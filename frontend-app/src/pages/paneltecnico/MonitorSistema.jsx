@@ -21,7 +21,7 @@ import {
  * ============================================================
  */
 
-export default function MonitorSistema({ baseUrl }) {
+export default function MonitorSistema() {
   const [tablas, setTablas] = useState([]);
   const [tablaSeleccionada, setTablaSeleccionada] = useState(null);
   const [columnas, setColumnas] = useState([]);
@@ -228,8 +228,7 @@ export default function MonitorSistema({ baseUrl }) {
           MONITOR REALTIME
           ====================================================== */}
 
-      <MonitorRealtime baseUrl={baseUrl} />
-
+<MonitorRealtime baseUrl={import.meta.env.VITE_API_URL} />
       {/* ======================================================
           DIAGNÓSTICO BD
           ====================================================== */}
