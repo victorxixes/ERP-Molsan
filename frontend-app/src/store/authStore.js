@@ -7,36 +7,17 @@ import { API_BASE } from "../api/config";
  * AUTH STORE — MOLSAN ERP PREMIUM 2027
  * =========================================================
  *
- * Fuente principal de autenticación:
+ * Autenticación centralizada del ERP.
  *
- * POST /api/auth/login
- *
- * El backend devuelve:
- *
- * {
- *   token,
- *   empleado: {
- *      empleado_id,
- *      nombre,
- *      apellidos,
- *      usuario,
- *      foto,
- *      activo,
- *      rol_id,
- *      rol_nombre,
- *      departamento_id,
- *      seccion_id,
- *      cargo_id,
- *      modulos_visibles_list,
- *      permisos_modulo_dict
- *   }
- * }
- *
- * IMPORTANTE:
- * No hacemos una segunda llamada a /empleados/{id}/ficha
- * para obtener los módulos.
- *
- * El login ya los devuelve correctamente.
+ * - Login
+ * - Persistencia JWT
+ * - Hidratación inicial
+ * - Validación de expiración JWT
+ * - Logout
+ * - Empleado normalizado
+ * - Módulos visibles
+ * - Permisos
+ * - Perfil
  * =========================================================
  */
 
@@ -51,7 +32,6 @@ function prepararFoto(foto) {
     return null;
   }
 
-  // Si ya es una URL absoluta
   if (
     foto.startsWith("http://") ||
     foto.startsWith("https://")
@@ -60,6 +40,102 @@ function prepararFoto(foto) {
   }
 
   return `${API_BASE}${foto}`;
+}
+
+
+/* =========================================================
+   COMPROBAR JWT
+========================================================= */
+
+/**
+ * Comprueba si un JWT está caducado.
+ *
+ * No necesitamos ninguna librería externa.
+ *
+ * El payload JWT contiene:
+ *
+ * {
+ *   exp: 1234567890
+ * }
+ *
+ * exp está expresado en segundos Unix.
+ *
+ * Dejamos 30 segundos de margen para evitar
+ * problemas de reloj entre navegador y servidor.
+ */
+
+function tokenEstaExpirado(token) {
+
+  if (!token) {
+    return true;
+  }
+
+  try {
+
+    const partes = token.split(".");
+
+    if (partes.length !== 3) {
+      return false;
+    }
+
+    const payloadBase64 = partes[1];
+
+    const payloadJson = decodeURIComponent(
+      atob(payloadBase64)
+        .split("")
+        .map(
+          (caracter) =>
+            "%" +
+            (
+              "00" +
+              caracter
+                .charCodeAt(0)
+                .toString(16)
+            ).slice(-2)
+        )
+        .join("")
+    );
+
+    const payload = JSON.parse(
+      payloadJson
+    );
+
+    /*
+     * Si no existe exp no bloqueamos el token.
+     *
+     * Esto mantiene compatibilidad por si en algún
+     * entorno el backend utiliza otro formato.
+     */
+
+    if (
+      typeof payload.exp !== "number"
+    ) {
+      return false;
+    }
+
+    const ahora =
+      Math.floor(
+        Date.now() / 1000
+      );
+
+    const margen = 30;
+
+    return payload.exp <= ahora + margen;
+
+  } catch (error) {
+
+    console.warn(
+      "No se ha podido comprobar la expiración del JWT.",
+      error
+    );
+
+    /*
+     * Si no podemos interpretar el JWT,
+     * dejamos que el backend determine si es válido.
+     */
+
+    return false;
+  }
 }
 
 
@@ -73,13 +149,15 @@ function normalizarEmpleado(empleado) {
     return null;
   }
 
+
   /*
    * -------------------------------------------------------
    * MÓDULOS
    * -------------------------------------------------------
    */
 
-  let modulos = empleado.modulos_visibles_list;
+  let modulos =
+    empleado.modulos_visibles_list;
 
   if (!Array.isArray(modulos)) {
     modulos = [];
@@ -92,7 +170,8 @@ function normalizarEmpleado(empleado) {
    * -------------------------------------------------------
    */
 
-  let permisos = empleado.permisos_modulo_dict;
+  let permisos =
+    empleado.permisos_modulo_dict;
 
   if (
     !permisos ||
@@ -113,14 +192,9 @@ function normalizarEmpleado(empleado) {
 
     ...empleado,
 
+
     /*
      * ID PRINCIPAL
-     *
-     * Backend:
-     * empleado_id
-     *
-     * Mantenemos también id para compatibilidad
-     * con componentes antiguos.
      */
 
     id:
@@ -150,11 +224,6 @@ function normalizarEmpleado(empleado) {
     modulos_visibles_list:
       modulos,
 
-
-    /*
-     * Alias compatible con código antiguo
-     */
-
     modulos_visibles:
       modulos,
 
@@ -166,14 +235,25 @@ function normalizarEmpleado(empleado) {
     permisos_modulo_dict:
       permisos,
 
-
-    /*
-     * Alias compatible con código antiguo
-     */
-
     permisos_modulo:
       permisos
   };
+}
+
+
+/* =========================================================
+   LIMPIAR SESIÓN
+========================================================= */
+
+function limpiarSesionLocal() {
+
+  localStorage.removeItem(
+    "token"
+  );
+
+  localStorage.removeItem(
+    "empleado"
+  );
 }
 
 
@@ -206,6 +286,7 @@ export const useAuthStore = create(
      */
 
     perfilModal: null,
+
 
     setPerfilModal: (id) => {
 
@@ -246,6 +327,40 @@ export const useAuthStore = create(
         !empleadoLS
       ) {
 
+        limpiarSesionLocal();
+
+        set({
+
+          token: null,
+
+          empleado: null,
+
+          loading: false,
+
+          authReady: true
+
+        });
+
+        return;
+      }
+
+
+      /*
+       * ---------------------------------------------------
+       * COMPROBAR EXPIRACIÓN DEL JWT
+       * ---------------------------------------------------
+       */
+
+      if (
+        tokenEstaExpirado(token)
+      ) {
+
+        console.warn(
+          "JWT expirado. Cerrando sesión."
+        );
+
+        limpiarSesionLocal();
+
         set({
 
           token: null,
@@ -283,8 +398,7 @@ export const useAuthStore = create(
 
 
         /*
-         * Si el empleado guardado no tiene ID
-         * consideramos inválida la sesión.
+         * El empleado debe tener ID.
          */
 
         if (
@@ -327,13 +441,7 @@ export const useAuthStore = create(
         );
 
 
-        localStorage.removeItem(
-          "token"
-        );
-
-        localStorage.removeItem(
-          "empleado"
-        );
+        limpiarSesionLocal();
 
 
         set({
@@ -403,7 +511,28 @@ export const useAuthStore = create(
 
         /*
          * -------------------------------------------------
-         * EMPLEADO DEVUELTO POR BACKEND
+         * COMPROBAR TOKEN
+         * -------------------------------------------------
+         */
+
+        if (
+          tokenEstaExpirado(
+            res.data.token
+          )
+        ) {
+
+          console.error(
+            "El backend ha devuelto un token expirado."
+          );
+
+          return false;
+
+        }
+
+
+        /*
+         * -------------------------------------------------
+         * EMPLEADO
          * -------------------------------------------------
          */
 
@@ -436,11 +565,44 @@ export const useAuthStore = create(
 
         /*
          * -------------------------------------------------
-         * DEBUG TEMPORAL
-         * -------------------------------------------------
+         * GUARDAR SESIÓN
          *
-         * Esto nos permitirá comprobar en Render/browser
-         * que el admin recibe todos los módulos.
+         * Primero localStorage y después Zustand.
+         * Así ambas fuentes quedan sincronizadas.
+         * -------------------------------------------------
+         */
+
+        localStorage.setItem(
+          "token",
+          res.data.token
+        );
+
+        localStorage.setItem(
+          "empleado",
+          JSON.stringify(
+            empleado
+          )
+        );
+
+
+        set({
+
+          empleado,
+
+          token:
+            res.data.token,
+
+          loading: false,
+
+          authReady: true
+
+        });
+
+
+        /*
+         * -------------------------------------------------
+         * DEBUG
+         * -------------------------------------------------
          */
 
         console.log(
@@ -486,51 +648,6 @@ export const useAuthStore = create(
         );
 
 
-        /*
-         * -------------------------------------------------
-         * GUARDAR EN ZUSTAND
-         * -------------------------------------------------
-         */
-
-        set({
-
-          empleado,
-
-          token:
-            res.data.token,
-
-          loading: false,
-
-          authReady: true
-
-        });
-
-
-        /*
-         * -------------------------------------------------
-         * GUARDAR SESIÓN
-         * -------------------------------------------------
-         */
-
-        localStorage.setItem(
-          "token",
-          res.data.token
-        );
-
-        localStorage.setItem(
-          "empleado",
-          JSON.stringify(
-            empleado
-          )
-        );
-
-
-        /*
-         * -------------------------------------------------
-         * OK
-         * -------------------------------------------------
-         */
-
         return true;
 
       }
@@ -541,7 +658,6 @@ export const useAuthStore = create(
           "ERROR LOGIN:",
           error
         );
-
 
         return false;
 
@@ -558,6 +674,9 @@ export const useAuthStore = create(
 
     logout: () => {
 
+      limpiarSesionLocal();
+
+
       set({
 
         empleado: null,
@@ -566,18 +685,11 @@ export const useAuthStore = create(
 
         loading: false,
 
-        authReady: true
+        authReady: true,
+
+        perfilModal: null
 
       });
-
-
-      localStorage.removeItem(
-        "token"
-      );
-
-      localStorage.removeItem(
-        "empleado"
-      );
 
     }
 
