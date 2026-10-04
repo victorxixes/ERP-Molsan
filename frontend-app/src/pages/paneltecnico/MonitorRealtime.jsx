@@ -14,7 +14,8 @@ import { buildRealtimeWsUrl } from "../../api/monitorRealtime";
  * ============================================================
  */
 
-export default function MonitorRealtime({ baseUrl }) {
+export default function MonitorRealtime() {
+
   const wsRef = useRef(null);
 
   const [conectado, setConectado] = useState(false);
@@ -27,70 +28,170 @@ export default function MonitorRealtime({ baseUrl }) {
     porUsuario: {},
   });
 
+
   // ============================================================
   // WEBSOCKET
   // ============================================================
 
   useEffect(() => {
-    if (!baseUrl) return;
 
-    const url = buildRealtimeWsUrl(baseUrl, {
-      modulo: "panel-tecnico",
-      grupo: "monitor-realtime",
-      rol: "admin",
-    });
+    let ws = null;
 
-    const ws = new WebSocket(url);
+    try {
 
-    wsRef.current = ws;
+      const url = buildRealtimeWsUrl({
+        modulo: "panel-tecnico",
+        grupo: "monitor-realtime",
+        rol: "admin",
+      });
 
-    ws.onopen = () => {
-      setConectado(true);
+      console.log(
+        "MONITOR REALTIME: conectando a:",
+        url
+      );
 
-      setStats((prev) => ({
-        ...prev,
-        total: prev.total + 1,
+      ws = new WebSocket(url);
 
-        porModulo: {
-          ...prev.porModulo,
-          "panel-tecnico":
-            (prev.porModulo["panel-tecnico"] || 0) + 1,
-        },
+      wsRef.current = ws;
 
-        porGrupo: {
-          ...prev.porGrupo,
-          "monitor-realtime":
-            (prev.porGrupo["monitor-realtime"] || 0) + 1,
-        },
 
-        porRol: {
-          ...prev.porRol,
-          admin: (prev.porRol.admin || 0) + 1,
-        },
-      }));
-    };
+      // --------------------------------------------------------
+      // CONECTADO
+      // --------------------------------------------------------
 
-    ws.onclose = () => {
+      ws.onopen = () => {
+
+        console.log(
+          "MONITOR REALTIME: WebSocket conectado"
+        );
+
+        setConectado(true);
+
+        setStats((prev) => ({
+
+          ...prev,
+
+          total: prev.total + 1,
+
+          porModulo: {
+            ...prev.porModulo,
+
+            "panel-tecnico":
+              (prev.porModulo["panel-tecnico"] || 0) + 1,
+          },
+
+          porGrupo: {
+            ...prev.porGrupo,
+
+            "monitor-realtime":
+              (prev.porGrupo["monitor-realtime"] || 0) + 1,
+          },
+
+          porRol: {
+            ...prev.porRol,
+
+            admin:
+              (prev.porRol.admin || 0) + 1,
+          },
+
+        }));
+
+      };
+
+
+      // --------------------------------------------------------
+      // MENSAJES
+      // --------------------------------------------------------
+
+      ws.onmessage = (event) => {
+
+        console.log(
+          "MONITOR REALTIME: evento recibido:",
+          event.data
+        );
+
+      };
+
+
+      // --------------------------------------------------------
+      // ERROR
+      // --------------------------------------------------------
+
+      ws.onerror = (error) => {
+
+        console.error(
+          "MONITOR REALTIME: error WebSocket:",
+          error
+        );
+
+        setConectado(false);
+
+      };
+
+
+      // --------------------------------------------------------
+      // CERRADO
+      // --------------------------------------------------------
+
+      ws.onclose = (event) => {
+
+        console.log(
+          "MONITOR REALTIME: WebSocket cerrado:",
+          event.code,
+          event.reason
+        );
+
+        setConectado(false);
+
+        setStats((prev) => ({
+
+          ...prev,
+
+          total: Math.max(
+            prev.total - 1,
+            0
+          ),
+
+        }));
+
+      };
+
+    } catch (error) {
+
+      console.error(
+        "MONITOR REALTIME: no se pudo crear WebSocket:",
+        error
+      );
+
       setConectado(false);
 
-      setStats((prev) => ({
-        ...prev,
-        total: Math.max(prev.total - 1, 0),
-      }));
-    };
+    }
 
-    ws.onerror = () => {
-      setConectado(false);
-    };
 
-    ws.onmessage = () => {};
+    // --------------------------------------------------------
+    // CLEANUP
+    // --------------------------------------------------------
 
     return () => {
-      try {
-        ws.close();
-      } catch {}
+
+      if (ws) {
+
+        try {
+
+          ws.close();
+
+        } catch {
+          // Ignorar error de cierre
+        }
+
+      }
+
+      wsRef.current = null;
+
     };
-  }, [baseUrl]);
+
+  }, []);
+
 
   // ============================================================
   // RESUMEN
@@ -101,59 +202,81 @@ export default function MonitorRealtime({ baseUrl }) {
     [stats.total]
   );
 
+
   const rolPrincipal = useMemo(() => {
-    const entradas = Object.entries(stats.porRol);
+
+    const entradas =
+      Object.entries(stats.porRol);
 
     if (!entradas.length) {
+
       return {
         nombre: "—",
         cantidad: 0,
       };
+
     }
 
-    const [nombre, cantidad] = entradas[0];
+    const [nombre, cantidad] =
+      entradas[0];
 
     return {
       nombre,
       cantidad,
     };
+
   }, [stats.porRol]);
 
+
   const moduloPrincipal = useMemo(() => {
-    const entradas = Object.entries(stats.porModulo);
+
+    const entradas =
+      Object.entries(stats.porModulo);
 
     if (!entradas.length) {
+
       return {
         nombre: "—",
         cantidad: 0,
       };
+
     }
 
-    const [nombre, cantidad] = entradas[0];
+    const [nombre, cantidad] =
+      entradas[0];
 
     return {
       nombre,
       cantidad,
     };
+
   }, [stats.porModulo]);
 
+
   const grupoPrincipal = useMemo(() => {
-    const entradas = Object.entries(stats.porGrupo);
+
+    const entradas =
+      Object.entries(stats.porGrupo);
 
     if (!entradas.length) {
+
       return {
         nombre: "—",
         cantidad: 0,
       };
+
     }
 
-    const [nombre, cantidad] = entradas[0];
+    const [nombre, cantidad] =
+      entradas[0];
 
     return {
       nombre,
       cantidad,
     };
+
   }, [stats.porGrupo]);
+
 
   // ============================================================
   // RENDER
@@ -196,8 +319,6 @@ export default function MonitorRealtime({ baseUrl }) {
             gap-4
           "
         >
-
-          {/* TÍTULO */}
 
           <div className="flex items-center gap-3">
 
@@ -249,8 +370,6 @@ export default function MonitorRealtime({ baseUrl }) {
           </div>
 
 
-          {/* ESTADO */}
-
           <div
             className={`
               inline-flex
@@ -263,6 +382,7 @@ export default function MonitorRealtime({ baseUrl }) {
               text-xs
               font-semibold
               w-fit
+
               ${
                 conectado
                   ? `
