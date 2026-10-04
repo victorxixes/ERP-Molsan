@@ -28,7 +28,7 @@ import { buildRealtimeWsUrl } from "../../api/monitorRealtime";
  * ============================================================
  */
 
-export default function MonitorRealtime({ baseUrl }) {
+export default function MonitorRealtime() {
   const wsRef = useRef(null);
   const reconnectTimerRef = useRef(null);
   const mountedRef = useRef(true);
@@ -84,11 +84,11 @@ export default function MonitorRealtime({ baseUrl }) {
       // CONSTRUIR URL
       // --------------------------------------------------------
 
-      const url = buildRealtimeWsUrl(baseUrl, {
-        modulo: "panel-tecnico",
-        grupo: "monitor-realtime",
-        rol: "admin",
-      });
+const url = buildRealtimeWsUrl({
+  modulo: "panel-tecnico",
+  grupo: "monitor-realtime",
+  rol: "admin",
+});
 
       console.log(
         "MonitorRealtime: conectando WebSocket:",
