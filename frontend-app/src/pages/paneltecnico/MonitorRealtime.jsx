@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
 import { buildRealtimeWsUrl } from "../../api/monitorRealtime";
 
 /**
@@ -6,340 +12,520 @@ import { buildRealtimeWsUrl } from "../../api/monitorRealtime";
  * MONITOR REALTIME — MOLSAN ERP PREMIUM 2027
  * ============================================================
  *
- * - WebSocket realtime
+ * Monitor técnico del WebSocket realtime.
+ *
+ * - Conexión WebSocket /ws/realtime/
+ * - Parámetros:
+ *      modulo=panel-tecnico
+ *      grupo=monitor-realtime
+ *      rol=admin
+ *
  * - Reconexión automática
- * - Estado de conexión visible
- * - KPIs premium
- * - Integrado con variables --erp-*
- *
- * IMPORTANTE:
- * El backend actual permite suscribirse por:
- *
- * - usuario_id
- * - rol
- * - modulo
- * - grupo
- *
- * Este monitor muestra actualmente los datos de ESTA conexión.
- * El backend todavía no proporciona un contador global real
- * de todas las conexiones activas.
+ * - Limpieza al desmontar
+ * - Contador de conexiones
+ * - Contador de mensajes
+ * - Última actividad
+ * - Estado visual de conexión
+ * - Diseño compatible con MonitorSistema
  * ============================================================
  */
 
 export default function MonitorRealtime() {
+
+  // ============================================================
+  // REFERENCIAS
+  // ============================================================
+
   const wsRef = useRef(null);
+
   const reconnectTimerRef = useRef(null);
+
+  const reconnectAttemptsRef = useRef(0);
+
   const mountedRef = useRef(false);
 
-  const [conectado, setConectado] = useState(false);
-
-  const [stats, setStats] = useState({
-    mensajes: 0,
-    ultimaActividad: null,
-  });
+  // Evita crear más de una conexión simultánea.
+  const connectingRef = useRef(false);
 
   // ============================================================
-  // CONEXIÓN WEBSOCKET
+  // CONFIGURACIÓN
   // ============================================================
 
-  useEffect(() => {
-    mountedRef.current = true;
+  const modulo = "panel-tecnico";
 
-    let cerradoManualmente = false;
+  const grupo = "monitor-realtime";
 
-    // ----------------------------------------------------------
-    // PROGRAMAR RECONEXIÓN
-    // ----------------------------------------------------------
+  const rol = "admin";
 
-    const programarReconexión = () => {
-      if (
-        !mountedRef.current ||
-        cerradoManualmente
-      ) {
-        return;
+  const MAX_RECONNECT_ATTEMPTS = 10;
+
+  const RECONNECT_BASE_DELAY = 2000;
+
+  const RECONNECT_MAX_DELAY = 30000;
+
+  // ============================================================
+  // ESTADO
+  // ============================================================
+
+  const [estado, setEstado] =
+    useState("desconectado");
+
+  const [mensajesRecibidos, setMensajesRecibidos] =
+    useState(0);
+
+  const [ultimaActividad, setUltimaActividad] =
+    useState(null);
+
+  const [conexiones, setConexiones] =
+    useState(0);
+
+  // ============================================================
+  // FORMATEAR HORA
+  // ============================================================
+
+  const formatearHora = useCallback(
+    (fecha) => {
+
+      if (!fecha) {
+        return "—";
       }
-
-      if (reconnectTimerRef.current) {
-        return;
-      }
-
-      reconnectTimerRef.current = setTimeout(() => {
-        reconnectTimerRef.current = null;
-
-        conectar();
-      }, 5000);
-    };
-
-    // ----------------------------------------------------------
-    // CONECTAR
-    // ----------------------------------------------------------
-
-    const conectar = () => {
-      if (
-        !mountedRef.current ||
-        cerradoManualmente
-      ) {
-        return;
-      }
-
-      // --------------------------------------------------------
-      // CERRAR CONEXIÓN ANTERIOR
-      // --------------------------------------------------------
 
       try {
-        if (wsRef.current) {
-          wsRef.current.close();
-        }
-      } catch {
-        // Ignorar
-      }
 
-      // --------------------------------------------------------
-      // CONSTRUIR URL
-      // --------------------------------------------------------
-
-      let url;
-
-      try {
-        url = buildRealtimeWsUrl({
-          modulo: "panel-tecnico",
-          grupo: "monitor-realtime",
-          rol: "admin",
-        });
-      } catch (error) {
-        console.error(
-          "MonitorRealtime: no se pudo construir la URL WebSocket:",
-          error
-        );
-
-        setConectado(false);
-
-        programarReconexión();
-
-        return;
-      }
-
-      console.log(
-        "MonitorRealtime: conectando WebSocket:",
-        url
-      );
-
-      // --------------------------------------------------------
-      // CREAR WEBSOCKET
-      // --------------------------------------------------------
-
-      let ws;
-
-      try {
-        ws = new WebSocket(url);
-      } catch (error) {
-        console.error(
-          "MonitorRealtime: error creando WebSocket:",
-          error
-        );
-
-        setConectado(false);
-
-        programarReconexión();
-
-        return;
-      }
-
-      wsRef.current = ws;
-
-      // ========================================================
-      // OPEN
-      // ========================================================
-
-      ws.onopen = () => {
-        if (
-          !mountedRef.current ||
-          cerradoManualmente
-        ) {
-          return;
-        }
-
-        console.log(
-          "MonitorRealtime: WebSocket conectado"
-        );
-
-        setConectado(true);
-
-        setStats((prev) => ({
-          ...prev,
-          ultimaActividad:
-            new Date().toISOString(),
-        }));
-      };
-
-      // ========================================================
-      // MESSAGE
-      // ========================================================
-
-      ws.onmessage = (event) => {
-        if (
-          !mountedRef.current ||
-          cerradoManualmente
-        ) {
-          return;
-        }
-
-        let mensaje;
-
-        try {
-          mensaje = JSON.parse(event.data);
-        } catch {
-          mensaje = event.data;
-        }
-
-        console.log(
-          "MonitorRealtime: evento recibido:",
-          mensaje
-        );
-
-        setStats((prev) => ({
-          ...prev,
-          mensajes: prev.mensajes + 1,
-          ultimaActividad:
-            new Date().toISOString(),
-        }));
-      };
-
-      // ========================================================
-      // ERROR
-      // ========================================================
-
-      ws.onerror = (error) => {
-        if (
-          !mountedRef.current ||
-          cerradoManualmente
-        ) {
-          return;
-        }
-
-        console.error(
-          "MonitorRealtime: error WebSocket:",
-          error
-        );
-
-        setConectado(false);
-      };
-
-      // ========================================================
-      // CLOSE
-      // ========================================================
-
-      ws.onclose = (event) => {
-        if (
-          !mountedRef.current ||
-          cerradoManualmente
-        ) {
-          return;
-        }
-
-        console.warn(
-          "MonitorRealtime: WebSocket cerrado.",
+        return new Date(fecha).toLocaleTimeString(
+          "es-ES",
           {
-            code: event.code,
-            reason: event.reason,
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
           }
         );
 
-        setConectado(false);
-
-        setStats((prev) => ({
-          ...prev,
-          ultimaActividad:
-            new Date().toISOString(),
-        }));
-
-        programarReconexión();
-      };
-    };
-
-    // ==========================================================
-    // INICIAR
-    // ==========================================================
-
-    conectar();
-
-    // ==========================================================
-    // CLEANUP
-    // ==========================================================
-
-    return () => {
-      cerradoManualmente = true;
-      mountedRef.current = false;
-
-      // --------------------------------------------------------
-      // CANCELAR RECONEXIÓN
-      // --------------------------------------------------------
-
-      if (reconnectTimerRef.current) {
-        clearTimeout(
-          reconnectTimerRef.current
-        );
-
-        reconnectTimerRef.current = null;
-      }
-
-      // --------------------------------------------------------
-      // CERRAR SOCKET
-      // --------------------------------------------------------
-
-      try {
-        if (wsRef.current) {
-          wsRef.current.close();
-        }
       } catch {
-        // Ignorar
+
+        return "—";
+
       }
 
-      wsRef.current = null;
-    };
-  }, []);
-
-  // ============================================================
-  // CONEXIÓN ACTUAL
-  // ============================================================
-
-  const resumen = useMemo(
-    () => (conectado ? 1 : 0),
-    [conectado]
+    },
+    []
   );
 
   // ============================================================
-  // FECHA ÚLTIMA ACTIVIDAD
+  // CANCELAR RECONEXIÓN
   // ============================================================
 
-  const ultimaActividad = useMemo(() => {
-    if (!stats.ultimaActividad) {
-      return "—";
+  const cancelarReconexión = useCallback(() => {
+
+    if (reconnectTimerRef.current) {
+
+      clearTimeout(
+        reconnectTimerRef.current
+      );
+
+      reconnectTimerRef.current = null;
+
+    }
+
+  }, []);
+
+  // ============================================================
+  // CERRAR SOCKET ACTUAL
+  // ============================================================
+
+  const cerrarSocket = useCallback(() => {
+
+    const ws = wsRef.current;
+
+    if (!ws) {
+      return;
     }
 
     try {
-      return new Date(
-        stats.ultimaActividad
-      ).toLocaleTimeString("es-ES");
-    } catch {
-      return "—";
+
+      ws.onopen = null;
+      ws.onmessage = null;
+      ws.onerror = null;
+      ws.onclose = null;
+
+      if (
+        ws.readyState === WebSocket.OPEN ||
+        ws.readyState === WebSocket.CONNECTING
+      ) {
+
+        ws.close();
+
+      }
+
+    } catch (error) {
+
+      console.warn(
+        "MonitorRealtime: error cerrando WebSocket:",
+        error
+      );
+
     }
-  }, [stats.ultimaActividad]);
+
+    wsRef.current = null;
+
+    connectingRef.current = false;
+
+  }, []);
+
+  // ============================================================
+  // PROGRAMAR RECONEXIÓN
+  // ============================================================
+
+  const programarReconexión = useCallback(() => {
+
+    if (!mountedRef.current) {
+      return;
+    }
+
+    if (reconnectTimerRef.current) {
+      return;
+    }
+
+    if (
+      reconnectAttemptsRef.current >=
+      MAX_RECONNECT_ATTEMPTS
+    ) {
+
+      console.warn(
+        "MonitorRealtime: máximo de intentos de reconexión alcanzado."
+      );
+
+      setEstado("desconectado");
+
+      return;
+
+    }
+
+    const intento =
+      reconnectAttemptsRef.current;
+
+    const delay = Math.min(
+      RECONNECT_BASE_DELAY *
+        Math.pow(2, intento),
+      RECONNECT_MAX_DELAY
+    );
+
+    reconnectAttemptsRef.current =
+      intento + 1;
+
+    reconnectTimerRef.current =
+      setTimeout(() => {
+
+        reconnectTimerRef.current = null;
+
+        if (!mountedRef.current) {
+          return;
+        }
+
+        conectarWebSocket();
+
+      }, delay);
+
+  }, []);
+
+  // ============================================================
+  // CONECTAR WEBSOCKET
+  // ============================================================
+
+  const conectarWebSocket = useCallback(() => {
+
+    if (!mountedRef.current) {
+      return;
+    }
+
+    // ----------------------------------------------------------
+    // EVITAR CONEXIONES DUPLICADAS
+    // ----------------------------------------------------------
+
+    if (connectingRef.current) {
+      return;
+    }
+
+    const socketActual =
+      wsRef.current;
+
+    if (
+      socketActual &&
+      (
+        socketActual.readyState ===
+          WebSocket.OPEN ||
+        socketActual.readyState ===
+          WebSocket.CONNECTING
+      )
+    ) {
+
+      return;
+
+    }
+
+    // ----------------------------------------------------------
+    // PREPARAR ESTADO
+    // ----------------------------------------------------------
+
+    connectingRef.current = true;
+
+    setEstado("conectando");
+
+    // ----------------------------------------------------------
+    // GENERAR URL
+    // ----------------------------------------------------------
+
+    let wsUrl;
+
+    try {
+
+      wsUrl = buildRealtimeWsUrl({
+        modulo,
+        grupo,
+        rol,
+      });
+
+    } catch (error) {
+
+      console.error(
+        "MonitorRealtime: error generando URL WebSocket:",
+        error
+      );
+
+      connectingRef.current = false;
+
+      setEstado("desconectado");
+
+      programarReconexión();
+
+      return;
+
+    }
+
+    console.log(
+      "MonitorRealtime: conectando WebSocket:",
+      wsUrl
+    );
+
+    // ----------------------------------------------------------
+    // CREAR WEBSOCKET
+    // ----------------------------------------------------------
+
+    let ws;
+
+    try {
+
+      ws = new WebSocket(wsUrl);
+
+    } catch (error) {
+
+      console.error(
+        "MonitorRealtime: no se pudo crear WebSocket:",
+        error
+      );
+
+      connectingRef.current = false;
+
+      setEstado("desconectado");
+
+      programarReconexión();
+
+      return;
+
+    }
+
+    wsRef.current = ws;
+
+    // ==========================================================
+    // OPEN
+    // ==========================================================
+
+    ws.onopen = () => {
+
+      if (!mountedRef.current) {
+        return;
+      }
+
+      connectingRef.current = false;
+
+      reconnectAttemptsRef.current = 0;
+
+      setEstado("conectado");
+
+      setConexiones(
+        (valor) => valor + 1
+      );
+
+      setUltimaActividad(
+        new Date()
+      );
+
+      console.log(
+        "MonitorRealtime: WebSocket conectado"
+      );
+
+    };
+
+    // ==========================================================
+    // MESSAGE
+    // ==========================================================
+
+    ws.onmessage = (event) => {
+
+      if (!mountedRef.current) {
+        return;
+      }
+
+      setMensajesRecibidos(
+        (valor) => valor + 1
+      );
+
+      setUltimaActividad(
+        new Date()
+      );
+
+    };
+
+    // ==========================================================
+    // ERROR
+    // ==========================================================
+
+    ws.onerror = (event) => {
+
+      if (!mountedRef.current) {
+        return;
+      }
+
+      /*
+       * No hacemos console.error aquí.
+       *
+       * El navegador ya muestra automáticamente el error
+       * WebSocket en DevTools y evitamos duplicar mensajes
+       * de error innecesarios.
+       */
+
+      console.warn(
+        "MonitorRealtime: error de comunicación WebSocket."
+      );
+
+      setEstado("desconectado");
+
+    };
+
+    // ==========================================================
+    // CLOSE
+    // ==========================================================
+
+    ws.onclose = () => {
+
+      connectingRef.current = false;
+
+      if (!mountedRef.current) {
+        return;
+      }
+
+      setEstado("desconectado");
+
+      console.warn(
+        "MonitorRealtime: WebSocket cerrado."
+      );
+
+      programarReconexión();
+
+    };
+
+  }, [
+    grupo,
+    modulo,
+    rol,
+    programarReconexión,
+  ]);
+
+  // ============================================================
+  // INICIALIZACIÓN
+  // ============================================================
+
+  useEffect(() => {
+
+    mountedRef.current = true;
+
+    conectarWebSocket();
+
+    return () => {
+
+      mountedRef.current = false;
+
+      cancelarReconexión();
+
+      cerrarSocket();
+
+    };
+
+  }, [
+    conectarWebSocket,
+    cancelarReconexión,
+    cerrarSocket,
+  ]);
+
+  // ============================================================
+  // ESTADO VISUAL
+  // ============================================================
+
+  const estadoConfig = {
+
+    conectado: {
+      texto: "WebSocket conectado",
+      punto: "bg-emerald-500",
+      fondo:
+        "bg-emerald-50",
+      borde:
+        "border-emerald-200",
+      textoClase:
+        "text-emerald-700",
+    },
+
+    conectando: {
+      texto: "Conectando WebSocket...",
+      punto: "bg-amber-500 animate-pulse",
+      fondo:
+        "bg-amber-50",
+      borde:
+        "border-amber-200",
+      textoClase:
+        "text-amber-700",
+    },
+
+    desconectado: {
+      texto: "WebSocket desconectado",
+      punto: "bg-red-500",
+      fondo:
+        "bg-red-50",
+      borde:
+        "border-red-200",
+      textoClase:
+        "text-red-700",
+    },
+
+  };
+
+  const estadoActual =
+    estadoConfig[estado] ||
+    estadoConfig.desconectado;
 
   // ============================================================
   // RENDER
   // ============================================================
 
   return (
+
     <section
       className="
-        rounded-2xl
+        bg-[var(--erp-surface)]
         border
         border-[var(--erp-border)]
-        bg-[var(--erp-surface)]
+        rounded-2xl
         shadow-sm
         overflow-hidden
-        animate-fade-in
       "
     >
 
@@ -353,45 +539,51 @@ export default function MonitorRealtime() {
           py-5
           border-b
           border-[var(--erp-border)]
-          bg-[var(--erp-surface-soft)]
+          flex
+          flex-col
+          md:flex-row
+          md:items-center
+          md:justify-between
+          gap-4
         "
       >
 
-        <div
-          className="
-            flex
-            flex-col
-            md:flex-row
-            md:items-center
-            md:justify-between
-            gap-4
-          "
-        >
+        <div>
 
-          {/* TÍTULO */}
-
-          <div className="flex items-center gap-3">
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+            "
+          >
 
             <div
               className="
                 w-11
                 h-11
-                rounded-xl
+                rounded-2xl
                 bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
+                border
+                border-[var(--erp-border)]
                 flex
                 items-center
                 justify-center
-                border
-                border-[var(--erp-border)]
+                text-[var(--erp-primary)]
               "
             >
+
               <svg
                 className="w-5 h-5"
                 aria-hidden="true"
               >
-                <use href="/icons/icons.svg#activity" />
+
+                <use
+                  href="/icons/icons.svg#activity"
+                />
+
               </svg>
+
             </div>
 
             <div>
@@ -410,6 +602,7 @@ export default function MonitorRealtime() {
                 className="
                   text-sm
                   text-[var(--erp-text-soft)]
+                  mt-0.5
                 "
               >
                 Conexión WebSocket del sistema
@@ -419,78 +612,63 @@ export default function MonitorRealtime() {
 
           </div>
 
-          {/* ESTADO */}
+        </div>
 
-          <div
+        {/* ESTADO */}
+
+        <div
+          className={`
+            inline-flex
+            items-center
+            gap-2
+            px-3
+            py-2
+            rounded-xl
+            border
+            text-xs
+            font-medium
+            ${estadoActual.fondo}
+            ${estadoActual.borde}
+            ${estadoActual.textoClase}
+          `}
+        >
+
+          <span
             className={`
-              inline-flex
-              items-center
-              gap-2
-              px-3
-              py-2
-              rounded-xl
-              border
-              text-xs
-              font-semibold
-              w-fit
-
-              ${
-                conectado
-                  ? `
-                    bg-emerald-50
-                    text-emerald-700
-                    border-emerald-200
-                  `
-                  : `
-                    bg-red-50
-                    text-red-700
-                    border-red-200
-                  `
-              }
+              w-2
+              h-2
+              rounded-full
+              ${estadoActual.punto}
             `}
-          >
+          />
 
-            <span
-              className={`
-                w-2
-                h-2
-                rounded-full
-
-                ${
-                  conectado
-                    ? "bg-emerald-500 animate-pulse"
-                    : "bg-red-500"
-                }
-              `}
-            />
-
-            {conectado
-              ? "WebSocket conectado"
-              : "WebSocket desconectado"}
-
-          </div>
+          {estadoActual.texto}
 
         </div>
 
       </div>
 
+
       {/* ======================================================
-          KPIs
+          CONTENIDO
           ====================================================== */}
 
-      <div className="p-6">
+      <div className="p-5 sm:p-6">
+
+        {/* ====================================================
+            KPIS
+            ==================================================== */}
 
         <div
           className="
             grid
             grid-cols-1
-            sm:grid-cols-2
-            xl:grid-cols-3
+            md:grid-cols-3
             gap-4
           "
         >
 
-          {/* CONEXIÓN */}
+          {/* CONEXIONES */}
 
           <div
             className="
@@ -498,67 +676,45 @@ export default function MonitorRealtime() {
               border
               border-[var(--erp-border)]
               bg-[var(--erp-surface-soft)]
-              p-5
-              hover:shadow-sm
-              transition
+              p-4
             "
           >
 
             <div
               className="
-                flex
-                items-center
-                justify-between
-                mb-4
+                text-xs
+                font-medium
+                text-[var(--erp-text-soft)]
               "
             >
-
-              <span
-                className="
-                  text-sm
-                  font-medium
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Conexión de esta vista
-              </span>
-
-              <svg
-                className="
-                  w-5
-                  h-5
-                  text-[var(--erp-primary)]
-                "
-                aria-hidden="true"
-              >
-                <use href="/icons/icons.svg#activity" />
-              </svg>
-
+              Conexión de esta vista
             </div>
 
             <div
               className="
+                mt-2
                 text-3xl
                 font-bold
                 text-[var(--erp-text)]
               "
             >
-              {resumen}
+              {conexiones}
             </div>
 
-            <p
+            <div
               className="
+                mt-1
                 text-xs
                 text-[var(--erp-text-soft)]
-                mt-1
               "
             >
-              {conectado
+              {estado === "conectado"
                 ? "Conexión activa"
-                : "Sin conexión"}
-            </p>
+                : "Sin conexión activa"}
+            </div>
 
           </div>
+
 
           {/* MENSAJES */}
 
@@ -568,67 +724,45 @@ export default function MonitorRealtime() {
               border
               border-[var(--erp-border)]
               bg-[var(--erp-surface-soft)]
-              p-5
-              hover:shadow-sm
-              transition
+              p-4
             "
           >
 
             <div
               className="
-                flex
-                items-center
-                justify-between
-                mb-4
+                text-xs
+                font-medium
+                text-[var(--erp-text-soft)]
               "
             >
-
-              <span
-                className="
-                  text-sm
-                  font-medium
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Mensajes recibidos
-              </span>
-
-              <svg
-                className="
-                  w-5
-                  h-5
-                  text-[var(--erp-primary)]
-                "
-                aria-hidden="true"
-              >
-                <use href="/icons/icons.svg#activity" />
-              </svg>
-
+              Mensajes recibidos
             </div>
 
             <div
               className="
+                mt-2
                 text-3xl
                 font-bold
                 text-[var(--erp-text)]
               "
             >
-              {stats.mensajes}
+              {mensajesRecibidos}
             </div>
 
-            <p
+            <div
               className="
+                mt-1
                 text-xs
                 text-[var(--erp-text-soft)]
-                mt-1
               "
             >
               Eventos recibidos por esta conexión
-            </p>
+            </div>
 
           </div>
 
-          {/* ÚLTIMA ACTIVIDAD */}
+
+          {/* ACTIVIDAD */}
 
           <div
             className="
@@ -636,68 +770,47 @@ export default function MonitorRealtime() {
               border
               border-[var(--erp-border)]
               bg-[var(--erp-surface-soft)]
-              p-5
-              hover:shadow-sm
-              transition
+              p-4
             "
           >
 
             <div
               className="
-                flex
-                items-center
-                justify-between
-                mb-4
+                text-xs
+                font-medium
+                text-[var(--erp-text-soft)]
               "
             >
-
-              <span
-                className="
-                  text-sm
-                  font-medium
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Última actividad
-              </span>
-
-              <svg
-                className="
-                  w-5
-                  h-5
-                  text-[var(--erp-primary)]
-                "
-                aria-hidden="true"
-              >
-                <use href="/icons/icons.svg#clock" />
-              </svg>
-
+              Última actividad
             </div>
 
             <div
               className="
-                text-xl
+                mt-2
+                text-2xl
                 font-bold
                 text-[var(--erp-text)]
-                truncate
               "
             >
-              {ultimaActividad}
+              {formatearHora(
+                ultimaActividad
+              )}
             </div>
 
-            <p
+            <div
               className="
+                mt-1
                 text-xs
                 text-[var(--erp-text-soft)]
-                mt-1
               "
             >
               Último evento recibido
-            </p>
+            </div>
 
           </div>
 
         </div>
+
 
         {/* ====================================================
             SUSCRIPCIÓN
@@ -705,12 +818,12 @@ export default function MonitorRealtime() {
 
         <div
           className="
-            mt-5
+            mt-4
             rounded-2xl
             border
             border-[var(--erp-border)]
             bg-[var(--erp-surface-soft)]
-            p-5
+            p-4
           "
         >
 
@@ -718,16 +831,16 @@ export default function MonitorRealtime() {
             className="
               flex
               flex-col
-              md:flex-row
-              md:items-center
-              md:justify-between
-              gap-4
+              sm:flex-row
+              sm:items-center
+              sm:justify-between
+              gap-3
             "
           >
 
             <div>
 
-              <h3
+              <div
                 className="
                   text-sm
                   font-semibold
@@ -735,25 +848,26 @@ export default function MonitorRealtime() {
                 "
               >
                 Suscripción realtime
-              </h3>
+              </div>
 
-              <p
+              <div
                 className="
                   text-xs
                   text-[var(--erp-text-soft)]
                   mt-1
                 "
               >
-                Esta vista escucha eventos del canal técnico
-                del sistema.
-              </p>
+                Esta vista escucha eventos del canal técnico del sistema.
+              </div>
 
             </div>
+
 
             <div
               className="
                 flex
                 flex-wrap
+                items-center
                 gap-2
               "
             >
@@ -762,54 +876,56 @@ export default function MonitorRealtime() {
                 className="
                   inline-flex
                   items-center
-                  px-3
-                  py-1.5
+                  px-2.5
+                  py-1
                   rounded-lg
                   bg-[var(--erp-primary-soft)]
                   border
                   border-[var(--erp-border)]
                   text-xs
-                  font-medium
                   text-[var(--erp-primary)]
+                  font-medium
                 "
               >
-                módulo: panel-tecnico
+                módulo: {modulo}
               </span>
+
 
               <span
                 className="
                   inline-flex
                   items-center
-                  px-3
-                  py-1.5
+                  px-2.5
+                  py-1
                   rounded-lg
                   bg-[var(--erp-primary-soft)]
                   border
                   border-[var(--erp-border)]
                   text-xs
-                  font-medium
                   text-[var(--erp-primary)]
+                  font-medium
                 "
               >
-                grupo: monitor-realtime
+                grupo: {grupo}
               </span>
+
 
               <span
                 className="
                   inline-flex
                   items-center
-                  px-3
-                  py-1.5
+                  px-2.5
+                  py-1
                   rounded-lg
                   bg-[var(--erp-primary-soft)]
                   border
                   border-[var(--erp-border)]
                   text-xs
-                  font-medium
                   text-[var(--erp-primary)]
+                  font-medium
                 "
               >
-                rol: admin
+                rol: {rol}
               </span>
 
             </div>
@@ -818,19 +934,20 @@ export default function MonitorRealtime() {
 
         </div>
 
+
         {/* ====================================================
             ENDPOINT
             ==================================================== */}
 
         <div
           className="
-            mt-5
-            px-4
-            py-3
-            rounded-xl
-            bg-[var(--erp-surface-soft)]
+            mt-4
+            rounded-2xl
             border
             border-[var(--erp-border)]
+            bg-[var(--erp-surface-soft)]
+            px-4
+            py-3
             flex
             flex-col
             sm:flex-row
@@ -864,5 +981,7 @@ export default function MonitorRealtime() {
       </div>
 
     </section>
+
   );
+
 }
