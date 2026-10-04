@@ -79,6 +79,8 @@ import SeguridadRolEditor from "./pages/seguridad/SeguridadRolEditor.jsx";
 /* AUDITORÍA */
 import SeguridadAuditoria from "./pages/seguridad/SeguridadAuditoria.jsx";
 
+/* MAESTROS */
+import Maestros from "./pages/maestros/Maestros.jsx";
 
 /**
  * ============================================================
@@ -346,6 +348,10 @@ export default function App() {
             element={<MonitorRealtime />}
           />
 
+          <Route  path="maestros"
+          element={<Maestros />}
+          />
+          
           <Route
             path="paneltecnico/auditoria-avanzada"
             element={<AuditoriaAvanzada />}
