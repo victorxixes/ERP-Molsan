@@ -6,43 +6,40 @@ import axios from "./axios";
  * ============================================================
  *
  * Gestiona:
+ *
  * - Listado de tablas
  * - Descripción de tabla
  * - Contenido de tabla
  * - Construcción de URL WebSocket realtime
+ *
+ * IMPORTANTE
+ * ============================================================
+ *
+ * La API principal utiliza:
+ *
+ *   https://agenda-intranet-b.onrender.com/api
+ *
+ * Pero las rutas técnicas /debug están publicadas en:
+ *
+ *   /debug/tablas
+ *   /debug/describe/{tabla}
+ *   /debug/contenido/{tabla}
+ *
+ * Por tanto:
+ *
+ *   Axios normal  -> /api/...
+ *   Debug técnico -> /debug/...
+ *   WebSocket     -> /ws/realtime/...
+ *
  * ============================================================
  */
 
 
-/* ---------------------------------------------------------
-   LISTAR TABLAS
---------------------------------------------------------- */
+/* ============================================================
+   BASE URL DEL BACKEND
+============================================================ */
 
-export const listarTablas = () =>
-  axios.get("/debug/tablas");
-
-
-/* ---------------------------------------------------------
-   DESCRIBIR TABLA
---------------------------------------------------------- */
-
-export const describirTabla = (tabla) =>
-  axios.get(`/debug/describe/${tabla}`);
-
-
-/* ---------------------------------------------------------
-   OBTENER CONTENIDO DE TABLA
---------------------------------------------------------- */
-
-export const obtenerContenidoTabla = (tabla) =>
-  axios.get(`/debug/contenido/${tabla}`);
-
-
-/* ---------------------------------------------------------
-   CONSTRUIR URL WEBSOCKET REALTIME
---------------------------------------------------------- */
-
-export const buildRealtimeWsUrl = (params = {}) => {
+const getBackendBaseUrl = () => {
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -52,21 +49,127 @@ export const buildRealtimeWsUrl = (params = {}) => {
     );
   }
 
-  /*
-   * Axios utiliza:
-   *
-   * https://agenda-intranet-b.onrender.com/api
-   *
-   * Pero WebSocket está definido en:
-   *
-   * /ws/realtime/
-   *
-   * Por tanto eliminamos /api.
-   */
-
-  const baseUrl = apiUrl
+  return apiUrl
     .replace(/\/api\/?$/, "")
     .replace(/\/$/, "");
+};
+
+
+/* ============================================================
+   LISTAR TABLAS
+============================================================ */
+
+/**
+ * Obtiene el listado de tablas disponibles
+ * para el diagnóstico técnico.
+ *
+ * IMPORTANTE:
+ * Esta ruta NO utiliza /api.
+ *
+ * GET:
+ *
+ *   /debug/tablas
+ */
+export const listarTablas = () => {
+
+  const baseUrl = getBackendBaseUrl();
+
+  return axios.get(
+    `${baseUrl}/debug/tablas`
+  );
+};
+
+
+/* ============================================================
+   DESCRIBIR TABLA
+============================================================ */
+
+/**
+ * Obtiene la estructura de una tabla.
+ *
+ * GET:
+ *
+ *   /debug/describe/{tabla}
+ */
+export const describirTabla = (tabla) => {
+
+  if (!tabla) {
+    return Promise.reject(
+      new Error(
+        "No se ha indicado ninguna tabla."
+      )
+    );
+  }
+
+  const baseUrl = getBackendBaseUrl();
+
+  return axios.get(
+    `${baseUrl}/debug/describe/${encodeURIComponent(tabla)}`
+  );
+};
+
+
+/* ============================================================
+   OBTENER CONTENIDO DE TABLA
+============================================================ */
+
+/**
+ * Obtiene el contenido de una tabla.
+ *
+ * GET:
+ *
+ *   /debug/contenido/{tabla}
+ */
+export const obtenerContenidoTabla = (tabla) => {
+
+  if (!tabla) {
+    return Promise.reject(
+      new Error(
+        "No se ha indicado ninguna tabla."
+      )
+    );
+  }
+
+  const baseUrl = getBackendBaseUrl();
+
+  return axios.get(
+    `${baseUrl}/debug/contenido/${encodeURIComponent(tabla)}`
+  );
+};
+
+
+/* ============================================================
+   CONSTRUIR URL WEBSOCKET REALTIME
+============================================================ */
+
+/**
+ * Construye la URL del WebSocket realtime.
+ *
+ * Axios utiliza:
+ *
+ *   https://agenda-intranet-b.onrender.com/api
+ *
+ * Pero WebSocket está definido en:
+ *
+ *   /ws/realtime/
+ *
+ * Por tanto eliminamos /api.
+ *
+ * Ejemplo:
+ *
+ * VITE_API_URL:
+ *
+ *   https://agenda-intranet-b.onrender.com/api
+ *
+ * Resultado:
+ *
+ *   wss://agenda-intranet-b.onrender.com/ws/realtime/
+ *
+ * ============================================================
+ */
+export const buildRealtimeWsUrl = (params = {}) => {
+
+  const baseUrl = getBackendBaseUrl();
 
   /*
    * HTTPS -> WSS
@@ -97,7 +200,7 @@ export const buildRealtimeWsUrl = (params = {}) => {
   } else {
 
     throw new Error(
-      `VITE_API_URL no tiene un formato válido: ${apiUrl}`
+      `VITE_API_URL no tiene un formato válido: ${import.meta.env.VITE_API_URL}`
     );
 
   }
@@ -106,7 +209,8 @@ export const buildRealtimeWsUrl = (params = {}) => {
     params
   ).toString();
 
-  return `${wsBaseUrl}/ws/realtime/${
-    query ? `?${query}` : ""
-  }`;
+  return (
+    `${wsBaseUrl}/ws/realtime/` +
+    (query ? `?${query}` : "")
+  );
 };
