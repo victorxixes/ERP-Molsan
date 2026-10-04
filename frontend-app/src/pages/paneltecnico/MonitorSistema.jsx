@@ -22,6 +22,17 @@ import {
  */
 
 export default function MonitorSistema() {
+
+  // ============================================================
+  // CONFIGURACIÓN API
+  // ============================================================
+
+  const baseUrl = import.meta.env.VITE_API_URL;
+
+  // ============================================================
+  // ESTADO
+  // ============================================================
+
   const [tablas, setTablas] = useState([]);
   const [tablaSeleccionada, setTablaSeleccionada] = useState(null);
   const [columnas, setColumnas] = useState([]);
@@ -29,6 +40,7 @@ export default function MonitorSistema() {
 
   const [cargandoTablas, setCargandoTablas] = useState(false);
   const [cargandoTabla, setCargandoTabla] = useState(false);
+
   const [errorTablas, setErrorTablas] = useState(null);
   const [errorTabla, setErrorTabla] = useState(null);
 
@@ -37,11 +49,14 @@ export default function MonitorSistema() {
   // ============================================================
 
   useEffect(() => {
+
     const cargarTablas = async () => {
+
       setCargandoTablas(true);
       setErrorTablas(null);
 
       try {
+
         const res = await listarTablas();
 
         setTablas(
@@ -49,66 +64,100 @@ export default function MonitorSistema() {
             ? res.data.tablas
             : []
         );
+
       } catch (error) {
-        console.error("Error cargando tablas:", error);
+
+        console.error(
+          "Error cargando tablas:",
+          error
+        );
+
         setErrorTablas(
           "No se ha podido cargar el listado de tablas."
         );
+
         setTablas([]);
+
       } finally {
+
         setCargandoTablas(false);
+
       }
+
     };
 
     cargarTablas();
+
   }, []);
 
   // ============================================================
   // CARGAR COLUMNAS + CONTENIDO
   // ============================================================
 
-  const cargarTabla = useCallback(async (tabla) => {
-    if (!tabla) return;
+  const cargarTabla = useCallback(
+    async (tabla) => {
 
-    setTablaSeleccionada(tabla);
-    setColumnas([]);
-    setContenido([]);
-    setErrorTabla(null);
-    setCargandoTabla(true);
+      if (!tabla) {
+        return;
+      }
 
-    try {
-      const [cols, cont] = await Promise.all([
-        describirTabla(tabla),
-        obtenerContenidoTabla(tabla),
-      ]);
-
-      setColumnas(
-        Array.isArray(cols.data?.columnas)
-          ? cols.data.columnas
-          : []
-      );
-
-      setContenido(
-        Array.isArray(cont.data?.filas)
-          ? cont.data.filas
-          : []
-      );
-    } catch (error) {
-      console.error(
-        `Error cargando tabla ${tabla}:`,
-        error
-      );
-
-      setErrorTabla(
-        `No se ha podido cargar la información de la tabla "${tabla}".`
-      );
-
+      setTablaSeleccionada(tabla);
       setColumnas([]);
       setContenido([]);
-    } finally {
-      setCargandoTabla(false);
-    }
-  }, []);
+      setErrorTabla(null);
+      setCargandoTabla(true);
+
+      try {
+
+        const [cols, cont] =
+          await Promise.all([
+            describirTabla(tabla),
+            obtenerContenidoTabla(tabla),
+          ]);
+
+        setColumnas(
+          Array.isArray(
+            cols.data?.columnas
+          )
+            ? cols.data.columnas
+            : []
+        );
+
+        setContenido(
+          Array.isArray(
+            cont.data?.filas
+          )
+            ? cont.data.filas
+            : []
+        );
+
+      } catch (error) {
+
+        console.error(
+          `Error cargando tabla ${tabla}:`,
+          error
+        );
+
+        setErrorTabla(
+          `No se ha podido cargar la información de la tabla "${tabla}".`
+        );
+
+        setColumnas([]);
+        setContenido([]);
+
+      } finally {
+
+        setCargandoTabla(false);
+
+      }
+
+    },
+    []
+  );
+
+  // ============================================================
+  // MEMOS
+  // ============================================================
 
   const columnasMemo = useMemo(
     () => columnas,
@@ -141,7 +190,9 @@ export default function MonitorSistema() {
           gap-3
         "
       >
+
         <div>
+
           <div
             className="
               flex
@@ -149,6 +200,7 @@ export default function MonitorSistema() {
               gap-3
             "
           >
+
             <div
               className="
                 w-11
@@ -164,12 +216,16 @@ export default function MonitorSistema() {
                 shadow-sm
               "
             >
-              <svg className="w-5 h-5" aria-hidden="true">
+              <svg
+                className="w-5 h-5"
+                aria-hidden="true"
+              >
                 <use href="/icons/icons.svg#monitor" />
               </svg>
             </div>
 
             <div>
+
               <h1
                 className="
                   text-2xl
@@ -190,9 +246,13 @@ export default function MonitorSistema() {
               >
                 Supervisión técnica, WebSocket y diagnóstico de base de datos
               </p>
+
             </div>
+
           </div>
+
         </div>
+
 
         <div
           className="
@@ -210,6 +270,7 @@ export default function MonitorSistema() {
             shadow-sm
           "
         >
+
           <span
             className="
               w-2
@@ -221,14 +282,21 @@ export default function MonitorSistema() {
           />
 
           Sistema operativo
+
         </div>
+
       </div>
+
 
       {/* ======================================================
           MONITOR REALTIME
           ====================================================== */}
 
-<MonitorRealtime baseUrl={import.meta.env.VITE_API_URL} />
+      <MonitorRealtime
+        baseUrl={baseUrl}
+      />
+
+
       {/* ======================================================
           DIAGNÓSTICO BD
           ====================================================== */}
@@ -260,7 +328,9 @@ export default function MonitorSistema() {
             gap-3
           "
         >
+
           <div>
+
             <h2
               className="
                 text-lg
@@ -280,7 +350,9 @@ export default function MonitorSistema() {
             >
               Consulta la estructura y el contenido de las tablas del sistema.
             </p>
+
           </div>
+
 
           <div
             className="
@@ -296,9 +368,13 @@ export default function MonitorSistema() {
             "
           >
             {tablas.length}{" "}
-            {tablas.length === 1 ? "tabla" : "tablas"}
+            {tablas.length === 1
+              ? "tabla"
+              : "tablas"}
           </div>
+
         </div>
+
 
         {/* CONTENIDO */}
 
@@ -335,6 +411,7 @@ export default function MonitorSistema() {
                   border-[var(--erp-border)]
                 "
               >
+
                 <div
                   className="
                     flex
@@ -343,6 +420,7 @@ export default function MonitorSistema() {
                     gap-2
                   "
                 >
+
                   <h3
                     className="
                       text-sm
@@ -361,12 +439,23 @@ export default function MonitorSistema() {
                   >
                     BD
                   </span>
+
                 </div>
+
               </div>
 
-              <div className="p-2 max-h-[560px] overflow-y-auto scrollbar-thin">
+
+              <div
+                className="
+                  p-2
+                  max-h-[560px]
+                  overflow-y-auto
+                  scrollbar-thin
+                "
+              >
 
                 {cargandoTablas && (
+
                   <div
                     className="
                       px-3
@@ -376,6 +465,7 @@ export default function MonitorSistema() {
                       text-[var(--erp-text-soft)]
                     "
                   >
+
                     <div
                       className="
                         mx-auto
@@ -391,29 +481,37 @@ export default function MonitorSistema() {
                     />
 
                     Cargando tablas...
+
                   </div>
+
                 )}
 
-                {!cargandoTablas && errorTablas && (
-                  <div
-                    className="
-                      m-2
-                      p-3
-                      rounded-xl
-                      bg-red-50
-                      border
-                      border-red-200
-                      text-red-700
-                      text-xs
-                    "
-                  >
-                    {errorTablas}
-                  </div>
-                )}
+
+                {!cargandoTablas &&
+                  errorTablas && (
+
+                    <div
+                      className="
+                        m-2
+                        p-3
+                        rounded-xl
+                        bg-red-50
+                        border
+                        border-red-200
+                        text-red-700
+                        text-xs
+                      "
+                    >
+                      {errorTablas}
+                    </div>
+
+                  )}
+
 
                 {!cargandoTablas &&
                   !errorTablas &&
                   tablas.length === 0 && (
+
                     <div
                       className="
                         px-3
@@ -425,19 +523,25 @@ export default function MonitorSistema() {
                     >
                       No hay tablas disponibles.
                     </div>
+
                   )}
+
 
                 {!cargandoTablas &&
                   !errorTablas &&
                   tablas.map((tabla) => {
+
                     const activa =
                       tablaSeleccionada === tabla;
 
                     return (
+
                       <button
                         key={tabla}
                         type="button"
-                        onClick={() => cargarTabla(tabla)}
+                        onClick={() =>
+                          cargarTabla(tabla)
+                        }
                         className={`
                           w-full
                           flex
@@ -452,6 +556,7 @@ export default function MonitorSistema() {
                           transition-all
                           duration-200
                           border
+
                           ${
                             activa
                               ? `
@@ -470,11 +575,13 @@ export default function MonitorSistema() {
                           }
                         `}
                       >
+
                         <svg
                           className={`
                             w-4
                             h-4
                             flex-shrink-0
+
                             ${
                               activa
                                 ? "text-white"
@@ -489,11 +596,17 @@ export default function MonitorSistema() {
                         <span className="truncate">
                           {tabla}
                         </span>
+
                       </button>
+
                     );
+
                   })}
+
               </div>
+
             </aside>
+
 
             {/* ==================================================
                 DETALLE DE TABLA
@@ -502,6 +615,7 @@ export default function MonitorSistema() {
             <div className="min-w-0">
 
               {!tablaSeleccionada && (
+
                 <div
                   className="
                     min-h-[420px]
@@ -518,6 +632,7 @@ export default function MonitorSistema() {
                     px-6
                   "
                 >
+
                   <div
                     className="
                       w-14
@@ -533,9 +648,14 @@ export default function MonitorSistema() {
                       mb-4
                     "
                   >
-                    <svg className="w-6 h-6" aria-hidden="true">
+
+                    <svg
+                      className="w-6 h-6"
+                      aria-hidden="true"
+                    >
                       <use href="/icons/icons.svg#database" />
                     </svg>
+
                   </div>
 
                   <h3
@@ -559,10 +679,14 @@ export default function MonitorSistema() {
                     Selecciona una tabla de la izquierda para consultar
                     sus columnas y sus registros.
                   </p>
+
                 </div>
+
               )}
 
+
               {tablaSeleccionada && (
+
                 <div className="space-y-5">
 
                   {/* CABECERA TABLA */}
@@ -577,7 +701,9 @@ export default function MonitorSistema() {
                       gap-3
                     "
                   >
+
                     <div>
+
                       <div
                         className="
                           flex
@@ -585,6 +711,7 @@ export default function MonitorSistema() {
                           gap-2
                         "
                       >
+
                         <svg
                           className="
                             w-5
@@ -605,6 +732,7 @@ export default function MonitorSistema() {
                         >
                           {tablaSeleccionada}
                         </h3>
+
                       </div>
 
                       <p
@@ -616,9 +744,12 @@ export default function MonitorSistema() {
                       >
                         Estructura y registros de la tabla seleccionada
                       </p>
+
                     </div>
 
+
                     {cargandoTabla && (
+
                       <div
                         className="
                           inline-flex
@@ -634,6 +765,7 @@ export default function MonitorSistema() {
                           text-[var(--erp-primary)]
                         "
                       >
+
                         <span
                           className="
                             w-3
@@ -647,13 +779,18 @@ export default function MonitorSistema() {
                         />
 
                         Cargando...
+
                       </div>
+
                     )}
+
                   </div>
+
 
                   {/* ERROR */}
 
                   {errorTabla && (
+
                     <div
                       className="
                         p-4
@@ -667,13 +804,16 @@ export default function MonitorSistema() {
                     >
                       {errorTabla}
                     </div>
+
                   )}
+
 
                   {/* ==================================================
                       COLUMNAS
                       ================================================== */}
 
                   {!errorTabla && (
+
                     <section
                       className="
                         rounded-2xl
@@ -695,7 +835,9 @@ export default function MonitorSistema() {
                           justify-between
                         "
                       >
+
                         <div>
+
                           <h4
                             className="
                               text-sm
@@ -715,7 +857,9 @@ export default function MonitorSistema() {
                           >
                             Columnas disponibles
                           </p>
+
                         </div>
+
 
                         <span
                           className="
@@ -731,12 +875,16 @@ export default function MonitorSistema() {
                         >
                           {columnasMemo.length} columnas
                         </span>
+
                       </div>
 
+
                       <div className="overflow-x-auto">
+
                         <table className="w-full text-sm">
 
                           <thead>
+
                             <tr
                               className="
                                 bg-white
@@ -744,6 +892,7 @@ export default function MonitorSistema() {
                                 border-[var(--erp-border)]
                               "
                             >
+
                               <th
                                 className="
                                   py-3
@@ -773,12 +922,18 @@ export default function MonitorSistema() {
                               >
                                 Tipo
                               </th>
+
                             </tr>
+
                           </thead>
 
+
                           <tbody>
+
                             {columnasMemo.length === 0 ? (
+
                               <tr>
+
                                 <td
                                   colSpan="2"
                                   className="
@@ -791,69 +946,87 @@ export default function MonitorSistema() {
                                   No se ha encontrado información
                                   sobre las columnas.
                                 </td>
-                              </tr>
-                            ) : (
-                              columnasMemo.map((c, i) => (
-                                <tr
-                                  key={i}
-                                  className="
-                                    border-b
-                                    border-[var(--erp-border)]
-                                    last:border-b-0
-                                    hover:bg-white
-                                    transition
-                                  "
-                                >
-                                  <td
-                                    className="
-                                      py-2.5
-                                      px-4
-                                      font-medium
-                                      text-[var(--erp-text)]
-                                    "
-                                  >
-                                    {c.columna}
-                                  </td>
 
-                                  <td
+                              </tr>
+
+                            ) : (
+
+                              columnasMemo.map(
+                                (c, i) => (
+
+                                  <tr
+                                    key={i}
                                     className="
-                                      py-2.5
-                                      px-4
-                                      text-[var(--erp-text-soft)]
+                                      border-b
+                                      border-[var(--erp-border)]
+                                      last:border-b-0
+                                      hover:bg-white
+                                      transition
                                     "
                                   >
-                                    <span
+
+                                    <td
                                       className="
-                                        inline-flex
-                                        px-2
-                                        py-1
-                                        rounded-lg
-                                        bg-[var(--erp-primary-soft)]
-                                        border
-                                        border-[var(--erp-border)]
-                                        text-xs
-                                        text-[var(--erp-primary)]
+                                        py-2.5
+                                        px-4
                                         font-medium
+                                        text-[var(--erp-text)]
                                       "
                                     >
-                                      {c.tipo}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ))
+                                      {c.columna}
+                                    </td>
+
+                                    <td
+                                      className="
+                                        py-2.5
+                                        px-4
+                                        text-[var(--erp-text-soft)]
+                                      "
+                                    >
+
+                                      <span
+                                        className="
+                                          inline-flex
+                                          px-2
+                                          py-1
+                                          rounded-lg
+                                          bg-[var(--erp-primary-soft)]
+                                          border
+                                          border-[var(--erp-border)]
+                                          text-xs
+                                          text-[var(--erp-primary)]
+                                          font-medium
+                                        "
+                                      >
+                                        {c.tipo}
+                                      </span>
+
+                                    </td>
+
+                                  </tr>
+
+                                )
+                              )
+
                             )}
+
                           </tbody>
 
                         </table>
+
                       </div>
+
                     </section>
+
                   )}
+
 
                   {/* ==================================================
                       CONTENIDO
                       ================================================== */}
 
                   {!errorTabla && (
+
                     <section
                       className="
                         rounded-2xl
@@ -876,7 +1049,9 @@ export default function MonitorSistema() {
                           gap-3
                         "
                       >
+
                         <div>
+
                           <h4
                             className="
                               text-sm
@@ -896,7 +1071,9 @@ export default function MonitorSistema() {
                           >
                             Registros disponibles
                           </p>
+
                         </div>
+
 
                         <span
                           className="
@@ -912,7 +1089,9 @@ export default function MonitorSistema() {
                         >
                           {contenidoMemo.length} registros
                         </span>
+
                       </div>
+
 
                       <div
                         className="
@@ -921,6 +1100,7 @@ export default function MonitorSistema() {
                           scrollbar-thin
                         "
                       >
+
                         <table className="w-full text-sm">
 
                           <thead
@@ -930,6 +1110,7 @@ export default function MonitorSistema() {
                               z-10
                             "
                           >
+
                             <tr
                               className="
                                 bg-[var(--erp-surface)]
@@ -937,38 +1118,46 @@ export default function MonitorSistema() {
                                 border-[var(--erp-border)]
                               "
                             >
-                              {columnasMemo.map((c, i) => (
-                                <th
-                                  key={i}
-                                  className="
-                                    py-3
-                                    px-4
-                                    text-left
-                                    whitespace-nowrap
-                                    text-xs
-                                    font-semibold
-                                    uppercase
-                                    tracking-wide
-                                    text-[var(--erp-text-soft)]
-                                  "
-                                >
-                                  {c.columna}
-                                </th>
-                              ))}
+
+                              {columnasMemo.map(
+                                (c, i) => (
+
+                                  <th
+                                    key={i}
+                                    className="
+                                      py-3
+                                      px-4
+                                      text-left
+                                      whitespace-nowrap
+                                      text-xs
+                                      font-semibold
+                                      uppercase
+                                      tracking-wide
+                                      text-[var(--erp-text-soft)]
+                                    "
+                                  >
+                                    {c.columna}
+                                  </th>
+
+                                )
+                              )}
+
                             </tr>
+
                           </thead>
+
 
                           <tbody>
 
                             {contenidoMemo.length === 0 ? (
+
                               <tr>
+
                                 <td
-                                  colSpan={
-                                    Math.max(
-                                      columnasMemo.length,
-                                      1
-                                    )
-                                  }
+                                  colSpan={Math.max(
+                                    columnasMemo.length,
+                                    1
+                                  )}
                                   className="
                                     py-10
                                     text-center
@@ -979,74 +1168,105 @@ export default function MonitorSistema() {
                                   Esta tabla no contiene registros
                                   para mostrar.
                                 </td>
+
                               </tr>
+
                             ) : (
-                              contenidoMemo.map((fila, i) => (
-                                <tr
-                                  key={i}
-                                  className="
-                                    border-b
-                                    border-[var(--erp-border)]
-                                    last:border-b-0
-                                    hover:bg-white
-                                    transition
-                                  "
-                                >
-                                  {columnasMemo.map((c, j) => (
-                                    <td
-                                      key={j}
-                                      className="
-                                        py-2.5
-                                        px-4
-                                        whitespace-nowrap
-                                        text-[var(--erp-text)]
-                                        max-w-[320px]
-                                        truncate
-                                      "
-                                      title={
-                                        fila[c.columna] !== null &&
-                                        fila[c.columna] !== undefined
-                                          ? String(
-                                              fila[c.columna]
-                                            )
-                                          : ""
-                                      }
-                                    >
-                                      {fila[c.columna] === null ||
-                                      fila[c.columna] === undefined
-                                        ? (
-                                          <span
+
+                              contenidoMemo.map(
+                                (fila, i) => (
+
+                                  <tr
+                                    key={i}
+                                    className="
+                                      border-b
+                                      border-[var(--erp-border)]
+                                      last:border-b-0
+                                      hover:bg-white
+                                      transition
+                                    "
+                                  >
+
+                                    {columnasMemo.map(
+                                      (c, j) => {
+
+                                        const valor =
+                                          fila[c.columna];
+
+                                        return (
+
+                                          <td
+                                            key={j}
                                             className="
-                                              text-[var(--erp-text-soft)]
-                                              italic
+                                              py-2.5
+                                              px-4
+                                              whitespace-nowrap
+                                              text-[var(--erp-text)]
+                                              max-w-[320px]
+                                              truncate
                                             "
+                                            title={
+                                              valor !== null &&
+                                              valor !== undefined
+                                                ? String(valor)
+                                                : ""
+                                            }
                                           >
-                                            —
-                                          </span>
-                                        )
-                                        : String(
-                                            fila[c.columna]
-                                          )}
-                                    </td>
-                                  ))}
-                                </tr>
-                              ))
+
+                                            {valor === null ||
+                                            valor === undefined ? (
+
+                                              <span
+                                                className="
+                                                  text-[var(--erp-text-soft)]
+                                                  italic
+                                                "
+                                              >
+                                                —
+                                              </span>
+
+                                            ) : (
+
+                                              String(valor)
+
+                                            )}
+
+                                          </td>
+
+                                        );
+
+                                      }
+                                    )}
+
+                                  </tr>
+
+                                )
+                              )
+
                             )}
 
                           </tbody>
 
                         </table>
+
                       </div>
+
                     </section>
+
                   )}
 
                 </div>
+
               )}
 
             </div>
+
           </div>
+
         </div>
+
       </section>
+
     </div>
   );
 }
