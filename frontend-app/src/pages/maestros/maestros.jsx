@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   getMaestros,
@@ -11,6 +6,7 @@ import {
   editarMaestro,
   eliminarMaestro,
 } from "../../api/maestros";
+
 
 /**
  * ============================================================
@@ -22,21 +18,25 @@ import {
  * - Secciones
  * - Cargos
  *
- * CRUD completo conectado con:
- * /api/maestros/*
+ * Backend:
+ * /api/maestros/departamentos
+ * /api/maestros/secciones
+ * /api/maestros/cargos
  *
- * Visual:
- * - Premium ERP
- * - Variables --erp-*
- * - Responsive
- * - Buscador
- * - Contadores
- * - Modal crear / editar
- * - Confirmación eliminar
+ * CRUD:
+ * GET
+ * POST
+ * PUT
+ * DELETE
  * ============================================================
  */
 
-const TIPOS = [
+
+/* ============================================================
+   CONFIGURACIÓN
+============================================================ */
+
+const TIPOS_MAESTRO = [
   {
     key: "departamentos",
     label: "Departamentos",
@@ -57,58 +57,61 @@ const TIPOS = [
   },
 ];
 
+
 /* ============================================================
-   COMPONENTE PRINCIPAL
-   ============================================================ */
+   COMPONENTE
+============================================================ */
 
 export default function Maestros() {
 
-  // ==========================================================
-  // ESTADO
-  // ==========================================================
+  /* ----------------------------------------------------------
+     ESTADO
+  ---------------------------------------------------------- */
 
-  const [tipoActivo, setTipoActivo] = useState(
-    "departamentos"
-  );
+  const [tipoActivo, setTipoActivo] =
+    useState("departamentos");
 
-  const [datos, setDatos] = useState([]);
+  const [datos, setDatos] =
+    useState([]);
 
-  const [cargando, setCargando] = useState(false);
+  const [cargando, setCargando] =
+    useState(false);
 
-  const [error, setError] = useState(null);
+  const [guardando, setGuardando] =
+    useState(false);
 
-  const [busqueda, setBusqueda] = useState("");
-
-  const [modalAbierto, setModalAbierto] = useState(false);
-
-  const [modoModal, setModoModal] = useState("crear");
-
-  const [registroEditar, setRegistroEditar] =
+  const [error, setError] =
     useState(null);
 
-  const [nombre, setNombre] = useState("");
-
-  const [guardando, setGuardando] = useState(false);
-
-  const [errorFormulario, setErrorFormulario] =
+  const [mensaje, setMensaje] =
     useState(null);
 
-  // ==========================================================
-  // CONFIGURACIÓN ACTUAL
-  // ==========================================================
+  const [modoFormulario, setModoFormulario] =
+    useState(null);
+
+  const [registroEditando, setRegistroEditando] =
+    useState(null);
+
+  const [nombre, setNombre] =
+    useState("");
+
+
+  /* ----------------------------------------------------------
+     CONFIGURACIÓN ACTIVA
+  ---------------------------------------------------------- */
 
   const tipoActual = useMemo(
     () =>
-      TIPOS.find(
-        (tipo) =>
-          tipo.key === tipoActivo
-      ) || TIPOS[0],
+      TIPOS_MAESTRO.find(
+        (tipo) => tipo.key === tipoActivo
+      ) || TIPOS_MAESTRO[0],
     [tipoActivo]
   );
 
-  // ==========================================================
-  // CARGAR DATOS
-  // ==========================================================
+
+  /* ----------------------------------------------------------
+     CARGAR DATOS
+  ---------------------------------------------------------- */
 
   const cargarDatos = useCallback(
     async () => {
@@ -118,21 +121,19 @@ export default function Maestros() {
 
       try {
 
-        const response =
-          await getMaestros(
-            tipoActivo
-          );
+        const res =
+          await getMaestros(tipoActivo);
 
         setDatos(
-          Array.isArray(response?.data)
-            ? response.data
+          Array.isArray(res.data)
+            ? res.data
             : []
         );
 
       } catch (err) {
 
         console.error(
-          "Error cargando maestro:",
+          "Maestros: error cargando datos:",
           err
         );
 
@@ -140,7 +141,7 @@ export default function Maestros() {
 
         setError(
           err?.response?.data?.detail ||
-          `No se ha podido cargar ${tipoActual.label.toLowerCase()}.`
+          `No se han podido cargar los ${tipoActual.label.toLowerCase()}.`
         );
 
       } finally {
@@ -153,107 +154,79 @@ export default function Maestros() {
     [tipoActivo, tipoActual.label]
   );
 
-  // ==========================================================
-  // CAMBIO DE TIPO
-  // ==========================================================
+
+  /* ----------------------------------------------------------
+     CAMBIO DE TIPO
+  ---------------------------------------------------------- */
 
   useEffect(() => {
 
-    setBusqueda("");
+    setMensaje(null);
+    setError(null);
+
+    setModoFormulario(null);
+    setRegistroEditando(null);
+    setNombre("");
 
     cargarDatos();
 
-  }, [cargarDatos]);
+  }, [
+    tipoActivo,
+    cargarDatos,
+  ]);
 
-  // ==========================================================
-  // FILTRADO
-  // ==========================================================
 
-  const datosFiltrados = useMemo(() => {
-
-    const texto =
-      busqueda
-        .trim()
-        .toLowerCase();
-
-    if (!texto) {
-      return datos;
-    }
-
-    return datos.filter(
-      (registro) =>
-        String(
-          registro?.nombre ?? ""
-        )
-          .toLowerCase()
-          .includes(texto)
-    );
-
-  }, [datos, busqueda]);
-
-  // ==========================================================
-  // ABRIR CREAR
-  // ==========================================================
+  /* ----------------------------------------------------------
+     ABRIR CREAR
+  ---------------------------------------------------------- */
 
   const abrirCrear = () => {
 
-    setModoModal("crear");
-
-    setRegistroEditar(null);
-
+    setModoFormulario("crear");
+    setRegistroEditando(null);
     setNombre("");
-
-    setErrorFormulario(null);
-
-    setModalAbierto(true);
+    setError(null);
+    setMensaje(null);
 
   };
 
-  // ==========================================================
-  // ABRIR EDITAR
-  // ==========================================================
+
+  /* ----------------------------------------------------------
+     ABRIR EDITAR
+  ---------------------------------------------------------- */
 
   const abrirEditar = (registro) => {
 
-    setModoModal("editar");
-
-    setRegistroEditar(registro);
-
-    setNombre(
-      registro?.nombre ?? ""
-    );
-
-    setErrorFormulario(null);
-
-    setModalAbierto(true);
+    setModoFormulario("editar");
+    setRegistroEditando(registro);
+    setNombre(registro?.nombre || "");
+    setError(null);
+    setMensaje(null);
 
   };
 
-  // ==========================================================
-  // CERRAR MODAL
-  // ==========================================================
 
-  const cerrarModal = () => {
+  /* ----------------------------------------------------------
+     CANCELAR FORMULARIO
+  ---------------------------------------------------------- */
+
+  const cancelarFormulario = () => {
 
     if (guardando) {
       return;
     }
 
-    setModalAbierto(false);
-
-    setModoModal("crear");
-
-    setRegistroEditar(null);
-
+    setModoFormulario(null);
+    setRegistroEditando(null);
     setNombre("");
-
-    setErrorFormulario(null);
+    setError(null);
 
   };
 
-  // ==========================================================
-  // GUARDAR
-  // ==========================================================
+
+  /* ----------------------------------------------------------
+     GUARDAR
+  ---------------------------------------------------------- */
 
   const guardar = async (event) => {
 
@@ -264,8 +237,8 @@ export default function Maestros() {
 
     if (!nombreLimpio) {
 
-      setErrorFormulario(
-        `Introduce el nombre del ${tipoActual.singular.toLowerCase()}.`
+      setError(
+        `Debes introducir un nombre de ${tipoActual.singular.toLowerCase()}.`
       );
 
       return;
@@ -273,45 +246,55 @@ export default function Maestros() {
     }
 
     setGuardando(true);
-
-    setErrorFormulario(null);
+    setError(null);
+    setMensaje(null);
 
     try {
 
-      if (
-        modoModal === "editar" &&
-        registroEditar?.id
-      ) {
-
-        await editarMaestro(
-          tipoActivo,
-          registroEditar.id,
-          nombreLimpio
-        );
-
-      } else {
+      if (modoFormulario === "crear") {
 
         await crearMaestro(
           tipoActivo,
           nombreLimpio
         );
 
+        setMensaje(
+          `${tipoActual.singular} creado correctamente.`
+        );
+
+      } else if (
+        modoFormulario === "editar" &&
+        registroEditando?.id
+      ) {
+
+        await editarMaestro(
+          tipoActivo,
+          registroEditando.id,
+          nombreLimpio
+        );
+
+        setMensaje(
+          `${tipoActual.singular} actualizado correctamente.`
+        );
+
       }
 
-      cerrarModal();
+      setModoFormulario(null);
+      setRegistroEditando(null);
+      setNombre("");
 
       await cargarDatos();
 
     } catch (err) {
 
       console.error(
-        "Error guardando maestro:",
+        "Maestros: error guardando:",
         err
       );
 
-      setErrorFormulario(
+      setError(
         err?.response?.data?.detail ||
-        "No se ha podido guardar el registro."
+        `No se ha podido guardar el ${tipoActual.singular.toLowerCase()}.`
       );
 
     } finally {
@@ -322,9 +305,10 @@ export default function Maestros() {
 
   };
 
-  // ==========================================================
-  // ELIMINAR
-  // ==========================================================
+
+  /* ----------------------------------------------------------
+     ELIMINAR
+  ---------------------------------------------------------- */
 
   const eliminar = async (registro) => {
 
@@ -334,20 +318,26 @@ export default function Maestros() {
 
     const confirmado =
       window.confirm(
-        `¿Seguro que quieres eliminar "${registro.nombre}"?`
+        `¿Seguro que quieres eliminar el ${tipoActual.singular.toLowerCase()} "${registro.nombre}"?`
       );
 
     if (!confirmado) {
       return;
     }
 
-    try {
+    setError(null);
+    setMensaje(null);
+    setGuardando(true);
 
-      setError(null);
+    try {
 
       await eliminarMaestro(
         tipoActivo,
         registro.id
+      );
+
+      setMensaje(
+        `${tipoActual.singular} eliminado correctamente.`
       );
 
       await cargarDatos();
@@ -355,61 +345,47 @@ export default function Maestros() {
     } catch (err) {
 
       console.error(
-        "Error eliminando maestro:",
+        "Maestros: error eliminando:",
         err
       );
 
       setError(
         err?.response?.data?.detail ||
-        "No se ha podido eliminar el registro."
+        `No se ha podido eliminar el ${tipoActual.singular.toLowerCase()}.`
       );
+
+    } finally {
+
+      setGuardando(false);
 
     }
 
   };
 
-  // ==========================================================
-  // RENDER
-  // ==========================================================
+
+  /* ----------------------------------------------------------
+     RENDER
+  ---------------------------------------------------------- */
 
   return (
-    <div
-      className="
-        space-y-6
-        animate-fade-in
-      "
-    >
+    <div className="p-6 space-y-6 animate-fade-in">
 
       {/* ======================================================
           CABECERA
-          ====================================================== */}
+      ====================================================== */}
 
-      <section
+      <div
         className="
-          relative
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          shadow-sm
-          p-5
-          sm:p-6
+          flex
+          flex-col
+          lg:flex-row
+          lg:items-center
+          lg:justify-between
+          gap-4
         "
       >
 
-        <div
-          className="
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-5
-          "
-        >
-
-          {/* TÍTULO */}
+        <div>
 
           <div
             className="
@@ -425,9 +401,9 @@ export default function Maestros() {
                 h-12
                 rounded-2xl
                 bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
                 border
                 border-[var(--erp-border)]
+                text-[var(--erp-primary)]
                 flex
                 items-center
                 justify-center
@@ -440,11 +416,12 @@ export default function Maestros() {
                 aria-hidden="true"
               >
                 <use
-                  href="/icons/icons.svg#settings"
+                  href="/icons/icons.svg#database"
                 />
               </svg>
 
             </div>
+
 
             <div>
 
@@ -462,7 +439,7 @@ export default function Maestros() {
                 className="
                   text-sm
                   text-[var(--erp-text-soft)]
-                  mt-0.5
+                  mt-1
                 "
               >
                 Gestión de departamentos, secciones y cargos
@@ -472,258 +449,224 @@ export default function Maestros() {
 
           </div>
 
-
-          {/* CONTADOR */}
-
-          <div
-            className="
-              inline-flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-xl
-              bg-[var(--erp-surface-soft)]
-              border
-              border-[var(--erp-border)]
-              text-sm
-              text-[var(--erp-text-soft)]
-              w-fit
-            "
-          >
-
-            <span
-              className="
-                w-2
-                h-2
-                rounded-full
-                bg-[var(--erp-primary)]
-              "
-            />
-
-            <span>
-              {datos.length}{" "}
-              {datos.length === 1
-                ? tipoActual.singular.toLowerCase()
-                : tipoActual.label.toLowerCase()}
-            </span>
-
-          </div>
-
         </div>
 
-      </section>
-
-
-      {/* ======================================================
-          SELECTOR DE MAESTRO
-          ====================================================== */}
-
-      <section
-        className="
-          rounded-[24px]
-          border
-          border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
-          shadow-sm
-          p-4
-        "
-      >
 
         <div
           className="
-            grid
-            grid-cols-1
-            md:grid-cols-3
-            gap-3
+            inline-flex
+            items-center
+            gap-2
+            px-3
+            py-2
+            rounded-xl
+            bg-[var(--erp-surface)]
+            border
+            border-[var(--erp-border)]
+            text-xs
+            font-medium
+            text-[var(--erp-text-soft)]
+            shadow-sm
           "
         >
 
-          {TIPOS.map((tipo) => {
+          <span
+            className="
+              w-2
+              h-2
+              rounded-full
+              bg-emerald-500
+            "
+          />
 
-            const activo =
-              tipo.key === tipoActivo;
-
-            const cantidad =
-              tipo.key === tipoActivo
-                ? datos.length
-                : null;
-
-            return (
-              <button
-                key={tipo.key}
-                type="button"
-                onClick={() =>
-                  setTipoActivo(
-                    tipo.key
-                  )
-                }
-                className={`
-                  group
-                  flex
-                  items-center
-                  gap-3
-                  rounded-2xl
-                  border
-                  p-4
-                  text-left
-                  transition-all
-                  duration-200
-
-                  ${
-                    activo
-                      ? `
-                        bg-[var(--erp-primary)]
-                        border-[var(--erp-primary)]
-                        text-white
-                        shadow-md
-                      `
-                      : `
-                        bg-[var(--erp-surface-soft)]
-                        border-[var(--erp-border)]
-                        text-[var(--erp-text)]
-                        hover:bg-[var(--erp-primary-soft)]
-                      `
-                  }
-                `}
-              >
-
-                <div
-                  className={`
-                    w-10
-                    h-10
-                    rounded-xl
-                    flex
-                    items-center
-                    justify-center
-                    border
-
-                    ${
-                      activo
-                        ? `
-                          bg-white/15
-                          border-white/20
-                          text-white
-                        `
-                        : `
-                          bg-[var(--erp-surface)]
-                          border-[var(--erp-border)]
-                          text-[var(--erp-primary)]
-                        `
-                    }
-                  `}
-                >
-
-                  <svg
-                    className="w-5 h-5"
-                    aria-hidden="true"
-                  >
-                    <use
-                      href={`/icons/icons.svg#${tipo.icon}`}
-                    />
-                  </svg>
-
-                </div>
-
-
-                <div className="min-w-0">
-
-                  <div
-                    className="
-                      flex
-                      items-center
-                      gap-2
-                    "
-                  >
-
-                    <span
-                      className="
-                        font-semibold
-                        truncate
-                      "
-                    >
-                      {tipo.label}
-                    </span>
-
-                    {activo && (
-                      <span
-                        className="
-                          text-[10px]
-                          uppercase
-                          tracking-wide
-                          opacity-75
-                        "
-                      >
-                        Activo
-                      </span>
-                    )}
-
-                  </div>
-
-                  <div
-                    className={`
-                      text-xs
-                      mt-0.5
-
-                      ${
-                        activo
-                          ? "text-white/75"
-                          : "text-[var(--erp-text-soft)]"
-                      }
-                    `}
-                  >
-                    {cantidad !== null
-                      ? `${cantidad} registros`
-                      : "Gestionar maestro"}
-                  </div>
-
-                </div>
-
-              </button>
-            );
-
-          })}
+          Gestión de datos maestros
 
         </div>
 
-      </section>
+      </div>
 
 
       {/* ======================================================
-          LISTADO
-          ====================================================== */}
+          PANEL PRINCIPAL
+      ====================================================== */}
 
       <section
         className="
-          rounded-[24px]
+          bg-[var(--erp-surface)]
           border
           border-[var(--erp-border)]
-          bg-[var(--erp-surface)]
+          rounded-2xl
           shadow-sm
           overflow-hidden
         "
       >
 
-        {/* CABECERA */}
+        {/* ====================================================
+            SELECTORES
+        ==================================================== */}
 
         <div
           className="
-            px-5
-            sm:px-6
+            px-6
             py-5
             border-b
             border-[var(--erp-border)]
+            bg-[var(--erp-surface-soft)]
           "
         >
 
           <div
             className="
               flex
+              flex-wrap
+              gap-2
+            "
+          >
+
+            {TIPOS_MAESTRO.map((tipo) => {
+
+              const activo =
+                tipo.key === tipoActivo;
+
+              return (
+
+                <button
+                  key={tipo.key}
+                  type="button"
+                  onClick={() =>
+                    setTipoActivo(tipo.key)
+                  }
+                  className={`
+                    inline-flex
+                    items-center
+                    gap-2
+                    px-4
+                    py-2.5
+                    rounded-xl
+                    border
+                    text-sm
+                    font-semibold
+                    transition-all
+                    duration-200
+
+                    ${
+                      activo
+                        ? `
+                          bg-[var(--erp-primary)]
+                          border-[var(--erp-primary)]
+                          text-white
+                          shadow-sm
+                        `
+                        : `
+                          bg-[var(--erp-surface)]
+                          border-[var(--erp-border)]
+                          text-[var(--erp-text)]
+                          hover:bg-[var(--erp-primary-soft)]
+                        `
+                    }
+                  `}
+                >
+
+                  <svg
+                    className={`
+                      w-4
+                      h-4
+                      ${
+                        activo
+                          ? "text-white"
+                          : "text-[var(--erp-primary)]"
+                      }
+                    `}
+                    aria-hidden="true"
+                  >
+
+                    <use
+                      href={`/icons/icons.svg#${tipo.icon}`}
+                    />
+
+                  </svg>
+
+                  {tipo.label}
+
+                </button>
+
+              );
+
+            })}
+
+          </div>
+
+        </div>
+
+
+        {/* ====================================================
+            CONTENIDO
+        ==================================================== */}
+
+        <div className="p-6">
+
+          {/* ==================================================
+              MENSAJE OK
+          ================================================== */}
+
+          {mensaje && (
+
+            <div
+              className="
+                mb-5
+                p-4
+                rounded-xl
+                bg-emerald-50
+                border
+                border-emerald-200
+                text-emerald-700
+                text-sm
+                font-medium
+              "
+            >
+              {mensaje}
+            </div>
+
+          )}
+
+
+          {/* ==================================================
+              ERROR
+          ================================================== */}
+
+          {error && (
+
+            <div
+              className="
+                mb-5
+                p-4
+                rounded-xl
+                bg-red-50
+                border
+                border-red-200
+                text-red-700
+                text-sm
+              "
+            >
+              {error}
+            </div>
+
+          )}
+
+
+          {/* ==================================================
+              CABECERA LISTADO
+          ================================================== */}
+
+          <div
+            className="
+              flex
               flex-col
-              xl:flex-row
-              xl:items-center
-              xl:justify-between
-              gap-4
+              sm:flex-row
+              sm:items-center
+              sm:justify-between
+              gap-3
+              mb-4
             "
           >
 
@@ -746,377 +689,420 @@ export default function Maestros() {
                   mt-1
                 "
               >
-                Administra los registros disponibles
-                en el sistema.
+                {datos.length}{" "}
+                {datos.length === 1
+                  ? "registro"
+                  : "registros"}
               </p>
 
             </div>
 
 
-            <div
+            <button
+              type="button"
+              onClick={abrirCrear}
+              disabled={guardando}
               className="
-                flex
-                flex-col
-                sm:flex-row
-                gap-3
-                w-full
-                xl:w-auto
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                px-4
+                py-2.5
+                rounded-xl
+                bg-[var(--erp-primary)]
+                border
+                border-[var(--erp-primary)]
+                text-white
+                text-sm
+                font-semibold
+                shadow-sm
+                hover:opacity-90
+                transition
+                disabled:opacity-50
+                disabled:cursor-not-allowed
               "
             >
 
-              {/* BUSCADOR */}
+              <svg
+                className="w-4 h-4"
+                aria-hidden="true"
+              >
+                <use
+                  href="/icons/icons.svg#plus"
+                />
+              </svg>
+
+              Nuevo {tipoActual.singular}
+
+            </button>
+
+          </div>
+
+
+          {/* ==================================================
+              FORMULARIO
+          ================================================== */}
+
+          {modoFormulario && (
+
+            <form
+              onSubmit={guardar}
+              className="
+                mb-5
+                p-5
+                rounded-2xl
+                border
+                border-[var(--erp-border)]
+                bg-[var(--erp-surface-soft)]
+              "
+            >
 
               <div
                 className="
-                  relative
-                  w-full
-                  sm:w-72
+                  flex
+                  flex-col
+                  lg:flex-row
+                  lg:items-end
+                  gap-4
                 "
               >
 
-                <svg
-                  className="
-                    absolute
-                    left-3
-                    top-1/2
-                    -translate-y-1/2
-                    w-4
-                    h-4
-                    text-[var(--erp-text-soft)]
-                  "
-                  aria-hidden="true"
-                >
-                  <use
-                    href="/icons/icons.svg#search"
-                  />
-                </svg>
+                <div className="flex-1">
 
-                <input
-                  type="text"
-                  value={busqueda}
-                  onChange={(event) =>
-                    setBusqueda(
-                      event.target.value
-                    )
-                  }
-                  placeholder={`Buscar ${tipoActual.label.toLowerCase()}...`}
-                  className="
-                    w-full
-                    h-11
-                    pl-10
-                    pr-4
-                    rounded-xl
-                    border
-                    border-[var(--erp-border)]
-                    bg-[var(--erp-surface-soft)]
-                    text-sm
-                    text-[var(--erp-text)]
-                    outline-none
-                    transition
-                    focus:border-[var(--erp-primary)]
-                    focus:ring-2
-                    focus:ring-[var(--erp-primary-soft)]
-                  "
-                />
-
-              </div>
-
-
-              {/* NUEVO */}
-
-              <button
-                type="button"
-                onClick={abrirCrear}
-                className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  gap-2
-                  h-11
-                  px-4
-                  rounded-xl
-                  bg-[var(--erp-primary)]
-                  text-white
-                  text-sm
-                  font-semibold
-                  shadow-sm
-                  transition
-                  hover:opacity-90
-                  active:scale-[0.98]
-                "
-              >
-
-                <svg
-                  className="w-4 h-4"
-                  aria-hidden="true"
-                >
-                  <use
-                    href="/icons/icons.svg#plus"
-                  />
-                </svg>
-
-                Nuevo {tipoActual.singular}
-
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {/* ERROR */}
-
-        {error && (
-
-          <div
-            className="
-              mx-5
-              sm:mx-6
-              mt-5
-              p-4
-              rounded-xl
-              bg-red-50
-              border
-              border-red-200
-              text-red-700
-              text-sm
-            "
-          >
-            {error}
-          </div>
-
-        )}
-
-
-        {/* TABLA */}
-
-        <div className="p-5 sm:p-6">
-
-          <div
-            className="
-              rounded-2xl
-              border
-              border-[var(--erp-border)]
-              overflow-hidden
-            "
-          >
-
-            <div className="overflow-x-auto">
-
-              <table
-                className="
-                  w-full
-                  text-sm
-                "
-              >
-
-                <thead>
-
-                  <tr
+                  <label
+                    htmlFor="maestro-nombre"
                     className="
-                      bg-[var(--erp-surface-soft)]
-                      border-b
+                      block
+                      text-sm
+                      font-semibold
+                      text-[var(--erp-text)]
+                      mb-2
+                    "
+                  >
+                    Nombre
+                  </label>
+
+                  <input
+                    id="maestro-nombre"
+                    type="text"
+                    value={nombre}
+                    onChange={(event) =>
+                      setNombre(event.target.value)
+                    }
+                    disabled={guardando}
+                    autoFocus
+                    maxLength={255}
+                    placeholder={
+                      `Nombre del ${tipoActual.singular.toLowerCase()}`
+                    }
+                    className="
+                      w-full
+                      px-4
+                      py-2.5
+                      rounded-xl
+                      border
                       border-[var(--erp-border)]
+                      bg-[var(--erp-surface)]
+                      text-[var(--erp-text)]
+                      outline-none
+                      focus:ring-2
+                      focus:ring-[var(--erp-primary)]
+                      disabled:opacity-50
+                    "
+                  />
+
+                </div>
+
+
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                  "
+                >
+
+                  <button
+                    type="submit"
+                    disabled={
+                      guardando ||
+                      !nombre.trim()
+                    }
+                    className="
+                      inline-flex
+                      items-center
+                      justify-center
+                      gap-2
+                      px-4
+                      py-2.5
+                      rounded-xl
+                      bg-[var(--erp-primary)]
+                      border
+                      border-[var(--erp-primary)]
+                      text-white
+                      text-sm
+                      font-semibold
+                      hover:opacity-90
+                      transition
+                      disabled:opacity-50
+                      disabled:cursor-not-allowed
                     "
                   >
 
-                    <th
-                      className="
-                        py-3
-                        px-4
-                        text-left
-                        text-xs
-                        font-semibold
-                        uppercase
-                        tracking-wide
-                        text-[var(--erp-text-soft)]
-                        w-24
-                      "
-                    >
-                      ID
-                    </th>
+                    {guardando
+                      ? "Guardando..."
+                      : modoFormulario === "crear"
+                        ? "Crear"
+                        : "Guardar cambios"}
 
-                    <th
-                      className="
-                        py-3
-                        px-4
-                        text-left
-                        text-xs
-                        font-semibold
-                        uppercase
-                        tracking-wide
-                        text-[var(--erp-text-soft)]
-                      "
-                    >
-                      Nombre
-                    </th>
-
-                    <th
-                      className="
-                        py-3
-                        px-4
-                        text-right
-                        text-xs
-                        font-semibold
-                        uppercase
-                        tracking-wide
-                        text-[var(--erp-text-soft)]
-                        w-40
-                      "
-                    >
-                      Acciones
-                    </th>
-
-                  </tr>
-
-                </thead>
+                  </button>
 
 
-                <tbody>
+                  <button
+                    type="button"
+                    onClick={cancelarFormulario}
+                    disabled={guardando}
+                    className="
+                      px-4
+                      py-2.5
+                      rounded-xl
+                      border
+                      border-[var(--erp-border)]
+                      bg-[var(--erp-surface)]
+                      text-[var(--erp-text)]
+                      text-sm
+                      font-semibold
+                      hover:bg-[var(--erp-primary-soft)]
+                      transition
+                      disabled:opacity-50
+                    "
+                  >
+                    Cancelar
+                  </button>
 
-                  {/* CARGANDO */}
+                </div>
 
-                  {cargando && (
+              </div>
 
-                    <tr>
+            </form>
 
-                      <td
-                        colSpan={3}
+          )}
+
+
+          {/* ==================================================
+              CARGANDO
+          ================================================== */}
+
+          {cargando && (
+
+            <div
+              className="
+                py-16
+                flex
+                flex-col
+                items-center
+                justify-center
+                text-center
+              "
+            >
+
+              <div
+                className="
+                  w-8
+                  h-8
+                  rounded-full
+                  border-2
+                  border-[var(--erp-border)]
+                  border-t-[var(--erp-primary)]
+                  animate-spin
+                  mb-4
+                "
+              />
+
+              <p
+                className="
+                  text-sm
+                  text-[var(--erp-text-soft)]
+                "
+              >
+                Cargando {tipoActual.label.toLowerCase()}...
+              </p>
+
+            </div>
+
+          )}
+
+
+          {/* ==================================================
+              LISTADO VACÍO
+          ================================================== */}
+
+          {!cargando &&
+            datos.length === 0 && (
+              <div
+                className="
+                  py-16
+                  rounded-2xl
+                  border
+                  border-dashed
+                  border-[var(--erp-border)]
+                  bg-[var(--erp-surface-soft)]
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  text-center
+                  px-6
+                "
+              >
+
+                <div
+                  className="
+                    w-14
+                    h-14
+                    rounded-2xl
+                    bg-[var(--erp-primary-soft)]
+                    border
+                    border-[var(--erp-border)]
+                    text-[var(--erp-primary)]
+                    flex
+                    items-center
+                    justify-center
+                    mb-4
+                  "
+                >
+
+                  <svg
+                    className="w-6 h-6"
+                    aria-hidden="true"
+                  >
+                    <use
+                      href="/icons/icons.svg#database"
+                    />
+                  </svg>
+
+                </div>
+
+                <h3
+                  className="
+                    text-lg
+                    font-semibold
+                    text-[var(--erp-text)]
+                  "
+                >
+                  No hay registros
+                </h3>
+
+                <p
+                  className="
+                    text-sm
+                    text-[var(--erp-text-soft)]
+                    mt-2
+                    max-w-md
+                  "
+                >
+                  Todavía no existen{" "}
+                  {tipoActual.label.toLowerCase()}.
+                  Puedes crear el primero utilizando el botón
+                  superior.
+                </p>
+
+              </div>
+            )}
+
+
+          {/* ==================================================
+              TABLA
+          ================================================== */}
+
+          {!cargando &&
+            datos.length > 0 && (
+
+              <div
+                className="
+                  rounded-2xl
+                  border
+                  border-[var(--erp-border)]
+                  overflow-hidden
+                  bg-[var(--erp-surface-soft)]
+                "
+              >
+
+                <div className="overflow-x-auto">
+
+                  <table
+                    className="
+                      w-full
+                      text-sm
+                    "
+                  >
+
+                    <thead>
+
+                      <tr
                         className="
-                          py-14
-                          text-center
+                          bg-[var(--erp-surface)]
+                          border-b
+                          border-[var(--erp-border)]
                         "
                       >
 
-                        <div
+                        <th
                           className="
-                            flex
-                            flex-col
-                            items-center
-                            justify-center
-                          "
-                        >
-
-                          <div
-                            className="
-                              w-7
-                              h-7
-                              rounded-full
-                              border-2
-                              border-[var(--erp-border)]
-                              border-t-[var(--erp-primary)]
-                              animate-spin
-                              mb-3
-                            "
-                          />
-
-                          <span
-                            className="
-                              text-sm
-                              text-[var(--erp-text-soft)]
-                            "
-                          >
-                            Cargando registros...
-                          </span>
-
-                        </div>
-
-                      </td>
-
-                    </tr>
-
-                  )}
-
-
-                  {/* SIN DATOS */}
-
-                  {!cargando &&
-                    datosFiltrados.length === 0 && (
-
-                      <tr>
-
-                        <td
-                          colSpan={3}
-                          className="
-                            py-14
+                            py-3
+                            px-4
                             text-center
+                            text-xs
+                            font-semibold
+                            uppercase
+                            tracking-wide
+                            text-[var(--erp-text-soft)]
+                            w-24
                           "
                         >
+                          ID
+                        </th>
 
-                          <div
-                            className="
-                              flex
-                              flex-col
-                              items-center
-                              justify-center
-                            "
-                          >
+                        <th
+                          className="
+                            py-3
+                            px-4
+                            text-left
+                            text-xs
+                            font-semibold
+                            uppercase
+                            tracking-wide
+                            text-[var(--erp-text-soft)]
+                          "
+                        >
+                          Nombre
+                        </th>
 
-                            <div
-                              className="
-                                w-14
-                                h-14
-                                rounded-2xl
-                                bg-[var(--erp-primary-soft)]
-                                border
-                                border-[var(--erp-border)]
-                                text-[var(--erp-primary)]
-                                flex
-                                items-center
-                                justify-center
-                                mb-4
-                              "
-                            >
-
-                              <svg
-                                className="w-6 h-6"
-                                aria-hidden="true"
-                              >
-                                <use
-                                  href="/icons/icons.svg#database"
-                                />
-                              </svg>
-
-                            </div>
-
-                            <h3
-                              className="
-                                text-base
-                                font-semibold
-                                text-[var(--erp-text)]
-                              "
-                            >
-                              No hay registros
-                            </h3>
-
-                            <p
-                              className="
-                                text-sm
-                                text-[var(--erp-text-soft)]
-                                mt-1
-                              "
-                            >
-                              {busqueda
-                                ? "No se encontraron registros con la búsqueda actual."
-                                : `Todavía no hay ${tipoActual.label.toLowerCase()} registrados.`}
-                            </p>
-
-                          </div>
-
-                        </td>
+                        <th
+                          className="
+                            py-3
+                            px-4
+                            text-right
+                            text-xs
+                            font-semibold
+                            uppercase
+                            tracking-wide
+                            text-[var(--erp-text-soft)]
+                            w-48
+                          "
+                        >
+                          Acciones
+                        </th>
 
                       </tr>
 
-                    )}
+                    </thead>
 
 
-                  {/* REGISTROS */}
+                    <tbody>
 
-                  {!cargando &&
-                    datosFiltrados.map(
-                      (registro) => (
+                      {datos.map((registro) => (
 
                         <tr
                           key={registro.id}
@@ -1124,84 +1110,39 @@ export default function Maestros() {
                             border-b
                             border-[var(--erp-border)]
                             last:border-b-0
-                            transition-all
-                            duration-150
-                            hover:bg-[var(--erp-primary-soft)]
+                            hover:bg-[var(--erp-surface)]
+                            transition
                           "
                         >
 
                           <td
                             className="
-                              py-3.5
+                              py-3
                               px-4
-                              text-[var(--erp-text-soft)]
+                              text-center
+                              font-semibold
+                              text-[var(--erp-primary)]
+                            "
+                          >
+                            {registro.id}
+                          </td>
+
+
+                          <td
+                            className="
+                              py-3
+                              px-4
                               font-medium
+                              text-[var(--erp-text)]
                             "
                           >
-                            #{registro.id}
+                            {registro.nombre || "—"}
                           </td>
 
 
                           <td
                             className="
-                              py-3.5
-                              px-4
-                            "
-                          >
-
-                            <div
-                              className="
-                                flex
-                                items-center
-                                gap-3
-                              "
-                            >
-
-                              <div
-                                className="
-                                  w-9
-                                  h-9
-                                  rounded-xl
-                                  bg-[var(--erp-primary-soft)]
-                                  text-[var(--erp-primary)]
-                                  border
-                                  border-[var(--erp-border)]
-                                  flex
-                                  items-center
-                                  justify-center
-                                  flex-shrink-0
-                                "
-                              >
-
-                                <svg
-                                  className="w-4 h-4"
-                                  aria-hidden="true"
-                                >
-                                  <use
-                                    href={`/icons/icons.svg#${tipoActual.icon}`}
-                                  />
-                                </svg>
-
-                              </div>
-
-                              <span
-                                className="
-                                  font-semibold
-                                  text-[var(--erp-text)]
-                                "
-                              >
-                                {registro.nombre ||
-                                  "Sin nombre"}
-                              </span>
-
-                            </div>
-
-                          </td>
-
-
-                          <td
-                            className="
-                              py-3.5
+                              py-3
                               px-4
                             "
                           >
@@ -1215,34 +1156,33 @@ export default function Maestros() {
                               "
                             >
 
-                              {/* EDITAR */}
-
                               <button
                                 type="button"
                                 onClick={() =>
-                                  abrirEditar(
-                                    registro
-                                  )
+                                  abrirEditar(registro)
                                 }
-                                title="Editar"
+                                disabled={guardando}
                                 className="
-                                  w-9
-                                  h-9
-                                  rounded-xl
+                                  inline-flex
+                                  items-center
+                                  gap-1.5
+                                  px-3
+                                  py-2
+                                  rounded-lg
                                   border
                                   border-[var(--erp-border)]
                                   bg-[var(--erp-surface)]
-                                  text-[var(--erp-primary)]
-                                  flex
-                                  items-center
-                                  justify-center
-                                  transition
+                                  text-[var(--erp-text)]
+                                  text-xs
+                                  font-semibold
                                   hover:bg-[var(--erp-primary-soft)]
+                                  transition
+                                  disabled:opacity-50
                                 "
                               >
 
                                 <svg
-                                  className="w-4 h-4"
+                                  className="w-3.5 h-3.5"
                                   aria-hidden="true"
                                 >
                                   <use
@@ -1250,43 +1190,46 @@ export default function Maestros() {
                                   />
                                 </svg>
 
+                                Editar
+
                               </button>
 
-
-                              {/* ELIMINAR */}
 
                               <button
                                 type="button"
                                 onClick={() =>
-                                  eliminar(
-                                    registro
-                                  )
+                                  eliminar(registro)
                                 }
-                                title="Eliminar"
+                                disabled={guardando}
                                 className="
-                                  w-9
-                                  h-9
-                                  rounded-xl
+                                  inline-flex
+                                  items-center
+                                  gap-1.5
+                                  px-3
+                                  py-2
+                                  rounded-lg
                                   border
                                   border-red-200
                                   bg-red-50
-                                  text-red-600
-                                  flex
-                                  items-center
-                                  justify-center
-                                  transition
+                                  text-red-700
+                                  text-xs
+                                  font-semibold
                                   hover:bg-red-100
+                                  transition
+                                  disabled:opacity-50
                                 "
                               >
 
                                 <svg
-                                  className="w-4 h-4"
+                                  className="w-3.5 h-3.5"
                                   aria-hidden="true"
                                 >
                                   <use
                                     href="/icons/icons.svg#trash"
                                   />
                                 </svg>
+
+                                Eliminar
 
                               </button>
 
@@ -1296,337 +1239,21 @@ export default function Maestros() {
 
                         </tr>
 
-                      )
-                    )}
+                      ))}
 
-                </tbody>
+                    </tbody>
 
-              </table>
+                  </table>
 
-            </div>
+                </div>
 
-          </div>
+              </div>
+
+            )}
 
         </div>
 
       </section>
-
-
-      {/* ======================================================
-          MODAL
-          ====================================================== */}
-
-      {modalAbierto && (
-
-        <div
-          className="
-            fixed
-            inset-0
-            z-50
-            flex
-            items-center
-            justify-center
-            p-4
-            bg-slate-950/40
-            backdrop-blur-sm
-          "
-          onMouseDown={(event) => {
-
-            if (
-              event.target === event.currentTarget
-            ) {
-              cerrarModal();
-            }
-
-          }}
-        >
-
-          <div
-            className="
-              w-full
-              max-w-lg
-              rounded-[24px]
-              border
-              border-[var(--erp-border)]
-              bg-[var(--erp-surface)]
-              shadow-2xl
-              overflow-hidden
-            "
-          >
-
-            {/* CABECERA MODAL */}
-
-            <div
-              className="
-                px-6
-                py-5
-                border-b
-                border-[var(--erp-border)]
-                flex
-                items-center
-                justify-between
-                gap-4
-              "
-            >
-
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-3
-                "
-              >
-
-                <div
-                  className="
-                    w-10
-                    h-10
-                    rounded-xl
-                    bg-[var(--erp-primary-soft)]
-                    text-[var(--erp-primary)]
-                    border
-                    border-[var(--erp-border)]
-                    flex
-                    items-center
-                    justify-center
-                  "
-                >
-
-                  <svg
-                    className="w-5 h-5"
-                    aria-hidden="true"
-                  >
-                    <use
-                      href={`/icons/icons.svg#${tipoActual.icon}`}
-                    />
-                  </svg>
-
-                </div>
-
-                <div>
-
-                  <h3
-                    className="
-                      text-lg
-                      font-semibold
-                      text-[var(--erp-text)]
-                    "
-                  >
-                    {modoModal === "editar"
-                      ? `Editar ${tipoActual.singular}`
-                      : `Nuevo ${tipoActual.singular}`}
-                  </h3>
-
-                  <p
-                    className="
-                      text-xs
-                      text-[var(--erp-text-soft)]
-                      mt-0.5
-                    "
-                  >
-                    {tipoActual.label}
-                  </p>
-
-                </div>
-
-              </div>
-
-
-              <button
-                type="button"
-                onClick={cerrarModal}
-                disabled={guardando}
-                className="
-                  w-9
-                  h-9
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-surface-soft)]
-                  text-[var(--erp-text-soft)]
-                  flex
-                  items-center
-                  justify-center
-                  hover:text-[var(--erp-text)]
-                  transition
-                "
-                title="Cerrar"
-              >
-
-                <svg
-                  className="w-4 h-4"
-                  aria-hidden="true"
-                >
-                  <use
-                    href="/icons/icons.svg#x"
-                  />
-                </svg>
-
-              </button>
-
-            </div>
-
-
-            {/* FORMULARIO */}
-
-            <form
-              onSubmit={guardar}
-              className="p-6"
-            >
-
-              <label
-                className="
-                  block
-                  text-sm
-                  font-semibold
-                  text-[var(--erp-text)]
-                  mb-2
-                "
-              >
-                Nombre
-              </label>
-
-              <input
-                type="text"
-                value={nombre}
-                onChange={(event) =>
-                  setNombre(
-                    event.target.value
-                  )
-                }
-                autoFocus
-                disabled={guardando}
-                placeholder={`Nombre del ${tipoActual.singular.toLowerCase()}`}
-                className="
-                  w-full
-                  h-12
-                  px-4
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-surface-soft)]
-                  text-[var(--erp-text)]
-                  outline-none
-                  transition
-                  focus:border-[var(--erp-primary)]
-                  focus:ring-2
-                  focus:ring-[var(--erp-primary-soft)]
-                  disabled:opacity-60
-                "
-              />
-
-
-              {errorFormulario && (
-
-                <div
-                  className="
-                    mt-3
-                    p-3
-                    rounded-xl
-                    bg-red-50
-                    border
-                    border-red-200
-                    text-red-700
-                    text-sm
-                  "
-                >
-                  {errorFormulario}
-                </div>
-
-              )}
-
-
-              {/* ACCIONES */}
-
-              <div
-                className="
-                  flex
-                  flex-col-reverse
-                  sm:flex-row
-                  sm:justify-end
-                  gap-3
-                  mt-6
-                "
-              >
-
-                <button
-                  type="button"
-                  onClick={cerrarModal}
-                  disabled={guardando}
-                  className="
-                    h-11
-                    px-5
-                    rounded-xl
-                    border
-                    border-[var(--erp-border)]
-                    bg-[var(--erp-surface-soft)]
-                    text-[var(--erp-text)]
-                    text-sm
-                    font-semibold
-                    transition
-                    hover:bg-[var(--erp-surface)]
-                    disabled:opacity-50
-                  "
-                >
-                  Cancelar
-                </button>
-
-
-                <button
-                  type="submit"
-                  disabled={guardando}
-                  className="
-                    h-11
-                    px-5
-                    rounded-xl
-                    bg-[var(--erp-primary)]
-                    text-white
-                    text-sm
-                    font-semibold
-                    shadow-sm
-                    transition
-                    hover:opacity-90
-                    disabled:opacity-60
-                    inline-flex
-                    items-center
-                    justify-center
-                    gap-2
-                  "
-                >
-
-                  {guardando && (
-
-                    <span
-                      className="
-                        w-4
-                        h-4
-                        rounded-full
-                        border-2
-                        border-white/40
-                        border-t-white
-                        animate-spin
-                      "
-                    />
-
-                  )}
-
-                  {guardando
-                    ? "Guardando..."
-                    : modoModal === "editar"
-                      ? "Guardar cambios"
-                      : "Crear registro"}
-
-                </button>
-
-              </div>
-
-            </form>
-
-          </div>
-
-        </div>
-
-      )}
 
     </div>
   );
