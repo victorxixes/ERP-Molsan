@@ -292,9 +292,7 @@ export default function MonitorSistema() {
           MONITOR REALTIME
           ====================================================== */}
 
-      <MonitorRealtime
-        baseUrl={baseUrl}
-      />
+   <MonitorRealtime />
 
 
       {/* ======================================================
