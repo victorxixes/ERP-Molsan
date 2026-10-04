@@ -427,7 +427,7 @@ export default function Sidebar() {
 
     {
       key: "realtime",
-      to: "/realtime",
+      to: "/MonitorRealtime",
       label: "Realtime",
       icon: "activity",
     },
