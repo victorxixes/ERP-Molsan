@@ -425,13 +425,6 @@ export default function Sidebar() {
       icon: "settings",
     },
 
-    {
-      key: "realtime",
-      to: "/paneltecnico/monitor-realtime",
-      label: "Realtime",
-      icon: "activity",
-    },
-
   ];
 
 
