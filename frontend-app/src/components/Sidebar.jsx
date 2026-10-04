@@ -420,7 +420,7 @@ export default function Sidebar() {
 
     {
       key: "panel-tecnico",
-      to: "/panel-tecnico",
+      to: "/PanelTecnico",
       label: "Panel técnico",
       icon: "settings",
     },
