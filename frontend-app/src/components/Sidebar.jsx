@@ -10,20 +10,189 @@ import { useNotificacionesStore } from "../store/notificacionesStore";
 
 /**
  * ============================================================
+ * ICONOS DE NAVEGACIÓN
+ *
+ * Se utilizan SVG internos para no depender de:
+ *
+ * /icons/icons.svg#...
+ *
+ * Esto evita que determinados módulos aparezcan sin icono
+ * cuando el sprite no contiene un identificador concreto.
+ * ============================================================
+ */
+
+const iconos = {
+
+  folder: (
+    <>
+      <path
+        d="M3 6.5A2.5 2.5 0 0 1 5.5 4H10l2 2h6.5A2.5 2.5 0 0 1 21 8.5v8A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"
+      />
+      <path d="M3 8h18" />
+    </>
+  ),
+
+  home: (
+    <>
+      <path d="m3 10 9-7 9 7" />
+      <path d="M5 9v11h14V9" />
+      <path d="M9 20v-6h6v6" />
+    </>
+  ),
+
+  calendar: (
+    <>
+      <rect
+        x="3"
+        y="4.5"
+        width="18"
+        height="17"
+        rx="2"
+      />
+      <path d="M16 2.5v4" />
+      <path d="M8 2.5v4" />
+      <path d="M3 9h18" />
+      <path d="M8 13h.01" />
+      <path d="M12 13h.01" />
+      <path d="M16 13h.01" />
+      <path d="M8 17h.01" />
+      <path d="M12 17h.01" />
+    </>
+  ),
+
+  "user-group": (
+    <>
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+      <path d="M16 5.5a3 3 0 0 1 0 5.5" />
+      <path d="M18 14c1.8.8 3 2.4 3 4.5" />
+    </>
+  ),
+
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18" />
+      <path d="M12 3c2.5 2.4 4 5.5 4 9s-1.5 6.6-4 9" />
+      <path d="M12 3c-2.5 2.4-4 5.5-4 9s1.5 6.6 4 9" />
+    </>
+  ),
+
+  chat: (
+    <>
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v7A2.5 2.5 0 0 1 17.5 15H11l-4.5 4v-4.2A2.5 2.5 0 0 1 4 12.5z" />
+      <path d="M8 8h8" />
+      <path d="M8 11h5" />
+    </>
+  ),
+
+  cog: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-2.6V20a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1A1.7 1.7 0 0 0 8 15a1.7 1.7 0 0 0-1.6-1H6v-2.6h.4A1.7 1.7 0 0 0 8 10a1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6v-.2h2.6V5a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2V14h-.2a1.7 1.7 0 0 0-1.6 1z" />
+    </>
+  ),
+
+  bell: (
+    <>
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+      <path d="M10 21h4" />
+    </>
+  ),
+
+  chart: (
+    <>
+      <path d="M4 19V5" />
+      <path d="M4 19h16" />
+      <rect x="7" y="11" width="2.5" height="5" rx=".5" />
+      <rect x="11" y="8" width="2.5" height="8" rx=".5" />
+      <rect x="15" y="5" width="2.5" height="11" rx=".5" />
+    </>
+  ),
+
+  shield: (
+    <>
+      <path d="M12 3 20 6v5.5c0 4.8-3.2 8.3-8 9.5-4.8-1.2-8-4.7-8-9.5V6z" />
+      <path d="m9 12 2 2 4-4" />
+    </>
+  ),
+
+  clipboard: (
+    <>
+      <rect
+        x="5"
+        y="4"
+        width="14"
+        height="17"
+        rx="2"
+      />
+      <path d="M9 4V3h6v1" />
+      <path d="M8 9h8" />
+      <path d="M8 13h8" />
+      <path d="M8 17h5" />
+    </>
+  ),
+
+  database: (
+    <>
+      <ellipse
+        cx="12"
+        cy="5"
+        rx="7"
+        ry="3"
+      />
+      <path d="M5 5v7c0 1.7 3.1 3 7 3s7-1.3 7-3V5" />
+      <path d="M5 12v7c0 1.7 3.1 3 7 3s7-1.3 7-3v-7" />
+    </>
+  ),
+
+  settings: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.4 1a7 7 0 0 0-2.1-1.2L14 3h-4l-.4 2.7a7 7 0 0 0-2.1 1.2l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 2.1 1.2L10 21h4l.4-2.7a7 7 0 0 0 2.1-1.2l2.4 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" />
+    </>
+  ),
+
+  activity: (
+    <>
+      <path d="M3 12h4l2-7 4 14 2-7h6" />
+    </>
+  ),
+
+};
+
+
+/**
+ * ============================================================
  * ICONO DE NAVEGACIÓN
  * ============================================================
  */
 
-const NavIcon = ({ name }) => (
-  <svg
-    className="w-4 h-4 flex-shrink-0"
-    viewBox="0 0 24 24"
-    fill="none"
-    aria-hidden="true"
-  >
-    <use href={`/icons/icons.svg#${name}`} />
-  </svg>
-);
+const NavIcon = ({ name }) => {
+
+  const contenido =
+    iconos[name] ||
+    iconos.activity;
+
+  return (
+    <svg
+      className="
+        w-4
+        h-4
+        flex-shrink-0
+      "
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {contenido}
+    </svg>
+  );
+};
 
 
 /**
@@ -104,9 +273,13 @@ const BellIcon = () => (
 
 const ChevronIcon = ({ open }) => (
   <svg
-    className={`w-3.5 h-3.5 transition-transform duration-200 ${
-      open ? "rotate-180" : ""
-    }`}
+    className={`
+      w-3.5
+      h-3.5
+      transition-transform
+      duration-200
+      ${open ? "rotate-180" : ""}
+    `}
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -201,36 +374,21 @@ const TopNavItem = ({
 
 /**
  * ============================================================
- * SEPARADOR
- * ============================================================
- */
-
-const NavSeparator = () => (
-  <div
-    className="
-      h-7
-      w-px
-      bg-[var(--erp-border)]
-      flex-shrink-0
-      mx-0.5
-    "
-  />
-);
-
-
-/**
- * ============================================================
  * SIDEBAR
  *
- * Aunque el nombre del fichero sigue siendo Sidebar.jsx,
- * visualmente funciona como navegación superior.
+ * Visualmente funciona como navegación superior.
  * ============================================================
  */
 
 export default function Sidebar() {
 
-  const empleado = useAuthStore((s) => s.empleado);
-  const logout = useAuthStore((s) => s.logout);
+  const empleado = useAuthStore(
+    (s) => s.empleado
+  );
+
+  const logout = useAuthStore(
+    (s) => s.logout
+  );
 
   const mensajesNoLeidos = useMensajesStore(
     (s) => s.noLeidosTotal || 0
@@ -240,7 +398,8 @@ export default function Sidebar() {
     (s) => s.unreadCount || 0
   );
 
-  const [masAbierto, setMasAbierto] = useState(false);
+  const [masAbierto, setMasAbierto] =
+    useState(false);
 
   const masRef = useRef(null);
 
@@ -264,7 +423,7 @@ export default function Sidebar() {
 
   /**
    * ==========================================================
-   * CERRAR MÁS AL HACER CLICK FUERA
+   * CERRAR MENÚ MÁS AL HACER CLICK FUERA
    * ==========================================================
    */
 
@@ -274,7 +433,9 @@ export default function Sidebar() {
 
       if (
         masRef.current &&
-        !masRef.current.contains(event.target)
+        !masRef.current.contains(
+          event.target
+        )
       ) {
         setMasAbierto(false);
       }
@@ -287,10 +448,12 @@ export default function Sidebar() {
     );
 
     return () => {
+
       document.removeEventListener(
         "mousedown",
         handleClickOutside
       );
+
     };
 
   }, []);
@@ -376,15 +539,15 @@ export default function Sidebar() {
    * ==========================================================
    * MÓDULOS SECUNDARIOS
    *
-   * SEGURIDAD Y AUDITORÍA SON MÓDULOS INDEPENDIENTES.
+   * IMPORTANTE:
    *
-   * Seguridad:
-   *   /seguridad
+   * /auditoria
+   * /seguridad
+   * /logs
+   * /maestros
+   * /paneltecnico
    *
-   * Auditoría:
-   *   /auditoria
-   *
-   * Cada uno utiliza su propia clave de permisos.
+   * son las rutas reales definidas en App.jsx.
    * ==========================================================
    */
 
@@ -420,7 +583,7 @@ export default function Sidebar() {
 
     {
       key: "panel-tecnico",
-      to: "/PanelTecnico",
+      to: "/paneltecnico",
       label: "Panel técnico",
       icon: "settings",
     },
@@ -430,25 +593,35 @@ export default function Sidebar() {
 
   /**
    * ==========================================================
-   * FILTRAR POR PERMISOS
+   * FILTRADO POR PERMISOS
    * ==========================================================
    */
 
   const visiblesPrincipales = useMemo(
     () =>
-      modulosPrincipales.filter((modulo) =>
-        puedeVerModulo(modulo.key)
+      modulosPrincipales.filter(
+        (modulo) =>
+          puedeVerModulo(
+            modulo.key
+          )
       ),
-    [empleado]
+    [
+      empleado,
+      mensajesNoLeidos,
+      unreadCount,
+    ]
   );
 
 
   const visiblesSecundarios = useMemo(
     () =>
-      modulosSecundarios.filter((modulo) =>
-        puedeVerModulo(modulo.key)
+      modulosSecundarios.filter(
+        (modulo) =>
+          puedeVerModulo(
+            modulo.key
+          )
       ),
-    [empleado, mensajesNoLeidos, unreadCount]
+    [empleado]
   );
 
 
@@ -459,6 +632,7 @@ export default function Sidebar() {
    */
 
   return (
+
     <header
       className="
         w-full
@@ -573,24 +747,29 @@ export default function Sidebar() {
               MÓDULOS PRINCIPALES
               ================================================== */}
 
-          {visiblesPrincipales.map((modulo) => (
+          {visiblesPrincipales.map(
+            (modulo) => (
 
-            <TopNavItem
-              key={modulo.key}
-              to={modulo.to}
-              label={modulo.label}
-              icon={modulo.icon}
-              badge={modulo.badge || 0}
-            />
+              <TopNavItem
+                key={modulo.key}
+                to={modulo.to}
+                label={modulo.label}
+                icon={modulo.icon}
+                badge={
+                  modulo.badge || 0
+                }
+              />
 
-          ))}
+            )
+          )}
 
 
           {/* ==================================================
               MÁS
               ================================================== */}
 
-          {visiblesSecundarios.length > 0 && (
+          {visiblesSecundarios.length >
+            0 && (
 
             <div
               ref={masRef}
@@ -603,9 +782,14 @@ export default function Sidebar() {
               <button
                 type="button"
                 onClick={() =>
-                  setMasAbierto((valor) => !valor)
+                  setMasAbierto(
+                    (valor) =>
+                      !valor
+                  )
                 }
-                aria-expanded={masAbierto}
+                aria-expanded={
+                  masAbierto
+                }
                 aria-haspopup="menu"
                 className="
                   flex
@@ -685,78 +869,95 @@ export default function Sidebar() {
                     "
                   >
 
-                    {visiblesSecundarios.map((modulo) => (
+                    {visiblesSecundarios.map(
+                      (modulo) => (
 
-                      <NavLink
-                        key={modulo.key}
-                        to={modulo.to}
-                        role="menuitem"
-                        onClick={() =>
-                          setMasAbierto(false)
-                        }
-                        className={({ isActive }) =>
-                          `
-                          flex
-                          items-center
-                          gap-3
-                          px-3
-                          py-2.5
-                          rounded-xl
-                          text-sm
-                          font-medium
-                          transition-all
-                          duration-150
-
-                          ${
-                            isActive
-                              ? `
-                                bg-[var(--erp-primary)]
-                                text-white
-                              `
-                              : `
-                                text-[var(--erp-text)]
-                                hover:bg-[var(--erp-primary-soft)]
-                                hover:text-[var(--erp-primary)]
-                              `
+                        <NavLink
+                          key={modulo.key}
+                          to={modulo.to}
+                          role="menuitem"
+                          onClick={() =>
+                            setMasAbierto(
+                              false
+                            )
                           }
-                          `
-                        }
-                      >
+                          className={({
+                            isActive,
+                          }) =>
+                            `
+                            flex
+                            items-center
+                            gap-3
+                            px-3
+                            py-2.5
+                            rounded-xl
+                            text-sm
+                            font-medium
+                            transition-all
+                            duration-150
 
-                        <NavIcon
-                          name={modulo.icon}
-                        />
+                            ${
+                              isActive
+                                ? `
+                                  bg-[var(--erp-primary)]
+                                  text-white
+                                `
+                                : `
+                                  text-[var(--erp-text)]
+                                  hover:bg-[var(--erp-primary-soft)]
+                                  hover:text-[var(--erp-primary)]
+                                `
+                            }
+                            `
+                          }
+                        >
 
-                        <span className="flex-1">
-                          {modulo.label}
-                        </span>
-
-
-                        {modulo.badge > 0 && (
+                          <NavIcon
+                            name={
+                              modulo.icon
+                            }
+                          />
 
                           <span
                             className="
-                              min-w-[19px]
-                              h-[19px]
-                              px-1
-                              rounded-full
-                              bg-red-500
-                              text-white
-                              text-[10px]
-                              font-bold
-                              flex
-                              items-center
-                              justify-center
+                              flex-1
                             "
                           >
-                            {modulo.badge}
+                            {
+                              modulo.label
+                            }
                           </span>
 
-                        )}
 
-                      </NavLink>
+                          {modulo.badge >
+                            0 && (
 
-                    ))}
+                            <span
+                              className="
+                                min-w-[19px]
+                                h-[19px]
+                                px-1
+                                rounded-full
+                                bg-red-500
+                                text-white
+                                text-[10px]
+                                font-bold
+                                flex
+                                items-center
+                                justify-center
+                              "
+                            >
+                              {
+                                modulo.badge
+                              }
+                            </span>
+
+                          )}
+
+                        </NavLink>
+
+                      )
+                    )}
 
                   </div>
 
@@ -851,7 +1052,9 @@ export default function Sidebar() {
             onClick={() =>
               useAuthStore
                 .getState()
-                .setPerfilModal(safeUser.id)
+                .setPerfilModal(
+                  safeUser.id
+                )
             }
             title="Mi perfil"
             className="
@@ -911,5 +1114,6 @@ export default function Sidebar() {
       </div>
 
     </header>
+
   );
 }
