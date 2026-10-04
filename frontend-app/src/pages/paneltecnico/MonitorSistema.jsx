@@ -23,11 +23,7 @@ import {
 
 export default function MonitorSistema() {
 
-  // ============================================================
-  // CONFIGURACIÓN API
-  // ============================================================
 
-  const baseUrl = import.meta.env.VITE_API_URL;
 
   // ============================================================
   // ESTADO
