@@ -1,53 +1,118 @@
 import re
 import unicodedata
 
+
+# ============================================================
+# LIMPIAR TEXTO
+# ============================================================
+
 def limpiar_texto(s: str) -> str:
+    """
+    Normaliza un texto para utilizarlo en búsquedas/geocodificación.
+    """
+
     if not s:
         return ""
 
-    # Normalizar acentos
-    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
+    s = str(s)
 
-    # Quitar dobles espacios
+    # Normalizar acentos
+    s = (
+        unicodedata
+        .normalize("NFKD", s)
+        .encode("ascii", "ignore")
+        .decode("ascii")
+    )
+
+    # Espacios múltiples
     s = re.sub(r"\s+", " ", s)
 
-    # Quitar espacios antes de comas
+    # Espacios antes de comas
     s = re.sub(r"\s+,", ",", s)
+
+    # Comas repetidas
+    s = re.sub(r",+", ",", s)
 
     return s.strip()
 
 
+# ============================================================
+# LIMPIAR DIRECCIÓN
+# ============================================================
+
 def limpiar_direccion(direccion: str) -> str:
+    """
+    Limpia una dirección antes de enviarla a Google Maps.
+
+    IMPORTANTE:
+    No elimina números de calle.
+    """
+
     if not direccion:
         return ""
 
     direccion = limpiar_texto(direccion)
 
-    # 🔥 Eliminar palabras que Google Maps rechaza
+    if not direccion:
+        return ""
+
+    # --------------------------------------------------------
+    # Eliminar información de piso / puerta / oficina
+    # --------------------------------------------------------
+
     direccion = re.sub(
-        r"\b(planta|piso|bajo|local|entresuelo|izd|dch|apta|apt|ap|aplanta|puerta|escalera|bloque|oficina|despacho)\b",
+        r"\b("
+        r"planta|"
+        r"piso|"
+        r"bajo|"
+        r"local|"
+        r"entresuelo|"
+        r"izq|"
+        r"izd|"
+        r"dch|"
+        r"apta|"
+        r"apt|"
+        r"ap|"
+        r"aplanta|"
+        r"puerta|"
+        r"escalera|"
+        r"bloque|"
+        r"oficina|"
+        r"despacho"
+        r")\b",
         "",
         direccion,
-        flags=re.IGNORECASE
+        flags=re.IGNORECASE,
     )
 
-    # 🔥 Eliminar números de piso tipo "3º", "2A", "1 B", "4ºA"
-    direccion = re.sub(r"\b\d+\s*[A-Za-z]?\b", "", direccion)
+    # --------------------------------------------------------
+    # Eliminar ordinales de piso
+    # Ejemplo:
+    # 3º
+    # 4ª
+    # 2ºA
+    # --------------------------------------------------------
 
-    # 🔥 Eliminar ordinales tipo "3º", "4ª"
-    direccion = re.sub(r"\b\d+º\b", "", direccion)
-    direccion = re.sub(r"\b\d+ª\b", "", direccion)
+    direccion = re.sub(
+        r"\b\d+\s*[ºª]\s*[A-Za-z]?\b",
+        "",
+        direccion,
+        flags=re.IGNORECASE,
+    )
 
-    # 🔥 Eliminar letras sueltas tipo "A", "B", "C"
-    direccion = re.sub(r"\b[A-Za-z]\b", "", direccion)
+    # --------------------------------------------------------
+    # Limpiar espacios
+    # --------------------------------------------------------
 
-    # 🔥 Quitar comas duplicadas
-    direccion = re.sub(r",+", ",", direccion)
-
-    # 🔥 Quitar espacios dobles otra vez
     direccion = re.sub(r"\s+", " ", direccion)
 
-    # 🔥 Quitar comas al final
-    direccion = direccion.rstrip(",")
+    # --------------------------------------------------------
+    # Limpiar comas
+    # --------------------------------------------------------
+
+    direccion = re.sub(r"\s+,", ",", direccion)
+    direccion = re.sub(r",\s*,+", ",", direccion)
+
+    direccion = direccion.strip(" ,")
 
     return direccion.strip()
