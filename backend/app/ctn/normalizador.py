@@ -6,115 +6,156 @@ import unicodedata
 # LIMPIAR TEXTO
 # ============================================================
 
-def limpiar_texto(valor) -> str:
+def limpiar_texto(s: str) -> str:
     """
-    Limpia un texto sin destruir información útil
+    Normaliza un texto manteniendo la información útil
     para geocodificación.
-
-    IMPORTANTE:
-    NO elimina números.
     """
 
-    if valor is None:
+    if not s:
         return ""
 
-    texto = str(valor).strip()
+    s = str(s)
 
-    if not texto:
-        return ""
+    # --------------------------------------------------------
+    # Normalizar acentos
+    # --------------------------------------------------------
 
-    # Normalizar Unicode manteniendo caracteres válidos.
-    texto = unicodedata.normalize(
-        "NFKC",
-        texto
+    s = unicodedata.normalize(
+        "NFKD",
+        s
+    ).encode(
+        "ascii",
+        "ignore"
+    ).decode(
+        "ascii"
     )
 
-    # Espacios múltiples.
-    texto = re.sub(
+    # --------------------------------------------------------
+    # Espacios
+    # --------------------------------------------------------
+
+    s = re.sub(
         r"\s+",
         " ",
-        texto
+        s
     )
 
-    # Espacios antes de comas.
-    texto = re.sub(
-        r"\s+,",
-        ",",
-        texto
-    )
+    # --------------------------------------------------------
+    # Espacios antes/después de comas
+    # --------------------------------------------------------
 
-    # Espacios después de comas.
-    texto = re.sub(
-        r",\s*",
+    s = re.sub(
+        r"\s*,\s*",
         ", ",
-        texto
+        s
     )
 
-    return texto.strip()
+    return s.strip()
 
 
 # ============================================================
 # LIMPIAR DIRECCIÓN
 # ============================================================
 
-def limpiar_direccion(valor) -> str:
+def limpiar_direccion(direccion: str) -> str:
     """
-    Normaliza una dirección para Google Maps.
+    Limpia una dirección para Google Maps.
 
     IMPORTANTE:
-    NO elimina:
-        - números de calle
-        - códigos postales
-        - letras de portal
-        - números de puerta
-
-    Solamente elimina información claramente
-    administrativa que puede perjudicar la búsqueda.
+    NO elimina números de calle ni códigos postales.
     """
-
-    direccion = limpiar_texto(valor)
 
     if not direccion:
         return ""
 
-    # Palabras administrativas que no aportan
-    # información geográfica relevante.
-    direccion = re.sub(
-        r"\b("
-        r"planta|"
-        r"piso|"
-        r"bajo|"
-        r"local|"
-        r"entresuelo|"
-        r"puerta|"
-        r"escalera|"
-        r"bloque|"
-        r"oficina|"
-        r"despacho"
-        r")\b",
-        " ",
-        direccion,
-        flags=re.IGNORECASE
-    )
-
-    # Abreviaturas de mano izquierda/derecha.
-    direccion = re.sub(
-        r"\b(izq|izda|izd|dcha|dch)\.?\b",
-        " ",
-        direccion,
-        flags=re.IGNORECASE
-    )
-
-    # Normalizar espacios.
-    direccion = re.sub(
-        r"\s+",
-        " ",
+    direccion = limpiar_texto(
         direccion
     )
 
-    # Normalizar comas.
+    if not direccion:
+        return ""
+
+    # ========================================================
+    # ELIMINAR INFORMACIÓN INTERIOR
+    # ========================================================
+    #
+    # Eliminamos solamente referencias que pueden confundir
+    # a Google dentro de una dirección.
+    #
+    # Ejemplo:
+    #
+    # "Calle Mayor 25, 3º A"
+    #
+    # -> "Calle Mayor 25"
+    #
+    # PERO mantenemos:
+    #
+    # "Calle Mayor 25"
+    #
+    # ========================================================
+
     direccion = re.sub(
-        r"\s*,\s*",
+        r"""
+        \b(
+            planta|
+            piso|
+            bajo|
+            local|
+            entresuelo|
+            puerta|
+            escalera|
+            bloque|
+            oficina|
+            despacho|
+            apta|
+            apt|
+            apartamento|
+            izq|
+            izd|
+            dcha|
+            dch
+        )\b
+        [\s\.-]*[A-Za-z0-9ºª\-]*
+        """,
+        " ",
+        direccion,
+        flags=re.IGNORECASE | re.VERBOSE
+    )
+
+    # ========================================================
+    # ELIMINAR ORDINALES DE PISO
+    # ========================================================
+
+    direccion = re.sub(
+        r"\b\d+\s*[ºª]\s*[A-Za-z]?\b",
+        " ",
+        direccion,
+        flags=re.IGNORECASE
+    )
+
+    # ========================================================
+    # ELIMINAR LETRA SUELTA SOLO DESPUÉS DE UN NÚMERO
+    # ========================================================
+    #
+    # "25 A" -> "25"
+    #
+    # NO eliminar letras normales de nombres de calles.
+    #
+    # ========================================================
+
+    direccion = re.sub(
+        r"(\d+)\s+[A-Za-z]\b",
+        r"\1",
+        direccion
+    )
+
+    # ========================================================
+    # LIMPIAR COMAS
+    # ========================================================
+
+    direccion = re.sub(
+        r"\s*,\s*,+",
         ", ",
         direccion
     )
@@ -122,6 +163,12 @@ def limpiar_direccion(valor) -> str:
     direccion = re.sub(
         r",\s*,+",
         ", ",
+        direccion
+    )
+
+    direccion = re.sub(
+        r"\s+",
+        " ",
         direccion
     )
 
