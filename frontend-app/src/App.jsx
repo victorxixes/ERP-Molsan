@@ -59,6 +59,8 @@ import Logs from "./pages/logs/Logs.jsx";
 /* NOTIFICACIONES */
 import Notificaciones from "./pages/notificaciones/Notificaciones.jsx";
 
+import Municipios from "./pages/herramientas/Municipios";
+
 /* PANEL TÉCNICO */
 import PanelTecnico from "./pages/paneltecnico/PanelTecnico.jsx";
 import MonitorSistema from "./pages/paneltecnico/MonitorSistema.jsx";
@@ -262,6 +264,11 @@ export default function App() {
           />
 
 
+          <Route
+  path="/herramientas/municipios"
+  element={<Municipios />}
+/>
+          
           {/* ==================================================
               MENSAJES
               ================================================== */}
