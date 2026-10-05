@@ -1,147 +1,631 @@
 from datetime import date
+import math
+
 from sqlalchemy.orm import Session
 
 from backend.app.agenda.models import Cita
 from backend.app.ctn.models import Notaria
 from backend.app.empleados.models import Empleado
 
-# ⭐ USAR EL NUEVO MÓDULO DE DISTANCIA REAL
-from backend.app.utils.distancia import distancia_km, MOLSAN_LAT, MOLSAN_LNG
+
+# =========================================================
+# COORDENADAS DE MOLSAN
+# =========================================================
+
+MOLSAN_LAT = 41.424960
+MOLSAN_LNG = 2.181740
 
 
-def km_de_cita(db: Session, cita: Cita) -> float:
+# =========================================================
+# DISTANCIA HAVERSINE
+# =========================================================
+
+def distancia_km(
+    lat1: float,
+    lng1: float,
+    lat2: float,
+    lng2: float,
+) -> float:
     """
-    Calcula km de una cita presencial.
-    - VC → 0 km
-    - Si no tiene notario → 0 km
-    - Si no tiene lat/lng → 0 km
+    Calcula la distancia en kilómetros entre dos coordenadas
+    utilizando la fórmula Haversine.
     """
 
-    # VC → km = 0
-    if cita.tipo_firma and cita.tipo_firma.lower().startswith("video"):
+    try:
+        lat1 = float(lat1)
+        lng1 = float(lng1)
+        lat2 = float(lat2)
+        lng2 = float(lng2)
+    except (TypeError, ValueError):
         return 0.0
 
-    if not cita.notario_id:
-        return 0.0
+    R = 6371.0
 
-    notario: Notaria | None = (
-        db.query(Notaria).filter(Notaria.id == cita.notario_id).first()
+    dlat = math.radians(lat2 - lat1)
+    dlng = math.radians(lng2 - lng1)
+
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(math.radians(lat1))
+        * math.cos(math.radians(lat2))
+        * math.sin(dlng / 2) ** 2
     )
 
-    if not notario:
-        return 0.0
+    # Evita pequeños errores numéricos
+    a = max(0.0, min(1.0, a))
+
+    c = 2 * math.atan2(
+        math.sqrt(a),
+        math.sqrt(1 - a),
+    )
+
+    return round(R * c, 2)
+
+
+# =========================================================
+# OBTENER COORDENADAS DE LA NOTARÍA
+# =========================================================
+
+def _coordenadas_notaria(notario: Notaria):
+    """
+    Obtiene las coordenadas de la notaría.
+
+    Primero intenta:
+        lat / lng
+
+    Y como compatibilidad adicional:
+        latitud / longitud
+
+    Esto permite trabajar aunque el modelo/schema utilice
+    nombres diferentes.
+    """
+
+    if notario is None:
+        return None, None
 
     lat = getattr(notario, "lat", None)
     lng = getattr(notario, "lng", None)
 
-    if lat is None or lng is None:
-        return 0.0
+    # Compatibilidad por si el modelo utiliza estos nombres
+    if lat is None:
+        lat = getattr(notario, "latitud", None)
+
+    if lng is None:
+        lng = getattr(notario, "longitud", None)
 
     try:
-        # ⭐ CÁLCULO REAL DE KM
-        return distancia_km(MOLSAN_LAT, MOLSAN_LNG, float(lat), float(lng))
-    except Exception as e:
-        print("ERROR KM:", e)
+        lat = float(lat)
+        lng = float(lng)
+    except (TypeError, ValueError):
+        return None, None
+
+    # Coordenadas inválidas
+    if not math.isfinite(lat) or not math.isfinite(lng):
+        return None, None
+
+    # Fuera de rango
+    if lat < -90 or lat > 90:
+        return None, None
+
+    if lng < -180 or lng > 180:
+        return None, None
+
+    return lat, lng
+
+
+# =========================================================
+# SABER SI UNA CITA ES VIDEOCONFERENCIA
+# =========================================================
+
+def _es_videoconferencia(
+    cita: Cita,
+    notario: Notaria | None = None,
+) -> bool:
+    """
+    Determina si la cita es VC.
+
+    Preferencia:
+    1. VC del notario
+    2. tipo_firma guardado en la cita
+    """
+
+    # -----------------------------------------------------
+    # 1. DATOS DEL NOTARIO
+    # -----------------------------------------------------
+
+    if notario is not None:
+
+        vc_val = str(
+            getattr(notario, "vc", "") or ""
+        ).strip().upper()
+
+        if vc_val in {
+            "SI",
+            "VC",
+            "VIDEOCONFERENCIA",
+        }:
+            return True
+
+        if vc_val in {
+            "NO",
+            "PRESENCIAL",
+        }:
+            return False
+
+    # -----------------------------------------------------
+    # 2. TIPO DE FIRMA DE LA CITA
+    # -----------------------------------------------------
+
+    tipo_firma = str(
+        getattr(cita, "tipo_firma", "") or ""
+    ).strip().upper()
+
+    if tipo_firma in {
+        "SI",
+        "VC",
+        "VIDEOCONFERENCIA",
+    }:
+        return True
+
+    return False
+
+
+# =========================================================
+# KM DE UNA CITA
+# =========================================================
+
+def km_de_cita(
+    db: Session,
+    cita: Cita,
+) -> float:
+    """
+    Calcula los kilómetros de una cita presencial.
+
+    VC:
+        0 km
+
+    Presencial:
+        distancia Molsan -> Notaría
+
+    Las coordenadas se obtienen directamente de la
+    relación Cita.notario o, si no está cargada,
+    mediante notario_id.
+    """
+
+    # =====================================================
+    # OBTENER NOTARIO
+    # =====================================================
+
+    notario = getattr(
+        cita,
+        "notario",
+        None,
+    )
+
+    if notario is None and cita.notario_id:
+
+        notario = (
+            db.query(Notaria)
+            .filter(
+                Notaria.id == cita.notario_id
+            )
+            .first()
+        )
+
+    # =====================================================
+    # DETERMINAR VC / PRESENCIAL
+    # =====================================================
+
+    if _es_videoconferencia(
+        cita,
+        notario,
+    ):
         return 0.0
 
+    # =====================================================
+    # UNA CITA PRESENCIAL NECESITA NOTARIO
+    # =====================================================
 
-def _rango_mes(año: int, mes: int) -> tuple[date, date]:
-    inicio = date(año, mes, 1)
-    fin = date(año, mes, 28)
-    while True:
-        try:
-            fin = date(año, mes, fin.day + 1)
-        except Exception:
-            break
+    if notario is None:
+
+        print(
+            f"[KM] Cita {cita.id}: "
+            f"presencial pero sin notario",
+            flush=True,
+        )
+
+        return 0.0
+
+    # =====================================================
+    # COORDENADAS
+    # =====================================================
+
+    lat, lng = _coordenadas_notaria(
+        notario
+    )
+
+    if lat is None or lng is None:
+
+        print(
+            f"[KM] Cita {cita.id}: "
+            f"notaría {getattr(notario, 'id', None)} "
+            f"sin coordenadas. "
+            f"lat={getattr(notario, 'lat', None)} "
+            f"lng={getattr(notario, 'lng', None)}",
+            flush=True,
+        )
+
+        return 0.0
+
+    # =====================================================
+    # CALCULAR
+    # =====================================================
+
+    km = distancia_km(
+        MOLSAN_LAT,
+        MOLSAN_LNG,
+        lat,
+        lng,
+    )
+
+    print(
+        f"[KM] Cita {cita.id} | "
+        f"Notaría {getattr(notario, 'id', None)} | "
+        f"lat={lat} | "
+        f"lng={lng} | "
+        f"KM={km}",
+        flush=True,
+    )
+
+    return km
+
+
+# =========================================================
+# RANGO DEL MES
+# =========================================================
+
+def _rango_mes(
+    año: int,
+    mes: int,
+) -> tuple[date, date]:
+
+    inicio = date(
+        año,
+        mes,
+        1,
+    )
+
+    if mes == 12:
+
+        fin = date(
+            año + 1,
+            1,
+            1,
+        )
+
+    else:
+
+        fin = date(
+            año,
+            mes + 1,
+            1,
+        )
+
     return inicio, fin
 
 
-def obtener_tabla(db: Session, mes: int, año: int):
-    inicio, fin = _rango_mes(año, mes)
+# =========================================================
+# TABLA MENSUAL
+# =========================================================
+
+def obtener_tabla(
+    db: Session,
+    mes: int,
+    año: int,
+):
+
+    inicio, fin = _rango_mes(
+        año,
+        mes,
+    )
 
     citas: list[Cita] = (
         db.query(Cita)
-        .filter(Cita.fecha >= inicio)
-        .filter(Cita.fecha <= fin)
+        .filter(
+            Cita.fecha >= inicio
+        )
+        .filter(
+            Cita.fecha < fin
+        )
         .all()
     )
 
-    tabla: dict = {}
+    tabla = {}
 
-    for c in citas:
-        # Nombre del apoderado
-        if c.apoderado_id:
-            emp: Empleado | None = (
-                db.query(Empleado).filter(Empleado.id == c.apoderado_id).first()
+    # =====================================================
+    # PROCESAR CITAS
+    # =====================================================
+
+    for cita in citas:
+
+        # -------------------------------------------------
+        # APODERADO
+        # -------------------------------------------------
+
+        if cita.apoderado_id:
+
+            empleado = (
+                db.query(Empleado)
+                .filter(
+                    Empleado.id
+                    == cita.apoderado_id
+                )
+                .first()
             )
-            nombre = f"{emp.nombre} {emp.apellidos}" if emp else "Sin nombre"
-            ap_id = c.apoderado_id
-        else:
-            nombre = c.apoderado or "Sin nombre"
-            ap_id = nombre
 
-        if ap_id not in tabla:
-            tabla[ap_id] = {
-                "apoderado_id": ap_id,
+            if empleado:
+
+                nombre = (
+                    f"{empleado.nombre} "
+                    f"{empleado.apellidos}"
+                ).strip()
+
+            else:
+
+                nombre = (
+                    cita.apoderado
+                    or "Sin nombre"
+                )
+
+            apoderado_id = cita.apoderado_id
+
+        else:
+
+            nombre = (
+                cita.apoderado
+                or "Sin nombre"
+            )
+
+            apoderado_id = nombre
+
+        # -------------------------------------------------
+        # CREAR FILA
+        # -------------------------------------------------
+
+        if apoderado_id not in tabla:
+
+            tabla[apoderado_id] = {
+                "apoderado_id": apoderado_id,
                 "nombre": nombre,
                 "vc": 0,
                 "presencial": 0,
                 "km": 0.0,
             }
 
-        # VC / Presencial
-        if c.tipo_firma and c.tipo_firma.lower().startswith("video"):
-            tabla[ap_id]["vc"] += 1
+        # -------------------------------------------------
+        # OBTENER NOTARIO
+        # -------------------------------------------------
+
+        notario = getattr(
+            cita,
+            "notario",
+            None,
+        )
+
+        if notario is None and cita.notario_id:
+
+            notario = (
+                db.query(Notaria)
+                .filter(
+                    Notaria.id
+                    == cita.notario_id
+                )
+                .first()
+            )
+
+        # -------------------------------------------------
+        # VC / PRESENCIAL
+        # -------------------------------------------------
+
+        es_vc = _es_videoconferencia(
+            cita,
+            notario,
+        )
+
+        if es_vc:
+
+            tabla[apoderado_id]["vc"] += 1
+
         else:
-            tabla[ap_id]["presencial"] += 1
 
-        # ⭐ KM REAL
-        tabla[ap_id]["km"] += km_de_cita(db, c)
+            tabla[
+                apoderado_id
+            ]["presencial"] += 1
 
-    return list(tabla.values())
+        # -------------------------------------------------
+        # KM
+        # -------------------------------------------------
+
+        km = km_de_cita(
+            db,
+            cita,
+        )
+
+        tabla[
+            apoderado_id
+        ]["km"] += km
+
+    # =====================================================
+    # REDONDEAR
+    # =====================================================
+
+    resultado = []
+
+    for fila in tabla.values():
+
+        fila["km"] = round(
+            float(fila["km"]),
+            2,
+        )
+
+        resultado.append(fila)
+
+    return resultado
 
 
-def obtener_ranking(db: Session, mes: int, año: int):
-    tabla = obtener_tabla(db, mes, año)
-    tabla.sort(key=lambda x: x["km"], reverse=True)
+# =========================================================
+# RANKING
+# =========================================================
+
+def obtener_ranking(
+    db: Session,
+    mes: int,
+    año: int,
+):
+
+    tabla = obtener_tabla(
+        db,
+        mes,
+        año,
+    )
+
+    tabla.sort(
+        key=lambda x: x["km"],
+        reverse=True,
+    )
+
     return tabla
 
 
-def obtener_informe_individual(db: Session, apoderado_id: int, mes: int, año: int):
-    inicio, fin = _rango_mes(año, mes)
+# =========================================================
+# INFORME INDIVIDUAL
+# =========================================================
+
+def obtener_informe_individual(
+    db: Session,
+    apoderado_id: int,
+    mes: int,
+    año: int,
+):
+
+    inicio, fin = _rango_mes(
+        año,
+        mes,
+    )
 
     citas: list[Cita] = (
         db.query(Cita)
-        .filter(Cita.fecha >= inicio)
-        .filter(Cita.fecha <= fin)
-        .filter(Cita.apoderado_id == apoderado_id)
+        .filter(
+            Cita.fecha >= inicio
+        )
+        .filter(
+            Cita.fecha < fin
+        )
+        .filter(
+            Cita.apoderado_id
+            == apoderado_id
+        )
         .all()
     )
 
     total_vc = 0
-    total_pres = 0
+    total_presencial = 0
     total_km = 0.0
-    dias: list[date] = []
 
-    for c in citas:
-        if c.tipo_firma and c.tipo_firma.lower().startswith("video"):
+    dias = []
+
+    # =====================================================
+    # PROCESAR
+    # =====================================================
+
+    for cita in citas:
+
+        notario = getattr(
+            cita,
+            "notario",
+            None,
+        )
+
+        if notario is None and cita.notario_id:
+
+            notario = (
+                db.query(Notaria)
+                .filter(
+                    Notaria.id
+                    == cita.notario_id
+                )
+                .first()
+            )
+
+        # -------------------------------------------------
+        # TIPO
+        # -------------------------------------------------
+
+        es_vc = _es_videoconferencia(
+            cita,
+            notario,
+        )
+
+        if es_vc:
+
             total_vc += 1
-        else:
-            total_pres += 1
 
-        # ⭐ KM REAL
-        total_km += km_de_cita(db, c)
-        dias.append(c.fecha)
+        else:
+
+            total_presencial += 1
+
+        # -------------------------------------------------
+        # KM
+        # -------------------------------------------------
+
+        total_km += km_de_cita(
+            db,
+            cita,
+        )
+
+        dias.append(
+            cita.fecha
+        )
+
+    # =====================================================
+    # TIEMPO MEDIO ENTRE CITAS
+    # =====================================================
 
     tiempo_medio = 0.0
+
     if len(dias) >= 2:
+
         dias.sort()
-        diffs = [(dias[i] - dias[i - 1]).days for i in range(1, len(dias))]
-        tiempo_medio = sum(diffs) / len(diffs)
+
+        diferencias = [
+            (
+                dias[i]
+                - dias[i - 1]
+            ).days
+            for i in range(
+                1,
+                len(dias),
+            )
+        ]
+
+        tiempo_medio = (
+            sum(diferencias)
+            / len(diferencias)
+        )
+
+    # =====================================================
+    # RESULTADO
+    # =====================================================
 
     return {
         "total_vc": total_vc,
-        "total_presencial": total_pres,
-        "km_totales": round(total_km, 2),
-        "tiempo_medio_dias": round(tiempo_medio, 1),
+        "total_presencial": total_presencial,
+        "km_totales": round(
+            total_km,
+            2,
+        ),
+        "tiempo_medio_dias": round(
+            tiempo_medio,
+            1,
+        ),
     }
