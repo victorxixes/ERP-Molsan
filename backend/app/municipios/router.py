@@ -67,6 +67,7 @@ class MunicipioResponse(MunicipioBase):
     activo: bool
 
     class Config:
+        orm_mode = True
         from_attributes = True
 
 
