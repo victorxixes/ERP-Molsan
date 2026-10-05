@@ -82,6 +82,9 @@ import SeguridadAuditoria from "./pages/seguridad/SeguridadAuditoria.jsx";
 /* MAESTROS */
 import Maestros from "./pages/maestros/Maestros.jsx";
 
+/* FUSIONES */
+import Fusiones from "./pages/fusiones/Fusiones";
+
 /**
  * ============================================================
  * WRAPPER MENSAJES
@@ -328,6 +331,14 @@ export default function App() {
             element={<Notificaciones />}
           />
 
+
+            {/* ==================================================
+              FUSIONES
+              ================================================== */}
+          <Route
+            path="/fusiones"
+            element={<Fusiones />}
+            />
 
           {/* ==================================================
               PANEL TÉCNICO
