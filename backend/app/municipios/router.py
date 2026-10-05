@@ -1,19 +1,20 @@
+
+from typing import List
+
 from fastapi import (
     APIRouter,
-    UploadFile,
-    File,
     Depends,
+    File,
     HTTPException,
-    Query,
+    UploadFile,
 )
-
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
 
 from backend.app.database import get_db
 from backend.app.municipios.models import Municipio
 from backend.app.Utilidades.importadores.municipios_importer import (
-    importar_municipios_desde_excel
+    importar_excel_municipios,
 )
 
 
@@ -23,566 +24,492 @@ from backend.app.Utilidades.importadores.municipios_importer import (
 
 router = APIRouter(
     prefix="/municipios",
-    tags=["Municipios"]
+    tags=["Municipios"],
 )
 
 
 # ============================================================
-# IMPORTAR MUNICIPIOS DESDE EXCEL
+# SCHEMAS
 # ============================================================
 
-@router.post("/importar")
-async def importar_municipios(
-    fichero: UploadFile = File(...),
-    db: Session = Depends(get_db)
-):
-    """
-    Importa municipios desde un fichero Excel.
+class MunicipioBase(BaseModel):
 
-    Columnas esperadas:
+    ccaa: str = Field(
+        ...,
+        min_length=1,
+        max_length=150,
+    )
 
-        CCAA
-        PROVINCIA
-        MUNICIPIO
-    """
+    provincia: str = Field(
+        ...,
+        min_length=1,
+        max_length=150,
+    )
 
-    if not fichero.filename:
-        raise HTTPException(
-            status_code=400,
-            detail="No se ha recibido ningún fichero."
-        )
+    municipio: str = Field(
+        ...,
+        min_length=1,
+        max_length=200,
+    )
 
-    nombre = fichero.filename.lower()
 
-    if not (
-        nombre.endswith(".xlsx")
-        or nombre.endswith(".xls")
-    ):
-        raise HTTPException(
-            status_code=400,
-            detail="El fichero debe ser un Excel (.xlsx o .xls)."
-        )
+class MunicipioCreate(MunicipioBase):
+    pass
 
-    contenido = await fichero.read()
 
-    if not contenido:
-        raise HTTPException(
-            status_code=400,
-            detail="El fichero está vacío."
-        )
+class MunicipioUpdate(MunicipioBase):
+    pass
 
-    try:
 
-        resultado = importar_municipios_desde_excel(
-            db,
-            contenido
-        )
+class MunicipioResponse(MunicipioBase):
 
-        return {
-            "ok": True,
-            "mensaje": "Municipios importados correctamente.",
-            **resultado
-        }
+    id: int
 
-    except ValueError as e:
+    activo: bool
 
-        raise HTTPException(
-            status_code=400,
-            detail=str(e)
-        )
-
-    except Exception as e:
-
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error importando municipios: {e}"
-        )
+    class Config:
+        from_attributes = True
 
 
 # ============================================================
-# LISTADO DE MUNICIPIOS
+# NORMALIZAR
 # ============================================================
 
-@router.get("")
+def limpiar_texto(valor: str) -> str:
+
+    return (
+        valor
+        .strip()
+    )
+
+
+# ============================================================
+# GET /municipios
+# ============================================================
+
+@router.get(
+    "",
+    response_model=List[MunicipioResponse],
+)
 def listar_municipios(
-    buscar: str | None = Query(
-        default=None,
-        description="Texto para buscar por CCAA, provincia o municipio."
-    ),
-    ccaa: str | None = Query(
-        default=None,
-        description="Filtrar por comunidad autónoma."
-    ),
-    provincia: str | None = Query(
-        default=None,
-        description="Filtrar por provincia."
-    ),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    """
-    Devuelve el listado de municipios.
-
-    Permite:
-
-    - búsqueda general
-    - filtro por CCAA
-    - filtro por provincia
-    """
-
-    query = db.query(Municipio)
-
-    # --------------------------------------------------------
-    # BÚSQUEDA GENERAL
-    # --------------------------------------------------------
-
-    if buscar and buscar.strip():
-
-        texto = f"%{buscar.strip()}%"
-
-        query = query.filter(
-            or_(
-                Municipio.ccaa.ilike(texto),
-                Municipio.provincia.ilike(texto),
-                Municipio.municipio.ilike(texto)
-            )
-        )
-
-    # --------------------------------------------------------
-    # FILTRO CCAA
-    # --------------------------------------------------------
-
-    if ccaa and ccaa.strip():
-
-        query = query.filter(
-            Municipio.ccaa == ccaa.strip()
-        )
-
-    # --------------------------------------------------------
-    # FILTRO PROVINCIA
-    # --------------------------------------------------------
-
-    if provincia and provincia.strip():
-
-        query = query.filter(
-            Municipio.provincia == provincia.strip()
-        )
-
-    # --------------------------------------------------------
-    # ORDEN
-    # --------------------------------------------------------
 
     municipios = (
-        query
+        db.query(Municipio)
+        .filter(
+            Municipio.activo.is_(True)
+        )
         .order_by(
-            Municipio.ccaa,
-            Municipio.provincia,
-            Municipio.municipio
+            Municipio.ccaa.asc(),
+            Municipio.provincia.asc(),
+            Municipio.municipio.asc(),
         )
         .all()
     )
 
-    return [
-        {
-            "id": municipio.id,
-            "ccaa": municipio.ccaa,
-            "provincia": municipio.provincia,
-            "municipio": municipio.municipio,
-        }
-        for municipio in municipios
-    ]
+
+    return municipios
 
 
 # ============================================================
-# OBTENER MUNICIPIO
+# POST /municipios
 # ============================================================
 
-@router.get("/{municipio_id}")
-def obtener_municipio(
-    municipio_id: int,
-    db: Session = Depends(get_db)
-):
-    """
-    Obtiene un municipio concreto por ID.
-    """
-
-    municipio = (
-        db.query(Municipio)
-        .filter(
-            Municipio.id == municipio_id
-        )
-        .first()
-    )
-
-    if not municipio:
-
-        raise HTTPException(
-            status_code=404,
-            detail="Municipio no encontrado."
-        )
-
-    return {
-        "id": municipio.id,
-        "ccaa": municipio.ccaa,
-        "provincia": municipio.provincia,
-        "municipio": municipio.municipio,
-    }
-
-
-# ============================================================
-# CREAR MUNICIPIO
-# ============================================================
-
-@router.post("")
+@router.post(
+    "",
+    response_model=MunicipioResponse,
+)
 def crear_municipio(
-    datos: dict,
-    db: Session = Depends(get_db)
+    datos: MunicipioCreate,
+    db: Session = Depends(get_db),
 ):
-    """
-    Crea un municipio manualmente.
 
-    Campos:
+    ccaa =
+        limpiar_texto(
+            datos.ccaa
+        )
 
-        ccaa
-        provincia
-        municipio
-    """
+    provincia =
+        limpiar_texto(
+            datos.provincia
+        )
 
-    ccaa = str(
-        datos.get("ccaa", "")
-    ).strip()
+    municipio_nombre =
+        limpiar_texto(
+            datos.municipio
+        )
 
-    provincia = str(
-        datos.get("provincia", "")
-    ).strip()
-
-    nombre_municipio = str(
-        datos.get("municipio", "")
-    ).strip()
-
-    # --------------------------------------------------------
-    # VALIDACIONES
-    # --------------------------------------------------------
 
     if not ccaa:
+
         raise HTTPException(
             status_code=400,
-            detail="La comunidad autónoma es obligatoria."
+            detail="La comunidad autónoma es obligatoria.",
         )
+
 
     if not provincia:
+
         raise HTTPException(
             status_code=400,
-            detail="La provincia es obligatoria."
+            detail="La provincia es obligatoria.",
         )
 
-    if not nombre_municipio:
+
+    if not municipio_nombre:
+
         raise HTTPException(
             status_code=400,
-            detail="El municipio es obligatorio."
+            detail="El municipio es obligatorio.",
         )
 
-    # --------------------------------------------------------
-    # COMPROBAR DUPLICADO
-    # --------------------------------------------------------
 
     existente = (
         db.query(Municipio)
         .filter(
             Municipio.ccaa == ccaa,
             Municipio.provincia == provincia,
-            Municipio.municipio == nombre_municipio
+            Municipio.municipio == municipio_nombre,
         )
         .first()
     )
+
 
     if existente:
 
         raise HTTPException(
             status_code=409,
-            detail="Ese municipio ya existe."
+            detail=(
+                "Ya existe un municipio con "
+                "la misma comunidad autónoma, "
+                "provincia y municipio."
+            ),
         )
 
-    # --------------------------------------------------------
-    # CREAR
-    # --------------------------------------------------------
 
     nuevo = Municipio(
+
         ccaa=ccaa,
+
         provincia=provincia,
-        municipio=nombre_municipio
+
+        municipio=municipio_nombre,
+
+        activo=True,
     )
+
 
     try:
 
-        db.add(nuevo)
-        db.commit()
-        db.refresh(nuevo)
+        db.add(
+            nuevo
+        )
 
-    except Exception as e:
+        db.commit()
+
+        db.refresh(
+            nuevo
+        )
+
+    except Exception as exc:
 
         db.rollback()
 
         raise HTTPException(
             status_code=500,
-            detail=f"No se pudo crear el municipio: {e}"
+            detail=(
+                f"No se pudo crear el municipio: {exc}"
+            ),
         )
 
-    return {
-        "ok": True,
-        "mensaje": "Municipio creado correctamente.",
-        "municipio": {
-            "id": nuevo.id,
-            "ccaa": nuevo.ccaa,
-            "provincia": nuevo.provincia,
-            "municipio": nuevo.municipio,
-        }
-    }
+
+    return nuevo
 
 
 # ============================================================
-# EDITAR MUNICIPIO
+# PUT /municipios/{municipio_id}
 # ============================================================
 
-@router.put("/{municipio_id}")
-def editar_municipio(
+@router.put(
+    "/{municipio_id}",
+    response_model=MunicipioResponse,
+)
+def actualizar_municipio(
     municipio_id: int,
-    datos: dict,
-    db: Session = Depends(get_db)
+    datos: MunicipioUpdate,
+    db: Session = Depends(get_db),
 ):
-    """
-    Edita un municipio existente.
-    """
 
-    municipio = (
+    municipio_actual =
         db.query(Municipio)
         .filter(
             Municipio.id == municipio_id
         )
         .first()
-    )
 
-    if not municipio:
+
+    if not municipio_actual:
 
         raise HTTPException(
             status_code=404,
-            detail="Municipio no encontrado."
+            detail="Municipio no encontrado.",
         )
 
-    # --------------------------------------------------------
-    # NUEVOS VALORES
-    # --------------------------------------------------------
 
-    ccaa = str(
-        datos.get(
-            "ccaa",
-            municipio.ccaa
+    ccaa =
+        limpiar_texto(
+            datos.ccaa
         )
-    ).strip()
 
-    provincia = str(
-        datos.get(
-            "provincia",
-            municipio.provincia
+    provincia =
+        limpiar_texto(
+            datos.provincia
         )
-    ).strip()
 
-    nombre_municipio = str(
-        datos.get(
-            "municipio",
-            municipio.municipio
+    municipio_nombre =
+        limpiar_texto(
+            datos.municipio
         )
-    ).strip()
 
-    # --------------------------------------------------------
-    # VALIDACIONES
-    # --------------------------------------------------------
 
     if not ccaa:
+
         raise HTTPException(
             status_code=400,
-            detail="La comunidad autónoma es obligatoria."
+            detail="La comunidad autónoma es obligatoria.",
         )
+
 
     if not provincia:
+
         raise HTTPException(
             status_code=400,
-            detail="La provincia es obligatoria."
+            detail="La provincia es obligatoria.",
         )
 
-    if not nombre_municipio:
+
+    if not municipio_nombre:
+
         raise HTTPException(
             status_code=400,
-            detail="El municipio es obligatorio."
+            detail="El municipio es obligatorio.",
         )
 
-    # --------------------------------------------------------
-    # COMPROBAR DUPLICADO
-    # --------------------------------------------------------
 
     duplicado = (
         db.query(Municipio)
         .filter(
             Municipio.ccaa == ccaa,
             Municipio.provincia == provincia,
-            Municipio.municipio == nombre_municipio,
-            Municipio.id != municipio_id
+            Municipio.municipio == municipio_nombre,
+            Municipio.id != municipio_id,
         )
         .first()
     )
+
 
     if duplicado:
 
         raise HTTPException(
             status_code=409,
-            detail="Ya existe otro municipio con esos mismos datos."
+            detail=(
+                "Ya existe otro municipio con "
+                "la misma comunidad autónoma, "
+                "provincia y municipio."
+            ),
         )
 
-    # --------------------------------------------------------
-    # ACTUALIZAR
-    # --------------------------------------------------------
 
-    municipio.ccaa = ccaa
-    municipio.provincia = provincia
-    municipio.municipio = nombre_municipio
+    municipio_actual.ccaa =
+        ccaa
+
+    municipio_actual.provincia =
+        provincia
+
+    municipio_actual.municipio =
+        municipio_nombre
+
+    municipio_actual.activo =
+        True
+
 
     try:
 
         db.commit()
-        db.refresh(municipio)
 
-    except Exception as e:
+        db.refresh(
+            municipio_actual
+        )
+
+    except Exception as exc:
 
         db.rollback()
 
         raise HTTPException(
             status_code=500,
-            detail=f"No se pudo actualizar el municipio: {e}"
+            detail=(
+                f"No se pudo actualizar el municipio: {exc}"
+            ),
         )
 
-    return {
-        "ok": True,
-        "mensaje": "Municipio actualizado correctamente.",
-        "municipio": {
-            "id": municipio.id,
-            "ccaa": municipio.ccaa,
-            "provincia": municipio.provincia,
-            "municipio": municipio.municipio,
-        }
-    }
+
+    return municipio_actual
 
 
 # ============================================================
-# ELIMINAR MUNICIPIO
+# DELETE /municipios/{municipio_id}
 # ============================================================
 
-@router.delete("/{municipio_id}")
+@router.delete(
+    "/{municipio_id}"
+)
 def eliminar_municipio(
     municipio_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    """
-    Elimina un municipio por ID.
-    """
 
-    municipio = (
+    municipio =
         db.query(Municipio)
         .filter(
             Municipio.id == municipio_id
         )
         .first()
-    )
+
 
     if not municipio:
 
         raise HTTPException(
             status_code=404,
-            detail="Municipio no encontrado."
+            detail="Municipio no encontrado.",
         )
+
 
     try:
 
-        db.delete(municipio)
+        # ----------------------------------------------------
+        # BORRADO LÓGICO
+        # ----------------------------------------------------
+
+        municipio.activo = False
+
         db.commit()
 
-    except Exception as e:
+
+    except Exception as exc:
 
         db.rollback()
 
         raise HTTPException(
             status_code=500,
-            detail=f"No se pudo eliminar el municipio: {e}"
+            detail=(
+                f"No se pudo eliminar el municipio: {exc}"
+            ),
         )
+
 
     return {
         "ok": True,
         "mensaje": "Municipio eliminado correctamente.",
-        "id": municipio_id
     }
 
 
 # ============================================================
-# LISTAR COMUNIDADES AUTÓNOMAS
+# POST /municipios/importar-excel
 # ============================================================
 
-@router.get("/catalogos/ccaa")
-def listar_ccaa(
-    db: Session = Depends(get_db)
+@router.post(
+    "/importar-excel"
+)
+async def importar_municipios_excel(
+    fichero: UploadFile = File(...),
+    db: Session = Depends(get_db),
 ):
-    """
-    Devuelve las comunidades autónomas disponibles.
-    """
 
-    resultados = (
-        db.query(Municipio.ccaa)
-        .distinct()
-        .order_by(Municipio.ccaa)
-        .all()
-    )
+    # ========================================================
+    # VALIDAR NOMBRE
+    # ========================================================
 
-    return [
-        fila[0]
-        for fila in resultados
-        if fila[0]
-    ]
+    nombre =
+        (
+            fichero.filename or ""
+        ).lower()
 
 
-# ============================================================
-# LISTAR PROVINCIAS
-# ============================================================
+    if not (
+        nombre.endswith(".xlsx")
+        or nombre.endswith(".xls")
+    ):
 
-@router.get("/catalogos/provincias")
-def listar_provincias(
-    ccaa: str | None = Query(
-        default=None
-    ),
-    db: Session = Depends(get_db)
-):
-    """
-    Devuelve las provincias disponibles.
-
-    Si se proporciona CCAA,
-    devuelve solamente sus provincias.
-    """
-
-    query = db.query(
-        Municipio.provincia
-    )
-
-    if ccaa and ccaa.strip():
-
-        query = query.filter(
-            Municipio.ccaa == ccaa.strip()
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "El archivo debe ser un Excel "
+                "con extensión .xlsx o .xls."
+            ),
         )
 
-    resultados = (
-        query
-        .distinct()
-        .order_by(Municipio.provincia)
-        .all()
-    )
 
-    return [
-        fila[0]
-        for fila in resultados
-        if fila[0]
-    ]
+    # ========================================================
+    # LEER ARCHIVO
+    # ========================================================
+
+    try:
+
+        contenido =
+            await fichero.read()
+
+    except Exception as exc:
+
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"No se pudo leer el archivo: {exc}"
+            ),
+        )
+
+
+    if not contenido:
+
+        raise HTTPException(
+            status_code=400,
+            detail="El archivo Excel está vacío.",
+        )
+
+
+    # ========================================================
+    # IMPORTAR
+    # ========================================================
+
+    try:
+
+        resultado =
+            importar_excel_municipios(
+                contenido,
+                db,
+            )
+
+
+        return resultado
+
+
+    except ValueError as exc:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        )
+
+
+    except Exception as exc:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                f"Error durante la importación: {exc}"
+            ),
+        )
