@@ -1,8 +1,11 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { API_BASE } from "../../api/config";
+import { useState, useEffect, useRef } from "react";
+import api from "../../api/axios";
 import Chart from "chart.js/auto";
 import SelectSJ from "../../components/ui/SelectSJ";
+
+/* ============================================================
+   MESES
+============================================================ */
 
 const MESES = [
   { value: 1, label: "Enero" },
@@ -19,95 +22,181 @@ const MESES = [
   { value: 12, label: "Diciembre" },
 ];
 
+
+/* ============================================================
+   INFORMES
+============================================================ */
+
 export default function Informes() {
+
   const hoy = new Date();
 
-  const [mes, setMes] = useState(hoy.getMonth() + 1);
-  const [año, setAño] = useState(hoy.getFullYear());
+  const [mes, setMes] =
+    useState(hoy.getMonth() + 1);
 
-  const [tabla, setTabla] = useState([]);
-  const [filtroNombre, setFiltroNombre] = useState("");
+  const [año, setAño] =
+    useState(hoy.getFullYear());
 
-  const [orden, setOrden] = useState({
-    campo: "nombre",
-    asc: true,
-  });
+  const [tabla, setTabla] =
+    useState([]);
+
+  const [filtroNombre, setFiltroNombre] =
+    useState("");
+
+  const [orden, setOrden] =
+    useState({
+      campo: "nombre",
+      asc: true,
+    });
+
+  const canvasVC = useRef(null);
+  const canvasPresencial = useRef(null);
+  const canvasKm = useRef(null);
+
+  const chartVC = useRef(null);
+  const chartPresencial = useRef(null);
+  const chartKm = useRef(null);
+
+
+  /* ==========================================================
+     CARGAR DATOS
+  ========================================================== */
 
   useEffect(() => {
+
     cargarTabla();
+
   }, [mes, año]);
 
+
+  /* ==========================================================
+     GRÁFICOS
+  ========================================================== */
+
   useEffect(() => {
+
     renderGraficos();
 
     return () => {
       destruirGraficos();
     };
+
   }, [tabla]);
 
-  // ============================================================
-  // CARGAR DATOS
-  // ============================================================
+
+  /* ==========================================================
+     CARGAR TABLA
+  ========================================================== */
 
   const cargarTabla = async () => {
-    try {
-      const res = await axios.get(
-        `${API_BASE}/informes/apoderados/tabla`,
-        {
-          params: {
-            mes,
-            año,
-          },
-        }
-      );
 
-      const lista = (res.data || []).map((t) => ({
-        ...t,
-        km: t.km ?? t.distancia_km ?? 0,
-      }));
+    try {
+
+      const res =
+        await api.get(
+          "/informes/apoderados/tabla",
+          {
+            params: {
+              mes,
+              año,
+            },
+          }
+        );
+
+
+      const lista =
+        (res.data || []).map((t) => ({
+
+          ...t,
+
+          vc:
+            Number(t.vc ?? 0),
+
+          presencial:
+            Number(t.presencial ?? 0),
+
+          km:
+            Number(
+              t.km ??
+              t.distancia_km ??
+              0
+            ),
+
+        }));
+
 
       setTabla(lista);
-    } catch (err) {
-      console.error("Error cargando informe:", err);
-      setTabla([]);
+
     }
+
+    catch (err) {
+
+      console.error(
+        "Error cargando informe:",
+        err
+      );
+
+      setTabla([]);
+
+    }
+
   };
 
-  // ============================================================
-  // ORDENACIÓN
-  // ============================================================
+
+  /* ==========================================================
+     ORDENACIÓN
+  ========================================================== */
 
   const ordenar = (campo) => {
+
     const asc =
       orden.campo === campo
         ? !orden.asc
         : true;
+
 
     setOrden({
       campo,
       asc,
     });
 
-    const ordenada = [...tabla].sort((a, b) => {
-      if (a[campo] < b[campo]) {
-        return asc ? -1 : 1;
-      }
 
-      if (a[campo] > b[campo]) {
-        return asc ? 1 : -1;
-      }
+    const ordenada =
+      [...tabla].sort((a, b) => {
 
-      return 0;
-    });
+        const valorA =
+          a[campo] ?? "";
+
+        const valorB =
+          b[campo] ?? "";
+
+
+        if (valorA < valorB) {
+          return asc ? -1 : 1;
+        }
+
+
+        if (valorA > valorB) {
+          return asc ? 1 : -1;
+        }
+
+
+        return 0;
+
+      });
+
 
     setTabla(ordenada);
+
   };
 
-  // ============================================================
-  // EXPORTAR EXCEL / CSV
-  // ============================================================
+
+  /* ==========================================================
+     EXPORTAR EXCEL / CSV
+  ========================================================== */
 
   const exportarExcel = () => {
+
     const encabezados = [
       "Apoderado",
       "VC",
@@ -115,170 +204,317 @@ export default function Informes() {
       "Km",
     ];
 
-    const filas = tabla.map((t) => [
-      t.nombre,
-      t.vc,
-      t.presencial,
-      t.km?.toFixed(2) || "0.00",
-    ]);
+
+    const filas =
+      filtrada.map((t) => [
+
+        t.nombre || "Sin nombre",
+
+        t.vc ?? 0,
+
+        t.presencial ?? 0,
+
+        Number(
+          t.km ?? 0
+        ).toFixed(2),
+
+      ]);
+
 
     let contenido =
-      encabezados.join(",") + "\n";
+      encabezados.join(",") +
+      "\n";
 
-    contenido += filas
-      .map((f) => f.join(","))
-      .join("\n");
 
-    const blob = new Blob(
-      [contenido],
-      {
-        type: "text/csv;charset=utf-8;",
-      }
-    );
+    contenido +=
+      filas
+        .map((f) =>
+          f.join(",")
+        )
+        .join("\n");
+
+
+    const blob =
+      new Blob(
+        [contenido],
+        {
+          type:
+            "text/csv;charset=utf-8;",
+        }
+      );
+
 
     const url =
-      URL.createObjectURL(blob);
+      URL.createObjectURL(
+        blob
+      );
+
 
     const link =
-      document.createElement("a");
+      document.createElement(
+        "a"
+      );
+
 
     link.href = url;
+
     link.download =
       `informe_${mes}_${año}.csv`;
 
+
+    document.body.appendChild(
+      link
+    );
+
     link.click();
 
-    URL.revokeObjectURL(url);
+    document.body.removeChild(
+      link
+    );
+
+
+    URL.revokeObjectURL(
+      url
+    );
+
   };
 
-  // ============================================================
-  // EXPORTAR PDF
-  // ============================================================
+
+  /* ==========================================================
+     EXPORTAR PDF
+  ========================================================== */
 
   const exportarPDF = () => {
-    const ventana =
-      window.open("", "_blank");
 
-    if (!ventana) return;
+    const ventana =
+      window.open(
+        "",
+        "_blank"
+      );
+
+
+    if (!ventana) {
+      return;
+    }
+
 
     const totalVC =
       tabla.reduce(
         (acc, t) =>
-          acc + (t.vc || 0),
+          acc +
+          Number(t.vc ?? 0),
         0
       );
+
 
     const totalPres =
       tabla.reduce(
         (acc, t) =>
-          acc + (t.presencial || 0),
+          acc +
+          Number(
+            t.presencial ?? 0
+          ),
         0
       );
+
 
     const totalKm =
       tabla.reduce(
         (acc, t) =>
-          acc + (t.km || 0),
+          acc +
+          Number(t.km ?? 0),
         0
       );
 
-    const filas = tabla
-      .map(
-        (t) => `
-          <tr>
-            <td>${t.nombre}</td>
-            <td>${t.vc}</td>
-            <td>${t.presencial}</td>
-            <td>${t.km ? t.km.toFixed(2) : "0.00"}</td>
-          </tr>
-        `
-      )
-      .join("");
+
+    const filas =
+      filtrada
+        .map(
+          (t) => `
+            <tr>
+              <td>${t.nombre || "Sin nombre"}</td>
+              <td>${t.vc ?? 0}</td>
+              <td>${t.presencial ?? 0}</td>
+              <td>${Number(t.km ?? 0).toFixed(2)}</td>
+            </tr>
+          `
+        )
+        .join("");
+
 
     ventana.document.write(`
+
       <html>
+
         <head>
-          <title>Informe ${mes}/${año}</title>
+
+          <title>
+            Informe ${mes}/${año}
+          </title>
+
 
           <style>
-            body {
-              font-family: 'Segoe UI', Arial, sans-serif;
-              padding: 40px;
-              background: #f7f9fc;
-              color: #1a1a1a;
+
+            * {
+              box-sizing: border-box;
             }
 
-            .logo {
-              width: 140px;
-              margin-bottom: 20px;
+
+            body {
+
+              font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+              padding: 40px;
+
+              background:
+                #f5f7fb;
+
+              color:
+                #172033;
+
             }
+
 
             h1 {
-              font-size: 26px;
-              margin-bottom: 5px;
-              color: #0d1b2a;
+
+              margin:
+                0 0 6px;
+
+              font-size:
+                28px;
+
             }
+
 
             h2 {
-              font-size: 18px;
-              margin-top: 0;
-              color: #415a77;
+
+              margin:
+                0;
+
+              color:
+                #64748b;
+
+              font-size:
+                16px;
+
             }
+
 
             .card {
-              background: white;
-              padding: 25px;
-              border-radius: 12px;
+
+              background:
+                white;
+
+              padding:
+                28px;
+
+              border-radius:
+                16px;
+
               box-shadow:
-                0 4px 20px rgba(0,0,0,0.08);
+                0 8px 30px
+                rgba(
+                  15,
+                  23,
+                  42,
+                  0.08
+                );
+
             }
+
 
             table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 25px;
-              font-size: 14px;
+
+              width:
+                100%;
+
+              border-collapse:
+                collapse;
+
+              margin-top:
+                25px;
+
+              font-size:
+                14px;
+
             }
+
 
             th {
-              background: #e9eef5;
-              padding: 10px;
+
+              background:
+                #eef2f7;
+
+              padding:
+                12px;
+
+              text-align:
+                left;
+
               border-bottom:
-                2px solid #cbd5e1;
-              text-align: left;
-              color: #0d1b2a;
+                2px solid
+                #d7dee9;
+
             }
+
 
             td {
-              padding: 8px;
+
+              padding:
+                10px 12px;
+
               border-bottom:
-                1px solid #e2e8f0;
+                1px solid
+                #e5eaf1;
+
             }
+
 
             tr:nth-child(even) {
-              background: #f8fafc;
+
+              background:
+                #f8fafc;
+
             }
+
 
             .totales {
-              margin-top: 30px;
-              font-size: 15px;
-              font-weight: 600;
-              color: #0d1b2a;
+
+              margin-top:
+                30px;
+
+              padding-top:
+                20px;
+
+              border-top:
+                1px solid
+                #e2e8f0;
+
+              font-weight:
+                600;
+
             }
+
 
             .totales span {
-              display: block;
-              margin-bottom: 6px;
+
+              display:
+                block;
+
+              margin-bottom:
+                6px;
+
             }
+
           </style>
+
         </head>
 
-        <body>
 
-          <img
-            class="logo"
-            src="/logo-sj2026.png"
-          />
+        <body>
 
           <div class="card">
 
@@ -287,38 +523,61 @@ export default function Informes() {
             </h1>
 
             <h2>
-              ${mes}/${año}
+              ${mesActual} ${año}
             </h2>
+
 
             <table>
 
               <thead>
+
                 <tr>
-                  <th>Apoderado</th>
-                  <th>VC</th>
-                  <th>Presencial</th>
-                  <th>Km</th>
+
+                  <th>
+                    Apoderado
+                  </th>
+
+                  <th>
+                    VC
+                  </th>
+
+                  <th>
+                    Presencial
+                  </th>
+
+                  <th>
+                    Km
+                  </th>
+
                 </tr>
+
               </thead>
 
+
               <tbody>
+
                 ${filas}
+
               </tbody>
 
             </table>
 
+
             <div class="totales">
 
               <span>
-                Total VC: ${totalVC}
+                Total VC:
+                ${totalVC}
               </span>
 
               <span>
-                Total Presencial: ${totalPres}
+                Total Presencial:
+                ${totalPres}
               </span>
 
               <span>
-                Total Km: ${totalKm.toFixed(2)}
+                Total Km:
+                ${totalKm.toFixed(2)}
               </span>
 
             </div>
@@ -326,492 +585,778 @@ export default function Informes() {
           </div>
 
         </body>
+
       </html>
+
     `);
 
+
     ventana.document.close();
+
     ventana.print();
+
   };
 
-  // ============================================================
-  // GRÁFICOS
-  // ============================================================
+
+  /* ==========================================================
+     DESTRUIR GRÁFICOS
+  ========================================================== */
 
   const destruirGraficos = () => {
-    [
-      "graficoVC",
-      "graficoP",
-      "graficoKm",
-    ].forEach((id) => {
-      const chart =
-        Chart.getChart(id);
 
-      if (chart) {
-        chart.destroy();
-      }
-    });
-  };
+    if (chartVC.current) {
 
-  const renderGraficos = () => {
-    destruirGraficos();
+      chartVC.current.destroy();
 
-    const ctx1 =
-      document.getElementById(
-        "graficoVC"
-      );
+      chartVC.current = null;
 
-    const ctx2 =
-      document.getElementById(
-        "graficoP"
-      );
-
-    const ctx3 =
-      document.getElementById(
-        "graficoKm"
-      );
-
-    if (
-      !ctx1 ||
-      !ctx2 ||
-      !ctx3
-    ) {
-      return;
     }
 
-    // ----------------------------------------------------------
-    // VC
-    // ----------------------------------------------------------
 
-    new Chart(ctx1, {
-      type: "bar",
+    if (chartPresencial.current) {
 
-      data: {
-        labels: tabla.map(
-          (t) => t.nombre
-        ),
+      chartPresencial.current.destroy();
 
-        datasets: [
-          {
-            label: "VC",
+      chartPresencial.current = null;
 
-            data: tabla.map(
-              (t) => t.vc
-            ),
+    }
 
-            backgroundColor:
-              "rgba(96, 165, 250, 0.75)",
 
-            borderColor:
-              "rgba(147, 197, 253, 1)",
+    if (chartKm.current) {
 
-            borderWidth: 1,
+      chartKm.current.destroy();
 
-            borderRadius: 8,
+      chartKm.current = null;
 
-            maxBarThickness: 42,
-          },
-        ],
-      },
+    }
 
-      options: {
-        responsive: true,
-
-        maintainAspectRatio: false,
-
-        plugins: {
-          legend: {
-            labels: {
-              color: "#ffffff",
-            },
-          },
-        },
-
-        scales: {
-          x: {
-            ticks: {
-              color:
-                "rgba(255,255,255,0.65)",
-            },
-
-            grid: {
-              color:
-                "rgba(255,255,255,0.06)",
-            },
-          },
-
-          y: {
-            beginAtZero: true,
-
-            ticks: {
-              color:
-                "rgba(255,255,255,0.65)",
-            },
-
-            grid: {
-              color:
-                "rgba(255,255,255,0.06)",
-            },
-          },
-        },
-      },
-    });
-
-    // ----------------------------------------------------------
-    // PRESENCIAL
-    // ----------------------------------------------------------
-
-    new Chart(ctx2, {
-      type: "bar",
-
-      data: {
-        labels: tabla.map(
-          (t) => t.nombre
-        ),
-
-        datasets: [
-          {
-            label: "Presencial",
-
-            data: tabla.map(
-              (t) => t.presencial
-            ),
-
-            backgroundColor:
-              "rgba(52, 211, 153, 0.75)",
-
-            borderColor:
-              "rgba(110, 231, 183, 1)",
-
-            borderWidth: 1,
-
-            borderRadius: 8,
-
-            maxBarThickness: 42,
-          },
-        ],
-      },
-
-      options: {
-        responsive: true,
-
-        maintainAspectRatio: false,
-
-        plugins: {
-          legend: {
-            labels: {
-              color: "#ffffff",
-            },
-          },
-        },
-
-        scales: {
-          x: {
-            ticks: {
-              color:
-                "rgba(255,255,255,0.65)",
-            },
-
-            grid: {
-              color:
-                "rgba(255,255,255,0.06)",
-            },
-          },
-
-          y: {
-            beginAtZero: true,
-
-            ticks: {
-              color:
-                "rgba(255,255,255,0.65)",
-            },
-
-            grid: {
-              color:
-                "rgba(255,255,255,0.06)",
-            },
-          },
-        },
-      },
-    });
-
-    // ----------------------------------------------------------
-    // KM
-    // ----------------------------------------------------------
-
-    new Chart(ctx3, {
-      type: "line",
-
-      data: {
-        labels: tabla.map(
-          (t) => t.nombre
-        ),
-
-        datasets: [
-          {
-            label: "Km",
-
-            data: tabla.map(
-              (t) => t.km || 0
-            ),
-
-            borderColor:
-              "#f87171",
-
-            backgroundColor:
-              "rgba(248,113,113,0.15)",
-
-            borderWidth: 3,
-
-            tension: 0.35,
-
-            fill: true,
-
-            pointRadius: 4,
-
-            pointHoverRadius: 6,
-          },
-        ],
-      },
-
-      options: {
-        responsive: true,
-
-        maintainAspectRatio: false,
-
-        plugins: {
-          legend: {
-            labels: {
-              color: "#ffffff",
-            },
-          },
-        },
-
-        scales: {
-          x: {
-            ticks: {
-              color:
-                "rgba(255,255,255,0.65)",
-            },
-
-            grid: {
-              color:
-                "rgba(255,255,255,0.06)",
-            },
-          },
-
-          y: {
-            beginAtZero: true,
-
-            ticks: {
-              color:
-                "rgba(255,255,255,0.65)",
-            },
-
-            grid: {
-              color:
-                "rgba(255,255,255,0.06)",
-            },
-          },
-        },
-      },
-    });
   };
 
-  // ============================================================
-  // FILTRO
-  // ============================================================
 
-  const filtrada = tabla.filter((t) =>
-    String(t.nombre || "")
-      .toLowerCase()
-      .includes(
-        filtroNombre.toLowerCase()
+  /* ==========================================================
+     GRÁFICOS
+  ========================================================== */
+
+  const renderGraficos = () => {
+
+    destruirGraficos();
+
+
+    if (
+      !canvasVC.current ||
+      !canvasPresencial.current ||
+      !canvasKm.current
+    ) {
+
+      return;
+
+    }
+
+
+    const nombres =
+      tabla.map(
+        (t) =>
+          t.nombre ||
+          "Sin nombre"
+      );
+
+
+    /* --------------------------------------------------------
+       VC
+    -------------------------------------------------------- */
+
+    chartVC.current =
+      new Chart(
+        canvasVC.current,
+        {
+
+          type: "bar",
+
+          data: {
+
+            labels:
+              nombres,
+
+            datasets: [
+
+              {
+
+                label:
+                  "Videoconferencias",
+
+                data:
+                  tabla.map(
+                    (t) =>
+                      Number(
+                        t.vc ?? 0
+                      )
+                  ),
+
+                backgroundColor:
+                  "rgba(96,165,250,0.80)",
+
+                borderColor:
+                  "#60a5fa",
+
+                borderWidth:
+                  1,
+
+                borderRadius:
+                  8,
+
+                maxBarThickness:
+                  44,
+
+              },
+
+            ],
+
+          },
+
+
+          options: {
+
+            responsive:
+              true,
+
+            maintainAspectRatio:
+              false,
+
+            plugins: {
+
+              legend: {
+
+                labels: {
+
+                  color:
+                    "#e2e8f0",
+
+                },
+
+              },
+
+            },
+
+
+            scales: {
+
+              x: {
+
+                ticks: {
+
+                  color:
+                    "#cbd5e1",
+
+                  maxRotation:
+                    35,
+
+                  minRotation:
+                    0,
+
+                },
+
+                grid: {
+
+                  color:
+                    "rgba(148,163,184,0.10)",
+
+                },
+
+              },
+
+
+              y: {
+
+                beginAtZero:
+                  true,
+
+                ticks: {
+
+                  color:
+                    "#cbd5e1",
+
+                  precision:
+                    0,
+
+                },
+
+                grid: {
+
+                  color:
+                    "rgba(148,163,184,0.10)",
+
+                },
+
+              },
+
+            },
+
+          },
+
+        }
+      );
+
+
+    /* --------------------------------------------------------
+       PRESENCIAL
+    -------------------------------------------------------- */
+
+    chartPresencial.current =
+      new Chart(
+        canvasPresencial.current,
+        {
+
+          type: "bar",
+
+          data: {
+
+            labels:
+              nombres,
+
+            datasets: [
+
+              {
+
+                label:
+                  "Presencial",
+
+                data:
+                  tabla.map(
+                    (t) =>
+                      Number(
+                        t.presencial ?? 0
+                      )
+                  ),
+
+                backgroundColor:
+                  "rgba(52,211,153,0.80)",
+
+                borderColor:
+                  "#34d399",
+
+                borderWidth:
+                  1,
+
+                borderRadius:
+                  8,
+
+                maxBarThickness:
+                  44,
+
+              },
+
+            ],
+
+          },
+
+
+          options: {
+
+            responsive:
+              true,
+
+            maintainAspectRatio:
+              false,
+
+            plugins: {
+
+              legend: {
+
+                labels: {
+
+                  color:
+                    "#e2e8f0",
+
+                },
+
+              },
+
+            },
+
+
+            scales: {
+
+              x: {
+
+                ticks: {
+
+                  color:
+                    "#cbd5e1",
+
+                  maxRotation:
+                    35,
+
+                },
+
+                grid: {
+
+                  color:
+                    "rgba(148,163,184,0.10)",
+
+                },
+
+              },
+
+
+              y: {
+
+                beginAtZero:
+                  true,
+
+                ticks: {
+
+                  color:
+                    "#cbd5e1",
+
+                  precision:
+                    0,
+
+                },
+
+                grid: {
+
+                  color:
+                    "rgba(148,163,184,0.10)",
+
+                },
+
+              },
+
+            },
+
+          },
+
+        }
+      );
+
+
+    /* --------------------------------------------------------
+       KM
+    -------------------------------------------------------- */
+
+    chartKm.current =
+      new Chart(
+        canvasKm.current,
+        {
+
+          type: "line",
+
+          data: {
+
+            labels:
+              nombres,
+
+            datasets: [
+
+              {
+
+                label:
+                  "Kilómetros",
+
+                data:
+                  tabla.map(
+                    (t) =>
+                      Number(
+                        t.km ?? 0
+                      )
+                  ),
+
+                borderColor:
+                  "#fb7185",
+
+                backgroundColor:
+                  "rgba(251,113,133,0.16)",
+
+                borderWidth:
+                  3,
+
+                tension:
+                  0.35,
+
+                fill:
+                  true,
+
+                pointRadius:
+                  4,
+
+                pointHoverRadius:
+                  6,
+
+                pointBackgroundColor:
+                  "#fb7185",
+
+                pointBorderColor:
+                  "#ffe4e6",
+
+              },
+
+            ],
+
+          },
+
+
+          options: {
+
+            responsive:
+              true,
+
+            maintainAspectRatio:
+              false,
+
+            plugins: {
+
+              legend: {
+
+                labels: {
+
+                  color:
+                    "#e2e8f0",
+
+                },
+
+              },
+
+            },
+
+
+            scales: {
+
+              x: {
+
+                ticks: {
+
+                  color:
+                    "#cbd5e1",
+
+                  maxRotation:
+                    35,
+
+                },
+
+                grid: {
+
+                  color:
+                    "rgba(148,163,184,0.10)",
+
+                },
+
+              },
+
+
+              y: {
+
+                beginAtZero:
+                  true,
+
+                ticks: {
+
+                  color:
+                    "#cbd5e1",
+
+                },
+
+                grid: {
+
+                  color:
+                    "rgba(148,163,184,0.10)",
+
+                },
+
+              },
+
+            },
+
+          },
+
+        }
+      );
+
+  };
+
+
+  /* ==========================================================
+     FILTRO
+  ========================================================== */
+
+  const filtrada =
+    tabla.filter((t) =>
+
+      String(
+        t.nombre || ""
       )
-  );
+        .toLowerCase()
+        .includes(
+          filtroNombre
+            .toLowerCase()
+        )
 
-  // ============================================================
-  // TOTALES
-  // ============================================================
+    );
+
+
+  /* ==========================================================
+     TOTALES
+  ========================================================== */
 
   const totalVC =
     tabla.reduce(
       (acc, t) =>
-        acc + (t.vc || 0),
+        acc +
+        Number(
+          t.vc ?? 0
+        ),
       0
     );
+
 
   const totalPresencial =
     tabla.reduce(
       (acc, t) =>
-        acc + (t.presencial || 0),
+        acc +
+        Number(
+          t.presencial ?? 0
+        ),
       0
     );
+
 
   const totalKm =
     tabla.reduce(
       (acc, t) =>
-        acc + (t.km || 0),
+        acc +
+        Number(
+          t.km ?? 0
+        ),
       0
     );
 
+
   const mediaCitas =
     tabla.length > 0
-      ? (totalVC + totalPresencial) /
+      ? (
+          totalVC +
+          totalPresencial
+        ) /
         tabla.length
       : 0;
 
+
   const mediaKm =
     tabla.length > 0
-      ? totalKm / tabla.length
+      ? totalKm /
+        tabla.length
       : 0;
+
 
   const mesActual =
     MESES.find(
-      (m) => m.value === mes
+      (m) =>
+        m.value === mes
     )?.label || "";
 
-  // ============================================================
-  // RENDER
-  // ============================================================
+
+  /* ==========================================================
+     RENDER
+  ========================================================== */
 
   return (
-    <div className="p-6 space-y-6 animate-fade-in">
+
+    <div
+      className="
+        min-h-full
+        w-full
+        rounded-3xl
+        bg-gradient-to-br
+        from-slate-950
+        via-slate-900
+        to-slate-950
+        text-slate-100
+        p-4
+        md:p-6
+        space-y-6
+        overflow-x-hidden
+      "
+    >
+
 
       {/* ======================================================
           CABECERA
       ====================================================== */}
 
-      <div
+      <section
         className="
-          relative overflow-hidden
-          bg-white/10
-          backdrop-blur-xl
-          border border-white/20
-          rounded-2xl
+          relative
+          overflow-hidden
+          rounded-3xl
+          border
+          border-white/10
+          bg-slate-900/80
+          shadow-2xl
+          shadow-black/30
           p-6
-          shadow-xl
+          md:p-7
         "
       >
 
         <div
           className="
             absolute
-            -top-20
-            -right-20
-            w-48
-            h-48
-            bg-blue-500/10
+            -top-24
+            -right-24
+            h-64
+            w-64
             rounded-full
+            bg-blue-500/10
             blur-3xl
             pointer-events-none
           "
         />
+
 
         <div
           className="
             absolute
-            -bottom-20
-            -left-20
-            w-48
-            h-48
-            bg-purple-500/10
+            -bottom-24
+            -left-24
+            h-64
+            w-64
             rounded-full
+            bg-purple-500/10
             blur-3xl
             pointer-events-none
           "
         />
 
-        <div className="relative">
 
-          <div className="flex items-center gap-3">
+        <div
+          className="
+            relative
+            flex
+            flex-col
+            md:flex-row
+            md:items-center
+            md:justify-between
+            gap-5
+          "
+        >
+
+          <div>
 
             <div
               className="
-                w-11 h-11
-                rounded-xl
-                bg-blue-500/20
-                border border-blue-400/30
-                flex items-center justify-center
-                shadow-lg
+                flex
+                items-center
+                gap-4
               "
             >
-              📊
-            </div>
 
-            <div>
-
-              <h1
+              <div
                 className="
-                  text-3xl
-                  font-bold
-                  text-white
-                  drop-shadow
+                  w-12
+                  h-12
+                  rounded-2xl
+                  bg-blue-500/15
+                  border border-blue-400/20
+                  flex
+                  items-center
+                  justify-center
+                  text-2xl
+                  shadow-lg
                 "
               >
-                Informes de Apoderados
-              </h1>
+                📊
+              </div>
 
-              <p
-                className="
-                  text-white/60
-                  text-sm
-                  mt-1
-                "
-              >
-                Estadísticas de actividad,
-                presencialidad y desplazamientos.
-              </p>
+
+              <div>
+
+                <h1
+                  className="
+                    text-2xl
+                    md:text-3xl
+                    font-bold
+                    text-white
+                    tracking-tight
+                  "
+                >
+                  Informes de Apoderados
+                </h1>
+
+
+                <p
+                  className="
+                    mt-1
+                    text-sm
+                    text-slate-400
+                  "
+                >
+                  Estadísticas de actividad,
+                  presencialidad y desplazamientos.
+                </p>
+
+              </div>
 
             </div>
 
-          </div>
 
-          <div
-            className="
-              mt-4
-              inline-flex
-              items-center
-              gap-2
-              px-3
-              py-1.5
-              rounded-full
-              bg-white/5
-              border border-white/10
-              text-white/70
-              text-xs
-            "
-          >
-            <span
+            <div
               className="
-                w-2
-                h-2
+                mt-5
+                inline-flex
+                items-center
+                gap-2
                 rounded-full
-                bg-blue-400
+                border border-white/10
+                bg-white/[0.04]
+                px-3
+                py-1.5
+                text-xs
+                text-slate-400
               "
-            />
+            >
 
-            Periodo:
-            <strong className="text-white">
-              {mesActual} {año}
-            </strong>
+              <span
+                className="
+                  h-2
+                  w-2
+                  rounded-full
+                  bg-blue-400
+                  shadow-[0_0_10px_rgba(96,165,250,0.8)]
+                "
+              />
+
+              Periodo:
+
+              <strong
+                className="
+                  font-semibold
+                  text-slate-200
+                "
+              >
+                {mesActual} {año}
+              </strong>
+
+            </div>
+
           </div>
 
         </div>
-      </div>
+
+      </section>
 
 
       {/* ======================================================
           FILTROS
       ====================================================== */}
 
-      <div
+      <section
         className="
-          bg-white/10
-          backdrop-blur-xl
-          border border-white/20
-          rounded-2xl
-          p-6
+          rounded-3xl
+          border border-white/10
+          bg-slate-900/80
           shadow-xl
+          shadow-black/20
+          p-5
+          md:p-6
         "
       >
 
@@ -819,19 +1364,27 @@ export default function Informes() {
           className="
             flex
             items-center
-            gap-2
+            gap-3
             mb-5
           "
         >
 
-          <span
+          <div
             className="
+              h-9
+              w-9
+              rounded-xl
+              bg-blue-500/10
+              border border-blue-400/20
+              flex
+              items-center
+              justify-center
               text-blue-300
-              text-lg
             "
           >
             ⚙
-          </span>
+          </div>
+
 
           <div>
 
@@ -845,10 +1398,11 @@ export default function Informes() {
               Filtros del informe
             </h2>
 
+
             <p
               className="
                 text-xs
-                text-white/50
+                text-slate-500
               "
             >
               Selecciona el periodo y filtra los resultados.
@@ -864,7 +1418,7 @@ export default function Informes() {
             grid
             grid-cols-1
             md:grid-cols-12
-            gap-5
+            gap-4
             items-end
           "
         >
@@ -874,28 +1428,30 @@ export default function Informes() {
           <div
             className="
               md:col-span-3
-              flex
-              flex-col
             "
           >
 
             <label
               className="
-                text-white/70
-                text-xs
-                font-medium
-                uppercase
-                tracking-wide
+                block
                 mb-2
+                text-[11px]
+                font-semibold
+                uppercase
+                tracking-wider
+                text-slate-400
               "
             >
               Mes
             </label>
 
+
             <SelectSJ
               value={mes}
               onChange={(v) =>
-                setMes(Number(v))
+                setMes(
+                  Number(v)
+                )
               }
               options={MESES}
               placeholder="Mes"
@@ -909,40 +1465,40 @@ export default function Informes() {
           <div
             className="
               md:col-span-2
-              flex
-              flex-col
             "
           >
 
             <label
               className="
-                text-white/70
-                text-xs
-                font-medium
-                uppercase
-                tracking-wide
+                block
                 mb-2
+                text-[11px]
+                font-semibold
+                uppercase
+                tracking-wider
+                text-slate-400
               "
             >
               Año
             </label>
 
+
             <input
               type="number"
               className="
                 w-full
-                bg-white/10
-                border border-white/20
                 rounded-xl
-                px-3
-                py-2.5
-                text-white
+                border border-white/10
+                bg-slate-800/80
+                px-4
+                py-3
+                text-slate-100
                 outline-none
                 transition
-                focus:border-blue-400/60
+                placeholder:text-slate-600
+                focus:border-blue-400/50
                 focus:ring-2
-                focus:ring-blue-400/20
-                hover:bg-white/15
+                focus:ring-blue-500/10
               "
               value={año}
               onChange={(e) =>
@@ -962,56 +1518,60 @@ export default function Informes() {
           <div
             className="
               md:col-span-7
-              flex
-              flex-col
             "
           >
 
             <label
               className="
-                text-white/70
-                text-xs
-                font-medium
-                uppercase
-                tracking-wide
+                block
                 mb-2
+                text-[11px]
+                font-semibold
+                uppercase
+                tracking-wider
+                text-slate-400
               "
             >
               Buscar apoderado
             </label>
 
-            <div className="relative">
+
+            <div
+              className="
+                relative
+              "
+            >
 
               <span
                 className="
                   absolute
-                  left-3
+                  left-4
                   top-1/2
                   -translate-y-1/2
-                  text-white/40
+                  text-slate-500
                 "
               >
                 🔎
               </span>
 
+
               <input
                 type="text"
                 className="
                   w-full
-                  bg-white/10
-                  border border-white/20
                   rounded-xl
-                  pl-10
+                  border border-white/10
+                  bg-slate-800/80
+                  pl-11
                   pr-4
-                  py-2.5
-                  text-white
-                  placeholder-white/35
+                  py-3
+                  text-slate-100
                   outline-none
                   transition
-                  focus:border-blue-400/60
+                  placeholder:text-slate-500
+                  focus:border-blue-400/50
                   focus:ring-2
-                  focus:ring-blue-400/20
-                  hover:bg-white/15
+                  focus:ring-blue-500/10
                 "
                 placeholder="Buscar por nombre..."
                 value={filtroNombre}
@@ -1028,11 +1588,11 @@ export default function Informes() {
 
         </div>
 
-      </div>
+      </section>
 
 
       {/* ======================================================
-          KPIs
+          KPIS
       ====================================================== */}
 
       <div
@@ -1053,6 +1613,7 @@ export default function Informes() {
           clase="blue"
         />
 
+
         <KpiCard
           icon="👤"
           titulo="Total Presencial"
@@ -1060,6 +1621,7 @@ export default function Informes() {
           subtitulo="Citas presenciales"
           clase="green"
         />
+
 
         <KpiCard
           icon="🚗"
@@ -1069,6 +1631,7 @@ export default function Informes() {
           clase="red"
         />
 
+
         <KpiCard
           icon="📈"
           titulo="Media Citas"
@@ -1076,6 +1639,7 @@ export default function Informes() {
           subtitulo="Por apoderado"
           clase="purple"
         />
+
 
         <KpiCard
           icon="📍"
@@ -1092,18 +1656,19 @@ export default function Informes() {
           EXPORTACIONES
       ====================================================== */}
 
-      <div
+      <section
         className="
+          rounded-2xl
+          border border-white/10
+          bg-slate-900/60
+          px-5
+          py-4
           flex
           flex-col
           sm:flex-row
           sm:items-center
-          justify-between
+          sm:justify-between
           gap-4
-          bg-white/5
-          border border-white/10
-          rounded-2xl
-          p-4
         "
       >
 
@@ -1111,18 +1676,19 @@ export default function Informes() {
 
           <div
             className="
-              text-white
               font-semibold
               text-sm
+              text-slate-200
             "
           >
             Exportar informe
           </div>
 
+
           <div
             className="
-              text-white/45
               text-xs
+              text-slate-500
               mt-1
             "
           >
@@ -1130,6 +1696,7 @@ export default function Informes() {
           </div>
 
         </div>
+
 
         <div
           className="
@@ -1140,82 +1707,92 @@ export default function Informes() {
         >
 
           <button
+            type="button"
             onClick={exportarExcel}
             className="
+              inline-flex
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              border border-emerald-400/20
+              bg-emerald-500/80
               px-4
               py-2.5
-              rounded-xl
-              bg-green-600/80
-              hover:bg-green-500
-              border border-green-400/30
-              text-white
               text-sm
-              font-medium
+              font-semibold
+              text-white
               shadow-lg
+              shadow-emerald-950/20
               transition
-              active:scale-[0.97]
-              flex
-              items-center
-              gap-2
+              hover:bg-emerald-500
+              active:scale-[0.98]
             "
           >
-            <span>📗</span>
+            📗
             Exportar Excel
           </button>
 
+
           <button
+            type="button"
             onClick={exportarPDF}
             className="
+              inline-flex
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              border border-red-400/20
+              bg-red-500/80
               px-4
               py-2.5
-              rounded-xl
-              bg-red-600/80
-              hover:bg-red-500
-              border border-red-400/30
-              text-white
               text-sm
-              font-medium
+              font-semibold
+              text-white
               shadow-lg
+              shadow-red-950/20
               transition
-              active:scale-[0.97]
-              flex
-              items-center
-              gap-2
+              hover:bg-red-500
+              active:scale-[0.98]
             "
           >
-            <span>📄</span>
+            📄
             Exportar PDF
           </button>
 
         </div>
 
-      </div>
+      </section>
 
 
       {/* ======================================================
           TABLA
       ====================================================== */}
 
-      <div
+      <section
         className="
-          bg-white/10
-          backdrop-blur-xl
-          border border-white/20
-          rounded-2xl
-          shadow-xl
           overflow-hidden
+          rounded-3xl
+          border border-white/10
+          bg-slate-900/80
+          shadow-xl
+          shadow-black/20
         "
       >
 
         <div
           className="
-            px-6
-            py-4
+            px-5
+            md:px-6
+            py-5
             border-b border-white/10
             flex
-            items-center
-            justify-between
-            gap-4
+            flex-col
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+            gap-3
           "
         >
 
@@ -1231,10 +1808,11 @@ export default function Informes() {
               Detalle por apoderado
             </h2>
 
+
             <p
               className="
                 text-xs
-                text-white/50
+                text-slate-500
                 mt-1
               "
             >
@@ -1243,15 +1821,18 @@ export default function Informes() {
 
           </div>
 
+
           <div
             className="
+              inline-flex
+              w-fit
+              rounded-lg
+              border border-white/10
+              bg-slate-800/70
               px-3
               py-1.5
-              rounded-lg
-              bg-white/5
-              border border-white/10
               text-xs
-              text-white/60
+              text-slate-400
             "
           >
             {mesActual} {año}
@@ -1260,24 +1841,29 @@ export default function Informes() {
         </div>
 
 
-        <div className="overflow-x-auto">
+        <div
+          className="
+            overflow-x-auto
+          "
+        >
 
           <table
             className="
               w-full
-              text-white
+              min-w-[700px]
               text-sm
             "
           >
 
-            <thead
-              className="
-                bg-white/10
-                border-b border-white/15
-              "
-            >
+            <thead>
 
-              <tr>
+              <tr
+                className="
+                  border-b
+                  border-white/10
+                  bg-slate-800/70
+                "
+              >
 
                 <ThOrden
                   titulo="Apoderado"
@@ -1287,6 +1873,7 @@ export default function Informes() {
                   align="left"
                 />
 
+
                 <ThOrden
                   titulo="VC"
                   campo="vc"
@@ -1295,6 +1882,7 @@ export default function Informes() {
                   align="center"
                 />
 
+
                 <ThOrden
                   titulo="Presencial"
                   campo="presencial"
@@ -1302,6 +1890,7 @@ export default function Informes() {
                   ordenar={ordenar}
                   align="center"
                 />
+
 
                 <ThOrden
                   titulo="Km Presenciales"
@@ -1325,20 +1914,25 @@ export default function Informes() {
                   <td
                     colSpan={4}
                     className="
-                      py-12
+                      py-14
                       text-center
-                      text-white/45
                     "
                   >
 
-                    <div className="text-3xl mb-2">
+                    <div
+                      className="
+                        text-4xl
+                        mb-3
+                      "
+                    >
                       📭
                     </div>
+
 
                     <div
                       className="
                         text-sm
-                        text-white/60
+                        text-slate-400
                       "
                     >
                       No hay datos para los filtros seleccionados.
@@ -1350,156 +1944,145 @@ export default function Informes() {
 
               ) : (
 
-                filtrada.map((row, index) => (
+                filtrada.map(
+                  (row, index) => (
 
-                  <tr
-                    key={row.apoderado_id}
-                    className="
-                      border-b border-white/10
-                      hover:bg-white/[0.07]
-                      transition
-                      group
-                    "
-                  >
-
-                    <td
+                    <tr
+                      key={
+                        row.apoderado_id ??
+                        `${row.nombre}-${index}`
+                      }
                       className="
-                        py-3.5
-                        px-6
-                        text-left
+                        border-b
+                        border-white/[0.06]
+                        text-slate-200
+                        transition
+                        hover:bg-white/[0.035]
                       "
                     >
 
-                      <div
+                      {/* APODERADO */}
+
+                      <td
                         className="
-                          flex
-                          items-center
-                          gap-3
+                          px-5
+                          md:px-6
+                          py-4
+                          text-left
                         "
                       >
 
                         <div
                           className="
-                            w-8
-                            h-8
-                            rounded-lg
-                            bg-white/10
-                            border border-white/10
                             flex
                             items-center
-                            justify-center
-                            text-xs
-                            text-white/60
-                            group-hover:bg-blue-500/20
-                            group-hover:text-blue-200
-                            transition
+                            gap-3
                           "
                         >
-                          {index + 1}
+
+                          <div
+                            className="
+                              h-9
+                              w-9
+                              shrink-0
+                              rounded-xl
+                              bg-slate-800
+                              border border-white/10
+                              flex
+                              items-center
+                              justify-center
+                              text-xs
+                              font-semibold
+                              text-slate-400
+                            "
+                          >
+                            {index + 1}
+                          </div>
+
+
+                          <span
+                            className="
+                              font-medium
+                              text-slate-200
+                            "
+                          >
+                            {row.nombre ||
+                              "Sin nombre"}
+                          </span>
+
                         </div>
 
-                        <span
-                          className="
-                            font-medium
-                            text-white
-                          "
-                        >
-                          {row.nombre}
-                        </span>
-
-                      </div>
-
-                    </td>
+                      </td>
 
 
-                    <td
-                      className="
-                        py-3.5
-                        px-6
-                        text-center
-                      "
-                    >
+                      {/* VC */}
 
-                      <span
+                      <td
                         className="
-                          inline-flex
-                          min-w-[42px]
-                          justify-center
-                          px-2.5
-                          py-1
-                          rounded-lg
-                          bg-blue-500/15
-                          border border-blue-400/20
-                          text-blue-200
-                          font-semibold
+                          px-5
+                          md:px-6
+                          py-4
+                          text-center
                         "
                       >
-                        {row.vc}
-                      </span>
 
-                    </td>
+                        <Badge
+                          value={
+                            row.vc ?? 0
+                          }
+                          clase="blue"
+                        />
+
+                      </td>
 
 
-                    <td
-                      className="
-                        py-3.5
-                        px-6
-                        text-center
-                      "
-                    >
+                      {/* PRESENCIAL */}
 
-                      <span
+                      <td
                         className="
-                          inline-flex
-                          min-w-[42px]
-                          justify-center
-                          px-2.5
-                          py-1
-                          rounded-lg
-                          bg-green-500/15
-                          border border-green-400/20
-                          text-green-200
-                          font-semibold
+                          px-5
+                          md:px-6
+                          py-4
+                          text-center
                         "
                       >
-                        {row.presencial}
-                      </span>
 
-                    </td>
+                        <Badge
+                          value={
+                            row.presencial ?? 0
+                          }
+                          clase="green"
+                        />
+
+                      </td>
 
 
-                    <td
-                      className="
-                        py-3.5
-                        px-6
-                        text-center
-                      "
-                    >
+                      {/* KM */}
 
-                      <span
+                      <td
                         className="
-                          inline-flex
-                          min-w-[60px]
-                          justify-center
-                          px-2.5
-                          py-1
-                          rounded-lg
-                          bg-red-500/10
-                          border border-red-400/20
-                          text-red-200
-                          font-semibold
+                          px-5
+                          md:px-6
+                          py-4
+                          text-center
                         "
                       >
-                        {row.km
-                          ? row.km.toFixed(1)
-                          : "0.0"}
-                      </span>
 
-                    </td>
+                        <Badge
+                          value={
+                            Number(
+                              row.km ?? 0
+                            ).toFixed(1)
+                          }
+                          clase="red"
+                        />
 
-                  </tr>
+                      </td>
 
-                ))
+                    </tr>
+
+                  )
+                )
 
               )}
 
@@ -1509,16 +2092,20 @@ export default function Informes() {
 
         </div>
 
-      </div>
+      </section>
 
 
       {/* ======================================================
           GRÁFICOS
       ====================================================== */}
 
-      <div>
+      <section>
 
-        <div className="mb-4">
+        <div
+          className="
+            mb-4
+          "
+        >
 
           <h2
             className="
@@ -1530,11 +2117,12 @@ export default function Informes() {
             Análisis gráfico
           </h2>
 
+
           <p
             className="
-              text-sm
-              text-white/50
               mt-1
+              text-sm
+              text-slate-500
             "
           >
             Comparativa visual de la actividad del periodo.
@@ -1557,9 +2145,11 @@ export default function Informes() {
             descripcion="VC por apoderado"
             icono="💻"
           >
+
             <canvas
-              id="graficoVC"
+              ref={canvasVC}
             />
+
           </GraficoCard>
 
 
@@ -1568,9 +2158,11 @@ export default function Informes() {
             descripcion="Citas presenciales por apoderado"
             icono="👤"
           >
+
             <canvas
-              id="graficoP"
+              ref={canvasPresencial}
             />
+
           </GraficoCard>
 
 
@@ -1579,23 +2171,26 @@ export default function Informes() {
             descripcion="Kilómetros presenciales"
             icono="🚗"
           >
+
             <canvas
-              id="graficoKm"
+              ref={canvasKm}
             />
+
           </GraficoCard>
 
         </div>
 
-      </div>
+      </section>
 
     </div>
+
   );
 }
 
 
-// ============================================================
-// COMPONENTE KPI
-// ============================================================
+/* ============================================================
+   KPI
+============================================================ */
 
 function KpiCard({
   icon,
@@ -1604,29 +2199,39 @@ function KpiCard({
   subtitulo,
   clase,
 }) {
+
   const fondos = {
+
     blue:
-      "bg-blue-500/10 border-blue-400/20",
+      "bg-blue-500/[0.08] border-blue-400/20",
+
     green:
-      "bg-green-500/10 border-green-400/20",
+      "bg-emerald-500/[0.08] border-emerald-400/20",
+
     red:
-      "bg-red-500/10 border-red-400/20",
+      "bg-rose-500/[0.08] border-rose-400/20",
+
     purple:
-      "bg-purple-500/10 border-purple-400/20",
+      "bg-purple-500/[0.08] border-purple-400/20",
+
     orange:
-      "bg-orange-500/10 border-orange-400/20",
+      "bg-orange-500/[0.08] border-orange-400/20",
+
   };
 
+
   return (
+
     <div
       className={`
         relative
         overflow-hidden
         rounded-2xl
         border
-        backdrop-blur-xl
         p-5
+        bg-slate-900/80
         shadow-lg
+        shadow-black/10
         transition
         hover:-translate-y-0.5
         hover:shadow-xl
@@ -1637,7 +2242,7 @@ function KpiCard({
       <div
         className="
           flex
-          items-center
+          items-start
           justify-between
           gap-3
         "
@@ -1647,32 +2252,35 @@ function KpiCard({
 
           <p
             className="
-              text-xs
+              text-[11px]
               uppercase
-              tracking-wide
-              text-white/50
-              font-medium
+              tracking-wider
+              font-semibold
+              text-slate-400
             "
           >
             {titulo}
           </p>
 
+
           <div
             className="
+              mt-2
               text-3xl
               font-bold
+              tracking-tight
               text-white
-              mt-2
             "
           >
             {valor}
           </div>
 
+
           <p
             className="
-              text-xs
-              text-white/40
               mt-1
+              text-xs
+              text-slate-500
             "
           >
             {subtitulo}
@@ -1683,16 +2291,16 @@ function KpiCard({
 
         <div
           className="
-            w-11
-            h-11
-            rounded-xl
-            bg-white/10
-            border border-white/10
             flex
+            h-11
+            w-11
+            shrink-0
             items-center
             justify-center
+            rounded-xl
+            bg-slate-800/80
+            border border-white/10
             text-xl
-            shadow-inner
           "
         >
           {icon}
@@ -1701,13 +2309,59 @@ function KpiCard({
       </div>
 
     </div>
+
   );
 }
 
 
-// ============================================================
-// CABECERA TABLA
-// ============================================================
+/* ============================================================
+   BADGE
+============================================================ */
+
+function Badge({
+  value,
+  clase,
+}) {
+
+  const estilos = {
+
+    blue:
+      "bg-blue-500/10 border-blue-400/20 text-blue-300",
+
+    green:
+      "bg-emerald-500/10 border-emerald-400/20 text-emerald-300",
+
+    red:
+      "bg-rose-500/10 border-rose-400/20 text-rose-300",
+
+  };
+
+
+  return (
+
+    <span
+      className={`
+        inline-flex
+        min-w-[48px]
+        justify-center
+        rounded-lg
+        border
+        px-3
+        py-1.5
+        font-semibold
+        ${estilos[clase]}
+      `}
+    >
+      {value}
+    </span>
+
+  );
+}
+
+
+/* ============================================================
+   CABECERA TABLA
+============================================================ */
 
 function ThOrden({
   titulo,
@@ -1716,47 +2370,50 @@ function ThOrden({
   ordenar,
   align = "left",
 }) {
+
   const activo =
     orden.campo === campo;
 
+
   return (
+
     <th
       className={`
-        py-3.5
-        px-6
+        px-5
+        md:px-6
+        py-4
         font-semibold
-        text-white/75
-        cursor-pointer
-        select-none
-        hover:text-white
-        transition
+        text-slate-300
         ${align === "center"
           ? "text-center"
           : "text-left"}
       `}
-      onClick={() =>
-        ordenar(campo)
-      }
     >
 
-      <span
+      <button
+        type="button"
+        onClick={() =>
+          ordenar(campo)
+        }
         className="
           inline-flex
           items-center
           gap-2
+          transition
+          hover:text-white
         "
       >
 
         {titulo}
 
+
         <span
           className={`
             text-[10px]
-            transition
             ${
               activo
-                ? "text-blue-300"
-                : "text-white/20"
+                ? "text-blue-400"
+                : "text-slate-600"
             }
           `}
         >
@@ -1767,16 +2424,17 @@ function ThOrden({
             : "↕"}
         </span>
 
-      </span>
+      </button>
 
     </th>
+
   );
 }
 
 
-// ============================================================
-// TARJETA DE GRÁFICO
-// ============================================================
+/* ============================================================
+   TARJETA GRÁFICO
+============================================================ */
 
 function GraficoCard({
   titulo,
@@ -1784,15 +2442,17 @@ function GraficoCard({
   icono,
   children,
 }) {
+
   return (
+
     <div
       className="
-        bg-white/10
-        backdrop-blur-xl
-        border border-white/20
-        rounded-2xl
-        shadow-xl
         overflow-hidden
+        rounded-3xl
+        border border-white/10
+        bg-slate-900/80
+        shadow-xl
+        shadow-black/20
       "
     >
 
@@ -1801,6 +2461,7 @@ function GraficoCard({
           px-5
           py-4
           border-b border-white/10
+          bg-slate-800/30
         "
       >
 
@@ -1814,10 +2475,10 @@ function GraficoCard({
 
           <div
             className="
-              w-9
-              h-9
-              rounded-lg
-              bg-white/10
+              h-10
+              w-10
+              rounded-xl
+              bg-slate-800
               border border-white/10
               flex
               items-center
@@ -1827,23 +2488,25 @@ function GraficoCard({
             {icono}
           </div>
 
+
           <div>
 
             <h3
               className="
                 text-sm
                 font-semibold
-                text-white
+                text-slate-200
               "
             >
               {titulo}
             </h3>
 
+
             <p
               className="
-                text-xs
-                text-white/40
                 mt-0.5
+                text-xs
+                text-slate-500
               "
             >
               {descripcion}
@@ -1862,10 +2525,13 @@ function GraficoCard({
           p-5
         "
       >
+
         {children}
+
       </div>
 
     </div>
-  );
-}
 
+  );
+
+}
