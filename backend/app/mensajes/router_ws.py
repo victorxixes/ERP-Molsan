@@ -1,4 +1,3 @@
-```python
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 import json
@@ -403,4 +402,4 @@ async def mensajes_ws(
             db.close()
         except Exception:
             pass
-```
+
