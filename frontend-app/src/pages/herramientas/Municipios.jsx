@@ -1,4 +1,3 @@
-```jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 
 /**
@@ -3085,4 +3084,3 @@ function ModalMunicipio({
   );
 
 }
-```
