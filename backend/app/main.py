@@ -131,6 +131,9 @@ from backend.app.realtime.router import router as realtime_router
 # Mensajes
 from backend.app.mensajes.router import router as mensajes_router
 
+# Municipios
+from backend.app.municipios.router import router as municipios_router
+
 # Herramientas Swagger
 from backend.app.herramientasswager.crear_tablas import router as herramientas_router
 from backend.app.herramientasswager.reset_intranet import router as reset_intranet_router
@@ -195,6 +198,9 @@ app.include_router(router_notif)
 
 # Realtime
 app.include_router(realtime_router)
+
+# Municipios
+app.include_router(municipios_router, prefix="/api")
 
 # Herramientas Swagger
 app.include_router(herramientas_router, prefix="/api")
