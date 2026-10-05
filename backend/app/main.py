@@ -3,13 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
 
+
 # ============================================================
 # APP
 # ============================================================
-app = FastAPI(title="Agenda Intranet Backend")
+
+app = FastAPI(
+    title="Agenda Intranet Backend"
+)
+
 
 # ============================================================
-# 🔥 CORS — CONFIGURACIÓN DEFINITIVA PARA RENDER
+# CORS — CONFIGURACIÓN PARA RENDER
 # ============================================================
 
 origins = [
@@ -29,203 +34,637 @@ app.add_middleware(
     max_age=86400,
 )
 
+
 # ============================================================
 # BASE DE DATOS
 # ============================================================
+
 from backend.app.database import Base, engine
 
-# ============================
-# MODELOS EXPEDIENTES
-# ============================
 
-# Cliente (titular + facturación)
+# ============================================================
+# MODELOS
+# ============================================================
+
+# ------------------------------------------------------------
+# CLIENTES
+# ------------------------------------------------------------
+
 from backend.app.expedientes.clientes.models import Cliente
 
-# Expediente completo
+
+# ------------------------------------------------------------
+# EXPEDIENTES
+# ------------------------------------------------------------
+
 from backend.app.expedientes.models import Expediente
 
-# Actividades del expediente
+
+# ------------------------------------------------------------
+# ACTIVIDADES DE EXPEDIENTES
+# ------------------------------------------------------------
+
 from backend.app.expedientes.actividades.models import ExpedienteActividad
 
-# Fincas + Registros
+
+# ------------------------------------------------------------
+# FINCAS Y REGISTROS
+# ------------------------------------------------------------
+
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 
-# Gastos del expediente
+
+# ------------------------------------------------------------
+# GASTOS
+# ------------------------------------------------------------
+
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 
-# Defectos del expediente
+
+# ------------------------------------------------------------
+# DEFECTOS
+# ------------------------------------------------------------
+
 from backend.app.expedientes.defectos.models import ExpedienteDefecto
 
-# Municipios
-from backend.app.municipios.models import Municipio
 
-# Modelos existentes
-from backend.app.mensajes.models import Mensaje
+# ------------------------------------------------------------
+# DETALLE DE EXPEDIENTES
+# ------------------------------------------------------------
+
 from backend.app.expedientes.detalle.models import ExpedienteDetalle
 
-# Crear tablas
-Base.metadata.create_all(bind=engine)
+
+# ------------------------------------------------------------
+# MENSAJES
+# ------------------------------------------------------------
+
+from backend.app.mensajes.models import Mensaje
+
+
+# ------------------------------------------------------------
+# MUNICIPIOS
+# ------------------------------------------------------------
+
+from backend.app.municipios.models import Municipio
+
+
+# ============================================================
+# CREAR TABLAS
+# ============================================================
+
+Base.metadata.create_all(
+    bind=engine
+)
+
 
 # ============================================================
 # FIX SCHEMA
 # ============================================================
+
 from backend.app.agenda.fix_schema import fix_agenda_schema
+
 fix_agenda_schema()
 
+
 from backend.app.expedientes.fix_schema import fix_expedientes_schema
+
 fix_expedientes_schema()
+
 
 # ============================================================
 # STATIC FILES
 # ============================================================
-STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+STATIC_DIR = os.path.join(
+    os.path.dirname(__file__),
+    "static"
+)
+
+app.mount(
+    "/static",
+    StaticFiles(directory=STATIC_DIR),
+    name="static"
+)
+
+
+# ============================================================
+# STATIC — MENSAJES
+# ============================================================
 
 TMP_MENSAJES = "/tmp/mensajes"
-os.makedirs(TMP_MENSAJES, exist_ok=True)
-app.mount("/static/mensajes", StaticFiles(directory=TMP_MENSAJES), name="mensajes")
 
-FOTOS_DIR = os.path.join(os.path.dirname(__file__), "static", "fotos")
-app.mount("/api/fotos", StaticFiles(directory=FOTOS_DIR), name="fotos")
+os.makedirs(
+    TMP_MENSAJES,
+    exist_ok=True
+)
+
+app.mount(
+    "/static/mensajes",
+    StaticFiles(directory=TMP_MENSAJES),
+    name="mensajes"
+)
+
+
+# ============================================================
+# STATIC — FOTOS
+# ============================================================
+
+FOTOS_DIR = os.path.join(
+    os.path.dirname(__file__),
+    "static",
+    "fotos"
+)
+
+app.mount(
+    "/api/fotos",
+    StaticFiles(directory=FOTOS_DIR),
+    name="fotos"
+)
+
 
 # ============================================================
 # IMPORTAR ROUTERS
 # ============================================================
 
-# Auth
+
+# ============================================================
+# AUTH
+# ============================================================
+
 from backend.app.auth.router import router as auth_router
 
-# Seguridad
-from backend.app.seguridad.roles.roles_router import router as roles_router
-from backend.app.seguridad.roles.asignar_rol_router import router as asignar_rol_router
-from backend.app.seguridad.asignar_password_router import router as asignar_password_router
-from backend.app.seguridad.permisos.permisos_router import router as permisos_router
-from backend.app.seguridad.permisos.asignar_router import router as asignar_router
-from backend.app.seguridad.permisos.repair_create_permisos_raw import router as permisos_repair_router
-from backend.app.seguridad.obtener_ficha_empleado import router as ficha_empleado_router
-from backend.app.seguridad.auditoria.router import router as seguridad_auditoria_router
-from backend.app.seguridad.logs.router import router as seguridad_logs_router
-from backend.app.seguridad.admin_router import router as admin_router
-
-# Agenda
-from backend.app.agenda.router import router as agenda_router
-
-# Empleados
-from backend.app.empleados.router import router as empleados_router
-
-# Maestros
-from backend.app.maestros.router import router as maestros_router
-
-# Intranet
-from backend.app.intranet.router import router as intranet_router
-from backend.app.intranet.documentos.router import router as documentos_router
-from backend.app.intranet.noticias.router import router as noticias_router
-
-# WebSockets
-from backend.app.websockets.intranet_ws import router as intranet_ws_router
-from backend.app.websockets.empleados_ws import router as empleados_ws_router
-from backend.app.websockets.agenda_ws import router as agenda_ws_router
-from backend.app.mensajes.router_ws import router as mensajes_ws_router
-from backend.app.notificaciones.router_ws import router_notif
-
-# Realtime
-from backend.app.realtime.router import router as realtime_router
-
-# Mensajes
-from backend.app.mensajes.router import router as mensajes_router
-
-# Municipios
-from backend.app.municipios.router import router as municipios_router
-
-# Herramientas Swagger
-from backend.app.herramientasswager.crear_tablas import router as herramientas_router
-from backend.app.herramientasswager.reset_intranet import router as reset_intranet_router
-from backend.app.herramientasswager.debug_router import router as debug_router
-from backend.app.herramientasswager.borrar_roles import router as borrar_roles_router
-from backend.app.herramientasswager.borrar_tablas import router as borrar_tablas_router
-from backend.app.herramientasswager.asignar_bloqueo_router import router as asignar_bloqueo_router
-
-# CTN
-from backend.app.ctn.router import router as ctn_router
-
-# Dashboard
-from backend.app.dashboard.router import router as dashboard_router
-
-# Utilidades
-from backend.app.Utilidades.router import router as utilidades_router
-from backend.app.informes.router import router as informes_router
-from backend.app.Utilidades.importadores.router_absis import router as router_absis
-
-# Expedientes
-from backend.app.expedientes.router import router as expedientes_router
 
 # ============================================================
-# INCLUIR ROUTERS (orden correcto)
+# SEGURIDAD
 # ============================================================
 
-# Auth
-app.include_router(auth_router, prefix="/api")
+from backend.app.seguridad.roles.roles_router import (
+    router as roles_router
+)
 
-# Seguridad
-app.include_router(roles_router, prefix="/api")
-app.include_router(asignar_rol_router, prefix="/api")
-app.include_router(asignar_password_router, prefix="/api")
-app.include_router(permisos_router, prefix="/api")
-app.include_router(asignar_router, prefix="/api")
-app.include_router(permisos_repair_router, prefix="/api")
-app.include_router(ficha_empleado_router, prefix="/api")
-app.include_router(seguridad_auditoria_router, prefix="/api")
-app.include_router(seguridad_logs_router, prefix="/api")
-app.include_router(admin_router, prefix="/api")
+from backend.app.seguridad.roles.asignar_rol_router import (
+    router as asignar_rol_router
+)
 
-# Agenda
-app.include_router(agenda_router, prefix="/api")
+from backend.app.seguridad.asignar_password_router import (
+    router as asignar_password_router
+)
 
-# Empleados
-app.include_router(empleados_router, prefix="/api")
+from backend.app.seguridad.permisos.permisos_router import (
+    router as permisos_router
+)
 
-# Maestros
-app.include_router(maestros_router, prefix="/api")
+from backend.app.seguridad.permisos.asignar_router import (
+    router as asignar_router
+)
 
-# Intranet
-app.include_router(intranet_router, prefix="/api")
-app.include_router(documentos_router, prefix="/api")
-app.include_router(noticias_router, prefix="/api")
+from backend.app.seguridad.permisos.repair_create_permisos_raw import (
+    router as permisos_repair_router
+)
 
-# WebSockets
-app.include_router(intranet_ws_router)
-app.include_router(empleados_ws_router)
-app.include_router(agenda_ws_router)
-app.include_router(mensajes_ws_router)
-app.include_router(router_notif)
+from backend.app.seguridad.obtener_ficha_empleado import (
+    router as ficha_empleado_router
+)
 
-# Realtime
-app.include_router(realtime_router)
+from backend.app.seguridad.auditoria.router import (
+    router as seguridad_auditoria_router
+)
 
-# Municipios
-app.include_router(municipios_router, prefix="/api")
+from backend.app.seguridad.logs.router import (
+    router as seguridad_logs_router
+)
 
-# Herramientas Swagger
-app.include_router(herramientas_router, prefix="/api")
-app.include_router(reset_intranet_router, prefix="/api")
-app.include_router(debug_router)
-app.include_router(borrar_roles_router)
-app.include_router(borrar_tablas_router)
-app.include_router(asignar_bloqueo_router, prefix="/api")
+from backend.app.seguridad.admin_router import (
+    router as admin_router
+)
 
+
+# ============================================================
+# AGENDA
+# ============================================================
+
+from backend.app.agenda.router import (
+    router as agenda_router
+)
+
+
+# ============================================================
+# EMPLEADOS
+# ============================================================
+
+from backend.app.empleados.router import (
+    router as empleados_router
+)
+
+
+# ============================================================
+# MAESTROS
+# ============================================================
+
+from backend.app.maestros.router import (
+    router as maestros_router
+)
+
+
+# ============================================================
+# INTRANET
+# ============================================================
+
+from backend.app.intranet.router import (
+    router as intranet_router
+)
+
+from backend.app.intranet.documentos.router import (
+    router as documentos_router
+)
+
+from backend.app.intranet.noticias.router import (
+    router as noticias_router
+)
+
+
+# ============================================================
+# WEBSOCKETS
+# ============================================================
+
+from backend.app.websockets.intranet_ws import (
+    router as intranet_ws_router
+)
+
+from backend.app.websockets.empleados_ws import (
+    router as empleados_ws_router
+)
+
+from backend.app.websockets.agenda_ws import (
+    router as agenda_ws_router
+)
+
+from backend.app.mensajes.router_ws import (
+    router as mensajes_ws_router
+)
+
+from backend.app.notificaciones.router_ws import (
+    router_notif
+)
+
+
+# ============================================================
+# REALTIME
+# ============================================================
+
+from backend.app.realtime.router import (
+    router as realtime_router
+)
+
+
+# ============================================================
+# MENSAJES
+# ============================================================
+
+from backend.app.mensajes.router import (
+    router as mensajes_router
+)
+
+
+# ============================================================
+# MUNICIPIOS
+# ============================================================
+
+from backend.app.municipios.router import (
+    router as municipios_router
+)
+
+
+# ============================================================
+# HERRAMIENTAS SWAGGER
+# ============================================================
+
+from backend.app.herramientasswager.crear_tablas import (
+    router as herramientas_router
+)
+
+from backend.app.herramientasswager.reset_intranet import (
+    router as reset_intranet_router
+)
+
+from backend.app.herramientasswager.debug_router import (
+    router as debug_router
+)
+
+from backend.app.herramientasswager.borrar_roles import (
+    router as borrar_roles_router
+)
+
+from backend.app.herramientasswager.borrar_tablas import (
+    router as borrar_tablas_router
+)
+
+from backend.app.herramientasswager.asignar_bloqueo_router import (
+    router as asignar_bloqueo_router
+)
+
+
+# ============================================================
 # CTN
-app.include_router(ctn_router, prefix="/api")
+# ============================================================
 
-# Dashboard
-app.include_router(dashboard_router, prefix="/api")
+from backend.app.ctn.router import (
+    router as ctn_router
+)
 
-# Mensajes REST
-app.include_router(mensajes_router, prefix="/api")
 
-# Utilidades
-app.include_router(utilidades_router, prefix="/api")
-app.include_router(informes_router, prefix="/api")
-app.include_router(router_absis, prefix="/api")
+# ============================================================
+# DASHBOARD
+# ============================================================
 
-# Expedientes
-app.include_router(expedientes_router, prefix="/api")
+from backend.app.dashboard.router import (
+    router as dashboard_router
+)
+
+
+# ============================================================
+# UTILIDADES
+# ============================================================
+
+from backend.app.Utilidades.router import (
+    router as utilidades_router
+)
+
+from backend.app.informes.router import (
+    router as informes_router
+)
+
+from backend.app.Utilidades.importadores.router_absis import (
+    router as router_absis
+)
+
+
+# ============================================================
+# EXPEDIENTES
+# ============================================================
+
+from backend.app.expedientes.router import (
+    router as expedientes_router
+)
+
+
+# ============================================================
+# INCLUIR ROUTERS
+# ============================================================
+
+
+# ============================================================
+# AUTH
+# ============================================================
+
+app.include_router(
+    auth_router,
+    prefix="/api"
+)
+
+
+# ============================================================
+# SEGURIDAD
+# ============================================================
+
+app.include_router(
+    roles_router,
+    prefix="/api"
+)
+
+app.include_router(
+    asignar_rol_router,
+    prefix="/api"
+)
+
+app.include_router(
+    asignar_password_router,
+    prefix="/api"
+)
+
+app.include_router(
+    permisos_router,
+    prefix="/api"
+)
+
+app.include_router(
+    asignar_router,
+    prefix="/api"
+)
+
+app.include_router(
+    permisos_repair_router,
+    prefix="/api"
+)
+
+app.include_router(
+    ficha_empleado_router,
+    prefix="/api"
+)
+
+app.include_router(
+    seguridad_auditoria_router,
+    prefix="/api"
+)
+
+app.include_router(
+    seguridad_logs_router,
+    prefix="/api"
+)
+
+app.include_router(
+    admin_router,
+    prefix="/api"
+)
+
+
+# ============================================================
+# AGENDA
+# ============================================================
+
+app.include_router(
+    agenda_router,
+    prefix="/api"
+)
+
+
+# ============================================================
+# EMPLEADOS
+# ============================================================
+
+app.include_router(
+    empleados_router,
+    prefix="/api"
+)
+
+
+# ============================================================
+# MAESTROS
+# ============================================================
+
+app.include_router(
+    maestros_router,
+    prefix="/api"
+)
+
+
+# ============================================================
+# INTRANET
+# ============================================================
+
+app.include_router(
+    intranet_router,
+    prefix="/api"
+)
+
+app.include_router(
+    documentos_router,
+    prefix="/api"
+)
+
+app.include_router(
+    noticias_router,
+    prefix="/api"
+)
+
+
+# ============================================================
+# WEBSOCKETS
+# ============================================================
+
+app.include_router(
+    intranet_ws_router
+)
+
+app.include_router(
+    empleados_ws_router
+)
+
+app.include_router(
+    agenda_ws_router
+)
+
+app.include_router(
+    mensajes_ws_router
+)
+
+app.include_router(
+    router_notif
+)
+
+
+# ============================================================
+# REALTIME
+# ============================================================
+
+app.include_router(
+    realtime_router
+)
+
+
+# ============================================================
+# MUNICIPIOS
+#
+# ENDPOINTS:
+#
+# GET  /api/municipios
+# POST /api/municipios/importar
+# ============================================================
+
+app.include_router(
+    municipios_router,
+    prefix="/api"
+)
+
+
+# ============================================================
+# HERRAMIENTAS SWAGGER
+# ============================================================
+
+app.include_router(
+    herramientas_router,
+    prefix="/api"
+)
+
+app.include_router(
+    reset_intranet_router,
+    prefix="/api"
+)
+
+app.include_router(
+    debug_router
+)
+
+app.include_router(
+    borrar_roles_router
+)
+
+app.include_router(
+    borrar_tablas_router
+)
+
+app.include_router(
+    asignar_bloqueo_router,
+    prefix="/api"
+)
+
+
+# ============================================================
+# CTN
+# ============================================================
+
+app.include_router(
+    ctn_router,
+    prefix="/api"
+)
+
+
+# ============================================================
+# DASHBOARD
+# ============================================================
+
+app.include_router(
+    dashboard_router,
+    prefix="/api"
+)
+
+
+# ============================================================
+# MENSAJES REST
+# ============================================================
+
+app.include_router(
+    mensajes_router,
+    prefix="/api"
+)
+
+
+# ============================================================
+# UTILIDADES
+# ============================================================
+
+app.include_router(
+    utilidades_router,
+    prefix="/api"
+)
+
+app.include_router(
+    informes_router,
+    prefix="/api"
+)
+
+app.include_router(
+    router_absis,
+    prefix="/api"
+)
+
+
+# ============================================================
+# EXPEDIENTES
+# ============================================================
+
+app.include_router(
+    expedientes_router,
+    prefix="/api"
+)
