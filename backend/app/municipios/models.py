@@ -1,4 +1,3 @@
-```python
 from sqlalchemy import (
     Boolean,
     Column,
@@ -106,4 +105,4 @@ class Municipio(Base):
             f"provincia={self.provincia!r} "
             f"municipio={self.municipio!r}>"
         )
-```
+
