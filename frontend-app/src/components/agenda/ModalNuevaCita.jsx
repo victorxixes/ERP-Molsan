@@ -1,7 +1,15 @@
-import { useEffect, useState, useCallback } from "react";
+import {
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+
 import AutocompleteNotario from "./AutocompleteNotario";
+
 import { obtenerNotaria } from "../../api/ctn";
+
 import SelectSJ from "../ui/SelectSJ";
+
 
 const TIPOS_CITA = [
   "Firma notarial",
@@ -10,19 +18,29 @@ const TIPOS_CITA = [
   "Otros",
 ];
 
+
 // ============================================================
 // NORMALIZAR TIPO DE FIRMA
 // ============================================================
 
-const normalizarTipoFirma = (vc) => {
-  const v = String(vc || "").trim().toUpperCase();
+const normalizarTipoFirma = (
+  vc
+) => {
 
-  return v === "SI" ||
+  const v =
+    String(vc || "")
+      .trim()
+      .toUpperCase();
+
+  return (
+    v === "SI" ||
     v === "VC" ||
     v === "VIDEOCONFERENCIA"
+  )
     ? "Videoconferencia"
     : "Presencial";
 };
+
 
 // ============================================================
 // NORMALIZAR NOTARIO
@@ -30,44 +48,122 @@ const normalizarTipoFirma = (vc) => {
 
 const normalizarNotario = (
   n,
-  tipoFirmaOverride = null
-) => ({
-  id: n?.id ?? null,
-  codigo: n?.codigo || "",
-  nombre: n?.nombre || "",
-  apellidos: n?.apellidos || "",
-  nif: n?.nif || "",
-  telefono: n?.telefono || "",
-  provincia: n?.provincia || "",
-  municipio: n?.municipio || "",
-  cp: n?.cp || "",
-  direccion: n?.direccion || "",
-  vc: n?.vc || "",
-  apoderado:
-    n?.apoderado_s ||
-    n?.apoderado ||
-    "",
-  observacion: n?.observacion || "",
-  lat: n?.lat ?? null,
-  lng: n?.lng ?? null,
-  tipo_firma:
+  tipoFirmaOverride = null,
+  distanciaKmOverride = null
+) => {
+
+  const tipoFirma =
     tipoFirmaOverride ||
-    normalizarTipoFirma(n?.vc),
-});
+    normalizarTipoFirma(
+      n?.vc
+    );
+
+  const distanciaKm =
+    distanciaKmOverride ??
+    n?.distancia_km ??
+    null;
+
+
+  return {
+
+    id:
+      n?.id ??
+      null,
+
+    codigo:
+      n?.codigo ||
+      "",
+
+    nombre:
+      n?.nombre ||
+      "",
+
+    apellidos:
+      n?.apellidos ||
+      "",
+
+    nif:
+      n?.nif ||
+      "",
+
+    telefono:
+      n?.telefono ||
+      "",
+
+    provincia:
+      n?.provincia ||
+      "",
+
+    municipio:
+      n?.municipio ||
+      "",
+
+    cp:
+      n?.cp ||
+      "",
+
+    direccion:
+      n?.direccion ||
+      "",
+
+    vc:
+      n?.vc ||
+      "",
+
+    apoderado:
+      n?.apoderado_s ||
+      n?.apoderado ||
+      "",
+
+    observacion:
+      n?.observacion ||
+      "",
+
+    lat:
+      n?.lat ??
+      null,
+
+    lng:
+      n?.lng ??
+      null,
+
+    distancia_km:
+      distanciaKm,
+
+    tipo_firma:
+      tipoFirma,
+  };
+};
+
 
 // ============================================================
 // FORMULARIO INICIAL
 // ============================================================
 
 const FORM_INICIAL = {
-  hora_inicio: "",
-  hora_fin: "",
-  tipo_cita: "",
-  notario_id: null,
-  tipo_firma: "",
-  apoderado_visible: "",
-  observaciones: "",
+
+  hora_inicio:
+    "",
+
+  hora_fin:
+    "",
+
+  tipo_cita:
+    "",
+
+  notario_id:
+    null,
+
+  tipo_firma:
+    "",
+
+  apoderado_visible:
+    "",
+
+  observaciones:
+    "",
 };
+
 
 export default function ModalNuevaCita({
   fecha,
@@ -77,268 +173,528 @@ export default function ModalNuevaCita({
   onGuardar,
   onDelete,
 }) {
-  const soloLectura = modo === "ver";
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const soloLectura =
+    modo === "ver";
 
-  const [form, setForm] = useState(FORM_INICIAL);
+  const [
+    loading,
+    setLoading,
+  ] = useState(false);
 
-  const [notarioSeleccionado, setNotarioSeleccionado] =
-    useState(null);
+  const [
+    error,
+    setError,
+  ] = useState("");
+
+  const [
+    form,
+    setForm,
+  ] = useState(
+    FORM_INICIAL
+  );
+
+  const [
+    notarioSeleccionado,
+    setNotarioSeleccionado,
+  ] = useState(null);
+
 
   // ==========================================================
   // CAMBIAR CAMPO
   // ==========================================================
 
-  const handleChange = useCallback(
-    (campo, valor) => {
-      if (soloLectura) return;
+  const handleChange =
+    useCallback(
+      (
+        campo,
+        valor
+      ) => {
 
-      setForm((actual) => ({
-        ...actual,
-        [campo]: valor,
-      }));
+        if (soloLectura)
+          return;
 
-      setError("");
-    },
-    [soloLectura]
-  );
+        setForm(
+          (actual) => ({
+            ...actual,
+            [campo]: valor,
+          })
+        );
+
+        setError("");
+
+      },
+      [soloLectura]
+    );
+
 
   // ==========================================================
   // CARGAR CITA
   // ==========================================================
 
   useEffect(() => {
-    if (!fecha) return;
+
+    if (!fecha)
+      return;
 
     setError("");
 
-    if (modo === "crear") {
-      setForm(FORM_INICIAL);
-      setNotarioSeleccionado(null);
+    if (
+      modo === "crear"
+    ) {
+
+      setForm(
+        FORM_INICIAL
+      );
+
+      setNotarioSeleccionado(
+        null
+      );
+
       return;
     }
 
-    if (!cita) return;
+    if (!cita)
+      return;
+
+
+    // ========================================================
+    // FORMULARIO
+    // ========================================================
 
     setForm({
-      hora_inicio: cita.hora_inicio || "",
-      hora_fin: cita.hora_fin || "",
-      tipo_cita: cita.tipo_cita || "",
-      notario_id: cita.notario_id || null,
+
+      hora_inicio:
+        cita.hora_inicio ||
+        "",
+
+      hora_fin:
+        cita.hora_fin ||
+        "",
+
+      tipo_cita:
+        cita.tipo_cita ||
+        "",
+
+      notario_id:
+        cita.notario_id ||
+        null,
+
       tipo_firma:
-        typeof cita.tipo_firma === "string"
+        typeof cita.tipo_firma ===
+        "string"
           ? cita.tipo_firma
           : "",
+
       apoderado_visible:
-        cita.apoderado_nombre || "",
+        cita.apoderado_nombre ||
+        "",
+
       observaciones:
-        cita.observaciones || "",
+        cita.observaciones ||
+        "",
     });
 
-    if (!cita.notario_id) {
-      setNotarioSeleccionado(null);
+
+    // ========================================================
+    // SIN NOTARIO
+    // ========================================================
+
+    if (
+      !cita.notario_id
+    ) {
+
+      setNotarioSeleccionado(
+        null
+      );
+
       return;
     }
 
-    let cancelado = false;
 
-    obtenerNotaria(cita.notario_id)
+    let cancelado =
+      false;
+
+
+    // ========================================================
+    // OBTENER NOTARÍA COMPLETA
+    // ========================================================
+
+    obtenerNotaria(
+      cita.notario_id
+    )
+
       .then((res) => {
-        if (cancelado) return;
 
-        const n = res?.data;
+        if (cancelado)
+          return;
+
+        const n =
+          res?.data;
 
         if (!n) {
-          setNotarioSeleccionado(null);
+
+          setNotarioSeleccionado(
+            null
+          );
+
           return;
         }
+
 
         const notarioCompleto =
           normalizarNotario(
             n,
-            cita.tipo_firma
+            cita.tipo_firma,
+            cita.distancia_km
           );
+
 
         setNotarioSeleccionado(
           notarioCompleto
         );
 
-        setForm((actual) => ({
-          ...actual,
-          tipo_firma:
-            notarioCompleto.tipo_firma,
-          apoderado_visible:
-            notarioCompleto.apoderado || "",
-          observaciones:
-            cita.observaciones ||
-            notarioCompleto.observacion ||
-            "",
-        }));
+
+        setForm(
+          (actual) => ({
+
+            ...actual,
+
+            tipo_firma:
+              notarioCompleto.tipo_firma,
+
+            apoderado_visible:
+              cita.apoderado_nombre ||
+              notarioCompleto.apoderado ||
+              "",
+
+            observaciones:
+              cita.observaciones ||
+              notarioCompleto.observacion ||
+              "",
+          })
+        );
+
       })
+
       .catch((err) => {
-        if (cancelado) return;
+
+        if (cancelado)
+          return;
 
         console.error(
           "ERROR CARGANDO NOTARIO:",
           err
         );
 
-        setNotarioSeleccionado(null);
+        setNotarioSeleccionado(
+          null
+        );
+
       });
 
+
     return () => {
+
       cancelado = true;
+
     };
-  }, [modo, cita, fecha]);
+
+  }, [
+    modo,
+    cita,
+    fecha,
+  ]);
+
 
   // ==========================================================
   // ESC
   // ==========================================================
 
   useEffect(() => {
-    if (!fecha) return;
 
-    const handleEscape = (event) => {
-      if (event.key === "Escape" && !loading) {
-        onClose();
-      }
-    };
+    if (!fecha)
+      return;
+
+    const handleEscape =
+      (event) => {
+
+        if (
+          event.key ===
+            "Escape" &&
+          !loading
+        ) {
+
+          onClose();
+
+        }
+
+      };
+
 
     window.addEventListener(
       "keydown",
       handleEscape
     );
 
+
     return () => {
+
       window.removeEventListener(
         "keydown",
         handleEscape
       );
+
     };
-  }, [fecha, loading, onClose]);
+
+  }, [
+    fecha,
+    loading,
+    onClose,
+  ]);
+
 
   // ==========================================================
   // GUARDAR
   // ==========================================================
 
-  const guardar = useCallback(async () => {
-    if (soloLectura || loading) return;
+  const guardar =
+    useCallback(
+      async () => {
 
-    setError("");
+        if (
+          soloLectura ||
+          loading
+        ) {
+          return;
+        }
 
-    if (!form.hora_inicio) {
-      setError("Indica la hora de inicio.");
-      return;
-    }
+        setError("");
 
-    if (!form.hora_fin) {
-      setError("Indica la hora de fin.");
-      return;
-    }
 
-    if (form.hora_fin <= form.hora_inicio) {
-      setError(
-        "La hora de fin debe ser posterior a la hora de inicio."
-      );
-      return;
-    }
+        if (
+          !form.hora_inicio
+        ) {
 
-    if (!form.tipo_cita) {
-      setError("Selecciona el tipo de cita.");
-      return;
-    }
+          setError(
+            "Indica la hora de inicio."
+          );
 
-    const fechaNormalizada =
-      typeof fecha === "string"
-        ? fecha
-        : fecha?.toLocaleDateString("sv-SE");
+          return;
+        }
 
-    if (!fechaNormalizada) {
-      setError("La fecha de la cita no es válida.");
-      return;
-    }
 
-    const payload = {
-      fecha: fechaNormalizada,
-      hora_inicio:
-        form.hora_inicio || "",
-      hora_fin:
-        form.hora_fin || "",
-      tipo_cita:
-        form.tipo_cita || "",
-      notario_id:
-        form.notario_id || null,
-      tipo_firma:
-        typeof form.tipo_firma === "string"
-          ? form.tipo_firma
-          : "",
-      apoderado:
-        form.apoderado_visible || "",
-      observaciones:
-        form.observaciones || "",
-    };
+        if (
+          !form.hora_fin
+        ) {
 
-    try {
-      setLoading(true);
+          setError(
+            "Indica la hora de fin."
+          );
 
-      await onGuardar(payload);
-    } catch (err) {
-      console.error(
-        "ERROR AL GUARDAR CITA:",
-        err
-      );
+          return;
+        }
 
-      setError(
-        err?.response?.data?.detail ||
-          err?.message ||
-          "No se pudo guardar la cita."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    soloLectura,
-    loading,
-    form,
-    fecha,
-    onGuardar,
-  ]);
+
+        if (
+          form.hora_fin <=
+          form.hora_inicio
+        ) {
+
+          setError(
+            "La hora de fin debe ser posterior a la hora de inicio."
+          );
+
+          return;
+        }
+
+
+        if (
+          !form.tipo_cita
+        ) {
+
+          setError(
+            "Selecciona el tipo de cita."
+          );
+
+          return;
+        }
+
+
+        const fechaNormalizada =
+          typeof fecha ===
+          "string"
+            ? fecha
+            : fecha?.toLocaleDateString(
+                "sv-SE"
+              );
+
+
+        if (!fechaNormalizada) {
+
+          setError(
+            "La fecha de la cita no es válida."
+          );
+
+          return;
+        }
+
+
+        // ====================================================
+        // PAYLOAD
+        // ====================================================
+        //
+        // IMPORTANTE:
+        // NO enviamos distancia_km desde aquí.
+        //
+        // El backend lo calcula directamente a partir
+        // de las coordenadas de la notaría.
+        //
+        // De esta forma el dato queda centralizado y
+        // no depende del navegador.
+        // ====================================================
+
+        const payload = {
+
+          fecha:
+            fechaNormalizada,
+
+          hora_inicio:
+            form.hora_inicio ||
+            "",
+
+          hora_fin:
+            form.hora_fin ||
+            "",
+
+          tipo_cita:
+            form.tipo_cita ||
+            "",
+
+          notario_id:
+            form.notario_id ||
+            null,
+
+          tipo_firma:
+            typeof form.tipo_firma ===
+            "string"
+              ? form.tipo_firma
+              : "",
+
+          apoderado:
+            form.apoderado_visible ||
+            "",
+
+          observaciones:
+            form.observaciones ||
+            "",
+        };
+
+
+        try {
+
+          setLoading(true);
+
+          await onGuardar(
+            payload
+          );
+
+        } catch (err) {
+
+          console.error(
+            "ERROR AL GUARDAR CITA:",
+            err
+          );
+
+          setError(
+            err?.response?.data
+              ?.detail ||
+              err?.message ||
+              "No se pudo guardar la cita."
+          );
+
+        } finally {
+
+          setLoading(false);
+
+        }
+
+      },
+      [
+        soloLectura,
+        loading,
+        form,
+        fecha,
+        onGuardar,
+      ]
+    );
+
 
   // ==========================================================
   // SELECCIONAR NOTARIO
   // ==========================================================
 
-  const seleccionarNotario = useCallback(
-    (n) => {
-      if (soloLectura || !n) return;
+  const seleccionarNotario =
+    useCallback(
+      (n) => {
 
-      const notarioCompleto =
-        normalizarNotario(n);
+        if (
+          soloLectura ||
+          !n
+        ) {
+          return;
+        }
 
-      setNotarioSeleccionado(
-        notarioCompleto
-      );
 
-      setForm((actual) => ({
-        ...actual,
-        notario_id:
-          notarioCompleto.id,
-        tipo_firma:
-          notarioCompleto.tipo_firma,
-        apoderado_visible:
-          notarioCompleto.apoderado || "",
-        observaciones:
-          notarioCompleto.observacion || "",
-      }));
+        const notarioCompleto =
+          normalizarNotario(
+            n,
+            n.tipo_firma,
+            n.distancia_km
+          );
 
-      setError("");
-    },
-    [soloLectura]
-  );
 
-  if (!fecha) return null;
+        setNotarioSeleccionado(
+          notarioCompleto
+        );
+
+
+        setForm(
+          (actual) => ({
+
+            ...actual,
+
+            notario_id:
+              notarioCompleto.id,
+
+            tipo_firma:
+              notarioCompleto.tipo_firma,
+
+            apoderado_visible:
+              notarioCompleto.apoderado ||
+              "",
+
+            observaciones:
+              notarioCompleto.observacion ||
+              "",
+          })
+        );
+
+
+        setError("");
+
+      },
+      [soloLectura]
+    );
+
+
+  // ==========================================================
+  // SIN FECHA
+  // ==========================================================
+
+  if (!fecha)
+    return null;
+
 
   const titulo =
     modo === "crear"
@@ -347,7 +703,9 @@ export default function ModalNuevaCita({
       ? "Editar cita"
       : "Ver cita";
 
+
   return (
+
     <div
       className="
         fixed inset-0
@@ -359,14 +717,20 @@ export default function ModalNuevaCita({
         animate-fade-in
       "
       onMouseDown={(e) => {
+
         if (
-          e.target === e.currentTarget &&
+          e.target ===
+            e.currentTarget &&
           !loading
         ) {
+
           onClose();
+
         }
+
       }}
     >
+
       <div
         className="
           bg-white
@@ -383,6 +747,7 @@ export default function ModalNuevaCita({
           e.stopPropagation()
         }
       >
+
         {/* ====================================================
             CABECERA
            ==================================================== */}
@@ -397,15 +762,31 @@ export default function ModalNuevaCita({
             gap-4
           "
         >
+
           <div>
-            <h2 className="text-xl font-bold text-slate-800">
+
+            <h2
+              className="
+                text-xl
+                font-bold
+                text-slate-800
+              "
+            >
               {titulo}
             </h2>
 
-            <p className="text-sm text-slate-500 mt-1">
+            <p
+              className="
+                text-sm
+                text-slate-500
+                mt-1
+              "
+            >
               {fecha}
             </p>
+
           </div>
+
 
           <button
             type="button"
@@ -425,17 +806,25 @@ export default function ModalNuevaCita({
           >
             ×
           </button>
+
         </div>
+
 
         {/* ====================================================
             CONTENIDO
            ==================================================== */}
 
-        <div className="p-6 space-y-5">
+        <div
+          className="
+            p-6
+            space-y-5
+          "
+        >
 
           {/* ERROR */}
 
           {error && (
+
             <div
               className="
                 rounded-xl
@@ -448,22 +837,41 @@ export default function ModalNuevaCita({
             >
               {error}
             </div>
+
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-            {/* =================================================
-                HORA INICIO
-               ================================================= */}
+          <div
+            className="
+              grid
+              grid-cols-1
+              sm:grid-cols-2
+              gap-4
+            "
+          >
+
+            {/* HORA INICIO */}
 
             <div>
-              <label className="block mb-1.5 text-sm font-medium text-slate-700">
+
+              <label
+                className="
+                  block
+                  mb-1.5
+                  text-sm
+                  font-medium
+                  text-slate-700
+                "
+              >
                 Hora inicio
               </label>
 
               <input
                 type="time"
-                disabled={soloLectura || loading}
+                disabled={
+                  soloLectura ||
+                  loading
+                }
                 className="
                   w-full
                   min-h-[42px]
@@ -480,7 +888,9 @@ export default function ModalNuevaCita({
                   disabled:bg-slate-100
                   disabled:text-slate-400
                 "
-                value={form.hora_inicio}
+                value={
+                  form.hora_inicio
+                }
                 onChange={(e) =>
                   handleChange(
                     "hora_inicio",
@@ -488,20 +898,32 @@ export default function ModalNuevaCita({
                   )
                 }
               />
+
             </div>
 
-            {/* =================================================
-                HORA FIN
-               ================================================= */}
+
+            {/* HORA FIN */}
 
             <div>
-              <label className="block mb-1.5 text-sm font-medium text-slate-700">
+
+              <label
+                className="
+                  block
+                  mb-1.5
+                  text-sm
+                  font-medium
+                  text-slate-700
+                "
+              >
                 Hora fin
               </label>
 
               <input
                 type="time"
-                disabled={soloLectura || loading}
+                disabled={
+                  soloLectura ||
+                  loading
+                }
                 className="
                   w-full
                   min-h-[42px]
@@ -518,7 +940,9 @@ export default function ModalNuevaCita({
                   disabled:bg-slate-100
                   disabled:text-slate-400
                 "
-                value={form.hora_fin}
+                value={
+                  form.hora_fin
+                }
                 onChange={(e) =>
                   handleChange(
                     "hora_fin",
@@ -526,19 +950,34 @@ export default function ModalNuevaCita({
                   )
                 }
               />
+
             </div>
 
-            {/* =================================================
-                TIPO CITA
-               ================================================= */}
 
-            <div className="sm:col-span-2">
-              <label className="block mb-1.5 text-sm font-medium text-slate-700">
+            {/* TIPO CITA */}
+
+            <div
+              className="
+                sm:col-span-2
+              "
+            >
+
+              <label
+                className="
+                  block
+                  mb-1.5
+                  text-sm
+                  font-medium
+                  text-slate-700
+                "
+              >
                 Tipo de cita
               </label>
 
               <SelectSJ
-                value={form.tipo_cita}
+                value={
+                  form.tipo_cita
+                }
                 onChange={(v) =>
                   handleChange(
                     "tipo_cita",
@@ -547,29 +986,46 @@ export default function ModalNuevaCita({
                 }
                 placeholder="Seleccionar tipo"
                 disabled={
-                  soloLectura || loading
+                  soloLectura ||
+                  loading
                 }
-                options={TIPOS_CITA.map(
-                  (tipo) => ({
-                    value: tipo,
-                    label: tipo,
-                  })
-                )}
+                options={
+                  TIPOS_CITA.map(
+                    (tipo) => ({
+                      value: tipo,
+                      label: tipo,
+                    })
+                  )
+                }
               />
+
             </div>
 
-            {/* =================================================
-                NOTARIO
-               ================================================= */}
 
-            <div className="sm:col-span-2">
-              <label className="block mb-1.5 text-sm font-medium text-slate-700">
+            {/* NOTARIO */}
+
+            <div
+              className="
+                sm:col-span-2
+              "
+            >
+
+              <label
+                className="
+                  block
+                  mb-1.5
+                  text-sm
+                  font-medium
+                  text-slate-700
+                "
+              >
                 Notario
               </label>
 
               <AutocompleteNotario
                 disabled={
-                  soloLectura || loading
+                  soloLectura ||
+                  loading
                 }
                 value={
                   notarioSeleccionado
@@ -578,14 +1034,18 @@ export default function ModalNuevaCita({
                   seleccionarNotario
                 }
               />
+
             </div>
+
           </div>
+
 
           {/* ==================================================
               TARJETA NOTARIO
              ================================================== */}
 
           {notarioSeleccionado && (
+
             <div
               className="
                 rounded-2xl
@@ -594,9 +1054,25 @@ export default function ModalNuevaCita({
                 p-4
               "
             >
-              <div className="flex items-start justify-between gap-4 mb-3">
+
+              <div
+                className="
+                  flex
+                  items-start
+                  justify-between
+                  gap-4
+                  mb-3
+                "
+              >
+
                 <div>
-                  <h3 className="font-semibold text-slate-800">
+
+                  <h3
+                    className="
+                      font-semibold
+                      text-slate-800
+                    "
+                  >
                     {
                       notarioSeleccionado.nombre
                     }{" "}
@@ -605,14 +1081,22 @@ export default function ModalNuevaCita({
                     }
                   </h3>
 
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p
+                    className="
+                      text-xs
+                      text-slate-500
+                      mt-0.5
+                    "
+                  >
                     Código{" "}
                     {
                       notarioSeleccionado.codigo ||
                       "—"
                     }
                   </p>
+
                 </div>
+
 
                 <span
                   className={`
@@ -633,67 +1117,180 @@ export default function ModalNuevaCita({
                     notarioSeleccionado.tipo_firma
                   }
                 </span>
+
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs text-slate-600">
+
+              <div
+                className="
+                  grid
+                  grid-cols-1
+                  sm:grid-cols-2
+                  gap-x-6
+                  gap-y-2
+                  text-xs
+                  text-slate-600
+                "
+              >
+
                 <p>
-                  <strong className="text-slate-700">
+
+                  <strong
+                    className="
+                      text-slate-700
+                    "
+                  >
                     NIF:
                   </strong>{" "}
-                  {notarioSeleccionado.nif ||
-                    "—"}
+
+                  {
+                    notarioSeleccionado.nif ||
+                    "—"
+                  }
+
                 </p>
 
+
                 <p>
-                  <strong className="text-slate-700">
+
+                  <strong
+                    className="
+                      text-slate-700
+                    "
+                  >
                     Teléfono:
                   </strong>{" "}
-                  {notarioSeleccionado.telefono ||
-                    "—"}
+
+                  {
+                    notarioSeleccionado.telefono ||
+                    "—"
+                  }
+
                 </p>
 
+
                 <p>
-                  <strong className="text-slate-700">
+
+                  <strong
+                    className="
+                      text-slate-700
+                    "
+                  >
                     Provincia:
                   </strong>{" "}
-                  {notarioSeleccionado.provincia ||
-                    "—"}
+
+                  {
+                    notarioSeleccionado.provincia ||
+                    "—"
+                  }
+
                 </p>
 
+
                 <p>
-                  <strong className="text-slate-700">
+
+                  <strong
+                    className="
+                      text-slate-700
+                    "
+                  >
                     Municipio:
                   </strong>{" "}
-                  {notarioSeleccionado.municipio ||
-                    "—"}
+
+                  {
+                    notarioSeleccionado.municipio ||
+                    "—"
+                  }
+
                 </p>
 
+
                 <p>
-                  <strong className="text-slate-700">
+
+                  <strong
+                    className="
+                      text-slate-700
+                    "
+                  >
                     CP:
                   </strong>{" "}
-                  {notarioSeleccionado.cp ||
-                    "—"}
+
+                  {
+                    notarioSeleccionado.cp ||
+                    "—"
+                  }
+
                 </p>
+
 
                 <p>
-                  <strong className="text-slate-700">
+
+                  <strong
+                    className="
+                      text-slate-700
+                    "
+                  >
+                    Distancia:
+                  </strong>{" "}
+
+                  {
+                    notarioSeleccionado.distancia_km !==
+                    null &&
+                    notarioSeleccionado.distancia_km !==
+                    undefined
+                      ? `${Number(
+                          notarioSeleccionado.distancia_km
+                        ).toFixed(2)} km`
+                      : "—"
+                  }
+
+                </p>
+
+
+                <p>
+
+                  <strong
+                    className="
+                      text-slate-700
+                    "
+                  >
                     Apoderado:
                   </strong>{" "}
-                  {notarioSeleccionado.apoderado ||
-                    "—"}
+
+                  {
+                    notarioSeleccionado.apoderado ||
+                    "—"
+                  }
+
                 </p>
 
-                <p className="sm:col-span-2">
-                  <strong className="text-slate-700">
+
+                <p
+                  className="
+                    sm:col-span-2
+                  "
+                >
+
+                  <strong
+                    className="
+                      text-slate-700
+                    "
+                  >
                     Dirección:
                   </strong>{" "}
-                  {notarioSeleccionado.direccion ||
-                    "—"}
+
+                  {
+                    notarioSeleccionado.direccion ||
+                    "—"
+                  }
+
                 </p>
+
               </div>
 
+
               {notarioSeleccionado.direccion && (
+
                 <iframe
                   title="Ubicación de la notaría"
                   className="
@@ -705,21 +1302,41 @@ export default function ModalNuevaCita({
                   "
                   loading="lazy"
                   src={`https://www.google.com/maps?q=${encodeURIComponent(
-                    `${notarioSeleccionado.direccion}, ${notarioSeleccionado.cp} ${notarioSeleccionado.municipio}`
+                    `${notarioSeleccionado.direccion}, ${notarioSeleccionado.cp || ""} ${notarioSeleccionado.municipio || ""}`
                   )}&output=embed`}
                 />
+
               )}
+
             </div>
+
           )}
+
 
           {/* ==================================================
               TIPO FIRMA / APODERADO
              ================================================== */}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div
+            className="
+              grid
+              grid-cols-1
+              sm:grid-cols-2
+              gap-4
+            "
+          >
 
             <div>
-              <label className="block mb-1.5 text-sm font-medium text-slate-700">
+
+              <label
+                className="
+                  block
+                  mb-1.5
+                  text-sm
+                  font-medium
+                  text-slate-700
+                "
+              >
                 Tipo de firma
               </label>
 
@@ -735,13 +1352,25 @@ export default function ModalNuevaCita({
                   text-slate-600
                 "
                 value={
-                  form.tipo_firma || "—"
+                  form.tipo_firma ||
+                  "—"
                 }
               />
+
             </div>
 
+
             <div>
-              <label className="block mb-1.5 text-sm font-medium text-slate-700">
+
+              <label
+                className="
+                  block
+                  mb-1.5
+                  text-sm
+                  font-medium
+                  text-slate-700
+                "
+              >
                 Apoderado
               </label>
 
@@ -761,21 +1390,34 @@ export default function ModalNuevaCita({
                   "—"
                 }
               />
+
             </div>
+
           </div>
+
 
           {/* ==================================================
               OBSERVACIONES
              ================================================== */}
 
           <div>
-            <label className="block mb-1.5 text-sm font-medium text-slate-700">
+
+            <label
+              className="
+                block
+                mb-1.5
+                text-sm
+                font-medium
+                text-slate-700
+              "
+            >
               Observaciones
             </label>
 
             <textarea
               disabled={
-                soloLectura || loading
+                soloLectura ||
+                loading
               }
               className="
                 w-full
@@ -794,7 +1436,9 @@ export default function ModalNuevaCita({
                 disabled:text-slate-400
               "
               rows={4}
-              value={form.observaciones}
+              value={
+                form.observaciones
+              }
               onChange={(e) =>
                 handleChange(
                   "observaciones",
@@ -802,8 +1446,11 @@ export default function ModalNuevaCita({
                 )
               }
             />
+
           </div>
+
         </div>
+
 
         {/* ====================================================
             FOOTER
@@ -814,15 +1461,19 @@ export default function ModalNuevaCita({
             border-t border-slate-200
             bg-slate-50/80
             px-6 py-4
-            flex flex-col-reverse sm:flex-row
+            flex flex-col-reverse
+            sm:flex-row
             justify-between
             gap-3
           "
         >
+
           <div>
+
             {modo === "editar" &&
               onDelete &&
               !soloLectura && (
+
                 <button
                   type="button"
                   disabled={loading}
@@ -836,14 +1487,26 @@ export default function ModalNuevaCita({
                     transition
                     disabled:opacity-50
                   "
-                  onClick={onDelete}
+                  onClick={
+                    onDelete
+                  }
                 >
                   Eliminar
                 </button>
+
               )}
+
           </div>
 
-          <div className="flex justify-end gap-3">
+
+          <div
+            className="
+              flex
+              justify-end
+              gap-3
+            "
+          >
+
             <button
               type="button"
               disabled={loading}
@@ -859,12 +1522,16 @@ export default function ModalNuevaCita({
                 disabled:opacity-50
               "
             >
-              {soloLectura
-                ? "Cerrar"
-                : "Cancelar"}
+              {
+                soloLectura
+                  ? "Cerrar"
+                  : "Cancelar"
+              }
             </button>
 
+
             {!soloLectura && (
+
               <button
                 type="button"
                 disabled={loading}
@@ -883,16 +1550,23 @@ export default function ModalNuevaCita({
                   disabled:cursor-not-allowed
                 "
               >
-                {loading
-                  ? "Guardando…"
-                  : modo === "crear"
-                  ? "Crear cita"
-                  : "Guardar cambios"}
+                {
+                  loading
+                    ? "Guardando…"
+                    : modo === "crear"
+                    ? "Crear cita"
+                    : "Guardar cambios"
+                }
               </button>
+
             )}
+
           </div>
+
         </div>
+
       </div>
+
     </div>
   );
 }
