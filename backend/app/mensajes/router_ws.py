@@ -10,14 +10,14 @@ from backend.app.mensajes.ws_manager import manager
 
 
 # =========================================================
-# ROUTER WEBSOCKET MENSAJES
+# ROUTER
 # =========================================================
 
 router = APIRouter()
 
 
 # =========================================================
-# WEBSOCKET
+# WEBSOCKET MENSAJES
 # =========================================================
 
 @router.websocket("/ws/mensajes/{empleado_id}")
@@ -26,65 +26,156 @@ async def mensajes_ws(
     empleado_id: int,
 ):
     """
-    WebSocket realtime de mensajería.
+    WebSocket principal de Mensajes.
 
-    Funciones:
-    - Autenticación JWT
-    - Presencia online/offline
-    - Typing
-    - Mensajes realtime
-    - Archivos realtime
-    - Soporte para múltiples pestañas
+    Seguridad:
+        JWT obligatorio.
+
+    Eventos:
+
+        online
+        offline
+        typing
+        nuevo_mensaje
+        nuevo_archivo
+
+    Entrada:
+
+        ping
+
+        {
+            "tipo": "typing",
+            "destinatario_id": 2
+        }
+
+        {
+            "tipo": "mensaje",
+            "destinatario_id": 2,
+            "contenido": "Hola"
+        }
+
+        {
+            "tipo": "archivo",
+            "destinatario_id": 2,
+            "archivo_url": "/static/mensajes/..."
+        }
     """
 
     db: Session = SessionLocal()
 
     # =====================================================
-    # VALIDAR TOKEN
+    # TOKEN
     # =====================================================
 
-    token = websocket.query_params.get("token")
+    token = websocket.query_params.get(
+        "token"
+    )
 
     if not token:
-        await websocket.close(code=4001)
+
+        print(
+            f"[WS-MSG] RECHAZADO "
+            f"empleado={empleado_id}: sin token",
+            flush=True,
+        )
+
+        await websocket.close(
+            code=4001
+        )
+
         db.close()
+
         return
+
+    # =====================================================
+    # VALIDAR JWT
+    # =====================================================
 
     try:
 
         payload = jwt.decode(
             token,
             settings.JWT_SECRET,
-            algorithms=[settings.ALGORITHM],
+            algorithms=[
+                settings.ALGORITHM
+            ],
         )
 
-        usuario_id = payload.get("id")
+        usuario_id = payload.get(
+            "id"
+        )
 
         if usuario_id is None:
-            await websocket.close(code=4002)
+
+            print(
+                "[WS-MSG] RECHAZADO: "
+                "JWT sin id",
+                flush=True,
+            )
+
+            await websocket.close(
+                code=4002
+            )
+
             db.close()
+
             return
 
-        usuario_id = int(usuario_id)
+        usuario_id = int(
+            usuario_id
+        )
 
-        # El usuario autenticado debe coincidir
-        # con el empleado indicado en la URL.
+        # -------------------------------------------------
+        # El usuario autenticado debe ser el mismo
+        # que viene en la URL.
+        # -------------------------------------------------
 
         if usuario_id != empleado_id:
-            await websocket.close(code=4003)
+
+            print(
+                "[WS-MSG] RECHAZADO: "
+                f"JWT={usuario_id} URL={empleado_id}",
+                flush=True,
+            )
+
+            await websocket.close(
+                code=4003
+            )
+
             db.close()
+
             return
 
     except jwt.ExpiredSignatureError:
 
-        await websocket.close(code=4004)
+        print(
+            f"[WS-MSG] JWT EXPIRADO "
+            f"empleado={empleado_id}",
+            flush=True,
+        )
+
+        await websocket.close(
+            code=4004
+        )
+
         db.close()
+
         return
 
-    except Exception:
+    except Exception as exc:
 
-        await websocket.close(code=4005)
+        print(
+            f"[WS-MSG] JWT INVÁLIDO "
+            f"empleado={empleado_id}: {exc}",
+            flush=True,
+        )
+
+        await websocket.close(
+            code=4005
+        )
+
         db.close()
+
         return
 
     # =====================================================
@@ -101,8 +192,18 @@ async def mensajes_ws(
 
     if not empleado:
 
-        await websocket.close(code=4006)
+        print(
+            f"[WS-MSG] EMPLEADO NO EXISTE "
+            f"id={empleado_id}",
+            flush=True,
+        )
+
+        await websocket.close(
+            code=4006
+        )
+
         db.close()
+
         return
 
     # =====================================================
@@ -119,19 +220,14 @@ async def mensajes_ws(
         )
 
         print(
-            f"[WS-MSG] Conectado: {empleado_id}",
+            f"[WS-MSG] CONECTADO "
+            f"empleado={empleado_id}",
             flush=True,
         )
 
         # =================================================
         # ONLINE
         # =================================================
-
-        # Solo avisamos de "online" cuando realmente
-        # aparece la primera conexión del empleado.
-        #
-        # Si tiene dos pestañas abiertas, la segunda
-        # no vuelve a generar otro evento online.
 
         if es_primera_conexion:
 
@@ -146,7 +242,7 @@ async def mensajes_ws(
             )
 
         # =================================================
-        # BUCLE
+        # BUCLE PRINCIPAL
         # =================================================
 
         while True:
@@ -156,17 +252,18 @@ async def mensajes_ws(
                 msg = await websocket.receive_text()
 
             except WebSocketDisconnect:
+
                 break
 
             except Exception as exc:
 
                 print(
-                    f"[WS-MSG] Error recibiendo mensaje "
-                    f"de {empleado_id}: {exc}",
+                    "[WS-MSG] Error receive_text "
+                    f"empleado={empleado_id}: {exc}",
                     flush=True,
                 )
 
-                continue
+                break
 
             # =================================================
             # PING
@@ -174,10 +271,14 @@ async def mensajes_ws(
 
             if msg == "ping":
 
-                # Respondemos para mantener viva la conexión.
                 try:
-                    await websocket.send_text("pong")
+
+                    await websocket.send_text(
+                        "pong"
+                    )
+
                 except Exception:
+
                     pass
 
                 continue
@@ -188,18 +289,27 @@ async def mensajes_ws(
 
             try:
 
-                data = json.loads(msg)
+                data = json.loads(
+                    msg
+                )
 
             except Exception:
 
                 continue
 
-            if not isinstance(data, dict):
+            if not isinstance(
+                data,
+                dict,
+            ):
+
                 continue
 
-            tipo = data.get("tipo")
+            tipo = data.get(
+                "tipo"
+            )
 
             if not tipo:
+
                 continue
 
             # =================================================
@@ -211,7 +321,9 @@ async def mensajes_ws(
                 try:
 
                     destinatario_id = int(
-                        data.get("destinatario_id")
+                        data.get(
+                            "destinatario_id"
+                        )
                     )
 
                 except (
@@ -222,10 +334,14 @@ async def mensajes_ws(
                     continue
 
                 if destinatario_id <= 0:
+
                     continue
 
-                # Nunca permitir que un usuario envíe
-                # typing fingiendo ser otro remitente.
+                # ---------------------------------------------
+                # Nunca usamos un remitente enviado por el
+                # frontend. Siempre utilizamos el usuario
+                # autenticado.
+                # ---------------------------------------------
 
                 await manager.send_to_user(
                     destinatario_id,
@@ -246,7 +362,9 @@ async def mensajes_ws(
                 try:
 
                     destinatario_id = int(
-                        data.get("destinatario_id")
+                        data.get(
+                            "destinatario_id"
+                        )
                     )
 
                 except (
@@ -256,14 +374,16 @@ async def mensajes_ws(
 
                     continue
 
+                if destinatario_id <= 0:
+
+                    continue
+
                 contenido = data.get(
                     "contenido"
                 )
 
-                if destinatario_id <= 0:
-                    continue
-
                 if contenido is None:
+
                     continue
 
                 contenido = str(
@@ -271,27 +391,28 @@ async def mensajes_ws(
                 ).strip()
 
                 if not contenido:
+
                     continue
 
                 # ---------------------------------------------
-                # GUARDAR + ENVIAR
+                # GUARDAR + DISTRIBUIR
                 # ---------------------------------------------
 
-                await manager.enviar_mensaje_ws(
-                    remitente_id=empleado_id,
-                    destinatario_id=destinatario_id,
-                    contenido=contenido,
-                )
+                try:
 
-                # IMPORTANTE:
-                #
-                # NO hacemos aquí send_to_user().
-                #
-                # enviar_mensaje_ws() ya guarda el mensaje
-                # y envía el objeto completo al remitente
-                # y destinatario.
-                #
-                # Así evitamos duplicados.
+                    await manager.enviar_mensaje_ws(
+                        remitente_id=empleado_id,
+                        destinatario_id=destinatario_id,
+                        contenido=contenido,
+                    )
+
+                except Exception as exc:
+
+                    print(
+                        "[WS-MSG] Error guardando "
+                        f"mensaje: {exc}",
+                        flush=True,
+                    )
 
                 continue
 
@@ -304,7 +425,9 @@ async def mensajes_ws(
                 try:
 
                     destinatario_id = int(
-                        data.get("destinatario_id")
+                        data.get(
+                            "destinatario_id"
+                        )
                     )
 
                 except (
@@ -314,14 +437,16 @@ async def mensajes_ws(
 
                     continue
 
+                if destinatario_id <= 0:
+
+                    continue
+
                 archivo_url = data.get(
                     "archivo_url"
                 )
 
-                if destinatario_id <= 0:
-                    continue
-
                 if not archivo_url:
+
                     continue
 
                 archivo_url = str(
@@ -329,34 +454,36 @@ async def mensajes_ws(
                 ).strip()
 
                 if not archivo_url:
+
                     continue
 
-                # ---------------------------------------------
-                # GUARDAR + ENVIAR
-                # ---------------------------------------------
+                try:
 
-                await manager.enviar_archivo_ws(
-                    remitente_id=empleado_id,
-                    destinatario_id=destinatario_id,
-                    archivo_url=archivo_url,
-                )
+                    await manager.enviar_archivo_ws(
+                        remitente_id=empleado_id,
+                        destinatario_id=destinatario_id,
+                        archivo_url=archivo_url,
+                    )
 
-                # Igual que con el mensaje:
-                #
-                # enviar_archivo_ws() ya realiza todo.
-                #
-                # NO enviamos otro evento aquí.
+                except Exception as exc:
+
+                    print(
+                        "[WS-MSG] Error guardando "
+                        f"archivo: {exc}",
+                        flush=True,
+                    )
 
                 continue
 
     except WebSocketDisconnect:
+
         pass
 
     except Exception as exc:
 
         print(
-            f"[WS-MSG] Error general "
-            f"empleado {empleado_id}: {exc}",
+            "[WS-MSG] ERROR GENERAL "
+            f"empleado={empleado_id}: {exc}",
             flush=True,
         )
 
@@ -374,7 +501,8 @@ async def mensajes_ws(
         )
 
         print(
-            f"[WS-MSG] Desconectado: {empleado_id}",
+            f"[WS-MSG] DESCONECTADO "
+            f"empleado={empleado_id}",
             flush=True,
         )
 
@@ -382,24 +510,33 @@ async def mensajes_ws(
         # OFFLINE
         # =================================================
 
-        # Solo notificamos offline cuando ya no queda
-        # ninguna pestaña/conexión del empleado.
-
         if era_ultima_conexion:
 
-            await manager.broadcast(
-                {
-                    "tipo": "offline",
-                    "id": empleado_id,
-                }
-            )
+            try:
+
+                await manager.broadcast(
+                    {
+                        "tipo": "offline",
+                        "id": empleado_id,
+                    }
+                )
+
+            except Exception as exc:
+
+                print(
+                    "[WS-MSG] Error broadcast offline: "
+                    f"{exc}",
+                    flush=True,
+                )
 
         # =================================================
-        # CERRAR DB
+        # DB
         # =================================================
 
         try:
-            db.close()
-        except Exception:
-            pass
 
+            db.close()
+
+        except Exception:
+
+            pass
