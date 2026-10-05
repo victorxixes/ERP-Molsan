@@ -110,7 +110,16 @@ def listar_municipios(
         .all()
     )
 
-    return municipios
+    return [
+        {
+            "id": municipio.id,
+            "ccaa": municipio.ccaa,
+            "provincia": municipio.provincia,
+            "municipio": municipio.municipio,
+            "activo": municipio.activo,
+        }
+        for municipio in municipios
+    ]
 
 
 # ============================================================
