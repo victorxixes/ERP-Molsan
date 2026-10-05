@@ -1,41 +1,7 @@
-import io
-
-import pandas as pd
-from sqlalchemy.orm import Session
-
-from backend.app.municipios.models import Municipio
-
-================================================================
-IMPORTADOR DE MUNICIPIOS — MOLSAN ERP
-================================================================
-
-Lee un Excel con las columnas:
-
-    CCAA
-    PROVINCIA
-    MUNICIPIO
-
-y sincroniza los datos con la tabla:
-
-    municipios
-
-Reglas:
-
-- CCAA obligatoria
-- PROVINCIA obligatoria
-- MUNICIPIO obligatorio
-- Los espacios exteriores se eliminan
-- Las filas vacías se ignoran
-- Los duplicados del Excel se ignoran
-- Los municipios existentes se actualizan
-- Los nuevos municipios se crean
-- La combinación CCAA + PROVINCIA + MUNICIPIO es única
-
-================================================================
-"""
-
 from io import BytesIO
-from typing import Any, Dict
+import re
+import unicodedata
+from typing import Any, Dict, List, Tuple
 
 import pandas as pd
 from sqlalchemy.orm import Session
@@ -44,8 +10,30 @@ from backend.app.municipios.models import Municipio
 
 
 # ============================================================
-# CONFIGURACIÓN
+# IMPORTADOR DE MUNICIPIOS
+# MOLSAN ERP
 # ============================================================
+#
+# Excel esperado:
+#
+#   CCAA
+#   PROVINCIA
+#   MUNICIPIO
+#
+# Reglas:
+#
+# - CCAA obligatoria
+# - PROVINCIA obligatoria
+# - MUNICIPIO obligatorio
+# - Se eliminan espacios exteriores
+# - Se normalizan espacios internos
+# - Filas completamente vacías -> omitidas
+# - Duplicados del Excel -> omitidos
+# - Municipios existentes -> actualizados/reactivados
+# - Municipios nuevos -> creados
+#
+# ============================================================
+
 
 BATCH_SIZE = 500
 
@@ -54,7 +42,9 @@ BATCH_SIZE = 500
 # NORMALIZAR TEXTO
 # ============================================================
 
-def normalizar_texto(valor: Any) -> str:
+def normalizar_texto(
+    valor: Any,
+) -> str:
 
     if valor is None:
         return ""
@@ -69,50 +59,68 @@ def normalizar_texto(valor: Any) -> str:
 
     texto = str(valor).strip()
 
-    # Evitar valores típicos de Excel
     if texto.lower() in {
         "nan",
         "none",
         "null",
     }:
+
         return ""
 
-    return texto
+    # --------------------------------------------------------
+    # Normalizar espacios
+    # --------------------------------------------------------
+
+    texto = re.sub(
+        r"\s+",
+        " ",
+        texto,
+    )
+
+    return texto.strip()
 
 
 # ============================================================
 # NORMALIZAR NOMBRE DE COLUMNA
 # ============================================================
 
-def normalizar_nombre_columna(nombre: Any) -> str:
+def normalizar_nombre_columna(
+    nombre: Any,
+) -> str:
 
     if nombre is None:
         return ""
 
-    texto = str(nombre).strip().upper()
+    texto = str(
+        nombre
+    ).strip().upper()
 
-    # Eliminamos espacios internos para tolerar:
-    #
-    # "COMUNIDAD AUTÓNOMA"
-    # "COMUNIDAD AUTONOMA"
-    #
-    # aunque nuestro Excel esperado sea CCAA.
+    # --------------------------------------------------------
+    # Quitar acentos
+    # --------------------------------------------------------
 
-    texto = (
-        texto
-        .replace("Á", "A")
-        .replace("É", "E")
-        .replace("Í", "I")
-        .replace("Ó", "O")
-        .replace("Ú", "U")
-        .replace("Ü", "U")
+    texto = unicodedata.normalize(
+        "NFKD",
+        texto,
     )
 
     texto = (
         texto
-        .replace(" ", "")
-        .replace("_", "")
-        .replace("-", "")
+        .encode(
+            "ascii",
+            "ignore",
+        )
+        .decode("ascii")
+    )
+
+    # --------------------------------------------------------
+    # Dejar únicamente letras y números
+    # --------------------------------------------------------
+
+    texto = re.sub(
+        r"[^A-Z0-9]",
+        "",
+        texto,
     )
 
     return texto
@@ -122,7 +130,9 @@ def normalizar_nombre_columna(nombre: Any) -> str:
 # DETECTAR COLUMNAS
 # ============================================================
 
-def detectar_columnas(df: pd.DataFrame):
+def detectar_columnas(
+    df: pd.DataFrame,
+) -> Dict[str, Any]:
 
     columnas = {}
 
@@ -132,32 +142,34 @@ def detectar_columnas(df: pd.DataFrame):
             columna
         )
 
-        columnas[normalizada] = columna
+        columnas[
+            normalizada
+        ] = columna
 
+    # --------------------------------------------------------
+    # ALIAS ADMITIDOS
+    # --------------------------------------------------------
 
     aliases = {
 
-        "CCAA": [
+        "CCAA": {
             "CCAA",
             "COMUNIDADAUTONOMA",
-            "COMUNIDADAUTONOMA",
-        ],
+            "COMUNIDADESAUTONOMAS",
+        },
 
-        "PROVINCIA": [
+        "PROVINCIA": {
             "PROVINCIA",
-            "PROVINCIA",
-        ],
+        },
 
-        "MUNICIPIO": [
+        "MUNICIPIO": {
             "MUNICIPIO",
             "MUNICIPIOS",
-        ],
+        },
 
     }
 
-
     resultado = {}
-
 
     for campo, posibles in aliases.items():
 
@@ -167,23 +179,45 @@ def detectar_columnas(df: pd.DataFrame):
 
             if posible in columnas:
 
-                encontrada = columnas[posible]
+                encontrada = columnas[
+                    posible
+                ]
 
                 break
 
-
         if encontrada is None:
 
-            raise ValueError(
-                f"No se encuentra la columna obligatoria "
-                f"'{campo}' en el Excel."
+            disponibles = ", ".join(
+                str(columna)
+                for columna in df.columns
             )
 
+            raise ValueError(
+                "No se encuentra la columna obligatoria "
+                f"'{campo}' en el Excel. "
+                f"Columnas detectadas: {disponibles}"
+            )
 
         resultado[campo] = encontrada
 
-
     return resultado
+
+
+# ============================================================
+# CLAVE NORMALIZADA
+# ============================================================
+
+def clave_municipio(
+    ccaa: str,
+    provincia: str,
+    municipio: str,
+) -> Tuple[str, str, str]:
+
+    return (
+        ccaa.casefold(),
+        provincia.casefold(),
+        municipio.casefold(),
+    )
 
 
 # ============================================================
@@ -195,14 +229,32 @@ def importar_excel_municipios(
     db: Session,
 ) -> Dict[str, Any]:
 
+    # ========================================================
+    # CONTADORES
+    # ========================================================
+
+    total_excel = 0
+
+    procesados = 0
     creados = 0
     actualizados = 0
+    sin_cambios = 0
     errores = 0
-    procesados = 0
     omitidos = 0
 
-    errores_detalle = []
+    errores_detalle: List[
+        Dict[str, Any]
+    ] = []
 
+    # ========================================================
+    # VALIDAR CONTENIDO
+    # ========================================================
+
+    if not contenido:
+
+        raise ValueError(
+            "El archivo Excel está vacío."
+        )
 
     # ========================================================
     # LEER EXCEL
@@ -210,307 +262,421 @@ def importar_excel_municipios(
 
     try:
 
-        archivo = BytesIO(
-            contenido
+        df = pd.read_excel(
+            BytesIO(contenido),
+            engine="openpyxl",
         )
 
+    except Exception as exc_openpyxl:
+
+        # ----------------------------------------------------
+        # Segundo intento
+        # ----------------------------------------------------
 
         try:
 
             df = pd.read_excel(
-                archivo,
-                engine="openpyxl",
+                BytesIO(contenido)
             )
 
-        except Exception:
+        except Exception as exc:
 
-            archivo.seek(0)
-
-            df = pd.read_excel(
-                archivo,
-            )
-
-
-    except Exception as exc:
-
-        raise ValueError(
-            f"No se pudo leer el archivo Excel: {exc}"
-        )
-
+            raise ValueError(
+                "No se pudo leer el archivo Excel: "
+                f"{exc}"
+            ) from exc
 
     # ========================================================
-    # VALIDAR EXCEL
+    # TOTAL ORIGINAL
+    # ========================================================
+
+    total_excel = int(
+        len(df)
+    )
+
+    # ========================================================
+    # EXCEL VACÍO
     # ========================================================
 
     if df is None or df.empty:
 
         return {
             "ok": True,
-            "mensaje": "El Excel no contiene filas.",
+            "mensaje": (
+                "El Excel no contiene filas."
+            ),
+            "total_excel": total_excel,
             "procesados": 0,
             "creados": 0,
             "actualizados": 0,
+            "sin_cambios": 0,
             "errores": 0,
             "omitidos": 0,
             "errores_detalle": [],
         }
 
+    # ========================================================
+    # DETECTAR COLUMNAS
+    # ========================================================
 
     columnas = detectar_columnas(
         df
     )
 
-
-    columna_ccaa =
-        columnas["CCAA"]
-
-    columna_provincia =
-        columnas["PROVINCIA"]
-
-    columna_municipio =
-        columnas["MUNICIPIO"]
-
-
     # ========================================================
-    # RENOMBRAR COLUMNAS
+    # RENOMBRAR
     # ========================================================
 
     df = df.rename(
         columns={
-            columna_ccaa: "CCAA",
-            columna_provincia: "PROVINCIA",
-            columna_municipio: "MUNICIPIO",
+            columnas["CCAA"]: "CCAA",
+            columnas["PROVINCIA"]: "PROVINCIA",
+            columnas["MUNICIPIO"]: "MUNICIPIO",
         }
     )
 
-
-    # ========================================================
-    # LIMPIEZA
-    # ========================================================
-
-    df["CCAA"] = (
-        df["CCAA"]
-        .map(normalizar_texto)
-    )
-
-    df["PROVINCIA"] = (
-        df["PROVINCIA"]
-        .map(normalizar_texto)
-    )
-
-    df["MUNICIPIO"] = (
-        df["MUNICIPIO"]
-        .map(normalizar_texto)
-    )
-
-
-    # ========================================================
-    # ELIMINAR FILAS COMPLETAMENTE VACÍAS
-    # ========================================================
+    # --------------------------------------------------------
+    # Trabajaremos únicamente con estas tres columnas
+    # --------------------------------------------------------
 
     df = df[
-        ~(
-            (df["CCAA"] == "") &
-            (df["PROVINCIA"] == "") &
-            (df["MUNICIPIO"] == "")
-        )
-    ].copy()
-
-
-    # ========================================================
-    # ELIMINAR FILAS SIN MUNICIPIO
-    # ========================================================
-
-    filas_sin_municipio = (
-        df["MUNICIPIO"] == ""
-    ).sum()
-
-
-    omitidos += int(
-        filas_sin_municipio
-    )
-
-
-    df = df[
-        df["MUNICIPIO"] != ""
-    ].copy()
-
-
-    if df.empty:
-
-        return {
-            "ok": True,
-            "mensaje": "No hay municipios válidos para importar.",
-            "procesados": 0,
-            "creados": 0,
-            "actualizados": 0,
-            "errores": 0,
-            "omitidos": omitidos,
-            "errores_detalle": [],
-        }
-
-
-    # ========================================================
-    # DEDUPLICAR EXCEL
-    # ========================================================
-
-    antes_deduplicacion = len(df)
-
-
-    df = df.drop_duplicates(
-        subset=[
+        [
             "CCAA",
             "PROVINCIA",
             "MUNICIPIO",
-        ],
-        keep="first",
-    ).copy()
+        ]
+    ].copy()
 
+    # ========================================================
+    # NORMALIZAR DATOS
+    # ========================================================
 
-    omitidos += (
-        antes_deduplicacion -
-        len(df)
+    for columna in [
+        "CCAA",
+        "PROVINCIA",
+        "MUNICIPIO",
+    ]:
+
+        df[columna] = df[
+            columna
+        ].map(
+            normalizar_texto
+        )
+
+    # ========================================================
+    # PREPARAR FILAS VÁLIDAS
+    # ========================================================
+
+    filas_validas = []
+
+    claves_excel = set()
+
+    for fila_excel, fila in enumerate(
+        df.itertuples(
+            index=False
+        ),
+        start=2,
+    ):
+
+        ccaa = normalizar_texto(
+            fila.CCAA
+        )
+
+        provincia = normalizar_texto(
+            fila.PROVINCIA
+        )
+
+        municipio_nombre = normalizar_texto(
+            fila.MUNICIPIO
+        )
+
+        # ----------------------------------------------------
+        # FILA COMPLETAMENTE VACÍA
+        # ----------------------------------------------------
+
+        if (
+            not ccaa
+            and not provincia
+            and not municipio_nombre
+        ):
+
+            omitidos += 1
+
+            continue
+
+        # ----------------------------------------------------
+        # VALIDAR CAMPOS OBLIGATORIOS
+        # ----------------------------------------------------
+
+        if not ccaa:
+
+            errores += 1
+
+            if len(errores_detalle) < 100:
+
+                errores_detalle.append(
+                    {
+                        "fila": fila_excel,
+                        "error": (
+                            "CCAA vacía."
+                        ),
+                        "provincia": provincia,
+                        "municipio": municipio_nombre,
+                    }
+                )
+
+            continue
+
+        if not provincia:
+
+            errores += 1
+
+            if len(errores_detalle) < 100:
+
+                errores_detalle.append(
+                    {
+                        "fila": fila_excel,
+                        "error": (
+                            "PROVINCIA vacía."
+                        ),
+                        "ccaa": ccaa,
+                        "municipio": municipio_nombre,
+                    }
+                )
+
+            continue
+
+        if not municipio_nombre:
+
+            errores += 1
+
+            if len(errores_detalle) < 100:
+
+                errores_detalle.append(
+                    {
+                        "fila": fila_excel,
+                        "error": (
+                            "MUNICIPIO vacío."
+                        ),
+                        "ccaa": ccaa,
+                        "provincia": provincia,
+                    }
+                )
+
+            continue
+
+        # ----------------------------------------------------
+        # CLAVE
+        # ----------------------------------------------------
+
+        clave = clave_municipio(
+            ccaa,
+            provincia,
+            municipio_nombre,
+        )
+
+        # ----------------------------------------------------
+        # DUPLICADO EN EXCEL
+        # ----------------------------------------------------
+
+        if clave in claves_excel:
+
+            omitidos += 1
+
+            continue
+
+        claves_excel.add(
+            clave
+        )
+
+        filas_validas.append(
+            (
+                ccaa,
+                provincia,
+                municipio_nombre,
+            )
+        )
+
+    # ========================================================
+    # NO HAY FILAS VÁLIDAS
+    # ========================================================
+
+    if not filas_validas:
+
+        return {
+            "ok": errores == 0,
+            "mensaje": (
+                "No hay municipios válidos "
+                "para importar."
+            ),
+            "total_excel": total_excel,
+            "procesados": 0,
+            "creados": 0,
+            "actualizados": 0,
+            "sin_cambios": 0,
+            "errores": errores,
+            "omitidos": omitidos,
+            "errores_detalle": (
+                errores_detalle[:100]
+            ),
+        }
+
+    # ========================================================
+    # CARGAR MUNICIPIOS EXISTENTES
+    # ========================================================
+    #
+    # España tiene un catálogo manejable de municipios,
+    # por lo que una lectura completa de la tabla es mucho
+    # más eficiente que lanzar una consulta SQL por cada fila.
+    #
+    # ========================================================
+
+    existentes = (
+        db.query(Municipio)
+        .all()
     )
 
+    existentes_por_clave = {}
+
+    for registro in existentes:
+
+        clave = clave_municipio(
+            normalizar_texto(
+                registro.ccaa
+            ),
+            normalizar_texto(
+                registro.provincia
+            ),
+            normalizar_texto(
+                registro.municipio
+            ),
+        )
+
+        existentes_por_clave[
+            clave
+        ] = registro
 
     # ========================================================
     # PROCESAMIENTO POR LOTES
     # ========================================================
 
-    registros_lote = []
+    try:
 
+        for inicio in range(
+            0,
+            len(filas_validas),
+            BATCH_SIZE,
+        ):
 
-    for indice, fila in df.iterrows():
+            lote = filas_validas[
+                inicio:inicio + BATCH_SIZE
+            ]
 
-        try:
+            for (
+                ccaa,
+                provincia,
+                municipio_nombre,
+            ) in lote:
 
-            ccaa = normalizar_texto(
-                fila["CCAA"]
-            )
-
-            provincia = normalizar_texto(
-                fila["PROVINCIA"]
-            )
-
-            municipio_nombre = normalizar_texto(
-                fila["MUNICIPIO"]
-            )
-
-
-            # ----------------------------------------------
-            # VALIDACIÓN
-            # ----------------------------------------------
-
-            if not ccaa:
-
-                errores += 1
-
-                errores_detalle.append({
-                    "fila": int(indice) + 2,
-                    "error": "CCAA vacía.",
-                    "municipio": municipio_nombre,
-                })
-
-                continue
-
-
-            if not provincia:
-
-                errores += 1
-
-                errores_detalle.append({
-                    "fila": int(indice) + 2,
-                    "error": "PROVINCIA vacía.",
-                    "municipio": municipio_nombre,
-                })
-
-                continue
-
-
-            if not municipio_nombre:
-
-                errores += 1
-
-                errores_detalle.append({
-                    "fila": int(indice) + 2,
-                    "error": "MUNICIPIO vacío.",
-                })
-
-                continue
-
-
-            registros_lote.append(
-                (
+                clave = clave_municipio(
                     ccaa,
                     provincia,
                     municipio_nombre,
                 )
+
+                existente = (
+                    existentes_por_clave.get(
+                        clave
+                    )
+                )
+
+                # ============================================
+                # EXISTENTE
+                # ============================================
+
+                if existente is not None:
+
+                    cambio = False
+
+                    if existente.ccaa != ccaa:
+
+                        existente.ccaa = ccaa
+
+                        cambio = True
+
+                    if existente.provincia != provincia:
+
+                        existente.provincia = provincia
+
+                        cambio = True
+
+                    if (
+                        existente.municipio
+                        != municipio_nombre
+                    ):
+
+                        existente.municipio = (
+                            municipio_nombre
+                        )
+
+                        cambio = True
+
+                    # ----------------------------------------
+                    # Reactivar si estaba borrado lógicamente
+                    # ----------------------------------------
+
+                    if existente.activo is not True:
+
+                        existente.activo = True
+
+                        cambio = True
+
+                    if cambio:
+
+                        actualizados += 1
+
+                    else:
+
+                        sin_cambios += 1
+
+                # ============================================
+                # NUEVO
+                # ============================================
+
+                else:
+
+                    nuevo = Municipio(
+                        ccaa=ccaa,
+                        provincia=provincia,
+                        municipio=municipio_nombre,
+                        activo=True,
+                    )
+
+                    db.add(
+                        nuevo
+                    )
+
+                    # Añadimos inmediatamente al diccionario
+                    # para que no vuelva a intentarse insertar.
+                    existentes_por_clave[
+                        clave
+                    ] = nuevo
+
+                    creados += 1
+
+            # ------------------------------------------------
+            # FLUSH DEL LOTE
+            # ------------------------------------------------
+
+            db.flush()
+
+            procesados += len(
+                lote
             )
 
-
-            # ----------------------------------------------
-            # PROCESAR LOTE
-            # ----------------------------------------------
-
-            if len(registros_lote) >= BATCH_SIZE:
-
-                c, a, e = _procesar_lote(
-                    db,
-                    registros_lote,
-                    errores_detalle,
-                )
-
-                creados += c
-                actualizados += a
-                errores += e
-
-                procesados += len(
-                    registros_lote
-                )
-
-                registros_lote = []
-
-
-        except Exception as exc:
-
-            errores += 1
-
-            errores_detalle.append({
-                "fila": int(indice) + 2,
-                "error": str(exc),
-            })
-
-
-    # ========================================================
-    # ÚLTIMO LOTE
-    # ========================================================
-
-    if registros_lote:
-
-        cantidad_lote = len(
-            registros_lote
-        )
-
-
-        c, a, e = _procesar_lote(
-            db,
-            registros_lote,
-            errores_detalle,
-        )
-
-
-        creados += c
-        actualizados += a
-        errores += e
-
-        procesados += cantidad_lote
-
-
-    # ========================================================
-    # COMMIT FINAL
-    # ========================================================
-
-    try:
+        # ====================================================
+        # COMMIT FINAL
+        # ====================================================
 
         db.commit()
 
@@ -519,9 +685,9 @@ def importar_excel_municipios(
         db.rollback()
 
         raise ValueError(
-            f"Error guardando los municipios: {exc}"
-        )
-
+            "Error guardando los municipios: "
+            f"{exc}"
+        ) from exc
 
     # ========================================================
     # RESULTADO
@@ -531,250 +697,27 @@ def importar_excel_municipios(
 
         "ok": True,
 
-        "mensaje":
-            "Importación de municipios completada.",
+        "mensaje": (
+            "Importación de municipios "
+            "completada correctamente."
+        ),
 
-        "procesados":
-            procesados,
+        "total_excel": total_excel,
 
-        "creados":
-            creados,
+        "procesados": procesados,
 
-        "actualizados":
-            actualizados,
+        "creados": creados,
 
-        "errores":
-            errores,
+        "actualizados": actualizados,
 
-        "omitidos":
-            omitidos,
+        "sin_cambios": sin_cambios,
 
-        "total_excel":
-            int(len(df)),
+        "errores": errores,
 
-        "errores_detalle":
-            errores_detalle[:100],
+        "omitidos": omitidos,
+
+        "errores_detalle": (
+            errores_detalle[:100]
+        ),
 
     }
-
-
-# ============================================================
-# PROCESAR LOTE
-# ============================================================
-
-def _procesar_lote(
-    db: Session,
-    registros,
-    errores_detalle,
-):
-
-    creados = 0
-    actualizados = 0
-    errores = 0
-
-
-    # ========================================================
-    # CLAVES DEL LOTE
-    # ========================================================
-
-    claves = [
-        (
-            ccaa,
-            provincia,
-            municipio,
-        )
-        for (
-            ccaa,
-            provincia,
-            municipio,
-        ) in registros
-    ]
-
-
-    # ========================================================
-    # BUSCAR EXISTENTES
-    # ========================================================
-
-    existentes = {}
-
-
-    for (
-        ccaa,
-        provincia,
-        municipio,
-    ) in claves:
-
-        try:
-
-            registro =
-                db.query(Municipio).filter(
-                    Municipio.ccaa == ccaa,
-                    Municipio.provincia == provincia,
-                    Municipio.municipio == municipio,
-                ).first()
-
-
-            if registro:
-
-                existentes[
-                    (
-                        ccaa,
-                        provincia,
-                        municipio,
-                    )
-                ] = registro
-
-
-        except Exception as exc:
-
-            errores += 1
-
-            errores_detalle.append({
-                "ccaa": ccaa,
-                "provincia": provincia,
-                "municipio": municipio,
-                "error": str(exc),
-            })
-
-
-    # ========================================================
-    # INSERTAR / ACTUALIZAR
-    # ========================================================
-
-    for (
-        ccaa,
-        provincia,
-        municipio_nombre,
-    ) in registros:
-
-        clave = (
-            ccaa,
-            provincia,
-            municipio_nombre,
-        )
-
-
-        try:
-
-            existente =
-                existentes.get(
-                    clave
-                )
-
-
-            if existente:
-
-                # ------------------------------------------
-                # EXISTENTE
-                # ------------------------------------------
-
-                cambio = False
-
-
-                if existente.ccaa != ccaa:
-
-                    existente.ccaa = ccaa
-
-                    cambio = True
-
-
-                if existente.provincia != provincia:
-
-                    existente.provincia = provincia
-
-                    cambio = True
-
-
-                if existente.municipio != municipio_nombre:
-
-                    existente.municipio =
-                        municipio_nombre
-
-                    cambio = True
-
-
-                # Un municipio que vuelve a entrar
-                # mediante Excel debe quedar activo.
-
-                if existente.activo is not True:
-
-                    existente.activo = True
-
-                    cambio = True
-
-
-                if cambio:
-
-                    actualizados += 1
-
-                else:
-
-                    # Aunque no haya cambios, contamos
-                    # el registro como actualizado/
-                    # procesado sin generar una inserción.
-
-                    actualizados += 1
-
-
-            else:
-
-                nuevo = Municipio(
-
-                    ccaa=ccaa,
-
-                    provincia=provincia,
-
-                    municipio=municipio_nombre,
-
-                    activo=True,
-                )
-
-
-                db.add(
-                    nuevo
-                )
-
-
-                creados += 1
-
-
-        except Exception as exc:
-
-            errores += 1
-
-            errores_detalle.append({
-                "ccaa": ccaa,
-                "provincia": provincia,
-                "municipio": municipio_nombre,
-                "error": str(exc),
-            })
-
-
-    # ========================================================
-    # FLUSH
-    # ========================================================
-
-    try:
-
-        db.flush()
-
-    except Exception as exc:
-
-        db.rollback()
-
-        errores += len(
-            registros
-        )
-
-        errores_detalle.append({
-            "error":
-                f"Error procesando lote: {exc}",
-        })
-
-
-    return (
-        creados,
-        actualizados,
-        errores,
-    )
-
