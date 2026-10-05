@@ -270,50 +270,18 @@ def geocode_notaria(
     notaria: Notaria,
 ) -> bool:
 
-    # --------------------------------------------------------
-    # SI YA TIENE LAS DOS COORDENADAS → NO HACER NADA
-    # --------------------------------------------------------
-
     if notaria.lat and notaria.lng:
-        pass
-
-    elif notaria.lat and notaria.lng:
         return False
-
-    # --------------------------------------------------------
-    # Construir dirección
-    # --------------------------------------------------------
 
     raw_address = _build_address(notaria)
 
     if not raw_address:
-
-        logger.warning(
-            "Sin dirección para notaría id=%s",
-            notaria.id,
-        )
-
         return False
-
-    # --------------------------------------------------------
-    # Normalizar
-    # --------------------------------------------------------
 
     address = limpiar_direccion(raw_address)
 
     if not address:
-
-        logger.warning(
-            "Dirección vacía después de normalizar "
-            "para notaría id=%s",
-            notaria.id,
-        )
-
         return False
-
-    # --------------------------------------------------------
-    # Google
-    # --------------------------------------------------------
 
     coords = _geocode_google(address)
 
@@ -322,12 +290,7 @@ def geocode_notaria(
 
     lat, lng = coords
 
-    # --------------------------------------------------------
-    # Guardar
-    # --------------------------------------------------------
-
     try:
-
         notaria.lat = str(lat)
         notaria.lng = str(lng)
 
@@ -335,18 +298,9 @@ def geocode_notaria(
         db.commit()
         db.refresh(notaria)
 
-        logger.info(
-            "COORDENADAS GUARDADAS "
-            "id=%s lat=%s lng=%s",
-            notaria.id,
-            lat,
-            lng,
-        )
-
         return True
 
     except Exception as e:
-
         db.rollback()
 
         logger.error(
