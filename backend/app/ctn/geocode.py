@@ -1,13 +1,16 @@
-import time
 import logging
 import os
+import time
 from typing import Optional
 
 import requests
 from sqlalchemy.orm import Session
 
 from backend.app.ctn.models import Notaria
-from backend.app.ctn.normalizador import limpiar_direccion
+from backend.app.ctn.normalizador import (
+    limpiar_texto,
+    limpiar_direccion,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -27,7 +30,7 @@ GOOGLE_GEOCODE_URL = (
 
 
 # ============================================================
-# COORDENADAS MOLSAN
+# MOLSAN
 # ============================================================
 
 MOLSAN_LAT = 41.424960
@@ -35,106 +38,219 @@ MOLSAN_LNG = 2.181740
 
 
 # ============================================================
-# CONSTRUIR DIRECCIÓN
+# DELAY
 # ============================================================
 
-def _build_address(
+GEOCODE_DELAY = 0.20
+
+
+# ============================================================
+# CONSTRUIR DIRECCIONES POSIBLES
+# ============================================================
+
+def _build_address_variants(
     notaria: Notaria,
-) -> Optional[str]:
+) -> list[str]:
+    """
+    Genera varias versiones de la dirección.
 
-    partes = []
+    Orden:
 
-    # --------------------------------------------------------
-    # DIRECCIÓN
-    # --------------------------------------------------------
+    1. Dirección completa
+    2. Dirección + municipio + provincia
+    3. Dirección + CP + municipio
+    4. CP + municipio + provincia
+    5. Municipio + provincia
 
-    direccion = getattr(
-        notaria,
-        "direccion",
-        None
+    Se eliminan duplicados.
+    """
+
+    direccion = limpiar_direccion(
+        getattr(
+            notaria,
+            "direccion",
+            None,
+        )
     )
 
-    if direccion:
-        direccion = str(direccion).strip()
-
-        if direccion:
-            partes.append(direccion)
-
-    # --------------------------------------------------------
-    # CÓDIGO POSTAL
-    # --------------------------------------------------------
-
-    cp = getattr(
-        notaria,
-        "cp",
-        None
+    cp = limpiar_texto(
+        getattr(
+            notaria,
+            "cp",
+            None,
+        )
     )
 
-    if cp:
-        cp = str(cp).strip()
-
-        if cp:
-            partes.append(cp)
-
-    # --------------------------------------------------------
-    # MUNICIPIO
-    # --------------------------------------------------------
-
-    municipio = getattr(
-        notaria,
-        "municipio",
-        None
+    municipio = limpiar_texto(
+        getattr(
+            notaria,
+            "municipio",
+            None,
+        )
     )
 
-    if municipio:
-        municipio = str(municipio).strip()
-
-        if municipio:
-            partes.append(municipio)
-
-    # --------------------------------------------------------
-    # PROVINCIA
-    # --------------------------------------------------------
-
-    provincia = getattr(
-        notaria,
-        "provincia",
-        None
+    provincia = limpiar_texto(
+        getattr(
+            notaria,
+            "provincia",
+            None,
+        )
     )
 
-    if provincia:
-        provincia = str(provincia).strip()
-
-        if provincia:
-            partes.append(provincia)
+    variantes = []
 
     # --------------------------------------------------------
-    # ESPAÑA
+    # 1. Dirección + CP + municipio + provincia
     # --------------------------------------------------------
 
-    partes.append(
-        "España"
+    partes = [
+        direccion,
+        cp,
+        municipio,
+        provincia,
+        "España",
+    ]
+
+    completa = ", ".join(
+        p for p in partes
+        if p
     )
 
+    if completa:
+        variantes.append(
+            completa
+        )
+
     # --------------------------------------------------------
-    # VALIDACIÓN
+    # 2. Dirección + municipio + provincia
     # --------------------------------------------------------
 
-    if len(partes) <= 1:
-        return None
+    partes = [
+        direccion,
+        municipio,
+        provincia,
+        "España",
+    ]
 
-    return ", ".join(
-        partes
+    variante = ", ".join(
+        p for p in partes
+        if p
     )
+
+    if variante:
+        variantes.append(
+            variante
+        )
+
+    # --------------------------------------------------------
+    # 3. Dirección + CP + municipio
+    # --------------------------------------------------------
+
+    partes = [
+        direccion,
+        cp,
+        municipio,
+        "España",
+    ]
+
+    variante = ", ".join(
+        p for p in partes
+        if p
+    )
+
+    if variante:
+        variantes.append(
+            variante
+        )
+
+    # --------------------------------------------------------
+    # 4. CP + municipio + provincia
+    # --------------------------------------------------------
+
+    partes = [
+        cp,
+        municipio,
+        provincia,
+        "España",
+    ]
+
+    variante = ", ".join(
+        p for p in partes
+        if p
+    )
+
+    if variante:
+        variantes.append(
+            variante
+        )
+
+    # --------------------------------------------------------
+    # 5. Municipio + provincia
+    # --------------------------------------------------------
+
+    partes = [
+        municipio,
+        provincia,
+        "España",
+    ]
+
+    variante = ", ".join(
+        p for p in partes
+        if p
+    )
+
+    if variante:
+        variantes.append(
+            variante
+        )
+
+    # --------------------------------------------------------
+    # Eliminar duplicados
+    # --------------------------------------------------------
+
+    resultado = []
+
+    vistos = set()
+
+    for variante in variantes:
+
+        clave = variante.lower().strip()
+
+        if not clave:
+            continue
+
+        if clave in vistos:
+            continue
+
+        vistos.add(
+            clave
+        )
+
+        resultado.append(
+            variante
+        )
+
+    return resultado
 
 
 # ============================================================
-# GEOCODIFICAR CON GOOGLE
+# GOOGLE
 # ============================================================
 
 def _geocode_google(
     address: str,
 ) -> Optional[tuple[float, float]]:
+    """
+    Geocodifica una dirección mediante Google.
+
+    Devuelve:
+
+        (lat, lng)
+
+    o:
+
+        None
+    """
 
     if not GOOGLE_MAPS_API_KEY:
 
@@ -156,7 +272,7 @@ def _geocode_google(
 
         logger.info(
             "GOOGLE GEOCODE REQUEST: %s",
-            address
+            address,
         )
 
         response = requests.get(
@@ -165,162 +281,161 @@ def _geocode_google(
             timeout=20,
         )
 
-        if response.status_code != 200:
-
-            logger.error(
-                "Google Maps HTTP %s para: %s",
-                response.status_code,
-                address
-            )
-
-            return None
+        response.raise_for_status()
 
         data = response.json()
 
-        status = data.get(
-            "status"
-        )
-
-        # ====================================================
-        # OK
-        # ====================================================
-
-        if status == "OK":
-
-            results = (
-                data.get("results")
-                or []
-            )
-
-            if not results:
-
-                logger.warning(
-                    "Google Maps OK pero sin resultados: %s",
-                    address
-                )
-
-                return None
-
-            result = results[0]
-
-            location = (
-                result
-                .get("geometry", {})
-                .get("location")
-            )
-
-            if not location:
-                return None
-
-            lat = location.get(
-                "lat"
-            )
-
-            lng = location.get(
-                "lng"
-            )
-
-            if lat is None or lng is None:
-                return None
-
-            formatted_address = result.get(
-                "formatted_address"
-            )
-
-            location_type = (
-                result
-                .get("geometry", {})
-                .get("location_type")
-            )
-
-            logger.info(
-                "GOOGLE OK | address=%s | "
-                "formatted=%s | "
-                "location_type=%s | "
-                "lat=%s | lng=%s",
-                address,
-                formatted_address,
-                location_type,
-                lat,
-                lng
-            )
-
-            return (
-                float(lat),
-                float(lng)
-            )
-
-        # ====================================================
-        # ZERO RESULTS
-        # ====================================================
-
-        if status == "ZERO_RESULTS":
-
-            logger.warning(
-                "GOOGLE ZERO_RESULTS | %s",
-                address
-            )
-
-            return None
-
-        # ====================================================
-        # REQUEST DENIED
-        # ====================================================
-
-        if status == "REQUEST_DENIED":
-
-            logger.error(
-                "GOOGLE REQUEST_DENIED | %s | %s",
-                address,
-                data.get("error_message")
-            )
-
-            return None
-
-        # ====================================================
-        # OVER QUERY LIMIT
-        # ====================================================
-
-        if status == "OVER_QUERY_LIMIT":
-
-            logger.error(
-                "GOOGLE OVER_QUERY_LIMIT"
-            )
-
-            return None
-
-        # ====================================================
-        # OTROS
-        # ====================================================
-
-        logger.error(
-            "GOOGLE STATUS=%s | address=%s | message=%s",
-            status,
-            address,
-            data.get("error_message")
-        )
-
-        return None
-
-    except requests.RequestException as e:
+    except requests.RequestException as exc:
 
         logger.error(
             "ERROR HTTP GOOGLE | %s | %s",
             address,
-            e
+            exc,
         )
 
         return None
 
-    except Exception as e:
+    except Exception as exc:
 
         logger.exception(
-            "ERROR GEOCODIFICANDO | %s | %s",
+            "ERROR GOOGLE | %s | %s",
             address,
-            e
+            exc,
         )
 
         return None
+
+    status = data.get(
+        "status"
+    )
+
+    # --------------------------------------------------------
+    # OK
+    # --------------------------------------------------------
+
+    if status == "OK":
+
+        results = (
+            data.get("results")
+            or []
+        )
+
+        if not results:
+
+            logger.warning(
+                "GOOGLE OK SIN RESULTADOS | %s",
+                address,
+            )
+
+            return None
+
+        result = results[0]
+
+        geometry = (
+            result.get(
+                "geometry"
+            )
+            or {}
+        )
+
+        location = (
+            geometry.get(
+                "location"
+            )
+            or {}
+        )
+
+        lat = location.get(
+            "lat"
+        )
+
+        lng = location.get(
+            "lng"
+        )
+
+        if lat is None or lng is None:
+            return None
+
+        logger.info(
+            "GOOGLE OK | "
+            "address=%s | "
+            "formatted=%s | "
+            "type=%s | "
+            "lat=%s | "
+            "lng=%s",
+            address,
+            result.get(
+                "formatted_address"
+            ),
+            geometry.get(
+                "location_type"
+            ),
+            lat,
+            lng,
+        )
+
+        return (
+            float(lat),
+            float(lng),
+        )
+
+    # --------------------------------------------------------
+    # ZERO RESULTS
+    # --------------------------------------------------------
+
+    if status == "ZERO_RESULTS":
+
+        logger.warning(
+            "GOOGLE ZERO_RESULTS | %s",
+            address,
+        )
+
+        return None
+
+    # --------------------------------------------------------
+    # REQUEST DENIED
+    # --------------------------------------------------------
+
+    if status == "REQUEST_DENIED":
+
+        logger.error(
+            "GOOGLE REQUEST_DENIED | %s | %s",
+            address,
+            data.get(
+                "error_message"
+            ),
+        )
+
+        return None
+
+    # --------------------------------------------------------
+    # OVER QUERY LIMIT
+    # --------------------------------------------------------
+
+    if status == "OVER_QUERY_LIMIT":
+
+        logger.error(
+            "GOOGLE OVER_QUERY_LIMIT",
+        )
+
+        return None
+
+    # --------------------------------------------------------
+    # OTROS
+    # --------------------------------------------------------
+
+    logger.error(
+        "GOOGLE STATUS=%s | "
+        "address=%s | "
+        "message=%s",
+        status,
+        address,
+        data.get(
+            "error_message"
+        ),
+    )
+
+    return None
 
 
 # ============================================================
@@ -333,105 +448,131 @@ def geocode_notaria(
 ) -> bool:
 
     # --------------------------------------------------------
-    # YA TIENE COORDENADAS
+    # Ya tiene coordenadas
     # --------------------------------------------------------
 
     if (
-        notaria.lat
-        and notaria.lng
+        limpiar_texto(
+            getattr(
+                notaria,
+                "lat",
+                None,
+            )
+        )
+        and
+        limpiar_texto(
+            getattr(
+                notaria,
+                "lng",
+                None,
+            )
+        )
     ):
         return False
 
     # --------------------------------------------------------
-    # CONSTRUIR DIRECCIÓN
+    # Variantes
     # --------------------------------------------------------
 
-    raw_address = _build_address(
+    variantes = _build_address_variants(
         notaria
     )
 
-    if not raw_address:
+    if not variantes:
 
         logger.warning(
-            "NOTARIA id=%s SIN DIRECCIÓN",
-            notaria.id
-        )
-
-        return False
-
-    # --------------------------------------------------------
-    # NORMALIZAR
-    # --------------------------------------------------------
-
-    address = limpiar_direccion(
-        raw_address
-    )
-
-    if not address:
-
-        logger.warning(
-            "NOTARIA id=%s DIRECCIÓN VACÍA | ORIGINAL=%s",
+            "NOTARIA %s SIN DATOS PARA GEOCODIFICAR",
             notaria.id,
-            raw_address
         )
 
         return False
 
-    logger.info(
-        "NOTARIA id=%s | ORIGINAL=%s",
-        notaria.id,
-        raw_address
-    )
-
-    logger.info(
-        "NOTARIA id=%s | GOOGLE=%s",
-        notaria.id,
-        address
-    )
-
     # --------------------------------------------------------
-    # GOOGLE
+    # Probar variantes
     # --------------------------------------------------------
 
-    coords = _geocode_google(
-        address
-    )
+    for indice, address in enumerate(
+        variantes,
+        start=1,
+    ):
 
-    if not coords:
-        return False
-
-    lat, lng = coords
-
-    # --------------------------------------------------------
-    # GUARDAR
-    # --------------------------------------------------------
-
-    try:
-
-        notaria.lat = str(lat)
-        notaria.lng = str(lng)
-
-        db.add(notaria)
-        db.commit()
-        db.refresh(notaria)
-
-        return True
-
-    except Exception as e:
-
-        db.rollback()
-
-        logger.error(
-            "ERROR GUARDANDO COORDENADAS id=%s: %s",
+        logger.info(
+            "NOTARIA %s | "
+            "INTENTO %s/%s | %s",
             notaria.id,
-            e
+            indice,
+            len(variantes),
+            address,
         )
 
-        return False
+        coords = _geocode_google(
+            address
+        )
+
+        if coords:
+
+            lat, lng = coords
+
+            try:
+
+                notaria.lat = str(
+                    lat
+                )
+
+                notaria.lng = str(
+                    lng
+                )
+
+                db.add(
+                    notaria
+                )
+
+                db.commit()
+
+                db.refresh(
+                    notaria
+                )
+
+                logger.info(
+                    "NOTARIA %s ACTUALIZADA | "
+                    "lat=%s lng=%s | "
+                    "query=%s",
+                    notaria.id,
+                    lat,
+                    lng,
+                    address,
+                )
+
+                return True
+
+            except Exception as exc:
+
+                db.rollback()
+
+                logger.error(
+                    "ERROR GUARDANDO NOTARIA %s: %s",
+                    notaria.id,
+                    exc,
+                )
+
+                return False
+
+        time.sleep(
+            GEOCODE_DELAY
+        )
+
+    logger.warning(
+        "NOTARIA %s SIN RESULTADOS | "
+        "variantes=%s",
+        notaria.id,
+        variantes,
+    )
+
+    return False
 
 
 # ============================================================
-# GEOCODIFICAR TODAS
+# TODAS LAS NOTARÍAS
 # ============================================================
 
 def geocode_todas_notarias(
@@ -439,7 +580,9 @@ def geocode_todas_notarias(
 ) -> dict:
 
     notarias = (
-        db.query(Notaria)
+        db.query(
+            Notaria
+        )
         .order_by(
             Notaria.id.asc()
         )
@@ -454,18 +597,19 @@ def geocode_todas_notarias(
     ya_con_coordenadas = 0
     sin_direccion = 0
     sin_resultados = 0
+    errores = 0
 
     logger.info(
         "=============================================="
     )
 
     logger.info(
-        "GEOCODIFICACIÓN NOTARÍAS - INICIO"
+        "GEOCODIFICACIÓN CTN - INICIO"
     )
 
     logger.info(
         "TOTAL NOTARÍAS: %s",
-        total
+        total,
     )
 
     logger.info(
@@ -474,144 +618,161 @@ def geocode_todas_notarias(
 
     for indice, notaria in enumerate(
         notarias,
-        start=1
+        start=1,
     ):
-
-        # ----------------------------------------------------
-        # YA TIENE COORDENADAS
-        # ----------------------------------------------------
-
-        if (
-            notaria.lat
-            and notaria.lng
-        ):
-
-            ya_con_coordenadas += 1
-
-            continue
-
-        # ----------------------------------------------------
-        # CONSTRUIR
-        # ----------------------------------------------------
-
-        raw_address = _build_address(
-            notaria
-        )
-
-        if not raw_address:
-
-            sin_direccion += 1
-
-            logger.warning(
-                "[%s/%s] SIN DIRECCIÓN id=%s",
-                indice,
-                total,
-                notaria.id
-            )
-
-            continue
-
-        # ----------------------------------------------------
-        # NORMALIZAR
-        # ----------------------------------------------------
-
-        address = limpiar_direccion(
-            raw_address
-        )
-
-        if not address:
-
-            sin_direccion += 1
-
-            logger.warning(
-                "[%s/%s] DIRECCIÓN VACÍA id=%s | ORIGINAL=%s",
-                indice,
-                total,
-                notaria.id,
-                raw_address
-            )
-
-            continue
-
-        # ----------------------------------------------------
-        # LOG
-        # ----------------------------------------------------
-
-        logger.info(
-            "[%s/%s] ID=%s | ORIGINAL=%s",
-            indice,
-            total,
-            notaria.id,
-            raw_address
-        )
-
-        logger.info(
-            "[%s/%s] ID=%s | GOOGLE=%s",
-            indice,
-            total,
-            notaria.id,
-            address
-        )
-
-        # ----------------------------------------------------
-        # GOOGLE
-        # ----------------------------------------------------
-
-        coords = _geocode_google(
-            address
-        )
-
-        if not coords:
-
-            sin_resultados += 1
-
-            continue
-
-        lat, lng = coords
-
-        # ----------------------------------------------------
-        # GUARDAR
-        # ----------------------------------------------------
 
         try:
 
-            notaria.lat = str(lat)
-            notaria.lng = str(lng)
+            lat_actual = limpiar_texto(
+                getattr(
+                    notaria,
+                    "lat",
+                    None,
+                )
+            )
 
-            db.add(notaria)
-            db.commit()
+            lng_actual = limpiar_texto(
+                getattr(
+                    notaria,
+                    "lng",
+                    None,
+                )
+            )
 
-            actualizadas += 1
+            # ------------------------------------------------
+            # YA TIENE COORDENADAS
+            # ------------------------------------------------
 
-            logger.info(
-                "[%s/%s] ACTUALIZADA id=%s "
-                "lat=%s lng=%s",
+            if (
+                lat_actual
+                and lng_actual
+            ):
+
+                ya_con_coordenadas += 1
+
+                continue
+
+            # ------------------------------------------------
+            # VARIANTES
+            # ------------------------------------------------
+
+            variantes = _build_address_variants(
+                notaria
+            )
+
+            if not variantes:
+
+                sin_direccion += 1
+
+                logger.warning(
+                    "[%s/%s] "
+                    "NOTARIA %s SIN DIRECCIÓN",
+                    indice,
+                    total,
+                    notaria.id,
+                )
+
+                continue
+
+            actualizada = False
+
+            # ------------------------------------------------
+            # PROBAR TODAS
+            # ------------------------------------------------
+
+            for intento, address in enumerate(
+                variantes,
+                start=1,
+            ):
+
+                logger.info(
+                    "[%s/%s] "
+                    "NOTARIA=%s "
+                    "INTENTO=%s/%s "
+                    "QUERY=%s",
+                    indice,
+                    total,
+                    notaria.id,
+                    intento,
+                    len(variantes),
+                    address,
+                )
+
+                coords = _geocode_google(
+                    address
+                )
+
+                if coords:
+
+                    lat, lng = coords
+
+                    notaria.lat = str(
+                        lat
+                    )
+
+                    notaria.lng = str(
+                        lng
+                    )
+
+                    db.add(
+                        notaria
+                    )
+
+                    db.commit()
+
+                    actualizadas += 1
+
+                    actualizada = True
+
+                    logger.info(
+                        "[%s/%s] "
+                        "NOTARIA=%s "
+                        "OK "
+                        "lat=%s "
+                        "lng=%s",
+                        indice,
+                        total,
+                        notaria.id,
+                        lat,
+                        lng,
+                    )
+
+                    break
+
+                time.sleep(
+                    GEOCODE_DELAY
+                )
+
+            if not actualizada:
+
+                sin_resultados += 1
+
+                logger.warning(
+                    "[%s/%s] "
+                    "NOTARIA=%s "
+                    "SIN RESULTADOS",
+                    indice,
+                    total,
+                    notaria.id,
+                )
+
+        except Exception as exc:
+
+            errores += 1
+
+            logger.exception(
+                "[%s/%s] "
+                "ERROR NOTARIA=%s: %s",
                 indice,
                 total,
                 notaria.id,
-                lat,
-                lng
+                exc,
             )
 
-        except Exception as e:
-
-            db.rollback()
-
-            logger.error(
-                "[%s/%s] ERROR GUARDANDO id=%s: %s",
-                indice,
-                total,
-                notaria.id,
-                e
-            )
-
-        # ----------------------------------------------------
-        # PAUSA
-        # ----------------------------------------------------
-
-        time.sleep(
-            0.2
-        )
+            try:
+                db.rollback()
+            except Exception:
+                pass
 
     resultado = {
         "total_notarias": total,
@@ -619,6 +780,7 @@ def geocode_todas_notarias(
         "ya_con_coordenadas": ya_con_coordenadas,
         "sin_direccion": sin_direccion,
         "sin_resultados": sin_resultados,
+        "errores": errores,
     }
 
     logger.info(
@@ -626,12 +788,12 @@ def geocode_todas_notarias(
     )
 
     logger.info(
-        "GEOCODIFICACIÓN NOTARÍAS - FINALIZADA"
+        "GEOCODIFICACIÓN CTN - FINALIZADA"
     )
 
     logger.info(
         "RESULTADO: %s",
-        resultado
+        resultado,
     )
 
     logger.info(
@@ -639,16 +801,3 @@ def geocode_todas_notarias(
     )
 
     return resultado
-
-
-# ============================================================
-# MIGRACIÓN
-# ============================================================
-
-def migracion_agregar_coordenadas(
-    db: Session,
-) -> dict:
-
-    return geocode_todas_notarias(
-        db
-    )
