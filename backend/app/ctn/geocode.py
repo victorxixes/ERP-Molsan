@@ -129,18 +129,10 @@ def _build_address(
             )
 
     # --------------------------------------------------------
-    # ESPAÑA
-    # --------------------------------------------------------
-
-    partes.append(
-        "España"
-    )
-
-    # --------------------------------------------------------
     # VALIDACIÓN
     # --------------------------------------------------------
 
-    if len(partes) <= 1:
+    if not partes:
         return None
 
     return ", ".join(
@@ -171,10 +163,11 @@ def _geocode_google(
             "key": GOOGLE_MAPS_API_KEY,
             "language": "es",
             "region": "es",
+            "components": "country:ES",
         }
 
         logger.info(
-            "GOOGLE GEOCODE: %s",
+            "GOOGLE GEOCODE REQUEST: %s",
             address,
         )
 
@@ -220,8 +213,10 @@ def _geocode_google(
 
                 return None
 
+            result = results[0]
+
             location = (
-                results[0]
+                result
                 .get("geometry", {})
                 .get("location")
             )
@@ -244,11 +239,27 @@ def _geocode_google(
             )
 
             if lat is None or lng is None:
+
                 return None
 
+            formatted_address = result.get(
+                "formatted_address"
+            )
+
+            location_type = (
+                result
+                .get("geometry", {})
+                .get("location_type")
+            )
+
             logger.info(
-                "GOOGLE OK: %s -> lat=%s lng=%s",
+                "GOOGLE OK | address=%s | "
+                "formatted=%s | "
+                "location_type=%s | "
+                "lat=%s | lng=%s",
                 address,
+                formatted_address,
+                location_type,
                 lat,
                 lng,
             )
@@ -265,20 +276,47 @@ def _geocode_google(
         if status == "ZERO_RESULTS":
 
             logger.warning(
-                "Google Maps ZERO_RESULTS: %s",
+                "GOOGLE ZERO_RESULTS | %s",
                 address,
             )
 
             return None
 
         # ====================================================
-        # OTROS ESTADOS
+        # REQUEST DENIED
+        # ====================================================
+
+        if status == "REQUEST_DENIED":
+
+            logger.error(
+                "GOOGLE REQUEST_DENIED | %s | %s",
+                address,
+                data.get("error_message"),
+            )
+
+            return None
+
+        # ====================================================
+        # OVER QUERY LIMIT
+        # ====================================================
+
+        if status == "OVER_QUERY_LIMIT":
+
+            logger.error(
+                "GOOGLE OVER_QUERY_LIMIT"
+            )
+
+            return None
+
+        # ====================================================
+        # OTROS
         # ====================================================
 
         logger.error(
-            "Google Maps status=%s para: %s",
+            "GOOGLE STATUS=%s | address=%s | message=%s",
             status,
             address,
+            data.get("error_message"),
         )
 
         return None
@@ -286,7 +324,7 @@ def _geocode_google(
     except requests.RequestException as e:
 
         logger.error(
-            "Error HTTP Google Maps '%s': %s",
+            "ERROR HTTP GOOGLE | %s | %s",
             address,
             e,
         )
@@ -296,7 +334,7 @@ def _geocode_google(
     except Exception as e:
 
         logger.exception(
-            "Error geocodificando '%s': %s",
+            "ERROR GEOCODIFICANDO | %s | %s",
             address,
             e,
         )
@@ -314,7 +352,7 @@ def geocode_notaria(
 ) -> bool:
 
     # --------------------------------------------------------
-    # YA TIENE LAS DOS COORDENADAS
+    # YA TIENE COORDENADAS
     # --------------------------------------------------------
 
     if (
@@ -332,6 +370,12 @@ def geocode_notaria(
     )
 
     if not raw_address:
+
+        logger.warning(
+            "NOTARIA id=%s SIN DIRECCIÓN",
+            notaria.id,
+        )
+
         return False
 
     # --------------------------------------------------------
@@ -343,10 +387,22 @@ def geocode_notaria(
     )
 
     if not address:
+
+        logger.warning(
+            "NOTARIA id=%s DIRECCIÓN VACÍA",
+            notaria.id,
+        )
+
         return False
 
     logger.info(
-        "DIRECCIÓN FINAL GOOGLE id=%s: %s",
+        "NOTARIA id=%s | ORIGINAL=%s",
+        notaria.id,
+        raw_address,
+    )
+
+    logger.info(
+        "NOTARIA id=%s | GOOGLE=%s",
         notaria.id,
         address,
     )
@@ -395,7 +451,7 @@ def geocode_notaria(
         db.rollback()
 
         logger.error(
-            "Error guardando coordenadas "
+            "ERROR GUARDANDO COORDENADAS "
             "id=%s: %s",
             notaria.id,
             e,
@@ -476,7 +532,7 @@ def geocode_todas_notarias(
             continue
 
         # ----------------------------------------------------
-        # DIRECCIÓN ORIGINAL
+        # CONSTRUIR
         # ----------------------------------------------------
 
         raw_address = _build_address(
@@ -518,11 +574,11 @@ def geocode_todas_notarias(
             continue
 
         # ----------------------------------------------------
-        # LOG COMPLETO
+        # LOG
         # ----------------------------------------------------
 
         logger.info(
-            "[%s/%s] ID=%s | DIRECCIÓN ORIGINAL=%s",
+            "[%s/%s] ID=%s | ORIGINAL=%s",
             indice,
             total,
             notaria.id,
@@ -530,7 +586,7 @@ def geocode_todas_notarias(
         )
 
         logger.info(
-            "[%s/%s] ID=%s | DIRECCIÓN GOOGLE=%s",
+            "[%s/%s] ID=%s | GOOGLE=%s",
             indice,
             total,
             notaria.id,
