@@ -1,7 +1,5 @@
 from pydantic import BaseModel, validator
-
 from datetime import date, time
-
 from typing import Optional
 
 
@@ -33,7 +31,6 @@ class CitaBase(BaseModel):
     def validar_tipo_cita(cls, v):
 
         if not v or not isinstance(v, str):
-
             raise ValueError(
                 "tipo_cita debe ser un texto válido"
             )
@@ -52,7 +49,6 @@ class CitaBase(BaseModel):
             == "Firma notarial"
             and v is None
         ):
-
             raise ValueError(
                 "notario_id es obligatorio "
                 "para tipo_cita = Firma notarial"
@@ -112,6 +108,8 @@ class CitaResponse(BaseModel):
     tipo_cita: str
 
     tipo_firma: Optional[str] = None
+
+    distancia_km: Optional[float] = None
 
     observaciones: Optional[str] = None
 
