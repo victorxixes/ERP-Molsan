@@ -1,30 +1,47 @@
 import { useEffect, useMemo, useState } from "react";
 
 /**
+ * ============================================================
  * MUNICIPIOS — MOLSAN ERP PREMIUM 2027
+ * ============================================================
  *
- * Gestión completa:
- * - Buscar
- * - Filtrar por CCAA
- * - Filtrar por provincia
- * - Alta
- * - Edición
- * - Eliminación
+ * Maestro de municipios
+ *
+ * Funciones:
+ * - Carga de municipios desde backend
+ * - Búsqueda instantánea
+ * - Filtro por CCAA
+ * - Filtro por provincia
+ * - Nuevo municipio
+ * - Editar municipio
+ * - Eliminar municipio
+ * - Contador de resultados
  * - Paginación
+ *
+ * Backend:
+ *
+ * GET    /api/municipios
+ * POST   /api/municipios
+ * PUT    /api/municipios/:id
+ * DELETE /api/municipios/:id
+ *
+ * ============================================================
  */
 
-const API_BASE =
-  import.meta.env.VITE_API_URL ||
-  "https://agenda-intranet-b.onrender.com/api";
+const API_BASE = "/api/municipios";
 
-const POR_PAGINA = 50;
+const FILAS_POR_PAGINA = 25;
 
 
-/* =========================================================
+/* ============================================================
    COMPONENTE PRINCIPAL
-========================================================= */
+============================================================ */
 
 export default function Municipios() {
+
+  // ----------------------------------------------------------
+  // DATOS
+  // ----------------------------------------------------------
 
   const [municipios, setMunicipios] = useState([]);
 
@@ -32,47 +49,61 @@ export default function Municipios() {
 
   const [error, setError] = useState("");
 
+
+  // ----------------------------------------------------------
+  // FILTROS
+  // ----------------------------------------------------------
+
   const [busqueda, setBusqueda] = useState("");
 
   const [ccaaFiltro, setCcaaFiltro] = useState("");
 
   const [provinciaFiltro, setProvinciaFiltro] = useState("");
 
+
+  // ----------------------------------------------------------
+  // PAGINACIÓN
+  // ----------------------------------------------------------
+
   const [pagina, setPagina] = useState(1);
+
+
+  // ----------------------------------------------------------
+  // MODAL
+  // ----------------------------------------------------------
 
   const [modalAbierto, setModalAbierto] = useState(false);
 
-  const [modoModal, setModoModal] = useState("crear");
+  const [modoModal, setModoModal] = useState("nuevo");
 
   const [municipioSeleccionado, setMunicipioSeleccionado] =
     useState(null);
 
+
+  // ----------------------------------------------------------
+  // MENSAJES
+  // ----------------------------------------------------------
+
   const [guardando, setGuardando] = useState(false);
 
-  const [eliminando, setEliminando] = useState(null);
+  const [mensaje, setMensaje] = useState("");
+
+  const [tipoMensaje, setTipoMensaje] = useState("ok");
 
 
-  /* =======================================================
-     CARGAR MUNICIPIOS
-  ======================================================= */
-
-  useEffect(() => {
-
-    cargarMunicipios();
-
-  }, []);
-
+  // ==========================================================
+  // CARGAR MUNICIPIOS
+  // ==========================================================
 
   async function cargarMunicipios() {
 
     try {
 
       setCargando(true);
+
       setError("");
 
-      const respuesta = await fetch(
-        `${API_BASE}/municipios`
-      );
+      const respuesta = await fetch(API_BASE);
 
       if (!respuesta.ok) {
         throw new Error(
@@ -96,7 +127,7 @@ export default function Municipios() {
       );
 
       setError(
-        "No se han podido cargar los municipios."
+        "No se pudieron cargar los municipios."
       );
 
     } finally {
@@ -104,29 +135,39 @@ export default function Municipios() {
       setCargando(false);
 
     }
-
   }
 
 
-  /* =======================================================
-     CCAA DISPONIBLES
-  ======================================================= */
+  // ==========================================================
+  // CARGA INICIAL
+  // ==========================================================
 
-  const ccaas = useMemo(() => {
+  useEffect(() => {
+
+    cargarMunicipios();
+
+  }, []);
+
+
+  // ==========================================================
+  // LISTA DE CCAA
+  // ==========================================================
+
+  const ccaaDisponibles = useMemo(() => {
 
     return [
       ...new Set(
         municipios
-          .map((item) => item.ccaa)
+          .map((m) => m.ccaa)
           .filter(Boolean)
-      ),
+      )
     ].sort(
       (a, b) =>
         a.localeCompare(
           b,
           "es",
           {
-            sensitivity: "base",
+            sensitivity: "base"
           }
         )
     );
@@ -134,19 +175,19 @@ export default function Municipios() {
   }, [municipios]);
 
 
-  /* =======================================================
-     PROVINCIAS DISPONIBLES
-  ======================================================= */
+  // ==========================================================
+  // LISTA DE PROVINCIAS
+  // ==========================================================
 
-  const provincias = useMemo(() => {
+  const provinciasDisponibles = useMemo(() => {
 
     let datos = municipios;
 
     if (ccaaFiltro) {
 
       datos = datos.filter(
-        (item) =>
-          item.ccaa === ccaaFiltro
+        (m) =>
+          m.ccaa === ccaaFiltro
       );
 
     }
@@ -154,67 +195,77 @@ export default function Municipios() {
     return [
       ...new Set(
         datos
-          .map((item) => item.provincia)
+          .map((m) => m.provincia)
           .filter(Boolean)
-      ),
+      )
     ].sort(
       (a, b) =>
         a.localeCompare(
           b,
           "es",
           {
-            sensitivity: "base",
+            sensitivity: "base"
           }
         )
     );
 
   }, [
     municipios,
-    ccaaFiltro,
+    ccaaFiltro
   ]);
 
 
-  /* =======================================================
-     FILTRADO
-  ======================================================= */
+  // ==========================================================
+  // BÚSQUEDA INSTANTÁNEA
+  // ==========================================================
 
   const municipiosFiltrados = useMemo(() => {
 
     const texto =
       busqueda
         .trim()
-        .toLocaleLowerCase(
-          "es"
-        );
+        .toLocaleLowerCase("es");
 
     return municipios.filter(
-      (item) => {
+      (municipio) => {
+
+        // ----------------------------------------------
+        // TEXTO
+        // ----------------------------------------------
 
         const coincideTexto =
           !texto ||
           [
-            item.ccaa,
-            item.provincia,
-            item.municipio,
+            municipio.ccaa,
+            municipio.provincia,
+            municipio.municipio
           ]
             .filter(Boolean)
             .some(
               (valor) =>
                 String(valor)
-                  .toLocaleLowerCase(
-                    "es"
-                  )
+                  .toLocaleLowerCase("es")
                   .includes(texto)
             );
 
+
+        // ----------------------------------------------
+        // CCAA
+        // ----------------------------------------------
+
         const coincideCcaa =
           !ccaaFiltro ||
-          item.ccaa === ccaaFiltro;
+          municipio.ccaa === ccaaFiltro;
+
+
+        // ----------------------------------------------
+        // PROVINCIA
+        // ----------------------------------------------
 
         const coincideProvincia =
           !provinciaFiltro ||
-          item.provincia ===
-            provinciaFiltro;
+          municipio.provincia === provinciaFiltro;
+
 
         return (
           coincideTexto &&
@@ -229,44 +280,62 @@ export default function Municipios() {
     municipios,
     busqueda,
     ccaaFiltro,
-    provinciaFiltro,
+    provinciaFiltro
   ]);
 
 
-  /* =======================================================
-     PAGINACIÓN
-  ======================================================= */
+  // ==========================================================
+  // PAGINACIÓN
+  // ==========================================================
 
   const totalPaginas = Math.max(
     1,
     Math.ceil(
       municipiosFiltrados.length /
-        POR_PAGINA
+      FILAS_POR_PAGINA
     )
   );
 
 
-  const paginaSegura = Math.min(
+  // Si los filtros reducen las páginas disponibles
+  useEffect(() => {
+
+    if (pagina > totalPaginas) {
+      setPagina(totalPaginas);
+    }
+
+  }, [
     pagina,
     totalPaginas
-  );
-
-
-  const inicio =
-    (paginaSegura - 1) *
-    POR_PAGINA;
+  ]);
 
 
   const municipiosPagina =
     municipiosFiltrados.slice(
-      inicio,
-      inicio + POR_PAGINA
+      (pagina - 1) *
+        FILAS_POR_PAGINA,
+
+      pagina *
+        FILAS_POR_PAGINA
     );
 
 
-  /* =======================================================
-     CAMBIAR FILTROS
-  ======================================================= */
+  // ==========================================================
+  // CAMBIAR BÚSQUEDA
+  // ==========================================================
+
+  function cambiarBusqueda(valor) {
+
+    setBusqueda(valor);
+
+    setPagina(1);
+
+  }
+
+
+  // ==========================================================
+  // CAMBIAR CCAA
+  // ==========================================================
 
   function cambiarCcaa(valor) {
 
@@ -279,6 +348,10 @@ export default function Municipios() {
   }
 
 
+  // ==========================================================
+  // CAMBIAR PROVINCIA
+  // ==========================================================
+
   function cambiarProvincia(valor) {
 
     setProvinciaFiltro(valor);
@@ -288,14 +361,9 @@ export default function Municipios() {
   }
 
 
-  function cambiarBusqueda(valor) {
-
-    setBusqueda(valor);
-
-    setPagina(1);
-
-  }
-
+  // ==========================================================
+  // LIMPIAR FILTROS
+  // ==========================================================
 
   function limpiarFiltros() {
 
@@ -310,45 +378,49 @@ export default function Municipios() {
   }
 
 
-  /* =======================================================
-     ABRIR CREAR
-  ======================================================= */
+  // ==========================================================
+  // ABRIR NUEVO
+  // ==========================================================
 
-  function abrirCrear() {
-
-    setModoModal("crear");
+  function abrirNuevo() {
 
     setMunicipioSeleccionado({
       ccaa: "",
       provincia: "",
-      municipio: "",
+      municipio: ""
     });
 
+    setModoModal("nuevo");
+
     setModalAbierto(true);
+
+    setMensaje("");
 
   }
 
 
-  /* =======================================================
-     ABRIR EDITAR
-  ======================================================= */
+  // ==========================================================
+  // ABRIR EDITAR
+  // ==========================================================
 
   function abrirEditar(municipio) {
 
-    setModoModal("editar");
-
     setMunicipioSeleccionado({
-      ...municipio,
+      ...municipio
     });
 
+    setModoModal("editar");
+
     setModalAbierto(true);
+
+    setMensaje("");
 
   }
 
 
-  /* =======================================================
-     CERRAR MODAL
-  ======================================================= */
+  // ==========================================================
+  // CERRAR MODAL
+  // ==========================================================
 
   function cerrarModal() {
 
@@ -358,74 +430,118 @@ export default function Municipios() {
 
     setModalAbierto(false);
 
-    setMunicipioSeleccionado(
-      null
-    );
+    setMunicipioSeleccionado(null);
 
   }
 
 
-  /* =======================================================
-     GUARDAR
-  ======================================================= */
+  // ==========================================================
+  // GUARDAR
+  // ==========================================================
 
   async function guardarMunicipio(datos) {
+
+    if (!datos.ccaa?.trim()) {
+
+      mostrarMensaje(
+        "La comunidad autónoma es obligatoria.",
+        "error"
+      );
+
+      return;
+
+    }
+
+    if (!datos.provincia?.trim()) {
+
+      mostrarMensaje(
+        "La provincia es obligatoria.",
+        "error"
+      );
+
+      return;
+
+    }
+
+    if (!datos.municipio?.trim()) {
+
+      mostrarMensaje(
+        "El municipio es obligatorio.",
+        "error"
+      );
+
+      return;
+
+    }
+
 
     try {
 
       setGuardando(true);
 
-      setError("");
+      const esNuevo =
+        modoModal === "nuevo";
 
-      const esEdicion =
-        modoModal === "editar";
 
-      const url = esEdicion
-        ? `${API_BASE}/municipios/${datos.id}`
-        : `${API_BASE}/municipios`;
+      const url = esNuevo
+        ? API_BASE
+        : `${API_BASE}/${datos.id}`;
 
-      const metodo = esEdicion
-        ? "PUT"
-        : "POST";
 
       const respuesta = await fetch(
         url,
         {
-          method: metodo,
+          method: esNuevo
+            ? "POST"
+            : "PUT",
+
           headers: {
             "Content-Type":
-              "application/json",
+              "application/json"
           },
+
           body: JSON.stringify({
-            ccaa: datos.ccaa.trim(),
+            ccaa:
+              datos.ccaa.trim(),
+
             provincia:
               datos.provincia.trim(),
+
             municipio:
-              datos.municipio.trim(),
-          }),
+              datos.municipio.trim()
+          })
         }
       );
 
+
       const resultado =
-        await respuesta.json()
-          .catch(() => null);
+        await respuesta.json();
+
 
       if (!respuesta.ok) {
 
         throw new Error(
-          resultado?.detail ||
-            "No se ha podido guardar el municipio."
+          resultado.detail ||
+          "No se pudo guardar el municipio."
         );
 
       }
 
-      setModalAbierto(false);
 
-      setMunicipioSeleccionado(
-        null
+      mostrarMensaje(
+        esNuevo
+          ? "Municipio creado correctamente."
+          : "Municipio actualizado correctamente.",
+        "ok"
       );
 
+
+      setModalAbierto(false);
+
+      setMunicipioSeleccionado(null);
+
       await cargarMunicipios();
+
 
     } catch (e) {
 
@@ -434,9 +550,10 @@ export default function Municipios() {
         e
       );
 
-      setError(
+      mostrarMensaje(
         e.message ||
-          "No se ha podido guardar el municipio."
+          "No se pudo guardar el municipio.",
+        "error"
       );
 
     } finally {
@@ -444,57 +561,59 @@ export default function Municipios() {
       setGuardando(false);
 
     }
-
   }
 
 
-  /* =======================================================
-     ELIMINAR
-  ======================================================= */
+  // ==========================================================
+  // ELIMINAR
+  // ==========================================================
 
-  async function eliminarMunicipio(
-    municipio
-  ) {
+  async function eliminarMunicipio(municipio) {
 
     const confirmar =
       window.confirm(
-        `¿Seguro que quieres eliminar el municipio "${municipio.municipio}"?`
+        `¿Seguro que quieres eliminar el municipio "${municipio.municipio}"?\n\nEsta acción no se puede deshacer.`
       );
+
 
     if (!confirmar) {
       return;
     }
 
+
     try {
-
-      setEliminando(
-        municipio.id
-      );
-
-      setError("");
 
       const respuesta =
         await fetch(
-          `${API_BASE}/municipios/${municipio.id}`,
+          `${API_BASE}/${municipio.id}`,
           {
-            method: "DELETE",
+            method: "DELETE"
           }
         );
 
+
       const resultado =
-        await respuesta.json()
-          .catch(() => null);
+        await respuesta.json();
+
 
       if (!respuesta.ok) {
 
         throw new Error(
-          resultado?.detail ||
-            "No se ha podido eliminar el municipio."
+          resultado.detail ||
+          "No se pudo eliminar el municipio."
         );
 
       }
 
+
+      mostrarMensaje(
+        "Municipio eliminado correctamente.",
+        "ok"
+      );
+
+
       await cargarMunicipios();
+
 
     } catch (e) {
 
@@ -503,28 +622,54 @@ export default function Municipios() {
         e
       );
 
-      setError(
+      mostrarMensaje(
         e.message ||
-          "No se ha podido eliminar el municipio."
+          "No se pudo eliminar el municipio.",
+        "error"
       );
-
-    } finally {
-
-      setEliminando(null);
 
     }
 
   }
 
 
-  /* =======================================================
-     RENDER
-  ======================================================= */
+  // ==========================================================
+  // MENSAJE
+  // ==========================================================
+
+  function mostrarMensaje(
+    texto,
+    tipo = "ok"
+  ) {
+
+    setMensaje(texto);
+
+    setTipoMensaje(tipo);
+
+    window.setTimeout(
+      () => {
+        setMensaje("");
+      },
+      3500
+    );
+
+  }
+
+
+  // ==========================================================
+  // RENDER
+  // ==========================================================
 
   return (
 
-    <div className="min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
-
+    <div
+      className="
+        min-h-full
+        p-4 sm:p-6 lg:p-8
+        space-y-6
+        animate-fadeIn
+      "
+    >
 
       {/* =====================================================
           CABECERA
@@ -556,28 +701,33 @@ export default function Municipios() {
           className="
             relative
             flex flex-col
+            gap-5
             lg:flex-row
             lg:items-center
             lg:justify-between
-            gap-5
           "
         >
 
-          <div className="flex items-center gap-4">
+          <div
+            className="
+              flex items-center gap-4
+            "
+          >
 
             <div
               className="
-                flex h-12 w-12 shrink-0
+                flex h-14 w-14 shrink-0
                 items-center justify-center
                 rounded-2xl
-                bg-blue-50
-                border border-blue-100
+                bg-indigo-50
+                border border-indigo-100
                 text-2xl
                 shadow-sm
               "
             >
               🏘️
             </div>
+
 
             <div>
 
@@ -592,8 +742,14 @@ export default function Municipios() {
                 Municipios
               </h1>
 
-              <p className="mt-1 text-sm text-slate-500">
-                Gestión de comunidades autónomas,
+              <p
+                className="
+                  mt-1
+                  text-sm
+                  text-slate-500
+                "
+              >
+                Maestro de comunidades autónomas,
                 provincias y municipios.
               </p>
 
@@ -602,9 +758,11 @@ export default function Municipios() {
           </div>
 
 
+          {/* BOTÓN NUEVO */}
+
           <button
             type="button"
-            onClick={abrirCrear}
+            onClick={abrirNuevo}
             className="
               inline-flex
               items-center
@@ -617,11 +775,10 @@ export default function Municipios() {
               text-sm
               font-semibold
               text-white
-              shadow-sm
+              shadow-[0_8px_20px_rgba(37,99,235,0.20)]
               transition-all
               hover:bg-blue-700
               hover:-translate-y-0.5
-              hover:shadow-md
               active:scale-[0.98]
             "
           >
@@ -639,7 +796,33 @@ export default function Municipios() {
 
 
       {/* =====================================================
-          ERROR
+          MENSAJE
+      ===================================================== */}
+
+      {mensaje && (
+
+        <div
+          className={`
+            rounded-2xl
+            border
+            px-4 py-3
+            text-sm
+            font-medium
+            ${
+              tipoMensaje === "error"
+                ? "border-red-200 bg-red-50 text-red-700"
+                : "border-emerald-200 bg-emerald-50 text-emerald-700"
+            }
+          `}
+        >
+          {mensaje}
+        </div>
+
+      )}
+
+
+      {/* =====================================================
+          ERROR CARGA
       ===================================================== */}
 
       {error && (
@@ -654,25 +837,7 @@ export default function Municipios() {
             text-red-700
           "
         >
-          <div className="flex items-start gap-3">
-
-            <span className="text-lg">
-              ⚠️
-            </span>
-
-            <div>
-
-              <div className="font-semibold">
-                Se ha producido un error
-              </div>
-
-              <div className="mt-1">
-                {error}
-              </div>
-
-            </div>
-
-          </div>
+          {error}
         </div>
 
       )}
@@ -698,19 +863,20 @@ export default function Municipios() {
             grid
             grid-cols-1
             md:grid-cols-2
-            xl:grid-cols-4
+            xl:grid-cols-[minmax(280px,1fr)_240px_240px_auto]
             gap-4
+            items-end
           "
         >
 
-          {/* BUSCAR */}
+          {/* BUSCADOR */}
 
-          <div className="xl:col-span-2">
+          <div>
 
             <label
               className="
-                block
                 mb-1.5
+                block
                 text-xs
                 font-semibold
                 uppercase
@@ -744,23 +910,22 @@ export default function Municipios() {
                     e.target.value
                   )
                 }
-                placeholder="Buscar municipio, provincia o CCAA..."
+                placeholder="Municipio, provincia o CCAA..."
                 className="
                   w-full
                   rounded-xl
                   border border-slate-200
                   bg-white
+                  py-2.5
                   pl-10
                   pr-4
-                  py-2.5
                   text-sm
                   text-slate-700
                   outline-none
                   transition
-                  placeholder:text-slate-400
                   focus:border-blue-400
                   focus:ring-4
-                  focus:ring-blue-500/10
+                  focus:ring-blue-100
                 "
               />
 
@@ -775,8 +940,8 @@ export default function Municipios() {
 
             <label
               className="
-                block
                 mb-1.5
+                block
                 text-xs
                 font-semibold
                 uppercase
@@ -804,9 +969,10 @@ export default function Municipios() {
                 text-sm
                 text-slate-700
                 outline-none
+                transition
                 focus:border-blue-400
                 focus:ring-4
-                focus:ring-blue-500/10
+                focus:ring-blue-100
               "
             >
 
@@ -814,16 +980,18 @@ export default function Municipios() {
                 Todas las comunidades
               </option>
 
-              {ccaas.map((ccaa) => (
+              {ccaaDisponibles.map(
+                (ccaa) => (
 
-                <option
-                  key={ccaa}
-                  value={ccaa}
-                >
-                  {ccaa}
-                </option>
+                  <option
+                    key={ccaa}
+                    value={ccaa}
+                  >
+                    {ccaa}
+                  </option>
 
-              ))}
+                )
+              )}
 
             </select>
 
@@ -836,8 +1004,8 @@ export default function Municipios() {
 
             <label
               className="
-                block
                 mb-1.5
+                block
                 text-xs
                 font-semibold
                 uppercase
@@ -865,9 +1033,10 @@ export default function Municipios() {
                 text-sm
                 text-slate-700
                 outline-none
+                transition
                 focus:border-blue-400
                 focus:ring-4
-                focus:ring-blue-500/10
+                focus:ring-blue-100
               "
             >
 
@@ -875,7 +1044,7 @@ export default function Municipios() {
                 Todas las provincias
               </option>
 
-              {provincias.map(
+              {provinciasDisponibles.map(
                 (provincia) => (
 
                   <option
@@ -892,58 +1061,101 @@ export default function Municipios() {
 
           </div>
 
+
+          {/* LIMPIAR */}
+
+          <button
+            type="button"
+            onClick={limpiarFiltros}
+            className="
+              rounded-xl
+              border border-slate-200
+              bg-white
+              px-4
+              py-2.5
+              text-sm
+              font-medium
+              text-slate-600
+              transition
+              hover:border-slate-300
+              hover:bg-slate-50
+            "
+          >
+            Limpiar filtros
+          </button>
+
         </div>
 
+      </div>
 
-        {/* PIE FILTROS */}
+
+      {/* =====================================================
+          RESUMEN
+      ===================================================== */}
+
+      <div
+        className="
+          flex
+          flex-col
+          gap-2
+          sm:flex-row
+          sm:items-center
+          sm:justify-between
+        "
+      >
 
         <div
           className="
-            mt-4
-            flex
-            flex-col
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-            gap-3
+            text-sm
+            text-slate-500
           "
         >
 
-          <div className="text-sm text-slate-500">
+          Mostrando{" "}
 
-            Mostrando{" "}
+          <span
+            className="
+              font-semibold
+              text-slate-700
+            "
+          >
+            {municipiosFiltrados.length.toLocaleString(
+              "es-ES"
+            )}
+          </span>
 
-            <span className="font-semibold text-slate-700">
-              {municipiosFiltrados.length.toLocaleString(
-                "es-ES"
-              )}
-            </span>
+          {" "}municipios
 
-            {" "}municipios
+          {municipiosFiltrados.length !==
+            municipios.length && (
 
-          </div>
+            <>
+              {" "}de{" "}
 
-
-          {(busqueda ||
-            ccaaFiltro ||
-            provinciaFiltro) && (
-
-            <button
-              type="button"
-              onClick={limpiarFiltros}
-              className="
-                text-sm
-                font-medium
-                text-blue-600
-                hover:text-blue-700
-                transition
-              "
-            >
-              Limpiar filtros
-            </button>
+              <span
+                className="
+                  font-semibold
+                  text-slate-700
+                "
+              >
+                {municipios.length.toLocaleString(
+                  "es-ES"
+                )}
+              </span>
+            </>
 
           )}
 
+        </div>
+
+
+        <div
+          className="
+            text-xs
+            text-slate-400
+          "
+        >
+          Página {pagina} de {totalPaginas}
         </div>
 
       </div>
@@ -958,8 +1170,7 @@ export default function Municipios() {
           overflow-hidden
           rounded-[22px]
           border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
+          bg-white/90
           shadow-[0_12px_35px_rgba(15,23,42,0.06)]
         "
       >
@@ -972,26 +1183,28 @@ export default function Municipios() {
               min-h-[300px]
               items-center
               justify-center
-              text-slate-500
+              text-sm
+              text-slate-400
             "
           >
 
-            <div className="flex items-center gap-3">
+            <div className="text-center">
 
               <div
                 className="
-                  h-5 w-5
+                  mx-auto
+                  mb-3
+                  h-8
+                  w-8
                   animate-spin
                   rounded-full
                   border-2
                   border-slate-200
-                  border-t-blue-600
+                  border-t-blue-500
                 "
               />
 
-              <span className="text-sm">
-                Cargando municipios...
-              </span>
+              Cargando municipios...
 
             </div>
 
@@ -1011,13 +1224,24 @@ export default function Municipios() {
             "
           >
 
-            <div className="text-4xl">
-              🏘️
+            <div
+              className="
+                mb-3
+                flex
+                h-14
+                w-14
+                items-center
+                justify-center
+                rounded-2xl
+                bg-slate-50
+                text-2xl
+              "
+            >
+              🔎
             </div>
 
             <h3
               className="
-                mt-4
                 text-base
                 font-semibold
                 text-slate-700
@@ -1030,379 +1254,241 @@ export default function Municipios() {
               className="
                 mt-1
                 text-sm
-                text-slate-500
+                text-slate-400
               "
             >
-              Prueba a modificar los filtros de búsqueda.
+              Prueba con otro texto o limpia los filtros.
             </p>
 
           </div>
 
         ) : (
 
-          <>
+          <div className="overflow-x-auto">
 
-            <div className="overflow-x-auto">
-
-              <table
-                className="
-                  w-full
-                  min-w-[850px]
-                  border-collapse
-                "
-              >
-
-                <thead>
-
-                  <tr
-                    className="
-                      border-b
-                      border-slate-200
-                      bg-slate-50/80
-                    "
-                  >
-
-                    <th
-                      className="
-                        px-5
-                        py-3.5
-                        text-left
-                        text-xs
-                        font-bold
-                        uppercase
-                        tracking-wide
-                        text-slate-500
-                      "
-                    >
-                      CCAA
-                    </th>
-
-                    <th
-                      className="
-                        px-5
-                        py-3.5
-                        text-left
-                        text-xs
-                        font-bold
-                        uppercase
-                        tracking-wide
-                        text-slate-500
-                      "
-                    >
-                      Provincia
-                    </th>
-
-                    <th
-                      className="
-                        px-5
-                        py-3.5
-                        text-left
-                        text-xs
-                        font-bold
-                        uppercase
-                        tracking-wide
-                        text-slate-500
-                      "
-                    >
-                      Municipio
-                    </th>
-
-                    <th
-                      className="
-                        px-5
-                        py-3.5
-                        text-right
-                        text-xs
-                        font-bold
-                        uppercase
-                        tracking-wide
-                        text-slate-500
-                      "
-                    >
-                      Acciones
-                    </th>
-
-                  </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                  {municipiosPagina.map(
-                    (municipio) => (
-
-                      <tr
-                        key={municipio.id}
-                        className="
-                          border-b
-                          border-slate-100
-                          last:border-b-0
-                          transition-colors
-                          hover:bg-blue-50/40
-                        "
-                      >
-
-                        <td
-                          className="
-                            px-5
-                            py-3.5
-                            text-sm
-                            text-slate-600
-                          "
-                        >
-                          {municipio.ccaa}
-                        </td>
-
-
-                        <td
-                          className="
-                            px-5
-                            py-3.5
-                            text-sm
-                            font-medium
-                            text-slate-700
-                          "
-                        >
-                          {municipio.provincia}
-                        </td>
-
-
-                        <td
-                          className="
-                            px-5
-                            py-3.5
-                            text-sm
-                            font-semibold
-                            text-slate-800
-                          "
-                        >
-                          {municipio.municipio}
-                        </td>
-
-
-                        <td
-                          className="
-                            px-5
-                            py-3.5
-                            text-right
-                          "
-                        >
-
-                          <div
-                            className="
-                              inline-flex
-                              items-center
-                              gap-2
-                            "
-                          >
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                abrirEditar(
-                                  municipio
-                                )
-                              }
-                              className="
-                                rounded-lg
-                                border
-                                border-slate-200
-                                bg-white
-                                px-3
-                                py-1.5
-                                text-xs
-                                font-semibold
-                                text-slate-600
-                                transition
-                                hover:border-blue-200
-                                hover:bg-blue-50
-                                hover:text-blue-600
-                              "
-                            >
-                              ✏️ Editar
-                            </button>
-
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                eliminarMunicipio(
-                                  municipio
-                                )
-                              }
-                              disabled={
-                                eliminando ===
-                                municipio.id
-                              }
-                              className="
-                                rounded-lg
-                                border
-                                border-red-100
-                                bg-white
-                                px-3
-                                py-1.5
-                                text-xs
-                                font-semibold
-                                text-red-500
-                                transition
-                                hover:border-red-200
-                                hover:bg-red-50
-                                hover:text-red-600
-                                disabled:cursor-not-allowed
-                                disabled:opacity-50
-                              "
-                            >
-
-                              {eliminando ===
-                              municipio.id
-                                ? "Eliminando..."
-                                : "🗑️ Eliminar"}
-
-                            </button>
-
-                          </div>
-
-                        </td>
-
-                      </tr>
-
-                    )
-                  )}
-
-                </tbody>
-
-              </table>
-
-            </div>
-
-
-            {/* =================================================
-                PAGINACIÓN
-            ================================================= */}
-
-            <div
+            <table
               className="
-                flex
-                flex-col
-                sm:flex-row
-                sm:items-center
-                sm:justify-between
-                gap-3
-                border-t
-                border-slate-200
-                px-5
-                py-4
+                w-full
+                min-w-[800px]
+                border-collapse
               "
             >
 
-              <div
-                className="
-                  text-xs
-                  text-slate-500
-                "
-              >
+              <thead>
 
-                Página{" "}
-
-                <span className="font-semibold text-slate-700">
-                  {paginaSegura}
-                </span>
-
-                {" "}de{" "}
-
-                <span className="font-semibold text-slate-700">
-                  {totalPaginas}
-                </span>
-
-              </div>
-
-
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-2
-                "
-              >
-
-                <button
-                  type="button"
-                  disabled={
-                    paginaSegura <= 1
-                  }
-                  onClick={() =>
-                    setPagina(
-                      (actual) =>
-                        Math.max(
-                          1,
-                          actual - 1
-                        )
-                    )
-                  }
+                <tr
                   className="
-                    rounded-lg
-                    border
+                    border-b
                     border-slate-200
-                    bg-white
-                    px-3
-                    py-2
-                    text-sm
-                    font-medium
-                    text-slate-600
-                    transition
-                    hover:border-blue-200
-                    hover:bg-blue-50
-                    hover:text-blue-600
-                    disabled:cursor-not-allowed
-                    disabled:opacity-40
+                    bg-slate-50/80
                   "
                 >
-                  ← Anterior
-                </button>
+
+                  <th
+                    className="
+                      px-5
+                      py-3.5
+                      text-left
+                      text-[11px]
+                      font-bold
+                      uppercase
+                      tracking-wider
+                      text-slate-500
+                    "
+                  >
+                    Comunidad autónoma
+                  </th>
+
+                  <th
+                    className="
+                      px-5
+                      py-3.5
+                      text-left
+                      text-[11px]
+                      font-bold
+                      uppercase
+                      tracking-wider
+                      text-slate-500
+                    "
+                  >
+                    Provincia
+                  </th>
+
+                  <th
+                    className="
+                      px-5
+                      py-3.5
+                      text-left
+                      text-[11px]
+                      font-bold
+                      uppercase
+                      tracking-wider
+                      text-slate-500
+                    "
+                  >
+                    Municipio
+                  </th>
+
+                  <th
+                    className="
+                      w-[150px]
+                      px-5
+                      py-3.5
+                      text-right
+                      text-[11px]
+                      font-bold
+                      uppercase
+                      tracking-wider
+                      text-slate-500
+                    "
+                  >
+                    Acciones
+                  </th>
+
+                </tr>
+
+              </thead>
 
 
-                <button
-                  type="button"
-                  disabled={
-                    paginaSegura >=
-                    totalPaginas
-                  }
-                  onClick={() =>
-                    setPagina(
-                      (actual) =>
-                        Math.min(
-                          totalPaginas,
-                          actual + 1
-                        )
-                    )
-                  }
-                  className="
-                    rounded-lg
-                    border
-                    border-slate-200
-                    bg-white
-                    px-3
-                    py-2
-                    text-sm
-                    font-medium
-                    text-slate-600
-                    transition
-                    hover:border-blue-200
-                    hover:bg-blue-50
-                    hover:text-blue-600
-                    disabled:cursor-not-allowed
-                    disabled:opacity-40
-                  "
-                >
-                  Siguiente →
-                </button>
+              <tbody>
 
-              </div>
+                {municipiosPagina.map(
+                  (municipio) => (
 
-            </div>
+                    <tr
+                      key={municipio.id}
+                      className="
+                        group
+                        border-b
+                        border-slate-100
+                        transition-colors
+                        hover:bg-blue-50/40
+                      "
+                    >
 
-          </>
+                      <td
+                        className="
+                          px-5
+                          py-3.5
+                          text-sm
+                          text-slate-600
+                        "
+                      >
+                        {municipio.ccaa}
+                      </td>
+
+
+                      <td
+                        className="
+                          px-5
+                          py-3.5
+                          text-sm
+                          text-slate-600
+                        "
+                      >
+                        {municipio.provincia}
+                      </td>
+
+
+                      <td
+                        className="
+                          px-5
+                          py-3.5
+                          text-sm
+                          font-semibold
+                          text-slate-700
+                        "
+                      >
+                        {municipio.municipio}
+                      </td>
+
+
+                      <td
+                        className="
+                          px-5
+                          py-3.5
+                        "
+                      >
+
+                        <div
+                          className="
+                            flex
+                            justify-end
+                            gap-2
+                          "
+                        >
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              abrirEditar(
+                                municipio
+                              )
+                            }
+                            title="Editar municipio"
+                            className="
+                              flex
+                              h-9
+                              w-9
+                              items-center
+                              justify-center
+                              rounded-lg
+                              border
+                              border-slate-200
+                              bg-white
+                              text-slate-500
+                              transition
+                              hover:border-blue-200
+                              hover:bg-blue-50
+                              hover:text-blue-600
+                            "
+                          >
+                            ✏️
+                          </button>
+
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              eliminarMunicipio(
+                                municipio
+                              )
+                            }
+                            title="Eliminar municipio"
+                            className="
+                              flex
+                              h-9
+                              w-9
+                              items-center
+                              justify-center
+                              rounded-lg
+                              border
+                              border-slate-200
+                              bg-white
+                              text-slate-500
+                              transition
+                              hover:border-red-200
+                              hover:bg-red-50
+                              hover:text-red-600
+                            "
+                          >
+                            🗑️
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+
+                  )
+                )}
+
+              </tbody>
+
+            </table>
+
+          </div>
 
         )}
 
@@ -1410,60 +1496,166 @@ export default function Municipios() {
 
 
       {/* =====================================================
+          PAGINACIÓN
+      ===================================================== */}
+
+      {!cargando &&
+        municipiosFiltrados.length > 0 && (
+
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            rounded-[18px]
+            border
+            border-slate-200/80
+            bg-white/70
+            px-4
+            py-3
+          "
+        >
+
+          <button
+            type="button"
+            disabled={pagina <= 1}
+            onClick={() =>
+              setPagina(
+                (actual) =>
+                  Math.max(
+                    1,
+                    actual - 1
+                  )
+              )
+            }
+            className="
+              rounded-lg
+              border border-slate-200
+              bg-white
+              px-3
+              py-2
+              text-sm
+              font-medium
+              text-slate-600
+              transition
+              hover:bg-slate-50
+              disabled:cursor-not-allowed
+              disabled:opacity-40
+            "
+          >
+            ← Anterior
+          </button>
+
+
+          <span
+            className="
+              text-sm
+              text-slate-500
+            "
+          >
+            Página{" "}
+
+            <strong
+              className="text-slate-700"
+            >
+              {pagina}
+            </strong>
+
+            {" "}de{" "}
+
+            <strong
+              className="text-slate-700"
+            >
+              {totalPaginas}
+            </strong>
+          </span>
+
+
+          <button
+            type="button"
+            disabled={
+              pagina >= totalPaginas
+            }
+            onClick={() =>
+              setPagina(
+                (actual) =>
+                  Math.min(
+                    totalPaginas,
+                    actual + 1
+                  )
+              )
+            }
+            className="
+              rounded-lg
+              border border-slate-200
+              bg-white
+              px-3
+              py-2
+              text-sm
+              font-medium
+              text-slate-600
+              transition
+              hover:bg-slate-50
+              disabled:cursor-not-allowed
+              disabled:opacity-40
+            "
+          >
+            Siguiente →
+          </button>
+
+        </div>
+
+      )}
+
+
+      {/* =====================================================
           MODAL
       ===================================================== */}
 
-      {modalAbierto &&
-        municipioSeleccionado && (
+      {modalAbierto && (
 
-          <ModalMunicipio
-            modo={modoModal}
-            municipio={
-              municipioSeleccionado
-            }
-            guardando={guardando}
-            onCerrar={
-              cerrarModal
-            }
-            onGuardar={
-              guardarMunicipio
-            }
-          />
+        <ModalMunicipio
+          modo={modoModal}
+          municipio={
+            municipioSeleccionado
+          }
+          guardando={guardando}
+          onCerrar={cerrarModal}
+          onGuardar={
+            guardarMunicipio
+          }
+        />
 
-        )}
+      )}
 
     </div>
 
   );
-
 }
 
 
-/* =========================================================
+/* ============================================================
    MODAL MUNICIPIO
-========================================================= */
+============================================================ */
 
 function ModalMunicipio({
   modo,
   municipio,
   guardando,
   onCerrar,
-  onGuardar,
+  onGuardar
 }) {
 
   const [formulario, setFormulario] =
     useState({
-      id: municipio.id,
-      ccaa: municipio.ccaa || "",
+      id: municipio?.id,
+      ccaa:
+        municipio?.ccaa || "",
       provincia:
-        municipio.provincia || "",
+        municipio?.provincia || "",
       municipio:
-        municipio.municipio || "",
+        municipio?.municipio || ""
     });
-
-
-  const [error, setError] =
-    useState("");
 
 
   function cambiarCampo(
@@ -1474,7 +1666,7 @@ function ModalMunicipio({
     setFormulario(
       (actual) => ({
         ...actual,
-        [campo]: valor,
+        [campo]: valor
       })
     );
 
@@ -1485,59 +1677,9 @@ function ModalMunicipio({
 
     e.preventDefault();
 
-    const ccaa =
-      formulario.ccaa.trim();
-
-    const provincia =
-      formulario.provincia.trim();
-
-    const nombreMunicipio =
-      formulario.municipio.trim();
-
-
-    if (!ccaa) {
-
-      setError(
-        "La comunidad autónoma es obligatoria."
-      );
-
-      return;
-
-    }
-
-
-    if (!provincia) {
-
-      setError(
-        "La provincia es obligatoria."
-      );
-
-      return;
-
-    }
-
-
-    if (!nombreMunicipio) {
-
-      setError(
-        "El municipio es obligatorio."
-      );
-
-      return;
-
-    }
-
-
-    setError("");
-
-
-    onGuardar({
-      ...formulario,
-      ccaa,
-      provincia,
-      municipio:
-        nombreMunicipio,
-    });
+    onGuardar(
+      formulario
+    );
 
   }
 
@@ -1548,13 +1690,12 @@ function ModalMunicipio({
       className="
         fixed
         inset-0
-        z-[100]
+        z-50
         flex
         items-center
         justify-center
-        bg-slate-900/40
-        px-4
-        py-6
+        bg-slate-950/40
+        p-4
         backdrop-blur-sm
       "
       onMouseDown={(e) => {
@@ -1578,7 +1719,7 @@ function ModalMunicipio({
           border
           border-slate-200
           bg-white
-          shadow-[0_25px_80px_rgba(15,23,42,0.22)]
+          shadow-[0_30px_80px_rgba(15,23,42,0.22)]
         "
       >
 
@@ -1587,70 +1728,52 @@ function ModalMunicipio({
         <div
           className="
             border-b
-            border-slate-200
-            bg-slate-50/80
+            border-slate-100
+            bg-slate-50/70
             px-6
             py-5
           "
         >
 
-          <div className="flex items-center justify-between">
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+            "
+          >
 
-            <div className="flex items-center gap-3">
+            <div>
 
-              <div
+              <h2
                 className="
-                  flex
-                  h-10
-                  w-10
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-blue-50
-                  border
-                  border-blue-100
                   text-lg
+                  font-bold
+                  text-slate-800
                 "
               >
-                {modo === "crear"
-                  ? "➕"
-                  : "✏️"}
-              </div>
+                {modo === "nuevo"
+                  ? "Nuevo municipio"
+                  : "Editar municipio"}
+              </h2>
 
-              <div>
-
-                <h2
-                  className="
-                    text-lg
-                    font-bold
-                    text-slate-800
-                  "
-                >
-                  {modo === "crear"
-                    ? "Nuevo municipio"
-                    : "Editar municipio"}
-                </h2>
-
-                <p
-                  className="
-                    text-xs
-                    text-slate-500
-                  "
-                >
-                  {modo === "crear"
-                    ? "Añade un nuevo municipio al maestro."
-                    : "Modifica los datos del municipio."}
-                </p>
-
-              </div>
+              <p
+                className="
+                  mt-1
+                  text-xs
+                  text-slate-500
+                "
+              >
+                Datos territoriales del municipio.
+              </p>
 
             </div>
 
 
             <button
               type="button"
-              onClick={onCerrar}
               disabled={guardando}
+              onClick={onCerrar}
               className="
                 flex
                 h-9
@@ -1661,7 +1784,7 @@ function ModalMunicipio({
                 text-slate-400
                 transition
                 hover:bg-slate-100
-                hover:text-slate-600
+                hover:text-slate-700
               "
             >
               ✕
@@ -1689,11 +1812,9 @@ function ModalMunicipio({
                 className="
                   mb-1.5
                   block
-                  text-xs
+                  text-sm
                   font-semibold
-                  uppercase
-                  tracking-wide
-                  text-slate-500
+                  text-slate-700
                 "
               >
                 Comunidad autónoma
@@ -1701,22 +1822,19 @@ function ModalMunicipio({
 
               <input
                 type="text"
-                value={
-                  formulario.ccaa
-                }
+                value={formulario.ccaa}
                 onChange={(e) =>
                   cambiarCampo(
                     "ccaa",
                     e.target.value
                   )
                 }
-                placeholder="Ej. País Vasco"
-                disabled={guardando}
+                placeholder="Ej. Cataluña"
+                autoFocus
                 className="
                   w-full
                   rounded-xl
-                  border
-                  border-slate-200
+                  border border-slate-200
                   bg-white
                   px-4
                   py-2.5
@@ -1724,11 +1842,9 @@ function ModalMunicipio({
                   text-slate-700
                   outline-none
                   transition
-                  placeholder:text-slate-400
                   focus:border-blue-400
                   focus:ring-4
-                  focus:ring-blue-500/10
-                  disabled:bg-slate-50
+                  focus:ring-blue-100
                 "
               />
 
@@ -1743,11 +1859,9 @@ function ModalMunicipio({
                 className="
                   mb-1.5
                   block
-                  text-xs
+                  text-sm
                   font-semibold
-                  uppercase
-                  tracking-wide
-                  text-slate-500
+                  text-slate-700
                 "
               >
                 Provincia
@@ -1764,13 +1878,11 @@ function ModalMunicipio({
                     e.target.value
                   )
                 }
-                placeholder="Ej. Araba/Álava"
-                disabled={guardando}
+                placeholder="Ej. Barcelona"
                 className="
                   w-full
                   rounded-xl
-                  border
-                  border-slate-200
+                  border border-slate-200
                   bg-white
                   px-4
                   py-2.5
@@ -1778,11 +1890,9 @@ function ModalMunicipio({
                   text-slate-700
                   outline-none
                   transition
-                  placeholder:text-slate-400
                   focus:border-blue-400
                   focus:ring-4
-                  focus:ring-blue-500/10
-                  disabled:bg-slate-50
+                  focus:ring-blue-100
                 "
               />
 
@@ -1797,11 +1907,9 @@ function ModalMunicipio({
                 className="
                   mb-1.5
                   block
-                  text-xs
+                  text-sm
                   font-semibold
-                  uppercase
-                  tracking-wide
-                  text-slate-500
+                  text-slate-700
                 "
               >
                 Municipio
@@ -1818,13 +1926,11 @@ function ModalMunicipio({
                     e.target.value
                   )
                 }
-                placeholder="Ej. Alegría-Dulantzi"
-                disabled={guardando}
+                placeholder="Ej. Barcelona"
                 className="
                   w-full
                   rounded-xl
-                  border
-                  border-slate-200
+                  border border-slate-200
                   bg-white
                   px-4
                   py-2.5
@@ -1832,11 +1938,9 @@ function ModalMunicipio({
                   text-slate-700
                   outline-none
                   transition
-                  placeholder:text-slate-400
                   focus:border-blue-400
                   focus:ring-4
-                  focus:ring-blue-500/10
-                  disabled:bg-slate-50
+                  focus:ring-blue-100
                 "
               />
 
@@ -1845,53 +1949,32 @@ function ModalMunicipio({
           </div>
 
 
-          {/* ERROR */}
-
-          {error && (
-
-            <div
-              className="
-                mt-4
-                rounded-xl
-                border
-                border-red-200
-                bg-red-50
-                px-4
-                py-3
-                text-sm
-                text-red-700
-              "
-            >
-              {error}
-            </div>
-
-          )}
-
-
           {/* BOTONES */}
 
           <div
             className="
-              mt-6
+              mt-7
               flex
               justify-end
               gap-3
+              border-t
+              border-slate-100
+              pt-5
             "
           >
 
             <button
               type="button"
-              onClick={onCerrar}
               disabled={guardando}
+              onClick={onCerrar}
               className="
                 rounded-xl
-                border
-                border-slate-200
+                border border-slate-200
                 bg-white
-                px-5
+                px-4
                 py-2.5
                 text-sm
-                font-semibold
+                font-medium
                 text-slate-600
                 transition
                 hover:bg-slate-50
@@ -1921,7 +2004,6 @@ function ModalMunicipio({
                 shadow-sm
                 transition
                 hover:bg-blue-700
-                hover:shadow-md
                 disabled:cursor-not-allowed
                 disabled:opacity-60
               "
@@ -1945,7 +2027,7 @@ function ModalMunicipio({
 
               {guardando
                 ? "Guardando..."
-                : modo === "crear"
+                : modo === "nuevo"
                   ? "Crear municipio"
                   : "Guardar cambios"}
 
@@ -1960,5 +2042,4 @@ function ModalMunicipio({
     </div>
 
   );
-
 }
