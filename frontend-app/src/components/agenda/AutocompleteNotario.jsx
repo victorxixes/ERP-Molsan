@@ -5,7 +5,9 @@ import {
   useCallback,
   useRef,
 } from "react";
+
 import { listarNotarias } from "../../api/ctn";
+
 
 // ============================================================
 // HIGHLIGHT
@@ -44,10 +46,13 @@ function highlight(text, query) {
           {part}
         </span>
       ) : (
-        <span key={i}>{part}</span>
+        <span key={i}>
+          {part}
+        </span>
       )
   );
 }
+
 
 // ============================================================
 // DISTANCIA KM
@@ -78,8 +83,12 @@ function distanciaKm(
 
   const a =
     Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
+    Math.cos(
+      (lat1 * Math.PI) / 180
+    ) *
+      Math.cos(
+        (lat2 * Math.PI) / 180
+      ) *
       Math.sin(dLon / 2) ** 2;
 
   const c =
@@ -92,12 +101,14 @@ function distanciaKm(
   return R * c;
 }
 
+
 // ============================================================
 // COORDENADAS MOLSAN
 // ============================================================
 
-const MOLSAN_LAT = 41.42496;
-const MOLSAN_LNG = 2.18174;
+const MOLSAN_LAT = 41.424960;
+const MOLSAN_LNG = 2.181740;
+
 
 // ============================================================
 // COMPONENTE
@@ -109,44 +120,64 @@ export default function AutocompleteNotario({
   disabled = false,
 }) {
   const [notarios, setNotarios] = useState([]);
-  const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const containerRef = useRef(null);
+  const [query, setQuery] =
+    useState("");
+
+  const [open, setOpen] =
+    useState(false);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const containerRef =
+    useRef(null);
+
 
   // ==========================================================
   // TEXTO ACTUAL
   // ==========================================================
 
   const currentLabel = useMemo(() => {
+
     if (
       value &&
-      (value.nombre || value.apellidos)
+      (
+        value.nombre ||
+        value.apellidos
+      )
     ) {
-      return `${value.nombre || ""} ${
-        value.apellidos || ""
-      }`.trim();
+
+      return (
+        `${value.nombre || ""} ${
+          value.apellidos || ""
+        }`.trim()
+      );
     }
 
     return query;
+
   }, [value, query]);
+
 
   // ==========================================================
   // CLICK FUERA
   // ==========================================================
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(
-          event.target
-        )
-      ) {
-        setOpen(false);
-      }
-    };
+
+    const handleClickOutside =
+      (event) => {
+
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(
+            event.target
+          )
+        ) {
+          setOpen(false);
+        }
+      };
 
     document.addEventListener(
       "mousedown",
@@ -154,23 +185,33 @@ export default function AutocompleteNotario({
     );
 
     return () => {
+
       document.removeEventListener(
         "mousedown",
         handleClickOutside
       );
+
     };
+
   }, []);
+
 
   // ==========================================================
   // ESC
   // ==========================================================
 
   useEffect(() => {
-    const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    };
+
+    const handleEscape =
+      (event) => {
+
+        if (
+          event.key === "Escape"
+        ) {
+          setOpen(false);
+        }
+
+      };
 
     document.addEventListener(
       "keydown",
@@ -178,157 +219,274 @@ export default function AutocompleteNotario({
     );
 
     return () => {
+
       document.removeEventListener(
         "keydown",
         handleEscape
       );
+
     };
+
   }, []);
+
 
   // ==========================================================
   // CERRAR AL DESHABILITAR
   // ==========================================================
 
   useEffect(() => {
+
     if (disabled) {
       setOpen(false);
     }
+
   }, [disabled]);
+
 
   // ==========================================================
   // BÚSQUEDA CON DEBOUNCE
   // ==========================================================
 
   useEffect(() => {
-    const texto = query.trim();
+
+    const texto =
+      query.trim();
 
     if (
       disabled ||
       texto.length < 2
     ) {
+
       setNotarios([]);
       setLoading(false);
+
       return;
     }
 
     setLoading(true);
 
-    const timer = setTimeout(() => {
-      listarNotarias({
-        q: texto,
-        page: 1,
-        page_size: 50,
-      })
-        .then((res) => {
-          const lista =
-            Array.isArray(
-              res?.data?.items
-            )
-              ? res.data.items
-              : [];
+    const timer =
+      setTimeout(() => {
 
-          setNotarios(lista);
-          setOpen(true);
+        listarNotarias({
+          q: texto,
+          page: 1,
+          page_size: 50,
         })
-        .catch((err) => {
-          console.error(
-            "ERROR BUSCANDO NOTARIOS:",
-            err
-          );
 
-          setNotarios([]);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }, 250);
+          .then((res) => {
+
+            const lista =
+              Array.isArray(
+                res?.data?.items
+              )
+                ? res.data.items
+                : [];
+
+            setNotarios(lista);
+            setOpen(true);
+
+          })
+
+          .catch((err) => {
+
+            console.error(
+              "ERROR BUSCANDO NOTARIOS:",
+              err
+            );
+
+            setNotarios([]);
+
+          })
+
+          .finally(() => {
+
+            setLoading(false);
+
+          });
+
+      }, 250);
 
     return () => {
+
       clearTimeout(timer);
+
     };
+
   }, [query, disabled]);
+
 
   // ==========================================================
   // SELECCIONAR
   // ==========================================================
 
-  const seleccionar = useCallback(
-    (n) => {
-      if (disabled || !n) return;
+  const seleccionar =
+    useCallback(
+      (n) => {
 
-      const lat = Number(n.lat);
-      const lng = Number(n.lng);
+        if (
+          disabled ||
+          !n
+        ) {
+          return;
+        }
 
-      const notarioCompleto = {
-        id: n.id,
-        codigo: n.codigo || "",
-        nombre: n.nombre || "",
-        apellidos: n.apellidos || "",
-        nif: n.nif || "",
-        telefono: n.telefono || "",
-        provincia: n.provincia || "",
-        municipio: n.municipio || "",
-        cp: n.cp || "",
-        direccion: n.direccion || "",
-        vc: n.vc || "",
-        apoderado:
-          n.apoderado ||
-          n.apoderado_s ||
-          "",
-        observacion:
-          n.observacion || "",
+        const lat =
+          Number(n.lat);
 
-        tipo_firma:
-          String(n.vc || "")
-            .trim()
-            .toUpperCase() === "SI"
-            ? "Videoconferencia"
-            : "Presencial",
+        const lng =
+          Number(n.lng);
 
-        distancia_km:
+        const distancia_km =
           distanciaKm(
             MOLSAN_LAT,
             MOLSAN_LNG,
             lat,
             lng
-          ),
-      };
+          );
 
-      setQuery(
-        `${n.nombre || ""} ${
-          n.apellidos || ""
-        }`.trim()
-      );
 
-      setOpen(false);
-      setNotarios([]);
+        // ====================================================
+        // NORMALIZAR VC
+        // ====================================================
 
-      onSelect(notarioCompleto);
-    },
-    [disabled, onSelect]
-  );
+        const vcVal =
+          String(n.vc || "")
+            .trim()
+            .toUpperCase();
+
+        const tipoFirma =
+          (
+            vcVal === "SI" ||
+            vcVal === "VC" ||
+            vcVal ===
+              "VIDEOCONFERENCIA"
+          )
+            ? "Videoconferencia"
+            : "Presencial";
+
+
+        // ====================================================
+        // NOTARIO COMPLETO
+        // ====================================================
+
+        const notarioCompleto = {
+
+          id: n.id,
+
+          codigo:
+            n.codigo || "",
+
+          nombre:
+            n.nombre || "",
+
+          apellidos:
+            n.apellidos || "",
+
+          nif:
+            n.nif || "",
+
+          telefono:
+            n.telefono || "",
+
+          provincia:
+            n.provincia || "",
+
+          municipio:
+            n.municipio || "",
+
+          cp:
+            n.cp || "",
+
+          direccion:
+            n.direccion || "",
+
+          vc:
+            n.vc || "",
+
+          lat:
+            Number.isFinite(lat)
+              ? lat
+              : null,
+
+          lng:
+            Number.isFinite(lng)
+              ? lng
+              : null,
+
+          apoderado:
+            n.apoderado ||
+            n.apoderado_s ||
+            "",
+
+          observacion:
+            n.observacion ||
+            "",
+
+          tipo_firma:
+            tipoFirma,
+
+          distancia_km:
+            distancia_km,
+
+        };
+
+
+        setQuery(
+          `${n.nombre || ""} ${
+            n.apellidos || ""
+          }`.trim()
+        );
+
+        setOpen(false);
+
+        setNotarios([]);
+
+        onSelect(
+          notarioCompleto
+        );
+
+      },
+      [
+        disabled,
+        onSelect,
+      ]
+    );
+
 
   // ==========================================================
   // INPUT
   // ==========================================================
 
-  const handleInputChange = (event) => {
-    if (disabled) return;
+  const handleInputChange =
+    (event) => {
 
-    const nuevoValor =
-      event.target.value;
+      if (disabled) return;
 
-    setQuery(nuevoValor);
-    setOpen(
-      nuevoValor.trim().length >= 2
-    );
-  };
+      const nuevoValor =
+        event.target.value;
+
+      setQuery(nuevoValor);
+
+      setOpen(
+        nuevoValor
+          .trim()
+          .length >= 2
+      );
+    };
+
+
+  // ==========================================================
+  // RENDER
+  // ==========================================================
 
   return (
+
     <div
       ref={containerRef}
       className="relative w-full"
     >
+
       {/* ====================================================
           INPUT
          ==================================================== */}
@@ -353,6 +511,7 @@ export default function AutocompleteNotario({
           }
         `}
       >
+
         {/* AVATAR */}
 
         <span
@@ -384,6 +543,7 @@ export default function AutocompleteNotario({
             : "NT"}
         </span>
 
+
         {/* INPUT */}
 
         <input
@@ -399,20 +559,28 @@ export default function AutocompleteNotario({
           "
           placeholder="Buscar notario por nombre, apellidos, municipio o provincia…"
           value={currentLabel}
-          onChange={handleInputChange}
+          onChange={
+            handleInputChange
+          }
           onFocus={() => {
+
             if (
               !disabled &&
               query.trim().length >= 2
             ) {
+
               setOpen(true);
+
             }
+
           }}
         />
+
 
         {/* LOADING */}
 
         {loading && (
+
           <div
             className="
               animate-spin
@@ -424,14 +592,18 @@ export default function AutocompleteNotario({
               shrink-0
             "
           />
+
         )}
+
       </div>
+
 
       {/* ====================================================
           DROPDOWN
          ==================================================== */}
 
       {open && !disabled && (
+
         <div
           className="
             absolute
@@ -450,13 +622,24 @@ export default function AutocompleteNotario({
             animate-fade-in
           "
         >
+
           {notarios.length === 0 &&
           !loading ? (
-            <div className="px-4 py-4 text-sm text-slate-400">
+
+            <div
+              className="
+                px-4 py-4
+                text-sm
+                text-slate-400
+              "
+            >
               No hay resultados
             </div>
+
           ) : (
+
             notarios.map((n) => {
+
               const nombreCompleto =
                 `${n.nombre || ""} ${
                   n.apellidos || ""
@@ -468,15 +651,21 @@ export default function AutocompleteNotario({
                   n.provincia || ""
                 }`.trim();
 
-              const esVC =
+              const vcVal =
                 String(n.vc || "")
                   .trim()
-                  .toUpperCase() ===
-                "SI";
+                  .toUpperCase();
 
-              const vcLabel = esVC
-                ? "VC"
-                : "Presencial";
+              const esVC =
+                vcVal === "SI" ||
+                vcVal === "VC" ||
+                vcVal ===
+                  "VIDEOCONFERENCIA";
+
+              const vcLabel =
+                esVC
+                  ? "VC"
+                  : "Presencial";
 
               const apoderadoLabel =
                 n.apoderado ||
@@ -500,9 +689,12 @@ export default function AutocompleteNotario({
                     (p) =>
                       p[0]?.toUpperCase()
                   )
-                  .join("") || "NT";
+                  .join("") ||
+                "NT";
+
 
               return (
+
                 <button
                   key={n.id}
                   type="button"
@@ -524,9 +716,19 @@ export default function AutocompleteNotario({
                     gap-3
                   "
                 >
+
                   {/* AVATAR / KM */}
 
-                  <div className="flex flex-col items-center justify-start shrink-0">
+                  <div
+                    className="
+                      flex
+                      flex-col
+                      items-center
+                      justify-start
+                      shrink-0
+                    "
+                  >
+
                     <div
                       className="
                         w-9 h-9
@@ -544,7 +746,9 @@ export default function AutocompleteNotario({
                       {iniciales}
                     </div>
 
+
                     {km !== null && (
+
                       <div
                         className="
                           mt-1
@@ -557,20 +761,43 @@ export default function AutocompleteNotario({
                         🚗{" "}
                         {km.toFixed(1)} km
                       </div>
+
                     )}
+
                   </div>
+
 
                   {/* DATOS */}
 
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-slate-800 truncate">
+                  <div
+                    className="
+                      flex-1
+                      min-w-0
+                    "
+                  >
+
+                    <div
+                      className="
+                        font-semibold
+                        text-slate-800
+                        truncate
+                      "
+                    >
                       {highlight(
                         nombreCompleto,
                         query
                       )}
                     </div>
 
-                    <div className="text-xs text-slate-500 truncate mt-0.5">
+
+                    <div
+                      className="
+                        text-xs
+                        text-slate-500
+                        truncate
+                        mt-0.5
+                      "
+                    >
                       {highlight(
                         `${n.municipio || ""} — ${
                           n.provincia || ""
@@ -579,29 +806,61 @@ export default function AutocompleteNotario({
                       )}
                     </div>
 
+
                     {direccionCompleta && (
-                      <div className="text-[11px] text-slate-400 truncate mt-0.5">
+
+                      <div
+                        className="
+                          text-[11px]
+                          text-slate-400
+                          truncate
+                          mt-0.5
+                        "
+                      >
                         {highlight(
                           direccionCompleta,
                           query
                         )}
                       </div>
+
                     )}
 
+
                     {apoderadoLabel && (
-                      <div className="text-[11px] text-emerald-600 truncate mt-0.5">
+
+                      <div
+                        className="
+                          text-[11px]
+                          text-emerald-600
+                          truncate
+                          mt-0.5
+                        "
+                      >
                         Apoderado:{" "}
                         {highlight(
                           apoderadoLabel,
                           query
                         )}
                       </div>
+
                     )}
+
                   </div>
+
 
                   {/* ESTADO */}
 
-                  <div className="flex flex-col items-end justify-start gap-1 shrink-0">
+                  <div
+                    className="
+                      flex
+                      flex-col
+                      items-end
+                      justify-start
+                      gap-1
+                      shrink-0
+                    "
+                  >
+
                     <span
                       className={`
                         inline-flex
@@ -611,6 +870,7 @@ export default function AutocompleteNotario({
                         rounded-full
                         text-[10px]
                         font-semibold
+
                         ${
                           esVC
                             ? "bg-purple-100 text-purple-700"
@@ -621,18 +881,34 @@ export default function AutocompleteNotario({
                       {vcLabel}
                     </span>
 
+
                     {n.codigo && (
-                      <span className="text-[10px] text-slate-400">
+
+                      <span
+                        className="
+                          text-[10px]
+                          text-slate-400
+                        "
+                      >
                         {n.codigo}
                       </span>
+
                     )}
+
                   </div>
+
                 </button>
+
               );
+
             })
+
           )}
+
         </div>
+
       )}
+
     </div>
   );
 }
