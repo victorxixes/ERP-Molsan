@@ -8,12 +8,12 @@ import unicodedata
 
 def limpiar_texto(s: str) -> str:
     """
-    Normaliza un texto:
+    Normaliza texto sin eliminar información importante
+    de la dirección.
 
-    - elimina acentos
-    - convierte caracteres especiales
-    - elimina espacios duplicados
-    - elimina espacios antes de comas
+    IMPORTANTE:
+    NO elimina números porque los números pueden ser
+    el número de la calle.
     """
 
     if not s:
@@ -21,33 +21,48 @@ def limpiar_texto(s: str) -> str:
 
     s = str(s)
 
+    # --------------------------------------------------------
     # Normalizar acentos
-    s = (
-        unicodedata
-        .normalize("NFKD", s)
-        .encode("ascii", "ignore")
-        .decode("ascii")
+    # --------------------------------------------------------
+
+    s = unicodedata.normalize(
+        "NFKD",
+        s
+    ).encode(
+        "ascii",
+        "ignore"
+    ).decode(
+        "ascii"
     )
 
-    # Espacios duplicados
+    # --------------------------------------------------------
+    # Espacios
+    # --------------------------------------------------------
+
     s = re.sub(
         r"\s+",
         " ",
-        s,
+        s
     )
 
+    # --------------------------------------------------------
     # Espacios antes de comas
+    # --------------------------------------------------------
+
     s = re.sub(
         r"\s+,",
         ",",
-        s,
+        s
     )
 
-    # Comas duplicadas
+    # --------------------------------------------------------
+    # Espacios después de comas
+    # --------------------------------------------------------
+
     s = re.sub(
-        r",+",
-        ",",
-        s,
+        r",\s*",
+        ", ",
+        s
     )
 
     return s.strip()
@@ -59,217 +74,145 @@ def limpiar_texto(s: str) -> str:
 
 def limpiar_direccion(direccion: str) -> str:
     """
-    Limpia una dirección manteniendo el número de calle.
+    Limpia una dirección para geocodificación.
 
     IMPORTANTE:
-    No debemos eliminar todos los números porque el número
-    de la calle es precisamente uno de los datos más
-    importantes para Google Geocoding.
+    Conserva el número de la calle.
+
+    Ejemplo:
+
+        Carrer de Mallorca 123, 08036 Barcelona
+
+    NO debe convertirse en:
+
+        Carrer de Mallorca, Barcelona
     """
 
     if not direccion:
         return ""
 
-    direccion = limpiar_texto(direccion)
+    direccion = limpiar_texto(
+        direccion
+    )
 
-    # Eliminar palabras accesorias de piso/local,
-    # pero NO eliminar el número principal de la calle.
+    if not direccion:
+        return ""
+
+    # ========================================================
+    # ABREVIATURAS DE INTERIOR
+    # ========================================================
+    #
+    # Solo eliminamos palabras que representan información
+    # interior del edificio.
+    #
+    # NO eliminamos números generales.
+    #
+    # ========================================================
+
     direccion = re.sub(
-        r"\b("
-        r"planta|"
-        r"piso|"
-        r"bajo|"
-        r"local|"
-        r"entresuelo|"
-        r"izq|"
-        r"izd|"
-        r"dcha|"
-        r"dch|"
-        r"apta|"
-        r"apt|"
-        r"ap|"
+        r"\b(planta|piso|bajo|local|entresuelo|"
+        r"izq|izquierda|izd|"
+        r"dch|derecha|"
+        r"apto|apta|apt|"
         r"puerta|"
         r"escalera|"
         r"bloque|"
         r"oficina|"
-        r"despacho"
-        r")\b",
-        " ",
+        r"despacho)\b",
+        "",
         direccion,
-        flags=re.IGNORECASE,
+        flags=re.IGNORECASE
     )
 
-    # Ordinales de piso: 3º, 4ª, etc.
+    # ========================================================
+    # ORDINALES DE INTERIOR
+    # ========================================================
+    #
+    # Ejemplos:
+    #
+    # 3º
+    # 4ª
+    #
+    # Esto sí puede eliminarse porque normalmente corresponde
+    # a piso/planta.
+    #
+    # ========================================================
+
     direccion = re.sub(
-        r"\b\d+\s*[ºª]\s*[A-Za-z]?\b",
-        " ",
+        r"\b\d+\s*[ºª]\b",
+        "",
         direccion,
-        flags=re.IGNORECASE,
+        flags=re.IGNORECASE
     )
 
-    # Combinaciones típicas de piso: 3A, 2B
-    # SOLO si aparecen después de una coma.
+    # ========================================================
+    # LETRAS SUELTAS DE INTERIOR
+    # ========================================================
+    #
+    # NO eliminamos números.
+    #
+    # Solamente eliminamos letras aisladas que normalmente
+    # aparecen como:
+    #
+    # "3 A"
+    # "2 B"
+    #
+    # pero intentamos no tocar nombres de calles.
+    #
+    # ========================================================
+
     direccion = re.sub(
-        r",\s*\d+\s*[A-Za-z]\b",
+        r"(?<=\d)\s+[A-Za-z]\b",
+        "",
+        direccion
+    )
+
+    # ========================================================
+    # PARÉNTESIS
+    # ========================================================
+
+    direccion = re.sub(
+        r"\([^)]*\)",
+        "",
+        direccion
+    )
+
+    # ========================================================
+    # COMAS DUPLICADAS
+    # ========================================================
+
+    direccion = re.sub(
+        r",\s*,+",
         ",",
-        direccion,
-        flags=re.IGNORECASE,
+        direccion
     )
 
-    # Letras sueltas después de coma
-    direccion = re.sub(
-        r",\s*[A-Za-z]\b",
-        ",",
-        direccion,
-        flags=re.IGNORECASE,
-    )
+    # ========================================================
+    # ESPACIOS DUPLICADOS
+    # ========================================================
 
-    # Espacios duplicados
     direccion = re.sub(
         r"\s+",
         " ",
-        direccion,
+        direccion
     )
 
-    # Comas duplicadas
-    direccion = re.sub(
-        r",+",
-        ",",
-        direccion,
-    )
+    # ========================================================
+    # ESPACIOS ANTES DE COMAS
+    # ========================================================
 
-    # Espacios antes de comas
     direccion = re.sub(
         r"\s+,",
         ",",
-        direccion,
+        direccion
     )
 
-    # Comas al principio/final
-    direccion = direccion.strip(" ,")
+    # ========================================================
+    # COMAS AL PRINCIPIO / FINAL
+    # ========================================================
 
-    return direccion.strip()
-
-
-# ============================================================
-# CONSTRUIR DIRECCIÓN DE BÚSQUEDA
-# ============================================================
-
-def construir_direccion_busqueda(
-    direccion: str | None = None,
-    cp: str | None = None,
-    municipio: str | None = None,
-    provincia: str | None = None,
-) -> str:
-    """
-    Construye una dirección completa para Google Geocoding.
-
-    Ejemplo:
-
-        direccion:
-            "Carrer de Mallorca 123"
-
-        cp:
-            "08036"
-
-        municipio:
-            "Barcelona"
-
-        provincia:
-            "Barcelona"
-
-    Resultado:
-
-        "Carrer de Mallorca 123, 08036 Barcelona,
-         Barcelona, Espana"
-
-    Si algún campo está vacío, simplemente se omite.
-
-    Nunca devuelve una dirección formada únicamente por
-    ", Espana".
-    """
-
-    partes = []
-
-    # --------------------------------------------------------
-    # DIRECCIÓN
-    # --------------------------------------------------------
-
-    direccion_limpia = limpiar_direccion(
-        direccion or ""
+    direccion = direccion.strip(
+        " ,"
     )
 
-    if direccion_limpia:
-        partes.append(
-            direccion_limpia
-        )
-
-    # --------------------------------------------------------
-    # CÓDIGO POSTAL
-    # --------------------------------------------------------
-
-    cp_limpio = limpiar_texto(
-        cp or ""
-    )
-
-    # --------------------------------------------------------
-    # MUNICIPIO
-    # --------------------------------------------------------
-
-    municipio_limpio = limpiar_texto(
-        municipio or ""
-    )
-
-    # --------------------------------------------------------
-    # CP + MUNICIPIO
-    # --------------------------------------------------------
-
-    if cp_limpio and municipio_limpio:
-
-        partes.append(
-            f"{cp_limpio} {municipio_limpio}"
-        )
-
-    elif cp_limpio:
-
-        partes.append(
-            cp_limpio
-        )
-
-    elif municipio_limpio:
-
-        partes.append(
-            municipio_limpio
-        )
-
-    # --------------------------------------------------------
-    # PROVINCIA
-    # --------------------------------------------------------
-
-    provincia_limpia = limpiar_texto(
-        provincia or ""
-    )
-
-    if provincia_limpia:
-        partes.append(
-            provincia_limpia
-        )
-
-    # --------------------------------------------------------
-    # COMPROBAR QUE REALMENTE TENEMOS DATOS
-    # --------------------------------------------------------
-
-    if not partes:
-        return ""
-
-    # --------------------------------------------------------
-    # PAÍS
-    # --------------------------------------------------------
-
-    partes.append(
-        "Espana"
-    )
-
-    return ", ".join(
-        partes
-    )
+    return direccion
