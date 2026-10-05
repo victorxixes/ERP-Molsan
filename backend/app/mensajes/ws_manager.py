@@ -4,26 +4,21 @@ from threading import Lock
 from backend.app.mensajes.models import Mensaje
 from backend.app.database import SessionLocal
 
+
 # =========================================================
 # NOTIFICACIONES
 # =========================================================
 
 try:
-
     from backend.app.notificaciones.router_ws import (
         send_notif_to_user,
     )
-
 except Exception:
 
     async def send_notif_to_user(
         empleado_id: int,
         data: dict,
     ):
-        """
-        Fallback para instalaciones donde el módulo
-        de notificaciones no esté disponible.
-        """
         return None
 
 
@@ -33,31 +28,35 @@ except Exception:
 
 class WSManager:
     """
-    Gestor WebSocket de mensajería.
+    Gestor central de WebSockets de Mensajes.
 
-    Funciones:
+    Permite:
 
-    - Conexiones por empleado.
-    - Múltiples pestañas por empleado.
-    - Broadcast global.
-    - Envío a un usuario.
-    - Limpieza de conexiones muertas.
-    - Mensajes realtime.
-    - Archivos realtime.
-    - Typing.
-    - Presencia online/offline.
+    - múltiples pestañas por empleado
+    - presencia online/offline
+    - envío a un usuario
+    - broadcast global
+    - typing
+    - mensajes realtime
+    - archivos realtime
+    - limpieza de conexiones muertas
     """
 
     def __init__(self):
 
         # -------------------------------------------------
-        # {empleado_id: [websocket, websocket, ...]}
+        # {
+        #     empleado_id: [
+        #         websocket,
+        #         websocket,
+        #     ]
+        # }
         # -------------------------------------------------
 
         self.conectados = {}
 
         # -------------------------------------------------
-        # Lock para proteger el diccionario de conexiones.
+        # Protección del diccionario.
         # -------------------------------------------------
 
         self.lock = Lock()
@@ -74,13 +73,8 @@ class WSManager:
         """
         Acepta y registra una conexión.
 
-        Devuelve:
-
-        True
-            si es la primera conexión de ese empleado.
-
-        False
-            si ya tenía otra conexión abierta.
+        Devuelve True solamente si esta conexión es
+        la primera conexión del empleado.
         """
 
         await websocket.accept()
@@ -92,13 +86,16 @@ class WSManager:
                 [],
             )
 
-            era_primera = (
-                len(conexiones) == 0
-            )
+            era_primera = len(conexiones) == 0
 
-            conexiones.append(
-                websocket
-            )
+            if websocket not in conexiones:
+                conexiones.append(websocket)
+
+        print(
+            f"[WS-MSG] CONNECT empleado={empleado_id} "
+            f"conexiones={len(self.conectados.get(empleado_id, []))}",
+            flush=True,
+        )
 
         return era_primera
 
@@ -112,43 +109,23 @@ class WSManager:
         empleado_id: int,
     ):
         """
-        Elimina UNA conexión.
+        Elimina solamente esta conexión.
 
-        Importante:
-
-        Si un empleado tiene dos pestañas abiertas,
-        cerrar una no significa que el empleado esté offline.
-
-        Devuelve:
-
-        True
-            cuando esta era la última conexión.
-
-        False
-            si todavía queda alguna conexión.
+        Devuelve True si era la última conexión
+        del empleado.
         """
 
         with self.lock:
 
-            conexiones = (
-                self.conectados.get(
-                    empleado_id,
-                    [],
-                )
+            conexiones = self.conectados.get(
+                empleado_id,
+                [],
             )
 
             try:
-
-                conexiones.remove(
-                    websocket
-                )
-
+                conexiones.remove(websocket)
             except ValueError:
                 pass
-
-            # ---------------------------------------------
-            # Ya no quedan conexiones.
-            # ---------------------------------------------
 
             if not conexiones:
 
@@ -157,21 +134,31 @@ class WSManager:
                     None,
                 )
 
+                print(
+                    f"[WS-MSG] OFFLINE empleado={empleado_id}",
+                    flush=True,
+                )
+
                 return True
+
+            print(
+                f"[WS-MSG] conexión cerrada empleado={empleado_id} "
+                f"restantes={len(conexiones)}",
+                flush=True,
+            )
 
             return False
 
     # =====================================================
-    # OBTENER CONECTADOS
+    # IDS CONECTADOS
     # =====================================================
 
     def obtener_ids_conectados(self):
         """
-        Devuelve una copia de los IDs conectados.
+        Devuelve una copia de los empleados conectados.
         """
 
         with self.lock:
-
             return list(
                 self.conectados.keys()
             )
@@ -184,20 +171,17 @@ class WSManager:
         self,
         empleado_id: int,
     ):
-
         with self.lock:
 
-            conexiones = (
-                self.conectados.get(
-                    empleado_id,
-                    [],
-                )
+            conexiones = self.conectados.get(
+                empleado_id,
+                [],
             )
 
-            return len(conexiones) > 0
+            return bool(conexiones)
 
     # =====================================================
-    # ENVIAR A UN USUARIO
+    # ENVIAR A USUARIO
     # =====================================================
 
     async def send_to_user(
@@ -206,10 +190,8 @@ class WSManager:
         data: dict,
     ):
         """
-        Envía un evento a todas las pestañas abiertas
+        Envía el evento a todas las pestañas abiertas
         del empleado.
-
-        Las conexiones que fallen se eliminan.
         """
 
         with self.lock:
@@ -234,39 +216,41 @@ class WSManager:
                     data
                 )
 
-            except Exception:
+            except Exception as exc:
+
+                print(
+                    f"[WS-MSG] conexión muerta "
+                    f"empleado={empleado_id}: {exc}",
+                    flush=True,
+                )
 
                 muertos.append(
                     websocket
                 )
 
         # -------------------------------------------------
-        # LIMPIAR CONEXIONES MUERTAS
+        # LIMPIAR MUERTOS
         # -------------------------------------------------
 
         if muertos:
 
             with self.lock:
 
-                conexiones_actuales = (
-                    self.conectados.get(
-                        empleado_id,
-                        [],
-                    )
+                actuales = self.conectados.get(
+                    empleado_id,
+                    [],
                 )
 
                 for websocket in muertos:
 
                     try:
-
-                        conexiones_actuales.remove(
+                        actuales.remove(
                             websocket
                         )
-
                     except ValueError:
                         pass
 
-                if not conexiones_actuales:
+                if not actuales:
 
                     self.conectados.pop(
                         empleado_id,
@@ -274,7 +258,7 @@ class WSManager:
                     )
 
     # =====================================================
-    # BROADCAST GLOBAL
+    # BROADCAST
     # =====================================================
 
     async def broadcast(
@@ -282,7 +266,7 @@ class WSManager:
         data: dict,
     ):
         """
-        Envía un evento a todos los usuarios conectados.
+        Envía un evento a todos los empleados conectados.
         """
 
         with self.lock:
@@ -314,7 +298,13 @@ class WSManager:
                     data
                 )
 
-            except Exception:
+            except Exception as exc:
+
+                print(
+                    f"[WS-MSG] broadcast falló "
+                    f"empleado={empleado_id}: {exc}",
+                    flush=True,
+                )
 
                 muertos.append(
                     (
@@ -333,23 +323,19 @@ class WSManager:
 
                 for empleado_id, websocket in muertos:
 
-                    conexiones_actuales = (
-                        self.conectados.get(
-                            empleado_id,
-                            [],
-                        )
+                    actuales = self.conectados.get(
+                        empleado_id,
+                        [],
                     )
 
                     try:
-
-                        conexiones_actuales.remove(
+                        actuales.remove(
                             websocket
                         )
-
                     except ValueError:
                         pass
 
-                    if not conexiones_actuales:
+                    if not actuales:
 
                         self.conectados.pop(
                             empleado_id,
@@ -367,10 +353,8 @@ class WSManager:
         contenido: str,
     ):
         """
-        Guarda un mensaje en PostgreSQL y después
-        lo envía realtime al remitente y destinatario.
-
-        El mensaje solamente se guarda UNA VEZ.
+        Guarda UNA vez el mensaje y después lo distribuye
+        por WebSocket al remitente y destinatario.
         """
 
         db = SessionLocal()
@@ -378,17 +362,11 @@ class WSManager:
         try:
 
             mensaje = Mensaje(
-
                 remitente_id=remitente_id,
-
                 destinatario_id=destinatario_id,
-
                 contenido=contenido,
-
                 archivo_url=None,
-
                 fecha=datetime.now(),
-
                 leido=False,
             )
 
@@ -403,16 +381,13 @@ class WSManager:
             )
 
             payload = {
-
                 "tipo": "nuevo_mensaje",
-
                 "mensaje": mensaje.as_dict(),
             }
 
         except Exception:
 
             db.rollback()
-
             raise
 
         finally:
@@ -420,7 +395,7 @@ class WSManager:
             db.close()
 
         # -------------------------------------------------
-        # ENVIAR AL REMITENTE
+        # REMITENTE
         # -------------------------------------------------
 
         await self.send_to_user(
@@ -429,7 +404,7 @@ class WSManager:
         )
 
         # -------------------------------------------------
-        # ENVIAR AL DESTINATARIO
+        # DESTINATARIO
         # -------------------------------------------------
 
         if destinatario_id != remitente_id:
@@ -457,10 +432,17 @@ class WSManager:
         except Exception as exc:
 
             print(
-                f"[WS-MSG] Error notificando "
-                f"mensaje: {exc}",
+                "[WS-MSG] Error enviando "
+                f"notificación: {exc}",
                 flush=True,
             )
+
+        print(
+            f"[WS-MSG] MENSAJE "
+            f"{remitente_id} -> {destinatario_id} "
+            f"id={mensaje.id}",
+            flush=True,
+        )
 
         return mensaje
 
@@ -475,10 +457,8 @@ class WSManager:
         archivo_url: str,
     ):
         """
-        Guarda un archivo como mensaje y lo distribuye
-        realtime.
-
-        El mensaje solamente se guarda UNA VEZ.
+        Guarda UNA vez el archivo como mensaje y después
+        lo distribuye por WebSocket.
         """
 
         db = SessionLocal()
@@ -486,17 +466,11 @@ class WSManager:
         try:
 
             mensaje = Mensaje(
-
                 remitente_id=remitente_id,
-
                 destinatario_id=destinatario_id,
-
                 contenido=None,
-
                 archivo_url=archivo_url,
-
                 fecha=datetime.now(),
-
                 leido=False,
             )
 
@@ -511,16 +485,13 @@ class WSManager:
             )
 
             payload = {
-
                 "tipo": "nuevo_archivo",
-
                 "mensaje": mensaje.as_dict(),
             }
 
         except Exception:
 
             db.rollback()
-
             raise
 
         finally:
@@ -565,10 +536,17 @@ class WSManager:
         except Exception as exc:
 
             print(
-                f"[WS-MSG] Error notificando "
-                f"archivo: {exc}",
+                "[WS-MSG] Error enviando "
+                f"notificación archivo: {exc}",
                 flush=True,
             )
+
+        print(
+            f"[WS-MSG] ARCHIVO "
+            f"{remitente_id} -> {destinatario_id} "
+            f"id={mensaje.id}",
+            flush=True,
+        )
 
         return mensaje
 
@@ -578,4 +556,3 @@ class WSManager:
 # =========================================================
 
 manager = WSManager()
-
