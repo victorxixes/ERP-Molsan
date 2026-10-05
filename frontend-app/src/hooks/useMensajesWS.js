@@ -1,4 +1,3 @@
-```javascript
 import { useEffect, useRef } from "react";
 import { useMensajesStore } from "../store/mensajesStore";
 
@@ -708,4 +707,3 @@ export const useMensajesWS = (empleadoId) => {
 
   return wsRef;
 };
-```
