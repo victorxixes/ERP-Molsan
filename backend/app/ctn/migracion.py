@@ -10,7 +10,28 @@ from sqlalchemy.orm import Session
 
 from backend.app.ctn.models import Notaria
 
+from backend.app.ctn.geocode import (
+    geocode_todas_notarias,
+)
 
+# ============================================================
+# MIGRACIÓN DE COORDENADAS
+# ============================================================
+
+def agregar_coordenadas(
+    db: Session,
+) -> dict:
+    """
+    Añade coordenadas a las notarías que todavía no las tienen.
+
+    Utiliza el único sistema de geocodificación CTN:
+        backend.app.ctn.geocode
+    """
+
+    return geocode_todas_notarias(
+        db
+    )
+    
 # ============================================================
 # CONFIGURACIÓN
 # ============================================================
