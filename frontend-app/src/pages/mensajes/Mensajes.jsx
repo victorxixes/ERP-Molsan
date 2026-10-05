@@ -1,3 +1,4 @@
+```javascript
 import {
   useEffect,
   useRef,
@@ -12,218 +13,516 @@ import { useMensajesWS } from "../../hooks/useMensajesWS";
 import MensajeBubble from "../../components/mensajes/MensajeBubble";
 import MensajesHeader from "../../components/mensajes/MensajesHeader";
 
+
 /**
+ * =========================================================
  * MENSAJES — MOLSAN ERP SAAS PREMIUM 2027
+ * =========================================================
  *
- * Diseño:
- * - Glass Luxe Premium
- * - Fondo claro corporativo
- * - Tarjetas blancas/translúcidas
- * - Azul corporativo
- * - Responsive
- * - Animaciones suaves
+ * Arquitectura:
  *
- * Lógica:
- * - Mantiene WebSocket realtime
- * - Mantiene REST
- * - Mantiene adjuntos
- * - Mantiene typing
- * - Mantiene Zustand
+ * REST:
+ * - Cargar conversación
+ * - Cargar conectados
+ * - Marcar leído
+ * - Subir archivos
+ *
+ * WebSocket:
+ * - Online
+ * - Offline
+ * - Typing
+ * - Mensajes
+ * - Archivos
+ *
+ * IMPORTANTE:
+ *
+ * Los mensajes enviados por WebSocket ya se guardan
+ * en PostgreSQL desde el backend.
+ *
+ * Por eso NO hacemos un POST REST adicional después
+ * de enviar un mensaje por WebSocket.
+ * =========================================================
  */
 
-export default function Mensajes({ usuarioId }) {
-  const [otroId, setOtroId] = useState(null);
-  const [texto, setTexto] = useState("");
+
+export default function Mensajes({
+  usuarioId,
+}) {
+
+  const [otroId, setOtroId] =
+    useState(null);
+
+  const [texto, setTexto] =
+    useState("");
+
+
+  /*
+   * -------------------------------------------------------
+   * ESTADO ZUSTAND
+   * -------------------------------------------------------
+   */
 
   const {
     mensajes,
     conectados,
     typing,
     cargarConversacion,
-    enviarMensajeREST,
+    marcarConversacionLeida,
   } = useMensajesStore();
 
-  const wsRef = useMensajesWS(usuarioId, otroId);
-  const chatRef = useRef(null);
 
-  // =========================================================
-  // USUARIOS CONECTADOS
-  // =========================================================
+  /*
+   * -------------------------------------------------------
+   * WEBSOCKET
+   * -------------------------------------------------------
+   *
+   * IMPORTANTE:
+   *
+   * El WebSocket solamente depende del usuario.
+   *
+   * Cambiar otroId NO reconecta el socket.
+   */
 
-  const conectadosFiltrados = useMemo(
-    () =>
-      conectados.filter(
-        (c) => c.id !== usuarioId
-      ),
-    [conectados, usuarioId]
-  );
+  const wsRef =
+    useMensajesWS(
+      usuarioId
+    );
 
-  // =========================================================
-  // CARGAR CONVERSACIÓN
-  // =========================================================
+
+  const chatRef =
+    useRef(null);
+
+
+  /*
+   * =======================================================
+   * USUARIOS CONECTADOS
+   * =======================================================
+   */
+
+  const conectadosFiltrados =
+    useMemo(
+      () =>
+        conectados.filter(
+          (c) =>
+            c.id !==
+            usuarioId
+        ),
+      [
+        conectados,
+        usuarioId,
+      ]
+    );
+
+
+  /*
+   * =======================================================
+   * CARGAR CONVERSACIÓN
+   * =======================================================
+   */
 
   useEffect(() => {
-    if (otroId) {
-      cargarConversacion(
-        usuarioId,
-        otroId
-      );
+
+    if (
+      !usuarioId ||
+      !otroId
+    ) {
+
+      return;
+
     }
+
+
+    cargarConversacion(
+      usuarioId,
+      otroId
+    );
+
+
+    /*
+     * Al abrir la conversación,
+     * marcar como leída.
+     */
+
+    marcarConversacionLeida(
+      usuarioId,
+      otroId
+    );
+
   }, [
-    otroId,
     usuarioId,
+    otroId,
     cargarConversacion,
+    marcarConversacionLeida,
   ]);
 
-  // =========================================================
-  // SCROLL AUTOMÁTICO
-  // =========================================================
+
+  /*
+   * =======================================================
+   * SCROLL AUTOMÁTICO
+   * =======================================================
+   */
 
   useEffect(() => {
-    const el = chatRef.current;
+
+    const el =
+      chatRef.current;
+
 
     if (!el) {
       return;
     }
 
+
     el.scrollTo({
-      top: el.scrollHeight,
-      behavior: "smooth",
+      top:
+        el.scrollHeight,
+
+      behavior:
+        "smooth",
     });
-  }, [mensajes]);
 
-  // =========================================================
-  // ENVIAR MENSAJE WS
-  // =========================================================
-
-  const enviarMensajeWS = useCallback(() => {
-    if (!otroId || !texto.trim()) {
-      return;
-    }
-
-    wsRef.current?.send(
-      JSON.stringify({
-        tipo: "mensaje",
-        destinatario_id: otroId,
-        contenido: texto,
-      })
-    );
   }, [
-    otroId,
-    texto,
-    wsRef,
+    mensajes,
   ]);
 
-  // =========================================================
-  // TYPING
-  // =========================================================
 
-  const enviarTypingWS = useCallback(() => {
-    if (!otroId) {
-      return;
-    }
+  /*
+   * =======================================================
+   * ENVIAR MENSAJE WEBSOCKET
+   * =======================================================
+   */
 
-    wsRef.current?.send(
-      JSON.stringify({
-        tipo: "typing",
-        destinatario_id: otroId,
-      })
-    );
-  }, [
-    otroId,
-    wsRef,
-  ]);
-
-  // =========================================================
-  // ADJUNTO
-  // =========================================================
-
-  const handleAdjunto = useCallback(
-    async (e) => {
-      const file =
-        e.target.files[0];
-
-      if (!file || !otroId) {
-        return;
-      }
-
-      const fd =
-        new FormData();
-
-      fd.append(
-        "file",
-        file
-      );
-
-      try {
-        const res =
-          await fetch(
-            `${import.meta.env.VITE_API_URL}/mensajes/upload`,
-            {
-              method: "POST",
-              body: fd,
-            }
-          );
-
-        const data =
-          await res.json();
+  const enviarMensajeWS =
+    useCallback(
+      () => {
 
         if (
-          data.status !== "ok"
+          !otroId
         ) {
-          return;
+
+          return false;
+
         }
 
-        const archivo_url =
-          data.archivo_url;
 
-        wsRef.current?.send(
+        const contenido =
+          texto.trim();
+
+
+        if (
+          !contenido
+        ) {
+
+          return false;
+
+        }
+
+
+        const ws =
+          wsRef.current;
+
+
+        if (
+          !ws ||
+          ws.readyState !==
+            WebSocket.OPEN
+        ) {
+
+          console.warn(
+            "[MENSAJES] WebSocket no conectado."
+          );
+
+          return false;
+
+        }
+
+
+        /*
+         * Enviar solamente por WebSocket.
+         *
+         * El backend:
+         *
+         * 1. Guarda en BD.
+         * 2. Genera ID.
+         * 3. Envía el mensaje al remitente.
+         * 4. Envía el mensaje al destinatario.
+         */
+
+        ws.send(
           JSON.stringify({
-            tipo: "archivo",
+            tipo:
+              "mensaje",
+
             destinatario_id:
               otroId,
-            archivo_url,
+
+            contenido,
           })
         );
 
-        await enviarMensajeREST({
-          remitente_id:
-            usuarioId,
-          destinatario_id:
-            otroId,
-          contenido: null,
-          archivo_url,
-        });
-      } catch (err) {
-        console.error(
-          "Error adjunto:",
-          err
-        );
-      } finally {
-        e.target.value = "";
-      }
-    },
-    [
-      otroId,
-      usuarioId,
-      enviarMensajeREST,
-      wsRef,
-    ]
-  );
 
-  // =========================================================
-  // AGRUPAR MENSAJES POR FECHA
-  // =========================================================
+        return true;
+
+      },
+      [
+        otroId,
+        texto,
+        wsRef,
+      ]
+    );
+
+
+  /*
+   * =======================================================
+   * TYPING
+   * =======================================================
+   */
+
+  const enviarTypingWS =
+    useCallback(
+      () => {
+
+        if (
+          !otroId
+        ) {
+
+          return;
+
+        }
+
+
+        const ws =
+          wsRef.current;
+
+
+        if (
+          !ws ||
+          ws.readyState !==
+            WebSocket.OPEN
+        ) {
+
+          return;
+
+        }
+
+
+        ws.send(
+          JSON.stringify({
+            tipo:
+              "typing",
+
+            destinatario_id:
+              otroId,
+          })
+        );
+
+      },
+      [
+        otroId,
+        wsRef,
+      ]
+    );
+
+
+  /*
+   * =======================================================
+   * ADJUNTO
+   * =======================================================
+   */
+
+  const handleAdjunto =
+    useCallback(
+      async (e) => {
+
+        const file =
+          e.target.files?.[0];
+
+
+        if (
+          !file ||
+          !otroId
+        ) {
+
+          return;
+
+        }
+
+
+        const ws =
+          wsRef.current;
+
+
+        if (
+          !ws ||
+          ws.readyState !==
+            WebSocket.OPEN
+        ) {
+
+          console.warn(
+            "[MENSAJES] WebSocket no conectado."
+          );
+
+          e.target.value =
+            "";
+
+          return;
+
+        }
+
+
+        const fd =
+          new FormData();
+
+
+        fd.append(
+          "file",
+          file
+        );
+
+
+        try {
+
+          /*
+           * ------------------------------------------------
+           * SUBIR ARCHIVO
+           * ------------------------------------------------
+           */
+
+          const res =
+            await fetch(
+              `${import.meta.env.VITE_API_URL}/mensajes/upload`,
+              {
+                method:
+                  "POST",
+
+                headers: {
+                  /*
+                   * NO poner Content-Type aquí.
+                   *
+                   * El navegador lo genera automáticamente
+                   * con el boundary de FormData.
+                   */
+                },
+
+                body:
+                  fd,
+              }
+            );
+
+
+          if (
+            !res.ok
+          ) {
+
+            throw new Error(
+              `HTTP ${res.status}`
+            );
+
+          }
+
+
+          const data =
+            await res.json();
+
+
+          if (
+            data.status !==
+            "ok"
+          ) {
+
+            console.error(
+              "[MENSAJES] Error subiendo archivo:",
+              data
+            );
+
+            return;
+
+          }
+
+
+          const archivoUrl =
+            data.archivo_url;
+
+
+          if (
+            !archivoUrl
+          ) {
+
+            console.error(
+              "[MENSAJES] El backend no devolvió archivo_url."
+            );
+
+            return;
+
+          }
+
+
+          /*
+           * ------------------------------------------------
+           * ENVIAR ARCHIVO POR WEBSOCKET
+           * ------------------------------------------------
+           *
+           * NO hacemos POST /mensajes.
+           *
+           * El backend WebSocket será quien cree
+           * el registro Mensaje en PostgreSQL.
+           */
+
+          ws.send(
+            JSON.stringify({
+              tipo:
+                "archivo",
+
+              destinatario_id:
+                otroId,
+
+              archivo_url:
+                archivoUrl,
+            })
+          );
+
+        } catch (err) {
+
+          console.error(
+            "Error adjunto:",
+            err
+          );
+
+        } finally {
+
+          e.target.value =
+            "";
+
+        }
+
+      },
+      [
+        otroId,
+        wsRef,
+      ]
+    );
+
+
+  /*
+   * =======================================================
+   * AGRUPAR MENSAJES POR FECHA
+   * =======================================================
+   */
 
   const mensajesAgrupados =
     useMemo(
       () =>
         mensajes.reduce(
-          (acc, m) => {
+          (
+            acc,
+            m
+          ) => {
+
             const fechaObj =
               new Date(
                 m.fecha
               );
+
 
             const fecha =
               isNaN(
@@ -234,22 +533,38 @@ export default function Mensajes({ usuarioId }) {
                     .toISOString()
                     .split("T")[0];
 
-            if (!acc[fecha]) {
-              acc[fecha] = [];
+
+            if (
+              !acc[fecha]
+            ) {
+
+              acc[fecha] =
+                [];
+
             }
 
-            acc[fecha].push(m);
+
+            acc[fecha].push(
+              m
+            );
+
 
             return acc;
+
           },
           {}
         ),
-      [mensajes]
+      [
+        mensajes,
+      ]
     );
 
-  // =========================================================
-  // RENDER
-  // =========================================================
+
+  /*
+   * =======================================================
+   * RENDER
+   * =======================================================
+   */
 
   return (
     <div
@@ -264,9 +579,10 @@ export default function Mensajes({ usuarioId }) {
         animate-fadeIn
       "
     >
-      {/* =====================================================
+
+      {/* ===================================================
           FONDO PREMIUM
-      ===================================================== */}
+      =================================================== */}
 
       <div
         className="
@@ -276,6 +592,7 @@ export default function Mensajes({ usuarioId }) {
           overflow-hidden
         "
       >
+
         <div
           className="
             absolute
@@ -327,11 +644,13 @@ export default function Mensajes({ usuarioId }) {
             to-blue-50/70
           "
         />
+
       </div>
 
-      {/* =====================================================
+
+      {/* ===================================================
           CONTENIDO
-      ===================================================== */}
+      =================================================== */}
 
       <div
         className="
@@ -343,9 +662,10 @@ export default function Mensajes({ usuarioId }) {
           gap-5
         "
       >
-        {/* ===================================================
+
+        {/* =================================================
             COLUMNA CONTACTOS
-        =================================================== */}
+        ================================================= */}
 
         <section
           className="
@@ -360,7 +680,6 @@ export default function Mensajes({ usuarioId }) {
             animate-slideUp
           "
         >
-          {/* Línea premium */}
 
           <div
             className="
@@ -376,7 +695,8 @@ export default function Mensajes({ usuarioId }) {
             "
           />
 
-          {/* Cabecera */}
+
+          {/* CABECERA */}
 
           <div
             className="
@@ -386,6 +706,7 @@ export default function Mensajes({ usuarioId }) {
               border-slate-200/80
             "
           >
+
             <div
               className="
                 flex
@@ -394,7 +715,9 @@ export default function Mensajes({ usuarioId }) {
                 gap-3
               "
             >
+
               <div>
+
                 <h2
                   className="
                     text-lg
@@ -415,7 +738,9 @@ export default function Mensajes({ usuarioId }) {
                 >
                   Empleados conectados
                 </p>
+
               </div>
+
 
               <div
                 className="
@@ -430,6 +755,7 @@ export default function Mensajes({ usuarioId }) {
                   py-1.5
                 "
               >
+
                 <span
                   className="
                     h-2
@@ -447,13 +773,19 @@ export default function Mensajes({ usuarioId }) {
                     text-emerald-600
                   "
                 >
-                  {conectadosFiltrados.length}
+                  {
+                    conectadosFiltrados.length
+                  }
                 </span>
+
               </div>
+
             </div>
+
           </div>
 
-          {/* Lista */}
+
+          {/* LISTA */}
 
           <div
             className="
@@ -463,8 +795,10 @@ export default function Mensajes({ usuarioId }) {
               overflow-y-auto
             "
           >
+
             {conectadosFiltrados.length ===
               0 && (
+
               <div
                 className="
                   rounded-2xl
@@ -476,6 +810,7 @@ export default function Mensajes({ usuarioId }) {
                   text-center
                 "
               >
+
                 <div
                   className="
                     mx-auto
@@ -514,16 +849,24 @@ export default function Mensajes({ usuarioId }) {
                   Los usuarios online
                   aparecerán aquí.
                 </p>
+
               </div>
+
             )}
+
 
             {conectadosFiltrados.map(
               (c) => (
+
                 <button
-                  key={c.id}
+                  key={
+                    c.id
+                  }
                   type="button"
                   onClick={() =>
-                    setOtroId(c.id)
+                    setOtroId(
+                      c.id
+                    )
                   }
                   className={`
                     group
@@ -554,7 +897,8 @@ export default function Mensajes({ usuarioId }) {
                     }
                   `}
                 >
-                  {/* Avatar */}
+
+                  {/* AVATAR */}
 
                   <div
                     className="
@@ -564,10 +908,20 @@ export default function Mensajes({ usuarioId }) {
                       shrink-0
                     "
                   >
+
                     <img
                       src={
                         c.foto
-                          ? `${import.meta.env.VITE_API_URL}${c.foto}`
+                          ? (
+                              c.foto.startsWith(
+                                "http://"
+                              ) ||
+                              c.foto.startsWith(
+                                "https://"
+                              )
+                                ? c.foto
+                                : `${import.meta.env.VITE_API_URL}${c.foto}`
+                            )
                           : "/no-foto.png"
                       }
                       alt=""
@@ -595,11 +949,19 @@ export default function Mensajes({ usuarioId }) {
                         bg-emerald-500
                       "
                     />
+
                   </div>
 
-                  {/* Datos */}
 
-                  <div className="min-w-0 flex-1">
+                  {/* DATOS */}
+
+                  <div
+                    className="
+                      min-w-0
+                      flex-1
+                    "
+                  >
+
                     <div
                       className="
                         truncate
@@ -621,9 +983,11 @@ export default function Mensajes({ usuarioId }) {
                     >
                       Disponible ahora
                     </div>
+
                   </div>
 
-                  {/* Flecha */}
+
+                  {/* FLECHA */}
 
                   <span
                     className="
@@ -635,15 +999,20 @@ export default function Mensajes({ usuarioId }) {
                   >
                     ›
                   </span>
+
                 </button>
+
               )
             )}
+
           </div>
+
         </section>
 
-        {/* ===================================================
+
+        {/* =================================================
             CHAT
-        =================================================== */}
+        ================================================= */}
 
         <section
           className="
@@ -659,6 +1028,7 @@ export default function Mensajes({ usuarioId }) {
             animate-slideUp
           "
         >
+
           <div
             className="
               absolute
@@ -673,21 +1043,34 @@ export default function Mensajes({ usuarioId }) {
             "
           />
 
+
           {otroId ? (
-            <div className="p-4 sm:p-5">
+
+            <div
+              className="
+                p-4
+                sm:p-5
+              "
+            >
+
               {/* CABECERA */}
 
               <MensajesHeader
-                otroId={otroId}
+                otroId={
+                  otroId
+                }
                 conectados={
                   conectadosFiltrados
                 }
               />
 
+
               {/* CHAT */}
 
               <div
-                ref={chatRef}
+                ref={
+                  chatRef
+                }
                 className="
                   h-[400px]
                   sm:h-[480px]
@@ -700,9 +1083,11 @@ export default function Mensajes({ usuarioId }) {
                   shadow-inner
                 "
               >
+
                 {Object.keys(
                   mensajesAgrupados
                 ).length === 0 && (
+
                   <div
                     className="
                       h-full
@@ -712,7 +1097,9 @@ export default function Mensajes({ usuarioId }) {
                       text-center
                     "
                   >
+
                     <div>
+
                       <div
                         className="
                           mx-auto
@@ -750,86 +1137,127 @@ export default function Mensajes({ usuarioId }) {
                         Escribe el primer
                         mensaje.
                       </p>
+
                     </div>
+
                   </div>
+
                 )}
+
 
                 {Object.keys(
                   mensajesAgrupados
-                ).map((fecha) => (
-                  <div
-                    key={fecha}
-                  >
+                ).map(
+                  (fecha) => (
+
                     <div
-                      className="
-                        my-4
-                        flex
-                        items-center
-                        justify-center
-                      "
+                      key={
+                        fecha
+                      }
                     >
-                      <span
+
+                      <div
                         className="
-                          rounded-full
-                          border
-                          border-slate-200
-                          bg-white
-                          px-3
-                          py-1
-                          text-[11px]
-                          font-medium
-                          text-slate-400
-                          shadow-sm
+                          my-4
+                          flex
+                          items-center
+                          justify-center
                         "
                       >
-                        {fecha}
-                      </span>
+
+                        <span
+                          className="
+                            rounded-full
+                            border
+                            border-slate-200
+                            bg-white
+                            px-3
+                            py-1
+                            text-[11px]
+                            font-medium
+                            text-slate-400
+                            shadow-sm
+                          "
+                        >
+                          {fecha}
+                        </span>
+
+                      </div>
+
+
+                      {mensajesAgrupados[
+                        fecha
+                      ].map(
+                        (m) => {
+
+                          const remitente =
+                            conectadosFiltrados.find(
+                              (x) =>
+                                x.id ===
+                                m.remitente_id
+                            );
+
+
+                          const avatarUrl =
+                            remitente?.foto
+                              ? (
+                                  remitente.foto.startsWith(
+                                    "http://"
+                                  ) ||
+                                  remitente.foto.startsWith(
+                                    "https://"
+                                  )
+                                    ? remitente.foto
+                                    : `${import.meta.env.VITE_API_URL}${remitente.foto}`
+                                )
+                              : "/no-foto.png";
+
+
+                          const online =
+                            conectadosFiltrados.some(
+                              (x) =>
+                                x.id ===
+                                m.remitente_id
+                            );
+
+
+                          return (
+
+                            <MensajeBubble
+                              key={
+                                m.id
+                              }
+                              mensaje={
+                                m
+                              }
+                              usuarioId={
+                                usuarioId
+                              }
+                              avatarUrl={
+                                avatarUrl
+                              }
+                              online={
+                                online
+                              }
+                            />
+
+                          );
+
+                        }
+                      )}
+
                     </div>
 
-                    {mensajesAgrupados[
-                      fecha
-                    ].map((m) => {
-                      const remitente =
-                        conectadosFiltrados.find(
-                          (x) =>
-                            x.id ===
-                            m.remitente_id
-                        );
+                  )
+                )}
 
-                      const avatarUrl =
-                        remitente?.foto
-                          ? `${import.meta.env.VITE_API_URL}${remitente.foto}`
-                          : "/no-foto.png";
-
-                      const online =
-                        conectadosFiltrados.some(
-                          (x) =>
-                            x.id ===
-                            m.remitente_id
-                        );
-
-                      return (
-                        <MensajeBubble
-                          key={m.id}
-                          mensaje={m}
-                          usuarioId={
-                            usuarioId
-                          }
-                          avatarUrl={
-                            avatarUrl
-                          }
-                          online={
-                            online
-                          }
-                        />
-                      );
-                    })}
-                  </div>
-                ))}
 
                 {/* TYPING */}
 
-                {typing[otroId] && (
+                {typing[
+                  otroId
+                ] && (
+
                   <div
                     className="
                       mt-3
@@ -841,6 +1269,7 @@ export default function Mensajes({ usuarioId }) {
                       italic
                     "
                   >
+
                     <div
                       className="
                         flex
@@ -854,6 +1283,7 @@ export default function Mensajes({ usuarioId }) {
                         shadow-sm
                       "
                     >
+
                       <span
                         className="
                           h-1.5
@@ -885,44 +1315,56 @@ export default function Mensajes({ usuarioId }) {
                           [animation-delay:300ms]
                         "
                       />
+
                     </div>
 
                     <span>
                       escribiendo…
                     </span>
+
                   </div>
+
                 )}
+
               </div>
 
-              {/* INPUT */}
+
+              {/* =================================================
+                  INPUT
+              ================================================= */}
 
               <form
-                onSubmit={async (
+                onSubmit={(
                   e
                 ) => {
+
                   e.preventDefault();
+
 
                   if (
                     !texto.trim() ||
                     !otroId
                   ) {
+
                     return;
+
                   }
 
-                  enviarMensajeWS();
 
-                  await enviarMensajeREST(
-                    {
-                      remitente_id:
-                        usuarioId,
-                      destinatario_id:
-                        otroId,
-                      contenido:
-                        texto,
-                    }
-                  );
+                  const enviado =
+                    enviarMensajeWS();
 
-                  setTexto("");
+
+                  if (
+                    enviado
+                  ) {
+
+                    setTexto(
+                      ""
+                    );
+
+                  }
+
                 }}
                 className="
                   mt-4
@@ -930,15 +1372,23 @@ export default function Mensajes({ usuarioId }) {
                   gap-2
                 "
               >
-                {/* Input */}
+
+                {/* INPUT */}
 
                 <input
-                  value={texto}
-                  onChange={(e) => {
+                  value={
+                    texto
+                  }
+                  onChange={(
+                    e
+                  ) => {
+
                     setTexto(
                       e.target.value
                     );
+
                     enviarTypingWS();
+
                   }}
                   className="
                     min-w-0
@@ -962,7 +1412,8 @@ export default function Mensajes({ usuarioId }) {
                   placeholder="Escribe un mensaje…"
                 />
 
-                {/* Adjunto */}
+
+                {/* ADJUNTO */}
 
                 <label
                   className="
@@ -988,18 +1439,22 @@ export default function Mensajes({ usuarioId }) {
                   "
                   title="Adjuntar archivo"
                 >
+
                   📎
 
                   <input
                     type="file"
                     className="hidden"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                     onChange={
                       handleAdjunto
                     }
                   />
+
                 </label>
 
-                {/* Enviar */}
+
+                {/* ENVIAR */}
 
                 <button
                   type="submit"
@@ -1026,9 +1481,13 @@ export default function Mensajes({ usuarioId }) {
                 >
                   Enviar
                 </button>
+
               </form>
+
             </div>
+
           ) : (
+
             <div
               className="
                 flex
@@ -1039,7 +1498,9 @@ export default function Mensajes({ usuarioId }) {
                 text-center
               "
             >
+
               <div>
+
                 <div
                   className="
                     mx-auto
@@ -1086,11 +1547,18 @@ export default function Mensajes({ usuarioId }) {
                   izquierda para comenzar
                   una conversación.
                 </p>
+
               </div>
+
             </div>
+
           )}
+
         </section>
+
       </div>
+
     </div>
   );
 }
+```
