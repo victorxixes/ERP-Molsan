@@ -81,7 +81,7 @@ export default function Utilidades() {
           icon="🏘️"
           titulo="Municipios"
           descripcion="Gestionar comunidades autónomas, provincias y municipios."
-          link="/herramientas/municipios"
+          link="/herramientas/utilidades/municipios"
         />
 
 
@@ -93,7 +93,7 @@ export default function Utilidades() {
           icon="🏛️"
           titulo="Oficinas Liquidadoras"
           descripcion="Gestionar las oficinas liquidadoras y sus datos asociados."
-          link="/herramientas/utilidades/oficinas-liquidadoras"
+          link="/herramientas/oficinas-liquidadoras"
         />
 
 
