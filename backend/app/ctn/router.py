@@ -14,6 +14,8 @@ from backend.app.utils.distancia import distancia_km, MOLSAN_LAT, MOLSAN_LNG
 # Google Maps geocode
 from backend.app.ctn.geocode import geocode_todas_notarias, migracion_agregar_coordenadas
 
+from backend.app.ctn.migracion import agregar_coordenadas
+
 router = APIRouter(prefix="/ctn", tags=["CTN"])
 
 
@@ -30,6 +32,12 @@ def migracion(db: Session = Depends(get_db)):
     return migracion_agregar_coordenadas(db)
 
 
+@router.post("/migracion/agregar-coordenadas")
+def migracion_agregar_coordenadas(
+    db: Session = Depends(get_db)
+):
+    return agregar_coordenadas(db)
+    
 # ---------------------------------------------------------
 # LISTAR NOTARÍAS
 # ---------------------------------------------------------
