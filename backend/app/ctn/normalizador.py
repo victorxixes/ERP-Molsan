@@ -7,81 +7,27 @@ import unicodedata
 # ============================================================
 
 def limpiar_texto(s: str) -> str:
-    """
-    Normaliza un texto sin destruir información útil
-    para geocodificación.
-
-    IMPORTANTE:
-    NO elimina números porque pueden ser:
-    - número de portal
-    - código postal
-    - carretera
-    - kilómetro
-    """
-
     if not s:
         return ""
 
     s = str(s)
 
-    # --------------------------------------------------------
-    # NORMALIZAR UNICODE
-    # --------------------------------------------------------
-
-    s = unicodedata.normalize(
-        "NFKD",
-        s
-    )
-
-    # --------------------------------------------------------
-    # ELIMINAR ACENTOS
-    # --------------------------------------------------------
-
+    # Normalizar acentos
     s = (
-        s
+        unicodedata
+        .normalize("NFKD", s)
         .encode("ascii", "ignore")
         .decode("ascii")
     )
 
-    # --------------------------------------------------------
-    # NORMALIZAR ESPACIOS
-    # --------------------------------------------------------
+    # Normalizar espacios
+    s = re.sub(r"\s+", " ", s)
 
-    s = re.sub(
-        r"\s+",
-        " ",
-        s
-    )
+    # Quitar espacios antes de comas
+    s = re.sub(r"\s+,", ",", s)
 
-    # --------------------------------------------------------
-    # ESPACIOS ANTES DE COMAS
-    # --------------------------------------------------------
-
-    s = re.sub(
-        r"\s+,",
-        ",",
-        s
-    )
-
-    # --------------------------------------------------------
-    # ESPACIOS DESPUÉS DE COMAS
-    # --------------------------------------------------------
-
-    s = re.sub(
-        r",\s*",
-        ", ",
-        s
-    )
-
-    # --------------------------------------------------------
-    # COMAS DUPLICADAS
-    # --------------------------------------------------------
-
-    s = re.sub(
-        r",\s*,+",
-        ", ",
-        s
-    )
+    # Quitar espacios después de comas
+    s = re.sub(r",\s*", ", ", s)
 
     return s.strip()
 
@@ -92,113 +38,95 @@ def limpiar_texto(s: str) -> str:
 
 def limpiar_direccion(direccion: str) -> str:
     """
-    Limpia una dirección para enviarla a Google Maps.
+    Limpia una dirección para geocodificación.
 
-    MUY IMPORTANTE:
-    No elimina números de portal ni códigos postales.
+    IMPORTANTE:
+    NO elimina números de calle ni códigos postales.
+
+    Ejemplo:
+
+        Carrer Mallorca 123, 08036, Barcelona
+
+    debe conservar:
+
+        123
+        08036
     """
 
     if not direccion:
         return ""
 
-    direccion = limpiar_texto(
-        direccion
-    )
-
-    if not direccion:
-        return ""
+    direccion = limpiar_texto(direccion)
 
     # ========================================================
     # ELIMINAR INFORMACIÓN INTERIOR DEL INMUEBLE
     # ========================================================
-    #
-    # Solo eliminamos elementos que pueden perjudicar
-    # la búsqueda:
-    #
-    # piso, puerta, escalera, oficina, etc.
-    #
-    # NO eliminamos números de calle.
-    #
-    # ========================================================
 
     direccion = re.sub(
-        r"\b("
-        r"planta|"
-        r"piso|"
-        r"bajo|"
-        r"local|"
-        r"entresuelo|"
-        r"izquierda|"
-        r"derecha|"
-        r"izq|"
-        r"dch|"
-        r"apto|"
-        r"apta|"
-        r"apt|"
-        r"puerta|"
-        r"escalera|"
-        r"bloque|"
-        r"oficina|"
-        r"despacho"
-        r")\b"
-        r"[^,]*",
-        "",
+        r"\b(planta|piso|bajo|local|entresuelo|"
+        r"izq|izda|izd|dcha|dch|"
+        r"apto|apt|ap|"
+        r"puerta|pta|"
+        r"escalera|esc|"
+        r"bloque|blq|"
+        r"oficina|of|"
+        r"despacho)\b"
+        r"[\s\.:,-]*"
+        r"[A-Za-z0-9ºª\-]*",
+        " ",
         direccion,
-        flags=re.IGNORECASE
+        flags=re.IGNORECASE,
     )
 
     # ========================================================
-    # ELIMINAR ORDINALES DE PISO
-    # ========================================================
+    # ELIMINAR SOLO INDICADORES DE PISO
     #
-    # Ejemplo:
-    # 3ºA
+    # 3º
     # 4ª
-    #
-    # PERO NO tocar:
-    # 123
-    # 08036
-    #
+    # 2ºA
     # ========================================================
 
     direccion = re.sub(
         r"\b\d+\s*[ºª]\s*[A-Za-z]?\b",
-        "",
-        direccion
+        " ",
+        direccion,
+        flags=re.IGNORECASE,
     )
 
     # ========================================================
-    # NORMALIZAR ESPACIOS
+    # ELIMINAR LETRAS SUELTAS DE PUERTA
+    #
+    # PERO NO ELIMINAR NÚMEROS NORMALES.
+    # ========================================================
+
+    direccion = re.sub(
+        r"(?i)(?:,\s*|\s+)[A-Za-z]\s*$",
+        "",
+        direccion,
+    )
+
+    # ========================================================
+    # LIMPIEZA FINAL
     # ========================================================
 
     direccion = re.sub(
         r"\s+",
         " ",
-        direccion
-    )
-
-    # ========================================================
-    # NORMALIZAR COMAS
-    # ========================================================
-
-    direccion = re.sub(
-        r"\s+,",
-        ",",
-        direccion
+        direccion,
     )
 
     direccion = re.sub(
         r",\s*,+",
         ", ",
-        direccion
+        direccion,
     )
 
-    # ========================================================
-    # QUITAR COMAS INICIALES / FINALES
-    # ========================================================
-
-    direccion = direccion.strip(
-        " ,"
+    direccion = re.sub(
+        r"\s+,",
+        ",",
+        direccion,
     )
 
-    return direccion
+    direccion = direccion.strip(" ,")
+
+    return direccion.strip()
