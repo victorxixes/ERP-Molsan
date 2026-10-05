@@ -41,25 +41,6 @@ MOLSAN_LNG = 2.181740
 def _build_address(
     notaria: Notaria,
 ) -> Optional[str]:
-    """
-    Construye una dirección completa para Google Maps.
-
-    IMPORTANTE:
-    Conservamos:
-    - calle
-    - número
-    - código postal
-    - municipio
-    - provincia
-
-    Ejemplo:
-
-        Carrer Mallorca 123,
-        08036,
-        Barcelona,
-        Barcelona,
-        España
-    """
 
     partes = []
 
@@ -70,10 +51,11 @@ def _build_address(
     direccion = getattr(
         notaria,
         "direccion",
-        None
+        None,
     )
 
     if direccion:
+
         direccion = str(
             direccion
         ).strip()
@@ -90,10 +72,11 @@ def _build_address(
     cp = getattr(
         notaria,
         "cp",
-        None
+        None,
     )
 
     if cp:
+
         cp = str(
             cp
         ).strip()
@@ -110,10 +93,11 @@ def _build_address(
     municipio = getattr(
         notaria,
         "municipio",
-        None
+        None,
     )
 
     if municipio:
+
         municipio = str(
             municipio
         ).strip()
@@ -130,10 +114,11 @@ def _build_address(
     provincia = getattr(
         notaria,
         "provincia",
-        None
+        None,
     )
 
     if provincia:
+
         provincia = str(
             provincia
         ).strip()
@@ -152,7 +137,7 @@ def _build_address(
     )
 
     # --------------------------------------------------------
-    # VALIDAR
+    # VALIDACIÓN
     # --------------------------------------------------------
 
     if len(partes) <= 1:
@@ -196,7 +181,7 @@ def _geocode_google(
         response = requests.get(
             GOOGLE_GEOCODE_URL,
             params=params,
-            timeout=15,
+            timeout=20,
         )
 
         if response.status_code != 200:
@@ -287,7 +272,7 @@ def _geocode_google(
             return None
 
         # ====================================================
-        # OTROS ERRORES
+        # OTROS ESTADOS
         # ====================================================
 
         logger.error(
@@ -328,19 +313,9 @@ def geocode_notaria(
     notaria: Notaria,
 ) -> bool:
 
-    # ========================================================
-    # IMPORTANTE
-    # ========================================================
-    #
-    # Solo saltamos si TENEMOS LAS DOS coordenadas.
-    #
-    # Antes:
-    #
-    # if not notaria.lat and not notaria.lng:
-    #
-    # Eso era incorrecto.
-    #
-    # ========================================================
+    # --------------------------------------------------------
+    # YA TIENE LAS DOS COORDENADAS
+    # --------------------------------------------------------
 
     if (
         notaria.lat
@@ -348,12 +323,20 @@ def geocode_notaria(
     ):
         return False
 
+    # --------------------------------------------------------
+    # CONSTRUIR DIRECCIÓN
+    # --------------------------------------------------------
+
     raw_address = _build_address(
         notaria
     )
 
     if not raw_address:
         return False
+
+    # --------------------------------------------------------
+    # NORMALIZAR
+    # --------------------------------------------------------
 
     address = limpiar_direccion(
         raw_address
@@ -368,6 +351,10 @@ def geocode_notaria(
         address,
     )
 
+    # --------------------------------------------------------
+    # GOOGLE
+    # --------------------------------------------------------
+
     coords = _geocode_google(
         address
     )
@@ -376,6 +363,10 @@ def geocode_notaria(
         return False
 
     lat, lng = coords
+
+    # --------------------------------------------------------
+    # GUARDAR
+    # --------------------------------------------------------
 
     try:
 
@@ -456,7 +447,7 @@ def geocode_todas_notarias(
     )
 
     # ========================================================
-    # RECORRER NOTARÍAS
+    # RECORRER
     # ========================================================
 
     for indice, notaria in enumerate(
@@ -465,7 +456,7 @@ def geocode_todas_notarias(
     ):
 
         # ----------------------------------------------------
-        # YA TIENE LAS DOS COORDENADAS
+        # YA TIENE COORDENADAS
         # ----------------------------------------------------
 
         if (
@@ -485,7 +476,7 @@ def geocode_todas_notarias(
             continue
 
         # ----------------------------------------------------
-        # CONSTRUIR DIRECCIÓN
+        # DIRECCIÓN ORIGINAL
         # ----------------------------------------------------
 
         raw_address = _build_address(
@@ -527,13 +518,22 @@ def geocode_todas_notarias(
             continue
 
         # ----------------------------------------------------
-        # LOG IMPORTANTÍSIMO
+        # LOG COMPLETO
         # ----------------------------------------------------
 
         logger.info(
-            "[%s/%s] BUSCANDO: %s",
+            "[%s/%s] ID=%s | DIRECCIÓN ORIGINAL=%s",
             indice,
             total,
+            notaria.id,
+            raw_address,
+        )
+
+        logger.info(
+            "[%s/%s] ID=%s | DIRECCIÓN GOOGLE=%s",
+            indice,
+            total,
+            notaria.id,
             address,
         )
 
@@ -599,7 +599,7 @@ def geocode_todas_notarias(
             )
 
         # ----------------------------------------------------
-        # PAUSA PARA GOOGLE
+        # PAUSA
         # ----------------------------------------------------
 
         time.sleep(
