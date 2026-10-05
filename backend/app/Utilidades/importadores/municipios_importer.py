@@ -1,7 +1,9 @@
 import io
 
 import pandas as pd
+
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
 from backend.app.municipios.models import Municipio
 
@@ -23,10 +25,13 @@ def importar_municipios_desde_excel(
         PROVINCIA
         MUNICIPIO
 
-    Si un municipio ya existe para una determinada provincia,
-    no se duplica.
+    La combinación:
 
-    Devuelve estadísticas de la importación.
+        CCAA + PROVINCIA + MUNICIPIO
+
+    se considera única.
+
+    Si ya existe, no se vuelve a crear.
     """
 
     # ========================================================
@@ -48,7 +53,7 @@ def importar_municipios_desde_excel(
 
 
     # ========================================================
-    # NORMALIZAR NOMBRES DE COLUMNAS
+    # NORMALIZAR COLUMNAS
     # ========================================================
 
     df.columns = [
@@ -63,10 +68,12 @@ def importar_municipios_desde_excel(
         "MUNICIPIO"
     }
 
+
     columnas_faltantes = (
-        columnas_obligatorias -
-        set(df.columns)
+        columnas_obligatorias
+        - set(df.columns)
     )
+
 
     if columnas_faltantes:
 
@@ -77,7 +84,7 @@ def importar_municipios_desde_excel(
 
 
     # ========================================================
-    # QUEDARNOS SOLO CON LAS COLUMNAS NECESARIAS
+    # SOLO COLUMNAS NECESARIAS
     # ========================================================
 
     df = df[
@@ -107,22 +114,20 @@ def importar_municipios_desde_excel(
         )
 
 
-    # Eliminar filas sin municipio
-
-    df = df[
-        df["MUNICIPIO"] != ""
-    ]
-
-
-    # Eliminar filas completamente inválidas
+    # ========================================================
+    # ELIMINAR FILAS INVÁLIDAS
+    # ========================================================
 
     df = df[
         (df["CCAA"] != "") &
-        (df["PROVINCIA"] != "")
-    ]
+        (df["PROVINCIA"] != "") &
+        (df["MUNICIPIO"] != "")
+    ].copy()
 
 
-    # Eliminar duplicados dentro del propio Excel
+    # ========================================================
+    # ELIMINAR DUPLICADOS DEL EXCEL
+    # ========================================================
 
     df = df.drop_duplicates(
         subset=[
@@ -133,23 +138,31 @@ def importar_municipios_desde_excel(
     )
 
 
-    # ========================================================
-    # IMPORTACIÓN
-    # ========================================================
+    total_excel = len(df)
 
     creados = 0
     existentes = 0
     errores = 0
 
+    primer_error = None
+
+
+    # ========================================================
+    # IMPORTACIÓN
+    # ========================================================
 
     for _, fila in df.iterrows():
 
+        ccaa = fila["CCAA"]
+        provincia = fila["PROVINCIA"]
+        municipio = fila["MUNICIPIO"]
+
+
         try:
 
-            ccaa = fila["CCAA"]
-            provincia = fila["PROVINCIA"]
-            municipio = fila["MUNICIPIO"]
-
+            # ------------------------------------------------
+            # COMPROBAR EXISTENCIA
+            # ------------------------------------------------
 
             existente = (
                 db.query(Municipio)
@@ -168,24 +181,65 @@ def importar_municipios_desde_excel(
                 continue
 
 
+            # ------------------------------------------------
+            # CREAR MUNICIPIO
+            # ------------------------------------------------
+
             nuevo = Municipio(
                 ccaa=ccaa,
                 provincia=provincia,
                 municipio=municipio
             )
 
+
             db.add(nuevo)
+
+            # IMPORTANTE:
+            # Comprobamos inmediatamente si PostgreSQL
+            # acepta el registro.
+            db.flush()
 
             creados += 1
 
 
-        except Exception:
+        except SQLAlchemyError as e:
+
+            # ------------------------------------------------
+            # ERROR DE BASE DE DATOS
+            # ------------------------------------------------
+
+            db.rollback()
 
             errores += 1
 
+            if primer_error is None:
+
+                primer_error = (
+                    f"CCAA='{ccaa}', "
+                    f"PROVINCIA='{provincia}', "
+                    f"MUNICIPIO='{municipio}': "
+                    f"{str(e)}"
+                )
+
+
+        except Exception as e:
+
+            db.rollback()
+
+            errores += 1
+
+            if primer_error is None:
+
+                primer_error = (
+                    f"CCAA='{ccaa}', "
+                    f"PROVINCIA='{provincia}', "
+                    f"MUNICIPIO='{municipio}': "
+                    f"{str(e)}"
+                )
+
 
     # ========================================================
-    # COMMIT
+    # COMMIT FINAL
     # ========================================================
 
     try:
@@ -197,7 +251,8 @@ def importar_municipios_desde_excel(
         db.rollback()
 
         raise ValueError(
-            f"Error guardando municipios en la base de datos: {e}"
+            "Error guardando municipios en la base de datos: "
+            f"{e}"
         )
 
 
@@ -205,10 +260,23 @@ def importar_municipios_desde_excel(
     # RESULTADO
     # ========================================================
 
-    return {
-        "total_excel": len(df),
+    resultado = {
+        "ok": True,
+        "total_excel": total_excel,
         "creados": creados,
         "existentes": existentes,
         "errores": errores,
         "total_final": creados + existentes
     }
+
+
+    # ========================================================
+    # MOSTRAR PRIMER ERROR
+    # ========================================================
+
+    if primer_error:
+
+        resultado["primer_error"] = primer_error
+
+
+    return resultado
