@@ -56,6 +56,9 @@ from backend.app.expedientes.gastos.models import ExpedienteGasto
 # Defectos del expediente
 from backend.app.expedientes.defectos.models import ExpedienteDefecto
 
+# Municipios
+from backend.app.municipios.models import Municipio
+
 # Modelos existentes
 from backend.app.mensajes.models import Mensaje
 from backend.app.expedientes.detalle.models import ExpedienteDetalle
