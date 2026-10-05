@@ -31,15 +31,25 @@ import { useEffect, useMemo, useRef, useState } from "react";
  *
  * POST   /api/municipios/importar-excel
  *
- * El fichero se envía mediante FormData:
+ * Campo multipart:
  *
  * fichero = archivo Excel
  *
  * ============================================================
  */
 
+
+/* ============================================================
+   BACKEND
+   IMPORTANTE:
+   El frontend y el backend están en servicios Render distintos.
+============================================================ */
+
+const API_ORIGEN =
+  "https://agenda-intranet-b.onrender.com";
+
 const API_BASE =
-  "https://agenda-intranet-b.onrender.com/api/municipios";
+  `${API_ORIGEN}/api/municipios`;
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
@@ -48,14 +58,107 @@ const FILAS_POR_PAGINA = 25;
 
 
 /* ============================================================
+   LEER RESPUESTAS DEL BACKEND
+============================================================ */
+
+async function leerRespuestaServidor(
+  respuesta
+) {
+
+  const contenido =
+    await respuesta.text();
+
+  if (!contenido) {
+    return null;
+  }
+
+  const contentType =
+    (
+      respuesta.headers.get(
+        "content-type"
+      ) || ""
+    ).toLowerCase();
+
+
+  /* ----------------------------------------------------------
+     JSON normal
+  ---------------------------------------------------------- */
+
+  if (
+    contentType.includes(
+      "application/json"
+    )
+  ) {
+
+    try {
+
+      return JSON.parse(
+        contenido
+      );
+
+    } catch {
+
+      throw new Error(
+        "El servidor devolvió una respuesta JSON no válida."
+      );
+
+    }
+
+  }
+
+
+  /* ----------------------------------------------------------
+     Intentar JSON aunque el servidor no haya enviado
+     correctamente el Content-Type.
+  ---------------------------------------------------------- */
+
+  try {
+
+    return JSON.parse(
+      contenido
+    );
+
+  } catch {
+
+    /* --------------------------------------------------------
+       Detectar HTML
+    -------------------------------------------------------- */
+
+    if (
+      contenido.trimStart().startsWith(
+        "<"
+      )
+    ) {
+
+      throw new Error(
+        `El servidor devolvió HTML en lugar de JSON. URL: ${respuesta.url}`
+      );
+
+    }
+
+    throw new Error(
+      contenido.substring(
+        0,
+        300
+      ) ||
+      "El servidor devolvió una respuesta no válida."
+    );
+
+  }
+
+}
+
+
+/* ============================================================
    COMPONENTE PRINCIPAL
 ============================================================ */
 
 export default function Municipios() {
 
-  // ----------------------------------------------------------
+
+  // ==========================================================
   // DATOS
-  // ----------------------------------------------------------
+  // ==========================================================
 
   const [municipios, setMunicipios] =
     useState([]);
@@ -67,9 +170,9 @@ export default function Municipios() {
     useState("");
 
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // FILTROS
-  // ----------------------------------------------------------
+  // ==========================================================
 
   const [busqueda, setBusqueda] =
     useState("");
@@ -81,17 +184,17 @@ export default function Municipios() {
     useState("");
 
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // PAGINACIÓN
-  // ----------------------------------------------------------
+  // ==========================================================
 
   const [pagina, setPagina] =
     useState(1);
 
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // MODAL MUNICIPIO
-  // ----------------------------------------------------------
+  // ==========================================================
 
   const [modalAbierto, setModalAbierto] =
     useState(false);
@@ -103,9 +206,9 @@ export default function Municipios() {
     useState(null);
 
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // MENSAJES
-  // ----------------------------------------------------------
+  // ==========================================================
 
   const [guardando, setGuardando] =
     useState(false);
@@ -117,9 +220,9 @@ export default function Municipios() {
     useState("ok");
 
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // IMPORTACIÓN EXCEL
-  // ----------------------------------------------------------
+  // ==========================================================
 
   const [modalImportacionAbierto, setModalImportacionAbierto] =
     useState(false);
@@ -147,26 +250,44 @@ export default function Municipios() {
       setError("");
 
       const respuesta =
-        await fetch(API_BASE);
+        await fetch(
+          API_BASE,
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json"
+            }
+          }
+        );
+
+
+      const datos =
+        await leerRespuestaServidor(
+          respuesta
+        );
 
 
       if (!respuesta.ok) {
 
         throw new Error(
+          datos?.detail ||
+          datos?.message ||
           `Error HTTP ${respuesta.status}`
         );
 
       }
 
 
-      const datos =
-        await respuesta.json();
+      const lista =
+        Array.isArray(
+          datos
+        )
+          ? datos
+          : [];
 
 
       setMunicipios(
-        Array.isArray(datos)
-          ? datos
-          : []
+        lista
       );
 
     } catch (e) {
@@ -176,7 +297,10 @@ export default function Municipios() {
         e
       );
 
+      setMunicipios([]);
+
       setError(
+        e?.message ||
         "No se pudieron cargar los municipios."
       );
 
@@ -205,28 +329,34 @@ export default function Municipios() {
   // ==========================================================
 
   const ccaaDisponibles =
-    useMemo(() => {
+    useMemo(
+      () => {
 
-      return [
-        ...new Set(
-          municipios
-            .map(
-              (m) => m.ccaa
-            )
-            .filter(Boolean)
-        )
-      ].sort(
-        (a, b) =>
-          a.localeCompare(
-            b,
-            "es",
-            {
-              sensitivity: "base"
-            }
+        return [
+          ...new Set(
+            municipios
+              .map(
+                (m) =>
+                  m.ccaa
+              )
+              .filter(Boolean)
           )
-      );
+        ].sort(
+          (a, b) =>
+            a.localeCompare(
+              b,
+              "es",
+              {
+                sensitivity: "base"
+              }
+            )
+        );
 
-    }, [municipios]);
+      },
+      [
+        municipios
+      ]
+    );
 
 
   // ==========================================================
@@ -234,45 +364,51 @@ export default function Municipios() {
   // ==========================================================
 
   const provinciasDisponibles =
-    useMemo(() => {
+    useMemo(
+      () => {
 
-      let datos = municipios;
-
-
-      if (ccaaFiltro) {
-
-        datos =
-          datos.filter(
-            (m) =>
-              m.ccaa === ccaaFiltro
-          );
-
-      }
+        let datos =
+          municipios;
 
 
-      return [
-        ...new Set(
-          datos
-            .map(
-              (m) => m.provincia
-            )
-            .filter(Boolean)
-        )
-      ].sort(
-        (a, b) =>
-          a.localeCompare(
-            b,
-            "es",
-            {
-              sensitivity: "base"
-            }
+        if (ccaaFiltro) {
+
+          datos =
+            datos.filter(
+              (m) =>
+                m.ccaa ===
+                ccaaFiltro
+            );
+
+        }
+
+
+        return [
+          ...new Set(
+            datos
+              .map(
+                (m) =>
+                  m.provincia
+              )
+              .filter(Boolean)
           )
-      );
+        ].sort(
+          (a, b) =>
+            a.localeCompare(
+              b,
+              "es",
+              {
+                sensitivity: "base"
+              }
+            )
+        );
 
-    }, [
-      municipios,
-      ccaaFiltro
-    ]);
+      },
+      [
+        municipios,
+        ccaaFiltro
+      ]
+    );
 
 
   // ==========================================================
@@ -280,58 +416,69 @@ export default function Municipios() {
   // ==========================================================
 
   const municipiosFiltrados =
-    useMemo(() => {
+    useMemo(
+      () => {
 
-      const texto =
-        busqueda
-          .trim()
-          .toLocaleLowerCase("es");
-
-
-      return municipios.filter(
-        (municipio) => {
-
-          const coincideTexto =
-            !texto ||
-            [
-              municipio.ccaa,
-              municipio.provincia,
-              municipio.municipio
-            ]
-              .filter(Boolean)
-              .some(
-                (valor) =>
-                  String(valor)
-                    .toLocaleLowerCase("es")
-                    .includes(texto)
-              );
+        const texto =
+          busqueda
+            .trim()
+            .toLocaleLowerCase(
+              "es"
+            );
 
 
-          const coincideCcaa =
-            !ccaaFiltro ||
-            municipio.ccaa === ccaaFiltro;
+        return municipios.filter(
+          (municipio) => {
+
+            const coincideTexto =
+              !texto ||
+              [
+                municipio.ccaa,
+                municipio.provincia,
+                municipio.municipio
+              ]
+                .filter(Boolean)
+                .some(
+                  (valor) =>
+                    String(valor)
+                      .toLocaleLowerCase(
+                        "es"
+                      )
+                      .includes(
+                        texto
+                      )
+                );
 
 
-          const coincideProvincia =
-            !provinciaFiltro ||
-            municipio.provincia === provinciaFiltro;
+            const coincideCcaa =
+              !ccaaFiltro ||
+              municipio.ccaa ===
+                ccaaFiltro;
 
 
-          return (
-            coincideTexto &&
-            coincideCcaa &&
-            coincideProvincia
-          );
+            const coincideProvincia =
+              !provinciaFiltro ||
+              municipio.provincia ===
+                provinciaFiltro;
 
-        }
-      );
 
-    }, [
-      municipios,
-      busqueda,
-      ccaaFiltro,
-      provinciaFiltro
-    ]);
+            return (
+              coincideTexto &&
+              coincideCcaa &&
+              coincideProvincia
+            );
+
+          }
+        );
+
+      },
+      [
+        municipios,
+        busqueda,
+        ccaaFiltro,
+        provinciaFiltro
+      ]
+    );
 
 
   // ==========================================================
@@ -350,7 +497,10 @@ export default function Municipios() {
 
   useEffect(() => {
 
-    if (pagina > totalPaginas) {
+    if (
+      pagina >
+      totalPaginas
+    ) {
 
       setPagina(
         totalPaginas
@@ -378,11 +528,17 @@ export default function Municipios() {
   // CAMBIAR BÚSQUEDA
   // ==========================================================
 
-  function cambiarBusqueda(valor) {
+  function cambiarBusqueda(
+    valor
+  ) {
 
-    setBusqueda(valor);
+    setBusqueda(
+      valor
+    );
 
-    setPagina(1);
+    setPagina(
+      1
+    );
 
   }
 
@@ -391,13 +547,21 @@ export default function Municipios() {
   // CAMBIAR CCAA
   // ==========================================================
 
-  function cambiarCcaa(valor) {
+  function cambiarCcaa(
+    valor
+  ) {
 
-    setCcaaFiltro(valor);
+    setCcaaFiltro(
+      valor
+    );
 
-    setProvinciaFiltro("");
+    setProvinciaFiltro(
+      ""
+    );
 
-    setPagina(1);
+    setPagina(
+      1
+    );
 
   }
 
@@ -406,11 +570,17 @@ export default function Municipios() {
   // CAMBIAR PROVINCIA
   // ==========================================================
 
-  function cambiarProvincia(valor) {
+  function cambiarProvincia(
+    valor
+  ) {
 
-    setProvinciaFiltro(valor);
+    setProvinciaFiltro(
+      valor
+    );
 
-    setPagina(1);
+    setPagina(
+      1
+    );
 
   }
 
@@ -444,9 +614,13 @@ export default function Municipios() {
       municipio: ""
     });
 
-    setModoModal("nuevo");
+    setModoModal(
+      "nuevo"
+    );
 
-    setModalAbierto(true);
+    setModalAbierto(
+      true
+    );
 
     setMensaje("");
 
@@ -457,15 +631,21 @@ export default function Municipios() {
   // ABRIR EDITAR
   // ==========================================================
 
-  function abrirEditar(municipio) {
+  function abrirEditar(
+    municipio
+  ) {
 
     setMunicipioSeleccionado({
       ...municipio
     });
 
-    setModoModal("editar");
+    setModoModal(
+      "editar"
+    );
 
-    setModalAbierto(true);
+    setModalAbierto(
+      true
+    );
 
     setMensaje("");
 
@@ -482,9 +662,13 @@ export default function Municipios() {
       return;
     }
 
-    setModalAbierto(false);
+    setModalAbierto(
+      false
+    );
 
-    setMunicipioSeleccionado(null);
+    setMunicipioSeleccionado(
+      null
+    );
 
   }
 
@@ -493,9 +677,13 @@ export default function Municipios() {
   // GUARDAR MUNICIPIO
   // ==========================================================
 
-  async function guardarMunicipio(datos) {
+  async function guardarMunicipio(
+    datos
+  ) {
 
-    if (!datos.ccaa?.trim()) {
+    if (
+      !datos.ccaa?.trim()
+    ) {
 
       mostrarMensaje(
         "La comunidad autónoma es obligatoria.",
@@ -507,7 +695,9 @@ export default function Municipios() {
     }
 
 
-    if (!datos.provincia?.trim()) {
+    if (
+      !datos.provincia?.trim()
+    ) {
 
       mostrarMensaje(
         "La provincia es obligatoria.",
@@ -519,7 +709,9 @@ export default function Municipios() {
     }
 
 
-    if (!datos.municipio?.trim()) {
+    if (
+      !datos.municipio?.trim()
+    ) {
 
       mostrarMensaje(
         "El municipio es obligatorio.",
@@ -533,11 +725,14 @@ export default function Municipios() {
 
     try {
 
-      setGuardando(true);
+      setGuardando(
+        true
+      );
 
 
       const esNuevo =
-        modoModal === "nuevo";
+        modoModal ===
+        "nuevo";
 
 
       const url =
@@ -557,6 +752,9 @@ export default function Municipios() {
 
             headers: {
               "Content-Type":
+                "application/json",
+
+              Accept:
                 "application/json"
             },
 
@@ -576,30 +774,40 @@ export default function Municipios() {
 
 
       const resultado =
-        await respuesta.json();
+        await leerRespuestaServidor(
+          respuesta
+        );
 
 
       if (!respuesta.ok) {
 
         throw new Error(
-          resultado.detail ||
-          "No se pudo guardar el municipio."
+          resultado?.detail ||
+          resultado?.message ||
+          `Error HTTP ${respuesta.status}`
         );
 
       }
 
 
       mostrarMensaje(
-        esNuevo
-          ? "Municipio creado correctamente."
-          : "Municipio actualizado correctamente.",
+        resultado?.mensaje ||
+        (
+          esNuevo
+            ? "Municipio creado correctamente."
+            : "Municipio actualizado correctamente."
+        ),
         "ok"
       );
 
 
-      setModalAbierto(false);
+      setModalAbierto(
+        false
+      );
 
-      setMunicipioSeleccionado(null);
+      setMunicipioSeleccionado(
+        null
+      );
 
 
       await cargarMunicipios();
@@ -612,14 +820,16 @@ export default function Municipios() {
       );
 
       mostrarMensaje(
-        e.message ||
+        e?.message ||
         "No se pudo guardar el municipio.",
         "error"
       );
 
     } finally {
 
-      setGuardando(false);
+      setGuardando(
+        false
+      );
 
     }
 
@@ -630,7 +840,9 @@ export default function Municipios() {
   // ELIMINAR MUNICIPIO
   // ==========================================================
 
-  async function eliminarMunicipio(municipio) {
+  async function eliminarMunicipio(
+    municipio
+  ) {
 
     const confirmar =
       window.confirm(
@@ -649,26 +861,34 @@ export default function Municipios() {
         await fetch(
           `${API_BASE}/${municipio.id}`,
           {
-            method: "DELETE"
+            method: "DELETE",
+            headers: {
+              Accept:
+                "application/json"
+            }
           }
         );
 
 
       const resultado =
-        await respuesta.json();
+        await leerRespuestaServidor(
+          respuesta
+        );
 
 
       if (!respuesta.ok) {
 
         throw new Error(
-          resultado.detail ||
-          "No se pudo eliminar el municipio."
+          resultado?.detail ||
+          resultado?.message ||
+          `Error HTTP ${respuesta.status}`
         );
 
       }
 
 
       mostrarMensaje(
+        resultado?.mensaje ||
         "Municipio eliminado correctamente.",
         "ok"
       );
@@ -684,7 +904,7 @@ export default function Municipios() {
       );
 
       mostrarMensaje(
-        e.message ||
+        e?.message ||
         "No se pudo eliminar el municipio.",
         "error"
       );
@@ -700,11 +920,17 @@ export default function Municipios() {
 
   function abrirImportacionExcel() {
 
-    setArchivoExcel(null);
+    setArchivoExcel(
+      null
+    );
 
-    setMensaje("");
+    setMensaje(
+      ""
+    );
 
-    setModalImportacionAbierto(true);
+    setModalImportacionAbierto(
+      true
+    );
 
   }
 
@@ -719,14 +945,21 @@ export default function Municipios() {
       return;
     }
 
-    setModalImportacionAbierto(false);
+    setModalImportacionAbierto(
+      false
+    );
 
-    setArchivoExcel(null);
+    setArchivoExcel(
+      null
+    );
 
 
-    if (inputExcelRef.current) {
+    if (
+      inputExcelRef.current
+    ) {
 
-      inputExcelRef.current.value = "";
+      inputExcelRef.current.value =
+        "";
 
     }
 
@@ -737,7 +970,9 @@ export default function Municipios() {
   // SELECCIONAR EXCEL
   // ==========================================================
 
-  function seleccionarExcel(event) {
+  function seleccionarExcel(
+    event
+  ) {
 
     const archivo =
       event.target.files?.[0];
@@ -745,7 +980,9 @@ export default function Municipios() {
 
     if (!archivo) {
 
-      setArchivoExcel(null);
+      setArchivoExcel(
+        null
+      );
 
       return;
 
@@ -759,8 +996,12 @@ export default function Municipios() {
 
 
     const extensionValida =
-      nombre.endsWith(".xlsx") ||
-      nombre.endsWith(".xls");
+      nombre.endsWith(
+        ".xlsx"
+      ) ||
+      nombre.endsWith(
+        ".xls"
+      );
 
 
     if (!extensionValida) {
@@ -771,16 +1012,48 @@ export default function Municipios() {
       );
 
 
-      event.target.value = "";
+      event.target.value =
+        "";
 
-      setArchivoExcel(null);
+      setArchivoExcel(
+        null
+      );
 
       return;
 
     }
 
 
-    setArchivoExcel(archivo);
+    setArchivoExcel(
+      archivo
+    );
+
+  }
+
+
+  // ==========================================================
+  // QUITAR EXCEL SELECCIONADO
+  // ==========================================================
+
+  function quitarArchivoExcel() {
+
+    if (importandoExcel) {
+      return;
+    }
+
+    setArchivoExcel(
+      null
+    );
+
+
+    if (
+      inputExcelRef.current
+    ) {
+
+      inputExcelRef.current.value =
+        "";
+
+    }
 
   }
 
@@ -805,9 +1078,13 @@ export default function Municipios() {
 
     try {
 
-      setImportandoExcel(true);
+      setImportandoExcel(
+        true
+      );
 
-      setMensaje("");
+      setMensaje(
+        ""
+      );
 
 
       const formulario =
@@ -825,24 +1102,19 @@ export default function Municipios() {
           API_IMPORTAR_EXCEL,
           {
             method: "POST",
-            body: formulario
+            body: formulario,
+            headers: {
+              Accept:
+                "application/json"
+            }
           }
         );
 
 
-      let resultado = null;
-
-
-      try {
-
-        resultado =
-          await respuesta.json();
-
-      } catch {
-
-        resultado = null;
-
-      }
+      const resultado =
+        await leerRespuestaServidor(
+          respuesta
+        );
 
 
       if (!respuesta.ok) {
@@ -856,24 +1128,37 @@ export default function Municipios() {
       }
 
 
-      /*
-       * El backend puede devolver distintos
-       * nombres para los contadores.
-       *
-       * Intentamos mostrar todos los formatos
-       * habituales sin romper la interfaz.
-       */
+      /* ------------------------------------------------------
+         CONTADORES DEL BACKEND
+      ------------------------------------------------------ */
+
+      const totalExcel =
+        resultado?.total_excel ??
+        null;
+
+
+      const procesados =
+        resultado?.procesados ??
+        0;
+
 
       const creados =
         resultado?.creados ??
-        resultado?.insertados ??
-        resultado?.importados ??
         0;
 
 
       const actualizados =
         resultado?.actualizados ??
-        resultado?.modificados ??
+        0;
+
+
+      const sinCambios =
+        resultado?.sin_cambios ??
+        0;
+
+
+      const omitidos =
+        resultado?.omitidos ??
         0;
 
 
@@ -882,73 +1167,142 @@ export default function Municipios() {
         0;
 
 
-      const procesados =
-        resultado?.procesados ??
-        resultado?.total ??
-        resultado?.filas_procesadas ??
-        null;
+      /* ------------------------------------------------------
+         MENSAJE PREMIUM DE RESULTADO
+      ------------------------------------------------------ */
+
+      const partes = [];
 
 
-      let textoResultado =
-        "Excel importado correctamente.";
+      partes.push(
+        resultado?.mensaje ||
+        "Excel importado correctamente."
+      );
 
 
       if (
-        procesados !== null ||
-        creados ||
-        actualizados ||
-        errores
+        totalExcel !== null
       ) {
 
-        textoResultado =
-          [
-            "Excel importado correctamente.",
+        partes.push(
+          `Filas Excel: ${Number(
+            totalExcel
+          ).toLocaleString(
+            "es-ES"
+          )}.`
+        );
 
-            procesados !== null
-              ? `Procesados: ${Number(procesados).toLocaleString("es-ES")}.`
-              : null,
+      }
 
-            `Creados: ${Number(creados).toLocaleString("es-ES")}.`,
 
-            `Actualizados: ${Number(actualizados).toLocaleString("es-ES")}.`,
+      partes.push(
+        `Procesados: ${Number(
+          procesados
+        ).toLocaleString(
+          "es-ES"
+        )}.`
+      );
 
+
+      partes.push(
+        `Creados: ${Number(
+          creados
+        ).toLocaleString(
+          "es-ES"
+        )}.`
+      );
+
+
+      partes.push(
+        `Actualizados: ${Number(
+          actualizados
+        ).toLocaleString(
+          "es-ES"
+        )}.`
+      );
+
+
+      if (
+        sinCambios > 0
+      ) {
+
+        partes.push(
+          `Sin cambios: ${Number(
+            sinCambios
+          ).toLocaleString(
+            "es-ES"
+          )}.`
+        );
+
+      }
+
+
+      if (
+        omitidos > 0
+      ) {
+
+        partes.push(
+          `Omitidos: ${Number(
+            omitidos
+          ).toLocaleString(
+            "es-ES"
+          )}.`
+        );
+
+      }
+
+
+      if (
+        errores > 0
+      ) {
+
+        partes.push(
+          `Errores: ${Number(
             errores
-              ? `Errores: ${Number(errores).toLocaleString("es-ES")}.`
-              : null
-          ]
-            .filter(Boolean)
-            .join(" ");
+          ).toLocaleString(
+            "es-ES"
+          )}.`
+        );
 
       }
 
 
       mostrarMensaje(
-        textoResultado,
-        "ok"
+        partes.join(
+          " "
+        ),
+        errores > 0
+          ? "error"
+          : "ok"
       );
 
 
-      /*
-       * Recargamos inmediatamente
-       * el maestro de municipios.
-       */
+      /* ------------------------------------------------------
+         RECARGAR CATÁLOGO
+      ------------------------------------------------------ */
 
       await cargarMunicipios();
 
 
-      /*
-       * Cerramos el modal después de
-       * actualizar los datos.
-       */
+      /* ------------------------------------------------------
+         CERRAR MODAL
+      ------------------------------------------------------ */
 
-      setModalImportacionAbierto(false);
+      setModalImportacionAbierto(
+        false
+      );
 
-      setArchivoExcel(null);
+      setArchivoExcel(
+        null
+      );
 
 
-      if (inputExcelRef.current) {
+      if (
+        inputExcelRef.current
+      ) {
 
-        inputExcelRef.current.value = "";
+        inputExcelRef.current.value =
+          "";
 
       }
 
@@ -961,14 +1315,16 @@ export default function Municipios() {
 
 
       mostrarMensaje(
-        e.message ||
+        e?.message ||
         "No se pudo importar el archivo Excel.",
         "error"
       );
 
     } finally {
 
-      setImportandoExcel(false);
+      setImportandoExcel(
+        false
+      );
 
     }
 
@@ -979,7 +1335,9 @@ export default function Municipios() {
   // FORMATEAR TAMAÑO
   // ==========================================================
 
-  function formatearTamanoArchivo(bytes) {
+  function formatearTamanoArchivo(
+    bytes
+  ) {
 
     if (!bytes) {
       return "0 KB";
@@ -997,8 +1355,12 @@ export default function Municipios() {
     const indice =
       Math.min(
         Math.floor(
-          Math.log(bytes) /
-          Math.log(1024)
+          Math.log(
+            bytes
+          ) /
+          Math.log(
+            1024
+          )
         ),
         unidades.length - 1
       );
@@ -1031,18 +1393,24 @@ export default function Municipios() {
     tipo = "ok"
   ) {
 
-    setMensaje(texto);
+    setMensaje(
+      texto
+    );
 
-    setTipoMensaje(tipo);
+    setTipoMensaje(
+      tipo
+    );
 
 
     window.setTimeout(
       () => {
 
-        setMensaje("");
+        setMensaje(
+          ""
+        );
 
       },
-      5000
+      7000
     );
 
   }
@@ -1165,11 +1533,11 @@ export default function Municipios() {
             "
           >
 
-            {/* IMPORTAR EXCEL */}
-
             <button
               type="button"
-              onClick={abrirImportacionExcel}
+              onClick={
+                abrirImportacionExcel
+              }
               className="
                 inline-flex
                 items-center
@@ -1201,11 +1569,11 @@ export default function Municipios() {
             </button>
 
 
-            {/* NUEVO MUNICIPIO */}
-
             <button
               type="button"
-              onClick={abrirNuevo}
+              onClick={
+                abrirNuevo
+              }
               className="
                 inline-flex
                 items-center
@@ -1352,7 +1720,9 @@ export default function Municipios() {
 
               <input
                 type="text"
-                value={busqueda}
+                value={
+                  busqueda
+                }
                 onChange={(e) =>
                   cambiarBusqueda(
                     e.target.value
@@ -1402,7 +1772,9 @@ export default function Municipios() {
 
 
             <select
-              value={ccaaFiltro}
+              value={
+                ccaaFiltro
+              }
               onChange={(e) =>
                 cambiarCcaa(
                   e.target.value
@@ -1468,7 +1840,9 @@ export default function Municipios() {
 
 
             <select
-              value={provinciaFiltro}
+              value={
+                provinciaFiltro
+              }
               onChange={(e) =>
                 cambiarProvincia(
                   e.target.value
@@ -1518,7 +1892,9 @@ export default function Municipios() {
 
           <button
             type="button"
-            onClick={limpiarFiltros}
+            onClick={
+              limpiarFiltros
+            }
             className="
               rounded-xl
               border border-slate-200
@@ -1814,7 +2190,9 @@ export default function Municipios() {
                   (municipio) => (
 
                     <tr
-                      key={municipio.id}
+                      key={
+                        municipio.id
+                      }
                       className="
                         group
                         border-b
@@ -1976,7 +2354,9 @@ export default function Municipios() {
 
           <button
             type="button"
-            disabled={pagina <= 1}
+            disabled={
+              pagina <= 1
+            }
             onClick={() =>
               setPagina(
                 (actual) =>
@@ -2032,7 +2412,8 @@ export default function Municipios() {
           <button
             type="button"
             disabled={
-              pagina >= totalPaginas
+              pagina >=
+              totalPaginas
             }
             onClick={() =>
               setPagina(
@@ -2073,12 +2454,18 @@ export default function Municipios() {
       {modalAbierto && (
 
         <ModalMunicipio
-          modo={modoModal}
+          modo={
+            modoModal
+          }
           municipio={
             municipioSeleccionado
           }
-          guardando={guardando}
-          onCerrar={cerrarModal}
+          guardando={
+            guardando
+          }
+          onCerrar={
+            cerrarModal
+          }
           onGuardar={
             guardarMunicipio
           }
@@ -2094,11 +2481,20 @@ export default function Municipios() {
       {modalImportacionAbierto && (
 
         <ModalImportarExcel
-          archivo={archivoExcel}
-          inputExcelRef={inputExcelRef}
-          importando={importandoExcel}
+          archivo={
+            archivoExcel
+          }
+          inputExcelRef={
+            inputExcelRef
+          }
+          importando={
+            importandoExcel
+          }
           onSeleccionar={
             seleccionarExcel
+          }
+          onQuitar={
+            quitarArchivoExcel
           }
           onImportar={
             importarExcel
@@ -2129,6 +2525,7 @@ function ModalImportarExcel({
   inputExcelRef,
   importando,
   onSeleccionar,
+  onQuitar,
   onImportar,
   onCerrar,
   formatearTamano
@@ -2151,7 +2548,8 @@ function ModalImportarExcel({
       onMouseDown={(e) => {
 
         if (
-          e.target === e.currentTarget &&
+          e.target ===
+            e.currentTarget &&
           !importando
         ) {
 
@@ -2253,8 +2651,12 @@ function ModalImportarExcel({
 
             <button
               type="button"
-              disabled={importando}
-              onClick={onCerrar}
+              disabled={
+                importando
+              }
+              onClick={
+                onCerrar
+              }
               className="
                 flex
                 h-9
@@ -2304,11 +2706,7 @@ function ModalImportarExcel({
               "
             >
 
-              <div
-                className="
-                  text-lg
-                "
-              >
+              <div className="text-lg">
                 ℹ️
               </div>
 
@@ -2367,20 +2765,31 @@ function ModalImportarExcel({
 
 
             <input
-              ref={inputExcelRef}
+              ref={
+                inputExcelRef
+              }
               type="file"
-              accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+              accept="
+                .xlsx,
+                .xls,
+                application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+                application/vnd.ms-excel
+              "
               onChange={
                 onSeleccionar
               }
-              disabled={importando}
+              disabled={
+                importando
+              }
               className="hidden"
             />
 
 
             <button
               type="button"
-              disabled={importando}
+              disabled={
+                importando
+              }
               onClick={() =>
                 inputExcelRef.current?.click()
               }
@@ -2494,7 +2903,11 @@ function ModalImportarExcel({
                 </div>
 
 
-                <div className="min-w-0">
+                <div
+                  className="
+                    min-w-0
+                  "
+                >
 
                   <p
                     className="
@@ -2529,12 +2942,8 @@ function ModalImportarExcel({
 
                 <button
                   type="button"
-                  onClick={() =>
-                    onSeleccionar({
-                      target: {
-                        files: []
-                      }
-                    })
+                  onClick={
+                    onQuitar
                   }
                   className="
                     shrink-0
@@ -2578,8 +2987,12 @@ function ModalImportarExcel({
 
           <button
             type="button"
-            disabled={importando}
-            onClick={onCerrar}
+            disabled={
+              importando
+            }
+            onClick={
+              onCerrar
+            }
             className="
               rounded-xl
               border
@@ -2606,7 +3019,9 @@ function ModalImportarExcel({
               !archivo ||
               importando
             }
-            onClick={onImportar}
+            onClick={
+              onImportar
+            }
             className="
               inline-flex
               min-w-[180px]
@@ -2680,13 +3095,16 @@ function ModalMunicipio({
         municipio?.id,
 
       ccaa:
-        municipio?.ccaa || "",
+        municipio?.ccaa ||
+        "",
 
       provincia:
-        municipio?.provincia || "",
+        municipio?.provincia ||
+        "",
 
       municipio:
-        municipio?.municipio || ""
+        municipio?.municipio ||
+        ""
     });
 
 
@@ -2698,7 +3116,8 @@ function ModalMunicipio({
     setFormulario(
       (actual) => ({
         ...actual,
-        [campo]: valor
+        [campo]:
+          valor
       })
     );
 
@@ -2733,7 +3152,8 @@ function ModalMunicipio({
       onMouseDown={(e) => {
 
         if (
-          e.target === e.currentTarget &&
+          e.target ===
+            e.currentTarget &&
           !guardando
         ) {
 
@@ -2786,7 +3206,8 @@ function ModalMunicipio({
                   text-slate-800
                 "
               >
-                {modo === "nuevo"
+                {modo ===
+                "nuevo"
                   ? "Nuevo municipio"
                   : "Editar municipio"}
               </h2>
@@ -2807,8 +3228,12 @@ function ModalMunicipio({
 
             <button
               type="button"
-              disabled={guardando}
-              onClick={onCerrar}
+              disabled={
+                guardando
+              }
+              onClick={
+                onCerrar
+              }
               className="
                 flex
                 h-9
@@ -2833,7 +3258,9 @@ function ModalMunicipio({
         {/* FORMULARIO */}
 
         <form
-          onSubmit={enviar}
+          onSubmit={
+            enviar
+          }
           className="p-6"
         >
 
@@ -3005,8 +3432,12 @@ function ModalMunicipio({
 
             <button
               type="button"
-              disabled={guardando}
-              onClick={onCerrar}
+              disabled={
+                guardando
+              }
+              onClick={
+                onCerrar
+              }
               className="
                 rounded-xl
                 border border-slate-200
@@ -3027,7 +3458,9 @@ function ModalMunicipio({
 
             <button
               type="submit"
-              disabled={guardando}
+              disabled={
+                guardando
+              }
               className="
                 inline-flex
                 min-w-[130px]
