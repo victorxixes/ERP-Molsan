@@ -59,7 +59,8 @@ import Logs from "./pages/logs/Logs.jsx";
 /* NOTIFICACIONES */
 import Notificaciones from "./pages/notificaciones/Notificaciones.jsx";
 
-import Municipios from "./pages/herramientas/Municipios";
+/* MUNICIPIOS */
+import Municipios from "./pages/herramientas/Municipios.jsx";
 
 /* PANEL TÉCNICO */
 import PanelTecnico from "./pages/paneltecnico/PanelTecnico.jsx";
@@ -264,11 +265,7 @@ export default function App() {
           />
 
 
-          <Route
-  path="/herramientas/municipios"
-  element={<Municipios />}
-/>
-          
+    
           {/* ==================================================
               MENSAJES
               ================================================== */}
@@ -293,6 +290,11 @@ export default function App() {
             element={<ImportarCTN />}
           />
 
+<Route
+  path="herramientas/municipios"
+  element={<Municipios />}
+/>
+      
           <Route
             path="herramientas/importador-absis"
             element={<ImportadorAbsis />}
