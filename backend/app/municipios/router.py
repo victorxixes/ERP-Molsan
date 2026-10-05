@@ -33,6 +33,7 @@ router = APIRouter(
 # ============================================================
 
 class MunicipioBase(BaseModel):
+
     ccaa: str = Field(
         ...,
         min_length=1,
@@ -61,6 +62,7 @@ class MunicipioUpdate(MunicipioBase):
 
 
 class MunicipioResponse(MunicipioBase):
+
     id: int
     activo: bool
 
@@ -69,13 +71,10 @@ class MunicipioResponse(MunicipioBase):
 
 
 # ============================================================
-# FUNCIONES AUXILIARES
+# LIMPIAR TEXTO
 # ============================================================
 
 def limpiar_texto(valor: str) -> str:
-    """
-    Limpia espacios al principio y al final.
-    """
 
     if valor is None:
         return ""
@@ -96,9 +95,6 @@ def limpiar_texto(valor: str) -> str:
 def listar_municipios(
     db: Session = Depends(get_db),
 ):
-    """
-    Devuelve todos los municipios activos.
-    """
 
     municipios = (
         db.query(Municipio)
@@ -128,38 +124,46 @@ def crear_municipio(
     datos: MunicipioCreate,
     db: Session = Depends(get_db),
 ):
-    """
-    Crea un municipio manualmente.
-    """
 
-    ccaa = limpiar_texto(datos.ccaa)
-    provincia = limpiar_texto(datos.provincia)
-    municipio_nombre = limpiar_texto(datos.municipio)
+    ccaa = limpiar_texto(
+        datos.ccaa
+    )
+
+    provincia = limpiar_texto(
+        datos.provincia
+    )
+
+    municipio_nombre = limpiar_texto(
+        datos.municipio
+    )
 
     # --------------------------------------------------------
     # VALIDACIONES
     # --------------------------------------------------------
 
     if not ccaa:
+
         raise HTTPException(
             status_code=400,
             detail="La comunidad autónoma es obligatoria.",
         )
 
     if not provincia:
+
         raise HTTPException(
             status_code=400,
             detail="La provincia es obligatoria.",
         )
 
     if not municipio_nombre:
+
         raise HTTPException(
             status_code=400,
             detail="El municipio es obligatorio.",
         )
 
     # --------------------------------------------------------
-    # COMPROBAR EXISTENCIA
+    # BUSCAR EXISTENTE
     # --------------------------------------------------------
 
     existente = (
@@ -173,7 +177,7 @@ def crear_municipio(
     )
 
     # --------------------------------------------------------
-    # SI EXISTE PERO ESTÁ INACTIVO -> REACTIVAR
+    # REACTIVAR SI EXISTÍA INACTIVO
     # --------------------------------------------------------
 
     if existente:
@@ -183,16 +187,22 @@ def crear_municipio(
             existente.activo = True
 
             try:
+
                 db.commit()
-                db.refresh(existente)
+
+                db.refresh(
+                    existente
+                )
 
             except Exception as exc:
+
                 db.rollback()
 
                 raise HTTPException(
                     status_code=500,
                     detail=(
-                        f"No se pudo reactivar el municipio: {exc}"
+                        "No se pudo reactivar el municipio: "
+                        f"{exc}"
                     ),
                 )
 
@@ -220,11 +230,15 @@ def crear_municipio(
 
     try:
 
-        db.add(nuevo)
+        db.add(
+            nuevo
+        )
 
         db.commit()
 
-        db.refresh(nuevo)
+        db.refresh(
+            nuevo
+        )
 
     except Exception as exc:
 
@@ -241,172 +255,10 @@ def crear_municipio(
 
 
 # ============================================================
-# PUT /api/municipios/{municipio_id}
-# ============================================================
-
-@router.put(
-    "/{municipio_id}",
-    response_model=MunicipioResponse,
-)
-def actualizar_municipio(
-    municipio_id: int,
-    datos: MunicipioUpdate,
-    db: Session = Depends(get_db),
-):
-    """
-    Actualiza un municipio.
-    """
-
-    municipio_actual = (
-        db.query(Municipio)
-        .filter(
-            Municipio.id == municipio_id
-        )
-        .first()
-    )
-
-    if not municipio_actual:
-        raise HTTPException(
-            status_code=404,
-            detail="Municipio no encontrado.",
-        )
-
-    ccaa = limpiar_texto(datos.ccaa)
-    provincia = limpiar_texto(datos.provincia)
-    municipio_nombre = limpiar_texto(datos.municipio)
-
-    # --------------------------------------------------------
-    # VALIDACIONES
-    # --------------------------------------------------------
-
-    if not ccaa:
-        raise HTTPException(
-            status_code=400,
-            detail="La comunidad autónoma es obligatoria.",
-        )
-
-    if not provincia:
-        raise HTTPException(
-            status_code=400,
-            detail="La provincia es obligatoria.",
-        )
-
-    if not municipio_nombre:
-        raise HTTPException(
-            status_code=400,
-            detail="El municipio es obligatorio.",
-        )
-
-    # --------------------------------------------------------
-    # COMPROBAR DUPLICADO
-    # --------------------------------------------------------
-
-    duplicado = (
-        db.query(Municipio)
-        .filter(
-            Municipio.ccaa == ccaa,
-            Municipio.provincia == provincia,
-            Municipio.municipio == municipio_nombre,
-            Municipio.id != municipio_id,
-        )
-        .first()
-    )
-
-    if duplicado:
-
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                "Ya existe otro municipio con "
-                "la misma comunidad autónoma, "
-                "provincia y municipio."
-            ),
-        )
-
-    # --------------------------------------------------------
-    # ACTUALIZAR
-    # --------------------------------------------------------
-
-    municipio_actual.ccaa = ccaa
-    municipio_actual.provincia = provincia
-    municipio_actual.municipio = municipio_nombre
-    municipio_actual.activo = True
-
-    try:
-
-        db.commit()
-
-        db.refresh(municipio_actual)
-
-    except Exception as exc:
-
-        db.rollback()
-
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                f"No se pudo actualizar el municipio: {exc}"
-            ),
-        )
-
-    return municipio_actual
-
-
-# ============================================================
-# DELETE /api/municipios/{municipio_id}
-# ============================================================
-
-@router.delete(
-    "/{municipio_id}"
-)
-def eliminar_municipio(
-    municipio_id: int,
-    db: Session = Depends(get_db),
-):
-    """
-    Borrado lógico.
-    """
-
-    municipio = (
-        db.query(Municipio)
-        .filter(
-            Municipio.id == municipio_id
-        )
-        .first()
-    )
-
-    if not municipio:
-
-        raise HTTPException(
-            status_code=404,
-            detail="Municipio no encontrado.",
-        )
-
-    try:
-
-        municipio.activo = False
-
-        db.commit()
-
-    except Exception as exc:
-
-        db.rollback()
-
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                f"No se pudo eliminar el municipio: {exc}"
-            ),
-        )
-
-    return {
-        "ok": True,
-        "mensaje": "Municipio eliminado correctamente.",
-    }
-
-
-# ============================================================
 # POST /api/municipios/importar-excel
+#
+# IMPORTANTE:
+# Esta ruta va antes de /{municipio_id}
 # ============================================================
 
 @router.post(
@@ -416,15 +268,6 @@ async def importar_municipios_excel(
     fichero: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    """
-    Importa el catálogo de municipios desde Excel.
-
-    Columnas esperadas:
-
-        CCAA
-        PROVINCIA
-        MUNICIPIO
-    """
 
     # ========================================================
     # VALIDAR NOMBRE DEL ARCHIVO
@@ -503,3 +346,180 @@ async def importar_municipios_excel(
                 f"Error durante la importación: {exc}"
             ),
         )
+
+
+# ============================================================
+# PUT /api/municipios/{municipio_id}
+# ============================================================
+
+@router.put(
+    "/{municipio_id}",
+    response_model=MunicipioResponse,
+)
+def actualizar_municipio(
+    municipio_id: int,
+    datos: MunicipioUpdate,
+    db: Session = Depends(get_db),
+):
+
+    municipio_actual = (
+        db.query(Municipio)
+        .filter(
+            Municipio.id == municipio_id
+        )
+        .first()
+    )
+
+    if not municipio_actual:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Municipio no encontrado.",
+        )
+
+    ccaa = limpiar_texto(
+        datos.ccaa
+    )
+
+    provincia = limpiar_texto(
+        datos.provincia
+    )
+
+    municipio_nombre = limpiar_texto(
+        datos.municipio
+    )
+
+    # --------------------------------------------------------
+    # VALIDACIONES
+    # --------------------------------------------------------
+
+    if not ccaa:
+
+        raise HTTPException(
+            status_code=400,
+            detail="La comunidad autónoma es obligatoria.",
+        )
+
+    if not provincia:
+
+        raise HTTPException(
+            status_code=400,
+            detail="La provincia es obligatoria.",
+        )
+
+    if not municipio_nombre:
+
+        raise HTTPException(
+            status_code=400,
+            detail="El municipio es obligatorio.",
+        )
+
+    # --------------------------------------------------------
+    # DUPLICADO
+    # --------------------------------------------------------
+
+    duplicado = (
+        db.query(Municipio)
+        .filter(
+            Municipio.ccaa == ccaa,
+            Municipio.provincia == provincia,
+            Municipio.municipio == municipio_nombre,
+            Municipio.id != municipio_id,
+        )
+        .first()
+    )
+
+    if duplicado:
+
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Ya existe otro municipio con "
+                "la misma comunidad autónoma, "
+                "provincia y municipio."
+            ),
+        )
+
+    # --------------------------------------------------------
+    # ACTUALIZAR
+    # --------------------------------------------------------
+
+    municipio_actual.ccaa = ccaa
+    municipio_actual.provincia = provincia
+    municipio_actual.municipio = municipio_nombre
+    municipio_actual.activo = True
+
+    try:
+
+        db.commit()
+
+        db.refresh(
+            municipio_actual
+        )
+
+    except Exception as exc:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                f"No se pudo actualizar el municipio: {exc}"
+            ),
+        )
+
+    return municipio_actual
+
+
+# ============================================================
+# DELETE /api/municipios/{municipio_id}
+# ============================================================
+
+@router.delete(
+    "/{municipio_id}"
+)
+def eliminar_municipio(
+    municipio_id: int,
+    db: Session = Depends(get_db),
+):
+
+    municipio = (
+        db.query(Municipio)
+        .filter(
+            Municipio.id == municipio_id
+        )
+        .first()
+    )
+
+    if not municipio:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Municipio no encontrado.",
+        )
+
+    try:
+
+        # ----------------------------------------------------
+        # BORRADO LÓGICO
+        # ----------------------------------------------------
+
+        municipio.activo = False
+
+        db.commit()
+
+    except Exception as exc:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                f"No se pudo eliminar el municipio: {exc}"
+            ),
+        )
+
+    return {
+        "ok": True,
+        "mensaje": "Municipio eliminado correctamente.",
+    }
