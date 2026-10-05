@@ -8,11 +8,10 @@ from fastapi import (
 )
 
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import or_
 
 from backend.app.database import get_db
 from backend.app.municipios.models import Municipio
-
 from backend.app.Utilidades.importadores.municipios_importer import (
     importar_municipios_desde_excel
 )
@@ -29,35 +28,7 @@ router = APIRouter(
 
 
 # ============================================================
-# UTILIDADES INTERNAS
-# ============================================================
-
-def normalizar_texto(valor: str | None) -> str:
-    """
-    Normaliza textos recibidos desde frontend/API.
-    """
-
-    if valor is None:
-        return ""
-
-    return str(valor).strip()
-
-
-def municipio_to_dict(municipio: Municipio):
-    """
-    Convierte un Municipio SQLAlchemy en un objeto JSON.
-    """
-
-    return {
-        "id": municipio.id,
-        "ccaa": municipio.ccaa,
-        "provincia": municipio.provincia,
-        "municipio": municipio.municipio,
-    }
-
-
-# ============================================================
-# IMPORTAR MUNICIPIOS
+# IMPORTAR MUNICIPIOS DESDE EXCEL
 # ============================================================
 
 @router.post("/importar")
@@ -66,7 +37,7 @@ async def importar_municipios(
     db: Session = Depends(get_db)
 ):
     """
-    Importa municipios desde un Excel.
+    Importa municipios desde un fichero Excel.
 
     Columnas esperadas:
 
@@ -134,141 +105,95 @@ async def importar_municipios(
 
 @router.get("")
 def listar_municipios(
-    pagina: int = Query(
-        1,
-        ge=1,
-        description="Número de página."
-    ),
-
-    porPagina: int = Query(
-        50,
-        ge=1,
-        le=500,
-        description="Municipios por página."
-    ),
-
     buscar: str | None = Query(
-        None,
-        description=(
-            "Texto de búsqueda en municipio, "
-            "provincia o CCAA."
-        )
+        default=None,
+        description="Texto para buscar por CCAA, provincia o municipio."
     ),
-
     ccaa: str | None = Query(
-        None,
+        default=None,
         description="Filtrar por comunidad autónoma."
     ),
-
     provincia: str | None = Query(
-        None,
+        default=None,
         description="Filtrar por provincia."
     ),
-
     db: Session = Depends(get_db)
 ):
     """
-    Listado paginado de municipios.
+    Devuelve el listado de municipios.
 
     Permite:
 
     - búsqueda general
     - filtro por CCAA
     - filtro por provincia
-    - paginación
     """
 
     query = db.query(Municipio)
 
-    # ========================================================
+    # --------------------------------------------------------
     # BÚSQUEDA GENERAL
-    # ========================================================
+    # --------------------------------------------------------
 
     if buscar and buscar.strip():
 
         texto = f"%{buscar.strip()}%"
 
         query = query.filter(
-            (Municipio.municipio.ilike(texto))
-            | (Municipio.provincia.ilike(texto))
-            | (Municipio.ccaa.ilike(texto))
+            or_(
+                Municipio.ccaa.ilike(texto),
+                Municipio.provincia.ilike(texto),
+                Municipio.municipio.ilike(texto)
+            )
         )
 
-    # ========================================================
+    # --------------------------------------------------------
     # FILTRO CCAA
-    # ========================================================
+    # --------------------------------------------------------
 
     if ccaa and ccaa.strip():
 
         query = query.filter(
-            Municipio.ccaa.ilike(
-                f"%{ccaa.strip()}%"
-            )
+            Municipio.ccaa == ccaa.strip()
         )
 
-    # ========================================================
+    # --------------------------------------------------------
     # FILTRO PROVINCIA
-    # ========================================================
+    # --------------------------------------------------------
 
     if provincia and provincia.strip():
 
         query = query.filter(
-            Municipio.provincia.ilike(
-                f"%{provincia.strip()}%"
-            )
+            Municipio.provincia == provincia.strip()
         )
 
-    # ========================================================
-    # TOTAL
-    # ========================================================
-
-    total = query.with_entities(
-        func.count(Municipio.id)
-    ).scalar() or 0
-
-    # ========================================================
-    # PAGINACIÓN
-    # ========================================================
-
-    offset = (
-        pagina - 1
-    ) * porPagina
+    # --------------------------------------------------------
+    # ORDEN
+    # --------------------------------------------------------
 
     municipios = (
         query
         .order_by(
-            Municipio.ccaa.asc(),
-            Municipio.provincia.asc(),
-            Municipio.municipio.asc()
+            Municipio.ccaa,
+            Municipio.provincia,
+            Municipio.municipio
         )
-        .offset(offset)
-        .limit(porPagina)
         .all()
     )
 
-    # ========================================================
-    # RESPUESTA
-    # ========================================================
-
-    return {
-        "items": [
-            municipio_to_dict(municipio)
-            for municipio in municipios
-        ],
-        "total": total,
-        "pagina": pagina,
-        "porPagina": porPagina,
-        "totalPaginas": (
-            (total + porPagina - 1)
-            // porPagina
-            if total > 0
-            else 0
-        ),
-    }
+    return [
+        {
+            "id": municipio.id,
+            "ccaa": municipio.ccaa,
+            "provincia": municipio.provincia,
+            "municipio": municipio.municipio,
+        }
+        for municipio in municipios
+    ]
 
 
 # ============================================================
-# OBTENER MUNICIPIO POR ID
+# OBTENER MUNICIPIO
 # ============================================================
 
 @router.get("/{municipio_id}")
@@ -277,7 +202,7 @@ def obtener_municipio(
     db: Session = Depends(get_db)
 ):
     """
-    Obtiene un municipio concreto por su ID.
+    Obtiene un municipio concreto por ID.
     """
 
     municipio = (
@@ -295,7 +220,12 @@ def obtener_municipio(
             detail="Municipio no encontrado."
         )
 
-    return municipio_to_dict(municipio)
+    return {
+        "id": municipio.id,
+        "ccaa": municipio.ccaa,
+        "provincia": municipio.provincia,
+        "municipio": municipio.municipio,
+    }
 
 
 # ============================================================
@@ -310,35 +240,33 @@ def crear_municipio(
     """
     Crea un municipio manualmente.
 
-    Body esperado:
+    Campos:
 
-    {
-        "ccaa": "País Vasco",
-        "provincia": "Araba/Álava",
-        "municipio": "Amurrio"
-    }
+        ccaa
+        provincia
+        municipio
     """
 
-    ccaa = normalizar_texto(
-        datos.get("ccaa")
-    )
+    ccaa = str(
+        datos.get("ccaa", "")
+    ).strip()
 
-    provincia = normalizar_texto(
-        datos.get("provincia")
-    )
+    provincia = str(
+        datos.get("provincia", "")
+    ).strip()
 
-    municipio_nombre = normalizar_texto(
-        datos.get("municipio")
-    )
+    nombre_municipio = str(
+        datos.get("municipio", "")
+    ).strip()
 
-    # ========================================================
+    # --------------------------------------------------------
     # VALIDACIONES
-    # ========================================================
+    # --------------------------------------------------------
 
     if not ccaa:
         raise HTTPException(
             status_code=400,
-            detail="La CCAA es obligatoria."
+            detail="La comunidad autónoma es obligatoria."
         )
 
     if not provincia:
@@ -347,22 +275,22 @@ def crear_municipio(
             detail="La provincia es obligatoria."
         )
 
-    if not municipio_nombre:
+    if not nombre_municipio:
         raise HTTPException(
             status_code=400,
             detail="El municipio es obligatorio."
         )
 
-    # ========================================================
+    # --------------------------------------------------------
     # COMPROBAR DUPLICADO
-    # ========================================================
+    # --------------------------------------------------------
 
     existente = (
         db.query(Municipio)
         .filter(
             Municipio.ccaa == ccaa,
             Municipio.provincia == provincia,
-            Municipio.municipio == municipio_nombre
+            Municipio.municipio == nombre_municipio
         )
         .first()
     )
@@ -371,20 +299,17 @@ def crear_municipio(
 
         raise HTTPException(
             status_code=409,
-            detail=(
-                "El municipio ya existe para "
-                "esa CCAA y provincia."
-            )
+            detail="Ese municipio ya existe."
         )
 
-    # ========================================================
+    # --------------------------------------------------------
     # CREAR
-    # ========================================================
+    # --------------------------------------------------------
 
     nuevo = Municipio(
         ccaa=ccaa,
         provincia=provincia,
-        municipio=municipio_nombre
+        municipio=nombre_municipio
     )
 
     try:
@@ -399,16 +324,18 @@ def crear_municipio(
 
         raise HTTPException(
             status_code=500,
-            detail=(
-                "No se pudo crear el municipio: "
-                f"{e}"
-            )
+            detail=f"No se pudo crear el municipio: {e}"
         )
 
     return {
         "ok": True,
         "mensaje": "Municipio creado correctamente.",
-        "municipio": municipio_to_dict(nuevo)
+        "municipio": {
+            "id": nuevo.id,
+            "ccaa": nuevo.ccaa,
+            "provincia": nuevo.provincia,
+            "municipio": nuevo.municipio,
+        }
     }
 
 
@@ -424,16 +351,6 @@ def editar_municipio(
 ):
     """
     Edita un municipio existente.
-
-    Body esperado:
-
-    {
-        "ccaa": "País Vasco",
-        "provincia": "Araba/Álava",
-        "municipio": "Amurrio"
-    }
-
-    Se pueden enviar los campos que se quieran modificar.
     """
 
     municipio = (
@@ -451,61 +368,64 @@ def editar_municipio(
             detail="Municipio no encontrado."
         )
 
-    # ========================================================
-    # VALORES ACTUALES
-    # ========================================================
+    # --------------------------------------------------------
+    # NUEVOS VALORES
+    # --------------------------------------------------------
 
-    nueva_ccaa = (
-        normalizar_texto(datos["ccaa"])
-        if "ccaa" in datos
-        else municipio.ccaa
-    )
+    ccaa = str(
+        datos.get(
+            "ccaa",
+            municipio.ccaa
+        )
+    ).strip()
 
-    nueva_provincia = (
-        normalizar_texto(datos["provincia"])
-        if "provincia" in datos
-        else municipio.provincia
-    )
+    provincia = str(
+        datos.get(
+            "provincia",
+            municipio.provincia
+        )
+    ).strip()
 
-    nuevo_municipio = (
-        normalizar_texto(datos["municipio"])
-        if "municipio" in datos
-        else municipio.municipio
-    )
+    nombre_municipio = str(
+        datos.get(
+            "municipio",
+            municipio.municipio
+        )
+    ).strip()
 
-    # ========================================================
+    # --------------------------------------------------------
     # VALIDACIONES
-    # ========================================================
+    # --------------------------------------------------------
 
-    if not nueva_ccaa:
+    if not ccaa:
         raise HTTPException(
             status_code=400,
-            detail="La CCAA no puede estar vacía."
+            detail="La comunidad autónoma es obligatoria."
         )
 
-    if not nueva_provincia:
+    if not provincia:
         raise HTTPException(
             status_code=400,
-            detail="La provincia no puede estar vacía."
+            detail="La provincia es obligatoria."
         )
 
-    if not nuevo_municipio:
+    if not nombre_municipio:
         raise HTTPException(
             status_code=400,
-            detail="El municipio no puede estar vacío."
+            detail="El municipio es obligatorio."
         )
 
-    # ========================================================
+    # --------------------------------------------------------
     # COMPROBAR DUPLICADO
-    # ========================================================
+    # --------------------------------------------------------
 
     duplicado = (
         db.query(Municipio)
         .filter(
-            Municipio.id != municipio_id,
-            Municipio.ccaa == nueva_ccaa,
-            Municipio.provincia == nueva_provincia,
-            Municipio.municipio == nuevo_municipio
+            Municipio.ccaa == ccaa,
+            Municipio.provincia == provincia,
+            Municipio.municipio == nombre_municipio,
+            Municipio.id != municipio_id
         )
         .first()
     )
@@ -514,19 +434,16 @@ def editar_municipio(
 
         raise HTTPException(
             status_code=409,
-            detail=(
-                "Ya existe otro municipio "
-                "con esos mismos datos."
-            )
+            detail="Ya existe otro municipio con esos mismos datos."
         )
 
-    # ========================================================
+    # --------------------------------------------------------
     # ACTUALIZAR
-    # ========================================================
+    # --------------------------------------------------------
 
-    municipio.ccaa = nueva_ccaa
-    municipio.provincia = nueva_provincia
-    municipio.municipio = nuevo_municipio
+    municipio.ccaa = ccaa
+    municipio.provincia = provincia
+    municipio.municipio = nombre_municipio
 
     try:
 
@@ -539,16 +456,18 @@ def editar_municipio(
 
         raise HTTPException(
             status_code=500,
-            detail=(
-                "No se pudo actualizar el municipio: "
-                f"{e}"
-            )
+            detail=f"No se pudo actualizar el municipio: {e}"
         )
 
     return {
         "ok": True,
         "mensaje": "Municipio actualizado correctamente.",
-        "municipio": municipio_to_dict(municipio)
+        "municipio": {
+            "id": municipio.id,
+            "ccaa": municipio.ccaa,
+            "provincia": municipio.provincia,
+            "municipio": municipio.municipio,
+        }
     }
 
 
@@ -591,10 +510,7 @@ def eliminar_municipio(
 
         raise HTTPException(
             status_code=500,
-            detail=(
-                "No se pudo eliminar el municipio: "
-                f"{e}"
-            )
+            detail=f"No se pudo eliminar el municipio: {e}"
         )
 
     return {
@@ -602,3 +518,71 @@ def eliminar_municipio(
         "mensaje": "Municipio eliminado correctamente.",
         "id": municipio_id
     }
+
+
+# ============================================================
+# LISTAR COMUNIDADES AUTÓNOMAS
+# ============================================================
+
+@router.get("/catalogos/ccaa")
+def listar_ccaa(
+    db: Session = Depends(get_db)
+):
+    """
+    Devuelve las comunidades autónomas disponibles.
+    """
+
+    resultados = (
+        db.query(Municipio.ccaa)
+        .distinct()
+        .order_by(Municipio.ccaa)
+        .all()
+    )
+
+    return [
+        fila[0]
+        for fila in resultados
+        if fila[0]
+    ]
+
+
+# ============================================================
+# LISTAR PROVINCIAS
+# ============================================================
+
+@router.get("/catalogos/provincias")
+def listar_provincias(
+    ccaa: str | None = Query(
+        default=None
+    ),
+    db: Session = Depends(get_db)
+):
+    """
+    Devuelve las provincias disponibles.
+
+    Si se proporciona CCAA,
+    devuelve solamente sus provincias.
+    """
+
+    query = db.query(
+        Municipio.provincia
+    )
+
+    if ccaa and ccaa.strip():
+
+        query = query.filter(
+            Municipio.ccaa == ccaa.strip()
+        )
+
+    resultados = (
+        query
+        .distinct()
+        .order_by(Municipio.provincia)
+        .all()
+    )
+
+    return [
+        fila[0]
+        for fila in resultados
+        if fila[0]
+    ]
