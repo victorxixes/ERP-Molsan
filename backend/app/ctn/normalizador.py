@@ -3,183 +3,201 @@ import unicodedata
 
 
 # ============================================================
-# NORMALIZACIÓN GENERAL
+# LIMPIAR TEXTO
 # ============================================================
 
-def limpiar_texto(valor) -> str:
+def limpiar_texto(s: str) -> str:
     """
-    Normaliza un texto para utilizarlo en búsquedas.
+    Normaliza un texto:
 
-    - Convierte None en ""
-    - Elimina acentos
-    - Normaliza espacios
-    - Limpia espacios alrededor de comas
+    - elimina acentos
+    - convierte caracteres especiales
+    - elimina espacios duplicados
+    - elimina espacios antes de comas
     """
 
-    if valor is None:
+    if not s:
         return ""
 
-    texto = str(valor).strip()
+    s = str(s)
 
-    if not texto:
-        return ""
-
-    texto = unicodedata.normalize(
-        "NFKD",
-        texto
-    ).encode(
-        "ascii",
-        "ignore"
-    ).decode(
-        "ascii"
+    # Normalizar acentos
+    s = (
+        unicodedata
+        .normalize("NFKD", s)
+        .encode("ascii", "ignore")
+        .decode("ascii")
     )
 
-    texto = re.sub(
+    # Espacios duplicados
+    s = re.sub(
         r"\s+",
         " ",
-        texto
+        s,
     )
 
-    texto = re.sub(
+    # Espacios antes de comas
+    s = re.sub(
         r"\s+,",
         ",",
-        texto
+        s,
     )
 
-    texto = re.sub(
-        r",\s*",
-        ", ",
-        texto
+    # Comas duplicadas
+    s = re.sub(
+        r",+",
+        ",",
+        s,
     )
 
-    return texto.strip()
+    return s.strip()
 
 
 # ============================================================
-# NORMALIZAR DIRECCIÓN
+# LIMPIAR DIRECCIÓN
 # ============================================================
 
-def limpiar_direccion(direccion) -> str:
+def limpiar_direccion(direccion: str) -> str:
     """
-    Limpia una dirección sin destruir información útil.
+    Limpia una dirección manteniendo el número de calle.
 
     IMPORTANTE:
-    NO elimina los números de portal.
-
-    Una dirección como:
-
-        Carrer Mallorca 123, 2º A
-
-    debe conservar el 123 porque es necesario para
-    localizar correctamente la notaría.
+    No debemos eliminar todos los números porque el número
+    de la calle es precisamente uno de los datos más
+    importantes para Google Geocoding.
     """
-
-    direccion = limpiar_texto(direccion)
 
     if not direccion:
         return ""
 
-    # --------------------------------------------------------
-    # Eliminar información secundaria de piso/puerta
-    # --------------------------------------------------------
+    direccion = limpiar_texto(direccion)
 
+    # Eliminar palabras accesorias de piso/local,
+    # pero NO eliminar el número principal de la calle.
+    direccion = re.sub(
+        r"\b("
+        r"planta|"
+        r"piso|"
+        r"bajo|"
+        r"local|"
+        r"entresuelo|"
+        r"izq|"
+        r"izd|"
+        r"dcha|"
+        r"dch|"
+        r"apta|"
+        r"apt|"
+        r"ap|"
+        r"puerta|"
+        r"escalera|"
+        r"bloque|"
+        r"oficina|"
+        r"despacho"
+        r")\b",
+        " ",
+        direccion,
+        flags=re.IGNORECASE,
+    )
+
+    # Ordinales de piso: 3º, 4ª, etc.
     direccion = re.sub(
         r"\b\d+\s*[ºª]\s*[A-Za-z]?\b",
-        "",
+        " ",
         direccion,
-        flags=re.IGNORECASE
+        flags=re.IGNORECASE,
     )
 
+    # Combinaciones típicas de piso: 3A, 2B
+    # SOLO si aparecen después de una coma.
     direccion = re.sub(
-        r"\b(planta|piso|bajo|local|entresuelo|"
-        r"izquierda|izq|derecha|dcha|dch|"
-        r"puerta|pta|escalera|esc|bloque|"
-        r"oficina|despacho)\b"
-        r"\s*[A-Za-z0-9ºª\-]*",
-        "",
+        r",\s*\d+\s*[A-Za-z]\b",
+        ",",
         direccion,
-        flags=re.IGNORECASE
+        flags=re.IGNORECASE,
     )
 
-    # --------------------------------------------------------
-    # Limpiar espacios
-    # --------------------------------------------------------
+    # Letras sueltas después de coma
+    direccion = re.sub(
+        r",\s*[A-Za-z]\b",
+        ",",
+        direccion,
+        flags=re.IGNORECASE,
+    )
 
+    # Espacios duplicados
     direccion = re.sub(
         r"\s+",
         " ",
-        direccion
+        direccion,
     )
 
-    # --------------------------------------------------------
-    # Limpiar comas
-    # --------------------------------------------------------
-
+    # Comas duplicadas
     direccion = re.sub(
-        r"\s*,\s*",
-        ", ",
-        direccion
+        r",+",
+        ",",
+        direccion,
     )
 
+    # Espacios antes de comas
     direccion = re.sub(
-        r",\s*,+",
-        ", ",
-        direccion
+        r"\s+,",
+        ",",
+        direccion,
     )
 
-    direccion = direccion.strip(
-        " ,"
-    )
+    # Comas al principio/final
+    direccion = direccion.strip(" ,")
 
-    return direccion
+    return direccion.strip()
 
 
 # ============================================================
-# CONSTRUIR DIRECCIÓN COMPLETA
+# CONSTRUIR DIRECCIÓN DE BÚSQUEDA
 # ============================================================
 
 def construir_direccion_busqueda(
-    direccion=None,
-    cp=None,
-    municipio=None,
-    provincia=None,
+    direccion: str | None = None,
+    cp: str | None = None,
+    municipio: str | None = None,
+    provincia: str | None = None,
 ) -> str:
     """
-    Construye una dirección completa para geocodificación.
+    Construye una dirección completa para Google Geocoding.
 
     Ejemplo:
 
-        direccion = "Carrer Mallorca 123"
-        cp = "08036"
-        municipio = "Barcelona"
-        provincia = "Barcelona"
+        direccion:
+            "Carrer de Mallorca 123"
+
+        cp:
+            "08036"
+
+        municipio:
+            "Barcelona"
+
+        provincia:
+            "Barcelona"
 
     Resultado:
 
-        Carrer Mallorca 123, 08036 Barcelona, Barcelona, Espana
+        "Carrer de Mallorca 123, 08036 Barcelona,
+         Barcelona, Espana"
+
+    Si algún campo está vacío, simplemente se omite.
+
+    Nunca devuelve una dirección formada únicamente por
+    ", Espana".
     """
 
     partes = []
 
-    direccion_limpia = limpiar_direccion(
-        direccion
-    )
-
-    cp_limpio = limpiar_texto(
-        cp
-    )
-
-    municipio_limpio = limpiar_texto(
-        municipio
-    )
-
-    provincia_limpia = limpiar_texto(
-        provincia
-    )
-
     # --------------------------------------------------------
     # DIRECCIÓN
     # --------------------------------------------------------
+
+    direccion_limpia = limpiar_direccion(
+        direccion or ""
+    )
 
     if direccion_limpia:
         partes.append(
@@ -187,32 +205,62 @@ def construir_direccion_busqueda(
         )
 
     # --------------------------------------------------------
+    # CÓDIGO POSTAL
+    # --------------------------------------------------------
+
+    cp_limpio = limpiar_texto(
+        cp or ""
+    )
+
+    # --------------------------------------------------------
+    # MUNICIPIO
+    # --------------------------------------------------------
+
+    municipio_limpio = limpiar_texto(
+        municipio or ""
+    )
+
+    # --------------------------------------------------------
     # CP + MUNICIPIO
     # --------------------------------------------------------
 
     if cp_limpio and municipio_limpio:
+
         partes.append(
             f"{cp_limpio} {municipio_limpio}"
         )
 
-    elif municipio_limpio:
-        partes.append(
-            municipio_limpio
-        )
-
     elif cp_limpio:
+
         partes.append(
             cp_limpio
+        )
+
+    elif municipio_limpio:
+
+        partes.append(
+            municipio_limpio
         )
 
     # --------------------------------------------------------
     # PROVINCIA
     # --------------------------------------------------------
 
+    provincia_limpia = limpiar_texto(
+        provincia or ""
+    )
+
     if provincia_limpia:
         partes.append(
             provincia_limpia
         )
+
+    # --------------------------------------------------------
+    # COMPROBAR QUE REALMENTE TENEMOS DATOS
+    # --------------------------------------------------------
+
+    if not partes:
+        return ""
 
     # --------------------------------------------------------
     # PAÍS
@@ -223,6 +271,5 @@ def construir_direccion_busqueda(
     )
 
     return ", ".join(
-        p for p in partes
-        if p
-    ).strip()
+        partes
+    )
