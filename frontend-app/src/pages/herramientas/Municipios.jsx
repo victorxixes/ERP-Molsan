@@ -38,7 +38,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
  * ============================================================
  */
 
-const API_BASE = "/api/municipios";
+const API_BASE =
+  "https://agenda-intranet-b.onrender.com/api/municipios";
 
 const API_IMPORTAR_EXCEL =
   `${API_BASE}/importar-excel`;
