@@ -2,7 +2,7 @@ import math
 
 
 # ============================================================
-# COORDENADAS MOLSAN
+# MOLSAN
 # ============================================================
 
 MOLSAN_LAT = 41.424960
@@ -18,15 +18,7 @@ def distancia_km(
     lon1,
     lat2,
     lon2,
-):
-    """
-    Calcula la distancia en línea recta mediante Haversine.
-
-    Devuelve siempre un float.
-
-    Si alguna coordenada no es válida:
-        0.0
-    """
+) -> float:
 
     try:
 
@@ -42,10 +34,6 @@ def distancia_km(
 
         return 0.0
 
-    # --------------------------------------------------------
-    # Comprobar valores finitos
-    # --------------------------------------------------------
-
     if not all(
         math.isfinite(v)
         for v in (
@@ -55,47 +43,23 @@ def distancia_km(
             lon2,
         )
     ):
+
         return 0.0
-
-    # --------------------------------------------------------
-    # Comprobar rango válido
-    # --------------------------------------------------------
-
-    if not (
-        -90 <= lat1 <= 90
-        and
-        -90 <= lat2 <= 90
-        and
-        -180 <= lon1 <= 180
-        and
-        -180 <= lon2 <= 180
-    ):
-        return 0.0
-
-    # ========================================================
-    # RADIO DE LA TIERRA
-    # ========================================================
 
     R = 6371.0
 
-    # ========================================================
-    # RADIANES
-    # ========================================================
-
-    d_lat = math.radians(
+    dlat = math.radians(
         lat2 - lat1
     )
 
-    d_lon = math.radians(
+    dlon = math.radians(
         lon2 - lon1
     )
 
-    # ========================================================
-    # HAVERSINE
-    # ========================================================
-
     a = (
-        math.sin(d_lat / 2) ** 2
+        math.sin(
+            dlat / 2
+        ) ** 2
         +
         math.cos(
             math.radians(lat1)
@@ -106,11 +70,9 @@ def distancia_km(
         )
         *
         math.sin(
-            d_lon / 2
+            dlon / 2
         ) ** 2
     )
-
-    # Protección numérica
 
     a = max(
         0.0,
@@ -120,37 +82,14 @@ def distancia_km(
         ),
     )
 
-    c = (
-        2
-        *
-        math.atan2(
-            math.sqrt(a),
-            math.sqrt(1 - a),
-        )
+    c = 2 * math.atan2(
+        math.sqrt(a),
+        math.sqrt(
+            1 - a
+        ),
     )
 
     return round(
         R * c,
         2,
-    )
-
-
-# ============================================================
-# COMPATIBILIDAD
-# ============================================================
-
-def distancia_molsan(
-    lat,
-    lng,
-):
-    """
-    Mantiene compatibilidad con código antiguo
-    que utiliza distancia_molsan().
-    """
-
-    return distancia_km(
-        MOLSAN_LAT,
-        MOLSAN_LNG,
-        lat,
-        lng,
     )
