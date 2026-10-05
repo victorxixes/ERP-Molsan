@@ -1,11 +1,8 @@
-import { useState, useEffect, useRef } from "react";
-import api from "../../api/axios";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
 import SelectSJ from "../../components/ui/SelectSJ";
-
-/* ============================================================
-   MESES
-============================================================ */
 
 const MESES = [
   { value: 1, label: "Enero" },
@@ -24,7 +21,8 @@ const MESES = [
 
 
 /* ============================================================
-   INFORMES
+   INFORMES — MOLSAN ERP PREMIUM 2027
+   ESTILO GLASS LUXE CLARO
 ============================================================ */
 
 export default function Informes() {
@@ -49,17 +47,9 @@ export default function Informes() {
       asc: true,
     });
 
-  const canvasVC = useRef(null);
-  const canvasPresencial = useRef(null);
-  const canvasKm = useRef(null);
-
-  const chartVC = useRef(null);
-  const chartPresencial = useRef(null);
-  const chartKm = useRef(null);
-
 
   /* ==========================================================
-     CARGAR DATOS
+     CARGA
   ========================================================== */
 
   useEffect(() => {
@@ -75,17 +65,24 @@ export default function Informes() {
 
   useEffect(() => {
 
-    renderGraficos();
+    const timer =
+      setTimeout(() => {
+        renderGraficos();
+      }, 50);
 
     return () => {
+
+      clearTimeout(timer);
+
       destruirGraficos();
+
     };
 
   }, [tabla]);
 
 
   /* ==========================================================
-     CARGAR TABLA
+     CARGAR DATOS
   ========================================================== */
 
   const cargarTabla = async () => {
@@ -93,8 +90,8 @@ export default function Informes() {
     try {
 
       const res =
-        await api.get(
-          "/informes/apoderados/tabla",
+        await axios.get(
+          `${API_BASE}/informes/apoderados/tabla`,
           {
             params: {
               mes,
@@ -109,17 +106,19 @@ export default function Informes() {
 
           ...t,
 
-          vc:
-            Number(t.vc ?? 0),
-
-          presencial:
-            Number(t.presencial ?? 0),
-
           km:
             Number(
               t.km ??
               t.distancia_km ??
               0
+            ) || 0,
+
+          vc:
+            Number(t.vc || 0),
+
+          presencial:
+            Number(
+              t.presencial || 0
             ),
 
         }));
@@ -164,22 +163,13 @@ export default function Informes() {
     const ordenada =
       [...tabla].sort((a, b) => {
 
-        const valorA =
-          a[campo] ?? "";
-
-        const valorB =
-          b[campo] ?? "";
-
-
-        if (valorA < valorB) {
+        if (a[campo] < b[campo]) {
           return asc ? -1 : 1;
         }
 
-
-        if (valorA > valorB) {
+        if (a[campo] > b[campo]) {
           return asc ? 1 : -1;
         }
-
 
         return 0;
 
@@ -206,17 +196,16 @@ export default function Informes() {
 
 
     const filas =
-      filtrada.map((t) => [
+      tabla.map((t) => [
 
-        t.nombre || "Sin nombre",
+        t.nombre,
 
-        t.vc ?? 0,
+        t.vc,
 
-        t.presencial ?? 0,
+        t.presencial,
 
-        Number(
-          t.km ?? 0
-        ).toFixed(2),
+        Number(t.km || 0)
+          .toFixed(2),
 
       ]);
 
@@ -261,16 +250,7 @@ export default function Informes() {
     link.download =
       `informe_${mes}_${año}.csv`;
 
-
-    document.body.appendChild(
-      link
-    );
-
     link.click();
-
-    document.body.removeChild(
-      link
-    );
 
 
     URL.revokeObjectURL(
@@ -301,8 +281,7 @@ export default function Informes() {
     const totalVC =
       tabla.reduce(
         (acc, t) =>
-          acc +
-          Number(t.vc ?? 0),
+          acc + Number(t.vc || 0),
         0
       );
 
@@ -312,7 +291,7 @@ export default function Informes() {
         (acc, t) =>
           acc +
           Number(
-            t.presencial ?? 0
+            t.presencial || 0
           ),
         0
       );
@@ -322,20 +301,20 @@ export default function Informes() {
       tabla.reduce(
         (acc, t) =>
           acc +
-          Number(t.km ?? 0),
+          Number(t.km || 0),
         0
       );
 
 
     const filas =
-      filtrada
+      tabla
         .map(
           (t) => `
             <tr>
               <td>${t.nombre || "Sin nombre"}</td>
-              <td>${t.vc ?? 0}</td>
-              <td>${t.presencial ?? 0}</td>
-              <td>${Number(t.km ?? 0).toFixed(2)}</td>
+              <td>${t.vc || 0}</td>
+              <td>${t.presencial || 0}</td>
+              <td>${Number(t.km || 0).toFixed(2)}</td>
             </tr>
           `
         )
@@ -355,51 +334,19 @@ export default function Informes() {
 
           <style>
 
-            * {
-              box-sizing: border-box;
-            }
-
-
             body {
-
               font-family:
-                "Segoe UI",
+                'Segoe UI',
                 Arial,
                 sans-serif;
 
               padding: 40px;
 
               background:
-                #f5f7fb;
+                #f3f7fc;
 
               color:
-                #172033;
-
-            }
-
-
-            h1 {
-
-              margin:
-                0 0 6px;
-
-              font-size:
-                28px;
-
-            }
-
-
-            h2 {
-
-              margin:
-                0;
-
-              color:
-                #64748b;
-
-              font-size:
-                16px;
-
+                #24344d;
             }
 
 
@@ -412,17 +359,40 @@ export default function Informes() {
                 28px;
 
               border-radius:
-                16px;
+                18px;
+
+              border:
+                1px solid #dbe7f4;
 
               box-shadow:
-                0 8px 30px
-                rgba(
-                  15,
-                  23,
-                  42,
-                  0.08
-                );
+                0 10px 30px
+                rgba(38, 68, 104, 0.10);
+            }
 
+
+            h1 {
+
+              font-size:
+                26px;
+
+              margin-bottom:
+                5px;
+
+              color:
+                #183b66;
+            }
+
+
+            h2 {
+
+              font-size:
+                17px;
+
+              margin-top:
+                0;
+
+              color:
+                #6f86a3;
             }
 
 
@@ -439,45 +409,42 @@ export default function Informes() {
 
               font-size:
                 14px;
-
             }
 
 
             th {
 
               background:
-                #eef2f7;
+                #edf4fc;
 
               padding:
-                12px;
+                11px;
+
+              border-bottom:
+                2px solid #d4e2f1;
 
               text-align:
                 left;
 
-              border-bottom:
-                2px solid
-                #d7dee9;
-
+              color:
+                #31577f;
             }
 
 
             td {
 
               padding:
-                10px 12px;
+                9px;
 
               border-bottom:
-                1px solid
-                #e5eaf1;
-
+                1px solid #e4edf6;
             }
 
 
             tr:nth-child(even) {
 
               background:
-                #f8fafc;
-
+                #f8fbfe;
             }
 
 
@@ -486,16 +453,14 @@ export default function Informes() {
               margin-top:
                 30px;
 
-              padding-top:
-                20px;
-
-              border-top:
-                1px solid
-                #e2e8f0;
+              font-size:
+                15px;
 
               font-weight:
                 600;
 
+              color:
+                #31577f;
             }
 
 
@@ -506,7 +471,6 @@ export default function Informes() {
 
               margin-bottom:
                 6px;
-
             }
 
           </style>
@@ -523,7 +487,7 @@ export default function Informes() {
             </h1>
 
             <h2>
-              ${mesActual} ${año}
+              ${mes}/${año}
             </h2>
 
 
@@ -566,13 +530,11 @@ export default function Informes() {
             <div class="totales">
 
               <span>
-                Total VC:
-                ${totalVC}
+                Total VC: ${totalVC}
               </span>
 
               <span>
-                Total Presencial:
-                ${totalPres}
+                Total Presencial: ${totalPres}
               </span>
 
               <span>
@@ -604,31 +566,20 @@ export default function Informes() {
 
   const destruirGraficos = () => {
 
-    if (chartVC.current) {
+    [
+      "graficoVC",
+      "graficoP",
+      "graficoKm",
+    ].forEach((id) => {
 
-      chartVC.current.destroy();
+      const chart =
+        Chart.getChart(id);
 
-      chartVC.current = null;
+      if (chart) {
+        chart.destroy();
+      }
 
-    }
-
-
-    if (chartPresencial.current) {
-
-      chartPresencial.current.destroy();
-
-      chartPresencial.current = null;
-
-    }
-
-
-    if (chartKm.current) {
-
-      chartKm.current.destroy();
-
-      chartKm.current = null;
-
-    }
+    });
 
   };
 
@@ -642,18 +593,32 @@ export default function Informes() {
     destruirGraficos();
 
 
+    const ctx1 =
+      document.getElementById(
+        "graficoVC"
+      );
+
+    const ctx2 =
+      document.getElementById(
+        "graficoP"
+      );
+
+    const ctx3 =
+      document.getElementById(
+        "graficoKm"
+      );
+
+
     if (
-      !canvasVC.current ||
-      !canvasPresencial.current ||
-      !canvasKm.current
+      !ctx1 ||
+      !ctx2 ||
+      !ctx3
     ) {
-
       return;
-
     }
 
 
-    const nombres =
+    const labels =
       tabla.map(
         (t) =>
           t.nombre ||
@@ -661,130 +626,89 @@ export default function Informes() {
       );
 
 
+    const colorTexto =
+      "#7186a3";
+
+    const colorGrid =
+      "rgba(102, 135, 170, 0.13)";
+
+
     /* --------------------------------------------------------
        VC
     -------------------------------------------------------- */
 
-    chartVC.current =
-      new Chart(
-        canvasVC.current,
-        {
+    new Chart(
+      ctx1,
+      {
 
-          type: "bar",
+        type:
+          "bar",
 
-          data: {
+        data: {
 
-            labels:
-              nombres,
+          labels,
 
-            datasets: [
+          datasets: [
 
-              {
+            {
 
-                label:
-                  "Videoconferencias",
+              label:
+                "Videoconferencias",
 
-                data:
-                  tabla.map(
-                    (t) =>
-                      Number(
-                        t.vc ?? 0
-                      )
-                  ),
+              data:
+                tabla.map(
+                  (t) =>
+                    Number(
+                      t.vc || 0
+                    )
+                ),
 
-                backgroundColor:
-                  "rgba(96,165,250,0.80)",
+              backgroundColor:
+                "rgba(96, 165, 250, 0.78)",
 
-                borderColor:
-                  "#60a5fa",
+              borderColor:
+                "#60a5fa",
 
-                borderWidth:
-                  1,
+              borderWidth:
+                1,
 
-                borderRadius:
-                  8,
+              borderRadius:
+                8,
 
-                maxBarThickness:
-                  44,
-
-              },
-
-            ],
-
-          },
-
-
-          options: {
-
-            responsive:
-              true,
-
-            maintainAspectRatio:
-              false,
-
-            plugins: {
-
-              legend: {
-
-                labels: {
-
-                  color:
-                    "#e2e8f0",
-
-                },
-
-              },
+              maxBarThickness:
+                42,
 
             },
 
+          ],
 
-            scales: {
-
-              x: {
-
-                ticks: {
-
-                  color:
-                    "#cbd5e1",
-
-                  maxRotation:
-                    35,
-
-                  minRotation:
-                    0,
-
-                },
-
-                grid: {
-
-                  color:
-                    "rgba(148,163,184,0.10)",
-
-                },
-
-              },
+        },
 
 
-              y: {
+        options: {
 
-                beginAtZero:
-                  true,
+          responsive:
+            true,
 
-                ticks: {
+          maintainAspectRatio:
+            false,
 
-                  color:
-                    "#cbd5e1",
+          animation: {
+            duration: 500,
+          },
 
-                  precision:
-                    0,
+          plugins: {
 
-                },
+            legend: {
 
-                grid: {
+              labels: {
 
-                  color:
-                    "rgba(148,163,184,0.10)",
+                color:
+                  colorTexto,
 
+                font: {
+                  size: 11,
+                  weight: "600",
                 },
 
               },
@@ -793,131 +717,147 @@ export default function Informes() {
 
           },
 
-        }
-      );
+
+          scales: {
+
+            x: {
+
+              ticks: {
+
+                color:
+                  colorTexto,
+
+                font: {
+                  size: 10,
+                },
+
+              },
+
+              grid: {
+                color:
+                  colorGrid,
+              },
+
+              border: {
+                color:
+                  "#dbe7f4",
+              },
+
+            },
+
+
+            y: {
+
+              beginAtZero:
+                true,
+
+              ticks: {
+
+                color:
+                  colorTexto,
+
+                font: {
+                  size: 10,
+                },
+
+              },
+
+              grid: {
+                color:
+                  colorGrid,
+              },
+
+              border: {
+                color:
+                  "#dbe7f4",
+              },
+
+            },
+
+          },
+
+        },
+
+      }
+    );
 
 
     /* --------------------------------------------------------
        PRESENCIAL
     -------------------------------------------------------- */
 
-    chartPresencial.current =
-      new Chart(
-        canvasPresencial.current,
-        {
+    new Chart(
+      ctx2,
+      {
 
-          type: "bar",
+        type:
+          "bar",
 
-          data: {
+        data: {
 
-            labels:
-              nombres,
+          labels,
 
-            datasets: [
+          datasets: [
 
-              {
+            {
 
-                label:
-                  "Presencial",
+              label:
+                "Presencial",
 
-                data:
-                  tabla.map(
-                    (t) =>
-                      Number(
-                        t.presencial ?? 0
-                      )
-                  ),
+              data:
+                tabla.map(
+                  (t) =>
+                    Number(
+                      t.presencial || 0
+                    )
+                ),
 
-                backgroundColor:
-                  "rgba(52,211,153,0.80)",
+              backgroundColor:
+                "rgba(52, 211, 153, 0.78)",
 
-                borderColor:
-                  "#34d399",
+              borderColor:
+                "#34d399",
 
-                borderWidth:
-                  1,
+              borderWidth:
+                1,
 
-                borderRadius:
-                  8,
+              borderRadius:
+                8,
 
-                maxBarThickness:
-                  44,
-
-              },
-
-            ],
-
-          },
-
-
-          options: {
-
-            responsive:
-              true,
-
-            maintainAspectRatio:
-              false,
-
-            plugins: {
-
-              legend: {
-
-                labels: {
-
-                  color:
-                    "#e2e8f0",
-
-                },
-
-              },
+              maxBarThickness:
+                42,
 
             },
 
+          ],
 
-            scales: {
-
-              x: {
-
-                ticks: {
-
-                  color:
-                    "#cbd5e1",
-
-                  maxRotation:
-                    35,
-
-                },
-
-                grid: {
-
-                  color:
-                    "rgba(148,163,184,0.10)",
-
-                },
-
-              },
+        },
 
 
-              y: {
+        options: {
 
-                beginAtZero:
-                  true,
+          responsive:
+            true,
 
-                ticks: {
+          maintainAspectRatio:
+            false,
 
-                  color:
-                    "#cbd5e1",
+          animation: {
+            duration: 500,
+          },
 
-                  precision:
-                    0,
+          plugins: {
 
-                },
+            legend: {
 
-                grid: {
+              labels: {
 
-                  color:
-                    "rgba(148,163,184,0.10)",
+                color:
+                  colorTexto,
 
+                font: {
+                  size: 11,
+                  weight: "600",
                 },
 
               },
@@ -926,140 +866,162 @@ export default function Informes() {
 
           },
 
-        }
-      );
+
+          scales: {
+
+            x: {
+
+              ticks: {
+
+                color:
+                  colorTexto,
+
+                font: {
+                  size: 10,
+                },
+
+              },
+
+              grid: {
+                color:
+                  colorGrid,
+              },
+
+              border: {
+                color:
+                  "#dbe7f4",
+              },
+
+            },
+
+
+            y: {
+
+              beginAtZero:
+                true,
+
+              ticks: {
+
+                color:
+                  colorTexto,
+
+                font: {
+                  size: 10,
+                },
+
+              },
+
+              grid: {
+                color:
+                  colorGrid,
+              },
+
+              border: {
+                color:
+                  "#dbe7f4",
+              },
+
+            },
+
+          },
+
+        },
+
+      }
+    );
 
 
     /* --------------------------------------------------------
        KM
     -------------------------------------------------------- */
 
-    chartKm.current =
-      new Chart(
-        canvasKm.current,
-        {
+    new Chart(
+      ctx3,
+      {
 
-          type: "line",
+        type:
+          "line",
 
-          data: {
+        data: {
 
-            labels:
-              nombres,
+          labels,
 
-            datasets: [
+          datasets: [
 
-              {
+            {
 
-                label:
-                  "Kilómetros",
+              label:
+                "Kilómetros",
 
-                data:
-                  tabla.map(
-                    (t) =>
-                      Number(
-                        t.km ?? 0
-                      )
-                  ),
+              data:
+                tabla.map(
+                  (t) =>
+                    Number(
+                      t.km || 0
+                    )
+                ),
 
-                borderColor:
-                  "#fb7185",
+              borderColor:
+                "#f43f5e",
 
-                backgroundColor:
-                  "rgba(251,113,133,0.16)",
+              backgroundColor:
+                "rgba(244, 63, 94, 0.10)",
 
-                borderWidth:
-                  3,
+              borderWidth:
+                3,
 
-                tension:
-                  0.35,
+              tension:
+                0.35,
 
-                fill:
-                  true,
+              fill:
+                true,
 
-                pointRadius:
-                  4,
+              pointRadius:
+                4,
 
-                pointHoverRadius:
-                  6,
+              pointHoverRadius:
+                6,
 
-                pointBackgroundColor:
-                  "#fb7185",
+              pointBackgroundColor:
+                "#f43f5e",
 
-                pointBorderColor:
-                  "#ffe4e6",
+              pointBorderColor:
+                "#ffffff",
 
-              },
-
-            ],
-
-          },
-
-
-          options: {
-
-            responsive:
-              true,
-
-            maintainAspectRatio:
-              false,
-
-            plugins: {
-
-              legend: {
-
-                labels: {
-
-                  color:
-                    "#e2e8f0",
-
-                },
-
-              },
+              pointBorderWidth:
+                2,
 
             },
 
+          ],
 
-            scales: {
-
-              x: {
-
-                ticks: {
-
-                  color:
-                    "#cbd5e1",
-
-                  maxRotation:
-                    35,
-
-                },
-
-                grid: {
-
-                  color:
-                    "rgba(148,163,184,0.10)",
-
-                },
-
-              },
+        },
 
 
-              y: {
+        options: {
 
-                beginAtZero:
-                  true,
+          responsive:
+            true,
 
-                ticks: {
+          maintainAspectRatio:
+            false,
 
-                  color:
-                    "#cbd5e1",
+          animation: {
+            duration: 500,
+          },
 
-                },
+          plugins: {
 
-                grid: {
+            legend: {
 
-                  color:
-                    "rgba(148,163,184,0.10)",
+              labels: {
 
+                color:
+                  colorTexto,
+
+                font: {
+                  size: 11,
+                  weight: "600",
                 },
 
               },
@@ -1068,8 +1030,69 @@ export default function Informes() {
 
           },
 
-        }
-      );
+
+          scales: {
+
+            x: {
+
+              ticks: {
+
+                color:
+                  colorTexto,
+
+                font: {
+                  size: 10,
+                },
+
+              },
+
+              grid: {
+                color:
+                  colorGrid,
+              },
+
+              border: {
+                color:
+                  "#dbe7f4",
+              },
+
+            },
+
+
+            y: {
+
+              beginAtZero:
+                true,
+
+              ticks: {
+
+                color:
+                  colorTexto,
+
+                font: {
+                  size: 10,
+                },
+
+              },
+
+              grid: {
+                color:
+                  colorGrid,
+              },
+
+              border: {
+                color:
+                  "#dbe7f4",
+              },
+
+            },
+
+          },
+
+        },
+
+      }
+    );
 
   };
 
@@ -1079,17 +1102,16 @@ export default function Informes() {
   ========================================================== */
 
   const filtrada =
-    tabla.filter((t) =>
-
-      String(
-        t.nombre || ""
-      )
-        .toLowerCase()
-        .includes(
-          filtroNombre
-            .toLowerCase()
+    tabla.filter(
+      (t) =>
+        String(
+          t.nombre || ""
         )
-
+          .toLowerCase()
+          .includes(
+            filtroNombre
+              .toLowerCase()
+          )
     );
 
 
@@ -1102,7 +1124,7 @@ export default function Informes() {
       (acc, t) =>
         acc +
         Number(
-          t.vc ?? 0
+          t.vc || 0
         ),
       0
     );
@@ -1113,7 +1135,7 @@ export default function Informes() {
       (acc, t) =>
         acc +
         Number(
-          t.presencial ?? 0
+          t.presencial || 0
         ),
       0
     );
@@ -1124,7 +1146,7 @@ export default function Informes() {
       (acc, t) =>
         acc +
         Number(
-          t.km ?? 0
+          t.km || 0
         ),
       0
     );
@@ -1135,8 +1157,7 @@ export default function Informes() {
       ? (
           totalVC +
           totalPresencial
-        ) /
-        tabla.length
+        ) / tabla.length
       : 0;
 
 
@@ -1162,38 +1183,32 @@ export default function Informes() {
 
     <div
       className="
-        min-h-full
-        w-full
-        rounded-3xl
+        min-h-screen
         bg-gradient-to-br
-        from-slate-950
-        via-slate-900
-        to-slate-950
-        text-slate-100
+        from-[#eef5fb]
+        via-[#f7faff]
+        to-[#eaf2fb]
+        text-slate-700
         p-4
         md:p-6
         space-y-6
-        overflow-x-hidden
       "
     >
-
 
       {/* ======================================================
           CABECERA
       ====================================================== */}
 
-      <section
+      <div
         className="
           relative
           overflow-hidden
-          rounded-3xl
-          border
-          border-white/10
-          bg-slate-900/80
-          shadow-2xl
-          shadow-black/30
+          bg-white/70
+          backdrop-blur-xl
+          border border-white/80
+          rounded-2xl
           p-6
-          md:p-7
+          shadow-[0_10px_35px_rgba(55,85,120,0.10)]
         "
       >
 
@@ -1202,25 +1217,24 @@ export default function Informes() {
             absolute
             -top-24
             -right-24
-            h-64
             w-64
+            h-64
+            bg-blue-300/20
             rounded-full
-            bg-blue-500/10
             blur-3xl
             pointer-events-none
           "
         />
-
 
         <div
           className="
             absolute
             -bottom-24
             -left-24
-            h-64
             w-64
+            h-64
+            bg-purple-300/15
             rounded-full
-            bg-purple-500/10
             blur-3xl
             pointer-events-none
           "
@@ -1245,7 +1259,7 @@ export default function Informes() {
               className="
                 flex
                 items-center
-                gap-4
+                gap-3
               "
             >
 
@@ -1253,14 +1267,14 @@ export default function Informes() {
                 className="
                   w-12
                   h-12
-                  rounded-2xl
-                  bg-blue-500/15
-                  border border-blue-400/20
+                  rounded-xl
+                  bg-blue-100
+                  border border-blue-200
                   flex
                   items-center
                   justify-center
-                  text-2xl
-                  shadow-lg
+                  text-xl
+                  shadow-sm
                 "
               >
                 📊
@@ -1274,8 +1288,7 @@ export default function Informes() {
                     text-2xl
                     md:text-3xl
                     font-bold
-                    text-white
-                    tracking-tight
+                    text-slate-800
                   "
                 >
                   Informes de Apoderados
@@ -1284,9 +1297,9 @@ export default function Informes() {
 
                 <p
                   className="
-                    mt-1
                     text-sm
-                    text-slate-400
+                    text-slate-500
+                    mt-1
                   "
                 >
                   Estadísticas de actividad,
@@ -1300,27 +1313,27 @@ export default function Informes() {
 
             <div
               className="
-                mt-5
+                mt-4
                 inline-flex
                 items-center
                 gap-2
-                rounded-full
-                border border-white/10
-                bg-white/[0.04]
                 px-3
                 py-1.5
+                rounded-full
+                bg-white/80
+                border border-slate-200
+                text-slate-500
                 text-xs
-                text-slate-400
+                shadow-sm
               "
             >
 
               <span
                 className="
-                  h-2
                   w-2
+                  h-2
                   rounded-full
                   bg-blue-400
-                  shadow-[0_0_10px_rgba(96,165,250,0.8)]
                 "
               />
 
@@ -1328,8 +1341,7 @@ export default function Informes() {
 
               <strong
                 className="
-                  font-semibold
-                  text-slate-200
+                  text-slate-700
                 "
               >
                 {mesActual} {año}
@@ -1341,22 +1353,21 @@ export default function Informes() {
 
         </div>
 
-      </section>
+      </div>
 
 
       {/* ======================================================
           FILTROS
       ====================================================== */}
 
-      <section
+      <div
         className="
-          rounded-3xl
-          border border-white/10
-          bg-slate-900/80
-          shadow-xl
-          shadow-black/20
-          p-5
-          md:p-6
+          bg-white/70
+          backdrop-blur-xl
+          border border-white/80
+          rounded-2xl
+          p-6
+          shadow-[0_10px_35px_rgba(55,85,120,0.09)]
         "
       >
 
@@ -1371,15 +1382,15 @@ export default function Informes() {
 
           <div
             className="
-              h-9
               w-9
-              rounded-xl
-              bg-blue-500/10
-              border border-blue-400/20
+              h-9
+              rounded-lg
+              bg-blue-50
+              border border-blue-100
               flex
               items-center
               justify-center
-              text-blue-300
+              text-blue-500
             "
           >
             ⚙
@@ -1392,17 +1403,16 @@ export default function Informes() {
               className="
                 text-lg
                 font-semibold
-                text-white
+                text-slate-800
               "
             >
               Filtros del informe
             </h2>
 
-
             <p
               className="
                 text-xs
-                text-slate-500
+                text-slate-400
               "
             >
               Selecciona el periodo y filtra los resultados.
@@ -1418,7 +1428,7 @@ export default function Informes() {
             grid
             grid-cols-1
             md:grid-cols-12
-            gap-4
+            gap-5
             items-end
           "
         >
@@ -1428,34 +1438,46 @@ export default function Informes() {
           <div
             className="
               md:col-span-3
+              flex
+              flex-col
             "
           >
 
             <label
               className="
-                block
-                mb-2
-                text-[11px]
+                text-slate-500
+                text-xs
                 font-semibold
                 uppercase
-                tracking-wider
-                text-slate-400
+                tracking-wide
+                mb-2
               "
             >
               Mes
             </label>
 
 
-            <SelectSJ
-              value={mes}
-              onChange={(v) =>
-                setMes(
-                  Number(v)
-                )
-              }
-              options={MESES}
-              placeholder="Mes"
-            />
+            <div
+              className="
+                rounded-xl
+                bg-white
+                border border-slate-200
+                shadow-sm
+              "
+            >
+
+              <SelectSJ
+                value={mes}
+                onChange={(v) =>
+                  setMes(
+                    Number(v)
+                  )
+                }
+                options={MESES}
+                placeholder="Mes"
+              />
+
+            </div>
 
           </div>
 
@@ -1465,18 +1487,19 @@ export default function Informes() {
           <div
             className="
               md:col-span-2
+              flex
+              flex-col
             "
           >
 
             <label
               className="
-                block
-                mb-2
-                text-[11px]
+                text-slate-500
+                text-xs
                 font-semibold
                 uppercase
-                tracking-wider
-                text-slate-400
+                tracking-wide
+                mb-2
               "
             >
               Año
@@ -1487,18 +1510,18 @@ export default function Informes() {
               type="number"
               className="
                 w-full
+                bg-white
+                border border-slate-200
                 rounded-xl
-                border border-white/10
-                bg-slate-800/80
-                px-4
-                py-3
-                text-slate-100
+                px-3
+                py-2.5
+                text-slate-700
                 outline-none
                 transition
-                placeholder:text-slate-600
-                focus:border-blue-400/50
+                shadow-sm
+                focus:border-blue-400
                 focus:ring-2
-                focus:ring-blue-500/10
+                focus:ring-blue-100
               "
               value={año}
               onChange={(e) =>
@@ -1518,18 +1541,19 @@ export default function Informes() {
           <div
             className="
               md:col-span-7
+              flex
+              flex-col
             "
           >
 
             <label
               className="
-                block
-                mb-2
-                text-[11px]
+                text-slate-500
+                text-xs
                 font-semibold
                 uppercase
-                tracking-wider
-                text-slate-400
+                tracking-wide
+                mb-2
               "
             >
               Buscar apoderado
@@ -1545,10 +1569,10 @@ export default function Informes() {
               <span
                 className="
                   absolute
-                  left-4
+                  left-3
                   top-1/2
                   -translate-y-1/2
-                  text-slate-500
+                  text-slate-400
                 "
               >
                 🔎
@@ -1559,19 +1583,20 @@ export default function Informes() {
                 type="text"
                 className="
                   w-full
+                  bg-white
+                  border border-slate-200
                   rounded-xl
-                  border border-white/10
-                  bg-slate-800/80
-                  pl-11
+                  pl-10
                   pr-4
-                  py-3
-                  text-slate-100
+                  py-2.5
+                  text-slate-700
+                  placeholder-slate-400
                   outline-none
                   transition
-                  placeholder:text-slate-500
-                  focus:border-blue-400/50
+                  shadow-sm
+                  focus:border-blue-400
                   focus:ring-2
-                  focus:ring-blue-500/10
+                  focus:ring-blue-100
                 "
                 placeholder="Buscar por nombre..."
                 value={filtroNombre}
@@ -1588,11 +1613,11 @@ export default function Informes() {
 
         </div>
 
-      </section>
+      </div>
 
 
       {/* ======================================================
-          KPIS
+          KPIs
       ====================================================== */}
 
       <div
@@ -1656,19 +1681,20 @@ export default function Informes() {
           EXPORTACIONES
       ====================================================== */}
 
-      <section
+      <div
         className="
-          rounded-2xl
-          border border-white/10
-          bg-slate-900/60
-          px-5
-          py-4
           flex
           flex-col
           sm:flex-row
           sm:items-center
-          sm:justify-between
+          justify-between
           gap-4
+          bg-white/65
+          backdrop-blur-xl
+          border border-white/80
+          rounded-2xl
+          p-4
+          shadow-[0_8px_25px_rgba(55,85,120,0.07)]
         "
       >
 
@@ -1676,9 +1702,9 @@ export default function Informes() {
 
           <div
             className="
+              text-slate-700
               font-semibold
               text-sm
-              text-slate-200
             "
           >
             Exportar informe
@@ -1687,8 +1713,8 @@ export default function Informes() {
 
           <div
             className="
+              text-slate-400
               text-xs
-              text-slate-500
               mt-1
             "
           >
@@ -1707,92 +1733,83 @@ export default function Informes() {
         >
 
           <button
-            type="button"
             onClick={exportarExcel}
             className="
-              inline-flex
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              border border-emerald-400/20
-              bg-emerald-500/80
               px-4
               py-2.5
+              rounded-xl
+              bg-emerald-500
+              hover:bg-emerald-600
+              border border-emerald-400
+              text-white
               text-sm
               font-semibold
-              text-white
-              shadow-lg
-              shadow-emerald-950/20
+              shadow-[0_6px_18px_rgba(16,185,129,0.22)]
               transition
-              hover:bg-emerald-500
-              active:scale-[0.98]
+              active:scale-[0.97]
+              flex
+              items-center
+              gap-2
             "
           >
-            📗
+            <span>📗</span>
             Exportar Excel
           </button>
 
 
           <button
-            type="button"
             onClick={exportarPDF}
             className="
-              inline-flex
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              border border-red-400/20
-              bg-red-500/80
               px-4
               py-2.5
+              rounded-xl
+              bg-rose-500
+              hover:bg-rose-600
+              border border-rose-400
+              text-white
               text-sm
               font-semibold
-              text-white
-              shadow-lg
-              shadow-red-950/20
+              shadow-[0_6px_18px_rgba(244,63,94,0.20)]
               transition
-              hover:bg-red-500
-              active:scale-[0.98]
+              active:scale-[0.97]
+              flex
+              items-center
+              gap-2
             "
           >
-            📄
+            <span>📄</span>
             Exportar PDF
           </button>
 
         </div>
 
-      </section>
+      </div>
 
 
       {/* ======================================================
           TABLA
       ====================================================== */}
 
-      <section
+      <div
         className="
+          bg-white/72
+          backdrop-blur-xl
+          border border-white/80
+          rounded-2xl
+          shadow-[0_10px_35px_rgba(55,85,120,0.09)]
           overflow-hidden
-          rounded-3xl
-          border border-white/10
-          bg-slate-900/80
-          shadow-xl
-          shadow-black/20
         "
       >
 
         <div
           className="
-            px-5
-            md:px-6
+            px-6
             py-5
-            border-b border-white/10
+            border-b border-slate-200/80
             flex
-            flex-col
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-            gap-3
+            items-center
+            justify-between
+            gap-4
           "
         >
 
@@ -1801,8 +1818,8 @@ export default function Informes() {
             <h2
               className="
                 text-xl
-                font-semibold
-                text-white
+                font-bold
+                text-slate-800
               "
             >
               Detalle por apoderado
@@ -1812,7 +1829,7 @@ export default function Informes() {
             <p
               className="
                 text-xs
-                text-slate-500
+                text-slate-400
                 mt-1
               "
             >
@@ -1824,15 +1841,14 @@ export default function Informes() {
 
           <div
             className="
-              inline-flex
-              w-fit
-              rounded-lg
-              border border-white/10
-              bg-slate-800/70
               px-3
               py-1.5
+              rounded-lg
+              bg-blue-50
+              border border-blue-100
               text-xs
-              text-slate-400
+              text-blue-600
+              font-medium
             "
           >
             {mesActual} {año}
@@ -1850,20 +1866,19 @@ export default function Informes() {
           <table
             className="
               w-full
-              min-w-[700px]
+              text-slate-700
               text-sm
             "
           >
 
-            <thead>
+            <thead
+              className="
+                bg-blue-50/70
+                border-b border-blue-100
+              "
+            >
 
-              <tr
-                className="
-                  border-b
-                  border-white/10
-                  bg-slate-800/70
-                "
-              >
+              <tr>
 
                 <ThOrden
                   titulo="Apoderado"
@@ -1914,15 +1929,16 @@ export default function Informes() {
                   <td
                     colSpan={4}
                     className="
-                      py-14
+                      py-12
                       text-center
+                      text-slate-400
                     "
                   >
 
                     <div
                       className="
-                        text-4xl
-                        mb-3
+                        text-3xl
+                        mb-2
                       "
                     >
                       📭
@@ -1932,7 +1948,7 @@ export default function Informes() {
                     <div
                       className="
                         text-sm
-                        text-slate-400
+                        text-slate-500
                       "
                     >
                       No hay datos para los filtros seleccionados.
@@ -1954,10 +1970,10 @@ export default function Informes() {
                       }
                       className="
                         border-b
-                        border-white/[0.06]
-                        text-slate-200
+                        border-slate-100
+                        hover:bg-blue-50/45
                         transition
-                        hover:bg-white/[0.035]
+                        group
                       "
                     >
 
@@ -1965,9 +1981,8 @@ export default function Informes() {
 
                       <td
                         className="
-                          px-5
-                          md:px-6
-                          py-4
+                          py-3.5
+                          px-6
                           text-left
                         "
                       >
@@ -1982,18 +1997,19 @@ export default function Informes() {
 
                           <div
                             className="
-                              h-9
-                              w-9
-                              shrink-0
-                              rounded-xl
-                              bg-slate-800
-                              border border-white/10
+                              w-8
+                              h-8
+                              rounded-lg
+                              bg-blue-50
+                              border border-blue-100
                               flex
                               items-center
                               justify-center
                               text-xs
+                              text-blue-600
                               font-semibold
-                              text-slate-400
+                              group-hover:bg-blue-100
+                              transition
                             "
                           >
                             {index + 1}
@@ -2002,8 +2018,8 @@ export default function Informes() {
 
                           <span
                             className="
-                              font-medium
-                              text-slate-200
+                              font-semibold
+                              text-slate-700
                             "
                           >
                             {row.nombre ||
@@ -2019,19 +2035,28 @@ export default function Informes() {
 
                       <td
                         className="
-                          px-5
-                          md:px-6
-                          py-4
+                          py-3.5
+                          px-6
                           text-center
                         "
                       >
 
-                        <Badge
-                          value={
-                            row.vc ?? 0
-                          }
-                          clase="blue"
-                        />
+                        <span
+                          className="
+                            inline-flex
+                            min-w-[42px]
+                            justify-center
+                            px-2.5
+                            py-1
+                            rounded-lg
+                            bg-blue-50
+                            border border-blue-200
+                            text-blue-700
+                            font-semibold
+                          "
+                        >
+                          {row.vc}
+                        </span>
 
                       </td>
 
@@ -2040,19 +2065,28 @@ export default function Informes() {
 
                       <td
                         className="
-                          px-5
-                          md:px-6
-                          py-4
+                          py-3.5
+                          px-6
                           text-center
                         "
                       >
 
-                        <Badge
-                          value={
-                            row.presencial ?? 0
-                          }
-                          clase="green"
-                        />
+                        <span
+                          className="
+                            inline-flex
+                            min-w-[42px]
+                            justify-center
+                            px-2.5
+                            py-1
+                            rounded-lg
+                            bg-emerald-50
+                            border border-emerald-200
+                            text-emerald-700
+                            font-semibold
+                          "
+                        >
+                          {row.presencial}
+                        </span>
 
                       </td>
 
@@ -2061,21 +2095,30 @@ export default function Informes() {
 
                       <td
                         className="
-                          px-5
-                          md:px-6
-                          py-4
+                          py-3.5
+                          px-6
                           text-center
                         "
                       >
 
-                        <Badge
-                          value={
-                            Number(
-                              row.km ?? 0
-                            ).toFixed(1)
-                          }
-                          clase="red"
-                        />
+                        <span
+                          className="
+                            inline-flex
+                            min-w-[60px]
+                            justify-center
+                            px-2.5
+                            py-1
+                            rounded-lg
+                            bg-rose-50
+                            border border-rose-200
+                            text-rose-600
+                            font-semibold
+                          "
+                        >
+                          {row.km
+                            ? row.km.toFixed(1)
+                            : "0.0"}
+                        </span>
 
                       </td>
 
@@ -2092,41 +2135,65 @@ export default function Informes() {
 
         </div>
 
-      </section>
+      </div>
 
 
       {/* ======================================================
           GRÁFICOS
       ====================================================== */}
 
-      <section>
+      <div>
 
         <div
           className="
             mb-4
+            flex
+            items-center
+            gap-3
           "
         >
 
-          <h2
+          <div
             className="
-              text-xl
-              font-semibold
-              text-white
+              w-10
+              h-10
+              rounded-xl
+              bg-blue-50
+              border border-blue-100
+              flex
+              items-center
+              justify-center
+              text-blue-500
             "
           >
-            Análisis gráfico
-          </h2>
+            📊
+          </div>
 
 
-          <p
-            className="
-              mt-1
-              text-sm
-              text-slate-500
-            "
-          >
-            Comparativa visual de la actividad del periodo.
-          </p>
+          <div>
+
+            <h2
+              className="
+                text-xl
+                font-bold
+                text-slate-800
+              "
+            >
+              Análisis gráfico
+            </h2>
+
+
+            <p
+              className="
+                text-sm
+                text-slate-400
+                mt-1
+              "
+            >
+              Comparativa visual de la actividad del periodo.
+            </p>
+
+          </div>
 
         </div>
 
@@ -2147,7 +2214,7 @@ export default function Informes() {
           >
 
             <canvas
-              ref={canvasVC}
+              id="graficoVC"
             />
 
           </GraficoCard>
@@ -2160,7 +2227,7 @@ export default function Informes() {
           >
 
             <canvas
-              ref={canvasPresencial}
+              id="graficoP"
             />
 
           </GraficoCard>
@@ -2173,18 +2240,19 @@ export default function Informes() {
           >
 
             <canvas
-              ref={canvasKm}
+              id="graficoKm"
             />
 
           </GraficoCard>
 
         </div>
 
-      </section>
+      </div>
 
     </div>
 
   );
+
 }
 
 
@@ -2203,19 +2271,39 @@ function KpiCard({
   const fondos = {
 
     blue:
-      "bg-blue-500/[0.08] border-blue-400/20",
+      "bg-blue-50/80 border-blue-200",
 
     green:
-      "bg-emerald-500/[0.08] border-emerald-400/20",
+      "bg-emerald-50/80 border-emerald-200",
 
     red:
-      "bg-rose-500/[0.08] border-rose-400/20",
+      "bg-rose-50/80 border-rose-200",
 
     purple:
-      "bg-purple-500/[0.08] border-purple-400/20",
+      "bg-purple-50/80 border-purple-200",
 
     orange:
-      "bg-orange-500/[0.08] border-orange-400/20",
+      "bg-orange-50/80 border-orange-200",
+
+  };
+
+
+  const colores = {
+
+    blue:
+      "text-blue-700",
+
+    green:
+      "text-emerald-700",
+
+    red:
+      "text-rose-700",
+
+    purple:
+      "text-purple-700",
+
+    orange:
+      "text-orange-700",
 
   };
 
@@ -2229,12 +2317,10 @@ function KpiCard({
         rounded-2xl
         border
         p-5
-        bg-slate-900/80
-        shadow-lg
-        shadow-black/10
+        shadow-[0_8px_25px_rgba(55,85,120,0.08)]
         transition
         hover:-translate-y-0.5
-        hover:shadow-xl
+        hover:shadow-[0_12px_30px_rgba(55,85,120,0.12)]
         ${fondos[clase]}
       `}
     >
@@ -2242,7 +2328,7 @@ function KpiCard({
       <div
         className="
           flex
-          items-start
+          items-center
           justify-between
           gap-3
         "
@@ -2252,11 +2338,11 @@ function KpiCard({
 
           <p
             className="
-              text-[11px]
+              text-xs
               uppercase
-              tracking-wider
+              tracking-wide
+              text-slate-500
               font-semibold
-              text-slate-400
             "
           >
             {titulo}
@@ -2265,11 +2351,10 @@ function KpiCard({
 
           <div
             className="
-              mt-2
               text-3xl
               font-bold
-              tracking-tight
-              text-white
+              text-slate-800
+              mt-2
             "
           >
             {valor}
@@ -2278,9 +2363,9 @@ function KpiCard({
 
           <p
             className="
-              mt-1
               text-xs
-              text-slate-500
+              text-slate-400
+              mt-1
             "
           >
             {subtitulo}
@@ -2290,18 +2375,20 @@ function KpiCard({
 
 
         <div
-          className="
-            flex
-            h-11
+          className={`
             w-11
-            shrink-0
+            h-11
+            rounded-xl
+            bg-white/70
+            border
+            border-white
+            flex
             items-center
             justify-center
-            rounded-xl
-            bg-slate-800/80
-            border border-white/10
             text-xl
-          "
+            shadow-sm
+            ${colores[clase]}
+          `}
         >
           {icon}
         </div>
@@ -2311,51 +2398,7 @@ function KpiCard({
     </div>
 
   );
-}
 
-
-/* ============================================================
-   BADGE
-============================================================ */
-
-function Badge({
-  value,
-  clase,
-}) {
-
-  const estilos = {
-
-    blue:
-      "bg-blue-500/10 border-blue-400/20 text-blue-300",
-
-    green:
-      "bg-emerald-500/10 border-emerald-400/20 text-emerald-300",
-
-    red:
-      "bg-rose-500/10 border-rose-400/20 text-rose-300",
-
-  };
-
-
-  return (
-
-    <span
-      className={`
-        inline-flex
-        min-w-[48px]
-        justify-center
-        rounded-lg
-        border
-        px-3
-        py-1.5
-        font-semibold
-        ${estilos[clase]}
-      `}
-    >
-      {value}
-    </span>
-
-  );
 }
 
 
@@ -2379,28 +2422,30 @@ function ThOrden({
 
     <th
       className={`
-        px-5
-        md:px-6
-        py-4
+        py-3.5
+        px-6
         font-semibold
-        text-slate-300
-        ${align === "center"
-          ? "text-center"
-          : "text-left"}
+        text-blue-800/80
+        cursor-pointer
+        select-none
+        hover:text-blue-900
+        transition
+        ${
+          align === "center"
+            ? "text-center"
+            : "text-left"
+        }
       `}
+      onClick={() =>
+        ordenar(campo)
+      }
     >
 
-      <button
-        type="button"
-        onClick={() =>
-          ordenar(campo)
-        }
+      <span
         className="
           inline-flex
           items-center
           gap-2
-          transition
-          hover:text-white
         "
       >
 
@@ -2410,25 +2455,29 @@ function ThOrden({
         <span
           className={`
             text-[10px]
+            transition
             ${
               activo
-                ? "text-blue-400"
-                : "text-slate-600"
+                ? "text-blue-500"
+                : "text-blue-300"
             }
           `}
         >
+
           {activo
             ? orden.asc
               ? "▲"
               : "▼"
             : "↕"}
+
         </span>
 
-      </button>
+      </span>
 
     </th>
 
   );
+
 }
 
 
@@ -2447,12 +2496,12 @@ function GraficoCard({
 
     <div
       className="
+        bg-white/70
+        backdrop-blur-xl
+        border border-white/80
+        rounded-2xl
+        shadow-[0_10px_35px_rgba(55,85,120,0.09)]
         overflow-hidden
-        rounded-3xl
-        border border-white/10
-        bg-slate-900/80
-        shadow-xl
-        shadow-black/20
       "
     >
 
@@ -2460,8 +2509,7 @@ function GraficoCard({
         className="
           px-5
           py-4
-          border-b border-white/10
-          bg-slate-800/30
+          border-b border-slate-200/80
         "
       >
 
@@ -2475,11 +2523,11 @@ function GraficoCard({
 
           <div
             className="
-              h-10
-              w-10
-              rounded-xl
-              bg-slate-800
-              border border-white/10
+              w-9
+              h-9
+              rounded-lg
+              bg-blue-50
+              border border-blue-100
               flex
               items-center
               justify-center
@@ -2495,7 +2543,7 @@ function GraficoCard({
               className="
                 text-sm
                 font-semibold
-                text-slate-200
+                text-slate-700
               "
             >
               {titulo}
@@ -2504,9 +2552,9 @@ function GraficoCard({
 
             <p
               className="
-                mt-0.5
                 text-xs
-                text-slate-500
+                text-slate-400
+                mt-0.5
               "
             >
               {descripcion}
