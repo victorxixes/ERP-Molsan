@@ -119,17 +119,23 @@ Base.metadata.create_all(
 
 
 # ============================================================
-# FIX SCHEMA
+# FIX SCHEMA — MUNICIPIOS
 # ============================================================
 
-from backend.app.agenda.fix_schema import fix_agenda_schema
-
-fix_agenda_schema()
+from sqlalchemy import text
 
 
-from backend.app.expedientes.fix_schema import fix_expedientes_schema
+with engine.begin() as connection:
 
-fix_expedientes_schema()
+    connection.execute(
+        text(
+            """
+            ALTER TABLE municipios
+            ADD COLUMN IF NOT EXISTS activo
+            BOOLEAN NOT NULL DEFAULT TRUE
+            """
+        )
+    )
 
 
 # ============================================================
