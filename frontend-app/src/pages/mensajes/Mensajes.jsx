@@ -1,4 +1,3 @@
-```javascript
 import {
   useEffect,
   useRef,
