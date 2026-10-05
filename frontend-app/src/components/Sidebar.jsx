@@ -532,6 +532,14 @@ export default function Sidebar() {
       badge: unreadCount,
     },
 
+        {
+      key: "fusiones",
+      to: "/fusiones",
+      label: "Fusiones",
+      icon: "fusion",
+      badge: unreadCount,
+    },
+    
   ];
 
 
