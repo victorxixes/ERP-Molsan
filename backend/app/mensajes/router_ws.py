@@ -10,14 +10,14 @@ from backend.app.mensajes.ws_manager import manager
 
 
 # =========================================================
-# ROUTER
+# ROUTER WEBSOCKET MENSAJES
 # =========================================================
 
 router = APIRouter()
 
 
 # =========================================================
-# WEBSOCKET MENSAJES
+# WEBSOCKET
 # =========================================================
 
 @router.websocket("/ws/mensajes/{empleado_id}")
@@ -26,39 +26,17 @@ async def mensajes_ws(
     empleado_id: int,
 ):
     """
-    WebSocket principal de Mensajes.
+    WebSocket de mensajería.
 
-    Seguridad:
-        JWT obligatorio.
+    Soporta:
 
-    Eventos:
-
-        online
-        offline
-        typing
-        nuevo_mensaje
-        nuevo_archivo
-
-    Entrada:
-
-        ping
-
-        {
-            "tipo": "typing",
-            "destinatario_id": 2
-        }
-
-        {
-            "tipo": "mensaje",
-            "destinatario_id": 2,
-            "contenido": "Hola"
-        }
-
-        {
-            "tipo": "archivo",
-            "destinatario_id": 2,
-            "archivo_url": "/static/mensajes/..."
-        }
+    - JWT
+    - online
+    - offline
+    - typing
+    - mensajes
+    - archivos
+    - múltiples pestañas
     """
 
     db: Session = SessionLocal()
@@ -72,12 +50,6 @@ async def mensajes_ws(
     )
 
     if not token:
-
-        print(
-            f"[WS-MSG] RECHAZADO "
-            f"empleado={empleado_id}: sin token",
-            flush=True,
-        )
 
         await websocket.close(
             code=4001
@@ -107,12 +79,6 @@ async def mensajes_ws(
 
         if usuario_id is None:
 
-            print(
-                "[WS-MSG] RECHAZADO: "
-                "JWT sin id",
-                flush=True,
-            )
-
             await websocket.close(
                 code=4002
             )
@@ -125,18 +91,7 @@ async def mensajes_ws(
             usuario_id
         )
 
-        # -------------------------------------------------
-        # El usuario autenticado debe ser el mismo
-        # que viene en la URL.
-        # -------------------------------------------------
-
         if usuario_id != empleado_id:
-
-            print(
-                "[WS-MSG] RECHAZADO: "
-                f"JWT={usuario_id} URL={empleado_id}",
-                flush=True,
-            )
 
             await websocket.close(
                 code=4003
@@ -147,12 +102,6 @@ async def mensajes_ws(
             return
 
     except jwt.ExpiredSignatureError:
-
-        print(
-            f"[WS-MSG] JWT EXPIRADO "
-            f"empleado={empleado_id}",
-            flush=True,
-        )
 
         await websocket.close(
             code=4004
@@ -165,8 +114,8 @@ async def mensajes_ws(
     except Exception as exc:
 
         print(
-            f"[WS-MSG] JWT INVÁLIDO "
-            f"empleado={empleado_id}: {exc}",
+            "[WS-MSG] Error JWT:",
+            exc,
             flush=True,
         )
 
@@ -192,12 +141,6 @@ async def mensajes_ws(
 
     if not empleado:
 
-        print(
-            f"[WS-MSG] EMPLEADO NO EXISTE "
-            f"id={empleado_id}",
-            flush=True,
-        )
-
         await websocket.close(
             code=4006
         )
@@ -220,8 +163,7 @@ async def mensajes_ws(
         )
 
         print(
-            f"[WS-MSG] CONECTADO "
-            f"empleado={empleado_id}",
+            f"[WS-MSG] Conectado: {empleado_id}",
             flush=True,
         )
 
@@ -242,7 +184,7 @@ async def mensajes_ws(
             )
 
         # =================================================
-        # BUCLE PRINCIPAL
+        # BUCLE
         # =================================================
 
         while True:
@@ -258,8 +200,8 @@ async def mensajes_ws(
             except Exception as exc:
 
                 print(
-                    "[WS-MSG] Error receive_text "
-                    f"empleado={empleado_id}: {exc}",
+                    "[WS-MSG] Error recibiendo "
+                    f"mensaje de {empleado_id}: {exc}",
                     flush=True,
                 )
 
@@ -337,12 +279,6 @@ async def mensajes_ws(
 
                     continue
 
-                # ---------------------------------------------
-                # Nunca usamos un remitente enviado por el
-                # frontend. Siempre utilizamos el usuario
-                # autenticado.
-                # ---------------------------------------------
-
                 await manager.send_to_user(
                     destinatario_id,
                     {
@@ -394,25 +330,15 @@ async def mensajes_ws(
 
                     continue
 
-                # ---------------------------------------------
+                # -------------------------------------------------
                 # GUARDAR + DISTRIBUIR
-                # ---------------------------------------------
+                # -------------------------------------------------
 
-                try:
-
-                    await manager.enviar_mensaje_ws(
-                        remitente_id=empleado_id,
-                        destinatario_id=destinatario_id,
-                        contenido=contenido,
-                    )
-
-                except Exception as exc:
-
-                    print(
-                        "[WS-MSG] Error guardando "
-                        f"mensaje: {exc}",
-                        flush=True,
-                    )
+                await manager.enviar_mensaje_ws(
+                    remitente_id=empleado_id,
+                    destinatario_id=destinatario_id,
+                    contenido=contenido,
+                )
 
                 continue
 
@@ -457,21 +383,15 @@ async def mensajes_ws(
 
                     continue
 
-                try:
+                # -------------------------------------------------
+                # GUARDAR + DISTRIBUIR
+                # -------------------------------------------------
 
-                    await manager.enviar_archivo_ws(
-                        remitente_id=empleado_id,
-                        destinatario_id=destinatario_id,
-                        archivo_url=archivo_url,
-                    )
-
-                except Exception as exc:
-
-                    print(
-                        "[WS-MSG] Error guardando "
-                        f"archivo: {exc}",
-                        flush=True,
-                    )
+                await manager.enviar_archivo_ws(
+                    remitente_id=empleado_id,
+                    destinatario_id=destinatario_id,
+                    archivo_url=archivo_url,
+                )
 
                 continue
 
@@ -482,16 +402,16 @@ async def mensajes_ws(
     except Exception as exc:
 
         print(
-            "[WS-MSG] ERROR GENERAL "
-            f"empleado={empleado_id}: {exc}",
+            "[WS-MSG] Error general "
+            f"empleado {empleado_id}: {exc}",
             flush=True,
         )
 
     finally:
 
-        # =================================================
+        # =====================================================
         # DESCONECTAR
-        # =================================================
+        # =====================================================
 
         era_ultima_conexion = (
             manager.disconnect(
@@ -501,14 +421,13 @@ async def mensajes_ws(
         )
 
         print(
-            f"[WS-MSG] DESCONECTADO "
-            f"empleado={empleado_id}",
+            f"[WS-MSG] Desconectado: {empleado_id}",
             flush=True,
         )
 
-        # =================================================
+        # =====================================================
         # OFFLINE
-        # =================================================
+        # =====================================================
 
         if era_ultima_conexion:
 
@@ -524,14 +443,14 @@ async def mensajes_ws(
             except Exception as exc:
 
                 print(
-                    "[WS-MSG] Error broadcast offline: "
-                    f"{exc}",
+                    "[WS-MSG] Error broadcast offline:",
+                    exc,
                     flush=True,
                 )
 
-        # =================================================
-        # DB
-        # =================================================
+        # =====================================================
+        # CERRAR DB
+        # =====================================================
 
         try:
 
