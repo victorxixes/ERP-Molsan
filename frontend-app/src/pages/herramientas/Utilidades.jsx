@@ -81,7 +81,7 @@ export default function Utilidades() {
           icon="🏘️"
           titulo="Municipios"
           descripcion="Gestionar comunidades autónomas, provincias y municipios."
-          link="/herramientas/utilidades/municipios"
+          link="/herramientas/municipios"
         />
 
 
