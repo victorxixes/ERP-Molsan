@@ -1,101 +1,194 @@
+from __future__ import annotations
+
 import os
 import time
-import requests
+import unicodedata
+from typing import Optional
 
+import requests
 from sqlalchemy.orm import Session
 
 from backend.app.ctn.models import Notaria
-from backend.app.ctn.normalizador import (
-    construir_direccion_busqueda,
-)
 
 
 # ============================================================
 # CONFIGURACIÓN
 # ============================================================
 
-GOOGLE_GEOCODING_URL = (
+MOLSAN_LAT = 41.424960
+MOLSAN_LNG = 2.181740
+
+# Geocodificación mediante Google Geocoding API.
+#
+# En Render debe existir:
+#
+# GOOGLE_MAPS_API_KEY
+#
+GOOGLE_MAPS_API_KEY = os.getenv(
+    "GOOGLE_MAPS_API_KEY"
+)
+
+GOOGLE_GEOCODE_URL = (
     "https://maps.googleapis.com/maps/api/geocode/json"
 )
 
-# Pausa entre consultas para evitar bombardear Google.
-PAUSA_ENTRE_CONSULTAS = 0.10
+# Pausa entre peticiones para evitar bombardear el servicio.
+GEOCODE_DELAY = 0.15
+
+# Timeout de cada petición.
+GEOCODE_TIMEOUT = 15
 
 
 # ============================================================
-# API KEY
+# NORMALIZAR TEXTO
 # ============================================================
 
-def obtener_google_api_key() -> str:
+def limpiar_texto(valor) -> str:
     """
-    Obtiene la API key desde Render / variables de entorno.
+    Limpia texto para construir una dirección de búsqueda.
 
-    Variable esperada:
-
-        GOOGLE_MAPS_API_KEY
+    No elimina números porque en una dirección el número
+    de la calle es imprescindible.
     """
 
-    api_key = os.getenv(
-        "GOOGLE_MAPS_API_KEY"
+    if valor is None:
+        return ""
+
+    texto = str(valor).strip()
+
+    if not texto:
+        return ""
+
+    # Normalizar Unicode.
+    texto = unicodedata.normalize(
+        "NFKC",
+        texto
     )
 
-    if not api_key:
-        raise RuntimeError(
-            "No existe la variable de entorno "
-            "GOOGLE_MAPS_API_KEY."
-        )
+    # Espacios múltiples.
+    texto = " ".join(
+        texto.split()
+    )
 
-    return api_key.strip()
+    return texto
 
 
 # ============================================================
-# GEOCODIFICAR UNA DIRECCIÓN
+# CONSTRUIR DIRECCIÓN
 # ============================================================
 
-def geocodificar_direccion(
-    direccion: str,
-    api_key: str,
-):
+def construir_direccion(notaria: Notaria) -> str:
     """
-    Consulta Google Geocoding API.
+    Construye una dirección completa y útil para geocodificación.
+
+    IMPORTANTE:
+    No utiliza únicamente direccion.
+
+    Combina:
+
+        direccion
+        cp
+        municipio
+        provincia
+        España
+    """
+
+    partes = []
+
+    direccion = limpiar_texto(
+        getattr(notaria, "direccion", None)
+    )
+
+    cp = limpiar_texto(
+        getattr(notaria, "cp", None)
+    )
+
+    municipio = limpiar_texto(
+        getattr(notaria, "municipio", None)
+    )
+
+    provincia = limpiar_texto(
+        getattr(notaria, "provincia", None)
+    )
+
+    if direccion:
+        partes.append(direccion)
+
+    if cp:
+        partes.append(cp)
+
+    if municipio:
+        partes.append(municipio)
+
+    if provincia:
+        partes.append(provincia)
+
+    # España siempre al final.
+    partes.append("España")
+
+    return ", ".join(
+        p for p in partes
+        if p
+    )
+
+
+# ============================================================
+# GEOCODIFICAR GOOGLE
+# ============================================================
+
+def geocodificar_google(
+    direccion: str
+) -> Optional[tuple[float, float]]:
+    """
+    Geocodifica una dirección usando Google Geocoding API.
 
     Devuelve:
 
-        {
-            "lat": ...,
-            "lng": ...,
-            "formatted_address": ...
-        }
+        (lat, lng)
 
-    o None si no encuentra resultados.
+    o:
+
+        None
+
+    si no encuentra resultado.
     """
+
+    if not GOOGLE_MAPS_API_KEY:
+        raise RuntimeError(
+            "No existe la variable de entorno "
+            "GOOGLE_MAPS_API_KEY en Render."
+        )
+
+    direccion = limpiar_texto(
+        direccion
+    )
 
     if not direccion:
         return None
 
     try:
+
         response = requests.get(
-            GOOGLE_GEOCODING_URL,
+            GOOGLE_GEOCODE_URL,
             params={
                 "address": direccion,
-                "key": api_key,
+                "key": GOOGLE_MAPS_API_KEY,
                 "language": "es",
                 "region": "es",
             },
-            timeout=15,
+            timeout=GEOCODE_TIMEOUT,
         )
 
         response.raise_for_status()
 
         data = response.json()
 
-    except Exception as e:
+    except Exception as exc:
 
         print(
-            "ERROR GOOGLE GEOCODING:",
-            direccion,
-            "|",
-            str(e),
+            f"ERROR GOOGLE GEOCODE | "
+            f"direccion={direccion!r} | "
+            f"error={exc}",
             flush=True,
         )
 
@@ -105,25 +198,20 @@ def geocodificar_direccion(
         "status"
     )
 
-    # --------------------------------------------------------
-    # Google no encontró resultado
-    # --------------------------------------------------------
-
     if status != "OK":
 
         print(
             f"GOOGLE SIN RESULTADO | "
-            f"STATUS={status} | "
-            f"DIRECCION={direccion}",
+            f"status={status} | "
+            f"direccion={direccion!r}",
             flush=True,
         )
 
         return None
 
     resultados = data.get(
-        "results",
-        []
-    )
+        "results"
+    ) or []
 
     if not resultados:
         return None
@@ -145,37 +233,35 @@ def geocodificar_direccion(
     if lat is None or lng is None:
         return None
 
-    return {
-        "lat": float(lat),
-        "lng": float(lng),
-        "formatted_address": (
-            resultados[0].get(
-                "formatted_address"
-            )
-        ),
-    }
+    try:
+
+        return (
+            float(lat),
+            float(lng),
+        )
+
+    except (
+        TypeError,
+        ValueError,
+    ):
+
+        return None
 
 
 # ============================================================
-# AGREGAR COORDENADAS
+# MIGRAR COORDENADAS
 # ============================================================
 
 def agregar_coordenadas(
-    db: Session,
-):
+    db: Session
+) -> dict:
     """
-    Geocodifica las notarías que todavía no tienen
-    coordenadas.
+    Añade coordenadas a las notarías que todavía no las tienen.
 
-    IMPORTANTE:
+    NO modifica notarías que ya tienen lat/lng.
 
-    - No toca las notarías que ya tienen lat/lng.
-    - Construye correctamente la dirección.
-    - Guarda lat/lng como texto porque el modelo actual
-      utiliza String(50).
+    Devuelve estadísticas completas.
     """
-
-    api_key = obtener_google_api_key()
 
     notarías = (
         db.query(Notaria)
@@ -196,12 +282,12 @@ def agregar_coordenadas(
     errores = 0
 
     print(
-        "==================================================",
+        "============================================",
         flush=True,
     )
 
     print(
-        "MIGRACIÓN DE COORDENADAS CTN",
+        "CTN - MIGRACIÓN DE COORDENADAS",
         flush=True,
     )
 
@@ -211,7 +297,7 @@ def agregar_coordenadas(
     )
 
     print(
-        "==================================================",
+        "============================================",
         flush=True,
     )
 
@@ -220,170 +306,195 @@ def agregar_coordenadas(
         start=1,
     ):
 
-        # ====================================================
-        # YA TIENE COORDENADAS
-        # ====================================================
+        try:
 
-        if (
-            notaria.lat
-            and notaria.lng
-        ):
+            # ------------------------------------------------
+            # YA TIENE COORDENADAS
+            # ------------------------------------------------
 
-            ya_con_coordenadas += 1
-
-            continue
-
-        # ====================================================
-        # CONSTRUIR DIRECCIÓN
-        # ====================================================
-
-        direccion_busqueda = (
-            construir_direccion_busqueda(
-                direccion=notaria.direccion,
-                cp=notaria.cp,
-                municipio=notaria.municipio,
-                provincia=notaria.provincia,
+            lat_actual = limpiar_texto(
+                getattr(
+                    notaria,
+                    "lat",
+                    None,
+                )
             )
-        )
 
-        # ====================================================
-        # COMPROBAR DIRECCIÓN REAL
-        # ====================================================
+            lng_actual = limpiar_texto(
+                getattr(
+                    notaria,
+                    "lng",
+                    None,
+                )
+            )
 
-        if not direccion_busqueda:
+            if lat_actual and lng_actual:
 
-            sin_direccion += 1
+                ya_con_coordenadas += 1
+
+                print(
+                    f"[{indice}/{total_notarias}] "
+                    f"NOTARIA {notaria.id} "
+                    f"→ ya tiene coordenadas",
+                    flush=True,
+                )
+
+                continue
+
+            # ------------------------------------------------
+            # CONSTRUIR DIRECCIÓN
+            # ------------------------------------------------
+
+            direccion_busqueda = (
+                construir_direccion(
+                    notaria
+                )
+            )
+
+            # ------------------------------------------------
+            # VALIDAR DIRECCIÓN
+            # ------------------------------------------------
+
+            # Como mínimo necesitamos algo más que "España".
+            componentes = [
+                limpiar_texto(
+                    getattr(
+                        notaria,
+                        "direccion",
+                        None,
+                    )
+                ),
+                limpiar_texto(
+                    getattr(
+                        notaria,
+                        "municipio",
+                        None,
+                    )
+                ),
+                limpiar_texto(
+                    getattr(
+                        notaria,
+                        "provincia",
+                        None,
+                    )
+                ),
+            ]
+
+            if not any(componentes):
+
+                sin_direccion += 1
+
+                print(
+                    f"[{indice}/{total_notarias}] "
+                    f"NOTARIA {notaria.id} "
+                    f"→ SIN DIRECCIÓN",
+                    flush=True,
+                )
+
+                continue
+
+            # ------------------------------------------------
+            # LOG REAL DE LA DIRECCIÓN
+            # ------------------------------------------------
 
             print(
                 f"[{indice}/{total_notarias}] "
-                f"ID={notaria.id} "
-                f"SIN DIRECCIÓN",
+                f"NOTARIA {notaria.id} "
+                f"→ BUSCANDO: "
+                f"{direccion_busqueda}",
                 flush=True,
             )
 
-            continue
+            # ------------------------------------------------
+            # GOOGLE
+            # ------------------------------------------------
 
-        # ====================================================
-        # LOG DE DEPURACIÓN
-        # ====================================================
-
-        print(
-            f"[{indice}/{total_notarias}] "
-            f"ID={notaria.id} "
-            f"BUSCANDO: {direccion_busqueda}",
-            flush=True,
-        )
-
-        # ====================================================
-        # GOOGLE
-        # ====================================================
-
-        try:
-
-            resultado = geocodificar_direccion(
-                direccion_busqueda,
-                api_key,
+            coordenadas = (
+                geocodificar_google(
+                    direccion_busqueda
+                )
             )
 
-        except Exception as e:
+            if not coordenadas:
 
-            errores += 1
+                sin_resultados += 1
 
-            print(
-                f"ERROR NOTARÍA ID={notaria.id}: {e}",
-                flush=True,
+                print(
+                    f"[{indice}/{total_notarias}] "
+                    f"NOTARIA {notaria.id} "
+                    f"→ SIN RESULTADO",
+                    flush=True,
+                )
+
+                time.sleep(
+                    GEOCODE_DELAY
+                )
+
+                continue
+
+            lat, lng = coordenadas
+
+            # ------------------------------------------------
+            # GUARDAR
+            # ------------------------------------------------
+
+            notaria.lat = str(
+                lat
             )
 
-            continue
+            notaria.lng = str(
+                lng
+            )
 
-        # ====================================================
-        # SIN RESULTADO
-        # ====================================================
+            db.add(
+                notaria
+            )
 
-        if not resultado:
-
-            sin_resultados += 1
-
-            continue
-
-        # ====================================================
-        # GUARDAR COORDENADAS
-        # ====================================================
-
-        notaria.lat = str(
-            resultado["lat"]
-        )
-
-        notaria.lng = str(
-            resultado["lng"]
-        )
-
-        actualizadas += 1
-
-        print(
-            f"   ✓ COORDENADAS: "
-            f"{resultado['lat']}, "
-            f"{resultado['lng']}",
-            flush=True,
-        )
-
-        print(
-            f"   ✓ GOOGLE: "
-            f"{resultado.get('formatted_address')}",
-            flush=True,
-        )
-
-        # ====================================================
-        # COMMIT INDIVIDUAL
-        # ====================================================
-        #
-        # Esto evita perder todo el progreso si Google falla
-        # en mitad de la migración.
-        # ====================================================
-
-        try:
-
+            # Commit individual para no perder
+            # todo el proceso si falla una petición.
             db.commit()
 
-        except Exception as e:
+            actualizadas += 1
 
-            db.rollback()
+            print(
+                f"[{indice}/{total_notarias}] "
+                f"NOTARIA {notaria.id} "
+                f"→ OK "
+                f"lat={lat} "
+                f"lng={lng}",
+                flush=True,
+            )
+
+            # ------------------------------------------------
+            # PAUSA
+            # ------------------------------------------------
+
+            time.sleep(
+                GEOCODE_DELAY
+            )
+
+        except Exception as exc:
 
             errores += 1
 
             print(
-                f"ERROR GUARDANDO ID={notaria.id}: "
-                f"{e}",
+                f"[{indice}/{total_notarias}] "
+                f"ERROR NOTARIA "
+                f"{getattr(notaria, 'id', '?')}: "
+                f"{exc}",
                 flush=True,
             )
 
-            continue
-
-        # ====================================================
-        # PAUSA
-        # ====================================================
-
-        time.sleep(
-            PAUSA_ENTRE_CONSULTAS
-        )
-
-    # ========================================================
-    # COMMIT FINAL
-    # ========================================================
-
-    try:
-
-        db.commit()
-
-    except Exception:
-
-        db.rollback()
+            try:
+                db.rollback()
+            except Exception:
+                pass
 
     # ========================================================
     # RESULTADO
     # ========================================================
 
-    resultado_final = {
+    resultado = {
         "total_notarias": total_notarias,
         "actualizadas": actualizadas,
         "ya_con_coordenadas": ya_con_coordenadas,
@@ -393,40 +504,23 @@ def agregar_coordenadas(
     }
 
     print(
-        "==================================================",
+        "============================================",
         flush=True,
     )
 
     print(
-        "MIGRACIÓN FINALIZADA",
+        "MIGRACIÓN COORDENADAS FINALIZADA",
         flush=True,
     )
 
     print(
-        resultado_final,
+        resultado,
         flush=True,
     )
 
     print(
-        "==================================================",
+        "============================================",
         flush=True,
     )
 
-    return resultado_final
-
-
-# ============================================================
-# ALIAS
-# ============================================================
-
-def migrar_coordenadas(
-    db: Session,
-):
-    """
-    Alias para mantener compatibilidad con cualquier
-    router existente que utilice este nombre.
-    """
-
-    return agregar_coordenadas(
-        db
-    )
+    return resultado
