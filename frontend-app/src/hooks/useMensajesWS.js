@@ -1,54 +1,35 @@
-import { useEffect, useRef } from "react";
-import { useMensajesStore } from "../store/mensajesStore";
+import {
+  useEffect,
+  useRef,
+} from "react";
+
+import {
+  useMensajesStore,
+} from "../store/mensajesStore";
 
 
 /**
  * =========================================================
- * WEBSOCKET MENSAJES — MOLSAN ERP PREMIUM 2027
- * =========================================================
- *
- * El socket pertenece al empleado autenticado.
- *
- * NO depende de:
- *
- *     otroId
- *
- * Porque cambiar de conversación NO debe cerrar ni
- * reconstruir el WebSocket.
- *
- * Eventos:
- *
- *     online
- *     offline
- *     typing
- *     nuevo_mensaje
- *     nuevo_archivo
- *
- * También acepta:
- *
- *     mensaje
- *     archivo
- *
- * para mantener compatibilidad.
+ * WEBSOCKET MENSAJES
+ * MOLSAN ERP
  * =========================================================
  */
 
-export const useMensajesWS = (empleadoId) => {
+export const useMensajesWS = (
+  empleadoId
+) => {
 
-  const wsRef = useRef(null);
+  const wsRef =
+    useRef(null);
 
-  const pingInterval = useRef(null);
+  const pingInterval =
+    useRef(null);
 
-  const reconnectTimeout = useRef(null);
+  const reconnectTimeout =
+    useRef(null);
 
-  const mountedRef = useRef(false);
-
-
-  /*
-   * =======================================================
-   * ZUSTAND
-   * =======================================================
-   */
+  const mountedRef =
+    useRef(true);
 
   const cargarConectados =
     useMensajesStore(
@@ -75,11 +56,9 @@ export const useMensajesWS = (empleadoId) => {
     );
 
 
-  /*
-   * =======================================================
-   * GUARDAR USUARIO ACTUAL
-   * =======================================================
-   */
+  // =======================================================
+  // GUARDAR USUARIO ACTUAL
+  // =======================================================
 
   useEffect(() => {
 
@@ -99,10 +78,9 @@ export const useMensajesWS = (empleadoId) => {
 
         return {
           ...state,
-          usuarioId: Number(
-            empleadoId
-          ),
+          usuarioId: empleadoId,
         };
+
       }
     );
 
@@ -111,34 +89,23 @@ export const useMensajesWS = (empleadoId) => {
   ]);
 
 
-  /*
-   * =======================================================
-   * WEBSOCKET
-   * =======================================================
-   */
+  // =======================================================
+  // CONEXIÓN
+  // =======================================================
 
   useEffect(() => {
 
-    mountedRef.current = true;
+    mountedRef.current =
+      true;
 
     if (!empleadoId) {
-
-      console.warn(
-        "[WS-MSG] No hay empleadoId."
-      );
-
-      return () => {
-        mountedRef.current = false;
-      };
-
+      return;
     }
 
 
-    /*
-     * -------------------------------------------------------
-     * TOKEN
-     * -------------------------------------------------------
-     */
+    // -------------------------------------------------------
+    // TOKEN
+    // -------------------------------------------------------
 
     const token =
       localStorage.getItem(
@@ -148,104 +115,39 @@ export const useMensajesWS = (empleadoId) => {
     if (!token) {
 
       console.warn(
-        "[WS-MSG] No existe token JWT."
+        "[WS-MSG] No existe JWT."
       );
 
-      return () => {
-        mountedRef.current = false;
-      };
+      return;
 
     }
 
 
-    /*
-     * -------------------------------------------------------
-     * URL WEBSOCKET
-     * -------------------------------------------------------
-     */
+    // -------------------------------------------------------
+    // YA CONECTADO
+    // -------------------------------------------------------
 
-    let wsBase =
-      import.meta.env.VITE_WS_URL;
+    if (
+      wsRef.current &&
+      (
+        wsRef.current.readyState ===
+          WebSocket.OPEN ||
+        wsRef.current.readyState ===
+          WebSocket.CONNECTING
+      )
+    ) {
 
-
-    /*
-     * Si VITE_WS_URL no existe, intentamos derivarla
-     * automáticamente desde VITE_API_URL.
-     */
-
-    if (!wsBase) {
-
-      const apiUrl =
-        import.meta.env.VITE_API_URL;
-
-      if (apiUrl) {
-
-        try {
-
-          const parsed =
-            new URL(
-              apiUrl
-            );
-
-          parsed.protocol =
-            parsed.protocol ===
-            "https:"
-              ? "wss:"
-              : "ws:";
-
-          parsed.pathname =
-            parsed.pathname.replace(
-              /\/api\/?$/,
-              ""
-            );
-
-          parsed.search = "";
-
-          wsBase =
-            parsed.toString().replace(
-              /\/$/,
-              ""
-            );
-
-        } catch (error) {
-
-          console.error(
-            "[WS-MSG] No se pudo derivar VITE_WS_URL:",
-            error
-          );
-
-        }
-
-      }
+      return;
 
     }
 
 
-    if (!wsBase) {
-
-      console.error(
-        "[WS-MSG] VITE_WS_URL no está configurada."
-      );
-
-      return () => {
-        mountedRef.current = false;
-      };
-
-    }
+    let ws = null;
 
 
-    wsBase =
-      wsBase.replace(
-        /\/$/,
-        ""
-      );
-
-
-    /*
-     * =======================================================
-     * LIMPIAR TIMERS
-     * =======================================================
-     */
+    // =======================================================
+    // LIMPIAR TIMERS
+    // =======================================================
 
     const limpiarTimers = () => {
 
@@ -278,11 +180,9 @@ export const useMensajesWS = (empleadoId) => {
     };
 
 
-    /*
-     * =======================================================
-     * CONECTAR
-     * =======================================================
-     */
+    // =======================================================
+    // CONECTAR
+    // =======================================================
 
     const conectar = () => {
 
@@ -292,15 +192,10 @@ export const useMensajesWS = (empleadoId) => {
         return;
       }
 
-
       if (!empleadoId) {
         return;
       }
 
-
-      /*
-       * No abrir dos sockets.
-       */
 
       if (
         wsRef.current &&
@@ -317,20 +212,25 @@ export const useMensajesWS = (empleadoId) => {
       }
 
 
+      const wsBase =
+        import.meta.env.VITE_WS_URL;
+
+
+      if (!wsBase) {
+
+        console.error(
+          "[WS-MSG] VITE_WS_URL no configurada."
+        );
+
+        return;
+
+      }
+
+
       const url =
         `${wsBase}/ws/mensajes/${empleadoId}` +
-        `?token=${encodeURIComponent(
-          token
-        )}`;
+        `?token=${encodeURIComponent(token)}`;
 
-
-      console.log(
-        "[WS-MSG] Conectando:",
-        `${wsBase}/ws/mensajes/${empleadoId}`
-      );
-
-
-      let ws;
 
       try {
 
@@ -355,44 +255,35 @@ export const useMensajesWS = (empleadoId) => {
         ws;
 
 
-      /*
-       * =====================================================
-       * OPEN
-       * =====================================================
-       */
+      // =====================================================
+      // OPEN
+      // =====================================================
 
       ws.onopen = () => {
 
-        if (
-          !mountedRef.current
-        ) {
-
-          try {
-            ws.close();
-          } catch {
-            // ignorar
-          }
-
-          return;
-
-        }
-
-
         console.log(
-          `[WS-MSG] CONECTADO empleado=${empleadoId}`
+          `[WS-MSG] Conectado: ${empleadoId}`
         );
 
 
-        /*
-         * Cargar lista actual de conectados.
-         */
+        // ---------------------------------------------------
+        // IMPORTANTE
+        // ---------------------------------------------------
+        // Recarga la lista desde PostgreSQL.
+        //
+        // Esto recupera:
+        //
+        // mensajes_no_leidos
+        //
+        // incluso después de F5.
+        // ---------------------------------------------------
 
         cargarConectados();
 
 
-        /*
-         * Ping.
-         */
+        // ---------------------------------------------------
+        // PING
+        // ---------------------------------------------------
 
         if (
           pingInterval.current
@@ -410,8 +301,9 @@ export const useMensajesWS = (empleadoId) => {
             () => {
 
               if (
+                ws &&
                 ws.readyState ===
-                WebSocket.OPEN
+                  WebSocket.OPEN
               ) {
 
                 try {
@@ -421,7 +313,7 @@ export const useMensajesWS = (empleadoId) => {
                   );
 
                 } catch {
-                  // ignorar
+                  // Ignorar.
                 }
 
               }
@@ -433,11 +325,9 @@ export const useMensajesWS = (empleadoId) => {
       };
 
 
-      /*
-       * =====================================================
-       * MESSAGE
-       * =====================================================
-       */
+      // =====================================================
+      // MESSAGE
+      // =====================================================
 
       ws.onmessage = (
         event
@@ -445,18 +335,6 @@ export const useMensajesWS = (empleadoId) => {
 
         if (
           !event.data
-        ) {
-          return;
-        }
-
-
-        /*
-         * "pong" no es JSON.
-         */
-
-        if (
-          event.data ===
-          "pong"
         ) {
           return;
         }
@@ -471,13 +349,9 @@ export const useMensajesWS = (empleadoId) => {
               event.data
             );
 
-        } catch (error) {
+        } catch {
 
-          console.warn(
-            "[WS-MSG] Mensaje no JSON:",
-            event.data
-          );
-
+          // "pong"
           return;
 
         }
@@ -487,21 +361,15 @@ export const useMensajesWS = (empleadoId) => {
           !data ||
           !data.tipo
         ) {
+
           return;
+
         }
 
 
-        console.log(
-          "[WS-MSG] EVENTO:",
-          data
-        );
-
-
-        /*
-         * ===================================================
-         * ONLINE
-         * ===================================================
-         */
+        // ---------------------------------------------------
+        // ONLINE
+        // ---------------------------------------------------
 
         if (
           data.tipo ===
@@ -512,16 +380,17 @@ export const useMensajesWS = (empleadoId) => {
             data
           );
 
+          // Actualizamos también el contador real.
+          cargarConectados();
+
           return;
 
         }
 
 
-        /*
-         * ===================================================
-         * OFFLINE
-         * ===================================================
-         */
+        // ---------------------------------------------------
+        // OFFLINE
+        // ---------------------------------------------------
 
         if (
           data.tipo ===
@@ -531,9 +400,7 @@ export const useMensajesWS = (empleadoId) => {
           setConectadosWS(
             {
               id:
-                Number(
-                  data.id
-                ),
+                data.id,
 
               offline:
                 true,
@@ -545,11 +412,9 @@ export const useMensajesWS = (empleadoId) => {
         }
 
 
-        /*
-         * ===================================================
-         * TYPING
-         * ===================================================
-         */
+        // ---------------------------------------------------
+        // TYPING
+        // ---------------------------------------------------
 
         if (
           data.tipo ===
@@ -562,9 +427,7 @@ export const useMensajesWS = (empleadoId) => {
             );
 
 
-          if (
-            !fromId
-          ) {
+          if (!fromId) {
             return;
           }
 
@@ -591,11 +454,9 @@ export const useMensajesWS = (empleadoId) => {
         }
 
 
-        /*
-         * ===================================================
-         * MENSAJE
-         * ===================================================
-         */
+        // ---------------------------------------------------
+        // MENSAJE
+        // ---------------------------------------------------
 
         if (
           data.tipo ===
@@ -621,11 +482,9 @@ export const useMensajesWS = (empleadoId) => {
         }
 
 
-        /*
-         * ===================================================
-         * ARCHIVO
-         * ===================================================
-         */
+        // ---------------------------------------------------
+        // ARCHIVO
+        // ---------------------------------------------------
 
         if (
           data.tipo ===
@@ -653,41 +512,37 @@ export const useMensajesWS = (empleadoId) => {
       };
 
 
-      /*
-       * =====================================================
-       * ERROR
-       * =====================================================
-       */
+      // =====================================================
+      // ERROR
+      // =====================================================
 
       ws.onerror = (
         error
       ) => {
 
         console.warn(
-          "[WS-MSG] ERROR WebSocket",
+          "[WS-MSG] Error WebSocket.",
           error
         );
 
       };
 
 
-      /*
-       * =====================================================
-       * CLOSE
-       * =====================================================
-       */
+      // =====================================================
+      // CLOSE
+      // =====================================================
 
       ws.onclose = (
         event
       ) => {
 
         console.warn(
-          `[WS-MSG] CERRADO empleado=${empleadoId}`,
-          "code=",
-          event.code,
-          "reason=",
-          event.reason
+          `[WS-MSG] Desconectado: ${empleadoId}`,
+          event.code
         );
+
+
+        limpiarTimers();
 
 
         if (
@@ -702,38 +557,8 @@ export const useMensajesWS = (empleadoId) => {
 
 
         if (
-          pingInterval.current
-        ) {
-
-          clearInterval(
-            pingInterval.current
-          );
-
-          pingInterval.current =
-            null;
-
-        }
-
-
-        /*
-         * Reconectar únicamente si el componente
-         * sigue montado.
-         */
-
-        if (
           mountedRef.current
         ) {
-
-          if (
-            reconnectTimeout.current
-          ) {
-
-            clearTimeout(
-              reconnectTimeout.current
-            );
-
-          }
-
 
           reconnectTimeout.current =
             setTimeout(
@@ -755,52 +580,42 @@ export const useMensajesWS = (empleadoId) => {
     };
 
 
-    /*
-     * =======================================================
-     * PRIMERA CONEXIÓN
-     * =======================================================
-     */
+    // =======================================================
+    // PRIMERA CONEXIÓN
+    // =======================================================
 
     conectar();
 
 
-    /*
-     * =======================================================
-     * CLEANUP
-     * =======================================================
-     */
+    // =======================================================
+    // CLEANUP
+    // =======================================================
 
     return () => {
 
       mountedRef.current =
         false;
 
-
       limpiarTimers();
 
 
-      const ws =
-        wsRef.current;
+      if (
+        wsRef.current
+      ) {
+
+        try {
+
+          wsRef.current.close();
+
+        } catch {
+          // Ignorar.
+        }
+
+      }
 
 
       wsRef.current =
         null;
-
-
-      if (ws) {
-
-        try {
-
-          ws.close(
-            1000,
-            "Componente desmontado"
-          );
-
-        } catch {
-          // ignorar
-        }
-
-      }
 
     };
 
