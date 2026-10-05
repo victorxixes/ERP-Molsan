@@ -71,7 +71,7 @@ class Municipio(Base):
     )
 
     # ========================================================
-    # ÍNDICES Y RESTRICCIONES
+    # ÍNDICES / RESTRICCIONES
     # ========================================================
 
     __table_args__ = (
