@@ -8,39 +8,53 @@ from backend.app.ctn.service import obtener_notaria
 from backend.app.agenda.models import Cita
 from backend.app.ctn.schemas import NotariaResponse
 
-# Distancia
-from backend.app.utils.distancia import distancia_km, MOLSAN_LAT, MOLSAN_LNG
+from backend.app.utils.distancia import (
+    distancia_km,
+    MOLSAN_LAT,
+    MOLSAN_LNG,
+)
 
-# Google Maps geocode
-from backend.app.ctn.geocode import geocode_todas_notarias, migracion_agregar_coordenadas
+from backend.app.ctn.geocode import (
+    geocode_todas_notarias,
+)
 
-from backend.app.ctn.migracion import agregar_coordenadas
+from backend.app.ctn.migracion import (
+    agregar_coordenadas,
+)
 
-router = APIRouter(prefix="/ctn", tags=["CTN"])
+
+router = APIRouter(
+    prefix="/ctn",
+    tags=["CTN"]
+)
 
 
-# ---------------------------------------------------------
-# GEOCODIFICACIÓN AUTOMÁTICA (GOOGLE MAPS)
-# ---------------------------------------------------------
+# =========================================================
+# GEOCODIFICACIÓN
+# =========================================================
+
 @router.post("/geocode/notarias")
-def geocode_notarias(db: Session = Depends(get_db)):
+def geocode_notarias(
+    db: Session = Depends(get_db)
+):
     return geocode_todas_notarias(db)
 
 
-@router.post("/migracion/agregar-coordenadas")
-def migracion(db: Session = Depends(get_db)):
-    return migracion_agregar_coordenadas(db)
-
+# =========================================================
+# MIGRACIÓN COORDENADAS
+# =========================================================
 
 @router.post("/migracion/agregar-coordenadas")
 def migracion_agregar_coordenadas(
     db: Session = Depends(get_db)
 ):
     return agregar_coordenadas(db)
-    
-# ---------------------------------------------------------
+
+
+# =========================================================
 # LISTAR NOTARÍAS
-# ---------------------------------------------------------
+# =========================================================
+
 @router.get("/notarias")
 def listar(
     db: Session = Depends(get_db),
@@ -56,28 +70,57 @@ def listar(
 
     if provincia:
         provincia_clean = provincia.strip()
-        query = query.filter(func.unaccent(Notaria.provincia).ilike(func.unaccent(f"%{provincia_clean}%")))
+
+        query = query.filter(
+            func.unaccent(Notaria.provincia).ilike(
+                func.unaccent(f"%{provincia_clean}%")
+            )
+        )
 
     if municipio:
         municipio_clean = municipio.strip()
-        query = query.filter(func.unaccent(Notaria.municipio).ilike(func.unaccent(f"%{municipio_clean}%")))
+
+        query = query.filter(
+            func.unaccent(Notaria.municipio).ilike(
+                func.unaccent(f"%{municipio_clean}%")
+            )
+        )
 
     if vc:
         vc_clean = vc.strip()
-        query = query.filter(func.unaccent(Notaria.vc).ilike(func.unaccent(f"%{vc_clean}%")))
+
+        query = query.filter(
+            func.unaccent(Notaria.vc).ilike(
+                func.unaccent(f"%{vc_clean}%")
+            )
+        )
 
     if apoderado:
         apoderado_clean = apoderado.strip()
-        query = query.filter(func.unaccent(Notaria.apoderado).ilike(func.unaccent(f"%{apoderado_clean}%")))
+
+        query = query.filter(
+            func.unaccent(Notaria.apoderado).ilike(
+                func.unaccent(f"%{apoderado_clean}%")
+            )
+        )
 
     if q:
         q_clean = q.strip()
+
         query = query.filter(
             or_(
-                func.unaccent(Notaria.nombre).ilike(func.unaccent(f"%{q_clean}%")),
-                func.unaccent(Notaria.apellidos).ilike(func.unaccent(f"%{q_clean}%")),
-                func.unaccent(Notaria.codigo).ilike(func.unaccent(f"%{q_clean}%")),
-                func.unaccent(Notaria.nif).ilike(func.unaccent(f"%{q_clean}%")),
+                func.unaccent(Notaria.nombre).ilike(
+                    func.unaccent(f"%{q_clean}%")
+                ),
+                func.unaccent(Notaria.apellidos).ilike(
+                    func.unaccent(f"%{q_clean}%")
+                ),
+                func.unaccent(Notaria.codigo).ilike(
+                    func.unaccent(f"%{q_clean}%")
+                ),
+                func.unaccent(Notaria.nif).ilike(
+                    func.unaccent(f"%{q_clean}%")
+                ),
             )
         )
 
@@ -98,38 +141,86 @@ def listar(
         "items": [
             {
                 **NotariaResponse.from_orm(n).dict(),
-                "distancia_km": distancia_km(MOLSAN_LAT, MOLSAN_LNG, n.lat, n.lng)
+                "distancia_km": distancia_km(
+                    MOLSAN_LAT,
+                    MOLSAN_LNG,
+                    n.lat,
+                    n.lng
+                )
             }
             for n in items
         ]
     }
 
 
-# ---------------------------------------------------------
-# OBTENER NOTARIA POR ID
-# ---------------------------------------------------------
-@router.get("/notarias/{notaria_id}", response_model=NotariaResponse)
-def obtener(notaria_id: int, db: Session = Depends(get_db)):
+# =========================================================
+# OBTENER NOTARÍA
+# =========================================================
+
+@router.get(
+    "/notarias/{notaria_id}",
+    response_model=NotariaResponse
+)
+def obtener(
+    notaria_id: int,
+    db: Session = Depends(get_db)
+):
     try:
-        notaria_id = int(str(notaria_id).strip())
-    except:
+        notaria_id = int(
+            str(notaria_id).strip()
+        )
+    except Exception:
         return None
 
-    notaria = obtener_notaria(db, notaria_id)
+    notaria = obtener_notaria(
+        db,
+        notaria_id
+    )
+
     if notaria is None:
         return None
 
-    return NotariaResponse.from_orm(notaria)
+    return NotariaResponse.from_orm(
+        notaria
+    )
 
 
-# ---------------------------------------------------------
-# FIRMAS POR NOTARIA
-# ---------------------------------------------------------
-@router.get("/notarias/{notaria_id}/firmas")
-def contar_firmas(notaria_id: int, db: Session = Depends(get_db)):
-    total = db.query(Cita).filter(Cita.notario_id == notaria_id).count()
-    vc = db.query(Cita).filter(Cita.notario_id == notaria_id, Cita.tipo_cita == "VC").count()
-    presencial = db.query(Cita).filter(Cita.notario_id == notaria_id, Cita.tipo_cita == "P").count()
+# =========================================================
+# FIRMAS POR NOTARÍA
+# =========================================================
+
+@router.get(
+    "/notarias/{notaria_id}/firmas"
+)
+def contar_firmas(
+    notaria_id: int,
+    db: Session = Depends(get_db)
+):
+    total = (
+        db.query(Cita)
+        .filter(
+            Cita.notario_id == notaria_id
+        )
+        .count()
+    )
+
+    vc = (
+        db.query(Cita)
+        .filter(
+            Cita.notario_id == notaria_id,
+            Cita.tipo_cita == "VC"
+        )
+        .count()
+    )
+
+    presencial = (
+        db.query(Cita)
+        .filter(
+            Cita.notario_id == notaria_id,
+            Cita.tipo_cita == "P"
+        )
+        .count()
+    )
 
     return {
         "notaria_id": notaria_id,
