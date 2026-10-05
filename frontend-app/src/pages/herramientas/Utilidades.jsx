@@ -57,7 +57,7 @@ export default function Utilidades() {
             </h1>
 
             <p className="mt-1 text-sm text-slate-500">
-              Procesos auxiliares, importaciones, documentos e informes.
+              Procesos auxiliares, maestros, importaciones, documentos e informes.
             </p>
 
           </div>
@@ -73,12 +73,57 @@ export default function Utilidades() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
 
+        {/* ===================================================
+            MUNICIPIOS
+        =================================================== */}
+
+        <Card
+          icon="🏘️"
+          titulo="Municipios"
+          descripcion="Gestionar comunidades autónomas, provincias y municipios."
+          link="/herramientas/utilidades/municipios"
+        />
+
+
+        {/* ===================================================
+            OFICINAS LIQUIDADORAS
+        =================================================== */}
+
+        <Card
+          icon="🏛️"
+          titulo="Oficinas Liquidadoras"
+          descripcion="Gestionar las oficinas liquidadoras y sus datos asociados."
+          link="/herramientas/utilidades/oficinas-liquidadoras"
+        />
+
+
+        {/* ===================================================
+            REGISTROS DE LA PROPIEDAD
+        =================================================== */}
+
+        <Card
+          icon="📚"
+          titulo="Registros de la Propiedad"
+          descripcion="Gestionar registros de la propiedad y su información."
+          link="/herramientas/utilidades/registros-propiedad"
+        />
+
+
+        {/* ===================================================
+            IMPORTAR CTN
+        =================================================== */}
+
         <Card
           icon="📥"
           titulo="Importar CTN"
           descripcion="Importar fichero Excel con información de notarías."
           link="/herramientas/importar-ctn"
         />
+
+
+        {/* ===================================================
+            CREAR NOTICIA
+        =================================================== */}
 
         <Card
           icon="📰"
@@ -87,6 +132,11 @@ export default function Utilidades() {
           link="/herramientas/utilidades/crear-noticia"
         />
 
+
+        {/* ===================================================
+            SUBIR DOCUMENTO
+        =================================================== */}
+
         <Card
           icon="📄"
           titulo="Subir documento"
@@ -94,12 +144,22 @@ export default function Utilidades() {
           link="/herramientas/utilidades/subir-documento"
         />
 
+
+        {/* ===================================================
+            INFORMES
+        =================================================== */}
+
         <Card
           icon="📊"
           titulo="Informes"
           descripcion="Listados y estadísticas de apoderados."
           link="/herramientas/informes"
         />
+
+
+        {/* ===================================================
+            IMPORTADOR ABSIS
+        =================================================== */}
 
         <Card
           icon="📦"
@@ -151,6 +211,8 @@ function Card({
       `}
     >
 
+      {/* Línea superior */}
+
       <div
         className="
           absolute inset-x-0 top-0 h-px
@@ -166,6 +228,8 @@ function Card({
 
       <div className="flex items-start gap-4">
 
+        {/* ICONO */}
+
         <div
           className={`
             flex h-12 w-12 shrink-0
@@ -175,6 +239,7 @@ function Card({
             text-xl
             transition-all duration-300
             group-hover:scale-105
+
             ${
               destacado
                 ? "bg-blue-100 border-blue-200"
@@ -184,6 +249,9 @@ function Card({
         >
           {icon}
         </div>
+
+
+        {/* TEXTO */}
 
         <div className="flex-1 min-w-0">
 
@@ -196,6 +264,9 @@ function Card({
           </p>
 
         </div>
+
+
+        {/* FLECHA */}
 
         <span
           className="
