@@ -1,7 +1,6 @@
 from sqlalchemy import (
     Boolean,
     Column,
-    Index,
     Integer,
     String,
     UniqueConstraint,
@@ -90,7 +89,7 @@ class EntidadBancaria(Base):
     )
 
     # ========================================================
-    # RESTRICCIONES / ÍNDICES
+    # RESTRICCIONES
     # ========================================================
 
     __table_args__ = (
@@ -98,11 +97,6 @@ class EntidadBancaria(Base):
         UniqueConstraint(
             "codigo_europeo",
             name="uq_entidades_bancarias_codigo_europeo",
-        ),
-
-        Index(
-            "ix_entidades_bancarias_nombre",
-            "nombre",
         ),
 
     )
