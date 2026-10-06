@@ -84,6 +84,16 @@ export default function Utilidades() {
           link="/herramientas/municipios"
         />
 
+        {/* ===================================================
+            ENTIDADES BANCARIAS
+        =================================================== */}
+
+        <Card
+          icon="🏦"
+          titulo="Entidades Bancarias"
+          descripcion="Gestión de entidades bancarias reguladas en España"
+          link="/herramientas/EntidadesBancarias"
+        />
 
         {/* ===================================================
             OFICINAS LIQUIDADORAS
