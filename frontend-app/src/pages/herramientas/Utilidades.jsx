@@ -185,18 +185,7 @@ export default function Utilidades() {
   descripcion="Catálogo de tipos de conceptos de gastos utilizados en los expedientes."
   link="/herramientas/tipos-concepto-gastos"
 />
-        
-        
-        {/* ===================================================
-            INFORMES
-        =================================================== */}
-
-        <Card
-          icon="📊"
-          titulo="Informes"
-          descripcion="Listados y estadísticas de apoderados."
-          link="/herramientas/informes"
-        />
+         
 
 
         {/* ===================================================
