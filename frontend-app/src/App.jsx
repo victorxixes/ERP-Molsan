@@ -72,6 +72,10 @@ import RegistrosPropiedad from "./pages/herramientas/RegistrosPropiedad.jsx";
 import OficinasLiquidadoras
   from "./pages/herramientas/OficinasLiquidadoras.jsx";
 
+/* ACCIONES DEL EXPEDIENTE */
+import AccionesExpediente
+  from "./pages/herramientas/AccionesExpediente.jsx";
+
 /* PANEL TÉCNICO */
 import PanelTecnico from "./pages/paneltecnico/PanelTecnico.jsx";
 import MonitorSistema from "./pages/paneltecnico/MonitorSistema.jsx";
@@ -328,6 +332,11 @@ export default function App() {
           <Route
           path="herramientas/oficinas-liquidadoras"
           element={<OficinasLiquidadoras />}
+          />
+
+          <Route
+          path="herramientas/acciones-expediente"
+          element={<AccionesExpediente />}
           />
           
           <Route
