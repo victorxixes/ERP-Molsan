@@ -22,7 +22,6 @@ class RealtimeManager:
 
         # --------------------------------------------------------
         # CONEXIONES POR USUARIO
-        # {usuario_id: {websocket, websocket, ...}}
         # --------------------------------------------------------
 
         self.user_connections: Dict[
@@ -31,7 +30,7 @@ class RealtimeManager:
         ] = {}
 
         # --------------------------------------------------------
-        # METADATA DEL USUARIO
+        # INFORMACIÓN DEL USUARIO
         # --------------------------------------------------------
 
         self.user_info: Dict[
@@ -95,7 +94,7 @@ class RealtimeManager:
                 websocket
             )
 
-            era_primera_conexion_usuario = False
+            era_primera = False
 
             if usuario_id is not None:
 
@@ -107,7 +106,7 @@ class RealtimeManager:
                     )
                 )
 
-                era_primera_conexion_usuario = (
+                era_primera = (
                     len(conexiones) == 0
                 )
 
@@ -115,7 +114,7 @@ class RealtimeManager:
                     websocket
                 )
 
-                if usuario_info is not None:
+                if usuario_info:
 
                     self.user_info[
                         usuario_id
@@ -156,7 +155,7 @@ class RealtimeManager:
                         websocket
                     )
 
-        return era_primera_conexion_usuario
+        return era_primera
 
 
     # ============================================================
@@ -169,7 +168,8 @@ class RealtimeManager:
     ):
 
         usuario_id = None
-        era_ultima_conexion_usuario = False
+
+        era_ultima = False
 
         with self.lock:
 
@@ -210,12 +210,12 @@ class RealtimeManager:
                             None,
                         )
 
-                        era_ultima_conexion_usuario = True
+                        era_ultima = True
 
                     break
 
             # ----------------------------------------------------
-            # RESTO DE AGRUPACIONES
+            # AGRUPACIONES
             # ----------------------------------------------------
 
             for d in (
@@ -238,7 +238,7 @@ class RealtimeManager:
 
         return (
             usuario_id,
-            era_ultima_conexion_usuario,
+            era_ultima,
         )
 
 
@@ -258,56 +258,34 @@ class RealtimeManager:
                 self.user_info.items()
             ):
 
-                item = {
+                resultado.append({
                     "id": usuario_id,
                     **info,
-                }
-
-                resultado.append(
-                    item
-                )
+                })
 
             return resultado
 
 
     # ============================================================
-    # COMPROBAR CONEXIÓN DE USUARIO
-    # ============================================================
-
-    def esta_conectado(
-        self,
-        usuario_id: int,
-    ) -> bool:
-
-        with self.lock:
-
-            return bool(
-                self.user_connections.get(
-                    usuario_id
-                )
-            )
-
-
-    # ============================================================
-    # ENVÍO SEGURO
+    # ENVIAR
     # ============================================================
 
     async def _safe_send(
         self,
-        ws: WebSocket,
+        websocket: WebSocket,
         event: RealtimeEvent,
     ):
 
         try:
 
-            await ws.send_json(
+            await websocket.send_json(
                 event.dict()
             )
 
         except Exception:
 
             self.disconnect(
-                ws
+                websocket
             )
 
 
@@ -320,35 +298,36 @@ class RealtimeManager:
         event: RealtimeEvent,
     ):
 
-        for ws in list(
+        for websocket in list(
             self.global_connections
         ):
 
             await self._safe_send(
-                ws,
+                websocket,
                 event,
             )
 
 
     # ============================================================
-    # BROADCAST GLOBAL EXCLUYENDO SOCKET
+    # BROADCAST GLOBAL EXCEPTO SOCKET
     # ============================================================
 
     async def broadcast_global_except(
         self,
-        websocket: WebSocket,
+        websocket_excluido: WebSocket,
         event: RealtimeEvent,
     ):
 
-        for ws in list(
+        for websocket in list(
             self.global_connections
         ):
 
-            if ws is websocket:
+            if websocket is websocket_excluido:
+
                 continue
 
             await self._safe_send(
-                ws,
+                websocket,
                 event,
             )
 
@@ -363,7 +342,7 @@ class RealtimeManager:
         event: RealtimeEvent,
     ):
 
-        for ws in list(
+        for websocket in list(
             self.user_connections.get(
                 usuario_id,
                 set(),
@@ -371,7 +350,7 @@ class RealtimeManager:
         ):
 
             await self._safe_send(
-                ws,
+                websocket,
                 event,
             )
 
@@ -386,7 +365,7 @@ class RealtimeManager:
         event: RealtimeEvent,
     ):
 
-        for ws in list(
+        for websocket in list(
             self.role_connections.get(
                 rol,
                 set(),
@@ -394,7 +373,7 @@ class RealtimeManager:
         ):
 
             await self._safe_send(
-                ws,
+                websocket,
                 event,
             )
 
@@ -409,7 +388,7 @@ class RealtimeManager:
         event: RealtimeEvent,
     ):
 
-        for ws in list(
+        for websocket in list(
             self.module_connections.get(
                 modulo,
                 set(),
@@ -417,7 +396,7 @@ class RealtimeManager:
         ):
 
             await self._safe_send(
-                ws,
+                websocket,
                 event,
             )
 
@@ -432,7 +411,7 @@ class RealtimeManager:
         event: RealtimeEvent,
     ):
 
-        for ws in list(
+        for websocket in list(
             self.group_connections.get(
                 grupo,
                 set(),
@@ -440,7 +419,7 @@ class RealtimeManager:
         ):
 
             await self._safe_send(
-                ws,
+                websocket,
                 event,
             )
 
