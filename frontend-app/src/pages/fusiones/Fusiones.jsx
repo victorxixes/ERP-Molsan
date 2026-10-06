@@ -525,7 +525,7 @@ export default function Fusiones() {
                   text-[var(--erp-text)]
                 "
               >
-                Fusiones
+                Fusiones - En Construcción
               </h1>
 
               <p
