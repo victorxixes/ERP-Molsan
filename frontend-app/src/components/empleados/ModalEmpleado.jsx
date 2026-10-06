@@ -20,6 +20,25 @@ import {
 
 import MODULOS_ERP from "../../config/modulos";
 
+// ============================================================
+// PERMISOS ESTÁNDAR DEL ERP
+// ============================================================
+//
+// Se utilizan cuando un módulo existe en el catálogo central
+// pero todavía no tiene registros de permisos globales.
+//
+// NO modifica el backend.
+// NO asigna permisos automáticamente.
+// Solo hace que las casillas aparezcan para poder marcarlas.
+// ============================================================
+
+const PERMISOS_ESTANDAR = [
+  "ver",
+  "crear",
+  "editar",
+  "eliminar",
+];
+
 /**
  * ============================================================
  * MODAL EMPLEADO — MOLSAN ERP SAAS PREMIUM 2027
@@ -994,18 +1013,24 @@ export default function ModalEmpleado({
      PERMISOS DISPONIBLES
   ========================================================== */
 
-  const permisosDisponibles =
-    useMemo(() => {
+/* ==========================================================
+   PERMISOS DISPONIBLES
+========================================================== */
 
-      const resultado = {};
+const permisosDisponibles =
+  useMemo(() => {
 
-      if (
-        !Array.isArray(
-          permisosGlobales
-        )
-      ) {
-        return resultado;
-      }
+    const resultado = {};
+
+    // --------------------------------------------------------
+    // 1. PERMISOS EXISTENTES EN BACKEND
+    // --------------------------------------------------------
+
+    if (
+      Array.isArray(
+        permisosGlobales
+      )
+    ) {
 
       permisosGlobales.forEach(
         (permiso) => {
@@ -1017,15 +1042,18 @@ export default function ModalEmpleado({
             return;
           }
 
+
           const modulo =
             typeof permiso.modulo === "string"
               ? permiso.modulo.trim()
               : "";
 
+
           const nombrePermiso =
             typeof permiso.permiso === "string"
               ? permiso.permiso.trim()
               : "";
+
 
           if (
             !modulo ||
@@ -1034,37 +1062,97 @@ export default function ModalEmpleado({
             return;
           }
 
+
           if (
             !resultado[modulo]
           ) {
             resultado[modulo] = [];
           }
 
+
           if (
-            !resultado[
-              modulo
-            ].includes(
+            !resultado[modulo].includes(
               nombrePermiso
             )
           ) {
-            resultado[
-              modulo
-            ].push(
+
+            resultado[modulo].push(
               nombrePermiso
             );
+
           }
+
         }
       );
 
+    }
 
-      Object.keys(
-        resultado
-      ).forEach(
-        (modulo) => {
 
-          resultado[
-            modulo
-          ].sort(
+    // --------------------------------------------------------
+    // 2. MÓDULOS DEL CATÁLOGO CENTRAL
+    // --------------------------------------------------------
+    //
+    // Si un módulo no tiene permisos definidos todavía,
+    // utilizamos los cuatro permisos estándar del ERP.
+    //
+    // IMPORTANTE:
+    // Esto NO marca ningún permiso.
+    // Solo hace visibles las cuatro casillas.
+    // --------------------------------------------------------
+
+    MODULOS_ERP.forEach(
+      (modulo) => {
+
+        if (
+          !modulo ||
+          typeof modulo !== "object" ||
+          typeof modulo.key !== "string"
+        ) {
+          return;
+        }
+
+
+        const clave =
+          modulo.key.trim();
+
+
+        if (!clave) {
+          return;
+        }
+
+
+        if (
+          !Array.isArray(
+            resultado[clave]
+          ) ||
+          resultado[clave].length === 0
+        ) {
+
+          resultado[clave] = [
+            ...PERMISOS_ESTANDAR,
+          ];
+
+        }
+
+      }
+    );
+
+
+    // --------------------------------------------------------
+    // 3. ORDENAR Y ELIMINAR DUPLICADOS
+    // --------------------------------------------------------
+
+    Object.keys(
+      resultado
+    ).forEach(
+      (modulo) => {
+
+        resultado[modulo] =
+          Array.from(
+            new Set(
+              resultado[modulo]
+            )
+          ).sort(
             (a, b) =>
               a.localeCompare(
                 b,
@@ -1076,14 +1164,15 @@ export default function ModalEmpleado({
               )
           );
 
-        }
-      );
+      }
+    );
 
-      return resultado;
 
-    }, [
-      permisosGlobales,
-    ]);
+    return resultado;
+
+  }, [
+    permisosGlobales,
+  ]);
 
 
   /* ==========================================================
