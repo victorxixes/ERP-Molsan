@@ -4,12 +4,18 @@ from threading import Lock
 from backend.app.mensajes.models import Mensaje
 from backend.app.database import SessionLocal
 
-from backend.app.realtime.manager import realtime_manager
-from backend.app.realtime.schemas import RealtimeEvent
+from backend.app.realtime.manager import (
+    realtime_manager,
+)
 
-# =========================================================
+from backend.app.realtime.schemas import (
+    RealtimeEvent,
+)
+
+
+# ============================================================
 # NOTIFICACIONES
-# =========================================================
+# ============================================================
 
 try:
 
@@ -23,45 +29,53 @@ except Exception:
         empleado_id: int,
         data: dict,
     ):
+        """
+        Fallback para instalaciones donde el módulo
+        de notificaciones no esté disponible.
+        """
         return None
 
 
-# =========================================================
+# ============================================================
 # WS MANAGER
-# =========================================================
+# ============================================================
 
 class WSManager:
     """
-    Gestor central de WebSockets de mensajería.
+    Gestor WebSocket de mensajería.
 
-    Soporta:
+    Funciones:
 
-    - múltiples pestañas por empleado
-    - presencia online/offline
-    - mensajes realtime
-    - archivos realtime
-    - typing
-    - limpieza de conexiones muertas
-    - notificaciones
+    - Conexiones por empleado.
+    - Múltiples pestañas por empleado.
+    - Broadcast global.
+    - Envío a un usuario.
+    - Limpieza de conexiones muertas.
+    - Mensajes realtime.
+    - Archivos realtime.
+    - Typing.
+    - Compatibilidad con el WebSocket antiguo.
+    - Publicación en el Realtime global.
     """
 
     def __init__(self):
 
-        # -------------------------------------------------
-        # empleado_id -> [websocket, websocket, ...]
-        # -------------------------------------------------
+        # -----------------------------------------------------
+        # {empleado_id: [websocket, websocket, ...]}
+        # -----------------------------------------------------
 
         self.conectados = {}
 
-        # -------------------------------------------------
-        # Protección del diccionario
-        # -------------------------------------------------
+        # -----------------------------------------------------
+        # Lock para proteger el diccionario.
+        # -----------------------------------------------------
 
         self.lock = Lock()
 
-    # =====================================================
+
+    # ========================================================
     # CONECTAR
-    # =====================================================
+    # ========================================================
 
     async def connect(
         self,
@@ -69,13 +83,15 @@ class WSManager:
         empleado_id: int,
     ):
         """
-        Registra una conexión.
+        Acepta y registra una conexión.
 
-        True:
-            era la primera conexión del empleado.
+        Devuelve:
 
-        False:
-            ya tenía otra conexión.
+        True
+            si es la primera conexión de ese empleado.
+
+        False
+            si ya tenía otra conexión abierta.
         """
 
         await websocket.accept()
@@ -97,9 +113,10 @@ class WSManager:
 
         return era_primera
 
-    # =====================================================
+
+    # ========================================================
     # DESCONECTAR
-    # =====================================================
+    # ========================================================
 
     def disconnect(
         self,
@@ -107,17 +124,27 @@ class WSManager:
         empleado_id: int,
     ):
         """
-        Elimina una conexión.
+        Elimina UNA conexión.
 
-        Solo devuelve True cuando esa conexión
-        era la última del empleado.
+        Si el empleado tiene varias pestañas abiertas,
+        cerrar una no significa que esté offline.
+
+        Devuelve:
+
+        True
+            cuando era la última conexión.
+
+        False
+            si todavía quedan conexiones.
         """
 
         with self.lock:
 
-            conexiones = self.conectados.get(
-                empleado_id,
-                [],
+            conexiones = (
+                self.conectados.get(
+                    empleado_id,
+                    [],
+                )
             )
 
             try:
@@ -141,14 +168,12 @@ class WSManager:
 
             return False
 
-    # =====================================================
-    # IDS CONECTADOS
-    # =====================================================
+
+    # ========================================================
+    # OBTENER IDS CONECTADOS
+    # ========================================================
 
     def obtener_ids_conectados(self):
-        """
-        Devuelve una copia segura de los empleados online.
-        """
 
         with self.lock:
 
@@ -156,9 +181,10 @@ class WSManager:
                 self.conectados.keys()
             )
 
-    # =====================================================
-    # ESTÁ CONECTADO
-    # =====================================================
+
+    # ========================================================
+    # COMPROBAR CONEXIÓN
+    # ========================================================
 
     def esta_conectado(
         self,
@@ -167,18 +193,21 @@ class WSManager:
 
         with self.lock:
 
-            conexiones = self.conectados.get(
-                empleado_id,
-                [],
+            conexiones = (
+                self.conectados.get(
+                    empleado_id,
+                    [],
+                )
             )
 
-            return bool(
+            return len(
                 conexiones
-            )
+            ) > 0
 
-    # =====================================================
+
+    # ========================================================
     # ENVIAR A UN USUARIO
-    # =====================================================
+    # ========================================================
 
     async def send_to_user(
         self,
@@ -186,8 +215,10 @@ class WSManager:
         data: dict,
     ):
         """
-        Envía a todas las pestañas abiertas
+        Envía un evento a todas las pestañas abiertas
         del empleado.
+
+        Las conexiones que fallen se eliminan.
         """
 
         with self.lock:
@@ -200,6 +231,7 @@ class WSManager:
             )
 
         if not conexiones:
+
             return
 
         muertos = []
@@ -218,13 +250,7 @@ class WSManager:
                     websocket
                 )
 
-        # -------------------------------------------------
-        # LIMPIAR MUERTOS
-        # -------------------------------------------------
-
         if muertos:
-
-            ultima_conexion = False
 
             with self.lock:
 
@@ -254,46 +280,28 @@ class WSManager:
                         None,
                     )
 
-                    ultima_conexion = True
 
-            # -------------------------------------------------
-            # PRESENCIA OFFLINE
-            # -------------------------------------------------
-
-            if ultima_conexion:
-
-                try:
-
-                    await self.broadcast(
-                        {
-                            "tipo": "offline",
-                            "id": empleado_id,
-                        }
-                    )
-
-                except Exception:
-
-                    pass
-
-    # =====================================================
-    # BROADCAST
-    # =====================================================
+    # ========================================================
+    # BROADCAST GLOBAL
+    # ========================================================
 
     async def broadcast(
         self,
         data: dict,
     ):
         """
-        Envía un evento a todos los empleados online.
+        Envía un evento a todos los empleados conectados
+        al WebSocket de Mensajes antiguo.
         """
 
         with self.lock:
 
             conexiones = []
 
-            for empleado_id, websockets in (
-                self.conectados.items()
-            ):
+            for (
+                empleado_id,
+                websockets,
+            ) in self.conectados.items():
 
                 for websocket in list(
                     websockets
@@ -308,7 +316,10 @@ class WSManager:
 
         muertos = []
 
-        for empleado_id, websocket in conexiones:
+        for (
+            empleado_id,
+            websocket,
+        ) in conexiones:
 
             try:
 
@@ -325,65 +336,136 @@ class WSManager:
                     )
                 )
 
-        if not muertos:
-            return
+        if muertos:
 
-        empleados_offline = set()
+            with self.lock:
 
-        with self.lock:
+                for (
+                    empleado_id,
+                    websocket,
+                ) in muertos:
 
-            for empleado_id, websocket in muertos:
-
-                conexiones_actuales = (
-                    self.conectados.get(
-                        empleado_id,
-                        [],
-                    )
-                )
-
-                try:
-
-                    conexiones_actuales.remove(
-                        websocket
+                    conexiones_actuales = (
+                        self.conectados.get(
+                            empleado_id,
+                            [],
+                        )
                     )
 
-                except ValueError:
+                    try:
 
-                    pass
+                        conexiones_actuales.remove(
+                            websocket
+                        )
 
-                if not conexiones_actuales:
+                    except ValueError:
 
-                    self.conectados.pop(
-                        empleado_id,
-                        None,
-                    )
+                        pass
 
-                    empleados_offline.add(
-                        empleado_id
-                    )
+                    if not conexiones_actuales:
 
-        # -------------------------------------------------
-        # AVISAR OFFLINE
-        # -------------------------------------------------
+                        self.conectados.pop(
+                            empleado_id,
+                            None,
+                        )
 
-        for empleado_id in empleados_offline:
 
-            try:
+    # ========================================================
+    # PUBLICAR MENSAJE EN REALTIME GLOBAL
+    # ========================================================
 
-                await self.broadcast(
-                    {
-                        "tipo": "offline",
-                        "id": empleado_id,
-                    }
-                )
+    async def publicar_mensaje_realtime(
+        self,
+        remitente_id: int,
+        mensaje: Mensaje,
+    ):
+        """
+        Publica el mensaje en el canal Realtime global.
 
-            except Exception:
+        El frontend global lo recibe aunque el usuario
+        esté en cualquier módulo del ERP.
+        """
 
-                pass
+        event = RealtimeEvent(
+            modulo="mensajes",
 
-    # =====================================================
+            evento="mensaje_nuevo",
+
+            usuario_id=remitente_id,
+
+            data={
+                "tipo": "nuevo_mensaje",
+
+                "mensaje": (
+                    mensaje.as_dict()
+                ),
+            },
+        )
+
+        await realtime_manager.broadcast_usuario(
+            remitente_id,
+            event,
+        )
+
+        if (
+            mensaje.destinatario_id
+            != remitente_id
+        ):
+
+            await realtime_manager.broadcast_usuario(
+                mensaje.destinatario_id,
+                event,
+            )
+
+
+    # ========================================================
+    # PUBLICAR ARCHIVO EN REALTIME GLOBAL
+    # ========================================================
+
+    async def publicar_archivo_realtime(
+        self,
+        remitente_id: int,
+        mensaje: Mensaje,
+    ):
+        """
+        Publica el archivo en el canal Realtime global.
+        """
+
+        event = RealtimeEvent(
+            modulo="mensajes",
+
+            evento="archivo_nuevo",
+
+            usuario_id=remitente_id,
+
+            data={
+                "tipo": "nuevo_archivo",
+
+                "mensaje": (
+                    mensaje.as_dict()
+                ),
+            },
+        )
+
+        await realtime_manager.broadcast_usuario(
+            remitente_id,
+            event,
+        )
+
+        if (
+            mensaje.destinatario_id
+            != remitente_id
+        ):
+
+            await realtime_manager.broadcast_usuario(
+                mensaje.destinatario_id,
+                event,
+            )
+
+
+    # ========================================================
     # GUARDAR + ENVIAR MENSAJE
-    # =====================================================
+    # ========================================================
 
     async def enviar_mensaje_ws(
         self,
@@ -392,12 +474,13 @@ class WSManager:
         contenido: str,
     ):
         """
-        Guarda una única vez el mensaje.
+        Guarda un mensaje en PostgreSQL y lo distribuye
+        por:
 
-        Después lo envía:
+        1. WebSocket antiguo de Mensajes.
+        2. Realtime global.
 
-        - remitente
-        - destinatario
+        El mensaje se guarda UNA sola vez.
         """
 
         db = SessionLocal()
@@ -405,11 +488,23 @@ class WSManager:
         try:
 
             mensaje = Mensaje(
-                remitente_id=remitente_id,
-                destinatario_id=destinatario_id,
-                contenido=contenido,
+
+                remitente_id=(
+                    remitente_id
+                ),
+
+                destinatario_id=(
+                    destinatario_id
+                ),
+
+                contenido=(
+                    contenido
+                ),
+
                 archivo_url=None,
+
                 fecha=datetime.now(),
+
                 leido=False,
             )
 
@@ -423,95 +518,83 @@ class WSManager:
                 mensaje
             )
 
-                    payload = {
-            "tipo": "nuevo_mensaje",
-            "mensaje": mensaje.as_dict(),
+        except Exception:
+
+            db.rollback()
+
+            raise
+
+        finally:
+
+            db.close()
+
+
+        # ====================================================
+        # PAYLOAD WS ANTIGUO
+        # ====================================================
+
+        payload = {
+
+            "tipo":
+                "nuevo_mensaje",
+
+            "mensaje":
+                mensaje.as_dict(),
         }
 
-        # =====================================================
-        # CANAL ANTIGUO — COMPATIBILIDAD
-        # =====================================================
+
+        # ====================================================
+        # ENVIAR AL REMITENTE
+        # ====================================================
 
         await self.send_to_user(
             remitente_id,
             payload,
         )
 
-        await self.send_to_user(
-            destinatario_id,
-            payload,
-        )
 
-        # =====================================================
-        # REALTIME GLOBAL
-        # =====================================================
+        # ====================================================
+        # ENVIAR AL DESTINATARIO
+        # ====================================================
 
-        realtime_event = RealtimeEvent(
-            modulo="mensajes",
-            evento="mensaje_nuevo",
-            usuario_id=remitente_id,
-            data={
-                "tipo": "nuevo_mensaje",
-                "mensaje": payload["mensaje"],
-            },
-        )
-
-        await realtime_manager.broadcast_usuario(
-            remitente_id,
-            realtime_event,
-        )
-
-        if destinatario_id != remitente_id:
-
-            await realtime_manager.broadcast_usuario(
-                destinatario_id,
-                realtime_event,
-            )
-
-        # =====================================================
-        # NOTIFICACIÓN
-        # =====================================================
-
-        await send_notif_to_user(
-            destinatario_id,
-            {
-                "tipo": "nuevo_mensaje",
-                "from": remitente_id,
-                "preview": contenido,
-            },
-        )
-        # -------------------------------------------------
-        # REMITENTE
-        # -------------------------------------------------
-
-        await self.send_to_user(
-            remitente_id,
-            payload,
-        )
-
-        # -------------------------------------------------
-        # DESTINATARIO
-        # -------------------------------------------------
-
-        if destinatario_id != remitente_id:
+        if (
+            destinatario_id
+            != remitente_id
+        ):
 
             await self.send_to_user(
                 destinatario_id,
                 payload,
             )
 
-        # -------------------------------------------------
+
+        # ====================================================
+        # REALTIME GLOBAL
+        # ====================================================
+
+        await self.publicar_mensaje_realtime(
+            remitente_id,
+            mensaje,
+        )
+
+
+        # ====================================================
         # NOTIFICACIÓN
-        # -------------------------------------------------
+        # ====================================================
 
         try:
 
             await send_notif_to_user(
                 destinatario_id,
                 {
-                    "tipo": "nuevo_mensaje",
-                    "from": remitente_id,
-                    "preview": contenido,
+                    "tipo":
+                        "nuevo_mensaje",
+
+                    "from":
+                        remitente_id,
+
+                    "preview":
+                        contenido,
                 },
             )
 
@@ -523,11 +606,13 @@ class WSManager:
                 flush=True,
             )
 
+
         return mensaje
 
-    # =====================================================
+
+    # ========================================================
     # GUARDAR + ENVIAR ARCHIVO
-    # =====================================================
+    # ========================================================
 
     async def enviar_archivo_ws(
         self,
@@ -536,8 +621,13 @@ class WSManager:
         archivo_url: str,
     ):
         """
-        Guarda un archivo como mensaje
-        y lo distribuye por WebSocket.
+        Guarda un archivo como mensaje y lo distribuye
+        por:
+
+        1. WebSocket antiguo de Mensajes.
+        2. Realtime global.
+
+        El mensaje se guarda UNA sola vez.
         """
 
         db = SessionLocal()
@@ -545,11 +635,23 @@ class WSManager:
         try:
 
             mensaje = Mensaje(
-                remitente_id=remitente_id,
-                destinatario_id=destinatario_id,
+
+                remitente_id=(
+                    remitente_id
+                ),
+
+                destinatario_id=(
+                    destinatario_id
+                ),
+
                 contenido=None,
-                archivo_url=archivo_url,
+
+                archivo_url=(
+                    archivo_url
+                ),
+
                 fecha=datetime.now(),
+
                 leido=False,
             )
 
@@ -563,96 +665,83 @@ class WSManager:
                 mensaje
             )
 
-                    payload = {
-            "tipo": "nuevo_archivo",
-            "mensaje": mensaje.as_dict(),
+        except Exception:
+
+            db.rollback()
+
+            raise
+
+        finally:
+
+            db.close()
+
+
+        # ====================================================
+        # PAYLOAD WS ANTIGUO
+        # ====================================================
+
+        payload = {
+
+            "tipo":
+                "nuevo_archivo",
+
+            "mensaje":
+                mensaje.as_dict(),
         }
 
-        # =====================================================
-        # CANAL ANTIGUO — COMPATIBILIDAD
-        # =====================================================
+
+        # ====================================================
+        # ENVIAR AL REMITENTE
+        # ====================================================
 
         await self.send_to_user(
             remitente_id,
             payload,
         )
 
-        await self.send_to_user(
-            destinatario_id,
-            payload,
-        )
 
-        # =====================================================
-        # REALTIME GLOBAL
-        # =====================================================
+        # ====================================================
+        # ENVIAR AL DESTINATARIO
+        # ====================================================
 
-        realtime_event = RealtimeEvent(
-            modulo="mensajes",
-            evento="archivo_nuevo",
-            usuario_id=remitente_id,
-            data={
-                "tipo": "nuevo_archivo",
-                "mensaje": payload["mensaje"],
-            },
-        )
-
-        await realtime_manager.broadcast_usuario(
-            remitente_id,
-            realtime_event,
-        )
-
-        if destinatario_id != remitente_id:
-
-            await realtime_manager.broadcast_usuario(
-                destinatario_id,
-                realtime_event,
-            )
-
-        # =====================================================
-        # NOTIFICACIÓN
-        # =====================================================
-
-        await send_notif_to_user(
-            destinatario_id,
-            {
-                "tipo": "nuevo_archivo",
-                "from": remitente_id,
-                "archivo_url": archivo_url,
-            },
-        )
-
-        # -------------------------------------------------
-        # REMITENTE
-        # -------------------------------------------------
-
-        await self.send_to_user(
-            remitente_id,
-            payload,
-        )
-
-        # -------------------------------------------------
-        # DESTINATARIO
-        # -------------------------------------------------
-
-        if destinatario_id != remitente_id:
+        if (
+            destinatario_id
+            != remitente_id
+        ):
 
             await self.send_to_user(
                 destinatario_id,
                 payload,
             )
 
-        # -------------------------------------------------
+
+        # ====================================================
+        # REALTIME GLOBAL
+        # ====================================================
+
+        await self.publicar_archivo_realtime(
+            remitente_id,
+            mensaje,
+        )
+
+
+        # ====================================================
         # NOTIFICACIÓN
-        # -------------------------------------------------
+        # ====================================================
 
         try:
 
             await send_notif_to_user(
                 destinatario_id,
                 {
-                    "tipo": "nuevo_archivo",
-                    "from": remitente_id,
-                    "archivo_url": archivo_url,
+                    "tipo":
+                        "nuevo_archivo",
+
+                    "from":
+                        remitente_id,
+
+                    "archivo_url":
+                        archivo_url,
                 },
             )
 
@@ -664,11 +753,12 @@ class WSManager:
                 flush=True,
             )
 
+
         return mensaje
 
 
-# =========================================================
+# ============================================================
 # INSTANCIA GLOBAL
-# =========================================================
+# ============================================================
 
 manager = WSManager()
