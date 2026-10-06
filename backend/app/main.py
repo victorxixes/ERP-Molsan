@@ -102,9 +102,7 @@ from backend.app.expedientes.defectos.models import (
 # DETALLE DE EXPEDIENTES
 # ------------------------------------------------------------
 
-from backend.app.expedientes.detalle.models import (
-    ExpedienteDetalle,
-)
+from backend.app.expedientes.detalle.models import ExpedienteDetalle
 
 
 # ------------------------------------------------------------
