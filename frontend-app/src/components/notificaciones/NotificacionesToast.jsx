@@ -1,180 +1,448 @@
-import { useEffect } from "react";
-import { useNotificacionesStore } from "../../store/notificacionesStore";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  useNotificacionesStore,
+} from "../../store/notificacionesStore";
+
+
+/**
+ * ============================================================
+ * NOTIFICACIONES TOAST
+ * MOLSAN ERP — GLASS LUXE
+ *
+ * - Avisos realtime
+ * - Diseño translúcido
+ * - Backdrop blur
+ * - Tamaño compacto
+ * - Desaparición automática en 2 segundos
+ * - No elimina la notificación del store
+ * ============================================================
+ */
 
 export default function NotificacionesToast() {
-  const notificaciones = useNotificacionesStore(
-    (s) => s.notificaciones
-  );
+
+  const notificaciones =
+    useNotificacionesStore(
+      (s) => s.notificaciones
+    );
+
+
+  /**
+   * ==========================================================
+   * SONIDO
+   * ==========================================================
+   */
 
   useEffect(() => {
-    if (notificaciones.length === 0) return;
 
-    const audio = new Audio("/sonido-notificacion.mp3");
+    if (
+      notificaciones.length === 0
+    ) {
+      return;
+    }
+
+
+    const audio =
+      new Audio(
+        "/sonido-notificacion.mp3"
+      );
+
+
     audio.volume = 0.4;
 
-    audio.play().catch(() => {});
-  }, [notificaciones]);
+
+    audio
+      .play()
+      .catch(() => {});
+
+
+  }, [
+    notificaciones,
+  ]);
+
 
   return (
     <div
       className="
+        pointer-events-none
         fixed
         bottom-5
         right-5
-        space-y-3
         z-[9999]
-        w-[min(380px,calc(100vw-2rem))]
+
+        flex
+        w-[min(340px,calc(100vw-2rem))]
+        flex-col
+        gap-2
       "
     >
-      {notificaciones.slice(0, 3).map((n) => (
-        <Toast
-          key={n.id}
-          notificacion={n}
-        />
-      ))}
+
+      {notificaciones
+        .slice(0, 3)
+        .map(
+          (n) => (
+            <Toast
+              key={n.id}
+              notificacion={n}
+            />
+          )
+        )}
+
     </div>
   );
 }
 
-function Toast({ notificacion: n }) {
-  const configuracion = obtenerConfiguracion(n.tipo);
+
+/**
+ * ============================================================
+ * TOAST INDIVIDUAL
+ * ============================================================
+ */
+
+function Toast({
+  notificacion: n,
+}) {
+
+  const configuracion =
+    obtenerConfiguracion(
+      n.tipo
+    );
+
+
+  const [
+    visible,
+    setVisible,
+  ] = useState(true);
+
+
+  /**
+   * ==========================================================
+   * VIDA DEL TOAST
+   *
+   * 1,5 segundos visible
+   * 0,5 segundos de desvanecimiento
+   * = 2 segundos totales
+   * ==========================================================
+   */
+
+  useEffect(() => {
+
+    const fadeTimer =
+      setTimeout(
+        () => {
+          setVisible(false);
+        },
+        1500
+      );
+
+
+    const removeTimer =
+      setTimeout(
+        () => {
+          setVisible(false);
+        },
+        2000
+      );
+
+
+    return () => {
+
+      clearTimeout(
+        fadeTimer
+      );
+
+      clearTimeout(
+        removeTimer
+      );
+
+    };
+
+  }, []);
+
+
+  if (!visible) {
+
+    return (
+      <div
+        className="
+          h-0
+          overflow-hidden
+          opacity-0
+        "
+      />
+    );
+
+  }
+
 
   return (
     <div
       className="
+        pointer-events-auto
         relative
         overflow-hidden
-        bg-slate-900/85
-        backdrop-blur-2xl
-        border border-white/15
-        shadow-2xl
+
+        w-full
+
         rounded-2xl
-        p-4
+
+        border
+        border-white/10
+
+        bg-slate-900/50
+
+        backdrop-blur-xl
+
+        px-3
+        py-3
+
         text-white
+
+        shadow-[0_18px_45px_rgba(15,23,42,0.18)]
+
+        transition-all
+        duration-500
+        ease-out
+
         animate-fade-in
       "
     >
 
-      {/* Línea lateral */}
+      {/* ==================================================
+          LÍNEA LATERAL
+      ================================================== */}
+
       <div
         className={`
           absolute
           left-0
           top-0
           bottom-0
-          w-1
+          w-[3px]
           ${configuracion.color}
         `}
       />
 
-      <div className="flex items-start gap-3">
 
-        {/* ICONO */}
+      {/* ==================================================
+          CONTENIDO
+      ================================================== */}
+
+      <div
+        className="
+          flex
+          items-center
+          gap-3
+        "
+      >
+
+        {/* =================================================
+            ICONO
+        ================================================= */}
+
         <div
           className="
-            w-10 h-10
+            flex
+            h-9
+            w-9
             shrink-0
+            items-center
+            justify-center
+
             rounded-xl
+
+            border
+            border-white/10
+
             bg-white/10
-            border border-white/10
-            flex items-center justify-center
-            text-lg
+
+            text-base
+
+            shadow-sm
           "
         >
-          {configuracion.icono}
+          {
+            configuracion.icono
+          }
         </div>
 
-        {/* CONTENIDO */}
-        <div className="min-w-0 flex-1">
 
-          <div className="flex items-center justify-between gap-3">
+        {/* =================================================
+            TEXTO
+        ================================================= */}
 
-            <div className="font-semibold text-sm">
-              {configuracion.titulo}
+        <div
+          className="
+            min-w-0
+            flex-1
+          "
+        >
+
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              gap-3
+            "
+          >
+
+            <div
+              className="
+                truncate
+                text-sm
+                font-semibold
+                text-white/95
+              "
+            >
+              {
+                configuracion.titulo
+              }
             </div>
 
-            <div className="text-[10px] text-white/35 whitespace-nowrap">
+
+            <div
+              className="
+                shrink-0
+                text-[10px]
+                font-medium
+                text-white/35
+              "
+            >
               Ahora
             </div>
 
           </div>
 
-          <div className="text-sm text-white/65 mt-1 break-words">
-            {n.preview || n.archivo_url || ""}
-          </div>
 
-          {n.tipo && (
+          {/* PREVIEW */}
+
+          {(n.preview ||
+            n.archivo_url) && (
+
             <div
               className="
-                inline-flex
-                mt-2
-                px-2 py-1
-                rounded-lg
-                bg-white/5
-                border border-white/10
-                text-[10px]
-                text-white/35
+                mt-0.5
+                truncate
+                text-xs
+                text-white/55
               "
             >
-              {n.tipo}
+              {
+                n.preview ||
+                n.archivo_url ||
+                ""
+              }
             </div>
+
           )}
 
         </div>
+
       </div>
+
+
+      {/* ==================================================
+          BRILLO SUPERIOR
+      ================================================== */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          left-0
+          right-0
+          top-0
+          h-px
+
+          bg-gradient-to-r
+          from-transparent
+          via-white/20
+          to-transparent
+        "
+      />
+
     </div>
   );
 }
 
-function obtenerConfiguracion(tipo) {
+
+/**
+ * ============================================================
+ * CONFIGURACIÓN
+ * ============================================================
+ */
+
+function obtenerConfiguracion(
+  tipo
+) {
+
   switch (tipo) {
+
     case "nuevo_mensaje":
+
       return {
         icono: "💬",
         titulo: "Nuevo mensaje",
         color: "bg-blue-400",
       };
 
+
     case "nuevo_archivo":
+
       return {
         icono: "📎",
         titulo: "Nuevo archivo",
         color: "bg-purple-400",
       };
 
+
     case "online":
+
       return {
         icono: "🟢",
         titulo: "Usuario conectado",
         color: "bg-emerald-400",
       };
 
+
     case "offline":
+
       return {
         icono: "⚫",
         titulo: "Usuario desconectado",
         color: "bg-slate-400",
       };
 
+
     case "error":
+
       return {
         icono: "⛔",
         titulo: "Error",
         color: "bg-red-400",
       };
 
+
     case "warning":
+
       return {
         icono: "⚠️",
         titulo: "Advertencia",
         color: "bg-yellow-400",
       };
 
+
     default:
+
       return {
         icono: "🔔",
         titulo: "Nueva notificación",
         color: "bg-blue-400",
       };
+
   }
 }
