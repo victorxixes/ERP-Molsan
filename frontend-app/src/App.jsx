@@ -102,6 +102,10 @@ import Maestros from "./pages/maestros/Maestros.jsx";
 /* FUSIONES */
 import Fusiones from "./pages/fusiones/Fusiones";
 
+/* TIPOS DE CARGA HIPOTECARIA */
+import TiposCargaHipotecaria
+  from "./pages/herramientas/TiposCargaHipotecaria.jsx";
+
 /**
  * ============================================================
  * WRAPPER MENSAJES
@@ -337,6 +341,11 @@ export default function App() {
           <Route
           path="herramientas/acciones-expediente"
           element={<AccionesExpediente />}
+          />
+
+          <Route
+          path="herramientas/tipos-carga-hipotecaria"
+          element={<TiposCargaHipotecaria />}
           />
           
           <Route
