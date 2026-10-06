@@ -57,17 +57,28 @@ const API_IMPORTAR_EXCEL =
 // ============================================================
 
 const DEPARTAMENTOS = [
-  // AÑADIR AQUÍ LOS DEPARTAMENTOS
+  "Pre firma",
+  "Post firma",
 ];
 
 
 const SECCIONES = [
-  // AÑADIR AQUÍ LAS SECCIONES
+  "Notaria",
+  "Registro propiedad",
+  "Apoderado",
+  "Gestor",
+  "Dirección",
 ];
 
 
 const ACTIVIDADES = [
-  // AÑADIR AQUÍ LAS ACTIVIDADES
+  "Documentación previa",
+  "Sede notarial sin protocolo",
+  "Sede notarial con protocolo",
+  "Liquidación impuestos",
+  "Tramitación inscripción",
+  "Defectos Registrales",
+  "Facturación y Cierre",
 ];
 
 
