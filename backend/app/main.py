@@ -603,11 +603,6 @@ app.include_router(
     prefix="/api"
 )
 
-app.include_router(
-    entidades_bancarias_router,
-    prefix="/api"
-)
-
 # ============================================================
 # HERRAMIENTAS SWAGGER
 # ============================================================
