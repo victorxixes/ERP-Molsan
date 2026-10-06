@@ -51,6 +51,14 @@ import {
  * - Secciones
  * - Cargos
  *
+ * FOTO:
+ *
+ * - Normalización de URL
+ * - Compatible con /api/fotos
+ * - Compatible con /fotos
+ * - Compatible con nombre de archivo
+ * - Cache busting después de subir foto
+ *
  * API EMPLEADOS:
  *
  * - editarEmpleado()
@@ -127,6 +135,195 @@ function normalizarPermisos(valor) {
   );
 
   return resultado;
+}
+
+
+/* ============================================================
+   FOTO — NORMALIZAR URL
+============================================================ */
+
+function prepararFotoEmpleado(
+  foto
+) {
+
+  if (!foto) {
+    return null;
+  }
+
+  const valor =
+    String(foto)
+      .trim();
+
+  if (!valor) {
+    return null;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * URL ABSOLUTA
+   * ----------------------------------------------------------
+   */
+
+  if (
+    valor.startsWith("http://") ||
+    valor.startsWith("https://")
+  ) {
+    return valor;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * API CONFIGURADA
+   *
+   * Normalmente VITE_API_URL es:
+   *
+   * https://agenda-intranet-b.onrender.com/api
+   *
+   * o:
+   *
+   * https://agenda-intranet-b.onrender.com/api/
+   * ----------------------------------------------------------
+   */
+
+  const apiConfigurada =
+    String(
+      import.meta.env.VITE_API_URL || ""
+    )
+      .replace(
+        /\/+$/,
+        ""
+      );
+
+
+  /*
+   * Si VITE_API_URL termina en /api,
+   * nos quedamos con el origen:
+   *
+   * https://agenda-intranet-b.onrender.com
+   */
+
+  const origen =
+    (
+      apiConfigurada
+        ? apiConfigurada
+            .replace(
+              /\/api$/i,
+              ""
+            )
+        : (
+            typeof window !== "undefined"
+              ? window.location.origin
+              : ""
+          )
+    );
+
+
+  /*
+   * Normalizar la ruta.
+   */
+
+  const ruta =
+    valor.startsWith("/")
+      ? valor
+      : `/${valor}`;
+
+
+  /*
+   * ----------------------------------------------------------
+   * CASO 1
+   *
+   * El backend devuelve directamente:
+   *
+   * /api/fotos/empleados/empleado_1.png
+   * ----------------------------------------------------------
+   */
+
+  if (
+    ruta.startsWith("/api/")
+  ) {
+    return (
+      `${origen}${ruta}`
+    );
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * CASO 2
+   *
+   * /fotos/empleados/empleado_1.png
+   *
+   * Lo convertimos a:
+   *
+   * /api/fotos/empleados/empleado_1.png
+   * ----------------------------------------------------------
+   */
+
+  if (
+    ruta.startsWith("/fotos/")
+  ) {
+    return (
+      `${origen}/api${ruta}`
+    );
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * CASO 3
+   *
+   * /static/fotos/empleados/...
+   *
+   * FastAPI también sirve /static.
+   * ----------------------------------------------------------
+   */
+
+  if (
+    ruta.startsWith("/static/fotos/")
+  ) {
+    return (
+      `${origen}${ruta}`
+    );
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * CASO 4
+   *
+   * /empleados/empleado_1.png
+   *
+   * ----------------------------------------------------------
+   */
+
+  if (
+    ruta.startsWith("/empleados/")
+  ) {
+    return (
+      `${origen}/api/fotos${ruta}`
+    );
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * CASO 5
+   *
+   * Solo tenemos:
+   *
+   * empleado_1.png
+   *
+   * Lo convertimos al endpoint real:
+   *
+   * /api/fotos/empleados/empleado_1.png
+   * ----------------------------------------------------------
+   */
+
+  return (
+    `${origen}/api/fotos/empleados${ruta}`
+  );
 }
 
 
@@ -211,6 +408,19 @@ export default function ModalEmpleado({
     permisosModulo,
     setPermisosModulo,
   ] = useState({});
+
+
+  /* ==========================================================
+     VERSION FOTO
+     
+     Se modifica después de subir una fotografía para evitar
+     que el navegador mantenga la imagen anterior en caché.
+  ========================================================== */
+
+  const [
+    fotoVersion,
+    setFotoVersion,
+  ] = useState(0);
 
 
   /* ==========================================================
@@ -391,6 +601,7 @@ export default function ModalEmpleado({
       setEmpleadoEdit({});
       setModulosVisibles([]);
       setPermisosModulo({});
+      setFotoVersion(0);
 
       return;
     }
@@ -411,6 +622,14 @@ export default function ModalEmpleado({
         ...empleadoFicha,
       }
     );
+
+
+    /*
+     * Cada vez que llega una ficha nueva,
+     * permitimos volver a cargar la imagen normalmente.
+     */
+
+    setFotoVersion(0);
 
 
     /* --------------------------------------------------------
@@ -652,7 +871,7 @@ export default function ModalEmpleado({
      FOTO
   ========================================================== */
 
-  const foto =
+  const fotoOriginal =
     empleadoFormulario?.foto_url ||
     empleadoFormulario?.fotoUrl ||
     empleadoFormulario?.foto ||
@@ -660,6 +879,39 @@ export default function ModalEmpleado({
     ficha?.fotoUrl ||
     ficha?.foto ||
     null;
+
+
+  const fotoBase =
+    prepararFotoEmpleado(
+      fotoOriginal
+    );
+
+
+  const foto =
+    useMemo(() => {
+
+      if (!fotoBase) {
+        return null;
+      }
+
+      if (!fotoVersion) {
+        return fotoBase;
+      }
+
+      return (
+        `${fotoBase}` +
+        (
+          fotoBase.includes("?")
+            ? "&"
+            : "?"
+        ) +
+        `v=${fotoVersion}`
+      );
+
+    }, [
+      fotoBase,
+      fotoVersion,
+    ]);
 
 
   /* ==========================================================
@@ -1350,22 +1602,38 @@ export default function ModalEmpleado({
         nuevaFoto
       ) {
 
+        /*
+         * Convertimos inmediatamente la respuesta
+         * del backend a una URL válida del backend.
+         */
+
+        const nuevaFotoPreparada =
+          prepararFotoEmpleado(
+            nuevaFoto
+          );
+
+
+        /*
+         * Actualizamos el formulario local.
+         */
+
         setEmpleadoEdit(
           (actual) => ({
             ...actual,
             foto:
-              nuevaFoto,
+              nuevaFotoPreparada,
             foto_url:
-              nuevaFoto,
+              nuevaFotoPreparada,
             fotoUrl:
-              nuevaFoto,
+              nuevaFotoPreparada,
           })
         );
 
 
         /*
-         * También actualizamos el store
-         * para que el cambio sea inmediato.
+         * Actualizamos también el store
+         * para que el cambio se vea inmediatamente
+         * en cualquier componente conectado.
          */
 
         useSeguridadStore.setState(
@@ -1384,13 +1652,13 @@ export default function ModalEmpleado({
                             ...estado.ficha.empleado,
 
                             foto:
-                              nuevaFoto,
+                              nuevaFotoPreparada,
 
                             foto_url:
-                              nuevaFoto,
+                              nuevaFotoPreparada,
 
                             fotoUrl:
-                              nuevaFoto,
+                              nuevaFotoPreparada,
                           }
 
                         : estado.ficha.empleado,
@@ -1398,6 +1666,15 @@ export default function ModalEmpleado({
 
                 : estado.ficha,
           })
+        );
+
+
+        /*
+         * Forzar recarga de imagen para evitar caché.
+         */
+
+        setFotoVersion(
+          Date.now()
         );
       }
 
