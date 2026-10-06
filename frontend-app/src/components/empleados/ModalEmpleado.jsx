@@ -475,39 +475,57 @@ export default function ModalEmpleado({
 
       } catch (err) {
 
-        console.error(
-          "MODAL EMPLEADO — ERROR CARGANDO FICHA:",
-          err
-        );
+  console.error(
+    "MODAL EMPLEADO — ERROR SUBIENDO FOTO:",
+    err
+  );
 
-        if (activo) {
+  const detail =
+    err?.response?.data?.detail;
 
-          setError(
-            err?.response?.data?.detail ||
-            "No se ha podido cargar la ficha del empleado."
-          );
-        }
+  let mensajeError =
+    "No se ha podido actualizar la fotografía.";
 
-      } finally {
+  if (typeof detail === "string") {
 
-        if (activo) {
-          setCargando(false);
-        }
-      }
-    };
+    mensajeError = detail;
 
-    cargar();
+  } else if (Array.isArray(detail)) {
 
-    return () => {
-      activo = false;
-    };
+    mensajeError =
+      detail
+        .map(
+          (item) =>
+            item?.msg ||
+            "Error de validación."
+        )
+        .join(". ");
 
-  }, [
-    open,
-    empleadoId,
-    cargarFicha,
-  ]);
+  } else if (
+    detail &&
+    typeof detail === "object"
+  ) {
 
+    mensajeError =
+      detail.msg ||
+      JSON.stringify(detail);
+
+  } else if (err?.message) {
+
+    mensajeError = err.message;
+
+  }
+
+  setError(
+    mensajeError
+  );
+
+} finally {
+
+  setSubiendoFoto(false);
+
+  event.target.value = "";
+}
 
   /* ==========================================================
      CARGAR MAESTROS
