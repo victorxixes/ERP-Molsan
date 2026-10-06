@@ -123,7 +123,7 @@ export default function Utilidades() {
 =================================================== */}
 
 <Card
-  icon="clipboard"
+  icon="📋"
   titulo="Acciones del Expediente"
   descripcion="Catálogo de acciones, actividades y descripciones asociadas a los expedientes."
   link="/herramientas/acciones-expediente"
