@@ -58,6 +58,172 @@ const safeId = (
 
 
 /* ============================================================
+   FOTO — NORMALIZAR URL
+============================================================ */
+
+const prepararFotoEmpleado = (
+  foto
+) => {
+
+  if (
+    foto === null ||
+    foto === undefined ||
+    foto === "" ||
+    foto === "-"
+  ) {
+    return "/no-foto.png";
+  }
+
+
+  const valor =
+    String(foto)
+      .trim();
+
+
+  if (!valor) {
+    return "/no-foto.png";
+  }
+
+
+  /* ----------------------------------------------------------
+     URL ABSOLUTA
+  ---------------------------------------------------------- */
+
+  if (
+    valor.startsWith(
+      "http://"
+    ) ||
+    valor.startsWith(
+      "https://"
+    )
+  ) {
+    return valor;
+  }
+
+
+  /*
+   * API_BASE del proyecto apunta a:
+   *
+   * https://agenda-intranet-b.onrender.com/api
+   *
+   * Por tanto construimos siempre las fotos
+   * debajo de /api/fotos.
+   */
+
+  const apiBase =
+    String(
+      API_BASE || ""
+    ).replace(
+      /\/+$/,
+      ""
+    );
+
+
+  /*
+   * ----------------------------------------------------------
+   * /api/fotos/...
+   * ----------------------------------------------------------
+   */
+
+  if (
+    valor.startsWith(
+      "/api/"
+    )
+  ) {
+
+    const origen =
+      apiBase.replace(
+        /\/api$/i,
+        ""
+      );
+
+    return (
+      `${origen}${valor}`
+    );
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * /fotos/...
+   * ----------------------------------------------------------
+   */
+
+  if (
+    valor.startsWith(
+      "/fotos/"
+    )
+  ) {
+    return (
+      `${apiBase}${valor}`
+    );
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * /static/fotos/...
+   * ----------------------------------------------------------
+   */
+
+  if (
+    valor.startsWith(
+      "/static/fotos/"
+    )
+  ) {
+
+    const origen =
+      apiBase.replace(
+        /\/api$/i,
+        ""
+      );
+
+    return (
+      `${origen}${valor}`
+    );
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * /empleados/...
+   * ----------------------------------------------------------
+   */
+
+  if (
+    valor.startsWith(
+      "/empleados/"
+    )
+  ) {
+
+    return (
+      `${apiBase}/fotos${valor}`
+    );
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * SOLO NOMBRE DE ARCHIVO
+   *
+   * empleado_1.png
+   *
+   * Resultado:
+   *
+   * /api/fotos/empleados/empleado_1.png
+   * ----------------------------------------------------------
+   */
+
+  return (
+    `${apiBase}/fotos/empleados/${valor.replace(
+      /^\/+/,
+      ""
+    )}`
+  );
+};
+
+
+/* ============================================================
    COMPONENTE
 ============================================================ */
 
@@ -574,10 +740,9 @@ export default function EmpleadosListado({
             (empleado) => {
 
               const foto =
-                empleado.foto &&
-                empleado.foto !== "-"
-                  ? `${API_BASE}${empleado.foto}`
-                  : "/no-foto.png";
+                prepararFotoEmpleado(
+                  empleado.foto
+                );
 
 
               return (
@@ -639,6 +804,20 @@ export default function EmpleadosListado({
                         <img
                           src={foto}
                           alt="Foto empleado"
+                          onError={(event) => {
+
+                            /*
+                             * Evitamos un bucle si
+                             * incluso la imagen por
+                             * defecto no pudiera cargarse.
+                             */
+
+                            event.currentTarget.onerror =
+                              null;
+
+                            event.currentTarget.src =
+                              "/no-foto.png";
+                          }}
                           className="
                             w-full
                             h-full
