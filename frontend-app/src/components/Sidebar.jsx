@@ -516,7 +516,15 @@ export default function Sidebar() {
       icon: "chat",
       badge: mensajesNoLeidos,
     },
-   {
+    
+    {
+      key: "informes",
+      to: "/informes",
+      label: "Informes",
+      icon: "chart",
+     },
+    
+    {
       key: "fusiones",
       to: "/fusiones",
       label: "Fusiones",
