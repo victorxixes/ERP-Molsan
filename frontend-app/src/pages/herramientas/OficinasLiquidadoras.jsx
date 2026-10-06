@@ -1,8 +1,26 @@
 import React, {
+  useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
+
+
+// ============================================================
+// OFICINAS LIQUIDADORAS — MOLSAN ERP PREMIUM 2027
+// ============================================================
+//
+// - Catálogo completo
+// - Buscador
+// - Filtros
+// - Paginación
+// - Alta
+// - Edición
+// - Eliminación
+// - Importación Excel
+// - Diseño integrado con ERP
+// - Sin estilos inline
+// ============================================================
 
 
 // ============================================================
@@ -23,8 +41,11 @@ const API_IMPORTAR_EXCEL =
 // UTILIDADES
 // ============================================================
 
-async function leerRespuestaServidor(response) {
-  const texto = await response.text();
+async function leerRespuestaServidor(
+  response
+) {
+  const texto =
+    await response.text();
 
   let datos = null;
 
@@ -43,10 +64,154 @@ async function leerRespuestaServidor(response) {
       texto ||
       `Error HTTP ${response.status}`;
 
-    throw new Error(detalle);
+    throw new Error(
+      detalle
+    );
   }
 
   return datos;
+}
+
+
+// ============================================================
+// ICONO
+// ============================================================
+
+function Icono({
+  name,
+  className = "w-5 h-5",
+}) {
+  return (
+    <svg
+      className={className}
+      aria-hidden="true"
+    >
+      <use
+        href={`/icons/icons.svg#${name}`}
+      />
+    </svg>
+  );
+}
+
+
+// ============================================================
+// CAMPO DE FORMULARIO
+// ============================================================
+
+function Campo({
+  label,
+  value,
+  onChange,
+  placeholder = "",
+  type = "text",
+  full = false,
+}) {
+  return (
+    <label
+      className={`
+        flex
+        flex-col
+        gap-1.5
+
+        ${full ? "md:col-span-2" : ""}
+      `}
+    >
+      <span
+        className="
+          text-xs
+          font-semibold
+          text-[var(--erp-text)]
+        "
+      >
+        {label}
+      </span>
+
+      <input
+        type={type}
+        value={value}
+        onChange={(event) =>
+          onChange(
+            event.target.value
+          )
+        }
+        placeholder={placeholder}
+        className="
+          w-full
+          rounded-xl
+          border
+          border-[var(--erp-border)]
+          bg-white
+          px-3
+          py-2.5
+          text-sm
+          text-[var(--erp-text)]
+          outline-none
+          transition
+
+          focus:border-[var(--erp-primary)]
+          focus:ring-2
+          focus:ring-[var(--erp-primary-soft)]
+        "
+      />
+    </label>
+  );
+}
+
+
+// ============================================================
+// BADGE ACTIVO
+// ============================================================
+
+function BadgeActivo({
+  activo,
+}) {
+  return (
+    <span
+      className={`
+        inline-flex
+        items-center
+        gap-1.5
+        rounded-lg
+        border
+        px-2.5
+        py-1
+        text-xs
+        font-semibold
+
+        ${
+          activo
+            ? `
+              border-green-200
+              bg-green-50
+              text-green-700
+            `
+            : `
+              border-red-200
+              bg-red-50
+              text-red-700
+            `
+        }
+      `}
+    >
+      <span
+        className={`
+          h-1.5
+          w-1.5
+          rounded-full
+
+          ${
+            activo
+              ? "bg-green-500"
+              : "bg-red-500"
+          }
+        `}
+      />
+
+      {activo
+        ? "Activa"
+        : "Inactiva"}
+    </span>
+  );
 }
 
 
@@ -55,48 +220,91 @@ async function leerRespuestaServidor(response) {
 // ============================================================
 
 export default function OficinasLiquidadoras() {
-  const [oficinas, setOficinas] = useState([]);
 
-  const [cargando, setCargando] = useState(false);
+  // ==========================================================
+  // ESTADO
+  // ==========================================================
 
-  const [error, setError] = useState("");
+  const [
+    oficinas,
+    setOficinas,
+  ] = useState([]);
 
-  const [mensaje, setMensaje] = useState("");
+  const [
+    loading,
+    setLoading,
+  ] = useState(false);
 
-  const [busqueda, setBusqueda] = useState("");
+  const [
+    error,
+    setError,
+  ] = useState("");
 
-  const [filtroProvincia, setFiltroProvincia] =
-    useState("");
+  const [
+    mensaje,
+    setMensaje,
+  ] = useState("");
 
-  const [filtroPoblacion, setFiltroPoblacion] =
-    useState("");
+  const [
+    busqueda,
+    setBusqueda,
+  ] = useState("");
 
-  const [filtroActivo, setFiltroActivo] =
-    useState("true");
+  const [
+    filtroProvincia,
+    setFiltroProvincia,
+  ] = useState("");
 
-  const [pagina, setPagina] = useState(1);
+  const [
+    filtroPoblacion,
+    setFiltroPoblacion,
+  ] = useState("");
 
-  const [porPagina] = useState(20);
+  const [
+    filtroActivo,
+    setFiltroActivo,
+  ] = useState("true");
 
-  const [mostrarModal, setMostrarModal] =
-    useState(false);
+  const [
+    pagina,
+    setPagina,
+  ] = useState(1);
 
-  const [modoEdicion, setModoEdicion] =
-    useState(false);
+  const [
+    mostrarModal,
+    setMostrarModal,
+  ] = useState(false);
 
-  const [oficinaEditando, setOficinaEditando] =
-    useState(null);
+  const [
+    mostrarImportar,
+    setMostrarImportar,
+  ] = useState(false);
 
-  const [mostrarImportar, setMostrarImportar] =
-    useState(false);
+  const [
+    modoEdicion,
+    setModoEdicion,
+  ] = useState(false);
 
-  const [archivo, setArchivo] =
-    useState(null);
+  const [
+    oficinaEditando,
+    setOficinaEditando,
+  ] = useState(null);
 
-  const [importando, setImportando] =
-    useState(false);
+  const [
+    archivo,
+    setArchivo,
+  ] = useState(null);
 
-  const [formulario, setFormulario] = useState({
+  const [
+    importando,
+    setImportando,
+  ] = useState(false);
+
+
+  const [
+    formulario,
+    setFormulario,
+  ] = useState({
     oficina_liquidadora: "",
     direccion: "",
     codigo_postal: "",
@@ -109,134 +317,238 @@ export default function OficinasLiquidadoras() {
   });
 
 
+  const POR_PAGINA = 20;
+
+
   // ==========================================================
-  // CARGAR
+  // CARGAR OFICINAS
   // ==========================================================
 
-  async function cargarOficinas() {
-    try {
-      setCargando(true);
-      setError("");
+  const cargarOficinas =
+    useCallback(
+      async () => {
 
-      const params = new URLSearchParams();
+        setLoading(true);
+        setError("");
 
-      if (busqueda.trim()) {
-        params.set(
-          "q",
-          busqueda.trim()
-        );
-      }
+        try {
 
-      if (filtroProvincia.trim()) {
-        params.set(
-          "provincia",
-          filtroProvincia.trim()
-        );
-      }
+          const params =
+            new URLSearchParams();
 
-      if (filtroPoblacion.trim()) {
-        params.set(
-          "poblacion",
-          filtroPoblacion.trim()
-        );
-      }
+          if (
+            busqueda.trim()
+          ) {
+            params.set(
+              "q",
+              busqueda.trim()
+            );
+          }
 
-      if (filtroActivo === "true") {
-        params.set("activo", "true");
-      }
+          if (
+            filtroProvincia.trim()
+          ) {
+            params.set(
+              "provincia",
+              filtroProvincia.trim()
+            );
+          }
 
-      if (filtroActivo === "false") {
-        params.set("activo", "false");
-      }
+          if (
+            filtroPoblacion.trim()
+          ) {
+            params.set(
+              "poblacion",
+              filtroPoblacion.trim()
+            );
+          }
 
-      const url =
-        params.toString()
-          ? `${API_BASE}?${params.toString()}`
-          : API_BASE;
+          if (
+            filtroActivo ===
+            "true"
+          ) {
+            params.set(
+              "activo",
+              "true"
+            );
+          }
 
-      const response = await fetch(url, {
-        headers: {
-          Accept: "application/json",
-        },
-      });
+          if (
+            filtroActivo ===
+            "false"
+          ) {
+            params.set(
+              "activo",
+              "false"
+            );
+          }
 
-      const datos =
-        await leerRespuestaServidor(
-          response
-        );
 
-      setOficinas(
-        Array.isArray(datos)
-          ? datos
-          : []
-      );
+          const url =
+            params.toString()
+              ? `${API_BASE}?${params.toString()}`
+              : API_BASE;
 
-      setPagina(1);
-    } catch (err) {
-      setError(
-        err.message ||
-          "No se pudieron cargar las Oficinas Liquidadoras."
-      );
-    } finally {
-      setCargando(false);
-    }
-  }
+
+          const response =
+            await fetch(
+              url,
+              {
+                headers: {
+                  Accept:
+                    "application/json",
+                },
+              }
+            );
+
+
+          const datos =
+            await leerRespuestaServidor(
+              response
+            );
+
+
+          setOficinas(
+            Array.isArray(
+              datos
+            )
+              ? datos
+              : []
+          );
+
+          setPagina(1);
+
+        } catch (err) {
+
+          setError(
+            err?.message ||
+              "No se han podido cargar las Oficinas Liquidadoras."
+          );
+
+        } finally {
+
+          setLoading(false);
+
+        }
+
+      },
+      [
+        busqueda,
+        filtroProvincia,
+        filtroPoblacion,
+        filtroActivo,
+      ]
+    );
 
 
   useEffect(() => {
+
     cargarOficinas();
+
   }, [
-    busqueda,
-    filtroProvincia,
-    filtroPoblacion,
-    filtroActivo,
+    cargarOficinas,
   ]);
 
 
   // ==========================================================
-  // OPCIONES
+  // LIMPIAR MENSAJES
   // ==========================================================
 
-  const provincias = useMemo(() => {
-    return [
-      ...new Set(
-        oficinas
-          .map((item) =>
-            item.provincia?.trim()
-          )
-          .filter(Boolean)
-      ),
-    ].sort((a, b) =>
-      a.localeCompare(
-        b,
-        "es",
-        {
-          sensitivity: "base",
-        }
-      )
-    );
-  }, [oficinas]);
+  useEffect(() => {
+
+    if (
+      !mensaje &&
+      !error
+    ) {
+      return;
+    }
+
+    const timer =
+      window.setTimeout(
+        () => {
+          setMensaje("");
+          setError("");
+        },
+        7000
+      );
+
+    return () =>
+      window.clearTimeout(
+        timer
+      );
+
+  }, [
+    mensaje,
+    error,
+  ]);
 
 
-  const poblaciones = useMemo(() => {
-    return [
-      ...new Set(
-        oficinas
-          .map((item) =>
-            item.poblacion?.trim()
+  // ==========================================================
+  // OPCIONES DE PROVINCIAS
+  // ==========================================================
+
+  const provincias =
+    useMemo(() => {
+
+      return [
+        ...new Set(
+          oficinas
+            .map(
+              (item) =>
+                item.provincia
+                  ?.trim()
+            )
+            .filter(Boolean)
+        ),
+      ].sort(
+        (a, b) =>
+          a.localeCompare(
+            b,
+            "es",
+            {
+              sensitivity:
+                "base",
+            }
           )
-          .filter(Boolean)
-      ),
-    ].sort((a, b) =>
-      a.localeCompare(
-        b,
-        "es",
-        {
-          sensitivity: "base",
-        }
-      )
-    );
-  }, [oficinas]);
+      );
+
+    }, [
+      oficinas,
+    ]);
+
+
+  // ==========================================================
+  // OPCIONES DE POBLACIÓN
+  // ==========================================================
+
+  const poblaciones =
+    useMemo(() => {
+
+      return [
+        ...new Set(
+          oficinas
+            .map(
+              (item) =>
+                item.poblacion
+                  ?.trim()
+            )
+            .filter(Boolean)
+        ),
+      ].sort(
+        (a, b) =>
+          a.localeCompare(
+            b,
+            "es",
+            {
+              sensitivity:
+                "base",
+            }
+          )
+      );
+
+    }, [
+      oficinas,
+    ]);
 
 
   // ==========================================================
@@ -247,36 +559,78 @@ export default function OficinasLiquidadoras() {
     Math.max(
       1,
       Math.ceil(
-        oficinas.length / porPagina
+        oficinas.length /
+          POR_PAGINA
       )
     );
 
+
   const oficinasPagina =
     oficinas.slice(
-      (pagina - 1) * porPagina,
-      pagina * porPagina
+      (pagina - 1) *
+        POR_PAGINA,
+      pagina *
+        POR_PAGINA
     );
 
 
   useEffect(() => {
-    if (pagina > totalPaginas) {
-      setPagina(totalPaginas);
+
+    if (
+      pagina >
+      totalPaginas
+    ) {
+      setPagina(
+        totalPaginas
+      );
     }
-  }, [pagina, totalPaginas]);
+
+  }, [
+    pagina,
+    totalPaginas,
+  ]);
 
 
   // ==========================================================
-  // FORMULARIO
+  // ESTADÍSTICAS
   // ==========================================================
 
-  function abrirNuevo() {
+  const totalOficinas =
+    oficinas.length;
+
+  const oficinasActivas =
+    oficinas.filter(
+      (item) =>
+        item.activo !==
+        false
+    ).length;
+
+  const oficinasConContacto =
+    oficinas.filter(
+      (item) =>
+        item.telefono ||
+        item.email
+    ).length;
+
+
+  // ==========================================================
+  // NUEVA OFICINA
+  // ==========================================================
+
+  function abrirNueva() {
+
     setModoEdicion(false);
-    setOficinaEditando(null);
+
+    setOficinaEditando(
+      null
+    );
 
     setFormulario({
-      oficina_liquidadora: "",
+      oficina_liquidadora:
+        "",
       direccion: "",
-      codigo_postal: "",
+      codigo_postal:
+        "",
       poblacion: "",
       provincia: "",
       telefono: "",
@@ -285,58 +639,115 @@ export default function OficinasLiquidadoras() {
       activo: true,
     });
 
-    setMostrarModal(true);
+    setMostrarModal(
+      true
+    );
+
     setError("");
-    setMensaje("");
   }
 
 
-  function abrirEditar(oficina) {
+  // ==========================================================
+  // EDITAR
+  // ==========================================================
+
+  function abrirEditar(
+    oficina
+  ) {
+
     setModoEdicion(true);
-    setOficinaEditando(oficina);
+
+    setOficinaEditando(
+      oficina
+    );
 
     setFormulario({
       oficina_liquidadora:
-        oficina.oficina_liquidadora || "",
+        oficina.oficina_liquidadora ||
+        "",
+
       direccion:
-        oficina.direccion || "",
+        oficina.direccion ||
+        "",
+
       codigo_postal:
-        oficina.codigo_postal || "",
+        oficina.codigo_postal ||
+        "",
+
       poblacion:
-        oficina.poblacion || "",
+        oficina.poblacion ||
+        "",
+
       provincia:
-        oficina.provincia || "",
+        oficina.provincia ||
+        "",
+
       telefono:
-        oficina.telefono || "",
+        oficina.telefono ||
+        "",
+
       email:
-        oficina.email || "",
+        oficina.email ||
+        "",
+
       horario:
-        oficina.horario || "",
+        oficina.horario ||
+        "",
+
       activo:
-        oficina.activo !== false,
+        oficina.activo !==
+        false,
     });
 
-    setMostrarModal(true);
+    setMostrarModal(
+      true
+    );
+
     setError("");
-    setMensaje("");
   }
 
+
+  // ==========================================================
+  // CERRAR MODAL
+  // ==========================================================
 
   function cerrarModal() {
-    setMostrarModal(false);
-    setOficinaEditando(null);
-    setModoEdicion(false);
+
+    if (loading) {
+      return;
+    }
+
+    setMostrarModal(
+      false
+    );
+
+    setModoEdicion(
+      false
+    );
+
+    setOficinaEditando(
+      null
+    );
+
   }
 
+
+  // ==========================================================
+  // CAMBIAR CAMPO
+  // ==========================================================
 
   function cambiarCampo(
     campo,
     valor
   ) {
-    setFormulario((anterior) => ({
-      ...anterior,
-      [campo]: valor,
-    }));
+
+    setFormulario(
+      (actual) => ({
+        ...actual,
+        [campo]: valor,
+      })
+    );
+
   }
 
 
@@ -344,52 +755,72 @@ export default function OficinasLiquidadoras() {
   // GUARDAR
   // ==========================================================
 
-  async function guardarOficina(event) {
+  async function guardarOficina(
+    event
+  ) {
+
     event.preventDefault();
 
-    if (
-      !formulario.oficina_liquidadora.trim()
-    ) {
+    const nombre =
+      formulario.oficina_liquidadora.trim();
+
+    if (!nombre) {
+
       setError(
         "La Oficina Liquidadora es obligatoria."
       );
+
       return;
     }
 
-    try {
-      setCargando(true);
-      setError("");
-      setMensaje("");
 
-      const metodo =
-        modoEdicion
-          ? "PUT"
-          : "POST";
+    setLoading(true);
+    setError("");
+
+
+    try {
 
       const url =
         modoEdicion
           ? `${API_BASE}/${oficinaEditando.id}`
           : API_BASE;
 
-      const response = await fetch(
-        url,
-        {
-          method: metodo,
-          headers: {
-            Accept:
-              "application/json",
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify(
-            formulario
-          ),
-        }
-      );
+      const method =
+        modoEdicion
+          ? "PUT"
+          : "POST";
+
+
+      const response =
+        await fetch(
+          url,
+          {
+            method,
+
+            headers: {
+              Accept:
+                "application/json",
+
+              "Content-Type":
+                "application/json",
+            },
+
+            body:
+              JSON.stringify(
+                {
+                  ...formulario,
+                  oficina_liquidadora:
+                    nombre,
+                }
+              ),
+          }
+        );
+
 
       await leerRespuestaServidor(
         response
       );
+
 
       setMensaje(
         modoEdicion
@@ -397,16 +828,35 @@ export default function OficinasLiquidadoras() {
           : "Oficina Liquidadora creada correctamente."
       );
 
-      cerrarModal();
+
+      setMostrarModal(
+        false
+      );
+
+
+      setModoEdicion(
+        false
+      );
+
+
+      setOficinaEditando(
+        null
+      );
+
 
       await cargarOficinas();
+
     } catch (err) {
+
       setError(
-        err.message ||
-          "No se pudo guardar la Oficina Liquidadora."
+        err?.message ||
+          "No se ha podido guardar la Oficina Liquidadora."
       );
+
     } finally {
-      setCargando(false);
+
+      setLoading(false);
+
     }
   }
 
@@ -415,25 +865,34 @@ export default function OficinasLiquidadoras() {
   // ELIMINAR
   // ==========================================================
 
-  async function eliminarOficina(oficina) {
+  async function eliminarOficina(
+    oficina
+  ) {
+
     const confirmado =
       window.confirm(
-        `¿Seguro que deseas eliminar "${oficina.oficina_liquidadora}"?`
+        `¿Deseas eliminar la Oficina Liquidadora "${oficina.oficina_liquidadora}"?`
       );
+
 
     if (!confirmado) {
       return;
     }
 
+
+    setLoading(true);
+    setError("");
+
+
     try {
-      setCargando(true);
-      setError("");
 
       const response =
         await fetch(
           `${API_BASE}/${oficina.id}`,
           {
-            method: "DELETE",
+            method:
+              "DELETE",
+
             headers: {
               Accept:
                 "application/json",
@@ -441,22 +900,30 @@ export default function OficinasLiquidadoras() {
           }
         );
 
+
       await leerRespuestaServidor(
         response
       );
+
 
       setMensaje(
         "Oficina Liquidadora eliminada correctamente."
       );
 
+
       await cargarOficinas();
+
     } catch (err) {
+
       setError(
-        err.message ||
-          "No se pudo eliminar la Oficina Liquidadora."
+        err?.message ||
+          "No se ha podido eliminar la Oficina Liquidadora."
       );
+
     } finally {
-      setCargando(false);
+
+      setLoading(false);
+
     }
   }
 
@@ -465,87 +932,146 @@ export default function OficinasLiquidadoras() {
   // IMPORTAR EXCEL
   // ==========================================================
 
-  function abrirImportar() {
+  function abrirImportacion() {
+
     setArchivo(null);
-    setMostrarImportar(true);
+
+    setMostrarImportar(
+      true
+    );
+
     setError("");
-    setMensaje("");
   }
 
 
-  function cerrarImportar() {
+  function cerrarImportacion() {
+
     if (importando) {
       return;
     }
 
-    setMostrarImportar(false);
+    setMostrarImportar(
+      false
+    );
+
     setArchivo(null);
   }
 
 
-  async function importarExcel(event) {
+  async function importarExcel(
+    event
+  ) {
+
     event.preventDefault();
 
+
     if (!archivo) {
+
       setError(
         "Selecciona un fichero Excel."
       );
+
       return;
     }
 
+
+    setImportando(true);
+    setError("");
+
+
     try {
-      setImportando(true);
-      setError("");
-      setMensaje("");
 
       const formData =
         new FormData();
+
 
       formData.append(
         "fichero",
         archivo
       );
 
+
       const response =
         await fetch(
           API_IMPORTAR_EXCEL,
           {
-            method: "POST",
+            method:
+              "POST",
+
             headers: {
               Accept:
                 "application/json",
             },
-            body: formData,
+
+            body:
+              formData,
           }
         );
+
 
       const resultado =
         await leerRespuestaServidor(
           response
         );
 
-      setMostrarImportar(false);
-      setArchivo(null);
+
+      setMostrarImportar(
+        false
+      );
+
+      setArchivo(
+        null
+      );
+
 
       setMensaje(
         `${resultado.mensaje} ` +
-        `Excel: ${resultado.total_excel} · ` +
-        `Procesados: ${resultado.procesados} · ` +
-        `Creados: ${resultado.creados} · ` +
-        `Actualizados: ${resultado.actualizados} · ` +
-        `Sin cambios: ${resultado.sin_cambios} · ` +
-        `Omitidos: ${resultado.omitidos} · ` +
-        `Errores: ${resultado.errores}`
+          `Excel: ${
+            resultado.total_excel ??
+            0
+          } · ` +
+          `Procesados: ${
+            resultado.procesados ??
+            0
+          } · ` +
+          `Creados: ${
+            resultado.creados ??
+            0
+          } · ` +
+          `Actualizados: ${
+            resultado.actualizados ??
+            0
+          } · ` +
+          `Sin cambios: ${
+            resultado.sin_cambios ??
+            0
+          } · ` +
+          `Omitidos: ${
+            resultado.omitidos ??
+            0
+          } · ` +
+          `Errores: ${
+            resultado.errores ??
+            0
+          }`
       );
 
+
       await cargarOficinas();
+
     } catch (err) {
+
       setError(
-        err.message ||
-          "No se pudo importar el Excel."
+        err?.message ||
+          "No se ha podido importar el Excel."
       );
+
     } finally {
-      setImportando(false);
+
+      setImportando(
+        false
+      );
+
     }
   }
 
@@ -556,576 +1082,1386 @@ export default function OficinasLiquidadoras() {
 
   return (
     <div
-      style={{
-        padding: "28px",
-        maxWidth: "1700px",
-        margin: "0 auto",
-      }}
+      className="
+        erp-page
+        min-h-full
+        p-4
+        sm:p-6
+        lg:p-8
+        text-[var(--erp-text)]
+        space-y-6
+        animate-fade-in
+      "
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center",
-          gap: "20px",
-          marginBottom: "24px",
-          flexWrap: "wrap",
-        }}
-      >
-        <div>
-          <div
-            style={{
-              fontSize: "30px",
-              fontWeight: 800,
-              letterSpacing: "-0.5px",
-            }}
-          >
-            Oficinas Liquidadoras
-          </div>
 
-          <div
-            style={{
-              marginTop: "6px",
-              opacity: 0.65,
-            }}
-          >
-            Catálogo de Oficinas Liquidadoras
-          </div>
-        </div>
+      {/* =====================================================
+          CABECERA
+      ===================================================== */}
+
+      <div
+        className="
+          max-w-[1700px]
+          mx-auto
+          flex
+          flex-col
+          lg:flex-row
+          lg:items-center
+          lg:justify-between
+          gap-5
+        "
+      >
 
         <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            flexWrap: "wrap",
-          }}
+          className="
+            flex
+            items-center
+            gap-4
+          "
         >
-          <button
-            type="button"
-            onClick={abrirImportar}
-            style={{
-              border: "1px solid #cfd5df",
-              background: "#fff",
-              borderRadius: "12px",
-              padding: "11px 16px",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
+
+          <div
+            className="
+              w-12
+              h-12
+              rounded-2xl
+              bg-[var(--erp-primary-soft)]
+              text-[var(--erp-primary)]
+              border
+              border-[var(--erp-border)]
+              flex
+              items-center
+              justify-center
+              shrink-0
+            "
           >
-            📥 Importar Excel
-          </button>
+            <Icono
+              name="database"
+              className="w-6 h-6"
+            />
+          </div>
+
+
+          <div>
+
+            <h1
+              className="
+                text-2xl
+                sm:text-3xl
+                font-bold
+                text-[var(--erp-text)]
+              "
+            >
+              Oficinas Liquidadoras
+            </h1>
+
+            <p
+              className="
+                text-sm
+                text-[var(--erp-text-soft)]
+                mt-0.5
+              "
+            >
+              Gestión y consulta del catálogo
+              de Oficinas Liquidadoras
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          className="
+            flex
+            flex-wrap
+            items-center
+            gap-2
+          "
+        >
 
           <button
             type="button"
-            onClick={abrirNuevo}
-            style={{
-              border: "none",
-              background:
-                "linear-gradient(135deg, #1f2937, #111827)",
-              color: "#fff",
-              borderRadius: "12px",
-              padding: "11px 18px",
-              fontWeight: 800,
-              cursor: "pointer",
-            }}
+            onClick={
+              abrirImportacion
+            }
+            className="
+              inline-flex
+              items-center
+              gap-2
+              px-4
+              py-2.5
+              rounded-xl
+              bg-white
+              border
+              border-[var(--erp-border)]
+              text-[var(--erp-text)]
+              text-sm
+              font-semibold
+              shadow-sm
+              hover:bg-[var(--erp-primary-soft)]
+              hover:text-[var(--erp-primary)]
+              hover:border-[var(--erp-primary)]
+              transition-all
+              duration-200
+            "
           >
-            ＋ Nueva Oficina
+            <Icono
+              name="database"
+              className="w-4 h-4"
+            />
+
+            Importar Excel
           </button>
+
+
+          <button
+            type="button"
+            onClick={
+              abrirNueva
+            }
+            className="
+              inline-flex
+              items-center
+              gap-2
+              px-4
+              py-2.5
+              rounded-xl
+              bg-[var(--erp-primary)]
+              hover:brightness-95
+              text-white
+              text-sm
+              font-semibold
+              shadow-sm
+              transition
+            "
+          >
+            <span
+              className="
+                text-lg
+                leading-none
+              "
+            >
+              +
+            </span>
+
+            Nueva oficina
+          </button>
+
         </div>
+
       </div>
 
 
+      {/* =====================================================
+          MENSAJES
+      ===================================================== */}
+
       {mensaje && (
+
         <div
-          style={{
-            marginBottom: "18px",
-            padding: "13px 16px",
-            borderRadius: "12px",
-            background: "#ecfdf3",
-            border:
-              "1px solid #bbf7d0",
-            color: "#166534",
-          }}
+          className="
+            max-w-[1700px]
+            mx-auto
+            rounded-xl
+            border
+            border-green-200
+            bg-green-50
+            px-4
+            py-3
+            text-sm
+            text-green-700
+          "
         >
           {mensaje}
         </div>
+
       )}
 
 
       {error && (
+
         <div
-          style={{
-            marginBottom: "18px",
-            padding: "13px 16px",
-            borderRadius: "12px",
-            background: "#fef2f2",
-            border:
-              "1px solid #fecaca",
-            color: "#991b1b",
-          }}
+          className="
+            max-w-[1700px]
+            mx-auto
+            rounded-xl
+            border
+            border-red-200
+            bg-red-50
+            px-4
+            py-3
+            text-sm
+            text-red-700
+          "
         >
           {error}
         </div>
+
       )}
 
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "minmax(280px, 2fr) minmax(180px, 1fr) minmax(180px, 1fr) 150px",
-          gap: "12px",
-          marginBottom: "18px",
-        }}
+      {/* =====================================================
+          RESUMEN
+      ===================================================== */}
+
+      <section
+        className="
+          max-w-[1700px]
+          mx-auto
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          lg:grid-cols-3
+          gap-4
+        "
       >
-        <input
-          value={busqueda}
-          onChange={(e) =>
-            setBusqueda(
-              e.target.value
-            )
-          }
-          placeholder="Buscar oficina, dirección, código postal, población, teléfono..."
-          style={{
-            width: "100%",
-            boxSizing: "border-box",
-            padding: "12px 14px",
-            border:
-              "1px solid #d8dee8",
-            borderRadius: "12px",
-            outline: "none",
-          }}
-        />
 
-        <select
-          value={filtroProvincia}
-          onChange={(e) =>
-            setFiltroProvincia(
-              e.target.value
-            )
-          }
-          style={{
-            padding: "12px 14px",
-            border:
-              "1px solid #d8dee8",
-            borderRadius: "12px",
-          }}
-        >
-          <option value="">
-            Todas las provincias
-          </option>
-
-          {provincias.map(
-            (provincia) => (
-              <option
-                key={provincia}
-                value={provincia}
-              >
-                {provincia}
-              </option>
-            )
-          )}
-        </select>
-
-        <select
-          value={filtroPoblacion}
-          onChange={(e) =>
-            setFiltroPoblacion(
-              e.target.value
-            )
-          }
-          style={{
-            padding: "12px 14px",
-            border:
-              "1px solid #d8dee8",
-            borderRadius: "12px",
-          }}
-        >
-          <option value="">
-            Todas las poblaciones
-          </option>
-
-          {poblaciones.map(
-            (poblacion) => (
-              <option
-                key={poblacion}
-                value={poblacion}
-              >
-                {poblacion}
-              </option>
-            )
-          )}
-        </select>
-
-        <select
-          value={filtroActivo}
-          onChange={(e) =>
-            setFiltroActivo(
-              e.target.value
-            )
-          }
-          style={{
-            padding: "12px 14px",
-            border:
-              "1px solid #d8dee8",
-            borderRadius: "12px",
-          }}
-        >
-          <option value="true">
-            Activas
-          </option>
-
-          <option value="false">
-            Inactivas
-          </option>
-
-          <option value="">
-            Todas
-          </option>
-        </select>
-      </div>
-
-
-      <div
-        style={{
-          background: "#fff",
-          border:
-            "1px solid #e5e7eb",
-          borderRadius: "18px",
-          overflow: "hidden",
-          boxShadow:
-            "0 10px 30px rgba(15,23,42,0.06)",
-        }}
-      >
         <div
-          style={{
-            overflowX: "auto",
-          }}
+          className="
+            erp-card
+            p-5
+          "
         >
-          <table
-            style={{
-              width: "100%",
-              borderCollapse:
-                "collapse",
-              minWidth: "1200px",
-            }}
+
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              gap-4
+            "
           >
-            <thead>
-              <tr
-                style={{
-                  background:
-                    "#f8fafc",
-                }}
+
+            <div>
+
+              <p
+                className="
+                  text-xs
+                  font-medium
+                  uppercase
+                  tracking-wide
+                  text-[var(--erp-text-soft)]
+                "
               >
-                {[
-                  "Oficina Liquidadora",
-                  "Dirección",
-                  "Código Postal",
-                  "Población",
-                  "Provincia",
-                  "Teléfono",
-                  "Email",
-                  "Horario",
-                  "Activo",
-                  "Acciones",
-                ].map((titulo) => (
-                  <th
-                    key={titulo}
-                    style={{
-                      padding:
-                        "14px 12px",
-                      textAlign:
-                        titulo ===
-                          "Código Postal" ||
-                        titulo === "Activo"
-                          ? "center"
-                          : "left",
-                      fontSize:
-                        "13px",
-                      fontWeight: 800,
-                      borderBottom:
-                        "1px solid #e5e7eb",
-                      whiteSpace:
-                        "nowrap",
-                    }}
+                Total oficinas
+              </p>
+
+              <p
+                className="
+                  text-3xl
+                  font-bold
+                  text-[var(--erp-text)]
+                  mt-1
+                "
+              >
+                {totalOficinas}
+              </p>
+
+            </div>
+
+
+            <div
+              className="
+                w-11
+                h-11
+                rounded-xl
+                bg-[var(--erp-primary-soft)]
+                text-[var(--erp-primary)]
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <Icono
+                name="database"
+                className="w-5 h-5"
+              />
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          className="
+            erp-card
+            p-5
+          "
+        >
+
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              gap-4
+            "
+          >
+
+            <div>
+
+              <p
+                className="
+                  text-xs
+                  font-medium
+                  uppercase
+                  tracking-wide
+                  text-[var(--erp-text-soft)]
+                "
+              >
+                Oficinas activas
+              </p>
+
+              <p
+                className="
+                  text-3xl
+                  font-bold
+                  text-[var(--erp-text)]
+                  mt-1
+                "
+              >
+                {oficinasActivas}
+              </p>
+
+            </div>
+
+
+            <div
+              className="
+                w-11
+                h-11
+                rounded-xl
+                bg-green-50
+                text-green-600
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <span
+                className="
+                  w-2.5
+                  h-2.5
+                  rounded-full
+                  bg-green-500
+                "
+              />
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          className="
+            erp-card
+            p-5
+          "
+        >
+
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              gap-4
+            "
+          >
+
+            <div>
+
+              <p
+                className="
+                  text-xs
+                  font-medium
+                  uppercase
+                  tracking-wide
+                  text-[var(--erp-text-soft)]
+                "
+              >
+                Con datos de contacto
+              </p>
+
+              <p
+                className="
+                  text-3xl
+                  font-bold
+                  text-[var(--erp-text)]
+                  mt-1
+                "
+              >
+                {oficinasConContacto}
+              </p>
+
+            </div>
+
+
+            <div
+              className="
+                w-11
+                h-11
+                rounded-xl
+                bg-[var(--erp-primary-soft)]
+                text-[var(--erp-primary)]
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <span
+                className="
+                  text-lg
+                  font-bold
+                "
+              >
+                @
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* =====================================================
+          FILTROS
+      ===================================================== */}
+
+      <section
+        className="
+          erp-card
+          max-w-[1700px]
+          mx-auto
+          p-4
+          shadow-sm
+        "
+      >
+
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            gap-3
+            mb-4
+          "
+        >
+
+          <div>
+
+            <h2
+              className="
+                text-base
+                font-semibold
+                text-[var(--erp-text)]
+              "
+            >
+              Buscar y filtrar
+            </h2>
+
+            <p
+              className="
+                text-xs
+                text-[var(--erp-text-soft)]
+                mt-1
+              "
+            >
+              Localiza rápidamente una Oficina
+              Liquidadora
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            onClick={() => {
+
+              setBusqueda("");
+              setFiltroProvincia("");
+              setFiltroPoblacion("");
+              setFiltroActivo("true");
+              setPagina(1);
+
+            }}
+            className="
+              text-xs
+              font-semibold
+              text-[var(--erp-primary)]
+              hover:underline
+            "
+          >
+            Limpiar filtros
+          </button>
+
+        </div>
+
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            md:grid-cols-2
+            xl:grid-cols-4
+            gap-3
+          "
+        >
+
+          <label
+            className="
+              md:col-span-2
+              xl:col-span-1
+              flex
+              flex-col
+              gap-1.5
+            "
+          >
+
+            <span
+              className="
+                text-xs
+                font-semibold
+                text-[var(--erp-text)]
+              "
+            >
+              Buscar
+            </span>
+
+            <input
+              value={busqueda}
+              onChange={(event) =>
+                setBusqueda(
+                  event.target.value
+                )
+              }
+              placeholder="
+                Oficina, dirección, población,
+                teléfono, email...
+              "
+              className="
+                w-full
+                rounded-xl
+                border
+                border-[var(--erp-border)]
+                bg-white
+                px-3
+                py-2.5
+                text-sm
+                text-[var(--erp-text)]
+                outline-none
+                transition
+
+                focus:border-[var(--erp-primary)]
+                focus:ring-2
+                focus:ring-[var(--erp-primary-soft)]
+              "
+            />
+
+          </label>
+
+
+          <label
+            className="
+              flex
+              flex-col
+              gap-1.5
+            "
+          >
+
+            <span
+              className="
+                text-xs
+                font-semibold
+                text-[var(--erp-text)]
+              "
+            >
+              Provincia
+            </span>
+
+            <select
+              value={
+                filtroProvincia
+              }
+              onChange={(event) =>
+                setFiltroProvincia(
+                  event.target.value
+                )
+              }
+              className="
+                w-full
+                rounded-xl
+                border
+                border-[var(--erp-border)]
+                bg-white
+                px-3
+                py-2.5
+                text-sm
+                text-[var(--erp-text)]
+                outline-none
+                transition
+
+                focus:border-[var(--erp-primary)]
+                focus:ring-2
+                focus:ring-[var(--erp-primary-soft)]
+              "
+            >
+
+              <option value="">
+                Todas las provincias
+              </option>
+
+              {provincias.map(
+                (provincia) => (
+
+                  <option
+                    key={
+                      provincia
+                    }
+                    value={
+                      provincia
+                    }
                   >
-                    {titulo}
-                  </th>
-                ))}
+                    {provincia}
+                  </option>
+
+                )
+              )}
+
+            </select>
+
+          </label>
+
+
+          <label
+            className="
+              flex
+              flex-col
+              gap-1.5
+            "
+          >
+
+            <span
+              className="
+                text-xs
+                font-semibold
+                text-[var(--erp-text)]
+              "
+            >
+              Población
+            </span>
+
+            <select
+              value={
+                filtroPoblacion
+              }
+              onChange={(event) =>
+                setFiltroPoblacion(
+                  event.target.value
+                )
+              }
+              className="
+                w-full
+                rounded-xl
+                border
+                border-[var(--erp-border)]
+                bg-white
+                px-3
+                py-2.5
+                text-sm
+                text-[var(--erp-text)]
+                outline-none
+                transition
+
+                focus:border-[var(--erp-primary)]
+                focus:ring-2
+                focus:ring-[var(--erp-primary-soft)]
+              "
+            >
+
+              <option value="">
+                Todas las poblaciones
+              </option>
+
+              {poblaciones.map(
+                (poblacion) => (
+
+                  <option
+                    key={
+                      poblacion
+                    }
+                    value={
+                      poblacion
+                    }
+                  >
+                    {poblacion}
+                  </option>
+
+                )
+              )}
+
+            </select>
+
+          </label>
+
+
+          <label
+            className="
+              flex
+              flex-col
+              gap-1.5
+            "
+          >
+
+            <span
+              className="
+                text-xs
+                font-semibold
+                text-[var(--erp-text)]
+              "
+            >
+              Estado
+            </span>
+
+            <select
+              value={
+                filtroActivo
+              }
+              onChange={(event) =>
+                setFiltroActivo(
+                  event.target.value
+                )
+              }
+              className="
+                w-full
+                rounded-xl
+                border
+                border-[var(--erp-border)]
+                bg-white
+                px-3
+                py-2.5
+                text-sm
+                text-[var(--erp-text)]
+                outline-none
+                transition
+
+                focus:border-[var(--erp-primary)]
+                focus:ring-2
+                focus:ring-[var(--erp-primary-soft)]
+              "
+            >
+
+              <option value="true">
+                Activas
+              </option>
+
+              <option value="false">
+                Inactivas
+              </option>
+
+              <option value="">
+                Todas
+              </option>
+
+            </select>
+
+          </label>
+
+        </div>
+
+      </section>
+
+
+      {/* =====================================================
+          TABLA
+      ===================================================== */}
+
+      <section
+        className="
+          erp-card
+          max-w-[1700px]
+          mx-auto
+          overflow-hidden
+        "
+      >
+
+        <div
+          className="
+            px-5
+            py-4
+            border-b
+            border-[var(--erp-border)]
+            flex
+            flex-col
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+            gap-3
+          "
+        >
+
+          <div>
+
+            <h2
+              className="
+                text-base
+                font-semibold
+                text-[var(--erp-text)]
+              "
+            >
+              Oficinas Liquidadoras
+            </h2>
+
+            <p
+              className="
+                text-xs
+                text-[var(--erp-text-soft)]
+                mt-1
+              "
+            >
+              {totalOficinas} registros
+            </p>
+
+          </div>
+
+
+          <div
+            className="
+              inline-flex
+              items-center
+              gap-2
+              px-3
+              py-1.5
+              rounded-xl
+              bg-[var(--erp-primary-soft)]
+              border
+              border-[var(--erp-border)]
+              text-xs
+              font-semibold
+              text-[var(--erp-primary)]
+              w-fit
+            "
+          >
+
+            <span
+              className="
+                w-2
+                h-2
+                rounded-full
+                bg-[var(--erp-primary)]
+              "
+            />
+
+            Catálogo activo
+
+          </div>
+
+        </div>
+
+
+        <div className="overflow-x-auto">
+
+          <table
+            className="
+              w-full
+              min-w-[1250px]
+              text-sm
+              text-[var(--erp-text)]
+            "
+          >
+
+            <thead>
+
+              <tr
+                className="
+                  bg-[var(--erp-primary)]
+                  text-white
+                  text-left
+                "
+              >
+
+                <th
+                  className="
+                    px-4
+                    py-3
+                    font-semibold
+                    whitespace-nowrap
+                  "
+                >
+                  Oficina Liquidadora
+                </th>
+
+                <th
+                  className="
+                    px-4
+                    py-3
+                    font-semibold
+                    whitespace-nowrap
+                  "
+                >
+                  Dirección
+                </th>
+
+                <th
+                  className="
+                    px-4
+                    py-3
+                    font-semibold
+                    text-center
+                    whitespace-nowrap
+                  "
+                >
+                  Código Postal
+                </th>
+
+                <th
+                  className="
+                    px-4
+                    py-3
+                    font-semibold
+                    whitespace-nowrap
+                  "
+                >
+                  Población
+                </th>
+
+                <th
+                  className="
+                    px-4
+                    py-3
+                    font-semibold
+                    whitespace-nowrap
+                  "
+                >
+                  Provincia
+                </th>
+
+                <th
+                  className="
+                    px-4
+                    py-3
+                    font-semibold
+                    whitespace-nowrap
+                  "
+                >
+                  Teléfono
+                </th>
+
+                <th
+                  className="
+                    px-4
+                    py-3
+                    font-semibold
+                    whitespace-nowrap
+                  "
+                >
+                  Email
+                </th>
+
+                <th
+                  className="
+                    px-4
+                    py-3
+                    font-semibold
+                    whitespace-nowrap
+                  "
+                >
+                  Horario
+                </th>
+
+                <th
+                  className="
+                    px-4
+                    py-3
+                    font-semibold
+                    text-center
+                    whitespace-nowrap
+                  "
+                >
+                  Estado
+                </th>
+
+                <th
+                  className="
+                    px-4
+                    py-3
+                    font-semibold
+                    text-center
+                    whitespace-nowrap
+                  "
+                >
+                  Acciones
+                </th>
+
               </tr>
+
             </thead>
 
+
             <tbody>
-              {cargando &&
-              oficinasPagina.length === 0 ? (
+
+              {loading &&
+              oficinasPagina.length ===
+                0 ? (
+
                 <tr>
+
                   <td
                     colSpan="10"
-                    style={{
-                      padding:
-                        "40px",
-                      textAlign:
-                        "center",
-                      opacity: 0.65,
-                    }}
+                    className="
+                      px-4
+                      py-14
+                      text-center
+                      text-[var(--erp-text-soft)]
+                    "
                   >
-                    Cargando...
+
+                    <div
+                      className="
+                        inline-flex
+                        items-center
+                        gap-2
+                      "
+                    >
+
+                      <span
+                        className="
+                          w-2
+                          h-2
+                          rounded-full
+                          bg-[var(--erp-primary)]
+                          animate-pulse
+                        "
+                      />
+
+                      Cargando oficinas…
+
+                    </div>
+
                   </td>
+
                 </tr>
+
               ) : oficinasPagina.length ===
                 0 ? (
+
                 <tr>
+
                   <td
                     colSpan="10"
-                    style={{
-                      padding:
-                        "40px",
-                      textAlign:
-                        "center",
-                      opacity: 0.65,
-                    }}
+                    className="
+                      px-4
+                      py-14
+                      text-center
+                      text-[var(--erp-text-soft)]
+                    "
                   >
-                    No hay Oficinas Liquidadoras.
+
+                    No hay Oficinas Liquidadoras
+                    que coincidan con los filtros.
+
                   </td>
+
                 </tr>
+
               ) : (
+
                 oficinasPagina.map(
                   (oficina) => (
+
                     <tr
                       key={
                         oficina.id
                       }
-                      style={{
-                        borderBottom:
-                          "1px solid #eef2f7",
-                      }}
+                      className="
+                        border-b
+                        border-[var(--erp-border)]
+                        hover:bg-[var(--erp-primary-soft)]
+                        transition-colors
+                      "
                     >
+
                       <td
-                        style={{
-                          padding:
-                            "14px 12px",
-                          fontWeight:
-                            700,
-                        }}
+                        className="
+                          px-4
+                          py-3.5
+                          font-semibold
+                        "
                       >
                         {
                           oficina.oficina_liquidadora
                         }
                       </td>
 
-                      <td
-                        style={{
-                          padding:
-                            "14px 12px",
-                        }}
-                      >
-                        {oficina.direccion ||
-                          "—"}
-                      </td>
 
                       <td
-                        style={{
-                          padding:
-                            "14px 12px",
-                          textAlign:
-                            "center",
-                        }}
+                        className="
+                          px-4
+                          py-3.5
+                          text-[var(--erp-text-soft)]
+                        "
                       >
-                        {oficina.codigo_postal ||
-                          "—"}
+                        {
+                          oficina.direccion ||
+                          "—"
+                        }
                       </td>
 
-                      <td
-                        style={{
-                          padding:
-                            "14px 12px",
-                        }}
-                      >
-                        {oficina.poblacion ||
-                          "—"}
-                      </td>
 
                       <td
-                        style={{
-                          padding:
-                            "14px 12px",
-                        }}
+                        className="
+                          px-4
+                          py-3.5
+                          text-center
+                          tabular-nums
+                        "
                       >
-                        {oficina.provincia ||
-                          "—"}
+                        {
+                          oficina.codigo_postal ||
+                          "—"
+                        }
                       </td>
 
-                      <td
-                        style={{
-                          padding:
-                            "14px 12px",
-                        }}
-                      >
-                        {oficina.telefono ||
-                          "—"}
-                      </td>
 
                       <td
-                        style={{
-                          padding:
-                            "14px 12px",
-                        }}
+                        className="
+                          px-4
+                          py-3.5
+                        "
                       >
-                        {oficina.email ||
-                          "—"}
+                        {
+                          oficina.poblacion ||
+                          "—"
+                        }
                       </td>
 
-                      <td
-                        style={{
-                          padding:
-                            "14px 12px",
-                          maxWidth:
-                            "220px",
-                        }}
-                      >
-                        {oficina.horario ||
-                          "—"}
-                      </td>
 
                       <td
-                        style={{
-                          padding:
-                            "14px 12px",
-                          textAlign:
-                            "center",
-                        }}
+                        className="
+                          px-4
+                          py-3.5
+                        "
+                      >
+                        {
+                          oficina.provincia ||
+                          "—"
+                        }
+                      </td>
+
+
+                      <td
+                        className="
+                          px-4
+                          py-3.5
+                          whitespace-nowrap
+                        "
+                      >
+                        {
+                          oficina.telefono ||
+                          "—"
+                        }
+                      </td>
+
+
+                      <td
+                        className="
+                          px-4
+                          py-3.5
+                          text-[var(--erp-text-soft)]
+                        "
+                      >
+                        {
+                          oficina.email ||
+                          "—"
+                        }
+                      </td>
+
+
+                      <td
+                        className="
+                          px-4
+                          py-3.5
+                          max-w-[220px]
+                        "
                       >
                         <span
-                          style={{
-                            display:
-                              "inline-block",
-                            padding:
-                              "5px 9px",
-                            borderRadius:
-                              "999px",
-                            fontSize:
-                              "12px",
-                            fontWeight:
-                              800,
-                            background:
-                              oficina.activo
-                                ? "#dcfce7"
-                                : "#fee2e2",
-                            color:
-                              oficina.activo
-                                ? "#166534"
-                                : "#991b1b",
-                          }}
+                          className="
+                            line-clamp-2
+                          "
                         >
-                          {oficina.activo
-                            ? "Sí"
-                            : "No"}
+                          {
+                            oficina.horario ||
+                            "—"
+                          }
                         </span>
                       </td>
 
-                      <td
-                        style={{
-                          padding:
-                            "14px 12px",
-                          whiteSpace:
-                            "nowrap",
-                        }}
-                      >
-                        <button
-                          type="button"
-                          onClick={() =>
-                            abrirEditar(
-                              oficina
-                            )
-                          }
-                          style={{
-                            marginRight:
-                              "6px",
-                            border:
-                              "1px solid #d8dee8",
-                            background:
-                              "#fff",
-                            padding:
-                              "8px 10px",
-                            borderRadius:
-                              "9px",
-                            cursor:
-                              "pointer",
-                          }}
-                        >
-                          ✏️
-                        </button>
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            eliminarOficina(
-                              oficina
-                            )
+                      <td
+                        className="
+                          px-4
+                          py-3.5
+                          text-center
+                        "
+                      >
+                        <BadgeActivo
+                          activo={
+                            oficina.activo !==
+                            false
                           }
-                          style={{
-                            border:
-                              "1px solid #fecaca",
-                            background:
-                              "#fff",
-                            padding:
-                              "8px 10px",
-                            borderRadius:
-                              "9px",
-                            cursor:
-                              "pointer",
-                          }}
-                        >
-                          🗑️
-                        </button>
+                        />
                       </td>
+
+
+                      <td
+                        className="
+                          px-4
+                          py-3.5
+                        "
+                      >
+
+                        <div
+                          className="
+                            flex
+                            items-center
+                            justify-center
+                            gap-2
+                          "
+                        >
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              abrirEditar(
+                                oficina
+                              )
+                            }
+                            title="Editar"
+                            className="
+                              w-9
+                              h-9
+                              rounded-xl
+                              bg-white
+                              border
+                              border-[var(--erp-border)]
+                              text-[var(--erp-primary)]
+                              flex
+                              items-center
+                              justify-center
+                              hover:bg-[var(--erp-primary-soft)]
+                              hover:border-[var(--erp-primary)]
+                              transition
+                            "
+                          >
+                            ✎
+                          </button>
+
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              eliminarOficina(
+                                oficina
+                              )
+                            }
+                            title="Eliminar"
+                            className="
+                              w-9
+                              h-9
+                              rounded-xl
+                              bg-white
+                              border
+                              border-red-200
+                              text-red-600
+                              flex
+                              items-center
+                              justify-center
+                              hover:bg-red-50
+                              transition
+                            "
+                          >
+                            ×
+                          </button>
+
+                        </div>
+
+                      </td>
+
                     </tr>
+
                   )
                 )
+
               )}
+
             </tbody>
+
           </table>
+
         </div>
 
 
+        {/* ===================================================
+            PAGINACIÓN
+        =================================================== */}
+
         <div
-          style={{
-            display: "flex",
-            justifyContent:
-              "space-between",
-            alignItems: "center",
-            padding:
-              "14px 16px",
-            borderTop:
-              "1px solid #eef2f7",
-            flexWrap: "wrap",
-            gap: "12px",
-          }}
+          className="
+            px-5
+            py-4
+            border-t
+            border-[var(--erp-border)]
+            flex
+            flex-col
+            sm:flex-row
+            items-center
+            justify-between
+            gap-4
+          "
         >
-          <div
-            style={{
-              fontSize: "13px",
-              opacity: 0.65,
-            }}
-          >
-            {oficinas.length} oficina
-            {oficinas.length === 1
-              ? ""
-              : "s"}
-          </div>
 
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
+            className="
+              text-sm
+              text-[var(--erp-text-soft)]
+            "
           >
+            Mostrando{" "}
+            <strong
+              className="
+                text-[var(--erp-text)]
+              "
+            >
+              {oficinasPagina.length}
+            </strong>{" "}
+            de{" "}
+            <strong
+              className="
+                text-[var(--erp-text)]
+              "
+            >
+              {totalOficinas}
+            </strong>{" "}
+            registros
+          </div>
+
+
+          <div
+            className="
+              flex
+              items-center
+              gap-2
+            "
+          >
+
             <button
               type="button"
               disabled={
-                pagina <= 1
+                pagina <= 1 ||
+                loading
               }
               onClick={() =>
                 setPagina(
@@ -1136,28 +2472,61 @@ export default function OficinasLiquidadoras() {
                     )
                 )
               }
+              className="
+                px-4
+                py-2
+                rounded-xl
+                bg-white
+                border
+                border-[var(--erp-border)]
+                text-[var(--erp-text)]
+                text-sm
+                font-medium
+                hover:bg-[var(--erp-surface-soft)]
+                transition
+                disabled:opacity-40
+                disabled:cursor-not-allowed
+              "
             >
-              ←
+              Anterior
             </button>
 
+
             <span
-              style={{
-                minWidth: "90px",
-                textAlign:
-                  "center",
-                fontSize: "13px",
-                fontWeight: 700,
-              }}
+              className="
+                px-3
+                text-sm
+                text-[var(--erp-text-soft)]
+              "
             >
-              Página {pagina} de{" "}
-              {totalPaginas}
+              Página{" "}
+
+              <strong
+                className="
+                  text-[var(--erp-text)]
+                "
+              >
+                {pagina}
+              </strong>
+
+              {" "}de{" "}
+
+              <strong
+                className="
+                  text-[var(--erp-text)]
+                "
+              >
+                {totalPaginas}
+              </strong>
             </span>
+
 
             <button
               type="button"
               disabled={
                 pagina >=
-                totalPaginas
+                  totalPaginas ||
+                loading
               }
               onClick={() =>
                 setPagina(
@@ -1168,449 +2537,753 @@ export default function OficinasLiquidadoras() {
                     )
                 )
               }
+              className="
+                px-4
+                py-2
+                rounded-xl
+                bg-white
+                border
+                border-[var(--erp-border)]
+                text-[var(--erp-text)]
+                text-sm
+                font-medium
+                hover:bg-[var(--erp-surface-soft)]
+                transition
+                disabled:opacity-40
+                disabled:cursor-not-allowed
+              "
             >
-              →
+              Siguiente
             </button>
+
           </div>
+
         </div>
-      </div>
+
+      </section>
 
 
-      {/* ======================================================
+      {/* =====================================================
           MODAL CREAR / EDITAR
-      ====================================================== */}
+      ===================================================== */}
 
       {mostrarModal && (
+
         <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background:
-              "rgba(15,23,42,0.48)",
-            display: "flex",
-            alignItems:
-              "center",
-            justifyContent:
-              "center",
-            padding: "20px",
-            zIndex: 5000,
-          }}
+          className="
+            fixed
+            inset-0
+            z-[200]
+            flex
+            items-center
+            justify-center
+            bg-slate-950/45
+            p-4
+            backdrop-blur-sm
+          "
         >
-          <form
-            onSubmit={
-              guardarOficina
-            }
-            style={{
-              width: "min(900px, 100%)",
-              maxHeight:
-                "90vh",
-              overflowY:
-                "auto",
-              background:
-                "#fff",
-              borderRadius:
-                "20px",
-              padding: "24px",
-              boxShadow:
-                "0 30px 80px rgba(0,0,0,0.2)",
-            }}
+
+          <div
+            className="
+              w-full
+              max-w-4xl
+              max-h-[92vh]
+              overflow-y-auto
+              rounded-2xl
+              bg-[var(--erp-surface)]
+              border
+              border-[var(--erp-border)]
+              shadow-2xl
+            "
           >
+
             <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "space-between",
-                alignItems:
-                  "center",
-                marginBottom:
-                  "22px",
-              }}
+              className="
+                px-5
+                py-4
+                border-b
+                border-[var(--erp-border)]
+                flex
+                items-center
+                justify-between
+                gap-4
+              "
             >
-              <div
-                style={{
-                  fontSize:
-                    "22px",
-                  fontWeight:
-                    800,
-                }}
-              >
-                {modoEdicion
-                  ? "Editar Oficina Liquidadora"
-                  : "Nueva Oficina Liquidadora"}
+
+              <div>
+
+                <h2
+                  className="
+                    text-lg
+                    font-semibold
+                    text-[var(--erp-text)]
+                  "
+                >
+                  {modoEdicion
+                    ? "Editar Oficina Liquidadora"
+                    : "Nueva Oficina Liquidadora"}
+                </h2>
+
+                <p
+                  className="
+                    text-xs
+                    text-[var(--erp-text-soft)]
+                    mt-1
+                  "
+                >
+                  Completa los datos del catálogo
+                </p>
+
               </div>
 
+
               <button
                 type="button"
                 onClick={
                   cerrarModal
                 }
+                className="
+                  w-9
+                  h-9
+                  rounded-xl
+                  bg-[var(--erp-surface-soft)]
+                  border
+                  border-[var(--erp-border)]
+                  text-[var(--erp-text-soft)]
+                  hover:text-[var(--erp-text)]
+                  transition
+                "
               >
-                ✕
+                ×
               </button>
+
             </div>
 
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(2, minmax(0, 1fr))",
-                gap: "14px",
-              }}
+            <form
+              onSubmit={
+                guardarOficina
+              }
             >
-              <Campo
-                label="Oficina Liquidadora *"
-                value={
-                  formulario.oficina_liquidadora
-                }
-                onChange={(valor) =>
-                  cambiarCampo(
-                    "oficina_liquidadora",
-                    valor
-                  )
-                }
-                full
-              />
 
-              <Campo
-                label="Dirección"
-                value={
-                  formulario.direccion
-                }
-                onChange={(valor) =>
-                  cambiarCampo(
-                    "direccion",
-                    valor
-                  )
-                }
-                full
-              />
-
-              <Campo
-                label="Código Postal"
-                value={
-                  formulario.codigo_postal
-                }
-                onChange={(valor) =>
-                  cambiarCampo(
-                    "codigo_postal",
-                    valor
-                  )
-                }
-              />
-
-              <Campo
-                label="Población"
-                value={
-                  formulario.poblacion
-                }
-                onChange={(valor) =>
-                  cambiarCampo(
-                    "poblacion",
-                    valor
-                  )
-                }
-              />
-
-              <Campo
-                label="Provincia"
-                value={
-                  formulario.provincia
-                }
-                onChange={(valor) =>
-                  cambiarCampo(
-                    "provincia",
-                    valor
-                  )
-                }
-              />
-
-              <Campo
-                label="Teléfono"
-                value={
-                  formulario.telefono
-                }
-                onChange={(valor) =>
-                  cambiarCampo(
-                    "telefono",
-                    valor
-                  )
-                }
-              />
-
-              <Campo
-                label="Email"
-                value={
-                  formulario.email
-                }
-                onChange={(valor) =>
-                  cambiarCampo(
-                    "email",
-                    valor
-                  )
-                }
-              />
-
-              <Campo
-                label="Horario"
-                value={
-                  formulario.horario
-                }
-                onChange={(valor) =>
-                  cambiarCampo(
-                    "horario",
-                    valor
-                  )
-                }
-              />
-
-              <label
-                style={{
-                  display: "flex",
-                  alignItems:
-                    "center",
-                  gap: "10px",
-                  paddingTop:
-                    "28px",
-                  fontWeight:
-                    700,
-                }}
+              <div
+                className="
+                  p-5
+                  grid
+                  grid-cols-1
+                  md:grid-cols-2
+                  gap-4
+                "
               >
-                <input
-                  type="checkbox"
-                  checked={
-                    formulario.activo
+
+                <Campo
+                  label="Oficina Liquidadora *"
+                  value={
+                    formulario.oficina_liquidadora
                   }
-                  onChange={(e) =>
+                  onChange={(valor) =>
                     cambiarCampo(
-                      "activo",
-                      e.target.checked
+                      "oficina_liquidadora",
+                      valor
                     )
                   }
+                  placeholder="Ej. Alcalá de Henares"
+                  full
                 />
 
-                Oficina activa
-              </label>
-            </div>
+
+                <Campo
+                  label="Dirección"
+                  value={
+                    formulario.direccion
+                  }
+                  onChange={(valor) =>
+                    cambiarCampo(
+                      "direccion",
+                      valor
+                    )
+                  }
+                  placeholder="Dirección postal"
+                  full
+                />
 
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "flex-end",
-                gap: "10px",
-                marginTop:
-                  "24px",
-              }}
-            >
-              <button
-                type="button"
-                onClick={
-                  cerrarModal
-                }
+                <Campo
+                  label="Código Postal"
+                  value={
+                    formulario.codigo_postal
+                  }
+                  onChange={(valor) =>
+                    cambiarCampo(
+                      "codigo_postal",
+                      valor
+                    )
+                  }
+                  placeholder="28000"
+                />
+
+
+                <Campo
+                  label="Población"
+                  value={
+                    formulario.poblacion
+                  }
+                  onChange={(valor) =>
+                    cambiarCampo(
+                      "poblacion",
+                      valor
+                    )
+                  }
+                  placeholder="Población"
+                />
+
+
+                <Campo
+                  label="Provincia"
+                  value={
+                    formulario.provincia
+                  }
+                  onChange={(valor) =>
+                    cambiarCampo(
+                      "provincia",
+                      valor
+                    )
+                  }
+                  placeholder="Provincia"
+                />
+
+
+                <Campo
+                  label="Teléfono"
+                  value={
+                    formulario.telefono
+                  }
+                  onChange={(valor) =>
+                    cambiarCampo(
+                      "telefono",
+                      valor
+                    )
+                  }
+                  placeholder="Teléfono"
+                />
+
+
+                <Campo
+                  label="Email"
+                  value={
+                    formulario.email
+                  }
+                  onChange={(valor) =>
+                    cambiarCampo(
+                      "email",
+                      valor
+                    )
+                  }
+                  placeholder="correo@ejemplo.es"
+                  type="email"
+                />
+
+
+                <Campo
+                  label="Horario"
+                  value={
+                    formulario.horario
+                  }
+                  onChange={(valor) =>
+                    cambiarCampo(
+                      "horario",
+                      valor
+                    )
+                  }
+                  placeholder="Ej. L-V 09:00-14:00"
+                />
+
+
+                <label
+                  className="
+                    flex
+                    items-center
+                    gap-3
+                    rounded-xl
+                    border
+                    border-[var(--erp-border)]
+                    bg-[var(--erp-surface-soft)]
+                    px-4
+                    py-3
+                    cursor-pointer
+                  "
+                >
+
+                  <input
+                    type="checkbox"
+                    checked={
+                      formulario.activo
+                    }
+                    onChange={(event) =>
+                      cambiarCampo(
+                        "activo",
+                        event.target.checked
+                      )
+                    }
+                    className="
+                      w-4
+                      h-4
+                      accent-[var(--erp-primary)]
+                    "
+                  />
+
+                  <div>
+
+                    <div
+                      className="
+                        text-sm
+                        font-semibold
+                        text-[var(--erp-text)]
+                      "
+                    >
+                      Oficina activa
+                    </div>
+
+                    <div
+                      className="
+                        text-xs
+                        text-[var(--erp-text-soft)]
+                      "
+                    >
+                      Disponible en el catálogo
+                    </div>
+
+                  </div>
+
+                </label>
+
+              </div>
+
+
+              <div
+                className="
+                  px-5
+                  py-4
+                  border-t
+                  border-[var(--erp-border)]
+                  flex
+                  justify-end
+                  gap-2
+                "
               >
-                Cancelar
-              </button>
 
-              <button
-                type="submit"
-                disabled={cargando}
-              >
-                {cargando
-                  ? "Guardando..."
-                  : "Guardar"}
-              </button>
-            </div>
-          </form>
+                <button
+                  type="button"
+                  onClick={
+                    cerrarModal
+                  }
+                  disabled={loading}
+                  className="
+                    px-4
+                    py-2.5
+                    rounded-xl
+                    bg-white
+                    border
+                    border-[var(--erp-border)]
+                    text-[var(--erp-text)]
+                    text-sm
+                    font-semibold
+                    hover:bg-[var(--erp-surface-soft)]
+                    transition
+                    disabled:opacity-50
+                  "
+                >
+                  Cancelar
+                </button>
+
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="
+                    px-4
+                    py-2.5
+                    rounded-xl
+                    bg-[var(--erp-primary)]
+                    text-white
+                    text-sm
+                    font-semibold
+                    shadow-sm
+                    hover:brightness-95
+                    transition
+                    disabled:opacity-50
+                  "
+                >
+                  {loading
+                    ? "Guardando..."
+                    : "Guardar"}
+                </button>
+
+              </div>
+
+            </form>
+
+          </div>
+
         </div>
+
       )}
 
 
-      {/* ======================================================
+      {/* =====================================================
           MODAL IMPORTAR EXCEL
-      ====================================================== */}
+      ===================================================== */}
 
       {mostrarImportar && (
+
         <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background:
-              "rgba(15,23,42,0.48)",
-            display: "flex",
-            alignItems:
-              "center",
-            justifyContent:
-              "center",
-            padding: "20px",
-            zIndex: 5000,
-          }}
+          className="
+            fixed
+            inset-0
+            z-[210]
+            flex
+            items-center
+            justify-center
+            bg-slate-950/45
+            p-4
+            backdrop-blur-sm
+          "
         >
-          <form
-            onSubmit={
-              importarExcel
-            }
-            style={{
-              width: "min(620px, 100%)",
-              background:
-                "#fff",
-              borderRadius:
-                "20px",
-              padding: "26px",
-              boxShadow:
-                "0 30px 80px rgba(0,0,0,0.2)",
-            }}
+
+          <div
+            className="
+              w-full
+              max-w-xl
+              rounded-2xl
+              bg-[var(--erp-surface)]
+              border
+              border-[var(--erp-border)]
+              shadow-2xl
+            "
           >
+
             <div
-              style={{
-                fontSize:
-                  "22px",
-                fontWeight:
-                  800,
-                marginBottom:
-                  "10px",
-              }}
+              className="
+                px-5
+                py-4
+                border-b
+                border-[var(--erp-border)]
+                flex
+                items-center
+                justify-between
+                gap-4
+              "
             >
-              📥 Importar Oficinas Liquidadoras
-            </div>
 
-            <p
-              style={{
-                opacity: 0.68,
-                lineHeight: 1.5,
-              }}
-            >
-              El Excel debe contener las columnas:
-              <br />
-              <strong>
-                Oficina Liquidadora,
-                Dirección, Código Postal,
-                Población, Província,
-                Teléfono, Email y Horario.
-              </strong>
-            </p>
+              <div>
 
-            <input
-              type="file"
-              accept=".xlsx,.xls,.xlsm"
-              onChange={(e) =>
-                setArchivo(
-                  e.target.files?.[0] ||
-                    null
-                )
-              }
-              disabled={importando}
-            />
+                <h2
+                  className="
+                    text-lg
+                    font-semibold
+                    text-[var(--erp-text)]
+                  "
+                >
+                  Importar Oficinas Liquidadoras
+                </h2>
 
-            {archivo && (
-              <div
-                style={{
-                  marginTop:
-                    "14px",
-                  padding:
-                    "12px",
-                  borderRadius:
-                    "10px",
-                  background:
-                    "#f8fafc",
-                }}
-              >
-                {archivo.name}
+                <p
+                  className="
+                    text-xs
+                    text-[var(--erp-text-soft)]
+                    mt-1
+                  "
+                >
+                  Carga el catálogo desde Excel
+                </p>
+
               </div>
-            )}
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "flex-end",
-                gap: "10px",
-                marginTop:
-                  "22px",
-              }}
-            >
+
               <button
                 type="button"
                 onClick={
-                  cerrarImportar
+                  cerrarImportacion
                 }
                 disabled={
                   importando
                 }
+                className="
+                  w-9
+                  h-9
+                  rounded-xl
+                  bg-[var(--erp-surface-soft)]
+                  border
+                  border-[var(--erp-border)]
+                  text-[var(--erp-text-soft)]
+                  hover:text-[var(--erp-text)]
+                  transition
+                  disabled:opacity-50
+                "
               >
-                Cancelar
+                ×
               </button>
 
-              <button
-                type="submit"
-                disabled={
-                  importando ||
-                  !archivo
-                }
-              >
-                {importando
-                  ? "Importando..."
-                  : "Importar Excel"}
-              </button>
             </div>
-          </form>
+
+
+            <form
+              onSubmit={
+                importarExcel
+              }
+            >
+
+              <div
+                className="
+                  p-5
+                  space-y-4
+                "
+              >
+
+                <div
+                  className="
+                    rounded-2xl
+                    border-2
+                    border-dashed
+                    border-[var(--erp-border)]
+                    bg-[var(--erp-surface-soft)]
+                    p-7
+                    text-center
+                  "
+                >
+
+                  <div
+                    className="
+                      mx-auto
+                      w-12
+                      h-12
+                      rounded-2xl
+                      bg-[var(--erp-primary)]
+                      text-white
+                      flex
+                      items-center
+                      justify-center
+                      mb-4
+                    "
+                  >
+                    <Icono
+                      name="database"
+                      className="w-6 h-6"
+                    />
+                  </div>
+
+                  <p
+                    className="
+                      text-sm
+                      font-semibold
+                      text-[var(--erp-text)]
+                    "
+                  >
+                    Selecciona el fichero Excel
+                  </p>
+
+                  <p
+                    className="
+                      text-xs
+                      text-[var(--erp-text-soft)]
+                      mt-1
+                    "
+                  >
+                    .xlsx, .xls o .xlsm
+                  </p>
+
+
+                  <label
+                    className="
+                      mt-4
+                      inline-flex
+                      cursor-pointer
+                      items-center
+                      justify-center
+                      gap-2
+                      px-4
+                      py-2.5
+                      rounded-xl
+                      bg-white
+                      border
+                      border-[var(--erp-border)]
+                      text-sm
+                      font-semibold
+                      text-[var(--erp-text)]
+                      hover:bg-[var(--erp-primary-soft)]
+                      transition
+                    "
+                  >
+
+                    Elegir archivo
+
+                    <input
+                      type="file"
+                      accept=".xlsx,.xls,.xlsm"
+                      className="hidden"
+                      disabled={
+                        importando
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        setArchivo(
+                          event.target
+                            .files?.[0] ||
+                            null
+                        )
+                      }
+                    />
+
+                  </label>
+
+
+                  {archivo && (
+
+                    <div
+                      className="
+                        mt-4
+                        rounded-xl
+                        border
+                        border-[var(--erp-border)]
+                        bg-white
+                        px-4
+                        py-3
+                        text-left
+                        text-sm
+                        text-[var(--erp-text)]
+                      "
+                    >
+
+                      <div
+                        className="
+                          font-semibold
+                        "
+                      >
+                        {archivo.name}
+                      </div>
+
+                      <div
+                        className="
+                          text-xs
+                          text-[var(--erp-text-soft)]
+                          mt-0.5
+                        "
+                      >
+                        Archivo seleccionado
+                      </div>
+
+                    </div>
+
+                  )}
+
+                </div>
+
+
+                <div
+                  className="
+                    rounded-xl
+                    border
+                    border-[var(--erp-border)]
+                    bg-[var(--erp-surface-soft)]
+                    px-4
+                    py-3
+                    text-xs
+                    text-[var(--erp-text-soft)]
+                  "
+                >
+                  El Excel debe contener:
+                  <strong
+                    className="
+                      text-[var(--erp-text)]
+                    "
+                  >
+                    {" "}
+                    Oficina Liquidadora,
+                    Dirección, Código Postal,
+                    Población, Província,
+                    Teléfono, Email y Horario.
+                  </strong>
+                </div>
+
+              </div>
+
+
+              <div
+                className="
+                  px-5
+                  py-4
+                  border-t
+                  border-[var(--erp-border)]
+                  flex
+                  justify-end
+                  gap-2
+                "
+              >
+
+                <button
+                  type="button"
+                  onClick={
+                    cerrarImportacion
+                  }
+                  disabled={
+                    importando
+                  }
+                  className="
+                    px-4
+                    py-2.5
+                    rounded-xl
+                    bg-white
+                    border
+                    border-[var(--erp-border)]
+                    text-[var(--erp-text)]
+                    text-sm
+                    font-semibold
+                    hover:bg-[var(--erp-surface-soft)]
+                    transition
+                    disabled:opacity-50
+                  "
+                >
+                  Cancelar
+                </button>
+
+
+                <button
+                  type="submit"
+                  disabled={
+                    importando ||
+                    !archivo
+                  }
+                  className="
+                    px-4
+                    py-2.5
+                    rounded-xl
+                    bg-[var(--erp-primary)]
+                    text-white
+                    text-sm
+                    font-semibold
+                    shadow-sm
+                    hover:brightness-95
+                    transition
+                    disabled:opacity-50
+                    disabled:cursor-not-allowed
+                  "
+                >
+                  {importando
+                    ? "Importando..."
+                    : "Importar Excel"}
+                </button>
+
+              </div>
+
+            </form>
+
+          </div>
+
         </div>
+
       )}
+
     </div>
-  );
-}
-
-
-// ============================================================
-// CAMPO
-// ============================================================
-
-function Campo({
-  label,
-  value,
-  onChange,
-  full = false,
-}) {
-  return (
-    <label
-      style={{
-        display: "flex",
-        flexDirection:
-          "column",
-        gap: "7px",
-        gridColumn: full
-          ? "1 / -1"
-          : undefined,
-      }}
-    >
-      <span
-        style={{
-          fontSize: "13px",
-          fontWeight: 800,
-        }}
-      >
-        {label}
-      </span>
-
-      <input
-        value={value}
-        onChange={(e) =>
-          onChange(
-            e.target.value
-          )
-        }
-        style={{
-          width: "100%",
-          boxSizing: "border-box",
-          padding:
-            "11px 12px",
-          border:
-            "1px solid #d8dee8",
-          borderRadius:
-            "10px",
-        }}
-      />
-    </label>
   );
 }
