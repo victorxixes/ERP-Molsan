@@ -516,13 +516,7 @@ export default function Sidebar() {
       icon: "chat",
       badge: mensajesNoLeidos,
     },
-
-    {
-      key: "utilidades",
-      to: "/herramientas/utilidades",
-      label: "Utilidades",
-      icon: "cog",
-    },
+   
 
     {
       key: "notificaciones",
@@ -567,7 +561,14 @@ export default function Sidebar() {
       label: "Auditoría",
       icon: "chart",
     },
-
+    
+    {
+      key: "utilidades",
+      to: "/herramientas/utilidades",
+      label: "Utilidades",
+      icon: "cog",
+    },
+    
     {
       key: "seguridad",
       to: "/seguridad",
