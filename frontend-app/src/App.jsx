@@ -63,7 +63,7 @@ import Notificaciones from "./pages/notificaciones/Notificaciones.jsx";
 import Municipios from "./pages/herramientas/Municipios.jsx";
 
 /* ENTIDADES BANCARIAS */
-import Municipios from "./pages/herramientas/EntidadesBancarias.jsx";
+import EntidadesBancarias from "./pages/herramientas/EntidadesBancarias.jsx";
 
 /* PANEL TÉCNICO */
 import PanelTecnico from "./pages/paneltecnico/PanelTecnico.jsx";
@@ -309,8 +309,8 @@ export default function App() {
           />
 
            <Route
-          path="herramientas/EntidadesBancarias"
-          element={<Entidades Bancarias />}
+          path="herramientas/entidades-bancarias"
+          element={<EntidadesBancarias />}
           />
           
           <Route
