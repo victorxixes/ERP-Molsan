@@ -4,6 +4,8 @@ from threading import Lock
 from backend.app.mensajes.models import Mensaje
 from backend.app.database import SessionLocal
 
+from backend.app.realtime.manager import realtime_manager
+from backend.app.realtime.schemas import RealtimeEvent
 
 # =========================================================
 # NOTIFICACIONES
@@ -421,21 +423,63 @@ class WSManager:
                 mensaje
             )
 
-            payload = {
+                    payload = {
+            "tipo": "nuevo_mensaje",
+            "mensaje": mensaje.as_dict(),
+        }
+
+        # =====================================================
+        # CANAL ANTIGUO — COMPATIBILIDAD
+        # =====================================================
+
+        await self.send_to_user(
+            remitente_id,
+            payload,
+        )
+
+        await self.send_to_user(
+            destinatario_id,
+            payload,
+        )
+
+        # =====================================================
+        # REALTIME GLOBAL
+        # =====================================================
+
+        realtime_event = RealtimeEvent(
+            modulo="mensajes",
+            evento="mensaje_nuevo",
+            usuario_id=remitente_id,
+            data={
                 "tipo": "nuevo_mensaje",
-                "mensaje": mensaje.as_dict(),
-            }
+                "mensaje": payload["mensaje"],
+            },
+        )
 
-        except Exception:
+        await realtime_manager.broadcast_usuario(
+            remitente_id,
+            realtime_event,
+        )
 
-            db.rollback()
+        if destinatario_id != remitente_id:
 
-            raise
+            await realtime_manager.broadcast_usuario(
+                destinatario_id,
+                realtime_event,
+            )
 
-        finally:
+        # =====================================================
+        # NOTIFICACIÓN
+        # =====================================================
 
-            db.close()
-
+        await send_notif_to_user(
+            destinatario_id,
+            {
+                "tipo": "nuevo_mensaje",
+                "from": remitente_id,
+                "preview": contenido,
+            },
+        )
         # -------------------------------------------------
         # REMITENTE
         # -------------------------------------------------
@@ -519,20 +563,63 @@ class WSManager:
                 mensaje
             )
 
-            payload = {
+                    payload = {
+            "tipo": "nuevo_archivo",
+            "mensaje": mensaje.as_dict(),
+        }
+
+        # =====================================================
+        # CANAL ANTIGUO — COMPATIBILIDAD
+        # =====================================================
+
+        await self.send_to_user(
+            remitente_id,
+            payload,
+        )
+
+        await self.send_to_user(
+            destinatario_id,
+            payload,
+        )
+
+        # =====================================================
+        # REALTIME GLOBAL
+        # =====================================================
+
+        realtime_event = RealtimeEvent(
+            modulo="mensajes",
+            evento="archivo_nuevo",
+            usuario_id=remitente_id,
+            data={
                 "tipo": "nuevo_archivo",
-                "mensaje": mensaje.as_dict(),
-            }
+                "mensaje": payload["mensaje"],
+            },
+        )
 
-        except Exception:
+        await realtime_manager.broadcast_usuario(
+            remitente_id,
+            realtime_event,
+        )
 
-            db.rollback()
+        if destinatario_id != remitente_id:
 
-            raise
+            await realtime_manager.broadcast_usuario(
+                destinatario_id,
+                realtime_event,
+            )
 
-        finally:
+        # =====================================================
+        # NOTIFICACIÓN
+        # =====================================================
 
-            db.close()
+        await send_notif_to_user(
+            destinatario_id,
+            {
+                "tipo": "nuevo_archivo",
+                "from": remitente_id,
+                "archivo_url": archivo_url,
+            },
+        )
 
         # -------------------------------------------------
         # REMITENTE
