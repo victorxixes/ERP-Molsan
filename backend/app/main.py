@@ -125,7 +125,9 @@ from backend.app.seguridad.roles.models import (
     Rol,
 )
 
-
+from backend.app.tipos_carga_hipotecaria.models import (
+    TipoCargaHipotecaria,
+)
 # ------------------------------------------------------------
 # NOTARIAS
 #
@@ -220,6 +222,13 @@ from backend.app.tipos_carga_hipotecaria.models import (
     TipoCargaHipotecaria,
 )
 
+# ------------------------------------------------------------
+# TIPOS DE CONCEPTO DE GASTOS
+# ------------------------------------------------------------
+
+from backend.app.tipos_concepto_gastos.models import (
+    TipoConceptoGastos,
+)
 
 # ------------------------------------------------------------
 # ACCIONES DEL EXPEDIENTE
@@ -579,6 +588,13 @@ from backend.app.oficinas_liquidadoras.router import (
     router as oficinas_liquidadoras_router,
 )
 
+# ============================================================
+# TIPOS DE CONCEPTO DE GASTOS
+# ============================================================
+
+from backend.app.tipos_concepto_gastos.router import (
+    router as tipos_concepto_gastos_router,
+)
 
 # ============================================================
 # ACCIONES DEL EXPEDIENTE
@@ -855,6 +871,14 @@ app.include_router(
     prefix="/api",
 )
 
+# ============================================================
+# TIPOS DE CONCEPTO DE GASTOS
+# ============================================================
+
+app.include_router(
+    tipos_concepto_gastos_router,
+    prefix="/api",
+)
 
 # ============================================================
 # ACCIONES DEL EXPEDIENTE
