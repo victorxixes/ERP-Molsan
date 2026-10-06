@@ -18,6 +18,7 @@ import {
   useSeguridadStore,
 } from "../../store/seguridadStore";
 
+import MODULOS_ERP from "../config/modulos";
 
 /**
  * ============================================================
@@ -1089,55 +1090,83 @@ export default function ModalEmpleado({
      MÓDULOS DISPONIBLES
   ========================================================== */
 
-  const modulosDisponibles =
-    useMemo(() => {
+ const modulosDisponibles = useMemo(() => {
 
-      const conjunto =
-        new Set();
+  const conjunto = new Set();
 
-      Object.keys(
-        permisosDisponibles
-      ).forEach(
-        (modulo) => {
-          conjunto.add(
-            modulo
-          );
-        }
+  // ----------------------------------------------------------
+  // CATÁLOGO CENTRAL
+  // ----------------------------------------------------------
+
+  MODULOS_ERP.forEach((modulo) => {
+
+    if (
+      modulo &&
+      typeof modulo === "object" &&
+      typeof modulo.key === "string"
+    ) {
+      conjunto.add(
+        modulo.key.trim()
       );
+    }
 
-      modulosVisibles.forEach(
-        (modulo) => {
+  });
 
-          if (
-            typeof modulo === "string"
-          ) {
-            conjunto.add(
-              modulo
-            );
+
+  // ----------------------------------------------------------
+  // MÓDULOS ANTIGUOS / LEGACY
+  // ----------------------------------------------------------
+
+  Object.keys(
+    permisosGlobales || {}
+  ).forEach((modulo) => {
+
+    if (
+      typeof modulo === "string" &&
+      modulo.trim()
+    ) {
+      conjunto.add(
+        modulo.trim()
+      );
+    }
+
+  });
+
+
+  // ----------------------------------------------------------
+  // MÓDULOS YA ASIGNADOS
+  // ----------------------------------------------------------
+
+  modulosVisibles.forEach((modulo) => {
+
+    if (
+      typeof modulo === "string" &&
+      modulo.trim()
+    ) {
+      conjunto.add(
+        modulo.trim()
+      );
+    }
+
+  });
+
+
+  return Array.from(conjunto)
+    .sort(
+      (a, b) =>
+        a.localeCompare(
+          b,
+          "es",
+          {
+            sensitivity: "base",
           }
+        )
+    );
 
-        }
-      );
-
-      return Array.from(
-        conjunto
-      ).sort(
-        (a, b) =>
-          a.localeCompare(
-            b,
-            "es",
-            {
-              sensitivity:
-                "base",
-            }
-          )
-      );
-
-    }, [
-      permisosDisponibles,
-      modulosVisibles,
-    ]);
-
+}, [
+  modulosVisibles,
+  permisosGlobales,
+]);
 
   /* ==========================================================
      HELPERS
