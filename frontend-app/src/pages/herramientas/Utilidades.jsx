@@ -164,7 +164,17 @@ export default function Utilidades() {
           link="/herramientas/utilidades/subir-documento"
         />
 
+{/* ===================================================
+    TIPOS DE CARGA HIPOTECARIA
+=================================================== */}
 
+<Card
+  icon="🏠"
+  titulo="Tipos de Carga Hipotecaria"
+  descripcion="Catálogo de tipos de carga hipotecaria utilizados en los expedientes."
+  link="/herramientas/tipos-carga-hipotecaria"
+/>
+        
         {/* ===================================================
             INFORMES
         =================================================== */}
