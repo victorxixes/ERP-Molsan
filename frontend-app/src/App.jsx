@@ -62,6 +62,9 @@ import Notificaciones from "./pages/notificaciones/Notificaciones.jsx";
 /* MUNICIPIOS */
 import Municipios from "./pages/herramientas/Municipios.jsx";
 
+/* ENTIDADES BANCARIAS */
+import Municipios from "./pages/herramientas/EntidadesBancarias.jsx";
+
 /* PANEL TÉCNICO */
 import PanelTecnico from "./pages/paneltecnico/PanelTecnico.jsx";
 import MonitorSistema from "./pages/paneltecnico/MonitorSistema.jsx";
@@ -305,6 +308,11 @@ export default function App() {
             element={<Utilidades />}
           />
 
+           <Route
+          path="herramientas/EntidadesBancarias"
+          element={<Entidades Bancarias />}
+          />
+          
           <Route
             path="herramientas/utilidades/crear-noticia"
             element={<CrearNoticia />}
