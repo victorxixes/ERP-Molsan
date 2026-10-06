@@ -114,6 +114,14 @@ from backend.app.municipios.models import Municipio
 
 from backend.app.entidades_bancarias.models import (EntidadBancaria,)
 
+# ------------------------------------------------------------
+# REGISTROS DE LA PROPIEDAD
+# ------------------------------------------------------------
+
+from backend.app.registros_propiedad.models import (
+    RegistroPropiedad,
+)
+
 # ============================================================
 # CREAR TABLAS
 # ============================================================
@@ -352,6 +360,14 @@ from backend.app.municipios.router import (
 
 from backend.app.entidades_bancarias.router import (
     router as entidades_bancarias_router,
+)
+
+# ============================================================
+# REGISTROS DE LA PROPIEDAD
+# ============================================================
+
+from backend.app.registros_propiedad.router import (
+    router as registros_propiedad_router,
 )
 
 # ============================================================
@@ -600,6 +616,15 @@ app.include_router(
 # ============================================================
 app.include_router(
     entidades_bancarias_router,
+    prefix="/api"
+)
+
+# ============================================================
+# REGISTROS DE LA PROPIEDAD
+# ============================================================
+
+app.include_router(
+    registros_propiedad_router,
     prefix="/api"
 )
 
