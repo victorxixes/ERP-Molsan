@@ -118,6 +118,17 @@ export default function Utilidades() {
           link="/herramientas/registros-propiedad"
         />
 
+       {/* ===================================================
+    ACCIONES DEL EXPEDIENTE
+=================================================== */}
+
+<Card
+  icon="clipboard"
+  titulo="Acciones del Expediente"
+  descripcion="Catálogo de acciones, actividades y descripciones asociadas a los expedientes."
+  link="/herramientas/acciones-expediente"
+/>
+        
         {/* ===================================================
             IMPORTAR CTN
         =================================================== */}
