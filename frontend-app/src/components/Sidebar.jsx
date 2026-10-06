@@ -517,14 +517,7 @@ export default function Sidebar() {
       badge: mensajesNoLeidos,
     },
    
-
-    {
-      key: "notificaciones",
-      to: "/notificaciones",
-      label: "Notificaciones",
-      icon: "bell",
-      badge: unreadCount,
-    },
+  
 
         {
       key: "fusiones",
@@ -599,7 +592,14 @@ export default function Sidebar() {
 
   ];
 
-
+{
+      key: "notificaciones",
+      to: "/notificaciones",
+      label: "Notificaciones",
+      icon: "bell",
+      badge: unreadCount,
+    },
+        
   /**
    * ==========================================================
    * FILTRADO POR PERMISOS
