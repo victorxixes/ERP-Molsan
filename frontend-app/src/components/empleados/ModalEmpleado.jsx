@@ -11,6 +11,10 @@ import {
 } from "../../api/empleados";
 
 import {
+  getMaestros,
+} from "../../api/maestros";
+
+import {
   useSeguridadStore,
 } from "../../store/seguridadStore";
 
@@ -41,11 +45,21 @@ import {
  * - Permisos por módulo
  * - Reset password
  *
+ * MAESTROS:
+ *
+ * - Departamentos
+ * - Secciones
+ * - Cargos
+ *
  * API EMPLEADOS:
  *
  * - editarEmpleado()
  * - subirFotoEmpleado()
  * - resetPasswordEmpleado()
+ *
+ * API MAESTROS:
+ *
+ * - getMaestros()
  *
  * STORE SEGURIDAD:
  *
@@ -200,6 +214,26 @@ export default function ModalEmpleado({
 
 
   /* ==========================================================
+     MAESTROS
+  ========================================================== */
+
+  const [
+    departamentos,
+    setDepartamentos,
+  ] = useState([]);
+
+  const [
+    secciones,
+    setSecciones,
+  ] = useState([]);
+
+  const [
+    cargos,
+    setCargos,
+  ] = useState([]);
+
+
+  /* ==========================================================
      CARGAR FICHA
   ========================================================== */
 
@@ -262,6 +296,87 @@ export default function ModalEmpleado({
     open,
     empleadoId,
     cargarFicha,
+  ]);
+
+
+  /* ==========================================================
+     CARGAR MAESTROS
+  ========================================================== */
+
+  useEffect(() => {
+
+    if (!open) {
+      return;
+    }
+
+    let activo = true;
+
+    const cargarMaestros = async () => {
+
+      try {
+
+        const [
+          departamentosRes,
+          seccionesRes,
+          cargosRes,
+        ] = await Promise.all([
+          getMaestros("departamentos"),
+          getMaestros("secciones"),
+          getMaestros("cargos"),
+        ]);
+
+        if (!activo) {
+          return;
+        }
+
+        setDepartamentos(
+          Array.isArray(
+            departamentosRes?.data
+          )
+            ? departamentosRes.data
+            : []
+        );
+
+        setSecciones(
+          Array.isArray(
+            seccionesRes?.data
+          )
+            ? seccionesRes.data
+            : []
+        );
+
+        setCargos(
+          Array.isArray(
+            cargosRes?.data
+          )
+            ? cargosRes.data
+            : []
+        );
+
+      } catch (err) {
+
+        console.error(
+          "MODAL EMPLEADO — ERROR CARGANDO MAESTROS:",
+          err
+        );
+
+        if (activo) {
+
+          setDepartamentos([]);
+          setSecciones([]);
+          setCargos([]);
+        }
+      }
+    };
+
+    cargarMaestros();
+
+    return () => {
+      activo = false;
+    };
+
+  }, [
+    open,
   ]);
 
 
@@ -366,7 +481,9 @@ export default function ModalEmpleado({
       )
     );
 
-  }, [ficha]);
+  }, [
+    ficha,
+  ]);
 
 
   /* ==========================================================
@@ -392,7 +509,9 @@ export default function ModalEmpleado({
 
     };
 
-  }, [open]);
+  }, [
+    open,
+  ]);
 
 
   /* ==========================================================
@@ -2414,46 +2533,67 @@ export default function ModalEmpleado({
                         "
                       >
 
-                        <CampoEditable
-                          label="Departamento ID"
-                          type="number"
+                        {/* DEPARTAMENTO */}
+
+                        <CampoSelect
+                          label="Departamento"
                           value={
                             empleadoFormulario.departamento_id
                           }
+                          options={
+                            departamentos
+                          }
+                          placeholder="Sin departamento"
                           onChange={(value) =>
                             cambiarCampo(
                               "departamento_id",
-                              value
+                              value === ""
+                                ? null
+                                : Number(value)
                             )
                           }
                         />
 
 
-                        <CampoEditable
-                          label="Sección ID"
-                          type="number"
+                        {/* SECCIÓN */}
+
+                        <CampoSelect
+                          label="Sección"
                           value={
                             empleadoFormulario.seccion_id
                           }
+                          options={
+                            secciones
+                          }
+                          placeholder="Sin sección"
                           onChange={(value) =>
                             cambiarCampo(
                               "seccion_id",
-                              value
+                              value === ""
+                                ? null
+                                : Number(value)
                             )
                           }
                         />
 
 
-                        <CampoEditable
-                          label="Cargo ID"
-                          type="number"
+                        {/* CARGO */}
+
+                        <CampoSelect
+                          label="Cargo"
                           value={
                             empleadoFormulario.cargo_id
                           }
+                          options={
+                            cargos
+                          }
+                          placeholder="Sin cargo"
                           onChange={(value) =>
                             cambiarCampo(
                               "cargo_id",
-                              value
+                              value === ""
+                                ? null
+                                : Number(value)
                             )
                           }
                         />
@@ -3591,6 +3731,92 @@ function CampoEditable({
           disabled:text-slate-400
         "
       />
+
+    </label>
+  );
+}
+
+
+/* ============================================================
+   CAMPO SELECT
+============================================================ */
+
+function CampoSelect({
+  label,
+  value,
+  options = [],
+  placeholder = "Seleccionar",
+  onChange,
+}) {
+
+  return (
+
+    <label className="block">
+
+      <span
+        className="
+          mb-2
+          block
+          text-[11px]
+          font-semibold
+          uppercase
+          tracking-wide
+          text-slate-400
+        "
+      >
+        {label}
+      </span>
+
+
+      <select
+        value={
+          value === null ||
+          value === undefined
+            ? ""
+            : String(value)
+        }
+        onChange={(event) =>
+          onChange(
+            event.target.value
+          )
+        }
+        className="
+          h-11
+          w-full
+          rounded-xl
+          border
+          border-slate-200
+          bg-white
+          px-4
+          text-sm
+          font-medium
+          text-slate-800
+          outline-none
+          transition
+          focus:border-blue-400
+          focus:ring-2
+          focus:ring-blue-100
+        "
+      >
+
+        <option value="">
+          {placeholder}
+        </option>
+
+        {options.map(
+          (item) => (
+
+            <option
+              key={item.id}
+              value={item.id}
+            >
+              {item.nombre}
+            </option>
+
+          )
+        )}
+
+      </select>
 
     </label>
   );
