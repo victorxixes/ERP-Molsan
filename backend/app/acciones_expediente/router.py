@@ -12,9 +12,7 @@ from pydantic import BaseModel
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from backend.app.database import (
-    get_db,
-)
+from backend.app.database import get_db
 
 from backend.app.acciones_expediente.models import (
     AccionExpediente,
@@ -24,6 +22,10 @@ from backend.app.Utilidades.importadores.acciones_expediente_importer import (
     importar_excel_acciones_expediente,
 )
 
+
+# ============================================================
+# ROUTER
+# ============================================================
 
 router = APIRouter(
     prefix="/acciones-expediente",
@@ -40,15 +42,10 @@ router = APIRouter(
 class AccionExpedienteBase(
     BaseModel
 ):
-
     departamento: Optional[str] = None
-
     seccion: Optional[str] = None
-
     actividad: Optional[str] = None
-
     descripcion: str
-
     activo: bool = True
 
     class Config:
@@ -74,56 +71,28 @@ class AccionExpedienteActualizar(
 def accion_a_dict(
     accion: AccionExpediente,
 ):
-
     return {
-
-        "id":
-            accion.id,
-
-        "departamento":
-            accion.departamento,
-
-        "seccion":
-            accion.seccion,
-
-        "actividad":
-            accion.actividad,
-
-        "descripcion":
-            accion.descripcion,
-
-        "activo":
-            accion.activo,
-
+        "id": accion.id,
+        "departamento": accion.departamento,
+        "seccion": accion.seccion,
+        "actividad": accion.actividad,
+        "descripcion": accion.descripcion,
+        "activo": accion.activo,
     }
 
 
 # ============================================================
-# LISTAR
+# GET /api/acciones-expediente
 # ============================================================
 
 @router.get("")
 def listar_acciones(
     q: Optional[str] = Query(None),
-
-    departamento:
-        Optional[str]
-        = Query(None),
-
-    seccion:
-        Optional[str]
-        = Query(None),
-
-    actividad:
-        Optional[str]
-        = Query(None),
-
-    activo:
-        Optional[bool]
-        = Query(None),
-
-    db: Session =
-        Depends(get_db),
+    departamento: Optional[str] = Query(None),
+    seccion: Optional[str] = Query(None),
+    actividad: Optional[str] = Query(None),
+    activo: Optional[bool] = Query(None),
+    db: Session = Depends(get_db),
 ):
 
     consulta = (
@@ -131,7 +100,6 @@ def listar_acciones(
             AccionExpediente
         )
     )
-
 
     # ========================================================
     # BÚSQUEDA GENERAL
@@ -143,38 +111,25 @@ def listar_acciones(
             f"%{q.strip()}%"
         )
 
-        consulta = (
-            consulta.filter(
-                or_(
+        consulta = consulta.filter(
+            or_(
+                AccionExpediente
+                .departamento
+                .ilike(texto),
 
-                    AccionExpediente
-                    .departamento
-                    .ilike(
-                        texto
-                    ),
+                AccionExpediente
+                .seccion
+                .ilike(texto),
 
-                    AccionExpediente
-                    .seccion
-                    .ilike(
-                        texto
-                    ),
+                AccionExpediente
+                .actividad
+                .ilike(texto),
 
-                    AccionExpediente
-                    .actividad
-                    .ilike(
-                        texto
-                    ),
-
-                    AccionExpediente
-                    .descripcion
-                    .ilike(
-                        texto
-                    ),
-
-                )
+                AccionExpediente
+                .descripcion
+                .ilike(texto),
             )
         )
-
 
     # ========================================================
     # FILTRO DEPARTAMENTO
@@ -182,16 +137,13 @@ def listar_acciones(
 
     if departamento:
 
-        consulta = (
-            consulta.filter(
-                AccionExpediente
-                .departamento
-                .ilike(
-                    f"%{departamento.strip()}%"
-                )
+        consulta = consulta.filter(
+            AccionExpediente
+            .departamento
+            .ilike(
+                f"%{departamento.strip()}%"
             )
         )
-
 
     # ========================================================
     # FILTRO SECCIÓN
@@ -199,16 +151,13 @@ def listar_acciones(
 
     if seccion:
 
-        consulta = (
-            consulta.filter(
-                AccionExpediente
-                .seccion
-                .ilike(
-                    f"%{seccion.strip()}%"
-                )
+        consulta = consulta.filter(
+            AccionExpediente
+            .seccion
+            .ilike(
+                f"%{seccion.strip()}%"
             )
         )
-
 
     # ========================================================
     # FILTRO ACTIVIDAD
@@ -216,16 +165,13 @@ def listar_acciones(
 
     if actividad:
 
-        consulta = (
-            consulta.filter(
-                AccionExpediente
-                .actividad
-                .ilike(
-                    f"%{actividad.strip()}%"
-                )
+        consulta = consulta.filter(
+            AccionExpediente
+            .actividad
+            .ilike(
+                f"%{actividad.strip()}%"
             )
         )
-
 
     # ========================================================
     # FILTRO ACTIVO
@@ -233,20 +179,16 @@ def listar_acciones(
 
     if activo is not None:
 
-        consulta = (
-            consulta.filter(
-                AccionExpediente
-                .activo
-                == activo
-            )
+        consulta = consulta.filter(
+            AccionExpediente.activo
+            == activo
         )
-
 
     # ========================================================
     # ORDEN
     # ========================================================
 
-    consulta = (
+    acciones = (
         consulta
         .order_by(
             AccionExpediente
@@ -265,13 +207,8 @@ def listar_acciones(
             .descripcion
             .asc(),
         )
+        .all()
     )
-
-
-    acciones = (
-        consulta.all()
-    )
-
 
     return [
         accion_a_dict(
@@ -282,22 +219,18 @@ def listar_acciones(
 
 
 # ============================================================
-# CREAR
+# POST /api/acciones-expediente
 # ============================================================
 
 @router.post("")
 def crear_accion(
-    datos:
-        AccionExpedienteCrear,
-
-    db: Session =
-        Depends(get_db),
+    datos: AccionExpedienteCrear,
+    db: Session = Depends(get_db),
 ):
 
     descripcion = (
         datos.descripcion.strip()
     )
-
 
     if not descripcion:
 
@@ -309,51 +242,58 @@ def crear_accion(
             ),
         )
 
+    nueva = AccionExpediente(
 
-    nueva = (
-        AccionExpediente(
+        departamento=(
+            datos.departamento.strip()
+            if datos.departamento
+            and datos.departamento.strip()
+            else None
+        ),
 
-            departamento=(
-                datos.departamento.strip()
-                if datos.departamento
-                and datos.departamento.strip()
-                else None
-            ),
+        seccion=(
+            datos.seccion.strip()
+            if datos.seccion
+            and datos.seccion.strip()
+            else None
+        ),
 
-            seccion=(
-                datos.seccion.strip()
-                if datos.seccion
-                and datos.seccion.strip()
-                else None
-            ),
+        actividad=(
+            datos.actividad.strip()
+            if datos.actividad
+            and datos.actividad.strip()
+            else None
+        ),
 
-            actividad=(
-                datos.actividad.strip()
-                if datos.actividad
-                and datos.actividad.strip()
-                else None
-            ),
+        descripcion=descripcion,
 
-            descripcion=
-                descripcion,
+        activo=datos.activo,
+    )
 
-            activo=
-                datos.activo,
+    try:
 
+        db.add(
+            nueva
         )
-    )
 
+        db.commit()
 
-    db.add(
-        nueva
-    )
+        db.refresh(
+            nueva
+        )
 
-    db.commit()
+    except Exception as exc:
 
-    db.refresh(
-        nueva
-    )
+        db.rollback()
 
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "No se pudo crear "
+                "la acción del expediente: "
+                f"{exc}"
+            ),
+        )
 
     return accion_a_dict(
         nueva
@@ -361,18 +301,15 @@ def crear_accion(
 
 
 # ============================================================
-# IMPORTAR EXCEL
+# POST /api/acciones-expediente/importar-excel
 # ============================================================
 
 @router.post(
     "/importar-excel"
 )
 async def importar_excel(
-    fichero:
-        UploadFile = File(...),
-
-    db: Session =
-        Depends(get_db),
+    fichero: UploadFile = File(...),
+    db: Session = Depends(get_db),
 ):
 
     nombre_archivo = (
@@ -380,6 +317,9 @@ async def importar_excel(
         or ""
     ).strip().lower()
 
+    # ========================================================
+    # VALIDAR EXTENSIÓN
+    # ========================================================
 
     if not nombre_archivo.endswith(
         (
@@ -398,11 +338,13 @@ async def importar_excel(
             ),
         )
 
+    # ========================================================
+    # LEER ARCHIVO
+    # ========================================================
 
     try:
 
-        contenido =
-            await fichero.read()
+        contenido = await fichero.read()
 
     except Exception as exc:
 
@@ -415,6 +357,9 @@ async def importar_excel(
             ),
         )
 
+    # ========================================================
+    # VALIDAR CONTENIDO
+    # ========================================================
 
     if not contenido:
 
@@ -426,10 +371,12 @@ async def importar_excel(
             ),
         )
 
+    # ========================================================
+    # ARCHIVO TEMPORAL
+    # ========================================================
 
     import os
     import tempfile
-
 
     extension = (
         os.path.splitext(
@@ -438,9 +385,7 @@ async def importar_excel(
         or ".xlsx"
     )
 
-
     ruta_temporal = None
-
 
     try:
 
@@ -457,6 +402,9 @@ async def importar_excel(
                 temporal.name
             )
 
+        # ====================================================
+        # IMPORTAR
+        # ====================================================
 
         resultado = (
             importar_excel_acciones_expediente(
@@ -465,6 +413,9 @@ async def importar_excel(
             )
         )
 
+        # ====================================================
+        # COMPROBAR RESULTADO
+        # ====================================================
 
         if not resultado.get(
             "ok"
@@ -479,11 +430,13 @@ async def importar_excel(
                 ),
             )
 
-
         return resultado
 
-
     finally:
+
+        # ====================================================
+        # BORRAR TEMPORAL
+        # ====================================================
 
         if ruta_temporal:
 
@@ -503,7 +456,7 @@ async def importar_excel(
 
 
 # ============================================================
-# ACTUALIZAR
+# PUT /api/acciones-expediente/{accion_id}
 # ============================================================
 
 @router.put(
@@ -511,12 +464,8 @@ async def importar_excel(
 )
 def actualizar_accion(
     accion_id: int,
-
-    datos:
-        AccionExpedienteActualizar,
-
-    db: Session =
-        Depends(get_db),
+    datos: AccionExpedienteActualizar,
+    db: Session = Depends(get_db),
 ):
 
     accion = (
@@ -530,7 +479,6 @@ def actualizar_accion(
         .first()
     )
 
-
     if not accion:
 
         raise HTTPException(
@@ -541,11 +489,9 @@ def actualizar_accion(
             ),
         )
 
-
     descripcion = (
         datos.descripcion.strip()
     )
-
 
     if not descripcion:
 
@@ -557,14 +503,12 @@ def actualizar_accion(
             ),
         )
 
-
     accion.departamento = (
         datos.departamento.strip()
         if datos.departamento
         and datos.departamento.strip()
         else None
     )
-
 
     accion.seccion = (
         datos.seccion.strip()
@@ -573,7 +517,6 @@ def actualizar_accion(
         else None
     )
 
-
     accion.actividad = (
         datos.actividad.strip()
         if datos.actividad
@@ -581,23 +524,34 @@ def actualizar_accion(
         else None
     )
 
-
     accion.descripcion = (
         descripcion
     )
-
 
     accion.activo = (
         datos.activo
     )
 
+    try:
 
-    db.commit()
+        db.commit()
 
-    db.refresh(
-        accion
-    )
+        db.refresh(
+            accion
+        )
 
+    except Exception as exc:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "No se pudo actualizar "
+                "la acción del expediente: "
+                f"{exc}"
+            ),
+        )
 
     return accion_a_dict(
         accion
@@ -605,7 +559,7 @@ def actualizar_accion(
 
 
 # ============================================================
-# ELIMINAR
+# DELETE /api/acciones-expediente/{accion_id}
 # ============================================================
 
 @router.delete(
@@ -613,9 +567,7 @@ def actualizar_accion(
 )
 def eliminar_accion(
     accion_id: int,
-
-    db: Session =
-        Depends(get_db),
+    db: Session = Depends(get_db),
 ):
 
     accion = (
@@ -629,7 +581,6 @@ def eliminar_accion(
         .first()
     )
 
-
     if not accion:
 
         raise HTTPException(
@@ -640,22 +591,31 @@ def eliminar_accion(
             ),
         )
 
+    try:
 
-    db.delete(
-        accion
-    )
+        db.delete(
+            accion
+        )
 
-    db.commit()
+        db.commit()
 
+    except Exception as exc:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "No se pudo eliminar "
+                "la acción del expediente: "
+                f"{exc}"
+            ),
+        )
 
     return {
-
-        "ok":
-            True,
-
-        "mensaje":
-            (
-                "Acción del expediente "
-                "eliminada correctamente."
-            ),
+        "ok": True,
+        "mensaje": (
+            "Acción del expediente "
+            "eliminada correctamente."
+        ),
     }
