@@ -106,6 +106,10 @@ import Fusiones from "./pages/fusiones/Fusiones";
 import TiposCargaHipotecaria
   from "./pages/herramientas/TiposCargaHipotecaria.jsx";
 
+/* TIPOS DE CONCEPTOS DE GASTOS */
+import TiposConceptoGastos
+  from "./pages/herramientas/TiposConceptoGastos.jsx";
+
 /**
  * ============================================================
  * WRAPPER MENSAJES
@@ -346,6 +350,11 @@ export default function App() {
           <Route
           path="herramientas/tipos-carga-hipotecaria"
           element={<TiposCargaHipotecaria />}
+          />
+
+          <Route
+          path="herramientas/tipos-concepto-gastos"
+          element={<TiposConceptoGastos />}
           />
           
           <Route
