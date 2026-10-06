@@ -174,6 +174,18 @@ export default function Utilidades() {
   descripcion="Catálogo de tipos de carga hipotecaria utilizados en los expedientes."
   link="/herramientas/tipos-carga-hipotecaria"
 />
+
+        {/* ===================================================
+    TIPOS DE CARGA HIPOTECARIA
+=================================================== */}
+
+<Card
+  icon="🧾"
+  titulo="Tipos de Conceptos de Gastos"
+  descripcion="Catálogo de tipos de conceptos de gastos utilizados en los expedientes."
+  link="/herramientas/tipos-concepto-gastos"
+/>
+        
         
         {/* ===================================================
             INFORMES
