@@ -108,6 +108,11 @@ from backend.app.mensajes.models import Mensaje
 
 from backend.app.municipios.models import Municipio
 
+# ------------------------------------------------------------
+# ENTIDADES BANCARIAS
+# ------------------------------------------------------------
+
+from backend.app.entidades_bancarias.models import (EntidadBancaria,)
 
 # ============================================================
 # CREAR TABLAS
@@ -341,6 +346,13 @@ from backend.app.municipios.router import (
     router as municipios_router
 )
 
+# ============================================================
+# ENTIDADES BANCARIAS
+# ============================================================
+
+from backend.app.entidades_bancarias.router import (
+    router as entidades_bancarias_router,
+)
 
 # ============================================================
 # HERRAMIENTAS SWAGGER
@@ -583,6 +595,18 @@ app.include_router(
     prefix="/api"
 )
 
+# ============================================================
+# ENTIDADES BANCARIAS
+# ============================================================
+app.include_router(
+    municipios_router,
+    prefix="/api"
+)
+
+app.include_router(
+    entidades_bancarias_router,
+    prefix="/api"
+)
 
 # ============================================================
 # HERRAMIENTAS SWAGGER
