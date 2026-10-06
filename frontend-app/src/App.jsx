@@ -65,6 +65,9 @@ import Municipios from "./pages/herramientas/Municipios.jsx";
 /* ENTIDADES BANCARIAS */
 import EntidadesBancarias from "./pages/herramientas/EntidadesBancarias.jsx";
 
+/* REGISTROS DE LA PROPIEDAD */
+import RegistrosPropiedad from "./pages/herramientas/RegistrosPropiedad.jsx";
+
 /* PANEL TÉCNICO */
 import PanelTecnico from "./pages/paneltecnico/PanelTecnico.jsx";
 import MonitorSistema from "./pages/paneltecnico/MonitorSistema.jsx";
@@ -311,6 +314,11 @@ export default function App() {
            <Route
           path="herramientas/entidades-bancarias"
           element={<EntidadesBancarias />}
+          />
+
+          <Route
+          path="herramientas/registros-propiedad"
+          element={<RegistrosPropiedad />}
           />
           
           <Route
