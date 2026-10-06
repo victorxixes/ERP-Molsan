@@ -1901,11 +1901,62 @@ export default function ExpedientesListado() {
               onChange={setFiltroNif}
             />
 
-            <FiltroInput
-              label="Actividad actual"
-              value={filtroActividad}
-              onChange={setFiltroActividad}
-            />
+            <div>
+
+  <label
+    className="
+      block
+      text-sm
+      font-medium
+      text-[var(--erp-text)]
+      mb-1
+    "
+  >
+    Actividad actual
+  </label>
+
+  <select
+    value={filtroActividad}
+    onChange={(event) =>
+      setFiltroActividad(
+        event.target.value
+      )
+    }
+    className="
+      w-full
+      px-3
+      py-2.5
+      rounded-xl
+      bg-[var(--erp-surface)]
+      border
+      border-[var(--erp-border)]
+      text-[var(--erp-text)]
+      outline-none
+      focus:border-[var(--erp-primary)]
+      focus:ring-2
+      focus:ring-[var(--erp-primary-soft)]
+      transition
+    "
+  >
+
+    <option value="">
+      Todas las actividades
+    </option>
+
+    {actividades.map(
+      (item) => (
+        <option
+          key={item.actividad}
+          value={item.actividad}
+        >
+          {item.actividad}
+        </option>
+      )
+    )}
+
+  </select>
+
+</div>
 
             <FiltroInput
               label="NIF / nombre notario"
