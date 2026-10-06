@@ -129,6 +129,17 @@ from backend.app.seguridad.roles.models import (
     Rol,
 )
 
+# ------------------------------------------------------------
+# CITAS
+#
+# IMPORTANTE:
+# Empleado tiene una relación con Cita.
+# Cita debe estar registrada antes de configurar Empleado.
+# ------------------------------------------------------------
+
+from backend.app.agenda.models import (
+    Cita,
+)
 
 # ------------------------------------------------------------
 # EMPLEADOS
