@@ -81,7 +81,9 @@ import {
    HELPERS
 ============================================================ */
 
-function normalizarPermisos(valor) {
+function normalizarPermisos(
+  valor
+) {
 
   if (
     !valor ||
@@ -139,6 +141,84 @@ function normalizarPermisos(valor) {
 
 
 /* ============================================================
+   ERRORES — CONVERTIR SIEMPRE A TEXTO
+============================================================ */
+
+function obtenerMensajeError(
+  error,
+  mensajeDefecto
+) {
+
+  const detail =
+    error?.response?.data?.detail;
+
+  if (
+    typeof detail === "string" &&
+    detail.trim()
+  ) {
+    return detail;
+  }
+
+  if (
+    Array.isArray(detail)
+  ) {
+
+    const mensajes =
+      detail
+        .map(
+          (item) =>
+            item?.msg ||
+            (
+              typeof item === "string"
+                ? item
+                : ""
+            )
+        )
+        .filter(Boolean);
+
+    if (
+      mensajes.length > 0
+    ) {
+      return mensajes.join(". ");
+    }
+  }
+
+  if (
+    detail &&
+    typeof detail === "object"
+  ) {
+
+    if (
+      typeof detail.msg === "string" &&
+      detail.msg.trim()
+    ) {
+      return detail.msg;
+    }
+
+    try {
+
+      return JSON.stringify(
+        detail
+      );
+
+    } catch {
+
+      return mensajeDefecto;
+    }
+  }
+
+  if (
+    typeof error?.message === "string" &&
+    error.message.trim()
+  ) {
+    return error.message;
+  }
+
+  return mensajeDefecto;
+}
+
+
+/* ============================================================
    FOTO — NORMALIZAR URL
 ============================================================ */
 
@@ -176,14 +256,6 @@ function prepararFotoEmpleado(
   /*
    * ----------------------------------------------------------
    * API CONFIGURADA
-   *
-   * Normalmente VITE_API_URL es:
-   *
-   * https://agenda-intranet-b.onrender.com/api
-   *
-   * o:
-   *
-   * https://agenda-intranet-b.onrender.com/api/
    * ----------------------------------------------------------
    */
 
@@ -199,9 +271,7 @@ function prepararFotoEmpleado(
 
   /*
    * Si VITE_API_URL termina en /api,
-   * nos quedamos con el origen:
-   *
-   * https://agenda-intranet-b.onrender.com
+   * nos quedamos con el origen.
    */
 
   const origen =
@@ -234,8 +304,6 @@ function prepararFotoEmpleado(
    * ----------------------------------------------------------
    * CASO 1
    *
-   * El backend devuelve directamente:
-   *
    * /api/fotos/empleados/empleado_1.png
    * ----------------------------------------------------------
    */
@@ -254,10 +322,6 @@ function prepararFotoEmpleado(
    * CASO 2
    *
    * /fotos/empleados/empleado_1.png
-   *
-   * Lo convertimos a:
-   *
-   * /api/fotos/empleados/empleado_1.png
    * ----------------------------------------------------------
    */
 
@@ -275,8 +339,6 @@ function prepararFotoEmpleado(
    * CASO 3
    *
    * /static/fotos/empleados/...
-   *
-   * FastAPI también sirve /static.
    * ----------------------------------------------------------
    */
 
@@ -294,7 +356,6 @@ function prepararFotoEmpleado(
    * CASO 4
    *
    * /empleados/empleado_1.png
-   *
    * ----------------------------------------------------------
    */
 
@@ -311,13 +372,9 @@ function prepararFotoEmpleado(
    * ----------------------------------------------------------
    * CASO 5
    *
-   * Solo tenemos:
+   * Solo nombre de archivo:
    *
    * empleado_1.png
-   *
-   * Lo convertimos al endpoint real:
-   *
-   * /api/fotos/empleados/empleado_1.png
    * ----------------------------------------------------------
    */
 
@@ -412,9 +469,6 @@ export default function ModalEmpleado({
 
   /* ==========================================================
      VERSION FOTO
-     
-     Se modifica después de subir una fotografía para evitar
-     que el navegador mantenga la imagen anterior en caché.
   ========================================================== */
 
   const [
@@ -475,57 +529,45 @@ export default function ModalEmpleado({
 
       } catch (err) {
 
-  console.error(
-    "MODAL EMPLEADO — ERROR SUBIENDO FOTO:",
-    err
-  );
+        console.error(
+          "MODAL EMPLEADO — ERROR CARGANDO FICHA:",
+          err
+        );
 
-  const detail =
-    err?.response?.data?.detail;
+        if (activo) {
 
-  let mensajeError =
-    "No se ha podido actualizar la fotografía.";
+          setError(
+            obtenerMensajeError(
+              err,
+              "No se ha podido cargar la ficha del empleado."
+            )
+          );
+        }
 
-  if (typeof detail === "string") {
+      } finally {
 
-    mensajeError = detail;
+        if (activo) {
 
-  } else if (Array.isArray(detail)) {
+          setCargando(false);
 
-    mensajeError =
-      detail
-        .map(
-          (item) =>
-            item?.msg ||
-            "Error de validación."
-        )
-        .join(". ");
+        }
+      }
+    };
 
-  } else if (
-    detail &&
-    typeof detail === "object"
-  ) {
+    cargar();
 
-    mensajeError =
-      detail.msg ||
-      JSON.stringify(detail);
+    return () => {
 
-  } else if (err?.message) {
+      activo = false;
 
-    mensajeError = err.message;
+    };
 
-  }
+  }, [
+    open,
+    empleadoId,
+    cargarFicha,
+  ]);
 
-  setError(
-    mensajeError
-  );
-
-} finally {
-
-  setSubiendoFoto(false);
-
-  event.target.value = "";
-}
 
   /* ==========================================================
      CARGAR MAESTROS
@@ -593,6 +635,7 @@ export default function ModalEmpleado({
           setDepartamentos([]);
           setSecciones([]);
           setCargos([]);
+
         }
       }
     };
@@ -600,7 +643,9 @@ export default function ModalEmpleado({
     cargarMaestros();
 
     return () => {
+
       activo = false;
+
     };
 
   }, [
@@ -1190,12 +1235,6 @@ export default function ModalEmpleado({
         /*
          * Solo enviamos campos que existen
          * en EmpleadoUpdate.
-         *
-         * No enviamos:
-         * - id
-         * - foto
-         * - rol
-         * - nombres maestros
          */
 
         const payload = {
@@ -1332,9 +1371,10 @@ export default function ModalEmpleado({
         );
 
         setError(
-          err?.response?.data?.detail ||
-          err?.message ||
-          "No se han podido guardar los cambios."
+          obtenerMensajeError(
+            err,
+            "No se han podido guardar los cambios."
+          )
         );
 
       } finally {
@@ -1482,9 +1522,10 @@ export default function ModalEmpleado({
         );
 
         setError(
-          err?.response?.data?.detail ||
-          err?.message ||
-          "No se ha podido guardar la configuración."
+          obtenerMensajeError(
+            err,
+            "No se ha podido guardar la configuración."
+          )
         );
 
       } finally {
@@ -1564,9 +1605,10 @@ export default function ModalEmpleado({
         );
 
         setError(
-          err?.response?.data?.detail ||
-          err?.message ||
-          "No se ha podido restablecer la contraseña."
+          obtenerMensajeError(
+            err,
+            "No se ha podido restablecer la contraseña."
+          )
         );
 
       } finally {
@@ -1622,7 +1664,7 @@ export default function ModalEmpleado({
 
         /*
          * Convertimos inmediatamente la respuesta
-         * del backend a una URL válida del backend.
+         * del backend a una URL válida.
          */
 
         const nuevaFotoPreparada =
@@ -1649,9 +1691,7 @@ export default function ModalEmpleado({
 
 
         /*
-         * Actualizamos también el store
-         * para que el cambio se vea inmediatamente
-         * en cualquier componente conectado.
+         * Actualizamos también el store.
          */
 
         useSeguridadStore.setState(
@@ -1688,7 +1728,8 @@ export default function ModalEmpleado({
 
 
         /*
-         * Forzar recarga de imagen para evitar caché.
+         * Forzar recarga de imagen
+         * para evitar caché.
          */
 
         setFotoVersion(
@@ -1709,9 +1750,10 @@ export default function ModalEmpleado({
       );
 
       setError(
-        err?.response?.data?.detail ||
-        err?.message ||
-        "No se ha podido actualizar la fotografía."
+        obtenerMensajeError(
+          err,
+          "No se ha podido actualizar la fotografía."
+        )
       );
 
     } finally {
@@ -1721,7 +1763,9 @@ export default function ModalEmpleado({
       if (
         event?.target
       ) {
+
         event.target.value = "";
+
       }
     }
   };
@@ -2193,7 +2237,7 @@ export default function ModalEmpleado({
                   text-red-700
                 "
               >
-                {error}
+                {String(error)}
               </div>
 
             )}
@@ -2220,7 +2264,7 @@ export default function ModalEmpleado({
                   text-emerald-700
                 "
               >
-                {mensaje}
+                {String(mensaje)}
               </div>
 
             )}
