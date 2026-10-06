@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
 import os
 
 
@@ -108,19 +109,29 @@ from backend.app.mensajes.models import Mensaje
 
 from backend.app.municipios.models import Municipio
 
+
 # ------------------------------------------------------------
 # ENTIDADES BANCARIAS
 # ------------------------------------------------------------
 
-from backend.app.entidades_bancarias.models import (EntidadBancaria,)
+from backend.app.entidades_bancarias.models import EntidadBancaria
+
 
 # ------------------------------------------------------------
 # REGISTROS DE LA PROPIEDAD
 # ------------------------------------------------------------
 
-from backend.app.registros_propiedad.models import (
-    RegistroPropiedad,
+from backend.app.registros_propiedad.models import RegistroPropiedad
+
+
+# ------------------------------------------------------------
+# OFICINAS LIQUIDADORAS
+# ------------------------------------------------------------
+
+from backend.app.oficinas_liquidadoras.models import (
+    OficinaLiquidadora,
 )
+
 
 # ------------------------------------------------------------
 # ACCIONES DEL EXPEDIENTE
@@ -129,6 +140,7 @@ from backend.app.registros_propiedad.models import (
 from backend.app.acciones_expediente.models import (
     AccionExpediente,
 )
+
 
 # ============================================================
 # CREAR TABLAS
@@ -142,9 +154,6 @@ Base.metadata.create_all(
 # ============================================================
 # FIX SCHEMA — MUNICIPIOS
 # ============================================================
-
-from sqlalchemy import text
-
 
 with engine.begin() as connection:
 
@@ -165,13 +174,13 @@ with engine.begin() as connection:
 
 STATIC_DIR = os.path.join(
     os.path.dirname(__file__),
-    "static"
+    "static",
 )
 
 app.mount(
     "/static",
     StaticFiles(directory=STATIC_DIR),
-    name="static"
+    name="static",
 )
 
 
@@ -183,13 +192,13 @@ TMP_MENSAJES = "/tmp/mensajes"
 
 os.makedirs(
     TMP_MENSAJES,
-    exist_ok=True
+    exist_ok=True,
 )
 
 app.mount(
     "/static/mensajes",
     StaticFiles(directory=TMP_MENSAJES),
-    name="mensajes"
+    name="mensajes",
 )
 
 
@@ -200,13 +209,13 @@ app.mount(
 FOTOS_DIR = os.path.join(
     os.path.dirname(__file__),
     "static",
-    "fotos"
+    "fotos",
 )
 
 app.mount(
     "/api/fotos",
     StaticFiles(directory=FOTOS_DIR),
-    name="fotos"
+    name="fotos",
 )
 
 
@@ -219,7 +228,9 @@ app.mount(
 # AUTH
 # ============================================================
 
-from backend.app.auth.router import router as auth_router
+from backend.app.auth.router import (
+    router as auth_router,
+)
 
 
 # ============================================================
@@ -227,43 +238,43 @@ from backend.app.auth.router import router as auth_router
 # ============================================================
 
 from backend.app.seguridad.roles.roles_router import (
-    router as roles_router
+    router as roles_router,
 )
 
 from backend.app.seguridad.roles.asignar_rol_router import (
-    router as asignar_rol_router
+    router as asignar_rol_router,
 )
 
 from backend.app.seguridad.asignar_password_router import (
-    router as asignar_password_router
+    router as asignar_password_router,
 )
 
 from backend.app.seguridad.permisos.permisos_router import (
-    router as permisos_router
+    router as permisos_router,
 )
 
 from backend.app.seguridad.permisos.asignar_router import (
-    router as asignar_router
+    router as asignar_router,
 )
 
 from backend.app.seguridad.permisos.repair_create_permisos_raw import (
-    router as permisos_repair_router
+    router as permisos_repair_router,
 )
 
 from backend.app.seguridad.obtener_ficha_empleado import (
-    router as ficha_empleado_router
+    router as ficha_empleado_router,
 )
 
 from backend.app.seguridad.auditoria.router import (
-    router as seguridad_auditoria_router
+    router as seguridad_auditoria_router,
 )
 
 from backend.app.seguridad.logs.router import (
-    router as seguridad_logs_router
+    router as seguridad_logs_router,
 )
 
 from backend.app.seguridad.admin_router import (
-    router as admin_router
+    router as admin_router,
 )
 
 
@@ -272,7 +283,7 @@ from backend.app.seguridad.admin_router import (
 # ============================================================
 
 from backend.app.agenda.router import (
-    router as agenda_router
+    router as agenda_router,
 )
 
 
@@ -281,7 +292,7 @@ from backend.app.agenda.router import (
 # ============================================================
 
 from backend.app.empleados.router import (
-    router as empleados_router
+    router as empleados_router,
 )
 
 
@@ -290,7 +301,7 @@ from backend.app.empleados.router import (
 # ============================================================
 
 from backend.app.maestros.router import (
-    router as maestros_router
+    router as maestros_router,
 )
 
 
@@ -299,15 +310,15 @@ from backend.app.maestros.router import (
 # ============================================================
 
 from backend.app.intranet.router import (
-    router as intranet_router
+    router as intranet_router,
 )
 
 from backend.app.intranet.documentos.router import (
-    router as documentos_router
+    router as documentos_router,
 )
 
 from backend.app.intranet.noticias.router import (
-    router as noticias_router
+    router as noticias_router,
 )
 
 
@@ -316,23 +327,23 @@ from backend.app.intranet.noticias.router import (
 # ============================================================
 
 from backend.app.websockets.intranet_ws import (
-    router as intranet_ws_router
+    router as intranet_ws_router,
 )
 
 from backend.app.websockets.empleados_ws import (
-    router as empleados_ws_router
+    router as empleados_ws_router,
 )
 
 from backend.app.websockets.agenda_ws import (
-    router as agenda_ws_router
+    router as agenda_ws_router,
 )
 
 from backend.app.mensajes.router_ws import (
-    router as mensajes_ws_router
+    router as mensajes_ws_router,
 )
 
 from backend.app.notificaciones.router_ws import (
-    router_notif
+    router_notif,
 )
 
 
@@ -341,7 +352,7 @@ from backend.app.notificaciones.router_ws import (
 # ============================================================
 
 from backend.app.realtime.router import (
-    router as realtime_router
+    router as realtime_router,
 )
 
 
@@ -350,7 +361,7 @@ from backend.app.realtime.router import (
 # ============================================================
 
 from backend.app.mensajes.router import (
-    router as mensajes_router
+    router as mensajes_router,
 )
 
 
@@ -359,8 +370,9 @@ from backend.app.mensajes.router import (
 # ============================================================
 
 from backend.app.municipios.router import (
-    router as municipios_router
+    router as municipios_router,
 )
+
 
 # ============================================================
 # ENTIDADES BANCARIAS
@@ -370,6 +382,7 @@ from backend.app.entidades_bancarias.router import (
     router as entidades_bancarias_router,
 )
 
+
 # ============================================================
 # REGISTROS DE LA PROPIEDAD
 # ============================================================
@@ -378,39 +391,51 @@ from backend.app.registros_propiedad.router import (
     router as registros_propiedad_router,
 )
 
+
+# ============================================================
+# OFICINAS LIQUIDADORAS
+# ============================================================
+
+from backend.app.oficinas_liquidadoras.router import (
+    router as oficinas_liquidadoras_router,
+)
+
+
 # ============================================================
 # ACCIONES DEL EXPEDIENTE
 # ============================================================
+
 from backend.app.acciones_expediente.router import (
     router as acciones_expediente_router,
 )
+
 
 # ============================================================
 # HERRAMIENTAS SWAGGER
 # ============================================================
 
 from backend.app.herramientasswager.crear_tablas import (
-    router as herramientas_router
+    router as herramientas_router,
 )
 
 from backend.app.herramientasswager.reset_intranet import (
-    router as reset_intranet_router
+    router as reset_intranet_router,
 )
 
 from backend.app.herramientasswager.debug_router import (
-    router as debug_router
+    router as debug_router,
 )
 
 from backend.app.herramientasswager.borrar_roles import (
-    router as borrar_roles_router
+    router as borrar_roles_router,
 )
 
 from backend.app.herramientasswager.borrar_tablas import (
-    router as borrar_tablas_router
+    router as borrar_tablas_router,
 )
 
 from backend.app.herramientasswager.asignar_bloqueo_router import (
-    router as asignar_bloqueo_router
+    router as asignar_bloqueo_router,
 )
 
 
@@ -419,7 +444,7 @@ from backend.app.herramientasswager.asignar_bloqueo_router import (
 # ============================================================
 
 from backend.app.ctn.router import (
-    router as ctn_router
+    router as ctn_router,
 )
 
 
@@ -428,7 +453,7 @@ from backend.app.ctn.router import (
 # ============================================================
 
 from backend.app.dashboard.router import (
-    router as dashboard_router
+    router as dashboard_router,
 )
 
 
@@ -437,15 +462,15 @@ from backend.app.dashboard.router import (
 # ============================================================
 
 from backend.app.Utilidades.router import (
-    router as utilidades_router
+    router as utilidades_router,
 )
 
 from backend.app.informes.router import (
-    router as informes_router
+    router as informes_router,
 )
 
 from backend.app.Utilidades.importadores.router_absis import (
-    router as router_absis
+    router as router_absis,
 )
 
 
@@ -454,7 +479,7 @@ from backend.app.Utilidades.importadores.router_absis import (
 # ============================================================
 
 from backend.app.expedientes.router import (
-    router as expedientes_router
+    router as expedientes_router,
 )
 
 
@@ -469,7 +494,7 @@ from backend.app.expedientes.router import (
 
 app.include_router(
     auth_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 
@@ -479,52 +504,52 @@ app.include_router(
 
 app.include_router(
     roles_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     asignar_rol_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     asignar_password_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     permisos_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     asignar_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     permisos_repair_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     ficha_empleado_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     seguridad_auditoria_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     seguridad_logs_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     admin_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 
@@ -534,7 +559,7 @@ app.include_router(
 
 app.include_router(
     agenda_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 
@@ -544,7 +569,7 @@ app.include_router(
 
 app.include_router(
     empleados_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 
@@ -554,7 +579,7 @@ app.include_router(
 
 app.include_router(
     maestros_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 
@@ -564,17 +589,17 @@ app.include_router(
 
 app.include_router(
     intranet_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     documentos_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     noticias_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 
@@ -583,23 +608,23 @@ app.include_router(
 # ============================================================
 
 app.include_router(
-    intranet_ws_router
+    intranet_ws_router,
 )
 
 app.include_router(
-    empleados_ws_router
+    empleados_ws_router,
 )
 
 app.include_router(
-    agenda_ws_router
+    agenda_ws_router,
 )
 
 app.include_router(
-    mensajes_ws_router
+    mensajes_ws_router,
 )
 
 app.include_router(
-    router_notif
+    router_notif,
 )
 
 
@@ -608,7 +633,7 @@ app.include_router(
 # ============================================================
 
 app.include_router(
-    realtime_router
+    realtime_router,
 )
 
 
@@ -618,16 +643,19 @@ app.include_router(
 
 app.include_router(
     municipios_router,
-    prefix="/api"
+    prefix="/api",
 )
+
 
 # ============================================================
 # ENTIDADES BANCARIAS
 # ============================================================
+
 app.include_router(
     entidades_bancarias_router,
-    prefix="/api"
+    prefix="/api",
 )
+
 
 # ============================================================
 # REGISTROS DE LA PROPIEDAD
@@ -635,21 +663,29 @@ app.include_router(
 
 app.include_router(
     registros_propiedad_router,
-    prefix="/api"
+    prefix="/api",
 )
+
+
+# ============================================================
+# OFICINAS LIQUIDADORAS
+# ============================================================
+
+app.include_router(
+    oficinas_liquidadoras_router,
+    prefix="/api",
+)
+
 
 # ============================================================
 # ACCIONES DEL EXPEDIENTE
 # ============================================================
 
-# ============================================================
-# REGISTROS DE LA PROPIEDAD
-# ============================================================
-
 app.include_router(
-    registros_propiedad_router,
-    prefix="/api"
+    acciones_expediente_router,
+    prefix="/api",
 )
+
 
 # ============================================================
 # HERRAMIENTAS SWAGGER
@@ -657,29 +693,29 @@ app.include_router(
 
 app.include_router(
     herramientas_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     reset_intranet_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
-    debug_router
+    debug_router,
 )
 
 app.include_router(
-    borrar_roles_router
+    borrar_roles_router,
 )
 
 app.include_router(
-    borrar_tablas_router
+    borrar_tablas_router,
 )
 
 app.include_router(
     asignar_bloqueo_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 
@@ -689,7 +725,7 @@ app.include_router(
 
 app.include_router(
     ctn_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 
@@ -699,7 +735,7 @@ app.include_router(
 
 app.include_router(
     dashboard_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 
@@ -709,7 +745,7 @@ app.include_router(
 
 app.include_router(
     mensajes_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 
@@ -719,17 +755,17 @@ app.include_router(
 
 app.include_router(
     utilidades_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     informes_router,
-    prefix="/api"
+    prefix="/api",
 )
 
 app.include_router(
     router_absis,
-    prefix="/api"
+    prefix="/api",
 )
 
 
@@ -739,5 +775,5 @@ app.include_router(
 
 app.include_router(
     expedientes_router,
-    prefix="/api"
+    prefix="/api",
 )
