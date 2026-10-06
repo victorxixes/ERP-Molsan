@@ -3,7 +3,7 @@ from fastapi import (
     Depends,
     HTTPException,
     UploadFile,
-    File
+    File,
 )
 
 from sqlalchemy.orm import Session
@@ -17,7 +17,7 @@ from backend.app.empleados.schemas import (
     Empleado,
     EmpleadoCreate,
     EmpleadoUpdate,
-    LoginEmpleado
+    LoginEmpleado,
 )
 
 from backend.app.empleados.service import (
@@ -30,11 +30,11 @@ from backend.app.empleados.service import (
     login_empleado,
     actualizar_modulos_visibles,
     actualizar_permisos_modulo,
-    reset_password
+    reset_password,
 )
 
 from backend.app.seguridad.auditoria.service import (
-    obtener_auditoria_empleado
+    obtener_auditoria_empleado,
 )
 
 
@@ -44,7 +44,7 @@ from backend.app.seguridad.auditoria.service import (
 
 router = APIRouter(
     prefix="/empleados",
-    tags=["Empleados"]
+    tags=["Empleados"],
 )
 
 
@@ -57,9 +57,11 @@ def get_db():
     db = SessionLocal()
 
     try:
+
         yield db
 
     finally:
+
         db.close()
 
 
@@ -71,13 +73,13 @@ def get_db():
 def search_empleados(
     q: str | None = None,
     activo: bool | None = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     return listar_empleados(
         db,
         q=q,
-        activo=activo
+        activo=activo,
     )
 
 
@@ -88,20 +90,20 @@ def search_empleados(
 @router.post("/login")
 def login(
     data: LoginEmpleado,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     resultado = login_empleado(
         db,
         data.usuario,
-        data.password
+        data.password,
     )
 
     if not resultado:
 
         raise HTTPException(
             status_code=401,
-            detail="Usuario o contraseña incorrectos"
+            detail="Usuario o contraseña incorrectos",
         )
 
     return resultado
@@ -115,13 +117,13 @@ def login(
 def listar(
     q: str | None = None,
     activo: bool | None = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     return listar_empleados(
         db,
         q=q,
-        activo=activo
+        activo=activo,
     )
 
 
@@ -132,19 +134,19 @@ def listar(
 @router.get("/{empleado_id}")
 def obtener(
     empleado_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     empleado = obtener_empleado(
         db,
-        empleado_id
+        empleado_id,
     )
 
     if not empleado:
 
         raise HTTPException(
             status_code=404,
-            detail="Empleado no encontrado"
+            detail="Empleado no encontrado",
         )
 
     return empleado
@@ -152,43 +154,34 @@ def obtener(
 
 # =========================================================
 # FICHA COMPLETA DEL EMPLEADO
-#
-# IMPORTANTE:
-# Esta ruta utiliza obtener_empleado_ficha()
-# para devolver también:
-#
-# - departamento_nombre
-# - seccion_nombre
-# - cargo_nombre
-#
 # =========================================================
 
 @router.get("/{empleado_id}/ficha")
 def ficha(
     empleado_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     empleado = obtener_empleado_ficha(
         db,
-        empleado_id
+        empleado_id,
     )
 
     if not empleado:
 
         raise HTTPException(
             status_code=404,
-            detail="Empleado no encontrado"
+            detail="Empleado no encontrado",
         )
 
     auditoria = obtener_auditoria_empleado(
         db,
-        empleado["usuario"]
+        empleado["usuario"],
     )
 
     return {
         "empleado": empleado,
-        "auditoria": auditoria
+        "auditoria": auditoria,
     }
 
 
@@ -199,14 +192,14 @@ def ficha(
 @router.post("/")
 def crear(
     data: EmpleadoCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     try:
 
         empleado = crear_empleado(
             db,
-            data
+            data,
         )
 
         return empleado
@@ -215,7 +208,7 @@ def crear(
 
         raise HTTPException(
             status_code=400,
-            detail=str(e)
+            detail=str(e),
         )
 
 
@@ -227,20 +220,20 @@ def crear(
 def editar(
     empleado_id: int,
     data: EmpleadoUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     empleado = editar_empleado(
         db,
         empleado_id,
-        data
+        data,
     )
 
     if not empleado:
 
         raise HTTPException(
             status_code=404,
-            detail="Empleado no encontrado"
+            detail="Empleado no encontrado",
         )
 
     return empleado
@@ -253,23 +246,23 @@ def editar(
 @router.delete("/{empleado_id}")
 def eliminar(
     empleado_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     resultado = eliminar_empleado(
         db,
-        empleado_id
+        empleado_id,
     )
 
     if not resultado:
 
         raise HTTPException(
             status_code=404,
-            detail="Empleado no encontrado"
+            detail="Empleado no encontrado",
         )
 
     return {
-        "status": "ok"
+        "status": "ok",
     }
 
 
@@ -281,82 +274,250 @@ def eliminar(
 def subir_foto(
     empleado_id: int,
     foto: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
+
+    # -----------------------------------------------------
+    # COMPROBAR EMPLEADO
+    # -----------------------------------------------------
 
     empleado = obtener_empleado(
         db,
-        empleado_id
+        empleado_id,
     )
 
     if not empleado:
 
         raise HTTPException(
             status_code=404,
-            detail="Empleado no encontrado"
+            detail="Empleado no encontrado",
         )
 
-    # -----------------------------------------------------
-    # DIRECTORIO
-    # -----------------------------------------------------
-
-    upload_dir = "uploads/empleados"
-
-    os.makedirs(
-        upload_dir,
-        exist_ok=True
-    )
 
     # -----------------------------------------------------
-    # EXTENSIÓN
+    # COMPROBAR FICHERO
+    # -----------------------------------------------------
+
+    if not foto:
+
+        raise HTTPException(
+            status_code=400,
+            detail="No se ha recibido ninguna fotografía.",
+        )
+
+
+    if not foto.filename:
+
+        raise HTTPException(
+            status_code=400,
+            detail="La fotografía no tiene nombre de archivo.",
+        )
+
+
+    # -----------------------------------------------------
+    # COMPROBAR EXTENSIÓN
     # -----------------------------------------------------
 
     extension = os.path.splitext(
-        foto.filename or ""
-    )[1]
+        foto.filename
+    )[1].lower()
 
-    if not extension:
 
-        extension = ".jpg"
+    extensiones_permitidas = {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".webp",
+        ".gif",
+    }
+
+
+    if extension not in extensiones_permitidas:
+
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Formato de imagen no permitido. "
+                "Usa JPG, JPEG, PNG, WEBP o GIF."
+            ),
+        )
+
+
+    # -----------------------------------------------------
+    # DIRECTORIO REAL DE FOTOS
+    #
+    # main.py sirve:
+    #
+    # /api/fotos
+    #
+    # desde:
+    #
+    # backend/app/static/fotos
+    #
+    # Por tanto guardamos en:
+    #
+    # backend/app/static/fotos/empleados
+    # -----------------------------------------------------
+
+    app_dir = os.path.dirname(
+        os.path.dirname(
+            os.path.abspath(
+                __file__
+            )
+        )
+    )
+
+
+    upload_dir = os.path.join(
+        app_dir,
+        "static",
+        "fotos",
+        "empleados",
+    )
+
+
+    os.makedirs(
+        upload_dir,
+        exist_ok=True,
+    )
+
+
+    # -----------------------------------------------------
+    # NOMBRE FINAL
+    # -----------------------------------------------------
 
     filename = (
-        f"empleado_{empleado_id}{extension}"
+        f"empleado_{empleado_id}"
+        f"{extension}"
     )
+
 
     filepath = os.path.join(
         upload_dir,
-        filename
+        filename,
     )
 
+
     # -----------------------------------------------------
-    # GUARDAR
+    # GUARDAR NUEVA FOTO
     # -----------------------------------------------------
 
-    with open(
-        filepath,
-        "wb"
-    ) as buffer:
+    try:
 
-        shutil.copyfileobj(
-            foto.file,
-            buffer
+        with open(
+            filepath,
+            "wb",
+        ) as buffer:
+
+            shutil.copyfileobj(
+                foto.file,
+                buffer,
+            )
+
+    except Exception as exc:
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "No se pudo guardar la fotografía: "
+                f"{exc}"
+            ),
         )
 
+
     # -----------------------------------------------------
-    # GUARDAR REFERENCIA
+    # ELIMINAR FOTOS ANTIGUAS DEL MISMO EMPLEADO
+    #
+    # Se hace DESPUÉS de guardar la nueva.
+    # -----------------------------------------------------
+
+    extensiones_anteriores = {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".webp",
+        ".gif",
+    }
+
+
+    for ext in extensiones_anteriores:
+
+        archivo_anterior = os.path.join(
+            upload_dir,
+            f"empleado_{empleado_id}{ext}",
+        )
+
+        if (
+            archivo_anterior != filepath
+            and os.path.exists(
+                archivo_anterior
+            )
+        ):
+
+            try:
+
+                os.remove(
+                    archivo_anterior
+                )
+
+            except Exception:
+
+                pass
+
+
+    # -----------------------------------------------------
+    # GUARDAR REFERENCIA EN BD
+    #
+    # Guardamos solamente el nombre.
+    #
+    # Ejemplo:
+    #
+    # empleado_1.png
+    #
+    # La URL pública será:
+    #
+    # /api/fotos/empleados/empleado_1.png
     # -----------------------------------------------------
 
     empleado.foto = filename
 
-    db.commit()
 
-    db.refresh(
-        empleado
+    try:
+
+        db.commit()
+
+        db.refresh(
+            empleado
+        )
+
+    except Exception as exc:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "La fotografía se guardó en disco, "
+                "pero no se pudo actualizar el empleado: "
+                f"{exc}"
+            ),
+        )
+
+
+    # -----------------------------------------------------
+    # URL PÚBLICA
+    # -----------------------------------------------------
+
+    foto_url = (
+        f"/api/fotos/empleados/{filename}"
     )
+
 
     return {
         "status": "ok",
-        "foto": filename
+        "foto": filename,
+        "foto_url": foto_url,
+        "fotoUrl": foto_url,
     }
 
 
@@ -367,23 +528,64 @@ def subir_foto(
 @router.get("/{empleado_id}/foto")
 def obtener_foto(
     empleado_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     empleado = obtener_empleado(
         db,
-        empleado_id
+        empleado_id,
     )
 
     if not empleado:
 
         raise HTTPException(
             status_code=404,
-            detail="Empleado no encontrado"
+            detail="Empleado no encontrado",
         )
 
+
+    filename = (
+        empleado.foto
+        if isinstance(
+            empleado.foto,
+            str,
+        )
+        else None
+    )
+
+
+    if not filename:
+
+        return {
+            "foto": None,
+            "foto_url": None,
+        }
+
+
+    # -----------------------------------------------------
+    # COMPATIBILIDAD
+    #
+    # Si en BD ya hubiera una ruta antigua como:
+    #
+    # /api/fotos/empleados/empleado_1.png
+    #
+    # extraemos solamente el nombre.
+    # -----------------------------------------------------
+
+    filename = os.path.basename(
+        filename
+    )
+
+
+    foto_url = (
+        f"/api/fotos/empleados/{filename}"
+    )
+
+
     return {
-        "foto": empleado.foto
+        "foto": filename,
+        "foto_url": foto_url,
+        "fotoUrl": foto_url,
     }
 
 
@@ -395,20 +597,20 @@ def obtener_foto(
 def actualizar_modulos(
     empleado_id: int,
     modulos_visibles_list: list,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     empleado = actualizar_modulos_visibles(
         db,
         empleado_id,
-        modulos_visibles_list
+        modulos_visibles_list,
     )
 
     if not empleado:
 
         raise HTTPException(
             status_code=404,
-            detail="Empleado no encontrado"
+            detail="Empleado no encontrado",
         )
 
     return empleado
@@ -422,20 +624,20 @@ def actualizar_modulos(
 def actualizar_permisos(
     empleado_id: int,
     permisos_modulo_dict: dict,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     empleado = actualizar_permisos_modulo(
         db,
         empleado_id,
-        permisos_modulo_dict
+        permisos_modulo_dict,
     )
 
     if not empleado:
 
         raise HTTPException(
             status_code=404,
-            detail="Empleado no encontrado"
+            detail="Empleado no encontrado",
         )
 
     return empleado
@@ -448,19 +650,19 @@ def actualizar_permisos(
 @router.post("/{empleado_id}/reset-password")
 def resetear_password(
     empleado_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
     resultado = reset_password(
         db,
-        empleado_id
+        empleado_id,
     )
 
     if not resultado:
 
         raise HTTPException(
             status_code=404,
-            detail="Empleado no encontrado"
+            detail="Empleado no encontrado",
         )
 
     return resultado
