@@ -286,8 +286,15 @@ export default function App() {
             element={<Intranet />}
           />
 
+          {/* ==================================================
+              INFORMES
+              ================================================== */}
+          <Route
+            path="informes"
+            element={<Informes />}
+          />
 
-    
+          
           {/* ==================================================
               MENSAJES
               ================================================== */}
@@ -365,11 +372,6 @@ export default function App() {
           <Route
             path="herramientas/utilidades/subir-documento"
             element={<SubirDocumento />}
-          />
-
-          <Route
-            path="herramientas/informes"
-            element={<Informes />}
           />
 
 
