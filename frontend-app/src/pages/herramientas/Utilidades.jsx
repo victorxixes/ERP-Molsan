@@ -92,7 +92,7 @@ export default function Utilidades() {
           icon="🏦"
           titulo="Entidades Bancarias"
           descripcion="Gestionar entidades bancarias, códigos europeos, LEI, categorías y direcciones."
-          link="/herramientas/EntidadesBancarias"
+          link="/herramientas/entidades-bancarias"
         />
 
         {/* ===================================================
