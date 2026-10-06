@@ -119,34 +119,44 @@ from backend.app.expedientes.detalle.models import (
 
 # ------------------------------------------------------------
 # ROLES
-#
-# IMPORTANTE:
-# Debe cargarse ANTES de Empleado porque Empleado tiene
-# una relación con Rol.
 # ------------------------------------------------------------
 
 from backend.app.seguridad.roles.models import (
     Rol,
 )
 
+
+# ------------------------------------------------------------
+# NOTARIAS
+#
+# IMPORTANTE:
+# Cita tiene una relación con Notaria.
+# Notaria debe cargarse antes de Cita.
+# ------------------------------------------------------------
+
+from backend.app.ctn.models import (
+    Notaria,
+)
+
+
 # ------------------------------------------------------------
 # CITAS
 #
 # IMPORTANTE:
 # Empleado tiene una relación con Cita.
-# Cita debe estar registrada antes de configurar Empleado.
+# Cita tiene una relación con Notaria.
 # ------------------------------------------------------------
 
 from backend.app.agenda.models import (
     Cita,
 )
 
+
 # ------------------------------------------------------------
 # EMPLEADOS
 #
 # IMPORTANTE:
-# Debe cargarse ANTES de Mensaje porque Mensaje tiene
-# una relación con Empleado.
+# Empleado tiene relaciones con Rol y Cita.
 # ------------------------------------------------------------
 
 from backend.app.empleados.models import (
@@ -156,6 +166,9 @@ from backend.app.empleados.models import (
 
 # ------------------------------------------------------------
 # MENSAJES
+#
+# IMPORTANTE:
+# Mensaje tiene una relación con Empleado.
 # ------------------------------------------------------------
 
 from backend.app.mensajes.models import (
