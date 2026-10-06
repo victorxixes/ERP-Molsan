@@ -6,6 +6,7 @@ import {
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 
+import MODULOS_ERP from "../../config/modulos";
 
 function arraySeguro(valor) {
   return Array.isArray(valor) ? valor : [];
@@ -69,59 +70,87 @@ export default function SeguridadModulos() {
    * ============================================================
    */
 
-  const modulosGlobales =
-    useMemo(() => {
+ const modulosGlobales = useMemo(() => {
 
-      const conjunto =
-        new Set();
+  const conjunto = new Set();
+
+  // ----------------------------------------------------------
+  // CATÁLOGO CENTRAL DEL ERP
+  // ----------------------------------------------------------
+
+  arraySeguro(MODULOS_ERP).forEach((modulo) => {
+
+    if (
+      modulo &&
+      typeof modulo === "object" &&
+      typeof modulo.key === "string"
+    ) {
+      conjunto.add(
+        modulo.key.trim()
+      );
+    }
+
+  });
 
 
-      arraySeguro(
-        permisos
-      ).forEach(
-        (permiso) => {
+  // ----------------------------------------------------------
+  // COMPATIBILIDAD CON MÓDULOS ANTIGUOS
+  // ----------------------------------------------------------
+  //
+  // Si existe un módulo en permisos que todavía no está
+  // registrado en el catálogo, no lo perdemos.
+  //
 
-          if (
-            permiso &&
-            typeof permiso === "object" &&
-            typeof permiso.modulo === "string"
-          ) {
-            conjunto.add(
-              permiso.modulo.trim()
-            );
+  arraySeguro(permisos).forEach((permiso) => {
+
+    if (
+      permiso &&
+      typeof permiso === "object" &&
+      typeof permiso.modulo === "string"
+    ) {
+      conjunto.add(
+        permiso.modulo.trim()
+      );
+    }
+
+  });
+
+
+  // ----------------------------------------------------------
+  // COMPATIBILIDAD CON MÓDULOS YA ASIGNADOS
+  // ----------------------------------------------------------
+
+  modulosVisibles.forEach((modulo) => {
+
+    if (
+      typeof modulo === "string" &&
+      modulo.trim()
+    ) {
+      conjunto.add(
+        modulo.trim()
+      );
+    }
+
+  });
+
+
+  return Array.from(conjunto)
+    .filter(Boolean)
+    .sort(
+      (a, b) =>
+        a.localeCompare(
+          b,
+          "es",
+          {
+            sensitivity: "base",
           }
+        )
+    );
 
-        }
-      );
-
-
-      modulosVisibles.forEach(
-        (modulo) =>
-          conjunto.add(
-            modulo
-          )
-      );
-
-
-      return Array.from(
-        conjunto
-      )
-        .filter(Boolean)
-        .sort(
-          (a, b) =>
-            a.localeCompare(
-              b,
-              "es",
-              {
-                sensitivity: "base",
-              }
-            )
-        );
-
-    }, [
-      permisos,
-      modulosVisibles,
-    ]);
+}, [
+  permisos,
+  modulosVisibles,
+]);
 
 
   /**
