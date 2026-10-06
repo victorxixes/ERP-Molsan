@@ -752,18 +752,22 @@ export default function Mensajes({
         ================================================= */}
 
         <section
-          className="
-            relative
-            overflow-hidden
-            rounded-[24px]
-            border
-            border-white/80
-            bg-white/75
-            backdrop-blur-2xl
-            shadow-[0_20px_60px_rgba(15,23,42,0.10)]
-            animate-slideUp
-          "
-        >
+  className="
+    relative
+    overflow-hidden
+    rounded-[24px]
+    border
+    border-white/80
+    bg-white/75
+    backdrop-blur-2xl
+    shadow-[0_20px_60px_rgba(15,23,42,0.10)]
+    animate-slideUp
+    lg:flex
+    lg:h-full
+    lg:min-h-0
+    lg:flex-col
+  "
+>
 
           {/* línea superior */}
 
@@ -910,13 +914,14 @@ export default function Mensajes({
           {/* LISTA */}
 
           <div
-            className="
-              max-h-[650px]
-              space-y-2
-              overflow-y-auto
-              p-4
-            "
-          >
+  className="
+    flex-1
+    min-h-0
+    space-y-2
+    overflow-y-auto
+    p-4
+  "
+>
 
             {conectadosFiltrados.length ===
               0 && (
@@ -1229,33 +1234,37 @@ export default function Mensajes({
             CHAT
         ================================================= */}
 
-        <section
-          className="
-            relative
-            min-h-[650px]
-            overflow-hidden
-            rounded-[24px]
-            border
-            border-white/80
-            bg-white/75
-            backdrop-blur-2xl
-            shadow-[0_20px_60px_rgba(15,23,42,0.10)]
-            lg:col-span-2
-            animate-slideUp
-          "
-        >
+       <section
+  className="
+    relative
+    overflow-hidden
+    rounded-[24px]
+    border
+    border-white/80
+    bg-white/75
+    backdrop-blur-2xl
+    shadow-[0_20px_60px_rgba(15,23,42,0.10)]
+    lg:col-span-2
+    animate-slideUp
+    lg:flex
+    lg:h-full
+    lg:min-h-0
+    lg:flex-col
+  "
+>
 
           {!otroId ? (
 
-            <div
-              className="
-                flex
-                min-h-[650px]
-                items-center
-                justify-center
-                p-8
-              "
-            >
+<div
+  className="
+    flex
+    flex-1
+    min-h-0
+    items-center
+    justify-center
+    p-8
+  "
+>
 
               <div
                 className="
@@ -1317,16 +1326,17 @@ export default function Mensajes({
 
           ) : (
 
-            <div
-              className="
-                flex
-                h-full
-                min-h-[650px]
-                flex-col
-                p-4
-                sm:p-5
-              "
-            >
+<div
+  className="
+    flex
+    h-full
+    min-h-0
+    flex-1
+    flex-col
+    p-4
+    sm:p-5
+  "
+>
 
               {/* HEADER */}
 
