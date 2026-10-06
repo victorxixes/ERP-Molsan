@@ -118,7 +118,6 @@ export default function Utilidades() {
           link="/herramientas/registros-propiedad"
         />
 
-
         {/* ===================================================
             IMPORTAR CTN
         =================================================== */}
