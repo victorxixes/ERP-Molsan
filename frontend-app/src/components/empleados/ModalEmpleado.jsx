@@ -18,7 +18,7 @@ import {
   useSeguridadStore,
 } from "../../store/seguridadStore";
 
-import MODULOS_ERP from "../config/modulos";
+import MODULOS_ERP from "../../config/modulos";
 
 /**
  * ============================================================
