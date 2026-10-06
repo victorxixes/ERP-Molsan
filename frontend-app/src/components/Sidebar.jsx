@@ -517,13 +517,7 @@ export default function Sidebar() {
       badge: mensajesNoLeidos,
     },
     
-    {
-      key: "informes",
-      to: "/informes",
-      label: "Informes",
-      icon: "chart",
-     },
-    
+   
     {
       key: "fusiones",
       to: "/fusiones",
@@ -567,6 +561,13 @@ export default function Sidebar() {
       label: "Auditoría",
       icon: "chart",
     },
+
+        {
+      key: "informes",
+      to: "/informes",
+      label: "Informes",
+      icon: "chart",
+     },
     
     {
       key: "utilidades",
