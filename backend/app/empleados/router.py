@@ -26,6 +26,7 @@ from backend.app.empleados.service import (
     editar_empleado,
     eliminar_empleado,
     obtener_empleado,
+    obtener_empleado_ficha,
     login_empleado,
     actualizar_modulos_visibles,
     actualizar_permisos_modulo,
@@ -37,6 +38,10 @@ from backend.app.seguridad.auditoria.service import (
 )
 
 
+# =========================================================
+# ROUTER
+# =========================================================
+
 router = APIRouter(
     prefix="/empleados",
     tags=["Empleados"]
@@ -44,7 +49,7 @@ router = APIRouter(
 
 
 # =========================================================
-# DB
+# DATABASE
 # =========================================================
 
 def get_db():
@@ -59,14 +64,11 @@ def get_db():
 
 
 # =========================================================
-# BUSCADOR
+# BUSCAR EMPLEADOS
 # =========================================================
 
-@router.get(
-    "/search",
-    response_model=list[Empleado]
-)
-def buscar(
+@router.get("/search")
+def search_empleados(
     q: str | None = None,
     activo: bool | None = None,
     db: Session = Depends(get_db)
@@ -95,42 +97,39 @@ def login(
         data.password
     )
 
-    if resultado is None:
+    if not resultado:
 
-        return {
-            "status": "error",
-            "message": "Credenciales incorrectas"
-        }
+        raise HTTPException(
+            status_code=401,
+            detail="Usuario o contraseña incorrectos"
+        )
 
-    return {
-        "status": "ok",
-        **resultado
-    }
+    return resultado
 
 
 # =========================================================
-# LISTADO
+# LISTAR EMPLEADOS
 # =========================================================
 
-@router.get(
-    "/",
-    response_model=list[Empleado]
-)
+@router.get("/")
 def listar(
+    q: str | None = None,
+    activo: bool | None = None,
     db: Session = Depends(get_db)
 ):
 
-    return listar_empleados(db)
+    return listar_empleados(
+        db,
+        q=q,
+        activo=activo
+    )
 
 
 # =========================================================
-# OBTENER
+# OBTENER EMPLEADO
 # =========================================================
 
-@router.get(
-    "/{empleado_id}",
-    response_model=Empleado
-)
+@router.get("/{empleado_id}")
 def obtener(
     empleado_id: int,
     db: Session = Depends(get_db)
@@ -152,18 +151,25 @@ def obtener(
 
 
 # =========================================================
-# FICHA COMPLETA
+# FICHA COMPLETA DEL EMPLEADO
+#
+# IMPORTANTE:
+# Esta ruta utiliza obtener_empleado_ficha()
+# para devolver también:
+#
+# - departamento_nombre
+# - seccion_nombre
+# - cargo_nombre
+#
 # =========================================================
 
-@router.get(
-    "/{empleado_id}/ficha",
-)
+@router.get("/{empleado_id}/ficha")
 def ficha(
     empleado_id: int,
     db: Session = Depends(get_db)
 ):
 
-    empleado = obtener_empleado(
+    empleado = obtener_empleado_ficha(
         db,
         empleado_id
     )
@@ -177,7 +183,7 @@ def ficha(
 
     auditoria = obtener_auditoria_empleado(
         db,
-        empleado.usuario
+        empleado["usuario"]
     )
 
     return {
@@ -187,13 +193,10 @@ def ficha(
 
 
 # =========================================================
-# CREAR
+# CREAR EMPLEADO
 # =========================================================
 
-@router.post(
-    "/",
-    response_model=Empleado
-)
+@router.post("/")
 def crear(
     data: EmpleadoCreate,
     db: Session = Depends(get_db)
@@ -201,10 +204,12 @@ def crear(
 
     try:
 
-        return crear_empleado(
+        empleado = crear_empleado(
             db,
             data
         )
+
+        return empleado
 
     except ValueError as e:
 
@@ -215,13 +220,10 @@ def crear(
 
 
 # =========================================================
-# EDITAR
+# EDITAR EMPLEADO
 # =========================================================
 
-@router.put(
-    "/{empleado_id}",
-    response_model=Empleado
-)
+@router.put("/{empleado_id}")
 def editar(
     empleado_id: int,
     data: EmpleadoUpdate,
@@ -245,23 +247,21 @@ def editar(
 
 
 # =========================================================
-# ELIMINAR
+# ELIMINAR EMPLEADO
 # =========================================================
 
-@router.delete(
-    "/{empleado_id}"
-)
+@router.delete("/{empleado_id}")
 def eliminar(
     empleado_id: int,
     db: Session = Depends(get_db)
 ):
 
-    ok = eliminar_empleado(
+    resultado = eliminar_empleado(
         db,
         empleado_id
     )
 
-    if not ok:
+    if not resultado:
 
         raise HTTPException(
             status_code=404,
@@ -269,21 +269,18 @@ def eliminar(
         )
 
     return {
-        "status": "ok",
-        "message": "Empleado eliminado"
+        "status": "ok"
     }
 
 
 # =========================================================
-# FOTO
+# SUBIR FOTO
 # =========================================================
 
-@router.post(
-    "/{empleado_id}/foto"
-)
+@router.post("/{empleado_id}/foto")
 def subir_foto(
     empleado_id: int,
-    archivo: UploadFile = File(...),
+    foto: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
 
@@ -299,87 +296,75 @@ def subir_foto(
             detail="Empleado no encontrado"
         )
 
-    if not archivo.filename:
+    # -----------------------------------------------------
+    # DIRECTORIO
+    # -----------------------------------------------------
 
-        raise HTTPException(
-            status_code=400,
-            detail="Archivo no válido"
-        )
-
-    extension = (
-        archivo.filename
-        .split(".")[-1]
-        .lower()
-    )
-
-    extensiones_permitidas = {
-        "jpg",
-        "jpeg",
-        "png",
-        "webp"
-    }
-
-    if extension not in extensiones_permitidas:
-
-        raise HTTPException(
-            status_code=400,
-            detail="Formato de imagen no permitido"
-        )
-
-    fotos_dir = os.path.join(
-        os.path.dirname(__file__),
-        "static",
-        "fotos",
-        "empleados"
-    )
+    upload_dir = "uploads/empleados"
 
     os.makedirs(
-        fotos_dir,
+        upload_dir,
         exist_ok=True
     )
 
-    nombre_archivo = (
-        f"empleado_{empleado_id}.{extension}"
+    # -----------------------------------------------------
+    # EXTENSIÓN
+    # -----------------------------------------------------
+
+    extension = os.path.splitext(
+        foto.filename or ""
+    )[1]
+
+    if not extension:
+
+        extension = ".jpg"
+
+    filename = (
+        f"empleado_{empleado_id}{extension}"
     )
 
-    ruta_archivo = os.path.join(
-        fotos_dir,
-        nombre_archivo
+    filepath = os.path.join(
+        upload_dir,
+        filename
     )
+
+    # -----------------------------------------------------
+    # GUARDAR
+    # -----------------------------------------------------
 
     with open(
-        ruta_archivo,
+        filepath,
         "wb"
     ) as buffer:
 
         shutil.copyfileobj(
-            archivo.file,
+            foto.file,
             buffer
         )
 
-    url_publica = (
-        f"/api/fotos/empleados/{nombre_archivo}"
-    )
+    # -----------------------------------------------------
+    # GUARDAR REFERENCIA
+    # -----------------------------------------------------
 
-    empleado.foto = url_publica
+    empleado.foto = filename
 
     db.commit()
 
-    db.refresh(empleado)
+    db.refresh(
+        empleado
+    )
 
     return {
         "status": "ok",
-        "foto_url": url_publica
+        "foto": filename
     }
 
 
 # =========================================================
-# FOTO DIRECTA
+# OBTENER FOTO
 # =========================================================
 
-@router.get(
-    "/{empleado_id}/foto"
-)
+@router.get("/{empleado_id}/foto")
 def obtener_foto(
     empleado_id: int,
     db: Session = Depends(get_db)
@@ -403,30 +388,20 @@ def obtener_foto(
 
 
 # =========================================================
-# MÓDULOS VISIBLES
+# ACTUALIZAR MÓDULOS VISIBLES
 # =========================================================
 
-@router.put(
-    "/{empleado_id}/modulos",
-    response_model=Empleado
-)
+@router.put("/{empleado_id}/modulos")
 def actualizar_modulos(
     empleado_id: int,
-    data: dict,
+    modulos_visibles_list: list,
     db: Session = Depends(get_db)
 ):
-
-    if "modulos_visibles_list" not in data:
-
-        raise HTTPException(
-            status_code=400,
-            detail="Falta modulos_visibles_list"
-        )
 
     empleado = actualizar_modulos_visibles(
         db,
         empleado_id,
-        data["modulos_visibles_list"]
+        modulos_visibles_list
     )
 
     if not empleado:
@@ -440,30 +415,20 @@ def actualizar_modulos(
 
 
 # =========================================================
-# PERMISOS
+# ACTUALIZAR PERMISOS DE MÓDULOS
 # =========================================================
 
-@router.put(
-    "/{empleado_id}/permisos",
-    response_model=Empleado
-)
+@router.put("/{empleado_id}/permisos")
 def actualizar_permisos(
     empleado_id: int,
-    data: dict,
+    permisos_modulo_dict: dict,
     db: Session = Depends(get_db)
 ):
-
-    if "permisos_modulo_dict" not in data:
-
-        raise HTTPException(
-            status_code=400,
-            detail="Falta permisos_modulo_dict"
-        )
 
     empleado = actualizar_permisos_modulo(
         db,
         empleado_id,
-        data["permisos_modulo_dict"]
+        permisos_modulo_dict
     )
 
     if not empleado:
@@ -480,10 +445,8 @@ def actualizar_permisos(
 # RESET PASSWORD
 # =========================================================
 
-@router.post(
-    "/{empleado_id}/reset-password"
-)
-def reset_password_empleado(
+@router.post("/{empleado_id}/reset-password")
+def resetear_password(
     empleado_id: int,
     db: Session = Depends(get_db)
 ):
