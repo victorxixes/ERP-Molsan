@@ -599,7 +599,7 @@ app.include_router(
 # ENTIDADES BANCARIAS
 # ============================================================
 app.include_router(
-    municipios_router,
+    entidades_bancarias_router,
     prefix="/api"
 )
 
