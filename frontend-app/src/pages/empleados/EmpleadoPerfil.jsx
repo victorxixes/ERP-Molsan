@@ -14,6 +14,9 @@ import {
   subirFotoEmpleado,
 } from "../../api/empleados";
 
+import {
+  getMaestros,
+} from "../../api/maestros";
 
 /* ============================================================
    EMPLEADO PERFIL
@@ -82,6 +85,26 @@ export default function EmpleadoPerfil({
 
 
   /* ==========================================================
+     MAESTROS
+  ========================================================== */
+
+  const [
+    departamentos,
+    setDepartamentos,
+  ] = useState([]);
+
+  const [
+    secciones,
+    setSecciones,
+  ] = useState([]);
+
+  const [
+    cargos,
+    setCargos,
+  ] = useState([]);
+
+
+  /* ==========================================================
      CARGAR PERFIL
   ========================================================== */
 
@@ -101,16 +124,38 @@ export default function EmpleadoPerfil({
 
         try {
 
-          const res =
-            await obtenerFichaEmpleado(
-              idNum
-            );
+          /*
+           * Cargamos simultáneamente:
+           *
+           * 1. Ficha del empleado
+           * 2. Departamentos
+           * 3. Secciones
+           * 4. Cargos
+           */
+
+          const [
+            fichaRes,
+            departamentosRes,
+            seccionesRes,
+            cargosRes,
+          ] = await Promise.all([
+            obtenerFichaEmpleado(idNum),
+            getMaestros("departamentos"),
+            getMaestros("secciones"),
+            getMaestros("cargos"),
+          ]);
+
+
+          /* --------------------------------------------------
+             FICHA
+          -------------------------------------------------- */
 
           const d =
-            res?.data || {};
+            fichaRes?.data || {};
 
           const empleado =
             d?.empleado || {};
+
 
           setData(
             d
@@ -122,6 +167,35 @@ export default function EmpleadoPerfil({
 
           setEmpleadoOriginal(
             empleado
+          );
+
+
+          /* --------------------------------------------------
+             MAESTROS
+          -------------------------------------------------- */
+
+          setDepartamentos(
+            Array.isArray(
+              departamentosRes?.data
+            )
+              ? departamentosRes.data
+              : []
+          );
+
+          setSecciones(
+            Array.isArray(
+              seccionesRes?.data
+            )
+              ? seccionesRes.data
+              : []
+          );
+
+          setCargos(
+            Array.isArray(
+              cargosRes?.data
+            )
+              ? cargosRes.data
+              : []
           );
 
         } catch (err) {
@@ -1475,12 +1549,20 @@ export default function EmpleadoPerfil({
             gap-5
           ">
 
-            <Campo
-              label="Departamento ID"
+
+            {/* ==================================================
+                DEPARTAMENTO
+            ================================================== */}
+
+            <CampoSelect
+              label="Departamento"
               value={
                 empleado.departamento_id
               }
-              type="number"
+              options={
+                departamentos
+              }
+              placeholder="Sin departamento"
               onChange={(value) =>
                 handleChange(
                   "departamento_id",
@@ -1492,12 +1574,19 @@ export default function EmpleadoPerfil({
             />
 
 
-            <Campo
-              label="Sección ID"
+            {/* ==================================================
+                SECCIÓN
+            ================================================== */}
+
+            <CampoSelect
+              label="Sección"
               value={
                 empleado.seccion_id
               }
-              type="number"
+              options={
+                secciones
+              }
+              placeholder="Sin sección"
               onChange={(value) =>
                 handleChange(
                   "seccion_id",
@@ -1509,12 +1598,19 @@ export default function EmpleadoPerfil({
             />
 
 
-            <Campo
-              label="Cargo ID"
+            {/* ==================================================
+                CARGO
+            ================================================== */}
+
+            <CampoSelect
+              label="Cargo"
               value={
                 empleado.cargo_id
               }
-              type="number"
+              options={
+                cargos
+              }
+              placeholder="Sin cargo"
               onChange={(value) =>
                 handleChange(
                   "cargo_id",
@@ -1902,6 +1998,89 @@ function Campo({
           focus:ring-[var(--erp-primary-soft)]
         "
       />
+
+    </label>
+
+  );
+
+}
+
+
+/* ============================================================
+   CAMPO SELECT — MAESTROS
+============================================================ */
+
+function CampoSelect({
+  label,
+  value,
+  options = [],
+  placeholder,
+  onChange,
+}) {
+
+  return (
+
+    <label className="block">
+
+      <span className="
+        block
+        text-xs
+        font-semibold
+        text-[var(--erp-text-soft)]
+        mb-2
+      ">
+
+        {label}
+
+      </span>
+
+
+      <select
+        value={
+          value ?? ""
+        }
+        onChange={(e) =>
+          onChange(
+            e.target.value
+          )
+        }
+        className="
+          w-full
+          h-11
+          rounded-xl
+          border
+          border-[var(--erp-border)]
+          bg-[var(--erp-surface)]
+          text-[var(--erp-text)]
+          px-4
+          outline-none
+          transition
+          focus:border-[var(--erp-primary)]
+          focus:ring-2
+          focus:ring-[var(--erp-primary-soft)]
+          cursor-pointer
+        "
+      >
+
+        <option value="">
+          {placeholder}
+        </option>
+
+
+        {options.map(
+          (item) => (
+
+            <option
+              key={item.id}
+              value={item.id}
+            >
+              {item.nombre}
+            </option>
+
+          )
+        )}
+
+      </select>
 
     </label>
 
