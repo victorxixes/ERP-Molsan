@@ -1,44 +1,55 @@
-from sqlalchemy import Boolean, Column, Integer, String, Text, UniqueConstraint
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 
 from backend.app.database import Base
 
 
+# ============================================================
+# OFICINAS LIQUIDADORAS
+# ============================================================
+
 class OficinaLiquidadora(Base):
     __tablename__ = "oficinas_liquidadoras"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
 
     oficina_liquidadora = Column(
         String(250),
         nullable=False,
-        index=True,
     )
 
     direccion = Column(
-        String(400),
+        String(500),
         nullable=True,
     )
 
     codigo_postal = Column(
-        String(10),
+        String(20),
         nullable=True,
-        index=True,
     )
 
     poblacion = Column(
-        String(150),
+        String(200),
         nullable=True,
-        index=True,
     )
 
     provincia = Column(
         String(150),
         nullable=True,
-        index=True,
     )
 
     telefono = Column(
-        String(50),
+        String(100),
         nullable=True,
     )
 
@@ -48,7 +59,7 @@ class OficinaLiquidadora(Base):
     )
 
     horario = Column(
-        Text,
+        String(250),
         nullable=True,
     )
 
@@ -56,21 +67,12 @@ class OficinaLiquidadora(Base):
         Boolean,
         nullable=False,
         default=True,
-        index=True,
+        server_default="true",
     )
 
     __table_args__ = (
         UniqueConstraint(
             "oficina_liquidadora",
-            name="uq_oficinas_liquidadoras_nombre",
+            name="uq_oficina_liquidadora_nombre",
         ),
     )
-
-    def __repr__(self):
-        return (
-            f"<OficinaLiquidadora "
-            f"id={self.id!r} "
-            f"oficina_liquidadora={self.oficina_liquidadora!r} "
-            f"poblacion={self.poblacion!r} "
-            f"provincia={self.provincia!r}>"
-        )
