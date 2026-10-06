@@ -520,6 +520,7 @@ export default function Mensajes({
             error
           );
 
+
         } finally {
 
           setSubiendoArchivo(
@@ -615,6 +616,7 @@ export default function Mensajes({
         return "/no-foto.png";
       }
 
+
       if (
         foto.startsWith(
           "http://"
@@ -625,6 +627,7 @@ export default function Mensajes({
       ) {
         return foto;
       }
+
 
       return `${import.meta.env.VITE_API_URL}${foto}`;
 
@@ -665,12 +668,20 @@ export default function Mensajes({
     <div
       className="
         relative
-        min-h-full
+
+        min-h-0
+
+        lg:h-[calc(100dvh-96px)]
+        lg:min-h-0
+
         overflow-hidden
+
         px-4
         py-4
+
         sm:px-6
         sm:py-6
+
         animate-fadeIn
       "
     >
@@ -740,10 +751,15 @@ export default function Mensajes({
         className="
           relative
           z-10
+
           grid
           grid-cols-1
+
           gap-5
+
           lg:grid-cols-3
+          lg:h-full
+          lg:min-h-0
         "
       >
 
@@ -752,22 +768,29 @@ export default function Mensajes({
         ================================================= */}
 
         <section
-  className="
-    relative
-    overflow-hidden
-    rounded-[24px]
-    border
-    border-white/80
-    bg-white/75
-    backdrop-blur-2xl
-    shadow-[0_20px_60px_rgba(15,23,42,0.10)]
-    animate-slideUp
-    lg:flex
-    lg:h-full
-    lg:min-h-0
-    lg:flex-col
-  "
->
+          className="
+            relative
+            overflow-hidden
+
+            rounded-[24px]
+
+            border
+            border-white/80
+
+            bg-white/75
+
+            backdrop-blur-2xl
+
+            shadow-[0_20px_60px_rgba(15,23,42,0.10)]
+
+            animate-slideUp
+
+            lg:flex
+            lg:h-full
+            lg:min-h-0
+            lg:flex-col
+          "
+        >
 
           {/* línea superior */}
 
@@ -794,6 +817,7 @@ export default function Mensajes({
               border-slate-200/80
               px-5
               py-5
+              shrink-0
             "
           >
 
@@ -894,6 +918,7 @@ export default function Mensajes({
                       text-red-600
                     "
                   >
+
                     <span>
                       ●
                     </span>
@@ -901,6 +926,7 @@ export default function Mensajes({
                     <span>
                       {totalPendientes}
                     </span>
+
                   </div>
                 )}
 
@@ -914,14 +940,16 @@ export default function Mensajes({
           {/* LISTA */}
 
           <div
-  className="
-    flex-1
-    min-h-0
-    space-y-2
-    overflow-y-auto
-    p-4
-  "
->
+            className="
+              flex-1
+              min-h-0
+
+              space-y-2
+              overflow-y-auto
+
+              p-4
+            "
+          >
 
             {conectadosFiltrados.length ===
               0 && (
@@ -1024,6 +1052,7 @@ export default function Mensajes({
                       text-left
                       transition-all
                       duration-200
+
                       ${
                         seleccionado
                           ? `
@@ -1039,6 +1068,7 @@ export default function Mensajes({
                             hover:shadow-[0_8px_25px_rgba(15,23,42,0.07)]
                           `
                       }
+
                       ${
                         pendientes > 0
                           ? "ring-1 ring-red-100"
@@ -1144,6 +1174,7 @@ export default function Mensajes({
                               text-red-600
                             "
                           >
+
                             <span>
                               ●
                             </span>
@@ -1153,6 +1184,7 @@ export default function Mensajes({
                                 ? "Nuevo mensaje"
                                 : `${pendientes} mensajes nuevos`}
                             </span>
+
                           </span>
 
                         </div>
@@ -1234,37 +1266,45 @@ export default function Mensajes({
             CHAT
         ================================================= */}
 
-       <section
-  className="
-    relative
-    overflow-hidden
-    rounded-[24px]
-    border
-    border-white/80
-    bg-white/75
-    backdrop-blur-2xl
-    shadow-[0_20px_60px_rgba(15,23,42,0.10)]
-    lg:col-span-2
-    animate-slideUp
-    lg:flex
-    lg:h-full
-    lg:min-h-0
-    lg:flex-col
-  "
->
+        <section
+          className="
+            relative
+            overflow-hidden
+
+            rounded-[24px]
+
+            border
+            border-white/80
+
+            bg-white/75
+
+            backdrop-blur-2xl
+
+            shadow-[0_20px_60px_rgba(15,23,42,0.10)]
+
+            lg:col-span-2
+
+            animate-slideUp
+
+            lg:flex
+            lg:h-full
+            lg:min-h-0
+            lg:flex-col
+          "
+        >
 
           {!otroId ? (
 
-<div
-  className="
-    flex
-    flex-1
-    min-h-0
-    items-center
-    justify-center
-    p-8
-  "
->
+            <div
+              className="
+                flex
+                flex-1
+                min-h-0
+                items-center
+                justify-center
+                p-8
+              "
+            >
 
               <div
                 className="
@@ -1326,17 +1366,17 @@ export default function Mensajes({
 
           ) : (
 
-<div
-  className="
-    flex
-    h-full
-    min-h-0
-    flex-1
-    flex-col
-    p-4
-    sm:p-5
-  "
->
+            <div
+              className="
+                flex
+                h-full
+                min-h-0
+                flex-1
+                flex-col
+                p-4
+                sm:p-5
+              "
+            >
 
               {/* HEADER */}
 
@@ -1359,13 +1399,19 @@ export default function Mensajes({
                 className="
                   min-h-0
                   flex-1
+
                   overflow-y-auto
+
                   rounded-2xl
+
                   border
                   border-slate-200/70
+
                   bg-slate-50/50
+
                   px-3
                   py-4
+
                   sm:px-5
                 "
               >
@@ -1378,7 +1424,7 @@ export default function Mensajes({
                     className="
                       flex
                       h-full
-                      min-h-[380px]
+                      min-h-0
                       items-center
                       justify-center
                       text-center
@@ -1537,6 +1583,7 @@ export default function Mensajes({
 
                   <div
                     className="
+                      shrink-0
                       px-2
                       py-2
                       text-xs
@@ -1557,12 +1604,18 @@ export default function Mensajes({
 
               <div
                 className="
-                  mt-4
+                  mt-3
+                  shrink-0
+
                   rounded-2xl
+
                   border
                   border-slate-200/80
+
                   bg-white/85
+
                   p-3
+
                   shadow-sm
                 "
               >
@@ -1655,19 +1708,30 @@ export default function Mensajes({
                     className="
                       max-h-32
                       min-h-11
+
                       flex-1
+
                       resize-none
+
                       rounded-xl
+
                       border
                       border-slate-200
+
                       bg-slate-50/70
+
                       px-4
                       py-3
+
                       text-sm
                       text-slate-700
+
                       outline-none
+
                       transition
+
                       placeholder:text-slate-400
+
                       focus:border-blue-300
                       focus:bg-white
                       focus:ring-2
