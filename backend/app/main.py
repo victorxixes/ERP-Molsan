@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+
 import os
 
 
@@ -41,25 +43,33 @@ app.add_middleware(
 # BASE DE DATOS
 # ============================================================
 
-from backend.app.database import Base, engine
+from backend.app.database import (
+    Base,
+    engine,
+)
 
 
 # ============================================================
 # MODELOS
 # ============================================================
 
+
 # ------------------------------------------------------------
 # CLIENTES
 # ------------------------------------------------------------
 
-from backend.app.expedientes.clientes.models import Cliente
+from backend.app.expedientes.clientes.models import (
+    Cliente,
+)
 
 
 # ------------------------------------------------------------
 # EXPEDIENTES
 # ------------------------------------------------------------
 
-from backend.app.expedientes.models import Expediente
+from backend.app.expedientes.models import (
+    Expediente,
+)
 
 
 # ------------------------------------------------------------
@@ -102,7 +112,22 @@ from backend.app.expedientes.defectos.models import (
 # DETALLE DE EXPEDIENTES
 # ------------------------------------------------------------
 
-from backend.app.expedientes.detalle.models import ExpedienteDetalle
+from backend.app.expedientes.detalle.models import (
+    ExpedienteDetalle,
+)
+
+
+# ------------------------------------------------------------
+# ROLES
+#
+# IMPORTANTE:
+# Debe cargarse ANTES de Empleado porque Empleado tiene
+# una relación con Rol.
+# ------------------------------------------------------------
+
+from backend.app.seguridad.roles.models import (
+    Rol,
+)
 
 
 # ------------------------------------------------------------
@@ -113,21 +138,27 @@ from backend.app.expedientes.detalle.models import ExpedienteDetalle
 # una relación con Empleado.
 # ------------------------------------------------------------
 
-from backend.app.empleados.models import Empleado
+from backend.app.empleados.models import (
+    Empleado,
+)
 
 
 # ------------------------------------------------------------
 # MENSAJES
 # ------------------------------------------------------------
 
-from backend.app.mensajes.models import Mensaje
+from backend.app.mensajes.models import (
+    Mensaje,
+)
 
 
 # ------------------------------------------------------------
 # MUNICIPIOS
 # ------------------------------------------------------------
 
-from backend.app.municipios.models import Municipio
+from backend.app.municipios.models import (
+    Municipio,
+)
 
 
 # ------------------------------------------------------------
@@ -206,36 +237,61 @@ with engine.begin() as connection:
 # ============================================================
 
 TIPOS_CARGA_HIPOTECARIA_INICIALES = [
+
     "cancelacion de prestamo o credito",
+
     "cancelacion por instancia",
+
     "devolucion",
+
     "mandamiento judicial de cancelación",
+
     "mandamiento judicial",
+
     "cancelacion de condicion resolutoria",
+
     "cancelacion embargo",
+
     "mandamiento de cancelación",
+
     "cancelacion por certificacion de cargas",
+
     "prestamo hipotecario",
+
     "cancelacion de prestamo o credito adicional",
+
     "cancelacion embargo adicional",
+
     "cancelación parcial y liberación de garantía",
+
     "cancelacion parcial y liberacion de finca",
+
     "condicion resolutoria",
+
     "cancelacion de usufructo",
+
     "cancelacion de condicion resolutoria adicional",
+
 ]
 
 
+# ============================================================
+# CREAR TIPOS DE CARGA SI NO EXISTEN
+# ============================================================
+
 with Session(bind=engine) as db:
 
-    for nombre in TIPOS_CARGA_HIPOTECARIA_INICIALES:
+    for nombre in (
+        TIPOS_CARGA_HIPOTECARIA_INICIALES
+    ):
 
         existe = (
             db.query(
                 TipoCargaHipotecaria
             )
             .filter(
-                TipoCargaHipotecaria.nombre == nombre
+                TipoCargaHipotecaria.nombre
+                == nombre
             )
             .first()
         )
@@ -263,7 +319,9 @@ STATIC_DIR = os.path.join(
 
 app.mount(
     "/static",
-    StaticFiles(directory=STATIC_DIR),
+    StaticFiles(
+        directory=STATIC_DIR
+    ),
     name="static",
 )
 
@@ -281,7 +339,9 @@ os.makedirs(
 
 app.mount(
     "/static/mensajes",
-    StaticFiles(directory=TMP_MENSAJES),
+    StaticFiles(
+        directory=TMP_MENSAJES
+    ),
     name="mensajes",
 )
 
@@ -298,7 +358,9 @@ FOTOS_DIR = os.path.join(
 
 app.mount(
     "/api/fotos",
-    StaticFiles(directory=FOTOS_DIR),
+    StaticFiles(
+        directory=FOTOS_DIR
+    ),
     name="fotos",
 )
 
