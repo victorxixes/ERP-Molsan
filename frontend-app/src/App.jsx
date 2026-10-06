@@ -102,6 +102,9 @@ import Maestros from "./pages/maestros/Maestros.jsx";
 /* FUSIONES */
 import Fusiones from "./pages/fusiones/Fusiones";
 
+/* REAL TIME */
+import RealtimeGlobal from "./components/realtime/RealtimeGlobal";
+
 /* TIPOS DE CARGA HIPOTECARIA */
 import TiposCargaHipotecaria
   from "./pages/herramientas/TiposCargaHipotecaria.jsx";
@@ -109,6 +112,7 @@ import TiposCargaHipotecaria
 /* TIPOS DE CONCEPTOS DE GASTOS */
 import TiposConceptoGastos
   from "./pages/herramientas/TiposConceptoGastos.jsx";
+
 
 /**
  * ============================================================
@@ -172,7 +176,23 @@ export default function App() {
           path="/"
           element={
             <RequireAuth>
-              <Layout />
+
+              <>
+                {/* ==================================================
+                    REALTIME GLOBAL
+                    ==================================================
+                    Se monta una sola vez al entrar al ERP.
+
+                    Permanece activo aunque el usuario cambie
+                    entre Dashboard, Fusiones, Expedientes,
+                    Agenda, Mensajes, etc.
+                    ================================================== */}
+
+                <RealtimeGlobal />
+
+                <Layout />
+              </>
+
             </RequireAuth>
           }
         >
@@ -286,15 +306,17 @@ export default function App() {
             element={<Intranet />}
           />
 
+
           {/* ==================================================
               INFORMES
               ================================================== */}
+
           <Route
             path="informes"
             element={<Informes />}
           />
 
-          
+
           {/* ==================================================
               MENSAJES
               ================================================== */}
@@ -320,10 +342,10 @@ export default function App() {
           />
 
           <Route
-          path="herramientas/municipios"
-          element={<Municipios />}
+            path="herramientas/municipios"
+            element={<Municipios />}
           />
-      
+
           <Route
             path="herramientas/importador-absis"
             element={<ImportadorAbsis />}
@@ -334,36 +356,36 @@ export default function App() {
             element={<Utilidades />}
           />
 
-           <Route
-          path="herramientas/entidades-bancarias"
-          element={<EntidadesBancarias />}
+          <Route
+            path="herramientas/entidades-bancarias"
+            element={<EntidadesBancarias />}
           />
 
           <Route
-          path="herramientas/registros-propiedad"
-          element={<RegistrosPropiedad />}
+            path="herramientas/registros-propiedad"
+            element={<RegistrosPropiedad />}
           />
 
           <Route
-          path="herramientas/oficinas-liquidadoras"
-          element={<OficinasLiquidadoras />}
+            path="herramientas/oficinas-liquidadoras"
+            element={<OficinasLiquidadoras />}
           />
 
           <Route
-          path="herramientas/acciones-expediente"
-          element={<AccionesExpediente />}
+            path="herramientas/acciones-expediente"
+            element={<AccionesExpediente />}
           />
 
           <Route
-          path="herramientas/tipos-carga-hipotecaria"
-          element={<TiposCargaHipotecaria />}
+            path="herramientas/tipos-carga-hipotecaria"
+            element={<TiposCargaHipotecaria />}
           />
 
           <Route
-          path="herramientas/tipos-concepto-gastos"
-          element={<TiposConceptoGastos />}
+            path="herramientas/tipos-concepto-gastos"
+            element={<TiposConceptoGastos />}
           />
-          
+
           <Route
             path="herramientas/utilidades/crear-noticia"
             element={<CrearNoticia />}
@@ -395,13 +417,15 @@ export default function App() {
           />
 
 
-            {/* ==================================================
+          {/* ==================================================
               FUSIONES
               ================================================== */}
+
           <Route
             path="/fusiones"
             element={<Fusiones />}
-            />
+          />
+
 
           {/* ==================================================
               PANEL TÉCNICO
@@ -422,10 +446,11 @@ export default function App() {
             element={<MonitorRealtime />}
           />
 
-          <Route  path="maestros"
-          element={<Maestros />}
+          <Route
+            path="maestros"
+            element={<Maestros />}
           />
-          
+
           <Route
             path="paneltecnico/auditoria-avanzada"
             element={<AuditoriaAvanzada />}
@@ -439,7 +464,7 @@ export default function App() {
 
           {/* ==================================================
               SEGURIDAD
-              
+
               IMPORTANTE:
               Seguridad queda separada de Auditoría.
               ================================================== */}
@@ -487,7 +512,7 @@ export default function App() {
 
           {/* ==================================================
               AUDITORÍA
-              
+
               Módulo independiente de Seguridad.
               ================================================== */}
 
