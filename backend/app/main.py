@@ -122,6 +122,14 @@ from backend.app.registros_propiedad.models import (
     RegistroPropiedad,
 )
 
+# ------------------------------------------------------------
+# ACCIONES DEL EXPEDIENTE
+# ------------------------------------------------------------
+
+from backend.app.acciones_expediente.models import (
+    AccionExpediente,
+)
+
 # ============================================================
 # CREAR TABLAS
 # ============================================================
@@ -371,6 +379,13 @@ from backend.app.registros_propiedad.router import (
 )
 
 # ============================================================
+# ACCIONES DEL EXPEDIENTE
+# ============================================================
+from backend.app.acciones_expediente.router import (
+    router as acciones_expediente_router,
+)
+
+# ============================================================
 # HERRAMIENTAS SWAGGER
 # ============================================================
 
@@ -599,11 +614,6 @@ app.include_router(
 
 # ============================================================
 # MUNICIPIOS
-#
-# ENDPOINTS:
-#
-# GET  /api/municipios
-# POST /api/municipios/importar
 # ============================================================
 
 app.include_router(
@@ -618,6 +628,19 @@ app.include_router(
     entidades_bancarias_router,
     prefix="/api"
 )
+
+# ============================================================
+# REGISTROS DE LA PROPIEDAD
+# ============================================================
+
+app.include_router(
+    registros_propiedad_router,
+    prefix="/api"
+)
+
+# ============================================================
+# ACCIONES DEL EXPEDIENTE
+# ============================================================
 
 # ============================================================
 # REGISTROS DE LA PROPIEDAD
