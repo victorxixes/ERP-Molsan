@@ -54,14 +54,6 @@ from backend.app.database import (
 # ============================================================
 
 
-# ------------------------------------------------------------
-# CLIENTES
-# ------------------------------------------------------------
-
-from backend.app.expedientes.clientes.models import (
-    Cliente,
-)
-
 
 # ------------------------------------------------------------
 # EXPEDIENTES
@@ -69,15 +61,6 @@ from backend.app.expedientes.clientes.models import (
 
 from backend.app.expedientes.models import (
     Expediente,
-)
-
-
-# ------------------------------------------------------------
-# ACTIVIDADES DE EXPEDIENTES
-# ------------------------------------------------------------
-
-from backend.app.expedientes.actividades.models import (
-    ExpedienteActividad,
 )
 
 
@@ -108,13 +91,6 @@ from backend.app.expedientes.defectos.models import (
 )
 
 
-# ------------------------------------------------------------
-# DETALLE DE EXPEDIENTES
-# ------------------------------------------------------------
-
-from backend.app.expedientes.detalle.models import (
-    ExpedienteDetalle,
-)
 
 
 # ------------------------------------------------------------
