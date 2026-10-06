@@ -58,7 +58,9 @@ class TipoCargaHipotecariaResponse(BaseModel):
 # UTILIDADES
 # ============================================================
 
-def normalizar_nombre(valor: str) -> str:
+def normalizar_nombre(
+    valor: str,
+) -> str:
 
     if valor is None:
         return ""
@@ -71,27 +73,120 @@ def normalizar_nombre(valor: str) -> str:
 
 
 # ============================================================
-# GET /api/tipos-carga-hipotecaria
+# CATÁLOGO INICIAL
+# ============================================================
+
+TIPOS_CARGA_HIPOTECARIA_INICIALES = [
+
+    "cancelacion de prestamo o credito",
+    "cancelacion por instancia",
+    "devolucion",
+    "mandamiento judicial de cancelación",
+    "mandamiento judicial",
+    "cancelacion de condicion resolutoria",
+    "cancelacion embargo",
+    "mandamiento de cancelación",
+    "cancelacion por certificacion de cargas",
+    "prestamo hipotecario",
+    "cancelacion de prestamo o credito adicional",
+    "cancelacion embargo adicional",
+    "cancelación parcial y liberación de garantía",
+    "cancelacion parcial y liberacion de finca",
+    "condicion resolutoria",
+    "cancelacion de usufructo",
+    "cancelacion de condicion resolutoria adicional",
+
+]
+
+
+# ============================================================
+# GARANTIZAR CATÁLOGO INICIAL
+# ============================================================
+
+def garantizar_catalogo_inicial(
+    db: Session,
+) -> None:
+
+    cambios = False
+
+    for nombre_original in (
+        TIPOS_CARGA_HIPOTECARIA_INICIALES
+    ):
+
+        nombre = normalizar_nombre(
+            nombre_original
+        )
+
+        existe = (
+            db.query(TipoCargaHipotecaria)
+            .filter(
+                func.lower(
+                    TipoCargaHipotecaria.nombre
+                )
+                == nombre.lower()
+            )
+            .first()
+        )
+
+        if not existe:
+
+            db.add(
+                TipoCargaHipotecaria(
+                    nombre=nombre,
+                    activo=True,
+                )
+            )
+
+            cambios = True
+
+    if cambios:
+
+        db.commit()
+
+
+# ============================================================
+# GET
+# /api/tipos-carga-hipotecaria
 # ============================================================
 
 @router.get(
     "",
-    response_model=list[TipoCargaHipotecariaResponse],
+    response_model=list[
+        TipoCargaHipotecariaResponse
+    ],
 )
 def listar_tipos_carga_hipotecaria(
+
     q: Optional[str] = Query(
         None,
         description="Buscar por nombre",
     ),
+
     activo: Optional[bool] = Query(
         None,
         description="Filtrar por estado activo",
     ),
+
     db: Session = Depends(get_db),
+
 ):
 
+    # --------------------------------------------------------
+    # GARANTIZAR QUE EXISTAN LOS 17 TIPOS INICIALES
+    # --------------------------------------------------------
+
+    garantizar_catalogo_inicial(
+        db
+    )
+
+    # --------------------------------------------------------
+    # CONSULTA
+    # --------------------------------------------------------
+
     consulta = (
-        db.query(TipoCargaHipotecaria)
+        db.query(
+            TipoCargaHipotecaria
+        )
     )
 
     # --------------------------------------------------------
@@ -117,7 +212,8 @@ def listar_tipos_carga_hipotecaria(
     if activo is not None:
 
         consulta = consulta.filter(
-            TipoCargaHipotecaria.activo == activo
+            TipoCargaHipotecaria.activo
+            == activo
         )
 
     # --------------------------------------------------------
@@ -134,22 +230,41 @@ def listar_tipos_carga_hipotecaria(
 
 
 # ============================================================
-# GET /api/tipos-carga-hipotecaria/opciones
+# GET
+# /api/tipos-carga-hipotecaria/opciones
 #
-# Endpoint pensado para futuros desplegables de expedientes.
-# Devuelve únicamente los registros activos.
+# Para futuros desplegables de expedientes.
+# Solo devuelve registros activos.
 # ============================================================
 
 @router.get(
     "/opciones",
-    response_model=list[TipoCargaHipotecariaResponse],
+    response_model=list[
+        TipoCargaHipotecariaResponse
+    ],
 )
 def opciones_tipos_carga_hipotecaria(
+
     db: Session = Depends(get_db),
+
 ):
 
+    # --------------------------------------------------------
+    # GARANTIZAR CATÁLOGO
+    # --------------------------------------------------------
+
+    garantizar_catalogo_inicial(
+        db
+    )
+
+    # --------------------------------------------------------
+    # SOLO ACTIVOS
+    # --------------------------------------------------------
+
     return (
-        db.query(TipoCargaHipotecaria)
+        db.query(
+            TipoCargaHipotecaria
+        )
         .filter(
             TipoCargaHipotecaria.activo.is_(True)
         )
@@ -163,7 +278,8 @@ def opciones_tipos_carga_hipotecaria(
 
 
 # ============================================================
-# POST /api/tipos-carga-hipotecaria
+# POST
+# /api/tipos-carga-hipotecaria
 # ============================================================
 
 @router.post(
@@ -171,8 +287,11 @@ def opciones_tipos_carga_hipotecaria(
     response_model=TipoCargaHipotecariaResponse,
 )
 def crear_tipo_carga_hipotecaria(
+
     datos: TipoCargaHipotecariaCreate,
+
     db: Session = Depends(get_db),
+
 ):
 
     nombre = normalizar_nombre(
@@ -194,7 +313,9 @@ def crear_tipo_carga_hipotecaria(
     # --------------------------------------------------------
 
     existente = (
-        db.query(TipoCargaHipotecaria)
+        db.query(
+            TipoCargaHipotecaria
+        )
         .filter(
             func.lower(
                 TipoCargaHipotecaria.nombre
@@ -209,8 +330,8 @@ def crear_tipo_carga_hipotecaria(
         raise HTTPException(
             status_code=409,
             detail=(
-                "Ya existe un tipo de carga hipotecaria "
-                "con ese nombre."
+                "Ya existe un tipo de carga "
+                "hipotecaria con ese nombre."
             ),
         )
 
@@ -225,11 +346,15 @@ def crear_tipo_carga_hipotecaria(
 
     try:
 
-        db.add(nuevo)
+        db.add(
+            nuevo
+        )
 
         db.commit()
 
-        db.refresh(nuevo)
+        db.refresh(
+            nuevo
+        )
 
     except Exception as exc:
 
@@ -238,7 +363,8 @@ def crear_tipo_carga_hipotecaria(
         raise HTTPException(
             status_code=500,
             detail=(
-                "No se pudo crear el tipo de carga hipotecaria: "
+                "No se pudo crear el tipo de "
+                "carga hipotecaria: "
                 f"{exc}"
             ),
         )
@@ -247,7 +373,8 @@ def crear_tipo_carga_hipotecaria(
 
 
 # ============================================================
-# PUT /api/tipos-carga-hipotecaria/{tipo_id}
+# PUT
+# /api/tipos-carga-hipotecaria/{tipo_id}
 # ============================================================
 
 @router.put(
@@ -255,13 +382,19 @@ def crear_tipo_carga_hipotecaria(
     response_model=TipoCargaHipotecariaResponse,
 )
 def actualizar_tipo_carga_hipotecaria(
+
     tipo_id: int,
+
     datos: TipoCargaHipotecariaUpdate,
+
     db: Session = Depends(get_db),
+
 ):
 
     tipo = (
-        db.query(TipoCargaHipotecaria)
+        db.query(
+            TipoCargaHipotecaria
+        )
         .filter(
             TipoCargaHipotecaria.id
             == tipo_id
@@ -279,6 +412,10 @@ def actualizar_tipo_carga_hipotecaria(
             ),
         )
 
+    # --------------------------------------------------------
+    # NORMALIZAR
+    # --------------------------------------------------------
+
     nombre = normalizar_nombre(
         datos.nombre
     )
@@ -298,7 +435,9 @@ def actualizar_tipo_carga_hipotecaria(
     # --------------------------------------------------------
 
     existente = (
-        db.query(TipoCargaHipotecaria)
+        db.query(
+            TipoCargaHipotecaria
+        )
         .filter(
             func.lower(
                 TipoCargaHipotecaria.nombre
@@ -325,14 +464,15 @@ def actualizar_tipo_carga_hipotecaria(
     # --------------------------------------------------------
 
     tipo.nombre = nombre
-
     tipo.activo = datos.activo
 
     try:
 
         db.commit()
 
-        db.refresh(tipo)
+        db.refresh(
+            tipo
+        )
 
     except Exception as exc:
 
@@ -341,8 +481,9 @@ def actualizar_tipo_carga_hipotecaria(
         raise HTTPException(
             status_code=500,
             detail=(
-                "No se pudo actualizar el tipo de "
-                f"carga hipotecaria: {exc}"
+                "No se pudo actualizar el tipo "
+                "de carga hipotecaria: "
+                f"{exc}"
             ),
         )
 
@@ -350,19 +491,25 @@ def actualizar_tipo_carga_hipotecaria(
 
 
 # ============================================================
-# DELETE /api/tipos-carga-hipotecaria/{tipo_id}
+# DELETE
+# /api/tipos-carga-hipotecaria/{tipo_id}
 # ============================================================
 
 @router.delete(
     "/{tipo_id}"
 )
 def eliminar_tipo_carga_hipotecaria(
+
     tipo_id: int,
+
     db: Session = Depends(get_db),
+
 ):
 
     tipo = (
-        db.query(TipoCargaHipotecaria)
+        db.query(
+            TipoCargaHipotecaria
+        )
         .filter(
             TipoCargaHipotecaria.id
             == tipo_id
@@ -382,7 +529,9 @@ def eliminar_tipo_carga_hipotecaria(
 
     try:
 
-        db.delete(tipo)
+        db.delete(
+            tipo
+        )
 
         db.commit()
 
@@ -393,8 +542,9 @@ def eliminar_tipo_carga_hipotecaria(
         raise HTTPException(
             status_code=500,
             detail=(
-                "No se pudo eliminar el tipo de "
-                f"carga hipotecaria: {exc}"
+                "No se pudo eliminar el tipo "
+                "de carga hipotecaria: "
+                f"{exc}"
             ),
         )
 
