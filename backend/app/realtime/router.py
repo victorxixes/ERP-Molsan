@@ -1,12 +1,11 @@
 import json
-
 import jwt
 
 from fastapi import (
     APIRouter,
-    Query,
     WebSocket,
     WebSocketDisconnect,
+    Query,
 )
 
 from backend.app.config import settings
@@ -59,14 +58,10 @@ async def realtime_ws(
 
     db = SessionLocal()
 
-    usuario_id_autenticado = None
-    empleado = None
-
-
     try:
 
         # ====================================================
-        # JWT
+        # TOKEN OBLIGATORIO
         # ====================================================
 
         if not token:
@@ -77,38 +72,19 @@ async def realtime_ws(
 
             return
 
+        # ====================================================
+        # VALIDAR JWT
+        # ====================================================
 
         try:
 
             payload = jwt.decode(
-
                 token,
-
                 settings.JWT_SECRET,
-
                 algorithms=[
                     settings.ALGORITHM
                 ],
-
             )
-
-            token_id = payload.get(
-                "id"
-            )
-
-            if token_id is None:
-
-                await websocket.close(
-                    code=4002
-                )
-
-                return
-
-
-            usuario_id_autenticado = int(
-                token_id
-            )
-
 
         except jwt.ExpiredSignatureError:
 
@@ -118,12 +94,10 @@ async def realtime_ws(
 
             return
 
-
         except Exception as exc:
 
             print(
-                "[REALTIME] Error JWT:",
-                exc,
+                f"[REALTIME] Error JWT: {exc}",
                 flush=True,
             )
 
@@ -133,15 +107,44 @@ async def realtime_ws(
 
             return
 
+        # ====================================================
+        # OBTENER USUARIO
+        # ====================================================
+
+        token_usuario_id = (
+            payload.get("id")
+        )
+
+        if token_usuario_id is None:
+
+            await websocket.close(
+                code=4002
+            )
+
+            return
+
+        try:
+
+            token_usuario_id = int(
+                token_usuario_id
+            )
+
+        except Exception:
+
+            await websocket.close(
+                code=4002
+            )
+
+            return
 
         # ====================================================
-        # VALIDAR ID
+        # COMPROBAR QUE usuario_id COINCIDE CON JWT
         # ====================================================
 
         if (
             usuario_id is not None
             and int(usuario_id)
-            != usuario_id_autenticado
+            != token_usuario_id
         ):
 
             await websocket.close(
@@ -150,28 +153,20 @@ async def realtime_ws(
 
             return
 
-
-        usuario_id =
-            usuario_id_autenticado
-
+        usuario_id = token_usuario_id
 
         # ====================================================
-        # EMPLEADO
+        # BUSCAR EMPLEADO
         # ====================================================
 
         empleado = (
-
             db.query(Empleado)
-
             .filter(
                 Empleado.id
                 == usuario_id
             )
-
             .first()
-
         )
-
 
         if not empleado:
 
@@ -181,9 +176,8 @@ async def realtime_ws(
 
             return
 
-
         # ====================================================
-        # INFO PRESENCIA
+        # INFORMACIÓN PRESENCIA
         # ====================================================
 
         usuario_info = {
@@ -199,18 +193,14 @@ async def realtime_ws(
 
             "foto":
                 empleado.foto,
-
         }
-
 
         # ====================================================
         # CONECTAR
         # ====================================================
 
-        primera_conexion = (
-
+        era_primera = (
             await realtime_manager.connect(
-
                 websocket,
 
                 usuario_id=
@@ -227,81 +217,68 @@ async def realtime_ws(
 
                 usuario_info=
                     usuario_info,
-
             )
-
         )
-
 
         print(
-            "[REALTIME] Conectado "
-            f"usuario={usuario_id}",
+            f"[REALTIME] Conectado usuario={usuario_id}",
             flush=True,
         )
-
 
         # ====================================================
         # SNAPSHOT
         # ====================================================
 
+        usuarios = (
+            realtime_manager
+            .obtener_usuarios_conectados()
+        )
+
         snapshot = RealtimeEvent(
 
-            modulo=
-                "realtime",
+            modulo="realtime",
 
-            evento=
-                "usuarios_snapshot",
+            evento="usuarios_snapshot",
 
             usuario_id=
                 usuario_id,
 
             data={
-
                 "usuarios":
-                    realtime_manager
-                    .obtener_usuarios_conectados(),
-
+                    usuarios,
             },
-
         )
-
 
         await websocket.send_json(
             snapshot.dict()
         )
 
-
         # ====================================================
         # ONLINE
         # ====================================================
 
-        if primera_conexion:
+        if era_primera:
 
-            online = RealtimeEvent(
+            online_event = RealtimeEvent(
 
-                modulo=
-                    "mensajes",
+                modulo="mensajes",
 
-                evento=
-                    "usuario_online",
+                evento="usuario_online",
 
                 usuario_id=
                     usuario_id,
 
                 data=
                     usuario_info,
-
             )
 
-
-            await realtime_manager.broadcast_global_except(
-
-                websocket,
-
-                online,
-
+            await (
+                realtime_manager
+                .broadcast_global_except(
+                    websocket,
+                    online_event,
+                )
             )
-
 
         # ====================================================
         # BUCLE
@@ -309,29 +286,47 @@ async def realtime_ws(
 
         while True:
 
-            raw = (
-                await websocket.receive_text()
-            )
+            try:
 
+                raw = (
+                    await websocket
+                    .receive_text()
+                )
+
+            except WebSocketDisconnect:
+
+                break
+
+            except Exception as exc:
+
+                print(
+                    f"[REALTIME] Error recibiendo "
+                    f"usuario={usuario_id}: {exc}",
+                    flush=True,
+                )
+
+                break
 
             # =================================================
-            # PING
+            # PING TEXTO
             # =================================================
 
             if raw == "ping":
 
-                await websocket.send_json(
-                    {
-                        "tipo":
-                            "pong"
-                    }
-                )
+                try:
+
+                    await websocket.send_json({
+                        "tipo": "pong"
+                    })
+
+                except Exception:
+
+                    break
 
                 continue
 
-
             # =================================================
-            # JSON
+            # PARSEAR JSON
             # =================================================
 
             try:
@@ -344,7 +339,6 @@ async def realtime_ws(
 
                 continue
 
-
             if not isinstance(
                 data,
                 dict,
@@ -352,16 +346,9 @@ async def realtime_ws(
 
                 continue
 
-
             tipo = data.get(
                 "tipo"
             )
-
-
-            if not tipo:
-
-                continue
-
 
             # =================================================
             # PING JSON
@@ -369,15 +356,17 @@ async def realtime_ws(
 
             if tipo == "ping":
 
-                await websocket.send_json(
-                    {
-                        "tipo":
-                            "pong"
-                    }
-                )
+                try:
+
+                    await websocket.send_json({
+                        "tipo": "pong"
+                    })
+
+                except Exception:
+
+                    break
 
                 continue
-
 
             # =================================================
             # TYPING
@@ -385,58 +374,50 @@ async def realtime_ws(
 
             if tipo == "typing":
 
+                destinatario_id = (
+                    data.get(
+                        "destinatario_id"
+                    )
+                )
+
+                if not destinatario_id:
+
+                    continue
+
                 try:
 
                     destinatario_id = int(
-                        data.get(
-                            "destinatario_id"
-                        )
+                        destinatario_id
                     )
 
-                except (
-                    TypeError,
-                    ValueError,
-                ):
+                except Exception:
 
                     continue
-
-
-                if destinatario_id <= 0:
-
-                    continue
-
 
                 event = RealtimeEvent(
 
-                    modulo=
-                        "mensajes",
+                    modulo="mensajes",
 
-                    evento=
-                        "typing",
+                    evento="typing",
 
                     usuario_id=
                         usuario_id,
 
                     data={
-
                         "from":
                             usuario_id,
-
                     },
-
                 )
 
-
-                await realtime_manager.broadcast_usuario(
-
-                    destinatario_id,
-
-                    event,
-
+                await (
+                    realtime_manager
+                    .broadcast_usuario(
+                        destinatario_id,
+                        event,
+                    )
                 )
 
                 continue
-
 
             # =================================================
             # MENSAJE
@@ -444,69 +425,107 @@ async def realtime_ws(
 
             if tipo == "mensaje":
 
-                try:
-
-                    destinatario_id = int(
-                        data.get(
-                            "destinatario_id"
-                        )
+                destinatario_id = (
+                    data.get(
+                        "destinatario_id"
                     )
-
-                except (
-                    TypeError,
-                    ValueError,
-                ):
-
-                    continue
-
-
-                contenido = data.get(
-                    "contenido"
                 )
 
+                contenido = (
+                    data.get(
+                        "contenido"
+                    )
+                )
 
-                if (
-                    destinatario_id <= 0
-                    or contenido is None
-                ):
-
+                if not destinatario_id:
                     continue
 
+                if not contenido:
+                    continue
 
                 contenido = str(
                     contenido
                 ).strip()
 
-
                 if not contenido:
+                    continue
+
+                try:
+
+                    destinatario_id = int(
+                        destinatario_id
+                    )
+
+                except Exception:
 
                     continue
 
+                try:
 
-                print(
-                    "[REALTIME] Mensaje "
-                    f"{usuario_id} -> "
-                    f"{destinatario_id}",
-                    flush=True,
-                )
+                    mensaje = (
+                        await
+                        mensajes_manager
+                        .enviar_mensaje_ws(
+                            usuario_id,
+                            destinatario_id,
+                            contenido,
+                        )
+                    )
 
+                except Exception as exc:
 
-                await mensajes_manager.enviar_mensaje_ws(
+                    print(
+                        f"[REALTIME] Error guardando "
+                        f"mensaje: {exc}",
+                        flush=True,
+                    )
 
-                    remitente_id=
+                    continue
+
+                # ---------------------------------------------
+                # EVENTO GLOBAL
+                # ---------------------------------------------
+
+                event = RealtimeEvent(
+
+                    modulo="mensajes",
+
+                    evento="mensaje_nuevo",
+
+                    usuario_id=
                         usuario_id,
 
-                    destinatario_id=
-                        destinatario_id,
+                    data={
+                        "tipo":
+                            "nuevo_mensaje",
 
-                    contenido=
-                        contenido,
-
+                        "mensaje":
+                            mensaje.as_dict(),
+                    },
                 )
 
+                await (
+                    realtime_manager
+                    .broadcast_usuario(
+                        usuario_id,
+                        event,
+                    )
+                )
+
+                if (
+                    destinatario_id
+                    != usuario_id
+                ):
+
+                    await (
+                        realtime_manager
+                        .broadcast_usuario(
+                            destinatario_id,
+                            event,
+                        )
+                    )
 
                 continue
-
 
             # =================================================
             # ARCHIVO
@@ -514,122 +533,147 @@ async def realtime_ws(
 
             if tipo == "archivo":
 
+                destinatario_id = (
+                    data.get(
+                        "destinatario_id"
+                    )
+                )
+
+                archivo_url = (
+                    data.get(
+                        "archivo_url"
+                    )
+                )
+
+                if not destinatario_id:
+                    continue
+
+                if not archivo_url:
+                    continue
+
                 try:
 
                     destinatario_id = int(
-                        data.get(
-                            "destinatario_id"
+                        destinatario_id
+                    )
+
+                except Exception:
+
+                    continue
+
+                try:
+
+                    mensaje = (
+                        await
+                        mensajes_manager
+                        .enviar_archivo_ws(
+                            usuario_id,
+                            destinatario_id,
+                            str(
+                                archivo_url
+                            ),
                         )
                     )
 
-                except (
-                    TypeError,
-                    ValueError,
-                ):
+                except Exception as exc:
+
+                    print(
+                        f"[REALTIME] Error guardando "
+                        f"archivo: {exc}",
+                        flush=True,
+                    )
 
                     continue
 
+                # ---------------------------------------------
+                # EVENTO GLOBAL
+                # ---------------------------------------------
 
-                archivo_url = data.get(
-                    "archivo_url"
-                )
+                event = RealtimeEvent(
 
+                    modulo="mensajes",
 
-                if (
-                    destinatario_id <= 0
-                    or not archivo_url
-                ):
+                    evento="archivo_nuevo",
 
-                    continue
-
-
-                archivo_url = str(
-                    archivo_url
-                ).strip()
-
-
-                if not archivo_url:
-
-                    continue
-
-
-                await mensajes_manager.enviar_archivo_ws(
-
-                    remitente_id=
+                    usuario_id=
                         usuario_id,
 
-                    destinatario_id=
-                        destinatario_id,
+                    data={
+                        "tipo":
+                            "nuevo_archivo",
 
-                    archivo_url=
-                        archivo_url,
-
+                        "mensaje":
+                            mensaje.as_dict(),
+                    },
                 )
 
+                await (
+                    realtime_manager
+                    .broadcast_usuario(
+                        usuario_id,
+                        event,
+                    )
+                )
+
+                if (
+                    destinatario_id
+                    != usuario_id
+                ):
+
+                    await (
+                        realtime_manager
+                        .broadcast_usuario(
+                            destinatario_id,
+                            event,
+                        )
+                    )
 
                 continue
-
-
-    except WebSocketDisconnect:
-
-        pass
-
-
-    except Exception as exc:
-
-        print(
-            "[REALTIME] Error usuario "
-            f"{usuario_id}: {exc}",
-            flush=True,
-        )
-
 
     finally:
 
         (
-            usuario_desconectado,
-            ultima_conexion,
+            usuario_id_desconectado,
+            era_ultima_conexion,
         ) = realtime_manager.disconnect(
             websocket
         )
 
+        # ====================================================
+        # OFFLINE
+        # ====================================================
 
         if (
-            usuario_desconectado is not None
-            and ultima_conexion
+            usuario_id_desconectado is not None
+            and era_ultima_conexion
         ):
 
-            offline = RealtimeEvent(
+            offline_event = RealtimeEvent(
 
-                modulo=
-                    "mensajes",
+                modulo="mensajes",
 
-                evento=
-                    "usuario_offline",
+                evento="usuario_offline",
 
                 usuario_id=
-                    usuario_desconectado,
+                    usuario_id_desconectado,
 
                 data={
-
                     "id":
-                        usuario_desconectado,
-
+                        usuario_id_desconectado,
                 },
-
             )
 
-
-            await realtime_manager.broadcast_global(
-                offline
+            await (
+                realtime_manager
+                .broadcast_global(
+                    offline_event
+                )
             )
-
 
             print(
-                "[REALTIME] Offline "
-                f"usuario={usuario_desconectado}",
+                f"[REALTIME] Offline "
+                f"usuario={usuario_id_desconectado}",
                 flush=True,
             )
-
 
         db.close()
