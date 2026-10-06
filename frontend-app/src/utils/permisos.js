@@ -26,7 +26,6 @@ import { useAuthStore } from "../store/authStore";
  */
 
 const MODULOS_EN_CONSTRUCCION = [
-  "fusiones",
 ];
 
 
