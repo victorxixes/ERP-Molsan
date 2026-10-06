@@ -108,6 +108,97 @@ def obtener_empleado(
 
 
 # =========================================================
+# OBTENER EMPLEADO PARA FICHA
+#
+# Devuelve los datos del empleado junto con:
+# - departamento_nombre
+# - seccion_nombre
+# - cargo_nombre
+#
+# No modificamos obtener_empleado() porque muchas otras
+# funciones del sistema necesitan el objeto SQLAlchemy
+# Empleado original.
+# =========================================================
+
+def obtener_empleado_ficha(
+    db: Session,
+    empleado_id: int
+):
+
+    resultado = (
+        db.query(
+            Empleado,
+
+            Departamento.nombre.label(
+                "departamento_nombre"
+            ),
+
+            Seccion.nombre.label(
+                "seccion_nombre"
+            ),
+
+            Cargo.nombre.label(
+                "cargo_nombre"
+            )
+        )
+        .outerjoin(
+            Departamento,
+            Empleado.departamento_id
+            == Departamento.id
+        )
+        .outerjoin(
+            Seccion,
+            Empleado.seccion_id
+            == Seccion.id
+        )
+        .outerjoin(
+            Cargo,
+            Empleado.cargo_id
+            == Cargo.id
+        )
+        .filter(
+            Empleado.id == empleado_id
+        )
+        .first()
+    )
+
+    if not resultado:
+        return None
+
+    empleado = resultado[0]
+
+    # -----------------------------------------------------
+    # CONVERTIR DATOS DEL EMPLEADO A DICCIONARIO
+    # -----------------------------------------------------
+
+    datos = {
+        columna.name: getattr(
+            empleado,
+            columna.name
+        )
+        for columna in Empleado.__table__.columns
+    }
+
+    # -----------------------------------------------------
+    # AÑADIR NOMBRES DE LOS MAESTROS
+    # -----------------------------------------------------
+
+    datos["departamento_nombre"] = (
+        resultado.departamento_nombre
+    )
+
+    datos["seccion_nombre"] = (
+        resultado.seccion_nombre
+    )
+
+    datos["cargo_nombre"] = (
+        resultado.cargo_nombre
+    )
+
+    return datos
+
+
+# =========================================================
 # OBTENER EMPLEADO POR USUARIO
 # =========================================================
 
