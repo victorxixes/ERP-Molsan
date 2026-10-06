@@ -11,8 +11,8 @@ import {
 } from "../../store/mensajesStore";
 
 import {
-  useMensajesWS,
-} from "../../hooks/useMensajesWS";
+  sendRealtime,
+} from "../../realtime/realtimeClient";
 
 import MensajeBubble from "../../components/mensajes/MensajeBubble";
 
@@ -74,16 +74,6 @@ export default function Mensajes({
     useMensajesStore(
       (state) =>
         state.limpiarNoLeidos
-    );
-
-
-  // =======================================================
-  // WEBSOCKET
-  // =======================================================
-
-  const wsRef =
-    useMensajesWS(
-      usuarioId
     );
 
 
@@ -276,26 +266,8 @@ export default function Mensajes({
       }
 
 
-      const ws =
-        wsRef.current;
-
-
-      if (
-        !ws ||
-        ws.readyState !==
-          WebSocket.OPEN
-      ) {
-
-        console.warn(
-          "[MENSAJES] WebSocket no conectado."
-        );
-
-        return;
-      }
-
-
-      ws.send(
-        JSON.stringify({
+      const enviado =
+        sendRealtime({
           tipo:
             "mensaje",
 
@@ -303,8 +275,18 @@ export default function Mensajes({
             Number(otroId),
 
           contenido,
-        })
-      );
+        });
+
+
+      if (!enviado) {
+
+        console.warn(
+          "[MENSAJES] No se pudo enviar el mensaje. WebSocket realtime no conectado."
+        );
+
+        return;
+
+      }
 
 
       setTexto("");
@@ -312,7 +294,6 @@ export default function Mensajes({
     }, [
       otroId,
       texto,
-      wsRef,
     ]);
 
 
@@ -355,32 +336,18 @@ export default function Mensajes({
       }
 
 
-      const ws =
-        wsRef.current;
+      sendRealtime({
 
+        tipo:
+          "typing",
 
-      if (
-        !ws ||
-        ws.readyState !==
-          WebSocket.OPEN
-      ) {
-        return;
-      }
+        destinatario_id:
+          Number(otroId),
 
-
-      ws.send(
-        JSON.stringify({
-          tipo:
-            "typing",
-
-          destinatario_id:
-            Number(otroId),
-        })
-      );
+      });
 
     }, [
       otroId,
-      wsRef,
     ]);
 
 
@@ -409,28 +376,6 @@ export default function Mensajes({
         }
 
 
-        const ws =
-          wsRef.current;
-
-
-        if (
-          !ws ||
-          ws.readyState !==
-            WebSocket.OPEN
-        ) {
-
-          console.warn(
-            "[MENSAJES] WebSocket no conectado."
-          );
-
-          event.target.value =
-            "";
-
-          return;
-
-        }
-
-
         const formData =
           new FormData();
 
@@ -446,6 +391,10 @@ export default function Mensajes({
 
 
         try {
+
+          // =================================================
+          // SUBIR ARCHIVO
+          // =================================================
 
           const response =
             await fetch(
@@ -499,8 +448,13 @@ export default function Mensajes({
           }
 
 
-          ws.send(
-            JSON.stringify({
+          // =================================================
+          // ENVIAR POR REALTIME GLOBAL
+          // =================================================
+
+          const enviado =
+            sendRealtime({
+
               tipo:
                 "archivo",
 
@@ -509,9 +463,17 @@ export default function Mensajes({
 
               archivo_url:
                 data.archivo_url,
-            })
-          );
 
+            });
+
+
+          if (!enviado) {
+
+            throw new Error(
+              "No existe conexión realtime para enviar el archivo."
+            );
+
+          }
 
         } catch (error) {
 
@@ -519,7 +481,6 @@ export default function Mensajes({
             "[MENSAJES] Error adjunto:",
             error
           );
-
 
         } finally {
 
@@ -535,7 +496,6 @@ export default function Mensajes({
       },
       [
         otroId,
-        wsRef,
       ]
     );
 
