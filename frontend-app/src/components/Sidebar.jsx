@@ -1,12 +1,21 @@
 import MODULOS_ERP from "../config/modulos";
 import { NavLink } from "react-router-dom";
-import { useMemo, useState, useEffect, useRef } from "react";
+import {
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 
 import { puedeVerModulo } from "../utils/permisos";
 
 import { useAuthStore } from "../store/authStore";
 import { useMensajesStore } from "../store/mensajesStore";
-import { useNotificacionesStore } from "../store/notificacionesStore";
+import {
+  useNotificacionesStore,
+} from "../store/notificacionesStore";
+
+import Notificaciones from "../pages/notificaciones/Notificaciones.jsx";
 
 
 /**
@@ -75,7 +84,7 @@ const iconos = {
       <circle cx="12" cy="12" r="9" />
       <path d="M3 12h18" />
       <path d="M12 3c2.5 2.4 4 5.5 4 9s-1.5 6.6-4 9" />
-      <path d="M12 3c-2.5 2.4-4 5.5-4 9s1.5 6.6 4 9" />
+      <path d="M12 3c-2.5-2.4-4-5.5-4 9s1.5 6.6 4 9" />
     </>
   ),
 
@@ -105,9 +114,27 @@ const iconos = {
     <>
       <path d="M4 19V5" />
       <path d="M4 19h16" />
-      <rect x="7" y="11" width="2.5" height="5" rx=".5" />
-      <rect x="11" y="8" width="2.5" height="8" rx=".5" />
-      <rect x="15" y="5" width="2.5" height="11" rx=".5" />
+      <rect
+        x="7"
+        y="11"
+        width="2.5"
+        height="5"
+        rx=".5"
+      />
+      <rect
+        x="11"
+        y="8"
+        width="2.5"
+        height="8"
+        rx=".5"
+      />
+      <rect
+        x="15"
+        y="5"
+        width="2.5"
+        height="11"
+        rx=".5"
+      />
     </>
   ),
 
@@ -289,7 +316,7 @@ const ChevronIcon = ({ open }) => (
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    <path d="m6 9 6 6 6-6" />
+    <path d="m6 9 6 6-6-6" />
   </svg>
 );
 
@@ -402,6 +429,9 @@ export default function Sidebar() {
   const [masAbierto, setMasAbierto] =
     useState(false);
 
+  const [notificacionesAbiertas, setNotificacionesAbiertas] =
+    useState(false);
+
   const masRef = useRef(null);
 
 
@@ -462,7 +492,59 @@ export default function Sidebar() {
 
   /**
    * ==========================================================
+   * ESC — CERRAR MODAL NOTIFICACIONES
+   * ==========================================================
+   */
+
+  useEffect(() => {
+
+    if (!notificacionesAbiertas) {
+      return;
+    }
+
+    const handleKeyDown = (
+      event
+    ) => {
+
+      if (
+        event.key === "Escape"
+      ) {
+        setNotificacionesAbiertas(
+          false
+        );
+      }
+
+    };
+
+    document.addEventListener(
+      "keydown",
+      handleKeyDown
+    );
+
+    return () => {
+
+      document.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+
+    };
+
+  }, [
+    notificacionesAbiertas,
+  ]);
+
+
+  /**
+   * ==========================================================
    * MÓDULOS PRINCIPALES
+   *
+   * IMPORTANTE:
+   *
+   * NOTIFICACIONES YA NO ES UN MÓDULO
+   * DE NAVEGACIÓN.
+   *
+   * SE ABRE DESDE LA CAMPANA.
    * ==========================================================
    */
 
@@ -517,8 +599,7 @@ export default function Sidebar() {
       icon: "chat",
       badge: mensajesNoLeidos,
     },
-    
-   
+
     {
       key: "fusiones",
       to: "/fusiones",
@@ -526,30 +607,12 @@ export default function Sidebar() {
       icon: "fusion",
     },
 
-    {
-      key: "notificaciones",
-      to: "/notificaciones",
-      label: "Notificaciones",
-      icon: "bell",
-      badge: unreadCount,
-    },
-        
   ];
 
 
   /**
    * ==========================================================
    * MÓDULOS SECUNDARIOS
-   *
-   * IMPORTANTE:
-   *
-   * /auditoria
-   * /seguridad
-   * /logs
-   * /maestros
-   * /paneltecnico
-   *
-   * son las rutas reales definidas en App.jsx.
    * ==========================================================
    */
 
@@ -562,20 +625,20 @@ export default function Sidebar() {
       icon: "chart",
     },
 
-        {
+    {
       key: "informes",
       to: "/informes",
       label: "Informes",
       icon: "chart",
-     },
-    
+    },
+
     {
       key: "utilidades",
       to: "/herramientas/utilidades",
       label: "Utilidades",
       icon: "cog",
     },
-    
+
     {
       key: "seguridad",
       to: "/seguridad",
@@ -624,7 +687,6 @@ export default function Sidebar() {
     [
       empleado,
       mensajesNoLeidos,
-      unreadCount,
     ]
   );
 
@@ -637,7 +699,9 @@ export default function Sidebar() {
             modulo.key
           )
       ),
-    [empleado]
+    [
+      empleado,
+    ]
   );
 
 
@@ -649,487 +713,706 @@ export default function Sidebar() {
 
   return (
 
-    <header
-      className="
-        w-full
-        bg-[var(--erp-surface)]
-        border-b
-        border-[var(--erp-border)]
-        shadow-sm
-        relative
-        z-50
-      "
-    >
+    <>
 
-      <div
+      <header
         className="
-          max-w-[1800px]
-          mx-auto
-          px-4
-          lg:px-6
-          py-2
-          flex
-          items-center
-          gap-4
-          min-w-0
+          w-full
+          bg-[var(--erp-surface)]
+          border-b
+          border-[var(--erp-border)]
+          shadow-sm
+          relative
+          z-50
         "
       >
 
-        {/* ====================================================
-            MARCA
-            ==================================================== */}
-
         <div
           className="
+            max-w-[1800px]
+            mx-auto
+            px-4
+            lg:px-6
+            py-2
             flex
             items-center
-            gap-3
-            flex-shrink-0
+            gap-4
+            min-w-0
           "
         >
 
+          {/* ====================================================
+              MARCA
+              ==================================================== */}
+
           <div
             className="
-              w-9
-              h-9
-              rounded-xl
-              bg-white
               flex
               items-center
-              justify-center
-              overflow-hidden
+              gap-3
               flex-shrink-0
             "
           >
 
-            <img
-              src="/img/logo.jpg"
-              alt="CancelaGest"
+            <div
               className="
-                w-full
-                h-full
-                object-contain
+                w-9
+                h-9
+                rounded-xl
+                bg-white
+                flex
+                items-center
+                justify-center
+                overflow-hidden
+                flex-shrink-0
               "
-            />
+            >
+
+              <img
+                src="/img/logo.jpg"
+                alt="CancelaGest"
+                className="
+                  w-full
+                  h-full
+                  object-contain
+                "
+              />
+
+            </div>
+
+
+            <div className="hidden lg:block">
+
+              <div
+                className="
+                  text-sm
+                  font-bold
+                  text-[var(--erp-text)]
+                  leading-tight
+                "
+              >
+                CancelaGest
+              </div>
+
+              <div
+                className="
+                  text-[11px]
+                  text-[var(--erp-text-soft)]
+                  leading-tight
+                "
+              >
+                Gestión empresarial
+              </div>
+
+            </div>
 
           </div>
 
 
-          <div className="hidden lg:block">
+          {/* ====================================================
+              NAVEGACIÓN
+              ==================================================== */}
 
-            <div
+          <nav
+            className="
+              flex
+              items-center
+              gap-1.5
+              flex-1
+              min-w-0
+              overflow-visible
+              pb-0.5
+            "
+          >
+
+            {/* ==================================================
+                MÓDULOS PRINCIPALES
+                ================================================== */}
+
+            {visiblesPrincipales.map(
+              (modulo) => (
+
+                <TopNavItem
+                  key={modulo.key}
+                  to={modulo.to}
+                  label={modulo.label}
+                  icon={modulo.icon}
+                  badge={
+                    modulo.badge || 0
+                  }
+                />
+
+              )
+            )}
+
+
+            {/* ==================================================
+                MÁS
+                ================================================== */}
+
+            {visiblesSecundarios.length >
+              0 && (
+
+              <div
+                ref={masRef}
+                className="
+                  relative
+                  flex-shrink-0
+                "
+              >
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setMasAbierto(
+                      (valor) =>
+                        !valor
+                    )
+                  }
+                  aria-expanded={
+                    masAbierto
+                  }
+                  aria-haspopup="menu"
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    px-3
+                    py-2
+                    rounded-xl
+                    whitespace-nowrap
+                    text-sm
+                    font-medium
+                    border
+                    border-[var(--erp-border)]
+                    bg-white
+                    text-[var(--erp-text)]
+                    hover:bg-[var(--erp-primary-soft)]
+                    hover:text-[var(--erp-primary)]
+                    hover:border-[var(--erp-primary)]
+                    transition-all
+                    duration-200
+                    shadow-sm
+                  "
+                >
+
+                  <span>Más</span>
+
+                  <ChevronIcon
+                    open={masAbierto}
+                  />
+
+                </button>
+
+
+                {/* ==================================================
+                    DROPDOWN
+                    ================================================== */}
+
+                {masAbierto && (
+
+                  <div
+                    role="menu"
+                    className="
+                      absolute
+                      top-[calc(100%+8px)]
+                      right-0
+                      w-[250px]
+                      p-2
+                      rounded-2xl
+                      bg-white
+                      border
+                      border-[var(--erp-border)]
+                      shadow-xl
+                      z-[100]
+                    "
+                  >
+
+                    <div
+                      className="
+                        px-3
+                        pt-2
+                        pb-2
+                        text-[10px]
+                        font-bold
+                        uppercase
+                        tracking-[0.14em]
+                        text-[var(--erp-text-soft)]
+                      "
+                    >
+                      Más módulos
+                    </div>
+
+
+                    <div
+                      className="
+                        grid
+                        gap-1
+                      "
+                    >
+
+                      {visiblesSecundarios.map(
+                        (modulo) => (
+
+                          <NavLink
+                            key={modulo.key}
+                            to={modulo.to}
+                            role="menuitem"
+                            onClick={() =>
+                              setMasAbierto(
+                                false
+                              )
+                            }
+                            className={({
+                              isActive,
+                            }) =>
+                              `
+                              flex
+                              items-center
+                              gap-3
+                              px-3
+                              py-2.5
+                              rounded-xl
+                              text-sm
+                              font-medium
+                              transition-all
+                              duration-150
+
+                              ${
+                                isActive
+                                  ? `
+                                    bg-[var(--erp-primary)]
+                                    text-white
+                                  `
+                                  : `
+                                    text-[var(--erp-text)]
+                                    hover:bg-[var(--erp-primary-soft)]
+                                    hover:text-[var(--erp-primary)]
+                                  `
+                              }
+                              `
+                            }
+                          >
+
+                            <NavIcon
+                              name={
+                                modulo.icon
+                              }
+                            />
+
+                            <span
+                              className="
+                                flex-1
+                              "
+                            >
+                              {
+                                modulo.label
+                              }
+                            </span>
+
+
+                            {modulo.badge >
+                              0 && (
+
+                              <span
+                                className="
+                                  min-w-[19px]
+                                  h-[19px]
+                                  px-1
+                                  rounded-full
+                                  bg-red-500
+                                  text-white
+                                  text-[10px]
+                                  font-bold
+                                  flex
+                                  items-center
+                                  justify-center
+                                "
+                              >
+                                {
+                                  modulo.badge
+                                }
+                              </span>
+
+                            )}
+
+                          </NavLink>
+
+                        )
+                      )}
+
+                    </div>
+
+                  </div>
+
+                )}
+
+              </div>
+
+            )}
+
+          </nav>
+
+
+          {/* ====================================================
+              ACCIONES DERECHA
+              ==================================================== */}
+
+          <div
+            className="
+              flex
+              items-center
+              gap-1.5
+              flex-shrink-0
+              pl-2
+              border-l
+              border-[var(--erp-border)]
+            "
+          >
+
+            {/* ==================================================
+                CAMPANA — ABRIR NOTIFICACIONES
+                ================================================== */}
+
+            <button
+              type="button"
+              title="Notificaciones"
+              aria-label="Abrir notificaciones"
+              aria-haspopup="dialog"
+              aria-expanded={
+                notificacionesAbiertas
+              }
+              onClick={() =>
+                setNotificacionesAbiertas(
+                  true
+                )
+              }
               className="
-                text-sm
-                font-bold
+                relative
+                w-9
+                h-9
+                rounded-xl
+                border
+                border-[var(--erp-border)]
+                bg-white
                 text-[var(--erp-text)]
-                leading-tight
+                flex
+                items-center
+                justify-center
+                hover:bg-[var(--erp-primary-soft)]
+                hover:text-[var(--erp-primary)]
+                hover:border-[var(--erp-primary)]
+                transition
+                active:scale-[0.96]
               "
             >
-              CancelaGest
-            </div>
 
-            <div
+              <BellIcon />
+
+              {unreadCount > 0 && (
+
+                <span
+                  className="
+                    absolute
+                    -top-1
+                    -right-1
+                    min-w-[17px]
+                    h-[17px]
+                    px-1
+                    rounded-full
+                    bg-red-500
+                    text-white
+                    text-[9px]
+                    font-bold
+                    flex
+                    items-center
+                    justify-center
+                    border-2
+                    border-[var(--erp-surface)]
+                  "
+                >
+                  {unreadCount}
+                </span>
+
+              )}
+
+            </button>
+
+
+            {/* ==================================================
+                PERFIL
+                ================================================== */}
+
+            <button
+              type="button"
+              onClick={() =>
+                useAuthStore
+                  .getState()
+                  .setPerfilModal(
+                    safeUser.id
+                  )
+              }
+              title="Mi perfil"
               className="
-                text-[11px]
-                text-[var(--erp-text-soft)]
-                leading-tight
+                w-9
+                h-9
+                rounded-xl
+                border
+                border-[var(--erp-border)]
+                bg-white
+                text-[var(--erp-text)]
+                flex
+                items-center
+                justify-center
+                hover:bg-[var(--erp-primary-soft)]
+                hover:text-[var(--erp-primary)]
+                hover:border-[var(--erp-primary)]
+                transition
+                active:scale-[0.96]
               "
             >
-              Gestión empresarial
-            </div>
+
+              <ProfileIcon />
+
+            </button>
+
+
+            {/* ==================================================
+                CERRAR SESIÓN
+                ================================================== */}
+
+            <button
+              type="button"
+              onClick={logout}
+              title="Cerrar sesión"
+              className="
+                w-9
+                h-9
+                rounded-xl
+                border
+                border-[var(--erp-border)]
+                bg-white
+                text-red-500
+                flex
+                items-center
+                justify-center
+                hover:bg-red-50
+                hover:border-red-200
+                transition
+                active:scale-[0.96]
+              "
+            >
+
+              <LogoutIcon />
+
+            </button>
 
           </div>
 
         </div>
 
+      </header>
 
-        {/* ====================================================
-            NAVEGACIÓN
-            ==================================================== */}
 
-        <nav
+      {/* ========================================================
+          MODAL NOTIFICACIONES
+      ======================================================== */}
+
+      {notificacionesAbiertas && (
+
+        <div
           className="
+            fixed
+            inset-0
+            z-[1000]
             flex
-            items-center
-            gap-1.5
-            flex-1
-            min-w-0
-            overflow-visible
-            pb-0.5
+            items-start
+            justify-center
+            px-4
+            pt-20
+            sm:pt-24
+            bg-slate-950/35
+            backdrop-blur-[2px]
           "
+          role="dialog"
+          aria-modal="true"
+          aria-label="Notificaciones"
+          onMouseDown={(event) => {
+
+            if (
+              event.target ===
+              event.currentTarget
+            ) {
+              setNotificacionesAbiertas(
+                false
+              );
+            }
+
+          }}
         >
 
-          {/* ==================================================
-              MÓDULOS PRINCIPALES
-              ================================================== */}
+          <div
+            className="
+              relative
+              w-full
+              max-w-[900px]
+              max-h-[calc(100vh-120px)]
+              overflow-hidden
+              rounded-3xl
+              border
+              border-[var(--erp-border)]
+              bg-[var(--erp-surface)]
+              shadow-2xl
+              animate-fade-in
+            "
+          >
 
-          {visiblesPrincipales.map(
-            (modulo) => (
-
-              <TopNavItem
-                key={modulo.key}
-                to={modulo.to}
-                label={modulo.label}
-                icon={modulo.icon}
-                badge={
-                  modulo.badge || 0
-                }
-              />
-
-            )
-          )}
-
-
-          {/* ==================================================
-              MÁS
-              ================================================== */}
-
-          {visiblesSecundarios.length >
-            0 && (
+            {/* ==================================================
+                CABECERA MODAL
+                ================================================== */}
 
             <div
-              ref={masRef}
               className="
-                relative
-                flex-shrink-0
+                flex
+                items-center
+                justify-between
+                gap-4
+                px-5
+                py-4
+                border-b
+                border-[var(--erp-border)]
+                bg-[var(--erp-surface)]
               "
             >
 
-              <button
-                type="button"
-                onClick={() =>
-                  setMasAbierto(
-                    (valor) =>
-                      !valor
-                  )
-                }
-                aria-expanded={
-                  masAbierto
-                }
-                aria-haspopup="menu"
+              <div
                 className="
                   flex
                   items-center
-                  gap-2
-                  px-3
-                  py-2
-                  rounded-xl
-                  whitespace-nowrap
-                  text-sm
-                  font-medium
-                  border
-                  border-[var(--erp-border)]
-                  bg-white
-                  text-[var(--erp-text)]
-                  hover:bg-[var(--erp-primary-soft)]
-                  hover:text-[var(--erp-primary)]
-                  hover:border-[var(--erp-primary)]
-                  transition-all
-                  duration-200
-                  shadow-sm
+                  gap-3
+                  min-w-0
                 "
               >
 
-                <span>Más</span>
+                <div
+                  className="
+                    w-10
+                    h-10
+                    rounded-xl
+                    bg-[var(--erp-primary-soft)]
+                    text-[var(--erp-primary)]
+                    flex
+                    items-center
+                    justify-center
+                    flex-shrink-0
+                  "
+                >
 
-                <ChevronIcon
-                  open={masAbierto}
-                />
+                  <BellIcon />
 
-              </button>
-
-
-              {/* ==================================================
-                  DROPDOWN
-                  ================================================== */}
-
-              {masAbierto && (
+                </div>
 
                 <div
-                  role="menu"
                   className="
-                    absolute
-                    top-[calc(100%+8px)]
-                    right-0
-                    w-[250px]
-                    p-2
-                    rounded-2xl
-                    bg-white
-                    border
-                    border-[var(--erp-border)]
-                    shadow-xl
-                    z-[100]
+                    min-w-0
                   "
                 >
 
                   <div
                     className="
-                      px-3
-                      pt-2
-                      pb-2
-                      text-[10px]
-                      font-bold
-                      uppercase
-                      tracking-[0.14em]
-                      text-[var(--erp-text-soft)]
+                      text-base
+                      font-semibold
+                      text-[var(--erp-text)]
+                      truncate
                     "
                   >
-                    Más módulos
+                    Notificaciones
                   </div>
-
 
                   <div
                     className="
-                      grid
-                      gap-1
+                      text-xs
+                      text-[var(--erp-text-soft)]
                     "
                   >
-
-                    {visiblesSecundarios.map(
-                      (modulo) => (
-
-                        <NavLink
-                          key={modulo.key}
-                          to={modulo.to}
-                          role="menuitem"
-                          onClick={() =>
-                            setMasAbierto(
-                              false
-                            )
-                          }
-                          className={({
-                            isActive,
-                          }) =>
-                            `
-                            flex
-                            items-center
-                            gap-3
-                            px-3
-                            py-2.5
-                            rounded-xl
-                            text-sm
-                            font-medium
-                            transition-all
-                            duration-150
-
-                            ${
-                              isActive
-                                ? `
-                                  bg-[var(--erp-primary)]
-                                  text-white
-                                `
-                                : `
-                                  text-[var(--erp-text)]
-                                  hover:bg-[var(--erp-primary-soft)]
-                                  hover:text-[var(--erp-primary)]
-                                `
-                            }
-                            `
-                          }
-                        >
-
-                          <NavIcon
-                            name={
-                              modulo.icon
-                            }
-                          />
-
-                          <span
-                            className="
-                              flex-1
-                            "
-                          >
-                            {
-                              modulo.label
-                            }
-                          </span>
-
-
-                          {modulo.badge >
-                            0 && (
-
-                            <span
-                              className="
-                                min-w-[19px]
-                                h-[19px]
-                                px-1
-                                rounded-full
-                                bg-red-500
-                                text-white
-                                text-[10px]
-                                font-bold
-                                flex
-                                items-center
-                                justify-center
-                              "
-                            >
-                              {
-                                modulo.badge
-                              }
-                            </span>
-
-                          )}
-
-                        </NavLink>
-
-                      )
-                    )}
-
+                    Avisos y actividad del sistema
                   </div>
 
                 </div>
 
-              )}
-
-            </div>
-
-          )}
-
-        </nav>
+              </div>
 
 
-        {/* ====================================================
-            ACCIONES DERECHA
-            ==================================================== */}
-
-        <div
-          className="
-            flex
-            items-center
-            gap-1.5
-            flex-shrink-0
-            pl-2
-            border-l
-            border-[var(--erp-border)]
-          "
-        >
-
-          {/* NOTIFICACIONES */}
-
-          <button
-            type="button"
-            title="Notificaciones"
-            className="
-              relative
-              w-9
-              h-9
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-white
-              text-[var(--erp-text)]
-              flex
-              items-center
-              justify-center
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              hover:border-[var(--erp-primary)]
-              transition
-              active:scale-[0.96]
-            "
-          >
-
-            <BellIcon />
-
-            {unreadCount > 0 && (
-
-              <span
+              <button
+                type="button"
+                onClick={() =>
+                  setNotificacionesAbiertas(
+                    false
+                  )
+                }
+                aria-label="Cerrar notificaciones"
+                title="Cerrar"
                 className="
-                  absolute
-                  -top-1
-                  -right-1
-                  min-w-[17px]
-                  h-[17px]
-                  px-1
-                  rounded-full
-                  bg-red-500
-                  text-white
-                  text-[9px]
-                  font-bold
+                  w-9
+                  h-9
+                  rounded-xl
+                  border
+                  border-[var(--erp-border)]
+                  bg-white
+                  text-[var(--erp-text-soft)]
                   flex
                   items-center
                   justify-center
-                  border-2
-                  border-[var(--erp-surface)]
+                  hover:bg-[var(--erp-primary-soft)]
+                  hover:text-[var(--erp-primary)]
+                  hover:border-[var(--erp-primary)]
+                  transition
+                  flex-shrink-0
                 "
               >
-                {unreadCount}
-              </span>
 
-            )}
+                <svg
+                  className="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  aria-hidden="true"
+                >
+                  <path d="M6 6l12 12" />
+                  <path d="M18 6 6 18" />
+                </svg>
 
-          </button>
+              </button>
 
-
-          {/* PERFIL */}
-
-          <button
-            type="button"
-            onClick={() =>
-              useAuthStore
-                .getState()
-                .setPerfilModal(
-                  safeUser.id
-                )
-            }
-            title="Mi perfil"
-            className="
-              w-9
-              h-9
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-white
-              text-[var(--erp-text)]
-              flex
-              items-center
-              justify-center
-              hover:bg-[var(--erp-primary-soft)]
-              hover:text-[var(--erp-primary)]
-              hover:border-[var(--erp-primary)]
-              transition
-              active:scale-[0.96]
-            "
-          >
-
-            <ProfileIcon />
-
-          </button>
+            </div>
 
 
-          {/* CERRAR SESIÓN */}
+            {/* ==================================================
+                CONTENIDO
+                ================================================== */}
 
-          <button
-            type="button"
-            onClick={logout}
-            title="Cerrar sesión"
-            className="
-              w-9
-              h-9
-              rounded-xl
-              border
-              border-[var(--erp-border)]
-              bg-white
-              text-red-500
-              flex
-              items-center
-              justify-center
-              hover:bg-red-50
-              hover:border-red-200
-              transition
-              active:scale-[0.96]
-            "
-          >
+            <div
+              className="
+                overflow-y-auto
+                max-h-[calc(100vh-195px)]
+                p-4
+                sm:p-5
+              "
+            >
 
-            <LogoutIcon />
+              <Notificaciones />
 
-          </button>
+            </div>
+
+          </div>
 
         </div>
 
-      </div>
+      )}
 
-    </header>
+    </>
 
   );
 }
