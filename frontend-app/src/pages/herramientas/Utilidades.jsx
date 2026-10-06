@@ -115,7 +115,7 @@ export default function Utilidades() {
           icon="📚"
           titulo="Registros de la Propiedad"
           descripcion="Gestionar registros de la propiedad y su información."
-          link="/herramientas/utilidades/registros-propiedad"
+          link="/herramientas/registros-propiedad"
         />
 
 
