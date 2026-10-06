@@ -524,7 +524,6 @@ export default function Sidebar() {
       to: "/fusiones",
       label: "Fusiones",
       icon: "fusion",
-      badge: unreadCount,
     },
 
     {
