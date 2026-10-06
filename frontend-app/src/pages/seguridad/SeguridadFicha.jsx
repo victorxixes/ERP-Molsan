@@ -7,6 +7,8 @@ import {
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 
+import MODULOS_ERP from "../../config/modulos";
+
 
 /* ============================================================
    HELPERS
@@ -425,7 +427,17 @@ export default function SeguridadFicha({
       empleado?.id
     );
 
+/* ============================================================
+   PERMISOS ESTÁNDAR DE LOS MÓDULOS
+============================================================ */
 
+const PERMISOS_ESTANDAR = [
+  "ver",
+  "crear",
+  "editar",
+  "eliminar",
+];
+  
   const empleadoValido =
     empleado !== null &&
     empleadoIdSeguro !== null &&
@@ -525,96 +537,153 @@ export default function SeguridadFicha({
      PERMISOS GLOBALES
   ============================================================ */
 
-  const permisosGlobales =
-    useMemo(() => {
+  /* ============================================================
+   PERMISOS GLOBALES
+============================================================ */
 
-      const resultado = {};
+const permisosGlobales =
+  useMemo(() => {
 
-
-      arraySeguro(
-        permisos
-      ).forEach(
-        (permiso) => {
-
-          if (
-            !objetoSeguro(
-              permiso
-            )
-          ) {
-            return;
-          }
+    const resultado = {};
 
 
-          const modulo =
-            textoSeguro(
-              permiso.modulo
-            ).trim();
+    /* --------------------------------------------------------
+       1. PERMISOS EXISTENTES EN BACKEND
+    -------------------------------------------------------- */
 
+    arraySeguro(
+      permisos
+    ).forEach(
+      (permiso) => {
 
-          const nombre =
-            textoSeguro(
-              permiso.permiso
-            ).trim();
-
-
-          if (
-            !modulo ||
-            !nombre
-          ) {
-            return;
-          }
-
-
-          if (
-            !Array.isArray(
-              resultado[modulo]
-            )
-          ) {
-            resultado[modulo] = [];
-          }
-
-
-          if (
-            !resultado[modulo].includes(
-              nombre
-            )
-          ) {
-            resultado[modulo].push(
-              nombre
-            );
-          }
-
+        if (
+          !objetoSeguro(
+            permiso
+          )
+        ) {
+          return;
         }
-      );
 
+        const modulo =
+          textoSeguro(
+            permiso.modulo
+          ).trim();
 
-      Object.keys(
-        resultado
-      ).forEach(
-        (modulo) => {
+        const nombre =
+          textoSeguro(
+            permiso.permiso
+          ).trim();
 
-          resultado[modulo].sort(
-            (a, b) =>
-              a.localeCompare(
-                b,
-                "es",
-                {
-                  sensitivity:
-                    "base",
-                }
-              )
+        if (
+          !modulo ||
+          !nombre
+        ) {
+          return;
+        }
+
+        if (
+          !Array.isArray(
+            resultado[modulo]
+          )
+        ) {
+          resultado[modulo] = [];
+        }
+
+        if (
+          !resultado[modulo].includes(
+            nombre
+          )
+        ) {
+          resultado[modulo].push(
+            nombre
           );
+        }
+
+      }
+    );
+
+
+    /* --------------------------------------------------------
+       2. CATÁLOGO CENTRAL DEL ERP
+       
+       Todo módulo registrado en MODULOS_ERP debe
+       disponer de permisos estándar aunque todavía
+       no exista una fila específica en permisos.
+    -------------------------------------------------------- */
+
+    arraySeguro(
+      MODULOS_ERP
+    ).forEach(
+      (modulo) => {
+
+        if (
+          !modulo ||
+          typeof modulo !== "object" ||
+          typeof modulo.key !== "string"
+        ) {
+          return;
+        }
+
+        const nombreModulo =
+          modulo.key.trim();
+
+        if (
+          !nombreModulo
+        ) {
+          return;
+        }
+
+        if (
+          !Array.isArray(
+            resultado[nombreModulo]
+          ) ||
+          resultado[nombreModulo].length === 0
+        ) {
+
+          resultado[nombreModulo] = [
+            ...PERMISOS_ESTANDAR,
+          ];
 
         }
-      );
+
+      }
+    );
 
 
-      return resultado;
+    /* --------------------------------------------------------
+       3. ORDENAR PERMISOS
+    -------------------------------------------------------- */
 
-    }, [
-      permisos,
-    ]);
+    Object.keys(
+      resultado
+    ).forEach(
+      (modulo) => {
 
+        resultado[modulo] = Array.from(
+          new Set(
+            resultado[modulo]
+          )
+        ).sort(
+          (a, b) =>
+            a.localeCompare(
+              b,
+              "es",
+              {
+                sensitivity:
+                  "base",
+              }
+            )
+        );
+
+      }
+    );
+
+
+    return resultado;
+
+  }, [
+    permisos,
+  ]);
 
   /* ============================================================
      MÓDULOS DISPONIBLES
