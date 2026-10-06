@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import (
     APIRouter,
@@ -41,8 +41,8 @@ class EntidadBancariaBase(BaseModel):
         max_length=50,
     )
 
-    lei: str | None = Field(
-        default=None,
+    lei: Optional[str] = Field(
+        None,
         max_length=50,
     )
 
@@ -58,8 +58,8 @@ class EntidadBancariaBase(BaseModel):
         max_length=150,
     )
 
-    direccion: str | None = Field(
-        default=None,
+    direccion: Optional[str] = Field(
+        None,
         max_length=400,
     )
 
@@ -85,7 +85,6 @@ class EntidadBancariaResponse(
 
     class Config:
         orm_mode = True
-        from_attributes = True
 
 
 # ============================================================
@@ -109,6 +108,21 @@ def limpiar_opcional(valor):
     )
 
     return texto or None
+
+
+def entidad_a_dict(
+    entidad: EntidadBancaria,
+):
+
+    return {
+        "id": entidad.id,
+        "codigo_europeo": entidad.codigo_europeo,
+        "lei": entidad.lei,
+        "nombre": entidad.nombre,
+        "categoria": entidad.categoria,
+        "direccion": entidad.direccion,
+        "activo": entidad.activo,
+    }
 
 
 # ============================================================
@@ -140,17 +154,9 @@ def listar_entidades_bancarias(
     )
 
     return [
-        {
-            "id": registro.id,
-            "codigo_europeo": (
-                registro.codigo_europeo
-            ),
-            "lei": registro.lei,
-            "nombre": registro.nombre,
-            "categoria": registro.categoria,
-            "direccion": registro.direccion,
-            "activo": registro.activo,
-        }
+        entidad_a_dict(
+            registro
+        )
         for registro in registros
     ]
 
@@ -189,6 +195,31 @@ def crear_entidad_bancaria(
     )
 
     # --------------------------------------------------------
+    # VALIDACIONES
+    # --------------------------------------------------------
+
+    if not codigo:
+
+        raise HTTPException(
+            status_code=400,
+            detail="El Código Europeo es obligatorio.",
+        )
+
+    if not nombre:
+
+        raise HTTPException(
+            status_code=400,
+            detail="El nombre es obligatorio.",
+        )
+
+    if not categoria:
+
+        raise HTTPException(
+            status_code=400,
+            detail="La categoría es obligatoria.",
+        )
+
+    # --------------------------------------------------------
     # BUSCAR EXISTENTE
     # --------------------------------------------------------
 
@@ -204,7 +235,7 @@ def crear_entidad_bancaria(
     )
 
     # --------------------------------------------------------
-    # REACTIVAR SI ESTABA INACTIVA
+    # REACTIVAR
     # --------------------------------------------------------
 
     if existente:
@@ -237,7 +268,9 @@ def crear_entidad_bancaria(
                     ),
                 )
 
-            return existente
+            return entidad_a_dict(
+                existente
+            )
 
         raise HTTPException(
             status_code=409,
@@ -284,11 +317,16 @@ def crear_entidad_bancaria(
             ),
         )
 
-    return nueva
+    return entidad_a_dict(
+        nueva
+    )
 
 
 # ============================================================
 # POST /api/entidades-bancarias/importar-excel
+#
+# IMPORTANTE:
+# Esta ruta se declara antes de /{entidad_id}
 # ============================================================
 
 @router.post(
@@ -298,6 +336,10 @@ async def importar_entidades_bancarias_excel(
     fichero: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
+
+    # --------------------------------------------------------
+    # NOMBRE
+    # --------------------------------------------------------
 
     nombre_archivo = (
         fichero.filename or ""
@@ -317,7 +359,7 @@ async def importar_entidades_bancarias_excel(
         )
 
     # --------------------------------------------------------
-    # LEER ARCHIVO
+    # LEER
     # --------------------------------------------------------
 
     try:
@@ -346,10 +388,14 @@ async def importar_entidades_bancarias_excel(
 
     try:
 
-        return importar_excel_entidades_bancarias(
-            contenido,
-            db,
+        resultado = (
+            importar_excel_entidades_bancarias(
+                contenido,
+                db,
+            )
         )
+
+        return resultado
 
     except ValueError as exc:
 
@@ -428,6 +474,31 @@ def actualizar_entidad_bancaria(
     )
 
     # --------------------------------------------------------
+    # VALIDACIONES
+    # --------------------------------------------------------
+
+    if not codigo:
+
+        raise HTTPException(
+            status_code=400,
+            detail="El Código Europeo es obligatorio.",
+        )
+
+    if not nombre:
+
+        raise HTTPException(
+            status_code=400,
+            detail="El nombre es obligatorio.",
+        )
+
+    if not categoria:
+
+        raise HTTPException(
+            status_code=400,
+            detail="La categoría es obligatoria.",
+        )
+
+    # --------------------------------------------------------
     # DUPLICADO
     # --------------------------------------------------------
 
@@ -485,7 +556,9 @@ def actualizar_entidad_bancaria(
             ),
         )
 
-    return entidad
+    return entidad_a_dict(
+        entidad
+    )
 
 
 # ============================================================
