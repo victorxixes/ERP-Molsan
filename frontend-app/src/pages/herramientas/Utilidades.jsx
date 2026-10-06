@@ -91,7 +91,7 @@ export default function Utilidades() {
         <Card
           icon="🏦"
           titulo="Entidades Bancarias"
-          descripcion="Gestión de entidades bancarias reguladas en España"
+          descripcion="Gestionar entidades bancarias, códigos europeos, LEI, categorías y direcciones."
           link="/herramientas/EntidadesBancarias"
         />
 
