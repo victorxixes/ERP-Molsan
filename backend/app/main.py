@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 import os
 
 
@@ -65,35 +66,56 @@ from backend.app.expedientes.models import Expediente
 # ACTIVIDADES DE EXPEDIENTES
 # ------------------------------------------------------------
 
-from backend.app.expedientes.actividades.models import ExpedienteActividad
+from backend.app.expedientes.actividades.models import (
+    ExpedienteActividad,
+)
 
 
 # ------------------------------------------------------------
 # FINCAS Y REGISTROS
 # ------------------------------------------------------------
 
-from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
+from backend.app.expedientes.fincasyregistros.models import (
+    ExpedienteFinca,
+)
 
 
 # ------------------------------------------------------------
 # GASTOS
 # ------------------------------------------------------------
 
-from backend.app.expedientes.gastos.models import ExpedienteGasto
+from backend.app.expedientes.gastos.models import (
+    ExpedienteGasto,
+)
 
 
 # ------------------------------------------------------------
 # DEFECTOS
 # ------------------------------------------------------------
 
-from backend.app.expedientes.defectos.models import ExpedienteDefecto
+from backend.app.expedientes.defectos.models import (
+    ExpedienteDefecto,
+)
 
 
 # ------------------------------------------------------------
 # DETALLE DE EXPEDIENTES
 # ------------------------------------------------------------
 
-from backend.app.expedientes.detalle.models import ExpedienteDetalle
+from backend.app.expedientes.detalle.models import (
+    ExpedienteDetalle,
+)
+
+
+# ------------------------------------------------------------
+# EMPLEADOS
+#
+# IMPORTANTE:
+# Debe cargarse ANTES de Mensaje porque Mensaje tiene
+# una relación con Empleado.
+# ------------------------------------------------------------
+
+from backend.app.empleados.models import Empleado
 
 
 # ------------------------------------------------------------
@@ -114,14 +136,18 @@ from backend.app.municipios.models import Municipio
 # ENTIDADES BANCARIAS
 # ------------------------------------------------------------
 
-from backend.app.entidades_bancarias.models import EntidadBancaria
+from backend.app.entidades_bancarias.models import (
+    EntidadBancaria,
+)
 
 
 # ------------------------------------------------------------
 # REGISTROS DE LA PROPIEDAD
 # ------------------------------------------------------------
 
-from backend.app.registros_propiedad.models import RegistroPropiedad
+from backend.app.registros_propiedad.models import (
+    RegistroPropiedad,
+)
 
 
 # ------------------------------------------------------------
@@ -132,6 +158,7 @@ from backend.app.oficinas_liquidadoras.models import (
     OficinaLiquidadora,
 )
 
+
 # ------------------------------------------------------------
 # TIPOS DE CARGA HIPOTECARIA
 # ------------------------------------------------------------
@@ -139,6 +166,7 @@ from backend.app.oficinas_liquidadoras.models import (
 from backend.app.tipos_carga_hipotecaria.models import (
     TipoCargaHipotecaria,
 )
+
 
 # ------------------------------------------------------------
 # ACCIONES DEL EXPEDIENTE
@@ -173,6 +201,57 @@ with engine.begin() as connection:
             """
         )
     )
+
+
+# ============================================================
+# DATOS INICIALES — TIPOS DE CARGA HIPOTECARIA
+# ============================================================
+
+TIPOS_CARGA_HIPOTECARIA_INICIALES = [
+    "cancelacion de prestamo o credito",
+    "cancelacion por instancia",
+    "devolucion",
+    "mandamiento judicial de cancelación",
+    "mandamiento judicial",
+    "cancelacion de condicion resolutoria",
+    "cancelacion embargo",
+    "mandamiento de cancelación",
+    "cancelacion por certificacion de cargas",
+    "prestamo hipotecario",
+    "cancelacion de prestamo o credito adicional",
+    "cancelacion embargo adicional",
+    "cancelación parcial y liberación de garantía",
+    "cancelacion parcial y liberacion de finca",
+    "condicion resolutoria",
+    "cancelacion de usufructo",
+    "cancelacion de condicion resolutoria adicional",
+]
+
+
+with Session(bind=engine) as db:
+
+    for nombre in TIPOS_CARGA_HIPOTECARIA_INICIALES:
+
+        existe = (
+            db.query(
+                TipoCargaHipotecaria
+            )
+            .filter(
+                TipoCargaHipotecaria.nombre == nombre
+            )
+            .first()
+        )
+
+        if not existe:
+
+            db.add(
+                TipoCargaHipotecaria(
+                    nombre=nombre,
+                    activo=True,
+                )
+            )
+
+    db.commit()
 
 
 # ============================================================
@@ -225,62 +304,7 @@ app.mount(
     name="fotos",
 )
 
-# ============================================================
-# DATOS INICIALES — TIPOS DE CARGA HIPOTECARIA
-# ============================================================
 
-from sqlalchemy.orm import Session
-
-from backend.app.tipos_carga_hipotecaria.models import (
-    TipoCargaHipotecaria,
-)
-
-
-TIPOS_CARGA_HIPOTECARIA_INICIALES = [
-    "cancelacion de prestamo o credito",
-    "cancelacion por instancia",
-    "devolucion",
-    "mandamiento judicial de cancelación",
-    "mandamiento judicial",
-    "cancelacion de condicion resolutoria",
-    "cancelacion embargo",
-    "mandamiento de cancelación",
-    "cancelacion por certificacion de cargas",
-    "prestamo hipotecario",
-    "cancelacion de prestamo o credito adicional",
-    "cancelacion embargo adicional",
-    "cancelación parcial y liberación de garantía",
-    "cancelacion parcial y liberacion de finca",
-    "condicion resolutoria",
-    "cancelacion de usufructo",
-    "cancelacion de condicion resolutoria adicional",
-]
-
-
-with Session(bind=engine) as db:
-
-    for nombre in TIPOS_CARGA_HIPOTECARIA_INICIALES:
-
-        existe = (
-            db.query(TipoCargaHipotecaria)
-            .filter(
-                TipoCargaHipotecaria.nombre
-                == nombre
-            )
-            .first()
-        )
-
-        if not existe:
-
-            db.add(
-                TipoCargaHipotecaria(
-                    nombre=nombre,
-                    activo=True,
-                )
-            )
-
-    db.commit()
-    
 # ============================================================
 # IMPORTAR ROUTERS
 # ============================================================
@@ -374,6 +398,7 @@ from backend.app.maestros.router import (
 from backend.app.tipos_carga_hipotecaria.router import (
     router as tipos_carga_hipotecaria_router,
 )
+
 
 # ============================================================
 # INTRANET
@@ -838,6 +863,7 @@ app.include_router(
     prefix="/api",
 )
 
+
 # ============================================================
 # TIPOS DE CARGA HIPOTECARIA
 # ============================================================
@@ -846,6 +872,7 @@ app.include_router(
     tipos_carga_hipotecaria_router,
     prefix="/api",
 )
+
 
 # ============================================================
 # EXPEDIENTES
