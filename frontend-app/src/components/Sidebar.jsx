@@ -564,7 +564,7 @@ export default function Sidebar() {
 
         {
       key: "informes",
-      to: "/informes/informes",
+      to: "/informes",
       label: "Informes",
       icon: "chart",
      },
