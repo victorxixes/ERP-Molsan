@@ -10,10 +10,13 @@ from pydantic import BaseModel, Field
 class RealtimeEvent(BaseModel):
 
     modulo: str
+
     evento: str
 
     usuario_id: Optional[int] = None
+
     rol: Optional[str] = None
+
     grupo: Optional[str] = None
 
     data: Dict[str, Any] = Field(
