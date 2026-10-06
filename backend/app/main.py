@@ -132,6 +132,13 @@ from backend.app.oficinas_liquidadoras.models import (
     OficinaLiquidadora,
 )
 
+# ------------------------------------------------------------
+# TIPOS DE CARGA HIPOTECARIA
+# ------------------------------------------------------------
+
+from backend.app.tipos_carga_hipotecaria.models import (
+    TipoCargaHipotecaria,
+)
 
 # ------------------------------------------------------------
 # ACCIONES DEL EXPEDIENTE
@@ -218,7 +225,62 @@ app.mount(
     name="fotos",
 )
 
+# ============================================================
+# DATOS INICIALES — TIPOS DE CARGA HIPOTECARIA
+# ============================================================
 
+from sqlalchemy.orm import Session
+
+from backend.app.tipos_carga_hipotecaria.models import (
+    TipoCargaHipotecaria,
+)
+
+
+TIPOS_CARGA_HIPOTECARIA_INICIALES = [
+    "cancelacion de prestamo o credito",
+    "cancelacion por instancia",
+    "devolucion",
+    "mandamiento judicial de cancelación",
+    "mandamiento judicial",
+    "cancelacion de condicion resolutoria",
+    "cancelacion embargo",
+    "mandamiento de cancelación",
+    "cancelacion por certificacion de cargas",
+    "prestamo hipotecario",
+    "cancelacion de prestamo o credito adicional",
+    "cancelacion embargo adicional",
+    "cancelación parcial y liberación de garantía",
+    "cancelacion parcial y liberacion de finca",
+    "condicion resolutoria",
+    "cancelacion de usufructo",
+    "cancelacion de condicion resolutoria adicional",
+]
+
+
+with Session(bind=engine) as db:
+
+    for nombre in TIPOS_CARGA_HIPOTECARIA_INICIALES:
+
+        existe = (
+            db.query(TipoCargaHipotecaria)
+            .filter(
+                TipoCargaHipotecaria.nombre
+                == nombre
+            )
+            .first()
+        )
+
+        if not existe:
+
+            db.add(
+                TipoCargaHipotecaria(
+                    nombre=nombre,
+                    activo=True,
+                )
+            )
+
+    db.commit()
+    
 # ============================================================
 # IMPORTAR ROUTERS
 # ============================================================
@@ -304,6 +366,14 @@ from backend.app.maestros.router import (
     router as maestros_router,
 )
 
+
+# ============================================================
+# TIPOS DE CARGA HIPOTECARIA
+# ============================================================
+
+from backend.app.tipos_carga_hipotecaria.router import (
+    router as tipos_carga_hipotecaria_router,
+)
 
 # ============================================================
 # INTRANET
@@ -768,6 +838,14 @@ app.include_router(
     prefix="/api",
 )
 
+# ============================================================
+# TIPOS DE CARGA HIPOTECARIA
+# ============================================================
+
+app.include_router(
+    tipos_carga_hipotecaria_router,
+    prefix="/api",
+)
 
 # ============================================================
 # EXPEDIENTES
