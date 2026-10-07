@@ -700,23 +700,13 @@ export default function ExpedientesListado() {
   ] = useState("");
 
   // ==========================================================
-// ACTUALIZACIÓN REALTIME
-// ==========================================================
-
-const [
-  recargaRealtime,
-  setRecargaRealtime,
-] = useState(0);
-
-  // ==========================================================
-  // RECARGA REALTIME
+  // ACTUALIZACIÓN REALTIME
   // ==========================================================
 
   const [
     recargaRealtime,
     setRecargaRealtime,
   ] = useState(0);
-
 
   // ==========================================================
   // INTERFAZ
@@ -1109,60 +1099,6 @@ const [
   ]);
 
 
-  // ==========================================================
-// ESCUCHAR CAMBIOS REALTIME DE EXPEDIENTES
-// ==========================================================
-
-useEffect(() => {
-
-  const manejarRealtime =
-    (event) => {
-
-      const data =
-        event.detail;
-
-      if (
-        !data ||
-        data.modulo !==
-          "expedientes" ||
-        data.evento !==
-          "importacion_finalizada"
-      ) {
-
-        return;
-
-      }
-
-      console.log(
-        "[EXPEDIENTES] Importación finalizada. Recargando listado...",
-        data.data
-      );
-
-      setRecargaRealtime(
-        (valor) =>
-          valor + 1
-      );
-
-    };
-
-
-  window.addEventListener(
-    "erp:realtime",
-    manejarRealtime
-  );
-
-
-  return () => {
-
-    window.removeEventListener(
-      "erp:realtime",
-      manejarRealtime
-    );
-
-  };
-
-}, []);
-  
   // ==========================================================
   // CARGAR RESUMEN DE ACTIVIDADES
   // ==========================================================
