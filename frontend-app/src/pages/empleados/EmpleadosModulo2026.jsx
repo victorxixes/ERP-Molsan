@@ -79,8 +79,7 @@ export default function EmpleadosModulo2026() {
 
       <section className="
         erp-card
-        max-w-[1700px]
-        mx-auto
+        w-full
         p-6
       ">
 
@@ -195,8 +194,7 @@ export default function EmpleadosModulo2026() {
 
       <section className="
         erp-card
-        max-w-[1700px]
-        mx-auto
+        w-full
         p-5
       ">
 
