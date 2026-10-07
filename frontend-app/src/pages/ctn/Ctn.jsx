@@ -5,7 +5,7 @@ export default function Ctn() {
     <div
       className="
         erp-page
-        min-h-full
+        w-full
         p-4
         sm:p-6
         lg:p-8
