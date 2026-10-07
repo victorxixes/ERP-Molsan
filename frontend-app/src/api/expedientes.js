@@ -65,3 +65,21 @@ export async function exportarExcelExpedientes(params = {}) {
 
   window.URL.revokeObjectURL(url);
 }
+
+// ============================================================
+// ENVIAR EXPEDIENTE A NOTARIO
+// ============================================================
+
+export async function enviarExpedienteANotario(
+  idExpediente,
+  datos
+) {
+  const response = await axios.put(
+    `/expedientes/${encodeURIComponent(
+      idExpediente
+    )}/enviar-a-notario`,
+    datos
+  );
+
+  return response.data;
+}
