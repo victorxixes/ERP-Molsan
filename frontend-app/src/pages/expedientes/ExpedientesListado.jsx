@@ -1,6 +1,5 @@
 import {
   useEffect,
-  useMemo,
   useState,
 } from "react";
 
@@ -486,8 +485,6 @@ const COLUMNAS = [
     label: "Observaciones",
     tipo: "texto",
   },
-
-,
 
   { key: "sol", label: "SOL", tipo: "texto" },
   { key: "cs", label: "CS", tipo: "texto" },
@@ -996,21 +993,10 @@ export default function ExpedientesListado() {
   // ==========================================================
 
   const [
-    columnasVisiblesManuales,
-    setColumnasVisiblesManuales,
+    columnasVisibles,
+    setColumnasVisibles,
   ] = useState(
     COLUMNAS_POR_DEFECTO
-  );
-
-  const columnasVisibles = useMemo(
-    () =>
-      actividadSeleccionada
-        ? obtenerColumnasActividad(actividadSeleccionada)
-        : columnasVisiblesManuales,
-    [
-      actividadSeleccionada,
-      columnasVisiblesManuales,
-    ]
   );
 
 
@@ -1900,7 +1886,7 @@ export default function ExpedientesListado() {
     key
   ) => {
 
-    setColumnasVisiblesManuales(
+    setColumnasVisibles(
       (actuales) => {
 
         if (
@@ -1938,7 +1924,7 @@ export default function ExpedientesListado() {
   const mostrarTodasColumnas =
     () => {
 
-      setColumnasVisiblesManuales(
+      setColumnasVisibles(
         COLUMNAS.map(
           (columna) =>
             columna.key
@@ -1955,7 +1941,7 @@ export default function ExpedientesListado() {
   const restaurarColumnas =
     () => {
 
-      setColumnasVisiblesManuales(
+      setColumnasVisibles(
         COLUMNAS_POR_DEFECTO
       );
 
@@ -2182,6 +2168,7 @@ export default function ExpedientesListado() {
               type="button"
               onClick={() => {
                 setActividadSeleccionada("");
+                setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                 setFiltroActividad("");
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: "" }));
                 setPagina(1);
@@ -2225,6 +2212,7 @@ export default function ExpedientesListado() {
                     const valorBackend = encontrado?.actividad || actividad.label;
 
                     setActividadSeleccionada(actividad.key);
+                    setColumnasVisibles(obtenerColumnasActividad(actividad.key));
                     setFiltroActividad(valorBackend);
                     setFiltrosAplicados((actual) => ({ ...actual, actividad: valorBackend }));
                     setPagina(1);
