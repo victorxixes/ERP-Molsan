@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import { useAuthStore } from "../store/authStore";
+
 import { useMensajesStore } from "../store/mensajesStore";
 
 import {
@@ -19,9 +20,11 @@ import {
 
 export default function useRealtimeGlobal() {
 
-  const empleado = useAuthStore(
-    (state) => state.empleado
-  );
+  const empleado =
+    useAuthStore(
+      (state) =>
+        state.empleado
+    );
 
 
   useEffect(() => {
@@ -35,8 +38,12 @@ export default function useRealtimeGlobal() {
 
     }
 
+
     const token =
-      localStorage.getItem("token");
+      localStorage.getItem(
+        "token"
+      );
+
 
     if (!token) {
 
@@ -50,9 +57,15 @@ export default function useRealtimeGlobal() {
 
 
     let ws = null;
-    let reconnectTimer = null;
-    let pingInterval = null;
-    let mounted = true;
+
+    let reconnectTimer =
+      null;
+
+    let pingInterval =
+      null;
+
+    let mounted =
+      true;
 
 
     // ========================================================
@@ -61,25 +74,64 @@ export default function useRealtimeGlobal() {
 
     const limpiar = () => {
 
-      if (reconnectTimer) {
+      if (
+        reconnectTimer
+      ) {
 
         clearTimeout(
           reconnectTimer
         );
 
-        reconnectTimer = null;
+        reconnectTimer =
+          null;
 
       }
 
-      if (pingInterval) {
+
+      if (
+        pingInterval
+      ) {
 
         clearInterval(
           pingInterval
         );
 
-        pingInterval = null;
+        pingInterval =
+          null;
 
       }
+
+    };
+
+
+    // ========================================================
+    // PROGRAMAR RECONEXIÓN
+    // ========================================================
+
+    const programarReconexion = () => {
+
+      if (
+        !mounted ||
+        reconnectTimer
+      ) {
+
+        return;
+
+      }
+
+
+      reconnectTimer =
+        setTimeout(
+          () => {
+
+            reconnectTimer =
+              null;
+
+            conectar();
+
+          },
+          2000
+        );
 
     };
 
@@ -91,7 +143,9 @@ export default function useRealtimeGlobal() {
     const conectar = () => {
 
       if (!mounted) {
+
         return;
+
       }
 
 
@@ -102,20 +156,25 @@ export default function useRealtimeGlobal() {
 
         const url =
           buildRealtimeWsUrl({
+
             usuario_id:
               empleado.id,
+
             token,
+
           });
 
 
         console.log(
-          "[REALTIME] Conectando:",
-          url
+          "[REALTIME] Conectando usuario:",
+          empleado.id
         );
 
 
         ws =
-          new WebSocket(url);
+          new WebSocket(
+            url
+          );
 
 
         setRealtimeSocket(
@@ -123,12 +182,15 @@ export default function useRealtimeGlobal() {
         );
 
 
-      } catch (error) {
+      } catch (
+        error
+      ) {
 
         console.error(
           "[REALTIME] Error creando WebSocket:",
           error
         );
+
 
         programarReconexion();
 
@@ -144,7 +206,9 @@ export default function useRealtimeGlobal() {
       ws.onopen = () => {
 
         if (!mounted) {
+
           return;
+
         }
 
 
@@ -154,22 +218,25 @@ export default function useRealtimeGlobal() {
         );
 
 
-        // ----------------------------------------------
+        // ----------------------------------------------------
         // USUARIO ACTUAL EN STORE
-        // ----------------------------------------------
+        // ----------------------------------------------------
 
         useMensajesStore.setState(
           (state) => ({
+
             ...state,
+
             usuarioId:
               empleado.id,
+
           })
         );
 
 
-        // ----------------------------------------------
+        // ----------------------------------------------------
         // PING
-        // ----------------------------------------------
+        // ----------------------------------------------------
 
         pingInterval =
           setInterval(
@@ -183,7 +250,9 @@ export default function useRealtimeGlobal() {
 
                 try {
 
-                  ws.send("ping");
+                  ws.send(
+                    "ping"
+                  );
 
                 } catch {
                   // Ignorar
@@ -217,6 +286,7 @@ export default function useRealtimeGlobal() {
 
         let data;
 
+
         try {
 
           data =
@@ -232,7 +302,9 @@ export default function useRealtimeGlobal() {
 
 
         if (!data) {
+
           return;
+
         }
 
 
@@ -242,7 +314,7 @@ export default function useRealtimeGlobal() {
 
         if (
           data.evento ===
-            "usuarios_snapshot"
+          "usuarios_snapshot"
         ) {
 
           const usuarios =
@@ -255,9 +327,12 @@ export default function useRealtimeGlobal() {
 
           useMensajesStore.setState(
             (state) => ({
+
               ...state,
+
               conectados:
                 usuarios,
+
             })
           );
 
@@ -320,8 +395,12 @@ export default function useRealtimeGlobal() {
             useMensajesStore
               .getState()
               .setConectadosWS({
+
                 id,
-                offline: true,
+
+                offline:
+                  true,
+
               });
 
           }
@@ -348,7 +427,9 @@ export default function useRealtimeGlobal() {
 
 
           if (!fromId) {
+
             return;
+
           }
 
 
@@ -477,21 +558,25 @@ export default function useRealtimeGlobal() {
 
 
         if (!mounted) {
+
           return;
+
         }
 
 
-        // ----------------------------------------------
+        // ----------------------------------------------------
         // ERRORES DE AUTENTICACIÓN
-        // ----------------------------------------------
+        // ----------------------------------------------------
 
         const erroresAuth = [
+
           4001,
           4002,
           4003,
           4004,
           4005,
           4006,
+
         ];
 
 
@@ -510,7 +595,7 @@ export default function useRealtimeGlobal() {
         }
 
 
-        programarReconexión();
+        programarReconexion();
 
       };
 
@@ -518,38 +603,7 @@ export default function useRealtimeGlobal() {
 
 
     // ========================================================
-    // RECONEXIÓN
-    // ========================================================
-
-    const programarReconexión = () => {
-
-      if (
-        !mounted ||
-        reconnectTimer
-      ) {
-
-        return;
-
-      }
-
-
-      reconnectTimer =
-        setTimeout(
-          () => {
-
-            reconnectTimer = null;
-
-            conectar();
-
-          },
-          2000
-        );
-
-    };
-
-
-    // ========================================================
-    // START
+    // INICIAR
     // ========================================================
 
     conectar();
@@ -561,9 +615,12 @@ export default function useRealtimeGlobal() {
 
     return () => {
 
-      mounted = false;
+      mounted =
+        false;
+
 
       limpiar();
+
 
       clearRealtimeSocket(
         ws
