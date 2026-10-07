@@ -28,6 +28,18 @@ const FORM_INICIAL = {
 
   protocolo: "",
 
+  // ----------------------------------------------------------
+  // NUEVO — FECHA PREVISTA DE FIRMA
+  // ----------------------------------------------------------
+
+  fecha_prevista_firma: "",
+
+  // ----------------------------------------------------------
+  // NUEVO — HORA PREVISTA DE FIRMA
+  // ----------------------------------------------------------
+
+  hora_prevista_firma: "09:00",
+
   notario: null,
 
   tipo_documento: "",
@@ -39,6 +51,7 @@ const FORM_INICIAL = {
 // ============================================================
 
 function fechaHoy() {
+
   const ahora = new Date();
 
   const year =
@@ -61,6 +74,7 @@ function fechaHoy() {
 // ============================================================
 
 function formatearFecha(valor) {
+
   if (!valor) {
     return "—";
   }
@@ -73,6 +87,7 @@ function formatearFecha(valor) {
       texto
     )
   ) {
+
     const [
       year,
       month,
@@ -101,7 +116,9 @@ export default function EnviarANotarioModal({
     setForm,
   ] = useState({
     ...FORM_INICIAL,
-    fecha_envio: fechaHoy(),
+
+    fecha_envio:
+      fechaHoy(),
   });
 
 
@@ -211,7 +228,9 @@ export default function EnviarANotarioModal({
           event.key === "Escape" &&
           !loading
         ) {
+
           onClose();
+
         }
 
       };
@@ -247,7 +266,9 @@ export default function EnviarANotarioModal({
         setForm(
           (actual) => ({
             ...actual,
-            [campo]: valor,
+
+            [campo]:
+              valor,
           })
         );
 
@@ -302,9 +323,13 @@ export default function EnviarANotarioModal({
           setForm(
             (actual) => ({
               ...actual,
-              notario: null,
+
+              notario:
+                null,
             })
           );
+
+          setError("");
 
           return;
         }
@@ -312,6 +337,7 @@ export default function EnviarANotarioModal({
         setForm(
           (actual) => ({
             ...actual,
+
             notario,
           })
         );
@@ -401,6 +427,58 @@ export default function EnviarANotarioModal({
 
 
         // ------------------------------------------------------
+        // FECHA PREVISTA DE FIRMA
+        // ------------------------------------------------------
+
+        if (
+          !form.fecha_prevista_firma
+        ) {
+
+          setError(
+            "Indica la Fecha prevista de firma."
+          );
+
+          return;
+        }
+
+
+        // ------------------------------------------------------
+        // HORA PREVISTA DE FIRMA
+        // ------------------------------------------------------
+
+        if (
+          !form.hora_prevista_firma
+        ) {
+
+          setError(
+            "Indica la Hora prevista de firma."
+          );
+
+          return;
+        }
+
+
+        // ------------------------------------------------------
+        // VALIDAR FECHA PREVISTA
+        //
+        // La fecha prevista de firma no puede ser anterior
+        // a la fecha de envío.
+        // ------------------------------------------------------
+
+        if (
+          form.fecha_prevista_firma <
+          form.fecha_envio
+        ) {
+
+          setError(
+            "La Fecha prevista de firma no puede ser anterior a la Fecha de envío."
+          );
+
+          return;
+        }
+
+
+        // ------------------------------------------------------
         // ESCRITURA FIRMADA
         // ------------------------------------------------------
 
@@ -433,6 +511,8 @@ export default function EnviarANotarioModal({
 
           // ----------------------------------------------------
           // REGLA FUNDAMENTAL
+          //
+          // FECHA ENVÍO <= FECHA FIRMA
           // ----------------------------------------------------
 
           if (
@@ -448,6 +528,16 @@ export default function EnviarANotarioModal({
           }
 
         }
+
+
+        // ------------------------------------------------------
+        // NOMBRE COMPLETO DEL NOTARIO
+        // ------------------------------------------------------
+
+        const nombreNotario =
+          `${form.notario.nombre || ""} ${
+            form.notario.apellidos || ""
+          }`.trim();
 
 
         // ------------------------------------------------------
@@ -478,21 +568,31 @@ export default function EnviarANotarioModal({
               ? form.protocolo.trim()
               : null,
 
+          // ----------------------------------------------------
+          // AGENDA
+          // ----------------------------------------------------
+
+          fecha_prevista_firma:
+            form.fecha_prevista_firma,
+
+          hora_prevista_firma:
+            form.hora_prevista_firma,
+
+          // ----------------------------------------------------
+          // NOTARIO
+          // ----------------------------------------------------
+
           notario_id:
             form.notario.id,
 
           nombre_notario:
-            `${form.notario.nombre || ""} ${
-              form.notario.apellidos || ""
-            }`.trim(),
+            nombreNotario,
 
           nif_notario:
             form.notario.nif || "",
 
           notario:
-            `${form.notario.nombre || ""} ${
-              form.notario.apellidos || ""
-            }`.trim(),
+            nombreNotario,
 
           apoderado:
             form.notario.apoderado || "",
@@ -589,7 +689,9 @@ export default function EnviarANotarioModal({
             event.currentTarget &&
           !loading
         ) {
+
           onClose();
+
         }
 
       }}
@@ -841,7 +943,9 @@ export default function EnviarANotarioModal({
               "
             >
 
-              {/* FECHA ENVÍO */}
+              {/* =================================================
+                  FECHA ENVÍO
+              ================================================= */}
 
               <div>
 
@@ -893,7 +997,143 @@ export default function EnviarANotarioModal({
               </div>
 
 
-              {/* FECHA FIRMA */}
+              {/* =================================================
+                  FECHA PREVISTA FIRMA
+              ================================================= */}
+
+              <div>
+
+                <label
+                  className="
+                    mb-1.5
+                    block
+                    text-sm
+                    font-semibold
+                    text-slate-700
+                  "
+                >
+                  Fecha prevista de firma
+                  <span className="text-red-500">
+                    {" "}*
+                  </span>
+                </label>
+
+                <input
+                  type="date"
+                  value={
+                    form.fecha_prevista_firma
+                  }
+                  min={
+                    form.fecha_envio ||
+                    undefined
+                  }
+                  disabled={loading}
+                  onChange={(event) =>
+                    cambiarCampo(
+                      "fecha_prevista_firma",
+                      event.target.value
+                    )
+                  }
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    border-slate-300
+                    bg-white
+                    px-3
+                    py-2.5
+                    text-sm
+                    text-slate-700
+                    outline-none
+
+                    focus:border-[var(--erp-primary)]
+                    focus:ring-2
+                    focus:ring-[var(--erp-primary-soft)]
+                  "
+                />
+
+                <p
+                  className="
+                    mt-1
+                    text-[11px]
+                    text-slate-400
+                  "
+                >
+                  Esta fecha creará automáticamente la cita
+                  de firma en Agenda.
+                </p>
+
+              </div>
+
+
+              {/* =================================================
+                  HORA PREVISTA FIRMA
+              ================================================= */}
+
+              <div>
+
+                <label
+                  className="
+                    mb-1.5
+                    block
+                    text-sm
+                    font-semibold
+                    text-slate-700
+                  "
+                >
+                  Hora prevista de firma
+                  <span className="text-red-500">
+                    {" "}*
+                  </span>
+                </label>
+
+                <input
+                  type="time"
+                  value={
+                    form.hora_prevista_firma
+                  }
+                  disabled={loading}
+                  onChange={(event) =>
+                    cambiarCampo(
+                      "hora_prevista_firma",
+                      event.target.value
+                    )
+                  }
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    border-slate-300
+                    bg-white
+                    px-3
+                    py-2.5
+                    text-sm
+                    text-slate-700
+                    outline-none
+
+                    focus:border-[var(--erp-primary)]
+                    focus:ring-2
+                    focus:ring-[var(--erp-primary-soft)]
+                  "
+                />
+
+                <p
+                  className="
+                    mt-1
+                    text-[11px]
+                    text-slate-400
+                  "
+                >
+                  La cita tendrá una duración inicial de una
+                  hora.
+                </p>
+
+              </div>
+
+
+              {/* =================================================
+                  FECHA FIRMA REAL
+              ================================================= */}
 
               {form.escritura_firmada ===
                 "Sí" && (
@@ -967,7 +1207,9 @@ export default function EnviarANotarioModal({
             </div>
 
 
-            {/* PROTOCOLO */}
+            {/* ==================================================
+                PROTOCOLO
+            ================================================== */}
 
             {form.escritura_firmada ===
               "Sí" && (
@@ -1067,7 +1309,9 @@ export default function EnviarANotarioModal({
             />
 
 
-            {/* DATOS AUTOMÁTICOS */}
+            {/* ==================================================
+                DATOS AUTOMÁTICOS
+            ================================================== */}
 
             {notario && (
 
@@ -1184,12 +1428,14 @@ export default function EnviarANotarioModal({
 
               {tiposDocumento.map(
                 (tipo) => (
+
                   <option
                     key={tipo.id}
                     value={tipo.nombre}
                   >
                     {tipo.nombre}
                   </option>
+
                 )
               )}
 
@@ -1258,6 +1504,21 @@ export default function EnviarANotarioModal({
                   valor={formatearFecha(
                     form.fecha_envio
                   )}
+                />
+
+                <Resumen
+                  label="Fecha prevista firma"
+                  valor={formatearFecha(
+                    form.fecha_prevista_firma
+                  )}
+                />
+
+                <Resumen
+                  label="Hora prevista"
+                  valor={
+                    form.hora_prevista_firma ||
+                    "—"
+                  }
                 />
 
                 <Resumen
@@ -1355,7 +1616,10 @@ export default function EnviarANotarioModal({
             type="button"
             disabled={
               loading ||
-              !form.notario
+              !form.notario ||
+              !form.tipo_documento ||
+              !form.fecha_prevista_firma ||
+              !form.hora_prevista_firma
             }
             onClick={guardar}
             className="
