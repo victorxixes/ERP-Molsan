@@ -383,21 +383,24 @@ async def mover(
 # DEBUG
 # ============================================================
 
-@router.get(
-    "/debug/estado",
-)
-def debug_estado(
-    db: Session = Depends(get_db),
-):
-
-    total = (
-        db.query(
-            Cita
-        ).count()
-    )
-
+@router.get("/debug/estado")
+def debug_estado(db: Session = Depends(get_db)):
+    total = db.query(Cita).count()
     return {
         "status": "ok",
         "tabla": "agenda_citas",
         "total_citas": total,
+    }
+
+
+@router.get("/prueba-mes/{año}/{mes}")
+def prueba_mes(
+    año: int,
+    mes: int,
+):
+    return {
+        "status": "ok",
+        "año": año,
+        "mes": mes,
+        "mensaje": "La ruta de prueba funciona",
     }
