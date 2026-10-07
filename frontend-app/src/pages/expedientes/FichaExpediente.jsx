@@ -553,8 +553,7 @@ export default function FichaExpediente() {
         <div
           className="
             erp-card
-            max-w-[1700px]
-            mx-auto
+           w-full
             p-6
           "
         >
@@ -604,8 +603,7 @@ export default function FichaExpediente() {
         <div
           className="
             erp-card
-            max-w-[1700px]
-            mx-auto
+            w-full
             p-8
             text-center
             text-[var(--erp-text-soft)]
@@ -639,8 +637,7 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+         w-full
           overflow-hidden
         "
       >
@@ -817,8 +814,7 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+          w-full
           overflow-hidden
         "
       >
@@ -912,8 +908,7 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+         w-full
           overflow-hidden
         "
       >
@@ -991,8 +986,7 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+        w-full
           overflow-hidden
         "
       >
@@ -1076,8 +1070,7 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+          w-full
           overflow-hidden
         "
       >
@@ -1150,8 +1143,7 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+        w-full
           overflow-hidden
         "
       >
@@ -1237,8 +1229,7 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+          w-full
           overflow-hidden
         "
       >
@@ -1314,8 +1305,7 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+          w-full
           overflow-hidden
         "
       >
@@ -1478,8 +1468,7 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          max-w-[1700px]
-          mx-auto
+          w-full
           overflow-hidden
         "
       >
@@ -1518,8 +1507,7 @@ export default function FichaExpediente() {
 
       <div
         className="
-          max-w-[1700px]
-          mx-auto
+          w-full
           flex
           flex-col
           sm:flex-row
