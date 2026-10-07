@@ -551,17 +551,17 @@ export default function Sidebar() {
   const modulosPrincipales = [
 
     {
-      key: "expedientes",
-      to: "/expedientes",
-      label: "Expedientes",
-      icon: "folder",
-    },
-
-    {
       key: "dashboard",
       to: "/dashboard",
       label: "Dashboard",
       icon: "home",
+    },
+    
+    {
+      key: "expedientes",
+      to: "/expedientes",
+      label: "Expedientes",
+      icon: "folder",
     },
 
     {
