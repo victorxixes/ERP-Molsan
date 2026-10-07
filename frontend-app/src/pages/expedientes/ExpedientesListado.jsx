@@ -487,39 +487,33 @@ const COLUMNAS = [
     tipo: "texto",
   },
 
-  // ==========================================================
-  // CAMPOS DE ACTIVIDAD — DOCUMENTACIÓN PREVIA
-  // ==========================================================
+,
 
-  {
-    key: "sol",
-    label: "SOL",
-    tipo: "texto",
-  },
-
-  {
-    key: "cs",
-    label: "CS",
-    tipo: "texto",
-  },
-
-  {
-    key: "ns",
-    label: "NS",
-    tipo: "texto",
-  },
-
-  {
-    key: "ultima_accion",
-    label: "Última acción",
-    tipo: "texto",
-  },
-
-  {
-    key: "fecha_ultima_accion",
-    label: "Fecha última acción",
-    tipo: "fecha",
-  },
+  { key: "sol", label: "SOL", tipo: "texto" },
+  { key: "cs", label: "CS", tipo: "texto" },
+  { key: "ns", label: "NS", tipo: "texto" },
+  { key: "ultima_accion", label: "Última acción", tipo: "texto" },
+  { key: "fecha_ultima_accion", label: "Fecha última acción", tipo: "fecha" },
+  { key: "fecha_envio", label: "Fecha de envío", tipo: "fecha" },
+  { key: "apoderado", label: "Apoderado", tipo: "texto" },
+  { key: "tipo_documento", label: "Tipo documento", tipo: "texto" },
+  { key: "poblacion", label: "Población", tipo: "texto" },
+  { key: "provincia", label: "Provincia", tipo: "texto" },
+  { key: "tipo_firma", label: "Tipo de firma", tipo: "texto" },
+  { key: "protocolo", label: "Protocolo", tipo: "texto" },
+  { key: "asiento_presentacion_libro_diario", label: "Asiento presentación / Libro diario", tipo: "texto" },
+  { key: "fecha_presentacion", label: "Fecha presentación", tipo: "fecha" },
+  { key: "numero_entrada", label: "Número de Entrada", tipo: "texto" },
+  { key: "fecha_recogida_notario_presentacion_telematica", label: "Fecha recogida Notario o presentación telemática", tipo: "fecha" },
+  { key: "copia_simple_escritura", label: "Copia simple escritura", tipo: "texto" },
+  { key: "fecha_presentacion_tributaria", label: "Fecha presentación tributaria", tipo: "fecha" },
+  { key: "fecha_liquidacion_tributaria", label: "Fecha liquidación tributaria", tipo: "fecha" },
+  { key: "oficina_liquidadora", label: "Oficina liquidadora", tipo: "texto" },
+  { key: "base_imponible", label: "Base imponible", tipo: "numero" },
+  { key: "tributacion", label: "Tributación", tipo: "texto" },
+  { key: "impuesto_ajd_itp", label: "Impuesto (AJD/ITP)", tipo: "texto" },
+  { key: "fecha_vencimiento_asiento", label: "Fecha vencimiento asiento", tipo: "fecha" },
+  { key: "escritura_simple_cancelacion", label: "Escritura simple de cancelación", tipo: "texto" },
 
 ];
 
@@ -613,53 +607,6 @@ const ACTIVIDADES_EXPEDIENTES = [
 // ============================================================
 
 const COLUMNAS_BASE_ACTIVIDAD = [
-  "id_expediente", "estado_expediente", "estado_actividad", "fecha_alta",
-  "actividad_actual", "nombre_titular", "nif_titular",
-  "nombre_solicitante", "nif_solicitante", "nombre_notario", "nif_notario",
-  "oficina", "capital", "saldo_disponible", "contrato", "tipo_operacion",
-  "observaciones",
-];
-
-const COLUMNAS_DOCUMENTACION_PREVIA = [...COLUMNAS_BASE_ACTIVIDAD, "sol", "cs", "ns", "ultima_accion", "fecha_ultima_accion"];
-
-const COLUMNAS_SEDE_NOTARIAL = [...COLUMNAS_BASE_ACTIVIDAD, "fecha_envio", "apoderado", "tipo_documento", "poblacion", "provincia", "tipo_firma", "sol", "cs", "ns", "ultima_accion", "fecha_ultima_accion"];
-
-const COLUMNAS_SEDE_NOTARIAL_PROTOCOLO = [...COLUMNAS_SEDE_NOTARIAL, "fecha_firma", "protocolo", "asiento_presentacion_libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica", "copia_simple_escritura"];
-
-const COLUMNAS_LIQUIDACION_IMPUESTOS = [...COLUMNAS_BASE_ACTIVIDAD, "ultima_accion", "fecha_ultima_accion", "fecha_presentacion_tributaria", "fecha_liquidacion_tributaria", "oficina_liquidadora", "base_imponible", "tributacion", "impuesto_ajd_itp"];
-
-const COLUMNAS_POR_ACTIVIDAD = {
-  "documentacion-previa": COLUMNAS_DOCUMENTACION_PREVIA,
-  "sede-notarial": COLUMNAS_SEDE_NOTARIAL,
-  "sede-notarial-protocolo": COLUMNAS_SEDE_NOTARIAL_PROTOCOLO,
-  "liquidacion-impuestos": COLUMNAS_LIQUIDACION_IMPUESTOS,
-};
-
-function obtenerColumnasActividad(actividad) {
-  return COLUMNAS_POR_ACTIVIDAD[actividad] || COLUMNAS_POR_DEFECTO;
-}
-
-
-function normalizarActividad(valor) {
-  return String(valor || "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-function actividadCoincide(definicion, valor) {
-  const normalizada = normalizarActividad(valor);
-  return [definicion.label, ...(definicion.aliases || [])]
-    .some((alias) => normalizarActividad(alias) === normalizada);
-}
-
-
-// ============================================================
-// COLUMNAS POR ACTIVIDAD
-// ============================================================
-
-const COLUMNAS_DOCUMENTACION_PREVIA = [
   "id_expediente",
   "estado_expediente",
   "estado_actividad",
@@ -677,6 +624,10 @@ const COLUMNAS_DOCUMENTACION_PREVIA = [
   "contrato",
   "tipo_operacion",
   "observaciones",
+];
+
+const COLUMNAS_DOCUMENTACION_PREVIA = [
+  ...COLUMNAS_BASE_ACTIVIDAD,
   "sol",
   "cs",
   "ns",
@@ -684,12 +635,78 @@ const COLUMNAS_DOCUMENTACION_PREVIA = [
   "fecha_ultima_accion",
 ];
 
+const COLUMNAS_SEDE_NOTARIAL = [
+  ...COLUMNAS_BASE_ACTIVIDAD,
+  "fecha_envio",
+  "apoderado",
+  "tipo_documento",
+  "poblacion",
+  "provincia",
+  "tipo_firma",
+  "sol",
+  "cs",
+  "ns",
+  "ultima_accion",
+  "fecha_ultima_accion",
+];
+
+const COLUMNAS_SEDE_NOTARIAL_PROTOCOLO = [
+  ...COLUMNAS_SEDE_NOTARIAL,
+  "fecha_firma",
+  "protocolo",
+  "asiento_presentacion_libro_diario",
+  "fecha_presentacion",
+  "numero_entrada",
+  "fecha_recogida_notario_presentacion_telematica",
+  "copia_simple_escritura",
+];
+
+const COLUMNAS_LIQUIDACION_IMPUESTOS = [
+  ...COLUMNAS_BASE_ACTIVIDAD,
+  "ultima_accion",
+  "fecha_ultima_accion",
+  "fecha_presentacion_tributaria",
+  "fecha_liquidacion_tributaria",
+  "oficina_liquidadora",
+  "base_imponible",
+  "tributacion",
+  "impuesto_ajd_itp",
+];
+
+const COLUMNAS_TRAMITACION_INSCRIPCION = [
+  ...COLUMNAS_BASE_ACTIVIDAD,
+  "ultima_accion",
+  "fecha_ultima_accion",
+  "fecha_presentacion",
+  "fecha_vencimiento_asiento",
+  "fecha_inscripcion",
+  "escritura_simple_cancelacion",
+];
+
 const COLUMNAS_POR_ACTIVIDAD = {
   "documentacion-previa": COLUMNAS_DOCUMENTACION_PREVIA,
+  "sede-notarial": COLUMNAS_SEDE_NOTARIAL,
+  "sede-notarial-protocolo": COLUMNAS_SEDE_NOTARIAL_PROTOCOLO,
+  "liquidacion-impuestos": COLUMNAS_LIQUIDACION_IMPUESTOS,
+  "tramitacion-inscripcion": COLUMNAS_TRAMITACION_INSCRIPCION,
 };
 
-function obtenerColumnasActividad(key) {
-  return COLUMNAS_POR_ACTIVIDAD[key] || COLUMNAS_POR_DEFECTO;
+function obtenerColumnasActividad(actividad) {
+  return COLUMNAS_POR_ACTIVIDAD[actividad] || COLUMNAS_POR_DEFECTO;
+}
+
+function normalizarActividad(valor) {
+  return String(valor || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function actividadCoincide(definicion, valor) {
+  const normalizada = normalizarActividad(valor);
+  return [definicion.label, ...(definicion.aliases || [])]
+    .some((alias) => normalizarActividad(alias) === normalizada);
 }
 
 
@@ -979,10 +996,21 @@ export default function ExpedientesListado() {
   // ==========================================================
 
   const [
-    columnasVisibles,
-    setColumnasVisibles,
+    columnasVisiblesManuales,
+    setColumnasVisiblesManuales,
   ] = useState(
     COLUMNAS_POR_DEFECTO
+  );
+
+  const columnasVisibles = useMemo(
+    () =>
+      actividadSeleccionada
+        ? obtenerColumnasActividad(actividadSeleccionada)
+        : columnasVisiblesManuales,
+    [
+      actividadSeleccionada,
+      columnasVisiblesManuales,
+    ]
   );
 
 
@@ -1872,7 +1900,7 @@ export default function ExpedientesListado() {
     key
   ) => {
 
-    setColumnasVisibles(
+    setColumnasVisiblesManuales(
       (actuales) => {
 
         if (
@@ -1910,7 +1938,7 @@ export default function ExpedientesListado() {
   const mostrarTodasColumnas =
     () => {
 
-      setColumnasVisibles(
+      setColumnasVisiblesManuales(
         COLUMNAS.map(
           (columna) =>
             columna.key
@@ -1927,7 +1955,7 @@ export default function ExpedientesListado() {
   const restaurarColumnas =
     () => {
 
-      setColumnasVisibles(
+      setColumnasVisiblesManuales(
         COLUMNAS_POR_DEFECTO
       );
 
@@ -2156,7 +2184,6 @@ export default function ExpedientesListado() {
                 setActividadSeleccionada("");
                 setFiltroActividad("");
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: "" }));
-                setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                 setPagina(1);
               }}
               className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left transition-all"
@@ -2200,7 +2227,6 @@ export default function ExpedientesListado() {
                     setActividadSeleccionada(actividad.key);
                     setFiltroActividad(valorBackend);
                     setFiltrosAplicados((actual) => ({ ...actual, actividad: valorBackend }));
-                    setColumnasVisibles(obtenerColumnasActividad(actividad.key));
                     setPagina(1);
                   }}
                   className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left transition-all"
@@ -2375,22 +2401,11 @@ export default function ExpedientesListado() {
                   filtroActividad
                 }
 
-                onChange={(event) => {
-                  const valor = event.target.value;
-                  const definicion = ACTIVIDADES_EXPEDIENTES.find((item) =>
-                    actividadCoincide(item, valor)
-                  );
-
-                  setFiltroActividad(valor);
-
-                  if (definicion) {
-                    setActividadSeleccionada(definicion.key);
-                    setColumnasVisibles(obtenerColumnasActividad(definicion.key));
-                  } else {
-                    setActividadSeleccionada("");
-                    setColumnasVisibles(COLUMNAS_POR_DEFECTO);
-                  }
-                }}
+                onChange={(event) =>
+                  setFiltroActividad(
+                    event.target.value
+                  )
+                }
 
                 className="
                   w-full
