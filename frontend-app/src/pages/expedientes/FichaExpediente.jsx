@@ -9,7 +9,13 @@ import {
   useParams,
 } from "react-router-dom";
 
-import { obtenerExpediente } from "../../api/expedientes";
+import {
+  obtenerExpediente,
+  enviarExpedienteANotario,
+} from "../../api/expedientes";
+
+import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
+
 
 /**
  * ============================================================
@@ -69,6 +75,7 @@ const ACTIVIDADES = [
   },
 ];
 
+
 const DOCUMENTOS_DIGITALES = [
   "Documentos Absis",
   "Hoja de Encargo firmada",
@@ -84,6 +91,7 @@ const DOCUMENTOS_DIGITALES = [
   "Documento Inscripción",
 ];
 
+
 function normalizarActividad(valor) {
   return String(valor || "")
     .trim()
@@ -91,6 +99,7 @@ function normalizarActividad(valor) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 }
+
 
 function obtenerActividadDefinicion(valor) {
   const normalizada = normalizarActividad(valor);
@@ -102,6 +111,7 @@ function obtenerActividadDefinicion(valor) {
     ) || null
   );
 }
+
 
 function formatearFecha(valor) {
   if (!valor) {
@@ -122,6 +132,7 @@ function formatearFecha(valor) {
   }
 }
 
+
 function formatearFechaHora(valor) {
   if (!valor) {
     return "—";
@@ -136,6 +147,7 @@ function formatearFechaHora(valor) {
     return String(valor);
   }
 }
+
 
 function formatearNumero(valor) {
   if (
@@ -158,6 +170,7 @@ function formatearNumero(valor) {
   }).format(numero);
 }
 
+
 function valorSeguro(valor) {
   if (
     valor === null ||
@@ -169,6 +182,7 @@ function valorSeguro(valor) {
 
   return String(valor);
 }
+
 
 function Badge({
   children,
@@ -206,6 +220,7 @@ function Badge({
     </span>
   );
 }
+
 
 function SectionHeader({
   icon,
@@ -277,6 +292,7 @@ function SectionHeader({
   );
 }
 
+
 function Dato({
   label,
   children,
@@ -311,6 +327,7 @@ function Dato({
     </div>
   );
 }
+
 
 function TarjetaEstado({
   label,
@@ -347,6 +364,7 @@ function TarjetaEstado({
     </div>
   );
 }
+
 
 function CarpetaDigital({
   nombre,
@@ -459,12 +477,19 @@ function CarpetaDigital({
   );
 }
 
+
 export default function FichaExpediente() {
   const { id } = useParams();
 
   const [expediente, setExpediente] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [
+    mostrarEnviarANotario,
+    setMostrarEnviarANotario,
+  ] = useState(false);
+
 
   useEffect(() => {
     let activo = true;
@@ -514,6 +539,16 @@ export default function FichaExpediente() {
     };
   }, [id]);
 
+
+  const esDocumentacionPrevia =
+    normalizarActividad(
+      expediente?.actividad_actual
+    ) ===
+    normalizarActividad(
+      "Documentación previa"
+    );
+
+
   const actividadDefinicion = useMemo(
     () =>
       obtenerActividadDefinicion(
@@ -522,13 +557,15 @@ export default function FichaExpediente() {
     [expediente?.actividad_actual]
   );
 
+
   if (loading) {
     return (
       <div className="erp-page space-y-5">
         <div
           className="
             erp-card
-           w-ful
+            max-w-[1700px]
+            mx-auto
             p-8
           "
         >
@@ -547,13 +584,15 @@ export default function FichaExpediente() {
     );
   }
 
+
   if (error) {
     return (
       <div className="erp-page space-y-5">
         <div
           className="
             erp-card
-           w-full
+            max-w-[1700px]
+            mx-auto
             p-6
           "
         >
@@ -597,13 +636,15 @@ export default function FichaExpediente() {
     );
   }
 
+
   if (!expediente) {
     return (
       <div className="erp-page space-y-5">
         <div
           className="
             erp-card
-            w-full
+            max-w-[1700px]
+            mx-auto
             p-8
             text-center
             text-[var(--erp-text-soft)]
@@ -615,12 +656,15 @@ export default function FichaExpediente() {
     );
   }
 
+
   const actividadLabel =
     actividadDefinicion?.label ||
     valorSeguro(expediente.actividad_actual);
 
+
   const actividadIcono =
     actividadDefinicion?.icono || "📁";
+
 
   return (
     <div
@@ -630,6 +674,7 @@ export default function FichaExpediente() {
         animate-fade-in
       "
     >
+
       {/* =====================================================
           CABECERA
       ====================================================== */}
@@ -637,7 +682,8 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-         w-full
+          max-w-[1700px]
+          mx-auto
           overflow-hidden
         "
       >
@@ -712,6 +758,7 @@ export default function FichaExpediente() {
               </div>
             </div>
 
+
             <div
               className="
                 flex
@@ -720,6 +767,7 @@ export default function FichaExpediente() {
                 gap-2
               "
             >
+
               <Link
                 to="/expedientes"
                 className="
@@ -742,6 +790,7 @@ export default function FichaExpediente() {
                 ← Volver al listado
               </Link>
 
+
               <button
                 type="button"
                 className="
@@ -761,8 +810,37 @@ export default function FichaExpediente() {
               >
                 Editar ficha
               </button>
+
+
+              {esDocumentacionPrevia && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setMostrarEnviarANotario(true)
+                  }
+                  className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    px-4
+                    py-2.5
+                    rounded-xl
+                    bg-[var(--erp-primary)]
+                    text-white
+                    text-sm
+                    font-semibold
+                    hover:opacity-90
+                    transition
+                    shadow-sm
+                  "
+                >
+                  🏛️ Enviar a notario
+                </button>
+              )}
+
             </div>
           </div>
+
 
           {/* RESUMEN SUPERIOR */}
 
@@ -807,6 +885,7 @@ export default function FichaExpediente() {
         </div>
       </section>
 
+
       {/* =====================================================
           CIRCUITO DE ACTIVIDADES
       ====================================================== */}
@@ -814,7 +893,8 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          w-full
+          max-w-[1700px]
+          mx-auto
           overflow-hidden
         "
       >
@@ -901,6 +981,7 @@ export default function FichaExpediente() {
         </div>
       </section>
 
+
       {/* =====================================================
           IDENTIFICACIÓN / TITULAR
       ====================================================== */}
@@ -908,7 +989,8 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-         w-full
+          max-w-[1700px]
+          mx-auto
           overflow-hidden
         "
       >
@@ -979,6 +1061,7 @@ export default function FichaExpediente() {
         </div>
       </section>
 
+
       {/* =====================================================
           OPERACIÓN / ECONÓMICO
       ====================================================== */}
@@ -986,7 +1069,8 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-        w-full
+          max-w-[1700px]
+          mx-auto
           overflow-hidden
         "
       >
@@ -1063,6 +1147,7 @@ export default function FichaExpediente() {
         </div>
       </section>
 
+
       {/* =====================================================
           NOTARÍA
       ====================================================== */}
@@ -1070,7 +1155,8 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          w-full
+          max-w-[1700px]
+          mx-auto
           overflow-hidden
         "
       >
@@ -1136,6 +1222,7 @@ export default function FichaExpediente() {
         </div>
       </section>
 
+
       {/* =====================================================
           REGISTRAL / DEFECTOS
       ====================================================== */}
@@ -1143,7 +1230,8 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-        w-full
+          max-w-[1700px]
+          mx-auto
           overflow-hidden
         "
       >
@@ -1222,6 +1310,7 @@ export default function FichaExpediente() {
         </div>
       </section>
 
+
       {/* =====================================================
           FECHAS DEL EXPEDIENTE
       ====================================================== */}
@@ -1229,7 +1318,8 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          w-full
+          max-w-[1700px]
+          mx-auto
           overflow-hidden
         "
       >
@@ -1298,6 +1388,7 @@ export default function FichaExpediente() {
         </div>
       </section>
 
+
       {/* =====================================================
           CARPETAS DIGITALES SOL / CS / NS
       ====================================================== */}
@@ -1305,7 +1396,8 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          w-full
+          max-w-[1700px]
+          mx-auto
           overflow-hidden
         "
       >
@@ -1461,6 +1553,7 @@ export default function FichaExpediente() {
         </div>
       </section>
 
+
       {/* =====================================================
           OBSERVACIONES
       ====================================================== */}
@@ -1468,7 +1561,8 @@ export default function FichaExpediente() {
       <section
         className="
           erp-card
-          w-full
+          max-w-[1700px]
+          mx-auto
           overflow-hidden
         "
       >
@@ -1501,13 +1595,15 @@ export default function FichaExpediente() {
         </div>
       </section>
 
+
       {/* =====================================================
           PIE
       ====================================================== */}
 
       <div
         className="
-          w-full
+          max-w-[1700px]
+          mx-auto
           flex
           flex-col
           sm:flex-row
@@ -1540,6 +1636,56 @@ export default function FichaExpediente() {
           </strong>
         </span>
       </div>
+
+
+      {/* =====================================================
+          MODAL — ENVÍO A NOTARIO
+      ====================================================== */}
+
+      {mostrarEnviarANotario && (
+        <EnviarANotarioModal
+          expediente={expediente}
+          onClose={() =>
+            setMostrarEnviarANotario(false)
+          }
+          onGuardar={async (datos) => {
+            try {
+              const respuesta =
+                await enviarExpedienteANotario(
+                  expediente.id_expediente,
+                  datos
+                );
+
+              const expedienteActualizado =
+                respuesta?.expediente ||
+                respuesta ||
+                null;
+
+              if (expedienteActualizado) {
+                setExpediente(
+                  expedienteActualizado
+                );
+              } else {
+                const actualizado =
+                  await obtenerExpediente(id);
+
+                setExpediente(actualizado);
+              }
+
+              setMostrarEnviarANotario(false);
+              setError("");
+            } catch (err) {
+              console.error(
+                "Error enviando expediente a notario:",
+                err
+              );
+
+              throw err;
+            }
+          }}
+        />
+      )}
+
     </div>
   );
 }
