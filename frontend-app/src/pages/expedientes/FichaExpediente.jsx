@@ -9,7 +9,7 @@ import {
   useParams,
 } from "react-router-dom";
 
-import axios from "../../api/axios";
+import { obtenerExpediente } from "../../api/expedientes";
 
 /**
  * ============================================================
@@ -480,19 +480,13 @@ export default function FichaExpediente() {
         setLoading(true);
         setError("");
 
-        const respuesta = await axios.get(
-          `/expedientes/${encodeURIComponent(id)}`
-        );
+        const data = await obtenerExpediente(id);
 
         if (!activo) {
           return;
         }
 
-        setExpediente(
-          respuesta?.data?.expediente ||
-          respuesta?.data ||
-          null
-        );
+        setExpediente(data);
       } catch (err) {
         console.error(
           "Error cargando ficha de expediente:",
