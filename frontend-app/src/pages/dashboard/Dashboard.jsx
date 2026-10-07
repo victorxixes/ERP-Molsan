@@ -1,106 +1,298 @@
+// ============================================================
+// ERP MOLSAN — DASHBOARD EXPEDIENTES
+// PREMIUM 2027 — MISMO ESTILO QUE EXPEDIENTES
+// ============================================================
+
 import { useDashboard } from "../../hooks/useDashboard";
 
-
-/* ============================================================
-   DASHBOARD — EXPEDIENTES
-   MOLSAN ERP SAAS PREMIUM 2027
-============================================================ */
-
-
-/* ============================================================
-   ACTIVIDADES
-============================================================ */
+// ============================================================
+// ACTIVIDADES
+// ============================================================
 
 const ACTIVIDADES = [
   {
     key: "documentacion_previa",
     nombre: "Documentación previa",
+    descripcion: "Preparación y revisión inicial del expediente",
     icono: "📄",
   },
   {
     key: "sede_notarial",
     nombre: "Sede notarial",
+    descripcion: "Expedientes enviados al notario pendientes de firma",
     icono: "🏛️",
   },
   {
     key: "sede_notarial_con_protocolo",
     nombre: "Sede notarial con protocolo",
-    icono: "📜",
+    descripcion: "Expedientes firmados con protocolo asignado",
+    icono: "✍️",
   },
   {
     key: "liquidacion_impuestos",
     nombre: "Liquidación de impuestos",
+    descripcion: "Presentación y liquidación tributaria",
     icono: "💶",
   },
   {
     key: "tramitacion_inscripcion",
     nombre: "Tramitación inscripción",
-    icono: "🏢",
+    descripcion: "Presentación y seguimiento registral",
+    icono: "📚",
   },
   {
     key: "defectos_registrales",
     nombre: "Defectos registrales",
+    descripcion: "Gestión de defectos y subsanaciones",
     icono: "⚠️",
   },
   {
     key: "facturacion_cierre",
     nombre: "Facturación y cierre",
+    descripcion: "Facturación, cierre y archivo del expediente",
     icono: "✅",
   },
 ];
 
+// ============================================================
+// HELPERS
+// ============================================================
 
-/* ============================================================
-   FORMATEAR NÚMERO
-============================================================ */
-
-function formatearNumero(valor) {
-
-  return new Intl.NumberFormat(
-    "es-ES"
-  ).format(
-    Number(valor || 0)
-  );
-
+function numero(valor) {
+  return Number(valor || 0).toLocaleString("es-ES");
 }
 
-
-/* ============================================================
-   FORMATEAR DÍAS
-============================================================ */
-
-function formatearDias(valor) {
-
-  if (
-    valor === null ||
-    valor === undefined ||
-    Number.isNaN(Number(valor))
-  ) {
-
+function decimal(valor, decimales = 1) {
+  if (valor == null || Number.isNaN(Number(valor))) {
     return "—";
-
   }
 
-
-  return new Intl.NumberFormat(
-    "es-ES",
-    {
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 1,
-    }
-  ).format(
-    Number(valor)
-  ) + " días";
-
+  return Number(valor).toLocaleString("es-ES", {
+    minimumFractionDigits: decimales,
+    maximumFractionDigits: decimales,
+  });
 }
 
+function porcentaje(valor) {
+  if (valor == null || Number.isNaN(Number(valor))) {
+    return "0 %";
+  }
 
-/* ============================================================
-   COMPONENTE PRINCIPAL
-============================================================ */
+  return `${Number(valor).toLocaleString("es-ES", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  })} %`;
+}
+
+// ============================================================
+// COMPONENTES VISUALES
+// ============================================================
+
+function IconoRefresh({ spinning = false }) {
+  return (
+    <svg
+      className={`w-4 h-4 ${spinning ? "animate-spin" : ""}`}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4 4v5h5"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M20 20v-5h-5"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M5.5 15a7 7 0 0011.9 1.9L20 14"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M18.5 9a7 7 0 00-11.9-1.9L4 10"
+      />
+    </svg>
+  );
+}
+
+function KpiCard({
+  icono,
+  titulo,
+  valor,
+  descripcion,
+}) {
+  return (
+    <div className="erp-card group relative overflow-hidden p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div
+            className="mb-2 text-xs font-semibold uppercase tracking-wide"
+            style={{ color: "var(--erp-text-soft)" }}
+          >
+            {titulo}
+          </div>
+
+          <div
+            className="text-3xl font-bold tracking-tight"
+            style={{ color: "var(--erp-text)" }}
+          >
+            {valor}
+          </div>
+
+          {descripcion && (
+            <div
+              className="mt-1 text-sm"
+              style={{ color: "var(--erp-text-soft)" }}
+            >
+              {descripcion}
+            </div>
+          )}
+        </div>
+
+        <div
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl"
+          style={{
+            background: "var(--erp-primary-soft)",
+            color: "var(--erp-primary)",
+          }}
+        >
+          {icono}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ActividadCard({
+  actividad,
+  total,
+}) {
+  return (
+    <div className="erp-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+      <div className="flex items-center gap-3">
+        <div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg"
+          style={{
+            background: "var(--erp-primary-soft)",
+          }}
+        >
+          {actividad.icono}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div
+            className="truncate text-sm font-semibold"
+            style={{ color: "var(--erp-text)" }}
+          >
+            {actividad.nombre}
+          </div>
+
+          <div
+            className="mt-0.5 truncate text-xs"
+            style={{ color: "var(--erp-text-soft)" }}
+          >
+            {actividad.descripcion}
+          </div>
+        </div>
+
+        <div
+          className="text-xl font-bold"
+          style={{ color: "var(--erp-primary)" }}
+        >
+          {numero(total)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// FIRMA CARD
+// ============================================================
+
+function FirmaCard({
+  icono,
+  titulo,
+  total,
+  porcentajeValor,
+}) {
+  return (
+    <div className="erp-card p-5">
+      <div className="flex items-center gap-4">
+        <div
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl"
+          style={{
+            background: "var(--erp-primary-soft)",
+          }}
+        >
+          {icono}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div
+            className="text-sm font-semibold"
+            style={{ color: "var(--erp-text)" }}
+          >
+            {titulo}
+          </div>
+
+          <div
+            className="mt-1 text-xs"
+            style={{ color: "var(--erp-text-soft)" }}
+          >
+            Firmas realizadas
+          </div>
+        </div>
+
+        <div className="text-right">
+          <div
+            className="text-2xl font-bold"
+            style={{ color: "var(--erp-text)" }}
+          >
+            {numero(total)}
+          </div>
+
+          <div
+            className="text-xs font-medium"
+            style={{ color: "var(--erp-primary)" }}
+          >
+            {porcentaje(porcentajeValor)}
+          </div>
+        </div>
+      </div>
+
+      <div
+        className="mt-4 h-2 overflow-hidden rounded-full"
+        style={{
+          background: "var(--erp-surface-soft)",
+        }}
+      >
+        <div
+          className="h-full rounded-full transition-all duration-500"
+          style={{
+            width: `${Math.min(
+              Math.max(Number(porcentajeValor || 0), 0),
+              100
+            )}%`,
+            background: "var(--erp-primary)",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
 
 export default function Dashboard() {
-
   const {
     totalExpedientes,
     expedientesPorActividad,
@@ -110,1464 +302,590 @@ export default function Dashboard() {
     cargarDashboard,
   } = useDashboard();
 
+  // ----------------------------------------------------------
+  // ACTIVIDADES
+  // ----------------------------------------------------------
 
-  /* ==========================================================
-     NORMALIZAR ACTIVIDADES
-  ========================================================== */
+  const actividadesMap = {};
 
-  const actividades = ACTIVIDADES.map(
-    (actividad) => {
+  if (Array.isArray(expedientesPorActividad)) {
+    expedientesPorActividad.forEach((actividad) => {
+      actividadesMap[actividad.key] = Number(
+        actividad.total || 0
+      );
+    });
+  }
 
-      const encontrada =
-        expedientesPorActividad.find(
-          (item) =>
-            item?.key ===
-            actividad.key
-        );
+  const actividades = ACTIVIDADES.map((actividad) => ({
+    ...actividad,
+    total: actividadesMap[actividad.key] || 0,
+  }));
 
+  // ----------------------------------------------------------
+  // CIRCUITO
+  // ----------------------------------------------------------
 
-      return {
-        ...actividad,
-
-        total:
-          Number(
-            encontrada?.total || 0
-          ),
-
-      };
-
-    }
+  const enCircuito = actividades.reduce(
+    (total, actividad) => total + actividad.total,
+    0
   );
 
-
-  /* ==========================================================
-     TOTAL ACTIVIDADES
-  ========================================================== */
-
-  const totalActividades =
-    actividades.reduce(
-      (
-        total,
-        actividad
-      ) =>
-        total +
-        Number(
-          actividad.total || 0
-        ),
-      0
-    );
-
-
-  /* ==========================================================
-     MEDIA GENERAL
-  ========================================================== */
-
-  const mediasValidas =
-    mediaFirmaPorTipoOperacion.filter(
-      (item) =>
-        item?.media_dias !== null &&
-        item?.media_dias !== undefined &&
-        !Number.isNaN(
-          Number(
-            item.media_dias
-          )
-        )
-    );
-
+  // ----------------------------------------------------------
+  // MEDIA GENERAL DE FIRMA
+  // ----------------------------------------------------------
 
   let mediaGeneral = null;
 
-
   if (
-    mediasValidas.length > 0
+    Array.isArray(mediaFirmaPorTipoOperacion) &&
+    mediaFirmaPorTipoOperacion.length > 0
   ) {
+    let totalDias = 0;
+    let totalFirmados = 0;
 
-    const suma =
-      mediasValidas.reduce(
-        (
-          total,
-          item
-        ) =>
-          total +
-          Number(
-            item.media_dias
-          ),
-        0
+    mediaFirmaPorTipoOperacion.forEach((fila) => {
+      const firmados = Number(
+        fila?.expedientes_firmados || 0
       );
 
+      const mediaDias =
+        fila?.media_dias == null
+          ? null
+          : Number(fila.media_dias);
 
-    mediaGeneral =
-      suma /
-      mediasValidas.length;
+      if (
+        firmados > 0 &&
+        mediaDias != null &&
+        !Number.isNaN(mediaDias)
+      ) {
+        totalDias += firmados * mediaDias;
+        totalFirmados += firmados;
+      }
+    });
 
+    if (totalFirmados > 0) {
+      mediaGeneral = totalDias / totalFirmados;
+    }
   }
 
+  // ----------------------------------------------------------
+  // FIRMAS
+  //
+  // IMPORTANTE:
+  // El backend todavía no dispone de tipo_firma.
+  //
+  // Cuando implementemos la ventana de encargo al notario,
+  // el expediente guardará:
+  //
+  //   tipo_firma = "Presencial"
+  //   tipo_firma = "Videoconferencia"
+  //
+  // El endpoint del dashboard podrá devolver:
+  //
+  //   firmas_realizadas: {
+  //      total: 120,
+  //      presencial: 80,
+  //      videoconferencia: 40
+  //   }
+  //
+  // Hasta entonces NO inventamos valores.
+  // ----------------------------------------------------------
 
-  /* ==========================================================
-     LOADING
-  ========================================================== */
+  const firmasRealizadas =
+    useDashboard.firmasRealizadas || null;
 
-  if (
-    loading &&
-    totalExpedientes === 0
-  ) {
+  const totalFirmas = Number(
+    firmasRealizadas?.total || 0
+  );
 
-    return (
+  const firmasPresenciales = Number(
+    firmasRealizadas?.presencial || 0
+  );
 
-      <div
-        className="
-          erp-page
-          min-h-full
+  const firmasVideoconferencia = Number(
+    firmasRealizadas?.videoconferencia || 0
+  );
 
-          p-4
-          sm:p-6
-          lg:p-8
+  const porcentajePresencial =
+    totalFirmas > 0
+      ? (firmasPresenciales / totalFirmas) * 100
+      : 0;
 
-          text-[var(--erp-text)]
+  const porcentajeVideoconferencia =
+    totalFirmas > 0
+      ? (firmasVideoconferencia / totalFirmas) * 100
+      : 0;
 
-          space-y-6
-
-          animate-fade-in
-        "
-      >
-
-        <div
-          className="
-            erp-card
-
-            p-6
-
-            animate-pulse
-          "
-        >
-
-          <div
-            className="
-              h-7
-              w-72
-
-              rounded
-
-              bg-[var(--erp-surface-soft)]
-            "
-          />
-
-          <div
-            className="
-              mt-3
-
-              h-4
-              w-96
-              max-w-full
-
-              rounded
-
-              bg-[var(--erp-surface-soft)]
-            "
-          />
-
-        </div>
-
-
-        <div
-          className="
-            grid
-
-            grid-cols-1
-            sm:grid-cols-2
-            xl:grid-cols-4
-
-            gap-4
-          "
-        >
-
-          {[
-            1,
-            2,
-            3,
-            4,
-          ].map(
-            (item) => (
-
-              <div
-                key={item}
-
-                className="
-                  h-32
-
-                  rounded-xl
-
-                  bg-[var(--erp-surface-soft)]
-
-                  border
-                  border-[var(--erp-border)]
-
-                  animate-pulse
-                "
-              />
-
-            )
-          )}
-
-        </div>
-
-
-        <div
-          className="
-            erp-card
-
-            h-96
-
-            animate-pulse
-          "
-        />
-
-      </div>
-
-    );
-
-  }
-
-
-  /* ==========================================================
-     RENDER
-  ========================================================== */
+  // ----------------------------------------------------------
+  // RENDER
+  // ----------------------------------------------------------
 
   return (
-
-    <div
-      className="
-        erp-page
-        min-h-full
-
-        p-4
-        sm:p-6
-        lg:p-8
-
-        text-[var(--erp-text)]
-
-        space-y-6
-
-        animate-fade-in
-      "
-    >
-
+    <div className="erp-page w-full">
       {/* ======================================================
           CABECERA
       ====================================================== */}
 
-      <div
-        className="
-          flex
-          flex-col
-
-          md:flex-row
-          md:items-center
-          md:justify-between
-
-          gap-4
-        "
-      >
-
+      <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
-
-          <h1
-            className="
-              text-3xl
-              font-bold
-
-              text-[var(--erp-text)]
-            "
+          <div
+            className="text-2xl font-bold tracking-tight"
+            style={{ color: "var(--erp-text)" }}
           >
-            Dashboard
-          </h1>
+            Dashboard de Expedientes
+          </div>
 
-
-          <p
-            className="
-              text-[var(--erp-text-soft)]
-
-              mt-1
-            "
+          <div
+            className="mt-1 text-sm"
+            style={{ color: "var(--erp-text-soft)" }}
           >
             Visión general del circuito de expedientes
-          </p>
-
+          </div>
         </div>
-
 
         <button
           type="button"
-
-          onClick={
-            cargarDashboard
-          }
-
-          disabled={
-            loading
-          }
-
-          className="
-            px-4
-            py-2.5
-
-            rounded-xl
-
-            bg-[var(--erp-primary)]
-
-            text-white
-
-            shadow-sm
-
-            hover:brightness-95
-
-            transition
-
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-          "
+          onClick={cargarDashboard}
+          disabled={loading}
+          className="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+          style={{
+            borderColor: "var(--erp-border)",
+            background: "var(--erp-surface)",
+            color: "var(--erp-text)",
+          }}
         >
-          {loading
-            ? "Actualizando..."
-            : "↻ Actualizar"}
+          <IconoRefresh spinning={loading} />
+          {loading ? "Actualizando..." : "Actualizar"}
         </button>
-
       </div>
-
 
       {/* ======================================================
           ERROR
       ====================================================== */}
 
       {error && (
-
         <div
-          className="
-            bg-red-50
-
-            border
-            border-red-200
-
-            rounded-xl
-
-            p-4
-
-            text-red-700
-          "
+          className="mb-6 rounded-xl border px-4 py-3 text-sm"
+          style={{
+            borderColor: "#fecaca",
+            background: "#fef2f2",
+            color: "#b91c1c",
+          }}
         >
-
-          <strong>
-            Error:
+          <strong className="font-semibold">
+            No se ha podido cargar el Dashboard.
           </strong>
 
-          {" "}
-
-          {error}
-
+          <div className="mt-1">
+            {error}
+          </div>
         </div>
-
       )}
 
-
       {/* ======================================================
-          KPIs
+          KPIs PRINCIPALES
       ====================================================== */}
 
-      <section
-        className="
-          grid
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <KpiCard
+          icono="📁"
+          titulo="Total expedientes"
+          valor={numero(totalExpedientes)}
+          descripcion="Expedientes registrados"
+        />
 
-          grid-cols-1
-          sm:grid-cols-2
-          xl:grid-cols-4
+        <KpiCard
+          icono="🔄"
+          titulo="Actividades"
+          valor="7"
+          descripcion="Etapas del circuito"
+        />
 
-          gap-4
-        "
-      >
+        <KpiCard
+          icono="📊"
+          titulo="En circuito"
+          valor={numero(enCircuito)}
+          descripcion="Expedientes por actividad"
+        />
 
-        {/* TOTAL EXPEDIENTES */}
+        <KpiCard
+          icono="⏱️"
+          titulo="Media hasta firma"
+          valor={
+            mediaGeneral == null
+              ? "—"
+              : `${decimal(mediaGeneral, 1)} días`
+          }
+          descripcion="Desde envío hasta firma"
+        />
+      </div>
 
-        <div
-          className="
-            erp-card
+      {/* ======================================================
+          FIRMAS REALIZADAS
+      ====================================================== */}
 
-            p-5
-
-            shadow-sm
-
-            transition
-
-            hover:shadow-md
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-start
-              justify-between
-              gap-4
-            "
+      <section className="mb-6">
+        <div className="mb-4 flex flex-col gap-1">
+          <h2
+            className="text-lg font-bold"
+            style={{ color: "var(--erp-text)" }}
           >
+            Firmas realizadas
+          </h2>
 
-            <div>
-
-              <p
-                className="
-                  text-sm
-                  font-medium
-
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Total expedientes
-              </p>
-
-
-              <p
-                className="
-                  mt-2
-
-                  text-3xl
-                  font-bold
-
-                  text-[var(--erp-primary)]
-                "
-              >
-                {formatearNumero(
-                  totalExpedientes
-                )}
-              </p>
-
-
-              <p
-                className="
-                  mt-1
-
-                  text-xs
-
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Expedientes registrados
-              </p>
-
-            </div>
-
-
-            <div
-              className="
-                flex
-                h-11
-                w-11
-
-                items-center
-                justify-center
-
-                rounded-xl
-
-                bg-[var(--erp-primary-soft)]
-
-                text-xl
-              "
-            >
-              📁
-            </div>
-
-          </div>
-
+          <p
+            className="text-sm"
+            style={{ color: "var(--erp-text-soft)" }}
+          >
+            Distribución de las firmas realizadas según la
+            modalidad seleccionada en el encargo al notario.
+          </p>
         </div>
 
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <KpiCard
+            icono="✍️"
+            titulo="Total firmas"
+            valor={numero(totalFirmas)}
+            descripcion="Firmas realizadas"
+          />
 
-        {/* ACTIVIDADES */}
+          <FirmaCard
+            icono="🏛️"
+            titulo="Presencial"
+            total={firmasPresenciales}
+            porcentajeValor={porcentajePresencial}
+          />
 
-        <div
-          className="
-            erp-card
-
-            p-5
-
-            shadow-sm
-
-            transition
-
-            hover:shadow-md
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-start
-              justify-between
-              gap-4
-            "
-          >
-
-            <div>
-
-              <p
-                className="
-                  text-sm
-                  font-medium
-
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Actividades
-              </p>
-
-
-              <p
-                className="
-                  mt-2
-
-                  text-3xl
-                  font-bold
-
-                  text-[var(--erp-primary)]
-                "
-              >
-                7
-              </p>
-
-
-              <p
-                className="
-                  mt-1
-
-                  text-xs
-
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Etapas del circuito
-              </p>
-
-            </div>
-
-
-            <div
-              className="
-                flex
-                h-11
-                w-11
-
-                items-center
-                justify-center
-
-                rounded-xl
-
-                bg-[var(--erp-primary-soft)]
-
-                text-xl
-              "
-            >
-              🔄
-            </div>
-
-          </div>
-
+          <FirmaCard
+            icono="💻"
+            titulo="Videoconferencia"
+            total={firmasVideoconferencia}
+            porcentajeValor={porcentajeVideoconferencia}
+          />
         </div>
-
-
-        {/* EN CIRCUITO */}
-
-        <div
-          className="
-            erp-card
-
-            p-5
-
-            shadow-sm
-
-            transition
-
-            hover:shadow-md
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-start
-              justify-between
-              gap-4
-            "
-          >
-
-            <div>
-
-              <p
-                className="
-                  text-sm
-                  font-medium
-
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                En circuito
-              </p>
-
-
-              <p
-                className="
-                  mt-2
-
-                  text-3xl
-                  font-bold
-
-                  text-[var(--erp-primary)]
-                "
-              >
-                {formatearNumero(
-                  totalActividades
-                )}
-              </p>
-
-
-              <p
-                className="
-                  mt-1
-
-                  text-xs
-
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Distribuidos por actividad
-              </p>
-
-            </div>
-
-
-            <div
-              className="
-                flex
-                h-11
-                w-11
-
-                items-center
-                justify-center
-
-                rounded-xl
-
-                bg-[var(--erp-primary-soft)]
-
-                text-xl
-              "
-            >
-              📋
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {/* MEDIA FIRMA */}
-
-        <div
-          className="
-            erp-card
-
-            p-5
-
-            shadow-sm
-
-            transition
-
-            hover:shadow-md
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-start
-              justify-between
-              gap-4
-            "
-          >
-
-            <div>
-
-              <p
-                className="
-                  text-sm
-                  font-medium
-
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Media hasta firma
-              </p>
-
-
-              <p
-                className="
-                  mt-2
-
-                  text-3xl
-                  font-bold
-
-                  text-[var(--erp-primary)]
-                "
-              >
-                {formatearDias(
-                  mediaGeneral
-                )}
-              </p>
-
-
-              <p
-                className="
-                  mt-1
-
-                  text-xs
-
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Inicio actividad → firma
-              </p>
-
-            </div>
-
-
-            <div
-              className="
-                flex
-                h-11
-                w-11
-
-                items-center
-                justify-center
-
-                rounded-xl
-
-                bg-[var(--erp-primary-soft)]
-
-                text-xl
-              "
-            >
-              ✍️
-            </div>
-
-          </div>
-
-        </div>
-
       </section>
-
 
       {/* ======================================================
           ACTIVIDADES
       ====================================================== */}
 
-      <section
-        className="
-          erp-card
-
-          p-4
-          sm:p-5
-
-          shadow-sm
-        "
-      >
-
-        <div
-          className="
-            flex
-            flex-col
-
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-
-            gap-2
-
-            mb-4
-          "
-        >
-
-          <div>
-
-            <h2
-              className="
-                text-xl
-                font-semibold
-
-                text-[var(--erp-text)]
-              "
-            >
-              Actividades de expedientes
-            </h2>
-
-
-            <p
-              className="
-                text-sm
-
-                text-[var(--erp-text-soft)]
-
-                mt-1
-              "
-            >
-              Número total de expedientes por actividad actual
-            </p>
-
-          </div>
-
-
-          <div
-            className="
-              text-sm
-
-              text-[var(--erp-text-soft)]
-            "
+      <section className="mb-6">
+        <div className="mb-4">
+          <h2
+            className="text-lg font-bold"
+            style={{ color: "var(--erp-text)" }}
           >
+            Expedientes por actividad
+          </h2>
 
-            Total general:{" "}
-
-            <strong
-              className="
-                text-[var(--erp-text)]
-              "
-            >
-              {formatearNumero(
-                totalActividades
-              )}
-            </strong>
-
-          </div>
-
+          <p
+            className="mt-1 text-sm"
+            style={{ color: "var(--erp-text-soft)" }}
+          >
+            Situación actual de los expedientes dentro del
+            circuito de trabajo.
+          </p>
         </div>
 
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {actividades.map((actividad) => (
+            <ActividadCard
+              key={actividad.key}
+              actividad={actividad}
+              total={actividad.total}
+            />
+          ))}
+        </div>
+      </section>
 
-        <div
-          className="
-            grid
+      {/* ======================================================
+          MEDIA DE FIRMA POR TIPO DE OPERACIÓN
+      ====================================================== */}
 
-            grid-cols-1
-            sm:grid-cols-2
-            lg:grid-cols-3
-            xl:grid-cols-4
+      <section className="mb-6">
+        <div className="mb-4">
+          <h2
+            className="text-lg font-bold"
+            style={{ color: "var(--erp-text)" }}
+          >
+            Tiempo medio hasta firma
+          </h2>
 
-            gap-3
-          "
-        >
+          <p
+            className="mt-1 text-sm"
+            style={{ color: "var(--erp-text-soft)" }}
+          >
+            Tiempo medio desde la fecha de envío hasta la
+            firma, agrupado por tipo de operación.
+          </p>
+        </div>
 
-          {actividades.map(
-            (actividad) => (
-
-              <div
-                key={
-                  actividad.key
-                }
-
-                className="
-                  bg-[var(--erp-surface-soft)]
-
-                  border
-                  border-[var(--erp-border)]
-
-                  rounded-xl
-
-                  p-4
-
-                  transition
-
-                  hover:border-[#cbd6e6]
-
-                  hover:shadow-sm
-                "
-              >
-
-                <div
-                  className="
-                    flex
-                    items-start
-                    justify-between
-                    gap-3
-                  "
-                >
-
-                  <div
-                    className="
-                      flex
-                      items-center
-                      gap-2
-                    "
+        <div className="erp-card overflow-hidden">
+          {Array.isArray(mediaFirmaPorTipoOperacion) &&
+          mediaFirmaPorTipoOperacion.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[650px] text-sm">
+                <thead>
+                  <tr
+                    className="border-b"
+                    style={{
+                      borderColor: "var(--erp-border)",
+                      background:
+                        "var(--erp-surface-soft)",
+                    }}
                   >
-
-                    <span
-                      className="
-                        text-lg
-                      "
+                    <th
+                      className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide"
+                      style={{
+                        color:
+                          "var(--erp-text-soft)",
+                      }}
                     >
-                      {actividad.icono}
-                    </span>
+                      Tipo de operación
+                    </th>
 
-                    <span
-                      className="
-                        text-sm
-                        font-medium
-
-                        text-[var(--erp-text-soft)]
-                      "
+                    <th
+                      className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide"
+                      style={{
+                        color:
+                          "var(--erp-text-soft)",
+                      }}
                     >
-                      {actividad.nombre}
-                    </span>
+                      Expedientes firmados
+                    </th>
 
-                  </div>
+                    <th
+                      className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide"
+                      style={{
+                        color:
+                          "var(--erp-text-soft)",
+                      }}
+                    >
+                      Media
+                    </th>
+                  </tr>
+                </thead>
 
-                </div>
+                <tbody>
+                  {mediaFirmaPorTipoOperacion.map(
+                    (fila, indice) => (
+                      <tr
+                        key={`${fila?.tipo_operacion || "sin-tipo"}-${indice}`}
+                        className="border-b last:border-b-0"
+                        style={{
+                          borderColor:
+                            "var(--erp-border)",
+                        }}
+                      >
+                        <td
+                          className="px-5 py-4 font-medium"
+                          style={{
+                            color:
+                              "var(--erp-text)",
+                          }}
+                        >
+                          {fila?.tipo_operacion ||
+                            "Sin tipo de operación"}
+                        </td>
 
+                        <td
+                          className="px-5 py-4 text-right font-semibold"
+                          style={{
+                            color:
+                              "var(--erp-text)",
+                          }}
+                        >
+                          {numero(
+                            fila?.expedientes_firmados
+                          )}
+                        </td>
 
-                <p
-                  className="
-                    mt-4
-
-                    text-2xl
-                    font-bold
-
-                    text-[var(--erp-primary)]
-                  "
-                >
-                  {formatearNumero(
-                    actividad.total
+                        <td
+                          className="px-5 py-4 text-right"
+                          style={{
+                            color:
+                              "var(--erp-primary)",
+                          }}
+                        >
+                          {fila?.media_dias == null
+                            ? "—"
+                            : `${decimal(
+                                fila.media_dias,
+                                1
+                              )} días`}
+                        </td>
+                      </tr>
+                    )
                   )}
-                </p>
-
-
-                <p
-                  className="
-                    mt-1
-
-                    text-xs
-
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  expedientes
-                </p>
-
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="px-5 py-10 text-center">
+              <div className="mb-2 text-3xl">
+                📊
               </div>
 
-            )
+              <div
+                className="text-sm font-medium"
+                style={{
+                  color: "var(--erp-text)",
+                }}
+              >
+                Todavía no hay datos de firmas por
+                tipo de operación.
+              </div>
+
+              <div
+                className="mt-1 text-xs"
+                style={{
+                  color:
+                    "var(--erp-text-soft)",
+                }}
+              >
+                Los datos aparecerán cuando existan
+                expedientes con fecha de envío y fecha
+                de firma.
+              </div>
+            </div>
           )}
-
         </div>
-
       </section>
 
-
       {/* ======================================================
-          MEDIA POR TIPO DE OPERACIÓN
+          DISTRIBUCIÓN VISUAL
       ====================================================== */}
 
-      <section
-        className="
-          erp-card
-
-          p-4
-          sm:p-5
-
-          shadow-sm
-        "
-      >
-
-        <div
-          className="
-            flex
-            flex-col
-
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-
-            gap-2
-
-            mb-4
-          "
-        >
-
-          <div>
-
-            <h2
-              className="
-                text-xl
-                font-semibold
-
-                text-[var(--erp-text)]
-              "
-            >
-              Media de firma por tipo de operación
-            </h2>
-
-
-            <p
-              className="
-                text-sm
-
-                text-[var(--erp-text-soft)]
-
-                mt-1
-              "
-            >
-              Tiempo medio entre el inicio de actividad y la fecha de firma
-            </p>
-
-          </div>
-
-
-          <div
-            className="
-              text-sm
-
-              text-[var(--erp-text-soft)]
-            "
-          >
-            {mediaFirmaPorTipoOperacion.length} tipos
-          </div>
-
-        </div>
-
-
-        {mediaFirmaPorTipoOperacion.length === 0 ? (
-
-          <div
-            className="
-              rounded-xl
-
-              border
-              border-[var(--erp-border)]
-
-              bg-[var(--erp-surface-soft)]
-
-              p-6
-
-              text-center
-
-              text-sm
-
-              text-[var(--erp-text-soft)]
-            "
-          >
-            No hay datos de firma disponibles todavía.
-          </div>
-
-        ) : (
-
-          <div
-            className="
-              overflow-x-auto
-            "
-          >
-
-            <table
-              className="
-                w-full
-
-                border-collapse
-              "
-            >
-
-              <thead>
-
-                <tr
-                  className="
-                    border-b
-                    border-[var(--erp-border)]
-                  "
-                >
-
-                  <th
-                    className="
-                      px-4
-                      py-3
-
-                      text-left
-
-                      text-xs
-                      font-semibold
-                      uppercase
-                      tracking-wide
-
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    Tipo de operación
-                  </th>
-
-
-                  <th
-                    className="
-                      px-4
-                      py-3
-
-                      text-center
-
-                      text-xs
-                      font-semibold
-                      uppercase
-                      tracking-wide
-
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    Expedientes firmados
-                  </th>
-
-
-                  <th
-                    className="
-                      px-4
-                      py-3
-
-                      text-right
-
-                      text-xs
-                      font-semibold
-                      uppercase
-                      tracking-wide
-
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    Media
-                  </th>
-
-                </tr>
-
-              </thead>
-
-
-              <tbody>
-
-                {mediaFirmaPorTipoOperacion.map(
-                  (
-                    fila,
-                    indice
-                  ) => (
-
-                    <tr
-                      key={
-                        `${fila.tipo_operacion}-${indice}`
-                      }
-
-                      className="
-                        border-b
-                        border-[var(--erp-border)]
-
-                        last:border-b-0
-
-                        hover:bg-[var(--erp-surface-soft)]
-
-                        transition
-                      "
-                    >
-
-                      <td
-                        className="
-                          px-4
-                          py-3
-
-                          text-sm
-                          font-medium
-
-                          text-[var(--erp-text)]
-                        "
-                      >
-                        {fila.tipo_operacion ||
-                          "Sin tipo de operación"}
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3
-
-                          text-center
-
-                          text-sm
-
-                          text-[var(--erp-text)]
-                        "
-                      >
-                        {formatearNumero(
-                          fila.expedientes_firmados
-                        )}
-                      </td>
-
-
-                      <td
-                        className="
-                          px-4
-                          py-3
-
-                          text-right
-
-                          text-sm
-                          font-semibold
-
-                          text-[var(--erp-primary)]
-                        "
-                      >
-                        {formatearDias(
-                          fila.media_dias
-                        )}
-                      </td>
-
-                    </tr>
-
-                  )
-                )}
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-        )}
-
-      </section>
-
-
-      {/* ======================================================
-          RESUMEN VISUAL
-      ====================================================== */}
-
-      <section
-        className="
-          erp-card
-
-          p-4
-          sm:p-5
-
-          shadow-sm
-        "
-      >
-
-        <div
-          className="
-            mb-5
-          "
-        >
-
+      <section>
+        <div className="mb-4">
           <h2
-            className="
-              text-xl
-              font-semibold
-
-              text-[var(--erp-text)]
-            "
+            className="text-lg font-bold"
+            style={{ color: "var(--erp-text)" }}
           >
             Distribución del circuito
           </h2>
 
-
           <p
-            className="
-              text-sm
-
-              text-[var(--erp-text-soft)]
-
-              mt-1
-            "
+            className="mt-1 text-sm"
+            style={{ color: "var(--erp-text-soft)" }}
           >
-            Peso de cada actividad sobre el total de expedientes
+            Representación visual de los expedientes por
+            actividad.
           </p>
-
         </div>
 
+        <div className="erp-card p-5">
+          <div className="space-y-4">
+            {actividades.map((actividad) => {
+              const total =
+                Number(actividad.total || 0);
 
-        <div
-          className="
-            space-y-4
-          "
-        >
-
-          {actividades.map(
-            (actividad) => {
-
-              const porcentaje =
+              const porcentajeActividad =
                 totalExpedientes > 0
-                  ? (
-                      Number(
-                        actividad.total
-                      ) /
-                      Number(
-                        totalExpedientes
-                      )
-                    ) *
-                    100
+                  ? (total / totalExpedientes) * 100
                   : 0;
 
-
               return (
-
-                <div
-                  key={
-                    actividad.key
-                  }
-                >
-
-                  <div
-                    className="
-                      flex
-                      items-center
-                      justify-between
-
-                      gap-4
-
-                      mb-1.5
-                    "
-                  >
-
-                    <div
-                      className="
-                        flex
-                        items-center
-                        gap-2
-
-                        min-w-0
-                      "
-                    >
-
-                      <span>
+                <div key={actividad.key}>
+                  <div className="mb-2 flex items-center justify-between gap-4">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span className="text-base">
                         {actividad.icono}
                       </span>
 
                       <span
-                        className="
-                          text-sm
-                          font-medium
-
-                          text-[var(--erp-text)]
-
-                          truncate
-                        "
+                        className="truncate text-sm font-medium"
+                        style={{
+                          color:
+                            "var(--erp-text)",
+                        }}
                       >
                         {actividad.nombre}
                       </span>
-
                     </div>
 
+                    <div className="flex shrink-0 items-center gap-3">
+                      <span
+                        className="text-sm font-semibold"
+                        style={{
+                          color:
+                            "var(--erp-text)",
+                        }}
+                      >
+                        {numero(total)}
+                      </span>
 
-                    <span
-                      className="
-                        shrink-0
-
-                        text-sm
-                        font-semibold
-
-                        text-[var(--erp-text)]
-                      "
-                    >
-                      {formatearNumero(
-                        actividad.total
-                      )}
-                    </span>
-
+                      <span
+                        className="w-14 text-right text-xs"
+                        style={{
+                          color:
+                            "var(--erp-text-soft)",
+                        }}
+                      >
+                        {porcentaje(
+                          porcentajeActividad
+                        )}
+                      </span>
+                    </div>
                   </div>
 
-
                   <div
-                    className="
-                      h-2.5
-
-                      overflow-hidden
-
-                      rounded-full
-
-                      bg-[var(--erp-surface-soft)]
-
-                      border
-                      border-[var(--erp-border)]
-                    "
+                    className="h-2 overflow-hidden rounded-full"
+                    style={{
+                      background:
+                        "var(--erp-surface-soft)",
+                    }}
                   >
-
                     <div
-                      className="
-                        h-full
-
-                        rounded-full
-
-                        bg-[var(--erp-primary)]
-
-                        transition-all
-                        duration-500
-                      "
-
+                      className="h-full rounded-full transition-all duration-500"
                       style={{
-                        width:
-                          `${Math.min(
-                            100,
-                            porcentaje
-                          )}%`,
+                        width: `${Math.min(
+                          Math.max(
+                            porcentajeActividad,
+                            0
+                          ),
+                          100
+                        )}%`,
+                        background:
+                          "var(--erp-primary)",
                       }}
                     />
-
                   </div>
-
-
-                  <div
-                    className="
-                      mt-1
-
-                      text-right
-
-                      text-xs
-
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    {porcentaje.toLocaleString(
-                      "es-ES",
-                      {
-                        minimumFractionDigits: 1,
-                        maximumFractionDigits: 1,
-                      }
-                    )}
-                    %
-                  </div>
-
                 </div>
-
               );
-
-            }
-          )}
-
+            })}
+          </div>
         </div>
-
       </section>
 
-
       {/* ======================================================
-          PIE
+          NOTA TÉCNICA
       ====================================================== */}
 
-      <div
-        className="
-          pb-2
-
-          text-center
-
-          text-xs
-
-          text-[var(--erp-text-soft)]
-        "
-      >
-        Dashboard de Expedientes · MOLSAN ERP
-      </div>
-
+      {!firmasRealizadas && (
+        <div
+          className="mt-6 rounded-xl border px-4 py-3 text-xs"
+          style={{
+            borderColor: "var(--erp-border)",
+            background:
+              "var(--erp-surface-soft)",
+            color: "var(--erp-text-soft)",
+          }}
+        >
+          <strong
+            style={{
+              color: "var(--erp-text)",
+            }}
+          >
+            Firmas presenciales / videoconferencia:
+          </strong>{" "}
+          esta información quedará disponible cuando
+          implementemos la ventana de encargo al notario y
+          guardemos en el expediente la modalidad de firma
+          seleccionada.
+        </div>
+      )}
     </div>
-
   );
-
 }
