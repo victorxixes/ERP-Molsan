@@ -17,7 +17,7 @@ from sqlalchemy import (
 from pydantic import BaseModel
 
 from typing import Optional
-from datetime import datetime, date
+from datetime import datetime, date, time, timedelta
 
 import json
 import io
@@ -27,6 +27,7 @@ import openpyxl
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 
+from backend.app.agenda.models import Cita
 from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
 
@@ -39,6 +40,57 @@ router = APIRouter(
     prefix="/expedientes",
     tags=["Expedientes"],
 )
+
+
+# ============================================================
+# MODELO — ENVÍO A NOTARIO
+# ============================================================
+
+class EnvioANotarioRequest(BaseModel):
+
+    escritura_firmada: bool
+
+    fecha_envio: date
+
+    fecha_firma: Optional[date] = None
+
+    protocolo: Optional[str] = None
+
+    notario_id: Optional[int] = None
+
+    nombre_notario: str
+
+    nif_notario: Optional[str] = None
+
+    notario: Optional[str] = None
+
+    apoderado: Optional[str] = None
+
+    tipo_firma: str
+
+    tipo_documento: str
+
+    poblacion: Optional[str] = None
+
+    provincia: Optional[str] = None
+
+    # ========================================================
+    # FECHA PREVISTA DE FIRMA
+    # ========================================================
+
+    fecha_prevista_firma: Optional[date] = None
+
+    # ========================================================
+    # HORA PREVISTA DE FIRMA
+    #
+    # Si el frontend no la envía:
+    # 09:00
+    # ========================================================
+
+    hora_prevista_firma: Optional[time] = time(
+        9,
+        0,
+    )
 
 
 # ============================================================
@@ -427,7 +479,10 @@ CAMPOS_EXPEDIENTE = [
     "nif_notario",
     "notario",
 
-    # NUEVOS DATOS DEL ENVÍO A NOTARIO
+    # ========================================================
+    # DATOS DEL ENVÍO A NOTARIO
+    # ========================================================
+
     "tipo_firma",
     "tipo_documento",
     "poblacion",
@@ -790,6 +845,7 @@ COLUMNAS_EXCEL = [
     ("IDEXPEDIENTE", "id_expediente"),
 
     ("ESTADOEXPEDIENTE", "estado_expediente"),
+
     (
         "ESTADOEXPEDIENTEANCERT",
         "estado_expediente_ancert",
@@ -798,34 +854,42 @@ COLUMNAS_EXCEL = [
     ("FECHAALTA", "fecha_alta"),
     ("FECHAFIRMA", "fecha_firma"),
     ("FECHAINSCRIPCION", "fecha_inscripcion"),
+
     (
         "FECHAENTREGADOCLIENTE",
         "fecha_entregado_cliente",
     ),
+
     (
         "FECHAPREVISTAFIRMA",
         "fecha_prevista_firma",
     ),
+
     (
         "FECHAVENCIMIENTO",
         "fecha_vencimiento",
     ),
+
     (
         "FECHASOLCGN",
         "fecha_sol_cgn",
     ),
+
     (
         "FECHAFIRMAPREVVAL",
         "fecha_firma_prev_val",
     ),
+
     (
         "FECHAFIRMAPREVCLI",
         "fecha_firma_prev_cli",
     ),
+
     (
         "FECHAINICIOACTIVIDAD",
         "fecha_inicio_actividad",
     ),
+
     (
         "FECHAFINACTIVIDAD",
         "fecha_fin_actividad",
@@ -835,6 +899,7 @@ COLUMNAS_EXCEL = [
         "NOMBRETITULAR",
         "nombre_titular",
     ),
+
     (
         "NIFTITULAR",
         "nif_titular",
@@ -844,6 +909,7 @@ COLUMNAS_EXCEL = [
         "NOMBRESOLICITANTE",
         "nombre_solicitante",
     ),
+
     (
         "NIFSOLICITANTE",
         "nif_solicitante",
@@ -858,10 +924,12 @@ COLUMNAS_EXCEL = [
         "NOMBRENOTARIO",
         "nombre_notario",
     ),
+
     (
         "NIFNOTARIO",
         "nif_notario",
     ),
+
     (
         "NOTARIO",
         "notario",
@@ -871,10 +939,12 @@ COLUMNAS_EXCEL = [
         "OFICINA",
         "oficina",
     ),
+
     (
         "DAN",
         "dan",
     ),
+
     (
         "OFICINAALTA",
         "oficina_alta",
@@ -884,14 +954,17 @@ COLUMNAS_EXCEL = [
         "CAPITAL",
         "capital",
     ),
+
     (
         "IMPORTE",
         "importe",
     ),
+
     (
         "SALDOREAL",
         "saldo_real",
     ),
+
     (
         "SALDODISPONIBLE",
         "saldo_disponible",
@@ -901,6 +974,7 @@ COLUMNAS_EXCEL = [
         "IDPROVISION",
         "id_provision",
     ),
+
     (
         "TIPOPROVISION",
         "tipo_provision",
@@ -910,22 +984,27 @@ COLUMNAS_EXCEL = [
         "CONTRATO",
         "contrato",
     ),
+
     (
         "NUMSOLICITUDSIA",
         "num_solicitud_sia",
     ),
+
     (
         "TIPOOPERACION",
         "tipo_operacion",
     ),
+
     (
         "SUBTIPOOPERACION",
         "subtipo_operacion",
     ),
+
     (
         "VINCCANC",
         "vinccanc",
     ),
+
     (
         "PROTOCOLO",
         "protocolo",
@@ -935,10 +1014,12 @@ COLUMNAS_EXCEL = [
         "ORIGENBANKIA",
         "origen_bankia",
     ),
+
     (
         "PRODUCTOGTG",
         "producto_gtg",
     ),
+
     (
         "DT",
         "dt",
@@ -948,6 +1029,7 @@ COLUMNAS_EXCEL = [
         "ACTIVIDADACTUAL",
         "actividad_actual",
     ),
+
     (
         "ESTADOACTIVIDAD",
         "estado_actividad",
@@ -957,10 +1039,12 @@ COLUMNAS_EXCEL = [
         "IDGESTORIATRAMITE",
         "id_gestoria_tramite",
     ),
+
     (
         "NOMBREGESTORIA",
         "nombre_gestoria",
     ),
+
     (
         "GESTORIA",
         "gestoria",
@@ -975,18 +1059,22 @@ COLUMNAS_EXCEL = [
         "TIENEDEFECTOSABIERTOS",
         "tiene_defectos_abiertos",
     ),
+
     (
         "TIPOERROR",
         "tipo_error",
     ),
+
     (
         "DESCRIPCIONERROR",
         "descripcion_error",
     ),
+
     (
         "FALTADEFECTO",
         "falta_defecto",
     ),
+
     (
         "FCIERREDEFECTO",
         "fcierre_defecto",
@@ -1006,6 +1094,7 @@ COLUMNAS_EXCEL = [
         "LUCY",
         "lucy",
     ),
+
     (
         "INDICADORTT",
         "indicador_tt",
@@ -1020,6 +1109,7 @@ COLUMNAS_EXCEL = [
         "FACTURACIONESTADO",
         "facturacion_estado",
     ),
+
     (
         "FACTURACIONFECHA",
         "facturacion_fecha",
@@ -1029,6 +1119,7 @@ COLUMNAS_EXCEL = [
         "REGISTRALESTADO",
         "registral_estado",
     ),
+
     (
         "REGISTRALFECHA",
         "registral_fecha",
@@ -1314,13 +1405,19 @@ def listado_expedientes(
     ),
 
     nif: Optional[str] = None,
+
     actividad: Optional[str] = None,
+
     fechaInicio: Optional[str] = None,
+
     fechaFin: Optional[str] = None,
+
     notario: Optional[str] = None,
+
     oficina: Optional[str] = None,
 
     importeMin: Optional[float] = None,
+
     importeMax: Optional[float] = None,
 
     ordenMultiple: Optional[str] = Query(
@@ -1422,6 +1519,7 @@ def listado_expedientes(
                     "asc",
                 )
             ).lower()
+
 
             campo = COLUMNAS_ORDENABLES.get(
                 columna
@@ -1600,6 +1698,7 @@ def resumen_expedientes(
         condicion = condicion_actividad(
             actividad["key"]
         )
+
 
         if condicion is None:
 
@@ -1966,38 +2065,182 @@ def exportar_excel_expedientes(
 
 
 # ============================================================
-# MODELO — ENVÍO A NOTARIO
+# CREAR / ACTUALIZAR CITA DE AGENDA
 # ============================================================
 
-class EnvioANotarioRequest(
-    BaseModel
+def crear_o_actualizar_cita_agenda(
+    db: Session,
+    expediente: Expediente,
+    datos: EnvioANotarioRequest,
 ):
+    """
+    Crea o actualiza la cita de Agenda correspondiente
+    a la fecha prevista de firma.
 
-    escritura_firmada: bool
+    La cita queda vinculada al expediente mediante
+    Cita.expediente_id.
 
-    fecha_envio: date
+    Si no existe fecha prevista de firma:
+    no se crea ninguna cita.
+    """
 
-    fecha_firma: Optional[date] = None
+    if not datos.fecha_prevista_firma:
+        return None
 
-    protocolo: Optional[str] = None
 
-    notario_id: Optional[int] = None
+    # ========================================================
+    # HORA INICIO
+    # ========================================================
 
-    nombre_notario: str
+    hora_inicio = (
+        datos.hora_prevista_firma
+        or time(9, 0)
+    )
 
-    nif_notario: Optional[str] = None
 
-    notario: Optional[str] = None
+    # ========================================================
+    # HORA FIN
+    #
+    # Duración inicial: 1 hora.
+    #
+    # Evitamos construir una hora inválida si empieza
+    # a las 23:00.
+    # ========================================================
 
-    apoderado: Optional[str] = None
+    minutos_inicio = (
+        hora_inicio.hour * 60
+        + hora_inicio.minute
+    )
 
-    tipo_firma: str
+    minutos_fin = min(
+        minutos_inicio + 60,
+        23 * 60 + 59,
+    )
 
-    tipo_documento: str
 
-    poblacion: Optional[str] = None
+    hora_fin = time(
+        minutos_fin // 60,
+        minutos_fin % 60,
+    )
 
-    provincia: Optional[str] = None
+
+    # ========================================================
+    # BUSCAR CITA EXISTENTE
+    # ========================================================
+
+    cita_existente = (
+
+        db.query(
+            Cita
+        )
+
+        .filter(
+            Cita.expediente_id
+            == expediente.id
+        )
+
+        .order_by(
+            Cita.id.desc()
+        )
+
+        .first()
+
+    )
+
+
+    # ========================================================
+    # DATOS COMUNES
+    # ========================================================
+
+    observaciones = (
+        f"Firma prevista — "
+        f"Expediente {expediente.id_expediente}"
+    )
+
+
+    if cita_existente:
+
+        # ----------------------------------------------------
+        # ACTUALIZAR
+        # ----------------------------------------------------
+
+        cita_existente.fecha = (
+            datos.fecha_prevista_firma
+        )
+
+        cita_existente.hora_inicio = (
+            hora_inicio
+        )
+
+        cita_existente.hora_fin = (
+            hora_fin
+        )
+
+        cita_existente.tipo_cita = (
+            "Firma notarial"
+        )
+
+        cita_existente.notario_id = (
+            datos.notario_id
+        )
+
+        cita_existente.tipo_firma = (
+            datos.tipo_firma
+        )
+
+        cita_existente.apoderado = (
+            datos.apoderado
+        )
+
+        cita_existente.observaciones = (
+            observaciones
+        )
+
+        return cita_existente
+
+
+    # ========================================================
+    # CREAR NUEVA CITA
+    # ========================================================
+
+    nueva_cita = Cita(
+
+        fecha=
+            datos.fecha_prevista_firma,
+
+        hora_inicio=
+            hora_inicio,
+
+        hora_fin=
+            hora_fin,
+
+        tipo_cita=
+            "Firma notarial",
+
+        notario_id=
+            datos.notario_id,
+
+        tipo_firma=
+            datos.tipo_firma,
+
+        apoderado=
+            datos.apoderado,
+
+        expediente_id=
+            expediente.id,
+
+        observaciones=
+            observaciones,
+
+    )
+
+
+    db.add(
+        nueva_cita
+    )
+
+
+    return nueva_cita
 
 
 # ============================================================
@@ -2096,7 +2339,7 @@ def enviar_a_notario(
 
 
     # ========================================================
-    # FECHA DE ENVÍO
+    # VALIDAR FECHA ENVÍO
     # ========================================================
 
     if not datos.fecha_envio:
@@ -2104,6 +2347,27 @@ def enviar_a_notario(
         raise HTTPException(
             status_code=400,
             detail="La Fecha de envío es obligatoria.",
+        )
+
+
+    # ========================================================
+    # VALIDAR FECHA PREVISTA DE FIRMA
+    #
+    # No puede ser anterior a la fecha de envío.
+    # ========================================================
+
+    if (
+        datos.fecha_prevista_firma
+        and datos.fecha_prevista_firma
+        < datos.fecha_envio
+    ):
+
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "La Fecha prevista de firma no puede "
+                "ser anterior a la Fecha de envío."
+            ),
         )
 
 
@@ -2140,8 +2404,6 @@ def enviar_a_notario(
 
 
         # ----------------------------------------------------
-        # REGLA FUNDAMENTAL
-        #
         # FECHA ENVÍO <= FECHA FIRMA
         # ----------------------------------------------------
 
@@ -2177,9 +2439,11 @@ def enviar_a_notario(
             datos.fecha_firma
         )
 
+
         expediente.protocolo = (
             datos.protocolo.strip()
         )
+
 
         expediente.actividad_actual = (
             "Sede notarial con protocolo"
@@ -2201,10 +2465,14 @@ def enviar_a_notario(
 
 
     expediente.nif_notario = (
+
         datos.nif_notario.strip()
+
         if datos.nif_notario
         and datos.nif_notario.strip()
+
         else None
+
     )
 
 
@@ -2267,41 +2535,127 @@ def enviar_a_notario(
 
 
     # ========================================================
-    # GUARDAR
+    # FECHA PREVISTA DE FIRMA DEL EXPEDIENTE
+    # ========================================================
+
+    if datos.fecha_prevista_firma:
+
+        expediente.fecha_prevista_firma = (
+            datos.fecha_prevista_firma
+        )
+
+
+    # ========================================================
+    # CREAR / ACTUALIZAR AGENDA
+    #
+    # IMPORTANTE:
+    #
+    # Se hace antes del commit, de modo que expediente
+    # y cita se guardan dentro de la misma transacción.
     # ========================================================
 
     try:
+
+        cita = crear_o_actualizar_cita_agenda(
+            db=db,
+            expediente=expediente,
+            datos=datos,
+        )
+
+
+        # ----------------------------------------------------
+        # GUARDAR EXPEDIENTE + CITA
+        # ----------------------------------------------------
 
         db.add(
             expediente
         )
 
+
         db.commit()
+
+
+        # ----------------------------------------------------
+        # REFRESCAR EXPEDIENTE
+        # ----------------------------------------------------
 
         db.refresh(
             expediente
         )
 
-    except Exception:
+
+        # ----------------------------------------------------
+        # REFRESCAR CITA SI EXISTE
+        # ----------------------------------------------------
+
+        if cita is not None:
+
+            db.refresh(
+                cita
+            )
+
+
+    except HTTPException:
 
         db.rollback()
+
+        raise
+
+
+    except Exception as exc:
+
+        db.rollback()
+
+        print(
+            "ERROR ENVIANDO EXPEDIENTE A NOTARIO:",
+            repr(exc),
+        )
 
         raise HTTPException(
             status_code=500,
             detail=(
                 "No se pudo guardar el envío "
-                "a notario."
+                "a notario ni crear la cita de Agenda."
             ),
         )
 
 
     # ========================================================
     # RESPUESTA
+    #
+    # Se mantiene el expediente como respuesta principal
+    # para no romper EnviarANotarioModal.
     # ========================================================
 
-    return expediente_a_dict(
+    respuesta = expediente_a_dict(
         expediente
     )
+
+
+    # ========================================================
+    # INFORMACIÓN DE AGENDA
+    #
+    # Añadimos estos datos sin romper la estructura
+    # anterior de respuesta.
+    # ========================================================
+
+    respuesta["agenda_cita_creada"] = (
+        cita is not None
+    )
+
+
+    respuesta["agenda_cita_id"] = (
+
+        cita.id
+
+        if cita is not None
+
+        else None
+
+    )
+
+
+    return respuesta
 
 
 # ============================================================
@@ -2309,13 +2663,15 @@ def enviar_a_notario(
 #
 # IMPORTANTE:
 #
-# Esta ruta queda DESPUÉS de:
+# Esta ruta queda DESPUÉS DE:
 #
 # /listado
 # /resumen
 # /exportar-excel
 #
-# y del PUT /enviar-a-notario.
+# y del PUT:
+#
+# /enviar-a-notario
 # ============================================================
 
 @router.get(
