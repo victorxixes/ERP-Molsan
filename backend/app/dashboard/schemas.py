@@ -1,59 +1,21 @@
-from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 
-# =========================================================
-# AGENDA — Próximas citas
-# =========================================================
-class CitaProxima(BaseModel):
-    fecha: str
-    notario: Optional[str]
-    apoderado: Optional[str]
-    tipo_firma: str
-    hora_inicio: str
-    hora_fin: str
+from pydantic import BaseModel, Field
 
 
-# =========================================================
-# APODERADOS — Ranking (SIN KM, SIN RUTAS)
-# =========================================================
-class ApoderadoRanking(BaseModel):
-    apoderado_id: int
+class ExpedientesPorActividad(BaseModel):
+    key: str
     nombre: str
-    firmas_presencial: int
-    km_por_cita: List[float]     # ahora siempre []
-    km_total: float              # ahora siempre 0
-    ruta_completa: Optional[dict] = None  # ahora siempre None
+    total: int = Field(ge=0)
 
 
-# =========================================================
-# AGENDA — Resumen del día
-# =========================================================
-class DashboardAgenda(BaseModel):
-    presencial_hoy: int
-    vc_hoy: int
-    proximas: List[CitaProxima]
+class MediaFirmaPorTipoOperacion(BaseModel):
+    tipo_operacion: str
+    expedientes_firmados: int = Field(ge=0)
+    media_dias: float | None = None
 
 
-# =========================================================
-# CTN — Resumen
-# =========================================================
-class DashboardCTN(BaseModel):
-    presencial_total: int
-    vc_total: int
-
-
-# =========================================================
-# APODERADOS — Resumen
-# =========================================================
-class DashboardApoderados(BaseModel):
-    ranking: List[ApoderadoRanking]
-    km_total: float
-
-
-# =========================================================
-# DASHBOARD — Respuesta completa
-# =========================================================
-class DashboardResponse(BaseModel):
-    agenda: DashboardAgenda
-    ctn: DashboardCTN
-    apoderados: DashboardApoderados
+class DashboardExpedientesResponse(BaseModel):
+    total_expedientes: int = Field(ge=0)
+    expedientes_por_actividad: List[ExpedientesPorActividad]
+    media_firma_por_tipo_operacion: List[MediaFirmaPorTipoOperacion]
