@@ -487,6 +487,40 @@ const COLUMNAS = [
     tipo: "texto",
   },
 
+  // ==========================================================
+  // CAMPOS DE ACTIVIDAD — DOCUMENTACIÓN PREVIA
+  // ==========================================================
+
+  {
+    key: "sol",
+    label: "SOL",
+    tipo: "texto",
+  },
+
+  {
+    key: "cs",
+    label: "CS",
+    tipo: "texto",
+  },
+
+  {
+    key: "ns",
+    label: "NS",
+    tipo: "texto",
+  },
+
+  {
+    key: "ultima_accion",
+    label: "Última acción",
+    tipo: "texto",
+  },
+
+  {
+    key: "fecha_ultima_accion",
+    label: "Fecha última acción",
+    tipo: "fecha",
+  },
+
 ];
 
 
@@ -586,6 +620,44 @@ function actividadCoincide(definicion, valor) {
   const normalizada = normalizarActividad(valor);
   return [definicion.label, ...(definicion.aliases || [])]
     .some((alias) => normalizarActividad(alias) === normalizada);
+}
+
+
+// ============================================================
+// COLUMNAS POR ACTIVIDAD
+// ============================================================
+
+const COLUMNAS_DOCUMENTACION_PREVIA = [
+  "id_expediente",
+  "estado_expediente",
+  "estado_actividad",
+  "fecha_alta",
+  "actividad_actual",
+  "nombre_titular",
+  "nif_titular",
+  "nombre_solicitante",
+  "nif_solicitante",
+  "nombre_notario",
+  "nif_notario",
+  "oficina",
+  "capital",
+  "saldo_disponible",
+  "contrato",
+  "tipo_operacion",
+  "observaciones",
+  "sol",
+  "cs",
+  "ns",
+  "ultima_accion",
+  "fecha_ultima_accion",
+];
+
+const COLUMNAS_POR_ACTIVIDAD = {
+  "documentacion-previa": COLUMNAS_DOCUMENTACION_PREVIA,
+};
+
+function obtenerColumnasActividad(key) {
+  return COLUMNAS_POR_ACTIVIDAD[key] || COLUMNAS_POR_DEFECTO;
 }
 
 
@@ -2052,6 +2124,7 @@ export default function ExpedientesListado() {
                 setActividadSeleccionada("");
                 setFiltroActividad("");
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: "" }));
+                setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                 setPagina(1);
               }}
               className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left transition-all"
@@ -2095,6 +2168,7 @@ export default function ExpedientesListado() {
                     setActividadSeleccionada(actividad.key);
                     setFiltroActividad(valorBackend);
                     setFiltrosAplicados((actual) => ({ ...actual, actividad: valorBackend }));
+                    setColumnasVisibles(obtenerColumnasActividad(actividad.key));
                     setPagina(1);
                   }}
                   className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left transition-all"
@@ -2269,11 +2343,22 @@ export default function ExpedientesListado() {
                   filtroActividad
                 }
 
-                onChange={(event) =>
-                  setFiltroActividad(
-                    event.target.value
-                  )
-                }
+                onChange={(event) => {
+                  const valor = event.target.value;
+                  const definicion = ACTIVIDADES_EXPEDIENTES.find((item) =>
+                    actividadCoincide(item, valor)
+                  );
+
+                  setFiltroActividad(valor);
+
+                  if (definicion) {
+                    setActividadSeleccionada(definicion.key);
+                    setColumnasVisibles(obtenerColumnasActividad(definicion.key));
+                  } else {
+                    setActividadSeleccionada("");
+                    setColumnasVisibles(COLUMNAS_POR_DEFECTO);
+                  }
+                }}
 
                 className="
                   w-full
