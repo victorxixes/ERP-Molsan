@@ -557,6 +557,86 @@ const ACTIVIDADES_ABSIS = [
 
 ];
 
+// ============================================================
+// ACTIVIDADES DEL MÓDULO EXPEDIENTES
+// ============================================================
+// Estas son las áreas de trabajo definitivas del módulo.
+// Los alias permiten enlazar los nombres actuales de ABSIS
+// con el nombre que mostramos en nuestro ERP.
+// ============================================================
+
+const ACTIVIDADES_EXPEDIENTES = [
+  {
+    key: "documentacion-previa",
+    label: "Documentación previa",
+    icon: "📄",
+    aliases: [
+      "Documentación previa",
+    ],
+  },
+
+  {
+    key: "sede-notarial",
+    label: "Sede notarial",
+    icon: "🏛️",
+    aliases: [
+      "Sede notarial",
+      "Sede Notarial",
+    ],
+  },
+
+  {
+    key: "sede-notarial-protocolo",
+    label: "Sede notarial con protocolo",
+    icon: "📜",
+    aliases: [
+      "Sede notarial con protocolo",
+      "Sede Notarial con protocolo",
+    ],
+  },
+
+  {
+    key: "liquidacion-impuestos",
+    label: "Liquidación de impuestos",
+    icon: "💶",
+    aliases: [
+      "Liquidación de impuestos",
+      "Liquidación impuestos",
+      "Liquidacion de impuestos",
+      "Liquidacion impuestos",
+    ],
+  },
+
+  {
+    key: "tramitacion-inscripcion",
+    label: "Tramitación inscripción",
+    icon: "🏢",
+    aliases: [
+      "Tramitación inscripción",
+      "Tramitacion inscripcion",
+    ],
+  },
+
+  {
+    key: "defectos-registrales",
+    label: "Defectos registrales",
+    icon: "⚠️",
+    aliases: [
+      "Defectos registrales",
+      "Defectos Registrales",
+    ],
+  },
+
+  {
+    key: "facturacion-cierre",
+    label: "Facturación y cierre",
+    icon: "🧾",
+    aliases: [
+      "Facturación y cierre",
+      "Facturacion y cierre",
+    ],
+  },
+];
 
 // ============================================================
 // FORMATEAR VALOR
@@ -678,6 +758,15 @@ function formatearNumero(
 
 export default function ExpedientesListado() {
 
+    // ==========================================================
+  // ACTIVIDAD SELECCIONADA EN EL SIDEBAR
+  // ==========================================================
+
+  const [
+    actividadSeleccionada,
+    setActividadSeleccionada,
+  ] = useState("");
+  
   // ==========================================================
   // DATOS
   // ==========================================================
@@ -1807,6 +1896,177 @@ export default function ExpedientesListado() {
       ]
     );
 
+    // ==========================================================
+  // NORMALIZAR TEXTO DE ACTIVIDAD
+  // ==========================================================
+
+  const normalizarActividad = (
+    valor
+  ) => {
+
+    return String(
+      valor || ""
+    )
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(
+        /[\u0300-\u036f]/g,
+        ""
+      );
+
+  };
+
+
+  // ==========================================================
+  // OBTENER DATOS DE UNA ACTIVIDAD
+  // ==========================================================
+
+  const obtenerActividadDatos = (
+    actividad
+  ) => {
+
+    if (!actividad) {
+
+      return null;
+
+    }
+
+    const aliases = [
+      actividad.label,
+      ...actividad.aliases,
+    ];
+
+    const aliasesNormalizados =
+      aliases.map(
+        normalizarActividad
+      );
+
+    return actividades.find(
+      (item) =>
+        aliasesNormalizados.includes(
+          normalizarActividad(
+            item.actividad
+          )
+        )
+    ) || null;
+
+  };
+
+
+  // ==========================================================
+  // CONTADOR DE ACTIVIDAD
+  // ==========================================================
+
+  const obtenerTotalActividad = (
+    actividad
+  ) => {
+
+    const encontrada =
+      obtenerActividadDatos(
+        actividad
+      );
+
+    return Number(
+      encontrada?.total || 0
+    );
+
+  };
+
+
+  // ==========================================================
+  // SELECCIONAR ACTIVIDAD
+  // ==========================================================
+
+  const seleccionarActividad = (
+    actividad
+  ) => {
+
+    // --------------------------------------------------------
+    // TODOS LOS EXPEDIENTES
+    // --------------------------------------------------------
+
+    if (!actividad) {
+
+      setActividadSeleccionada("");
+
+      setFiltroActividad("");
+
+      setFiltrosAplicados(
+        (actual) => ({
+          ...actual,
+          actividad: "",
+        })
+      );
+
+      setPagina(1);
+
+      setError("");
+
+      return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // ACTIVIDAD CONCRETA
+    // --------------------------------------------------------
+
+    const datos =
+      obtenerActividadDatos(
+        actividad
+      );
+
+
+    // Utilizamos el nombre real que devuelve
+    // el backend cuando existe.
+    //
+    // Esto es importante porque actualmente ABSIS
+    // puede devolver, por ejemplo:
+    //
+    // "Liquidación impuestos"
+    //
+    // mientras que nosotros mostramos:
+    //
+    // "Liquidación de impuestos"
+
+    const valorFiltro =
+      datos?.actividad ||
+      actividad.label;
+
+
+    setActividadSeleccionada(
+      actividad.key
+    );
+
+    setFiltroActividad(
+      valorFiltro
+    );
+
+    setFiltrosAplicados(
+      (actual) => ({
+        ...actual,
+        actividad: valorFiltro,
+      })
+    );
+
+    setPagina(1);
+
+    setError("");
+
+  };
+
+
+  // ==========================================================
+  // ACTIVIDAD ACTIVA
+  // ==========================================================
+
+  const actividadActiva =
+    ACTIVIDADES_EXPEDIENTES.find(
+      (actividad) =>
+        actividad.key ===
+        actividadSeleccionada
+    ) || null;
 
   // ==========================================================
   // RENDER
@@ -1939,269 +2199,599 @@ export default function ExpedientesListado() {
       )}
 
 
-      {/* ======================================================
-          ACTIVIDADES
+            {/* ======================================================
+          ESTRUCTURA PRINCIPAL DEL MÓDULO EXPEDIENTES
       ====================================================== */}
 
-      <section
+      <div
         className="
-          erp-card
-
           max-w-[1700px]
           mx-auto
 
-          p-4
-          sm:p-5
+          grid
+          grid-cols-1
 
-          shadow-sm
+          xl:grid-cols-[270px_minmax(0,1fr)]
+
+          gap-5
+
+          items-start
         "
       >
 
-        <div
+        {/* ====================================================
+            SIDEBAR EXPEDIENTES
+        ==================================================== */}
+
+        <aside
           className="
-            flex
-            flex-col
+            erp-card
 
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
+            p-3
 
-            gap-2
+            shadow-sm
 
-            mb-4
+            xl:sticky
+            xl:top-4
+
+            z-20
           "
         >
 
-          <div>
-
-            <h2
-              className="
-                text-xl
-                font-semibold
-                text-[var(--erp-text)]
-              "
-            >
-              Actividades de expedientes
-            </h2>
-
-
-            <p
-              className="
-                text-sm
-                text-[var(--erp-text-soft)]
-                mt-1
-              "
-            >
-              Número total de expedientes por actividad actual
-            </p>
-
-          </div>
-
-
           <div
             className="
-              text-sm
-              text-[var(--erp-text-soft)]
+              px-3
+              pt-2
+              pb-3
             "
           >
 
-            Total general:{" "}
-
-            <strong
+            <div
               className="
+                text-xs
+                font-semibold
+
+                uppercase
+                tracking-wider
+
+                text-[var(--erp-text-soft)]
+              "
+            >
+              Expedientes
+            </div>
+
+
+            <div
+              className="
+                mt-1
+
+                text-lg
+                font-bold
+
                 text-[var(--erp-text)]
               "
             >
-              {formatearNumero(
-                totalActividades
-              )}
-            </strong>
+              Áreas de trabajo
+            </div>
 
           </div>
 
-        </div>
 
+          {/* ==================================================
+              TODOS
+          ================================================== */}
 
-        {loadingActividades ? (
+          <button
+            type="button"
 
-          <div
-            className="
-              grid
+            onClick={() =>
+              seleccionarActividad(
+                null
+              )
+            }
 
-              grid-cols-1
-              sm:grid-cols-2
-              lg:grid-cols-3
-              xl:grid-cols-4
+            className={`
+              w-full
+
+              flex
+              items-center
 
               gap-3
+
+              px-3
+              py-3
+
+              rounded-xl
+
+              text-left
+
+              transition
+
+              ${
+                !actividadSeleccionada
+                  ? `
+                    bg-[var(--erp-primary)]
+                    text-white
+                    shadow-sm
+                  `
+                  : `
+                    text-[var(--erp-text)]
+                    hover:bg-[var(--erp-primary-soft)]
+                  `
+              }
+            `}
+          >
+
+            <span
+              className="
+                w-9
+                h-9
+
+                shrink-0
+
+                rounded-lg
+
+                flex
+                items-center
+                justify-center
+
+                text-base
+
+                ${
+                  !actividadSeleccionada
+                    ? "bg-white/15"
+                    : "bg-[var(--erp-primary-soft)]"
+                }
+              "
+            >
+              📁
+            </span>
+
+
+            <span
+              className="
+                min-w-0
+                flex-1
+              "
+            >
+
+              <span
+                className="
+                  block
+
+                  text-sm
+                  font-semibold
+                "
+              >
+                Todos los expedientes
+              </span>
+
+            </span>
+
+
+            <span
+              className={`
+                shrink-0
+
+                min-w-[32px]
+
+                px-2
+                py-1
+
+                rounded-lg
+
+                text-center
+
+                text-xs
+                font-bold
+
+                ${
+                  !actividadSeleccionada
+                    ? "bg-white/15 text-white"
+                    : "bg-[var(--erp-surface-soft)] text-[var(--erp-text)]"
+                }
+              `}
+            >
+              {
+                formatearNumero(
+                  totalExpedientes
+                )
+              }
+            </span>
+
+          </button>
+
+
+          {/* ==================================================
+              SEPARADOR
+          ================================================== */}
+
+          <div
+            className="
+              h-px
+
+              bg-[var(--erp-border)]
+
+              my-3
+            "
+          />
+
+
+          {/* ==================================================
+              ACTIVIDADES
+          ================================================== */}
+
+          <nav
+            className="
+              space-y-1
             "
           >
 
-            {[
-              1,
-              2,
-              3,
-              4,
-            ].map(
-              (item) => (
+            {ACTIVIDADES_EXPEDIENTES.map(
+              (
+                actividad
+              ) => {
 
-                <div
-                  key={item}
-                  className="
-                    h-24
+                const activa =
+                  actividadSeleccionada ===
+                  actividad.key;
 
-                    rounded-xl
+                const total =
+                  obtenerTotalActividad(
+                    actividad
+                  );
 
-                    bg-[var(--erp-surface-soft)]
+                return (
 
-                    border
-                    border-[var(--erp-border)]
+                  <button
+                    key={
+                      actividad.key
+                    }
 
-                    animate-pulse
-                  "
-                />
+                    type="button"
 
-              )
+                    onClick={() =>
+                      seleccionarActividad(
+                        actividad
+                      )
+                    }
+
+                    className={`
+                      w-full
+
+                      flex
+                      items-center
+
+                      gap-3
+
+                      px-3
+                      py-2.5
+
+                      rounded-xl
+
+                      text-left
+
+                      transition
+
+                      ${
+                        activa
+                          ? `
+                            bg-[var(--erp-primary)]
+                            text-white
+                            shadow-sm
+                          `
+                          : `
+                            text-[var(--erp-text)]
+                            hover:bg-[var(--erp-primary-soft)]
+                          `
+                      }
+                    `}
+                  >
+
+                    <span
+                      className={`
+                        w-9
+                        h-9
+
+                        shrink-0
+
+                        rounded-lg
+
+                        flex
+                        items-center
+                        justify-center
+
+                        text-base
+
+                        ${
+                          activa
+                            ? "bg-white/15"
+                            : "bg-[var(--erp-surface-soft)]"
+                        }
+                      `}
+                    >
+                      {
+                        actividad.icon
+                      }
+                    </span>
+
+
+                    <span
+                      className="
+                        min-w-0
+                        flex-1
+                      "
+                    >
+
+                      <span
+                        className="
+                          block
+
+                          text-sm
+                          font-medium
+
+                          leading-tight
+                        "
+                      >
+                        {
+                          actividad.label
+                        }
+                      </span>
+
+                    </span>
+
+
+                    <span
+                      className={`
+                        shrink-0
+
+                        min-w-[30px]
+
+                        px-2
+                        py-1
+
+                        rounded-lg
+
+                        text-center
+
+                        text-xs
+                        font-bold
+
+                        ${
+                          activa
+                            ? "bg-white/15 text-white"
+                            : "bg-[var(--erp-surface-soft)] text-[var(--erp-text)]"
+                        }
+                      `}
+                    >
+                      {
+                        loadingActividades
+                          ? "…"
+                          : formatearNumero(
+                              total
+                            )
+                      }
+                    </span>
+
+                  </button>
+
+                );
+
+              }
             )}
 
-          </div>
+          </nav>
 
-        ) : errorActividades ? (
 
-          <div
-            className="
-              rounded-xl
-
-              border
-              border-amber-200
-
-              bg-amber-50
-
-              p-4
-
-              text-sm
-
-              text-amber-800
-            "
-          >
-            {errorActividades}
-          </div>
-
-        ) : actividades.length === 0 ? (
+          {/* ==================================================
+              INFORMACIÓN
+          ================================================== */}
 
           <div
             className="
-              rounded-xl
+              mt-4
 
-              border
-              border-[var(--erp-border)]
+              px-3
+              py-3
+
+              rounded-xl
 
               bg-[var(--erp-surface-soft)]
 
-              p-5
-
-              text-sm
-
-              text-[var(--erp-text-soft)]
+              border
+              border-[var(--erp-border)]
             "
           >
-            No hay actividades para mostrar.
+
+            <div
+              className="
+                text-xs
+                font-medium
+
+                text-[var(--erp-text-soft)]
+              "
+            >
+              Total
+            </div>
+
+
+            <div
+              className="
+                mt-1
+
+                text-xl
+                font-bold
+
+                text-[var(--erp-text)]
+              "
+            >
+              {
+                formatearNumero(
+                  totalExpedientes
+                )
+              }
+            </div>
+
+
+            <div
+              className="
+                mt-0.5
+
+                text-xs
+
+                text-[var(--erp-text-soft)]
+              "
+            >
+              expedientes
+            </div>
+
           </div>
 
-        ) : (
+        </aside>
 
-          <div
+
+        {/* ====================================================
+            ÁREA PRINCIPAL EXPEDIENTES
+        ==================================================== */}
+
+        <div
+          className="
+            min-w-0
+
+            space-y-5
+          "
+        >
+
+          {/* ==================================================
+              CABECERA DEL ÁREA
+          ================================================== */}
+
+          <section
             className="
-              grid
+              erp-card
 
-              grid-cols-1
-              sm:grid-cols-2
-              lg:grid-cols-3
-              xl:grid-cols-4
+              p-4
+              sm:p-5
 
-              gap-3
+              shadow-sm
             "
           >
 
-            {actividades.map(
-              (
-                actividad,
-                indice
-              ) => (
+            <div
+              className="
+                flex
+                flex-col
+
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+
+                gap-3
+              "
+            >
+
+              <div>
 
                 <div
-                  key={
-                    `${actividad.actividad}-${indice}`
-                  }
                   className="
-                    bg-[var(--erp-surface-soft)]
+                    text-xs
 
-                    border
-                    border-[var(--erp-border)]
+                    uppercase
+                    tracking-wider
+
+                    font-semibold
+
+                    text-[var(--erp-text-soft)]
+                  "
+                >
+                  Área de trabajo
+                </div>
+
+
+                <h2
+                  className="
+                    mt-1
+
+                    text-2xl
+
+                    font-bold
+
+                    text-[var(--erp-text)]
+                  "
+                >
+                  {
+                    actividadActiva
+                      ? actividadActiva.label
+                      : "Todos los expedientes"
+                  }
+                </h2>
+
+
+                <p
+                  className="
+                    mt-1
+
+                    text-sm
+
+                    text-[var(--erp-text-soft)]
+                  "
+                >
+                  {
+                    actividadActiva
+                      ? "Expedientes pendientes de trabajo en esta actividad."
+                      : "Consulta general de todos los expedientes."
+                  }
+                </p>
+
+              </div>
+
+
+              <div
+                className="
+                  flex
+                  items-center
+
+                  gap-2
+
+                  shrink-0
+                "
+              >
+
+                <span
+                  className="
+                    inline-flex
+                    items-center
+
+                    px-3
+                    py-2
 
                     rounded-xl
 
-                    p-4
+                    bg-[var(--erp-primary-soft)]
 
-                    transition
+                    text-[var(--erp-primary)]
 
-                    hover:border-[#cbd6e6]
-
-                    hover:shadow-sm
+                    text-sm
+                    font-semibold
                   "
                 >
+                  {
+                    formatearNumero(
+                      actividadActiva
+                        ? obtenerTotalActividad(
+                            actividadActiva
+                          )
+                        : totalExpedientes
+                    )
+                  }{" "}
+                  expedientes
+                </span>
 
-                  <p
-                    className="
-                      text-sm
-                      font-medium
-                      text-[var(--erp-text-soft)]
+              </div>
 
-                      min-h-[40px]
-                    "
-                  >
-                    {actividad.actividad}
-                  </p>
+            </div>
 
-
-                  <p
-                    className="
-                      text-2xl
-                      font-bold
-
-                      text-[var(--erp-primary)]
-
-                      mt-2
-                    "
-                  >
-                    {formatearNumero(
-                      actividad.total
-                    )}
-                  </p>
-
-
-                  <p
-                    className="
-                      text-xs
-
-                      text-[var(--erp-text-soft)]
-
-                      mt-1
-                    "
-                  >
-                    expedientes
-                  </p>
-
-                </div>
-
-              )
-            )}
-
-          </div>
-
-        )}
-
-      </section>
+          </section>
 
 
       {/* ======================================================
