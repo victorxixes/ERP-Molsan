@@ -4,6 +4,10 @@ from typing import Optional
 from pydantic import BaseModel, validator
 
 
+# ============================================================
+# CITA BASE
+# ============================================================
+
 class CitaBase(BaseModel):
 
     fecha: date
@@ -24,14 +28,17 @@ class CitaBase(BaseModel):
 
     observaciones: Optional[str] = None
 
-    # =========================================================
+    # --------------------------------------------------------
     # EXPEDIENTE
-    # =========================================================
+    # --------------------------------------------------------
 
     expediente_id: Optional[int] = None
 
     @validator("tipo_cita")
-    def validar_tipo_cita(cls, v):
+    def validar_tipo_cita(
+        cls,
+        v,
+    ):
 
         if not v or not isinstance(v, str):
 
@@ -41,11 +48,40 @@ class CitaBase(BaseModel):
 
         return v
 
+    @validator("notario_id")
+    def validar_notario_si_firma(
+        cls,
+        v,
+        values,
+    ):
 
-class CitaCreate(CitaBase):
+        if (
+            values.get("tipo_cita")
+            == "Firma notarial"
+            and v is None
+        ):
 
-    apoderado: Optional[str] = None
+            raise ValueError(
+                "notario_id es obligatorio "
+                "para tipo_cita = Firma notarial"
+            )
 
+        return v
+
+
+# ============================================================
+# CREAR CITA
+# ============================================================
+
+class CitaCreate(
+    CitaBase
+):
+    pass
+
+
+# ============================================================
+# ACTUALIZAR CITA
+# ============================================================
 
 class CitaUpdate(BaseModel):
 
@@ -69,6 +105,10 @@ class CitaUpdate(BaseModel):
 
     expediente_id: Optional[int] = None
 
+
+# ============================================================
+# RESPUESTA
+# ============================================================
 
 class CitaResponse(BaseModel):
 
@@ -98,13 +138,14 @@ class CitaResponse(BaseModel):
 
     apoderado: Optional[str] = None
 
-    # =========================================================
+    # --------------------------------------------------------
     # EXPEDIENTE
-    # =========================================================
+    # --------------------------------------------------------
 
     expediente_id: Optional[int] = None
 
     id_expediente: Optional[str] = None
 
     class Config:
+
         orm_mode = True
