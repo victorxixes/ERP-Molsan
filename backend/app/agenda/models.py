@@ -12,13 +12,22 @@ from backend.app.database import Base
 
 
 class Cita(Base):
+
     __tablename__ = "agenda_citas"
+
+    # ============================================================
+    # IDENTIFICACIÓN
+    # ============================================================
 
     id = Column(
         Integer,
         primary_key=True,
         index=True,
     )
+
+    # ============================================================
+    # FECHA / HORARIO
+    # ============================================================
 
     fecha = Column(
         Date,
@@ -35,40 +44,24 @@ class Cita(Base):
         nullable=False,
     )
 
+    # ============================================================
+    # TIPO
+    # ============================================================
+
     tipo_cita = Column(
         String,
         nullable=False,
     )
 
-    # =========================================================
-    # EXPEDIENTE
-    # =========================================================
-    #
-    # NULL:
-    #   Cita normal creada directamente desde Agenda.
-    #
-    # INFORMADO:
-    #   Cita vinculada a un expediente.
-    #
-    # =========================================================
-
-    expediente_id = Column(
-        Integer,
-        ForeignKey(
-            "expedientes.id",
-            ondelete="SET NULL",
-        ),
-        nullable=True,
-        index=True,
-    )
-
-    # =========================================================
+    # ============================================================
     # NOTARIO
-    # =========================================================
+    # ============================================================
 
     notario_id = Column(
         Integer,
-        ForeignKey("ctn_notarios.id"),
+        ForeignKey(
+            "ctn_notarios.id"
+        ),
         nullable=True,
     )
 
@@ -77,9 +70,9 @@ class Cita(Base):
         nullable=True,
     )
 
-    # =========================================================
+    # ============================================================
     # APODERADO
-    # =========================================================
+    # ============================================================
 
     apoderado = Column(
         String(150),
@@ -88,9 +81,40 @@ class Cita(Base):
 
     apoderado_id = Column(
         Integer,
-        ForeignKey("empleados.id"),
+        ForeignKey(
+            "empleados.id"
+        ),
         nullable=True,
     )
+
+    # ============================================================
+    # EXPEDIENTE
+    #
+    # Nullable porque una cita normal de Agenda NO tiene por qué
+    # pertenecer a un expediente.
+    # ============================================================
+
+    expediente_id = Column(
+        Integer,
+        ForeignKey(
+            "expedientes.id"
+        ),
+        nullable=True,
+        index=True,
+    )
+
+    # ============================================================
+    # OBSERVACIONES
+    # ============================================================
+
+    observaciones = Column(
+        String,
+        nullable=True,
+    )
+
+    # ============================================================
+    # RELACIONES
+    # ============================================================
 
     apoderado_rel = relationship(
         "Empleado",
@@ -98,31 +122,13 @@ class Cita(Base):
         lazy="joined",
     )
 
-    # =========================================================
-    # OBSERVACIONES
-    # =========================================================
-
-    observaciones = Column(
-        String,
-        nullable=True,
-    )
-
-    # =========================================================
-    # RELACIÓN NOTARIO
-    # =========================================================
-
     notario = relationship(
         "Notaria",
         back_populates="citas",
         lazy="joined",
     )
 
-    # =========================================================
-    # RELACIÓN EXPEDIENTE
-    # =========================================================
-
     expediente = relationship(
         "Expediente",
-        foreign_keys=[expediente_id],
         lazy="joined",
     )
