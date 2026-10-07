@@ -1,4 +1,11 @@
-from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Float,
+    Date,
+    ForeignKey,
+)
 
 from backend.app.database import Base
 
@@ -55,27 +62,60 @@ class Expediente(Base):
     # FECHAS
     # ============================================================
 
-    fecha_alta = Column(Date, nullable=True)
+    fecha_alta = Column(
+        Date,
+        nullable=True,
+    )
 
-    fecha_firma = Column(Date, nullable=True)
+    fecha_firma = Column(
+        Date,
+        nullable=True,
+    )
 
-    fecha_inscripcion = Column(Date, nullable=True)
+    fecha_inscripcion = Column(
+        Date,
+        nullable=True,
+    )
 
-    fecha_entregado_cliente = Column(Date, nullable=True)
+    fecha_entregado_cliente = Column(
+        Date,
+        nullable=True,
+    )
 
-    fecha_prevista_firma = Column(Date, nullable=True)
+    fecha_prevista_firma = Column(
+        Date,
+        nullable=True,
+    )
 
-    fecha_vencimiento = Column(Date, nullable=True)
+    fecha_vencimiento = Column(
+        Date,
+        nullable=True,
+    )
 
-    fecha_sol_cgn = Column(Date, nullable=True)
+    fecha_sol_cgn = Column(
+        Date,
+        nullable=True,
+    )
 
-    fecha_firma_prev_val = Column(Date, nullable=True)
+    fecha_firma_prev_val = Column(
+        Date,
+        nullable=True,
+    )
 
-    fecha_firma_prev_cli = Column(Date, nullable=True)
+    fecha_firma_prev_cli = Column(
+        Date,
+        nullable=True,
+    )
 
-    fecha_inicio_actividad = Column(Date, nullable=True)
+    fecha_inicio_actividad = Column(
+        Date,
+        nullable=True,
+    )
 
-    fecha_fin_actividad = Column(Date, nullable=True)
+    fecha_fin_actividad = Column(
+        Date,
+        nullable=True,
+    )
 
     # ============================================================
     # TITULAR
@@ -111,6 +151,30 @@ class Expediente(Base):
 
     apoderado = Column(
         String(300),
+        nullable=True,
+    )
+
+    # ============================================================
+    # DATOS DEL ENVÍO A NOTARIO
+    # ============================================================
+
+    tipo_firma = Column(
+        String(100),
+        nullable=True,
+    )
+
+    tipo_documento = Column(
+        String(300),
+        nullable=True,
+    )
+
+    poblacion = Column(
+        String(200),
+        nullable=True,
+    )
+
+    provincia = Column(
+        String(200),
         nullable=True,
     )
 
@@ -256,7 +320,6 @@ class Expediente(Base):
         String(200),
         nullable=True,
     )
-
 
     # ============================================================
     # GESTORÍA
