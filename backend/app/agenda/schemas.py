@@ -1,11 +1,8 @@
-from pydantic import BaseModel, validator
 from datetime import date, time
 from typing import Optional
 
+from pydantic import BaseModel, validator
 
-# =========================================================
-# BASE
-# =========================================================
 
 class CitaBase(BaseModel):
 
@@ -27,48 +24,28 @@ class CitaBase(BaseModel):
 
     observaciones: Optional[str] = None
 
+    # =========================================================
+    # EXPEDIENTE
+    # =========================================================
+
+    expediente_id: Optional[int] = None
+
     @validator("tipo_cita")
     def validar_tipo_cita(cls, v):
 
         if not v or not isinstance(v, str):
+
             raise ValueError(
                 "tipo_cita debe ser un texto válido"
             )
 
         return v
 
-    @validator("notario_id")
-    def validar_notario_si_firma(
-        cls,
-        v,
-        values
-    ):
-
-        if (
-            values.get("tipo_cita")
-            == "Firma notarial"
-            and v is None
-        ):
-            raise ValueError(
-                "notario_id es obligatorio "
-                "para tipo_cita = Firma notarial"
-            )
-
-        return v
-
-
-# =========================================================
-# CREATE
-# =========================================================
 
 class CitaCreate(CitaBase):
 
     apoderado: Optional[str] = None
 
-
-# =========================================================
-# UPDATE
-# =========================================================
 
 class CitaUpdate(BaseModel):
 
@@ -90,10 +67,8 @@ class CitaUpdate(BaseModel):
 
     observaciones: Optional[str] = None
 
+    expediente_id: Optional[int] = None
 
-# =========================================================
-# RESPONSE
-# =========================================================
 
 class CitaResponse(BaseModel):
 
@@ -113,23 +88,23 @@ class CitaResponse(BaseModel):
 
     observaciones: Optional[str] = None
 
-    # -----------------------------------------------------
-    # NOTARIO
-    # -----------------------------------------------------
-
     notario_id: Optional[int] = None
 
     notario_nombre: Optional[str] = None
-
-    # -----------------------------------------------------
-    # APODERADO
-    # -----------------------------------------------------
 
     apoderado_id: Optional[int] = None
 
     apoderado_nombre: Optional[str] = None
 
     apoderado: Optional[str] = None
+
+    # =========================================================
+    # EXPEDIENTE
+    # =========================================================
+
+    expediente_id: Optional[int] = None
+
+    id_expediente: Optional[str] = None
 
     class Config:
         orm_mode = True
