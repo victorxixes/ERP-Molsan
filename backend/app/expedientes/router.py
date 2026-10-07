@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import (
     or_,
     func,
+    and_,
 )
 
 from typing import Optional
@@ -16,6 +17,7 @@ from datetime import datetime, date
 
 import json
 import io
+import unicodedata
 
 import openpyxl
 from openpyxl.styles import Font
@@ -35,6 +37,438 @@ router = APIRouter(
     prefix="/expedientes",
     tags=["Expedientes"],
 )
+
+
+# ============================================================
+# ACTIVIDADES DEL MÓDULO EXPEDIENTES
+#
+# IMPORTANTE:
+#
+# Estas son las actividades de trabajo que verá el usuario
+# en el módulo Expedientes.
+#
+# No todas tienen por qué coincidir literalmente con el valor
+# almacenado en Expediente.actividad_actual.
+#
+# Especialmente:
+#
+#   Sede notarial
+#       = actividad Sede notarial + fecha_firma vacía
+#
+#   Sede notarial con protocolo
+#       = actividad Sede notarial + fecha_firma informada
+#
+# Las claves son internas y estables para el frontend.
+# ============================================================
+
+ACTIVIDADES_EXPEDIENTES = [
+
+    {
+        "key": "documentacion-previa",
+        "label": "Documentación previa",
+        "aliases": [
+            "Documentación previa",
+            "Documentacion previa",
+        ],
+    },
+
+    {
+        "key": "sede-notarial",
+        "label": "Sede notarial",
+        "aliases": [
+            "Sede notarial",
+            "Sede Notarial",
+            "Sede NOTARIAL",
+        ],
+    },
+
+    {
+        "key": "sede-notarial-protocolo",
+        "label": "Sede notarial con protocolo",
+        "aliases": [
+            "Sede notarial",
+            "Sede Notarial",
+            "Sede NOTARIAL",
+        ],
+    },
+
+    {
+        "key": "liquidacion-impuestos",
+        "label": "Liquidación de impuestos",
+        "aliases": [
+            "Liquidación de impuestos",
+            "Liquidacion de impuestos",
+            "Liquidación impuestos",
+            "Liquidacion impuestos",
+        ],
+    },
+
+    {
+        "key": "tramitacion-inscripcion",
+        "label": "Tramitación inscripción",
+        "aliases": [
+            "Tramitación inscripción",
+            "Tramitacion inscripcion",
+            "Tramitación de inscripción",
+            "Tramitacion de inscripcion",
+        ],
+    },
+
+    {
+        "key": "defectos-registrales",
+        "label": "Defectos registrales",
+        "aliases": [
+            "Defectos registrales",
+            "Defectos Registrales",
+            "Defectos registrales ",
+        ],
+    },
+
+    {
+        "key": "facturacion-cierre",
+        "label": "Facturación y cierre",
+        "aliases": [
+            "Facturación y cierre",
+            "Facturacion y cierre",
+        ],
+    },
+
+]
+
+
+# ============================================================
+# NORMALIZAR TEXTO DE ACTIVIDAD
+#
+# Se utiliza para interpretar correctamente la actividad
+# recibida desde el frontend.
+#
+# Ejemplos:
+#
+#   "Sede Notarial"
+#   "sede notarial"
+#   "SÉDE NOTARIAL"   -> misma clave normalizada
+#
+# NO modifica los datos de la base de datos.
+# ============================================================
+
+def normalizar_actividad_texto(
+    valor: Optional[str],
+) -> str:
+
+    if valor is None:
+        return ""
+
+    texto = str(valor).strip().lower()
+
+    texto = unicodedata.normalize(
+        "NFD",
+        texto,
+    )
+
+    texto = "".join(
+        caracter
+        for caracter in texto
+        if unicodedata.category(caracter) != "Mn"
+    )
+
+    texto = " ".join(
+        texto.split()
+    )
+
+    return texto
+
+
+# ============================================================
+# RESOLVER ACTIVIDAD
+#
+# Convierte lo que llega desde frontend en una clave interna.
+#
+# Puede recibir:
+#
+#   documentacion-previa
+#   Documentación previa
+#   Documentacion previa
+#
+# etc.
+# ============================================================
+
+def resolver_actividad(
+    valor: Optional[str],
+) -> Optional[str]:
+
+    normalizada = normalizar_actividad_texto(
+        valor
+    )
+
+    if not normalizada:
+        return None
+
+    for actividad in ACTIVIDADES_EXPEDIENTES:
+
+        if (
+            normalizada
+            == normalizar_actividad_texto(
+                actividad["key"]
+            )
+        ):
+            return actividad["key"]
+
+        if (
+            normalizada
+            == normalizar_actividad_texto(
+                actividad["label"]
+            )
+        ):
+            return actividad["key"]
+
+        for alias in actividad["aliases"]:
+
+            if (
+                normalizada
+                == normalizar_actividad_texto(
+                    alias
+                )
+            ):
+                return actividad["key"]
+
+    return None
+
+
+# ============================================================
+# CONSTRUIR CONDICIÓN DE ACTIVIDAD
+#
+# Esta función contiene las reglas reales del módulo.
+#
+# Es utilizada tanto por:
+#
+#   /listado
+#
+# como por:
+#
+#   /resumen
+#
+# para garantizar que los contadores y el listado siempre
+# coincidan.
+# ============================================================
+
+def condicion_actividad(
+    clave_actividad: str,
+):
+
+    # ========================================================
+    # DOCUMENTACIÓN PREVIA
+    # ========================================================
+
+    if clave_actividad == "documentacion-previa":
+
+        return or_(
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Documentación previa"
+            ),
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Documentacion previa"
+            ),
+
+        )
+
+
+    # ========================================================
+    # SEDE NOTARIAL
+    #
+    # IMPORTANTE:
+    #
+    # Sede notarial = actividad Sede notarial
+    #                 y fecha_firma VACÍA.
+    #
+    # No debe incluir expedientes que ya tengan fecha de firma.
+    # ========================================================
+
+    if clave_actividad == "sede-notarial":
+
+        return and_(
+
+            or_(
+
+                func.trim(
+                    Expediente.actividad_actual
+                ).ilike(
+                    "Sede notarial"
+                ),
+
+                func.trim(
+                    Expediente.actividad_actual
+                ).ilike(
+                    "Sede Notarial"
+                ),
+
+            ),
+
+            Expediente.fecha_firma.is_(None),
+
+        )
+
+
+    # ========================================================
+    # SEDE NOTARIAL CON PROTOCOLO
+    #
+    # IMPORTANTE:
+    #
+    # Es la misma actividad base "Sede notarial",
+    # pero con fecha_firma INFORMADA.
+    # ========================================================
+
+    if clave_actividad == "sede-notarial-protocolo":
+
+        return and_(
+
+            or_(
+
+                func.trim(
+                    Expediente.actividad_actual
+                ).ilike(
+                    "Sede notarial"
+                ),
+
+                func.trim(
+                    Expediente.actividad_actual
+                ).ilike(
+                    "Sede Notarial"
+                ),
+
+            ),
+
+            Expediente.fecha_firma.isnot(None),
+
+        )
+
+
+    # ========================================================
+    # LIQUIDACIÓN DE IMPUESTOS
+    # ========================================================
+
+    if clave_actividad == "liquidacion-impuestos":
+
+        return or_(
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Liquidación de impuestos"
+            ),
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Liquidacion de impuestos"
+            ),
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Liquidación impuestos"
+            ),
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Liquidacion impuestos"
+            ),
+
+        )
+
+
+    # ========================================================
+    # TRAMITACIÓN INSCRIPCIÓN
+    # ========================================================
+
+    if clave_actividad == "tramitacion-inscripcion":
+
+        return or_(
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Tramitación inscripción"
+            ),
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Tramitacion inscripcion"
+            ),
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Tramitación de inscripción"
+            ),
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Tramitacion de inscripcion"
+            ),
+
+        )
+
+
+    # ========================================================
+    # DEFECTOS REGISTRALES
+    # ========================================================
+
+    if clave_actividad == "defectos-registrales":
+
+        return or_(
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Defectos registrales"
+            ),
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Defectos Registrales"
+            ),
+
+        )
+
+
+    # ========================================================
+    # FACTURACIÓN Y CIERRE
+    # ========================================================
+
+    if clave_actividad == "facturacion-cierre":
+
+        return or_(
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Facturación y cierre"
+            ),
+
+            func.trim(
+                Expediente.actividad_actual
+            ).ilike(
+                "Facturacion y cierre"
+            ),
+
+        )
+
+
+    # ========================================================
+    # ACTIVIDAD DESCONOCIDA
+    # ========================================================
+
+    return None
 
 
 # ============================================================
@@ -797,17 +1231,41 @@ def aplicar_filtros(
 
     # ========================================================
     # ACTIVIDAD
+    #
+    # IMPORTANTE:
+    #
+    # Aquí ya NO hacemos simplemente:
+    #
+    # actividad_actual LIKE '%...%'
+    #
+    # Ahora utilizamos las reglas reales de cada actividad.
     # ========================================================
 
     if actividad and actividad.strip():
 
-        patron = f"%{actividad.strip()}%"
-
-        q = q.filter(
-            Expediente.actividad_actual.ilike(
-                patron
-            )
+        clave_actividad = resolver_actividad(
+            actividad
         )
+
+        if clave_actividad is None:
+
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Actividad no válida: "
+                    f"{actividad}"
+                ),
+            )
+
+        condicion = condicion_actividad(
+            clave_actividad
+        )
+
+        if condicion is not None:
+
+            q = q.filter(
+                condicion
+            )
 
 
     # ========================================================
@@ -1230,11 +1688,24 @@ def listado_expedientes(
 #
 # IMPORTANTE:
 #
-# Los contadores se calculan directamente en la base de datos.
+# Los contadores utilizan EXACTAMENTE las mismas reglas que
+# /listado.
 #
-# NO dependen de la página actual del listado.
+# De esta manera:
 #
-# Se agrupan por actividad_actual.
+# contador "Sede notarial"
+#
+# coincide con:
+#
+# listado actividad=sede-notarial
+#
+# y:
+#
+# contador "Sede notarial con protocolo"
+#
+# coincide con:
+#
+# listado actividad=sede-notarial-protocolo
 # ============================================================
 
 @router.get("/resumen")
@@ -1245,103 +1716,6 @@ def resumen_expedientes(
     ),
 
 ):
-
-    # ========================================================
-    # EXPRESIÓN NORMALIZADA
-    #
-    # Convierte:
-    #
-    # NULL
-    # ""
-    # "   "
-    #
-    # en:
-    #
-    # "Sin actividad"
-    #
-    # para evitar duplicados.
-    # ========================================================
-
-    actividad_normalizada = func.coalesce(
-
-        func.nullif(
-
-            func.trim(
-                Expediente.actividad_actual
-            ),
-
-            "",
-
-        ),
-
-        "Sin actividad",
-
-    )
-
-
-    # ========================================================
-    # AGRUPAR POR ACTIVIDAD ACTUAL
-    # ========================================================
-
-    resultados = (
-
-        db.query(
-
-            actividad_normalizada.label(
-                "actividad"
-            ),
-
-            func.count(
-                Expediente.id
-            ).label(
-                "total"
-            ),
-
-        )
-
-        .group_by(
-            actividad_normalizada
-        )
-
-        .order_by(
-
-            func.count(
-                Expediente.id
-            ).desc()
-
-        )
-
-        .all()
-
-    )
-
-
-    # ========================================================
-    # LISTA
-    # ========================================================
-
-    actividades = []
-
-
-    for (
-        actividad,
-        total,
-    ) in resultados:
-
-        actividades.append({
-
-            "actividad":
-                str(
-                    actividad
-                ).strip(),
-
-            "total":
-                int(
-                    total
-                ),
-
-        })
-
 
     # ========================================================
     # TOTAL GENERAL
@@ -1362,6 +1736,60 @@ def resumen_expedientes(
         or 0
 
     )
+
+
+    # ========================================================
+    # CONTADORES DE LAS 7 ACTIVIDADES
+    # ========================================================
+
+    actividades = []
+
+
+    for actividad in ACTIVIDADES_EXPEDIENTES:
+
+        condicion = condicion_actividad(
+            actividad["key"]
+        )
+
+        if condicion is None:
+
+            total = 0
+
+        else:
+
+            total = (
+
+                db.query(
+                    func.count(
+                        Expediente.id
+                    )
+                )
+
+                .filter(
+                    condicion
+                )
+
+                .scalar()
+
+                or 0
+
+            )
+
+
+        actividades.append({
+
+            "key":
+                actividad["key"],
+
+            "actividad":
+                actividad["label"],
+
+            "total":
+                int(
+                    total
+                ),
+
+        })
 
 
     # ========================================================
