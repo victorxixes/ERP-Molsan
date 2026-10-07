@@ -1,6 +1,5 @@
 import {
   useEffect,
-  useMemo,
   useState,
 } from "react";
 
@@ -992,29 +991,6 @@ export default function ExpedientesListado() {
 
 
   // ==========================================================
-  // COLUMNAS
-  // ==========================================================
-
-  const [
-    columnasVisiblesManuales,
-    setColumnasVisiblesManuales,
-  ] = useState(
-    COLUMNAS_POR_DEFECTO
-  );
-
-  const columnasVisibles = useMemo(
-    () =>
-      actividadSeleccionada
-        ? obtenerColumnasActividad(actividadSeleccionada)
-        : columnasVisiblesManuales,
-    [
-      actividadSeleccionada,
-      columnasVisiblesManuales,
-    ]
-  );
-
-
-  // ==========================================================
   // ACTIVIDADES
   // ==========================================================
 
@@ -1050,6 +1026,18 @@ export default function ExpedientesListado() {
     actividadSeleccionada,
     setActividadSeleccionada,
   ] = useState("");
+
+
+  // ==========================================================
+  // COLUMNAS VISIBLES
+  // ==========================================================
+
+  const [
+    columnasVisibles,
+    setColumnasVisibles,
+  ] = useState(
+    COLUMNAS_POR_DEFECTO
+  );
 
 
   // ==========================================================
@@ -1900,7 +1888,7 @@ export default function ExpedientesListado() {
     key
   ) => {
 
-    setColumnasVisiblesManuales(
+    setColumnasVisibles(
       (actuales) => {
 
         if (
@@ -1938,7 +1926,7 @@ export default function ExpedientesListado() {
   const mostrarTodasColumnas =
     () => {
 
-      setColumnasVisiblesManuales(
+      setColumnasVisibles(
         COLUMNAS.map(
           (columna) =>
             columna.key
@@ -1955,7 +1943,7 @@ export default function ExpedientesListado() {
   const restaurarColumnas =
     () => {
 
-      setColumnasVisiblesManuales(
+      setColumnasVisibles(
         COLUMNAS_POR_DEFECTO
       );
 
@@ -1967,17 +1955,11 @@ export default function ExpedientesListado() {
   // ==========================================================
 
   const columnasActivas =
-    useMemo(
-      () =>
-        COLUMNAS.filter(
-          (columna) =>
-            columnasVisibles.includes(
-              columna.key
-            )
-        ),
-      [
-        columnasVisibles,
-      ]
+    COLUMNAS.filter(
+      (columna) =>
+        columnasVisibles.includes(
+          columna.key
+        )
     );
 
 
@@ -2117,6 +2099,7 @@ export default function ExpedientesListado() {
               type="button"
               onClick={() => {
                 setActividadSeleccionada("");
+                setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                 setFiltroActividad("");
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: "" }));
                 setPagina(1);
@@ -2160,6 +2143,7 @@ export default function ExpedientesListado() {
                     const valorBackend = encontrado?.actividad || actividad.label;
 
                     setActividadSeleccionada(actividad.key);
+                    setColumnasVisibles(obtenerColumnasActividad(actividad.key));
                     setFiltroActividad(valorBackend);
                     setFiltrosAplicados((actual) => ({ ...actual, actividad: valorBackend }));
                     setPagina(1);
