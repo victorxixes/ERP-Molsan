@@ -116,8 +116,10 @@ from backend.app.ctn.models import (
 # CITAS
 #
 # IMPORTANTE:
-# Empleado tiene una relación con Cita.
-# Cita tiene una relación con Notaria.
+# Cita tiene relación con:
+# - Notaria
+# - Empleado
+# - Expediente
 # ------------------------------------------------------------
 
 from backend.app.agenda.models import (
@@ -217,8 +219,11 @@ from backend.app.acciones_expediente.models import (
 #
 # IMPORTANTE:
 #
-# Los modelos se importan antes de create_all().
+# Todos los modelos se importan antes de create_all().
 # De esta forma SQLAlchemy conoce todas las tablas y relaciones.
+#
+# create_all() solamente crea tablas que no existen.
+# No modifica tablas existentes.
 # ============================================================
 
 Base.metadata.create_all(
@@ -239,7 +244,6 @@ Base.metadata.create_all(
 #          ↓
 # SEDE NOTARIAL CON PROTOCOLO
 #
-# IMPORTANTE:
 # create_all() NO modifica tablas existentes.
 # Por eso añadimos las columnas mediante ALTER TABLE.
 # ============================================================
@@ -282,6 +286,89 @@ with engine.begin() as connection:
             ALTER TABLE expedientes
             ADD COLUMN IF NOT EXISTS provincia
             VARCHAR(200)
+            """
+        )
+    )
+
+
+# ============================================================
+# FIX SCHEMA — AGENDA / EXPEDIENTES
+#
+# Una cita de firma notarial puede quedar vinculada
+# directamente al expediente.
+#
+# Flujo:
+#
+# EXPEDIENTE
+#     ↓
+# ENVIAR A NOTARIO
+#     ↓
+# FECHA PREVISTA DE FIRMA
+#     ↓
+# AGENDA_CITAS
+#
+# expediente_id permite saber qué expediente originó
+# una determinada cita de firma.
+#
+# create_all() no modifica tablas existentes, por lo que
+# añadimos la columna manualmente.
+# ============================================================
+
+with engine.begin() as connection:
+
+    connection.execute(
+        text(
+            """
+            ALTER TABLE agenda_citas
+            ADD COLUMN IF NOT EXISTS expediente_id
+            INTEGER
+            """
+        )
+    )
+
+    connection.execute(
+        text(
+            """
+            CREATE INDEX IF NOT EXISTS
+            ix_agenda_citas_expediente_id
+            ON agenda_citas (expediente_id)
+            """
+        )
+    )
+
+
+# ============================================================
+# FIX SCHEMA — FOREIGN KEY A EXPEDIENTES
+#
+# Intentamos garantizar que agenda_citas.expediente_id
+# quede relacionado con expedientes.id.
+#
+# El bloque DO evita intentar crear la restricción
+# nuevamente en cada arranque.
+# ============================================================
+
+with engine.begin() as connection:
+
+    connection.execute(
+        text(
+            """
+            DO $$
+            BEGIN
+
+                IF NOT EXISTS (
+                    SELECT 1
+                    FROM pg_constraint
+                    WHERE conname = 'fk_agenda_citas_expediente_id'
+                ) THEN
+
+                    ALTER TABLE agenda_citas
+                    ADD CONSTRAINT fk_agenda_citas_expediente_id
+                    FOREIGN KEY (expediente_id)
+                    REFERENCES expedientes(id);
+
+                END IF;
+
+            END $$;
             """
         )
     )
@@ -353,9 +440,7 @@ TIPOS_CARGA_HIPOTECARIA_INICIALES = [
 
 with Session(bind=engine) as db:
 
-    for nombre in (
-        TIPOS_CARGA_HIPOTECARIA_INICIALES
-    ):
+    for nombre in TIPOS_CARGA_HIPOTECARIA_INICIALES:
 
         existe = (
             db.query(
