@@ -1,265 +1,311 @@
-from sqlalchemy import cast, Date
-from sqlalchemy.orm import Session
-from datetime import date, timedelta, time
+from datetime import date
 from calendar import monthrange
+
+from sqlalchemy.orm import Session
 
 from backend.app.agenda.models import Cita
 from backend.app.ctn.models import Notaria
 from backend.app.empleados.models import Empleado
+from backend.app.expedientes.models import Expediente
+
 from backend.app.agenda.geocode import distancia_molsan
 
 
-# =========================================================
-# CITA CON RELACIONES
-# =========================================================
+# ============================================================
+# NORMALIZAR TIPO DE FIRMA
+# ============================================================
 
-def cita_con_relaciones(
-    db: Session,
-    cita: Cita
+def normalizar_tipo_firma(
+    cita: Cita,
+    notario=None,
 ):
-    # ======================================================
-    # NOTARIO
-    # ======================================================
 
-    notario = None
+    if notario is not None:
 
-    if cita.notario_id:
+        vc = str(
+            getattr(
+                notario,
+                "vc",
+                "",
+            )
+            or ""
+        ).strip().upper()
+
+        if vc in {
+            "SI",
+            "VC",
+            "VIDEOCONFERENCIA",
+        }:
+
+            return "Videoconferencia"
+
+        if vc in {
+            "NO",
+            "PRESENCIAL",
+        }:
+
+            return "Presencial"
+
+    tipo = str(
+        getattr(
+            cita,
+            "tipo_firma",
+            "",
+        )
+        or ""
+    ).strip().upper()
+
+    if tipo in {
+        "SI",
+        "VC",
+        "VIDEOCONFERENCIA",
+    }:
+
+        return "Videoconferencia"
+
+    return (
+        getattr(
+            cita,
+            "tipo_firma",
+            None,
+        )
+        or "Presencial"
+    )
+
+
+# ============================================================
+# DISTANCIA
+# ============================================================
+
+def calcular_distancia_cita(
+    db: Session,
+    cita: Cita,
+):
+
+    notario = getattr(
+        cita,
+        "notario",
+        None,
+    )
+
+    if (
+        notario is None
+        and cita.notario_id
+    ):
 
         notario = (
             db.query(Notaria)
             .filter(
-                Notaria.id == cita.notario_id
+                Notaria.id
+                == cita.notario_id
             )
             .first()
         )
 
-    # ======================================================
-    # APODERADO
-    # ======================================================
+    tipo_firma = normalizar_tipo_firma(
+        cita,
+        notario,
+    )
 
-    apoderado = None
+    if tipo_firma == "Videoconferencia":
+
+        return 0.0
+
+    if notario is None:
+
+        return 0.0
+
+    lat = getattr(
+        notario,
+        "lat",
+        None,
+    )
+
+    lng = getattr(
+        notario,
+        "lng",
+        None,
+    )
+
+    if lat is None or lng is None:
+
+        return 0.0
+
+    try:
+
+        return float(
+            distancia_molsan(
+                float(lat),
+                float(lng),
+            )
+        )
+
+    except Exception:
+
+        return 0.0
+
+
+# ============================================================
+# SERIALIZAR CITA
+# ============================================================
+
+def cita_con_relaciones(
+    db: Session,
+    cita: Cita,
+):
+
+    notario = getattr(
+        cita,
+        "notario",
+        None,
+    )
+
+    if (
+        notario is None
+        and cita.notario_id
+    ):
+
+        notario = (
+            db.query(Notaria)
+            .filter(
+                Notaria.id
+                == cita.notario_id
+            )
+            .first()
+        )
+
+    empleado = None
 
     if cita.apoderado_id:
 
-        apoderado = (
+        empleado = (
             db.query(Empleado)
             .filter(
-                Empleado.id == cita.apoderado_id
+                Empleado.id
+                == cita.apoderado_id
             )
             .first()
         )
 
-    # ======================================================
-    # TIPO DE FIRMA
-    # ======================================================
+    expediente = None
+
+    if getattr(
+        cita,
+        "expediente_id",
+        None,
+    ):
+
+        expediente = (
+            db.query(Expediente)
+            .filter(
+                Expediente.id
+                == cita.expediente_id
+            )
+            .first()
+        )
+
+    tipo_firma = normalizar_tipo_firma(
+        cita,
+        notario,
+    )
+
+    distancia = calcular_distancia_cita(
+        db,
+        cita,
+    )
+
+    notario_nombre = ""
 
     if notario:
 
-        vc_val = (
-            notario.vc or ""
-        ).strip().upper()
+        notario_nombre = (
+            f"{getattr(notario, 'nombre', '') or ''} "
+            f"{getattr(notario, 'apellidos', '') or ''}"
+        ).strip()
 
-        tipo_firma = (
-            "Videoconferencia"
-            if vc_val in [
-                "SI",
-                "VC",
-                "VIDEOCONFERENCIA",
-            ]
-            else "Presencial"
+    apoderado_nombre = ""
+
+    if empleado:
+
+        apoderado_nombre = (
+            f"{getattr(empleado, 'nombre', '') or ''} "
+            f"{getattr(empleado, 'apellidos', '') or ''}"
+        ).strip()
+
+    elif cita.apoderado:
+
+        apoderado_nombre = (
+            cita.apoderado
         )
-
-    else:
-
-        tipo_firma = (
-            cita.tipo_firma
-            or "Presencial"
-        )
-
-    # ======================================================
-    # DISTANCIA MOLSAN -> NOTARÍA
-    # ======================================================
-
-    distancia_km = None
-
-    if notario:
-
-        lat = getattr(
-            notario,
-            "lat",
-            None
-        )
-
-        lng = getattr(
-            notario,
-            "lng",
-            None
-        )
-
-        distancia_km = distancia_molsan(
-            lat,
-            lng
-        )
-
-    # ======================================================
-    # RESPUESTA
-    # ======================================================
 
     return {
 
-        "id": cita.id,
+        "id":
+            cita.id,
 
-        "fecha": (
-            cita.fecha.strftime("%Y-%m-%d")
-            if cita.fecha
-            else None
-        ),
+        "fecha":
+            cita.fecha,
 
-        "hora_inicio": (
-            str(cita.hora_inicio)
-            if cita.hora_inicio
-            else None
-        ),
+        "hora_inicio":
+            cita.hora_inicio,
 
-        "hora_fin": (
-            str(cita.hora_fin)
-            if cita.hora_fin
-            else None
-        ),
+        "hora_fin":
+            cita.hora_fin,
 
-        "tipo_cita": cita.tipo_cita,
+        "tipo_cita":
+            cita.tipo_cita,
 
-        "tipo_firma": tipo_firma,
+        "tipo_firma":
+            tipo_firma,
 
-        "distancia_km": distancia_km,
+        "distancia_km":
+            distancia,
 
-        "vc": (
-            notario.vc
-            if notario
-            else None
-        ),
-
-        "observaciones": (
+        "observaciones":
             cita.observaciones
-        ),
+            or "",
 
-        # ==================================================
-        # NOTARIO
-        # ==================================================
+        "notario_id":
+            cita.notario_id,
 
-        "notario_id": (
-            cita.notario_id
-        ),
+        "notario_nombre":
+            notario_nombre,
 
-        "notario_nombre": (
-            f"{notario.nombre} "
-            f"{notario.apellidos}"
-            if notario
-            else None
-        ),
+        "notario":
+            notario,
 
-        "notario": {
+        "apoderado_id":
+            cita.apoderado_id,
 
-            "id": notario.id,
+        "apoderado_nombre":
+            apoderado_nombre,
 
-            "codigo": getattr(
-                notario,
-                "codigo",
-                None
+        "apoderado":
+            cita.apoderado,
+
+        "expediente_id":
+            getattr(
+                cita,
+                "expediente_id",
+                None,
             ),
 
-            "nif": getattr(
-                notario,
-                "nif",
-                None
+        "id_expediente":
+            getattr(
+                expediente,
+                "id_expediente",
+                None,
             ),
-
-            "nombre": notario.nombre,
-
-            "apellidos": notario.apellidos,
-
-            "telefono": notario.telefono,
-
-            "provincia": notario.provincia,
-
-            "municipio": notario.municipio,
-
-            "cp": getattr(
-                notario,
-                "cp",
-                None
-            ),
-
-            "direccion": getattr(
-                notario,
-                "direccion",
-                None
-            ),
-
-            "vc": notario.vc,
-
-            "apoderado": getattr(
-                notario,
-                "apoderado",
-                None
-            ),
-
-            "observacion": getattr(
-                notario,
-                "observacion",
-                None
-            ),
-
-            "lat": getattr(
-                notario,
-                "lat",
-                None
-            ),
-
-            "lng": getattr(
-                notario,
-                "lng",
-                None
-            ),
-
-            "distancia_km": distancia_km,
-
-        } if notario else None,
-
-        # ==================================================
-        # APODERADO
-        # ==================================================
-
-        "apoderado_id": (
-            cita.apoderado_id
-        ),
-
-        "apoderado_nombre": (
-
-            f"{apoderado.nombre} "
-            f"{apoderado.apellidos}"
-
-            if apoderado
-
-            else (
-                cita.apoderado
-                or ""
-            )
-        ),
-
-        "apoderado": (
-            cita.apoderado
-        ),
     }
 
 
-# =========================================================
-# OBTENER CITA
-# =========================================================
+# ============================================================
+# OBTENER UNA CITA
+# ============================================================
 
 def obtener_cita(
     db: Session,
-    cita_id: int
+    cita_id: int,
 ):
 
     cita = (
@@ -271,245 +317,219 @@ def obtener_cita(
     )
 
     if not cita:
+
         return None
 
     return cita_con_relaciones(
         db,
-        cita
+        cita,
     )
 
 
-# =========================================================
-# LISTAR CITAS POR DÍA
-# =========================================================
+# ============================================================
+# DÍA
+# ============================================================
 
-def listar_citas_dia(
+def obtener_citas_dia(
     db: Session,
-    fecha: date
+    fecha: date,
 ):
 
     citas = (
         db.query(Cita)
-
         .filter(
-            cast(
-                Cita.fecha,
-                Date
-            ) == fecha
+            Cita.fecha == fecha
         )
-
         .order_by(
             Cita.hora_inicio.asc()
         )
-
         .all()
     )
 
     return [
         cita_con_relaciones(
             db,
-            c
+            cita,
         )
-        for c in citas
+        for cita in citas
     ]
 
 
-# =========================================================
-# LISTAR CITAS POR SEMANA
-# =========================================================
+# ============================================================
+# SEMANA
+# ============================================================
 
-def listar_citas_semana(
+def obtener_citas_semana(
     db: Session,
-    fecha: date
+    fecha: date,
 ):
 
-    inicio_semana = fecha
-
-    fin_semana = (
+    inicio = (
         fecha
-        + timedelta(days=6)
+        - __import__(
+            "datetime"
+        ).timedelta(
+            days=fecha.weekday()
+        )
+    )
+
+    fin = (
+        inicio
+        + __import__(
+            "datetime"
+        ).timedelta(
+            days=7
+        )
     )
 
     citas = (
         db.query(Cita)
-
         .filter(
-            cast(
-                Cita.fecha,
-                Date
-            ) >= inicio_semana
+            Cita.fecha >= inicio
         )
-
         .filter(
-            cast(
-                Cita.fecha,
-                Date
-            ) <= fin_semana
+            Cita.fecha < fin
         )
-
         .order_by(
             Cita.fecha.asc(),
-            Cita.hora_inicio.asc()
+            Cita.hora_inicio.asc(),
         )
-
         .all()
     )
 
     return [
         cita_con_relaciones(
             db,
-            c
+            cita,
         )
-        for c in citas
+        for cita in citas
     ]
 
 
-# =========================================================
-# LISTAR CITAS POR MES
-# =========================================================
+# ============================================================
+# MES
+# ============================================================
 
-def listar_citas_mes(
+def obtener_citas_mes(
     db: Session,
-    year: int,
-    month: int
+    año: int,
+    mes: int,
 ):
-
-    last_day = monthrange(
-        year,
-        month
-    )[1]
 
     inicio = date(
-        year,
-        month,
-        1
+        año,
+        mes,
+        1,
     )
 
-    fin = date(
-        year,
-        month,
-        last_day
-    )
+    if mes == 12:
+
+        fin = date(
+            año + 1,
+            1,
+            1,
+        )
+
+    else:
+
+        fin = date(
+            año,
+            mes + 1,
+            1,
+        )
 
     citas = (
         db.query(Cita)
-
         .filter(
-            cast(
-                Cita.fecha,
-                Date
-            ) >= inicio
+            Cita.fecha >= inicio
         )
-
         .filter(
-            cast(
-                Cita.fecha,
-                Date
-            ) <= fin
+            Cita.fecha < fin
         )
-
         .order_by(
             Cita.fecha.asc(),
-            Cita.hora_inicio.asc()
+            Cita.hora_inicio.asc(),
         )
-
         .all()
     )
 
     return [
         cita_con_relaciones(
             db,
-            c
+            cita,
         )
-        for c in citas
+        for cita in citas
     ]
 
 
-# =========================================================
-# RELLENAR DESDE NOTARIO
-# =========================================================
+# ============================================================
+# COMPLETAR DATOS DEL NOTARIO
+# ============================================================
 
 def _rellenar_desde_notario(
     db: Session,
-    cita: Cita
+    cita: Cita,
 ):
 
     if not cita.notario_id:
+
         return
 
     notario = (
         db.query(Notaria)
         .filter(
-            Notaria.id == cita.notario_id
+            Notaria.id
+            == cita.notario_id
         )
         .first()
     )
 
-    if not notario:
+    if notario:
+
         return
 
-    # ======================================================
-    # TIPO FIRMA DESDE VC
-    # ======================================================
-
-    vc_val = (
-        notario.vc or ""
-    ).strip().upper()
-
     cita.tipo_firma = (
-
-        "Videoconferencia"
-
-        if vc_val in [
-            "SI",
-            "VC",
-            "VIDEOCONFERENCIA",
-        ]
-
-        else "Presencial"
+        normalizar_tipo_firma(
+            cita,
+            notario,
+        )
     )
 
-    # ======================================================
-    # NO ASIGNAR APODERADO AUTOMÁTICAMENTE
-    # ======================================================
+    if not cita.observaciones:
 
-    # El apoderado se mantiene independiente
-    # de la notaría.
-
-    # ======================================================
-    # OBSERVACIONES
-    # ======================================================
-
-    if (
-        not cita.observaciones
-        and getattr(
+        observacion = getattr(
             notario,
             "observacion",
-            None
-        )
-    ):
-
-        cita.observaciones = (
-            notario.observacion
+            None,
         )
 
+        if observacion:
 
-# =========================================================
+            cita.observaciones = (
+                observacion
+            )
+
+
+# ============================================================
 # CREAR CITA
-# =========================================================
+# ============================================================
 
 def crear_cita(
     db: Session,
-    data
+    data,
 ):
 
+    datos = data.dict(
+        exclude_none=True
+    )
+
     cita = Cita(
-        **data.dict()
+        **datos
     )
 
     _rellenar_desde_notario(
         db,
-        cita
+        cita,
     )
 
     db.add(cita)
@@ -520,18 +540,18 @@ def crear_cita(
 
     return cita_con_relaciones(
         db,
-        cita
+        cita,
     )
 
 
-# =========================================================
+# ============================================================
 # EDITAR CITA
-# =========================================================
+# ============================================================
 
 def editar_cita(
     db: Session,
     cita_id: int,
-    data
+    data,
 ):
 
     cita = (
@@ -543,23 +563,24 @@ def editar_cita(
     )
 
     if not cita:
+
         return None
 
-    for key, value in (
-        data.dict(
-            exclude_unset=True
-        ).items()
-    ):
+    datos = data.dict(
+        exclude_unset=True
+    )
+
+    for campo, valor in datos.items():
 
         setattr(
             cita,
-            key,
-            value
+            campo,
+            valor,
         )
 
     _rellenar_desde_notario(
         db,
-        cita
+        cita,
     )
 
     db.commit()
@@ -568,17 +589,17 @@ def editar_cita(
 
     return cita_con_relaciones(
         db,
-        cita
+        cita,
     )
 
 
-# =========================================================
-# ELIMINAR CITA
-# =========================================================
+# ============================================================
+# ELIMINAR
+# ============================================================
 
 def eliminar_cita(
     db: Session,
-    cita_id: int
+    cita_id: int,
 ):
 
     cita = (
@@ -590,7 +611,8 @@ def eliminar_cita(
     )
 
     if not cita:
-        return None
+
+        return False
 
     db.delete(cita)
 
@@ -599,16 +621,14 @@ def eliminar_cita(
     return True
 
 
-# =========================================================
+# ============================================================
 # MOVER CITA
-# =========================================================
+# ============================================================
 
 def mover_cita(
     db: Session,
     cita_id: int,
-    nueva_fecha: date,
-    nueva_hora_inicio: time,
-    nueva_hora_fin: time
+    fecha: date,
 ):
 
     cita = (
@@ -620,17 +640,10 @@ def mover_cita(
     )
 
     if not cita:
+
         return None
 
-    cita.fecha = nueva_fecha
-
-    cita.hora_inicio = (
-        nueva_hora_inicio
-    )
-
-    cita.hora_fin = (
-        nueva_hora_fin
-    )
+    cita.fecha = fecha
 
     db.commit()
 
@@ -638,5 +651,5 @@ def mover_cita(
 
     return cita_con_relaciones(
         db,
-        cita
+        cita,
     )
