@@ -608,6 +608,38 @@ const ACTIVIDADES_EXPEDIENTES = [
   { key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾", aliases: ["Facturación y cierre", "Facturacion y cierre"] },
 ];
 
+// ============================================================
+// COLUMNAS ESPECÍFICAS POR ACTIVIDAD
+// ============================================================
+
+const COLUMNAS_BASE_ACTIVIDAD = [
+  "id_expediente", "estado_expediente", "estado_actividad", "fecha_alta",
+  "actividad_actual", "nombre_titular", "nif_titular",
+  "nombre_solicitante", "nif_solicitante", "nombre_notario", "nif_notario",
+  "oficina", "capital", "saldo_disponible", "contrato", "tipo_operacion",
+  "observaciones",
+];
+
+const COLUMNAS_DOCUMENTACION_PREVIA = [...COLUMNAS_BASE_ACTIVIDAD, "sol", "cs", "ns", "ultima_accion", "fecha_ultima_accion"];
+
+const COLUMNAS_SEDE_NOTARIAL = [...COLUMNAS_BASE_ACTIVIDAD, "fecha_envio", "apoderado", "tipo_documento", "poblacion", "provincia", "tipo_firma", "sol", "cs", "ns", "ultima_accion", "fecha_ultima_accion"];
+
+const COLUMNAS_SEDE_NOTARIAL_PROTOCOLO = [...COLUMNAS_SEDE_NOTARIAL, "fecha_firma", "protocolo", "asiento_presentacion_libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica", "copia_simple_escritura"];
+
+const COLUMNAS_LIQUIDACION_IMPUESTOS = [...COLUMNAS_BASE_ACTIVIDAD, "ultima_accion", "fecha_ultima_accion", "fecha_presentacion_tributaria", "fecha_liquidacion_tributaria", "oficina_liquidadora", "base_imponible", "tributacion", "impuesto_ajd_itp"];
+
+const COLUMNAS_POR_ACTIVIDAD = {
+  "documentacion-previa": COLUMNAS_DOCUMENTACION_PREVIA,
+  "sede-notarial": COLUMNAS_SEDE_NOTARIAL,
+  "sede-notarial-protocolo": COLUMNAS_SEDE_NOTARIAL_PROTOCOLO,
+  "liquidacion-impuestos": COLUMNAS_LIQUIDACION_IMPUESTOS,
+};
+
+function obtenerColumnasActividad(actividad) {
+  return COLUMNAS_POR_ACTIVIDAD[actividad] || COLUMNAS_POR_DEFECTO;
+}
+
+
 function normalizarActividad(valor) {
   return String(valor || "")
     .trim()
