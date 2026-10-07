@@ -487,6 +487,8 @@ const COLUMNAS = [
     tipo: "texto",
   },
 
+,
+
   { key: "sol", label: "SOL", tipo: "texto" },
   { key: "cs", label: "CS", tipo: "texto" },
   { key: "ns", label: "NS", tipo: "texto" },
@@ -994,10 +996,21 @@ export default function ExpedientesListado() {
   // ==========================================================
 
   const [
-    columnasVisibles,
-    setColumnasVisibles,
+    columnasVisiblesManuales,
+    setColumnasVisiblesManuales,
   ] = useState(
     COLUMNAS_POR_DEFECTO
+  );
+
+  const columnasVisibles = useMemo(
+    () =>
+      actividadSeleccionada
+        ? obtenerColumnasActividad(actividadSeleccionada)
+        : columnasVisiblesManuales,
+    [
+      actividadSeleccionada,
+      columnasVisiblesManuales,
+    ]
   );
 
 
@@ -1887,7 +1900,7 @@ export default function ExpedientesListado() {
     key
   ) => {
 
-    setColumnasVisibles(
+    setColumnasVisiblesManuales(
       (actuales) => {
 
         if (
@@ -1925,7 +1938,7 @@ export default function ExpedientesListado() {
   const mostrarTodasColumnas =
     () => {
 
-      setColumnasVisibles(
+      setColumnasVisiblesManuales(
         COLUMNAS.map(
           (columna) =>
             columna.key
@@ -1942,7 +1955,7 @@ export default function ExpedientesListado() {
   const restaurarColumnas =
     () => {
 
-      setColumnasVisibles(
+      setColumnasVisiblesManuales(
         COLUMNAS_POR_DEFECTO
       );
 
@@ -1995,77 +2008,13 @@ export default function ExpedientesListado() {
           CABECERA
       ====================================================== */}
 
-      <div
-        className="
-          w-full
-
-          flex
-          flex-col
-
-          md:flex-row
-          md:items-center
-          md:justify-between
-
-          gap-4
-        "
-      >
-
-        <div>
-
-          <h1
-            className="
-              text-3xl
-              font-bold
-              text-[var(--erp-text)]
-            "
-          >
-            Expedientes
-          </h1>
-
-
-          <p
-            className="
-              text-[var(--erp-text-soft)]
-              mt-1
-            "
-          >
-            Gestión y consulta de expedientes
-          </p>
-
-        </div>
-
-
-        <button
-          type="button"
-          onClick={
-            exportarExcel
-          }
-          disabled={
-            loading
-          }
-          className="
-            px-4
-            py-2.5
-
-            rounded-xl
-
-            bg-[var(--erp-success)]
-
-            hover:brightness-95
-
-            text-white
-
-            shadow-sm
-
-            transition
-
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-          "
-        >
-          Exportar Excel
-        </button>
-
+      <div className="w-full flex flex-col gap-1">
+        <h1 className="text-3xl font-bold text-[var(--erp-text)]">
+          Expedientes
+        </h1>
+        <p className="text-[var(--erp-text-soft)]">
+          Gestión y consulta de expedientes
+        </p>
       </div>
 
 
@@ -2118,6 +2067,8 @@ export default function ExpedientesListado() {
             SIDEBAR INTERNO DE EXPEDIENTES
         ==================================================== */}
 
+        <div className="min-w-0 space-y-4">
+
         <aside
           className="
             rounded-2xl
@@ -2166,7 +2117,6 @@ export default function ExpedientesListado() {
               type="button"
               onClick={() => {
                 setActividadSeleccionada("");
-                setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                 setFiltroActividad("");
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: "" }));
                 setPagina(1);
@@ -2210,7 +2160,6 @@ export default function ExpedientesListado() {
                     const valorBackend = encontrado?.actividad || actividad.label;
 
                     setActividadSeleccionada(actividad.key);
-                    setColumnasVisibles(obtenerColumnasActividad(actividad.key));
                     setFiltroActividad(valorBackend);
                     setFiltrosAplicados((actual) => ({ ...actual, actividad: valorBackend }));
                     setPagina(1);
@@ -2236,6 +2185,50 @@ export default function ExpedientesListado() {
             })}
           </div>
         </aside>
+
+        {/* ====================================================
+            ACCIONES DEL MÓDULO
+        ==================================================== */}
+
+        <section
+          className="rounded-2xl border shadow-sm p-3"
+          style={{
+            background: "var(--erp-surface)",
+            borderColor: "var(--erp-border)",
+          }}
+        >
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={exportarExcel}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: "var(--erp-success)" }}
+            >
+              📊 Exportar Excel
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMostrarFiltros(true)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm"
+              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
+            >
+              🔎 Filtros avanzados
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMostrarColumnas(true)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm"
+              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
+            >
+              ☷ Columnas visibles
+            </button>
+          </div>
+        </section>
+
+        </div>
 
         {/* ====================================================
             ÁREA PRINCIPAL DE TRABAJO
@@ -2265,562 +2258,9 @@ export default function ExpedientesListado() {
                 </div>
               </div>
 
-              <div className="shrink-0 px-4 py-2 rounded-xl" style={{ background: "var(--erp-primary-soft)", color: "var(--erp-primary-dark)" }}>
-                <span className="text-xs font-semibold uppercase tracking-wide">Expedientes</span>
-                <span className="ml-2 font-bold">{formatearNumero(totalExpedientes)}</span>
-              </div>
+              
             </div>
           </div>
-
-      {/* ======================================================
-          FILTROS
-      ====================================================== */}
-
-      <section
-        className="
-          erp-card
-
-          w-full
-
-          p-4
-
-          shadow-sm
-        "
-      >
-
-        <button
-          type="button"
-
-          onClick={() =>
-            setMostrarFiltros(
-              (actual) =>
-                !actual
-            )
-          }
-
-          className="
-            w-full
-
-            flex
-            items-center
-            justify-between
-
-            text-xl
-            font-semibold
-            text-left
-
-            text-[var(--erp-text)]
-
-            hover:text-[var(--erp-primary)]
-
-            transition
-          "
-        >
-
-          <span>
-            Filtros avanzados
-          </span>
-
-
-          <span
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-            "
-          >
-            {mostrarFiltros
-              ? "▲ Ocultar"
-              : "▼ Mostrar"}
-          </span>
-
-        </button>
-
-
-        {mostrarFiltros && (
-
-          <div
-            className="
-              mt-5
-
-              grid
-
-              grid-cols-1
-              md:grid-cols-2
-              lg:grid-cols-3
-
-              gap-4
-            "
-          >
-
-            <FiltroInput
-              label="NIF titular"
-              value={
-                filtroNif
-              }
-              onChange={
-                setFiltroNif
-              }
-            />
-
-
-            <div>
-
-              <label
-                className="
-                  block
-
-                  text-sm
-                  font-medium
-
-                  text-[var(--erp-text)]
-
-                  mb-1
-                "
-              >
-                Actividad actual
-              </label>
-
-
-              <select
-                value={
-                  filtroActividad
-                }
-
-                onChange={(event) =>
-                  setFiltroActividad(
-                    event.target.value
-                  )
-                }
-
-                className="
-                  w-full
-
-                  px-3
-                  py-2.5
-
-                  rounded-xl
-
-                  bg-[var(--erp-surface)]
-
-                  border
-                  border-[var(--erp-border)]
-
-                  text-[var(--erp-text)]
-
-                  outline-none
-
-                  focus:border-[var(--erp-primary)]
-
-                  focus:ring-2
-
-                  focus:ring-[var(--erp-primary-soft)]
-
-                  transition
-                "
-              >
-
-                <option value="">
-                  Todas las actividades
-                </option>
-
-
-                {actividades.map(
-                  (
-                    item
-                  ) => (
-
-                    <option
-                      key={
-                        item.actividad
-                      }
-                      value={
-                        item.actividad
-                      }
-                    >
-                      {
-                        item.actividad
-                      }
-                    </option>
-
-                  )
-                )}
-
-              </select>
-
-            </div>
-
-
-            <FiltroInput
-              label="NIF / nombre notario"
-              value={
-                filtroNotario
-              }
-              onChange={
-                setFiltroNotario
-              }
-            />
-
-
-            <FiltroInput
-              label="Oficina"
-              value={
-                filtroOficina
-              }
-              onChange={
-                setFiltroOficina
-              }
-            />
-
-
-            <FiltroInput
-              label="Fecha inicio"
-              type="date"
-              value={
-                filtroFechaInicio
-              }
-              onChange={
-                setFiltroFechaInicio
-              }
-            />
-
-
-            <FiltroInput
-              label="Fecha fin"
-              type="date"
-              value={
-                filtroFechaFin
-              }
-              onChange={
-                setFiltroFechaFin
-              }
-            />
-
-
-            <FiltroInput
-              label="Importe mínimo"
-              type="number"
-              value={
-                filtroImporteMin
-              }
-              onChange={
-                setFiltroImporteMin
-              }
-            />
-
-
-            <FiltroInput
-              label="Importe máximo"
-              type="number"
-              value={
-                filtroImporteMax
-              }
-              onChange={
-                setFiltroImporteMax
-              }
-            />
-
-
-            <div
-              className="
-                flex
-                items-end
-
-                gap-3
-              "
-            >
-
-              <button
-                type="button"
-
-                onClick={
-                  aplicarFiltros
-                }
-
-                className="
-                  px-4
-                  py-2.5
-
-                  rounded-xl
-
-                  bg-[var(--erp-primary)]
-
-                  hover:bg-[var(--erp-primary-dark)]
-
-                  text-white
-
-                  transition
-                "
-              >
-                Aplicar filtros
-              </button>
-
-
-              <button
-                type="button"
-
-                onClick={
-                  limpiarFiltros
-                }
-
-                className="
-                  px-4
-                  py-2.5
-
-                  rounded-xl
-
-                  bg-white
-
-                  border
-                  border-[var(--erp-border)]
-
-                  text-[var(--erp-text)]
-
-                  hover:bg-[var(--erp-surface-soft)]
-
-                  transition
-                "
-              >
-                Limpiar
-              </button>
-
-            </div>
-
-          </div>
-
-        )}
-
-      </section>
-
-
-      {/* ======================================================
-          COLUMNAS VISIBLES
-      ====================================================== */}
-
-      <section
-        className="
-          erp-card
-
-          w-full
-
-          p-4
-
-          shadow-sm
-        "
-      >
-
-        <button
-          type="button"
-
-          onClick={() =>
-            setMostrarColumnas(
-              (actual) =>
-                !actual
-            )
-          }
-
-          className="
-            w-full
-
-            flex
-            items-center
-            justify-between
-
-            text-xl
-            font-semibold
-            text-left
-
-            text-[var(--erp-text)]
-
-            hover:text-[var(--erp-primary)]
-
-            transition
-          "
-        >
-
-          <span>
-            Columnas visibles
-          </span>
-
-
-          <span
-            className="
-              text-sm
-              text-[var(--erp-text-soft)]
-            "
-          >
-            {mostrarColumnas
-              ? "▲ Ocultar"
-              : "▼ Mostrar"}
-          </span>
-
-        </button>
-
-
-        {mostrarColumnas && (
-
-          <div
-            className="
-              mt-5
-            "
-          >
-
-            <div
-              className="
-                flex
-                flex-wrap
-
-                gap-2
-
-                mb-4
-              "
-            >
-
-              <button
-                type="button"
-
-                onClick={
-                  mostrarTodasColumnas
-                }
-
-                className="
-                  px-3
-                  py-1.5
-
-                  rounded-lg
-
-                  text-sm
-
-                  bg-[var(--erp-primary-soft)]
-
-                  text-[var(--erp-primary)]
-
-                  border
-                  border-[var(--erp-border)]
-
-                  hover:border-[#c1cee2]
-                "
-              >
-                Mostrar todas
-              </button>
-
-
-              <button
-                type="button"
-
-                onClick={
-                  restaurarColumnas
-                }
-
-                className="
-                  px-3
-                  py-1.5
-
-                  rounded-lg
-
-                  text-sm
-
-                  bg-white
-
-                  text-[var(--erp-text)]
-
-                  border
-                  border-[var(--erp-border)]
-
-                  hover:bg-[var(--erp-surface-soft)]
-                "
-              >
-                Restaurar por defecto
-              </button>
-
-            </div>
-
-
-            <div
-              className="
-                grid
-
-                grid-cols-2
-                md:grid-cols-4
-                lg:grid-cols-6
-
-                gap-2
-              "
-            >
-
-              {COLUMNAS.map(
-                (
-                  columna
-                ) => (
-
-                  <label
-                    key={
-                      columna.key
-                    }
-
-                    className="
-                      flex
-
-                      items-start
-
-                      gap-2
-
-                      text-sm
-
-                      text-[var(--erp-text)]
-
-                      cursor-pointer
-
-                      rounded-lg
-
-                      px-2
-                      py-1.5
-
-                      hover:bg-[var(--erp-primary-soft)]
-                    "
-                  >
-
-                    <input
-                      type="checkbox"
-
-                      checked={
-                        columnasVisibles.includes(
-                          columna.key
-                        )
-                      }
-
-                      onChange={() =>
-                        toggleColumna(
-                          columna.key
-                        )
-                      }
-
-                      className="
-                        mt-0.5
-
-                        accent-[var(--erp-primary)]
-                      "
-                    />
-
-
-                    <span>
-                      {
-                        columna.label
-                      }
-                    </span>
-
-                  </label>
-
-                )
-              )}
-
-            </div>
-
-          </div>
-
-        )}
-
-      </section>
-
 
       {/* ======================================================
           TABLA
@@ -3369,6 +2809,179 @@ export default function ExpedientesListado() {
         </main>
 
       </div>
+
+      {/* ======================================================
+          MODAL — FILTROS AVANZADOS
+      ====================================================== */}
+
+      {mostrarFiltros && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-filtros-titulo"
+        >
+          <button
+            type="button"
+            aria-label="Cerrar filtros avanzados"
+            onClick={() => setMostrarFiltros(false)}
+            className="absolute inset-0 bg-slate-900/35 backdrop-blur-sm"
+          />
+
+          <section
+            className="relative z-10 w-full max-w-5xl max-h-[88vh] overflow-y-auto rounded-3xl border shadow-2xl"
+            style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
+          >
+            <div
+              className="sticky top-0 z-10 px-6 py-5 border-b flex items-start justify-between gap-4"
+              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
+            >
+              <div>
+                <h3 id="modal-filtros-titulo" className="text-xl font-bold" style={{ color: "var(--erp-text)" }}>
+                  Filtros avanzados
+                </h3>
+                <p className="text-sm mt-1" style={{ color: "var(--erp-text-soft)" }}>
+                  Combina varios criterios para localizar expedientes.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMostrarFiltros(false)}
+                className="shrink-0 w-10 h-10 rounded-xl border text-lg font-semibold transition hover:bg-[var(--erp-surface-soft)]"
+                style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+              <FiltroInput label="NIF titular" value={filtroNif} onChange={setFiltroNif} placeholder="NIF / CIF" />
+              <div>
+                <label className="block text-xs font-bold mb-2" style={{ color: "var(--erp-text-soft)" }}>
+                  Actividad actual
+                </label>
+                <select
+                  value={filtroActividad}
+                  onChange={(event) => setFiltroActividad(event.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border outline-none text-sm transition-all focus:ring-2"
+                  style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)", "--tw-ring-color": "var(--erp-primary-soft)" }}
+                >
+                  <option value="">Todas las actividades</option>
+                  {actividades.map((item) => (
+                    <option key={item.actividad} value={item.actividad}>{item.actividad}</option>
+                  ))}
+                </select>
+              </div>
+              <FiltroInput label="NIF / nombre notario" value={filtroNotario} onChange={setFiltroNotario} placeholder="Nombre o NIF" />
+              <FiltroInput label="Oficina" value={filtroOficina} onChange={setFiltroOficina} placeholder="Oficina" />
+              <FiltroInput label="Fecha inicio" type="date" value={filtroFechaInicio} onChange={setFiltroFechaInicio} />
+              <FiltroInput label="Fecha fin" type="date" value={filtroFechaFin} onChange={setFiltroFechaFin} />
+              <FiltroInput label="Importe mínimo" type="number" value={filtroImporteMin} onChange={setFiltroImporteMin} placeholder="0,00" />
+              <FiltroInput label="Importe máximo" type="number" value={filtroImporteMax} onChange={setFiltroImporteMax} placeholder="0,00" />
+            </div>
+
+            <div className="px-6 py-4 border-t flex flex-wrap items-center justify-end gap-3" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
+              <button
+                type="button"
+                onClick={limpiarFiltros}
+                className="px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm"
+                style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
+              >
+                Limpiar filtros
+              </button>
+              <button
+                type="button"
+                onClick={aplicarFiltros}
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md"
+                style={{ background: "var(--erp-primary)" }}
+              >
+                Aplicar filtros
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* ======================================================
+          MODAL — COLUMNAS VISIBLES
+      ====================================================== */}
+
+      {mostrarColumnas && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-columnas-titulo"
+        >
+          <button
+            type="button"
+            aria-label="Cerrar columnas visibles"
+            onClick={() => setMostrarColumnas(false)}
+            className="absolute inset-0 bg-slate-900/35 backdrop-blur-sm"
+          />
+
+          <section
+            className="relative z-10 w-full max-w-6xl max-h-[88vh] overflow-y-auto rounded-3xl border shadow-2xl"
+            style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
+          >
+            <div className="sticky top-0 z-10 px-6 py-5 border-b flex items-start justify-between gap-4" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}>
+              <div>
+                <h3 id="modal-columnas-titulo" className="text-xl font-bold" style={{ color: "var(--erp-text)" }}>
+                  Columnas visibles
+                </h3>
+                <p className="text-sm mt-1" style={{ color: "var(--erp-text-soft)" }}>
+                  Selecciona las columnas que quieres mostrar en el listado.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMostrarColumnas(false)}
+                className="shrink-0 w-10 h-10 rounded-xl border text-lg font-semibold transition hover:bg-[var(--erp-surface-soft)]"
+                style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="flex flex-wrap gap-2 mb-5">
+                <button type="button" onClick={mostrarTodasColumnas} className="px-3 py-2 rounded-xl text-sm font-semibold border transition-all" style={{ background: "var(--erp-primary-soft)", color: "var(--erp-primary)", borderColor: "var(--erp-border)" }}>
+                  Mostrar todas
+                </button>
+                <button type="button" onClick={restaurarColumnas} className="px-3 py-2 rounded-xl text-sm font-semibold border transition-all" style={{ background: "var(--erp-surface)", color: "var(--erp-text)", borderColor: "var(--erp-border)" }}>
+                  Restaurar por defecto
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                {COLUMNAS.map((columna) => {
+                  const visible = columnasVisibles.includes(columna.key);
+                  return (
+                    <label
+                      key={columna.key}
+                      className="flex items-start gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-all hover:bg-[var(--erp-primary-soft)]"
+                      style={{ background: visible ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: visible ? "var(--erp-primary)" : "var(--erp-border)" }}
+                    >
+                      <input type="checkbox" checked={visible} onChange={() => toggleColumna(columna.key)} className="mt-0.5 accent-[var(--erp-primary)]" />
+                      <span className="text-sm" style={{ color: visible ? "var(--erp-primary-dark)" : "var(--erp-text)" }}>
+                        {columna.label}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t flex justify-end" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
+              <button type="button" onClick={() => setMostrarColumnas(false)} className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md" style={{ background: "var(--erp-primary)" }}>
+                Cerrar
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
 
     </div>
 
