@@ -199,16 +199,13 @@ export default function Layout() {
           "
         >
 
-          <div
-            className="
-              max-w-[1800px]
-              mx-auto
-            "
-          >
-
-            <Outlet />
-
-          </div>
+      <div
+  className="
+    w-full
+  "
+>
+  <Outlet />
+</div>
 
         </div>
 
