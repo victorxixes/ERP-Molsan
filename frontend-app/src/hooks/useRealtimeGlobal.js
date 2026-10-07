@@ -29,6 +29,10 @@ export default function useRealtimeGlobal() {
 
   useEffect(() => {
 
+    // ========================================================
+    // VALIDAR USUARIO
+    // ========================================================
+
     if (
       !empleado ||
       !empleado.id
@@ -38,6 +42,10 @@ export default function useRealtimeGlobal() {
 
     }
 
+
+    // ========================================================
+    // TOKEN JWT
+    // ========================================================
 
     const token =
       localStorage.getItem(
@@ -56,6 +64,10 @@ export default function useRealtimeGlobal() {
     }
 
 
+    // ========================================================
+    // VARIABLES
+    // ========================================================
+
     let ws = null;
 
     let reconnectTimer =
@@ -69,10 +81,10 @@ export default function useRealtimeGlobal() {
 
 
     // ========================================================
-    // LIMPIAR
+    // LIMPIAR TEMPORIZADORES
     // ========================================================
 
-    const limpiar = () => {
+    const limpiarTimers = () => {
 
       if (
         reconnectTimer
@@ -137,24 +149,522 @@ export default function useRealtimeGlobal() {
 
 
     // ========================================================
-    // CONECTAR
+    // PROPAGAR EVENTO AL ERP
     // ========================================================
 
-    const conectar = () => {
+    const propagarEventoERP = (
+      data
+    ) => {
 
-      if (!mounted) {
+      if (
+        typeof window ===
+        "undefined"
+      ) {
 
         return;
 
       }
 
 
-      limpiar();
+      try {
+
+        window.dispatchEvent(
+          new CustomEvent(
+            "erp:realtime",
+            {
+              detail: data,
+            }
+          )
+        );
+
+      } catch (
+        error
+      ) {
+
+        console.warn(
+          "[REALTIME] No se pudo propagar erp:realtime:",
+          error
+        );
+
+      }
+
+    };
+
+
+    // ========================================================
+    // PROCESAR PRESENCIA
+    // ========================================================
+
+    const procesarPresencia = (
+      data
+    ) => {
+
+      // ------------------------------------------------------
+      // SNAPSHOT
+      // ------------------------------------------------------
+
+      if (
+        data.evento ===
+        "usuarios_snapshot"
+      ) {
+
+        const usuarios =
+          Array.isArray(
+            data.data?.usuarios
+          )
+            ? data.data.usuarios
+            : [];
+
+
+        useMensajesStore.setState(
+          (state) => ({
+
+            ...state,
+
+            conectados:
+              usuarios,
+
+          })
+        );
+
+
+        return true;
+
+      }
+
+
+      // ------------------------------------------------------
+      // ONLINE — EVENTO NUEVO
+      // ------------------------------------------------------
+
+      if (
+        data.evento ===
+        "usuario_online"
+      ) {
+
+        const usuario =
+          data.data;
+
+
+        if (
+          usuario &&
+          usuario.id
+        ) {
+
+          useMensajesStore
+            .getState()
+            .setConectadosWS(
+              usuario
+            );
+
+        }
+
+
+        return true;
+
+      }
+
+
+      // ------------------------------------------------------
+      // OFFLINE — EVENTO NUEVO
+      // ------------------------------------------------------
+
+      if (
+        data.evento ===
+        "usuario_offline"
+      ) {
+
+        const id =
+          Number(
+            data.data?.id ??
+            data.usuario_id
+          );
+
+
+        if (id) {
+
+          useMensajesStore
+            .getState()
+            .setConectadosWS({
+
+              id,
+
+              offline:
+                true,
+
+            });
+
+        }
+
+
+        return true;
+
+      }
+
+
+      // ------------------------------------------------------
+      // COMPATIBILIDAD CON EVENTO ANTIGUO "online"
+      // ------------------------------------------------------
+
+      if (
+        data.tipo ===
+        "online"
+      ) {
+
+        if (
+          data.id
+        ) {
+
+          useMensajesStore
+            .getState()
+            .setConectadosWS({
+
+              id:
+                Number(
+                  data.id
+                ),
+
+              nombre:
+                data.nombre,
+
+              apellidos:
+                data.apellidos,
+
+              foto:
+                data.foto,
+
+            });
+
+        }
+
+
+        return true;
+
+      }
+
+
+      // ------------------------------------------------------
+      // COMPATIBILIDAD CON EVENTO ANTIGUO "offline"
+      // ------------------------------------------------------
+
+      if (
+        data.tipo ===
+        "offline"
+      ) {
+
+        const id =
+          Number(
+            data.id
+          );
+
+
+        if (id) {
+
+          useMensajesStore
+            .getState()
+            .setConectadosWS({
+
+              id,
+
+              offline:
+                true,
+
+            });
+
+        }
+
+
+        return true;
+
+      }
+
+
+      return false;
+
+    };
+
+
+    // ========================================================
+    // PROCESAR MENSAJES
+    // ========================================================
+
+    const procesarMensajes = (
+      data
+    ) => {
+
+      // ------------------------------------------------------
+      // TYPING — EVENTO NUEVO
+      // ------------------------------------------------------
+
+      if (
+        data.evento ===
+        "typing"
+      ) {
+
+        const fromId =
+          Number(
+            data.data?.from ??
+            data.usuario_id
+          );
+
+
+        if (
+          !fromId
+        ) {
+
+          return true;
+
+        }
+
+
+        useMensajesStore
+          .getState()
+          .setTyping(
+            fromId
+          );
+
+
+        setTimeout(
+          () => {
+
+            useMensajesStore
+              .getState()
+              .clearTyping(
+                fromId
+              );
+
+          },
+          1500
+        );
+
+
+        return true;
+
+      }
+
+
+      // ------------------------------------------------------
+      // MENSAJE — EVENTO NUEVO
+      // ------------------------------------------------------
+
+      if (
+        data.evento ===
+        "mensaje_nuevo"
+      ) {
+
+        const mensaje =
+          data.data?.mensaje;
+
+
+        if (
+          mensaje
+        ) {
+
+          useMensajesStore
+            .getState()
+            .addMensajeRealtime(
+              mensaje
+            );
+
+        }
+
+
+        return true;
+
+      }
+
+
+      // ------------------------------------------------------
+      // ARCHIVO — EVENTO NUEVO
+      // ------------------------------------------------------
+
+      if (
+        data.evento ===
+        "archivo_nuevo"
+      ) {
+
+        const mensaje =
+          data.data?.mensaje;
+
+
+        if (
+          mensaje
+        ) {
+
+          useMensajesStore
+            .getState()
+            .addArchivoRealtime(
+              mensaje
+            );
+
+        }
+
+
+        return true;
+
+      }
+
+
+      // ------------------------------------------------------
+      // COMPATIBILIDAD TYPING ANTIGUO
+      // ------------------------------------------------------
+
+      if (
+        data.tipo ===
+        "typing"
+      ) {
+
+        const fromId =
+          Number(
+            data.from
+          );
+
+
+        if (
+          !fromId
+        ) {
+
+          return true;
+
+        }
+
+
+        useMensajesStore
+          .getState()
+          .setTyping(
+            fromId
+          );
+
+
+        setTimeout(
+          () => {
+
+            useMensajesStore
+              .getState()
+              .clearTyping(
+                fromId
+              );
+
+          },
+          1500
+        );
+
+
+        return true;
+
+      }
+
+
+      // ------------------------------------------------------
+      // COMPATIBILIDAD MENSAJE ANTIGUO
+      // ------------------------------------------------------
+
+      if (
+        data.tipo ===
+          "nuevo_mensaje" ||
+        data.tipo ===
+          "mensaje"
+      ) {
+
+        if (
+          data.mensaje
+        ) {
+
+          useMensajesStore
+            .getState()
+            .addMensajeRealtime(
+              data.mensaje
+            );
+
+        }
+
+
+        return true;
+
+      }
+
+
+      // ------------------------------------------------------
+      // COMPATIBILIDAD ARCHIVO ANTIGUO
+      // ------------------------------------------------------
+
+      if (
+        data.tipo ===
+          "nuevo_archivo" ||
+        data.tipo ===
+          "archivo"
+      ) {
+
+        if (
+          data.mensaje
+        ) {
+
+          useMensajesStore
+            .getState()
+            .addArchivoRealtime(
+              data.mensaje
+            );
+
+        }
+
+
+        return true;
+
+      }
+
+
+      return false;
+
+    };
+
+
+    // ========================================================
+    // CONECTAR
+    // ========================================================
+
+    const conectar = () => {
+
+      if (
+        !mounted
+      ) {
+
+        return;
+
+      }
+
+
+      limpiarTimers();
+
+
+      // ------------------------------------------------------
+      // EVITAR DUPLICAR CONEXIONES
+      // ------------------------------------------------------
+
+      if (
+        ws &&
+        (
+          ws.readyState ===
+            WebSocket.OPEN ||
+          ws.readyState ===
+            WebSocket.CONNECTING
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      // ------------------------------------------------------
+      // CONSTRUIR URL
+      // ------------------------------------------------------
+
+      let url;
 
 
       try {
 
-        const url =
+        url =
           buildRealtimeWsUrl({
 
             usuario_id:
@@ -164,6 +674,28 @@ export default function useRealtimeGlobal() {
 
           });
 
+      } catch (
+        error
+      ) {
+
+        console.error(
+          "[REALTIME] Error construyendo URL:",
+          error
+        );
+
+
+        programarReconexion();
+
+        return;
+
+      }
+
+
+      // ------------------------------------------------------
+      // CREAR SOCKET
+      // ------------------------------------------------------
+
+      try {
 
         console.log(
           "[REALTIME] Conectando usuario:",
@@ -181,7 +713,6 @@ export default function useRealtimeGlobal() {
           ws
         );
 
-
       } catch (
         error
       ) {
@@ -190,6 +721,13 @@ export default function useRealtimeGlobal() {
           "[REALTIME] Error creando WebSocket:",
           error
         );
+
+
+        ws =
+          null;
+
+
+        clearRealtimeSocket();
 
 
         programarReconexion();
@@ -205,7 +743,9 @@ export default function useRealtimeGlobal() {
 
       ws.onopen = () => {
 
-        if (!mounted) {
+        if (
+          !mounted
+        ) {
 
           return;
 
@@ -219,7 +759,7 @@ export default function useRealtimeGlobal() {
 
 
         // ----------------------------------------------------
-        // USUARIO ACTUAL EN STORE
+        // USUARIO ACTUAL EN MENSAJES STORE
         // ----------------------------------------------------
 
         useMensajesStore.setState(
@@ -228,7 +768,9 @@ export default function useRealtimeGlobal() {
             ...state,
 
             usuarioId:
-              empleado.id,
+              Number(
+                empleado.id
+              ),
 
           })
         );
@@ -287,6 +829,10 @@ export default function useRealtimeGlobal() {
         let data;
 
 
+        // ----------------------------------------------------
+        // PARSE JSON
+        // ----------------------------------------------------
+
         try {
 
           data =
@@ -296,12 +842,15 @@ export default function useRealtimeGlobal() {
 
         } catch {
 
+          // Puede ser una respuesta no JSON.
           return;
 
         }
 
 
-        if (!data) {
+        if (
+          !data
+        ) {
 
           return;
 
@@ -309,33 +858,13 @@ export default function useRealtimeGlobal() {
 
 
         // ====================================================
-        // SNAPSHOT
+        // PONG
         // ====================================================
 
         if (
-          data.evento ===
-          "usuarios_snapshot"
+          data.tipo ===
+          "pong"
         ) {
-
-          const usuarios =
-            Array.isArray(
-              data.data?.usuarios
-            )
-              ? data.data.usuarios
-              : [];
-
-
-          useMensajesStore.setState(
-            (state) => ({
-
-              ...state,
-
-              conectados:
-                usuarios,
-
-            })
-          );
-
 
           return;
 
@@ -343,31 +872,23 @@ export default function useRealtimeGlobal() {
 
 
         // ====================================================
-        // ONLINE
+        // PROPAGAR SIEMPRE
+        // ====================================================
+
+        propagarEventoERP(
+          data
+        );
+
+
+        // ====================================================
+        // PRESENCIA
         // ====================================================
 
         if (
-          data.evento ===
-          "usuario_online"
+          procesarPresencia(
+            data
+          )
         ) {
-
-          const usuario =
-            data.data;
-
-
-          if (
-            usuario &&
-            usuario.id
-          ) {
-
-            useMensajesStore
-              .getState()
-              .setConectadosWS(
-                usuario
-              );
-
-          }
-
 
           return;
 
@@ -375,142 +896,14 @@ export default function useRealtimeGlobal() {
 
 
         // ====================================================
-        // OFFLINE
+        // MENSAJES
         // ====================================================
 
         if (
-          data.evento ===
-          "usuario_offline"
+          procesarMensajes(
+            data
+          )
         ) {
-
-          const id =
-            Number(
-              data.data?.id ??
-              data.usuario_id
-            );
-
-
-          if (id) {
-
-            useMensajesStore
-              .getState()
-              .setConectadosWS({
-
-                id,
-
-                offline:
-                  true,
-
-              });
-
-          }
-
-
-          return;
-
-        }
-
-
-        // ====================================================
-        // TYPING
-        // ====================================================
-
-        if (
-          data.evento ===
-          "typing"
-        ) {
-
-          const fromId =
-            Number(
-              data.data?.from
-            );
-
-
-          if (!fromId) {
-
-            return;
-
-          }
-
-
-          useMensajesStore
-            .getState()
-            .setTyping(
-              fromId
-            );
-
-
-          setTimeout(
-            () => {
-
-              useMensajesStore
-                .getState()
-                .clearTyping(
-                  fromId
-                );
-
-            },
-            1500
-          );
-
-
-          return;
-
-        }
-
-
-        // ====================================================
-        // MENSAJE
-        // ====================================================
-
-        if (
-          data.evento ===
-          "mensaje_nuevo"
-        ) {
-
-          const mensaje =
-            data.data?.mensaje;
-
-
-          if (mensaje) {
-
-            useMensajesStore
-              .getState()
-              .addMensajeRealtime(
-                mensaje
-              );
-
-          }
-
-
-          return;
-
-        }
-
-
-        // ====================================================
-        // ARCHIVO
-        // ====================================================
-
-        if (
-          data.evento ===
-          "archivo_nuevo"
-        ) {
-
-          const mensaje =
-            data.data?.mensaje;
-
-
-          if (mensaje) {
-
-            useMensajesStore
-              .getState()
-              .addArchivoRealtime(
-                mensaje
-              );
-
-          }
-
 
           return;
 
@@ -549,7 +942,7 @@ export default function useRealtimeGlobal() {
         );
 
 
-        limpiar();
+        limpiarTimers();
 
 
         clearRealtimeSocket(
@@ -557,11 +950,17 @@ export default function useRealtimeGlobal() {
         );
 
 
-        if (!mounted) {
+        if (
+          !mounted
+        ) {
 
           return;
 
         }
+
+
+        ws =
+          null;
 
 
         // ----------------------------------------------------
@@ -595,6 +994,10 @@ export default function useRealtimeGlobal() {
         }
 
 
+        // ----------------------------------------------------
+        // RECONEXIÓN
+        // ----------------------------------------------------
+
         programarReconexion();
 
       };
@@ -619,19 +1022,29 @@ export default function useRealtimeGlobal() {
         false;
 
 
-      limpiar();
+      limpiarTimers();
+
+
+      const socket =
+        ws;
+
+
+      ws =
+        null;
 
 
       clearRealtimeSocket(
-        ws
+        socket
       );
 
 
-      if (ws) {
+      if (
+        socket
+      ) {
 
         try {
 
-          ws.close();
+          socket.close();
 
         } catch {
           // Ignorar
