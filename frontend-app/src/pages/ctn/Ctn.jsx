@@ -13,7 +13,7 @@ export default function Ctn() {
         animate-fade-in
       "
     >
-      <div className="max-w-[1700px] mx-auto space-y-6">
+      <div className="w-full space-y-6">
 
         {/* CABECERA */}
         <div>
