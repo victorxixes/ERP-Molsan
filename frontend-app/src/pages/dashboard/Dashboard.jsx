@@ -1,968 +1,654 @@
-import { useEffect, useCallback } from "react";
 import { useDashboard } from "../../hooks/useDashboard";
 
-import IconCalendar from "../../icons/IconCalendar.jsx";
-import IconWeek from "../../icons/IconWeek.jsx";
-import IconMonth from "../../icons/IconMonth.jsx";
-import IconClock from "../../icons/IconClock.jsx";
+
+/* ============================================================
+   DASHBOARD EXPEDIENTES
+   MOLSAN ERP SAAS PREMIUM 2027
+============================================================ */
+
+const ACTIVIDADES = [
+  {
+    key: "documentacion_previa",
+    nombre: "Documentación previa",
+    icono: "📄",
+  },
+  {
+    key: "sede_notarial",
+    nombre: "Sede notarial",
+    icono: "🏛️",
+  },
+  {
+    key: "sede_notarial_con_protocolo",
+    nombre: "Sede notarial con protocolo",
+    icono: "📜",
+  },
+  {
+    key: "liquidacion_impuestos",
+    nombre: "Liquidación de impuestos",
+    icono: "💶",
+  },
+  {
+    key: "tramitacion_inscripcion",
+    nombre: "Tramitación inscripción",
+    icono: "🏢",
+  },
+  {
+    key: "defectos_registrales",
+    nombre: "Defectos registrales",
+    icono: "⚠️",
+  },
+  {
+    key: "facturacion_cierre",
+    nombre: "Facturación y cierre",
+    icono: "✅",
+  },
+];
+
+
+/* ============================================================
+   HELPERS
+============================================================ */
+
+function numero(valor) {
+  return Number(valor ?? 0).toLocaleString("es-ES");
+}
+
+
+function dias(valor) {
+  if (valor == null || Number.isNaN(Number(valor))) {
+    return "—";
+  }
+
+  return `${Number(valor).toLocaleString("es-ES", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  })} días`;
+}
+
+
+/* ============================================================
+   TARJETA KPI
+============================================================ */
+
+function KpiCard({
+  titulo,
+  valor,
+  descripcion,
+  icono,
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-sm backdrop-blur-xl">
+
+      <div className="flex items-start justify-between gap-4">
+
+        <div>
+
+          <p className="text-sm font-medium text-[var(--erp-muted)]">
+            {titulo}
+          </p>
+
+          <div className="mt-2 text-3xl font-bold tracking-tight">
+            {valor}
+          </div>
+
+          {descripcion && (
+            <p className="mt-1 text-xs text-[var(--erp-muted)]">
+              {descripcion}
+            </p>
+          )}
+
+        </div>
+
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-xl">
+          {icono}
+        </div>
+
+      </div>
+
+    </div>
+  );
+}
+
+
+/* ============================================================
+   ACTIVIDAD
+============================================================ */
+
+function ActividadCard({
+  actividad,
+  total,
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/[0.07]">
+
+      <div className="flex items-center justify-between gap-4">
+
+        <div className="flex min-w-0 items-center gap-3">
+
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-xl">
+            {actividad.icono}
+          </div>
+
+          <div className="min-w-0">
+
+            <p className="truncate text-sm font-semibold">
+              {actividad.nombre}
+            </p>
+
+            <p className="mt-1 text-xs text-[var(--erp-muted)]">
+              Expedientes en actividad
+            </p>
+
+          </div>
+
+        </div>
+
+        <div className="shrink-0 text-2xl font-bold">
+          {numero(total)}
+        </div>
+
+      </div>
+
+      <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
+
+        <div
+          className="h-full rounded-full bg-current opacity-70"
+          style={{
+            width: "100%",
+          }}
+        />
+
+      </div>
+
+    </div>
+  );
+}
+
+
+/* ============================================================
+   LOADING
+============================================================ */
+
+function DashboardLoading() {
+  return (
+    <div className="space-y-6">
+
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+
+        <div className="h-7 w-72 animate-pulse rounded bg-white/10" />
+
+        <div className="mt-3 h-4 w-96 max-w-full animate-pulse rounded bg-white/10" />
+
+      </div>
+
+
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+
+        {[1, 2, 3, 4].map((item) => (
+          <div
+            key={item}
+            className="h-32 animate-pulse rounded-2xl border border-white/10 bg-white/5"
+          />
+        ))}
+
+      </div>
+
+
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+
+        {[1, 2].map((item) => (
+          <div
+            key={item}
+            className="h-96 animate-pulse rounded-2xl border border-white/10 bg-white/5"
+          />
+        ))}
+
+      </div>
+
+    </div>
+  );
+}
+
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
 
 export default function Dashboard() {
-  const { data, loading, cargarDashboard } = useDashboard();
 
-  const cargar = useCallback(() => {
-    cargarDashboard();
-  }, [cargarDashboard]);
+  const {
+    totalExpedientes,
+    expedientesPorActividad,
+    mediaFirmaPorTipoOperacion,
+    loading,
+    error,
+    cargarDashboard,
+  } = useDashboard();
 
-  useEffect(() => {
-    cargar();
-  }, [cargar]);
+
+  /* ----------------------------------------------------------
+     MAPA ACTIVIDADES
+  ---------------------------------------------------------- */
+
+  const actividades = ACTIVIDADES.map((actividad) => {
+
+    const encontrada =
+      expedientesPorActividad.find(
+        (item) =>
+          item?.key === actividad.key
+      );
+
+    return {
+      ...actividad,
+      total: encontrada?.total ?? 0,
+    };
+
+  });
+
+
+  /* ----------------------------------------------------------
+     TOTAL EN ACTIVIDADES
+  ---------------------------------------------------------- */
+
+  const totalActividades =
+    actividades.reduce(
+      (total, actividad) =>
+        total + Number(actividad.total || 0),
+      0
+    );
+
+
+  /* ----------------------------------------------------------
+     MEDIA GENERAL
+  ---------------------------------------------------------- */
+
+  const mediasValidas =
+    mediaFirmaPorTipoOperacion.filter(
+      (item) =>
+        item?.media_dias != null &&
+        !Number.isNaN(
+          Number(item.media_dias)
+        )
+    );
+
+
+  const mediaGeneral =
+    mediasValidas.length > 0
+      ? mediasValidas.reduce(
+          (suma, item) =>
+            suma + Number(item.media_dias),
+          0
+        ) / mediasValidas.length
+      : null;
+
+
+  /* ----------------------------------------------------------
+     RENDER
+  ---------------------------------------------------------- */
+
+  if (loading && totalExpedientes === 0) {
+    return <DashboardLoading />;
+  }
+
 
   return (
-    <div className="erp-page min-h-screen p-6">
+    <div className="w-full space-y-6">
 
       {/* ======================================================
           CABECERA
-         ====================================================== */}
+      ====================================================== */}
 
-      <div className="mb-7">
-        <div className="flex items-start gap-4">
+      <section className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-sm backdrop-blur-xl">
 
-          <div
-            className="
-              flex
-              items-center
-              justify-center
-              w-12
-              h-12
-              rounded-2xl
-              bg-[var(--erp-primary-soft)]
-              text-[var(--erp-primary)]
-              border border-[var(--erp-border)]
-              shrink-0
-            "
-          >
-            <IconCalendar className="w-6 h-6" />
-          </div>
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
 
           <div>
-            <h1
-              className="
-                text-3xl
-                font-bold
-                tracking-tight
-                text-[var(--erp-text)]
-              "
-            >
-              Panel de actividad
-            </h1>
 
-            <p
-              className="
-                mt-1
-                text-sm
-                text-[var(--erp-text-soft)]
-              "
-            >
-              Resumen de actividad de la agenda.
-            </p>
-          </div>
+            <div className="flex items-center gap-3">
 
-        </div>
-      </div>
-
-      {/* ======================================================
-          CARGANDO
-         ====================================================== */}
-
-      {loading && (
-        <div className="space-y-6">
-
-          {/* Skeleton tarjetas */}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-
-            {[1, 2, 3, 4].map((item) => (
-              <div
-                key={item}
-                className="
-                  bg-white
-                  border border-[var(--erp-border)]
-                  rounded-2xl
-                  p-5
-                  shadow-sm
-                  animate-pulse
-                "
-              >
-                <div className="flex items-center gap-3">
-
-                  <div
-                    className="
-                      w-10
-                      h-10
-                      rounded-xl
-                      bg-[var(--erp-surface-soft)]
-                    "
-                  />
-
-                  <div className="flex-1 space-y-2">
-                    <div
-                      className="
-                        h-3
-                        w-24
-                        rounded
-                        bg-[var(--erp-surface-soft)]
-                      "
-                    />
-
-                    <div
-                      className="
-                        h-3
-                        w-32
-                        rounded
-                        bg-[var(--erp-surface-soft)]
-                      "
-                    />
-                  </div>
-
-                </div>
-
-                <div
-                  className="
-                    mt-5
-                    h-8
-                    w-16
-                    rounded
-                    bg-[var(--erp-surface-soft)]
-                  "
-                />
-              </div>
-            ))}
-
-          </div>
-
-          {/* Skeleton panel */}
-
-          <div className="erp-card p-6 animate-pulse">
-
-            <div className="flex items-center justify-between mb-6">
-
-              <div className="space-y-2">
-                <div
-                  className="
-                    h-5
-                    w-40
-                    rounded
-                    bg-[var(--erp-surface-soft)]
-                  "
-                />
-
-                <div
-                  className="
-                    h-3
-                    w-64
-                    rounded
-                    bg-[var(--erp-surface-soft)]
-                  "
-                />
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-2xl">
+                📊
               </div>
 
-              <div
-                className="
-                  w-10
-                  h-10
-                  rounded-xl
-                  bg-[var(--erp-surface-soft)]
-                "
-              />
+              <div>
+
+                <h1 className="text-2xl font-bold tracking-tight">
+                  Dashboard de Expedientes
+                </h1>
+
+                <p className="mt-1 text-sm text-[var(--erp-muted)]">
+                  Visión general del circuito y evolución de los expedientes
+                </p>
+
+              </div>
 
             </div>
 
-            <div
-              className="
-                h-20
-                rounded-xl
-                bg-[var(--erp-surface-soft)]
-              "
-            />
+          </div>
+
+
+          <button
+            type="button"
+            onClick={cargarDashboard}
+            disabled={loading}
+            className="rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 text-sm font-semibold transition hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loading ? "Actualizando..." : "↻ Actualizar"}
+          </button>
+
+        </div>
+
+      </section>
+
+
+      {/* ======================================================
+          ERROR
+      ====================================================== */}
+
+      {error && (
+        <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5">
+
+          <div className="flex items-start gap-3">
+
+            <div className="text-xl">
+              ⚠️
+            </div>
+
+            <div>
+
+              <p className="font-semibold">
+                No se ha podido cargar el Dashboard
+              </p>
+
+              <p className="mt-1 text-sm text-[var(--erp-muted)]">
+                {error}
+              </p>
+
+            </div>
 
           </div>
 
         </div>
       )}
 
+
       {/* ======================================================
-          CONTENIDO
-         ====================================================== */}
+          KPIs
+      ====================================================== */}
 
-      {!loading && data && (
-        <>
+      <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
 
-          {/* ==================================================
-              RESUMEN
-             ================================================== */}
+        <KpiCard
+          titulo="Total expedientes"
+          valor={numero(totalExpedientes)}
+          descripcion="Total registrado en el sistema"
+          icono="📁"
+        />
 
-          <div
-            className="
-              grid
-              grid-cols-1
-              md:grid-cols-2
-              xl:grid-cols-4
-              gap-4
-              mb-6
-            "
-          >
+        <KpiCard
+          titulo="Actividades"
+          valor={numero(actividades.length)}
+          descripcion="Etapas del circuito"
+          icono="🔄"
+        />
 
-            {/* ==================================================
-                PRÓXIMAS
-               ================================================== */}
+        <KpiCard
+          titulo="Expedientes en circuito"
+          valor={numero(totalActividades)}
+          descripcion="Distribuidos entre actividades"
+          icono="📋"
+        />
 
-            <div
-              className="
-                group
-                relative
-                overflow-hidden
-                bg-white
-                border border-blue-200
-                rounded-2xl
-                p-5
-                shadow-sm
-                transition-all
-                duration-200
-                hover:-translate-y-1
-                hover:shadow-md
-              "
-            >
+        <KpiCard
+          titulo="Media hasta firma"
+          valor={dias(mediaGeneral)}
+          descripcion="Media de todos los tipos de operación"
+          icono="✍️"
+        />
 
-              {/* Línea lateral */}
+      </section>
 
-              <div
-                className="
-                  absolute
-                  left-0
-                  top-0
-                  bottom-0
-                  w-1
-                  bg-blue-500
-                "
-              />
 
-              <div className="flex items-start justify-between gap-3">
+      {/* ======================================================
+          EXPEDIENTES POR ACTIVIDAD
+      ====================================================== */}
 
-                <div>
+      <section className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-sm backdrop-blur-xl">
 
-                  <p
-                    className="
-                      text-xs
-                      font-semibold
-                      uppercase
-                      tracking-wide
-                      text-blue-600
-                    "
-                  >
-                    Próximas
-                  </p>
+        <div className="mb-5">
 
-                  <p
-                    className="
-                      mt-1
-                      text-sm
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    Citas pendientes
-                  </p>
+          <h2 className="text-lg font-bold">
+            Expedientes por actividad
+          </h2>
 
-                </div>
+          <p className="mt-1 text-sm text-[var(--erp-muted)]">
+            Distribución actual de los expedientes dentro del circuito
+          </p>
 
-                <div
-                  className="
-                    flex
-                    items-center
-                    justify-center
-                    w-10
-                    h-10
-                    rounded-xl
-                    bg-blue-50
-                    text-[var(--erp-primary)]
-                    shrink-0
-                  "
-                >
-                  <IconCalendar className="w-5 h-5" />
-                </div>
+        </div>
 
-              </div>
 
-              <div className="mt-5 flex items-end gap-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
 
-                <span
-                  className="
-                    text-4xl
-                    leading-none
-                    font-bold
-                    tracking-tight
-                    text-[var(--erp-primary)]
-                  "
-                >
-                  {data.proximas.length}
-                </span>
+          {actividades.map((actividad) => (
+            <ActividadCard
+              key={actividad.key}
+              actividad={actividad}
+              total={actividad.total}
+            />
+          ))}
 
-                <span
-                  className="
-                    mb-1
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  citas
-                </span>
+        </div>
 
-              </div>
+      </section>
 
+
+      {/* ======================================================
+          MEDIA DE FIRMA
+      ====================================================== */}
+
+      <section className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-sm backdrop-blur-xl">
+
+        <div className="mb-5">
+
+          <h2 className="text-lg font-bold">
+            Media de días hasta firma
+          </h2>
+
+          <p className="mt-1 text-sm text-[var(--erp-muted)]">
+            Tiempo medio entre el inicio de actividad y la fecha de firma,
+            agrupado por tipo de operación
+          </p>
+
+        </div>
+
+
+        {mediaFirmaPorTipoOperacion.length === 0 ? (
+
+          <div className="rounded-xl border border-dashed border-white/10 p-10 text-center">
+
+            <div className="text-3xl">
+              📈
             </div>
 
-            {/* ==================================================
-                VC
-               ================================================== */}
+            <p className="mt-3 font-semibold">
+              Todavía no hay datos de firma
+            </p>
 
-            <div
-              className="
-                group
-                relative
-                overflow-hidden
-                bg-white
-                border border-green-200
-                rounded-2xl
-                p-5
-                shadow-sm
-                transition-all
-                duration-200
-                hover:-translate-y-1
-                hover:shadow-md
-              "
-            >
-
-              <div
-                className="
-                  absolute
-                  left-0
-                  top-0
-                  bottom-0
-                  w-1
-                  bg-green-500
-                "
-              />
-
-              <div className="flex items-start justify-between gap-3">
-
-                <div>
-
-                  <p
-                    className="
-                      text-xs
-                      font-semibold
-                      uppercase
-                      tracking-wide
-                      text-green-600
-                    "
-                  >
-                    VC realizadas
-                  </p>
-
-                  <p
-                    className="
-                      mt-1
-                      text-sm
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    Videoconferencias
-                  </p>
-
-                </div>
-
-                <div
-                  className="
-                    flex
-                    items-center
-                    justify-center
-                    w-10
-                    h-10
-                    rounded-xl
-                    bg-green-50
-                    text-[var(--erp-success)]
-                    shrink-0
-                  "
-                >
-                  <IconWeek className="w-5 h-5" />
-                </div>
-
-              </div>
-
-              <div className="mt-5 flex items-end gap-2">
-
-                <span
-                  className="
-                    text-4xl
-                    leading-none
-                    font-bold
-                    tracking-tight
-                    text-[var(--erp-success)]
-                  "
-                >
-                  {data.realizadasVC.length}
-                </span>
-
-                <span
-                  className="
-                    mb-1
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  realizadas
-                </span>
-
-              </div>
-
-            </div>
-
-            {/* ==================================================
-                PRESENCIAL
-               ================================================== */}
-
-            <div
-              className="
-                group
-                relative
-                overflow-hidden
-                bg-white
-                border border-purple-200
-                rounded-2xl
-                p-5
-                shadow-sm
-                transition-all
-                duration-200
-                hover:-translate-y-1
-                hover:shadow-md
-              "
-            >
-
-              <div
-                className="
-                  absolute
-                  left-0
-                  top-0
-                  bottom-0
-                  w-1
-                  bg-purple-500
-                "
-              />
-
-              <div className="flex items-start justify-between gap-3">
-
-                <div>
-
-                  <p
-                    className="
-                      text-xs
-                      font-semibold
-                      uppercase
-                      tracking-wide
-                      text-purple-600
-                    "
-                  >
-                    Presencial
-                  </p>
-
-                  <p
-                    className="
-                      mt-1
-                      text-sm
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    Citas presenciales
-                  </p>
-
-                </div>
-
-                <div
-                  className="
-                    flex
-                    items-center
-                    justify-center
-                    w-10
-                    h-10
-                    rounded-xl
-                    bg-purple-50
-                    text-purple-600
-                    shrink-0
-                  "
-                >
-                  <IconMonth className="w-5 h-5" />
-                </div>
-
-              </div>
-
-              <div className="mt-5 flex items-end gap-2">
-
-                <span
-                  className="
-                    text-4xl
-                    leading-none
-                    font-bold
-                    tracking-tight
-                    text-purple-600
-                  "
-                >
-                  {data.realizadasPresencial.length}
-                </span>
-
-                <span
-                  className="
-                    mb-1
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  realizadas
-                </span>
-
-              </div>
-
-            </div>
-
-            {/* ==================================================
-                TOTAL MES
-               ================================================== */}
-
-            <div
-              className="
-                group
-                relative
-                overflow-hidden
-                bg-white
-                border border-[var(--erp-border)]
-                rounded-2xl
-                p-5
-                shadow-sm
-                transition-all
-                duration-200
-                hover:-translate-y-1
-                hover:shadow-md
-              "
-            >
-
-              <div
-                className="
-                  absolute
-                  left-0
-                  top-0
-                  bottom-0
-                  w-1
-                  bg-[var(--erp-primary)]
-                "
-              />
-
-              <div className="flex items-start justify-between gap-3">
-
-                <div>
-
-                  <p
-                    className="
-                      text-xs
-                      font-semibold
-                      uppercase
-                      tracking-wide
-                      text-[var(--erp-primary)]
-                    "
-                  >
-                    Total mes
-                  </p>
-
-                  <p
-                    className="
-                      mt-1
-                      text-sm
-                      text-[var(--erp-text-soft)]
-                    "
-                  >
-                    Actividad mensual
-                  </p>
-
-                </div>
-
-                <div
-                  className="
-                    flex
-                    items-center
-                    justify-center
-                    w-10
-                    h-10
-                    rounded-xl
-                    bg-[var(--erp-primary-soft)]
-                    text-[var(--erp-primary)]
-                    shrink-0
-                  "
-                >
-                  <IconMonth className="w-5 h-5" />
-                </div>
-
-              </div>
-
-              <div className="mt-5 flex items-end gap-2">
-
-                <span
-                  className="
-                    text-4xl
-                    leading-none
-                    font-bold
-                    tracking-tight
-                    text-[var(--erp-text)]
-                  "
-                >
-                  {data.totalMes}
-                </span>
-
-                <span
-                  className="
-                    mb-1
-                    text-xs
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  citas
-                </span>
-
-              </div>
-
-            </div>
+            <p className="mt-1 text-sm text-[var(--erp-muted)]">
+              Se mostrarán aquí los tiempos medios cuando existan
+              expedientes con fecha de inicio y fecha de firma.
+            </p>
 
           </div>
 
-          {/* ==================================================
-              PRÓXIMAS CITAS
-             ================================================== */}
+        ) : (
 
-          <div className="erp-card p-6">
+          <div className="overflow-x-auto">
 
-            {/* Cabecera */}
+            <table className="w-full min-w-[700px] border-collapse">
 
-            <div
-              className="
-                flex
-                flex-col
-                sm:flex-row
-                sm:items-center
-                sm:justify-between
-                gap-4
-                mb-6
-              "
-            >
+              <thead>
 
-              <div className="flex items-center gap-3">
+                <tr className="border-b border-white/10">
 
-                <div
-                  className="
-                    flex
-                    items-center
-                    justify-center
-                    w-11
-                    h-11
-                    rounded-xl
-                    bg-[var(--erp-primary-soft)]
-                    text-[var(--erp-primary)]
-                    shrink-0
-                  "
-                >
-                  <IconCalendar className="w-5 h-5" />
-                </div>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--erp-muted)]">
+                    Tipo de operación
+                  </th>
 
-                <div>
+                  <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-[var(--erp-muted)]">
+                    Expedientes firmados
+                  </th>
 
-                  <h2
-                    className="
-                      text-xl
-                      font-bold
-                      text-[var(--erp-text)]
-                    "
-                  >
-                    Próximas citas
-                  </h2>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-[var(--erp-muted)]">
+                    Media
+                  </th>
 
-                  <p
-                    className="
-                      text-sm
-                      text-[var(--erp-text-soft)]
-                      mt-1
-                    "
-                  >
-                    Citas pendientes de la agenda.
-                  </p>
+                </tr>
 
-                </div>
+              </thead>
 
-              </div>
 
-              {data.proximas.length > 0 && (
-                <div
-                  className="
-                    inline-flex
-                    items-center
-                    w-fit
-                    rounded-full
-                    bg-[var(--erp-primary-soft)]
-                    border border-[var(--erp-border)]
-                    px-3
-                    py-1.5
-                    text-xs
-                    font-semibold
-                    text-[var(--erp-primary)]
-                  "
-                >
-                  {data.proximas.length}{" "}
-                  {data.proximas.length === 1 ? "cita" : "citas"}
-                </div>
-              )}
+              <tbody>
 
-            </div>
+                {mediaFirmaPorTipoOperacion.map(
+                  (fila, indice) => (
 
-            {/* ==================================================
-                SIN CITAS
-               ================================================== */}
+                    <tr
+                      key={`${fila.tipo_operacion}-${indice}`}
+                      className="border-b border-white/5 last:border-b-0"
+                    >
 
-            {data.proximas.length === 0 && (
-              <div
-                className="
-                  rounded-2xl
-                  border border-dashed
-                  border-[var(--erp-border)]
-                  bg-[var(--erp-surface-soft)]
-                  p-10
-                  text-center
-                "
-              >
-
-                <div
-                  className="
-                    mx-auto
-                    mb-4
-                    flex
-                    items-center
-                    justify-center
-                    w-14
-                    h-14
-                    rounded-2xl
-                    bg-white
-                    border border-[var(--erp-border)]
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  <IconCalendar className="w-6 h-6" />
-                </div>
-
-                <p
-                  className="
-                    font-semibold
-                    text-[var(--erp-text)]
-                  "
-                >
-                  No hay citas próximas
-                </p>
-
-                <p
-                  className="
-                    text-sm
-                    text-[var(--erp-text-soft)]
-                    mt-1
-                  "
-                >
-                  No existen citas pendientes para mostrar.
-                </p>
-
-              </div>
-            )}
-
-            {/* ==================================================
-                LISTADO
-               ================================================== */}
-
-            {data.proximas.length > 0 && (
-              <ul className="space-y-3">
-
-                {data.proximas.map((c, i) => (
-                  <li
-                    key={i}
-                    className="
-                      relative
-                      overflow-hidden
-                      bg-[var(--erp-surface-soft)]
-                      border border-[var(--erp-border)]
-                      rounded-2xl
-                      p-4
-                      transition-all
-                      duration-200
-                      hover:bg-[var(--erp-primary-soft)]
-                      hover:border-blue-200
-                      hover:shadow-sm
-                    "
-                  >
-
-                    {/* Línea de estado */}
-
-                    <div
-                      className="
-                        absolute
-                        left-0
-                        top-0
-                        bottom-0
-                        w-1
-                        bg-[var(--erp-primary)]
-                      "
-                    />
-
-                    <div className="pl-2">
-
-                      {/* Cabecera */}
-
-                      <div
-                        className="
-                          flex
-                          flex-col
-                          sm:flex-row
-                          sm:items-center
-                          sm:justify-between
-                          gap-2
-                          mb-3
-                        "
-                      >
-
-                        <div className="flex items-center gap-2">
-
-                          <span
-                            className="
-                              inline-flex
-                              items-center
-                              justify-center
-                              w-2
-                              h-2
-                              rounded-full
-                              bg-[var(--erp-primary)]
-                              shrink-0
-                            "
-                          />
-
-                          <span
-                            className="
-                              font-semibold
-                              text-[var(--erp-text)]
-                            "
-                          >
-                            {c.tipo_firma || "—"}
-                          </span>
-
-                        </div>
-
-                        <span
-                          className="
-                            inline-flex
-                            items-center
-                            w-fit
-                            rounded-full
-                            bg-white
-                            border border-[var(--erp-border)]
-                            px-3
-                            py-1
-                            text-xs
-                            font-medium
-                            text-[var(--erp-text-soft)]
-                          "
-                        >
-                          {c.fecha}
-                        </span>
-
-                      </div>
-
-                      {/* Hora */}
-
-                      <div
-                        className="
-                          flex
-                          items-center
-                          gap-2
-                          text-sm
-                          text-[var(--erp-text-soft)]
-                          mb-3
-                        "
-                      >
-
-                        <IconClock
-                          className="
-                            w-4
-                            h-4
-                            text-[var(--erp-primary)]
-                            shrink-0
-                          "
-                        />
+                      <td className="px-4 py-4">
 
                         <span className="font-medium">
-                          {c.hora_inicio} → {c.hora_fin}
+                          {fila.tipo_operacion ||
+                            "Sin tipo de operación"}
                         </span>
 
-                      </div>
+                      </td>
 
-                      {/* Información */}
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+                      <td className="px-4 py-4 text-center">
 
-                        <p
-                          className="
-                            text-sm
-                            text-[var(--erp-text-soft)]
-                          "
-                        >
-                          <span
-                            className="
-                              font-semibold
-                              text-[var(--erp-text)]
-                            "
-                          >
-                            Notario:
-                          </span>{" "}
-                          {c.notario || "—"}
-                        </p>
+                        <span className="inline-flex rounded-lg bg-white/10 px-3 py-1 text-sm font-semibold">
+                          {numero(
+                            fila.expedientes_firmados
+                          )}
+                        </span>
 
-                        <p
-                          className="
-                            text-sm
-                            text-[var(--erp-text-soft)]
-                          "
-                        >
-                          <span
-                            className="
-                              font-semibold
-                              text-[var(--erp-text)]
-                            "
-                          >
-                            Apoderado:
-                          </span>{" "}
-                          {c.apoderado || "—"}
-                        </p>
+                      </td>
 
-                      </div>
 
-                    </div>
+                      <td className="px-4 py-4 text-right">
 
-                  </li>
-                ))}
+                        <span className="text-lg font-bold">
+                          {dias(fila.media_dias)}
+                        </span>
 
-              </ul>
-            )}
+                      </td>
+
+                    </tr>
+
+                  )
+                )}
+
+              </tbody>
+
+            </table>
 
           </div>
 
-        </>
-      )}
+        )}
+
+      </section>
+
+
+      {/* ======================================================
+          RESUMEN DEL CIRCUITO
+      ====================================================== */}
+
+      <section className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-sm backdrop-blur-xl">
+
+        <div className="mb-5">
+
+          <h2 className="text-lg font-bold">
+            Resumen del circuito
+          </h2>
+
+          <p className="mt-1 text-sm text-[var(--erp-muted)]">
+            Estado actual de las principales etapas de trabajo
+          </p>
+
+        </div>
+
+
+        <div className="space-y-4">
+
+          {actividades.map((actividad) => {
+
+            const porcentaje =
+              totalExpedientes > 0
+                ? Math.min(
+                    100,
+                    (actividad.total /
+                      totalExpedientes) *
+                      100
+                  )
+                : 0;
+
+            return (
+              <div
+                key={actividad.key}
+                className="grid grid-cols-[minmax(180px,280px)_1fr_70px] items-center gap-4"
+              >
+
+                <div className="flex min-w-0 items-center gap-2">
+
+                  <span>
+                    {actividad.icono}
+                  </span>
+
+                  <span className="truncate text-sm font-medium">
+                    {actividad.nombre}
+                  </span>
+
+                </div>
+
+
+                <div className="h-3 overflow-hidden rounded-full bg-white/10">
+
+                  <div
+                    className="h-full rounded-full bg-current opacity-70 transition-all duration-500"
+                    style={{
+                      width: `${porcentaje}%`,
+                    }}
+                  />
+
+                </div>
+
+
+                <div className="text-right text-sm font-bold">
+                  {numero(actividad.total)}
+                </div>
+
+              </div>
+            );
+
+          })}
+
+        </div>
+
+      </section>
+
+
+      {/* ======================================================
+          PIE
+      ====================================================== */}
+
+      <div className="pb-4 text-center text-xs text-[var(--erp-muted)]">
+        Dashboard de Expedientes · MOLSAN ERP
+      </div>
 
     </div>
   );
