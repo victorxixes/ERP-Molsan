@@ -528,8 +528,7 @@ export default function FichaExpediente() {
         <div
           className="
             erp-card
-            max-w-[1700px]
-            mx-auto
+           w-ful
             p-8
           "
         >
