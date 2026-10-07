@@ -6,14 +6,12 @@ from sqlalchemy import (
     Time,
     ForeignKey,
 )
-
 from sqlalchemy.orm import relationship
 
 from backend.app.database import Base
 
 
 class Cita(Base):
-
     __tablename__ = "agenda_citas"
 
     id = Column(
@@ -42,11 +40,35 @@ class Cita(Base):
         nullable=False,
     )
 
-    notario_id = Column(
+    # =========================================================
+    # EXPEDIENTE
+    # =========================================================
+    #
+    # NULL:
+    #   Cita normal creada directamente desde Agenda.
+    #
+    # INFORMADO:
+    #   Cita vinculada a un expediente.
+    #
+    # =========================================================
+
+    expediente_id = Column(
         Integer,
         ForeignKey(
-            "ctn_notarios.id"
+            "expedientes.id",
+            ondelete="SET NULL",
         ),
+        nullable=True,
+        index=True,
+    )
+
+    # =========================================================
+    # NOTARIO
+    # =========================================================
+
+    notario_id = Column(
+        Integer,
+        ForeignKey("ctn_notarios.id"),
         nullable=True,
     )
 
@@ -55,24 +77,18 @@ class Cita(Base):
         nullable=True,
     )
 
-    # ========================================================
-    # APODERADO COMO TEXTO
-    # ========================================================
+    # =========================================================
+    # APODERADO
+    # =========================================================
 
     apoderado = Column(
         String(150),
         nullable=True,
     )
 
-    # ========================================================
-    # APODERADO COMO RELACIÓN OPCIONAL
-    # ========================================================
-
     apoderado_id = Column(
         Integer,
-        ForeignKey(
-            "empleados.id"
-        ),
+        ForeignKey("empleados.id"),
         nullable=True,
     )
 
@@ -82,21 +98,31 @@ class Cita(Base):
         lazy="joined",
     )
 
-    # ========================================================
+    # =========================================================
     # OBSERVACIONES
-    # ========================================================
+    # =========================================================
 
     observaciones = Column(
         String,
         nullable=True,
     )
 
-    # ========================================================
-    # NOTARIO
-    # ========================================================
+    # =========================================================
+    # RELACIÓN NOTARIO
+    # =========================================================
 
     notario = relationship(
         "Notaria",
         back_populates="citas",
+        lazy="joined",
+    )
+
+    # =========================================================
+    # RELACIÓN EXPEDIENTE
+    # =========================================================
+
+    expediente = relationship(
+        "Expediente",
+        foreign_keys=[expediente_id],
         lazy="joined",
     )
