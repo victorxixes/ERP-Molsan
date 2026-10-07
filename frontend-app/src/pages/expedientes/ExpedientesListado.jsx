@@ -1997,8 +1997,7 @@ export default function ExpedientesListado() {
 
       <div
         className="
-          max-w-[1700px]
-          mx-auto
+          w-full
 
           flex
           flex-col
@@ -2078,8 +2077,7 @@ export default function ExpedientesListado() {
 
         <div
           className="
-            max-w-[1700px]
-            mx-auto
+            w-full
 
             bg-red-50
 
@@ -2105,8 +2103,7 @@ export default function ExpedientesListado() {
 
       <div
         className="
-          max-w-[1700px]
-          mx-auto
+          w-full
 
           grid
           grid-cols-1
@@ -2283,8 +2280,7 @@ export default function ExpedientesListado() {
         className="
           erp-card
 
-          max-w-[1700px]
-          mx-auto
+          w-full
 
           p-4
 
@@ -2604,8 +2600,7 @@ export default function ExpedientesListado() {
         className="
           erp-card
 
-          max-w-[1700px]
-          mx-auto
+          w-full
 
           p-4
 
@@ -2835,8 +2830,7 @@ export default function ExpedientesListado() {
         className="
           erp-card
 
-          max-w-[1700px]
-          mx-auto
+          w-full
 
           p-2
           sm:p-3
@@ -3170,8 +3164,7 @@ export default function ExpedientesListado() {
 
       <div
         className="
-          max-w-[1700px]
-          mx-auto
+          w-full
 
           flex
 
@@ -3236,8 +3229,7 @@ export default function ExpedientesListado() {
 
       <div
         className="
-          max-w-[1700px]
-          mx-auto
+          w-full
 
           flex
           flex-col
