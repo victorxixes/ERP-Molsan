@@ -54,7 +54,6 @@ from backend.app.database import (
 # ============================================================
 
 
-
 # ------------------------------------------------------------
 # EXPEDIENTES
 # ------------------------------------------------------------
@@ -91,8 +90,6 @@ from backend.app.expedientes.defectos.models import (
 )
 
 
-
-
 # ------------------------------------------------------------
 # ROLES
 # ------------------------------------------------------------
@@ -101,9 +98,7 @@ from backend.app.seguridad.roles.models import (
     Rol,
 )
 
-from backend.app.tipos_carga_hipotecaria.models import (
-    TipoCargaHipotecaria,
-)
+
 # ------------------------------------------------------------
 # NOTARIAS
 #
@@ -198,6 +193,7 @@ from backend.app.tipos_carga_hipotecaria.models import (
     TipoCargaHipotecaria,
 )
 
+
 # ------------------------------------------------------------
 # TIPOS DE CONCEPTO DE GASTOS
 # ------------------------------------------------------------
@@ -205,6 +201,7 @@ from backend.app.tipos_carga_hipotecaria.models import (
 from backend.app.tipos_concepto_gastos.models import (
     TipoConceptoGastos,
 )
+
 
 # ------------------------------------------------------------
 # ACCIONES DEL EXPEDIENTE
@@ -217,11 +214,77 @@ from backend.app.acciones_expediente.models import (
 
 # ============================================================
 # CREAR TABLAS
+#
+# IMPORTANTE:
+#
+# Los modelos se importan antes de create_all().
+# De esta forma SQLAlchemy conoce todas las tablas y relaciones.
 # ============================================================
 
 Base.metadata.create_all(
     bind=engine
 )
+
+
+# ============================================================
+# FIX SCHEMA — EXPEDIENTES
+#
+# Estos campos son necesarios para el flujo:
+#
+# DOCUMENTACIÓN PREVIA
+#          ↓
+#    ENVIAR A NOTARIO
+#          ↓
+# SEDE NOTARIAL
+#          ↓
+# SEDE NOTARIAL CON PROTOCOLO
+#
+# IMPORTANTE:
+# create_all() NO modifica tablas existentes.
+# Por eso añadimos las columnas mediante ALTER TABLE.
+# ============================================================
+
+with engine.begin() as connection:
+
+    connection.execute(
+        text(
+            """
+            ALTER TABLE expedientes
+            ADD COLUMN IF NOT EXISTS tipo_firma
+            VARCHAR(100)
+            """
+        )
+    )
+
+    connection.execute(
+        text(
+            """
+            ALTER TABLE expedientes
+            ADD COLUMN IF NOT EXISTS tipo_documento
+            VARCHAR(300)
+            """
+        )
+    )
+
+    connection.execute(
+        text(
+            """
+            ALTER TABLE expedientes
+            ADD COLUMN IF NOT EXISTS poblacion
+            VARCHAR(200)
+            """
+        )
+    )
+
+    connection.execute(
+        text(
+            """
+            ALTER TABLE expedientes
+            ADD COLUMN IF NOT EXISTS provincia
+            VARCHAR(200)
+            """
+        )
+    )
 
 
 # ============================================================
@@ -461,15 +524,6 @@ from backend.app.maestros.router import (
 
 
 # ============================================================
-# TIPOS DE CARGA HIPOTECARIA
-# ============================================================
-
-from backend.app.tipos_carga_hipotecaria.router import (
-    router as tipos_carga_hipotecaria_router,
-)
-
-
-# ============================================================
 # INTRANET
 # ============================================================
 
@@ -564,6 +618,7 @@ from backend.app.oficinas_liquidadoras.router import (
     router as oficinas_liquidadoras_router,
 )
 
+
 # ============================================================
 # TIPOS DE CONCEPTO DE GASTOS
 # ============================================================
@@ -571,6 +626,7 @@ from backend.app.oficinas_liquidadoras.router import (
 from backend.app.tipos_concepto_gastos.router import (
     router as tipos_concepto_gastos_router,
 )
+
 
 # ============================================================
 # ACCIONES DEL EXPEDIENTE
@@ -651,6 +707,15 @@ from backend.app.Utilidades.importadores.router_absis import (
 
 from backend.app.expedientes.router import (
     router as expedientes_router,
+)
+
+
+# ============================================================
+# TIPOS DE CARGA HIPOTECARIA
+# ============================================================
+
+from backend.app.tipos_carga_hipotecaria.router import (
+    router as tipos_carga_hipotecaria_router,
 )
 
 
@@ -809,6 +874,16 @@ app.include_router(
 
 
 # ============================================================
+# MENSAJES REST
+# ============================================================
+
+app.include_router(
+    mensajes_router,
+    prefix="/api",
+)
+
+
+# ============================================================
 # MUNICIPIOS
 # ============================================================
 
@@ -847,6 +922,7 @@ app.include_router(
     prefix="/api",
 )
 
+
 # ============================================================
 # TIPOS DE CONCEPTO DE GASTOS
 # ============================================================
@@ -855,6 +931,7 @@ app.include_router(
     tipos_concepto_gastos_router,
     prefix="/api",
 )
+
 
 # ============================================================
 # ACCIONES DEL EXPEDIENTE
@@ -914,16 +991,6 @@ app.include_router(
 
 app.include_router(
     dashboard_router,
-    prefix="/api",
-)
-
-
-# ============================================================
-# MENSAJES REST
-# ============================================================
-
-app.include_router(
-    mensajes_router,
     prefix="/api",
 )
 
