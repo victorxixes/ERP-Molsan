@@ -1,3 +1,4 @@
+```dockerfile
 FROM python:3.11
 
 # ============================================================
@@ -26,10 +27,23 @@ RUN pip install --no-cache-dir \
 
 
 # ============================================================
-# ARRANQUE
+# PUERTO RENDER
 #
-# Render puede proporcionar PORT.
-# Si no existe, usamos 8000.
+# Render proporciona PORT en tiempo de ejecución.
+# El valor habitual de Render es 10000.
 # ============================================================
 
-CMD ["sh", "-c", "exec uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+EXPOSE 10000
+
+
+# ============================================================
+# ARRANQUE
+#
+# IMPORTANTE:
+# Uvicorn escucha en el PORT proporcionado por Render.
+#
+# Si PORT no existe localmente, utilizamos 10000.
+# ============================================================
+
+CMD ["sh", "-c", "exec uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
+```
