@@ -28,14 +28,14 @@ function formatearFecha(fecha) {
 
   const texto = String(fecha);
 
-  // Formato ISO: YYYY-MM-DD
+  // YYYY-MM-DD
   if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
     const [year, month, day] = texto.split("-");
 
     return `${day}/${month}/${year}`;
   }
 
-  // ISO con hora
+  // YYYY-MM-DDTHH:mm:ss
   if (texto.includes("T")) {
     const parteFecha = texto.split("T")[0];
 
@@ -112,7 +112,7 @@ function IconoSeccion({ tipo }) {
 
 
 // ============================================================
-// ESTADO
+// ESTADO BADGE
 // ============================================================
 
 function EstadoBadge({ estado }) {
@@ -151,7 +151,12 @@ function EstadoBadge({ estado }) {
 // DATO
 // ============================================================
 
-function Dato({ etiqueta, valor, tipo = "texto", destacado = false }) {
+function Dato({
+  etiqueta,
+  valor,
+  tipo = "texto",
+  destacado = false,
+}) {
   let valorFormateado = valorVisible(valor);
 
   if (tipo === "fecha") {
@@ -183,12 +188,20 @@ function Dato({ etiqueta, valor, tipo = "texto", destacado = false }) {
 
 
 // ============================================================
-// SECCION
+// SECCION NORMAL
 // ============================================================
 
-function Seccion({ titulo, subtitulo, icono, children }) {
+function Seccion({
+  titulo,
+  subtitulo,
+  icono,
+  children,
+  className = "",
+}) {
   return (
-    <section className="relative overflow-hidden rounded-[24px] border border-white/80 bg-white/78 p-5 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
+    <section
+      className={`relative overflow-hidden rounded-[24px] border border-white/80 bg-white/78 p-5 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl ${className}`}
+    >
       <div className="absolute left-0 right-0 top-0 h-[3px] bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500" />
 
       <div className="mb-5 flex items-center gap-3">
@@ -207,7 +220,7 @@ function Seccion({ titulo, subtitulo, icono, children }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3">
         {children}
       </div>
     </section>
@@ -253,7 +266,9 @@ export default function FichaExpediente() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
-  const [mostrarEnviarANotario, setMostrarEnviarANotario] = useState(false);
+  const [mostrarEnviarANotario, setMostrarEnviarANotario] =
+    useState(false);
+
 
   // ==========================================================
   // CARGAR EXPEDIENTE
@@ -273,7 +288,10 @@ export default function FichaExpediente() {
 
         setExpediente(datos);
       } catch (err) {
-        console.error("Error cargando expediente:", err);
+        console.error(
+          "Error cargando expediente:",
+          err
+        );
 
         if (!activo) return;
 
@@ -344,13 +362,17 @@ export default function FichaExpediente() {
         <div className="mx-auto max-w-[1500px]">
           <div className="rounded-[28px] border border-white/80 bg-white/80 p-8 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
             <div className="animate-pulse space-y-5">
+
               <div className="h-8 w-72 rounded-xl bg-slate-200" />
+
               <div className="h-4 w-96 rounded-lg bg-slate-100" />
+
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div className="h-24 rounded-2xl bg-slate-100" />
                 <div className="h-24 rounded-2xl bg-slate-100" />
                 <div className="h-24 rounded-2xl bg-slate-100" />
               </div>
+
             </div>
           </div>
         </div>
@@ -367,7 +389,9 @@ export default function FichaExpediente() {
     return (
       <div className="min-h-[60vh] p-6">
         <div className="mx-auto max-w-[1500px]">
+
           <div className="rounded-[28px] border border-red-200 bg-red-50 p-8">
+
             <h1 className="text-lg font-bold text-red-800">
               Error al cargar el expediente
             </h1>
@@ -382,7 +406,9 @@ export default function FichaExpediente() {
             >
               Volver a expedientes
             </Link>
+
           </div>
+
         </div>
       </div>
     );
@@ -393,7 +419,9 @@ export default function FichaExpediente() {
     return (
       <div className="min-h-[60vh] p-6">
         <div className="mx-auto max-w-[1500px]">
+
           <div className="rounded-[28px] border border-slate-200 bg-white p-8 text-center">
+
             <p className="text-sm text-slate-500">
               No se ha encontrado el expediente.
             </p>
@@ -404,7 +432,9 @@ export default function FichaExpediente() {
             >
               Volver a expedientes
             </Link>
+
           </div>
+
         </div>
       </div>
     );
@@ -417,23 +447,30 @@ export default function FichaExpediente() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-50 px-4 py-6 md:px-6">
+
       {/* Fondos decorativos */}
       <div className="pointer-events-none absolute -left-32 top-20 h-72 w-72 rounded-full bg-blue-200/20 blur-3xl" />
+
       <div className="pointer-events-none absolute -right-32 top-96 h-80 w-80 rounded-full bg-cyan-200/20 blur-3xl" />
 
+
       <div className="relative mx-auto max-w-[1500px] space-y-5">
+
 
         {/* ================================================== */}
         {/* CABECERA */}
         {/* ================================================== */}
 
         <header className="relative overflow-hidden rounded-[28px] border border-white/80 bg-white/80 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.07)] backdrop-blur-2xl">
+
           <div className="absolute left-0 right-0 top-0 h-[4px] bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-500" />
 
           <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
 
             <div>
+
               <div className="mb-2 flex flex-wrap items-center gap-2">
+
                 <Link
                   to="/expedientes"
                   className="text-xs font-semibold text-blue-600 hover:text-blue-800"
@@ -441,39 +478,53 @@ export default function FichaExpediente() {
                   ← Expedientes
                 </Link>
 
-                <span className="text-slate-300">/</span>
+                <span className="text-slate-300">
+                  /
+                </span>
 
                 <span className="text-xs text-slate-400">
                   Ficha de expediente
                 </span>
+
               </div>
 
+
               <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
-                Expediente {valorVisible(expediente.id_expediente)}
+                Expediente{" "}
+                {valorVisible(
+                  expediente.id_expediente
+                )}
               </h1>
+
 
               <p className="mt-1 text-sm text-slate-500">
                 Información completa del expediente
               </p>
+
             </div>
 
 
             <div className="flex flex-wrap items-center gap-3">
 
               <div className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3">
+
                 <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
                   Estado
                 </div>
 
                 <div className="mt-1">
                   <EstadoBadge
-                    estado={expediente.estado_expediente}
+                    estado={
+                      expediente.estado_expediente
+                    }
                   />
                 </div>
+
               </div>
 
 
               <div className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3">
+
                 <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
                   Actividad actual
                 </div>
@@ -483,24 +534,33 @@ export default function FichaExpediente() {
                     expediente.actividad_actual
                   )}
                 </div>
+
               </div>
 
 
               <div className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3">
+
                 <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
                   Importe
                 </div>
 
                 <div className="mt-1 text-sm font-bold text-slate-900">
-                  {formatearNumero(expediente.importe)}
+                  {formatearNumero(
+                    expediente.importe
+                  )}
                 </div>
+
               </div>
 
             </div>
+
           </div>
 
 
-          {/* Acciones */}
+          {/* ================================================= */}
+          {/* ACCIONES */}
+          {/* ================================================= */}
+
           <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-5">
 
             {expediente.fecha_prevista_firma && (
@@ -518,7 +578,9 @@ export default function FichaExpediente() {
             {esDocumentacionPrevia && (
               <button
                 type="button"
-                onClick={() => setMostrarEnviarANotario(true)}
+                onClick={() =>
+                  setMostrarEnviarANotario(true)
+                }
                 className="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
               >
                 ✒️ Enviar a notario
@@ -526,48 +588,115 @@ export default function FichaExpediente() {
             )}
 
           </div>
+
         </header>
 
 
         {/* ================================================== */}
-        {/* 1. ESTADO */}
+        {/* PRIMER BLOQUE — ESTADO / TITULARES / SOLICITANTES */}
         {/* ================================================== */}
 
-        <Seccion
-          titulo="Estado del expediente"
-          subtitulo="Situación actual del expediente"
-          icono="estado"
-        >
-          <Dato
-            etiqueta="Estado expediente"
-            valor={expediente.estado_expediente}
-            destacado
-          />
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
 
-          <Dato
-            etiqueta="Estado expediente ANCERT"
-            valor={expediente.estado_expediente_ancert}
-          />
 
-          <Dato
-            etiqueta="Estado actividad"
-            valor={expediente.estado_actividad}
-          />
+          {/* ================================================= */}
+          {/* ESTADO */}
+          {/* ================================================= */}
 
-          <Dato
-            etiqueta="Estado facturación"
-            valor={expediente.facturacion_estado}
-          />
+          <Seccion
+            titulo="Estado"
+            subtitulo="Situación actual del expediente"
+            icono="estado"
+          >
 
-          <Dato
-            etiqueta="Estado registral"
-            valor={expediente.registral_estado}
-          />
-        </Seccion>
+            <Dato
+              etiqueta="Estado"
+              valor={expediente.estado_expediente}
+              destacado
+            />
+
+            <Dato
+              etiqueta="Actividad actual"
+              valor={expediente.actividad_actual}
+              destacado
+            />
+
+            <Dato
+              etiqueta="Estado actividad"
+              valor={expediente.estado_actividad}
+            />
+
+            <Dato
+              etiqueta="Tipo operación"
+              valor={expediente.tipo_operacion}
+              destacado
+            />
+
+            <Dato
+              etiqueta="Subtipo operación"
+              valor={expediente.subtipo_operacion}
+            />
+
+          </Seccion>
+
+
+          {/* ================================================= */}
+          {/* TITULARES */}
+          {/* ================================================= */}
+
+          <Seccion
+            titulo="Titulares"
+            subtitulo="Información de los titulares del expediente"
+            icono="titular"
+          >
+
+            <Dato
+              etiqueta="Nombre titular"
+              valor={expediente.nombre_titular}
+              destacado
+            />
+
+            <Dato
+              etiqueta="NIF titular"
+              valor={expediente.nif_titular}
+            />
+
+          </Seccion>
+
+
+          {/* ================================================= */}
+          {/* SOLICITANTES */}
+          {/* ================================================= */}
+
+          <Seccion
+            titulo="Solicitantes"
+            subtitulo="Información de solicitantes y apoderados"
+            icono="solicitante"
+          >
+
+            <Dato
+              etiqueta="Nombre solicitante"
+              valor={expediente.nombre_solicitante}
+              destacado
+            />
+
+            <Dato
+              etiqueta="NIF solicitante"
+              valor={expediente.nif_solicitante}
+            />
+
+            <Dato
+              etiqueta="Apoderado"
+              valor={expediente.apoderado}
+            />
+
+          </Seccion>
+
+        </div>
 
 
         {/* ================================================== */}
-        {/* 2. IDENTIFICACIÓN */}
+        {/* IDENTIFICACIÓN */}
         {/* ================================================== */}
 
         <Seccion
@@ -575,6 +704,7 @@ export default function FichaExpediente() {
           subtitulo="Datos generales y referencias del expediente"
           icono="identificacion"
         >
+
           <Dato
             etiqueta="Nº expediente"
             valor={expediente.id_expediente}
@@ -594,16 +724,6 @@ export default function FichaExpediente() {
           <Dato
             etiqueta="Contrato"
             valor={expediente.contrato}
-          />
-
-          <Dato
-            etiqueta="Tipo operación"
-            valor={expediente.tipo_operacion}
-          />
-
-          <Dato
-            etiqueta="Subtipo operación"
-            valor={expediente.subtipo_operacion}
           />
 
           <Dato
@@ -630,60 +750,12 @@ export default function FichaExpediente() {
             etiqueta="Tipo acta"
             valor={expediente.tipo_acta}
           />
+
         </Seccion>
 
 
         {/* ================================================== */}
-        {/* 3. TITULARES */}
-        {/* ================================================== */}
-
-        <Seccion
-          titulo="Titulares"
-          subtitulo="Información de los titulares del expediente"
-          icono="titular"
-        >
-          <Dato
-            etiqueta="Nombre titular"
-            valor={expediente.nombre_titular}
-            destacado
-          />
-
-          <Dato
-            etiqueta="NIF titular"
-            valor={expediente.nif_titular}
-          />
-        </Seccion>
-
-
-        {/* ================================================== */}
-        {/* 4. SOLICITANTES */}
-        {/* ================================================== */}
-
-        <Seccion
-          titulo="Solicitantes"
-          subtitulo="Información de solicitantes y apoderados"
-          icono="solicitante"
-        >
-          <Dato
-            etiqueta="Nombre solicitante"
-            valor={expediente.nombre_solicitante}
-            destacado
-          />
-
-          <Dato
-            etiqueta="NIF solicitante"
-            valor={expediente.nif_solicitante}
-          />
-
-          <Dato
-            etiqueta="Apoderado"
-            valor={expediente.apoderado}
-          />
-        </Seccion>
-
-
-        {/* ================================================== */}
-        {/* 5. NOTARIO */}
+        {/* NOTARIO */}
         {/* ================================================== */}
 
         <Seccion
@@ -691,6 +763,7 @@ export default function FichaExpediente() {
           subtitulo="Datos del notario asignado"
           icono="notario"
         >
+
           <Dato
             etiqueta="Nombre notario"
             valor={expediente.nombre_notario}
@@ -711,11 +784,12 @@ export default function FichaExpediente() {
             etiqueta="ID notario"
             valor={expediente.notario_id}
           />
+
         </Seccion>
 
 
         {/* ================================================== */}
-        {/* 6. OFICINA */}
+        {/* OFICINA */}
         {/* ================================================== */}
 
         <Seccion
@@ -723,6 +797,7 @@ export default function FichaExpediente() {
           subtitulo="Información de oficina y departamento"
           icono="oficina"
         >
+
           <Dato
             etiqueta="Oficina"
             valor={expediente.oficina}
@@ -738,11 +813,12 @@ export default function FichaExpediente() {
             etiqueta="Oficina alta"
             valor={expediente.oficina_alta}
           />
+
         </Seccion>
 
 
         {/* ================================================== */}
-        {/* 7. FECHAS */}
+        {/* FECHAS */}
         {/* ================================================== */}
 
         <Seccion
@@ -750,6 +826,7 @@ export default function FichaExpediente() {
           subtitulo="Fechas relevantes del expediente"
           icono="fechas"
         >
+
           <Dato
             etiqueta="Fecha alta"
             valor={expediente.fecha_alta}
@@ -771,7 +848,9 @@ export default function FichaExpediente() {
 
           <Dato
             etiqueta="Fecha entrega cliente"
-            valor={expediente.fecha_entregado_cliente}
+            valor={
+              expediente.fecha_entregado_cliente
+            }
             tipo="fecha"
           />
 
@@ -783,38 +862,41 @@ export default function FichaExpediente() {
 
           <Dato
             etiqueta="Fecha prevista firma"
-            valor={expediente.fecha_prevista_firma}
+            valor={
+              expediente.fecha_prevista_firma
+            }
             tipo="fecha"
           />
 
           <Dato
             etiqueta="Fecha vencimiento"
-            valor={expediente.fecha_vencimiento}
-            tipo="fecha"
-          />
-
-          <Dato
-            etiqueta="Fecha solicitud CGN"
-            valor={expediente.fecha_sol_cgn}
+            valor={
+              expediente.fecha_vencimiento
+            }
             tipo="fecha"
           />
 
           <Dato
             etiqueta="Fecha firma prevista valoración"
-            valor={expediente.fecha_firma_prev_val}
+            valor={
+              expediente.fecha_firma_prev_val
+            }
             tipo="fecha"
           />
 
           <Dato
             etiqueta="Fecha firma prevista cliente"
-            valor={expediente.fecha_firma_prev_cli}
+            valor={
+              expediente.fecha_firma_prev_cli
+            }
             tipo="fecha"
           />
+
         </Seccion>
 
 
         {/* ================================================== */}
-        {/* 8. ACTIVIDAD */}
+        {/* ACTIVIDAD */}
         {/* ================================================== */}
 
         <Seccion
@@ -822,6 +904,7 @@ export default function FichaExpediente() {
           subtitulo="Situación y evolución de la actividad"
           icono="actividad"
         >
+
           <Dato
             etiqueta="Actividad actual"
             valor={expediente.actividad_actual}
@@ -835,13 +918,17 @@ export default function FichaExpediente() {
 
           <Dato
             etiqueta="Inicio actividad"
-            valor={expediente.fecha_inicio_actividad}
+            valor={
+              expediente.fecha_inicio_actividad
+            }
             tipo="fecha"
           />
 
           <Dato
             etiqueta="Fin actividad"
-            valor={expediente.fecha_fin_actividad}
+            valor={
+              expediente.fecha_fin_actividad
+            }
             tipo="fecha"
           />
 
@@ -850,18 +937,20 @@ export default function FichaExpediente() {
             valor={expediente.fcierre_defecto}
             tipo="fecha"
           />
+
         </Seccion>
 
 
         {/* ================================================== */}
-        {/* 9. FACTURACIÓN */}
+        {/* FACTURACIÓN */}
         {/* ================================================== */}
 
         <Seccion
           titulo="Facturación"
-          subtitulo="Información relacionada con la facturación del expediente"
+          subtitulo="Información relacionada con la facturación"
           icono="facturacion"
         >
+
           <Dato
             etiqueta="Estado facturación"
             valor={expediente.facturacion_estado}
@@ -873,18 +962,20 @@ export default function FichaExpediente() {
             valor={expediente.facturacion_fecha}
             tipo="fecha"
           />
+
         </Seccion>
 
 
         {/* ================================================== */}
-        {/* 10. INFORMACIÓN CREDITICIA */}
+        {/* INFORMACIÓN CREDITICIA */}
         {/* ================================================== */}
 
         <Seccion
           titulo="Información crediticia"
-          subtitulo="Capital, importe y situación económica del expediente"
+          subtitulo="Capital, importe y situación económica"
           icono="economico"
         >
+
           <Dato
             etiqueta="Capital"
             valor={expediente.capital}
@@ -910,18 +1001,20 @@ export default function FichaExpediente() {
             valor={expediente.saldo_disponible}
             tipo="numero"
           />
+
         </Seccion>
 
 
         {/* ================================================== */}
-        {/* 11. PROVISIÓN */}
+        {/* PROVISIÓN */}
         {/* ================================================== */}
 
         <Seccion
           titulo="Provisión"
-          subtitulo="Información de la provisión asociada al expediente"
+          subtitulo="Información de la provisión asociada"
           icono="provision"
         >
+
           <Dato
             etiqueta="ID provisión"
             valor={expediente.id_provision}
@@ -932,11 +1025,12 @@ export default function FichaExpediente() {
             etiqueta="Tipo provisión"
             valor={expediente.tipo_provision}
           />
+
         </Seccion>
 
 
         {/* ================================================== */}
-        {/* 12. FINCA */}
+        {/* FINCA */}
         {/* ================================================== */}
 
         <Seccion
@@ -944,6 +1038,7 @@ export default function FichaExpediente() {
           subtitulo="Información registral de la finca"
           icono="finca"
         >
+
           <Dato
             etiqueta="Finca"
             valor={expediente.finca}
@@ -955,11 +1050,12 @@ export default function FichaExpediente() {
             valor={expediente.registral_fecha}
             tipo="fecha"
           />
+
         </Seccion>
 
 
         {/* ================================================== */}
-        {/* 13. DEFECTOS */}
+        {/* DEFECTOS */}
         {/* ================================================== */}
 
         <Seccion
@@ -967,6 +1063,7 @@ export default function FichaExpediente() {
           subtitulo="Incidencias y defectos registrales"
           icono="defectos"
         >
+
           <Dato
             etiqueta="Defectos abiertos"
             valor={
@@ -989,31 +1086,27 @@ export default function FichaExpediente() {
 
           <Dato
             etiqueta="Descripción error"
-            valor={expediente.descripcion_error}
+            valor={
+              expediente.descripcion_error
+            }
           />
+
         </Seccion>
 
 
         {/* ================================================== */}
-        {/* 14. OBSERVACIONES */}
+        {/* OBSERVACIONES */}
         {/* ================================================== */}
 
         <Observaciones
           texto={expediente.observaciones}
         />
 
-
-        {/* ================================================== */}
-        {/* NOTA DE ESTRUCTURA
-            CGN / GTG-BANKIA / OTROS / GESTORÍA
-            se han retirado de esta versión.
-        ================================================== */}
-
       </div>
 
 
       {/* ==================================================== */}
-      {/* MODAL ENVIAR A NOTARIO                               */}
+      {/* MODAL ENVIAR A NOTARIO */}
       {/* ==================================================== */}
 
       {mostrarEnviarANotario && (
@@ -1023,6 +1116,7 @@ export default function FichaExpediente() {
           onGuardar={guardarEnviarANotario}
         />
       )}
+
     </div>
   );
 }
