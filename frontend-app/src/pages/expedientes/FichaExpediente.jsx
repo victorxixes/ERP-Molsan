@@ -2608,20 +2608,7 @@ export default function FichaExpediente() {
                 destaque
               />
 
-              <Dato
-                campo="Provisión"
-                valor={
-                  expediente.tipo_provision
-                }
-              />
-
-              <Dato
-                campo="ID provisión"
-                valor={
-                  expediente.id_provision
-                }
-              />
-
+             
             </div>
 
           </Seccion>
