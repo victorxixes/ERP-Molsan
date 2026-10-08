@@ -1961,6 +1961,48 @@ export default function FichaExpediente() {
   // RENDER
   // ==========================================================
 
+  // ==========================================================
+  // FINCAS
+  // ==========================================================
+
+  function abrirFincas() {
+    setFincaForm({
+      numero_finca:
+        expediente?.finca ||
+        "",
+      registro:
+        expediente?.registro ||
+        "",
+      municipio:
+        expediente?.poblacion ||
+        "",
+      provincia:
+        expediente?.provincia ||
+        "",
+      tomo: "",
+      libro: "",
+      folio: "",
+      inscripcion: "",
+      observaciones: "",
+    });
+
+    setMostrarFincas(true);
+  }
+
+
+  function guardarFinca() {
+    console.log(
+      "FINCA EXPEDIENTE:",
+      {
+        expediente:
+          expediente?.id_expediente,
+        ...fincaForm,
+      }
+    );
+
+    setMostrarFincas(false);
+  }
+
   return (
     <div
       className="
