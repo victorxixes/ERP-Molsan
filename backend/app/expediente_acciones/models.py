@@ -4,29 +4,32 @@ from sqlalchemy import (
     Date,
     ForeignKey,
     Integer,
+    String,
     Text,
+    UniqueConstraint,
 )
 
 from backend.app.database import Base
 
 
 class ExpedienteAccion(Base):
+    """
+    Relación entre un expediente y una acción del catálogo maestro
+    acciones_expediente.
+
+    IMPORTANTE:
+    - NO duplica las acciones del catálogo.
+    - accion_id apunta a acciones_expediente.id.
+    - expediente_id apunta a expedientes.id.
+    """
 
     __tablename__ = "expediente_acciones"
-
-    # ============================================================
-    # ID
-    # ============================================================
 
     id = Column(
         Integer,
         primary_key=True,
         index=True,
     )
-
-    # ============================================================
-    # EXPEDIENTE
-    # ============================================================
 
     expediente_id = Column(
         Integer,
@@ -38,10 +41,6 @@ class ExpedienteAccion(Base):
         index=True,
     )
 
-    # ============================================================
-    # ACCIÓN DEL CATÁLOGO
-    # ============================================================
-
     accion_id = Column(
         Integer,
         ForeignKey(
@@ -52,20 +51,12 @@ class ExpedienteAccion(Base):
         index=True,
     )
 
-    # ============================================================
-    # ESTADO
-    # ============================================================
-
     estado = Column(
-        Text,
+        String(50),
         nullable=False,
         default="Pendiente",
         index=True,
     )
-
-    # ============================================================
-    # FECHA
-    # ============================================================
 
     fecha = Column(
         Date,
@@ -73,18 +64,10 @@ class ExpedienteAccion(Base):
         index=True,
     )
 
-    # ============================================================
-    # OBSERVACIONES
-    # ============================================================
-
     observaciones = Column(
         Text,
         nullable=True,
     )
-
-    # ============================================================
-    # ACTIVA
-    # ============================================================
 
     activo = Column(
         Boolean,
@@ -93,12 +76,10 @@ class ExpedienteAccion(Base):
         index=True,
     )
 
-    def __repr__(self):
-
-        return (
-            f"<ExpedienteAccion "
-            f"id={self.id!r} "
-            f"expediente_id={self.expediente_id!r} "
-            f"accion_id={self.accion_id!r} "
-            f"estado={self.estado!r}>"
-        )
+    __table_args__ = (
+        UniqueConstraint(
+            "expediente_id",
+            "accion_id",
+            name="uq_expediente_accion",
+        ),
+    )
