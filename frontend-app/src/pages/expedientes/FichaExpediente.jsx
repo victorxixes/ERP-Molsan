@@ -1,4 +1,8 @@
-```jsx
+// ============================================================
+// ERP MOLSAN
+// FICHA DE EXPEDIENTE
+// ============================================================
+
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -20,40 +24,43 @@ function valorVisible(valor) {
 
 
 function formatearFecha(fecha) {
-  if (!fecha) return "—";
-
-  const texto = String(fecha);
-
-  if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
-    const [year, month, day] = texto.split("-");
-    return `${day}/${month}/${year}`;
+  if (!fecha) {
+    return "—";
   }
 
-  if (texto.includes("T")) {
-    const parteFecha = texto.split("T")[0];
+  const valor = String(fecha);
+
+  // YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+    const [anio, mes, dia] = valor.split("-");
+    return `${dia}/${mes}/${anio}`;
+  }
+
+  // ISO
+  if (valor.includes("T")) {
+    const parteFecha = valor.split("T")[0];
 
     if (/^\d{4}-\d{2}-\d{2}$/.test(parteFecha)) {
-      const [year, month, day] = parteFecha.split("-");
-      return `${day}/${month}/${year}`;
+      const [anio, mes, dia] = parteFecha.split("-");
+      return `${dia}/${mes}/${anio}`;
     }
   }
 
-  return texto;
+  return valor;
 }
 
 
 function formatearNumero(valor) {
-  if (valor === null || valor === undefined || valor === "") {
+  if (
+    valor === null ||
+    valor === undefined ||
+    valor === "" ||
+    Number.isNaN(Number(valor))
+  ) {
     return "—";
   }
 
-  const numero = Number(valor);
-
-  if (Number.isNaN(numero)) {
-    return String(valor);
-  }
-
-  return numero.toLocaleString("es-ES", {
+  return Number(valor).toLocaleString("es-ES", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -61,9 +68,7 @@ function formatearNumero(valor) {
 
 
 function normalizarActividad(valor) {
-  if (!valor) return "";
-
-  return String(valor)
+  return String(valor || "")
     .trim()
     .toLowerCase()
     .normalize("NFD")
@@ -93,57 +98,50 @@ function IconoSeccion({ tipo }) {
   };
 
   return (
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-lg text-blue-600">
-      {iconos[tipo] || "•"}
-    </div>
+    <span className="text-lg leading-none">
+      {iconos[tipo] || "▣"}
+    </span>
   );
 }
 
 
 // ============================================================
-// BADGE ESTADO
+// BADGE DE ESTADO
 // ============================================================
 
 function EstadoBadge({ valor }) {
   const texto = valorVisible(valor);
-
   const normalizado = texto.toLowerCase();
 
-  let clases =
-    "border-slate-200 bg-slate-50 text-slate-700";
+  let clase =
+    "inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600";
 
   if (
     normalizado.includes("vig") ||
     normalizado.includes("abiert") ||
     normalizado.includes("activo")
   ) {
-    clases =
-      "border-emerald-200 bg-emerald-50 text-emerald-700";
+    clase =
+      "inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700";
   }
 
   if (
     normalizado.includes("cerr") ||
     normalizado.includes("final")
   ) {
-    clases =
-      "border-slate-200 bg-slate-100 text-slate-600";
+    clase =
+      "inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600";
   }
 
   if (
     normalizado.includes("error") ||
     normalizado.includes("defecto")
   ) {
-    clases =
-      "border-red-200 bg-red-50 text-red-700";
+    clase =
+      "inline-flex items-center rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-700";
   }
 
-  return (
-    <span
-      className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${clases}`}
-    >
-      {texto}
-    </span>
-  );
+  return <span className={clase}>{texto}</span>;
 }
 
 
@@ -154,42 +152,51 @@ function EstadoBadge({ valor }) {
 function Dato({
   etiqueta,
   valor,
-  tipo = "texto",
+  fecha = false,
+  numero = false,
   destacado = false,
 }) {
-  let contenido = valorVisible(valor);
+  let valorFinal = valorVisible(valor);
 
-  if (tipo === "fecha") {
-    contenido = formatearFecha(valor);
+  if (fecha && valor) {
+    valorFinal = formatearFecha(valor);
   }
 
-  if (tipo === "numero") {
-    contenido = formatearNumero(valor);
+  if (numero && valor !== null && valor !== undefined && valor !== "") {
+    valorFinal = formatearNumero(valor);
   }
 
   const esEstado =
-    etiqueta === "Estado" ||
-    etiqueta === "Estado actividad";
+    etiqueta?.toLowerCase() === "estado" ||
+    etiqueta?.toLowerCase() === "estado actividad";
 
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4">
-      <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400">
+    <div
+      className={[
+        "rounded-xl border border-slate-200/80 bg-white/70 p-4",
+        destacado
+          ? "ring-1 ring-blue-100"
+          : "",
+      ].join(" ")}
+    >
+      <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
         {etiqueta}
       </div>
 
-      {esEstado ? (
-        <EstadoBadge valor={contenido} />
-      ) : (
-        <div
-          className={
-            destacado
-              ? "text-sm font-bold text-slate-800"
-              : "text-sm font-medium text-slate-600"
-          }
-        >
-          {contenido}
-        </div>
-      )}
+      <div
+        className={[
+          "break-words text-sm",
+          destacado
+            ? "font-bold text-slate-900"
+            : "font-medium text-slate-700",
+        ].join(" ")}
+      >
+        {esEstado ? (
+          <EstadoBadge valor={valorFinal} />
+        ) : (
+          valorFinal
+        )}
+      </div>
     </div>
   );
 }
@@ -206,32 +213,30 @@ function Seccion({
   children,
 }) {
   return (
-    <section className="relative overflow-hidden rounded-[24px] border border-white/80 bg-white/78 p-5 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
+    <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 shadow-sm backdrop-blur-sm">
+      <div className="border-b border-slate-200/80 bg-gradient-to-r from-blue-50 via-indigo-50 to-cyan-50 px-5 py-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/80 bg-white/80 shadow-sm">
+            <IconoSeccion tipo={icono} />
+          </div>
 
-      <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400" />
+          <div>
+            <h2 className="text-base font-bold text-slate-800">
+              {titulo}
+            </h2>
 
-      <div className="mb-5 flex items-center gap-3">
-
-        <IconoSeccion tipo={icono} />
-
-        <div>
-          <h2 className="text-base font-bold text-slate-800">
-            {titulo}
-          </h2>
-
-          {subtitulo && (
-            <p className="mt-0.5 text-xs text-slate-400">
-              {subtitulo}
-            </p>
-          )}
+            {subtitulo && (
+              <p className="mt-0.5 text-xs text-slate-500">
+                {subtitulo}
+              </p>
+            )}
+          </div>
         </div>
-
       </div>
 
-      <div className="space-y-3">
+      <div className="p-5">
         {children}
       </div>
-
     </section>
   );
 }
@@ -241,35 +246,19 @@ function Seccion({
 // OBSERVACIONES
 // ============================================================
 
-function Observaciones({ texto }) {
+function Observaciones({ valor }) {
   return (
-    <section className="relative overflow-hidden rounded-[24px] border border-white/80 bg-white/78 p-5 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
-
-      <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-slate-400 via-blue-400 to-indigo-400" />
-
-      <div className="mb-4 flex items-center gap-3">
-
-        <IconoSeccion tipo="identificacion" />
-
-        <div>
-          <h2 className="text-base font-bold text-slate-800">
-            Observaciones
-          </h2>
-
-          <p className="text-xs text-slate-400">
-            Información adicional del expediente
-          </p>
-        </div>
-
-      </div>
-
-      <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4">
-        <div className="whitespace-pre-wrap text-sm leading-6 text-slate-600">
-          {valorVisible(texto)}
+    <Seccion
+      titulo="Observaciones"
+      subtitulo="Información adicional del expediente"
+      icono="identificacion"
+    >
+      <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+        <div className="whitespace-pre-wrap text-sm leading-6 text-slate-700">
+          {valorVisible(valor)}
         </div>
       </div>
-
-    </section>
+    </Seccion>
   );
 }
 
@@ -295,12 +284,8 @@ export default function FichaExpediente() {
   const [mostrarAltaDefecto, setMostrarAltaDefecto] =
     useState(false);
 
-  const [tipoDefecto, setTipoDefecto] =
-    useState("");
-
-  const [faltaDefecto, setFaltaDefecto] =
-    useState("");
-
+  const [tipoDefecto, setTipoDefecto] = useState("");
+  const [faltaDefecto, setFaltaDefecto] = useState("");
   const [descripcionDefecto, setDescripcionDefecto] =
     useState("");
 
@@ -309,7 +294,7 @@ export default function FichaExpediente() {
 
 
   // ==========================================================
-  // CARGA EXPEDIENTE
+  // CARGAR EXPEDIENTE
   // ==========================================================
 
   useEffect(() => {
@@ -322,24 +307,26 @@ export default function FichaExpediente() {
 
         const datos = await obtenerExpediente(id);
 
-        if (!activo) return;
+        if (!activo) {
+          return;
+        }
 
         setExpediente(datos);
-
       } catch (err) {
         console.error(
           "Error cargando expediente:",
           err
         );
 
-        if (!activo) return;
+        if (!activo) {
+          return;
+        }
 
         setError(
           err?.response?.data?.detail ||
-            err?.message ||
-            "No se ha podido cargar el expediente."
+          err?.message ||
+          "No se ha podido cargar el expediente."
         );
-
       } finally {
         if (activo) {
           setCargando(false);
@@ -393,7 +380,7 @@ export default function FichaExpediente() {
 
 
   // ==========================================================
-  // ALTA DEFECTO
+  // ALTA DE DEFECTO
   // ==========================================================
 
   function abrirAltaDefecto() {
@@ -405,7 +392,9 @@ export default function FichaExpediente() {
 
 
   function cerrarAltaDefecto() {
-    if (guardandoDefecto) return;
+    if (guardandoDefecto) {
+      return;
+    }
 
     setMostrarAltaDefecto(false);
     setTipoDefecto("");
@@ -434,33 +423,31 @@ export default function FichaExpediente() {
       setGuardandoDefecto(true);
 
       const payload = {
-        expediente_id: expediente.id,
-        id_expediente: expediente.id_expediente,
+        expediente_id: expediente?.id,
+        id_expediente: expediente?.id_expediente,
         tipo_error: tipoDefecto.trim(),
         falta_defecto: faltaDefecto.trim(),
         descripcion_error: descripcionDefecto.trim(),
       };
+
+      /*
+       * IMPORTANTE:
+       * Todavía no conectamos este botón a ningún endpoint.
+       *
+       * Primero debemos revisar el backend de defectos para utilizar
+       * el endpoint, modelo y estructura de datos reales del ERP.
+       */
 
       console.log(
         "ALTA DEFECTO — payload:",
         payload
       );
 
-      /*
-       * IMPORTANTE:
-       *
-       * Aquí conectaremos posteriormente el endpoint
-       * real del backend para guardar el defecto.
-       *
-       * No hacemos ninguna llamada inventada todavía.
-       */
-
       setMostrarAltaDefecto(false);
 
       setTipoDefecto("");
       setFaltaDefecto("");
       setDescripcionDefecto("");
-
     } catch (err) {
       console.error(
         "Error dando de alta defecto:",
@@ -469,10 +456,9 @@ export default function FichaExpediente() {
 
       alert(
         err?.response?.data?.detail ||
-          err?.message ||
-          "No se ha podido dar de alta el defecto."
+        err?.message ||
+        "No se ha podido dar de alta el defecto."
       );
-
     } finally {
       setGuardandoDefecto(false);
     }
@@ -480,99 +466,67 @@ export default function FichaExpediente() {
 
 
   // ==========================================================
-  // LOADING
+  // ESTADOS DE CARGA
   // ==========================================================
 
   if (cargando) {
     return (
-      <div className="min-h-screen bg-slate-50 p-6">
+      <div className="erp-page flex min-h-[400px] items-center justify-center">
+        <div className="erp-card px-8 py-6 text-center">
+          <div className="mb-2 text-2xl">⏳</div>
 
-        <div className="mx-auto max-w-[1600px]">
-
-          <div className="rounded-[28px] border border-white/80 bg-white/80 p-8 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
-
-            <div className="animate-pulse">
-
-              <div className="mb-4 h-4 w-40 rounded bg-slate-200" />
-
-              <div className="mb-3 h-8 w-80 rounded bg-slate-200" />
-
-              <div className="h-4 w-64 rounded bg-slate-200" />
-
-            </div>
-
+          <div className="text-sm font-semibold text-slate-600">
+            Cargando expediente...
           </div>
-
         </div>
-
       </div>
     );
   }
 
-
-  // ==========================================================
-  // ERROR
-  // ==========================================================
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-50 p-6">
+      <div className="erp-page">
+        <div className="erp-card border border-red-200 bg-red-50 p-6">
+          <div className="mb-2 text-lg font-bold text-red-700">
+            Error
+          </div>
 
-        <div className="mx-auto max-w-[1600px]">
+          <div className="text-sm text-red-600">
+            {error}
+          </div>
 
-          <div className="rounded-[28px] border border-red-200 bg-red-50 p-8 shadow-sm">
-
-            <h1 className="text-lg font-bold text-red-700">
-              No se ha podido cargar el expediente
-            </h1>
-
-            <p className="mt-2 text-sm text-red-600">
-              {error}
-            </p>
-
+          <div className="mt-5">
             <Link
               to="/expedientes"
-              className="mt-5 inline-flex rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100"
+              className="erp-btn-secondary inline-flex items-center gap-2"
             >
               ← Volver a expedientes
             </Link>
-
           </div>
-
         </div>
-
       </div>
     );
   }
 
 
-  // ==========================================================
-  // SIN DATOS
-  // ==========================================================
-
   if (!expediente) {
     return (
-      <div className="min-h-screen bg-slate-50 p-6">
+      <div className="erp-page">
+        <div className="erp-card p-6 text-center">
+          <div className="text-sm font-semibold text-slate-600">
+            No se ha encontrado el expediente.
+          </div>
 
-        <div className="mx-auto max-w-[1600px]">
-
-          <div className="rounded-[28px] border border-white/80 bg-white/80 p-8 shadow-sm">
-
-            <h1 className="text-lg font-bold text-slate-800">
-              Expediente no encontrado
-            </h1>
-
+          <div className="mt-5">
             <Link
               to="/expedientes"
-              className="mt-5 inline-flex rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="erp-btn-secondary inline-flex items-center gap-2"
             >
               ← Volver a expedientes
             </Link>
-
           </div>
-
         </div>
-
       </div>
     );
   }
@@ -583,602 +537,598 @@ export default function FichaExpediente() {
   // ==========================================================
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 sm:p-6">
+    <div className="erp-page space-y-6">
 
-      <div className="mx-auto max-w-[1600px] space-y-5">
+      {/* ======================================================
+          CABECERA
+      ====================================================== */}
 
-
-        {/* ====================================================
-            CABECERA
-        ==================================================== */}
-
-        <header className="rounded-[28px] border border-white/80 bg-white/80 p-6 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
-
-          <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+      <div className="erp-card overflow-hidden">
+        <div className="border-b border-slate-200/80 bg-gradient-to-r from-blue-50 via-indigo-50 to-cyan-50 px-6 py-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
             <div>
+              <div className="mb-2 flex flex-wrap items-center gap-2">
+                <Link
+                  to="/expedientes"
+                  className="erp-btn-secondary inline-flex items-center gap-2 px-3 py-2 text-xs font-bold"
+                >
+                  ← Expedientes
+                </Link>
 
-              <Link
-                to="/expedientes"
-                className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition hover:text-blue-800"
-              >
-                ← Expedientes
-              </Link>
-
-              <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
-                Ficha de expediente
+                {expediente.fecha_prevista_firma && (
+                  <Link
+                    to={`/agenda?fecha=${expediente.fecha_prevista_firma}`}
+                    className="erp-btn-secondary inline-flex items-center gap-2 px-3 py-2 text-xs font-bold"
+                  >
+                    📅 Ver agenda
+                  </Link>
+                )}
               </div>
 
-              <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-800 sm:text-3xl">
+              <h1 className="text-2xl font-black tracking-tight text-slate-900">
                 Expediente{" "}
-                {valorVisible(expediente.id_expediente)}
+                {valorVisible(
+                  expediente.id_expediente
+                )}
               </h1>
 
-              <p className="mt-1 text-sm text-slate-400">
-                Información completa del expediente
+              <p className="mt-1 text-sm text-slate-500">
+                Ficha completa del expediente
               </p>
-
             </div>
 
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
 
-              {expediente.fecha_prevista_firma && (
-                <Link
-                  to={`/agenda?fecha=${String(
-                    expediente.fecha_prevista_firma
-                  ).slice(0, 10)}`}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
-                >
-                  📅 Ver agenda
-                </Link>
-              )}
-
-
-              {(esDocumentacionPrevia ||
-                actividadNormalizada.includes("document") ||
-                actividadNormalizada.includes("previa")) && (
-
+              {esDocumentacionPrevia && (
                 <button
                   type="button"
                   onClick={() =>
                     setMostrarEnviarANotario(true)
                   }
-                  className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700"
+                  className="erp-btn-primary inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold"
                 >
                   ✒️ Enviar a notario
                 </button>
-
               )}
 
             </div>
-
           </div>
-
-        </header>
-
-
-        {/* ====================================================
-            BLOQUE 1
-            ESTADO / TITULARES / SOLICITANTES
-        ==================================================== */}
-
-        <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
+        </div>
+      </div>
 
 
-          {/* ==================================================
-              IZQUIERDA — ESTADO
-          ================================================== */}
+      {/* ======================================================
+          ESTADO
+      ====================================================== */}
 
-          <Seccion
-            titulo="Estado"
-            subtitulo="Situación actual del expediente"
-            icono="estado"
-          >
+      <Seccion
+        titulo="Estado"
+        subtitulo="Situación actual del expediente"
+        icono="estado"
+      >
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
 
-            <Dato
-              etiqueta="Estado"
-              valor={expediente.estado_expediente}
-              destacado
-            />
+          <Dato
+            etiqueta="Estado"
+            valor={expediente.estado_expediente}
+            destacado
+          />
 
-            <Dato
-              etiqueta="Actividad actual"
-              valor={expediente.actividad_actual}
-              destacado
-            />
+          <Dato
+            etiqueta="Actividad actual"
+            valor={expediente.actividad_actual}
+            destacado
+          />
 
-            <Dato
-              etiqueta="Estado actividad"
-              valor={expediente.estado_actividad}
-            />
+          <Dato
+            etiqueta="Estado actividad"
+            valor={expediente.estado_actividad}
+          />
 
-            <Dato
-              etiqueta="Tipo operación"
-              valor={expediente.tipo_operacion}
-              destacado
-            />
+          <Dato
+            etiqueta="Tipo operación"
+            valor={expediente.tipo_operacion}
+          />
 
-            <Dato
-              etiqueta="Oficina"
-              valor={expediente.oficina}
-              destacado
-            />
+          <Dato
+            etiqueta="Oficina"
+            valor={expediente.oficina}
+          />
 
-            <Dato
-              etiqueta="DAN"
-              valor={expediente.dan}
-            />
+          <Dato
+            etiqueta="DAN"
+            valor={expediente.dan}
+          />
 
-            <Dato
-              etiqueta="Fecha alta"
-              valor={expediente.fecha_alta}
-              tipo="fecha"
-              destacado
-            />
-
-          </Seccion>
-
-
-          {/* ==================================================
-              CENTRO — TITULARES
-          ================================================== */}
-
-          <Seccion
-            titulo="Titulares"
-            subtitulo="Información de los titulares del expediente"
-            icono="titular"
-          >
-
-            <Dato
-              etiqueta="Nombre titular"
-              valor={expediente.nombre_titular}
-              destacado
-            />
-
-            <Dato
-              etiqueta="NIF titular"
-              valor={expediente.nif_titular}
-            />
-
-          </Seccion>
-
-
-          {/* ==================================================
-              DERECHA — SOLICITANTES
-          ================================================== */}
-
-          <Seccion
-            titulo="Solicitantes"
-            subtitulo="Información de solicitantes y apoderados"
-            icono="solicitante"
-          >
-
-            <Dato
-              etiqueta="Nombre solicitante"
-              valor={expediente.nombre_solicitante}
-              destacado
-            />
-
-            <Dato
-              etiqueta="NIF solicitante"
-              valor={expediente.nif_solicitante}
-            />
-
-          </Seccion>
+          <Dato
+            etiqueta="Fecha alta"
+            valor={expediente.fecha_alta}
+            fecha
+          />
 
         </div>
+      </Seccion>
 
 
-        {/* ====================================================
-            INFORMACIÓN CREDITICIA
-        ==================================================== */}
+      {/* ======================================================
+          TITULARES
+      ====================================================== */}
 
-        <Seccion
-          titulo="Información crediticia"
-          subtitulo="Datos identificativos del préstamo/crédito"
-          icono="identificacion"
-        >
+      <Seccion
+        titulo="Titulares"
+        subtitulo="Información de los titulares del expediente"
+        icono="titular"
+      >
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
 
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <Dato
+            etiqueta="Nombre titular"
+            valor={expediente.nombre_titular}
+            destacado
+          />
 
-            <Dato
-              etiqueta="ID expediente"
-              valor={expediente.id_expediente}
-              destacado
-            />
+          <Dato
+            etiqueta="NIF titular"
+            valor={expediente.nif_titular}
+          />
 
-            <Dato
-              etiqueta="Contrato"
-              valor={expediente.contrato}
-            />
-
-            <Dato
-              etiqueta="Tipo operación"
-              valor={expediente.tipo_operacion}
-            />
-
-            <Dato
-              etiqueta="Subtipo operación"
-              valor={expediente.subtipo_operacion}
-            />
-
-            <Dato
-              etiqueta="Nº solicitud SIA"
-              valor={expediente.num_solicitud_sia}
-            />
-
-            <Dato
-              etiqueta="Capital"
-              valor={expediente.capital}
-              tipo="numero"
-              destacado
-            />
-
-            <Dato
-              etiqueta="Importe"
-              valor={expediente.importe}
-              tipo="numero"
-              destacado
-            />
-
-            <Dato
-              etiqueta="Saldo real"
-              valor={expediente.saldo_real}
-              tipo="numero"
-            />
-
-            <Dato
-              etiqueta="Saldo disponible"
-              valor={expediente.saldo_disponible}
-              tipo="numero"
-            />
-
-            <Dato
-              etiqueta="Finca"
-              valor={expediente.finca}
-              destacado
-            />
-
-          </div>
-
-        </Seccion>
+        </div>
+      </Seccion>
 
 
-        {/* ====================================================
-            NOTARIO
-        ==================================================== */}
+      {/* ======================================================
+          SOLICITANTES
+      ====================================================== */}
 
-        <Seccion
-          titulo="Notario"
-          subtitulo="Información del notario asociado"
-          icono="notario"
-        >
+      <Seccion
+        titulo="Solicitantes"
+        subtitulo="Información de los solicitantes"
+        icono="solicitante"
+      >
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
 
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <Dato
+            etiqueta="Nombre solicitante"
+            valor={expediente.nombre_solicitante}
+            destacado
+          />
 
-            <Dato
-              etiqueta="Nombre notario"
-              valor={expediente.nombre_notario}
-              destacado
-            />
+          <Dato
+            etiqueta="NIF solicitante"
+            valor={expediente.nif_solicitante}
+          />
 
-            <Dato
-              etiqueta="NIF notario"
-              valor={expediente.nif_notario}
-            />
-
-            <Dato
-              etiqueta="Notario"
-              valor={expediente.notario}
-            />
-
-            <Dato
-              etiqueta="ID notario"
-              valor={expediente.notario_id}
-            />
-
-          </div>
-
-        </Seccion>
+        </div>
+      </Seccion>
 
 
-        {/* ====================================================
-            DEFECTOS
-        ==================================================== */}
+      {/* ======================================================
+          INFORMACIÓN CREDITICIA
+      ====================================================== */}
 
-        <Seccion
-          titulo="Defectos"
-          subtitulo="Incidencias y defectos registrales"
-          icono="defectos"
-        >
+      <Seccion
+        titulo="Información crediticia"
+        subtitulo="Datos económicos y contractuales"
+        icono="economico"
+      >
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
 
-          <div className="flex flex-col gap-4">
+          <Dato
+            etiqueta="Nº expediente"
+            valor={expediente.id_expediente}
+            destacado
+          />
 
-            {/* ==================================================
-                CABECERA DEFECTOS
-            ================================================== */}
+          <Dato
+            etiqueta="Contrato"
+            valor={expediente.contrato}
+          />
 
-            <div className="flex flex-col gap-3 rounded-2xl border border-red-100 bg-red-50/60 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <Dato
+            etiqueta="Tipo operación"
+            valor={expediente.tipo_operacion}
+          />
 
-              <div>
+          <Dato
+            etiqueta="Subtipo operación"
+            valor={expediente.subtipo_operacion}
+          />
+
+          <Dato
+            etiqueta="Nº solicitud SIA"
+            valor={expediente.num_solicitud_sia}
+          />
+
+          <Dato
+            etiqueta="Capital"
+            valor={expediente.capital}
+            numero
+          />
+
+          <Dato
+            etiqueta="Importe"
+            valor={expediente.importe}
+            numero
+          />
+
+          <Dato
+            etiqueta="Saldo real"
+            valor={expediente.saldo_real}
+            numero
+          />
+
+          <Dato
+            etiqueta="Saldo disponible"
+            valor={expediente.saldo_disponible}
+            numero
+          />
+
+          <Dato
+            etiqueta="Finca"
+            valor={expediente.finca}
+          />
+
+        </div>
+      </Seccion>
+
+
+      {/* ======================================================
+          NOTARIO
+      ====================================================== */}
+
+      <Seccion
+        titulo="Notario"
+        subtitulo="Información del notario asociado"
+        icono="notario"
+      >
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+
+          <Dato
+            etiqueta="Nombre notario"
+            valor={expediente.nombre_notario}
+            destacado
+          />
+
+          <Dato
+            etiqueta="NIF notario"
+            valor={expediente.nif_notario}
+          />
+
+          <Dato
+            etiqueta="Notario"
+            valor={expediente.notario}
+          />
+
+          <Dato
+            etiqueta="ID notario"
+            valor={expediente.notario_id}
+          />
+
+        </div>
+      </Seccion>
+
+
+      {/* ======================================================
+          OBSERVACIONES
+      ====================================================== */}
+
+      <Observaciones
+        valor={expediente.observaciones}
+      />
+
+
+      {/* ======================================================
+          DEFECTOS
+      ====================================================== */}
+
+      <Seccion
+        titulo="Defectos"
+        subtitulo="Incidencias y defectos registrales"
+        icono="defectos"
+      >
+        <div className="space-y-4">
+
+          {/* --------------------------------------------------
+              CABECERA DEFECTOS
+          -------------------------------------------------- */}
+
+          <div className="flex flex-col gap-4 rounded-xl border border-red-200 bg-red-50/60 p-4 lg:flex-row lg:items-center lg:justify-between">
+
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-lg">
+                  ⚠️
+                </span>
+
                 <div className="text-sm font-bold text-slate-800">
                   Gestión de defectos
                 </div>
-
-                <div className="mt-1 text-xs text-slate-500">
-                  Registra y consulta las incidencias o defectos
-                  asociados a este expediente.
-                </div>
               </div>
+
+              <div className="mt-1 text-xs leading-5 text-slate-500">
+                Registra y consulta las incidencias o defectos
+                asociados a este expediente.
+              </div>
+            </div>
+
+
+            <button
+              type="button"
+              onClick={abrirAltaDefecto}
+              className="erp-btn-danger inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold"
+            >
+              ⚠️ Dar de alta defecto
+            </button>
+
+          </div>
+
+
+          {/* --------------------------------------------------
+              INFORMACIÓN ACTUAL DE DEFECTOS
+          -------------------------------------------------- */}
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+
+            <Dato
+              etiqueta="Defectos abiertos"
+              valor={
+                expediente.tiene_defectos_abiertos
+                  ? "Sí"
+                  : "No"
+              }
+              destacado
+            />
+
+            <Dato
+              etiqueta="Tipo error"
+              valor={expediente.tipo_error}
+            />
+
+            <Dato
+              etiqueta="Descripción error"
+              valor={expediente.descripcion_error}
+            />
+
+            <Dato
+              etiqueta="Falta / defecto"
+              valor={expediente.falta_defecto}
+            />
+
+          </div>
+
+        </div>
+      </Seccion>
+
+
+      {/* ======================================================
+          MODAL — ALTA DEFECTO
+      ====================================================== */}
+
+      {mostrarAltaDefecto && (
+        <div
+          className="modal-overlay-sj z-50 flex items-center justify-center p-4"
+          onMouseDown={(event) => {
+            if (
+              event.target === event.currentTarget &&
+              !guardandoDefecto
+            ) {
+              cerrarAltaDefecto();
+            }
+          }}
+        >
+
+          <div
+            className="erp-modal w-full max-w-2xl overflow-hidden"
+            onMouseDown={(event) =>
+              event.stopPropagation()
+            }
+          >
+
+            {/* ------------------------------------------------
+                HEADER
+            ------------------------------------------------ */}
+
+            <div className="erp-modal-header flex items-center justify-between gap-4 p-5">
+
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">
+                    ⚠️
+                  </span>
+
+                  <h3 className="text-lg font-black">
+                    Dar de alta defecto
+                  </h3>
+                </div>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Expediente{" "}
+                  {valorVisible(
+                    expediente.id_expediente
+                  )}
+                </p>
+              </div>
+
 
               <button
                 type="button"
-                onClick={abrirAltaDefecto}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-red-700"
+                onClick={cerrarAltaDefecto}
+                disabled={guardandoDefecto}
+                className="erp-btn-secondary flex h-9 w-9 items-center justify-center rounded-lg p-0 text-lg"
+                aria-label="Cerrar"
               >
-                ⚠️ Dar de alta defecto
+                ×
               </button>
 
             </div>
 
 
-            {/* ==================================================
-                RESUMEN ACTUAL
-            ================================================== */}
+            {/* ------------------------------------------------
+                BODY
+            ------------------------------------------------ */}
 
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="erp-modal-body space-y-5 p-6">
 
-              <Dato
-                etiqueta="Defectos abiertos"
-                valor={
-                  expediente.tiene_defectos_abiertos
-                    ? "Sí"
-                    : "No"
-                }
-                destacado
-              />
+              {/* TIPO DEFECTO */}
 
-              <Dato
-                etiqueta="Tipo error"
-                valor={expediente.tipo_error}
-              />
+              <div>
+                <label
+                  htmlFor="tipo-defecto"
+                  className="mb-2 block text-sm font-bold text-slate-700"
+                >
+                  Tipo de defecto
+                  <span className="ml-1 text-red-500">
+                    *
+                  </span>
+                </label>
 
-              <Dato
-                etiqueta="Descripción error"
-                valor={expediente.descripcion_error}
-              />
+                <input
+                  id="tipo-defecto"
+                  type="text"
+                  value={tipoDefecto}
+                  onChange={(event) =>
+                    setTipoDefecto(
+                      event.target.value
+                    )
+                  }
+                  placeholder="Ej. Defecto registral"
+                  disabled={guardandoDefecto}
+                  autoFocus
+                  className="w-full"
+                />
+              </div>
 
-              <Dato
-                etiqueta="Falta / defecto"
-                valor={expediente.falta_defecto}
-              />
+
+              {/* FALTA / DEFECTO */}
+
+              <div>
+                <label
+                  htmlFor="falta-defecto"
+                  className="mb-2 block text-sm font-bold text-slate-700"
+                >
+                  Falta / defecto
+                  <span className="ml-1 text-red-500">
+                    *
+                  </span>
+                </label>
+
+                <input
+                  id="falta-defecto"
+                  type="text"
+                  value={faltaDefecto}
+                  onChange={(event) =>
+                    setFaltaDefecto(
+                      event.target.value
+                    )
+                  }
+                  placeholder="Indica la falta o defecto detectado"
+                  disabled={guardandoDefecto}
+                  className="w-full"
+                />
+              </div>
+
+
+              {/* DESCRIPCIÓN */}
+
+              <div>
+                <label
+                  htmlFor="descripcion-defecto"
+                  className="mb-2 block text-sm font-bold text-slate-700"
+                >
+                  Descripción
+                  <span className="ml-1 text-red-500">
+                    *
+                  </span>
+                </label>
+
+                <textarea
+                  id="descripcion-defecto"
+                  value={descripcionDefecto}
+                  onChange={(event) =>
+                    setDescripcionDefecto(
+                      event.target.value
+                    )
+                  }
+                  placeholder="Describe detalladamente el defecto..."
+                  disabled={guardandoDefecto}
+                  rows={5}
+                  className="w-full resize-y"
+                />
+              </div>
+
+
+              {/* AVISO */}
+
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                <div className="flex gap-3">
+                  <span className="text-lg">
+                    ℹ️
+                  </span>
+
+                  <div className="text-xs leading-5 text-amber-800">
+                    El defecto quedará asociado al expediente
+                    seleccionado.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+
+            {/* ------------------------------------------------
+                FOOTER
+            ------------------------------------------------ */}
+
+            <div className="erp-modal-footer flex flex-col-reverse gap-3 p-5 sm:flex-row sm:justify-end">
+
+              <button
+                type="button"
+                onClick={cerrarAltaDefecto}
+                disabled={guardandoDefecto}
+                className="erp-btn-secondary inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold"
+              >
+                Cancelar
+              </button>
+
+
+              <button
+                type="button"
+                onClick={guardarDefecto}
+                disabled={guardandoDefecto}
+                className="erp-btn-danger inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold"
+              >
+                {guardandoDefecto ? (
+                  <>
+                    ⏳ Guardando...
+                  </>
+                ) : (
+                  <>
+                    ⚠️ Guardar defecto
+                  </>
+                )}
+              </button>
 
             </div>
 
           </div>
+        </div>
+      )}
 
-        </Seccion>
 
+      {/* ======================================================
+          MODAL — ENVIAR A NOTARIO
+      ====================================================== */}
 
-        {/* ====================================================
-            OBSERVACIONES
-        ==================================================== */}
-
-        <Observaciones
-          texto={expediente.observaciones}
+      {mostrarEnviarANotario && (
+        <EnviarANotarioModal
+          expediente={expediente}
+          onClose={cerrarEnviarANotario}
+          onGuardar={guardarEnviarANotario}
         />
-
-
-        {/* ====================================================
-            MODAL ENVIAR A NOTARIO
-        ==================================================== */}
-
-        {mostrarEnviarANotario && (
-          <EnviarANotarioModal
-            expediente={expediente}
-            onCerrar={cerrarEnviarANotario}
-            onGuardar={guardarEnviarANotario}
-          />
-        )}
-
-
-        {/* ====================================================
-            MODAL ALTA DEFECTO
-        ==================================================== */}
-
-        {mostrarAltaDefecto && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-
-            <div className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-white/80 bg-white shadow-2xl">
-
-              {/* ==================================================
-                  CABECERA MODAL
-              ================================================== */}
-
-              <div className="border-b border-slate-100 bg-red-50/70 px-6 py-5">
-
-                <div className="flex items-start justify-between gap-4">
-
-                  <div className="flex items-center gap-3">
-
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-red-200 bg-white text-xl">
-                      ⚠️
-                    </div>
-
-                    <div>
-
-                      <h2 className="text-lg font-black text-slate-800">
-                        Dar de alta defecto
-                      </h2>
-
-                      <p className="mt-0.5 text-xs text-slate-500">
-                        Registrar un nuevo defecto en el expediente
-                      </p>
-
-                    </div>
-
-                  </div>
-
-
-                  <button
-                    type="button"
-                    onClick={cerrarAltaDefecto}
-                    disabled={guardandoDefecto}
-                    className="rounded-xl px-3 py-2 text-slate-400 transition hover:bg-white hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    ✕
-                  </button>
-
-                </div>
-
-              </div>
-
-
-              {/* ==================================================
-                  CUERPO MODAL
-              ================================================== */}
-
-              <div className="space-y-5 p-6">
-
-                {/* EXPEDIENTE */}
-
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-
-                  <div className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400">
-                    Expediente
-                  </div>
-
-                  <div className="mt-1 text-sm font-bold text-slate-800">
-                    {valorVisible(expediente.id_expediente)}
-                  </div>
-
-                </div>
-
-
-                {/* TIPO DEFECTO */}
-
-                <div>
-
-                  <label
-                    htmlFor="tipo-defecto"
-                    className="mb-2 block text-xs font-bold uppercase tracking-[0.08em] text-slate-500"
-                  >
-                    Tipo de defecto
-                  </label>
-
-                  <input
-                    id="tipo-defecto"
-                    type="text"
-                    value={tipoDefecto}
-                    onChange={(e) =>
-                      setTipoDefecto(e.target.value)
-                    }
-                    placeholder="Ej. Defecto registral"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-red-400 focus:ring-2 focus:ring-red-100"
-                    disabled={guardandoDefecto}
-                  />
-
-                </div>
-
-
-                {/* FALTA / DEFECTO */}
-
-                <div>
-
-                  <label
-                    htmlFor="falta-defecto"
-                    className="mb-2 block text-xs font-bold uppercase tracking-[0.08em] text-slate-500"
-                  >
-                    Falta / defecto
-                  </label>
-
-                  <input
-                    id="falta-defecto"
-                    type="text"
-                    value={faltaDefecto}
-                    onChange={(e) =>
-                      setFaltaDefecto(e.target.value)
-                    }
-                    placeholder="Indica la falta o defecto detectado"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-red-400 focus:ring-2 focus:ring-red-100"
-                    disabled={guardandoDefecto}
-                  />
-
-                </div>
-
-
-                {/* DESCRIPCIÓN */}
-
-                <div>
-
-                  <label
-                    htmlFor="descripcion-defecto"
-                    className="mb-2 block text-xs font-bold uppercase tracking-[0.08em] text-slate-500"
-                  >
-                    Descripción del defecto
-                  </label>
-
-                  <textarea
-                    id="descripcion-defecto"
-                    value={descripcionDefecto}
-                    onChange={(e) =>
-                      setDescripcionDefecto(e.target.value)
-                    }
-                    placeholder="Describe detalladamente el defecto..."
-                    rows={5}
-                    className="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-red-400 focus:ring-2 focus:ring-red-100"
-                    disabled={guardandoDefecto}
-                  />
-
-                </div>
-
-              </div>
-
-
-              {/* ==================================================
-                  PIE MODAL
-              ================================================== */}
-
-              <div className="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50/70 px-6 py-4 sm:flex-row sm:justify-end">
-
-                <button
-                  type="button"
-                  onClick={cerrarAltaDefecto}
-                  disabled={guardandoDefecto}
-                  className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Cancelar
-                </button>
-
-                <button
-                  type="button"
-                  onClick={guardarDefecto}
-                  disabled={guardandoDefecto}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {guardandoDefecto ? (
-                    <>
-                      <span className="animate-spin">⟳</span>
-                      Guardando...
-                    </>
-                  ) : (
-                    <>
-                      ⚠️ Guardar defecto
-                    </>
-                  )}
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-        )}
-
-      </div>
+      )}
 
     </div>
   );
 }
-```
