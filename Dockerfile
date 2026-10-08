@@ -8,26 +8,23 @@ WORKDIR /app
 
 COPY backend /app/backend
 
-
 # ============================================================
 # INSTALAR DEPENDENCIAS
 # ============================================================
 
 RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 
-
 # ============================================================
-# PYTHON
+# CONFIGURACIÓN
 # ============================================================
 
 ENV PYTHONUNBUFFERED=1
 
+# Render utiliza el puerto definido en PORT
+EXPOSE 10000
 
 # ============================================================
-# FASTAPI / UVICORN
-#
-# Render proporciona el puerto mediante la variable PORT.
-# Si PORT no existe, usamos 8000 como respaldo local.
+# ARRANQUE
 # ============================================================
 
-ENTRYPOINT ["sh", "-c", "exec uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "exec uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
