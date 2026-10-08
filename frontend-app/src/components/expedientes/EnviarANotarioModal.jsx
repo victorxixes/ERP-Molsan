@@ -1079,8 +1079,24 @@ export default function EnviarANotarioModal({
 
 
           console.log(
-            "EXPEDIENTE — ENVÍO GUARDADO CORRECTAMENTE"
-          );
+  "========== PRUEBA ENVÍO A NOTARIO =========="
+);
+
+console.log(
+  "1. ANTES DE onGuardar()"
+);
+
+await onGuardar(
+  payload
+);
+
+console.log(
+  "2. DESPUÉS DE onGuardar()"
+);
+
+console.log(
+  "3. AHORA VAMOS A CREAR LA CITA EN AGENDA"
+);
 
 
           // ----------------------------------------------------
