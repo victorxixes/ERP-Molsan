@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 
 ENV PYTHONUNBUFFERED=1
 
-# Render utiliza el puerto definido en PORT
+# Puerto HTTP utilizado por Render
 EXPOSE 10000
 
 # ============================================================
