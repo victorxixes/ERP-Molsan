@@ -118,4 +118,4 @@ import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModa
   </Seccion>
 
 </div>
-```
+
