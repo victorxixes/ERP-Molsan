@@ -1660,60 +1660,6 @@ export default function FichaExpediente() {
 
 
   // ==========================================================
-  // FINCAS
-  // ==========================================================
-
-  function abrirFincas() {
-    setFincaForm({
-      numero_finca:
-        expediente?.finca || "",
-      registro:
-        expediente?.registro ||
-        "",
-      municipio:
-        expediente?.poblacion ||
-        "",
-      provincia:
-        expediente?.provincia ||
-        "",
-      tomo:
-        "",
-      libro:
-        "",
-      folio:
-        "",
-      inscripcion:
-        "",
-      observaciones:
-        "",
-    });
-
-    setMostrarFincas(true);
-  }
-
-
-  function guardarFinca() {
-    /*
-     * El formulario queda preparado.
-     *
-     * La persistencia definitiva deberá conectarse
-     * al endpoint de Fincas cuando esté disponible.
-     */
-
-    console.log(
-      "FINCA EXPEDIENTE:",
-      {
-        expediente:
-          expediente?.id_expediente,
-        ...fincaForm,
-      }
-    );
-
-    setMostrarFincas(false);
-  }
-
-
-  // ==========================================================
   // REGISTROS
   // ==========================================================
 
@@ -1794,68 +1740,7 @@ export default function FichaExpediente() {
   }
 
 
-  // ==========================================================
-  // EXPEDIENTES RELACIONADOS POR NIF
-  // ==========================================================
-
-  async function abrirAgregarExpedientes() {
-    setMostrarAgregarExpedientes(true);
-
-    const nif =
-      expediente?.nif_titular ||
-      expediente?.nif_solicitante ||
-      "";
-
-    if (!nif) {
-      setExpedientesRelacionados([]);
-      return;
-    }
-
-    try {
-      setCargandoRelacionados(true);
-
-      const respuesta =
-        await obtenerListadoExpedientes({
-          nif,
-          pagina: 1,
-          porPagina: 100,
-        });
-
-      const lista =
-        obtenerArrayRespuesta(
-          respuesta
-        );
-
-      const expedienteActual =
-        String(
-          expediente?.id_expediente ||
-          ""
-        );
-
-      const relacionados =
-        lista.filter(
-          (item) =>
-            String(
-              item?.id_expediente ||
-              ""
-            ) !== expedienteActual
-        );
-
-      setExpedientesRelacionados(
-        relacionados
-      );
-    } catch (err) {
-      console.error(
-        "Error buscando expedientes relacionados:",
-        err
-      );
-
-      setExpedientesRelacionados([]);
-    } finally {
-      setCargandoRelacionados(false);
-    }
-  }
-
+  
 
   // ==========================================================
   // OBSERVACIONES
@@ -2129,6 +2014,67 @@ export default function FichaExpediente() {
                 >
                   Ficha completa del expediente
                 </p>
+// ==========================================================
+  // EXPEDIENTES RELACIONADOS POR NIF
+  // ==========================================================
+
+  async function abrirAgregarExpedientes() {
+    setMostrarAgregarExpedientes(true);
+
+    const nif =
+      expediente?.nif_titular ||
+      expediente?.nif_solicitante ||
+      "";
+
+    if (!nif) {
+      setExpedientesRelacionados([]);
+      return;
+    }
+
+    try {
+      setCargandoRelacionados(true);
+
+      const respuesta =
+        await obtenerListadoExpedientes({
+          nif,
+          pagina: 1,
+          porPagina: 100,
+        });
+
+      const lista =
+        obtenerArrayRespuesta(
+          respuesta
+        );
+
+      const expedienteActual =
+        String(
+          expediente?.id_expediente ||
+          ""
+        );
+
+      const relacionados =
+        lista.filter(
+          (item) =>
+            String(
+              item?.id_expediente ||
+              ""
+            ) !== expedienteActual
+        );
+
+      setExpedientesRelacionados(
+        relacionados
+      );
+    } catch (err) {
+      console.error(
+        "Error buscando expedientes relacionados:",
+        err
+      );
+
+      setExpedientesRelacionados([]);
+    } finally {
+      setCargandoRelacionados(false);
+    }
+  }
 
               </div>
             </div>
@@ -3610,150 +3556,96 @@ export default function FichaExpediente() {
 
 
       {/* =====================================================
-          MODAL ACCIONES
-      ====================================================== */}
+    MODAL ACCIONES
+====================================================== */}
 
-      <Modal
-        open={
-          mostrarAcciones
-        }
-        onClose={() =>
-          setMostrarAcciones(false)
-        }
-        titulo="⚡ Acciones del expediente"
-        subtitulo="Registrar una acción operativa"
-        ancho="max-w-3xl"
-        footer={
-          <>
-            <Boton
-              onClick={() =>
-                setMostrarAcciones(false)
-              }
-            >
-              Cancelar
-            </Boton>
-
-            <Boton
-              tipo="primary"
-              onClick={
-                guardarAccion
-              }
-            >
-              💾 Guardar acción
-            </Boton>
-          </>
-        }
+<Modal
+  open={mostrarAcciones}
+  onClose={() => setMostrarAcciones(false)}
+  titulo="⚡ Acciones del expediente"
+  subtitulo="Asignar una acción del catálogo al expediente"
+  ancho="max-w-3xl"
+  footer={
+    <>
+      <Boton
+        onClick={() => setMostrarAcciones(false)}
       >
+        Cancelar
+      </Boton>
 
-        <div className="space-y-5">
+      <Boton
+        tipo="primary"
+        onClick={guardarAccion}
+      >
+        💾 Asignar acción
+      </Boton>
+    </>
+  }
+>
+  <div className="space-y-5">
 
-          <CampoSelect
-            label="Acción"
-            value={
-              accionForm.accion
-            }
-            onChange={(valor) =>
-              setAccionForm(
-                (actual) => ({
-                  ...actual,
-                  accion:
-                    valor,
-                })
-              )
-            }
-            opciones={[
-              "",
-              "Reclamar documentación",
-              "Enviar documentación",
-              "Solicitar firma",
-              "Solicitar inscripción",
-              "Reclamar inscripción",
-              "Reclamar cancelación",
-              "Seguimiento",
-              "Otra acción",
-            ]}
-          />
+    <CampoSelect
+      label="Acción"
+      value={accionForm.accion_id}
+      onChange={(valor) =>
+        setAccionForm((actual) => ({
+          ...actual,
+          accion_id: valor,
+        }))
+      }
+      opciones={accionesCatalogo.map((accion) => ({
+        value: String(accion.id),
+        label: `${accion.descripcion}${
+          accion.actividad
+            ? ` — ${accion.actividad}`
+            : ""
+        }`,
+      }))}
+    />
 
+    <CampoSelect
+      label="Estado"
+      value={accionForm.estado}
+      onChange={(valor) =>
+        setAccionForm((actual) => ({
+          ...actual,
+          estado: valor,
+        }))
+      }
+      opciones={[
+        "Pendiente",
+        "En curso",
+        "Realizada",
+        "Cancelada",
+      ]}
+    />
 
-          <CampoFormulario
-            label="Entidad a cancelar"
-            value={
-              accionForm.entidad_cancelar
-            }
-            onChange={(valor) =>
-              setAccionForm(
-                (actual) => ({
-                  ...actual,
-                  entidad_cancelar:
-                    valor,
-                })
-              )
-            }
-            placeholder="Indica la entidad a cancelar"
-          />
+    <CampoFormulario
+      label="Fecha"
+      value={accionForm.fecha}
+      tipo="date"
+      onChange={(valor) =>
+        setAccionForm((actual) => ({
+          ...actual,
+          fecha: valor,
+        }))
+      }
+    />
 
+    <CampoFormulario
+      label="Observaciones"
+      value={accionForm.observaciones}
+      textarea
+      onChange={(valor) =>
+        setAccionForm((actual) => ({
+          ...actual,
+          observaciones: valor,
+        }))
+      }
+    />
 
-          <CampoSelect
-            label="Reclamación a oficina"
-            value={
-              accionForm.reclamacion_oficina
-            }
-            onChange={(valor) =>
-              setAccionForm(
-                (actual) => ({
-                  ...actual,
-                  reclamacion_oficina:
-                    valor,
-                })
-              )
-            }
-            opciones={[
-              "",
-              "Sí",
-              "No",
-            ]}
-          />
-
-
-          <CampoFormulario
-            label="Fecha"
-            value={
-              accionForm.fecha
-            }
-            tipo="date"
-            onChange={(valor) =>
-              setAccionForm(
-                (actual) => ({
-                  ...actual,
-                  fecha:
-                    valor,
-                })
-              )
-            }
-          />
-
-
-          <CampoFormulario
-            label="Observaciones"
-            value={
-              accionForm.observaciones
-            }
-            textarea
-            onChange={(valor) =>
-              setAccionForm(
-                (actual) => ({
-                  ...actual,
-                  observaciones:
-                    valor,
-                })
-              )
-            }
-          />
-
-        </div>
-
-      </Modal>
-
+  </div>
+</Modal>
 
       {/* =====================================================
           MODAL EXPEDIENTES RELACIONADOS
