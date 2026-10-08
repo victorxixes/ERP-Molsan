@@ -13,6 +13,8 @@ import {
   obtenerExpediente,
 } from "../../api/expedientes";
 
+import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
+
 
 // ============================================================
 // FORMATEADORES
@@ -89,6 +91,23 @@ function formatearNumero(valor) {
       maximumFractionDigits: 2,
     }
   ).format(numero);
+}
+
+
+// ============================================================
+// NORMALIZAR ACTIVIDAD
+// ============================================================
+
+function normalizarActividad(valor) {
+
+  return String(valor || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    );
 }
 
 
@@ -898,6 +917,16 @@ export default function FichaExpediente() {
 
 
   // ==========================================================
+  // MODAL ENVÍO A NOTARIO
+  // ==========================================================
+
+  const [
+    mostrarEnviarANotario,
+    setMostrarEnviarANotario,
+  ] = useState(false);
+
+
+  // ==========================================================
   // CARGAR
   // ==========================================================
 
@@ -976,6 +1005,77 @@ export default function FichaExpediente() {
   }, [
     id,
   ]);
+
+
+  // ==========================================================
+  // ACTIVIDAD — DOCUMENTACIÓN PREVIA
+  // ==========================================================
+
+  const esDocumentacionPrevia =
+    useMemo(
+      () =>
+        normalizarActividad(
+          expediente?.actividad_actual
+        ) === "documentacion previa",
+      [
+        expediente?.actividad_actual,
+      ]
+    );
+
+
+  // ==========================================================
+  // CERRAR MODAL
+  // ==========================================================
+
+  const cerrarEnviarANotario =
+    () => {
+
+      setMostrarEnviarANotario(
+        false
+      );
+
+    };
+
+
+  // ==========================================================
+  // GUARDAR ENVÍO A NOTARIO
+  //
+  // El modal ya valida y construye el payload.
+  //
+  // IMPORTANTE:
+  // No se inventa aquí ningún endpoint de backend.
+  // La integración del endpoint se hará cuando exista
+  // la ruta definitiva para guardar el envío.
+  // ==========================================================
+
+  const guardarEnviarANotario =
+    async (payload) => {
+
+      console.log(
+        "ENVÍO A NOTARIO — PAYLOAD:",
+        payload
+      );
+
+      /*
+       * ======================================================
+       * AQUÍ SE CONECTARÁ EL ENDPOINT REAL
+       * ======================================================
+       *
+       * Ejemplo de integración futura:
+       *
+       * await axios.post(
+       *   "/expedientes/enviar-notario",
+       *   payload
+       * );
+       *
+       * No lo activamos hasta tener la ruta backend real.
+       */
+
+      setMostrarEnviarANotario(
+        false
+      );
+
+    };
 
 
   // ==========================================================
@@ -1736,6 +1836,137 @@ export default function FichaExpediente() {
 
           </div>
 
+
+          {/* =================================================
+              ACCIÓN — ENVIAR A NOTARIO
+          ================================================= */}
+
+          {esDocumentacionPrevia && (
+
+            <div
+              className="
+                mt-5
+                flex
+                flex-col
+                gap-3
+                rounded-2xl
+                border
+                border-blue-100
+                bg-gradient-to-r
+                from-blue-50/80
+                via-white/80
+                to-cyan-50/70
+                p-4
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+              "
+            >
+
+              <div
+                className="
+                  flex
+                  min-w-0
+                  items-center
+                  gap-3
+                "
+              >
+
+                <div
+                  className="
+                    flex
+                    h-10
+                    w-10
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-xl
+                    border
+                    border-blue-200
+                    bg-white
+                    text-lg
+                    shadow-sm
+                  "
+                >
+                  🏛️
+                </div>
+
+
+                <div
+                  className="
+                    min-w-0
+                  "
+                >
+
+                  <p
+                    className="
+                      text-sm
+                      font-bold
+                      text-slate-800
+                    "
+                  >
+                    Envío a notario
+                  </p>
+
+                  <p
+                    className="
+                      mt-0.5
+                      text-xs
+                      text-slate-500
+                    "
+                  >
+                    El expediente está en Documentación previa y
+                    puede prepararse su envío a notario.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <button
+                type="button"
+                onClick={() =>
+                  setMostrarEnviarANotario(
+                    true
+                  )
+                }
+                className="
+                  inline-flex
+                  shrink-0
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-xl
+                  bg-[var(--erp-primary)]
+                  px-5
+                  py-3
+                  text-sm
+                  font-bold
+                  text-white
+                  shadow-sm
+                  transition
+                  hover:opacity-90
+                  hover:shadow-md
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-[var(--erp-primary)]
+                  focus:ring-offset-2
+                "
+              >
+                <span
+                  aria-hidden="true"
+                >
+                  🏛️
+                </span>
+
+                Enviar a notario
+              </button>
+
+            </div>
+
+          )}
+
         </section>
 
 
@@ -2125,6 +2356,7 @@ export default function FichaExpediente() {
                 hover:bg-blue-50
               "
             >
+
               <p
                 className="
                   mb-1.5
@@ -2174,6 +2406,7 @@ export default function FichaExpediente() {
                 <span aria-hidden="true">📅</span>
                 Crear cita en agenda
               </Link>
+
             </div>
           )}
 
@@ -2655,6 +2888,28 @@ export default function FichaExpediente() {
         </div>
 
       </div>
+
+
+      {/* =====================================================
+          MODAL — ENVÍO A NOTARIO
+      ===================================================== */}
+
+      {mostrarEnviarANotario &&
+        esDocumentacionPrevia && (
+
+        <EnviarANotarioModal
+          expediente={
+            expediente
+          }
+          onClose={
+            cerrarEnviarANotario
+          }
+          onGuardar={
+            guardarEnviarANotario
+          }
+        />
+
+      )}
 
     </div>
 
