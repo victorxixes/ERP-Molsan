@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -11,15 +12,25 @@ import {
 
 import {
   obtenerExpediente,
+  obtenerListadoExpedientes,
+  enviarExpedienteANotario,
 } from "../../api/expedientes";
+
+import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
+
+import {
+  obtenerCatalogoAcciones,
+  obtenerAccionesExpediente,
+  asignarAccionExpediente,
+  eliminarAccionExpediente,
+} from "../../api/expedienteAcciones";
 
 
 // ============================================================
-// FORMATEADORES
+// HELPERS
 // ============================================================
 
 function valorVisible(valor) {
-
   if (
     valor === null ||
     valor === undefined ||
@@ -33,38 +44,39 @@ function valorVisible(valor) {
 
 
 function formatearFecha(valor) {
-
   if (!valor) {
     return "—";
   }
 
-  const fecha =
-    String(valor);
-
-  // YYYY-MM-DD
+  const texto = String(valor);
 
   if (
-    /^\d{4}-\d{2}-\d{2}$/.test(
-      fecha
-    )
+    /^\d{4}-\d{2}-\d{2}$/.test(texto)
   ) {
-
     const [
       year,
       month,
       day,
-    ] =
-      fecha.split("-");
+    ] = texto.split("-");
 
     return `${day}/${month}/${year}`;
   }
 
-  return fecha;
+  try {
+    const fecha = new Date(valor);
+
+    if (!Number.isNaN(fecha.getTime())) {
+      return fecha.toLocaleDateString("es-ES");
+    }
+  } catch {
+    // Nada.
+  }
+
+  return texto;
 }
 
 
 function formatearNumero(valor) {
-
   if (
     valor === null ||
     valor === undefined ||
@@ -73,367 +85,710 @@ function formatearNumero(valor) {
     return "—";
   }
 
-  const numero =
-    Number(valor);
+  const numero = Number(valor);
 
-  if (
-    Number.isNaN(numero)
-  ) {
+  if (Number.isNaN(numero)) {
     return String(valor);
   }
 
   return new Intl.NumberFormat(
     "es-ES",
     {
-      minimumFractionDigits: 0,
+      minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }
   ).format(numero);
 }
 
 
-// ============================================================
-// ICONO SECCIÓN
-// ============================================================
+function normalizarTexto(valor) {
+  return String(valor || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    );
+}
 
-function IconoSeccion({
-  tipo = "default",
-}) {
 
-  const iconos = {
-
-    estado: (
-      <>
-        <circle
-          cx="12"
-          cy="12"
-          r="8"
-        />
-        <path
-          d="m9 12 2 2 4-4"
-        />
-      </>
-    ),
-
-    identificacion: (
-      <>
-        <rect
-          x="4"
-          y="4"
-          width="16"
-          height="16"
-          rx="2"
-        />
-        <path
-          d="M8 9h8"
-        />
-        <path
-          d="M8 13h5"
-        />
-        <path
-          d="M8 17h3"
-        />
-      </>
-    ),
-
-    titular: (
-      <>
-        <circle
-          cx="12"
-          cy="8"
-          r="3"
-        />
-        <path
-          d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6"
-        />
-      </>
-    ),
-
-    solicitante: (
-      <>
-        <circle
-          cx="9"
-          cy="8"
-          r="3"
-        />
-        <path
-          d="M3.5 20c.5-3.4 2.7-5.5 5.5-5.5"
-        />
-        <path
-          d="M16 12v6"
-        />
-        <path
-          d="M13 15h6"
-        />
-      </>
-    ),
-
-    notario: (
-      <>
-        <path
-          d="M4 20h16"
-        />
-        <path
-          d="M6 20V9l6-4 6 4v11"
-        />
-        <path
-          d="M9 20v-6h6v6"
-        />
-      </>
-    ),
-
-    oficina: (
-      <>
-        <path
-          d="M4 20h16"
-        />
-        <path
-          d="M6 20V8h12v12"
-        />
-        <path
-          d="M8 5h8"
-        />
-        <path
-          d="M9 11h1"
-        />
-        <path
-          d="M14 11h1"
-        />
-        <path
-          d="M9 15h1"
-        />
-        <path
-          d="M14 15h1"
-        />
-      </>
-    ),
-
-    fechas: (
-      <>
-        <rect
-          x="4"
-          y="5"
-          width="16"
-          height="15"
-          rx="2"
-        />
-        <path
-          d="M8 3v4"
-        />
-        <path
-          d="M16 3v4"
-        />
-        <path
-          d="M4 10h16"
-        />
-      </>
-    ),
-
-    actividad: (
-      <>
-        <path
-          d="M5 12h14"
-        />
-        <path
-          d="m13 6 6 6-6 6"
-        />
-      </>
-    ),
-
-    economico: (
-      <>
-        <circle
-          cx="12"
-          cy="12"
-          r="8"
-        />
-        <path
-          d="M12 7v10"
-        />
-        <path
-          d="M15 9.5c0-1.2-1.1-2-3-2s-3 .8-3 2 1.1 2 3 2 3 .8 3 2-1.1 2-3 2-3-.8-3-2"
-        />
-      </>
-    ),
-
-    provision: (
-      <>
-        <rect
-          x="5"
-          y="5"
-          width="14"
-          height="14"
-          rx="2"
-        />
-        <path
-          d="M9 9h6"
-        />
-        <path
-          d="M9 13h6"
-        />
-      </>
-    ),
-
-    gestoria: (
-      <>
-        <circle
-          cx="8"
-          cy="8"
-          r="3"
-        />
-        <path
-          d="M3 20c.5-3.5 2.4-5.5 5-5.5s4.5 2 5 5.5"
-        />
-        <path
-          d="M15 8h5"
-        />
-        <path
-          d="M17.5 5.5v5"
-        />
-      </>
-    ),
-
-    finca: (
-      <>
-        <path
-          d="M4 20h16"
-        />
-        <path
-          d="m6 20 2-10 4-3 4 3 2 10"
-        />
-        <path
-          d="M9 15h6"
-        />
-      </>
-    ),
-
-    defectos: (
-      <>
-        <path
-          d="M12 4 3.5 19h17z"
-        />
-        <path
-          d="M12 9v4"
-        />
-        <path
-          d="M12 16h.01"
-        />
-      </>
-    ),
-
-    cgn: (
-      <>
-        <path
-          d="M6 4h12v16H6z"
-        />
-        <path
-          d="M9 8h6"
-        />
-        <path
-          d="M9 12h6"
-        />
-        <path
-          d="M9 16h4"
-        />
-      </>
-    ),
-
-    bankia: (
-      <>
-        <path
-          d="M4 9h16"
-        />
-        <path
-          d="m6 9 6-5 6 5"
-        />
-        <path
-          d="M6 19h12"
-        />
-        <path
-          d="M8 12v5"
-        />
-        <path
-          d="M12 12v5"
-        />
-        <path
-          d="M16 12v5"
-        />
-      </>
-    ),
-
-    otros: (
-      <>
-        <circle
-          cx="12"
-          cy="12"
-          r="8"
-        />
-        <path
-          d="M12 8v8"
-        />
-        <path
-          d="M8 12h8"
-        />
-      </>
-    ),
-
-    default: (
-      <>
-        <rect
-          x="5"
-          y="4"
-          width="14"
-          height="16"
-          rx="2"
-        />
-        <path
-          d="M9 8h6"
-        />
-        <path
-          d="M9 12h6"
-        />
-        <path
-          d="M9 16h4"
-        />
-      </>
-    ),
-
-  };
+function esDisponible(
+  objeto,
+  campo
+) {
+  if (!objeto) {
+    return false;
+  }
 
   return (
-    <svg
-      className="
-        h-4
-        w-4
-      "
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {iconos[tipo] || iconos.default}
-    </svg>
+    Object.prototype.hasOwnProperty.call(
+      objeto,
+      campo
+    ) &&
+    objeto[campo] !== null &&
+    objeto[campo] !== undefined &&
+    objeto[campo] !== ""
   );
 }
 
 
+function obtenerArrayRespuesta(
+  respuesta
+) {
+  if (Array.isArray(respuesta)) {
+    return respuesta;
+  }
+
+  if (
+    Array.isArray(
+      respuesta?.items
+    )
+  ) {
+    return respuesta.items;
+  }
+
+  if (
+    Array.isArray(
+      respuesta?.expedientes
+    )
+  ) {
+    return respuesta.expedientes;
+  }
+
+  if (
+    Array.isArray(
+      respuesta?.data
+    )
+  ) {
+    return respuesta.data;
+  }
+
+  if (
+    Array.isArray(
+      respuesta?.results
+    )
+  ) {
+    return respuesta.results;
+  }
+
+  return [];
+}
+
+
 // ============================================================
-// BADGE DE ESTADO
+// ACTIVIDADES REALES DEL WORKFLOW
+// ============================================================
+
+const ACTIVIDADES_EXPEDIENTES = [
+  {
+    key: "documentacion-previa",
+    label: "Documentación previa",
+    icono: "📄",
+  },
+
+  {
+    key: "sede-notarial",
+    label: "Sede notarial",
+    icono: "🏛️",
+  },
+
+  {
+    key: "sede-notarial-protocolo",
+    label: "Sede notarial con protocolo",
+    icono: "📜",
+  },
+
+  {
+    key: "liquidacion-impuestos",
+    label: "Liquidación de impuestos",
+    icono: "💶",
+  },
+
+  {
+    key: "tramitacion-inscripcion",
+    label: "Tramitación inscripción",
+    icono: "🏢",
+  },
+
+  {
+    key: "defectos-registrales",
+    label: "Defectos registrales",
+    icono: "⚠️",
+  },
+
+  {
+    key: "facturacion-cierre",
+    label: "Facturación y cierre",
+    icono: "🧾",
+  },
+];
+
+
+// ============================================================
+// CAMPOS COMUNES DE ACTIVIDADES
+// ============================================================
+
+const CAMPOS_COMUNES_ACTIVIDAD = [
+  {
+    key: "id_expediente",
+    label: "Nº expediente",
+  },
+
+  {
+    key: "estado_expediente",
+    label: "Estado expediente",
+    estado: true,
+  },
+
+  {
+    key: "estado_actividad",
+    label: "Estado actividad",
+    estado: true,
+  },
+
+  {
+    key: "fecha_alta",
+    label: "Fecha alta",
+    tipo: "fecha",
+  },
+
+  {
+    key: "actividad_actual",
+    label: "Actividad actual",
+  },
+
+  {
+    key: "nombre_titular",
+    label: "Nombre titular",
+  },
+
+  {
+    key: "nif_titular",
+    label: "NIF titular",
+  },
+
+  {
+    key: "nombre_solicitante",
+    label: "Nombre solicitante",
+  },
+
+  {
+    key: "nif_solicitante",
+    label: "NIF solicitante",
+  },
+
+  {
+    key: "nombre_notario",
+    label: "Nombre notario",
+  },
+
+  {
+    key: "nif_notario",
+    label: "NIF notario",
+  },
+
+  {
+    key: "oficina",
+    label: "Oficina",
+  },
+
+  {
+    key: "capital",
+    label: "Capital",
+    tipo: "numero",
+  },
+
+  {
+    key: "importe",
+    label: "Importe",
+    tipo: "numero",
+  },
+
+  {
+    key: "saldo_real",
+    label: "Saldo real",
+    tipo: "numero",
+  },
+
+  {
+    key: "saldo_disponible",
+    label: "Saldo disponible",
+    tipo: "numero",
+  },
+
+  {
+    key: "contrato",
+    label: "Contrato",
+  },
+
+  {
+    key: "tipo_operacion",
+    label: "Tipo operación",
+  },
+
+  {
+    key: "subtipo_operacion",
+    label: "Subtipo operación",
+  },
+
+  {
+    key: "observaciones",
+    label: "Observaciones",
+    multilinea: true,
+  },
+];
+
+
+// ============================================================
+// CAMPOS ESPECÍFICOS DE ACTIVIDADES
+// ============================================================
+
+const CAMPOS_ACTIVIDADES = {
+
+  "documentacion-previa": [
+    {
+      key: "fecha_inicio_actividad",
+      label: "Inicio actividad",
+      tipo: "fecha",
+    },
+
+    {
+      key: "fecha_fin_actividad",
+      label: "Fin actividad",
+      tipo: "fecha",
+    },
+
+    {
+      key: "ultima_accion",
+      label: "Última acción",
+    },
+
+    {
+      key: "fecha_ultima_accion",
+      label: "Fecha última acción",
+      tipo: "fecha",
+    },
+
+    {
+      key: "sol",
+      label: "SOL",
+    },
+
+    {
+      key: "cs",
+      label: "CS",
+    },
+
+    {
+      key: "ns",
+      label: "NS",
+    },
+  ],
+
+  "sede-notarial": [
+    {
+      key: "fecha_envio",
+      label: "Fecha envío",
+      tipo: "fecha",
+    },
+
+    {
+      key: "apoderado",
+      label: "Apoderado",
+    },
+
+    {
+      key: "tipo_documento",
+      label: "Tipo documento",
+    },
+
+    {
+      key: "poblacion",
+      label: "Población",
+    },
+
+    {
+      key: "provincia",
+      label: "Provincia",
+    },
+
+    {
+      key: "tipo_firma",
+      label: "Tipo firma",
+    },
+
+    {
+      key: "fecha_prevista_firma",
+      label: "Fecha prevista firma",
+      tipo: "fecha",
+    },
+
+    {
+      key: "fecha_firma",
+      label: "Fecha firma",
+      tipo: "fecha",
+    },
+
+    {
+      key: "ultima_accion",
+      label: "Última acción",
+    },
+
+    {
+      key: "fecha_ultima_accion",
+      label: "Fecha última acción",
+      tipo: "fecha",
+    },
+
+    {
+      key: "sol",
+      label: "SOL",
+    },
+
+    {
+      key: "cs",
+      label: "CS",
+    },
+
+    {
+      key: "ns",
+      label: "NS",
+    },
+  ],
+
+  "sede-notarial-protocolo": [
+    {
+      key: "fecha_envio",
+      label: "Fecha envío",
+      tipo: "fecha",
+    },
+
+    {
+      key: "apoderado",
+      label: "Apoderado",
+    },
+
+    {
+      key: "tipo_documento",
+      label: "Tipo documento",
+    },
+
+    {
+      key: "poblacion",
+      label: "Población",
+    },
+
+    {
+      key: "provincia",
+      label: "Provincia",
+    },
+
+    {
+      key: "tipo_firma",
+      label: "Tipo firma",
+    },
+
+    {
+      key: "fecha_firma",
+      label: "Fecha firma",
+      tipo: "fecha",
+    },
+
+    {
+      key: "protocolo",
+      label: "Protocolo",
+    },
+
+    {
+      key: "asiento_presentacion_libro_diario",
+      label: "Asiento presentación libro diario",
+    },
+
+    {
+      key: "fecha_presentacion",
+      label: "Fecha presentación",
+      tipo: "fecha",
+    },
+
+    {
+      key: "numero_entrada",
+      label: "Número entrada",
+    },
+
+    {
+      key: "fecha_recogida_notario_presentacion_telematica",
+      label:
+        "Fecha recogida notario / presentación telemática",
+      tipo: "fecha",
+    },
+
+    {
+      key: "copia_simple_escritura",
+      label: "Copia simple escritura",
+    },
+
+    {
+      key: "ultima_accion",
+      label: "Última acción",
+    },
+
+    {
+      key: "fecha_ultima_accion",
+      label: "Fecha última acción",
+      tipo: "fecha",
+    },
+  ],
+
+  "liquidacion-impuestos": [
+    {
+      key: "ultima_accion",
+      label: "Última acción",
+    },
+
+    {
+      key: "fecha_ultima_accion",
+      label: "Fecha última acción",
+      tipo: "fecha",
+    },
+
+    {
+      key: "fecha_presentacion_tributaria",
+      label: "Fecha presentación tributaria",
+      tipo: "fecha",
+    },
+
+    {
+      key: "fecha_liquidacion_tributaria",
+      label: "Fecha liquidación tributaria",
+      tipo: "fecha",
+    },
+
+    {
+      key: "oficina_liquidadora",
+      label: "Oficina liquidadora",
+    },
+
+    {
+      key: "base_imponible",
+      label: "Base imponible",
+      tipo: "numero",
+    },
+
+    {
+      key: "tributacion",
+      label: "Tributación",
+    },
+
+    {
+      key: "impuesto_ajd_itp",
+      label: "Impuesto AJD / ITP",
+    },
+  ],
+
+  "tramitacion-inscripcion": [
+    {
+      key: "ultima_accion",
+      label: "Última acción",
+    },
+
+    {
+      key: "fecha_ultima_accion",
+      label: "Fecha última acción",
+      tipo: "fecha",
+    },
+
+    {
+      key: "fecha_presentacion",
+      label: "Fecha presentación",
+      tipo: "fecha",
+    },
+
+    {
+      key: "fecha_vencimiento_asiento",
+      label: "Fecha vencimiento asiento",
+      tipo: "fecha",
+    },
+
+    {
+      key: "fecha_inscripcion",
+      label: "Fecha inscripción",
+      tipo: "fecha",
+    },
+
+    {
+      key: "escritura_simple_cancelacion",
+      label: "Escritura simple cancelación",
+    },
+
+    {
+      key: "registral_estado",
+      label: "Estado registral",
+      estado: true,
+    },
+
+    {
+      key: "registral_fecha",
+      label: "Fecha registral",
+      tipo: "fecha",
+    },
+  ],
+
+  "defectos-registrales": [
+    {
+      key: "tiene_defectos_abiertos",
+      label: "Defectos abiertos",
+      estado: true,
+    },
+
+    {
+      key: "tipo_error",
+      label: "Tipo error",
+    },
+
+    {
+      key: "falta_defecto",
+      label: "Falta / defecto",
+    },
+
+    {
+      key: "descripcion_error",
+      label: "Descripción del defecto",
+      multilinea: true,
+    },
+
+    {
+      key: "fcierre_defecto",
+      label: "Fecha cierre defecto",
+      tipo: "fecha",
+    },
+
+    {
+      key: "registral_estado",
+      label: "Estado registral",
+      estado: true,
+    },
+
+    {
+      key: "registral_fecha",
+      label: "Fecha registral",
+      tipo: "fecha",
+    },
+  ],
+
+  "facturacion-cierre": [
+    {
+      key: "facturacion_estado",
+      label: "Estado facturación",
+      estado: true,
+    },
+
+    {
+      key: "facturacion_fecha",
+      label: "Fecha facturación",
+      tipo: "fecha",
+    },
+
+    {
+      key: "fecha_entregado_cliente",
+      label: "Fecha entregado cliente",
+      tipo: "fecha",
+    },
+
+    {
+      key: "fecha_fin_actividad",
+      label: "Fin actividad",
+      tipo: "fecha",
+    },
+  ],
+};
+
+
+// ============================================================
+// RESOLVER ACTIVIDAD
+// ============================================================
+
+function resolverActividadActual(
+  expediente
+) {
+  const actividad =
+    normalizarTexto(
+      expediente?.actividad_actual
+    );
+
+  if (
+    actividad.includes(
+      "sede notarial con protocolo"
+    )
+  ) {
+    return "sede-notarial-protocolo";
+  }
+
+  if (
+    actividad.includes(
+      "defectos registrales"
+    )
+  ) {
+    return "defectos-registrales";
+  }
+
+  if (
+    actividad.includes(
+      "liquidacion de impuestos"
+    ) ||
+    actividad.includes(
+      "liquidacion impuestos"
+    )
+  ) {
+    return "liquidacion-impuestos";
+  }
+
+  if (
+    actividad.includes(
+      "tramitacion inscripcion"
+    )
+  ) {
+    return "tramitacion-inscripcion";
+  }
+
+  if (
+    actividad.includes(
+      "facturacion y cierre"
+    )
+  ) {
+    return "facturacion-cierre";
+  }
+
+  if (
+    actividad.includes(
+      "sede notarial"
+    )
+  ) {
+    if (
+      expediente?.protocolo ||
+      expediente?.fecha_firma
+    ) {
+      return "sede-notarial-protocolo";
+    }
+
+    return "sede-notarial";
+  }
+
+  return "documentacion-previa";
+}
+
+
+// ============================================================
+// ESTADO BADGE
 // ============================================================
 
 function EstadoBadge({
   valor,
 }) {
-
   const texto =
     valorVisible(valor);
 
-  if (
-    texto === "—"
-  ) {
+  if (texto === "—") {
     return (
       <span
         className="
@@ -446,7 +801,7 @@ function EstadoBadge({
           px-2.5
           py-1
           text-[11px]
-          font-medium
+          font-semibold
           text-slate-400
         "
       >
@@ -455,32 +810,75 @@ function EstadoBadge({
     );
   }
 
+  const normalizado =
+    normalizarTexto(texto);
+
+  const positivo =
+    normalizado.includes("vig") ||
+    normalizado.includes("abiert") ||
+    normalizado.includes("activo");
+
+  const negativo =
+    normalizado.includes("error") ||
+    normalizado.includes("defecto");
+
+  const cerrado =
+    normalizado.includes("cerr") ||
+    normalizado.includes("final");
+
+  let clases =
+    "border-blue-200 bg-blue-50 text-blue-700";
+
+  let punto =
+    "bg-blue-500";
+
+  if (positivo) {
+    clases =
+      "border-emerald-200 bg-emerald-50 text-emerald-700";
+
+    punto =
+      "bg-emerald-500";
+  }
+
+  if (cerrado) {
+    clases =
+      "border-slate-200 bg-slate-100 text-slate-600";
+
+    punto =
+      "bg-slate-500";
+  }
+
+  if (negativo) {
+    clases =
+      "border-red-200 bg-red-50 text-red-700";
+
+    punto =
+      "bg-red-500";
+  }
 
   return (
     <span
-      className="
+      className={`
         inline-flex
         max-w-full
         items-center
+        gap-1.5
         rounded-full
         border
-        border-blue-100
-        bg-blue-50
         px-2.5
         py-1
         text-[11px]
-        font-semibold
-        text-blue-600
-      "
+        font-bold
+        ${clases}
+      `}
     >
       <span
-        className="
-          mr-1.5
+        className={`
           h-1.5
           w-1.5
           rounded-full
-          bg-blue-500
-        "
+          ${punto}
+        `}
       />
 
       <span className="truncate">
@@ -492,184 +890,76 @@ function EstadoBadge({
 
 
 // ============================================================
-// DATO
+// ICONO
 // ============================================================
 
-function Dato({
-  campo,
-  valor,
-  tipo = "texto",
-  destaque = false,
-  estado = false,
+function IconoSeccion({
+  tipo = "default",
 }) {
-
-  let contenido =
-    valorVisible(valor);
-
-
-  if (
-    tipo === "fecha"
-  ) {
-
-    contenido =
-      formatearFecha(valor);
-
-  }
-
-
-  if (
-    tipo === "numero"
-  ) {
-
-    contenido =
-      formatearNumero(valor);
-
-  }
-
+  const iconos = {
+    estado: "◉",
+    titular: "👤",
+    solicitante: "👥",
+    economico: "📊",
+    notario: "✒️",
+    observaciones: "▣",
+    actividad: "⚙️",
+    finca: "🏠",
+    registro: "📚",
+    accion: "⚡",
+  };
 
   return (
-    <div
-      className={`
-        group
-        min-w-0
-        rounded-2xl
-        border
-        p-3.5
-        transition-all
-        duration-200
-
-        ${
-          destaque
-            ? `
-              border-blue-100
-              bg-blue-50/55
-            `
-            : `
-              border-slate-200/80
-              bg-white/70
-              hover:border-blue-100
-              hover:bg-white
-              hover:shadow-sm
-            `
-        }
-      `}
+    <span
+      className="
+        text-base
+        leading-none
+      "
+      aria-hidden="true"
     >
-
-      <p
-        className="
-          mb-1.5
-          truncate
-          text-[10px]
-          font-semibold
-          uppercase
-          tracking-[0.08em]
-          text-slate-400
-        "
-      >
-        {campo}
-      </p>
-
-
-      {estado ? (
-
-        <EstadoBadge
-          valor={valor}
-        />
-
-      ) : (
-
-        <p
-          className={`
-            break-words
-            text-sm
-            leading-5
-            ${
-              destaque
-                ? `
-                  font-bold
-                  text-blue-700
-                `
-                : `
-                  font-medium
-                  text-slate-700
-                `
-            }
-          `}
-        >
-          {contenido}
-        </p>
-
-      )}
-
-    </div>
+      {
+        iconos[tipo] ||
+        "▣"
+      }
+    </span>
   );
 }
 
 
 // ============================================================
-// SECCIÓN
+// TARJETA
 // ============================================================
 
 function Seccion({
   titulo,
   subtitulo,
-  icono = "default",
+  icono,
   children,
-  columnas = 3,
+  className = "",
 }) {
-
-  const gridClass =
-    columnas === 4
-      ? "xl:grid-cols-4"
-      : columnas === 2
-        ? "xl:grid-cols-2"
-        : "xl:grid-cols-3";
-
-
   return (
     <section
-      className="
-        relative
-        overflow-hidden
-        rounded-[24px]
+      className={`
+        rounded-2xl
         border
         border-white/80
-        bg-white/78
-        p-5
-        shadow-[0_16px_45px_rgba(15,23,42,0.06)]
-        backdrop-blur-2xl
-        sm:p-6
-      "
+        bg-white/85
+        shadow-[0_15px_40px_rgba(15,23,42,0.07)]
+        overflow-hidden
+        ${className}
+      `}
     >
-
-      {/* Línea premium */}
-
       <div
         className="
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-          bg-gradient-to-r
-          from-transparent
-          via-blue-400/45
-          to-transparent
-        "
-      />
-
-
-      {/* CABECERA */}
-
-      <div
-        className="
-          mb-5
           flex
-          items-start
+          items-center
           gap-3
+          border-b
+          border-slate-100
+          px-5
+          py-4
         "
       >
-
         <div
           className="
             flex
@@ -690,19 +980,11 @@ function Seccion({
           />
         </div>
 
-
-        <div
-          className="
-            min-w-0
-            flex-1
-          "
-        >
-
+        <div className="min-w-0">
           <h2
             className="
-              text-base
+              text-sm
               font-bold
-              tracking-tight
               text-slate-800
             "
           >
@@ -710,348 +992,195 @@ function Seccion({
           </h2>
 
           {subtitulo && (
-
             <p
               className="
-                mt-1
-                text-xs
-                leading-5
+                mt-0.5
+                text-[11px]
                 text-slate-400
               "
             >
               {subtitulo}
             </p>
-
           )}
-
         </div>
-
       </div>
 
-
-      {/* DATOS */}
-
-      <div
-        className={`
-          grid
-          grid-cols-1
-          gap-3
-          sm:grid-cols-2
-          ${gridClass}
-        `}
-      >
+      <div className="p-5">
         {children}
       </div>
-
     </section>
   );
 }
 
 
 // ============================================================
-// OBSERVACIONES
+// DATO
 // ============================================================
 
-function Observaciones({
+function Dato({
+  campo,
   valor,
+  tipo = "texto",
+  destaque = false,
+  estado = false,
+  multilinea = false,
 }) {
+  let contenido =
+    valorVisible(valor);
+
+  if (tipo === "fecha") {
+    contenido =
+      formatearFecha(valor);
+  }
+
+  if (tipo === "numero") {
+    contenido =
+      formatearNumero(valor);
+  }
 
   return (
-    <section
-      className="
-        relative
-        overflow-hidden
-        rounded-[24px]
+    <div
+      className={`
+        min-w-0
+        rounded-xl
         border
-        border-white/80
-        bg-white/78
-        p-5
-        shadow-[0_16px_45px_rgba(15,23,42,0.06)]
-        backdrop-blur-2xl
-        sm:p-6
-      "
+        px-3
+        py-3
+        ${
+          destaque
+            ? "border-blue-100 bg-blue-50/60"
+            : "border-slate-100 bg-white"
+        }
+      `}
     >
-
-      <div
+      <p
         className="
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-          bg-gradient-to-r
-          from-transparent
-          via-blue-400/45
-          to-transparent
-        "
-      />
-
-
-      <div
-        className="
-          mb-5
-          flex
-          items-center
-          gap-3
+          mb-1.5
+          truncate
+          text-[9px]
+          font-bold
+          uppercase
+          tracking-[0.08em]
+          text-slate-400
         "
       >
+        {campo}
+      </p>
 
+      {estado ? (
+        <EstadoBadge
+          valor={valor}
+        />
+      ) : (
+        <div
+          className={`
+            text-xs
+            font-medium
+            ${
+              destaque
+                ? "text-blue-700"
+                : "text-slate-700"
+            }
+            ${
+              multilinea
+                ? "whitespace-pre-wrap"
+                : "break-words"
+            }
+          `}
+        >
+          {contenido}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+// ============================================================
+// MODAL BASE
+// ============================================================
+
+function Modal({
+  open,
+  onClose,
+  titulo,
+  subtitulo,
+  children,
+  footer,
+  ancho = "max-w-3xl",
+}) {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div
+      className="
+        fixed
+        inset-0
+        z-[9999]
+        flex
+        items-center
+        justify-center
+        bg-slate-900/50
+        p-4
+        backdrop-blur-[2px]
+      "
+      onMouseDown={(event) => {
+        if (
+          event.target ===
+          event.currentTarget
+        ) {
+          onClose();
+        }
+      }}
+    >
+      <div
+        className={`
+          relative
+          flex
+          max-h-[92vh]
+          w-full
+          ${ancho}
+          flex-col
+          overflow-hidden
+          rounded-2xl
+          border
+          border-slate-200
+          bg-white
+          shadow-2xl
+        `}
+        onMouseDown={(event) => {
+          event.stopPropagation();
+        }}
+      >
         <div
           className="
             flex
-            h-10
-            w-10
-            shrink-0
             items-center
-            justify-center
-            rounded-xl
-            border
+            justify-between
+            gap-4
+            border-b
             border-slate-200
-            bg-slate-50
-            text-slate-500
+            bg-gradient-to-r
+            from-slate-50
+            to-white
+            px-6
+            py-5
           "
         >
-          <IconoSeccion
-            tipo="default"
-          />
-        </div>
-
-
-        <div>
-
-          <h2
-            className="
-              text-base
-              font-bold
-              tracking-tight
-              text-slate-800
-            "
-          >
-            Observaciones
-          </h2>
-
-          <p
-            className="
-              mt-1
-              text-xs
-              text-slate-400
-            "
-          >
-            Información adicional del expediente
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <div
-        className="
-          min-h-[120px]
-          rounded-2xl
-          border
-          border-slate-200/80
-          bg-slate-50/75
-          p-4
-          text-sm
-          leading-6
-          text-slate-600
-          shadow-inner
-          whitespace-pre-wrap
-          break-words
-        "
-      >
-        {valorVisible(valor)}
-      </div>
-
-    </section>
-  );
-}
-
-
-// ============================================================
-// FICHA
-// ============================================================
-
-export default function FichaExpediente() {
-
-  const { id } =
-    useParams();
-
-
-  const [
-    expediente,
-    setExpediente,
-  ] = useState(null);
-
-
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
-
-
-  const [
-    error,
-    setError,
-  ] = useState("");
-
-
-  // ==========================================================
-  // CARGAR
-  // ==========================================================
-
-  useEffect(() => {
-
-    let activo = true;
-
-
-    async function cargar() {
-
-      setLoading(true);
-      setError("");
-
-
-      try {
-
-        const data =
-          await obtenerExpediente(
-            id
-          );
-
-
-        if (activo) {
-
-          setExpediente(
-            data
-          );
-
-        }
-
-      } catch (err) {
-
-        console.error(
-          "Error cargando expediente:",
-          err
-        );
-
-
-        if (activo) {
-
-          setError(
-            err?.response?.data?.detail ||
-            "No se ha podido cargar el expediente."
-          );
-
-          setExpediente(
-            null
-          );
-
-        }
-
-      } finally {
-
-        if (activo) {
-
-          setLoading(
-            false
-          );
-
-        }
-
-      }
-
-    }
-
-
-    cargar();
-
-
-    return () => {
-
-      activo = false;
-
-    };
-
-  }, [
-    id,
-  ]);
-
-
-  // ==========================================================
-  // LOADING
-  // ==========================================================
-
-  if (loading) {
-
-    return (
-
-      <div
-        className="
-          relative
-          min-h-full
-          overflow-hidden
-          px-4
-          py-4
-          sm:px-6
-          sm:py-6
-        "
-      >
-
-        <div
-          className="
-            mx-auto
-            max-w-[1800px]
-          "
-        >
-
-          <div
-            className="
-              flex
-              min-h-[420px]
-              items-center
-              justify-center
-            "
-          >
-
-            <div
+          <div className="min-w-0">
+            <h2
               className="
-                rounded-2xl
-                border
-                border-white/80
-                bg-white/78
-                px-6
-                py-5
-                text-center
-                shadow-[0_16px_45px_rgba(15,23,42,0.06)]
-                backdrop-blur-2xl
+                text-lg
+                font-bold
+                text-slate-800
               "
             >
+              {titulo}
+            </h2>
 
-              <div
-                className="
-                  mx-auto
-                  mb-3
-                  h-8
-                  w-8
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-blue-100
-                  border-t-blue-500
-                "
-              />
-
-              <p
-                className="
-                  text-sm
-                  font-semibold
-                  text-slate-600
-                "
-              >
-                Cargando expediente…
-              </p>
-
+            {subtitulo && (
               <p
                 className="
                   mt-1
@@ -1059,19 +1188,894 @@ export default function FichaExpediente() {
                   text-slate-400
                 "
               >
-                Obteniendo información del expediente
+                {subtitulo}
               </p>
-
-            </div>
-
+            )}
           </div>
 
+          <button
+            type="button"
+            onClick={onClose}
+            className="
+              flex
+              h-9
+              w-9
+              shrink-0
+              items-center
+              justify-center
+              rounded-xl
+              border
+              border-slate-200
+              bg-white
+              text-slate-500
+              transition
+              hover:bg-slate-50
+              hover:text-slate-800
+            "
+          >
+            ✕
+          </button>
         </div>
 
-      </div>
+        <div
+          className="
+            min-h-0
+            flex-1
+            overflow-y-auto
+            px-6
+            py-6
+          "
+        >
+          {children}
+        </div>
 
+        {footer && (
+          <div
+            className="
+              flex
+              items-center
+              justify-end
+              gap-3
+              border-t
+              border-slate-200
+              bg-slate-50
+              px-6
+              py-4
+            "
+          >
+            {footer}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+// ============================================================
+// BOTÓN
+// ============================================================
+
+function Boton({
+  children,
+  onClick,
+  tipo = "secondary",
+  disabled = false,
+  className = "",
+}) {
+  const clases = {
+    primary:
+      "border-blue-600 bg-blue-600 text-white hover:bg-blue-700",
+
+    secondary:
+      "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+
+    danger:
+      "border-red-200 bg-red-50 text-red-700 hover:bg-red-100",
+
+    success:
+      "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
+
+    warning:
+      "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100",
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        inline-flex
+        items-center
+        justify-center
+        gap-2
+        rounded-xl
+        border
+        px-4
+        py-2.5
+        text-xs
+        font-bold
+        transition
+        disabled:cursor-not-allowed
+        disabled:opacity-50
+        ${clases[tipo] || clases.secondary}
+        ${className}
+      `}
+    >
+      {children}
+    </button>
+  );
+}
+
+
+// ============================================================
+// COMPONENTE
+// ============================================================
+
+export default function FichaExpediente() {
+  const { id } = useParams();
+
+  const [
+    expediente,
+    setExpediente,
+  ] = useState(null);
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
+
+  const [
+    error,
+    setError,
+  ] = useState("");
+
+  // ----------------------------------------------------------
+  // MODALES
+  // ----------------------------------------------------------
+
+  const [
+    mostrarActividades,
+    setMostrarActividades,
+  ] = useState(false);
+
+  const [
+    actividadSeleccionada,
+    setActividadSeleccionada,
+  ] = useState(
+    "documentacion-previa"
+  );
+
+  const [
+    mostrarDefecto,
+    setMostrarDefecto,
+  ] = useState(false);
+
+  const [
+    mostrarEnviarNotario,
+    setMostrarEnviarNotario,
+  ] = useState(false);
+
+  const [
+    mostrarFincas,
+    setMostrarFincas,
+  ] = useState(false);
+
+  const [
+    mostrarRegistros,
+    setMostrarRegistros,
+  ] = useState(false);
+
+  const [
+    mostrarAcciones,
+    setMostrarAcciones,
+  ] = useState(false);
+
+  const [
+    mostrarAgregarExpedientes,
+    setMostrarAgregarExpedientes,
+  ] = useState(false);
+
+  const [
+    mostrarObservaciones,
+    setMostrarObservaciones,
+  ] = useState(false);
+
+  // ----------------------------------------------------------
+  // DATOS AUXILIARES
+  // ----------------------------------------------------------
+
+  const [
+    expedientesRelacionados,
+    setExpedientesRelacionados,
+  ] = useState([]);
+
+  const [
+    cargandoRelacionados,
+    setCargandoRelacionados,
+  ] = useState(false);
+
+  const [
+    comentario,
+    setComentario,
+  ] = useState("");
+
+  const [
+    visionesComentario,
+    setVisionesComentario,
+  ] = useState({
+    notario: false,
+    apoderado: false,
+    actividad: true,
+  });
+
+  const [
+    fincaForm,
+    setFincaForm,
+  ] = useState({
+    numero_finca: "",
+    registro: "",
+    municipio: "",
+    provincia: "",
+    tomo: "",
+    libro: "",
+    folio: "",
+    inscripcion: "",
+    observaciones: "",
+  });
+
+  const [
+    registroForm,
+    setRegistroForm,
+  ] = useState({
+    registro: "",
+    registrador: "",
+    municipio: "",
+    provincia: "",
+    numero_finca: "",
+    tomo: "",
+    libro: "",
+    folio: "",
+    inscripcion: "",
+    observaciones: "",
+  });
+
+  const [
+    accionForm,
+    setAccionForm,
+  ] = useState({
+    accion_id: "",
+    estado: "Pendiente",
+    fecha: "",
+    observaciones: "",
+  });
+
+  const [
+    accionesCatalogo,
+    setAccionesCatalogo,
+  ] = useState([]);
+
+  const [
+    accionesExpediente,
+    setAccionesExpediente,
+  ] = useState([]);
+
+  const [
+    cargandoAcciones,
+    setCargandoAcciones,
+  ] = useState(false);
+
+  const [
+    errorAcciones,
+    setErrorAcciones,
+  ] = useState("");
+
+  const [
+    defectoLocal,
+    setDefectoLocal,
+  ] = useState(null);
+
+  // ==========================================================
+  // CARGAR EXPEDIENTE
+  // ==========================================================
+
+  const cargarExpediente =
+    useCallback(
+      async () => {
+        if (!id) {
+          setLoading(false);
+          setError(
+            "No se ha indicado ningún expediente."
+          );
+          return;
+        }
+
+        try {
+          setLoading(true);
+          setError("");
+
+          const respuesta =
+            await obtenerExpediente(id);
+
+          const datos =
+            respuesta?.expediente ||
+            respuesta?.data ||
+            respuesta ||
+            null;
+
+          setExpediente(datos);
+
+          if (
+            datos?.tiene_defectos_abiertos
+          ) {
+            setDefectoLocal({
+              tipo_error:
+                datos.tipo_error || "",
+              falta_defecto:
+                datos.falta_defecto || "",
+              descripcion_error:
+                datos.descripcion_error ||
+                "",
+              fcierre_defecto:
+                datos.fcierre_defecto ||
+                "",
+            });
+          } else {
+            setDefectoLocal(null);
+          }
+
+          setActividadSeleccionada(
+            resolverActividadActual(
+              datos
+            )
+          );
+        } catch (err) {
+          console.error(
+            "Error cargando ficha:",
+            err
+          );
+
+          setExpediente(null);
+
+          setError(
+            err?.response?.data?.detail ||
+            "No se ha podido cargar la ficha del expediente."
+          );
+        } finally {
+          setLoading(false);
+        }
+      },
+      [id]
     );
 
+
+  useEffect(() => {
+    cargarExpediente();
+  }, [
+    cargarExpediente,
+  ]);
+
+
+  // ==========================================================
+  // ACTIVIDAD ACTUAL
+  // ==========================================================
+
+  const actividadActual =
+    useMemo(
+      () =>
+        resolverActividadActual(
+          expediente
+        ),
+      [expediente]
+    );
+
+
+  // ==========================================================
+  // DATOS DE ACTIVIDAD SELECCIONADA
+  // ==========================================================
+
+  const actividadSeleccionadaDef =
+    useMemo(
+      () =>
+        ACTIVIDADES_EXPEDIENTES.find(
+          (actividad) =>
+            actividad.key ===
+            actividadSeleccionada
+        ) ||
+        ACTIVIDADES_EXPEDIENTES[0],
+      [actividadSeleccionada]
+    );
+
+
+  // ==========================================================
+  // CAMPOS ACTIVIDAD
+  // ==========================================================
+
+  const camposActividad =
+    useMemo(() => {
+      const especificos =
+        CAMPOS_ACTIVIDADES[
+          actividadSeleccionada
+        ] || [];
+
+      const todos = [
+        ...CAMPOS_COMUNES_ACTIVIDAD,
+        ...especificos,
+      ];
+
+      const vistos =
+        new Set();
+
+      return todos.filter(
+        (campo) => {
+          if (
+            vistos.has(campo.key)
+          ) {
+            return false;
+          }
+
+          vistos.add(campo.key);
+
+          return true;
+        }
+      );
+    }, [
+      actividadSeleccionada,
+    ]);
+
+
+  // ==========================================================
+  // ABRIR ACTIVIDADES
+  // ==========================================================
+
+  function abrirActividades() {
+    setActividadSeleccionada(
+      actividadActual
+    );
+
+    setMostrarActividades(true);
+  }
+
+
+  // ==========================================================
+  // ENVIAR A NOTARIO
+  // ==========================================================
+
+  async function guardarEnviarANotario(
+    payload
+  ) {
+    await enviarExpedienteANotario(
+      expediente.id_expediente,
+      payload
+    );
+
+    await cargarExpediente();
+
+    setMostrarEnviarNotario(false);
+  }
+
+
+  // ==========================================================
+  // DEFECTO
+  // ==========================================================
+
+  function abrirDefecto() {
+    setMostrarDefecto(true);
+  }
+
+
+  function guardarDefectoLocal() {
+    setDefectoLocal({
+      tipo_error:
+        expediente?.tipo_error ||
+        "",
+      falta_defecto:
+        expediente?.falta_defecto ||
+        "",
+      descripcion_error:
+        expediente?.descripcion_error ||
+        "",
+      fcierre_defecto:
+        expediente?.fcierre_defecto ||
+        "",
+    });
+
+    setMostrarDefecto(false);
+  }
+
+
+  // ==========================================================
+  // REGISTROS
+  // ==========================================================
+
+  function abrirRegistros() {
+    setRegistroForm({
+      registro:
+        expediente?.registro ||
+        "",
+      registrador:
+        "",
+      municipio:
+        expediente?.poblacion ||
+        "",
+      provincia:
+        expediente?.provincia ||
+        "",
+      numero_finca:
+        expediente?.finca ||
+        "",
+      tomo:
+        "",
+      libro:
+        "",
+      folio:
+        "",
+      inscripcion:
+        "",
+      observaciones:
+        "",
+    });
+
+    setMostrarRegistros(true);
+  }
+
+
+  function guardarRegistro() {
+    console.log(
+      "REGISTRO EXPEDIENTE:",
+      {
+        expediente:
+          expediente?.id_expediente,
+        ...registroForm,
+      }
+    );
+
+    setMostrarRegistros(false);
+  }
+
+
+  // ==========================================================
+  // ACCIONES
+  // ==========================================================
+
+  const cargarAccionesDelExpediente =
+    useCallback(
+      async () => {
+        if (!expediente?.id_expediente) {
+          setAccionesExpediente([]);
+          return;
+        }
+
+        try {
+          setCargandoAcciones(true);
+          setErrorAcciones("");
+
+          const respuesta =
+            await obtenerAccionesExpediente(
+              expediente.id_expediente
+            );
+
+          const datos =
+            Array.isArray(respuesta)
+              ? respuesta
+              : respuesta?.items ||
+                respuesta?.data ||
+                [];
+
+          setAccionesExpediente(datos);
+        } catch (err) {
+          console.error(
+            "Error cargando acciones del expediente:",
+            err
+          );
+          setAccionesExpediente([]);
+          setErrorAcciones(
+            err?.response?.data?.detail ||
+            "No se han podido cargar las acciones del expediente."
+          );
+        } finally {
+          setCargandoAcciones(false);
+        }
+      },
+      [expediente?.id_expediente]
+    );
+
+  useEffect(() => {
+    cargarAccionesDelExpediente();
+  }, [cargarAccionesDelExpediente]);
+
+  async function cargarCatalogoAcciones() {
+    try {
+      setErrorAcciones("");
+
+      const respuesta =
+        await obtenerCatalogoAcciones({
+          activo: true,
+        });
+
+      const datos =
+        Array.isArray(respuesta)
+          ? respuesta
+          : respuesta?.items ||
+            respuesta?.data ||
+            [];
+
+      setAccionesCatalogo(datos);
+    } catch (err) {
+      console.error(
+        "Error cargando catálogo de acciones:",
+        err
+      );
+      setAccionesCatalogo([]);
+      setErrorAcciones(
+        err?.response?.data?.detail ||
+        "No se ha podido cargar el catálogo de acciones."
+      );
+    }
+  }
+
+  async function abrirAcciones() {
+    const hoy =
+      new Date()
+        .toISOString()
+        .slice(0, 10);
+
+    setAccionForm({
+      accion_id: "",
+      estado: "Pendiente",
+      fecha: hoy,
+      observaciones: "",
+    });
+
+    setErrorAcciones("");
+    setMostrarAcciones(true);
+
+    await Promise.all([
+      cargarCatalogoAcciones(),
+      cargarAccionesDelExpediente(),
+    ]);
+  }
+
+  async function guardarAccion() {
+    if (!expediente?.id_expediente) {
+      setErrorAcciones(
+        "No se ha podido identificar el expediente."
+      );
+      return;
+    }
+
+    if (!accionForm.accion_id) {
+      setErrorAcciones(
+        "Debes seleccionar una acción del catálogo."
+      );
+      return;
+    }
+
+    try {
+      setCargandoAcciones(true);
+      setErrorAcciones("");
+
+      await asignarAccionExpediente(
+        expediente.id_expediente,
+        {
+          accion_id: Number(accionForm.accion_id),
+          estado:
+            accionForm.estado ||
+            "Pendiente",
+          fecha:
+            accionForm.fecha ||
+            null,
+          observaciones:
+            accionForm.observaciones?.trim() ||
+            null,
+        }
+      );
+
+      await cargarAccionesDelExpediente();
+
+      setAccionForm({
+        accion_id: "",
+        estado: "Pendiente",
+        fecha: new Date()
+          .toISOString()
+          .slice(0, 10),
+        observaciones: "",
+      });
+
+      setMostrarAcciones(false);
+    } catch (err) {
+      console.error(
+        "Error asignando acción al expediente:",
+        err
+      );
+      setErrorAcciones(
+        err?.response?.data?.detail ||
+        "No se ha podido asignar la acción al expediente."
+      );
+    } finally {
+      setCargandoAcciones(false);
+    }
+  }
+
+  async function retirarAccion(relacionId) {
+    if (!relacionId) return;
+
+    try {
+      setCargandoAcciones(true);
+      setErrorAcciones("");
+
+      await eliminarAccionExpediente(
+        relacionId
+      );
+
+      await cargarAccionesDelExpediente();
+    } catch (err) {
+      console.error(
+        "Error retirando acción del expediente:",
+        err
+      );
+      setErrorAcciones(
+        err?.response?.data?.detail ||
+        "No se ha podido retirar la acción."
+      );
+    } finally {
+      setCargandoAcciones(false);
+    }
+  }
+
+
+  // ==========================================================
+  // OBSERVACIONES
+  // ==========================================================
+
+  function abrirObservaciones() {
+    setComentario(
+      expediente?.observaciones ||
+      ""
+    );
+
+    setVisionesComentario({
+      notario: false,
+      apoderado: false,
+      actividad: true,
+    });
+
+    setMostrarObservaciones(true);
+  }
+
+
+  function guardarObservacion() {
+    console.log(
+      "OBSERVACION EXPEDIENTE:",
+      {
+        expediente:
+          expediente?.id_expediente,
+        comentario,
+        visiones:
+          visionesComentario,
+      }
+    );
+
+    /*
+     * Dejamos la observación inmediatamente visible
+     * en la ficha.
+     *
+     * La persistencia definitiva se conectará al
+     * sistema de observaciones/mensajes.
+     */
+
+    setExpediente(
+      (actual) => ({
+        ...actual,
+        observaciones:
+          comentario,
+      })
+    );
+
+    setMostrarObservaciones(false);
+  }
+
+
+  // ==========================================================
+  // EXPEDIENTES RELACIONADOS POR NIF
+  // ==========================================================
+
+  async function abrirAgregarExpedientes() {
+    setMostrarAgregarExpedientes(true);
+
+    const nif =
+      expediente?.nif_titular ||
+      expediente?.nif_solicitante ||
+      "";
+
+    if (!nif) {
+      setExpedientesRelacionados([]);
+      return;
+    }
+
+    try {
+      setCargandoRelacionados(true);
+
+      const respuesta =
+        await obtenerListadoExpedientes({
+          nif,
+          pagina: 1,
+          porPagina: 100,
+        });
+
+      const lista =
+        obtenerArrayRespuesta(
+          respuesta
+        );
+
+      const expedienteActual =
+        String(
+          expediente?.id_expediente ||
+          ""
+        );
+
+      const relacionados =
+        lista.filter(
+          (item) =>
+            String(
+              item?.id_expediente ||
+              ""
+            ) !== expedienteActual
+        );
+
+      setExpedientesRelacionados(
+        relacionados
+      );
+    } catch (err) {
+      console.error(
+        "Error buscando expedientes relacionados:",
+        err
+      );
+
+      setExpedientesRelacionados([]);
+    } finally {
+      setCargandoRelacionados(false);
+    }
+  }
+
+
+  // ==========================================================
+  // LOADING
+  // ==========================================================
+
+  if (loading) {
+    return (
+      <div
+        className="
+          erp-page
+          p-6
+        "
+      >
+        <div
+          className="
+           w-full
+            rounded-2xl
+            border
+            border-white/80
+            bg-white/85
+            p-12
+            text-center
+            shadow-lg
+          "
+        >
+          <div
+            className="
+              animate-pulse
+              text-sm
+              text-slate-400
+            "
+          >
+            Cargando ficha del expediente…
+          </div>
+        </div>
+      </div>
+    );
   }
 
 
@@ -1080,1392 +2084,1350 @@ export default function FichaExpediente() {
   // ==========================================================
 
   if (error) {
-
     return (
-
       <div
         className="
-          relative
-          min-h-full
-          overflow-hidden
-          px-4
-          py-4
-          sm:px-6
-          sm:py-6
+          erp-page
+          p-6
         "
       >
-
         <div
           className="
-            mx-auto
-            max-w-[1800px]
-          "
-        >
-
-          <Link
-            to="/expedientes"
-            className="
-              inline-flex
-              items-center
-              rounded-xl
-              border
-              border-slate-200
-              bg-white/80
-              px-3
-              py-2
-              text-sm
-              font-medium
-              text-slate-500
-              shadow-sm
-              backdrop-blur-xl
-              transition
-              hover:border-blue-200
-              hover:bg-blue-50
-              hover:text-blue-600
-            "
-          >
-            ← Volver a expedientes
-          </Link>
-
-
-          <div
-            className="
-              mt-5
-              overflow-hidden
-              rounded-[24px]
-              border
-              border-red-200
-              bg-red-50/80
-              p-5
-              shadow-[0_16px_45px_rgba(127,29,29,0.06)]
-              backdrop-blur-2xl
-            "
-          >
-
-            <div
-              className="
-                flex
-                items-start
-                gap-3
-              "
-            >
-
-              <div
-                className="
-                  flex
-                  h-10
-                  w-10
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-red-100
-                  text-red-600
-                "
-              >
-                !
-              </div>
-
-
-              <div>
-
-                <h2
-                  className="
-                    text-base
-                    font-bold
-                    text-red-700
-                  "
-                >
-                  No se ha podido cargar el expediente
-                </h2>
-
-                <p
-                  className="
-                    mt-1
-                    text-sm
-                    leading-6
-                    text-red-600/80
-                  "
-                >
-                  {error}
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    );
-
-  }
-
-
-  // ==========================================================
-  // NO ENCONTRADO
-  // ==========================================================
-
-  if (!expediente) {
-
-    return (
-
-      <div
-        className="
-          px-4
-          py-6
-          sm:px-6
-        "
-      >
-
-        <div
-          className="
-            mx-auto
-            max-w-[1800px]
-            rounded-[24px]
+             w-full
+            rounded-2xl
             border
-            border-slate-200
-            bg-white/80
-            p-8
-            text-center
-            shadow-sm
-            backdrop-blur-xl
+            border-red-200
+            bg-red-50
+            p-6
+            text-red-700
           "
         >
-
-          <div
-            className="
-              mx-auto
-              mb-4
-              flex
-              h-14
-              w-14
-              items-center
-              justify-center
-              rounded-2xl
-              bg-slate-100
-              text-2xl
-            "
-          >
-            📁
-          </div>
-
-          <h2
-            className="
-              text-lg
-              font-bold
-              text-slate-700
-            "
-          >
-            Expediente no encontrado
-          </h2>
-
-          <p
-            className="
-              mt-1
-              text-sm
-              text-slate-400
-            "
-          >
-            No se ha encontrado información para este expediente.
+          <p className="text-sm">
+            {error}
           </p>
 
           <Link
             to="/expedientes"
             className="
-              mt-5
+              mt-4
               inline-flex
               rounded-xl
               bg-blue-600
               px-4
               py-2.5
-              text-sm
-              font-semibold
+              text-xs
+              font-bold
               text-white
-              shadow-sm
-              transition
-              hover:bg-blue-700
             "
           >
-            Volver a expedientes
+            ← Expedientes
           </Link>
-
         </div>
-
       </div>
-
     );
-
   }
 
 
-  // ==========================================================
-  // RESUMEN CABECERA
-  // ==========================================================
+  if (!expediente) {
+    return null;
+  }
 
-  const numeroExpediente =
-    valorVisible(
-      expediente.id_expediente
+
+  const tieneDefecto =
+    Boolean(
+      expediente.tiene_defectos_abiertos ||
+      defectoLocal
     );
-
-
-  const estadoPrincipal =
-    expediente.estado_expediente;
-
-
-  const actividadPrincipal =
-    expediente.actividad_actual;
-
-
-  const importePrincipal =
-    formatearNumero(
-      expediente.importe
-    );
-
-
-  const tieneDefectos =
-    expediente.tiene_defectos_abiertos;
 
 
   // ==========================================================
   // RENDER
   // ==========================================================
 
-  return (
+  // ==========================================================
+  // FINCAS
+  // ==========================================================
 
+  function abrirFincas() {
+    setFincaForm({
+      numero_finca:
+        expediente?.finca ||
+        "",
+      registro:
+        expediente?.registro ||
+        "",
+      municipio:
+        expediente?.poblacion ||
+        "",
+      provincia:
+        expediente?.provincia ||
+        "",
+      tomo: "",
+      libro: "",
+      folio: "",
+      inscripcion: "",
+      observaciones: "",
+    });
+
+    setMostrarFincas(true);
+  }
+
+
+  function guardarFinca() {
+    console.log(
+      "FINCA EXPEDIENTE:",
+      {
+        expediente:
+          expediente?.id_expediente,
+        ...fincaForm,
+      }
+    );
+
+    setMostrarFincas(false);
+  }
+
+  return (
     <div
       className="
-        relative
-        min-h-full
-        overflow-hidden
-        px-4
-        py-4
-        sm:px-6
-        sm:py-6
-        animate-fadeIn
+        erp-page
+        space-y-4
+        pb-8
       "
     >
 
       {/* =====================================================
-          FONDO PREMIUM ERP
-      ===================================================== */}
+          CABECERA
+      ====================================================== */}
 
-      <div
+      <section
         className="
-          pointer-events-none
-          absolute
-          inset-0
+           w-full
           overflow-hidden
+          rounded-[24px]
+          border
+          border-white/80
+          bg-white/85
+          shadow-[0_20px_60px_rgba(15,23,42,0.08)]
         "
       >
-
         <div
           className="
-            absolute
-            -left-52
-            -top-52
-            h-[560px]
-            w-[560px]
-            rounded-full
-            bg-blue-400/10
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute
-            -bottom-56
-            -right-56
-            h-[620px]
-            w-[620px]
-            rounded-full
-            bg-cyan-300/10
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute
-            left-1/2
-            top-1/2
-            h-[760px]
-            w-[760px]
-            -translate-x-1/2
-            -translate-y-1/2
-            rounded-full
-            bg-white/70
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute
-            inset-0
-            bg-gradient-to-br
-            from-white/75
-            via-transparent
-            to-blue-50/70
-          "
-        />
-
-      </div>
-
-
-      {/* =====================================================
-          CONTENIDO
-      ===================================================== */}
-
-      <div
-        className="
-          relative
-          z-10
-          mx-auto
-          max-w-[1800px]
-          space-y-5
-        "
-      >
-
-        {/* ===================================================
-            CABECERA
-        =================================================== */}
-
-        <section
-          className="
-            relative
-            overflow-hidden
-            rounded-[28px]
-            border
-            border-white/80
-            bg-white/80
+            flex
+            flex-col
+            gap-5
             p-5
-            shadow-[0_20px_60px_rgba(15,23,42,0.08)]
-            backdrop-blur-2xl
             sm:p-6
+            xl:flex-row
+            xl:items-center
+            xl:justify-between
           "
         >
 
-          {/* línea superior */}
+          <div className="min-w-0">
 
-          <div
-            className="
-              absolute
-              left-0
-              right-0
-              top-0
-              h-px
-              bg-gradient-to-r
-              from-transparent
-              via-blue-400/55
-              to-transparent
-            "
-          />
+            <Link
+              to="/expedientes"
+              className="
+                mb-3
+                inline-flex
+                items-center
+                text-[11px]
+                font-bold
+                text-blue-600
+                hover:text-blue-700
+              "
+            >
+              ← Expedientes
+            </Link>
+
+            <div
+              className="
+                flex
+                items-center
+                gap-4
+              "
+            >
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  border
+                  border-blue-100
+                  bg-blue-50
+                  text-xl
+                  text-blue-600
+                "
+              >
+                📁
+              </div>
+
+              <div className="min-w-0">
+
+                <p
+                  className="
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-[0.12em]
+                    text-slate-400
+                  "
+                >
+                  Ficha de expediente
+                </p>
+
+                <h1
+                  className="
+                    truncate
+                    text-2xl
+                    font-bold
+                    text-slate-800
+                  "
+                >
+                  {valorVisible(
+                    expediente.id_expediente
+                  )}
+                </h1>
+
+                <p
+                  className="
+                    mt-0.5
+                    text-xs
+                    text-slate-400
+                  "
+                >
+                  Ficha completa del expediente
+                </p>
+
+              </div>
+            </div>
+          </div>
+  {/* ===================================================
+            COLUMNA 2
+        ==================================================== */}
+
+        <div className="space-y-4">
+
+          {/* TITULARES */}
+
+          <Seccion
+            titulo="Titulares"
+            subtitulo="Titulares del expediente"
+            icono="titular"
+          >
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
+            >
+
+              <Dato
+                campo="Nombre titular"
+                valor={
+                  expediente.nombre_titular
+                }
+                destaque
+              />
+
+              <Dato
+                campo="NIF titular"
+                valor={
+                  expediente.nif_titular
+                }
+              />
+
+            </div>
+          </Seccion>
+
+
+          {/* SOLICITANTES */}
+
+          <Seccion
+            titulo="Solicitantes"
+            subtitulo="Solicitantes del expediente"
+            icono="solicitante"
+          >
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
+            >
+
+              <Dato
+                campo="Nombre solicitante"
+                valor={
+                  expediente.nombre_solicitante
+                }
+                destaque
+              />
+
+              <Dato
+                campo="NIF solicitante"
+                valor={
+                  expediente.nif_solicitante
+                }
+              />
+
+            </div>
+          </Seccion>
+
+
+          {/* AGREGAR EXPEDIENTES */}
+
+          <Seccion
+            titulo="Expedientes relacionados"
+            subtitulo="Agrupación automática por NIF"
+            icono="titular"
+          >
+            <p
+              className="
+                text-xs
+                leading-5
+                text-slate-500
+              "
+            >
+              El sistema buscará otros expedientes
+              cuyo titular tenga el mismo NIF.
+            </p>
+
+            <button
+              type="button"
+              onClick={
+                abrirAgregarExpedientes
+              }
+              className="
+                mt-3
+                w-full
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-4
+                py-3
+                text-xs
+                font-bold
+                text-blue-700
+                transition
+                hover:bg-blue-100
+              "
+            >
+              ➕ Agregar expedientes
+            </button>
+          </Seccion>
+
+        </div>
 
 
           <div
             className="
               flex
-              flex-col
-              gap-5
-              xl:flex-row
-              xl:items-center
-              xl:justify-between
+              flex-wrap
+              items-center
+              gap-2
             "
           >
 
-            {/* izquierda */}
+            {tieneDefecto && (
+              <button
+                type="button"
+                onClick={
+                  abrirDefecto
+                }
+                className="
+                  animate-pulse
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-xl
+                  border
+                  border-red-300
+                  bg-red-50
+                  px-4
+                  py-2.5
+                  text-xs
+                  font-bold
+                  text-red-700
+                  shadow-sm
+                "
+              >
+                ⚠️ DEFECTO REGISTRAL
+              </button>
+            )}
 
+            <Boton
+              onClick={
+                abrirActividades
+              }
+            >
+              ⚙️ Ver actividades
+            </Boton>
+
+            <Boton
+              tipo="primary"
+              onClick={() =>
+                setMostrarEnviarNotario(
+                  true
+                )
+              }
+            >
+              📤 Enviar a notario
+            </Boton>
+
+          </div>
+        </div>
+      </section>
+
+
+      {/* =====================================================
+          CUATRO COLUMNAS PRINCIPALES
+      ====================================================== */}
+
+      <div
+        className="
+          grid
+           w-full
+          grid-cols-1
+          gap-4
+          xl:grid-cols-4
+        "
+      >
+
+        {/* ===================================================
+            COLUMNA 1
+        ==================================================== */}
+
+        <div className="space-y-4">
+
+          {/* ESTADO */}
+
+          <Seccion
+            titulo="Estado"
+            subtitulo="Situación actual del expediente"
+            icono="estado"
+          >
             <div
               className="
-                min-w-0
+                grid
+                grid-cols-2
+                gap-2
               "
             >
 
-              <Link
-                to="/expedientes"
-                className="
-                  inline-flex
-                  items-center
-                  rounded-lg
-                  text-xs
-                  font-semibold
-                  text-blue-600
-                  transition
-                  hover:text-blue-700
-                "
-              >
-                ← Volver a expedientes
-              </Link>
+              <Dato
+                campo="Estado"
+                valor={
+                  expediente.estado_expediente
+                }
+                estado
+                destaque
+              />
+
+              <Dato
+                campo="Actividad actual"
+                valor={
+                  expediente.actividad_actual
+                }
+                destaque
+              />
+
+              <Dato
+                campo="Estado actividad"
+                valor={
+                  expediente.estado_actividad
+                }
+                estado
+              />
+
+              <Dato
+                campo="Tipo operación"
+                valor={
+                  expediente.tipo_operacion
+                }
+              />
+
+              <Dato
+                campo="Oficina"
+                valor={
+                  expediente.oficina
+                }
+                destaque
+              />
+
+              <Dato
+                campo="DAN"
+                valor={
+                  expediente.dan
+                }
+              />
+
+              <Dato
+                campo="Fecha alta"
+                valor={
+                  expediente.fecha_alta
+                }
+                tipo="fecha"
+                destaque
+              />
+
+            </div>
+          </Seccion>
 
 
-              <div
-                className="
-                  mt-3
-                  flex
-                  items-start
-                  gap-4
-                "
-              >
+          {/* FINCAS */}
 
-                <div
-                  className="
-                    flex
-                    h-14
-                    w-14
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    border
-                    border-blue-100
-                    bg-blue-50
-                    text-blue-600
-                    shadow-sm
-                  "
-                >
+          <Seccion
+            titulo="Fincas"
+            subtitulo="Información de las fincas vinculadas"
+            icono="finca"
+          >
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
+            >
+              <Dato
+                campo="Finca"
+                valor={
+                  expediente.finca
+                }
+                destaque
+              />
 
-                  <svg
-                    className="
-                      h-6
-                      w-6
-                    "
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path
-                      d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2h5.5A2.5 2.5 0 0 1 20 8.5v9A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5z"
-                    />
-                    <path
-                      d="M4 9h16"
-                    />
-                  </svg>
+              <Dato
+                campo="Estado registral"
+                valor={
+                  expediente.registral_estado
+                }
+                estado
+              />
 
-                </div>
+              <Dato
+                campo="Fecha registral"
+                valor={
+                  expediente.registral_fecha
+                }
+                tipo="fecha"
+              />
+            </div>
 
-
-                <div
-                  className="
-                    min-w-0
-                  "
-                >
-
-                  <p
-                    className="
-                      text-[10px]
-                      font-semibold
-                      uppercase
-                      tracking-[0.12em]
-                      text-slate-400
-                    "
-                  >
-                    Ficha de expediente
-                  </p>
+            <button
+              type="button"
+              onClick={
+                abrirFincas
+              }
+              className="
+                mt-3
+                w-full
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-3
+                py-2.5
+                text-xs
+                font-bold
+                text-blue-700
+                transition
+                hover:bg-blue-100
+              "
+            >
+              🏠 Gestionar finca
+            </button>
+          </Seccion>
 
 
-                  <h1
-                    className="
-                      mt-1
-                      break-words
-                      text-2xl
-                      font-bold
-                      tracking-tight
-                      text-slate-800
-                      sm:text-3xl
-                    "
-                  >
-                    {numeroExpediente}
-                  </h1>
+          {/* REGISTROS */}
+
+          <Seccion
+            titulo="Registros"
+            subtitulo="Datos registrales del expediente"
+            icono="registro"
+          >
+            <div
+              className="
+                space-y-2
+              "
+            >
+              <Dato
+                campo="Registro"
+                valor={
+                  expediente.registro
+                }
+              />
+
+              <Dato
+                campo="Estado registral"
+                valor={
+                  expediente.registral_estado
+                }
+                estado
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={
+                abrirRegistros
+              }
+              className="
+                mt-3
+                w-full
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-3
+                py-2.5
+                text-xs
+                font-bold
+                text-blue-700
+                transition
+                hover:bg-blue-100
+              "
+            >
+              📚 Gestionar registro
+            </button>
+          </Seccion>
 
 
-                  <p
-                    className="
-                      mt-1
-                      text-sm
-                      text-slate-400
-                    "
-                  >
-                    Información completa del expediente
-                  </p>
+          {/* ACCIONES */}
 
-                </div>
+          <Seccion
+            titulo="Acciones"
+            subtitulo="Acciones operativas del expediente"
+            icono="accion"
+          >
+            <button
+              type="button"
+              onClick={
+                abrirAcciones
+              }
+              className="
+                w-full
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-4
+                py-3
+                text-xs
+                font-bold
+                text-blue-700
+                transition
+                hover:bg-blue-100
+              "
+            >
+              ⚡ Gestionar acciones
+            </button>
 
+            {errorAcciones && (
+              <div className="erp-danger mt-3 rounded-xl border px-4 py-3 text-xs">
+                {errorAcciones}
               </div>
+            )}
+
+            {cargandoAcciones ? (
+              <div className="erp-text-soft mt-3 text-xs">
+                Cargando acciones...
+              </div>
+            ) : accionesExpediente.length > 0 ? (
+              <div className="mt-4 space-y-3">
+                {accionesExpediente.map((relacion) => {
+                  const accion =
+                    relacion.accion ||
+                    relacion.accion_expediente ||
+                    relacion;
+
+                  return (
+                    <div
+                      key={relacion.id}
+                      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-slate-800">
+                            {accion.descripcion ||
+                              relacion.descripcion ||
+                              "Acción"}
+                          </div>
+
+                          {accion.actividad && (
+                            <div className="mt-1 text-xs text-slate-500">
+                              {accion.actividad}
+                            </div>
+                          )}
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            retirarAccion(relacion.id)
+                          }
+                          className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100"
+                        >
+                          Retirar
+                        </button>
+                      </div>
+
+                      <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                        {relacion.estado && (
+                          <span className="rounded-full bg-slate-100 px-2.5 py-1 font-semibold text-slate-700">
+                            {relacion.estado}
+                          </span>
+                        )}
+                        {relacion.fecha && (
+                          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-slate-600">
+                            {formatearFecha(relacion.fecha)}
+                          </span>
+                        )}
+                      </div>
+
+                      {relacion.observaciones && (
+                        <div className="mt-3 text-xs text-slate-600">
+                          {relacion.observaciones}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="erp-text-soft mt-3 rounded-xl border border-dashed border-slate-200 px-4 py-4 text-xs">
+                Este expediente todavía no tiene acciones asignadas.
+              </div>
+            )}
+          </Seccion>
+
+        </div>
+
+
+      
+
+        {/* ===================================================
+            COLUMNA 3
+        ==================================================== */}
+
+        <div>
+
+          <Seccion
+            titulo="Información crediticia"
+            subtitulo="Datos económicos y contractuales"
+            icono="economico"
+            className="h-full"
+          >
+
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
+            >
+
+              <Dato
+                campo="Nº expediente"
+                valor={
+                  expediente.id_expediente
+                }
+                destaque
+              />
+
+              <Dato
+                campo="Contrato"
+                valor={
+                  expediente.contrato
+                }
+              />
+
+              <Dato
+                campo="Tipo operación"
+                valor={
+                  expediente.tipo_operacion
+                }
+              />
+
+              <Dato
+                campo="Subtipo operación"
+                valor={
+                  expediente.subtipo_operacion
+                }
+              />
+
+              <Dato
+                campo="Nº solicitud SIA"
+                valor={
+                  expediente.num_solicitud_sia
+                }
+              />
+
+              <Dato
+                campo="Capital"
+                valor={
+                  expediente.capital
+                }
+                tipo="numero"
+                destaque
+              />
+
+              <Dato
+                campo="Importe"
+                valor={
+                  expediente.importe
+                }
+                tipo="numero"
+                destaque
+              />
+
+              <Dato
+                campo="Saldo real"
+                valor={
+                  expediente.saldo_real
+                }
+                tipo="numero"
+              />
+
+              <Dato
+                campo="Saldo disponible"
+                valor={
+                  expediente.saldo_disponible
+                }
+                tipo="numero"
+              />
+
+              <Dato
+                campo="Finca"
+                valor={
+                  expediente.finca
+                }
+                destaque
+              />
+
+              <Dato
+                campo="Provisión"
+                valor={
+                  expediente.tipo_provision
+                }
+              />
+
+              <Dato
+                campo="ID provisión"
+                valor={
+                  expediente.id_provision
+                }
+              />
 
             </div>
 
+          </Seccion>
 
-            {/* resumen */}
+        </div>
+
+
+        {/* ===================================================
+            COLUMNA 4
+        ==================================================== */}
+
+        <div className="space-y-4">
+
+          {/* NOTARIO */}
+
+          <Seccion
+            titulo="Notario"
+            subtitulo="Información del notario asociado"
+            icono="notario"
+          >
+
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
+            >
+
+              <Dato
+                campo="Nombre notario"
+                valor={
+                  expediente.nombre_notario
+                }
+                destaque
+              />
+
+              <Dato
+                campo="NIF notario"
+                valor={
+                  expediente.nif_notario
+                }
+              />
+
+              <Dato
+                campo="Notario"
+                valor={
+                  expediente.notario
+                }
+              />
+
+              <Dato
+                campo="ID notario"
+                valor={
+                  expediente.id_notario
+                }
+              />
+
+              <Dato
+                campo="Apoderado"
+                valor={
+                  expediente.apoderado
+                }
+              />
+
+              <Dato
+                campo="Tipo firma"
+                valor={
+                  expediente.tipo_firma
+                }
+              />
+
+            </div>
+
+          </Seccion>
+
+
+          {/* OBSERVACIONES */}
+
+          <Seccion
+            titulo="Observaciones"
+            subtitulo="Información adicional"
+            icono="observaciones"
+          >
+
+            <div
+              className="
+                min-h-[90px]
+                whitespace-pre-wrap
+                rounded-xl
+                border
+                border-slate-200
+                bg-slate-50
+                p-4
+                text-xs
+                leading-5
+                text-slate-600
+              "
+            >
+              {
+                valorVisible(
+                  expediente.observaciones
+                )
+              }
+            </div>
+
+            <button
+              type="button"
+              onClick={
+                abrirObservaciones
+              }
+              className="
+                mt-3
+                w-full
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-4
+                py-3
+                text-xs
+                font-bold
+                text-blue-700
+                transition
+                hover:bg-blue-100
+              "
+            >
+              💬 Gestionar observaciones
+            </button>
+
+          </Seccion>
+
+        </div>
+
+      </div>
+
+
+      {/* =====================================================
+          MODAL ACTIVIDADES
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarActividades
+        }
+        onClose={() =>
+          setMostrarActividades(false)
+        }
+        titulo="⚙️ Actividades del expediente"
+        subtitulo={
+          `Expediente ${valorVisible(
+            expediente.id_expediente
+          )} · actividad actual: ${valorVisible(
+            expediente.actividad_actual
+          )}`
+        }
+        ancho="max-w-[1200px]"
+        footer={
+          <Boton
+            onClick={() =>
+              setMostrarActividades(false)
+            }
+          >
+            Cerrar
+          </Boton>
+        }
+      >
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-4
+            lg:grid-cols-[280px_minmax(0,1fr)]
+          "
+        >
+
+          {/* MENU ACTIVIDADES */}
+
+          <div
+            className="
+              space-y-2
+            "
+          >
+
+            {ACTIVIDADES_EXPEDIENTES.map(
+              (actividad) => {
+
+                const activa =
+                  actividad.key ===
+                  actividadSeleccionada;
+
+                const esActual =
+                  actividad.key ===
+                  actividadActual;
+
+                return (
+                  <button
+                    key={
+                      actividad.key
+                    }
+                    type="button"
+                    onClick={() =>
+                      setActividadSeleccionada(
+                        actividad.key
+                      )
+                    }
+                    className={`
+                      w-full
+                      rounded-xl
+                      border
+                      p-3
+                      text-left
+                      transition
+                      ${
+                        activa
+                          ? "border-blue-300 bg-blue-50 shadow-sm"
+                          : "border-slate-200 bg-white hover:bg-slate-50"
+                      }
+                    `}
+                  >
+
+                    <div
+                      className="
+                        flex
+                        items-center
+                        gap-3
+                      "
+                    >
+
+                      <span
+                        className="
+                          text-lg
+                        "
+                      >
+                        {
+                          actividad.icono
+                        }
+                      </span>
+
+                      <span
+                        className={`
+                          text-xs
+                          font-bold
+                          ${
+                            activa
+                              ? "text-blue-700"
+                              : "text-slate-700"
+                          }
+                        `}
+                      >
+                        {
+                          actividad.label
+                        }
+                      </span>
+
+                    </div>
+
+                    {esActual && (
+                      <span
+                        className="
+                          mt-2
+                          inline-flex
+                          rounded-full
+                          border
+                          border-emerald-200
+                          bg-emerald-50
+                          px-2
+                          py-1
+                          text-[9px]
+                          font-bold
+                          uppercase
+                          tracking-wide
+                          text-emerald-700
+                        "
+                      >
+                        ● Actividad actual
+                      </span>
+                    )}
+
+                  </button>
+                );
+              }
+            )}
+
+          </div>
+
+
+          {/* DETALLE */}
+
+          <div
+            className="
+              min-w-0
+              rounded-2xl
+              border
+              border-slate-200
+              bg-slate-50/70
+              p-4
+            "
+          >
+
+            <div
+              className="
+                mb-4
+                flex
+                flex-wrap
+                items-center
+                justify-between
+                gap-3
+              "
+            >
+
+              <div>
+
+                <h3
+                  className="
+                    text-base
+                    font-bold
+                    text-slate-800
+                  "
+                >
+                  {
+                    actividadSeleccionadaDef.icono
+                  }{" "}
+                  {
+                    actividadSeleccionadaDef.label
+                  }
+                </h3>
+
+                <p
+                  className="
+                    mt-1
+                    text-xs
+                    text-slate-400
+                  "
+                >
+                  Campos de esta actividad
+                </p>
+
+              </div>
+
+              {actividadSeleccionada ===
+                actividadActual && (
+                <EstadoBadge
+                  valor="Actividad actual"
+                />
+              )}
+
+            </div>
+
 
             <div
               className="
                 grid
                 grid-cols-1
-                gap-3
-                sm:grid-cols-3
-                xl:min-w-[560px]
+                gap-2
+                sm:grid-cols-2
+                xl:grid-cols-3
               "
             >
 
-              <div
-                className="
-                  rounded-2xl
-                  border
-                  border-slate-200/80
-                  bg-white/70
-                  px-4
-                  py-3
-                "
-              >
+              {camposActividad.map(
+                (campo) => {
 
-                <p
-                  className="
-                    text-[10px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.08em]
-                    text-slate-400
-                  "
-                >
-                  Estado
-                </p>
+                  if (
+                    !esDisponible(
+                      expediente,
+                      campo.key
+                    )
+                  ) {
+                    return null;
+                  }
 
-                <div
-                  className="
-                    mt-2
-                  "
-                >
-
-                  <EstadoBadge
-                    valor={
-                      estadoPrincipal
-                    }
-                  />
-
-                </div>
-
-              </div>
-
-
-              <div
-                className="
-                  rounded-2xl
-                  border
-                  border-slate-200/80
-                  bg-white/70
-                  px-4
-                  py-3
-                "
-              >
-
-                <p
-                  className="
-                    text-[10px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.08em]
-                    text-slate-400
-                  "
-                >
-                  Actividad actual
-                </p>
-
-                <p
-                  className="
-                    mt-2
-                    truncate
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                  "
-                >
-                  {valorVisible(
-                    actividadPrincipal
-                  )}
-                </p>
-
-              </div>
-
-
-              <div
-                className="
-                  rounded-2xl
-                  border
-                  border-slate-200/80
-                  bg-white/70
-                  px-4
-                  py-3
-                "
-              >
-
-                <p
-                  className="
-                    text-[10px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.08em]
-                    text-slate-400
-                  "
-                >
-                  Importe
-                </p>
-
-                <p
-                  className="
-                    mt-2
-                    text-lg
-                    font-bold
-                    tracking-tight
-                    text-slate-800
-                  "
-                >
-                  {importePrincipal}
-                </p>
-
-              </div>
+                  return (
+                    <Dato
+                      key={
+                        campo.key
+                      }
+                      campo={
+                        campo.label
+                      }
+                      valor={
+                        expediente[
+                          campo.key
+                        ]
+                      }
+                      tipo={
+                        campo.tipo
+                      }
+                      estado={
+                        campo.estado
+                      }
+                      multilinea={
+                        campo.multilinea
+                      }
+                    />
+                  );
+                }
+              )}
 
             </div>
+
+
+            {!camposActividad.some(
+              (campo) =>
+                esDisponible(
+                  expediente,
+                  campo.key
+                )
+            ) && (
+              <div
+                className="
+                  rounded-xl
+                  border
+                  border-dashed
+                  border-slate-300
+                  bg-white
+                  p-8
+                  text-center
+                "
+              >
+                <p
+                  className="
+                    text-sm
+                    font-semibold
+                    text-slate-500
+                  "
+                >
+                  No hay datos disponibles
+                  para esta actividad.
+                </p>
+
+                <p
+                  className="
+                    mt-1
+                    text-xs
+                    text-slate-400
+                  "
+                >
+                  Los campos aparecerán cuando
+                  el expediente disponga de ellos.
+                </p>
+              </div>
+            )}
 
           </div>
 
-        </section>
-
-
-        {/* ===================================================
-            ESTADO
-        =================================================== */}
-
-        <Seccion
-          titulo="Estado del expediente"
-          subtitulo="Situación actual y estados operativos"
-          icono="estado"
-          columnas={3}
-        >
-
-          <Dato
-            campo="Estado expediente"
-            valor={
-              expediente.estado_expediente
-            }
-            estado
-          />
-
-          <Dato
-            campo="Estado ANCERT"
-            valor={
-              expediente.estado_expediente_ancert
-            }
-            estado
-          />
-
-          <Dato
-            campo="Estado actividad"
-            valor={
-              expediente.estado_actividad
-            }
-            estado
-          />
-
-          <Dato
-            campo="Actividad actual"
-            valor={
-              expediente.actividad_actual
-            }
-            destaque
-          />
-
-          <Dato
-            campo="Tiene defectos abiertos"
-            valor={
-              expediente.tiene_defectos_abiertos
-            }
-            destaque={
-              Boolean(tieneDefectos)
-            }
-          />
-
-          <Dato
-            campo="Estado facturación"
-            valor={
-              expediente.facturacion_estado
-            }
-            estado
-          />
-
-          <Dato
-            campo="Estado registral"
-            valor={
-              expediente.registral_estado
-            }
-            estado
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            IDENTIFICACIÓN
-        =================================================== */}
-
-        <Seccion
-          titulo="Identificación"
-          subtitulo="Datos principales de identificación del expediente"
-          icono="identificacion"
-          columnas={3}
-        >
-
-          <Dato
-            campo="ID expediente"
-            valor={
-              expediente.id_expediente
-            }
-            destaque
-          />
-
-          <Dato
-            campo="ID interno"
-            valor={
-              expediente.id
-            }
-            tipo="numero"
-          />
-
-          <Dato
-            campo="ID cliente"
-            valor={
-              expediente.cliente_id
-            }
-            tipo="numero"
-          />
-
-          <Dato
-            campo="Contrato"
-            valor={
-              expediente.contrato
-            }
-          />
-
-          <Dato
-            campo="Tipo operación"
-            valor={
-              expediente.tipo_operacion
-            }
-          />
-
-          <Dato
-            campo="Subtipo operación"
-            valor={
-              expediente.subtipo_operacion
-            }
-          />
-
-          <Dato
-            campo="Nº solicitud SIA"
-            valor={
-              expediente.num_solicitud_sia
-            }
-          />
-
-          <Dato
-            campo="Nº solicitud PNC"
-            valor={
-              expediente.num_solicitud_pnc
-            }
-            destaque
-          />
-
-          <Dato
-            campo="VincCanc"
-            valor={
-              expediente.vinccanc
-            }
-          />
-
-          <Dato
-            campo="Protocolo"
-            valor={
-              expediente.protocolo
-            }
-          />
-
-          <Dato
-            campo="Tipo acta"
-            valor={
-              expediente.tipo_acta
-            }
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            TITULAR
-        =================================================== */}
-
-        <Seccion
-          titulo="Titular"
-          subtitulo="Información identificativa del titular"
-          icono="titular"
-          columnas={3}
-        >
-
-          <Dato
-            campo="Nombre titular"
-            valor={
-              expediente.nombre_titular
-            }
-            destaque
-          />
-
-          <Dato
-            campo="NIF titular"
-            valor={
-              expediente.nif_titular
-            }
-          />
-
-          <Dato
-            campo="ID cliente"
-            valor={
-              expediente.cliente_id
-            }
-            tipo="numero"
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            SOLICITANTE
-        =================================================== */}
-
-        <Seccion
-          titulo="Solicitante"
-          subtitulo="Datos del solicitante y representación"
-          icono="solicitante"
-          columnas={3}
-        >
-
-          <Dato
-            campo="Nombre solicitante"
-            valor={
-              expediente.nombre_solicitante
-            }
-          />
-
-          <Dato
-            campo="NIF solicitante"
-            valor={
-              expediente.nif_solicitante
-            }
-          />
-
-          <Dato
-            campo="Apoderado"
-            valor={
-              expediente.apoderado
-            }
-            destaque
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            NOTARIO
-        =================================================== */}
-
-        <Seccion
-          titulo="Notario"
-          subtitulo="Información del notario asociado"
-          icono="notario"
-          columnas={3}
-        >
-
-          <Dato
-            campo="Nombre notario"
-            valor={
-              expediente.nombre_notario
-            }
-            destaque
-          />
-
-          <Dato
-            campo="NIF notario"
-            valor={
-              expediente.nif_notario
-            }
-          />
-
-          <Dato
-            campo="Notario"
-            valor={
-              expediente.notario
-            }
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            OFICINA
-        =================================================== */}
-
-        <Seccion
-          titulo="Oficina"
-          subtitulo="Datos de oficina y canal de alta"
-          icono="oficina"
-          columnas={3}
-        >
-
-          <Dato
-            campo="Oficina"
-            valor={
-              expediente.oficina
-            }
-            destaque
-          />
-
-          <Dato
-            campo="DAN"
-            valor={
-              expediente.dan
-            }
-          />
-
-          <Dato
-            campo="Oficina alta"
-            valor={
-              expediente.oficina_alta
-            }
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            FECHAS
-        =================================================== */}
-
-        <Seccion
-          titulo="Fechas"
-          subtitulo="Cronología completa del expediente"
-          icono="fechas"
-          columnas={4}
-        >
-
-          <Dato
-            campo="Fecha alta"
-            valor={
-              expediente.fecha_alta
-            }
-            tipo="fecha"
-            destaque
-          />
-
-          <Dato
-            campo="Fecha firma"
-            valor={
-              expediente.fecha_firma
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha inscripción"
-            valor={
-              expediente.fecha_inscripcion
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha entregado cliente"
-            valor={
-              expediente.fecha_entregado_cliente
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha solicitud"
-            valor={
-              expediente.fecha_solicitud
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha prevista firma"
-            valor={
-              expediente.fecha_prevista_firma
-            }
-            tipo="fecha"
-          />
-
-          {expediente.fecha_prevista_firma && (
-            <div
-              className="
-                rounded-2xl
-                border
-                border-blue-100
-                bg-blue-50/55
-                p-3.5
-                transition-all
-                duration-200
-                hover:border-blue-200
-                hover:bg-blue-50
-              "
+        </div>
+
+      </Modal>
+
+
+      {/* =====================================================
+          MODAL DEFECTO
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarDefecto
+        }
+        onClose={() =>
+          setMostrarDefecto(false)
+        }
+        titulo="⚠️ Defecto registral"
+        subtitulo={
+          `Expediente ${valorVisible(
+            expediente.id_expediente
+          )}`
+        }
+        ancho="max-w-2xl"
+        footer={
+          <>
+            <Boton
+              onClick={() =>
+                setMostrarDefecto(false)
+              }
             >
-              <p
-                className="
-                  mb-1.5
-                  text-[10px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.08em]
-                  text-slate-400
-                "
-              >
-                Agenda
-              </p>
+              Cerrar
+            </Boton>
 
-              <Link
-                to="/agenda"
-                state={{
-                  crearCita: true,
-                  fecha: expediente.fecha_prevista_firma,
-                  expedienteId: expediente.id_expediente,
-                  expediente: expediente.id_expediente,
-                  nombreTitular: expediente.nombre_titular || "",
-                  nombreNotario: expediente.nombre_notario || "",
-                  notarioId: expediente.notario_id || null,
-                }}
-                className="
-                  inline-flex
-                  w-full
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-xl
-                  border
-                  border-blue-200
-                  bg-white
-                  px-3
-                  py-2.5
-                  text-xs
-                  font-bold
-                  text-blue-600
-                  shadow-sm
-                  transition
-                  hover:border-blue-300
-                  hover:bg-blue-600
-                  hover:text-white
-                "
-              >
-                <span aria-hidden="true">📅</span>
-                Crear cita en agenda
-              </Link>
-            </div>
-          )}
+            <Boton
+              tipo="primary"
+              onClick={
+                guardarDefectoLocal
+              }
+            >
+              ✏️ Guardar
+            </Boton>
+          </>
+        }
+      >
 
-          <Dato
-            campo="Fecha vencimiento"
-            valor={
-              expediente.fecha_vencimiento
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha solicitud CGN"
-            valor={
-              expediente.fecha_sol_cgn
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha firma prevista validación"
-            valor={
-              expediente.fecha_firma_prev_val
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha firma prevista cliente"
-            valor={
-              expediente.fecha_firma_prev_cli
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Inicio actividad"
-            valor={
-              expediente.fecha_inicio_actividad
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fin actividad"
-            valor={
-              expediente.fecha_fin_actividad
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha cierre defecto"
-            valor={
-              expediente.fcierre_defecto
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha facturación"
-            valor={
-              expediente.facturacion_fecha
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha registral"
-            valor={
-              expediente.registral_fecha
-            }
-            tipo="fecha"
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            ACTIVIDAD
-        =================================================== */}
-
-        <Seccion
-          titulo="Actividad"
-          subtitulo="Estado y evolución de la actividad"
-          icono="actividad"
-          columnas={4}
+        <div
+          className="
+            space-y-3
+          "
         >
-
-          <Dato
-            campo="Actividad actual"
-            valor={
-              expediente.actividad_actual
-            }
-            destaque
-          />
-
-          <Dato
-            campo="Estado actividad"
-            valor={
-              expediente.estado_actividad
-            }
-            estado
-          />
-
-          <Dato
-            campo="Inicio actividad"
-            valor={
-              expediente.fecha_inicio_actividad
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fin actividad"
-            valor={
-              expediente.fecha_fin_actividad
-            }
-            tipo="fecha"
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            ECONÓMICO
-        =================================================== */}
-
-        <Seccion
-          titulo="Importes y saldos"
-          subtitulo="Información económica asociada al expediente"
-          icono="economico"
-          columnas={4}
-        >
-
-          <Dato
-            campo="Capital"
-            valor={
-              expediente.capital
-            }
-            tipo="numero"
-            destaque
-          />
-
-          <Dato
-            campo="Importe"
-            valor={
-              expediente.importe
-            }
-            tipo="numero"
-            destaque
-          />
-
-          <Dato
-            campo="Saldo real"
-            valor={
-              expediente.saldo_real
-            }
-            tipo="numero"
-          />
-
-          <Dato
-            campo="Saldo disponible"
-            valor={
-              expediente.saldo_disponible
-            }
-            tipo="numero"
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            PROVISIÓN
-        =================================================== */}
-
-        <Seccion
-          titulo="Provisión"
-          subtitulo="Información de provisión"
-          icono="provision"
-          columnas={2}
-        >
-
-          <Dato
-            campo="ID provisión"
-            valor={
-              expediente.id_provision
-            }
-          />
-
-          <Dato
-            campo="Tipo provisión"
-            valor={
-              expediente.tipo_provision
-            }
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            GESTORÍA
-        =================================================== */}
-
-        <Seccion
-          titulo="Gestoría"
-          subtitulo="Información de la gestoría del trámite"
-          icono="gestoria"
-          columnas={3}
-        >
-
-          <Dato
-            campo="ID gestoría trámite"
-            valor={
-              expediente.id_gestoria_tramite
-            }
-          />
-
-          <Dato
-            campo="Nombre gestoría"
-            valor={
-              expediente.nombre_gestoria
-            }
-            destaque
-          />
-
-          <Dato
-            campo="Gestoría"
-            valor={
-              expediente.gestoria
-            }
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            FINCA
-        =================================================== */}
-
-        <Seccion
-          titulo="Finca"
-          subtitulo="Información de la finca vinculada"
-          icono="finca"
-          columnas={2}
-        >
-
-          <Dato
-            campo="Finca"
-            valor={
-              expediente.finca
-            }
-            destaque
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            DEFECTOS
-        =================================================== */}
-
-        <Seccion
-          titulo="Defectos"
-          subtitulo="Incidencias y defectos detectados"
-          icono="defectos"
-          columnas={3}
-        >
-
-          <Dato
-            campo="Tiene defectos abiertos"
-            valor={
-              expediente.tiene_defectos_abiertos
-            }
-            destaque={
-              Boolean(
-                expediente.tiene_defectos_abiertos
-              )
-            }
-          />
 
           <Dato
             campo="Tipo error"
             valor={
               expediente.tipo_error
-            }
-          />
-
-          <Dato
-            campo="Descripción error"
-            valor={
-              expediente.descripcion_error
             }
           />
 
@@ -2477,6 +3439,14 @@ export default function FichaExpediente() {
           />
 
           <Dato
+            campo="Descripción"
+            valor={
+              expediente.descripcion_error
+            }
+            multilinea
+          />
+
+          <Dato
             campo="Fecha cierre defecto"
             valor={
               expediente.fcierre_defecto
@@ -2484,179 +3454,1156 @@ export default function FichaExpediente() {
             tipo="fecha"
           />
 
-        </Seccion>
+        </div>
+
+      </Modal>
 
 
-        {/* ===================================================
-            CGN
-        =================================================== */}
+      {/* =====================================================
+          MODAL FINCAS
+      ====================================================== */}
 
-        <Seccion
-          titulo="CGN"
-          subtitulo="Información del expediente CGN"
-          icono="cgn"
-          columnas={2}
-        >
+      <Modal
+        open={
+          mostrarFincas
+        }
+        onClose={() =>
+          setMostrarFincas(false)
+        }
+        titulo="🏠 Fincas del expediente"
+        subtitulo="Datos de la finca que vamos a vincular"
+        ancho="max-w-4xl"
+        footer={
+          <>
+            <Boton
+              onClick={() =>
+                setMostrarFincas(false)
+              }
+            >
+              Cancelar
+            </Boton>
 
-          <Dato
-            campo="ID expediente CGN"
-            valor={
-              expediente.id_expediente_cgn
-            }
-          />
-
-          <Dato
-            campo="Fecha solicitud CGN"
-            valor={
-              expediente.fecha_sol_cgn
-            }
-            tipo="fecha"
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            GTG / BANKIA
-        =================================================== */}
-
-        <Seccion
-          titulo="GTG / Bankia"
-          subtitulo="Datos procedentes del entorno GTG / Bankia"
-          icono="bankia"
-          columnas={3}
-        >
-
-          <Dato
-            campo="Origen Bankia"
-            valor={
-              expediente.origen_bankia
-            }
-          />
-
-          <Dato
-            campo="Producto GTG"
-            valor={
-              expediente.producto_gtg
-            }
-          />
-
-          <Dato
-            campo="DT"
-            valor={
-              expediente.dt
-            }
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            OTROS
-        =================================================== */}
-
-        <Seccion
-          titulo="Otros"
-          subtitulo="Información adicional"
-          icono="otros"
-          columnas={2}
-        >
-
-          <Dato
-            campo="Lucy"
-            valor={
-              expediente.lucy
-            }
-          />
-
-          <Dato
-            campo="Indicador TT"
-            valor={
-              expediente.indicador_tt
-            }
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            OBSERVACIONES
-        =================================================== */}
-
-        <Observaciones
-          valor={
-            expediente.observaciones
-          }
-        />
-
-
-        {/* ===================================================
-            PIE
-        =================================================== */}
+            <Boton
+              tipo="primary"
+              onClick={
+                guardarFinca
+              }
+            >
+              💾 Guardar finca
+            </Boton>
+          </>
+        }
+      >
 
         <div
           className="
-            flex
-            flex-col
-            gap-3
-            pb-3
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
+            grid
+            grid-cols-1
+            gap-4
+            md:grid-cols-2
           "
         >
 
-          <p
+          <CampoFormulario
+            label="Número de finca"
+            value={
+              fincaForm.numero_finca
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  numero_finca:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Registro"
+            value={
+              fincaForm.registro
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  registro:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Municipio"
+            value={
+              fincaForm.municipio
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  municipio:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Provincia"
+            value={
+              fincaForm.provincia
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  provincia:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Tomo"
+            value={
+              fincaForm.tomo
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  tomo: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Libro"
+            value={
+              fincaForm.libro
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  libro: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Folio"
+            value={
+              fincaForm.folio
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  folio: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Inscripción"
+            value={
+              fincaForm.inscripcion
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  inscripcion:
+                    valor,
+                })
+              )
+            }
+          />
+
+        </div>
+
+        <CampoFormulario
+          label="Observaciones de la finca"
+          value={
+            fincaForm.observaciones
+          }
+          textarea
+          onChange={(valor) =>
+            setFincaForm(
+              (actual) => ({
+                ...actual,
+                observaciones:
+                  valor,
+              })
+            )
+          }
+        />
+
+      </Modal>
+
+
+      {/* =====================================================
+          MODAL REGISTROS
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarRegistros
+        }
+        onClose={() =>
+          setMostrarRegistros(false)
+        }
+        titulo="📚 Registros del expediente"
+        subtitulo="Información del Registro de la Propiedad"
+        ancho="max-w-4xl"
+        footer={
+          <>
+            <Boton
+              onClick={() =>
+                setMostrarRegistros(false)
+              }
+            >
+              Cancelar
+            </Boton>
+
+            <Boton
+              tipo="primary"
+              onClick={
+                guardarRegistro
+              }
+            >
+              💾 Guardar registro
+            </Boton>
+          </>
+        }
+      >
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-4
+            md:grid-cols-2
+          "
+        >
+
+          <CampoFormulario
+            label="Registro"
+            value={
+              registroForm.registro
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  registro:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Registrador"
+            value={
+              registroForm.registrador
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  registrador:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Municipio"
+            value={
+              registroForm.municipio
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  municipio:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Provincia"
+            value={
+              registroForm.provincia
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  provincia:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Número de finca"
+            value={
+              registroForm.numero_finca
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  numero_finca:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Tomo"
+            value={
+              registroForm.tomo
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  tomo: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Libro"
+            value={
+              registroForm.libro
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  libro: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Folio"
+            value={
+              registroForm.folio
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  folio: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Inscripción"
+            value={
+              registroForm.inscripcion
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  inscripcion:
+                    valor,
+                })
+              )
+            }
+          />
+
+        </div>
+
+        <CampoFormulario
+          label="Observaciones del registro"
+          value={
+            registroForm.observaciones
+          }
+          textarea
+          onChange={(valor) =>
+            setRegistroForm(
+              (actual) => ({
+                ...actual,
+                observaciones:
+                  valor,
+              })
+            )
+          }
+        />
+
+      </Modal>
+
+
+      {/* =====================================================
+    MODAL ACCIONES
+====================================================== */}
+
+<Modal
+  open={mostrarAcciones}
+  onClose={() => setMostrarAcciones(false)}
+  titulo="⚡ Acciones del expediente"
+  subtitulo="Asignar una acción del catálogo al expediente"
+  ancho="max-w-3xl"
+  footer={
+    <>
+      <Boton
+        onClick={() => setMostrarAcciones(false)}
+      >
+        Cancelar
+      </Boton>
+
+      <Boton
+        tipo="primary"
+        onClick={guardarAccion}
+      >
+        💾 Asignar acción
+      </Boton>
+    </>
+  }
+>
+  <div className="space-y-5">
+
+    {errorAcciones && (
+      <div className="erp-danger rounded-xl border px-4 py-3 text-sm">
+        {errorAcciones}
+      </div>
+    )}
+
+    <CampoSelect
+      label="Acción"
+      value={accionForm.accion_id}
+      onChange={(valor) =>
+        setAccionForm((actual) => ({
+          ...actual,
+          accion_id: valor,
+        }))
+      }
+      opciones={accionesCatalogo.map((accion) => ({
+        value: String(accion.id),
+        label: `${accion.descripcion}${
+          accion.actividad
+            ? ` — ${accion.actividad}`
+            : ""
+        }`,
+      }))}
+    />
+
+    {cargandoAcciones && (
+      <div className="erp-text-soft text-xs">
+        Cargando acciones...
+      </div>
+    )}
+
+    <CampoSelect
+      label="Estado"
+      value={accionForm.estado}
+      onChange={(valor) =>
+        setAccionForm((actual) => ({
+          ...actual,
+          estado: valor,
+        }))
+      }
+      opciones={[
+        "Pendiente",
+        "En curso",
+        "Realizada",
+        "Cancelada",
+      ]}
+    />
+
+    <CampoFormulario
+      label="Fecha"
+      value={accionForm.fecha}
+      tipo="date"
+      onChange={(valor) =>
+        setAccionForm((actual) => ({
+          ...actual,
+          fecha: valor,
+        }))
+      }
+    />
+
+    <CampoFormulario
+      label="Observaciones"
+      value={accionForm.observaciones}
+      textarea
+      onChange={(valor) =>
+        setAccionForm((actual) => ({
+          ...actual,
+          observaciones: valor,
+        }))
+      }
+    />
+
+  </div>
+</Modal>
+
+      {/* =====================================================
+          MODAL EXPEDIENTES RELACIONADOS
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarAgregarExpedientes
+        }
+        onClose={() =>
+          setMostrarAgregarExpedientes(false)
+        }
+        titulo="➕ Expedientes relacionados"
+        subtitulo={
+          `Agrupación por NIF · ${valorVisible(
+            expediente.nif_titular
+          )}`
+        }
+        ancho="max-w-5xl"
+        footer={
+          <Boton
+            onClick={() =>
+              setMostrarAgregarExpedientes(false)
+            }
+          >
+            Cerrar
+          </Boton>
+        }
+      >
+
+        {cargandoRelacionados ? (
+          <div
             className="
-              text-[11px]
+              rounded-xl
+              border
+              border-slate-200
+              bg-slate-50
+              p-10
+              text-center
+              text-sm
               text-slate-400
             "
           >
-            Expediente ID interno:{" "}
-            <span
+            Buscando expedientes del mismo NIF…
+          </div>
+        ) : expedientesRelacionados.length ===
+          0 ? (
+          <div
+            className="
+              rounded-xl
+              border
+              border-dashed
+              border-slate-300
+              bg-slate-50
+              p-10
+              text-center
+            "
+          >
+            <p
               className="
+                text-sm
                 font-semibold
                 text-slate-500
               "
             >
-              {valorVisible(
-                expediente.id
+              No se han encontrado otros
+              expedientes relacionados.
+            </p>
+
+            <p
+              className="
+                mt-1
+                text-xs
+                text-slate-400
+              "
+            >
+              El sistema ha realizado la búsqueda
+              utilizando el NIF del titular.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+
+            <div
+              className="
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-4
+                py-3
+              "
+            >
+              <p
+                className="
+                  text-xs
+                  font-bold
+                  text-blue-700
+                "
+              >
+                {expedientesRelacionados.length}{" "}
+                expediente(s) relacionado(s)
+              </p>
+
+              <p
+                className="
+                  mt-1
+                  text-[11px]
+                  text-blue-600
+                "
+              >
+                Mismo NIF que el titular actual.
+              </p>
+            </div>
+
+
+            <div
+              className="
+                overflow-hidden
+                rounded-xl
+                border
+                border-slate-200
+                bg-white
+              "
+            >
+              <div
+                className="
+                  grid
+                  grid-cols-[1.2fr_1fr_1.3fr_1fr_auto]
+                  gap-3
+                  border-b
+                  border-slate-200
+                  bg-slate-50
+                  px-4
+                  py-3
+                  text-[10px]
+                  font-bold
+                  uppercase
+                  tracking-wide
+                  text-slate-400
+                "
+              >
+                <span>Expediente</span>
+                <span>Fecha alta</span>
+                <span>Actividad</span>
+                <span>Estado</span>
+                <span />
+              </div>
+
+              {expedientesRelacionados.map(
+                (relacionado) => (
+                  <div
+                    key={
+                      relacionado.id_expediente
+                    }
+                    className="
+                      grid
+                      grid-cols-[1.2fr_1fr_1.3fr_1fr_auto]
+                      items-center
+                      gap-3
+                      border-b
+                      border-slate-100
+                      px-4
+                      py-3
+                      last:border-b-0
+                    "
+                  >
+                    <span
+                      className="
+                        text-xs
+                        font-bold
+                        text-blue-700
+                      "
+                    >
+                      {
+                        valorVisible(
+                          relacionado.id_expediente
+                        )
+                      }
+                    </span>
+
+                    <span
+                      className="
+                        text-xs
+                        text-slate-600
+                      "
+                    >
+                      {
+                        formatearFecha(
+                          relacionado.fecha_alta
+                        )
+                      }
+                    </span>
+
+                    <span
+                      className="
+                        text-xs
+                        text-slate-600
+                      "
+                    >
+                      {
+                        valorVisible(
+                          relacionado.actividad_actual
+                        )
+                      }
+                    </span>
+
+                    <EstadoBadge
+                      valor={
+                        relacionado.estado_expediente
+                      }
+                    />
+
+                    <Link
+                      to={`/expedientes/${encodeURIComponent(
+                        relacionado.id_expediente
+                      )}`}
+                      className="
+                        inline-flex
+                        rounded-lg
+                        border
+                        border-blue-200
+                        bg-blue-50
+                        px-3
+                        py-2
+                        text-[10px]
+                        font-bold
+                        text-blue-700
+                        hover:bg-blue-100
+                      "
+                      onClick={() =>
+                        setMostrarAgregarExpedientes(
+                          false
+                        )
+                      }
+                    >
+                      Ver
+                    </Link>
+                  </div>
+                )
               )}
-            </span>
-          </p>
+
+            </div>
+
+          </div>
+        )}
+
+      </Modal>
 
 
-          <Link
-            to="/expedientes"
-            className="
-              inline-flex
-              items-center
-              justify-center
-              rounded-xl
-              border
-              border-slate-200
-              bg-white/80
-              px-4
-              py-2.5
-              text-xs
-              font-semibold
-              text-slate-500
-              shadow-sm
-              backdrop-blur-xl
-              transition
-              hover:border-blue-200
-              hover:bg-blue-50
-              hover:text-blue-600
-            "
-          >
-            ← Volver al listado
-          </Link>
+      {/* =====================================================
+          MODAL OBSERVACIONES
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarObservaciones
+        }
+        onClose={() =>
+          setMostrarObservaciones(false)
+        }
+        titulo="💬 Observaciones"
+        subtitulo="Comentario y destino dentro del expediente"
+        ancho="max-w-3xl"
+        footer={
+          <>
+            <Boton
+              onClick={() =>
+                setMostrarObservaciones(false)
+              }
+            >
+              Cancelar
+            </Boton>
+
+            <Boton
+              tipo="primary"
+              onClick={
+                guardarObservacion
+              }
+            >
+              💾 Guardar comentario
+            </Boton>
+          </>
+        }
+      >
+
+        <div className="space-y-5">
+
+          <CampoFormulario
+            label="Comentario"
+            value={
+              comentario
+            }
+            textarea
+            onChange={
+              setComentario
+            }
+            placeholder="Escribe aquí la observación..."
+          />
+
+
+          <div>
+
+            <p
+              className="
+                mb-3
+                text-xs
+                font-bold
+                text-slate-700
+              "
+            >
+              Dirigir comentario a
+            </p>
+
+            <div
+              className="
+                grid
+                grid-cols-1
+                gap-3
+                md:grid-cols-3
+              "
+            >
+
+              <CheckboxVision
+                label="Visión notario"
+                checked={
+                  visionesComentario.notario
+                }
+                onChange={(checked) =>
+                  setVisionesComentario(
+                    (actual) => ({
+                      ...actual,
+                      notario:
+                        checked,
+                    })
+                  )
+                }
+              />
+
+              <CheckboxVision
+                label="Visión apoderado"
+                checked={
+                  visionesComentario.apoderado
+                }
+                onChange={(checked) =>
+                  setVisionesComentario(
+                    (actual) => ({
+                      ...actual,
+                      apoderado:
+                        checked,
+                    })
+                  )
+                }
+              />
+
+              <CheckboxVision
+                label="Visión actividad"
+                checked={
+                  visionesComentario.actividad
+                }
+                onChange={(checked) =>
+                  setVisionesComentario(
+                    (actual) => ({
+                      ...actual,
+                      actividad:
+                        checked,
+                    })
+                  )
+                }
+              />
+
+            </div>
+
+          </div>
 
         </div>
 
-      </div>
+      </Modal>
+
+
+      {/* =====================================================
+          MODAL ENVIAR A NOTARIO
+      ====================================================== */}
+
+      {mostrarEnviarNotario && (
+        <EnviarANotarioModal
+          expediente={
+            expediente
+          }
+          onClose={() =>
+            setMostrarEnviarNotario(
+              false
+            )
+          }
+          onGuardar={
+            guardarEnviarANotario
+          }
+        />
+      )}
 
     </div>
+  );
+}
 
+
+// ============================================================
+// CAMPO FORMULARIO
+// ============================================================
+
+function CampoFormulario({
+  label,
+  value,
+  onChange,
+  textarea = false,
+  tipo = "text",
+  placeholder = "",
+}) {
+  return (
+    <div className="mt-4">
+
+      <label
+        className="
+          mb-1.5
+          block
+          text-[11px]
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+        "
+      >
+        {label}
+      </label>
+
+      {textarea ? (
+        <textarea
+          value={
+            value ?? ""
+          }
+          onChange={(event) =>
+            onChange(
+              event.target.value
+            )
+          }
+          placeholder={
+            placeholder
+          }
+          rows={4}
+          className="
+            w-full
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            px-3
+            py-3
+            text-sm
+            text-slate-700
+            outline-none
+            transition
+            focus:border-blue-400
+            focus:ring-2
+            focus:ring-blue-100
+          "
+        />
+      ) : (
+        <input
+          type={
+            tipo
+          }
+          value={
+            value ?? ""
+          }
+          onChange={(event) =>
+            onChange(
+              event.target.value
+            )
+          }
+          placeholder={
+            placeholder
+          }
+          className="
+            w-full
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            px-3
+            py-2.5
+            text-sm
+            text-slate-700
+            outline-none
+            transition
+            focus:border-blue-400
+            focus:ring-2
+            focus:ring-blue-100
+          "
+        />
+      )}
+
+    </div>
+  );
+}
+
+
+// ============================================================
+// CAMPO SELECT
+// ============================================================
+
+function CampoSelect({
+  label,
+  value,
+  onChange,
+  opciones = [],
+}) {
+  return (
+    <div>
+
+      <label
+        className="
+          mb-1.5
+          block
+          text-[11px]
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+        "
+      >
+        {label}
+      </label>
+
+      <select
+        value={
+          value ?? ""
+        }
+        onChange={(event) =>
+          onChange(
+            event.target.value
+          )
+        }
+        className="
+          w-full
+          rounded-xl
+          border
+          border-slate-200
+          bg-white
+          px-3
+          py-2.5
+          text-sm
+          text-slate-700
+          outline-none
+          transition
+          focus:border-blue-400
+          focus:ring-2
+          focus:ring-blue-100
+        "
+      >
+
+        {opciones.map(
+          (opcion) => (
+            <option
+              key={opcion}
+              value={opcion}
+            >
+              {
+                opcion ||
+                "Seleccionar…"
+              }
+            </option>
+          )
+        )}
+
+      </select>
+
+    </div>
+  );
+}
+
+
+// ============================================================
+// CHECKBOX VISIÓN
+// ============================================================
+
+function CheckboxVision({
+  label,
+  checked,
+  onChange,
+}) {
+  return (
+    <label
+      className={`
+        flex
+        cursor-pointer
+        items-center
+        gap-3
+        rounded-xl
+        border
+        p-4
+        transition
+        ${
+          checked
+            ? "border-blue-200 bg-blue-50"
+            : "border-slate-200 bg-white hover:bg-slate-50"
+        }
+      `}
+    >
+
+      <input
+        type="checkbox"
+        checked={
+          checked
+        }
+        onChange={(event) =>
+          onChange(
+            event.target.checked
+          )
+        }
+        className="
+          h-4
+          w-4
+          rounded
+          border-slate-300
+          text-blue-600
+          focus:ring-blue-500
+        "
+      />
+
+      <span
+        className={`
+          text-xs
+          font-bold
+          ${
+            checked
+              ? "text-blue-700"
+              : "text-slate-600"
+          }
+        `}
+      >
+        {label}
+      </span>
+
+    </label>
   );
 }
