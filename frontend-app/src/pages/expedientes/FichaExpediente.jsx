@@ -617,12 +617,12 @@ export default function FichaExpediente() {
 
 
         {/* ====================================================
-            IDENTIFICACIÓN
+            INFORMACIÓN CREDITICIA
         ==================================================== */}
 
         <Seccion
-          titulo="Identificación"
-          subtitulo="Datos identificativos y referencias del expediente"
+          titulo="Información crediticia"
+          subtitulo="Datos identificativos del préstamos/crédito"
           icono="identificacion"
         >
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -631,16 +631,6 @@ export default function FichaExpediente() {
               etiqueta="ID expediente"
               valor={expediente.id_expediente}
               destacado
-            />
-
-            <Dato
-              etiqueta="ID interno"
-              valor={expediente.id}
-            />
-
-            <Dato
-              etiqueta="Cliente"
-              valor={expediente.cliente_id}
             />
 
             <Dato
@@ -662,28 +652,38 @@ export default function FichaExpediente() {
               etiqueta="Nº solicitud SIA"
               valor={expediente.num_solicitud_sia}
             />
-
-            <Dato
-              etiqueta="Nº solicitud PNC"
-              valor={expediente.num_solicitud_pnc}
+  <Dato
+              etiqueta="Capital"
+              valor={expediente.capital}
+              tipo="numero"
+              destacado
             />
 
             <Dato
-              etiqueta="VINCCANC"
-              valor={expediente.vinccanc}
+              etiqueta="Importe"
+              valor={expediente.importe}
+              tipo="numero"
+              destacado
             />
 
             <Dato
-              etiqueta="Protocolo"
-              valor={expediente.protocolo}
+              etiqueta="Saldo real"
+              valor={expediente.saldo_real}
+              tipo="numero"
             />
 
             <Dato
-              etiqueta="Tipo acta"
-              valor={expediente.tipo_acta}
+              etiqueta="Saldo disponible"
+              valor={expediente.saldo_disponible}
+              tipo="numero"
             />
 
-          </div>
+                    <Dato
+              etiqueta="Finca"
+              valor={expediente.finca}
+              destacado
+            />
+            
         </Seccion>
 
 
@@ -745,258 +745,11 @@ export default function FichaExpediente() {
               valor={expediente.dan}
             />
 
-            <Dato
-              etiqueta="Oficina alta"
-              valor={expediente.oficina_alta}
-            />
-
           </div>
         </Seccion>
-
-
-        {/* ====================================================
-            FECHAS
-        ==================================================== */}
-
-        <Seccion
-          titulo="Fechas"
-          subtitulo="Fechas principales del expediente"
-          icono="fechas"
-        >
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-
-            <Dato
-              etiqueta="Fecha alta"
-              valor={expediente.fecha_alta}
-              tipo="fecha"
-            />
-
-            <Dato
-              etiqueta="Fecha firma"
-              valor={expediente.fecha_firma}
-              tipo="fecha"
-            />
-
-            <Dato
-              etiqueta="Fecha inscripción"
-              valor={expediente.fecha_inscripcion}
-              tipo="fecha"
-            />
-
-            <Dato
-              etiqueta="Entregado cliente"
-              valor={expediente.fecha_entregado_cliente}
-              tipo="fecha"
-            />
-
-            <Dato
-              etiqueta="Fecha solicitud"
-              valor={expediente.fecha_solicitud}
-              tipo="fecha"
-            />
-
-            <Dato
-              etiqueta="Fecha prevista firma"
-              valor={expediente.fecha_prevista_firma}
-              tipo="fecha"
-            />
-
-            <Dato
-              etiqueta="Fecha vencimiento"
-              valor={expediente.fecha_vencimiento}
-              tipo="fecha"
-            />
-
-            <Dato
-              etiqueta="Fecha sol. CGN"
-              valor={expediente.fecha_sol_cgn}
-              tipo="fecha"
-            />
-
-            <Dato
-              etiqueta="Fecha firma prevista VAL"
-              valor={expediente.fecha_firma_prev_val}
-              tipo="fecha"
-            />
-
-            <Dato
-              etiqueta="Fecha firma prevista CLI"
-              valor={expediente.fecha_firma_prev_cli}
-              tipo="fecha"
-            />
-
-          </div>
-        </Seccion>
-
-
-        {/* ====================================================
-            ACTIVIDAD
-        ==================================================== */}
-
-        <Seccion
-          titulo="Actividad"
-          subtitulo="Seguimiento de la actividad del expediente"
-          icono="actividad"
-        >
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-
-            <Dato
-              etiqueta="Actividad actual"
-              valor={expediente.actividad_actual}
-              destacado
-            />
-
-            <Dato
-              etiqueta="Estado actividad"
-              valor={expediente.estado_actividad}
-            />
-
-            <Dato
-              etiqueta="Inicio actividad"
-              valor={expediente.fecha_inicio_actividad}
-              tipo="fecha"
-            />
-
-            <Dato
-              etiqueta="Fin actividad"
-              valor={expediente.fecha_fin_actividad}
-              tipo="fecha"
-            />
-
-            <Dato
-              etiqueta="Cierre defecto"
-              valor={expediente.fcierre_defecto}
-              tipo="fecha"
-            />
-
-          </div>
-        </Seccion>
-
-
-        {/* ====================================================
-            FACTURACIÓN
-        ==================================================== */}
-
-        <Seccion
-          titulo="Facturación"
-          subtitulo="Información de facturación del expediente"
-          icono="facturacion"
-        >
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-
-            <Dato
-              etiqueta="Estado facturación"
-              valor={expediente.facturacion_estado}
-            />
-
-            <Dato
-              etiqueta="Fecha facturación"
-              valor={expediente.facturacion_fecha}
-              tipo="fecha"
-            />
-
-          </div>
-        </Seccion>
-
-
-        {/* ====================================================
-            INFORMACIÓN CREDITICIA
-        ==================================================== */}
-
-        <Seccion
-          titulo="Información crediticia"
-          subtitulo="Datos económicos y saldos asociados"
-          icono="economico"
-        >
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-
-            <Dato
-              etiqueta="Capital"
-              valor={expediente.capital}
-              tipo="numero"
-              destacado
-            />
-
-            <Dato
-              etiqueta="Importe"
-              valor={expediente.importe}
-              tipo="numero"
-              destacado
-            />
-
-            <Dato
-              etiqueta="Saldo real"
-              valor={expediente.saldo_real}
-              tipo="numero"
-            />
-
-            <Dato
-              etiqueta="Saldo disponible"
-              valor={expediente.saldo_disponible}
-              tipo="numero"
-            />
-
-          </div>
-        </Seccion>
-
-
-        {/* ====================================================
-            PROVISIÓN
-        ==================================================== */}
-
-        <Seccion
-          titulo="Provisión"
-          subtitulo="Información de provisiones asociadas"
-          icono="provision"
-        >
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-
-            <Dato
-              etiqueta="ID provisión"
-              valor={expediente.id_provision}
-            />
-
-            <Dato
-              etiqueta="Tipo provisión"
-              valor={expediente.tipo_provision}
-              destacado
-            />
-
-          </div>
-        </Seccion>
-
-
-        {/* ====================================================
-            FINCA
-        ==================================================== */}
-
-        <Seccion
-          titulo="Finca"
-          subtitulo="Información registral de la finca"
-          icono="finca"
-        >
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-
-            <Dato
-              etiqueta="Finca"
-              valor={expediente.finca}
-              destacado
-            />
-
-            <Dato
-              etiqueta="Estado registral"
-              valor={expediente.registral_estado}
-            />
-
-            <Dato
-              etiqueta="Fecha registral"
-              valor={expediente.registral_fecha}
-              tipo="fecha"
-            />
-
-          </div>
-        </Seccion>
-
+          
+     
+       
 
         {/* ====================================================
             DEFECTOS
