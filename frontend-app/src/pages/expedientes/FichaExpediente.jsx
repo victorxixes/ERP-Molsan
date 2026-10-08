@@ -1795,6 +1795,69 @@ export default function FichaExpediente() {
 
 
   // ==========================================================
+  // EXPEDIENTES RELACIONADOS POR NIF
+  // ==========================================================
+
+  async function abrirAgregarExpedientes() {
+    setMostrarAgregarExpedientes(true);
+
+    const nif =
+      expediente?.nif_titular ||
+      expediente?.nif_solicitante ||
+      "";
+
+    if (!nif) {
+      setExpedientesRelacionados([]);
+      return;
+    }
+
+    try {
+      setCargandoRelacionados(true);
+
+      const respuesta =
+        await obtenerListadoExpedientes({
+          nif,
+          pagina: 1,
+          porPagina: 100,
+        });
+
+      const lista =
+        obtenerArrayRespuesta(
+          respuesta
+        );
+
+      const expedienteActual =
+        String(
+          expediente?.id_expediente ||
+          ""
+        );
+
+      const relacionados =
+        lista.filter(
+          (item) =>
+            String(
+              item?.id_expediente ||
+              ""
+            ) !== expedienteActual
+        );
+
+      setExpedientesRelacionados(
+        relacionados
+      );
+    } catch (err) {
+      console.error(
+        "Error buscando expedientes relacionados:",
+        err
+      );
+
+      setExpedientesRelacionados([]);
+    } finally {
+      setCargandoRelacionados(false);
+    }
+  }
+
+
+  // ==========================================================
   // LOADING
   // ==========================================================
 
@@ -2014,67 +2077,6 @@ export default function FichaExpediente() {
                 >
                   Ficha completa del expediente
                 </p>
-// ==========================================================
-  // EXPEDIENTES RELACIONADOS POR NIF
-  // ==========================================================
-
-  async function abrirAgregarExpedientes() {
-    setMostrarAgregarExpedientes(true);
-
-    const nif =
-      expediente?.nif_titular ||
-      expediente?.nif_solicitante ||
-      "";
-
-    if (!nif) {
-      setExpedientesRelacionados([]);
-      return;
-    }
-
-    try {
-      setCargandoRelacionados(true);
-
-      const respuesta =
-        await obtenerListadoExpedientes({
-          nif,
-          pagina: 1,
-          porPagina: 100,
-        });
-
-      const lista =
-        obtenerArrayRespuesta(
-          respuesta
-        );
-
-      const expedienteActual =
-        String(
-          expediente?.id_expediente ||
-          ""
-        );
-
-      const relacionados =
-        lista.filter(
-          (item) =>
-            String(
-              item?.id_expediente ||
-              ""
-            ) !== expedienteActual
-        );
-
-      setExpedientesRelacionados(
-        relacionados
-      );
-    } catch (err) {
-      console.error(
-        "Error buscando expedientes relacionados:",
-        err
-      );
-
-      setExpedientesRelacionados([]);
-    } finally {
-      setCargandoRelacionados(false);
-    }
-  }
 
               </div>
             </div>
