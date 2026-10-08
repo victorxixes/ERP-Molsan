@@ -13,6 +13,7 @@
 // - Vinculación con expediente
 // - Vinculación con notario
 // - Prevención de citas duplicadas
+// - Control detallado del proceso de guardado
 // ============================================================
 
 import {
@@ -135,7 +136,10 @@ function sumarUnaHora(hora) {
     minutos +
     60;
 
-  if (totalMinutos >= 24 * 60) {
+  if (
+    totalMinutos >=
+    24 * 60
+  ) {
     return "";
   }
 
@@ -197,6 +201,10 @@ export default function EnviarANotarioModal({
   onGuardar,
 }) {
 
+  // ==========================================================
+  // FORMULARIO
+  // ==========================================================
+
   const [
     form,
     setForm,
@@ -207,6 +215,10 @@ export default function EnviarANotarioModal({
       fechaHoy(),
   });
 
+
+  // ==========================================================
+  // TIPOS DE DOCUMENTO
+  // ==========================================================
 
   const [
     tiposDocumento,
@@ -219,6 +231,10 @@ export default function EnviarANotarioModal({
     setLoadingTipos,
   ] = useState(false);
 
+
+  // ==========================================================
+  // ESTADO GENERAL
+  // ==========================================================
 
   const [
     loading,
@@ -277,6 +293,7 @@ export default function EnviarANotarioModal({
 
           setError(
             err?.response?.data?.detail ||
+            err?.response?.data?.message ||
             "No se han podido cargar los tipos de documento."
           );
 
@@ -453,6 +470,21 @@ export default function EnviarANotarioModal({
         }
 
 
+        console.log(
+          "AGENDA — COMPROBANDO CITA EXISTENTE..."
+        );
+
+        console.log(
+          "AGENDA — EXPEDIENTE:",
+          expediente.id_expediente
+        );
+
+        console.log(
+          "AGENDA — FECHA:",
+          form.fecha_prevista_firma
+        );
+
+
         const response =
           await axios.get(
             "/agenda/search",
@@ -468,6 +500,12 @@ export default function EnviarANotarioModal({
           );
 
 
+        console.log(
+          "AGENDA — RESPUESTA BÚSQUEDA:",
+          response?.data
+        );
+
+
         const datos =
           response?.data;
 
@@ -476,6 +514,11 @@ export default function EnviarANotarioModal({
           Array.isArray(datos) &&
           datos.length > 0
         ) {
+
+          console.warn(
+            "AGENDA — YA EXISTE CITA:",
+            datos[0]
+          );
 
           return datos[0];
 
@@ -500,15 +543,62 @@ export default function EnviarANotarioModal({
     useCallback(
       async () => {
 
+        console.log(
+          "=================================================="
+        );
+
+        console.log(
+          "AGENDA — INICIANDO CREACIÓN DE CITA"
+        );
+
+        console.log(
+          "=================================================="
+        );
+
+
+        // ----------------------------------------------------
+        // VALIDACIONES
+        // ----------------------------------------------------
+
         if (
-          !form.fecha_prevista_firma ||
-          !form.hora_prevista_firma ||
-          !form.notario?.id ||
+          !form.fecha_prevista_firma
+        ) {
+
+          throw new Error(
+            "Falta la Fecha prevista de firma."
+          );
+
+        }
+
+
+        if (
+          !form.hora_prevista_firma
+        ) {
+
+          throw new Error(
+            "Falta la Hora prevista de firma."
+          );
+
+        }
+
+
+        if (
+          !form.notario?.id
+        ) {
+
+          throw new Error(
+            "Falta el notario."
+          );
+
+        }
+
+
+        if (
           !expediente?.id_expediente
         ) {
 
           throw new Error(
-            "Faltan datos necesarios para crear la cita en Agenda."
+            "Falta el número de expediente."
           );
 
         }
@@ -518,8 +608,18 @@ export default function EnviarANotarioModal({
         // COMPROBAR DUPLICADO
         // ----------------------------------------------------
 
+        console.log(
+          "AGENDA — PASO 1: COMPROBAR DUPLICADO"
+        );
+
+
         const citaExistente =
           await comprobarCitaExistente();
+
+
+        console.log(
+          "AGENDA — PASO 2: COMPROBACIÓN FINALIZADA"
+        );
 
 
         if (citaExistente) {
@@ -556,10 +656,6 @@ export default function EnviarANotarioModal({
 
         // ----------------------------------------------------
         // EXPEDIENTE INTERNO
-        //
-        // Agenda utiliza expediente_id como FK numérica.
-        //
-        // El número visible es id_expediente.
         // ----------------------------------------------------
 
         const expedienteId =
@@ -584,8 +680,7 @@ export default function EnviarANotarioModal({
 
 
         // ----------------------------------------------------
-        // PAYLOAD EXACTAMENTE COMPATIBLE
-        // CON CitaCreate
+        // PAYLOAD AGENDA
         // ----------------------------------------------------
 
         const payloadAgenda = {
@@ -603,7 +698,9 @@ export default function EnviarANotarioModal({
             "Firma notarial",
 
           notario_id:
-            Number(form.notario.id),
+            Number(
+              form.notario.id
+            ),
 
           tipo_firma:
             form.notario.tipo_firma ||
@@ -629,13 +726,9 @@ export default function EnviarANotarioModal({
         };
 
 
-        console.log(
-          "=================================================="
-        );
-
-        console.log(
-          "AGENDA — CREANDO CITA"
-        );
+        // ----------------------------------------------------
+        // LOG PAYLOAD
+        // ----------------------------------------------------
 
         console.log(
           "AGENDA — PAYLOAD:",
@@ -669,8 +762,13 @@ export default function EnviarANotarioModal({
           horaFin
         );
 
+
+        // ----------------------------------------------------
+        // POST AGENDA
+        // ----------------------------------------------------
+
         console.log(
-          "=================================================="
+          "AGENDA — PASO 3: ENVIANDO POST /agenda/"
         );
 
 
@@ -682,7 +780,11 @@ export default function EnviarANotarioModal({
 
 
         console.log(
-          "AGENDA — CITA CREADA CORRECTAMENTE:",
+          "AGENDA — PASO 4: CITA CREADA CORRECTAMENTE"
+        );
+
+        console.log(
+          "AGENDA — RESPUESTA:",
           response?.data
         );
 
@@ -808,7 +910,7 @@ export default function EnviarANotarioModal({
 
 
         // ------------------------------------------------------
-        // FECHA PREVISTA DE FIRMA
+        // FECHA PREVISTA
         // ------------------------------------------------------
 
         if (
@@ -824,7 +926,7 @@ export default function EnviarANotarioModal({
 
 
         // ------------------------------------------------------
-        // HORA PREVISTA DE FIRMA
+        // HORA PREVISTA
         // ------------------------------------------------------
 
         if (
@@ -840,7 +942,7 @@ export default function EnviarANotarioModal({
 
 
         // ------------------------------------------------------
-        // VALIDAR HORA PARA 1 HORA DE DURACIÓN
+        // VALIDAR HORA PARA 1 HORA
         // ------------------------------------------------------
 
         const horaFinValidacion =
@@ -924,10 +1026,6 @@ export default function EnviarANotarioModal({
           }
 
 
-          // ----------------------------------------------------
-          // FECHA ENVÍO <= FECHA FIRMA
-          // ----------------------------------------------------
-
           if (
             form.fecha_envio >
             form.fecha_firma
@@ -944,7 +1042,7 @@ export default function EnviarANotarioModal({
 
 
         // ------------------------------------------------------
-        // NOMBRE COMPLETO DEL NOTARIO
+        // NOMBRE COMPLETO NOTARIO
         // ------------------------------------------------------
 
         const nombreNotario =
@@ -969,19 +1067,11 @@ export default function EnviarANotarioModal({
           fecha_envio:
             form.fecha_envio,
 
-          // ----------------------------------------------------
-          // PNC
-          // ----------------------------------------------------
-
           fecha_solicitud_pnc:
             form.fecha_solicitud_pnc,
 
           numero_solicitud_pnc:
             form.numero_solicitud_pnc.trim(),
-
-          // ----------------------------------------------------
-          // FIRMA
-          // ----------------------------------------------------
 
           fecha_firma:
             form.escritura_firmada ===
@@ -995,19 +1085,11 @@ export default function EnviarANotarioModal({
               ? form.protocolo.trim()
               : null,
 
-          // ----------------------------------------------------
-          // AGENDA
-          // ----------------------------------------------------
-
           fecha_prevista_firma:
             form.fecha_prevista_firma,
 
           hora_prevista_firma:
             form.hora_prevista_firma,
-
-          // ----------------------------------------------------
-          // NOTARIO
-          // ----------------------------------------------------
 
           notario_id:
             form.notario.id,
@@ -1016,13 +1098,15 @@ export default function EnviarANotarioModal({
             nombreNotario,
 
           nif_notario:
-            form.notario.nif || "",
+            form.notario.nif ||
+            "",
 
           notario:
             nombreNotario,
 
           apoderado:
-            form.notario.apoderado || "",
+            form.notario.apoderado ||
+            "",
 
           tipo_firma:
             form.notario.tipo_firma ||
@@ -1043,7 +1127,7 @@ export default function EnviarANotarioModal({
 
 
         // ------------------------------------------------------
-        // GUARDAR
+        // INICIO GUARDADO
         // ------------------------------------------------------
 
         try {
@@ -1056,11 +1140,16 @@ export default function EnviarANotarioModal({
           );
 
           console.log(
-            "EXPEDIENTE — GUARDANDO ENVÍO A NOTARIO"
+            "ENVÍO A NOTARIO — INICIO"
           );
 
           console.log(
-            "EXPEDIENTE — PAYLOAD:",
+            "EXPEDIENTE:",
+            expediente.id_expediente
+          );
+
+          console.log(
+            "PAYLOAD EXPEDIENTE:",
             payload
           );
 
@@ -1073,34 +1162,32 @@ export default function EnviarANotarioModal({
           // PRIMERO GUARDAMOS EL ENVÍO DEL EXPEDIENTE
           // ----------------------------------------------------
 
+          console.log(
+            "1. ANTES DE onGuardar()"
+          );
+
+
           await onGuardar(
             payload
           );
 
 
+          // ----------------------------------------------------
+          // ESTA LÍNEA ES MUY IMPORTANTE PARA EL DIAGNÓSTICO
+          // ----------------------------------------------------
+
           console.log(
-  "========== PRUEBA ENVÍO A NOTARIO =========="
-);
+            "2. DESPUÉS DE onGuardar()"
+          );
 
-console.log(
-  "1. ANTES DE onGuardar()"
-);
 
-await onGuardar(
-  payload
-);
-
-console.log(
-  "2. DESPUÉS DE onGuardar()"
-);
-
-console.log(
-  "3. AHORA VAMOS A CREAR LA CITA EN AGENDA"
-);
+          console.log(
+            "3. AHORA VAMOS A CREAR LA CITA EN AGENDA"
+          );
 
 
           // ----------------------------------------------------
-          // DESPUÉS CREAMOS LA CITA DE AGENDA
+          // CREAR CITA
           // ----------------------------------------------------
 
           try {
@@ -1110,10 +1197,9 @@ console.log(
 
 
             console.log(
-              "AGENDA — PROCESO COMPLETADO:",
+              "4. CITA DE AGENDA PROCESADA:",
               cita
             );
-
 
           } catch (agendaError) {
 
@@ -1155,12 +1241,16 @@ console.log(
           }
 
 
+          // ----------------------------------------------------
+          // TODO CORRECTO
+          // ----------------------------------------------------
+
           console.log(
             "=================================================="
           );
 
           console.log(
-            "ENVÍO A NOTARIO COMPLETADO CORRECTAMENTE"
+            "5. ENVÍO A NOTARIO COMPLETADO CORRECTAMENTE"
           );
 
           console.log(
@@ -1177,8 +1267,30 @@ console.log(
         } catch (err) {
 
           console.error(
-            "ERROR ENVIANDO EXPEDIENTE A NOTARIO:",
+            "=================================================="
+          );
+
+          console.error(
+            "ERROR ENVIANDO EXPEDIENTE A NOTARIO"
+          );
+
+          console.error(
+            "ERROR:",
             err
+          );
+
+          console.error(
+            "RESPONSE:",
+            err?.response?.data
+          );
+
+          console.error(
+            "STATUS:",
+            err?.response?.status
+          );
+
+          console.error(
+            "=================================================="
           );
 
 
@@ -1258,16 +1370,11 @@ console.log(
           max-w-3xl
           max-h-[94vh]
           overflow-y-auto
-
           bg-white
-
           rounded-3xl
-
           border
           border-slate-200
-
           shadow-2xl
-
           text-slate-800
         "
         onMouseDown={(event) =>
@@ -1284,18 +1391,14 @@ console.log(
             sticky
             top-0
             z-20
-
             flex
             items-start
             justify-between
             gap-4
-
             px-6
             py-5
-
             bg-white/95
             backdrop-blur-xl
-
             border-b
             border-slate-200
           "
@@ -1318,11 +1421,8 @@ console.log(
                   w-11
                   items-center
                   justify-center
-
                   rounded-2xl
-
                   bg-[var(--erp-primary-soft)]
-
                   text-xl
                 "
               >
@@ -1371,14 +1471,10 @@ console.log(
               w-9
               items-center
               justify-center
-
               rounded-xl
-
               text-slate-400
-
               hover:bg-slate-100
               hover:text-slate-700
-
               transition
             "
           >
@@ -1457,10 +1553,8 @@ console.log(
                       border
                       px-4
                       py-3
-
                       text-sm
                       font-semibold
-
                       transition
 
                       ${
@@ -1567,7 +1661,6 @@ console.log(
                     text-sm
                     text-slate-700
                     outline-none
-
                     focus:border-[var(--erp-primary)]
                     focus:ring-2
                     focus:ring-[var(--erp-primary-soft)]
@@ -1625,7 +1718,6 @@ console.log(
                     text-sm
                     text-slate-700
                     outline-none
-
                     focus:border-[var(--erp-primary)]
                     focus:ring-2
                     focus:ring-[var(--erp-primary-soft)]
@@ -1680,7 +1772,6 @@ console.log(
                     text-sm
                     text-slate-700
                     outline-none
-
                     focus:border-[var(--erp-primary)]
                     focus:ring-2
                     focus:ring-[var(--erp-primary-soft)]
@@ -1757,7 +1848,6 @@ console.log(
                     text-sm
                     text-slate-700
                     outline-none
-
                     focus:border-[var(--erp-primary)]
                     focus:ring-2
                     focus:ring-[var(--erp-primary-soft)]
@@ -1821,7 +1911,6 @@ console.log(
                     text-sm
                     text-slate-700
                     outline-none
-
                     focus:border-[var(--erp-primary)]
                     focus:ring-2
                     focus:ring-[var(--erp-primary-soft)]
@@ -1892,22 +1981,11 @@ console.log(
                       text-sm
                       text-slate-700
                       outline-none
-
                       focus:border-[var(--erp-primary)]
                       focus:ring-2
                       focus:ring-[var(--erp-primary-soft)]
                     "
                   />
-
-                  <p
-                    className="
-                      mt-1
-                      text-[11px]
-                      text-slate-400
-                    "
-                  >
-                    La fecha de firma debe ser igual o posterior a la fecha de envío.
-                  </p>
 
                 </div>
 
@@ -1964,7 +2042,6 @@ console.log(
                     text-sm
                     text-slate-700
                     outline-none
-
                     focus:border-[var(--erp-primary)]
                     focus:ring-2
                     focus:ring-[var(--erp-primary-soft)]
@@ -2018,9 +2095,9 @@ console.log(
             />
 
 
-            {/* ==================================================
+            {/* =================================================
                 DATOS AUTOMÁTICOS
-            ================================================== */}
+            ================================================= */}
 
             {notario && (
 
@@ -2122,7 +2199,6 @@ console.log(
                 text-sm
                 text-slate-700
                 outline-none
-
                 focus:border-[var(--erp-primary)]
                 focus:ring-2
                 focus:ring-[var(--erp-primary-soft)]
@@ -2304,15 +2380,11 @@ console.log(
             flex
             flex-col-reverse
             gap-3
-
             border-t
             border-slate-200
-
             bg-slate-50
-
             px-6
             py-4
-
             sm:flex-row
             sm:justify-end
           "
@@ -2332,11 +2404,8 @@ console.log(
               text-sm
               font-semibold
               text-slate-700
-
               hover:bg-slate-100
-
               transition
-
               disabled:opacity-50
             "
           >
@@ -2364,13 +2433,9 @@ console.log(
               text-sm
               font-semibold
               text-white
-
               shadow-sm
-
               hover:opacity-90
-
               transition
-
               disabled:cursor-not-allowed
               disabled:opacity-50
             "
@@ -2420,16 +2485,11 @@ function CampoAutomatico({
           min-h-[42px]
           flex
           items-center
-
           rounded-xl
-
           border
           border-slate-200
-
           bg-slate-100
-
           px-3
-
           text-sm
           font-medium
           text-slate-600
