@@ -1,9 +1,10 @@
+```jsx
 import {
   useEffect,
   useMemo,
   useState,
 } from "react";
- 
+
 import {
   Link,
   useParams,
@@ -42,8 +43,6 @@ function formatearFecha(valor) {
 
   const fecha =
     String(valor);
-
-  // YYYY-MM-DD
 
   if (
     /^\d{4}-\d{2}-\d{2}$/.test(
@@ -187,6 +186,43 @@ function IconoSeccion({
       </>
     ),
 
+    facturacion: (
+      <>
+        <rect
+          x="4"
+          y="5"
+          width="16"
+          height="14"
+          rx="2"
+        />
+        <path
+          d="M8 9h8"
+        />
+        <path
+          d="M8 13h5"
+        />
+        <path
+          d="M15 13h1"
+        />
+      </>
+    ),
+
+    credito: (
+      <>
+        <circle
+          cx="12"
+          cy="12"
+          r="8"
+        />
+        <path
+          d="M12 7v10"
+        />
+        <path
+          d="M15 9.5c0-1.2-1.1-2-3-2s-3 .8-3 2 1.1 2 3 2 3 .8 3 2-1.1 2-3 2-3-.8-3-2"
+        />
+      </>
+    ),
+
     notario: (
       <>
         <path
@@ -259,22 +295,6 @@ function IconoSeccion({
       </>
     ),
 
-    economico: (
-      <>
-        <circle
-          cx="12"
-          cy="12"
-          r="8"
-        />
-        <path
-          d="M12 7v10"
-        />
-        <path
-          d="M15 9.5c0-1.2-1.1-2-3-2s-3 .8-3 2 1.1 2 3 2 3 .8 3 2-1.1 2-3 2-3-.8-3-2"
-        />
-      </>
-    ),
-
     provision: (
       <>
         <rect
@@ -289,25 +309,6 @@ function IconoSeccion({
         />
         <path
           d="M9 13h6"
-        />
-      </>
-    ),
-
-    gestoria: (
-      <>
-        <circle
-          cx="8"
-          cy="8"
-          r="3"
-        />
-        <path
-          d="M3 20c.5-3.5 2.4-5.5 5-5.5s4.5 2 5 5.5"
-        />
-        <path
-          d="M15 8h5"
-        />
-        <path
-          d="M17.5 5.5v5"
         />
       </>
     ),
@@ -453,6 +454,7 @@ function EstadoBadge({
   if (
     texto === "—"
   ) {
+
     return (
       <span
         className="
@@ -927,7 +929,7 @@ export default function FichaExpediente() {
 
 
   // ==========================================================
-  // CARGAR
+  // CARGAR EXPEDIENTE
   // ==========================================================
 
   useEffect(() => {
@@ -1039,13 +1041,6 @@ export default function FichaExpediente() {
 
   // ==========================================================
   // GUARDAR ENVÍO A NOTARIO
-  //
-  // El modal ya valida y construye el payload.
-  //
-  // IMPORTANTE:
-  // No se inventa aquí ningún endpoint de backend.
-  // La integración del endpoint se hará cuando exista
-  // la ruta definitiva para guardar el envío.
   // ==========================================================
 
   const guardarEnviarANotario =
@@ -1055,21 +1050,6 @@ export default function FichaExpediente() {
         "ENVÍO A NOTARIO — PAYLOAD:",
         payload
       );
-
-      /*
-       * ======================================================
-       * AQUÍ SE CONECTARÁ EL ENDPOINT REAL
-       * ======================================================
-       *
-       * Ejemplo de integración futura:
-       *
-       * await axios.post(
-       *   "/expedientes/enviar-notario",
-       *   payload
-       * );
-       *
-       * No lo activamos hasta tener la ruta backend real.
-       */
 
       setMostrarEnviarANotario(
         false
@@ -1100,7 +1080,7 @@ export default function FichaExpediente() {
 
         <div
           className="
-           w-full
+            w-full
           "
         >
 
@@ -1196,7 +1176,7 @@ export default function FichaExpediente() {
 
         <div
           className="
-           w-full
+            w-full
           "
         >
 
@@ -1321,7 +1301,7 @@ export default function FichaExpediente() {
 
         <div
           className="
-           w-full
+            w-full
             rounded-[24px]
             border
             border-slate-200
@@ -1522,7 +1502,7 @@ export default function FichaExpediente() {
         className="
           relative
           z-10
-         w-full
+          w-full
           space-y-5
         "
       >
@@ -1545,8 +1525,6 @@ export default function FichaExpediente() {
             sm:p-6
           "
         >
-
-          {/* línea superior */}
 
           <div
             className="
@@ -1573,8 +1551,6 @@ export default function FichaExpediente() {
               xl:justify-between
             "
           >
-
-            {/* izquierda */}
 
             <div
               className="
@@ -1699,7 +1675,7 @@ export default function FichaExpediente() {
             </div>
 
 
-            {/* resumen */}
+            {/* RESUMEN */}
 
             <div
               className="
@@ -1739,13 +1715,11 @@ export default function FichaExpediente() {
                     mt-2
                   "
                 >
-
                   <EstadoBadge
                     valor={
                       estadoPrincipal
                     }
                   />
-
                 </div>
 
               </div>
@@ -1834,7 +1808,7 @@ export default function FichaExpediente() {
 
 
           {/* =================================================
-              ACCIÓN — ENVIAR A NOTARIO
+              ENVIAR A NOTARIO
           ================================================= */}
 
           {esDocumentacionPrevia && (
@@ -2134,12 +2108,12 @@ export default function FichaExpediente() {
 
 
         {/* ===================================================
-            TITULAR
+            TITULARES
         =================================================== */}
 
         <Seccion
-          titulo="Titular"
-          subtitulo="Información identificativa del titular"
+          titulo="Titulares"
+          subtitulo="Personas titulares vinculadas al expediente"
           icono="titular"
           columnas={3}
         >
@@ -2171,11 +2145,11 @@ export default function FichaExpediente() {
 
 
         {/* ===================================================
-            SOLICITANTE
+            SOLICITANTES
         =================================================== */}
 
         <Seccion
-          titulo="Solicitante"
+          titulo="Solicitantes"
           subtitulo="Datos del solicitante y representación"
           icono="solicitante"
           columnas={3}
@@ -2186,6 +2160,7 @@ export default function FichaExpediente() {
             valor={
               expediente.nombre_solicitante
             }
+            destaque
           />
 
           <Dato
@@ -2339,6 +2314,7 @@ export default function FichaExpediente() {
           />
 
           {expediente.fecha_prevista_firma && (
+
             <div
               className="
                 rounded-2xl
@@ -2370,12 +2346,18 @@ export default function FichaExpediente() {
                 to="/agenda"
                 state={{
                   crearCita: true,
-                  fecha: expediente.fecha_prevista_firma,
-                  expedienteId: expediente.id_expediente,
-                  expediente: expediente.id_expediente,
-                  nombreTitular: expediente.nombre_titular || "",
-                  nombreNotario: expediente.nombre_notario || "",
-                  notarioId: expediente.notario_id || null,
+                  fecha:
+                    expediente.fecha_prevista_firma,
+                  expedienteId:
+                    expediente.id_expediente,
+                  expediente:
+                    expediente.id_expediente,
+                  nombreTitular:
+                    expediente.nombre_titular || "",
+                  nombreNotario:
+                    expediente.nombre_notario || "",
+                  notarioId:
+                    expediente.notario_id || null,
                 }}
                 className="
                   inline-flex
@@ -2399,11 +2381,15 @@ export default function FichaExpediente() {
                   hover:text-white
                 "
               >
-                <span aria-hidden="true">📅</span>
+                <span aria-hidden="true">
+                  📅
+                </span>
+
                 Crear cita en agenda
               </Link>
 
             </div>
+
           )}
 
           <Dato
@@ -2528,13 +2514,13 @@ export default function FichaExpediente() {
 
 
         {/* ===================================================
-            ECONÓMICO
+            INFORMACIÓN CREDITICIA
         =================================================== */}
 
         <Seccion
-          titulo="Importes y saldos"
-          subtitulo="Información económica asociada al expediente"
-          icono="economico"
+          titulo="Información crediticia"
+          subtitulo="Capital, importe y situación económica del expediente"
+          icono="credito"
           columnas={4}
         >
 
@@ -2576,6 +2562,45 @@ export default function FichaExpediente() {
 
 
         {/* ===================================================
+            FACTURACIÓN
+        =================================================== */}
+
+        <Seccion
+          titulo="Facturación"
+          subtitulo="Información relacionada con la facturación del expediente"
+          icono="facturacion"
+          columnas={3}
+        >
+
+          <Dato
+            campo="Estado facturación"
+            valor={
+              expediente.facturacion_estado
+            }
+            estado
+            destaque
+          />
+
+          <Dato
+            campo="Fecha facturación"
+            valor={
+              expediente.facturacion_fecha
+            }
+            tipo="fecha"
+          />
+
+          <Dato
+            campo="Importe"
+            valor={
+              expediente.importe
+            }
+            tipo="numero"
+          />
+
+        </Seccion>
+
+
+        {/* ===================================================
             PROVISIÓN
         =================================================== */}
 
@@ -2597,42 +2622,6 @@ export default function FichaExpediente() {
             campo="Tipo provisión"
             valor={
               expediente.tipo_provision
-            }
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            GESTORÍA
-        =================================================== */}
-
-        <Seccion
-          titulo="Gestoría"
-          subtitulo="Información de la gestoría del trámite"
-          icono="gestoria"
-          columnas={3}
-        >
-
-          <Dato
-            campo="ID gestoría trámite"
-            valor={
-              expediente.id_gestoria_tramite
-            }
-          />
-
-          <Dato
-            campo="Nombre gestoría"
-            valor={
-              expediente.nombre_gestoria
-            }
-            destaque
-          />
-
-          <Dato
-            campo="Gestoría"
-            valor={
-              expediente.gestoria
             }
           />
 
@@ -2732,6 +2721,7 @@ export default function FichaExpediente() {
             valor={
               expediente.id_expediente_cgn
             }
+            destaque
           />
 
           <Dato
@@ -2842,6 +2832,7 @@ export default function FichaExpediente() {
             "
           >
             Expediente ID interno:{" "}
+
             <span
               className="
                 font-semibold
@@ -2911,3 +2902,4 @@ export default function FichaExpediente() {
 
   );
 }
+```
