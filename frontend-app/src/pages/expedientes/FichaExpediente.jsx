@@ -1,32 +1,20 @@
-```jsx
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
-import {
-  Link,
-  useParams,
-} from "react-router-dom";
-
-import {
-  obtenerExpediente,
-} from "../../api/expedientes";
-
+import { obtenerExpediente } from "../../api/expedientes";
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 
 
 // ============================================================
-// FORMATEADORES
+// HELPERS
 // ============================================================
 
 function valorVisible(valor) {
-
   if (
     valor === null ||
     valor === undefined ||
-    valor === ""
+    valor === "" ||
+    String(valor).trim() === ""
   ) {
     return "—";
   }
@@ -35,480 +23,127 @@ function valorVisible(valor) {
 }
 
 
-function formatearFecha(valor) {
+function formatearFecha(fecha) {
+  if (!fecha) return "—";
 
-  if (!valor) {
-    return "—";
-  }
+  const texto = String(fecha);
 
-  const fecha =
-    String(valor);
-
-  if (
-    /^\d{4}-\d{2}-\d{2}$/.test(
-      fecha
-    )
-  ) {
-
-    const [
-      year,
-      month,
-      day,
-    ] =
-      fecha.split("-");
+  // Formato ISO: YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+    const [year, month, day] = texto.split("-");
 
     return `${day}/${month}/${year}`;
   }
 
-  return fecha;
+  // ISO con hora
+  if (texto.includes("T")) {
+    const parteFecha = texto.split("T")[0];
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(parteFecha)) {
+      const [year, month, day] = parteFecha.split("-");
+
+      return `${day}/${month}/${year}`;
+    }
+  }
+
+  return texto;
 }
 
 
 function formatearNumero(valor) {
-
   if (
     valor === null ||
     valor === undefined ||
-    valor === ""
+    valor === "" ||
+    String(valor).trim() === ""
   ) {
     return "—";
   }
 
-  const numero =
-    Number(valor);
+  const numero = Number(valor);
 
-  if (
-    Number.isNaN(numero)
-  ) {
-    return String(valor);
+  if (Number.isNaN(numero)) {
+    return valorVisible(valor);
   }
 
-  return new Intl.NumberFormat(
-    "es-ES",
-    {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }
-  ).format(numero);
+  return numero.toLocaleString("es-ES", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
-
-// ============================================================
-// NORMALIZAR ACTIVIDAD
-// ============================================================
 
 function normalizarActividad(valor) {
+  if (!valor) return "—";
 
-  return String(valor || "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(
-      /[\u0300-\u036f]/g,
-      ""
-    );
+  const texto = String(valor).trim();
+
+  return texto || "—";
 }
 
 
 // ============================================================
-// ICONO SECCIÓN
+// ICONOS
 // ============================================================
 
-function IconoSeccion({
-  tipo = "default",
-}) {
-
+function IconoSeccion({ tipo }) {
   const iconos = {
-
-    estado: (
-      <>
-        <circle
-          cx="12"
-          cy="12"
-          r="8"
-        />
-        <path
-          d="m9 12 2 2 4-4"
-        />
-      </>
-    ),
-
-    identificacion: (
-      <>
-        <rect
-          x="4"
-          y="4"
-          width="16"
-          height="16"
-          rx="2"
-        />
-        <path
-          d="M8 9h8"
-        />
-        <path
-          d="M8 13h5"
-        />
-        <path
-          d="M8 17h3"
-        />
-      </>
-    ),
-
-    titular: (
-      <>
-        <circle
-          cx="12"
-          cy="8"
-          r="3"
-        />
-        <path
-          d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6"
-        />
-      </>
-    ),
-
-    solicitante: (
-      <>
-        <circle
-          cx="9"
-          cy="8"
-          r="3"
-        />
-        <path
-          d="M3.5 20c.5-3.4 2.7-5.5 5.5-5.5"
-        />
-        <path
-          d="M16 12v6"
-        />
-        <path
-          d="M13 15h6"
-        />
-      </>
-    ),
-
-    facturacion: (
-      <>
-        <rect
-          x="4"
-          y="5"
-          width="16"
-          height="14"
-          rx="2"
-        />
-        <path
-          d="M8 9h8"
-        />
-        <path
-          d="M8 13h5"
-        />
-        <path
-          d="M15 13h1"
-        />
-      </>
-    ),
-
-    credito: (
-      <>
-        <circle
-          cx="12"
-          cy="12"
-          r="8"
-        />
-        <path
-          d="M12 7v10"
-        />
-        <path
-          d="M15 9.5c0-1.2-1.1-2-3-2s-3 .8-3 2 1.1 2 3 2 3 .8 3 2-1.1 2-3 2-3-.8-3-2"
-        />
-      </>
-    ),
-
-    notario: (
-      <>
-        <path
-          d="M4 20h16"
-        />
-        <path
-          d="M6 20V9l6-4 6 4v11"
-        />
-        <path
-          d="M9 20v-6h6v6"
-        />
-      </>
-    ),
-
-    oficina: (
-      <>
-        <path
-          d="M4 20h16"
-        />
-        <path
-          d="M6 20V8h12v12"
-        />
-        <path
-          d="M8 5h8"
-        />
-        <path
-          d="M9 11h1"
-        />
-        <path
-          d="M14 11h1"
-        />
-        <path
-          d="M9 15h1"
-        />
-        <path
-          d="M14 15h1"
-        />
-      </>
-    ),
-
-    fechas: (
-      <>
-        <rect
-          x="4"
-          y="5"
-          width="16"
-          height="15"
-          rx="2"
-        />
-        <path
-          d="M8 3v4"
-        />
-        <path
-          d="M16 3v4"
-        />
-        <path
-          d="M4 10h16"
-        />
-      </>
-    ),
-
-    actividad: (
-      <>
-        <path
-          d="M5 12h14"
-        />
-        <path
-          d="m13 6 6 6-6 6"
-        />
-      </>
-    ),
-
-    provision: (
-      <>
-        <rect
-          x="5"
-          y="5"
-          width="14"
-          height="14"
-          rx="2"
-        />
-        <path
-          d="M9 9h6"
-        />
-        <path
-          d="M9 13h6"
-        />
-      </>
-    ),
-
-    finca: (
-      <>
-        <path
-          d="M4 20h16"
-        />
-        <path
-          d="m6 20 2-10 4-3 4 3 2 10"
-        />
-        <path
-          d="M9 15h6"
-        />
-      </>
-    ),
-
-    defectos: (
-      <>
-        <path
-          d="M12 4 3.5 19h17z"
-        />
-        <path
-          d="M12 9v4"
-        />
-        <path
-          d="M12 16h.01"
-        />
-      </>
-    ),
-
-    cgn: (
-      <>
-        <path
-          d="M6 4h12v16H6z"
-        />
-        <path
-          d="M9 8h6"
-        />
-        <path
-          d="M9 12h6"
-        />
-        <path
-          d="M9 16h4"
-        />
-      </>
-    ),
-
-    bankia: (
-      <>
-        <path
-          d="M4 9h16"
-        />
-        <path
-          d="m6 9 6-5 6 5"
-        />
-        <path
-          d="M6 19h12"
-        />
-        <path
-          d="M8 12v5"
-        />
-        <path
-          d="M12 12v5"
-        />
-        <path
-          d="M16 12v5"
-        />
-      </>
-    ),
-
-    otros: (
-      <>
-        <circle
-          cx="12"
-          cy="12"
-          r="8"
-        />
-        <path
-          d="M12 8v8"
-        />
-        <path
-          d="M8 12h8"
-        />
-      </>
-    ),
-
-    default: (
-      <>
-        <rect
-          x="5"
-          y="4"
-          width="14"
-          height="16"
-          rx="2"
-        />
-        <path
-          d="M9 8h6"
-        />
-        <path
-          d="M9 12h6"
-        />
-        <path
-          d="M9 16h4"
-        />
-      </>
-    ),
-
+    estado: "◉",
+    identificacion: "▣",
+    titular: "👤",
+    solicitante: "👥",
+    notario: "✒️",
+    oficina: "🏢",
+    fechas: "📅",
+    actividad: "↻",
+    facturacion: "🧾",
+    economico: "€",
+    provision: "💶",
+    finca: "🏠",
+    defectos: "⚠️",
   };
 
   return (
-    <svg
-      className="
-        h-4
-        w-4
-      "
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {iconos[tipo] || iconos.default}
-    </svg>
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-lg text-blue-600">
+      {iconos[tipo] || "•"}
+    </div>
   );
 }
 
 
 // ============================================================
-// BADGE DE ESTADO
+// ESTADO
 // ============================================================
 
-function EstadoBadge({
-  valor,
-}) {
+function EstadoBadge({ estado }) {
+  const texto = valorVisible(estado);
 
-  const texto =
-    valorVisible(valor);
+  let clases =
+    "inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold";
+
+  const normalizado = String(estado || "").toLowerCase();
 
   if (
-    texto === "—"
+    normalizado.includes("cerr") ||
+    normalizado.includes("final") ||
+    normalizado.includes("entreg")
   ) {
-
-    return (
-      <span
-        className="
-          inline-flex
-          items-center
-          rounded-full
-          border
-          border-slate-200
-          bg-slate-50
-          px-2.5
-          py-1
-          text-[11px]
-          font-medium
-          text-slate-400
-        "
-      >
-        —
-      </span>
-    );
+    clases += " border-emerald-200 bg-emerald-50 text-emerald-700";
+  } else if (
+    normalizado.includes("pend") ||
+    normalizado.includes("abiert")
+  ) {
+    clases += " border-amber-200 bg-amber-50 text-amber-700";
+  } else if (
+    normalizado.includes("error") ||
+    normalizado.includes("cancel")
+  ) {
+    clases += " border-red-200 bg-red-50 text-red-700";
+  } else {
+    clases += " border-slate-200 bg-slate-50 text-slate-700";
   }
 
-
-  return (
-    <span
-      className="
-        inline-flex
-        max-w-full
-        items-center
-        rounded-full
-        border
-        border-blue-100
-        bg-blue-50
-        px-2.5
-        py-1
-        text-[11px]
-        font-semibold
-        text-blue-600
-      "
-    >
-      <span
-        className="
-          mr-1.5
-          h-1.5
-          w-1.5
-          rounded-full
-          bg-blue-500
-        "
-      />
-
-      <span className="truncate">
-        {texto}
-      </span>
-    </span>
-  );
+  return <span className={clases}>{texto}</span>;
 }
 
 
@@ -516,254 +151,65 @@ function EstadoBadge({
 // DATO
 // ============================================================
 
-function Dato({
-  campo,
-  valor,
-  tipo = "texto",
-  destaque = false,
-  estado = false,
-}) {
+function Dato({ etiqueta, valor, tipo = "texto", destacado = false }) {
+  let valorFormateado = valorVisible(valor);
 
-  let contenido =
-    valorVisible(valor);
-
-
-  if (
-    tipo === "fecha"
-  ) {
-
-    contenido =
-      formatearFecha(valor);
-
+  if (tipo === "fecha") {
+    valorFormateado = formatearFecha(valor);
   }
 
-
-  if (
-    tipo === "numero"
-  ) {
-
-    contenido =
-      formatearNumero(valor);
-
+  if (tipo === "numero") {
+    valorFormateado = formatearNumero(valor);
   }
-
 
   return (
-    <div
-      className={`
-        group
-        min-w-0
-        rounded-2xl
-        border
-        p-3.5
-        transition-all
-        duration-200
+    <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4">
+      <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">
+        {etiqueta}
+      </div>
 
-        ${
-          destaque
-            ? `
-              border-blue-100
-              bg-blue-50/55
-            `
-            : `
-              border-slate-200/80
-              bg-white/70
-              hover:border-blue-100
-              hover:bg-white
-              hover:shadow-sm
-            `
+      <div
+        className={
+          destacado
+            ? "text-base font-bold text-slate-900"
+            : "text-sm font-medium text-slate-700"
         }
-      `}
-    >
-
-      <p
-        className="
-          mb-1.5
-          truncate
-          text-[10px]
-          font-semibold
-          uppercase
-          tracking-[0.08em]
-          text-slate-400
-        "
       >
-        {campo}
-      </p>
-
-
-      {estado ? (
-
-        <EstadoBadge
-          valor={valor}
-        />
-
-      ) : (
-
-        <p
-          className={`
-            break-words
-            text-sm
-            leading-5
-            ${
-              destaque
-                ? `
-                  font-bold
-                  text-blue-700
-                `
-                : `
-                  font-medium
-                  text-slate-700
-                `
-            }
-          `}
-        >
-          {contenido}
-        </p>
-
-      )}
-
+        {valorFormateado}
+      </div>
     </div>
   );
 }
 
 
 // ============================================================
-// SECCIÓN
+// SECCION
 // ============================================================
 
-function Seccion({
-  titulo,
-  subtitulo,
-  icono = "default",
-  children,
-  columnas = 3,
-}) {
-
-  const gridClass =
-    columnas === 4
-      ? "xl:grid-cols-4"
-      : columnas === 2
-        ? "xl:grid-cols-2"
-        : "xl:grid-cols-3";
-
-
+function Seccion({ titulo, subtitulo, icono, children }) {
   return (
-    <section
-      className="
-        relative
-        overflow-hidden
-        rounded-[24px]
-        border
-        border-white/80
-        bg-white/78
-        p-5
-        shadow-[0_16px_45px_rgba(15,23,42,0.06)]
-        backdrop-blur-2xl
-        sm:p-6
-      "
-    >
+    <section className="relative overflow-hidden rounded-[24px] border border-white/80 bg-white/78 p-5 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
+      <div className="absolute left-0 right-0 top-0 h-[3px] bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500" />
 
-      {/* Línea premium */}
+      <div className="mb-5 flex items-center gap-3">
+        <IconoSeccion tipo={icono} />
 
-      <div
-        className="
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-          bg-gradient-to-r
-          from-transparent
-          via-blue-400/45
-          to-transparent
-        "
-      />
-
-
-      {/* CABECERA */}
-
-      <div
-        className="
-          mb-5
-          flex
-          items-start
-          gap-3
-        "
-      >
-
-        <div
-          className="
-            flex
-            h-10
-            w-10
-            shrink-0
-            items-center
-            justify-center
-            rounded-xl
-            border
-            border-blue-100
-            bg-blue-50
-            text-blue-600
-          "
-        >
-          <IconoSeccion
-            tipo={icono}
-          />
-        </div>
-
-
-        <div
-          className="
-            min-w-0
-            flex-1
-          "
-        >
-
-          <h2
-            className="
-              text-base
-              font-bold
-              tracking-tight
-              text-slate-800
-            "
-          >
+        <div>
+          <h2 className="text-base font-bold text-slate-900">
             {titulo}
           </h2>
 
           {subtitulo && (
-
-            <p
-              className="
-                mt-1
-                text-xs
-                leading-5
-                text-slate-400
-              "
-            >
+            <p className="mt-0.5 text-xs text-slate-400">
               {subtitulo}
             </p>
-
           )}
-
         </div>
-
       </div>
 
-
-      {/* DATOS */}
-
-      <div
-        className={`
-          grid
-          grid-cols-1
-          gap-3
-          sm:grid-cols-2
-          ${gridClass}
-        `}
-      >
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {children}
       </div>
-
     </section>
   );
 }
@@ -773,384 +219,143 @@ function Seccion({
 // OBSERVACIONES
 // ============================================================
 
-function Observaciones({
-  valor,
-}) {
-
+function Observaciones({ texto }) {
   return (
-    <section
-      className="
-        relative
-        overflow-hidden
-        rounded-[24px]
-        border
-        border-white/80
-        bg-white/78
-        p-5
-        shadow-[0_16px_45px_rgba(15,23,42,0.06)]
-        backdrop-blur-2xl
-        sm:p-6
-      "
-    >
+    <section className="relative overflow-hidden rounded-[24px] border border-white/80 bg-white/78 p-5 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
+      <div className="absolute left-0 right-0 top-0 h-[3px] bg-gradient-to-r from-slate-400 via-slate-300 to-slate-400" />
 
-      <div
-        className="
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-          bg-gradient-to-r
-          from-transparent
-          via-blue-400/45
-          to-transparent
-        "
-      />
+      <div className="mb-4">
+        <h2 className="text-base font-bold text-slate-900">
+          Observaciones
+        </h2>
 
-
-      <div
-        className="
-          mb-5
-          flex
-          items-center
-          gap-3
-        "
-      >
-
-        <div
-          className="
-            flex
-            h-10
-            w-10
-            shrink-0
-            items-center
-            justify-center
-            rounded-xl
-            border
-            border-slate-200
-            bg-slate-50
-            text-slate-500
-          "
-        >
-          <IconoSeccion
-            tipo="default"
-          />
-        </div>
-
-
-        <div>
-
-          <h2
-            className="
-              text-base
-              font-bold
-              tracking-tight
-              text-slate-800
-            "
-          >
-            Observaciones
-          </h2>
-
-          <p
-            className="
-              mt-1
-              text-xs
-              text-slate-400
-            "
-          >
-            Información adicional del expediente
-          </p>
-
-        </div>
-
+        <p className="mt-0.5 text-xs text-slate-400">
+          Información adicional del expediente
+        </p>
       </div>
 
-
-      <div
-        className="
-          min-h-[120px]
-          rounded-2xl
-          border
-          border-slate-200/80
-          bg-slate-50/75
-          p-4
-          text-sm
-          leading-6
-          text-slate-600
-          shadow-inner
-          whitespace-pre-wrap
-          break-words
-        "
-      >
-        {valorVisible(valor)}
+      <div className="min-h-[100px] rounded-2xl border border-slate-200/80 bg-white/70 p-4 text-sm leading-6 text-slate-700">
+        {valorVisible(texto)}
       </div>
-
     </section>
   );
 }
 
 
 // ============================================================
-// FICHA
+// COMPONENTE PRINCIPAL
 // ============================================================
 
 export default function FichaExpediente() {
+  const { id } = useParams();
 
-  const { id } =
-    useParams();
+  const [expediente, setExpediente] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
 
-
-  const [
-    expediente,
-    setExpediente,
-  ] = useState(null);
-
-
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
-
-
-  const [
-    error,
-    setError,
-  ] = useState("");
-
-
-  // ==========================================================
-  // MODAL ENVÍO A NOTARIO
-  // ==========================================================
-
-  const [
-    mostrarEnviarANotario,
-    setMostrarEnviarANotario,
-  ] = useState(false);
-
+  const [mostrarEnviarANotario, setMostrarEnviarANotario] = useState(false);
 
   // ==========================================================
   // CARGAR EXPEDIENTE
   // ==========================================================
 
   useEffect(() => {
-
     let activo = true;
 
-
     async function cargar() {
-
-      setLoading(true);
-      setError("");
-
-
       try {
+        setCargando(true);
+        setError("");
 
-        const data =
-          await obtenerExpediente(
-            id
-          );
+        const datos = await obtenerExpediente(id);
 
+        if (!activo) return;
 
-        if (activo) {
-
-          setExpediente(
-            data
-          );
-
-        }
-
+        setExpediente(datos);
       } catch (err) {
+        console.error("Error cargando expediente:", err);
 
-        console.error(
-          "Error cargando expediente:",
-          err
-        );
+        if (!activo) return;
 
-
-        if (activo) {
-
-          setError(
-            err?.response?.data?.detail ||
+        setError(
+          err?.response?.data?.detail ||
+            err?.message ||
             "No se ha podido cargar el expediente."
-          );
-
-          setExpediente(
-            null
-          );
-
-        }
-
+        );
       } finally {
-
         if (activo) {
-
-          setLoading(
-            false
-          );
-
+          setCargando(false);
         }
-
       }
-
     }
 
-
-    cargar();
-
+    if (id) {
+      cargar();
+    }
 
     return () => {
-
       activo = false;
-
     };
-
-  }, [
-    id,
-  ]);
+  }, [id]);
 
 
   // ==========================================================
-  // ACTIVIDAD — DOCUMENTACIÓN PREVIA
+  // DATOS CALCULADOS
   // ==========================================================
 
-  const esDocumentacionPrevia =
-    useMemo(
-      () =>
-        normalizarActividad(
-          expediente?.actividad_actual
-        ) === "documentacion previa",
-      [
-        expediente?.actividad_actual,
-      ]
+  const esDocumentacionPrevia = useMemo(() => {
+    const actividad = String(
+      expediente?.actividad_actual || ""
+    ).toLowerCase();
+
+    return (
+      actividad.includes("document") ||
+      actividad.includes("previa")
+    );
+  }, [expediente]);
+
+
+  // ==========================================================
+  // ENVIAR A NOTARIO
+  // ==========================================================
+
+  function cerrarEnviarANotario() {
+    setMostrarEnviarANotario(false);
+  }
+
+
+  async function guardarEnviarANotario(payload) {
+    console.log(
+      "ENVIAR A NOTARIO — PAYLOAD:",
+      payload
     );
 
-
-  // ==========================================================
-  // CERRAR MODAL
-  // ==========================================================
-
-  const cerrarEnviarANotario =
-    () => {
-
-      setMostrarEnviarANotario(
-        false
-      );
-
-    };
-
-
-  // ==========================================================
-  // GUARDAR ENVÍO A NOTARIO
-  // ==========================================================
-
-  const guardarEnviarANotario =
-    async (payload) => {
-
-      console.log(
-        "ENVÍO A NOTARIO — PAYLOAD:",
-        payload
-      );
-
-      setMostrarEnviarANotario(
-        false
-      );
-
-    };
+    setMostrarEnviarANotario(false);
+  }
 
 
   // ==========================================================
   // LOADING
   // ==========================================================
 
-  if (loading) {
-
+  if (cargando) {
     return (
-
-      <div
-        className="
-          relative
-          min-h-full
-          overflow-hidden
-          px-4
-          py-4
-          sm:px-6
-          sm:py-6
-        "
-      >
-
-        <div
-          className="
-            w-full
-          "
-        >
-
-          <div
-            className="
-              flex
-              min-h-[420px]
-              items-center
-              justify-center
-            "
-          >
-
-            <div
-              className="
-                rounded-2xl
-                border
-                border-white/80
-                bg-white/78
-                px-6
-                py-5
-                text-center
-                shadow-[0_16px_45px_rgba(15,23,42,0.06)]
-                backdrop-blur-2xl
-              "
-            >
-
-              <div
-                className="
-                  mx-auto
-                  mb-3
-                  h-8
-                  w-8
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-blue-100
-                  border-t-blue-500
-                "
-              />
-
-              <p
-                className="
-                  text-sm
-                  font-semibold
-                  text-slate-600
-                "
-              >
-                Cargando expediente…
-              </p>
-
-              <p
-                className="
-                  mt-1
-                  text-xs
-                  text-slate-400
-                "
-              >
-                Obteniendo información del expediente
-              </p>
-
+      <div className="min-h-[60vh] p-6">
+        <div className="mx-auto max-w-[1500px]">
+          <div className="rounded-[28px] border border-white/80 bg-white/80 p-8 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
+            <div className="animate-pulse space-y-5">
+              <div className="h-8 w-72 rounded-xl bg-slate-200" />
+              <div className="h-4 w-96 rounded-lg bg-slate-100" />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="h-24 rounded-2xl bg-slate-100" />
+                <div className="h-24 rounded-2xl bg-slate-100" />
+                <div className="h-24 rounded-2xl bg-slate-100" />
+              </div>
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     );
-
   }
 
 
@@ -1159,252 +364,51 @@ export default function FichaExpediente() {
   // ==========================================================
 
   if (error) {
-
     return (
+      <div className="min-h-[60vh] p-6">
+        <div className="mx-auto max-w-[1500px]">
+          <div className="rounded-[28px] border border-red-200 bg-red-50 p-8">
+            <h1 className="text-lg font-bold text-red-800">
+              Error al cargar el expediente
+            </h1>
 
-      <div
-        className="
-          relative
-          min-h-full
-          overflow-hidden
-          px-4
-          py-4
-          sm:px-6
-          sm:py-6
-        "
-      >
+            <p className="mt-2 text-sm text-red-700">
+              {error}
+            </p>
 
-        <div
-          className="
-            w-full
-          "
-        >
-
-          <Link
-            to="/expedientes"
-            className="
-              inline-flex
-              items-center
-              rounded-xl
-              border
-              border-slate-200
-              bg-white/80
-              px-3
-              py-2
-              text-sm
-              font-medium
-              text-slate-500
-              shadow-sm
-              backdrop-blur-xl
-              transition
-              hover:border-blue-200
-              hover:bg-blue-50
-              hover:text-blue-600
-            "
-          >
-            ← Volver a expedientes
-          </Link>
-
-
-          <div
-            className="
-              mt-5
-              overflow-hidden
-              rounded-[24px]
-              border
-              border-red-200
-              bg-red-50/80
-              p-5
-              shadow-[0_16px_45px_rgba(127,29,29,0.06)]
-              backdrop-blur-2xl
-            "
-          >
-
-            <div
-              className="
-                flex
-                items-start
-                gap-3
-              "
+            <Link
+              to="/expedientes"
+              className="mt-5 inline-flex rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
             >
-
-              <div
-                className="
-                  flex
-                  h-10
-                  w-10
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-red-100
-                  text-red-600
-                "
-              >
-                !
-              </div>
-
-
-              <div>
-
-                <h2
-                  className="
-                    text-base
-                    font-bold
-                    text-red-700
-                  "
-                >
-                  No se ha podido cargar el expediente
-                </h2>
-
-                <p
-                  className="
-                    mt-1
-                    text-sm
-                    leading-6
-                    text-red-600/80
-                  "
-                >
-                  {error}
-                </p>
-
-              </div>
-
-            </div>
-
+              Volver a expedientes
+            </Link>
           </div>
-
         </div>
-
       </div>
-
     );
-
   }
 
-
-  // ==========================================================
-  // NO ENCONTRADO
-  // ==========================================================
 
   if (!expediente) {
-
     return (
+      <div className="min-h-[60vh] p-6">
+        <div className="mx-auto max-w-[1500px]">
+          <div className="rounded-[28px] border border-slate-200 bg-white p-8 text-center">
+            <p className="text-sm text-slate-500">
+              No se ha encontrado el expediente.
+            </p>
 
-      <div
-        className="
-          px-4
-          py-6
-          sm:px-6
-        "
-      >
-
-        <div
-          className="
-            w-full
-            rounded-[24px]
-            border
-            border-slate-200
-            bg-white/80
-            p-8
-            text-center
-            shadow-sm
-            backdrop-blur-xl
-          "
-        >
-
-          <div
-            className="
-              mx-auto
-              mb-4
-              flex
-              h-14
-              w-14
-              items-center
-              justify-center
-              rounded-2xl
-              bg-slate-100
-              text-2xl
-            "
-          >
-            📁
+            <Link
+              to="/expedientes"
+              className="mt-5 inline-flex rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
+            >
+              Volver a expedientes
+            </Link>
           </div>
-
-          <h2
-            className="
-              text-lg
-              font-bold
-              text-slate-700
-            "
-          >
-            Expediente no encontrado
-          </h2>
-
-          <p
-            className="
-              mt-1
-              text-sm
-              text-slate-400
-            "
-          >
-            No se ha encontrado información para este expediente.
-          </p>
-
-          <Link
-            to="/expedientes"
-            className="
-              mt-5
-              inline-flex
-              rounded-xl
-              bg-blue-600
-              px-4
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-sm
-              transition
-              hover:bg-blue-700
-            "
-          >
-            Volver a expedientes
-          </Link>
-
         </div>
-
       </div>
-
     );
-
   }
-
-
-  // ==========================================================
-  // RESUMEN CABECERA
-  // ==========================================================
-
-  const numeroExpediente =
-    valorVisible(
-      expediente.id_expediente
-    );
-
-
-  const estadoPrincipal =
-    expediente.estado_expediente;
-
-
-  const actividadPrincipal =
-    expediente.actividad_actual;
-
-
-  const importePrincipal =
-    formatearNumero(
-      expediente.importe
-    );
-
-
-  const tieneDefectos =
-    expediente.tiene_defectos_abiertos;
 
 
   // ==========================================================
@@ -1412,1494 +416,614 @@ export default function FichaExpediente() {
   // ==========================================================
 
   return (
+    <div className="relative min-h-screen overflow-hidden bg-slate-50 px-4 py-6 md:px-6">
+      {/* Fondos decorativos */}
+      <div className="pointer-events-none absolute -left-32 top-20 h-72 w-72 rounded-full bg-blue-200/20 blur-3xl" />
+      <div className="pointer-events-none absolute -right-32 top-96 h-80 w-80 rounded-full bg-cyan-200/20 blur-3xl" />
 
-    <div
-      className="
-        relative
-        min-h-full
-        overflow-hidden
-        px-4
-        py-4
-        sm:px-6
-        sm:py-6
-        animate-fadeIn
-      "
-    >
+      <div className="relative mx-auto max-w-[1500px] space-y-5">
 
-      {/* =====================================================
-          FONDO PREMIUM ERP
-      ===================================================== */}
+        {/* ================================================== */}
+        {/* CABECERA */}
+        {/* ================================================== */}
 
-      <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          overflow-hidden
-        "
-      >
+        <header className="relative overflow-hidden rounded-[28px] border border-white/80 bg-white/80 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.07)] backdrop-blur-2xl">
+          <div className="absolute left-0 right-0 top-0 h-[4px] bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-500" />
 
-        <div
-          className="
-            absolute
-            -left-52
-            -top-52
-            h-[560px]
-            w-[560px]
-            rounded-full
-            bg-blue-400/10
-            blur-3xl
-          "
-        />
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
 
-        <div
-          className="
-            absolute
-            -bottom-56
-            -right-56
-            h-[620px]
-            w-[620px]
-            rounded-full
-            bg-cyan-300/10
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute
-            left-1/2
-            top-1/2
-            h-[760px]
-            w-[760px]
-            -translate-x-1/2
-            -translate-y-1/2
-            rounded-full
-            bg-white/70
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute
-            inset-0
-            bg-gradient-to-br
-            from-white/75
-            via-transparent
-            to-blue-50/70
-          "
-        />
-
-      </div>
-
-
-      {/* =====================================================
-          CONTENIDO
-      ===================================================== */}
-
-      <div
-        className="
-          relative
-          z-10
-          w-full
-          space-y-5
-        "
-      >
-
-        {/* ===================================================
-            CABECERA
-        =================================================== */}
-
-        <section
-          className="
-            relative
-            overflow-hidden
-            rounded-[28px]
-            border
-            border-white/80
-            bg-white/80
-            p-5
-            shadow-[0_20px_60px_rgba(15,23,42,0.08)]
-            backdrop-blur-2xl
-            sm:p-6
-          "
-        >
-
-          <div
-            className="
-              absolute
-              left-0
-              right-0
-              top-0
-              h-px
-              bg-gradient-to-r
-              from-transparent
-              via-blue-400/55
-              to-transparent
-            "
-          />
-
-
-          <div
-            className="
-              flex
-              flex-col
-              gap-5
-              xl:flex-row
-              xl:items-center
-              xl:justify-between
-            "
-          >
-
-            <div
-              className="
-                min-w-0
-              "
-            >
-
-              <Link
-                to="/expedientes"
-                className="
-                  inline-flex
-                  items-center
-                  rounded-lg
-                  text-xs
-                  font-semibold
-                  text-blue-600
-                  transition
-                  hover:text-blue-700
-                "
-              >
-                ← Volver a expedientes
-              </Link>
-
-
-              <div
-                className="
-                  mt-3
-                  flex
-                  items-start
-                  gap-4
-                "
-              >
-
-                <div
-                  className="
-                    flex
-                    h-14
-                    w-14
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    border
-                    border-blue-100
-                    bg-blue-50
-                    text-blue-600
-                    shadow-sm
-                  "
+            <div>
+              <div className="mb-2 flex flex-wrap items-center gap-2">
+                <Link
+                  to="/expedientes"
+                  className="text-xs font-semibold text-blue-600 hover:text-blue-800"
                 >
+                  ← Expedientes
+                </Link>
 
-                  <svg
-                    className="
-                      h-6
-                      w-6
-                    "
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path
-                      d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2h5.5A2.5 2.5 0 0 1 20 8.5v9A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5z"
-                    />
-                    <path
-                      d="M4 9h16"
-                    />
-                  </svg>
+                <span className="text-slate-300">/</span>
 
-                </div>
-
-
-                <div
-                  className="
-                    min-w-0
-                  "
-                >
-
-                  <p
-                    className="
-                      text-[10px]
-                      font-semibold
-                      uppercase
-                      tracking-[0.12em]
-                      text-slate-400
-                    "
-                  >
-                    Ficha de expediente
-                  </p>
-
-
-                  <h1
-                    className="
-                      mt-1
-                      break-words
-                      text-2xl
-                      font-bold
-                      tracking-tight
-                      text-slate-800
-                      sm:text-3xl
-                    "
-                  >
-                    {numeroExpediente}
-                  </h1>
-
-
-                  <p
-                    className="
-                      mt-1
-                      text-sm
-                      text-slate-400
-                    "
-                  >
-                    Información completa del expediente
-                  </p>
-
-                </div>
-
+                <span className="text-xs text-slate-400">
+                  Ficha de expediente
+                </span>
               </div>
 
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
+                Expediente {valorVisible(expediente.id_expediente)}
+              </h1>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Información completa del expediente
+              </p>
             </div>
 
 
-            {/* RESUMEN */}
+            <div className="flex flex-wrap items-center gap-3">
 
-            <div
-              className="
-                grid
-                grid-cols-1
-                gap-3
-                sm:grid-cols-3
-                xl:min-w-[560px]
-              "
-            >
-
-              <div
-                className="
-                  rounded-2xl
-                  border
-                  border-slate-200/80
-                  bg-white/70
-                  px-4
-                  py-3
-                "
-              >
-
-                <p
-                  className="
-                    text-[10px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.08em]
-                    text-slate-400
-                  "
-                >
+              <div className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3">
+                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
                   Estado
-                </p>
+                </div>
 
-                <div
-                  className="
-                    mt-2
-                  "
-                >
+                <div className="mt-1">
                   <EstadoBadge
-                    valor={
-                      estadoPrincipal
-                    }
+                    estado={expediente.estado_expediente}
                   />
                 </div>
-
               </div>
 
 
-              <div
-                className="
-                  rounded-2xl
-                  border
-                  border-slate-200/80
-                  bg-white/70
-                  px-4
-                  py-3
-                "
-              >
-
-                <p
-                  className="
-                    text-[10px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.08em]
-                    text-slate-400
-                  "
-                >
+              <div className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3">
+                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
                   Actividad actual
-                </p>
+                </div>
 
-                <p
-                  className="
-                    mt-2
-                    truncate
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                  "
-                >
-                  {valorVisible(
-                    actividadPrincipal
+                <div className="mt-1 text-sm font-semibold text-slate-800">
+                  {normalizarActividad(
+                    expediente.actividad_actual
                   )}
-                </p>
-
+                </div>
               </div>
 
 
-              <div
-                className="
-                  rounded-2xl
-                  border
-                  border-slate-200/80
-                  bg-white/70
-                  px-4
-                  py-3
-                "
-              >
-
-                <p
-                  className="
-                    text-[10px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.08em]
-                    text-slate-400
-                  "
-                >
+              <div className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3">
+                <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
                   Importe
-                </p>
+                </div>
 
-                <p
-                  className="
-                    mt-2
-                    text-lg
-                    font-bold
-                    tracking-tight
-                    text-slate-800
-                  "
-                >
-                  {importePrincipal}
-                </p>
-
+                <div className="mt-1 text-sm font-bold text-slate-900">
+                  {formatearNumero(expediente.importe)}
+                </div>
               </div>
 
             </div>
-
           </div>
 
 
-          {/* =================================================
-              ENVIAR A NOTARIO
-          ================================================= */}
+          {/* Acciones */}
+          <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-5">
 
-          {esDocumentacionPrevia && (
-
-            <div
-              className="
-                mt-5
-                flex
-                flex-col
-                gap-3
-                rounded-2xl
-                border
-                border-blue-100
-                bg-gradient-to-r
-                from-blue-50/80
-                via-white/80
-                to-cyan-50/70
-                p-4
-                sm:flex-row
-                sm:items-center
-                sm:justify-between
-              "
-            >
-
-              <div
-                className="
-                  flex
-                  min-w-0
-                  items-center
-                  gap-3
-                "
+            {expediente.fecha_prevista_firma && (
+              <Link
+                to={`/agenda?fecha=${String(
+                  expediente.fecha_prevista_firma
+                ).slice(0, 10)}`}
+                className="inline-flex items-center rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
               >
-
-                <div
-                  className="
-                    flex
-                    h-10
-                    w-10
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-xl
-                    border
-                    border-blue-200
-                    bg-white
-                    text-lg
-                    shadow-sm
-                  "
-                >
-                  🏛️
-                </div>
+                📅 Ver agenda
+              </Link>
+            )}
 
 
-                <div
-                  className="
-                    min-w-0
-                  "
-                >
-
-                  <p
-                    className="
-                      text-sm
-                      font-bold
-                      text-slate-800
-                    "
-                  >
-                    Envío a notario
-                  </p>
-
-                  <p
-                    className="
-                      mt-0.5
-                      text-xs
-                      text-slate-500
-                    "
-                  >
-                    El expediente está en Documentación previa y
-                    puede prepararse su envío a notario.
-                  </p>
-
-                </div>
-
-              </div>
-
-
+            {esDocumentacionPrevia && (
               <button
                 type="button"
-                onClick={() =>
-                  setMostrarEnviarANotario(
-                    true
-                  )
-                }
-                className="
-                  inline-flex
-                  shrink-0
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-xl
-                  bg-[var(--erp-primary)]
-                  px-5
-                  py-3
-                  text-sm
-                  font-bold
-                  text-white
-                  shadow-sm
-                  transition
-                  hover:opacity-90
-                  hover:shadow-md
-                  focus:outline-none
-                  focus:ring-2
-                  focus:ring-[var(--erp-primary)]
-                  focus:ring-offset-2
-                "
+                onClick={() => setMostrarEnviarANotario(true)}
+                className="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
               >
-                <span
-                  aria-hidden="true"
-                >
-                  🏛️
-                </span>
-
-                Enviar a notario
+                ✒️ Enviar a notario
               </button>
+            )}
 
-            </div>
-
-          )}
-
-        </section>
+          </div>
+        </header>
 
 
-        {/* ===================================================
-            ESTADO
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 1. ESTADO */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Estado del expediente"
-          subtitulo="Situación actual y estados operativos"
+          subtitulo="Situación actual del expediente"
           icono="estado"
-          columnas={3}
         >
-
           <Dato
-            campo="Estado expediente"
-            valor={
-              expediente.estado_expediente
-            }
-            estado
+            etiqueta="Estado expediente"
+            valor={expediente.estado_expediente}
+            destacado
           />
 
           <Dato
-            campo="Estado ANCERT"
-            valor={
-              expediente.estado_expediente_ancert
-            }
-            estado
+            etiqueta="Estado expediente ANCERT"
+            valor={expediente.estado_expediente_ancert}
           />
 
           <Dato
-            campo="Estado actividad"
-            valor={
-              expediente.estado_actividad
-            }
-            estado
+            etiqueta="Estado actividad"
+            valor={expediente.estado_actividad}
           />
 
           <Dato
-            campo="Actividad actual"
-            valor={
-              expediente.actividad_actual
-            }
-            destaque
+            etiqueta="Estado facturación"
+            valor={expediente.facturacion_estado}
           />
 
           <Dato
-            campo="Tiene defectos abiertos"
-            valor={
-              expediente.tiene_defectos_abiertos
-            }
-            destaque={
-              Boolean(tieneDefectos)
-            }
+            etiqueta="Estado registral"
+            valor={expediente.registral_estado}
           />
-
-          <Dato
-            campo="Estado facturación"
-            valor={
-              expediente.facturacion_estado
-            }
-            estado
-          />
-
-          <Dato
-            campo="Estado registral"
-            valor={
-              expediente.registral_estado
-            }
-            estado
-          />
-
         </Seccion>
 
 
-        {/* ===================================================
-            IDENTIFICACIÓN
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 2. IDENTIFICACIÓN */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Identificación"
-          subtitulo="Datos principales de identificación del expediente"
+          subtitulo="Datos generales y referencias del expediente"
           icono="identificacion"
-          columnas={3}
         >
-
           <Dato
-            campo="ID expediente"
-            valor={
-              expediente.id_expediente
-            }
-            destaque
+            etiqueta="Nº expediente"
+            valor={expediente.id_expediente}
+            destacado
           />
 
           <Dato
-            campo="ID interno"
-            valor={
-              expediente.id
-            }
-            tipo="numero"
+            etiqueta="ID interno"
+            valor={expediente.id}
           />
 
           <Dato
-            campo="ID cliente"
-            valor={
-              expediente.cliente_id
-            }
-            tipo="numero"
+            etiqueta="ID cliente"
+            valor={expediente.cliente_id}
           />
 
           <Dato
-            campo="Contrato"
-            valor={
-              expediente.contrato
-            }
+            etiqueta="Contrato"
+            valor={expediente.contrato}
           />
 
           <Dato
-            campo="Tipo operación"
-            valor={
-              expediente.tipo_operacion
-            }
+            etiqueta="Tipo operación"
+            valor={expediente.tipo_operacion}
           />
 
           <Dato
-            campo="Subtipo operación"
-            valor={
-              expediente.subtipo_operacion
-            }
+            etiqueta="Subtipo operación"
+            valor={expediente.subtipo_operacion}
           />
 
           <Dato
-            campo="Nº solicitud SIA"
-            valor={
-              expediente.num_solicitud_sia
-            }
+            etiqueta="Nº solicitud SIA"
+            valor={expediente.num_solicitud_sia}
           />
 
           <Dato
-            campo="Nº solicitud PNC"
-            valor={
-              expediente.num_solicitud_pnc
-            }
-            destaque
+            etiqueta="Nº solicitud PNC"
+            valor={expediente.num_solicitud_pnc}
           />
 
           <Dato
-            campo="VincCanc"
-            valor={
-              expediente.vinccanc
-            }
+            etiqueta="VINCCANC"
+            valor={expediente.vinccanc}
           />
 
           <Dato
-            campo="Protocolo"
-            valor={
-              expediente.protocolo
-            }
+            etiqueta="Protocolo"
+            valor={expediente.protocolo}
           />
 
           <Dato
-            campo="Tipo acta"
-            valor={
-              expediente.tipo_acta
-            }
+            etiqueta="Tipo acta"
+            valor={expediente.tipo_acta}
           />
-
         </Seccion>
 
 
-        {/* ===================================================
-            TITULARES
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 3. TITULARES */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Titulares"
-          subtitulo="Personas titulares vinculadas al expediente"
+          subtitulo="Información de los titulares del expediente"
           icono="titular"
-          columnas={3}
         >
-
           <Dato
-            campo="Nombre titular"
-            valor={
-              expediente.nombre_titular
-            }
-            destaque
+            etiqueta="Nombre titular"
+            valor={expediente.nombre_titular}
+            destacado
           />
 
           <Dato
-            campo="NIF titular"
-            valor={
-              expediente.nif_titular
-            }
+            etiqueta="NIF titular"
+            valor={expediente.nif_titular}
           />
-
-          <Dato
-            campo="ID cliente"
-            valor={
-              expediente.cliente_id
-            }
-            tipo="numero"
-          />
-
         </Seccion>
 
 
-        {/* ===================================================
-            SOLICITANTES
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 4. SOLICITANTES */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Solicitantes"
-          subtitulo="Datos del solicitante y representación"
+          subtitulo="Información de solicitantes y apoderados"
           icono="solicitante"
-          columnas={3}
         >
-
           <Dato
-            campo="Nombre solicitante"
-            valor={
-              expediente.nombre_solicitante
-            }
-            destaque
+            etiqueta="Nombre solicitante"
+            valor={expediente.nombre_solicitante}
+            destacado
           />
 
           <Dato
-            campo="NIF solicitante"
-            valor={
-              expediente.nif_solicitante
-            }
+            etiqueta="NIF solicitante"
+            valor={expediente.nif_solicitante}
           />
 
           <Dato
-            campo="Apoderado"
-            valor={
-              expediente.apoderado
-            }
-            destaque
+            etiqueta="Apoderado"
+            valor={expediente.apoderado}
           />
-
         </Seccion>
 
 
-        {/* ===================================================
-            NOTARIO
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 5. NOTARIO */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Notario"
-          subtitulo="Información del notario asociado"
+          subtitulo="Datos del notario asignado"
           icono="notario"
-          columnas={3}
         >
-
           <Dato
-            campo="Nombre notario"
-            valor={
-              expediente.nombre_notario
-            }
-            destaque
+            etiqueta="Nombre notario"
+            valor={expediente.nombre_notario}
+            destacado
           />
 
           <Dato
-            campo="NIF notario"
-            valor={
-              expediente.nif_notario
-            }
+            etiqueta="NIF notario"
+            valor={expediente.nif_notario}
           />
 
           <Dato
-            campo="Notario"
-            valor={
-              expediente.notario
-            }
+            etiqueta="Notario"
+            valor={expediente.notario}
           />
 
+          <Dato
+            etiqueta="ID notario"
+            valor={expediente.notario_id}
+          />
         </Seccion>
 
 
-        {/* ===================================================
-            OFICINA
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 6. OFICINA */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Oficina"
-          subtitulo="Datos de oficina y canal de alta"
+          subtitulo="Información de oficina y departamento"
           icono="oficina"
-          columnas={3}
         >
-
           <Dato
-            campo="Oficina"
-            valor={
-              expediente.oficina
-            }
-            destaque
+            etiqueta="Oficina"
+            valor={expediente.oficina}
+            destacado
           />
 
           <Dato
-            campo="DAN"
-            valor={
-              expediente.dan
-            }
+            etiqueta="DAN"
+            valor={expediente.dan}
           />
 
           <Dato
-            campo="Oficina alta"
-            valor={
-              expediente.oficina_alta
-            }
+            etiqueta="Oficina alta"
+            valor={expediente.oficina_alta}
           />
-
         </Seccion>
 
 
-        {/* ===================================================
-            FECHAS
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 7. FECHAS */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Fechas"
-          subtitulo="Cronología completa del expediente"
+          subtitulo="Fechas relevantes del expediente"
           icono="fechas"
-          columnas={4}
         >
-
           <Dato
-            campo="Fecha alta"
-            valor={
-              expediente.fecha_alta
-            }
+            etiqueta="Fecha alta"
+            valor={expediente.fecha_alta}
             tipo="fecha"
-            destaque
+            destacado
           />
 
           <Dato
-            campo="Fecha firma"
-            valor={
-              expediente.fecha_firma
-            }
+            etiqueta="Fecha firma"
+            valor={expediente.fecha_firma}
             tipo="fecha"
           />
 
           <Dato
-            campo="Fecha inscripción"
-            valor={
-              expediente.fecha_inscripcion
-            }
+            etiqueta="Fecha inscripción"
+            valor={expediente.fecha_inscripcion}
             tipo="fecha"
           />
 
           <Dato
-            campo="Fecha entregado cliente"
-            valor={
-              expediente.fecha_entregado_cliente
-            }
+            etiqueta="Fecha entrega cliente"
+            valor={expediente.fecha_entregado_cliente}
             tipo="fecha"
           />
 
           <Dato
-            campo="Fecha solicitud"
-            valor={
-              expediente.fecha_solicitud
-            }
+            etiqueta="Fecha solicitud"
+            valor={expediente.fecha_solicitud}
             tipo="fecha"
           />
 
           <Dato
-            campo="Fecha prevista firma"
-            valor={
-              expediente.fecha_prevista_firma
-            }
-            tipo="fecha"
-          />
-
-          {expediente.fecha_prevista_firma && (
-
-            <div
-              className="
-                rounded-2xl
-                border
-                border-blue-100
-                bg-blue-50/55
-                p-3.5
-                transition-all
-                duration-200
-                hover:border-blue-200
-                hover:bg-blue-50
-              "
-            >
-
-              <p
-                className="
-                  mb-1.5
-                  text-[10px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.08em]
-                  text-slate-400
-                "
-              >
-                Agenda
-              </p>
-
-              <Link
-                to="/agenda"
-                state={{
-                  crearCita: true,
-                  fecha:
-                    expediente.fecha_prevista_firma,
-                  expedienteId:
-                    expediente.id_expediente,
-                  expediente:
-                    expediente.id_expediente,
-                  nombreTitular:
-                    expediente.nombre_titular || "",
-                  nombreNotario:
-                    expediente.nombre_notario || "",
-                  notarioId:
-                    expediente.notario_id || null,
-                }}
-                className="
-                  inline-flex
-                  w-full
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-xl
-                  border
-                  border-blue-200
-                  bg-white
-                  px-3
-                  py-2.5
-                  text-xs
-                  font-bold
-                  text-blue-600
-                  shadow-sm
-                  transition
-                  hover:border-blue-300
-                  hover:bg-blue-600
-                  hover:text-white
-                "
-              >
-                <span aria-hidden="true">
-                  📅
-                </span>
-
-                Crear cita en agenda
-              </Link>
-
-            </div>
-
-          )}
-
-          <Dato
-            campo="Fecha vencimiento"
-            valor={
-              expediente.fecha_vencimiento
-            }
+            etiqueta="Fecha prevista firma"
+            valor={expediente.fecha_prevista_firma}
             tipo="fecha"
           />
 
           <Dato
-            campo="Fecha solicitud CGN"
-            valor={
-              expediente.fecha_sol_cgn
-            }
+            etiqueta="Fecha vencimiento"
+            valor={expediente.fecha_vencimiento}
             tipo="fecha"
           />
 
           <Dato
-            campo="Fecha firma prevista validación"
-            valor={
-              expediente.fecha_firma_prev_val
-            }
+            etiqueta="Fecha solicitud CGN"
+            valor={expediente.fecha_sol_cgn}
             tipo="fecha"
           />
 
           <Dato
-            campo="Fecha firma prevista cliente"
-            valor={
-              expediente.fecha_firma_prev_cli
-            }
+            etiqueta="Fecha firma prevista valoración"
+            valor={expediente.fecha_firma_prev_val}
             tipo="fecha"
           />
 
           <Dato
-            campo="Inicio actividad"
-            valor={
-              expediente.fecha_inicio_actividad
-            }
+            etiqueta="Fecha firma prevista cliente"
+            valor={expediente.fecha_firma_prev_cli}
             tipo="fecha"
           />
-
-          <Dato
-            campo="Fin actividad"
-            valor={
-              expediente.fecha_fin_actividad
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha cierre defecto"
-            valor={
-              expediente.fcierre_defecto
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha facturación"
-            valor={
-              expediente.facturacion_fecha
-            }
-            tipo="fecha"
-          />
-
-          <Dato
-            campo="Fecha registral"
-            valor={
-              expediente.registral_fecha
-            }
-            tipo="fecha"
-          />
-
         </Seccion>
 
 
-        {/* ===================================================
-            ACTIVIDAD
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 8. ACTIVIDAD */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Actividad"
-          subtitulo="Estado y evolución de la actividad"
+          subtitulo="Situación y evolución de la actividad"
           icono="actividad"
-          columnas={4}
         >
-
           <Dato
-            campo="Actividad actual"
-            valor={
-              expediente.actividad_actual
-            }
-            destaque
+            etiqueta="Actividad actual"
+            valor={expediente.actividad_actual}
+            destacado
           />
 
           <Dato
-            campo="Estado actividad"
-            valor={
-              expediente.estado_actividad
-            }
-            estado
+            etiqueta="Estado actividad"
+            valor={expediente.estado_actividad}
           />
 
           <Dato
-            campo="Inicio actividad"
-            valor={
-              expediente.fecha_inicio_actividad
-            }
+            etiqueta="Inicio actividad"
+            valor={expediente.fecha_inicio_actividad}
             tipo="fecha"
           />
 
           <Dato
-            campo="Fin actividad"
-            valor={
-              expediente.fecha_fin_actividad
-            }
+            etiqueta="Fin actividad"
+            valor={expediente.fecha_fin_actividad}
             tipo="fecha"
           />
 
+          <Dato
+            etiqueta="Fecha cierre defecto"
+            valor={expediente.fcierre_defecto}
+            tipo="fecha"
+          />
         </Seccion>
 
 
-        {/* ===================================================
-            INFORMACIÓN CREDITICIA
-        =================================================== */}
-
-        <Seccion
-          titulo="Información crediticia"
-          subtitulo="Capital, importe y situación económica del expediente"
-          icono="credito"
-          columnas={4}
-        >
-
-          <Dato
-            campo="Capital"
-            valor={
-              expediente.capital
-            }
-            tipo="numero"
-            destaque
-          />
-
-          <Dato
-            campo="Importe"
-            valor={
-              expediente.importe
-            }
-            tipo="numero"
-            destaque
-          />
-
-          <Dato
-            campo="Saldo real"
-            valor={
-              expediente.saldo_real
-            }
-            tipo="numero"
-          />
-
-          <Dato
-            campo="Saldo disponible"
-            valor={
-              expediente.saldo_disponible
-            }
-            tipo="numero"
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            FACTURACIÓN
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 9. FACTURACIÓN */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Facturación"
           subtitulo="Información relacionada con la facturación del expediente"
           icono="facturacion"
-          columnas={3}
         >
-
           <Dato
-            campo="Estado facturación"
-            valor={
-              expediente.facturacion_estado
-            }
-            estado
-            destaque
+            etiqueta="Estado facturación"
+            valor={expediente.facturacion_estado}
+            destacado
           />
 
           <Dato
-            campo="Fecha facturación"
-            valor={
-              expediente.facturacion_fecha
-            }
+            etiqueta="Fecha facturación"
+            valor={expediente.facturacion_fecha}
             tipo="fecha"
           />
+        </Seccion>
+
+
+        {/* ================================================== */}
+        {/* 10. INFORMACIÓN CREDITICIA */}
+        {/* ================================================== */}
+
+        <Seccion
+          titulo="Información crediticia"
+          subtitulo="Capital, importe y situación económica del expediente"
+          icono="economico"
+        >
+          <Dato
+            etiqueta="Capital"
+            valor={expediente.capital}
+            tipo="numero"
+            destacado
+          />
 
           <Dato
-            campo="Importe"
-            valor={
-              expediente.importe
-            }
+            etiqueta="Importe"
+            valor={expediente.importe}
+            tipo="numero"
+            destacado
+          />
+
+          <Dato
+            etiqueta="Saldo real"
+            valor={expediente.saldo_real}
             tipo="numero"
           />
 
+          <Dato
+            etiqueta="Saldo disponible"
+            valor={expediente.saldo_disponible}
+            tipo="numero"
+          />
         </Seccion>
 
 
-        {/* ===================================================
-            PROVISIÓN
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 11. PROVISIÓN */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Provisión"
-          subtitulo="Información de provisión"
+          subtitulo="Información de la provisión asociada al expediente"
           icono="provision"
-          columnas={2}
         >
-
           <Dato
-            campo="ID provisión"
-            valor={
-              expediente.id_provision
-            }
+            etiqueta="ID provisión"
+            valor={expediente.id_provision}
+            destacado
           />
 
           <Dato
-            campo="Tipo provisión"
-            valor={
-              expediente.tipo_provision
-            }
+            etiqueta="Tipo provisión"
+            valor={expediente.tipo_provision}
           />
-
         </Seccion>
 
 
-        {/* ===================================================
-            FINCA
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 12. FINCA */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Finca"
-          subtitulo="Información de la finca vinculada"
+          subtitulo="Información registral de la finca"
           icono="finca"
-          columnas={2}
         >
-
           <Dato
-            campo="Finca"
-            valor={
-              expediente.finca
-            }
-            destaque
+            etiqueta="Finca"
+            valor={expediente.finca}
+            destacado
           />
 
+          <Dato
+            etiqueta="Fecha registral"
+            valor={expediente.registral_fecha}
+            tipo="fecha"
+          />
         </Seccion>
 
 
-        {/* ===================================================
-            DEFECTOS
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 13. DEFECTOS */}
+        {/* ================================================== */}
 
         <Seccion
           titulo="Defectos"
-          subtitulo="Incidencias y defectos detectados"
+          subtitulo="Incidencias y defectos registrales"
           icono="defectos"
-          columnas={3}
         >
-
           <Dato
-            campo="Tiene defectos abiertos"
+            etiqueta="Defectos abiertos"
             valor={
               expediente.tiene_defectos_abiertos
+                ? "SÍ"
+                : "NO"
             }
-            destaque={
-              Boolean(
-                expediente.tiene_defectos_abiertos
-              )
-            }
+            destacado
           />
 
           <Dato
-            campo="Tipo error"
-            valor={
-              expediente.tipo_error
-            }
+            etiqueta="Tipo error"
+            valor={expediente.tipo_error}
           />
 
           <Dato
-            campo="Descripción error"
-            valor={
-              expediente.descripcion_error
-            }
+            etiqueta="Falta / defecto"
+            valor={expediente.falta_defecto}
           />
 
           <Dato
-            campo="Falta / defecto"
-            valor={
-              expediente.falta_defecto
-            }
+            etiqueta="Descripción error"
+            valor={expediente.descripcion_error}
           />
-
-          <Dato
-            campo="Fecha cierre defecto"
-            valor={
-              expediente.fcierre_defecto
-            }
-            tipo="fecha"
-          />
-
         </Seccion>
 
 
-        {/* ===================================================
-            CGN
-        =================================================== */}
-
-        <Seccion
-          titulo="CGN"
-          subtitulo="Información del expediente CGN"
-          icono="cgn"
-          columnas={2}
-        >
-
-          <Dato
-            campo="ID expediente CGN"
-            valor={
-              expediente.id_expediente_cgn
-            }
-            destaque
-          />
-
-          <Dato
-            campo="Fecha solicitud CGN"
-            valor={
-              expediente.fecha_sol_cgn
-            }
-            tipo="fecha"
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            GTG / BANKIA
-        =================================================== */}
-
-        <Seccion
-          titulo="GTG / Bankia"
-          subtitulo="Datos procedentes del entorno GTG / Bankia"
-          icono="bankia"
-          columnas={3}
-        >
-
-          <Dato
-            campo="Origen Bankia"
-            valor={
-              expediente.origen_bankia
-            }
-          />
-
-          <Dato
-            campo="Producto GTG"
-            valor={
-              expediente.producto_gtg
-            }
-          />
-
-          <Dato
-            campo="DT"
-            valor={
-              expediente.dt
-            }
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            OTROS
-        =================================================== */}
-
-        <Seccion
-          titulo="Otros"
-          subtitulo="Información adicional"
-          icono="otros"
-          columnas={2}
-        >
-
-          <Dato
-            campo="Lucy"
-            valor={
-              expediente.lucy
-            }
-          />
-
-          <Dato
-            campo="Indicador TT"
-            valor={
-              expediente.indicador_tt
-            }
-          />
-
-        </Seccion>
-
-
-        {/* ===================================================
-            OBSERVACIONES
-        =================================================== */}
+        {/* ================================================== */}
+        {/* 14. OBSERVACIONES */}
+        {/* ================================================== */}
 
         <Observaciones
-          valor={
-            expediente.observaciones
-          }
+          texto={expediente.observaciones}
         />
 
 
-        {/* ===================================================
-            PIE
-        =================================================== */}
-
-        <div
-          className="
-            flex
-            flex-col
-            gap-3
-            pb-3
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-          "
-        >
-
-          <p
-            className="
-              text-[11px]
-              text-slate-400
-            "
-          >
-            Expediente ID interno:{" "}
-
-            <span
-              className="
-                font-semibold
-                text-slate-500
-              "
-            >
-              {valorVisible(
-                expediente.id
-              )}
-            </span>
-          </p>
-
-
-          <Link
-            to="/expedientes"
-            className="
-              inline-flex
-              items-center
-              justify-center
-              rounded-xl
-              border
-              border-slate-200
-              bg-white/80
-              px-4
-              py-2.5
-              text-xs
-              font-semibold
-              text-slate-500
-              shadow-sm
-              backdrop-blur-xl
-              transition
-              hover:border-blue-200
-              hover:bg-blue-50
-              hover:text-blue-600
-            "
-          >
-            ← Volver al listado
-          </Link>
-
-        </div>
+        {/* ================================================== */}
+        {/* NOTA DE ESTRUCTURA
+            CGN / GTG-BANKIA / OTROS / GESTORÍA
+            se han retirado de esta versión.
+        ================================================== */}
 
       </div>
 
 
-      {/* =====================================================
-          MODAL — ENVÍO A NOTARIO
-      ===================================================== */}
+      {/* ==================================================== */}
+      {/* MODAL ENVIAR A NOTARIO                               */}
+      {/* ==================================================== */}
 
-      {mostrarEnviarANotario &&
-        esDocumentacionPrevia && (
-
+      {mostrarEnviarANotario && (
         <EnviarANotarioModal
-          expediente={
-            expediente
-          }
-          onClose={
-            cerrarEnviarANotario
-          }
-          onGuardar={
-            guardarEnviarANotario
-          }
+          expediente={expediente}
+          onCerrar={cerrarEnviarANotario}
+          onGuardar={guardarEnviarANotario}
         />
-
       )}
-
     </div>
-
   );
 }
-```
+
