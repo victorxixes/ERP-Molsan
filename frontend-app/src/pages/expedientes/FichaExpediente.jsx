@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -11,6 +12,7 @@ import {
 
 import {
   obtenerExpediente,
+  obtenerListadoExpedientes,
   enviarExpedienteANotario,
 } from "../../api/expedientes";
 
@@ -39,21 +41,31 @@ function formatearFecha(valor) {
     return "—";
   }
 
-  const fecha = String(valor);
+  const texto = String(valor);
 
   if (
-    /^\d{4}-\d{2}-\d{2}$/.test(fecha)
+    /^\d{4}-\d{2}-\d{2}$/.test(texto)
   ) {
     const [
       year,
       month,
       day,
-    ] = fecha.split("-");
+    ] = texto.split("-");
 
     return `${day}/${month}/${year}`;
   }
 
-  return fecha;
+  try {
+    const fecha = new Date(valor);
+
+    if (!Number.isNaN(fecha.getTime())) {
+      return fecha.toLocaleDateString("es-ES");
+    }
+  } catch {
+    // Nada.
+  }
+
+  return texto;
 }
 
 
@@ -94,7 +106,7 @@ function normalizarTexto(valor) {
 }
 
 
-function esValorDisponible(
+function esDisponible(
   objeto,
   campo
 ) {
@@ -114,8 +126,51 @@ function esValorDisponible(
 }
 
 
+function obtenerArrayRespuesta(
+  respuesta
+) {
+  if (Array.isArray(respuesta)) {
+    return respuesta;
+  }
+
+  if (
+    Array.isArray(
+      respuesta?.items
+    )
+  ) {
+    return respuesta.items;
+  }
+
+  if (
+    Array.isArray(
+      respuesta?.expedientes
+    )
+  ) {
+    return respuesta.expedientes;
+  }
+
+  if (
+    Array.isArray(
+      respuesta?.data
+    )
+  ) {
+    return respuesta.data;
+  }
+
+  if (
+    Array.isArray(
+      respuesta?.results
+    )
+  ) {
+    return respuesta.results;
+  }
+
+  return [];
+}
+
+
 // ============================================================
-// ACTIVIDADES REALES DEL MÓDULO EXPEDIENTES
+// ACTIVIDADES REALES DEL WORKFLOW
 // ============================================================
 
 const ACTIVIDADES_EXPEDIENTES = [
@@ -123,75 +178,48 @@ const ACTIVIDADES_EXPEDIENTES = [
     key: "documentacion-previa",
     label: "Documentación previa",
     icono: "📄",
-    aliases: [
-      "Documentación previa",
-    ],
   },
 
   {
     key: "sede-notarial",
     label: "Sede notarial",
     icono: "🏛️",
-    aliases: [
-      "Sede notarial",
-      "Sede Notarial",
-    ],
   },
 
   {
     key: "sede-notarial-protocolo",
     label: "Sede notarial con protocolo",
     icono: "📜",
-    aliases: [
-      "Sede notarial con protocolo",
-      "Sede Notarial con protocolo",
-    ],
   },
 
   {
     key: "liquidacion-impuestos",
     label: "Liquidación de impuestos",
     icono: "💶",
-    aliases: [
-      "Liquidación de impuestos",
-      "Liquidacion de impuestos",
-    ],
   },
 
   {
     key: "tramitacion-inscripcion",
     label: "Tramitación inscripción",
     icono: "🏢",
-    aliases: [
-      "Tramitación inscripción",
-      "Tramitacion inscripcion",
-    ],
   },
 
   {
     key: "defectos-registrales",
     label: "Defectos registrales",
     icono: "⚠️",
-    aliases: [
-      "Defectos registrales",
-      "Defectos Registrales",
-    ],
   },
 
   {
     key: "facturacion-cierre",
     label: "Facturación y cierre",
     icono: "🧾",
-    aliases: [
-      "Facturación y cierre",
-      "Facturacion y cierre",
-    ],
   },
 ];
 
 
 // ============================================================
-// CAMPOS COMUNES DE ACTIVIDAD
+// CAMPOS COMUNES DE ACTIVIDADES
 // ============================================================
 
 const CAMPOS_COMUNES_ACTIVIDAD = [
@@ -226,7 +254,6 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
   {
     key: "nombre_titular",
     label: "Nombre titular",
-    destaque: true,
   },
 
   {
@@ -247,7 +274,6 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
   {
     key: "nombre_notario",
     label: "Nombre notario",
-    destaque: true,
   },
 
   {
@@ -308,7 +334,7 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
 
 
 // ============================================================
-// CAMPOS ESPECÍFICOS POR ACTIVIDAD
+// CAMPOS ESPECÍFICOS DE ACTIVIDADES
 // ============================================================
 
 const CAMPOS_ACTIVIDADES = {
@@ -485,7 +511,8 @@ const CAMPOS_ACTIVIDADES = {
 
     {
       key: "fecha_recogida_notario_presentacion_telematica",
-      label: "Fecha recogida notario / presentación telemática",
+      label:
+        "Fecha recogida notario / presentación telemática",
       tipo: "fecha",
     },
 
@@ -603,7 +630,7 @@ const CAMPOS_ACTIVIDADES = {
   "defectos-registrales": [
     {
       key: "tiene_defectos_abiertos",
-      label: "Tiene defectos abiertos",
+      label: "Defectos abiertos",
       estado: true,
     },
 
@@ -671,7 +698,7 @@ const CAMPOS_ACTIVIDADES = {
 
 
 // ============================================================
-// RESOLVER ACTIVIDAD ACTUAL
+// RESOLVER ACTIVIDAD
 // ============================================================
 
 function resolverActividadActual(
@@ -681,10 +708,6 @@ function resolverActividadActual(
     normalizarTexto(
       expediente?.actividad_actual
     );
-
-  if (!actividad) {
-    return "documentacion-previa";
-  }
 
   if (
     actividad.includes(
@@ -705,6 +728,9 @@ function resolverActividadActual(
   if (
     actividad.includes(
       "liquidacion de impuestos"
+    ) ||
+    actividad.includes(
+      "liquidacion impuestos"
     )
   ) {
     return "liquidacion-impuestos";
@@ -731,11 +757,6 @@ function resolverActividadActual(
       "sede notarial"
     )
   ) {
-    /*
-     * Si el backend todavía devuelve "Sede notarial"
-     * pero ya existe fecha de firma/protocolo,
-     * mostramos la fase con protocolo.
-     */
     if (
       expediente?.protocolo ||
       expediente?.fecha_firma
@@ -746,199 +767,21 @@ function resolverActividadActual(
     return "sede-notarial";
   }
 
-  if (
-    actividad.includes(
-      "documentacion previa"
-    )
-  ) {
-    return "documentacion-previa";
-  }
-
   return "documentacion-previa";
 }
 
 
 // ============================================================
-// ICONOS DE SECCIÓN
-// ============================================================
-
-function IconoSeccion({
-  tipo = "default",
-}) {
-
-  const iconos = {
-
-    estado: (
-      <>
-        <circle
-          cx="12"
-          cy="12"
-          r="8"
-        />
-        <path
-          d="m9 12 2 2 4-4"
-        />
-      </>
-    ),
-
-    titular: (
-      <>
-        <circle
-          cx="12"
-          cy="8"
-          r="3"
-        />
-        <path
-          d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6"
-        />
-      </>
-    ),
-
-    solicitante: (
-      <>
-        <circle
-          cx="9"
-          cy="8"
-          r="3"
-        />
-        <path
-          d="M3.5 20c.5-3.4 2.7-5.5 5.5-5.5"
-        />
-        <path
-          d="M16 12v6"
-        />
-        <path
-          d="M13 15h6"
-        />
-      </>
-    ),
-
-    economico: (
-      <>
-        <circle
-          cx="12"
-          cy="12"
-          r="8"
-        />
-        <path
-          d="M12 7v10"
-        />
-        <path
-          d="M15 9.5c0-1.2-1.1-2-3-2s-3 .8-3 2 1.1 2 3 2 3 .8 3 2-1.1 2-3 2-3-.8-3-2"
-        />
-      </>
-    ),
-
-    notario: (
-      <>
-        <path
-          d="M4 20h16"
-        />
-        <path
-          d="M6 20V9l6-4 6 4v11"
-        />
-        <path
-          d="M9 20v-6h6v6"
-        />
-      </>
-    ),
-
-    observaciones: (
-      <>
-        <path
-          d="M4 5h16v12H8l-4 4z"
-        />
-        <path
-          d="M8 9h8"
-        />
-        <path
-          d="M8 13h5"
-        />
-      </>
-    ),
-
-    actividad: (
-      <>
-        <path
-          d="M5 12h14"
-        />
-        <path
-          d="m13 6 6 6-6 6"
-        />
-      </>
-    ),
-
-    defecto: (
-      <>
-        <path
-          d="M12 4 3.5 19h17z"
-        />
-        <path
-          d="M12 9v4"
-        />
-        <path
-          d="M12 16h.01"
-        />
-      </>
-    ),
-
-    default: (
-      <>
-        <rect
-          x="5"
-          y="4"
-          width="14"
-          height="16"
-          rx="2"
-        />
-        <path
-          d="M9 8h6"
-        />
-        <path
-          d="M9 12h6"
-        />
-        <path
-          d="M9 16h4"
-        />
-      </>
-    ),
-  };
-
-  return (
-    <svg
-      className="h-5 w-5"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {
-        iconos[tipo] ||
-        iconos.default
-      }
-    </svg>
-  );
-}
-
-
-// ============================================================
-// BADGE ESTADO
+// ESTADO BADGE
 // ============================================================
 
 function EstadoBadge({
   valor,
-  rojo = false,
 }) {
-
   const texto =
     valorVisible(valor);
 
-  if (
-    texto === "—"
-  ) {
+  if (texto === "—") {
     return (
       <span
         className="
@@ -960,37 +803,6 @@ function EstadoBadge({
     );
   }
 
-  if (rojo) {
-    return (
-      <span
-        className="
-          inline-flex
-          items-center
-          gap-1.5
-          rounded-full
-          border
-          border-red-200
-          bg-red-50
-          px-2.5
-          py-1
-          text-[11px]
-          font-bold
-          text-red-700
-        "
-      >
-        <span
-          className="
-            h-1.5
-            w-1.5
-            rounded-full
-            bg-red-500
-          "
-        />
-        {texto}
-      </span>
-    );
-  }
-
   const normalizado =
     normalizarTexto(texto);
 
@@ -999,16 +811,16 @@ function EstadoBadge({
     normalizado.includes("abiert") ||
     normalizado.includes("activo");
 
-  const cerrado =
-    normalizado.includes("cerr") ||
-    normalizado.includes("final");
-
   const negativo =
     normalizado.includes("error") ||
     normalizado.includes("defecto");
 
+  const cerrado =
+    normalizado.includes("cerr") ||
+    normalizado.includes("final");
+
   let clases =
-    "border-blue-100 bg-blue-50 text-blue-600";
+    "border-blue-200 bg-blue-50 text-blue-700";
 
   let punto =
     "bg-blue-500";
@@ -1016,6 +828,7 @@ function EstadoBadge({
   if (positivo) {
     clases =
       "border-emerald-200 bg-emerald-50 text-emerald-700";
+
     punto =
       "bg-emerald-500";
   }
@@ -1023,6 +836,7 @@ function EstadoBadge({
   if (cerrado) {
     clases =
       "border-slate-200 bg-slate-100 text-slate-600";
+
     punto =
       "bg-slate-500";
   }
@@ -1030,6 +844,7 @@ function EstadoBadge({
   if (negativo) {
     clases =
       "border-red-200 bg-red-50 text-red-700";
+
     punto =
       "bg-red-500";
   }
@@ -1054,7 +869,6 @@ function EstadoBadge({
         className={`
           h-1.5
           w-1.5
-          shrink-0
           rounded-full
           ${punto}
         `}
@@ -1069,179 +883,76 @@ function EstadoBadge({
 
 
 // ============================================================
-// DATO
+// ICONO
 // ============================================================
 
-function Dato({
-  campo,
-  valor,
-  tipo = "texto",
-  destaque = false,
-  estado = false,
-  multilinea = false,
+function IconoSeccion({
+  tipo = "default",
 }) {
-
-  let contenido =
-    valorVisible(valor);
-
-  if (
-    tipo === "fecha"
-  ) {
-    contenido =
-      formatearFecha(valor);
-  }
-
-  if (
-    tipo === "numero"
-  ) {
-    contenido =
-      formatearNumero(valor);
-  }
+  const iconos = {
+    estado: "◉",
+    titular: "👤",
+    solicitante: "👥",
+    economico: "📊",
+    notario: "✒️",
+    observaciones: "▣",
+    actividad: "⚙️",
+    finca: "🏠",
+    registro: "📚",
+    accion: "⚡",
+  };
 
   return (
-    <div
-      className={`
-        min-w-0
-        rounded-2xl
-        border
-        p-3.5
-        transition-all
-        duration-200
-        ${
-          destaque
-            ? `
-              border-blue-100
-              bg-blue-50/55
-            `
-            : `
-              border-slate-200/80
-              bg-white/70
-              hover:border-blue-100
-              hover:bg-white
-              hover:shadow-sm
-            `
-        }
-      `}
+    <span
+      className="
+        text-base
+        leading-none
+      "
+      aria-hidden="true"
     >
-
-      <p
-        className="
-          mb-1.5
-          truncate
-          text-[10px]
-          font-semibold
-          uppercase
-          tracking-[0.08em]
-          text-slate-400
-        "
-      >
-        {campo}
-      </p>
-
-      {estado ? (
-
-        <EstadoBadge
-          valor={valor}
-          rojo={
-            normalizarTexto(
-              valor
-            ).includes("defecto")
-          }
-        />
-
-      ) : (
-
-        <p
-          className={`
-            break-words
-            text-sm
-            leading-5
-            ${
-              multilinea
-                ? "whitespace-pre-wrap"
-                : ""
-            }
-            ${
-              destaque
-                ? `
-                  font-bold
-                  text-blue-700
-                `
-                : `
-                  font-medium
-                  text-slate-700
-                `
-            }
-          `}
-        >
-          {contenido}
-        </p>
-
-      )}
-
-    </div>
+      {
+        iconos[tipo] ||
+        "▣"
+      }
+    </span>
   );
 }
 
 
 // ============================================================
-// SECCIÓN
+// TARJETA
 // ============================================================
 
 function Seccion({
   titulo,
   subtitulo,
-  icono = "default",
+  icono,
   children,
-  columnas = 3,
+  className = "",
 }) {
-
-  const gridClass =
-    columnas === 4
-      ? "xl:grid-cols-4"
-      : columnas === 2
-        ? "xl:grid-cols-2"
-        : "xl:grid-cols-3";
-
   return (
     <section
-      className="
-        relative
-        overflow-hidden
-        rounded-[24px]
+      className={`
+        rounded-2xl
         border
         border-white/80
-        bg-white/80
-        p-5
-        shadow-[0_16px_45px_rgba(15,23,42,0.06)]
-        backdrop-blur-2xl
-        sm:p-6
-      "
+        bg-white/85
+        shadow-[0_15px_40px_rgba(15,23,42,0.07)]
+        overflow-hidden
+        ${className}
+      `}
     >
-
       <div
         className="
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-          bg-gradient-to-r
-          from-transparent
-          via-blue-400/45
-          to-transparent
-        "
-      />
-
-      <div
-        className="
-          mb-5
           flex
-          items-start
+          items-center
           gap-3
+          border-b
+          border-slate-100
+          px-5
+          py-4
         "
       >
-
         <div
           className="
             flex
@@ -1262,13 +973,11 @@ function Seccion({
           />
         </div>
 
-        <div className="min-w-0 flex-1">
-
+        <div className="min-w-0">
           <h2
             className="
-              text-base
+              text-sm
               font-bold
-              tracking-tight
               text-slate-800
             "
           >
@@ -1278,817 +987,124 @@ function Seccion({
           {subtitulo && (
             <p
               className="
-                mt-1
-                text-xs
-                leading-5
+                mt-0.5
+                text-[11px]
                 text-slate-400
               "
             >
               {subtitulo}
             </p>
           )}
-
         </div>
-
       </div>
 
-      <div
-        className={`
-          grid
-          grid-cols-1
-          gap-3
-          sm:grid-cols-2
-          ${gridClass}
-        `}
-      >
+      <div className="p-5">
         {children}
       </div>
-
     </section>
   );
 }
 
 
 // ============================================================
-// OBSERVACIONES
+// DATO
 // ============================================================
 
-function Observaciones({
+function Dato({
+  campo,
   valor,
+  tipo = "texto",
+  destaque = false,
+  estado = false,
+  multilinea = false,
 }) {
+  let contenido =
+    valorVisible(valor);
 
-  return (
-    <section
-      className="
-        relative
-        overflow-hidden
-        rounded-[24px]
-        border
-        border-white/80
-        bg-white/80
-        p-5
-        shadow-[0_16px_45px_rgba(15,23,42,0.06)]
-        backdrop-blur-2xl
-        sm:p-6
-      "
-    >
+  if (tipo === "fecha") {
+    contenido =
+      formatearFecha(valor);
+  }
 
-      <div
-        className="
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-          bg-gradient-to-r
-          from-transparent
-          via-blue-400/45
-          to-transparent
-        "
-      />
-
-      <div
-        className="
-          mb-5
-          flex
-          items-center
-          gap-3
-        "
-      >
-
-        <div
-          className="
-            flex
-            h-10
-            w-10
-            shrink-0
-            items-center
-            justify-center
-            rounded-xl
-            border
-            border-slate-200
-            bg-slate-50
-            text-slate-500
-          "
-        >
-          <IconoSeccion
-            tipo="observaciones"
-          />
-        </div>
-
-        <div>
-
-          <h2
-            className="
-              text-base
-              font-bold
-              tracking-tight
-              text-slate-800
-            "
-          >
-            Observaciones
-          </h2>
-
-          <p
-            className="
-              mt-1
-              text-xs
-              text-slate-400
-            "
-          >
-            Información adicional
-          </p>
-
-        </div>
-
-      </div>
-
-      <div
-        className="
-          min-h-[100px]
-          rounded-2xl
-          border
-          border-slate-200/80
-          bg-slate-50/75
-          p-4
-          text-sm
-          leading-6
-          text-slate-600
-          shadow-inner
-          whitespace-pre-wrap
-          break-words
-        "
-      >
-        {valorVisible(valor)}
-      </div>
-
-    </section>
-  );
-}
-
-
-// ============================================================
-// MODAL ACTIVIDADES
-// ============================================================
-
-function ModalActividades({
-  expediente,
-  actividadSeleccionada,
-  setActividadSeleccionada,
-  cerrar,
-}) {
-
-  const actividad =
-    ACTIVIDADES_EXPEDIENTES.find(
-      (item) =>
-        item.key ===
-        actividadSeleccionada
-    ) ||
-    ACTIVIDADES_EXPEDIENTES[0];
-
-  const campos =
-    [
-      ...CAMPOS_COMUNES_ACTIVIDAD,
-      ...(
-        CAMPOS_ACTIVIDADES[
-          actividad.key
-        ] || []
-      ),
-    ];
-
-  /*
-   * Eliminamos duplicados por seguridad.
-   */
-  const camposUnicos =
-    campos.filter(
-      (campo, index, array) =>
-        array.findIndex(
-          (item) =>
-            item.key === campo.key
-        ) === index
-    );
-
-  /*
-   * Solo mostramos campos que realmente
-   * vienen en el objeto expediente.
-   *
-   * Así NO inventamos información.
-   */
-  const camposDisponibles =
-    camposUnicos.filter(
-      (campo) =>
-        esValorDisponible(
-          expediente,
-          campo.key
-        )
-    );
+  if (tipo === "numero") {
+    contenido =
+      formatearNumero(valor);
+  }
 
   return (
     <div
-      className="
-        fixed
-        inset-0
-        z-[9998]
-        flex
-        items-center
-        justify-center
-        bg-slate-900/50
-        p-4
-        backdrop-blur-[2px]
-      "
-      onMouseDown={(event) => {
-        if (
-          event.target ===
-          event.currentTarget
-        ) {
-          cerrar();
+      className={`
+        min-w-0
+        rounded-xl
+        border
+        px-3
+        py-3
+        ${
+          destaque
+            ? "border-blue-100 bg-blue-50/60"
+            : "border-slate-100 bg-white"
         }
-      }}
+      `}
     >
-
-      <div
+      <p
         className="
-          relative
-          flex
-          max-h-[92vh]
-          w-full
-          max-w-[1250px]
-          flex-col
-          overflow-hidden
-          rounded-[28px]
-          border
-          border-slate-200
-          bg-white
-          shadow-[0_30px_100px_rgba(15,23,42,0.25)]
+          mb-1.5
+          truncate
+          text-[9px]
+          font-bold
+          uppercase
+          tracking-[0.08em]
+          text-slate-400
         "
-        onMouseDown={(event) => {
-          event.stopPropagation();
-        }}
       >
+        {campo}
+      </p>
 
-        {/* ================================================
-            CABECERA MODAL
-        ================================================ */}
-
+      {estado ? (
+        <EstadoBadge
+          valor={valor}
+        />
+      ) : (
         <div
-          className="
-            flex
-            shrink-0
-            items-start
-            justify-between
-            gap-4
-            border-b
-            border-slate-200
-            bg-gradient-to-r
-            from-slate-50
-            to-white
-            px-6
-            py-5
-          "
+          className={`
+            text-xs
+            font-medium
+            ${
+              destaque
+                ? "text-blue-700"
+                : "text-slate-700"
+            }
+            ${
+              multilinea
+                ? "whitespace-pre-wrap"
+                : "break-words"
+            }
+          `}
         >
-
-          <div className="min-w-0">
-
-            <div
-              className="
-                flex
-                items-center
-                gap-3
-              "
-            >
-
-              <div
-                className="
-                  flex
-                  h-11
-                  w-11
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-xl
-                  border
-                  border-blue-100
-                  bg-blue-50
-                  text-xl
-                "
-              >
-                ⚙️
-              </div>
-
-              <div>
-
-                <h2
-                  className="
-                    text-lg
-                    font-bold
-                    tracking-tight
-                    text-slate-800
-                  "
-                >
-                  Actividades del expediente
-                </h2>
-
-                <p
-                  className="
-                    mt-1
-                    text-xs
-                    text-slate-400
-                  "
-                >
-                  Expediente{" "}
-                  <span
-                    className="
-                      font-semibold
-                      text-slate-600
-                    "
-                  >
-                    {
-                      valorVisible(
-                        expediente.id_expediente
-                      )
-                    }
-                  </span>
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <button
-            type="button"
-            onClick={cerrar}
-            className="
-              inline-flex
-              h-9
-              w-9
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              border
-              border-slate-200
-              bg-white
-              text-lg
-              text-slate-400
-              shadow-sm
-              transition
-              hover:border-slate-300
-              hover:bg-slate-50
-              hover:text-slate-700
-            "
-            aria-label="Cerrar actividades"
-          >
-            ×
-          </button>
-
+          {contenido}
         </div>
-
-
-        {/* ================================================
-            ACTIVIDADES / PESTAÑAS
-        ================================================ */}
-
-        <div
-          className="
-            shrink-0
-            border-b
-            border-slate-200
-            bg-slate-50/70
-            px-5
-            py-4
-          "
-        >
-
-          <div
-            className="
-              flex
-              gap-2
-              overflow-x-auto
-              pb-1
-            "
-          >
-
-            {ACTIVIDADES_EXPEDIENTES.map(
-              (item) => {
-
-                const activa =
-                  item.key ===
-                  actividadSeleccionada;
-
-                const esActual =
-                  item.key ===
-                  resolverActividadActual(
-                    expediente
-                  );
-
-                return (
-                  <button
-                    key={item.key}
-                    type="button"
-                    onClick={() =>
-                      setActividadSeleccionada(
-                        item.key
-                      )
-                    }
-                    className={`
-                      relative
-                      flex
-                      shrink-0
-                      items-center
-                      gap-2
-                      rounded-xl
-                      border
-                      px-3
-                      py-2.5
-                      text-xs
-                      font-semibold
-                      transition-all
-                      ${
-                        activa
-                          ? `
-                            border-blue-200
-                            bg-blue-600
-                            text-white
-                            shadow-sm
-                          `
-                          : `
-                            border-slate-200
-                            bg-white
-                            text-slate-600
-                            hover:border-blue-200
-                            hover:bg-blue-50
-                            hover:text-blue-700
-                          `
-                      }
-                    `}
-                  >
-
-                    <span>
-                      {item.icono}
-                    </span>
-
-                    <span>
-                      {item.label}
-                    </span>
-
-                    {esActual && (
-                      <span
-                        className={`
-                          rounded-full
-                          px-2
-                          py-0.5
-                          text-[9px]
-                          font-bold
-                          uppercase
-                          tracking-wide
-                          ${
-                            activa
-                              ? `
-                                bg-white/20
-                                text-white
-                              `
-                              : `
-                                bg-emerald-50
-                                text-emerald-700
-                              `
-                          }
-                        `}
-                      >
-                        Actual
-                      </span>
-                    )}
-
-                  </button>
-                );
-              }
-            )}
-
-          </div>
-
-        </div>
-
-
-        {/* ================================================
-            CUERPO
-        ================================================ */}
-
-        <div
-          className="
-            min-h-0
-            flex-1
-            overflow-y-auto
-            px-6
-            py-6
-          "
-        >
-
-          {/* Cabecera de actividad */}
-
-          <div
-            className="
-              mb-5
-              flex
-              flex-col
-              gap-3
-              rounded-2xl
-              border
-              border-blue-100
-              bg-blue-50/60
-              p-4
-              sm:flex-row
-              sm:items-center
-              sm:justify-between
-            "
-          >
-
-            <div
-              className="
-                flex
-                items-center
-                gap-3
-              "
-            >
-
-              <span
-                className="
-                  text-2xl
-                "
-              >
-                {actividad.icono}
-              </span>
-
-              <div>
-
-                <h3
-                  className="
-                    text-base
-                    font-bold
-                    text-slate-800
-                  "
-                >
-                  {actividad.label}
-                </h3>
-
-                <p
-                  className="
-                    mt-1
-                    text-xs
-                    text-slate-500
-                  "
-                >
-                  Información disponible
-                  para esta actividad.
-                </p>
-
-              </div>
-
-            </div>
-
-            {actividad.key ===
-              resolverActividadActual(
-                expediente
-              ) && (
-                <span
-                  className="
-                    inline-flex
-                    w-fit
-                    items-center
-                    rounded-full
-                    border
-                    border-emerald-200
-                    bg-emerald-50
-                    px-3
-                    py-1.5
-                    text-[10px]
-                    font-bold
-                    uppercase
-                    tracking-wide
-                    text-emerald-700
-                  "
-                >
-                  ● Actividad actual
-                </span>
-              )}
-
-          </div>
-
-
-          {/* Datos */}
-
-          {camposDisponibles.length > 0 ? (
-
-            <div
-              className="
-                grid
-                grid-cols-1
-                gap-3
-                sm:grid-cols-2
-                xl:grid-cols-3
-              "
-            >
-
-              {camposDisponibles.map(
-                (campo) => (
-
-                  <Dato
-                    key={campo.key}
-                    campo={campo.label}
-                    valor={
-                      expediente[
-                        campo.key
-                      ]
-                    }
-                    tipo={
-                      campo.tipo ||
-                      "texto"
-                    }
-                    estado={
-                      Boolean(
-                        campo.estado
-                      )
-                    }
-                    destaque={
-                      Boolean(
-                        campo.destaque
-                      )
-                    }
-                    multilinea={
-                      Boolean(
-                        campo.multilinea
-                      )
-                    }
-                  />
-
-                )
-              )}
-
-            </div>
-
-          ) : (
-
-            <div
-              className="
-                flex
-                min-h-[220px]
-                items-center
-                justify-center
-                rounded-2xl
-                border
-                border-dashed
-                border-slate-200
-                bg-slate-50/70
-                p-8
-                text-center
-              "
-            >
-
-              <div>
-
-                <div
-                  className="
-                    mx-auto
-                    flex
-                    h-14
-                    w-14
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    bg-slate-100
-                    text-2xl
-                  "
-                >
-                  📋
-                </div>
-
-                <h4
-                  className="
-                    mt-4
-                    text-sm
-                    font-bold
-                    text-slate-700
-                  "
-                >
-                  Sin información disponible
-                </h4>
-
-                <p
-                  className="
-                    mx-auto
-                    mt-1
-                    max-w-md
-                    text-xs
-                    leading-5
-                    text-slate-400
-                  "
-                >
-                  El expediente no contiene
-                  actualmente datos registrados
-                  para esta actividad.
-                </p>
-
-              </div>
-
-            </div>
-
-          )}
-
-        </div>
-
-
-        {/* ================================================
-            PIE
-        ================================================ */}
-
-        <div
-          className="
-            flex
-            shrink-0
-            items-center
-            justify-between
-            gap-3
-            border-t
-            border-slate-200
-            bg-slate-50
-            px-6
-            py-4
-          "
-        >
-
-          <p
-            className="
-              text-[11px]
-              text-slate-400
-            "
-          >
-            Los datos mostrados corresponden
-            al expediente actual.
-          </p>
-
-          <button
-            type="button"
-            onClick={cerrar}
-            className="
-              inline-flex
-              items-center
-              justify-center
-              rounded-xl
-              border
-              border-slate-200
-              bg-white
-              px-4
-              py-2.5
-              text-xs
-              font-semibold
-              text-slate-600
-              shadow-sm
-              transition
-              hover:border-slate-300
-              hover:bg-slate-100
-            "
-          >
-            Cerrar
-          </button>
-
-        </div>
-
-      </div>
-
+      )}
     </div>
   );
 }
 
 
 // ============================================================
-// MODAL DEFECTO
+// MODAL BASE
 // ============================================================
 
-function ModalDefecto({
-  modo,
-  tipoDefecto,
-  faltaDefecto,
-  descripcionDefecto,
-  fechaAltaDefecto,
-  fechaSubsanacion,
-  observacionSubsanacion,
-  setTipoDefecto,
-  setFaltaDefecto,
-  setDescripcionDefecto,
-  setFechaAltaDefecto,
-  setFechaSubsanacion,
-  setObservacionSubsanacion,
-  guardar,
-  confirmarSubsanacion,
-  cerrar,
-  guardando,
+function Modal({
+  open,
+  onClose,
+  titulo,
+  subtitulo,
+  children,
+  footer,
+  ancho = "max-w-3xl",
 }) {
-
-  const esSubsanacion =
-    modo === "subsanar";
-
-  const esDetalle =
-    modo === "detalle";
+  if (!open) {
+    return null;
+  }
 
   return (
     <div
@@ -2108,18 +1124,17 @@ function ModalDefecto({
           event.target ===
           event.currentTarget
         ) {
-          cerrar();
+          onClose();
         }
       }}
     >
-
       <div
-        className="
+        className={`
           relative
           flex
-          max-h-[90vh]
+          max-h-[92vh]
           w-full
-          max-w-2xl
+          ${ancho}
           flex-col
           overflow-hidden
           rounded-2xl
@@ -2127,20 +1142,17 @@ function ModalDefecto({
           border-slate-200
           bg-white
           shadow-2xl
-        "
+        `}
         onMouseDown={(event) => {
           event.stopPropagation();
         }}
       >
-
-        {/* HEADER */}
-
         <div
           className="
             flex
-            shrink-0
             items-center
             justify-between
+            gap-4
             border-b
             border-slate-200
             bg-gradient-to-r
@@ -2150,93 +1162,53 @@ function ModalDefecto({
             py-5
           "
         >
-
-          <div>
-
-            <div
+          <div className="min-w-0">
+            <h2
               className="
-                flex
-                items-center
-                gap-3
+                text-lg
+                font-bold
+                text-slate-800
               "
             >
+              {titulo}
+            </h2>
 
-              <div
+            {subtitulo && (
+              <p
                 className="
-                  flex
-                  h-10
-                  w-10
-                  items-center
-                  justify-center
-                  rounded-xl
-                  border
-                  border-red-200
-                  bg-red-50
-                  text-red-600
+                  mt-1
+                  text-xs
+                  text-slate-400
                 "
               >
-                ⚠️
-              </div>
-
-              <div>
-
-                <h2
-                  className="
-                    text-lg
-                    font-bold
-                    text-slate-800
-                  "
-                >
-                  {esSubsanacion
-                    ? "Subsanar defecto registral"
-                    : esDetalle
-                      ? "Detalle del defecto registral"
-                      : "Dar de alta defecto registral"}
-                </h2>
-
-                <p
-                  className="
-                    mt-1
-                    text-xs
-                    text-slate-400
-                  "
-                >
-                  Información registral del expediente
-                </p>
-
-              </div>
-
-            </div>
-
+                {subtitulo}
+              </p>
+            )}
           </div>
 
           <button
             type="button"
-            onClick={cerrar}
+            onClick={onClose}
             className="
-              inline-flex
+              flex
               h-9
               w-9
+              shrink-0
               items-center
               justify-center
               rounded-xl
               border
               border-slate-200
               bg-white
-              text-lg
-              text-slate-400
+              text-slate-500
               transition
               hover:bg-slate-50
-              hover:text-slate-700
+              hover:text-slate-800
             "
           >
-            ×
+            ✕
           </button>
-
         </div>
-
-
-        {/* BODY */}
 
         <div
           className="
@@ -2247,530 +1219,119 @@ function ModalDefecto({
             py-6
           "
         >
-
-          {!esSubsanacion && (
-            <div
-              className="
-                grid
-                grid-cols-1
-                gap-4
-                sm:grid-cols-2
-              "
-            >
-
-              <label className="block">
-
-                <span
-                  className="
-                    mb-1.5
-                    block
-                    text-xs
-                    font-semibold
-                    text-slate-500
-                  "
-                >
-                  Tipo de defecto
-                </span>
-
-                <input
-                  type="text"
-                  value={
-                    tipoDefecto
-                  }
-                  onChange={(event) =>
-                    setTipoDefecto(
-                      event.target.value
-                    )
-                  }
-                  disabled={esDetalle}
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-3
-                    py-2.5
-                    text-sm
-                    text-slate-700
-                    outline-none
-                    transition
-                    focus:border-blue-400
-                    focus:ring-2
-                    focus:ring-blue-100
-                    disabled:bg-slate-50
-                  "
-                  placeholder="Tipo de defecto"
-                />
-
-              </label>
-
-
-              <label className="block">
-
-                <span
-                  className="
-                    mb-1.5
-                    block
-                    text-xs
-                    font-semibold
-                    text-slate-500
-                  "
-                >
-                  Falta / defecto
-                </span>
-
-                <input
-                  type="text"
-                  value={
-                    faltaDefecto
-                  }
-                  onChange={(event) =>
-                    setFaltaDefecto(
-                      event.target.value
-                    )
-                  }
-                  disabled={esDetalle}
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-3
-                    py-2.5
-                    text-sm
-                    text-slate-700
-                    outline-none
-                    transition
-                    focus:border-blue-400
-                    focus:ring-2
-                    focus:ring-blue-100
-                    disabled:bg-slate-50
-                  "
-                  placeholder="Falta o defecto"
-                />
-
-              </label>
-
-
-              <label
-                className="
-                  block
-                  sm:col-span-2
-                "
-              >
-
-                <span
-                  className="
-                    mb-1.5
-                    block
-                    text-xs
-                    font-semibold
-                    text-slate-500
-                  "
-                >
-                  Descripción
-                </span>
-
-                <textarea
-                  rows={5}
-                  value={
-                    descripcionDefecto
-                  }
-                  onChange={(event) =>
-                    setDescripcionDefecto(
-                      event.target.value
-                    )
-                  }
-                  disabled={esDetalle}
-                  className="
-                    w-full
-                    resize-y
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-3
-                    py-2.5
-                    text-sm
-                    leading-6
-                    text-slate-700
-                    outline-none
-                    transition
-                    focus:border-blue-400
-                    focus:ring-2
-                    focus:ring-blue-100
-                    disabled:bg-slate-50
-                  "
-                  placeholder="Descripción del defecto registral"
-                />
-
-              </label>
-
-
-              <label className="block">
-
-                <span
-                  className="
-                    mb-1.5
-                    block
-                    text-xs
-                    font-semibold
-                    text-slate-500
-                  "
-                >
-                  Fecha de alta
-                </span>
-
-                <input
-                  type="date"
-                  value={
-                    fechaAltaDefecto
-                  }
-                  onChange={(event) =>
-                    setFechaAltaDefecto(
-                      event.target.value
-                    )
-                  }
-                  disabled={esDetalle}
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-3
-                    py-2.5
-                    text-sm
-                    text-slate-700
-                    outline-none
-                    transition
-                    focus:border-blue-400
-                    focus:ring-2
-                    focus:ring-blue-100
-                    disabled:bg-slate-50
-                  "
-                />
-
-              </label>
-
-            </div>
-          )}
-
-
-          {esSubsanacion && (
-            <div
-              className="
-                space-y-5
-              "
-            >
-
-              <div
-                className="
-                  rounded-2xl
-                  border
-                  border-red-100
-                  bg-red-50/70
-                  p-4
-                "
-              >
-
-                <p
-                  className="
-                    text-xs
-                    font-bold
-                    uppercase
-                    tracking-wide
-                    text-red-600
-                  "
-                >
-                  Defecto registral
-                </p>
-
-                <p
-                  className="
-                    mt-2
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                  "
-                >
-                  {valorVisible(
-                    tipoDefecto
-                  )}
-                </p>
-
-                <p
-                  className="
-                    mt-1
-                    text-xs
-                    leading-5
-                    text-slate-500
-                  "
-                >
-                  {valorVisible(
-                    descripcionDefecto
-                  )}
-                </p>
-
-              </div>
-
-
-              <label className="block">
-
-                <span
-                  className="
-                    mb-1.5
-                    block
-                    text-xs
-                    font-semibold
-                    text-slate-500
-                  "
-                >
-                  Fecha de subsanación
-                </span>
-
-                <input
-                  type="date"
-                  value={
-                    fechaSubsanacion
-                  }
-                  onChange={(event) =>
-                    setFechaSubsanacion(
-                      event.target.value
-                    )
-                  }
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-3
-                    py-2.5
-                    text-sm
-                    text-slate-700
-                    outline-none
-                    transition
-                    focus:border-blue-400
-                    focus:ring-2
-                    focus:ring-blue-100
-                  "
-                />
-
-              </label>
-
-
-              <label className="block">
-
-                <span
-                  className="
-                    mb-1.5
-                    block
-                    text-xs
-                    font-semibold
-                    text-slate-500
-                  "
-                >
-                  Observación de la subsanación
-                </span>
-
-                <textarea
-                  rows={5}
-                  value={
-                    observacionSubsanacion
-                  }
-                  onChange={(event) =>
-                    setObservacionSubsanacion(
-                      event.target.value
-                    )
-                  }
-                  className="
-                    w-full
-                    resize-y
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-3
-                    py-2.5
-                    text-sm
-                    leading-6
-                    text-slate-700
-                    outline-none
-                    transition
-                    focus:border-blue-400
-                    focus:ring-2
-                    focus:ring-blue-100
-                  "
-                  placeholder="Observaciones de la subsanación"
-                />
-
-              </label>
-
-            </div>
-          )}
-
+          {children}
         </div>
 
-
-        {/* FOOTER */}
-
-        <div
-          className="
-            flex
-            shrink-0
-            items-center
-            justify-end
-            gap-3
-            border-t
-            border-slate-200
-            bg-slate-50
-            px-6
-            py-4
-          "
-        >
-
-          <button
-            type="button"
-            onClick={cerrar}
+        {footer && (
+          <div
             className="
-              rounded-xl
-              border
+              flex
+              items-center
+              justify-end
+              gap-3
+              border-t
               border-slate-200
-              bg-white
-              px-4
-              py-2.5
-              text-xs
-              font-semibold
-              text-slate-600
-              shadow-sm
-              transition
-              hover:bg-slate-100
+              bg-slate-50
+              px-6
+              py-4
             "
           >
-            Cerrar
-          </button>
-
-          {esDetalle && (
-            <span
-              className="
-                rounded-xl
-                bg-slate-100
-                px-4
-                py-2.5
-                text-xs
-                font-semibold
-                text-slate-500
-              "
-            >
-              Solo consulta
-            </span>
-          )}
-
-          {!esDetalle &&
-            !esSubsanacion && (
-              <button
-                type="button"
-                onClick={guardar}
-                disabled={guardando}
-                className="
-                  rounded-xl
-                  bg-red-600
-                  px-4
-                  py-2.5
-                  text-xs
-                  font-bold
-                  text-white
-                  shadow-sm
-                  transition
-                  hover:bg-red-700
-                  disabled:cursor-not-allowed
-                  disabled:opacity-60
-                "
-              >
-                {guardando
-                  ? "Guardando…"
-                  : "⚠️ Dar de alta defecto"}
-              </button>
-            )}
-
-          {esSubsanacion && (
-            <button
-              type="button"
-              onClick={
-                confirmarSubsanacion
-              }
-              disabled={guardando}
-              className="
-                rounded-xl
-                bg-emerald-600
-                px-4
-                py-2.5
-                text-xs
-                font-bold
-                text-white
-                shadow-sm
-                transition
-                hover:bg-emerald-700
-                disabled:cursor-not-allowed
-                disabled:opacity-60
-              "
-            >
-              {guardando
-                ? "Guardando…"
-                : "✓ Confirmar subsanación"}
-            </button>
-          )}
-
-        </div>
-
+            {footer}
+          </div>
+        )}
       </div>
-
     </div>
   );
 }
 
 
 // ============================================================
-// FICHA
+// BOTÓN
+// ============================================================
+
+function Boton({
+  children,
+  onClick,
+  tipo = "secondary",
+  disabled = false,
+  className = "",
+}) {
+  const clases = {
+    primary:
+      "border-blue-600 bg-blue-600 text-white hover:bg-blue-700",
+
+    secondary:
+      "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+
+    danger:
+      "border-red-200 bg-red-50 text-red-700 hover:bg-red-100",
+
+    success:
+      "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
+
+    warning:
+      "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100",
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        inline-flex
+        items-center
+        justify-center
+        gap-2
+        rounded-xl
+        border
+        px-4
+        py-2.5
+        text-xs
+        font-bold
+        transition
+        disabled:cursor-not-allowed
+        disabled:opacity-50
+        ${clases[tipo] || clases.secondary}
+        ${className}
+      `}
+    >
+      {children}
+    </button>
+  );
+}
+
+
+// ============================================================
+// COMPONENTE
 // ============================================================
 
 export default function FichaExpediente() {
-
-  const {
-    id,
-  } = useParams();
-
+  const { id } = useParams();
 
   const [
     expediente,
     setExpediente,
   ] = useState(null);
 
-
   const [
     loading,
     setLoading,
   ] = useState(true);
-
 
   const [
     error,
     setError,
   ] = useState("");
 
-
-  // ==========================================================
-  // ACTIVIDADES
-  // ==========================================================
+  // ----------------------------------------------------------
+  // MODALES
+  // ----------------------------------------------------------
 
   const [
     mostrarActividades,
     setMostrarActividades,
   ] = useState(false);
-
 
   const [
     actividadSeleccionada,
@@ -2779,162 +1340,262 @@ export default function FichaExpediente() {
     "documentacion-previa"
   );
 
-
-  // ==========================================================
-  // ENVIAR A NOTARIO
-  // ==========================================================
+  const [
+    mostrarDefecto,
+    setMostrarDefecto,
+  ] = useState(false);
 
   const [
     mostrarEnviarNotario,
     setMostrarEnviarNotario,
   ] = useState(false);
 
-
   const [
-    enviandoNotario,
-    setEnviandoNotario,
+    mostrarFincas,
+    setMostrarFincas,
   ] = useState(false);
 
-
-  // ==========================================================
-  // DEFECTOS
-  // ==========================================================
-
   const [
-    mostrarDefectoModal,
-    setMostrarDefectoModal,
+    mostrarRegistros,
+    setMostrarRegistros,
   ] = useState(false);
 
-
   const [
-    modoDefecto,
-    setModoDefecto,
-  ] = useState("detalle");
-
-
-  const [
-    tipoDefecto,
-    setTipoDefecto,
-  ] = useState("");
-
-
-  const [
-    faltaDefecto,
-    setFaltaDefecto,
-  ] = useState("");
-
-
-  const [
-    descripcionDefecto,
-    setDescripcionDefecto,
-  ] = useState("");
-
-
-  const [
-    fechaAltaDefecto,
-    setFechaAltaDefecto,
-  ] = useState("");
-
-
-  const [
-    fechaSubsanacion,
-    setFechaSubsanacion,
-  ] = useState("");
-
-
-  const [
-    observacionSubsanacion,
-    setObservacionSubsanacion,
-  ] = useState("");
-
-
-  const [
-    guardandoDefecto,
-    setGuardandoDefecto,
+    mostrarAcciones,
+    setMostrarAcciones,
   ] = useState(false);
 
+  const [
+    mostrarAgregarExpedientes,
+    setMostrarAgregarExpedientes,
+  ] = useState(false);
+
+  const [
+    mostrarObservaciones,
+    setMostrarObservaciones,
+  ] = useState(false);
+
+  // ----------------------------------------------------------
+  // DATOS AUXILIARES
+  // ----------------------------------------------------------
+
+  const [
+    expedientesRelacionados,
+    setExpedientesRelacionados,
+  ] = useState([]);
+
+  const [
+    cargandoRelacionados,
+    setCargandoRelacionados,
+  ] = useState(false);
+
+  const [
+    comentario,
+    setComentario,
+  ] = useState("");
+
+  const [
+    visionesComentario,
+    setVisionesComentario,
+  ] = useState({
+    notario: false,
+    apoderado: false,
+    actividad: true,
+  });
+
+  const [
+    fincaForm,
+    setFincaForm,
+  ] = useState({
+    numero_finca: "",
+    registro: "",
+    municipio: "",
+    provincia: "",
+    tomo: "",
+    libro: "",
+    folio: "",
+    inscripcion: "",
+    observaciones: "",
+  });
+
+  const [
+    registroForm,
+    setRegistroForm,
+  ] = useState({
+    registro: "",
+    registrador: "",
+    municipio: "",
+    provincia: "",
+    numero_finca: "",
+    tomo: "",
+    libro: "",
+    folio: "",
+    inscripcion: "",
+    observaciones: "",
+  });
+
+  const [
+    accionForm,
+    setAccionForm,
+  ] = useState({
+    accion: "",
+    entidad_cancelar: "",
+    reclamacion_oficina: "",
+    fecha: "",
+    observaciones: "",
+  });
+
+  const [
+    defectoLocal,
+    setDefectoLocal,
+  ] = useState(null);
 
   // ==========================================================
   // CARGAR EXPEDIENTE
   // ==========================================================
 
-  useEffect(() => {
-
-    let activo = true;
-
-    async function cargar() {
-
-      setLoading(true);
-      setError("");
-
-      try {
-
-        const data =
-          await obtenerExpediente(id);
-
-        if (activo) {
-
-          setExpediente(
-            data
+  const cargarExpediente =
+    useCallback(
+      async () => {
+        if (!id) {
+          setLoading(false);
+          setError(
+            "No se ha indicado ningún expediente."
           );
-
+          return;
         }
 
-      } catch (err) {
+        try {
+          setLoading(true);
+          setError("");
 
-        console.error(
-          "Error cargando expediente:",
-          err
-        );
+          const respuesta =
+            await obtenerExpediente(id);
 
-        if (activo) {
+          const datos =
+            respuesta?.expediente ||
+            respuesta?.data ||
+            respuesta ||
+            null;
+
+          setExpediente(datos);
+
+          if (
+            datos?.tiene_defectos_abiertos
+          ) {
+            setDefectoLocal({
+              tipo_error:
+                datos.tipo_error || "",
+              falta_defecto:
+                datos.falta_defecto || "",
+              descripcion_error:
+                datos.descripcion_error ||
+                "",
+              fcierre_defecto:
+                datos.fcierre_defecto ||
+                "",
+            });
+          } else {
+            setDefectoLocal(null);
+          }
+
+          setActividadSeleccionada(
+            resolverActividadActual(
+              datos
+            )
+          );
+        } catch (err) {
+          console.error(
+            "Error cargando ficha:",
+            err
+          );
+
+          setExpediente(null);
 
           setError(
             err?.response?.data?.detail ||
-            "No se ha podido cargar el expediente."
+            "No se ha podido cargar la ficha del expediente."
           );
-
-          setExpediente(
-            null
-          );
-
-        }
-
-      } finally {
-
-        if (activo) {
+        } finally {
           setLoading(false);
         }
+      },
+      [id]
+    );
 
-      }
-    }
 
-    cargar();
-
-    return () => {
-      activo = false;
-    };
-
-  }, [id]);
+  useEffect(() => {
+    cargarExpediente();
+  }, [
+    cargarExpediente,
+  ]);
 
 
   // ==========================================================
   // ACTIVIDAD ACTUAL
   // ==========================================================
 
-  const actividadActualKey =
+  const actividadActual =
+    useMemo(
+      () =>
+        resolverActividadActual(
+          expediente
+        ),
+      [expediente]
+    );
+
+
+  // ==========================================================
+  // DATOS DE ACTIVIDAD SELECCIONADA
+  // ==========================================================
+
+  const actividadSeleccionadaDef =
+    useMemo(
+      () =>
+        ACTIVIDADES_EXPEDIENTES.find(
+          (actividad) =>
+            actividad.key ===
+            actividadSeleccionada
+        ) ||
+        ACTIVIDADES_EXPEDIENTES[0],
+      [actividadSeleccionada]
+    );
+
+
+  // ==========================================================
+  // CAMPOS ACTIVIDAD
+  // ==========================================================
+
+  const camposActividad =
     useMemo(() => {
+      const especificos =
+        CAMPOS_ACTIVIDADES[
+          actividadSeleccionada
+        ] || [];
 
-      if (!expediente) {
-        return "documentacion-previa";
-      }
+      const todos = [
+        ...CAMPOS_COMUNES_ACTIVIDAD,
+        ...especificos,
+      ];
 
-      return resolverActividadActual(
-        expediente
+      const vistos =
+        new Set();
+
+      return todos.filter(
+        (campo) => {
+          if (
+            vistos.has(campo.key)
+          ) {
+            return false;
+          }
+
+          vistos.add(campo.key);
+
+          return true;
+        }
       );
-
     }, [
-      expediente,
+      actividadSeleccionada,
     ]);
 
 
@@ -2943,248 +1604,11 @@ export default function FichaExpediente() {
   // ==========================================================
 
   function abrirActividades() {
-
     setActividadSeleccionada(
-      actividadActualKey
+      actividadActual
     );
 
-    setMostrarActividades(
-      true
-    );
-  }
-
-
-  // ==========================================================
-  // ABRIR DEFECTO
-  // ==========================================================
-
-  function abrirDetalleDefecto() {
-
-    setModoDefecto(
-      "detalle"
-    );
-
-    setTipoDefecto(
-      expediente?.tipo_error ||
-      ""
-    );
-
-    setFaltaDefecto(
-      expediente?.falta_defecto ||
-      ""
-    );
-
-    setDescripcionDefecto(
-      expediente?.descripcion_error ||
-      ""
-    );
-
-    setFechaAltaDefecto(
-      expediente?.fecha_alta ||
-      ""
-    );
-
-    setMostrarDefectoModal(
-      true
-    );
-  }
-
-
-  function abrirAltaDefecto() {
-
-    setModoDefecto(
-      "alta"
-    );
-
-    setTipoDefecto("");
-    setFaltaDefecto("");
-    setDescripcionDefecto("");
-
-    setFechaAltaDefecto(
-      new Date()
-        .toISOString()
-        .slice(0, 10)
-    );
-
-    setMostrarDefectoModal(
-      true
-    );
-  }
-
-
-  function abrirSubsanacion() {
-
-    setModoDefecto(
-      "subsanar"
-    );
-
-    setTipoDefecto(
-      expediente?.tipo_error ||
-      ""
-    );
-
-    setFaltaDefecto(
-      expediente?.falta_defecto ||
-      ""
-    );
-
-    setDescripcionDefecto(
-      expediente?.descripcion_error ||
-      ""
-    );
-
-    setFechaSubsanacion(
-      new Date()
-        .toISOString()
-        .slice(0, 10)
-    );
-
-    setObservacionSubsanacion(
-      ""
-    );
-
-    setMostrarDefectoModal(
-      true
-    );
-  }
-
-
-  // ==========================================================
-  // GUARDAR DEFECTO
-  // ==========================================================
-
-  async function guardarDefecto() {
-
-    setGuardandoDefecto(
-      true
-    );
-
-    try {
-
-      /*
-       * De momento el backend actual no dispone
-       * de un endpoint específico de defectos.
-       *
-       * Por tanto NO hacemos una llamada inventada.
-       *
-       * Dejamos la información preparada para
-       * conectarla al endpoint cuando se cree.
-       */
-
-      console.log(
-        "ALTA DEFECTO:",
-        {
-          id_expediente:
-            expediente?.id_expediente,
-
-          tipo_error:
-            tipoDefecto,
-
-          falta_defecto:
-            faltaDefecto,
-
-          descripcion_error:
-            descripcionDefecto,
-
-          fecha_alta:
-            fechaAltaDefecto,
-        }
-      );
-
-      setExpediente(
-        (actual) => ({
-          ...actual,
-
-          tiene_defectos_abiertos:
-            true,
-
-          tipo_error:
-            tipoDefecto,
-
-          falta_defecto:
-            faltaDefecto,
-
-          descripcion_error:
-            descripcionDefecto,
-
-          fcierre_defecto:
-            null,
-        })
-      );
-
-      setMostrarDefectoModal(
-        false
-      );
-
-    } finally {
-
-      setGuardandoDefecto(
-        false
-      );
-
-    }
-  }
-
-
-  // ==========================================================
-  // SUBSANAR DEFECTO
-  // ==========================================================
-
-  async function confirmarSubsanacion() {
-
-    if (
-      !fechaSubsanacion
-    ) {
-      window.alert(
-        "Indica la fecha de subsanación."
-      );
-
-      return;
-    }
-
-    setGuardandoDefecto(
-      true
-    );
-
-    try {
-
-      console.log(
-        "SUBSANACIÓN DEFECTO:",
-        {
-          id_expediente:
-            expediente?.id_expediente,
-
-          fecha_subsanacion:
-            fechaSubsanacion,
-
-          observacion:
-            observacionSubsanacion,
-        }
-      );
-
-      setExpediente(
-        (actual) => ({
-          ...actual,
-
-          tiene_defectos_abiertos:
-            false,
-
-          fcierre_defecto:
-            fechaSubsanacion,
-        })
-      );
-
-      setMostrarDefectoModal(
-        false
-      );
-
-    } finally {
-
-      setGuardandoDefecto(
-        false
-      );
-
-    }
+    setMostrarActividades(true);
   }
 
 
@@ -3195,53 +1619,293 @@ export default function FichaExpediente() {
   async function guardarEnviarANotario(
     payload
   ) {
+    await enviarExpedienteANotario(
+      expediente.id_expediente,
+      payload
+    );
 
-    if (!expediente) {
+    await cargarExpediente();
+
+    setMostrarEnviarNotario(false);
+  }
+
+
+  // ==========================================================
+  // DEFECTO
+  // ==========================================================
+
+  function abrirDefecto() {
+    setMostrarDefecto(true);
+  }
+
+
+  function guardarDefectoLocal() {
+    setDefectoLocal({
+      tipo_error:
+        expediente?.tipo_error ||
+        "",
+      falta_defecto:
+        expediente?.falta_defecto ||
+        "",
+      descripcion_error:
+        expediente?.descripcion_error ||
+        "",
+      fcierre_defecto:
+        expediente?.fcierre_defecto ||
+        "",
+    });
+
+    setMostrarDefecto(false);
+  }
+
+
+  // ==========================================================
+  // FINCAS
+  // ==========================================================
+
+  function abrirFincas() {
+    setFincaForm({
+      numero_finca:
+        expediente?.finca || "",
+      registro:
+        expediente?.registro ||
+        "",
+      municipio:
+        expediente?.poblacion ||
+        "",
+      provincia:
+        expediente?.provincia ||
+        "",
+      tomo:
+        "",
+      libro:
+        "",
+      folio:
+        "",
+      inscripcion:
+        "",
+      observaciones:
+        "",
+    });
+
+    setMostrarFincas(true);
+  }
+
+
+  function guardarFinca() {
+    /*
+     * El formulario queda preparado.
+     *
+     * La persistencia definitiva deberá conectarse
+     * al endpoint de Fincas cuando esté disponible.
+     */
+
+    console.log(
+      "FINCA EXPEDIENTE:",
+      {
+        expediente:
+          expediente?.id_expediente,
+        ...fincaForm,
+      }
+    );
+
+    setMostrarFincas(false);
+  }
+
+
+  // ==========================================================
+  // REGISTROS
+  // ==========================================================
+
+  function abrirRegistros() {
+    setRegistroForm({
+      registro:
+        expediente?.registro ||
+        "",
+      registrador:
+        "",
+      municipio:
+        expediente?.poblacion ||
+        "",
+      provincia:
+        expediente?.provincia ||
+        "",
+      numero_finca:
+        expediente?.finca ||
+        "",
+      tomo:
+        "",
+      libro:
+        "",
+      folio:
+        "",
+      inscripcion:
+        "",
+      observaciones:
+        "",
+    });
+
+    setMostrarRegistros(true);
+  }
+
+
+  function guardarRegistro() {
+    console.log(
+      "REGISTRO EXPEDIENTE:",
+      {
+        expediente:
+          expediente?.id_expediente,
+        ...registroForm,
+      }
+    );
+
+    setMostrarRegistros(false);
+  }
+
+
+  // ==========================================================
+  // ACCIONES
+  // ==========================================================
+
+  function abrirAcciones() {
+    setAccionForm({
+      accion: "",
+      entidad_cancelar: "",
+      reclamacion_oficina: "",
+      fecha: "",
+      observaciones: "",
+    });
+
+    setMostrarAcciones(true);
+  }
+
+
+  function guardarAccion() {
+    console.log(
+      "ACCION EXPEDIENTE:",
+      {
+        expediente:
+          expediente?.id_expediente,
+        ...accionForm,
+      }
+    );
+
+    setMostrarAcciones(false);
+  }
+
+
+  // ==========================================================
+  // EXPEDIENTES RELACIONADOS POR NIF
+  // ==========================================================
+
+  async function abrirAgregarExpedientes() {
+    setMostrarAgregarExpedientes(true);
+
+    const nif =
+      expediente?.nif_titular ||
+      expediente?.nif_solicitante ||
+      "";
+
+    if (!nif) {
+      setExpedientesRelacionados([]);
       return;
     }
 
-    setEnviandoNotario(
-      true
-    );
-
     try {
+      setCargandoRelacionados(true);
 
-      const data =
-        await enviarExpedienteANotario(
-          expediente.id_expediente,
-          payload
+      const respuesta =
+        await obtenerListadoExpedientes({
+          nif,
+          pagina: 1,
+          porPagina: 100,
+        });
+
+      const lista =
+        obtenerArrayRespuesta(
+          respuesta
         );
 
-      setExpediente(
-        (actual) => ({
-          ...actual,
-          ...(data || {}),
-        })
-      );
+      const expedienteActual =
+        String(
+          expediente?.id_expediente ||
+          ""
+        );
 
-      setMostrarEnviarNotario(
-        false
-      );
+      const relacionados =
+        lista.filter(
+          (item) =>
+            String(
+              item?.id_expediente ||
+              ""
+            ) !== expedienteActual
+        );
 
+      setExpedientesRelacionados(
+        relacionados
+      );
     } catch (err) {
-
       console.error(
-        "Error enviando expediente a notario:",
+        "Error buscando expedientes relacionados:",
         err
       );
 
-      window.alert(
-        err?.response?.data?.detail ||
-        "No se ha podido enviar el expediente a notario."
-      );
-
+      setExpedientesRelacionados([]);
     } finally {
-
-      setEnviandoNotario(
-        false
-      );
-
+      setCargandoRelacionados(false);
     }
+  }
+
+
+  // ==========================================================
+  // OBSERVACIONES
+  // ==========================================================
+
+  function abrirObservaciones() {
+    setComentario(
+      expediente?.observaciones ||
+      ""
+    );
+
+    setVisionesComentario({
+      notario: false,
+      apoderado: false,
+      actividad: true,
+    });
+
+    setMostrarObservaciones(true);
+  }
+
+
+  function guardarObservacion() {
+    console.log(
+      "OBSERVACION EXPEDIENTE:",
+      {
+        expediente:
+          expediente?.id_expediente,
+        comentario,
+        visiones:
+          visionesComentario,
+      }
+    );
+
+    /*
+     * Dejamos la observación inmediatamente visible
+     * en la ficha.
+     *
+     * La persistencia definitiva se conectará al
+     * sistema de observaciones/mensajes.
+     */
+
+    setExpediente(
+      (actual) => ({
+        ...actual,
+        observaciones:
+          comentario,
+      })
+    );
+
+    setMostrarObservaciones(false);
   }
 
 
@@ -3250,83 +1914,36 @@ export default function FichaExpediente() {
   // ==========================================================
 
   if (loading) {
-
     return (
       <div
         className="
-          relative
-          min-h-full
-          overflow-hidden
-          px-4
-          py-4
-          sm:px-6
-          sm:py-6
+          erp-page
+          p-6
         "
       >
-
         <div
           className="
             mx-auto
-            flex
-            min-h-[420px]
-            max-w-[1800px]
-            items-center
-            justify-center
+            max-w-[1700px]
+            rounded-2xl
+            border
+            border-white/80
+            bg-white/85
+            p-12
+            text-center
+            shadow-lg
           "
         >
-
           <div
             className="
-              rounded-2xl
-              border
-              border-white/80
-              bg-white/80
-              px-8
-              py-6
-              text-center
-              shadow-[0_16px_45px_rgba(15,23,42,0.06)]
-              backdrop-blur-2xl
+              animate-pulse
+              text-sm
+              text-slate-400
             "
           >
-
-            <div
-              className="
-                mx-auto
-                mb-3
-                h-8
-                w-8
-                animate-spin
-                rounded-full
-                border-2
-                border-blue-100
-                border-t-blue-500
-              "
-            />
-
-            <p
-              className="
-                text-sm
-                font-semibold
-                text-slate-600
-              "
-            >
-              Cargando expediente…
-            </p>
-
-            <p
-              className="
-                mt-1
-                text-xs
-                text-slate-400
-              "
-            >
-              Obteniendo información del expediente
-            </p>
-
+            Cargando ficha del expediente…
           </div>
-
         </div>
-
       </div>
     );
   }
@@ -3337,172 +1954,60 @@ export default function FichaExpediente() {
   // ==========================================================
 
   if (error) {
-
     return (
       <div
         className="
-          px-4
-          py-6
-          sm:px-6
+          erp-page
+          p-6
         "
       >
-
         <div
           className="
             mx-auto
-            max-w-[1800px]
-          "
-        >
-
-          <Link
-            to="/expedientes"
-            className="
-              inline-flex
-              items-center
-              rounded-xl
-              border
-              border-slate-200
-              bg-white/80
-              px-3
-              py-2
-              text-sm
-              font-medium
-              text-slate-500
-              shadow-sm
-              backdrop-blur-xl
-              transition
-              hover:border-blue-200
-              hover:bg-blue-50
-              hover:text-blue-600
-            "
-          >
-            ← Expedientes
-          </Link>
-
-          <div
-            className="
-              mt-5
-              rounded-[24px]
-              border
-              border-red-200
-              bg-red-50/80
-              p-6
-              shadow-sm
-            "
-          >
-
-            <h2
-              className="
-                text-base
-                font-bold
-                text-red-700
-              "
-            >
-              No se ha podido cargar el expediente
-            </h2>
-
-            <p
-              className="
-                mt-2
-                text-sm
-                text-red-600/80
-              "
-            >
-              {error}
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-    );
-  }
-
-
-  // ==========================================================
-  // NO ENCONTRADO
-  // ==========================================================
-
-  if (!expediente) {
-
-    return (
-      <div
-        className="
-          px-4
-          py-6
-          sm:px-6
-        "
-      >
-
-        <div
-          className="
-            mx-auto
-            max-w-[1800px]
-            rounded-[24px]
+            max-w-[1700px]
+            rounded-2xl
             border
-            border-slate-200
-            bg-white/80
-            p-8
-            text-center
-            shadow-sm
+            border-red-200
+            bg-red-50
+            p-6
+            text-red-700
           "
         >
-
-          <div className="text-3xl">
-            📁
-          </div>
-
-          <h2
-            className="
-              mt-3
-              text-lg
-              font-bold
-              text-slate-700
-            "
-          >
-            Expediente no encontrado
-          </h2>
+          <p className="text-sm">
+            {error}
+          </p>
 
           <Link
             to="/expedientes"
             className="
-              mt-5
+              mt-4
               inline-flex
               rounded-xl
               bg-blue-600
               px-4
               py-2.5
-              text-sm
-              font-semibold
+              text-xs
+              font-bold
               text-white
-              shadow-sm
-              transition
-              hover:bg-blue-700
             "
           >
-            ← Volver a expedientes
+            ← Expedientes
           </Link>
-
         </div>
-
       </div>
     );
   }
 
 
-  // ==========================================================
-  // VARIABLES
-  // ==========================================================
+  if (!expediente) {
+    return null;
+  }
 
-  const numeroExpediente =
-    valorVisible(
-      expediente.id_expediente
-    );
 
-  const tieneDefectos =
+  const tieneDefecto =
     Boolean(
-      expediente.tiene_defectos_abiertos
+      expediente.tiene_defectos_abiertos ||
+      defectoLocal
     );
 
 
@@ -3513,489 +2018,454 @@ export default function FichaExpediente() {
   return (
     <div
       className="
-        relative
-        min-h-full
-        overflow-hidden
-        px-4
-        py-4
-        sm:px-6
-        sm:py-6
+        erp-page
+        space-y-4
+        pb-8
       "
     >
 
-      {/* ====================================================
-          FONDO PREMIUM
-      ==================================================== */}
+      {/* =====================================================
+          CABECERA
+      ====================================================== */}
 
-      <div
+      <section
         className="
-          pointer-events-none
-          absolute
-          inset-0
-          overflow-hidden
-        "
-      >
-
-        <div
-          className="
-            absolute
-            -left-52
-            -top-52
-            h-[560px]
-            w-[560px]
-            rounded-full
-            bg-blue-400/10
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute
-            -bottom-56
-            -right-56
-            h-[620px]
-            w-[620px]
-            rounded-full
-            bg-cyan-300/10
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute
-            left-1/2
-            top-1/2
-            h-[760px]
-            w-[760px]
-            -translate-x-1/2
-            -translate-y-1/2
-            rounded-full
-            bg-white/70
-            blur-3xl
-          "
-        />
-
-      </div>
-
-
-      {/* ====================================================
-          CONTENIDO
-      ==================================================== */}
-
-      <div
-        className="
-          relative
-          z-10
           mx-auto
-          max-w-[1800px]
-          space-y-5
+          max-w-[1700px]
+          overflow-hidden
+          rounded-[24px]
+          border
+          border-white/80
+          bg-white/85
+          shadow-[0_20px_60px_rgba(15,23,42,0.08)]
         "
       >
-
-        {/* ==================================================
-            CABECERA
-        ================================================== */}
-
-        <section
+        <div
           className="
-            relative
-            overflow-hidden
-            rounded-[28px]
-            border
-            border-white/80
-            bg-white/80
+            flex
+            flex-col
+            gap-5
             p-5
-            shadow-[0_20px_60px_rgba(15,23,42,0.08)]
-            backdrop-blur-2xl
             sm:p-6
+            xl:flex-row
+            xl:items-center
+            xl:justify-between
           "
         >
 
-          <div
-            className="
-              absolute
-              left-0
-              right-0
-              top-0
-              h-px
-              bg-gradient-to-r
-              from-transparent
-              via-blue-400/55
-              to-transparent
-            "
-          />
+          <div className="min-w-0">
 
-          <div
-            className="
-              flex
-              flex-col
-              gap-5
-              xl:flex-row
-              xl:items-center
-              xl:justify-between
-            "
-          >
-
-            {/* IZQUIERDA */}
-
-            <div className="min-w-0">
-
-              <Link
-                to="/expedientes"
-                className="
-                  inline-flex
-                  items-center
-                  rounded-lg
-                  text-xs
-                  font-semibold
-                  text-blue-600
-                  transition
-                  hover:text-blue-700
-                "
-              >
-                ← Expedientes
-              </Link>
-
-              <div
-                className="
-                  mt-3
-                  flex
-                  items-start
-                  gap-4
-                "
-              >
-
-                <div
-                  className="
-                    flex
-                    h-14
-                    w-14
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    border
-                    border-blue-100
-                    bg-blue-50
-                    text-blue-600
-                    shadow-sm
-                  "
-                >
-
-                  <svg
-                    className="h-6 w-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path
-                      d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2h5.5A2.5 2.5 0 0 1 20 8.5v9A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5z"
-                    />
-
-                    <path
-                      d="M4 9h16"
-                    />
-                  </svg>
-
-                </div>
-
-                <div className="min-w-0">
-
-                  <p
-                    className="
-                      text-[10px]
-                      font-semibold
-                      uppercase
-                      tracking-[0.12em]
-                      text-slate-400
-                    "
-                  >
-                    Ficha de expediente
-                  </p>
-
-                  <h1
-                    className="
-                      mt-1
-                      break-words
-                      text-2xl
-                      font-bold
-                      tracking-tight
-                      text-slate-800
-                      sm:text-3xl
-                    "
-                  >
-                    {numeroExpediente}
-                  </h1>
-
-                  <p
-                    className="
-                      mt-1
-                      text-sm
-                      text-slate-400
-                    "
-                  >
-                    Ficha completa del expediente
-                  </p>
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-            {/* BOTONES */}
+            <Link
+              to="/expedientes"
+              className="
+                mb-3
+                inline-flex
+                items-center
+                text-[11px]
+                font-bold
+                text-blue-600
+                hover:text-blue-700
+              "
+            >
+              ← Expedientes
+            </Link>
 
             <div
               className="
                 flex
-                flex-wrap
                 items-center
-                justify-end
-                gap-2
+                gap-4
               "
             >
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  border
+                  border-blue-100
+                  bg-blue-50
+                  text-xl
+                  text-blue-600
+                "
+              >
+                📁
+              </div>
 
-              {/* DEFECTO */}
+              <div className="min-w-0">
 
-              {tieneDefectos ? (
-
-                <button
-                  type="button"
-                  onClick={
-                    abrirDetalleDefecto
-                  }
+                <p
                   className="
-                    animate-pulse
-                    inline-flex
-                    items-center
-                    gap-2
-                    rounded-xl
-                    border
-                    border-red-300
-                    bg-red-50
-                    px-4
-                    py-2.5
-                    text-xs
+                    text-[9px]
                     font-bold
-                    text-red-700
-                    shadow-sm
-                    transition
-                    hover:bg-red-100
+                    uppercase
+                    tracking-[0.12em]
+                    text-slate-400
                   "
                 >
-                  ⚠️ DEFECTO REGISTRAL
-                </button>
+                  Ficha de expediente
+                </p>
 
-              ) : (
-
-                <button
-                  type="button"
-                  onClick={
-                    abrirAltaDefecto
-                  }
+                <h1
                   className="
-                    inline-flex
-                    items-center
-                    gap-2
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-4
-                    py-2.5
-                    text-xs
-                    font-semibold
-                    text-slate-600
-                    shadow-sm
-                    transition
-                    hover:border-red-200
-                    hover:bg-red-50
-                    hover:text-red-700
+                    truncate
+                    text-2xl
+                    font-bold
+                    text-slate-800
                   "
                 >
-                  ⚠️ Dar de alta defecto
-                </button>
+                  {valorVisible(
+                    expediente.id_expediente
+                  )}
+                </h1>
 
-              )}
+                <p
+                  className="
+                    mt-0.5
+                    text-xs
+                    text-slate-400
+                  "
+                >
+                  Ficha completa del expediente
+                </p>
+
+              </div>
+            </div>
+          </div>
 
 
-              {/* ACTIVIDADES */}
+          <div
+            className="
+              flex
+              flex-wrap
+              items-center
+              gap-2
+            "
+          >
 
+            {tieneDefecto && (
               <button
                 type="button"
                 onClick={
-                  abrirActividades
+                  abrirDefecto
                 }
                 className="
+                  animate-pulse
                   inline-flex
                   items-center
                   gap-2
                   rounded-xl
                   border
-                  border-slate-200
-                  bg-white
-                  px-4
-                  py-2.5
-                  text-xs
-                  font-semibold
-                  text-slate-600
-                  shadow-sm
-                  transition
-                  hover:border-blue-200
-                  hover:bg-blue-50
-                  hover:text-blue-700
-                "
-              >
-                📋 Ver actividades
-              </button>
-
-
-              {/* NOTARIO */}
-
-              <button
-                type="button"
-                onClick={() =>
-                  setMostrarEnviarNotario(
-                    true
-                  )
-                }
-                className="
-                  inline-flex
-                  items-center
-                  gap-2
-                  rounded-xl
-                  bg-blue-600
+                  border-red-300
+                  bg-red-50
                   px-4
                   py-2.5
                   text-xs
                   font-bold
-                  text-white
+                  text-red-700
                   shadow-sm
-                  transition
-                  hover:bg-blue-700
-                  disabled:cursor-not-allowed
-                  disabled:opacity-60
                 "
-                disabled={
-                  enviandoNotario
-                }
               >
-                ✒️ Enviar a notario
+                ⚠️ DEFECTO REGISTRAL
               </button>
+            )}
 
-            </div>
+            <Boton
+              onClick={
+                abrirActividades
+              }
+            >
+              ⚙️ Ver actividades
+            </Boton>
+
+            <Boton
+              tipo="primary"
+              onClick={() =>
+                setMostrarEnviarNotario(
+                  true
+                )
+              }
+            >
+              📤 Enviar a notario
+            </Boton>
 
           </div>
+        </div>
+      </section>
 
-        </section>
 
+      {/* =====================================================
+          CUATRO COLUMNAS PRINCIPALES
+      ====================================================== */}
 
-        {/* ==================================================
-            FILA PRINCIPAL DE CUATRO BLOQUES
-        ================================================== */}
+      <div
+        className="
+          mx-auto
+          grid
+          max-w-[1700px]
+          grid-cols-1
+          gap-4
+          xl:grid-cols-4
+        "
+      >
 
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-5
-            xl:grid-cols-4
-          "
-        >
+        {/* ===================================================
+            COLUMNA 1
+        ==================================================== */}
 
-          {/* =================================================
-              ESTADO
-          ================================================= */}
+        <div className="space-y-4">
+
+          {/* ESTADO */}
 
           <Seccion
-            titulo="◉ Estado"
+            titulo="Estado"
             subtitulo="Situación actual del expediente"
             icono="estado"
-            columnas={1}
           >
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
+            >
 
-            <Dato
-              campo="Estado"
-              valor={
-                expediente.estado_expediente
-              }
-              estado
-            />
+              <Dato
+                campo="Estado"
+                valor={
+                  expediente.estado_expediente
+                }
+                estado
+                destaque
+              />
 
-            <Dato
-              campo="Actividad actual"
-              valor={
-                expediente.actividad_actual
-              }
-              destaque
-            />
+              <Dato
+                campo="Actividad actual"
+                valor={
+                  expediente.actividad_actual
+                }
+                destaque
+              />
 
-            <Dato
-              campo="Estado actividad"
-              valor={
-                expediente.estado_actividad
-              }
-              estado
-            />
+              <Dato
+                campo="Estado actividad"
+                valor={
+                  expediente.estado_actividad
+                }
+                estado
+              />
 
-            <Dato
-              campo="Tipo operación"
-              valor={
-                expediente.tipo_operacion
-              }
-              destaque
-            />
+              <Dato
+                campo="Tipo operación"
+                valor={
+                  expediente.tipo_operacion
+                }
+              />
 
-            <Dato
-              campo="Oficina"
-              valor={
-                expediente.oficina
-              }
-              destaque
-            />
+              <Dato
+                campo="Oficina"
+                valor={
+                  expediente.oficina
+                }
+                destaque
+              />
 
-            <Dato
-              campo="DAN"
-              valor={
-                expediente.dan
-              }
-            />
+              <Dato
+                campo="DAN"
+                valor={
+                  expediente.dan
+                }
+              />
 
-            <Dato
-              campo="Fecha alta"
-              valor={
-                expediente.fecha_alta
-              }
-              tipo="fecha"
-              destaque
-            />
+              <Dato
+                campo="Fecha alta"
+                valor={
+                  expediente.fecha_alta
+                }
+                tipo="fecha"
+                destaque
+              />
 
+            </div>
           </Seccion>
 
 
-          {/* =================================================
-              TITULARES + SOLICITANTES
-          ================================================= */}
+          {/* FINCAS */}
 
-          <div
-            className="
-              flex
-              flex-col
-              gap-5
-            "
+          <Seccion
+            titulo="Fincas"
+            subtitulo="Información de las fincas vinculadas"
+            icono="finca"
           >
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
+            >
+              <Dato
+                campo="Finca"
+                valor={
+                  expediente.finca
+                }
+                destaque
+              />
 
-            <Seccion
-              titulo="👤 Titulares"
-              subtitulo="Titulares del expediente"
-              icono="titular"
-              columnas={1}
+              <Dato
+                campo="Estado registral"
+                valor={
+                  expediente.registral_estado
+                }
+                estado
+              />
+
+              <Dato
+                campo="Fecha registral"
+                valor={
+                  expediente.registral_fecha
+                }
+                tipo="fecha"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={
+                abrirFincas
+              }
+              className="
+                mt-3
+                w-full
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-3
+                py-2.5
+                text-xs
+                font-bold
+                text-blue-700
+                transition
+                hover:bg-blue-100
+              "
+            >
+              🏠 Gestionar finca
+            </button>
+          </Seccion>
+
+
+          {/* REGISTROS */}
+
+          <Seccion
+            titulo="Registros"
+            subtitulo="Datos registrales del expediente"
+            icono="registro"
+          >
+            <div
+              className="
+                space-y-2
+              "
+            >
+              <Dato
+                campo="Registro"
+                valor={
+                  expediente.registro
+                }
+              />
+
+              <Dato
+                campo="Estado registral"
+                valor={
+                  expediente.registral_estado
+                }
+                estado
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={
+                abrirRegistros
+              }
+              className="
+                mt-3
+                w-full
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-3
+                py-2.5
+                text-xs
+                font-bold
+                text-blue-700
+                transition
+                hover:bg-blue-100
+              "
+            >
+              📚 Gestionar registro
+            </button>
+          </Seccion>
+
+
+          {/* ACCIONES */}
+
+          <Seccion
+            titulo="Acciones"
+            subtitulo="Acciones operativas del expediente"
+            icono="accion"
+          >
+            <button
+              type="button"
+              onClick={
+                abrirAcciones
+              }
+              className="
+                w-full
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-4
+                py-3
+                text-xs
+                font-bold
+                text-blue-700
+                transition
+                hover:bg-blue-100
+              "
+            >
+              ⚡ Gestionar acciones
+            </button>
+          </Seccion>
+
+        </div>
+
+
+        {/* ===================================================
+            COLUMNA 2
+        ==================================================== */}
+
+        <div className="space-y-4">
+
+          {/* TITULARES */}
+
+          <Seccion
+            titulo="Titulares"
+            subtitulo="Titulares del expediente"
+            icono="titular"
+          >
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
             >
 
               <Dato
@@ -4013,14 +2483,23 @@ export default function FichaExpediente() {
                 }
               />
 
-            </Seccion>
+            </div>
+          </Seccion>
 
 
-            <Seccion
-              titulo="👥 Solicitantes"
-              subtitulo="Solicitantes del expediente"
-              icono="solicitante"
-              columnas={1}
+          {/* SOLICITANTES */}
+
+          <Seccion
+            titulo="Solicitantes"
+            subtitulo="Solicitantes del expediente"
+            icono="solicitante"
+          >
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
             >
 
               <Dato
@@ -4038,120 +2517,196 @@ export default function FichaExpediente() {
                 }
               />
 
-            </Seccion>
-
-          </div>
-
-
-          {/* =================================================
-              INFORMACIÓN CREDITICIA
-          ================================================= */}
-
-          <Seccion
-            titulo="📊 Información crediticia"
-            subtitulo="Datos económicos y contractuales"
-            icono="economico"
-            columnas={1}
-          >
-
-            <Dato
-              campo="Nº expediente"
-              valor={
-                expediente.id_expediente
-              }
-              destaque
-            />
-
-            <Dato
-              campo="Contrato"
-              valor={
-                expediente.contrato
-              }
-            />
-
-            <Dato
-              campo="Tipo operación"
-              valor={
-                expediente.tipo_operacion
-              }
-            />
-
-            <Dato
-              campo="Subtipo operación"
-              valor={
-                expediente.subtipo_operacion
-              }
-            />
-
-            <Dato
-              campo="Nº solicitud SIA"
-              valor={
-                expediente.num_solicitud_sia
-              }
-            />
-
-            <Dato
-              campo="Capital"
-              valor={
-                expediente.capital
-              }
-              tipo="numero"
-              destaque
-            />
-
-            <Dato
-              campo="Importe"
-              valor={
-                expediente.importe
-              }
-              tipo="numero"
-              destaque
-            />
-
-            <Dato
-              campo="Saldo real"
-              valor={
-                expediente.saldo_real
-              }
-              tipo="numero"
-            />
-
-            <Dato
-              campo="Saldo disponible"
-              valor={
-                expediente.saldo_disponible
-              }
-              tipo="numero"
-            />
-
-            <Dato
-              campo="Finca"
-              valor={
-                expediente.finca
-              }
-              destaque
-            />
-
+            </div>
           </Seccion>
 
 
-          {/* =================================================
-              NOTARIO + OBSERVACIONES
-          ================================================= */}
+          {/* AGREGAR EXPEDIENTES */}
 
-          <div
-            className="
-              flex
-              flex-col
-              gap-5
-            "
+          <Seccion
+            titulo="Expedientes relacionados"
+            subtitulo="Agrupación automática por NIF"
+            icono="titular"
+          >
+            <p
+              className="
+                text-xs
+                leading-5
+                text-slate-500
+              "
+            >
+              El sistema buscará otros expedientes
+              cuyo titular tenga el mismo NIF.
+            </p>
+
+            <button
+              type="button"
+              onClick={
+                abrirAgregarExpedientes
+              }
+              className="
+                mt-3
+                w-full
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-4
+                py-3
+                text-xs
+                font-bold
+                text-blue-700
+                transition
+                hover:bg-blue-100
+              "
+            >
+              ➕ Agregar expedientes
+            </button>
+          </Seccion>
+
+        </div>
+
+
+        {/* ===================================================
+            COLUMNA 3
+        ==================================================== */}
+
+        <div>
+
+          <Seccion
+            titulo="Información crediticia"
+            subtitulo="Datos económicos y contractuales"
+            icono="economico"
+            className="h-full"
           >
 
-            <Seccion
-              titulo="✒️ Notario"
-              subtitulo="Información del notario asociado"
-              icono="notario"
-              columnas={1}
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
+            >
+
+              <Dato
+                campo="Nº expediente"
+                valor={
+                  expediente.id_expediente
+                }
+                destaque
+              />
+
+              <Dato
+                campo="Contrato"
+                valor={
+                  expediente.contrato
+                }
+              />
+
+              <Dato
+                campo="Tipo operación"
+                valor={
+                  expediente.tipo_operacion
+                }
+              />
+
+              <Dato
+                campo="Subtipo operación"
+                valor={
+                  expediente.subtipo_operacion
+                }
+              />
+
+              <Dato
+                campo="Nº solicitud SIA"
+                valor={
+                  expediente.num_solicitud_sia
+                }
+              />
+
+              <Dato
+                campo="Capital"
+                valor={
+                  expediente.capital
+                }
+                tipo="numero"
+                destaque
+              />
+
+              <Dato
+                campo="Importe"
+                valor={
+                  expediente.importe
+                }
+                tipo="numero"
+                destaque
+              />
+
+              <Dato
+                campo="Saldo real"
+                valor={
+                  expediente.saldo_real
+                }
+                tipo="numero"
+              />
+
+              <Dato
+                campo="Saldo disponible"
+                valor={
+                  expediente.saldo_disponible
+                }
+                tipo="numero"
+              />
+
+              <Dato
+                campo="Finca"
+                valor={
+                  expediente.finca
+                }
+                destaque
+              />
+
+              <Dato
+                campo="Provisión"
+                valor={
+                  expediente.tipo_provision
+                }
+              />
+
+              <Dato
+                campo="ID provisión"
+                valor={
+                  expediente.id_provision
+                }
+              />
+
+            </div>
+
+          </Seccion>
+
+        </div>
+
+
+        {/* ===================================================
+            COLUMNA 4
+        ==================================================== */}
+
+        <div className="space-y-4">
+
+          {/* NOTARIO */}
+
+          <Seccion
+            titulo="Notario"
+            subtitulo="Información del notario asociado"
+            icono="notario"
+          >
+
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
             >
 
               <Dato
@@ -4179,108 +2734,280 @@ export default function FichaExpediente() {
               <Dato
                 campo="ID notario"
                 valor={
-                  expediente.notario_id
+                  expediente.id_notario
                 }
               />
 
-            </Seccion>
+              <Dato
+                campo="Apoderado"
+                valor={
+                  expediente.apoderado
+                }
+              />
+
+              <Dato
+                campo="Tipo firma"
+                valor={
+                  expediente.tipo_firma
+                }
+              />
+
+            </div>
+
+          </Seccion>
 
 
-            <Observaciones
-              valor={
-                expediente.observaciones
+          {/* OBSERVACIONES */}
+
+          <Seccion
+            titulo="Observaciones"
+            subtitulo="Información adicional"
+            icono="observaciones"
+          >
+
+            <div
+              className="
+                min-h-[90px]
+                whitespace-pre-wrap
+                rounded-xl
+                border
+                border-slate-200
+                bg-slate-50
+                p-4
+                text-xs
+                leading-5
+                text-slate-600
+              "
+            >
+              {
+                valorVisible(
+                  expediente.observaciones
+                )
               }
-            />
+            </div>
 
-          </div>
+            <button
+              type="button"
+              onClick={
+                abrirObservaciones
+              }
+              className="
+                mt-3
+                w-full
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-4
+                py-3
+                text-xs
+                font-bold
+                text-blue-700
+                transition
+                hover:bg-blue-100
+              "
+            >
+              💬 Gestionar observaciones
+            </button>
+
+          </Seccion>
 
         </div>
 
+      </div>
 
-        {/* ==================================================
-            ACTIVIDADES — BLOQUE COMPACTO
-        ================================================== */}
 
-        <section
+      {/* =====================================================
+          MODAL ACTIVIDADES
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarActividades
+        }
+        onClose={() =>
+          setMostrarActividades(false)
+        }
+        titulo="⚙️ Actividades del expediente"
+        subtitulo={
+          `Expediente ${valorVisible(
+            expediente.id_expediente
+          )} · actividad actual: ${valorVisible(
+            expediente.actividad_actual
+          )}`
+        }
+        ancho="max-w-[1200px]"
+        footer={
+          <Boton
+            onClick={() =>
+              setMostrarActividades(false)
+            }
+          >
+            Cerrar
+          </Boton>
+        }
+      >
+
+        <div
           className="
-            relative
-            overflow-hidden
-            rounded-[24px]
-            border
-            border-white/80
-            bg-white/80
-            p-5
-            shadow-[0_16px_45px_rgba(15,23,42,0.06)]
-            backdrop-blur-2xl
-            sm:p-6
+            grid
+            grid-cols-1
+            gap-4
+            lg:grid-cols-[280px_minmax(0,1fr)]
           "
         >
 
-          <div
-            className="
-              absolute
-              left-0
-              right-0
-              top-0
-              h-px
-              bg-gradient-to-r
-              from-transparent
-              via-blue-400/45
-              to-transparent
-            "
-          />
+          {/* MENU ACTIVIDADES */}
 
           <div
             className="
-              flex
-              flex-col
-              gap-4
-              sm:flex-row
-              sm:items-center
-              sm:justify-between
+              space-y-2
+            "
+          >
+
+            {ACTIVIDADES_EXPEDIENTES.map(
+              (actividad) => {
+
+                const activa =
+                  actividad.key ===
+                  actividadSeleccionada;
+
+                const esActual =
+                  actividad.key ===
+                  actividadActual;
+
+                return (
+                  <button
+                    key={
+                      actividad.key
+                    }
+                    type="button"
+                    onClick={() =>
+                      setActividadSeleccionada(
+                        actividad.key
+                      )
+                    }
+                    className={`
+                      w-full
+                      rounded-xl
+                      border
+                      p-3
+                      text-left
+                      transition
+                      ${
+                        activa
+                          ? "border-blue-300 bg-blue-50 shadow-sm"
+                          : "border-slate-200 bg-white hover:bg-slate-50"
+                      }
+                    `}
+                  >
+
+                    <div
+                      className="
+                        flex
+                        items-center
+                        gap-3
+                      "
+                    >
+
+                      <span
+                        className="
+                          text-lg
+                        "
+                      >
+                        {
+                          actividad.icono
+                        }
+                      </span>
+
+                      <span
+                        className={`
+                          text-xs
+                          font-bold
+                          ${
+                            activa
+                              ? "text-blue-700"
+                              : "text-slate-700"
+                          }
+                        `}
+                      >
+                        {
+                          actividad.label
+                        }
+                      </span>
+
+                    </div>
+
+                    {esActual && (
+                      <span
+                        className="
+                          mt-2
+                          inline-flex
+                          rounded-full
+                          border
+                          border-emerald-200
+                          bg-emerald-50
+                          px-2
+                          py-1
+                          text-[9px]
+                          font-bold
+                          uppercase
+                          tracking-wide
+                          text-emerald-700
+                        "
+                      >
+                        ● Actividad actual
+                      </span>
+                    )}
+
+                  </button>
+                );
+              }
+            )}
+
+          </div>
+
+
+          {/* DETALLE */}
+
+          <div
+            className="
+              min-w-0
+              rounded-2xl
+              border
+              border-slate-200
+              bg-slate-50/70
+              p-4
             "
           >
 
             <div
               className="
+                mb-4
                 flex
+                flex-wrap
                 items-center
+                justify-between
                 gap-3
               "
             >
 
-              <div
-                className="
-                  flex
-                  h-10
-                  w-10
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-xl
-                  border
-                  border-blue-100
-                  bg-blue-50
-                  text-blue-600
-                "
-              >
-                <IconoSeccion
-                  tipo="actividad"
-                />
-              </div>
-
               <div>
 
-                <h2
+                <h3
                   className="
                     text-base
                     font-bold
-                    tracking-tight
                     text-slate-800
                   "
                 >
-                  ⚙️ Actividades
-                </h2>
+                  {
+                    actividadSeleccionadaDef.icono
+                  }{" "}
+                  {
+                    actividadSeleccionadaDef.label
+                  }
+                </h3>
 
                 <p
                   className="
@@ -4289,195 +3016,1390 @@ export default function FichaExpediente() {
                     text-slate-400
                   "
                 >
-                  Información de las actividades
-                  del expediente
+                  Campos de esta actividad
                 </p>
 
               </div>
+
+              {actividadSeleccionada ===
+                actividadActual && (
+                <EstadoBadge
+                  valor="Actividad actual"
+                />
+              )}
 
             </div>
 
 
             <div
               className="
-                flex
-                flex-wrap
-                items-center
-                gap-3
+                grid
+                grid-cols-1
+                gap-2
+                sm:grid-cols-2
+                xl:grid-cols-3
               "
             >
 
+              {camposActividad.map(
+                (campo) => {
+
+                  if (
+                    !esDisponible(
+                      expediente,
+                      campo.key
+                    )
+                  ) {
+                    return null;
+                  }
+
+                  return (
+                    <Dato
+                      key={
+                        campo.key
+                      }
+                      campo={
+                        campo.label
+                      }
+                      valor={
+                        expediente[
+                          campo.key
+                        ]
+                      }
+                      tipo={
+                        campo.tipo
+                      }
+                      estado={
+                        campo.estado
+                      }
+                      multilinea={
+                        campo.multilinea
+                      }
+                    />
+                  );
+                }
+              )}
+
+            </div>
+
+
+            {!camposActividad.some(
+              (campo) =>
+                esDisponible(
+                  expediente,
+                  campo.key
+                )
+            ) && (
               <div
                 className="
-                  inline-flex
-                  items-center
-                  gap-2
                   rounded-xl
                   border
-                  border-emerald-200
-                  bg-emerald-50
-                  px-3
-                  py-2
+                  border-dashed
+                  border-slate-300
+                  bg-white
+                  p-8
+                  text-center
                 "
               >
-
-                <span
+                <p
                   className="
-                    h-1.5
-                    w-1.5
-                    rounded-full
-                    bg-emerald-500
-                  "
-                />
-
-                <span
-                  className="
-                    text-[11px]
-                    font-bold
-                    text-emerald-700
+                    text-sm
+                    font-semibold
+                    text-slate-500
                   "
                 >
-                  {valorVisible(
-                    expediente.actividad_actual
-                  )}
-                </span>
+                  No hay datos disponibles
+                  para esta actividad.
+                </p>
 
+                <p
+                  className="
+                    mt-1
+                    text-xs
+                    text-slate-400
+                  "
+                >
+                  Los campos aparecerán cuando
+                  el expediente disponga de ellos.
+                </p>
               </div>
+            )}
+
+          </div>
+
+        </div>
+
+      </Modal>
 
 
-              <button
-                type="button"
-                onClick={
-                  abrirActividades
-                }
+      {/* =====================================================
+          MODAL DEFECTO
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarDefecto
+        }
+        onClose={() =>
+          setMostrarDefecto(false)
+        }
+        titulo="⚠️ Defecto registral"
+        subtitulo={
+          `Expediente ${valorVisible(
+            expediente.id_expediente
+          )}`
+        }
+        ancho="max-w-2xl"
+        footer={
+          <>
+            <Boton
+              onClick={() =>
+                setMostrarDefecto(false)
+              }
+            >
+              Cerrar
+            </Boton>
+
+            <Boton
+              tipo="primary"
+              onClick={
+                guardarDefectoLocal
+              }
+            >
+              ✏️ Guardar
+            </Boton>
+          </>
+        }
+      >
+
+        <div
+          className="
+            space-y-3
+          "
+        >
+
+          <Dato
+            campo="Tipo error"
+            valor={
+              expediente.tipo_error
+            }
+          />
+
+          <Dato
+            campo="Falta / defecto"
+            valor={
+              expediente.falta_defecto
+            }
+          />
+
+          <Dato
+            campo="Descripción"
+            valor={
+              expediente.descripcion_error
+            }
+            multilinea
+          />
+
+          <Dato
+            campo="Fecha cierre defecto"
+            valor={
+              expediente.fcierre_defecto
+            }
+            tipo="fecha"
+          />
+
+        </div>
+
+      </Modal>
+
+
+      {/* =====================================================
+          MODAL FINCAS
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarFincas
+        }
+        onClose={() =>
+          setMostrarFincas(false)
+        }
+        titulo="🏠 Fincas del expediente"
+        subtitulo="Datos de la finca que vamos a vincular"
+        ancho="max-w-4xl"
+        footer={
+          <>
+            <Boton
+              onClick={() =>
+                setMostrarFincas(false)
+              }
+            >
+              Cancelar
+            </Boton>
+
+            <Boton
+              tipo="primary"
+              onClick={
+                guardarFinca
+              }
+            >
+              💾 Guardar finca
+            </Boton>
+          </>
+        }
+      >
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-4
+            md:grid-cols-2
+          "
+        >
+
+          <CampoFormulario
+            label="Número de finca"
+            value={
+              fincaForm.numero_finca
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  numero_finca:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Registro"
+            value={
+              fincaForm.registro
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  registro:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Municipio"
+            value={
+              fincaForm.municipio
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  municipio:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Provincia"
+            value={
+              fincaForm.provincia
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  provincia:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Tomo"
+            value={
+              fincaForm.tomo
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  tomo: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Libro"
+            value={
+              fincaForm.libro
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  libro: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Folio"
+            value={
+              fincaForm.folio
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  folio: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Inscripción"
+            value={
+              fincaForm.inscripcion
+            }
+            onChange={(valor) =>
+              setFincaForm(
+                (actual) => ({
+                  ...actual,
+                  inscripcion:
+                    valor,
+                })
+              )
+            }
+          />
+
+        </div>
+
+        <CampoFormulario
+          label="Observaciones de la finca"
+          value={
+            fincaForm.observaciones
+          }
+          textarea
+          onChange={(valor) =>
+            setFincaForm(
+              (actual) => ({
+                ...actual,
+                observaciones:
+                  valor,
+              })
+            )
+          }
+        />
+
+      </Modal>
+
+
+      {/* =====================================================
+          MODAL REGISTROS
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarRegistros
+        }
+        onClose={() =>
+          setMostrarRegistros(false)
+        }
+        titulo="📚 Registros del expediente"
+        subtitulo="Información del Registro de la Propiedad"
+        ancho="max-w-4xl"
+        footer={
+          <>
+            <Boton
+              onClick={() =>
+                setMostrarRegistros(false)
+              }
+            >
+              Cancelar
+            </Boton>
+
+            <Boton
+              tipo="primary"
+              onClick={
+                guardarRegistro
+              }
+            >
+              💾 Guardar registro
+            </Boton>
+          </>
+        }
+      >
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-4
+            md:grid-cols-2
+          "
+        >
+
+          <CampoFormulario
+            label="Registro"
+            value={
+              registroForm.registro
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  registro:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Registrador"
+            value={
+              registroForm.registrador
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  registrador:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Municipio"
+            value={
+              registroForm.municipio
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  municipio:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Provincia"
+            value={
+              registroForm.provincia
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  provincia:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Número de finca"
+            value={
+              registroForm.numero_finca
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  numero_finca:
+                    valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Tomo"
+            value={
+              registroForm.tomo
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  tomo: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Libro"
+            value={
+              registroForm.libro
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  libro: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Folio"
+            value={
+              registroForm.folio
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  folio: valor,
+                })
+              )
+            }
+          />
+
+          <CampoFormulario
+            label="Inscripción"
+            value={
+              registroForm.inscripcion
+            }
+            onChange={(valor) =>
+              setRegistroForm(
+                (actual) => ({
+                  ...actual,
+                  inscripcion:
+                    valor,
+                })
+              )
+            }
+          />
+
+        </div>
+
+        <CampoFormulario
+          label="Observaciones del registro"
+          value={
+            registroForm.observaciones
+          }
+          textarea
+          onChange={(valor) =>
+            setRegistroForm(
+              (actual) => ({
+                ...actual,
+                observaciones:
+                  valor,
+              })
+            )
+          }
+        />
+
+      </Modal>
+
+
+      {/* =====================================================
+          MODAL ACCIONES
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarAcciones
+        }
+        onClose={() =>
+          setMostrarAcciones(false)
+        }
+        titulo="⚡ Acciones del expediente"
+        subtitulo="Registrar una acción operativa"
+        ancho="max-w-3xl"
+        footer={
+          <>
+            <Boton
+              onClick={() =>
+                setMostrarAcciones(false)
+              }
+            >
+              Cancelar
+            </Boton>
+
+            <Boton
+              tipo="primary"
+              onClick={
+                guardarAccion
+              }
+            >
+              💾 Guardar acción
+            </Boton>
+          </>
+        }
+      >
+
+        <div className="space-y-5">
+
+          <CampoSelect
+            label="Acción"
+            value={
+              accionForm.accion
+            }
+            onChange={(valor) =>
+              setAccionForm(
+                (actual) => ({
+                  ...actual,
+                  accion:
+                    valor,
+                })
+              )
+            }
+            opciones={[
+              "",
+              "Reclamar documentación",
+              "Enviar documentación",
+              "Solicitar firma",
+              "Solicitar inscripción",
+              "Reclamar inscripción",
+              "Reclamar cancelación",
+              "Seguimiento",
+              "Otra acción",
+            ]}
+          />
+
+
+          <CampoFormulario
+            label="Entidad a cancelar"
+            value={
+              accionForm.entidad_cancelar
+            }
+            onChange={(valor) =>
+              setAccionForm(
+                (actual) => ({
+                  ...actual,
+                  entidad_cancelar:
+                    valor,
+                })
+              )
+            }
+            placeholder="Indica la entidad a cancelar"
+          />
+
+
+          <CampoSelect
+            label="Reclamación a oficina"
+            value={
+              accionForm.reclamacion_oficina
+            }
+            onChange={(valor) =>
+              setAccionForm(
+                (actual) => ({
+                  ...actual,
+                  reclamacion_oficina:
+                    valor,
+                })
+              )
+            }
+            opciones={[
+              "",
+              "Sí",
+              "No",
+            ]}
+          />
+
+
+          <CampoFormulario
+            label="Fecha"
+            value={
+              accionForm.fecha
+            }
+            tipo="date"
+            onChange={(valor) =>
+              setAccionForm(
+                (actual) => ({
+                  ...actual,
+                  fecha:
+                    valor,
+                })
+              )
+            }
+          />
+
+
+          <CampoFormulario
+            label="Observaciones"
+            value={
+              accionForm.observaciones
+            }
+            textarea
+            onChange={(valor) =>
+              setAccionForm(
+                (actual) => ({
+                  ...actual,
+                  observaciones:
+                    valor,
+                })
+              )
+            }
+          />
+
+        </div>
+
+      </Modal>
+
+
+      {/* =====================================================
+          MODAL EXPEDIENTES RELACIONADOS
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarAgregarExpedientes
+        }
+        onClose={() =>
+          setMostrarAgregarExpedientes(false)
+        }
+        titulo="➕ Expedientes relacionados"
+        subtitulo={
+          `Agrupación por NIF · ${valorVisible(
+            expediente.nif_titular
+          )}`
+        }
+        ancho="max-w-5xl"
+        footer={
+          <Boton
+            onClick={() =>
+              setMostrarAgregarExpedientes(false)
+            }
+          >
+            Cerrar
+          </Boton>
+        }
+      >
+
+        {cargandoRelacionados ? (
+          <div
+            className="
+              rounded-xl
+              border
+              border-slate-200
+              bg-slate-50
+              p-10
+              text-center
+              text-sm
+              text-slate-400
+            "
+          >
+            Buscando expedientes del mismo NIF…
+          </div>
+        ) : expedientesRelacionados.length ===
+          0 ? (
+          <div
+            className="
+              rounded-xl
+              border
+              border-dashed
+              border-slate-300
+              bg-slate-50
+              p-10
+              text-center
+            "
+          >
+            <p
+              className="
+                text-sm
+                font-semibold
+                text-slate-500
+              "
+            >
+              No se han encontrado otros
+              expedientes relacionados.
+            </p>
+
+            <p
+              className="
+                mt-1
+                text-xs
+                text-slate-400
+              "
+            >
+              El sistema ha realizado la búsqueda
+              utilizando el NIF del titular.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+
+            <div
+              className="
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-4
+                py-3
+              "
+            >
+              <p
                 className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-xl
-                  bg-blue-600
-                  px-4
-                  py-2.5
                   text-xs
                   font-bold
-                  text-white
-                  shadow-sm
-                  transition
-                  hover:bg-blue-700
+                  text-blue-700
                 "
               >
-                📋 Ver actividades
-              </button>
+                {expedientesRelacionados.length}{" "}
+                expediente(s) relacionado(s)
+              </p>
+
+              <p
+                className="
+                  mt-1
+                  text-[11px]
+                  text-blue-600
+                "
+              >
+                Mismo NIF que el titular actual.
+              </p>
+            </div>
+
+
+            <div
+              className="
+                overflow-hidden
+                rounded-xl
+                border
+                border-slate-200
+                bg-white
+              "
+            >
+              <div
+                className="
+                  grid
+                  grid-cols-[1.2fr_1fr_1.3fr_1fr_auto]
+                  gap-3
+                  border-b
+                  border-slate-200
+                  bg-slate-50
+                  px-4
+                  py-3
+                  text-[10px]
+                  font-bold
+                  uppercase
+                  tracking-wide
+                  text-slate-400
+                "
+              >
+                <span>Expediente</span>
+                <span>Fecha alta</span>
+                <span>Actividad</span>
+                <span>Estado</span>
+                <span />
+              </div>
+
+              {expedientesRelacionados.map(
+                (relacionado) => (
+                  <div
+                    key={
+                      relacionado.id_expediente
+                    }
+                    className="
+                      grid
+                      grid-cols-[1.2fr_1fr_1.3fr_1fr_auto]
+                      items-center
+                      gap-3
+                      border-b
+                      border-slate-100
+                      px-4
+                      py-3
+                      last:border-b-0
+                    "
+                  >
+                    <span
+                      className="
+                        text-xs
+                        font-bold
+                        text-blue-700
+                      "
+                    >
+                      {
+                        valorVisible(
+                          relacionado.id_expediente
+                        )
+                      }
+                    </span>
+
+                    <span
+                      className="
+                        text-xs
+                        text-slate-600
+                      "
+                    >
+                      {
+                        formatearFecha(
+                          relacionado.fecha_alta
+                        )
+                      }
+                    </span>
+
+                    <span
+                      className="
+                        text-xs
+                        text-slate-600
+                      "
+                    >
+                      {
+                        valorVisible(
+                          relacionado.actividad_actual
+                        )
+                      }
+                    </span>
+
+                    <EstadoBadge
+                      valor={
+                        relacionado.estado_expediente
+                      }
+                    />
+
+                    <Link
+                      to={`/expedientes/${encodeURIComponent(
+                        relacionado.id_expediente
+                      )}`}
+                      className="
+                        inline-flex
+                        rounded-lg
+                        border
+                        border-blue-200
+                        bg-blue-50
+                        px-3
+                        py-2
+                        text-[10px]
+                        font-bold
+                        text-blue-700
+                        hover:bg-blue-100
+                      "
+                      onClick={() =>
+                        setMostrarAgregarExpedientes(
+                          false
+                        )
+                      }
+                    >
+                      Ver
+                    </Link>
+                  </div>
+                )
+              )}
+
+            </div>
+
+          </div>
+        )}
+
+      </Modal>
+
+
+      {/* =====================================================
+          MODAL OBSERVACIONES
+      ====================================================== */}
+
+      <Modal
+        open={
+          mostrarObservaciones
+        }
+        onClose={() =>
+          setMostrarObservaciones(false)
+        }
+        titulo="💬 Observaciones"
+        subtitulo="Comentario y destino dentro del expediente"
+        ancho="max-w-3xl"
+        footer={
+          <>
+            <Boton
+              onClick={() =>
+                setMostrarObservaciones(false)
+              }
+            >
+              Cancelar
+            </Boton>
+
+            <Boton
+              tipo="primary"
+              onClick={
+                guardarObservacion
+              }
+            >
+              💾 Guardar comentario
+            </Boton>
+          </>
+        }
+      >
+
+        <div className="space-y-5">
+
+          <CampoFormulario
+            label="Comentario"
+            value={
+              comentario
+            }
+            textarea
+            onChange={
+              setComentario
+            }
+            placeholder="Escribe aquí la observación..."
+          />
+
+
+          <div>
+
+            <p
+              className="
+                mb-3
+                text-xs
+                font-bold
+                text-slate-700
+              "
+            >
+              Dirigir comentario a
+            </p>
+
+            <div
+              className="
+                grid
+                grid-cols-1
+                gap-3
+                md:grid-cols-3
+              "
+            >
+
+              <CheckboxVision
+                label="Visión notario"
+                checked={
+                  visionesComentario.notario
+                }
+                onChange={(checked) =>
+                  setVisionesComentario(
+                    (actual) => ({
+                      ...actual,
+                      notario:
+                        checked,
+                    })
+                  )
+                }
+              />
+
+              <CheckboxVision
+                label="Visión apoderado"
+                checked={
+                  visionesComentario.apoderado
+                }
+                onChange={(checked) =>
+                  setVisionesComentario(
+                    (actual) => ({
+                      ...actual,
+                      apoderado:
+                        checked,
+                    })
+                  )
+                }
+              />
+
+              <CheckboxVision
+                label="Visión actividad"
+                checked={
+                  visionesComentario.actividad
+                }
+                onChange={(checked) =>
+                  setVisionesComentario(
+                    (actual) => ({
+                      ...actual,
+                      actividad:
+                        checked,
+                    })
+                  )
+                }
+              />
 
             </div>
 
           </div>
 
-        </section>
+        </div>
+
+      </Modal>
 
 
-        {/* ==================================================
-            MODALES
-        ================================================== */}
+      {/* =====================================================
+          MODAL ENVIAR A NOTARIO
+      ====================================================== */}
 
-        {mostrarActividades && (
-          <ModalActividades
-            expediente={
-              expediente
-            }
-            actividadSeleccionada={
-              actividadSeleccionada
-            }
-            setActividadSeleccionada={
-              setActividadSeleccionada
-            }
-            cerrar={() =>
-              setMostrarActividades(
-                false
-              )
-            }
-          />
-        )}
-
-
-        {mostrarDefectoModal && (
-          <ModalDefecto
-            modo={
-              modoDefecto
-            }
-            tipoDefecto={
-              tipoDefecto
-            }
-            faltaDefecto={
-              faltaDefecto
-            }
-            descripcionDefecto={
-              descripcionDefecto
-            }
-            fechaAltaDefecto={
-              fechaAltaDefecto
-            }
-            fechaSubsanacion={
-              fechaSubsanacion
-            }
-            observacionSubsanacion={
-              observacionSubsanacion
-            }
-            setTipoDefecto={
-              setTipoDefecto
-            }
-            setFaltaDefecto={
-              setFaltaDefecto
-            }
-            setDescripcionDefecto={
-              setDescripcionDefecto
-            }
-            setFechaAltaDefecto={
-              setFechaAltaDefecto
-            }
-            setFechaSubsanacion={
-              setFechaSubsanacion
-            }
-            setObservacionSubsanacion={
-              setObservacionSubsanacion
-            }
-            guardar={
-              guardarDefecto
-            }
-            confirmarSubsanacion={
-              confirmarSubsanacion
-            }
-            cerrar={() =>
-              setMostrarDefectoModal(
-                false
-              )
-            }
-            guardando={
-              guardandoDefecto
-            }
-          />
-        )}
-
-
-        {mostrarEnviarNotario && (
-          <EnviarANotarioModal
-            expediente={
-              expediente
-            }
-            onClose={() =>
-              setMostrarEnviarNotario(
-                false
-              )
-            }
-            onEnviar={
-              guardarEnviarANotario
-            }
-          />
-        )}
-
-      </div>
+      {mostrarEnviarNotario && (
+        <EnviarANotarioModal
+          expediente={
+            expediente
+          }
+          onClose={() =>
+            setMostrarEnviarNotario(
+              false
+            )
+          }
+          onGuardar={
+            guardarEnviarANotario
+          }
+        />
+      )}
 
     </div>
+  );
+}
+
+
+// ============================================================
+// CAMPO FORMULARIO
+// ============================================================
+
+function CampoFormulario({
+  label,
+  value,
+  onChange,
+  textarea = false,
+  tipo = "text",
+  placeholder = "",
+}) {
+  return (
+    <div className="mt-4">
+
+      <label
+        className="
+          mb-1.5
+          block
+          text-[11px]
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+        "
+      >
+        {label}
+      </label>
+
+      {textarea ? (
+        <textarea
+          value={
+            value ?? ""
+          }
+          onChange={(event) =>
+            onChange(
+              event.target.value
+            )
+          }
+          placeholder={
+            placeholder
+          }
+          rows={4}
+          className="
+            w-full
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            px-3
+            py-3
+            text-sm
+            text-slate-700
+            outline-none
+            transition
+            focus:border-blue-400
+            focus:ring-2
+            focus:ring-blue-100
+          "
+        />
+      ) : (
+        <input
+          type={
+            tipo
+          }
+          value={
+            value ?? ""
+          }
+          onChange={(event) =>
+            onChange(
+              event.target.value
+            )
+          }
+          placeholder={
+            placeholder
+          }
+          className="
+            w-full
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            px-3
+            py-2.5
+            text-sm
+            text-slate-700
+            outline-none
+            transition
+            focus:border-blue-400
+            focus:ring-2
+            focus:ring-blue-100
+          "
+        />
+      )}
+
+    </div>
+  );
+}
+
+
+// ============================================================
+// CAMPO SELECT
+// ============================================================
+
+function CampoSelect({
+  label,
+  value,
+  onChange,
+  opciones = [],
+}) {
+  return (
+    <div>
+
+      <label
+        className="
+          mb-1.5
+          block
+          text-[11px]
+          font-bold
+          uppercase
+          tracking-wide
+          text-slate-500
+        "
+      >
+        {label}
+      </label>
+
+      <select
+        value={
+          value ?? ""
+        }
+        onChange={(event) =>
+          onChange(
+            event.target.value
+          )
+        }
+        className="
+          w-full
+          rounded-xl
+          border
+          border-slate-200
+          bg-white
+          px-3
+          py-2.5
+          text-sm
+          text-slate-700
+          outline-none
+          transition
+          focus:border-blue-400
+          focus:ring-2
+          focus:ring-blue-100
+        "
+      >
+
+        {opciones.map(
+          (opcion) => (
+            <option
+              key={opcion}
+              value={opcion}
+            >
+              {
+                opcion ||
+                "Seleccionar…"
+              }
+            </option>
+          )
+        )}
+
+      </select>
+
+    </div>
+  );
+}
+
+
+// ============================================================
+// CHECKBOX VISIÓN
+// ============================================================
+
+function CheckboxVision({
+  label,
+  checked,
+  onChange,
+}) {
+  return (
+    <label
+      className={`
+        flex
+        cursor-pointer
+        items-center
+        gap-3
+        rounded-xl
+        border
+        p-4
+        transition
+        ${
+          checked
+            ? "border-blue-200 bg-blue-50"
+            : "border-slate-200 bg-white hover:bg-slate-50"
+        }
+      `}
+    >
+
+      <input
+        type="checkbox"
+        checked={
+          checked
+        }
+        onChange={(event) =>
+          onChange(
+            event.target.checked
+          )
+        }
+        className="
+          h-4
+          w-4
+          rounded
+          border-slate-300
+          text-blue-600
+          focus:ring-blue-500
+        "
+      />
+
+      <span
+        className={`
+          text-xs
+          font-bold
+          ${
+            checked
+              ? "text-blue-700"
+              : "text-slate-600"
+          }
+        `}
+      >
+        {label}
+      </span>
+
+    </label>
   );
 }
