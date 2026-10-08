@@ -1,5 +1,4 @@
-import {
-  useCallback,
+Callback,
   useEffect,
   useMemo,
   useState,
@@ -1435,9 +1434,24 @@ export default function FichaExpediente() {
   ] = useState([]);
 
   const [
+    expedientesManuales,
+    setExpedientesManuales,
+  ] = useState([]);
+
+  const [
     cargandoRelacionados,
     setCargandoRelacionados,
   ] = useState(false);
+
+  const [
+    expedienteRelacionadoManual,
+    setExpedienteRelacionadoManual,
+  ] = useState("");
+
+  const [
+    errorRelacionManual,
+    setErrorRelacionManual,
+  ] = useState("");
 
   const [
     comentario,
@@ -1456,6 +1470,24 @@ export default function FichaExpediente() {
   const [
     fincaForm,
     setFincaForm,
+  ] = useState({
+    numero_finca: "",
+    cru_idufir: "",
+    provincia: "",
+    poblacion: "",
+    registro: "",
+    seccion: "",
+    cuantia: "",
+    inscripcion: "",
+    contrato: "",
+    fecha_constitucion: "",
+    subrogado: "",
+    entidad_original: "",
+  });
+
+  const [
+    fincaRegistrada,
+    setFincaRegistrada,
   ] = useState({
     numero_finca: "",
     cru_idufir: "",
@@ -1535,6 +1567,48 @@ const [
             null;
 
           setExpediente(datos);
+
+          setFincaRegistrada({
+            numero_finca: datos?.finca || "",
+            cru_idufir:
+              datos?.cru_idufir ||
+              datos?.cru ||
+              datos?.idufir ||
+              "",
+            provincia: datos?.provincia || "",
+            poblacion:
+              datos?.poblacion ||
+              datos?.municipio ||
+              "",
+            registro: datos?.registro || "",
+            seccion: datos?.seccion || "",
+            cuantia: datos?.cuantia || "",
+            inscripcion: datos?.inscripcion || "",
+            contrato: datos?.contrato || "",
+            fecha_constitucion:
+              datos?.fecha_constitucion || "",
+            subrogado:
+              datos?.subrogado === true
+                ? "SI"
+                : datos?.subrogado === false
+                  ? "NO"
+                  : datos?.subrogado || "",
+            entidad_original:
+              datos?.entidad_original || "",
+          });
+
+          try {
+            const guardados = JSON.parse(
+              localStorage.getItem(
+                `erp_expedientes_relacionados_${datos?.id_expediente || id}`
+              ) || "[]"
+            );
+            setExpedientesManuales(
+              Array.isArray(guardados) ? guardados : []
+            );
+          } catch {
+            setExpedientesManuales([]);
+          }
 
           if (
             datos?.tiene_defectos_abiertos
@@ -1953,51 +2027,93 @@ const [
   // EXPEDIENTES RELACIONADOS POR NIF
   // ==========================================================
 
+  function guardarManualesRelacionados(lista) {
+    setExpedientesManuales(lista);
+
+    try {
+      localStorage.setItem(
+        `erp_expedientes_relacionados_${expediente?.id_expediente || id}`,
+        JSON.stringify(lista)
+      );
+    } catch (err) {
+      console.warn(
+        "No se han podido guardar los expedientes relacionados localmente:",
+        err
+      );
+    }
+  }
+
   async function abrirAgregarExpedientes() {
     setMostrarAgregarExpedientes(true);
+    setExpedienteRelacionadoManual("");
+    setErrorRelacionManual("");
 
     const nif =
       expediente?.nif_titular ||
       expediente?.nif_solicitante ||
       "";
 
-    if (!nif) {
-      setExpedientesRelacionados([]);
-      return;
-    }
-
     try {
       setCargandoRelacionados(true);
 
-      const respuesta =
-        await obtenerListadoExpedientes({
-          nif,
-          pagina: 1,
-          porPagina: 100,
-        });
+      let automaticos = [];
 
-      const lista =
-        obtenerArrayRespuesta(
-          respuesta
-        );
+      if (nif) {
+        const respuesta =
+          await obtenerListadoExpedientes({
+            nif,
+            pagina: 1,
+            porPagina: 100,
+          });
 
-      const expedienteActual =
-        String(
-          expediente?.id_expediente ||
-          ""
-        );
+        const lista =
+          obtenerArrayRespuesta(
+            respuesta
+          );
 
-      const relacionados =
-        lista.filter(
-          (item) =>
-            String(
-              item?.id_expediente ||
-              ""
-            ) !== expedienteActual
-        );
+        const expedienteActual =
+          String(
+            expediente?.id_expediente ||
+            ""
+          );
+
+        automaticos =
+          lista
+            .filter(
+              (item) =>
+                String(
+                  item?.id_expediente || ""
+                ) !== expedienteActual
+            )
+            .map((item) => ({
+              ...item,
+              _manual: false,
+            }));
+      }
+
+      const manuales = expedientesManuales.map(
+        (item) => ({
+          ...item,
+          _manual: true,
+        })
+      );
+
+      const mapa = new Map();
+
+      [...automaticos, ...manuales].forEach(
+        (item) => {
+          const clave = String(
+            item?.id_expediente || ""
+          ).trim();
+
+          if (clave) {
+            mapa.set(clave, item);
+          }
+        }
+      );
 
       setExpedientesRelacionados(
-        relacionados
+        Array.from(mapa.values())
       );
     } catch (err) {
       console.error(
@@ -2005,11 +2121,143 @@ const [
         err
       );
 
-      setExpedientesRelacionados([]);
+      setExpedientesRelacionados(
+        expedientesManuales.map(
+          (item) => ({
+            ...item,
+            _manual: true,
+          })
+        )
+      );
     } finally {
       setCargandoRelacionados(false);
     }
   }
+
+  async function guardarExpedienteRelacionado() {
+    const numero = String(
+      expedienteRelacionadoManual || ""
+    ).trim();
+
+    if (!numero) {
+      setErrorRelacionManual(
+        "Introduce un número de expediente."
+      );
+      return;
+    }
+
+    const actual = String(
+      expediente?.id_expediente || ""
+    ).trim();
+
+    if (numero === actual) {
+      setErrorRelacionManual(
+        "No puedes relacionar el expediente consigo mismo."
+      );
+      return;
+    }
+
+    const yaExiste = expedientesRelacionados.some(
+      (item) =>
+        String(
+          item?.id_expediente || ""
+        ).trim() === numero
+    );
+
+    if (yaExiste) {
+      setErrorRelacionManual(
+        "Ese expediente ya está en la lista."
+      );
+      return;
+    }
+
+    try {
+      setErrorRelacionManual("");
+      setCargandoRelacionados(true);
+
+      const respuesta =
+        await obtenerExpediente(numero);
+
+      const datos =
+        respuesta?.expediente ||
+        respuesta?.data ||
+        respuesta ||
+        null;
+
+      if (!datos?.id_expediente) {
+        throw new Error(
+          "No se ha encontrado el expediente indicado."
+        );
+      }
+
+      const nuevo = {
+        ...datos,
+        _manual: true,
+      };
+
+      const manualesActuales = [
+        ...expedientesManuales,
+        nuevo,
+      ];
+
+      guardarManualesRelacionados(
+        manualesActuales
+      );
+
+      setExpedientesRelacionados(
+        (actuales) => [
+          ...actuales,
+          nuevo,
+        ]
+      );
+
+      setExpedienteRelacionadoManual("");
+    } catch (err) {
+      console.error(
+        "Error agregando expediente relacionado:",
+        err
+      );
+
+      setErrorRelacionManual(
+        err?.response?.data?.detail ||
+        err?.message ||
+        "No se ha podido encontrar ese expediente."
+      );
+    } finally {
+      setCargandoRelacionados(false);
+    }
+  }
+
+  function eliminarExpedienteRelacionado(
+    numeroExpediente
+  ) {
+    const numero = String(
+      numeroExpediente || ""
+    ).trim();
+
+    const manuales = expedientesManuales.filter(
+      (item) =>
+        String(
+          item?.id_expediente || ""
+        ).trim() !== numero
+    );
+
+    guardarManualesRelacionados(
+      manuales
+    );
+
+    setExpedientesRelacionados(
+      (actuales) =>
+        actuales.filter(
+          (item) =>
+            String(
+              item?.id_expediente || ""
+            ).trim() !== numero ||
+            !item?._manual
+        )
+    );
+  }
+
 
 
   // ==========================================================
@@ -2155,14 +2403,29 @@ const [
 
 
   function guardarFinca() {
-    console.log(
-      "FINCA EXPEDIENTE:",
-      {
-        expediente:
-          expediente?.id_expediente,
-        ...fincaForm,
-      }
-    );
+    const datos = {
+      ...fincaForm,
+    };
+
+    setFincaRegistrada(datos);
+
+    setExpediente((actual) => ({
+      ...actual,
+      finca: datos.numero_finca,
+      cru_idufir: datos.cru_idufir,
+      provincia: datos.provincia,
+      poblacion: datos.poblacion,
+      registro: datos.registro,
+      seccion: datos.seccion,
+      cuantia: datos.cuantia,
+      inscripcion: datos.inscripcion,
+      contrato: datos.contrato,
+      fecha_constitucion:
+        datos.fecha_constitucion,
+      subrogado: datos.subrogado,
+      entidad_original:
+        datos.entidad_original,
+    }));
 
     setMostrarFincas(false);
   }
@@ -2198,7 +2461,7 @@ const [
             gap-3
             p-3
             sm:p-4
-            xl:grid-cols-[220px_minmax(0,1fr)_auto]
+            xl:grid-cols-[250px_minmax(0,1fr)_auto]
             xl:items-center
           "
         >
@@ -2539,46 +2802,116 @@ const [
             titulo="Fincas y Registros"
             subtitulo="Datos registrales del expediente"
             icono="finca"
+            colapsable
           >
             <div className="grid grid-cols-2 gap-2">
 
               <Dato
                 campo="Finca"
-                valor={expediente.finca}
+                valor={fincaRegistrada.numero_finca}
                 destaque
               />
 
-              <Dato
-                campo="CRU/Idufir"
-                valor={
-                  expediente.cru_idufir ||
-                  expediente.cru ||
-                  expediente.idufir
-                }
-              />
+              {esDisponible(
+                fincaRegistrada.cru_idufir
+              ) && (
+                <Dato
+                  campo="CRU/Idufir"
+                  valor={fincaRegistrada.cru_idufir}
+                />
+              )}
 
-              <Dato
-                campo="Provincia"
-                valor={expediente.provincia}
-              />
+              {esDisponible(
+                fincaRegistrada.provincia
+              ) && (
+                <Dato
+                  campo="Provincia"
+                  valor={fincaRegistrada.provincia}
+                />
+              )}
 
-              <Dato
-                campo="Población"
-                valor={
-                  expediente.poblacion ||
-                  expediente.municipio
-                }
-              />
+              {esDisponible(
+                fincaRegistrada.poblacion
+              ) && (
+                <Dato
+                  campo="Población"
+                  valor={fincaRegistrada.poblacion}
+                />
+              )}
 
-              <Dato
-                campo="Registro"
-                valor={expediente.registro}
-              />
+              {esDisponible(
+                fincaRegistrada.registro
+              ) && (
+                <Dato
+                  campo="Registro"
+                  valor={fincaRegistrada.registro}
+                />
+              )}
 
-              <Dato
-                campo="Inscripción"
-                valor={expediente.inscripcion}
-              />
+              {esDisponible(
+                fincaRegistrada.inscripcion
+              ) && (
+                <Dato
+                  campo="Inscripción"
+                  valor={fincaRegistrada.inscripcion}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.seccion
+              ) && (
+                <Dato
+                  campo="Sección"
+                  valor={fincaRegistrada.seccion}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.cuantia
+              ) && (
+                <Dato
+                  campo="Cuantía"
+                  valor={fincaRegistrada.cuantia}
+                  tipo="numero"
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.contrato
+              ) && (
+                <Dato
+                  campo="Contrato"
+                  valor={fincaRegistrada.contrato}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.fecha_constitucion
+              ) && (
+                <Dato
+                  campo="Fecha constitución"
+                  valor={fincaRegistrada.fecha_constitucion}
+                  tipo="fecha"
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.subrogado
+              ) && (
+                <Dato
+                  campo="Subrogado"
+                  valor={fincaRegistrada.subrogado}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.entidad_original
+              ) && (
+                <Dato
+                  campo="Entidad original"
+                  valor={fincaRegistrada.entidad_original}
+                />
+              )}
 
             </div>
 
@@ -2602,6 +2935,7 @@ const [
             titulo="Acciones"
             subtitulo="Acciones operativas del expediente"
             icono="accion"
+            colapsable
           >
             <button
               type="button"
@@ -2719,7 +3053,6 @@ const [
             titulo="Información crediticia"
             subtitulo="Datos económicos y contractuales"
             icono="economico"
-            className="h-full"
             colapsable
           >
 
@@ -3576,222 +3909,269 @@ const [
         }
       >
 
-        {cargandoRelacionados ? (
-          <div
-            className="
-              rounded-xl
-              border
-              border-slate-200
-              bg-slate-50
-              p-10
-              text-center
-              text-sm
-              text-slate-400
-            "
-          >
-            Buscando expedientes del mismo NIF…
-          </div>
-        ) : expedientesRelacionados.length ===
-          0 ? (
-          <div
-            className="
-              rounded-xl
-              border
-              border-dashed
-              border-slate-300
-              bg-slate-50
-              p-10
-              text-center
-            "
-          >
-            <p
-              className="
-                text-sm
-                font-semibold
-                text-slate-500
-              "
-            >
-              No se han encontrado otros
-              expedientes relacionados.
+        <div className="space-y-5">
+
+          <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
+            <p className="text-sm font-bold text-slate-800">
+              Agregar expediente manualmente
             </p>
 
-            <p
-              className="
-                mt-1
-                text-xs
-                text-slate-400
-              "
-            >
-              El sistema ha realizado la búsqueda
-              utilizando el NIF del titular.
+            <p className="mt-1 text-xs text-slate-500">
+              Introduce el número de expediente que quieres relacionar.
+              Se guardará en este navegador para este expediente.
             </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
 
-            <div
-              className="
-                rounded-xl
-                border
-                border-blue-100
-                bg-blue-50
-                px-4
-                py-3
-              "
-            >
-              <p
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <input
+                type="text"
+                value={expedienteRelacionadoManual}
+                onChange={(event) =>
+                  setExpedienteRelacionadoManual(
+                    event.target.value
+                  )
+                }
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    guardarExpedienteRelacionado();
+                  }
+                }}
+                placeholder="Nº de expediente"
                 className="
-                  text-xs
-                  font-bold
-                  text-blue-700
+                  min-w-0 flex-1 rounded-xl border border-slate-200
+                  bg-white px-4 py-2.5 text-sm text-slate-700
+                  outline-none transition focus:border-blue-400
+                  focus:ring-2 focus:ring-blue-100
                 "
-              >
-                {expedientesRelacionados.length}{" "}
-                expediente(s) relacionado(s)
-              </p>
+              />
 
-              <p
-                className="
-                  mt-1
-                  text-[11px]
-                  text-blue-600
-                "
+              <Boton
+                tipo="primary"
+                onClick={guardarExpedienteRelacionado}
+                disabled={
+                  cargandoRelacionados ||
+                  !expedienteRelacionadoManual.trim()
+                }
               >
-                Mismo NIF que el titular actual.
-              </p>
+                ＋ Agregar
+              </Boton>
             </div>
 
+            {errorRelacionManual && (
+              <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">
+                {errorRelacionManual}
+              </div>
+            )}
+          </div>
 
+          {cargandoRelacionados ? (
             <div
               className="
-                overflow-hidden
                 rounded-xl
                 border
                 border-slate-200
-                bg-white
+                bg-slate-50
+                p-8
+                text-center
+                text-sm
+                text-slate-400
               "
             >
+              Buscando expedientes del mismo NIF…
+            </div>
+          ) : expedientesRelacionados.length === 0 ? (
+            <div
+              className="
+                rounded-xl
+                border
+                border-dashed
+                border-slate-300
+                bg-slate-50
+                p-8
+                text-center
+              "
+            >
+              <p className="text-sm font-semibold text-slate-500">
+                No hay otros expedientes relacionados.
+              </p>
+
+              <p className="mt-1 text-xs text-slate-400">
+                Los encontrados por NIF aparecerán aquí y también puedes
+                añadirlos manualmente.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+
               <div
                 className="
-                  grid
-                  grid-cols-[1.2fr_1fr_1.3fr_1fr_auto]
-                  gap-3
-                  border-b
-                  border-slate-200
-                  bg-slate-50
+                  rounded-xl
+                  border
+                  border-blue-100
+                  bg-blue-50
                   px-4
                   py-3
-                  text-[10px]
-                  font-bold
-                  uppercase
-                  tracking-wide
-                  text-slate-400
                 "
               >
-                <span>Expediente</span>
-                <span>Fecha alta</span>
-                <span>Actividad</span>
-                <span>Estado</span>
-                <span />
+                <p className="text-xs font-bold text-blue-700">
+                  {expedientesRelacionados.length} expediente(s) relacionado(s)
+                </p>
+
+                <p className="mt-1 text-[11px] text-blue-600">
+                  Automáticos por NIF y añadidos manualmente.
+                </p>
               </div>
 
-              {expedientesRelacionados.map(
-                (relacionado) => (
-                  <div
-                    key={
-                      relacionado.id_expediente
-                    }
-                    className="
-                      grid
-                      grid-cols-[1.2fr_1fr_1.3fr_1fr_auto]
-                      items-center
-                      gap-3
-                      border-b
-                      border-slate-100
-                      px-4
-                      py-3
-                      last:border-b-0
-                    "
-                  >
-                    <span
-                      className="
-                        text-xs
-                        font-bold
-                        text-blue-700
-                      "
-                    >
-                      {
-                        valorVisible(
-                          relacionado.id_expediente
-                        )
-                      }
-                    </span>
+              <div
+                className="
+                  overflow-hidden
+                  rounded-xl
+                  border
+                  border-slate-200
+                  bg-white
+                "
+              >
+                <div
+                  className="
+                    grid
+                    grid-cols-[1.2fr_1fr_1.3fr_1fr_auto]
+                    gap-3
+                    border-b
+                    border-slate-200
+                    bg-slate-50
+                    px-4
+                    py-3
+                    text-[10px]
+                    font-bold
+                    uppercase
+                    tracking-wide
+                    text-slate-400
+                  "
+                >
+                  <span>Expediente</span>
+                  <span>Fecha alta</span>
+                  <span>Actividad</span>
+                  <span>Origen</span>
+                  <span />
+                </div>
 
-                    <span
-                      className="
-                        text-xs
-                        text-slate-600
-                      "
-                    >
-                      {
-                        formatearFecha(
-                          relacionado.fecha_alta
-                        )
-                      }
-                    </span>
-
-                    <span
-                      className="
-                        text-xs
-                        text-slate-600
-                      "
-                    >
-                      {
-                        valorVisible(
-                          relacionado.actividad_actual
-                        )
-                      }
-                    </span>
-
-                    <EstadoBadge
-                      valor={
-                        relacionado.estado_expediente
-                      }
-                    />
-
-                    <Link
-                      to={`/expedientes/${encodeURIComponent(
+                {expedientesRelacionados.map(
+                  (relacionado) => (
+                    <div
+                      key={String(
                         relacionado.id_expediente
-                      )}`}
+                      )}
                       className="
-                        inline-flex
-                        rounded-lg
-                        border
-                        border-blue-200
-                        bg-blue-50
-                        px-3
-                        py-2
-                        text-[10px]
-                        font-bold
-                        text-blue-700
-                        hover:bg-blue-100
+                        grid
+                        grid-cols-[1.2fr_1fr_1.3fr_1fr_auto]
+                        items-center
+                        gap-3
+                        border-b
+                        border-slate-100
+                        px-4
+                        py-3
+                        last:border-b-0
                       "
-                      onClick={() =>
-                        setMostrarAgregarExpedientes(
-                          false
-                        )
-                      }
                     >
-                      Ver
-                    </Link>
-                  </div>
-                )
-              )}
+                      <span className="text-xs font-bold text-blue-700">
+                        {valorVisible(
+                          relacionado.id_expediente
+                        )}
+                      </span>
 
+                      <span className="text-xs text-slate-600">
+                        {formatearFecha(
+                          relacionado.fecha_alta
+                        )}
+                      </span>
+
+                      <span className="text-xs text-slate-600">
+                        {valorVisible(
+                          relacionado.actividad_actual
+                        )}
+                      </span>
+
+                      <span
+                        className={`
+                          inline-flex
+                          w-fit
+                          rounded-full
+                          px-2.5
+                          py-1
+                          text-[10px]
+                          font-bold
+                          ${
+                            relacionado._manual
+                              ? "bg-blue-50 text-blue-700"
+                              : "bg-slate-100 text-slate-600"
+                          }
+                        `}
+                      >
+                        {
+                          relacionado._manual
+                            ? "Manual"
+                            : "Por NIF"
+                        }
+                      </span>
+
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/expedientes/${encodeURIComponent(
+                            relacionado.id_expediente
+                          )}`}
+                          className="
+                            inline-flex
+                            rounded-lg
+                            border
+                            border-blue-200
+                            bg-blue-50
+                            px-3
+                            py-2
+                            text-[10px]
+                            font-bold
+                            text-blue-700
+                            hover:bg-blue-100
+                          "
+                          onClick={() =>
+                            setMostrarAgregarExpedientes(false)
+                          }
+                        >
+                          Ver
+                        </Link>
+
+                        {relacionado._manual && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              eliminarExpedienteRelacionado(
+                                relacionado.id_expediente
+                              )
+                            }
+                            className="
+                              inline-flex
+                              rounded-lg
+                              border
+                              border-red-200
+                              bg-red-50
+                              px-3
+                              py-2
+                              text-[10px]
+                              font-bold
+                              text-red-700
+                              hover:bg-red-100
+                            "
+                          >
+                            Eliminar
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
             </div>
+          )}
 
-          </div>
-        )}
+        </div>
 
       </Modal>
 
