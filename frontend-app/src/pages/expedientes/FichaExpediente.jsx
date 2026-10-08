@@ -4058,7 +4058,6 @@ export default function FichaExpediente() {
             guardarEnviarANotario
           }
         />
-      )}
 
     </div>
   );
