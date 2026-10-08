@@ -2608,7 +2608,12 @@ export default function FichaExpediente() {
                 destaque
               />
 
-             
+               <Dato
+                campo="Observaciones"
+                valor={expediente.observaciones
+                }
+                destaque
+              />
             </div>
 
           </Seccion>
