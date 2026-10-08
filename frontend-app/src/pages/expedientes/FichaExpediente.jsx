@@ -206,9 +206,11 @@ function Seccion({
 }) {
   return (
     <section className="relative overflow-hidden rounded-[24px] border border-white/80 bg-white/78 p-5 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
+
       <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400" />
 
       <div className="mb-5 flex items-center gap-3">
+
         <IconoSeccion tipo={icono} />
 
         <div>
@@ -222,11 +224,13 @@ function Seccion({
             </p>
           )}
         </div>
+
       </div>
 
       <div className="space-y-3">
         {children}
       </div>
+
     </section>
   );
 }
@@ -239,9 +243,11 @@ function Seccion({
 function Observaciones({ texto }) {
   return (
     <section className="relative overflow-hidden rounded-[24px] border border-white/80 bg-white/78 p-5 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
+
       <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-slate-400 via-blue-400 to-indigo-400" />
 
       <div className="mb-4 flex items-center gap-3">
+
         <IconoSeccion tipo="identificacion" />
 
         <div>
@@ -253,6 +259,7 @@ function Observaciones({ texto }) {
             Información adicional del expediente
           </p>
         </div>
+
       </div>
 
       <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-4">
@@ -260,6 +267,7 @@ function Observaciones({ texto }) {
           {valorVisible(texto)}
         </div>
       </div>
+
     </section>
   );
 }
@@ -296,8 +304,12 @@ export default function FichaExpediente() {
         if (!activo) return;
 
         setExpediente(datos);
+
       } catch (err) {
-        console.error("Error cargando expediente:", err);
+        console.error(
+          "Error cargando expediente:",
+          err
+        );
 
         if (!activo) return;
 
@@ -306,6 +318,7 @@ export default function FichaExpediente() {
             err?.message ||
             "No se ha podido cargar el expediente."
         );
+
       } finally {
         if (activo) {
           setCargando(false);
@@ -365,15 +378,25 @@ export default function FichaExpediente() {
   if (cargando) {
     return (
       <div className="min-h-screen bg-slate-50 p-6">
+
         <div className="mx-auto max-w-[1600px]">
+
           <div className="rounded-[28px] border border-white/80 bg-white/80 p-8 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
+
             <div className="animate-pulse">
+
               <div className="mb-4 h-4 w-40 rounded bg-slate-200" />
+
               <div className="mb-3 h-8 w-80 rounded bg-slate-200" />
+
               <div className="h-4 w-64 rounded bg-slate-200" />
+
             </div>
+
           </div>
+
         </div>
+
       </div>
     );
   }
@@ -386,8 +409,11 @@ export default function FichaExpediente() {
   if (error) {
     return (
       <div className="min-h-screen bg-slate-50 p-6">
+
         <div className="mx-auto max-w-[1600px]">
+
           <div className="rounded-[28px] border border-red-200 bg-red-50 p-8 shadow-sm">
+
             <h1 className="text-lg font-bold text-red-700">
               No se ha podido cargar el expediente
             </h1>
@@ -402,8 +428,11 @@ export default function FichaExpediente() {
             >
               ← Volver a expedientes
             </Link>
+
           </div>
+
         </div>
+
       </div>
     );
   }
@@ -416,8 +445,11 @@ export default function FichaExpediente() {
   if (!expediente) {
     return (
       <div className="min-h-screen bg-slate-50 p-6">
+
         <div className="mx-auto max-w-[1600px]">
+
           <div className="rounded-[28px] border border-white/80 bg-white/80 p-8 shadow-sm">
+
             <h1 className="text-lg font-bold text-slate-800">
               Expediente no encontrado
             </h1>
@@ -428,8 +460,11 @@ export default function FichaExpediente() {
             >
               ← Volver a expedientes
             </Link>
+
           </div>
+
         </div>
+
       </div>
     );
   }
@@ -441,6 +476,7 @@ export default function FichaExpediente() {
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-6">
+
       <div className="mx-auto max-w-[1600px] space-y-5">
 
 
@@ -449,9 +485,11 @@ export default function FichaExpediente() {
         ==================================================== */}
 
         <header className="rounded-[28px] border border-white/80 bg-white/80 p-6 shadow-[0_16px_45px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
+
           <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
 
             <div>
+
               <Link
                 to="/expedientes"
                 className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition hover:text-blue-800"
@@ -471,6 +509,7 @@ export default function FichaExpediente() {
               <p className="mt-1 text-sm text-slate-400">
                 Información completa del expediente
               </p>
+
             </div>
 
 
@@ -487,9 +526,11 @@ export default function FichaExpediente() {
                 </Link>
               )}
 
+
               {(esDocumentacionPrevia ||
                 actividadNormalizada.includes("document") ||
                 actividadNormalizada.includes("previa")) && (
+
                 <button
                   type="button"
                   onClick={() =>
@@ -499,10 +540,13 @@ export default function FichaExpediente() {
                 >
                   ✒️ Enviar a notario
                 </button>
+
               )}
 
             </div>
+
           </div>
+
         </header>
 
 
@@ -513,6 +557,7 @@ export default function FichaExpediente() {
 
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
 
+
           {/* ==================================================
               IZQUIERDA — ESTADO
           ================================================== */}
@@ -522,6 +567,7 @@ export default function FichaExpediente() {
             subtitulo="Situación actual del expediente"
             icono="estado"
           >
+
             <Dato
               etiqueta="Estado"
               valor={expediente.estado_expediente}
@@ -562,6 +608,7 @@ export default function FichaExpediente() {
               tipo="fecha"
               destacado
             />
+
           </Seccion>
 
 
@@ -574,6 +621,7 @@ export default function FichaExpediente() {
             subtitulo="Información de los titulares del expediente"
             icono="titular"
           >
+
             <Dato
               etiqueta="Nombre titular"
               valor={expediente.nombre_titular}
@@ -584,6 +632,7 @@ export default function FichaExpediente() {
               etiqueta="NIF titular"
               valor={expediente.nif_titular}
             />
+
           </Seccion>
 
 
@@ -596,6 +645,7 @@ export default function FichaExpediente() {
             subtitulo="Información de solicitantes y apoderados"
             icono="solicitante"
           >
+
             <Dato
               etiqueta="Nombre solicitante"
               valor={expediente.nombre_solicitante}
@@ -611,6 +661,7 @@ export default function FichaExpediente() {
               etiqueta="Apoderado"
               valor={expediente.apoderado}
             />
+
           </Seccion>
 
         </div>
@@ -622,9 +673,10 @@ export default function FichaExpediente() {
 
         <Seccion
           titulo="Información crediticia"
-          subtitulo="Datos identificativos del préstamos/crédito"
+          subtitulo="Datos identificativos del préstamo/crédito"
           icono="identificacion"
         >
+
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
 
             <Dato
@@ -652,7 +704,8 @@ export default function FichaExpediente() {
               etiqueta="Nº solicitud SIA"
               valor={expediente.num_solicitud_sia}
             />
-  <Dato
+
+            <Dato
               etiqueta="Capital"
               valor={expediente.capital}
               tipo="numero"
@@ -678,12 +731,14 @@ export default function FichaExpediente() {
               tipo="numero"
             />
 
-                    <Dato
+            <Dato
               etiqueta="Finca"
               valor={expediente.finca}
               destacado
             />
-            
+
+          </div>
+
         </Seccion>
 
 
@@ -696,6 +751,7 @@ export default function FichaExpediente() {
           subtitulo="Información del notario asociado"
           icono="notario"
         >
+
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
 
             <Dato
@@ -720,6 +776,7 @@ export default function FichaExpediente() {
             />
 
           </div>
+
         </Seccion>
 
 
@@ -732,6 +789,7 @@ export default function FichaExpediente() {
           subtitulo="Datos de oficina y asignación"
           icono="oficina"
         >
+
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
 
             <Dato
@@ -746,10 +804,9 @@ export default function FichaExpediente() {
             />
 
           </div>
+
         </Seccion>
-          
-     
-       
+
 
         {/* ====================================================
             DEFECTOS
@@ -760,6 +817,7 @@ export default function FichaExpediente() {
           subtitulo="Incidencias y defectos registrales"
           icono="defectos"
         >
+
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
 
             <Dato
@@ -788,6 +846,7 @@ export default function FichaExpediente() {
             />
 
           </div>
+
         </Seccion>
 
 
@@ -813,6 +872,7 @@ export default function FichaExpediente() {
         )}
 
       </div>
+
     </div>
   );
 }
