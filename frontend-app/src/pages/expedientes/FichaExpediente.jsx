@@ -18,6 +18,13 @@ import {
 
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 
+import {
+  obtenerCatalogoAcciones,
+  obtenerAccionesExpediente,
+  asignarAccionExpediente,
+  eliminarAccionExpediente,
+} from "../../api/expedienteAcciones";
+
 
 // ============================================================
 // HELPERS
@@ -1438,12 +1445,31 @@ export default function FichaExpediente() {
     accionForm,
     setAccionForm,
   ] = useState({
-    accion: "",
-    entidad_cancelar: "",
-    reclamacion_oficina: "",
+    accion_id: "",
+    estado: "Pendiente",
     fecha: "",
     observaciones: "",
   });
+
+  const [
+    accionesCatalogo,
+    setAccionesCatalogo,
+  ] = useState([]);
+
+  const [
+    accionesExpediente,
+    setAccionesExpediente,
+  ] = useState([]);
+
+  const [
+    cargandoAcciones,
+    setCargandoAcciones,
+  ] = useState(false);
+
+  const [
+    errorAcciones,
+    setErrorAcciones,
+  ] = useState("");
 
   const [
     defectoLocal,
@@ -1713,34 +1739,191 @@ export default function FichaExpediente() {
   // ACCIONES
   // ==========================================================
 
-  function abrirAcciones() {
+  const cargarAccionesDelExpediente =
+    useCallback(
+      async () => {
+        if (!expediente?.id_expediente) {
+          setAccionesExpediente([]);
+          return;
+        }
+
+        try {
+          setCargandoAcciones(true);
+          setErrorAcciones("");
+
+          const respuesta =
+            await obtenerAccionesExpediente(
+              expediente.id_expediente
+            );
+
+          const datos =
+            Array.isArray(respuesta)
+              ? respuesta
+              : respuesta?.items ||
+                respuesta?.data ||
+                [];
+
+          setAccionesExpediente(datos);
+        } catch (err) {
+          console.error(
+            "Error cargando acciones del expediente:",
+            err
+          );
+          setAccionesExpediente([]);
+          setErrorAcciones(
+            err?.response?.data?.detail ||
+            "No se han podido cargar las acciones del expediente."
+          );
+        } finally {
+          setCargandoAcciones(false);
+        }
+      },
+      [expediente?.id_expediente]
+    );
+
+  useEffect(() => {
+    cargarAccionesDelExpediente();
+  }, [cargarAccionesDelExpediente]);
+
+  async function cargarCatalogoAcciones() {
+    try {
+      setErrorAcciones("");
+
+      const respuesta =
+        await obtenerCatalogoAcciones({
+          activo: true,
+        });
+
+      const datos =
+        Array.isArray(respuesta)
+          ? respuesta
+          : respuesta?.items ||
+            respuesta?.data ||
+            [];
+
+      setAccionesCatalogo(datos);
+    } catch (err) {
+      console.error(
+        "Error cargando catálogo de acciones:",
+        err
+      );
+      setAccionesCatalogo([]);
+      setErrorAcciones(
+        err?.response?.data?.detail ||
+        "No se ha podido cargar el catálogo de acciones."
+      );
+    }
+  }
+
+  async function abrirAcciones() {
+    const hoy =
+      new Date()
+        .toISOString()
+        .slice(0, 10);
+
     setAccionForm({
-      accion: "",
-      entidad_cancelar: "",
-      reclamacion_oficina: "",
-      fecha: "",
+      accion_id: "",
+      estado: "Pendiente",
+      fecha: hoy,
       observaciones: "",
     });
 
+    setErrorAcciones("");
     setMostrarAcciones(true);
+
+    await Promise.all([
+      cargarCatalogoAcciones(),
+      cargarAccionesDelExpediente(),
+    ]);
   }
 
+  async function guardarAccion() {
+    if (!expediente?.id_expediente) {
+      setErrorAcciones(
+        "No se ha podido identificar el expediente."
+      );
+      return;
+    }
 
-  function guardarAccion() {
-    console.log(
-      "ACCION EXPEDIENTE:",
-      {
-        expediente:
-          expediente?.id_expediente,
-        ...accionForm,
-      }
-    );
+    if (!accionForm.accion_id) {
+      setErrorAcciones(
+        "Debes seleccionar una acción del catálogo."
+      );
+      return;
+    }
 
-    setMostrarAcciones(false);
+    try {
+      setCargandoAcciones(true);
+      setErrorAcciones("");
+
+      await asignarAccionExpediente(
+        expediente.id_expediente,
+        {
+          accion_id: Number(accionForm.accion_id),
+          estado:
+            accionForm.estado ||
+            "Pendiente",
+          fecha:
+            accionForm.fecha ||
+            null,
+          observaciones:
+            accionForm.observaciones?.trim() ||
+            null,
+        }
+      );
+
+      await cargarAccionesDelExpediente();
+
+      setAccionForm({
+        accion_id: "",
+        estado: "Pendiente",
+        fecha: new Date()
+          .toISOString()
+          .slice(0, 10),
+        observaciones: "",
+      });
+
+      setMostrarAcciones(false);
+    } catch (err) {
+      console.error(
+        "Error asignando acción al expediente:",
+        err
+      );
+      setErrorAcciones(
+        err?.response?.data?.detail ||
+        "No se ha podido asignar la acción al expediente."
+      );
+    } finally {
+      setCargandoAcciones(false);
+    }
   }
 
+  async function retirarAccion(relacionId) {
+    if (!relacionId) return;
 
-  
+    try {
+      setCargandoAcciones(true);
+      setErrorAcciones("");
+
+      await eliminarAccionExpediente(
+        relacionId
+      );
+
+      await cargarAccionesDelExpediente();
+    } catch (err) {
+      console.error(
+        "Error retirando acción del expediente:",
+        err
+      );
+      setErrorAcciones(
+        err?.response?.data?.detail ||
+        "No se ha podido retirar la acción."
+      );
+    } finally {
+      setCargandoAcciones(false);
+    }
+  }
+
 
   // ==========================================================
   // OBSERVACIONES
@@ -2546,6 +2729,83 @@ export default function FichaExpediente() {
             >
               ⚡ Gestionar acciones
             </button>
+
+            {errorAcciones && (
+              <div className="erp-danger mt-3 rounded-xl border px-4 py-3 text-xs">
+                {errorAcciones}
+              </div>
+            )}
+
+            {cargandoAcciones ? (
+              <div className="erp-text-soft mt-3 text-xs">
+                Cargando acciones...
+              </div>
+            ) : accionesExpediente.length > 0 ? (
+              <div className="mt-4 space-y-3">
+                {accionesExpediente.map((relacion) => {
+                  const accion =
+                    relacion.accion ||
+                    relacion.accion_expediente ||
+                    relacion;
+
+                  return (
+                    <div
+                      key={relacion.id}
+                      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-slate-800">
+                            {accion.descripcion ||
+                              relacion.descripcion ||
+                              "Acción"}
+                          </div>
+
+                          {accion.actividad && (
+                            <div className="mt-1 text-xs text-slate-500">
+                              {accion.actividad}
+                            </div>
+                          )}
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            retirarAccion(relacion.id)
+                          }
+                          className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100"
+                        >
+                          Retirar
+                        </button>
+                      </div>
+
+                      <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                        {relacion.estado && (
+                          <span className="rounded-full bg-slate-100 px-2.5 py-1 font-semibold text-slate-700">
+                            {relacion.estado}
+                          </span>
+                        )}
+                        {relacion.fecha && (
+                          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-slate-600">
+                            {formatearFecha(relacion.fecha)}
+                          </span>
+                        )}
+                      </div>
+
+                      {relacion.observaciones && (
+                        <div className="mt-3 text-xs text-slate-600">
+                          {relacion.observaciones}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="erp-text-soft mt-3 rounded-xl border border-dashed border-slate-200 px-4 py-4 text-xs">
+                Este expediente todavía no tiene acciones asignadas.
+              </div>
+            )}
           </Seccion>
 
         </div>
@@ -3628,6 +3888,12 @@ export default function FichaExpediente() {
 >
   <div className="space-y-5">
 
+    {errorAcciones && (
+      <div className="erp-danger rounded-xl border px-4 py-3 text-sm">
+        {errorAcciones}
+      </div>
+    )}
+
     <CampoSelect
       label="Acción"
       value={accionForm.accion_id}
@@ -3646,6 +3912,12 @@ export default function FichaExpediente() {
         }`,
       }))}
     />
+
+    {cargandoAcciones && (
+      <div className="erp-text-soft text-xs">
+        Cargando acciones...
+      </div>
+    )}
 
     <CampoSelect
       label="Estado"
