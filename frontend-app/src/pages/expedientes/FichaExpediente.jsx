@@ -16,6 +16,13 @@ import {
   enviarExpedienteANotario,
 } from "../../api/expedientes";
 
+import {
+  obtenerCatalogoAcciones,
+  obtenerAccionesExpediente,
+  asignarAccionExpediente,
+  eliminarAccionExpediente,
+} from "../../api/expedienteAcciones";
+
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 
 
@@ -1438,12 +1445,31 @@ export default function FichaExpediente() {
     accionForm,
     setAccionForm,
   ] = useState({
-    accion: "",
-    entidad_cancelar: "",
-    reclamacion_oficina: "",
+    accion_id: "",
+    estado: "Pendiente",
     fecha: "",
     observaciones: "",
   });
+
+  const [
+    accionesCatalogo,
+    setAccionesCatalogo,
+  ] = useState([]);
+
+  const [
+    accionesExpediente,
+    setAccionesExpediente,
+  ] = useState([]);
+
+  const [
+    cargandoAcciones,
+    setCargandoAcciones,
+  ] = useState(false);
+
+  const [
+    errorAcciones,
+    setErrorAcciones,
+  ] = useState("");
 
   const [
     defectoLocal,
@@ -1529,6 +1555,78 @@ export default function FichaExpediente() {
   }, [
     cargarExpediente,
   ]);
+
+
+  // ==========================================================
+  // ACCIONES DEL EXPEDIENTE
+  // ==========================================================
+
+  const cargarAccionesDelExpediente =
+    useCallback(
+      async () => {
+        if (!id) {
+          return;
+        }
+
+        try {
+          setCargandoAcciones(true);
+          setErrorAcciones("");
+
+          const lista =
+            await obtenerAccionesExpediente(id);
+
+          setAccionesExpediente(
+            Array.isArray(lista) ? lista : []
+          );
+        } catch (err) {
+          console.error(
+            "Error cargando acciones del expediente:",
+            err
+          );
+
+          setAccionesExpediente([]);
+          setErrorAcciones(
+            err?.response?.data?.detail ||
+            "No se han podido cargar las acciones del expediente."
+          );
+        } finally {
+          setCargandoAcciones(false);
+        }
+      },
+      [id]
+    );
+
+
+  useEffect(() => {
+    cargarAccionesDelExpediente();
+  }, [
+    cargarAccionesDelExpediente,
+  ]);
+
+
+  async function cargarCatalogoAcciones() {
+    try {
+      const lista =
+        await obtenerCatalogoAcciones({
+          activo: true,
+        });
+
+      setAccionesCatalogo(
+        Array.isArray(lista) ? lista : []
+      );
+    } catch (err) {
+      console.error(
+        "Error cargando catálogo de acciones:",
+        err
+      );
+
+      setAccionesCatalogo([]);
+      setErrorAcciones(
+        err?.response?.data?.detail ||
+        "No se ha podido cargar el catálogo de acciones."
+      );
+    }
+  }
 
 
   // ==========================================================
@@ -1660,6 +1758,49 @@ export default function FichaExpediente() {
 
 
   // ==========================================================
+  // FINCAS
+  // ==========================================================
+
+  function abrirFincas() {
+    setFincaForm({
+      numero_finca:
+        expediente?.finca ||
+        "",
+      registro:
+        expediente?.registro ||
+        "",
+      municipio:
+        expediente?.poblacion ||
+        "",
+      provincia:
+        expediente?.provincia ||
+        "",
+      tomo: "",
+      libro: "",
+      folio: "",
+      inscripcion: "",
+      observaciones: "",
+    });
+
+    setMostrarFincas(true);
+  }
+
+
+  function guardarFinca() {
+    console.log(
+      "FINCA EXPEDIENTE:",
+      {
+        expediente:
+          expediente?.id_expediente,
+        ...fincaForm,
+      }
+    );
+
+    setMostrarFincas(false);
+  }
+
+
+  // ==========================================================
   // REGISTROS
   // ==========================================================
 
@@ -1713,34 +1854,105 @@ export default function FichaExpediente() {
   // ACCIONES
   // ==========================================================
 
-  function abrirAcciones() {
+  async function abrirAcciones() {
+    const hoy =
+      new Date().toISOString().slice(0, 10);
+
     setAccionForm({
-      accion: "",
-      entidad_cancelar: "",
-      reclamacion_oficina: "",
-      fecha: "",
+      accion_id: "",
+      estado: "Pendiente",
+      fecha: hoy,
       observaciones: "",
     });
 
+    setErrorAcciones("");
     setMostrarAcciones(true);
+
+    await Promise.all([
+      cargarCatalogoAcciones(),
+      cargarAccionesDelExpediente(),
+    ]);
   }
 
 
-  function guardarAccion() {
-    console.log(
-      "ACCION EXPEDIENTE:",
-      {
-        expediente:
-          expediente?.id_expediente,
-        ...accionForm,
-      }
-    );
+  async function guardarAccion() {
+    if (!expediente?.id_expediente) {
+      setErrorAcciones(
+        "No se ha identificado el expediente."
+      );
+      return;
+    }
 
-    setMostrarAcciones(false);
+    if (!accionForm.accion_id) {
+      setErrorAcciones(
+        "Selecciona una acción del catálogo."
+      );
+      return;
+    }
+
+    try {
+      setErrorAcciones("");
+
+      await asignarAccionExpediente(
+        expediente.id_expediente,
+        {
+          accion_id: Number(
+            accionForm.accion_id
+          ),
+          estado:
+            accionForm.estado ||
+            "Pendiente",
+          fecha:
+            accionForm.fecha ||
+            null,
+          observaciones:
+            accionForm.observaciones?.trim() ||
+            null,
+        }
+      );
+
+      await cargarAccionesDelExpediente();
+
+      setMostrarAcciones(false);
+    } catch (err) {
+      console.error(
+        "Error asignando acción al expediente:",
+        err
+      );
+
+      setErrorAcciones(
+        err?.response?.data?.detail ||
+        "No se ha podido asignar la acción al expediente."
+      );
+    }
   }
 
 
-  
+  async function retirarAccion(relacionId) {
+    if (!relacionId) {
+      return;
+    }
+
+    try {
+      await eliminarAccionExpediente(
+        relacionId
+      );
+
+      await cargarAccionesDelExpediente();
+    } catch (err) {
+      console.error(
+        "Error retirando acción del expediente:",
+        err
+      );
+
+      setErrorAcciones(
+        err?.response?.data?.detail ||
+        "No se ha podido retirar la acción."
+      );
+    }
+  }
+
+
 
   // ==========================================================
   // OBSERVACIONES
@@ -1791,6 +2003,69 @@ export default function FichaExpediente() {
     );
 
     setMostrarObservaciones(false);
+  }
+
+
+  // ==========================================================
+  // EXPEDIENTES RELACIONADOS POR NIF
+  // ==========================================================
+
+  async function abrirAgregarExpedientes() {
+    setMostrarAgregarExpedientes(true);
+
+    const nif =
+      expediente?.nif_titular ||
+      expediente?.nif_solicitante ||
+      "";
+
+    if (!nif) {
+      setExpedientesRelacionados([]);
+      return;
+    }
+
+    try {
+      setCargandoRelacionados(true);
+
+      const respuesta =
+        await obtenerListadoExpedientes({
+          nif,
+          pagina: 1,
+          porPagina: 100,
+        });
+
+      const lista =
+        obtenerArrayRespuesta(
+          respuesta
+        );
+
+      const expedienteActual =
+        String(
+          expediente?.id_expediente ||
+          ""
+        );
+
+      const relacionados =
+        lista.filter(
+          (item) =>
+            String(
+              item?.id_expediente ||
+              ""
+            ) !== expedienteActual
+        );
+
+      setExpedientesRelacionados(
+        relacionados
+      );
+    } catch (err) {
+      console.error(
+        "Error buscando expedientes relacionados:",
+        err
+      );
+
+      setExpedientesRelacionados([]);
+    } finally {
+      setCargandoRelacionados(false);
+    }
   }
 
 
@@ -2014,68 +2289,6 @@ export default function FichaExpediente() {
                 >
                   Ficha completa del expediente
                 </p>
-// ==========================================================
-  // EXPEDIENTES RELACIONADOS POR NIF
-  // ==========================================================
-
-  async function abrirAgregarExpedientes() {
-    setMostrarAgregarExpedientes(true);
-
-    const nif =
-      expediente?.nif_titular ||
-      expediente?.nif_solicitante ||
-      "";
-
-    if (!nif) {
-      setExpedientesRelacionados([]);
-      return;
-    }
-
-    try {
-      setCargandoRelacionados(true);
-
-      const respuesta =
-        await obtenerListadoExpedientes({
-          nif,
-          pagina: 1,
-          porPagina: 100,
-        });
-
-      const lista =
-        obtenerArrayRespuesta(
-          respuesta
-        );
-
-      const expedienteActual =
-        String(
-          expediente?.id_expediente ||
-          ""
-        );
-
-      const relacionados =
-        lista.filter(
-          (item) =>
-            String(
-              item?.id_expediente ||
-              ""
-            ) !== expedienteActual
-        );
-
-      setExpedientesRelacionados(
-        relacionados
-      );
-    } catch (err) {
-      console.error(
-        "Error buscando expedientes relacionados:",
-        err
-      );
-
-      setExpedientesRelacionados([]);
-    } finally {
-      setCargandoRelacionados(false);
-    }
-  }
-
               </div>
             </div>
           </div>
@@ -2137,24 +2350,9 @@ export default function FichaExpediente() {
             </Boton>
 
           </div>
+
         </div>
       </section>
-
-
-      {/* =====================================================
-          CUATRO COLUMNAS PRINCIPALES
-      ====================================================== */}
-
-      <div
-        className="
-          grid
-           w-full
-          grid-cols-1
-          gap-4
-          xl:grid-cols-4
-        "
-      >
-
         {/* ===================================================
             COLUMNA 1
         ==================================================== */}
@@ -2362,12 +2560,159 @@ export default function FichaExpediente() {
             subtitulo="Acciones operativas del expediente"
             icono="accion"
           >
+
+            {errorAcciones && (
+              <div
+                className="
+                  mb-3
+                  rounded-xl
+                  border
+                  border-red-200
+                  bg-red-50
+                  px-3
+                  py-2.5
+                  text-[11px]
+                  font-semibold
+                  text-red-700
+                "
+              >
+                {errorAcciones}
+              </div>
+            )}
+
+            {cargandoAcciones ? (
+              <div
+                className="
+                  rounded-xl
+                  border
+                  border-slate-200
+                  bg-slate-50
+                  px-3
+                  py-4
+                  text-center
+                  text-[11px]
+                  text-slate-400
+                "
+              >
+                Cargando acciones…
+              </div>
+            ) : accionesExpediente.length > 0 ? (
+              <div className="space-y-2">
+                {accionesExpediente.map((relacion) => (
+                  <div
+                    key={relacion.id}
+                    className="
+                      rounded-xl
+                      border
+                      border-slate-200
+                      bg-slate-50
+                      p-3
+                    "
+                  >
+                    <div
+                      className="
+                        flex
+                        items-start
+                        justify-between
+                        gap-2
+                      "
+                    >
+                      <div className="min-w-0">
+                        <p
+                          className="
+                            text-xs
+                            font-bold
+                            text-slate-700
+                          "
+                        >
+                          {valorVisible(
+                            relacion.accion?.descripcion
+                          )}
+                        </p>
+
+                        {relacion.accion?.actividad && (
+                          <p
+                            className="
+                              mt-0.5
+                              text-[10px]
+                              text-slate-400
+                            "
+                          >
+                            {relacion.accion.actividad}
+                          </p>
+                        )}
+                      </div>
+
+                      <EstadoBadge
+                        valor={relacion.estado}
+                      />
+                    </div>
+
+                    {(relacion.fecha || relacion.observaciones) && (
+                      <div
+                        className="
+                          mt-2
+                          border-t
+                          border-slate-200
+                          pt-2
+                        "
+                      >
+                        {relacion.fecha && (
+                          <p className="text-[10px] text-slate-500">
+                            Fecha: {formatearFecha(relacion.fecha)}
+                          </p>
+                        )}
+
+                        {relacion.observaciones && (
+                          <p className="mt-1 whitespace-pre-wrap text-[10px] leading-4 text-slate-500">
+                            {relacion.observaciones}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        retirarAccion(relacion.id)
+                      }
+                      className="
+                        mt-2
+                        text-[10px]
+                        font-bold
+                        text-red-600
+                        hover:text-red-700
+                      "
+                    >
+                      Retirar acción
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div
+                className="
+                  rounded-xl
+                  border
+                  border-dashed
+                  border-slate-200
+                  bg-slate-50
+                  px-3
+                  py-4
+                  text-center
+                  text-[11px]
+                  text-slate-400
+                "
+              >
+                No hay acciones asignadas.
+              </div>
+            )}
+
             <button
               type="button"
-              onClick={
-                abrirAcciones
-              }
+              onClick={abrirAcciones}
               className="
+                mt-3
                 w-full
                 rounded-xl
                 border
@@ -2382,14 +2727,21 @@ export default function FichaExpediente() {
                 hover:bg-blue-100
               "
             >
-              ⚡ Gestionar acciones
+              ⚡ Añadir acción
             </button>
+
           </Seccion>
 
         </div>
 
 
-        {/* ===================================================
+      
+
+
+
+
+
+  {/* ===================================================
             COLUMNA 2
         ==================================================== */}
 
@@ -2509,6 +2861,24 @@ export default function FichaExpediente() {
         </div>
 
 
+        </div>
+      </section>
+
+
+      {/* =====================================================
+          CUATRO COLUMNAS PRINCIPALES
+      ====================================================== */}
+
+      <div
+        className="
+          grid
+           w-full
+          grid-cols-1
+          gap-4
+          xl:grid-cols-4
+        "
+      >
+
         {/* ===================================================
             COLUMNA 3
         ==================================================== */}
@@ -2608,12 +2978,20 @@ export default function FichaExpediente() {
                 destaque
               />
 
-               <Dato
-                campo="Observaciones"
-                valor={expediente.observaciones
+              <Dato
+                campo="Provisión"
+                valor={
+                  expediente.tipo_provision
                 }
-                destaque
               />
+
+              <Dato
+                campo="ID provisión"
+                valor={
+                  expediente.id_provision
+                }
+              />
+
             </div>
 
           </Seccion>
@@ -3548,96 +3926,124 @@ export default function FichaExpediente() {
 
 
       {/* =====================================================
-    MODAL ACCIONES
-====================================================== */}
+          MODAL ACCIONES
+      ====================================================== */}
 
-<Modal
-  open={mostrarAcciones}
-  onClose={() => setMostrarAcciones(false)}
-  titulo="⚡ Acciones del expediente"
-  subtitulo="Asignar una acción del catálogo al expediente"
-  ancho="max-w-3xl"
-  footer={
-    <>
-      <Boton
-        onClick={() => setMostrarAcciones(false)}
+      <Modal
+        open={mostrarAcciones}
+        onClose={() =>
+          setMostrarAcciones(false)
+        }
+        titulo="⚡ Acciones del expediente"
+        subtitulo="Asignar una acción del catálogo al expediente"
+        ancho="max-w-3xl"
+        footer={
+          <>
+            <Boton
+              onClick={() =>
+                setMostrarAcciones(false)
+              }
+            >
+              Cancelar
+            </Boton>
+
+            <Boton
+              tipo="primary"
+              onClick={guardarAccion}
+              disabled={!accionForm.accion_id}
+            >
+              💾 Asignar acción
+            </Boton>
+          </>
+        }
       >
-        Cancelar
-      </Boton>
 
-      <Boton
-        tipo="primary"
-        onClick={guardarAccion}
-      >
-        💾 Asignar acción
-      </Boton>
-    </>
-  }
->
-  <div className="space-y-5">
+        <div className="space-y-5">
 
-    <CampoSelect
-      label="Acción"
-      value={accionForm.accion_id}
-      onChange={(valor) =>
-        setAccionForm((actual) => ({
-          ...actual,
-          accion_id: valor,
-        }))
-      }
-      opciones={accionesCatalogo.map((accion) => ({
-        value: String(accion.id),
-        label: `${accion.descripcion}${
-          accion.actividad
-            ? ` — ${accion.actividad}`
-            : ""
-        }`,
-      }))}
-    />
+          <CampoSelect
+            label="Acción del catálogo"
+            value={accionForm.accion_id}
+            onChange={(valor) =>
+              setAccionForm((actual) => ({
+                ...actual,
+                accion_id: valor,
+              }))
+            }
+            opciones={accionesCatalogo.map(
+              (accion) => ({
+                value: String(accion.id),
+                label: [
+                  accion.descripcion,
+                  accion.actividad,
+                  accion.seccion,
+                ]
+                  .filter(Boolean)
+                  .join(" · "),
+              })
+            )}
+          />
 
-    <CampoSelect
-      label="Estado"
-      value={accionForm.estado}
-      onChange={(valor) =>
-        setAccionForm((actual) => ({
-          ...actual,
-          estado: valor,
-        }))
-      }
-      opciones={[
-        "Pendiente",
-        "En curso",
-        "Realizada",
-        "Cancelada",
-      ]}
-    />
+          {accionesCatalogo.length === 0 && (
+            <div
+              className="
+                rounded-xl
+                border
+                border-amber-200
+                bg-amber-50
+                p-4
+                text-xs
+                text-amber-700
+              "
+            >
+              No hay acciones activas disponibles en el catálogo.
+              Primero debes crearlas en el catálogo de Acciones del expediente.
+            </div>
+          )}
 
-    <CampoFormulario
-      label="Fecha"
-      value={accionForm.fecha}
-      tipo="date"
-      onChange={(valor) =>
-        setAccionForm((actual) => ({
-          ...actual,
-          fecha: valor,
-        }))
-      }
-    />
+          <CampoSelect
+            label="Estado"
+            value={accionForm.estado}
+            onChange={(valor) =>
+              setAccionForm((actual) => ({
+                ...actual,
+                estado: valor,
+              }))
+            }
+            opciones={[
+              "Pendiente",
+              "En curso",
+              "Realizada",
+              "Cancelada",
+            ]}
+          />
 
-    <CampoFormulario
-      label="Observaciones"
-      value={accionForm.observaciones}
-      textarea
-      onChange={(valor) =>
-        setAccionForm((actual) => ({
-          ...actual,
-          observaciones: valor,
-        }))
-      }
-    />
+          <CampoFormulario
+            label="Fecha"
+            value={accionForm.fecha}
+            tipo="date"
+            onChange={(valor) =>
+              setAccionForm((actual) => ({
+                ...actual,
+                fecha: valor,
+              }))
+            }
+          />
 
-  </div>
-</Modal>
+          <CampoFormulario
+            label="Observaciones"
+            value={accionForm.observaciones}
+            textarea
+            onChange={(valor) =>
+              setAccionForm((actual) => ({
+                ...actual,
+                observaciones: valor,
+              }))
+            }
+          />
+
+        </div>
+
+      </Modal>
 
       {/* =====================================================
           MODAL EXPEDIENTES RELACIONADOS
@@ -4198,17 +4604,33 @@ function CampoSelect({
       >
 
         {opciones.map(
-          (opcion) => (
-            <option
-              key={opcion}
-              value={opcion}
-            >
-              {
-                opcion ||
-                "Seleccionar…"
-              }
-            </option>
-          )
+          (opcion, indice) => {
+            const esObjeto =
+              typeof opcion === "object" &&
+              opcion !== null;
+
+            const valorOpcion =
+              esObjeto
+                ? opcion.value
+                : opcion;
+
+            const etiquetaOpcion =
+              esObjeto
+                ? opcion.label
+                : opcion;
+
+            return (
+              <option
+                key={`${valorOpcion}-${indice}`}
+                value={valorOpcion ?? ""}
+              >
+                {
+                  etiquetaOpcion ||
+                  "Seleccionar…"
+                }
+              </option>
+            );
+          }
         )}
 
       </select>
