@@ -1,8 +1,3 @@
-// ============================================================
-// ERP MOLSAN
-// FICHA DE EXPEDIENTE
-// ============================================================
-
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -24,27 +19,25 @@ function valorVisible(valor) {
 
 
 function formatearFecha(fecha) {
-  if (!fecha) {
-    return "—";
-  }
+  if (!fecha) return "—";
 
-  const valor = String(fecha);
+  const texto = String(fecha);
 
-  if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
-    const [anio, mes, dia] = valor.split("-");
+  if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+    const [anio, mes, dia] = texto.split("-");
     return `${dia}/${mes}/${anio}`;
   }
 
-  if (valor.includes("T")) {
-    const parteFecha = valor.split("T")[0];
+  if (texto.includes("T")) {
+    const parte = texto.split("T")[0];
 
-    if (/^\d{4}-\d{2}-\d{2}$/.test(parteFecha)) {
-      const [anio, mes, dia] = parteFecha.split("-");
+    if (/^\d{4}-\d{2}-\d{2}$/.test(parte)) {
+      const [anio, mes, dia] = parte.split("-");
       return `${dia}/${mes}/${anio}`;
     }
   }
 
-  return valor;
+  return texto;
 }
 
 
@@ -52,13 +45,18 @@ function formatearNumero(valor) {
   if (
     valor === null ||
     valor === undefined ||
-    valor === "" ||
-    Number.isNaN(Number(valor))
+    valor === ""
   ) {
     return "—";
   }
 
-  return Number(valor).toLocaleString("es-ES", {
+  const numero = Number(valor);
+
+  if (Number.isNaN(numero)) {
+    return String(valor);
+  }
+
+  return numero.toLocaleString("es-ES", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -75,7 +73,7 @@ function normalizarActividad(valor) {
 
 
 // ============================================================
-// ICONOS DE SECCIÓN
+// ICONOS
 // ============================================================
 
 function IconoSeccion({ tipo }) {
@@ -96,7 +94,7 @@ function IconoSeccion({ tipo }) {
   };
 
   return (
-    <span className="text-lg leading-none">
+    <span className="mr-2 inline-flex items-center">
       {iconos[tipo] || "▣"}
     </span>
   );
@@ -109,37 +107,40 @@ function IconoSeccion({ tipo }) {
 
 function EstadoBadge({ valor }) {
   const texto = valorVisible(valor);
-  const normalizado = texto.toLowerCase();
+  const normalizado = normalizarActividad(valor);
 
   let clase =
-    "inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600";
+    "inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold";
 
   if (
     normalizado.includes("vig") ||
     normalizado.includes("abiert") ||
     normalizado.includes("activo")
   ) {
-    clase =
-      "inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700";
-  }
-
-  if (
+    clase +=
+      " border-emerald-200 bg-emerald-50 text-emerald-700";
+  } else if (
     normalizado.includes("cerr") ||
     normalizado.includes("final")
   ) {
-    clase =
-      "inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600";
-  }
-
-  if (
+    clase +=
+      " border-slate-200 bg-slate-100 text-slate-600";
+  } else if (
     normalizado.includes("error") ||
     normalizado.includes("defecto")
   ) {
-    clase =
-      "inline-flex items-center rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-700";
+    clase +=
+      " border-red-200 bg-red-50 text-red-700";
+  } else {
+    clase +=
+      " border-slate-200 bg-slate-50 text-slate-700";
   }
 
-  return <span className={clase}>{texto}</span>;
+  return (
+    <span className={clase}>
+      {texto}
+    </span>
+  );
 }
 
 
@@ -156,43 +157,37 @@ function Dato({
 }) {
   let valorFinal = valorVisible(valor);
 
-  if (fecha && valor) {
+  if (fecha) {
     valorFinal = formatearFecha(valor);
   }
 
-  if (numero && valor !== null && valor !== undefined && valor !== "") {
+  if (numero) {
     valorFinal = formatearNumero(valor);
   }
 
   const esEstado =
-    etiqueta?.toLowerCase() === "estado" ||
-    etiqueta?.toLowerCase() === "estado actividad";
+    etiqueta === "Estado" ||
+    etiqueta === "Estado actividad";
 
   return (
-    <div
-      className={[
-        "rounded-xl border border-slate-200/80 bg-white/70 p-4",
-        destacado ? "ring-1 ring-blue-100" : "",
-      ].join(" ")}
-    >
-      <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+    <div className="rounded-xl border border-slate-200 bg-white/70 p-3">
+      <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-slate-400">
         {etiqueta}
       </div>
 
-      <div
-        className={[
-          "break-words text-sm",
-          destacado
-            ? "font-bold text-slate-900"
-            : "font-medium text-slate-700",
-        ].join(" ")}
-      >
-        {esEstado ? (
-          <EstadoBadge valor={valorFinal} />
-        ) : (
-          valorFinal
-        )}
-      </div>
+      {esEstado ? (
+        <EstadoBadge valor={valor} />
+      ) : (
+        <div
+          className={
+            destacado
+              ? "text-sm font-bold text-slate-800"
+              : "text-sm text-slate-700"
+          }
+        >
+          {valorFinal}
+        </div>
+      )}
     </div>
   );
 }
@@ -209,78 +204,51 @@ function Seccion({
   children,
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 shadow-sm backdrop-blur-sm">
-
-      <div className="border-b border-slate-200/80 bg-gradient-to-r from-blue-50 via-indigo-50 to-cyan-50 px-5 py-4">
-
-        <div className="flex items-center gap-3">
-
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/80 bg-white/80 shadow-sm">
-            <IconoSeccion tipo={icono} />
-          </div>
-
-          <div>
-            <h2 className="text-base font-bold text-slate-800">
-              {titulo}
-            </h2>
-
-            {subtitulo && (
-              <p className="mt-0.5 text-xs text-slate-500">
-                {subtitulo}
-              </p>
-            )}
-          </div>
-
+    <section className="overflow-hidden rounded-2xl border border-white/70 bg-white/80 shadow-sm backdrop-blur">
+      <div className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white px-5 py-4">
+        <div className="flex items-center text-base font-bold text-slate-800">
+          <IconoSeccion tipo={icono} />
+          {titulo}
         </div>
 
+        {subtitulo && (
+          <div className="mt-1 text-xs text-slate-500">
+            {subtitulo}
+          </div>
+        )}
       </div>
 
       <div className="p-5">
         {children}
       </div>
-
     </section>
   );
 }
 
 
 // ============================================================
-// OBSERVACIONES
+// DEFECTO — BADGE
 // ============================================================
 
-function Observaciones({ valor }) {
+function DefectoEstadoBadge({ vigente }) {
+  if (vigente) {
+    return (
+      <span className="inline-flex items-center rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-bold text-red-700">
+        ⚠️ DEFECTO VIGENTE
+      </span>
+    );
+  }
+
   return (
-    <Seccion
-      titulo="Observaciones"
-      subtitulo="Información adicional del expediente"
-      icono="identificacion"
-    >
-      <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
-        <div className="whitespace-pre-wrap text-sm leading-6 text-slate-700">
-          {valorVisible(valor)}
-        </div>
-      </div>
-    </Seccion>
-  );
-}
-
-
-// ============================================================
-// BADGE DEFECTO VIGENTE
-// ============================================================
-
-function DefectoVigenteBadge() {
-  return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-black text-red-700">
-      <span className="h-2 w-2 rounded-full bg-red-500" />
-      DEFECTO VIGENTE
+    <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+      ✓ DEFECTO SUBSANADO
     </span>
   );
 }
 
 
 // ============================================================
-// FICHA EXPEDIENTE
+// COMPONENTE PRINCIPAL
 // ============================================================
 
 export default function FichaExpediente() {
@@ -290,55 +258,49 @@ export default function FichaExpediente() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
-  const [
-    mostrarEnviarANotario,
-    setMostrarEnviarANotario,
-  ] = useState(false);
+  // ----------------------------------------------------------
+  // MODAL ENVIAR A NOTARIO
+  // ----------------------------------------------------------
+
+  const [mostrarEnviarANotario, setMostrarEnviarANotario] =
+    useState(false);
 
 
-  // ==========================================================
+  // ----------------------------------------------------------
   // DEFECTOS
-  // ==========================================================
+  // ----------------------------------------------------------
 
-  const [
-    mostrarAltaDefecto,
-    setMostrarAltaDefecto,
-  ] = useState(false);
+  const [mostrarDefectoModal, setMostrarDefectoModal] =
+    useState(false);
 
-  const [
-    modoDefecto,
-    setModoDefecto,
-  ] = useState("alta");
+  const [modoDefecto, setModoDefecto] =
+    useState("alta");
 
-  const [
-    tipoDefecto,
-    setTipoDefecto,
-  ] = useState("");
+  const [tipoDefecto, setTipoDefecto] =
+    useState("");
 
-  const [
-    faltaDefecto,
-    setFaltaDefecto,
-  ] = useState("");
+  const [faltaDefecto, setFaltaDefecto] =
+    useState("");
 
-  const [
-    descripcionDefecto,
-    setDescripcionDefecto,
-  ] = useState("");
+  const [descripcionDefecto, setDescripcionDefecto] =
+    useState("");
 
-  const [
-    guardandoDefecto,
-    setGuardandoDefecto,
-  ] = useState(false);
+  const [fechaSubsanacion, setFechaSubsanacion] =
+    useState("");
 
-  const [
-    defectoLocal,
-    setDefectoLocal,
-  ] = useState(null);
+  const [observacionSubsanacion, setObservacionSubsanacion] =
+    useState("");
+
+  const [guardandoDefecto, setGuardandoDefecto] =
+    useState(false);
+
+  const [defectoLocal, setDefectoLocal] =
+    useState(null);
 
 
-  // ==========================================================
+  // ----------------------------------------------------------
   // CARGAR EXPEDIENTE
-  // ==========================================================
+  // ----------------------------------------------------------
 
   useEffect(() => {
     let activo = true;
@@ -348,54 +310,22 @@ export default function FichaExpediente() {
         setCargando(true);
         setError("");
 
-        const datos = await obtenerExpediente(id);
+        const data = await obtenerExpediente(id);
 
-        if (!activo) {
-          return;
-        }
+        if (!activo) return;
 
-        setExpediente(datos);
-
-        // ------------------------------------------------------
-        // Si el backend ya devuelve información del defecto,
-        // la utilizamos como estado inicial.
-        // ------------------------------------------------------
-
-        if (
-          datos?.tiene_defectos_abiertos ||
-          datos?.tipo_error ||
-          datos?.falta_defecto ||
-          datos?.descripcion_error
-        ) {
-          setDefectoLocal({
-            vigente: Boolean(
-              datos?.tiene_defectos_abiertos
-            ),
-            tipo_error:
-              datos?.tipo_error || "",
-            falta_defecto:
-              datos?.falta_defecto || "",
-            descripcion_error:
-              datos?.descripcion_error || "",
-          });
-        } else {
-          setDefectoLocal(null);
-        }
-
+        setExpediente(data);
       } catch (err) {
         console.error(
           "Error cargando expediente:",
           err
         );
 
-        if (!activo) {
-          return;
-        }
+        if (!activo) return;
 
         setError(
           err?.response?.data?.detail ||
-          err?.message ||
-          "No se ha podido cargar el expediente."
+            "No se ha podido cargar el expediente."
         );
       } finally {
         if (activo) {
@@ -418,31 +348,27 @@ export default function FichaExpediente() {
   // ACTIVIDAD
   // ==========================================================
 
-  const actividadNormalizada = useMemo(() => {
-    return normalizarActividad(
-      expediente?.actividad_actual
-    );
-  }, [expediente?.actividad_actual]);
-
+  const actividadNormalizada = useMemo(
+    () =>
+      normalizarActividad(
+        expediente?.actividad_actual
+      ),
+    [expediente]
+  );
 
   const esDocumentacionPrevia =
-    actividadNormalizada.includes("document") ||
+    actividadNormalizada.includes("documentacion") &&
     actividadNormalizada.includes("previa");
-
-
-  // ==========================================================
-  // DEFECTO VIGENTE
-  // ==========================================================
-
-  const defectoVigente = Boolean(
-    defectoLocal?.vigente ??
-    expediente?.tiene_defectos_abiertos
-  );
 
 
   // ==========================================================
   // ENVIAR A NOTARIO
   // ==========================================================
+
+  function abrirEnviarANotario() {
+    setMostrarEnviarANotario(true);
+  }
+
 
   function cerrarEnviarANotario() {
     setMostrarEnviarANotario(false);
@@ -451,7 +377,7 @@ export default function FichaExpediente() {
 
   async function guardarEnviarANotario(payload) {
     console.log(
-      "ENVIAR A NOTARIO — payload:",
+      "ENVIAR A NOTARIO — pendiente conexión backend:",
       payload
     );
 
@@ -460,7 +386,7 @@ export default function FichaExpediente() {
 
 
   // ==========================================================
-  // ABRIR ALTA DEFECTO
+  // DEFECTOS — ABRIR ALTA
   // ==========================================================
 
   function abrirAltaDefecto() {
@@ -469,37 +395,50 @@ export default function FichaExpediente() {
     setTipoDefecto("");
     setFaltaDefecto("");
     setDescripcionDefecto("");
+    setFechaSubsanacion("");
+    setObservacionSubsanacion("");
 
-    setMostrarAltaDefecto(true);
+    setMostrarDefectoModal(true);
   }
 
 
   // ==========================================================
-  // ABRIR EDICIÓN DEFECTO
+  // DEFECTOS — VER / EDITAR
   // ==========================================================
 
   function editarDefecto() {
+    const defecto =
+      defectoLocal || {
+        tipo: expediente?.tipo_error,
+        falta: expediente?.falta_defecto,
+        descripcion:
+          expediente?.descripcion_error,
+        vigente: true,
+      };
+
     setModoDefecto("editar");
 
     setTipoDefecto(
-      defectoLocal?.tipo_error ||
-      expediente?.tipo_error ||
-      ""
+      defecto?.tipo || ""
     );
 
     setFaltaDefecto(
-      defectoLocal?.falta_defecto ||
-      expediente?.falta_defecto ||
-      ""
+      defecto?.falta || ""
     );
 
     setDescripcionDefecto(
-      defectoLocal?.descripcion_error ||
-      expediente?.descripcion_error ||
-      ""
+      defecto?.descripcion || ""
     );
 
-    setMostrarAltaDefecto(true);
+    setFechaSubsanacion(
+      defecto?.fecha_subsanacion || ""
+    );
+
+    setObservacionSubsanacion(
+      defecto?.observacion_subsanacion || ""
+    );
+
+    setMostrarDefectoModal(true);
   }
 
 
@@ -507,16 +446,12 @@ export default function FichaExpediente() {
   // CERRAR MODAL DEFECTO
   // ==========================================================
 
-  function cerrarAltaDefecto() {
+  function cerrarDefectoModal() {
     if (guardandoDefecto) {
       return;
     }
 
-    setMostrarAltaDefecto(false);
-
-    setTipoDefecto("");
-    setFaltaDefecto("");
-    setDescripcionDefecto("");
+    setMostrarDefectoModal(false);
   }
 
 
@@ -526,66 +461,86 @@ export default function FichaExpediente() {
 
   async function guardarDefecto() {
     if (!tipoDefecto.trim()) {
-      alert("Debes indicar el tipo de defecto.");
+      alert("Indica el tipo de defecto.");
       return;
     }
 
     if (!faltaDefecto.trim()) {
-      alert("Debes indicar la falta o defecto.");
+      alert("Indica la falta o documentación.");
       return;
     }
 
     if (!descripcionDefecto.trim()) {
-      alert("Debes indicar una descripción.");
+      alert("Indica la descripción del defecto.");
       return;
     }
 
     try {
       setGuardandoDefecto(true);
 
-      const nuevoDefecto = {
-        vigente: true,
-        tipo_error: tipoDefecto.trim(),
-        falta_defecto: faltaDefecto.trim(),
-        descripcion_error:
+      const payload = {
+        expediente_id:
+          expediente?.id ||
+          expediente?.id_expediente ||
+          id,
+
+        id_expediente:
+          expediente?.id_expediente ||
+          id,
+
+        tipo_defecto: tipoDefecto.trim(),
+
+        falta: faltaDefecto.trim(),
+
+        descripcion:
           descripcionDefecto.trim(),
+
+        fecha_subsanacion:
+          fechaSubsanacion || null,
+
+        observacion_subsanacion:
+          observacionSubsanacion.trim() || null,
+
+        vigente:
+          !fechaSubsanacion,
       };
 
-      /*
-       * --------------------------------------------------------
-       * PENDIENTE CONEXIÓN BACKEND
-       * --------------------------------------------------------
-       *
-       * Aquí conectaremos el endpoint real de defectos.
-       *
-       * No inventamos todavía ninguna URL porque queremos
-       * utilizar la arquitectura real del backend de ERP Molsan.
-       */
-
       console.log(
-        modoDefecto === "alta"
-          ? "ALTA DEFECTO"
-          : "EDITAR DEFECTO",
-        {
-          expediente_id: expediente?.id,
-          id_expediente:
-            expediente?.id_expediente,
-          ...nuevoDefecto,
-        }
+        "DEFECTO REGISTRAL — pendiente conexión backend:",
+        payload
       );
 
-      // --------------------------------------------------------
-      // Estado visual inmediato
-      // --------------------------------------------------------
+      /*
+       * ------------------------------------------------------
+       * IMPORTANTE
+       * ------------------------------------------------------
+       *
+       * Aquí se conectará posteriormente el endpoint real
+       * de defectos registrales.
+       *
+       * No se inventa ningún endpoint hasta revisar
+       * el backend actual.
+       *
+       * ------------------------------------------------------
+       */
 
-      setDefectoLocal(nuevoDefecto);
+      setDefectoLocal({
+        tipo: tipoDefecto.trim(),
+        falta: faltaDefecto.trim(),
+        descripcion:
+          descripcionDefecto.trim(),
 
-      setMostrarAltaDefecto(false);
+        fecha_subsanacion:
+          fechaSubsanacion || null,
 
-      setTipoDefecto("");
-      setFaltaDefecto("");
-      setDescripcionDefecto("");
+        observacion_subsanacion:
+          observacionSubsanacion.trim() || null,
 
+        vigente:
+          !fechaSubsanacion,
+      });
+
+      setMostrarDefectoModal(false);
     } catch (err) {
       console.error(
         "Error guardando defecto:",
@@ -593,8 +548,6 @@ export default function FichaExpediente() {
       );
 
       alert(
-        err?.response?.data?.detail ||
-        err?.message ||
         "No se ha podido guardar el defecto."
       );
     } finally {
@@ -604,118 +557,166 @@ export default function FichaExpediente() {
 
 
   // ==========================================================
-  // DAR DE BAJA DEFECTO
+  // DAR DE BAJA / SUBSANAR
   // ==========================================================
 
-  function darDeBajaDefecto() {
-    const confirmar = window.confirm(
-      "¿Quieres dar de baja el defecto vigente de este expediente?"
-    );
+  function abrirSubsanacion() {
+    const hoy = new Date()
+      .toISOString()
+      .slice(0, 10);
 
-    if (!confirmar) {
+    setModoDefecto("subsanar");
+
+    setFechaSubsanacion(hoy);
+    setObservacionSubsanacion("");
+
+    setMostrarDefectoModal(true);
+  }
+
+
+  async function confirmarSubsanacion() {
+    if (!fechaSubsanacion) {
+      alert(
+        "Indica la fecha de subsanación."
+      );
       return;
     }
 
-    /*
-     * --------------------------------------------------------
-     * PENDIENTE CONEXIÓN BACKEND
-     * --------------------------------------------------------
-     *
-     * Cuando tengamos el endpoint real, aquí se actualizará
-     * definitivamente el estado en la base de datos.
-     */
+    try {
+      setGuardandoDefecto(true);
 
-    setDefectoLocal((actual) => {
-      if (!actual) {
-        return null;
-      }
+      const payload = {
+        expediente_id:
+          expediente?.id ||
+          expediente?.id_expediente ||
+          id,
 
-      return {
-        ...actual,
+        id_expediente:
+          expediente?.id_expediente ||
+          id,
+
+        fecha_subsanacion:
+          fechaSubsanacion,
+
+        observacion_subsanacion:
+          observacionSubsanacion.trim() || null,
+
         vigente: false,
       };
-    });
+
+      console.log(
+        "SUBSANACIÓN DEFECTO — pendiente conexión backend:",
+        payload
+      );
+
+      setDefectoLocal((actual) => ({
+        ...(actual || {}),
+        fecha_subsanacion:
+          fechaSubsanacion,
+
+        observacion_subsanacion:
+          observacionSubsanacion.trim() || null,
+
+        vigente: false,
+      }));
+
+      setMostrarDefectoModal(false);
+    } catch (err) {
+      console.error(
+        "Error subsanando defecto:",
+        err
+      );
+
+      alert(
+        "No se ha podido registrar la subsanación."
+      );
+    } finally {
+      setGuardandoDefecto(false);
+    }
   }
 
 
   // ==========================================================
-  // ESTADOS CARGA
+  // DEFECTO ACTUAL
+  // ==========================================================
+
+  const defecto = defectoLocal
+    ? defectoLocal
+    : expediente?.tipo_error ||
+      expediente?.falta_defecto ||
+      expediente?.descripcion_error
+    ? {
+        tipo:
+          expediente?.tipo_error || "",
+        falta:
+          expediente?.falta_defecto || "",
+        descripcion:
+          expediente?.descripcion_error || "",
+        vigente: true,
+      }
+    : null;
+
+
+  // ==========================================================
+  // CARGANDO
   // ==========================================================
 
   if (cargando) {
     return (
-      <div className="erp-page flex min-h-[400px] items-center justify-center">
-        <div className="erp-card px-8 py-6 text-center">
-
-          <div className="mb-2 text-2xl">
-            ⏳
-          </div>
-
-          <div className="text-sm font-semibold text-slate-600">
+      <div className="erp-page">
+        <div className="erp-card p-8">
+          <div className="text-center text-sm text-slate-500">
             Cargando expediente...
           </div>
-
         </div>
       </div>
     );
   }
 
+
+  // ==========================================================
+  // ERROR
+  // ==========================================================
 
   if (error) {
     return (
       <div className="erp-page">
-
-        <div className="erp-card border border-red-200 bg-red-50 p-6">
-
-          <div className="mb-2 text-lg font-bold text-red-700">
-            Error
-          </div>
-
-          <div className="text-sm text-red-600">
+        <div className="erp-card p-8">
+          <div className="mb-4 text-sm font-semibold text-red-600">
             {error}
           </div>
 
-          <div className="mt-5">
-
-            <Link
-              to="/expedientes"
-              className="erp-btn-secondary inline-flex items-center gap-2"
-            >
-              ← Volver a expedientes
-            </Link>
-
-          </div>
-
+          <Link
+            to="/expedientes"
+            className="erp-btn-secondary"
+          >
+            ← Volver a expedientes
+          </Link>
         </div>
-
       </div>
     );
   }
 
 
+  // ==========================================================
+  // SIN EXPEDIENTE
+  // ==========================================================
+
   if (!expediente) {
     return (
       <div className="erp-page">
-
-        <div className="erp-card p-6 text-center">
-
-          <div className="text-sm font-semibold text-slate-600">
+        <div className="erp-card p-8">
+          <div className="mb-4 text-sm text-slate-500">
             No se ha encontrado el expediente.
           </div>
 
-          <div className="mt-5">
-
-            <Link
-              to="/expedientes"
-              className="erp-btn-secondary inline-flex items-center gap-2"
-            >
-              ← Volver a expedientes
-            </Link>
-
-          </div>
-
+          <Link
+            to="/expedientes"
+            className="erp-btn-secondary"
+          >
+            ← Volver a expedientes
+          </Link>
         </div>
-
       </div>
     );
   }
@@ -726,70 +727,65 @@ export default function FichaExpediente() {
   // ==========================================================
 
   return (
-    <div className="erp-page space-y-6">
+    <div className="erp-page">
+
+      {/* ====================================================
+          CABECERA
+      ==================================================== */}
+
+      <div className="mb-6">
+
+        <div className="mb-4">
+          <Link
+            to="/expedientes"
+            className="inline-flex items-center text-sm font-semibold text-slate-600 transition hover:text-slate-900"
+          >
+            ← Expedientes
+          </Link>
+        </div>
 
 
-      {/* ======================================================
-          CABECERA EXPEDIENTE
-      ====================================================== */}
+        <div className="erp-card overflow-hidden">
 
-      <div className="erp-card overflow-hidden">
-
-        <div className="border-b border-slate-200/80 bg-gradient-to-r from-blue-50 via-indigo-50 to-cyan-50 px-6 py-5">
-
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-5 p-6 xl:flex-row xl:items-center xl:justify-between">
 
             <div>
-
-              <div className="mb-2 flex flex-wrap items-center gap-2">
-
-                <Link
-                  to="/expedientes"
-                  className="erp-btn-secondary inline-flex items-center gap-2 px-3 py-2 text-xs font-bold"
-                >
-                  ← Expedientes
-                </Link>
-
-                {expediente.fecha_prevista_firma && (
-                  <Link
-                    to={`/agenda?fecha=${expediente.fecha_prevista_firma}`}
-                    className="erp-btn-secondary inline-flex items-center gap-2 px-3 py-2 text-xs font-bold"
-                  >
-                    📅 Ver agenda
-                  </Link>
-                )}
-
-              </div>
-
-
-              <h1 className="text-2xl font-black tracking-tight text-slate-900">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">
                 Expediente{" "}
                 {valorVisible(
                   expediente.id_expediente
                 )}
               </h1>
 
-
               <p className="mt-1 text-sm text-slate-500">
                 Ficha completa del expediente
               </p>
-
             </div>
 
 
-            <div className="flex flex-wrap items-center gap-2">
+            {/* ==================================================
+                BOTONES DE ACCIÓN
+            ================================================== */}
+
+            <div className="flex flex-wrap items-center gap-3">
 
               {esDocumentacionPrevia && (
                 <button
                   type="button"
-                  onClick={() =>
-                    setMostrarEnviarANotario(true)
-                  }
-                  className="erp-btn-primary inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold"
+                  onClick={abrirEnviarANotario}
+                  className="erp-btn-primary"
                 >
                   ✒️ Enviar a notario
                 </button>
               )}
+
+              <button
+                type="button"
+                onClick={abrirAltaDefecto}
+                className="erp-btn-danger"
+              >
+                ⚠️ Defecto registral
+              </button>
 
             </div>
 
@@ -800,16 +796,15 @@ export default function FichaExpediente() {
       </div>
 
 
-      {/* ======================================================
-          BLOQUES PRINCIPALES — 4 COLUMNAS
-      ====================================================== */}
+      {/* ====================================================
+          4 BLOQUES PRINCIPALES
+      ==================================================== */}
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-4">
 
-
-        {/* ====================================================
+        {/* ==================================================
             COLUMNA 1 — ESTADO
-        ==================================================== */}
+        ================================================== */}
 
         <Seccion
           titulo="Estado"
@@ -821,39 +816,53 @@ export default function FichaExpediente() {
 
             <Dato
               etiqueta="Estado"
-              valor={expediente.estado_expediente}
+              valor={
+                expediente.estado_expediente
+              }
               destacado
             />
 
             <Dato
               etiqueta="Actividad actual"
-              valor={expediente.actividad_actual}
+              valor={
+                expediente.actividad_actual
+              }
               destacado
             />
 
             <Dato
               etiqueta="Estado actividad"
-              valor={expediente.estado_actividad}
+              valor={
+                expediente.estado_actividad
+              }
             />
 
             <Dato
               etiqueta="Tipo operación"
-              valor={expediente.tipo_operacion}
+              valor={
+                expediente.tipo_operacion
+              }
             />
 
             <Dato
               etiqueta="Oficina"
-              valor={expediente.oficina}
+              valor={
+                expediente.oficina
+              }
             />
 
             <Dato
               etiqueta="DAN"
-              valor={expediente.dan}
+              valor={
+                expediente.dan
+              }
             />
 
             <Dato
               etiqueta="Fecha alta"
-              valor={expediente.fecha_alta}
+              valor={
+                expediente.fecha_alta
+              }
               fecha
             />
 
@@ -862,65 +871,73 @@ export default function FichaExpediente() {
         </Seccion>
 
 
-        {/* ====================================================
-            COLUMNA 2 — TITULARES
-        ==================================================== */}
+        {/* ==================================================
+            COLUMNA 2 — TITULARES + SOLICITANTES
+        ================================================== */}
 
-        <Seccion
-          titulo="Titulares"
-          subtitulo="Información de los titulares del expediente"
-          icono="titular"
-        >
+        <div className="space-y-5">
 
-          <div className="grid grid-cols-1 gap-3">
+          <Seccion
+            titulo="Titulares"
+            subtitulo="Titulares del expediente"
+            icono="titular"
+          >
 
-            <Dato
-              etiqueta="Nombre titular"
-              valor={expediente.nombre_titular}
-              destacado
-            />
+            <div className="grid grid-cols-1 gap-3">
 
-            <Dato
-              etiqueta="NIF titular"
-              valor={expediente.nif_titular}
-            />
+              <Dato
+                etiqueta="Nombre titular"
+                valor={
+                  expediente.nombre_titular
+                }
+                destacado
+              />
 
-          </div>
+              <Dato
+                etiqueta="NIF titular"
+                valor={
+                  expediente.nif_titular
+                }
+              />
 
-        </Seccion>
+            </div>
 
-
-        {/* ====================================================
-            COLUMNA 3 — SOLICITANTES
-        ==================================================== */}
-
-        <Seccion
-          titulo="Solicitantes"
-          subtitulo="Información de los solicitantes"
-          icono="solicitante"
-        >
-
-          <div className="grid grid-cols-1 gap-3">
-
-            <Dato
-              etiqueta="Nombre solicitante"
-              valor={expediente.nombre_solicitante}
-              destacado
-            />
-
-            <Dato
-              etiqueta="NIF solicitante"
-              valor={expediente.nif_solicitante}
-            />
-
-          </div>
-
-        </Seccion>
+          </Seccion>
 
 
-        {/* ====================================================
-            COLUMNA 4 — INFORMACIÓN CREDITICIA
-        ==================================================== */}
+          <Seccion
+            titulo="Solicitantes"
+            subtitulo="Solicitantes del expediente"
+            icono="solicitante"
+          >
+
+            <div className="grid grid-cols-1 gap-3">
+
+              <Dato
+                etiqueta="Nombre solicitante"
+                valor={
+                  expediente.nombre_solicitante
+                }
+                destacado
+              />
+
+              <Dato
+                etiqueta="NIF solicitante"
+                valor={
+                  expediente.nif_solicitante
+                }
+              />
+
+            </div>
+
+          </Seccion>
+
+        </div>
+
+
+        {/* ==================================================
+            COLUMNA 3 — INFORMACIÓN CREDITICIA
+        ================================================== */}
 
         <Seccion
           titulo="Información crediticia"
@@ -932,58 +949,392 @@ export default function FichaExpediente() {
 
             <Dato
               etiqueta="Nº expediente"
-              valor={expediente.id_expediente}
+              valor={
+                expediente.id_expediente
+              }
               destacado
             />
 
             <Dato
               etiqueta="Contrato"
-              valor={expediente.contrato}
+              valor={
+                expediente.contrato
+              }
             />
 
             <Dato
               etiqueta="Tipo operación"
-              valor={expediente.tipo_operacion}
+              valor={
+                expediente.tipo_operacion
+              }
             />
 
             <Dato
               etiqueta="Subtipo operación"
-              valor={expediente.subtipo_operacion}
+              valor={
+                expediente.subtipo_operacion
+              }
             />
 
             <Dato
               etiqueta="Nº solicitud SIA"
-              valor={expediente.num_solicitud_sia}
+              valor={
+                expediente.num_solicitud_sia
+              }
             />
 
             <Dato
               etiqueta="Capital"
-              valor={expediente.capital}
+              valor={
+                expediente.capital
+              }
               numero
             />
 
             <Dato
               etiqueta="Importe"
-              valor={expediente.importe}
+              valor={
+                expediente.importe
+              }
               numero
             />
 
             <Dato
               etiqueta="Saldo real"
-              valor={expediente.saldo_real}
+              valor={
+                expediente.saldo_real
+              }
               numero
             />
 
             <Dato
               etiqueta="Saldo disponible"
-              valor={expediente.saldo_disponible}
+              valor={
+                expediente.saldo_disponible
+              }
               numero
             />
 
             <Dato
               etiqueta="Finca"
-              valor={expediente.finca}
+              valor={
+                expediente.finca
+              }
             />
+
+          </div>
+
+        </Seccion>
+
+
+        {/* ==================================================
+            COLUMNA 4 — NOTARIO + OBSERVACIONES
+        ================================================== */}
+
+        <div className="space-y-5">
+
+          <Seccion
+            titulo="Notario"
+            subtitulo="Información del notario asociado"
+            icono="notario"
+          >
+
+            <div className="grid grid-cols-1 gap-3">
+
+              <Dato
+                etiqueta="Nombre notario"
+                valor={
+                  expediente.nombre_notario
+                }
+                destacado
+              />
+
+              <Dato
+                etiqueta="NIF notario"
+                valor={
+                  expediente.nif_notario
+                }
+              />
+
+              <Dato
+                etiqueta="Notario"
+                valor={
+                  expediente.notario
+                }
+              />
+
+              <Dato
+                etiqueta="ID notario"
+                valor={
+                  expediente.notario_id
+                }
+              />
+
+            </div>
+
+          </Seccion>
+
+
+          {/* ==================================================
+              OBSERVACIONES — DENTRO DE NOTARIO
+          ================================================== */}
+
+          <Seccion
+            titulo="Observaciones"
+            subtitulo="Información adicional"
+            icono="identificacion"
+          >
+
+            <div className="min-h-[120px] rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+
+              <div className="whitespace-pre-wrap text-sm leading-6 text-slate-700">
+                {valorVisible(
+                  expediente.observaciones
+                )}
+              </div>
+
+            </div>
+
+          </Seccion>
+
+        </div>
+
+      </div>
+
+
+      {/* ====================================================
+          DEFECTOS
+      ==================================================== */}
+
+      <div className="mt-5">
+
+        <Seccion
+          titulo="Defectos registrales"
+          subtitulo="Defectos asociados al expediente"
+          icono="defectos"
+        >
+
+          {!defecto ? (
+
+            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-6 text-center">
+
+              <div className="mb-2 text-3xl">
+                ✓
+              </div>
+
+              <div className="text-sm font-semibold text-slate-700">
+                No hay ningún defecto registral vigente
+              </div>
+
+              <div className="mt-1 text-xs text-slate-500">
+                Puedes registrar un defecto desde el botón de la cabecera.
+              </div>
+
+            </div>
+
+          ) : (
+
+            <div className="rounded-2xl border border-slate-200 bg-white">
+
+              <div className="flex flex-col gap-4 border-b border-slate-200 bg-slate-50/70 p-5 xl:flex-row xl:items-center xl:justify-between">
+
+                <div>
+
+                  <div className="mb-2">
+                    <DefectoEstadoBadge
+                      vigente={
+                        defecto.vigente !== false
+                      }
+                    />
+                  </div>
+
+                  <div className="text-sm font-bold text-slate-800">
+                    Expediente{" "}
+                    {valorVisible(
+                      expediente.id_expediente
+                    )}
+                  </div>
+
+                </div>
+
+
+                <div className="flex flex-wrap gap-2">
+
+                  <button
+                    type="button"
+                    onClick={editarDefecto}
+                    className="erp-btn-secondary"
+                  >
+                    ✏️ Ver / editar
+                  </button>
+
+                  {defecto.vigente !== false && (
+                    <button
+                      type="button"
+                      onClick={abrirSubsanacion}
+                      className="erp-btn-danger"
+                    >
+                      ⛔ Dar de baja
+                    </button>
+                  )}
+
+                </div>
+
+              </div>
+
+
+              <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-3">
+
+                <Dato
+                  etiqueta="Tipo de defecto"
+                  valor={defecto.tipo}
+                  destacado
+                />
+
+                <Dato
+                  etiqueta="Falta / documento"
+                  valor={defecto.falta}
+                />
+
+                <Dato
+                  etiqueta="Estado"
+                  valor={
+                    defecto.vigente !== false
+                      ? "Vigente"
+                      : "Subsanado"
+                  }
+                />
+
+              </div>
+
+
+              <div className="px-5 pb-5">
+
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+
+                  <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-slate-400">
+                    Descripción del defecto
+                  </div>
+
+                  <div className="whitespace-pre-wrap text-sm leading-6 text-slate-700">
+                    {valorVisible(
+                      defecto.descripcion
+                    )}
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              {defecto.fecha_subsanacion && (
+
+                <div className="grid grid-cols-1 gap-4 border-t border-slate-200 p-5 md:grid-cols-2">
+
+                  <Dato
+                    etiqueta="Fecha de subsanación"
+                    valor={
+                      defecto.fecha_subsanacion
+                    }
+                    fecha
+                  />
+
+                  <Dato
+                    etiqueta="Observación de subsanación"
+                    valor={
+                      defecto.observacion_subsanacion
+                    }
+                  />
+
+                </div>
+
+              )}
+
+            </div>
+
+          )}
+
+        </Seccion>
+
+      </div>
+
+
+      {/* ====================================================
+          ACTIVIDADES
+      ==================================================== */}
+
+      <div className="mt-5">
+
+        <Seccion
+          titulo="Actividades"
+          subtitulo="Historial y seguimiento del expediente"
+          icono="actividad"
+        >
+
+          <div className="mb-5 overflow-x-auto border-b border-slate-200">
+
+            <div className="flex min-w-max gap-1">
+
+              <button
+                type="button"
+                className="border-b-2 border-slate-800 px-4 py-3 text-sm font-bold text-slate-800"
+              >
+                Todas
+              </button>
+
+              <button
+                type="button"
+                className="border-b-2 border-transparent px-4 py-3 text-sm font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-800"
+              >
+                Documentación
+              </button>
+
+              <button
+                type="button"
+                className="border-b-2 border-transparent px-4 py-3 text-sm font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-800"
+              >
+                Notaría
+              </button>
+
+              <button
+                type="button"
+                className="border-b-2 border-transparent px-4 py-3 text-sm font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-800"
+              >
+                Registro
+              </button>
+
+              <button
+                type="button"
+                className="border-b-2 border-transparent px-4 py-3 text-sm font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-800"
+              >
+                Firma
+              </button>
+
+              <button
+                type="button"
+                className="border-b-2 border-transparent px-4 py-3 text-sm font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-800"
+              >
+                Incidencias
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-8 text-center">
+
+            <div className="mb-2 text-3xl">
+              ⚙️
+            </div>
+
+            <div className="text-sm font-semibold text-slate-700">
+              Historial de actividades
+            </div>
+
+            <div className="mt-1 text-xs text-slate-500">
+              Las actividades reales del expediente se mostrarán aquí.
+            </div>
 
           </div>
 
@@ -992,443 +1343,9 @@ export default function FichaExpediente() {
       </div>
 
 
-      {/* ======================================================
-          NOTARIO
-      ====================================================== */}
-
-      <Seccion
-        titulo="Notario"
-        subtitulo="Información del notario asociado"
-        icono="notario"
-      >
-
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-
-          <Dato
-            etiqueta="Nombre notario"
-            valor={expediente.nombre_notario}
-            destacado
-          />
-
-          <Dato
-            etiqueta="NIF notario"
-            valor={expediente.nif_notario}
-          />
-
-          <Dato
-            etiqueta="Notario"
-            valor={expediente.notario}
-          />
-
-          <Dato
-            etiqueta="ID notario"
-            valor={expediente.notario_id}
-          />
-
-        </div>
-
-      </Seccion>
-
-
-      {/* ======================================================
-          OBSERVACIONES
-      ====================================================== */}
-
-      <Observaciones
-        valor={expediente.observaciones}
-      />
-
-
-      {/* ======================================================
-          DEFECTOS
-      ====================================================== */}
-
-      <Seccion
-        titulo="Defectos"
-        subtitulo="Incidencias y defectos registrales"
-        icono="defectos"
-      >
-
-        <div className="space-y-4">
-
-
-          {/* ==================================================
-              DEFECTO VIGENTE
-          ================================================== */}
-
-          {defectoVigente && (
-
-            <div className="rounded-2xl border border-red-200 bg-red-50/70 p-5">
-
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-
-                <div className="min-w-0">
-
-                  <div className="mb-3 flex flex-wrap items-center gap-2">
-
-                    <DefectoVigenteBadge />
-
-                  </div>
-
-
-                  <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-
-                    <Dato
-                      etiqueta="Tipo de defecto"
-                      valor={
-                        defectoLocal?.tipo_error ||
-                        expediente.tipo_error
-                      }
-                    />
-
-                    <Dato
-                      etiqueta="Falta / defecto"
-                      valor={
-                        defectoLocal?.falta_defecto ||
-                        expediente.falta_defecto
-                      }
-                    />
-
-                    <Dato
-                      etiqueta="Descripción"
-                      valor={
-                        defectoLocal?.descripcion_error ||
-                        expediente.descripcion_error
-                      }
-                    />
-
-                  </div>
-
-                </div>
-
-
-                {/* ==========================================
-                    ACCIONES DEFECTO
-                ========================================== */}
-
-                <div className="flex shrink-0 flex-wrap gap-2">
-
-                  <button
-                    type="button"
-                    onClick={editarDefecto}
-                    className="erp-btn-secondary inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold"
-                  >
-                    ✏️ Editar
-                  </button>
-
-
-                  <button
-                    type="button"
-                    onClick={darDeBajaDefecto}
-                    className="erp-btn-danger inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold"
-                  >
-                    ⛔ Dar de baja
-                  </button>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          )}
-
-
-          {/* ==================================================
-              SIN DEFECTO VIGENTE
-          ================================================== */}
-
-          {!defectoVigente && (
-
-            <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-5 lg:flex-row lg:items-center lg:justify-between">
-
-              <div>
-
-                <div className="flex items-center gap-2">
-
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-sm">
-                    ✓
-                  </span>
-
-                  <div className="text-sm font-bold text-slate-800">
-                    No hay ningún defecto vigente
-                  </div>
-
-                </div>
-
-                <p className="mt-1 text-xs text-slate-500">
-                  Este expediente no tiene actualmente
-                  ningún defecto abierto.
-                </p>
-
-              </div>
-
-
-              <button
-                type="button"
-                onClick={abrirAltaDefecto}
-                className="erp-btn-danger inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold"
-              >
-                ⚠️ Dar de alta defecto
-              </button>
-
-            </div>
-
-          )}
-
-
-        </div>
-
-      </Seccion>
-
-
-      {/* ======================================================
-          MODAL ALTA / EDICIÓN DEFECTO
-      ====================================================== */}
-
-      {mostrarAltaDefecto && (
-
-        <div
-          className="modal-overlay-sj z-50 flex items-center justify-center p-4"
-          onMouseDown={(event) => {
-
-            if (
-              event.target === event.currentTarget &&
-              !guardandoDefecto
-            ) {
-              cerrarAltaDefecto();
-            }
-
-          }}
-        >
-
-          <div
-            className="erp-modal w-full max-w-2xl overflow-hidden"
-            onMouseDown={(event) =>
-              event.stopPropagation()
-            }
-          >
-
-
-            {/* ================================================
-                HEADER
-            ================================================ */}
-
-            <div className="erp-modal-header flex items-center justify-between gap-4 p-5">
-
-              <div>
-
-                <div className="flex items-center gap-2">
-
-                  <span className="text-xl">
-                    ⚠️
-                  </span>
-
-                  <h3 className="text-lg font-black">
-                    {modoDefecto === "editar"
-                      ? "Editar defecto"
-                      : "Dar de alta defecto"}
-                  </h3>
-
-                </div>
-
-                <p className="mt-1 text-xs text-slate-500">
-                  Expediente{" "}
-                  {valorVisible(
-                    expediente.id_expediente
-                  )}
-                </p>
-
-              </div>
-
-
-              <button
-                type="button"
-                onClick={cerrarAltaDefecto}
-                disabled={guardandoDefecto}
-                className="erp-btn-secondary flex h-9 w-9 items-center justify-center rounded-lg p-0 text-lg"
-                aria-label="Cerrar"
-              >
-                ×
-              </button>
-
-            </div>
-
-
-            {/* ================================================
-                BODY
-            ================================================ */}
-
-            <div className="erp-modal-body space-y-5 p-6">
-
-
-              {/* TIPO */}
-
-              <div>
-
-                <label
-                  htmlFor="tipo-defecto"
-                  className="mb-2 block text-sm font-bold text-slate-700"
-                >
-                  Tipo de defecto
-                  <span className="ml-1 text-red-500">
-                    *
-                  </span>
-                </label>
-
-                <input
-                  id="tipo-defecto"
-                  type="text"
-                  value={tipoDefecto}
-                  onChange={(event) =>
-                    setTipoDefecto(
-                      event.target.value
-                    )
-                  }
-                  placeholder="Ej. Defecto registral"
-                  disabled={guardandoDefecto}
-                  autoFocus
-                  className="w-full"
-                />
-
-              </div>
-
-
-              {/* FALTA */}
-
-              <div>
-
-                <label
-                  htmlFor="falta-defecto"
-                  className="mb-2 block text-sm font-bold text-slate-700"
-                >
-                  Falta / defecto
-                  <span className="ml-1 text-red-500">
-                    *
-                  </span>
-                </label>
-
-                <input
-                  id="falta-defecto"
-                  type="text"
-                  value={faltaDefecto}
-                  onChange={(event) =>
-                    setFaltaDefecto(
-                      event.target.value
-                    )
-                  }
-                  placeholder="Indica la falta o defecto detectado"
-                  disabled={guardandoDefecto}
-                  className="w-full"
-                />
-
-              </div>
-
-
-              {/* DESCRIPCIÓN */}
-
-              <div>
-
-                <label
-                  htmlFor="descripcion-defecto"
-                  className="mb-2 block text-sm font-bold text-slate-700"
-                >
-                  Descripción
-                  <span className="ml-1 text-red-500">
-                    *
-                  </span>
-                </label>
-
-                <textarea
-                  id="descripcion-defecto"
-                  value={descripcionDefecto}
-                  onChange={(event) =>
-                    setDescripcionDefecto(
-                      event.target.value
-                    )
-                  }
-                  placeholder="Describe detalladamente el defecto..."
-                  disabled={guardandoDefecto}
-                  rows={5}
-                  className="w-full resize-y"
-                />
-
-              </div>
-
-
-              {/* AVISO */}
-
-              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-
-                <div className="flex gap-3">
-
-                  <span className="text-lg">
-                    ℹ️
-                  </span>
-
-                  <div className="text-xs leading-5 text-amber-800">
-                    {modoDefecto === "editar"
-                      ? "Estás modificando el defecto actualmente asociado al expediente."
-                      : "El nuevo defecto quedará asociado al expediente y aparecerá como defecto vigente."}
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-            {/* ================================================
-                FOOTER
-            ================================================ */}
-
-            <div className="erp-modal-footer flex flex-col-reverse gap-3 p-5 sm:flex-row sm:justify-end">
-
-              <button
-                type="button"
-                onClick={cerrarAltaDefecto}
-                disabled={guardandoDefecto}
-                className="erp-btn-secondary inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold"
-              >
-                Cancelar
-              </button>
-
-
-              <button
-                type="button"
-                onClick={guardarDefecto}
-                disabled={guardandoDefecto}
-                className="erp-btn-danger inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold"
-              >
-
-                {guardandoDefecto ? (
-                  <>
-                    ⏳ Guardando...
-                  </>
-                ) : (
-                  <>
-                    ⚠️{" "}
-                    {modoDefecto === "editar"
-                      ? "Guardar cambios"
-                      : "Dar de alta defecto"}
-                  </>
-                )}
-
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )}
-
-
-      {/* ======================================================
-          MODAL ENVIAR A NOTARIO
-      ====================================================== */}
+      {/* ====================================================
+          MODAL — ENVIAR A NOTARIO
+      ==================================================== */}
 
       {mostrarEnviarANotario && (
 
@@ -1437,6 +1354,309 @@ export default function FichaExpediente() {
           onClose={cerrarEnviarANotario}
           onGuardar={guardarEnviarANotario}
         />
+
+      )}
+
+
+      {/* ====================================================
+          MODAL — DEFECTO REGISTRAL
+      ==================================================== */}
+
+      {mostrarDefectoModal && (
+
+        <div
+          className="modal-overlay-sj"
+          onMouseDown={(event) => {
+            if (
+              event.target === event.currentTarget
+            ) {
+              cerrarDefectoModal();
+            }
+          }}
+        >
+
+          <div
+            className="erp-modal w-full max-w-2xl"
+            onMouseDown={(event) =>
+              event.stopPropagation()
+            }
+          >
+
+            {/* ==================================================
+                CABECERA MODAL
+            ================================================== */}
+
+            <div className="erp-modal-header">
+
+              <div>
+
+                <div className="text-lg font-bold text-slate-800">
+
+                  {modoDefecto === "alta" &&
+                    "⚠️ Alta de defecto registral"}
+
+                  {modoDefecto === "editar" &&
+                    "✏️ Editar defecto registral"}
+
+                  {modoDefecto === "subsanar" &&
+                    "⛔ Subsanar defecto registral"}
+
+                </div>
+
+                <div className="mt-1 text-xs text-slate-500">
+
+                  Expediente{" "}
+                  <strong>
+                    {valorVisible(
+                      expediente.id_expediente
+                    )}
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <button
+                type="button"
+                onClick={cerrarDefectoModal}
+                className="text-xl text-slate-400 transition hover:text-slate-700"
+                disabled={guardandoDefecto}
+              >
+                ✕
+              </button>
+
+            </div>
+
+
+            {/* ==================================================
+                CUERPO MODAL
+            ================================================== */}
+
+            <div className="erp-modal-body">
+
+              {/* ----------------------------------------------
+                  EXPEDIENTE
+              ---------------------------------------------- */}
+
+              <div className="mb-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+
+                <div className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
+                  Expediente en defectos registrales
+                </div>
+
+                <div className="mt-1 text-base font-bold text-slate-800">
+                  {valorVisible(
+                    expediente.id_expediente
+                  )}
+                </div>
+
+              </div>
+
+
+              {/* ----------------------------------------------
+                  ALTA / EDICIÓN
+              ---------------------------------------------- */}
+
+              {modoDefecto !== "subsanar" && (
+
+                <div className="space-y-5">
+
+                  <div>
+
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      Tipo de defecto
+                    </label>
+
+                    <input
+                      type="text"
+                      value={tipoDefecto}
+                      onChange={(event) =>
+                        setTipoDefecto(
+                          event.target.value
+                        )
+                      }
+                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+                      placeholder="Ej.: Documentación"
+                      disabled={guardandoDefecto}
+                    />
+
+                  </div>
+
+
+                  <div>
+
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      Falta / documento
+                    </label>
+
+                    <input
+                      type="text"
+                      value={faltaDefecto}
+                      onChange={(event) =>
+                        setFaltaDefecto(
+                          event.target.value
+                        )
+                      }
+                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+                      placeholder="Ej.: Nota simple actualizada"
+                      disabled={guardandoDefecto}
+                    />
+
+                  </div>
+
+
+                  <div>
+
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      Descripción del defecto
+                    </label>
+
+                    <textarea
+                      rows={5}
+                      value={descripcionDefecto}
+                      onChange={(event) =>
+                        setDescripcionDefecto(
+                          event.target.value
+                        )
+                      }
+                      className="w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+                      placeholder="Describe el defecto registral..."
+                      disabled={guardandoDefecto}
+                    />
+
+                  </div>
+
+                </div>
+
+              )}
+
+
+              {/* ----------------------------------------------
+                  SUBSANACIÓN
+              ---------------------------------------------- */}
+
+              {modoDefecto === "subsanar" && (
+
+                <div className="space-y-5">
+
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+
+                    <div className="text-sm font-bold text-red-700">
+                      ⚠️ Se va a registrar la subsanación del defecto
+                    </div>
+
+                    <div className="mt-1 text-xs leading-5 text-red-600">
+                      El defecto no se eliminará del expediente.
+                      Quedará registrado como histórico y pasará
+                      a estado subsanado.
+                    </div>
+
+                  </div>
+
+
+                  <div>
+
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      Fecha de subsanación
+                    </label>
+
+                    <input
+                      type="date"
+                      value={fechaSubsanacion}
+                      onChange={(event) =>
+                        setFechaSubsanacion(
+                          event.target.value
+                        )
+                      }
+                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+                      disabled={guardandoDefecto}
+                    />
+
+                  </div>
+
+
+                  <div>
+
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      Observación de subsanación
+                    </label>
+
+                    <textarea
+                      rows={4}
+                      value={
+                        observacionSubsanacion
+                      }
+                      onChange={(event) =>
+                        setObservacionSubsanacion(
+                          event.target.value
+                        )
+                      }
+                      className="w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+                      placeholder="Indica cómo se ha subsanado el defecto..."
+                      disabled={guardandoDefecto}
+                    />
+
+                  </div>
+
+                </div>
+
+              )}
+
+            </div>
+
+
+            {/* ==================================================
+                PIE MODAL
+            ================================================== */}
+
+            <div className="erp-modal-footer">
+
+              <button
+                type="button"
+                onClick={cerrarDefectoModal}
+                className="erp-btn-secondary"
+                disabled={guardandoDefecto}
+              >
+                Cancelar
+              </button>
+
+
+              {modoDefecto === "subsanar" ? (
+
+                <button
+                  type="button"
+                  onClick={confirmarSubsanacion}
+                  className="erp-btn-danger"
+                  disabled={guardandoDefecto}
+                >
+                  {guardandoDefecto
+                    ? "Guardando..."
+                    : "✓ Confirmar subsanación"}
+                </button>
+
+              ) : (
+
+                <button
+                  type="button"
+                  onClick={guardarDefecto}
+                  className="erp-btn-primary"
+                  disabled={guardandoDefecto}
+                >
+                  {guardandoDefecto
+                    ? "Guardando..."
+                    : modoDefecto === "editar"
+                    ? "Guardar cambios"
+                    : "Dar de alta defecto"}
+                </button>
+
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
 
       )}
 
