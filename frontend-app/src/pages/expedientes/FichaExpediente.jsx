@@ -3033,7 +3033,7 @@ const [
             COLUMNA 3
         ==================================================== */}
 
-        <div className="space-y-4">
+        <div className="space-y-3">
 
           {/* NOTARIO */}
 
