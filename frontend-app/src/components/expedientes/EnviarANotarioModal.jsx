@@ -1,7 +1,15 @@
+```jsx
 // ============================================================
 // ERP MOLSAN — EXPEDIENTES
 // MODAL "ENVÍO A NOTARIO"
 // PREMIUM 2027
+//
+// INCLUYE:
+// - Fecha Solicitud PNC
+// - Nº de Solicitud
+// - Fecha prevista de firma
+// - Hora prevista de firma
+// - Creación automática de cita en Agenda
 // ============================================================
 
 import {
@@ -24,23 +32,43 @@ const FORM_INICIAL = {
 
   fecha_envio: "",
 
+  // ----------------------------------------------------------
+  // PNC
+  // ----------------------------------------------------------
+
+  fecha_solicitud_pnc: "",
+
+  numero_solicitud_pnc: "",
+
+  // ----------------------------------------------------------
+  // FIRMA REAL
+  // ----------------------------------------------------------
+
   fecha_firma: "",
 
   protocolo: "",
 
   // ----------------------------------------------------------
-  // NUEVO — FECHA PREVISTA DE FIRMA
+  // FECHA PREVISTA DE FIRMA
   // ----------------------------------------------------------
 
   fecha_prevista_firma: "",
 
   // ----------------------------------------------------------
-  // NUEVO — HORA PREVISTA DE FIRMA
+  // HORA PREVISTA DE FIRMA
   // ----------------------------------------------------------
 
   hora_prevista_firma: "09:00",
 
+  // ----------------------------------------------------------
+  // NOTARIO
+  // ----------------------------------------------------------
+
   notario: null,
+
+  // ----------------------------------------------------------
+  // TIPO DOCUMENTO
+  // ----------------------------------------------------------
 
   tipo_documento: "",
 };
@@ -66,6 +94,48 @@ function fechaHoy() {
   ).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
+}
+
+
+// ============================================================
+// SUMAR UNA HORA
+// ============================================================
+
+function sumarUnaHora(hora) {
+
+  if (!hora) {
+    return "";
+  }
+
+  const partes =
+    String(hora).split(":");
+
+  if (partes.length < 2) {
+    return "";
+  }
+
+  let horas =
+    Number(partes[0]);
+
+  let minutos =
+    Number(partes[1]);
+
+  if (
+    Number.isNaN(horas) ||
+    Number.isNaN(minutos)
+  ) {
+    return "";
+  }
+
+  horas += 1;
+
+  if (horas >= 24) {
+    horas = 0;
+  }
+
+  return `${String(horas).padStart(2, "0")}:${String(
+    minutos
+  ).padStart(2, "0")}`;
 }
 
 
@@ -350,6 +420,123 @@ export default function EnviarANotarioModal({
 
 
   // ==========================================================
+  // CREAR CITA EN AGENDA
+  // ==========================================================
+
+  const crearCitaAgenda =
+    useCallback(
+      async () => {
+
+        if (
+          !form.fecha_prevista_firma ||
+          !form.hora_prevista_firma ||
+          !form.notario?.id ||
+          !expediente?.id_expediente
+        ) {
+
+          throw new Error(
+            "Faltan datos necesarios para crear la cita en Agenda."
+          );
+
+        }
+
+
+        // ----------------------------------------------------
+        // HORA FINAL
+        // Duración inicial: 1 hora
+        // ----------------------------------------------------
+
+        const horaFin =
+          sumarUnaHora(
+            form.hora_prevista_firma
+          );
+
+
+        if (!horaFin) {
+
+          throw new Error(
+            "No se ha podido calcular la hora final de la cita."
+          );
+
+        }
+
+
+        // ----------------------------------------------------
+        // EXPEDIENTE
+        //
+        // Intentamos utilizar el ID interno si está disponible.
+        // ----------------------------------------------------
+
+        const expedienteId =
+          expediente?.id ??
+          expediente?.expediente_id ??
+          null;
+
+
+        // ----------------------------------------------------
+        // PAYLOAD AGENDA
+        // ----------------------------------------------------
+
+        const payloadAgenda = {
+
+          fecha:
+            form.fecha_prevista_firma,
+
+          hora_inicio:
+            form.hora_prevista_firma,
+
+          hora_fin:
+            horaFin,
+
+          tipo_cita:
+            "Firma notarial",
+
+          tipo_firma:
+            form.notario.tipo_firma ||
+            "",
+
+          notario_id:
+            form.notario.id,
+
+          expediente_id:
+            expedienteId,
+
+          observaciones:
+            `Firma notarial — Expediente ${expediente.id_expediente}`,
+
+        };
+
+
+        console.log(
+          "AGENDA — CREANDO CITA:",
+          payloadAgenda
+        );
+
+
+        const response =
+          await axios.post(
+            "/agenda/",
+            payloadAgenda
+          );
+
+
+        console.log(
+          "AGENDA — CITA CREADA:",
+          response?.data
+        );
+
+
+        return response?.data;
+
+      },
+      [
+        form,
+        expediente,
+      ]
+    );
+
+
+  // ==========================================================
   // GUARDAR
   // ==========================================================
 
@@ -388,6 +575,38 @@ export default function EnviarANotarioModal({
 
           setError(
             "La Fecha de envío es obligatoria."
+          );
+
+          return;
+        }
+
+
+        // ------------------------------------------------------
+        // FECHA SOLICITUD PNC
+        // ------------------------------------------------------
+
+        if (
+          !form.fecha_solicitud_pnc
+        ) {
+
+          setError(
+            "La Fecha Solicitud PNC es obligatoria."
+          );
+
+          return;
+        }
+
+
+        // ------------------------------------------------------
+        // Nº SOLICITUD PNC
+        // ------------------------------------------------------
+
+        if (
+          !form.numero_solicitud_pnc.trim()
+        ) {
+
+          setError(
+            "El Nº de Solicitud es obligatorio."
           );
 
           return;
@@ -460,9 +679,6 @@ export default function EnviarANotarioModal({
 
         // ------------------------------------------------------
         // VALIDAR FECHA PREVISTA
-        //
-        // La fecha prevista de firma no puede ser anterior
-        // a la fecha de envío.
         // ------------------------------------------------------
 
         if (
@@ -472,6 +688,23 @@ export default function EnviarANotarioModal({
 
           setError(
             "La Fecha prevista de firma no puede ser anterior a la Fecha de envío."
+          );
+
+          return;
+        }
+
+
+        // ------------------------------------------------------
+        // VALIDAR FECHA PNC
+        // ------------------------------------------------------
+
+        if (
+          form.fecha_solicitud_pnc >
+          form.fecha_envio
+        ) {
+
+          setError(
+            "La Fecha Solicitud PNC no puede ser posterior a la Fecha de envío."
           );
 
           return;
@@ -510,8 +743,6 @@ export default function EnviarANotarioModal({
 
 
           // ----------------------------------------------------
-          // REGLA FUNDAMENTAL
-          //
           // FECHA ENVÍO <= FECHA FIRMA
           // ----------------------------------------------------
 
@@ -541,7 +772,7 @@ export default function EnviarANotarioModal({
 
 
         // ------------------------------------------------------
-        // PAYLOAD
+        // PAYLOAD EXPEDIENTE
         // ------------------------------------------------------
 
         const payload = {
@@ -555,6 +786,20 @@ export default function EnviarANotarioModal({
 
           fecha_envio:
             form.fecha_envio,
+
+          // ----------------------------------------------------
+          // PNC
+          // ----------------------------------------------------
+
+          fecha_solicitud_pnc:
+            form.fecha_solicitud_pnc,
+
+          numero_solicitud_pnc:
+            form.numero_solicitud_pnc.trim(),
+
+          // ----------------------------------------------------
+          // FIRMA
+          // ----------------------------------------------------
 
           fecha_firma:
             form.escritura_firmada ===
@@ -616,16 +861,60 @@ export default function EnviarANotarioModal({
 
 
         // ------------------------------------------------------
-        // GUARDAR
+        // GUARDAR EXPEDIENTE
         // ------------------------------------------------------
 
         try {
 
           setLoading(true);
 
+
+          console.log(
+            "EXPEDIENTE — GUARDANDO ENVÍO A NOTARIO:",
+            payload
+          );
+
+
           await onGuardar(
             payload
           );
+
+
+          // ----------------------------------------------------
+          // CREAR CITA EN AGENDA
+          // ----------------------------------------------------
+
+          try {
+
+            await crearCitaAgenda();
+
+          } catch (agendaError) {
+
+            console.error(
+              "ERROR CREANDO CITA EN AGENDA:",
+              agendaError
+            );
+
+
+            throw new Error(
+              agendaError?.response?.data?.detail ||
+              agendaError?.message ||
+              "El envío se ha guardado, pero no se ha podido crear la cita en Agenda."
+            );
+
+          }
+
+
+          console.log(
+            "ENVÍO A NOTARIO COMPLETADO CORRECTAMENTE"
+          );
+
+
+          // ----------------------------------------------------
+          // CERRAR MODAL
+          // ----------------------------------------------------
+
+          onClose();
 
         } catch (err) {
 
@@ -634,10 +923,11 @@ export default function EnviarANotarioModal({
             err
           );
 
+
           setError(
             err?.response?.data?.detail ||
             err?.message ||
-            "No se ha podido enviar el expediente al notario."
+            "No se ha podido completar el envío a notario."
           );
 
         } finally {
@@ -652,6 +942,8 @@ export default function EnviarANotarioModal({
         expediente,
         form,
         onGuardar,
+        crearCitaAgenda,
+        onClose,
       ]
     );
 
@@ -929,10 +1221,35 @@ export default function EnviarANotarioModal({
 
 
           {/* ==================================================
-              FECHAS
+              DATOS DEL ENVÍO / PNC
           ================================================== */}
 
           <section className="mb-6">
+
+            <div className="mb-4">
+
+              <h3
+                className="
+                  text-sm
+                  font-bold
+                  text-slate-800
+                "
+              >
+                Datos del envío
+              </h3>
+
+              <p
+                className="
+                  mt-1
+                  text-xs
+                  text-slate-500
+                "
+              >
+                Información de la solicitud PNC y del envío a notario.
+              </p>
+
+            </div>
+
 
             <div
               className="
@@ -998,6 +1315,138 @@ export default function EnviarANotarioModal({
 
 
               {/* =================================================
+                  FECHA SOLICITUD PNC
+              ================================================= */}
+
+              <div>
+
+                <label
+                  className="
+                    mb-1.5
+                    block
+                    text-sm
+                    font-semibold
+                    text-slate-700
+                  "
+                >
+                  Fecha Solicitud PNC
+                  <span className="text-red-500">
+                    {" "}*
+                  </span>
+                </label>
+
+                <input
+                  type="date"
+                  value={
+                    form.fecha_solicitud_pnc
+                  }
+                  max={
+                    form.fecha_envio ||
+                    undefined
+                  }
+                  disabled={loading}
+                  onChange={(event) =>
+                    cambiarCampo(
+                      "fecha_solicitud_pnc",
+                      event.target.value
+                    )
+                  }
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    border-slate-300
+                    bg-white
+                    px-3
+                    py-2.5
+                    text-sm
+                    text-slate-700
+                    outline-none
+
+                    focus:border-[var(--erp-primary)]
+                    focus:ring-2
+                    focus:ring-[var(--erp-primary-soft)]
+                  "
+                />
+
+              </div>
+
+
+              {/* =================================================
+                  Nº SOLICITUD
+              ================================================= */}
+
+              <div>
+
+                <label
+                  className="
+                    mb-1.5
+                    block
+                    text-sm
+                    font-semibold
+                    text-slate-700
+                  "
+                >
+                  Nº de Solicitud
+                  <span className="text-red-500">
+                    {" "}*
+                  </span>
+                </label>
+
+                <input
+                  type="text"
+                  value={
+                    form.numero_solicitud_pnc
+                  }
+                  disabled={loading}
+                  onChange={(event) =>
+                    cambiarCampo(
+                      "numero_solicitud_pnc",
+                      event.target.value
+                    )
+                  }
+                  placeholder="Número de solicitud"
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    border-slate-300
+                    bg-white
+                    px-3
+                    py-2.5
+                    text-sm
+                    text-slate-700
+                    outline-none
+
+                    focus:border-[var(--erp-primary)]
+                    focus:ring-2
+                    focus:ring-[var(--erp-primary-soft)]
+                  "
+                />
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          {/* ==================================================
+              FECHAS DE FIRMA
+          ================================================== */}
+
+          <section className="mb-6">
+
+            <div
+              className="
+                grid
+                grid-cols-1
+                gap-4
+                md:grid-cols-2
+              "
+            >
+
+              {/* =================================================
                   FECHA PREVISTA FIRMA
               ================================================= */}
 
@@ -1059,8 +1508,7 @@ export default function EnviarANotarioModal({
                     text-slate-400
                   "
                 >
-                  Esta fecha creará automáticamente la cita
-                  de firma en Agenda.
+                  Se creará automáticamente la cita de firma en Agenda.
                 </p>
 
               </div>
@@ -1124,8 +1572,7 @@ export default function EnviarANotarioModal({
                     text-slate-400
                   "
                 >
-                  La cita tendrá una duración inicial de una
-                  hora.
+                  La cita tendrá una duración inicial de una hora.
                 </p>
 
               </div>
@@ -1196,8 +1643,7 @@ export default function EnviarANotarioModal({
                       text-slate-400
                     "
                   >
-                    La fecha de firma debe ser igual o
-                    posterior a la fecha de envío.
+                    La fecha de firma debe ser igual o posterior a la fecha de envío.
                   </p>
 
                 </div>
@@ -1500,6 +1946,21 @@ export default function EnviarANotarioModal({
                 />
 
                 <Resumen
+                  label="Fecha Solicitud PNC"
+                  valor={formatearFecha(
+                    form.fecha_solicitud_pnc
+                  )}
+                />
+
+                <Resumen
+                  label="Nº de Solicitud"
+                  valor={
+                    form.numero_solicitud_pnc
+                  }
+
+                />
+
+                <Resumen
                   label="Fecha envío"
                   valor={formatearFecha(
                     form.fecha_envio
@@ -1618,6 +2079,8 @@ export default function EnviarANotarioModal({
               loading ||
               !form.notario ||
               !form.tipo_documento ||
+              !form.fecha_solicitud_pnc ||
+              !form.numero_solicitud_pnc.trim() ||
               !form.fecha_prevista_firma ||
               !form.hora_prevista_firma
             }
@@ -1746,3 +2209,4 @@ function Resumen({
     </div>
   );
 }
+```
