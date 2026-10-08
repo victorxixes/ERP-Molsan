@@ -10,6 +10,10 @@
 // - Fecha prevista de firma
 // - Hora prevista de firma
 // - Creación automática de cita en Agenda
+// - Duración inicial de 1 hora
+// - Vinculación con expediente
+// - Vinculación con notario
+// - Prevención de citas duplicadas
 // ============================================================
 
 import {
@@ -114,10 +118,10 @@ function sumarUnaHora(hora) {
     return "";
   }
 
-  let horas =
+  const horas =
     Number(partes[0]);
 
-  let minutos =
+  const minutos =
     Number(partes[1]);
 
   if (
@@ -127,14 +131,27 @@ function sumarUnaHora(hora) {
     return "";
   }
 
-  horas += 1;
+  const totalMinutos =
+    horas * 60 +
+    minutos +
+    60;
 
-  if (horas >= 24) {
-    horas = 0;
+  if (totalMinutos >= 24 * 60) {
+    return "";
   }
 
-  return `${String(horas).padStart(2, "0")}:${String(
-    minutos
+  const horasFinal =
+    Math.floor(
+      totalMinutos / 60
+    );
+
+  const minutosFinal =
+    totalMinutos % 60;
+
+  return `${String(
+    horasFinal
+  ).padStart(2, "0")}:${String(
+    minutosFinal
   ).padStart(2, "0")}`;
 }
 
@@ -420,6 +437,63 @@ export default function EnviarANotarioModal({
 
 
   // ==========================================================
+  // COMPROBAR SI YA EXISTE CITA
+  // ==========================================================
+
+  const comprobarCitaExistente =
+    useCallback(
+      async () => {
+
+        if (
+          !expediente?.id_expediente ||
+          !form.fecha_prevista_firma
+        ) {
+
+          return null;
+
+        }
+
+
+        const response =
+          await axios.get(
+            "/agenda/search",
+            {
+              params: {
+                id_expediente:
+                  expediente.id_expediente,
+
+                fecha:
+                  form.fecha_prevista_firma,
+              },
+            }
+          );
+
+
+        const datos =
+          response?.data;
+
+
+        if (
+          Array.isArray(datos) &&
+          datos.length > 0
+        ) {
+
+          return datos[0];
+
+        }
+
+
+        return null;
+
+      },
+      [
+        expediente,
+        form.fecha_prevista_firma,
+      ]
+    );
+
+
+  // ==========================================================
   // CREAR CITA EN AGENDA
   // ==========================================================
 
@@ -442,6 +516,26 @@ export default function EnviarANotarioModal({
 
 
         // ----------------------------------------------------
+        // COMPROBAR DUPLICADO
+        // ----------------------------------------------------
+
+        const citaExistente =
+          await comprobarCitaExistente();
+
+
+        if (citaExistente) {
+
+          console.warn(
+            "AGENDA — YA EXISTE UNA CITA PARA ESTE EXPEDIENTE Y FECHA:",
+            citaExistente
+          );
+
+          return citaExistente;
+
+        }
+
+
+        // ----------------------------------------------------
         // HORA FINAL
         // Duración inicial: 1 hora
         // ----------------------------------------------------
@@ -455,16 +549,18 @@ export default function EnviarANotarioModal({
         if (!horaFin) {
 
           throw new Error(
-            "No se ha podido calcular la hora final de la cita."
+            "La hora prevista de firma debe permitir una duración de una hora. La última hora de inicio permitida es las 23:00."
           );
 
         }
 
 
         // ----------------------------------------------------
-        // EXPEDIENTE
+        // EXPEDIENTE INTERNO
         //
-        // Intentamos utilizar el ID interno si está disponible.
+        // Agenda utiliza expediente_id como FK numérica.
+        //
+        // El número visible es id_expediente.
         // ----------------------------------------------------
 
         const expedienteId =
@@ -474,7 +570,23 @@ export default function EnviarANotarioModal({
 
 
         // ----------------------------------------------------
-        // PAYLOAD AGENDA
+        // APODERADO
+        // ----------------------------------------------------
+
+        const apoderadoId =
+          form.notario?.apoderado_id ??
+          expediente?.apoderado_id ??
+          null;
+
+
+        const apoderado =
+          form.notario?.apoderado ||
+          "";
+
+
+        // ----------------------------------------------------
+        // PAYLOAD EXACTAMENTE COMPATIBLE
+        // CON CitaCreate
         // ----------------------------------------------------
 
         const payloadAgenda = {
@@ -491,25 +603,75 @@ export default function EnviarANotarioModal({
           tipo_cita:
             "Firma notarial",
 
+          notario_id:
+            Number(form.notario.id),
+
           tipo_firma:
             form.notario.tipo_firma ||
-            "",
+            null,
 
-          notario_id:
-            form.notario.id,
+          apoderado_id:
+            apoderadoId
+              ? Number(apoderadoId)
+              : null,
 
-          expediente_id:
-            expedienteId,
+          apoderado:
+            apoderado ||
+            null,
 
           observaciones:
-            `Firma notarial — Expediente ${expediente.id_expediente}`,
+            `Firma notarial — Expediente ${expediente.id_expediente} — Solicitud PNC ${form.numero_solicitud_pnc.trim()}`,
+
+          expediente_id:
+            expedienteId
+              ? Number(expedienteId)
+              : null,
 
         };
 
 
         console.log(
-          "AGENDA — CREANDO CITA:",
+          "=================================================="
+        );
+
+        console.log(
+          "AGENDA — CREANDO CITA"
+        );
+
+        console.log(
+          "AGENDA — PAYLOAD:",
           payloadAgenda
+        );
+
+        console.log(
+          "AGENDA — EXPEDIENTE ID INTERNO:",
+          expedienteId
+        );
+
+        console.log(
+          "AGENDA — EXPEDIENTE Nº:",
+          expediente.id_expediente
+        );
+
+        console.log(
+          "AGENDA — NOTARIO ID:",
+          form.notario.id
+        );
+
+        console.log(
+          "AGENDA — FECHA:",
+          form.fecha_prevista_firma
+        );
+
+        console.log(
+          "AGENDA — HORA:",
+          form.hora_prevista_firma,
+          "→",
+          horaFin
+        );
+
+        console.log(
+          "=================================================="
         );
 
 
@@ -521,7 +683,7 @@ export default function EnviarANotarioModal({
 
 
         console.log(
-          "AGENDA — CITA CREADA:",
+          "AGENDA — CITA CREADA CORRECTAMENTE:",
           response?.data
         );
 
@@ -532,6 +694,7 @@ export default function EnviarANotarioModal({
       [
         form,
         expediente,
+        comprobarCitaExistente,
       ]
     );
 
@@ -671,6 +834,26 @@ export default function EnviarANotarioModal({
 
           setError(
             "Indica la Hora prevista de firma."
+          );
+
+          return;
+        }
+
+
+        // ------------------------------------------------------
+        // VALIDAR HORA PARA 1 HORA DE DURACIÓN
+        // ------------------------------------------------------
+
+        const horaFinValidacion =
+          sumarUnaHora(
+            form.hora_prevista_firma
+          );
+
+
+        if (!horaFinValidacion) {
+
+          setError(
+            "La hora prevista de firma no puede ser posterior a las 23:00 porque la cita tendrá una duración inicial de una hora."
           );
 
           return;
@@ -861,7 +1044,7 @@ export default function EnviarANotarioModal({
 
 
         // ------------------------------------------------------
-        // GUARDAR EXPEDIENTE
+        // GUARDAR
         // ------------------------------------------------------
 
         try {
@@ -870,34 +1053,86 @@ export default function EnviarANotarioModal({
 
 
           console.log(
-            "EXPEDIENTE — GUARDANDO ENVÍO A NOTARIO:",
+            "=================================================="
+          );
+
+          console.log(
+            "EXPEDIENTE — GUARDANDO ENVÍO A NOTARIO"
+          );
+
+          console.log(
+            "EXPEDIENTE — PAYLOAD:",
             payload
           );
 
+          console.log(
+            "=================================================="
+          );
+
+
+          // ----------------------------------------------------
+          // PRIMERO GUARDAMOS EL ENVÍO DEL EXPEDIENTE
+          // ----------------------------------------------------
 
           await onGuardar(
             payload
           );
 
 
+          console.log(
+            "EXPEDIENTE — ENVÍO GUARDADO CORRECTAMENTE"
+          );
+
+
           // ----------------------------------------------------
-          // CREAR CITA EN AGENDA
+          // DESPUÉS CREAMOS LA CITA DE AGENDA
           // ----------------------------------------------------
 
           try {
 
-            await crearCitaAgenda();
+            const cita =
+              await crearCitaAgenda();
+
+
+            console.log(
+              "AGENDA — PROCESO COMPLETADO:",
+              cita
+            );
+
 
           } catch (agendaError) {
 
             console.error(
-              "ERROR CREANDO CITA EN AGENDA:",
+              "=================================================="
+            );
+
+            console.error(
+              "AGENDA — ERROR CREANDO CITA"
+            );
+
+            console.error(
+              "AGENDA — ERROR COMPLETO:",
               agendaError
+            );
+
+            console.error(
+              "AGENDA — RESPONSE:",
+              agendaError?.response?.data
+            );
+
+            console.error(
+              "AGENDA — STATUS:",
+              agendaError?.response?.status
+            );
+
+            console.error(
+              "=================================================="
             );
 
 
             throw new Error(
               agendaError?.response?.data?.detail ||
+              agendaError?.response?.data?.message ||
               agendaError?.message ||
               "El envío se ha guardado, pero no se ha podido crear la cita en Agenda."
             );
@@ -906,7 +1141,15 @@ export default function EnviarANotarioModal({
 
 
           console.log(
+            "=================================================="
+          );
+
+          console.log(
             "ENVÍO A NOTARIO COMPLETADO CORRECTAMENTE"
+          );
+
+          console.log(
+            "=================================================="
           );
 
 
@@ -926,6 +1169,7 @@ export default function EnviarANotarioModal({
 
           setError(
             err?.response?.data?.detail ||
+            err?.response?.data?.message ||
             err?.message ||
             "No se ha podido completar el envío a notario."
           );
@@ -947,6 +1191,10 @@ export default function EnviarANotarioModal({
       ]
     );
 
+
+  // ==========================================================
+  // SI NO HAY EXPEDIENTE
+  // ==========================================================
 
   if (!expediente) {
     return null;
@@ -1957,7 +2205,6 @@ export default function EnviarANotarioModal({
                   valor={
                     form.numero_solicitud_pnc
                   }
-
                 />
 
                 <Resumen
@@ -1979,6 +2226,15 @@ export default function EnviarANotarioModal({
                   valor={
                     form.hora_prevista_firma ||
                     "—"
+                  }
+                />
+
+                <Resumen
+                  label="Fin previsto"
+                  valor={
+                    sumarUnaHora(
+                      form.hora_prevista_firma
+                    ) || "—"
                   }
                 />
 
