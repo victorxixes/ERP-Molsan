@@ -1100,8 +1100,7 @@ export default function FichaExpediente() {
 
         <div
           className="
-            mx-auto
-            max-w-[1800px]
+           w-full
           "
         >
 
@@ -1197,8 +1196,7 @@ export default function FichaExpediente() {
 
         <div
           className="
-            mx-auto
-            max-w-[1800px]
+           w-full
           "
         >
 
@@ -1323,8 +1321,7 @@ export default function FichaExpediente() {
 
         <div
           className="
-            mx-auto
-            max-w-[1800px]
+           w-full
             rounded-[24px]
             border
             border-slate-200
@@ -1525,8 +1522,7 @@ export default function FichaExpediente() {
         className="
           relative
           z-10
-          mx-auto
-          max-w-[1800px]
+         w-full
           space-y-5
         "
       >
