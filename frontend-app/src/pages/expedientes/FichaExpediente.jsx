@@ -657,11 +657,6 @@ export default function FichaExpediente() {
               valor={expediente.nif_solicitante}
             />
 
-            <Dato
-              etiqueta="Apoderado"
-              valor={expediente.apoderado}
-            />
-
           </Seccion>
 
         </div>
@@ -808,47 +803,7 @@ export default function FichaExpediente() {
         </Seccion>
 
 
-        {/* ====================================================
-            DEFECTOS
-        ==================================================== */}
-
-        <Seccion
-          titulo="Defectos"
-          subtitulo="Incidencias y defectos registrales"
-          icono="defectos"
-        >
-
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-
-            <Dato
-              etiqueta="Defectos abiertos"
-              valor={
-                expediente.tiene_defectos_abiertos
-                  ? "Sí"
-                  : "No"
-              }
-              destacado
-            />
-
-            <Dato
-              etiqueta="Tipo error"
-              valor={expediente.tipo_error}
-            />
-
-            <Dato
-              etiqueta="Descripción error"
-              valor={expediente.descripcion_error}
-            />
-
-            <Dato
-              etiqueta="Falta / defecto"
-              valor={expediente.falta_defecto}
-            />
-
-          </div>
-
-        </Seccion>
-
+       
 
         {/* ====================================================
             OBSERVACIONES
