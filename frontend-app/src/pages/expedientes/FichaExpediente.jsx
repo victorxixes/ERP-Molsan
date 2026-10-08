@@ -1803,9 +1803,7 @@ const [
 
     setAccionForm({
       accion_id: "",
-      estado: "Pendiente",
-      fecha: hoy,
-      observaciones: "",
+      fecha: hoy,      
     });
 
     setErrorAcciones("");
@@ -1840,27 +1838,21 @@ const [
         expediente.id_expediente,
         {
           accion_id: Number(accionForm.accion_id),
-          estado:
-            accionForm.estado ||
-            "Pendiente",
-          fecha:
+           fecha:
             accionForm.fecha ||
             null,
-          observaciones:
-            accionForm.observaciones?.trim() ||
-            null,
-        }
+          }
       );
 
       await cargarAccionesDelExpediente();
 
       setAccionForm({
         accion_id: "",
-        estado: "Pendiente",
+        
         fecha: new Date()
           .toISOString()
           .slice(0, 10),
-        observaciones: "",
+        
       });
 
       setMostrarAcciones(false);
