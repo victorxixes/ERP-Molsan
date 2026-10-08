@@ -1,4 +1,3 @@
-```jsx
 // ============================================================
 // ERP MOLSAN — EXPEDIENTES
 // MODAL "ENVÍO A NOTARIO"
@@ -2465,4 +2464,3 @@ function Resumen({
     </div>
   );
 }
-```
