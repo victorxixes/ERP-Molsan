@@ -773,37 +773,8 @@ export default function FichaExpediente() {
           </div>
 
         </Seccion>
-
-
-        {/* ====================================================
-            OFICINA
-        ==================================================== */}
-
-        <Seccion
-          titulo="Oficina"
-          subtitulo="Datos de oficina y asignación"
-          icono="oficina"
-        >
-
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-
-            <Dato
-              etiqueta="Oficina"
-              valor={expediente.oficina}
-              destacado
-            />
-
-            <Dato
-              etiqueta="DAN"
-              valor={expediente.dan}
-            />
-
-          </div>
-
-        </Seccion>
-
-
-       
+           
+      
 
         {/* ====================================================
             OBSERVACIONES
