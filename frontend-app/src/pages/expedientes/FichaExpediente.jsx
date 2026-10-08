@@ -948,7 +948,11 @@ function Seccion({
   icono,
   children,
   className = "",
+  colapsable = false,
+  compacto = false,
 }) {
+  const [abierta, setAbierta] = useState(true);
+
   return (
     <section
       className={`
@@ -962,15 +966,14 @@ function Seccion({
       `}
     >
       <div
-        className="
+        className={`
           flex
           items-center
           gap-3
           border-b
           border-slate-100
-          px-5
-          py-4
-        "
+          ${compacto ? "px-3 py-2.5" : "px-5 py-4"}
+        `}
       >
         <div
           className="
@@ -992,9 +995,10 @@ function Seccion({
           />
         </div>
 
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h2
             className="
+              truncate
               text-sm
               font-bold
               text-slate-800
@@ -1007,6 +1011,7 @@ function Seccion({
             <p
               className="
                 mt-0.5
+                truncate
                 text-[11px]
                 text-slate-400
               "
@@ -1015,11 +1020,43 @@ function Seccion({
             </p>
           )}
         </div>
+
+        {colapsable && (
+          <button
+            type="button"
+            onClick={() => setAbierta((valor) => !valor)}
+            className="
+              ml-auto
+              flex
+              h-8
+              w-8
+              shrink-0
+              items-center
+              justify-center
+              rounded-lg
+              border
+              border-slate-200
+              bg-white
+              text-slate-500
+              transition
+              hover:bg-slate-50
+              hover:text-blue-600
+            "
+            aria-label={abierta ? `Ocultar ${titulo}` : `Mostrar ${titulo}`}
+            title={abierta ? "Ocultar" : "Mostrar"}
+          >
+            <span className="text-xs font-bold">
+              {abierta ? "⌃" : "⌄"}
+            </span>
+          </button>
+        )}
       </div>
 
-      <div className="p-5">
-        {children}
-      </div>
+      {(!colapsable || abierta) && (
+        <div className={compacto ? "p-3" : "p-5"}>
+          {children}
+        </div>
+      )}
     </section>
   );
 }
@@ -1401,16 +1438,6 @@ export default function FichaExpediente() {
     cargandoRelacionados,
     setCargandoRelacionados,
   ] = useState(false);
-
-  const [
-    expedienteRelacionadoManual,
-    setExpedienteRelacionadoManual,
-  ] = useState("");
-
-  const [
-    errorRelacionManual,
-    setErrorRelacionManual,
-  ] = useState("");
 
   const [
     comentario,
@@ -1936,8 +1963,6 @@ const [
 
   async function abrirAgregarExpedientes() {
     setMostrarAgregarExpedientes(true);
-    setExpedienteRelacionadoManual("");
-    setErrorRelacionManual("");
 
     const nif =
       expediente?.nif_titular ||
@@ -1989,78 +2014,6 @@ const [
       );
 
       setExpedientesRelacionados([]);
-    } finally {
-      setCargandoRelacionados(false);
-    }
-  }
-
-
-  async function guardarExpedienteRelacionado() {
-    const numero = String(
-      expedienteRelacionadoManual || ""
-    ).trim();
-
-    if (!numero) {
-      return;
-    }
-
-    const actual = String(
-      expediente?.id_expediente || ""
-    ).trim();
-
-    if (numero === actual) {
-      setErrorRelacionManual(
-        "No puedes relacionar el expediente consigo mismo."
-      );
-      return;
-    }
-
-    const yaExiste = expedientesRelacionados.some(
-      (item) =>
-        String(item?.id_expediente || "").trim() === numero
-    );
-
-    if (yaExiste) {
-      setErrorRelacionManual(
-        "Ese expediente ya está en la lista de relacionados."
-      );
-      return;
-    }
-
-    try {
-      setErrorRelacionManual("");
-      setCargandoRelacionados(true);
-
-      const respuesta = await obtenerExpediente(numero);
-      const datos =
-        respuesta?.expediente ||
-        respuesta?.data ||
-        respuesta ||
-        null;
-
-      if (!datos?.id_expediente) {
-        throw new Error("No se ha encontrado el expediente indicado.");
-      }
-
-      setExpedientesRelacionados((actuales) => [
-        ...actuales,
-        {
-          ...datos,
-          _manual: true,
-        },
-      ]);
-
-      setExpedienteRelacionadoManual("");
-    } catch (err) {
-      console.error(
-        "Error agregando expediente relacionado:",
-        err
-      );
-      setErrorRelacionManual(
-        err?.response?.data?.detail ||
-        err?.message ||
-        "No se ha podido encontrar ese expediente."
-      );
     } finally {
       setCargandoRelacionados(false);
     }
@@ -2248,14 +2201,13 @@ const [
       >
         <div
           className="
-            flex
-            flex-col
-            gap-5
-            p-5
-            sm:p-6
-            xl:flex-row
+            grid
+            grid-cols-1
+            gap-3
+            p-3
+            sm:p-4
+            xl:grid-cols-[220px_minmax(0,1fr)_auto]
             xl:items-center
-            xl:justify-between
           "
         >
 
@@ -2318,9 +2270,10 @@ const [
 
                 <h1
                   className="
-                    truncate
-                    text-2xl
+                    whitespace-nowrap
+                    text-xl
                     font-bold
+                    leading-none
                     text-slate-800
                   "
                 >
@@ -2344,262 +2297,96 @@ const [
           </div>
   {/* ===================================================
             BLOQUES SUPERIORES
-            Izquierda: ficha | Centro: titular/solicitante/relacionados | Derecha: acciones
         ==================================================== */}
 
         <div
           className="
-            grid
-            w-full
             min-w-0
-            items-center
-            gap-3
-            xl:grid-cols-[minmax(300px,0.9fr)_minmax(720px,2.2fr)_auto]
+            w-full
           "
         >
-
-          {/* CENTRO — TRES BLOQUES HORIZONTALES */}
           <div
             className="
               grid
-              min-w-0
               grid-cols-1
               gap-2
-              lg:grid-cols-3
-              xl:col-span-2
+              md:grid-cols-3
             "
           >
 
-            {/* TITULAR */}
-            <div
-              className="
-                flex
-                min-w-0
-                min-h-[58px]
-                items-center
-                gap-3
-                rounded-xl
-                border
-                border-slate-200/80
-                bg-white/75
-                px-4
-                py-2.5
-                shadow-sm
-              "
+            <Seccion
+              titulo="Titulares"
+              subtitulo="Titulares del expediente"
+              icono="titular"
+              className="h-full"
+              compacto
             >
-              <div
+              <div className="grid grid-cols-2 gap-2">
+                <Dato
+                  campo="Nombre titular"
+                  valor={expediente.nombre_titular}
+                  destaque
+                />
+                <Dato
+                  campo="NIF titular"
+                  valor={expediente.nif_titular}
+                />
+              </div>
+            </Seccion>
+
+            <Seccion
+              titulo="Solicitantes"
+              subtitulo="Solicitantes del expediente"
+              icono="solicitante"
+              className="h-full"
+              compacto
+            >
+              <div className="grid grid-cols-2 gap-2">
+                <Dato
+                  campo="Nombre solicitante"
+                  valor={expediente.nombre_solicitante}
+                  destaque
+                />
+                <Dato
+                  campo="NIF solicitante"
+                  valor={expediente.nif_solicitante}
+                />
+              </div>
+            </Seccion>
+
+            <Seccion
+              titulo="Expedientes relacionados"
+              subtitulo="Agrupación automática por NIF"
+              icono="titular"
+              className="h-full"
+              compacto
+            >
+              <p className="text-xs leading-5 text-slate-500">
+                El sistema buscará otros expedientes cuyo titular tenga el mismo NIF.
+              </p>
+
+              <button
+                type="button"
+                onClick={abrirAgregarExpedientes}
                 className="
-                  flex
-                  h-9
-                  w-9
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-lg
-                  border
-                  border-blue-100
-                  bg-blue-50
-                  text-sm
+                  mt-3 w-full rounded-xl border border-blue-100
+                  bg-blue-50 px-3 py-2.5 text-xs font-bold
+                  text-blue-700 transition hover:bg-blue-100
                 "
               >
-                👤
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex min-w-0 items-baseline gap-2">
-                  <span
-                    className="
-                      shrink-0
-                      text-[9px]
-                      font-bold
-                      uppercase
-                      tracking-[0.08em]
-                      text-slate-400
-                    "
-                  >
-                    Titular
-                  </span>
-                  <span
-                    className="
-                      min-w-0
-                      truncate
-                      text-xs
-                      font-bold
-                      text-slate-700
-                    "
-                  >
-                    {valorVisible(expediente.nombre_titular)}
-                  </span>
-                </div>
-
-                <div className="mt-0.5 flex items-center gap-2">
-                  <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
-                    NIF
-                  </span>
-                  <span className="truncate text-[10px] font-semibold text-slate-500">
-                    {valorVisible(expediente.nif_titular)}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* SOLICITANTE */}
-            <div
-              className="
-                flex
-                min-w-0
-                min-h-[58px]
-                items-center
-                gap-3
-                rounded-xl
-                border
-                border-slate-200/80
-                bg-white/75
-                px-4
-                py-2.5
-                shadow-sm
-              "
-            >
-              <div
-                className="
-                  flex
-                  h-9
-                  w-9
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-lg
-                  border
-                  border-blue-100
-                  bg-blue-50
-                  text-sm
-                "
-              >
-                👥
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex min-w-0 items-baseline gap-2">
-                  <span
-                    className="
-                      shrink-0
-                      text-[9px]
-                      font-bold
-                      uppercase
-                      tracking-[0.08em]
-                      text-slate-400
-                    "
-                  >
-                    Solicitante
-                  </span>
-                  <span
-                    className="
-                      min-w-0
-                      truncate
-                      text-xs
-                      font-bold
-                      text-slate-700
-                    "
-                  >
-                    {valorVisible(expediente.nombre_solicitante)}
-                  </span>
-                </div>
-
-                <div className="mt-0.5 flex items-center gap-2">
-                  <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
-                    NIF
-                  </span>
-                  <span className="truncate text-[10px] font-semibold text-slate-500">
-                    {valorVisible(expediente.nif_solicitante)}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* EXPEDIENTES RELACIONADOS */}
-            <button
-              type="button"
-              onClick={abrirAgregarExpedientes}
-              className="
-                flex
-                min-w-0
-                min-h-[58px]
-                items-center
-                gap-3
-                rounded-xl
-                border
-                border-slate-200/80
-                bg-white/75
-                px-4
-                py-2.5
-                text-left
-                shadow-sm
-                transition
-                hover:border-blue-200
-                hover:bg-blue-50/40
-              "
-            >
-              <div
-                className="
-                  flex
-                  h-9
-                  w-9
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-lg
-                  border
-                  border-blue-100
-                  bg-blue-50
-                  text-sm
-                "
-              >
-                📁
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex min-w-0 items-baseline gap-2">
-                  <span
-                    className="
-                      shrink-0
-                      text-[9px]
-                      font-bold
-                      uppercase
-                      tracking-[0.08em]
-                      text-slate-400
-                    "
-                  >
-                    Relacionados
-                  </span>
-                  <span className="min-w-0 truncate text-xs font-bold text-slate-700">
-                    Agrupación por NIF
-                  </span>
-                </div>
-
-                <span
-                  className="
-                    mt-0.5
-                    block
-                    truncate
-                    text-[10px]
-                    font-semibold
-                    text-blue-600
-                  "
-                >
-                  + Agregar expediente
-                </span>
-              </div>
-            </button>
+                ➕ Agregar expedientes
+              </button>
+            </Seccion>
 
           </div>
+        </div>
 
-          {/* DERECHA — ACCIONES */}
+
           <div
             className="
               flex
               flex-wrap
               items-center
-              justify-end
               gap-2
             "
           >
@@ -2607,13 +2394,14 @@ const [
             {tieneDefecto && (
               <button
                 type="button"
-                onClick={abrirDefecto}
+                onClick={
+                  abrirDefecto
+                }
                 className="
                   animate-pulse
                   inline-flex
                   items-center
                   gap-2
-                  whitespace-nowrap
                   rounded-xl
                   border
                   border-red-300
@@ -2631,7 +2419,9 @@ const [
             )}
 
             <Boton
-              onClick={abrirActividades}
+              onClick={
+                abrirActividades
+              }
             >
               ⚙️ Ver actividades
             </Boton>
@@ -2639,18 +2429,16 @@ const [
             <Boton
               tipo="primary"
               onClick={() =>
-                setMostrarEnviarNotario(true)
+                setMostrarEnviarNotario(
+                  true
+                )
               }
             >
               📤 Enviar a notario
             </Boton>
 
           </div>
-
         </div>
-
-        </div>
-
       </section>
 
 
@@ -2680,6 +2468,7 @@ const [
             titulo="Estado"
             subtitulo="Situación actual del expediente"
             icono="estado"
+            colapsable
           >
             <div
               className="
@@ -2939,6 +2728,7 @@ const [
             subtitulo="Datos económicos y contractuales"
             icono="economico"
             className="h-full"
+            colapsable
           >
 
             <div
@@ -3054,6 +2844,7 @@ const [
             titulo="Notario"
             subtitulo="Información del notario asociado"
             icono="notario"
+            colapsable
           >
 
             <div
@@ -3076,6 +2867,34 @@ const [
                 campo="NIF notario"
                 valor={
                   expediente.nif_notario
+                }
+              />
+
+              <Dato
+                campo="Notario"
+                valor={
+                  expediente.notario
+                }
+              />
+
+              <Dato
+                campo="ID notario"
+                valor={
+                  expediente.id_notario
+                }
+              />
+
+              <Dato
+                campo="Apoderado"
+                valor={
+                  expediente.apoderado
+                }
+              />
+
+              <Dato
+                campo="Tipo firma"
+                valor={
+                  expediente.tipo_firma
                 }
               />
 
@@ -3769,105 +3588,142 @@ const [
       ====================================================== */}
 
       <Modal
-        open={mostrarAgregarExpedientes}
-        onClose={() => setMostrarAgregarExpedientes(false)}
-        titulo="📁 Expedientes relacionados"
-        subtitulo={`Agrupación automática por NIF · ${valorVisible(
-          expediente.nif_titular
-        )}`}
+        open={
+          mostrarAgregarExpedientes
+        }
+        onClose={() =>
+          setMostrarAgregarExpedientes(false)
+        }
+        titulo="➕ Expedientes relacionados"
+        subtitulo={
+          `Agrupación por NIF · ${valorVisible(
+            expediente.nif_titular
+          )}`
+        }
         ancho="max-w-5xl"
         footer={
           <Boton
-            onClick={() => setMostrarAgregarExpedientes(false)}
+            onClick={() =>
+              setMostrarAgregarExpedientes(false)
+            }
           >
             Cerrar
           </Boton>
         }
       >
-        {/* AGREGAR MANUALMENTE */}
-        <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
-          <div className="mb-3">
-            <p className="text-sm font-bold text-slate-800">
-              Agregar expediente manualmente
-            </p>
-            <p className="mt-0.5 text-xs text-slate-500">
-              Introduce el número de expediente que quieres relacionar.
-            </p>
-          </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <input
-              type="text"
-              value={expedienteRelacionadoManual}
-              onChange={(event) =>
-                setExpedienteRelacionadoManual(event.target.value)
-              }
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  guardarExpedienteRelacionado();
-                }
-              }}
-              placeholder="Nº de expediente"
+        {cargandoRelacionados ? (
+          <div
+            className="
+              rounded-xl
+              border
+              border-slate-200
+              bg-slate-50
+              p-10
+              text-center
+              text-sm
+              text-slate-400
+            "
+          >
+            Buscando expedientes del mismo NIF…
+          </div>
+        ) : expedientesRelacionados.length ===
+          0 ? (
+          <div
+            className="
+              rounded-xl
+              border
+              border-dashed
+              border-slate-300
+              bg-slate-50
+              p-10
+              text-center
+            "
+          >
+            <p
               className="
-                min-w-0 flex-1 rounded-xl border border-slate-200
-                bg-white px-4 py-2.5 text-sm text-slate-700
-                outline-none transition focus:border-blue-400
-                focus:ring-2 focus:ring-blue-100
+                text-sm
+                font-semibold
+                text-slate-500
               "
-            />
-
-            <Boton
-              tipo="primary"
-              onClick={guardarExpedienteRelacionado}
-              disabled={!expedienteRelacionadoManual.trim()}
             >
-              ＋ Agregar
-            </Boton>
+              No se han encontrado otros
+              expedientes relacionados.
+            </p>
+
+            <p
+              className="
+                mt-1
+                text-xs
+                text-slate-400
+              "
+            >
+              El sistema ha realizado la búsqueda
+              utilizando el NIF del titular.
+            </p>
           </div>
+        ) : (
+          <div className="space-y-3">
 
-          {errorRelacionManual && (
-            <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">
-              {errorRelacionManual}
-            </div>
-          )}
-
-          <p className="mt-2 text-[10px] text-slate-400">
-            Los expedientes encontrados por el mismo NIF se muestran debajo.
-          </p>
-        </div>
-
-        <div className="mt-5">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-bold text-slate-800">
-                Expedientes relacionados
+            <div
+              className="
+                rounded-xl
+                border
+                border-blue-100
+                bg-blue-50
+                px-4
+                py-3
+              "
+            >
+              <p
+                className="
+                  text-xs
+                  font-bold
+                  text-blue-700
+                "
+              >
+                {expedientesRelacionados.length}{" "}
+                expediente(s) relacionado(s)
               </p>
-              <p className="text-xs text-slate-400">
-                Automáticos por NIF y añadidos manualmente.
-              </p>
-            </div>
 
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-bold text-slate-500">
-              {expedientesRelacionados.length}
-            </span>
-          </div>
-
-          {cargandoRelacionados ? (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-400">
-              Buscando expedientes del mismo NIF…
-            </div>
-          ) : expedientesRelacionados.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
-              <p className="text-sm font-semibold text-slate-500">
-                No hay expedientes relacionados todavía.
-              </p>
-              <p className="mt-1 text-xs text-slate-400">
-                Puedes agregar uno manualmente utilizando el campo superior.
+              <p
+                className="
+                  mt-1
+                  text-[11px]
+                  text-blue-600
+                "
+              >
+                Mismo NIF que el titular actual.
               </p>
             </div>
-          ) : (
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-              <div className="grid grid-cols-[1.3fr_1fr_1.5fr_1fr_auto] gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3 text-[10px] font-bold uppercase tracking-wide text-slate-400">
+
+
+            <div
+              className="
+                overflow-hidden
+                rounded-xl
+                border
+                border-slate-200
+                bg-white
+              "
+            >
+              <div
+                className="
+                  grid
+                  grid-cols-[1.2fr_1fr_1.3fr_1fr_auto]
+                  gap-3
+                  border-b
+                  border-slate-200
+                  bg-slate-50
+                  px-4
+                  py-3
+                  text-[10px]
+                  font-bold
+                  uppercase
+                  tracking-wide
+                  text-slate-400
+                "
+              >
                 <span>Expediente</span>
                 <span>Fecha alta</span>
                 <span>Actividad</span>
@@ -3875,57 +3731,104 @@ const [
                 <span />
               </div>
 
-              {expedientesRelacionados.map((relacionado, indice) => (
-                <div
-                  key={`${relacionado.id_expediente}-${indice}`}
-                  className="grid grid-cols-[1.3fr_1fr_1.5fr_1fr_auto] items-center gap-3 border-b border-slate-100 px-4 py-3 last:border-b-0"
-                >
-                  <span className="text-xs font-bold text-blue-700">
-                    {valorVisible(relacionado.id_expediente)}
-                  </span>
+              {expedientesRelacionados.map(
+                (relacionado) => (
+                  <div
+                    key={
+                      relacionado.id_expediente
+                    }
+                    className="
+                      grid
+                      grid-cols-[1.2fr_1fr_1.3fr_1fr_auto]
+                      items-center
+                      gap-3
+                      border-b
+                      border-slate-100
+                      px-4
+                      py-3
+                      last:border-b-0
+                    "
+                  >
+                    <span
+                      className="
+                        text-xs
+                        font-bold
+                        text-blue-700
+                      "
+                    >
+                      {
+                        valorVisible(
+                          relacionado.id_expediente
+                        )
+                      }
+                    </span>
 
-                  <span className="text-xs text-slate-600">
-                    {relacionado._manual
-                      ? "—"
-                      : formatearFecha(relacionado.fecha_alta)}
-                  </span>
+                    <span
+                      className="
+                        text-xs
+                        text-slate-600
+                      "
+                    >
+                      {
+                        formatearFecha(
+                          relacionado.fecha_alta
+                        )
+                      }
+                    </span>
 
-                  <span className="text-xs text-slate-600">
-                    {relacionado._manual
-                      ? "Añadido manualmente"
-                      : valorVisible(relacionado.actividad_actual)}
-                  </span>
+                    <span
+                      className="
+                        text-xs
+                        text-slate-600
+                      "
+                    >
+                      {
+                        valorVisible(
+                          relacionado.actividad_actual
+                        )
+                      }
+                    </span>
 
-                  <span>
-                    {relacionado._manual ? (
-                      <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-blue-700">
-                        Manual
-                      </span>
-                    ) : (
-                      <EstadoBadge
-                        valor={relacionado.estado_expediente}
-                      />
-                    )}
-                  </span>
+                    <EstadoBadge
+                      valor={
+                        relacionado.estado_expediente
+                      }
+                    />
 
-                  {!relacionado._manual ? (
                     <Link
                       to={`/expedientes/${encodeURIComponent(
                         relacionado.id_expediente
                       )}`}
-                      className="inline-flex rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-[10px] font-bold text-blue-700 hover:bg-blue-100"
-                      onClick={() => setMostrarAgregarExpedientes(false)}
+                      className="
+                        inline-flex
+                        rounded-lg
+                        border
+                        border-blue-200
+                        bg-blue-50
+                        px-3
+                        py-2
+                        text-[10px]
+                        font-bold
+                        text-blue-700
+                        hover:bg-blue-100
+                      "
+                      onClick={() =>
+                        setMostrarAgregarExpedientes(
+                          false
+                        )
+                      }
                     >
                       Ver
                     </Link>
-                  ) : (
-                    <span className="text-[10px] text-slate-300">Manual</span>
-                  )}
-                </div>
-              ))}
+                  </div>
+                )
+              )}
+
             </div>
-          )}
-        </div>
+
+          </div>
+        )}
+
       </Modal>
 
 
