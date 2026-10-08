@@ -1,13 +1,29 @@
-// frontend-app/src/api/expedienteAcciones.js
-
 import axios from "./axios";
 
 
 // ============================================================
-// LISTAR ACCIONES DE UN EXPEDIENTE
+// CATÁLOGO MAESTRO DE ACCIONES
 // ============================================================
 
-export async function obtenerAccionesExpediente(idExpediente) {
+export async function obtenerCatalogoAcciones(params = {}) {
+  const response = await axios.get(
+    "/acciones-expediente",
+    {
+      params,
+    }
+  );
+
+  return response.data;
+}
+
+
+// ============================================================
+// LISTAR ACCIONES ASIGNADAS A UN EXPEDIENTE
+// ============================================================
+
+export async function obtenerAccionesExpediente(
+  idExpediente
+) {
   const response = await axios.get(
     `/expediente-acciones/expediente/${encodeURIComponent(
       idExpediente
@@ -19,7 +35,7 @@ export async function obtenerAccionesExpediente(idExpediente) {
 
 
 // ============================================================
-// ASIGNAR ACCIÓN
+// ASIGNAR ACCIÓN AL EXPEDIENTE
 // ============================================================
 
 export async function asignarAccionExpediente(
@@ -38,7 +54,7 @@ export async function asignarAccionExpediente(
 
 
 // ============================================================
-// ACTUALIZAR ACCIÓN
+// ACTUALIZAR ACCIÓN ASIGNADA
 // ============================================================
 
 export async function actualizarAccionExpediente(
@@ -55,7 +71,7 @@ export async function actualizarAccionExpediente(
 
 
 // ============================================================
-// ELIMINAR / RETIRAR ACCIÓN
+// RETIRAR ACCIÓN DEL EXPEDIENTE
 // ============================================================
 
 export async function eliminarAccionExpediente(
