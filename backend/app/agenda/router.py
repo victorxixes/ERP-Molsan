@@ -214,17 +214,9 @@ def citas_semana(
 # MES
 # ============================================================
 
-@router.get(
-    "/mes/{año}/{mes}",
-)
-def citas_mes(
-    año: int,
-    mes: int,
-    db: Session = Depends(get_db),
-):
-
+@router.get("/mes/{anio}/{mes}")
+def citas_mes(anio: int, mes: int, db: Session = Depends(get_db)):
     if mes < 1 or mes > 12:
-
         raise HTTPException(
             status_code=400,
             detail="El mes debe estar entre 1 y 12.",
@@ -232,14 +224,13 @@ def citas_mes(
 
     citas = obtener_citas_mes(
         db,
-        año,
+        anio,
         mes,
     )
 
     return {
         "citas": citas,
     }
-
 
 # ============================================================
 # OBTENER CITA
