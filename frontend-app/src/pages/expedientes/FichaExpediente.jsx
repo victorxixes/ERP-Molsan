@@ -2870,20 +2870,6 @@ const [
                 }
               />
 
-              <Dato
-                campo="Apoderado"
-                valor={
-                  expediente.apoderado
-                }
-              />
-
-              <Dato
-                campo="Tipo firma"
-                valor={
-                  expediente.tipo_firma
-                }
-              />
-
             </div>
 
           </Seccion>
