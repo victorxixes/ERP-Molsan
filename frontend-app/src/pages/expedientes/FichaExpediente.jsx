@@ -1,3 +1,4 @@
+```jsx
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -283,7 +284,27 @@ export default function FichaExpediente() {
   const [expediente, setExpediente] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+
   const [mostrarEnviarANotario, setMostrarEnviarANotario] =
+    useState(false);
+
+  // ==========================================================
+  // ESTADO ALTA DEFECTO
+  // ==========================================================
+
+  const [mostrarAltaDefecto, setMostrarAltaDefecto] =
+    useState(false);
+
+  const [tipoDefecto, setTipoDefecto] =
+    useState("");
+
+  const [faltaDefecto, setFaltaDefecto] =
+    useState("");
+
+  const [descripcionDefecto, setDescripcionDefecto] =
+    useState("");
+
+  const [guardandoDefecto, setGuardandoDefecto] =
     useState(false);
 
 
@@ -368,6 +389,93 @@ export default function FichaExpediente() {
     );
 
     setMostrarEnviarANotario(false);
+  }
+
+
+  // ==========================================================
+  // ALTA DEFECTO
+  // ==========================================================
+
+  function abrirAltaDefecto() {
+    setTipoDefecto("");
+    setFaltaDefecto("");
+    setDescripcionDefecto("");
+    setMostrarAltaDefecto(true);
+  }
+
+
+  function cerrarAltaDefecto() {
+    if (guardandoDefecto) return;
+
+    setMostrarAltaDefecto(false);
+    setTipoDefecto("");
+    setFaltaDefecto("");
+    setDescripcionDefecto("");
+  }
+
+
+  async function guardarDefecto() {
+    if (!tipoDefecto.trim()) {
+      alert("Debes indicar el tipo de defecto.");
+      return;
+    }
+
+    if (!faltaDefecto.trim()) {
+      alert("Debes indicar la falta o defecto.");
+      return;
+    }
+
+    if (!descripcionDefecto.trim()) {
+      alert("Debes indicar una descripción.");
+      return;
+    }
+
+    try {
+      setGuardandoDefecto(true);
+
+      const payload = {
+        expediente_id: expediente.id,
+        id_expediente: expediente.id_expediente,
+        tipo_error: tipoDefecto.trim(),
+        falta_defecto: faltaDefecto.trim(),
+        descripcion_error: descripcionDefecto.trim(),
+      };
+
+      console.log(
+        "ALTA DEFECTO — payload:",
+        payload
+      );
+
+      /*
+       * IMPORTANTE:
+       *
+       * Aquí conectaremos posteriormente el endpoint
+       * real del backend para guardar el defecto.
+       *
+       * No hacemos ninguna llamada inventada todavía.
+       */
+
+      setMostrarAltaDefecto(false);
+
+      setTipoDefecto("");
+      setFaltaDefecto("");
+      setDescripcionDefecto("");
+
+    } catch (err) {
+      console.error(
+        "Error dando de alta defecto:",
+        err
+      );
+
+      alert(
+        err?.response?.data?.detail ||
+          err?.message ||
+          "No se ha podido dar de alta el defecto."
+      );
+
+    } finally {
+      setGuardandoDefecto(false);
+    }
   }
 
 
@@ -773,8 +881,85 @@ export default function FichaExpediente() {
           </div>
 
         </Seccion>
-           
-      
+
+
+        {/* ====================================================
+            DEFECTOS
+        ==================================================== */}
+
+        <Seccion
+          titulo="Defectos"
+          subtitulo="Incidencias y defectos registrales"
+          icono="defectos"
+        >
+
+          <div className="flex flex-col gap-4">
+
+            {/* ==================================================
+                CABECERA DEFECTOS
+            ================================================== */}
+
+            <div className="flex flex-col gap-3 rounded-2xl border border-red-100 bg-red-50/60 p-4 sm:flex-row sm:items-center sm:justify-between">
+
+              <div>
+                <div className="text-sm font-bold text-slate-800">
+                  Gestión de defectos
+                </div>
+
+                <div className="mt-1 text-xs text-slate-500">
+                  Registra y consulta las incidencias o defectos
+                  asociados a este expediente.
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={abrirAltaDefecto}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-red-700"
+              >
+                ⚠️ Dar de alta defecto
+              </button>
+
+            </div>
+
+
+            {/* ==================================================
+                RESUMEN ACTUAL
+            ================================================== */}
+
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+
+              <Dato
+                etiqueta="Defectos abiertos"
+                valor={
+                  expediente.tiene_defectos_abiertos
+                    ? "Sí"
+                    : "No"
+                }
+                destacado
+              />
+
+              <Dato
+                etiqueta="Tipo error"
+                valor={expediente.tipo_error}
+              />
+
+              <Dato
+                etiqueta="Descripción error"
+                valor={expediente.descripcion_error}
+              />
+
+              <Dato
+                etiqueta="Falta / defecto"
+                valor={expediente.falta_defecto}
+              />
+
+            </div>
+
+          </div>
+
+        </Seccion>
+
 
         {/* ====================================================
             OBSERVACIONES
@@ -797,9 +982,203 @@ export default function FichaExpediente() {
           />
         )}
 
+
+        {/* ====================================================
+            MODAL ALTA DEFECTO
+        ==================================================== */}
+
+        {mostrarAltaDefecto && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+
+            <div className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-white/80 bg-white shadow-2xl">
+
+              {/* ==================================================
+                  CABECERA MODAL
+              ================================================== */}
+
+              <div className="border-b border-slate-100 bg-red-50/70 px-6 py-5">
+
+                <div className="flex items-start justify-between gap-4">
+
+                  <div className="flex items-center gap-3">
+
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-red-200 bg-white text-xl">
+                      ⚠️
+                    </div>
+
+                    <div>
+
+                      <h2 className="text-lg font-black text-slate-800">
+                        Dar de alta defecto
+                      </h2>
+
+                      <p className="mt-0.5 text-xs text-slate-500">
+                        Registrar un nuevo defecto en el expediente
+                      </p>
+
+                    </div>
+
+                  </div>
+
+
+                  <button
+                    type="button"
+                    onClick={cerrarAltaDefecto}
+                    disabled={guardandoDefecto}
+                    className="rounded-xl px-3 py-2 text-slate-400 transition hover:bg-white hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    ✕
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              {/* ==================================================
+                  CUERPO MODAL
+              ================================================== */}
+
+              <div className="space-y-5 p-6">
+
+                {/* EXPEDIENTE */}
+
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+
+                  <div className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400">
+                    Expediente
+                  </div>
+
+                  <div className="mt-1 text-sm font-bold text-slate-800">
+                    {valorVisible(expediente.id_expediente)}
+                  </div>
+
+                </div>
+
+
+                {/* TIPO DEFECTO */}
+
+                <div>
+
+                  <label
+                    htmlFor="tipo-defecto"
+                    className="mb-2 block text-xs font-bold uppercase tracking-[0.08em] text-slate-500"
+                  >
+                    Tipo de defecto
+                  </label>
+
+                  <input
+                    id="tipo-defecto"
+                    type="text"
+                    value={tipoDefecto}
+                    onChange={(e) =>
+                      setTipoDefecto(e.target.value)
+                    }
+                    placeholder="Ej. Defecto registral"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                    disabled={guardandoDefecto}
+                  />
+
+                </div>
+
+
+                {/* FALTA / DEFECTO */}
+
+                <div>
+
+                  <label
+                    htmlFor="falta-defecto"
+                    className="mb-2 block text-xs font-bold uppercase tracking-[0.08em] text-slate-500"
+                  >
+                    Falta / defecto
+                  </label>
+
+                  <input
+                    id="falta-defecto"
+                    type="text"
+                    value={faltaDefecto}
+                    onChange={(e) =>
+                      setFaltaDefecto(e.target.value)
+                    }
+                    placeholder="Indica la falta o defecto detectado"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                    disabled={guardandoDefecto}
+                  />
+
+                </div>
+
+
+                {/* DESCRIPCIÓN */}
+
+                <div>
+
+                  <label
+                    htmlFor="descripcion-defecto"
+                    className="mb-2 block text-xs font-bold uppercase tracking-[0.08em] text-slate-500"
+                  >
+                    Descripción del defecto
+                  </label>
+
+                  <textarea
+                    id="descripcion-defecto"
+                    value={descripcionDefecto}
+                    onChange={(e) =>
+                      setDescripcionDefecto(e.target.value)
+                    }
+                    placeholder="Describe detalladamente el defecto..."
+                    rows={5}
+                    className="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                    disabled={guardandoDefecto}
+                  />
+
+                </div>
+
+              </div>
+
+
+              {/* ==================================================
+                  PIE MODAL
+              ================================================== */}
+
+              <div className="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50/70 px-6 py-4 sm:flex-row sm:justify-end">
+
+                <button
+                  type="button"
+                  onClick={cerrarAltaDefecto}
+                  disabled={guardandoDefecto}
+                  className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  onClick={guardarDefecto}
+                  disabled={guardandoDefecto}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {guardandoDefecto ? (
+                    <>
+                      <span className="animate-spin">⟳</span>
+                      Guardando...
+                    </>
+                  ) : (
+                    <>
+                      ⚠️ Guardar defecto
+                    </>
+                  )}
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
       </div>
 
     </div>
   );
 }
-
+```
