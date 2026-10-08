@@ -226,6 +226,18 @@ const ACTIVIDADES_EXPEDIENTES = [
 
 
 // ============================================================
+// CATÁLOGOS — FINCAS Y REGISTROS
+// ============================================================
+
+const PROVINCIAS_FINCA = [
+"CORUÑA (A)","ALAVA","ALBACETE","ALICANTE/ALACANT","ALMERIA","ASTURIAS","AVILA","BADAJOZ","BALEARS (ILLES)","BARCELONA","BURGOS","CACERES","CADIZ","CANTABRIA","CASTELLON/CASTELLO","CEUTA","CIUDAD REAL","CORDOBA","CUENCA","GIRONA","GRANADA","GUADALAJARA","GUIPUZCOA","HUELVA","HUESCA","JAEN","RIOJA (LA)","PALMAS (LAS)","LEON","LLEIDA","LUGO","MADRID","MALAGA","MELILLA","MURCIA","NAVARRA","OURENSE","PALENCIA","PONTEVEDRA","SALAMANCA","SANTA CRUZ DE TENERIFE","SEGOVIA","SEVILLA","SORIA","TARRAGONA","TERUEL","TOLEDO","VALENCIA/VALENCIA","VALLADOLID","VIZCAYA","ZAMORA","ZARAGOZA"
+];
+
+const ENTIDADES_ORIGINALES_FINCA = [
+"BANCA CÍVICA","Banca Jover, S.A.","BANCAJA","BANCO DE EUROPA","BANCO DE FOMENTO (Cesión de oficinas)","Banco de la Pequeña y Mediana Empresa, S.A.","BANCO DE LAS ISLAS CANARIAS","BANCO DE MURCIA","BANCO DE VALENCIA","BANCO GRANADA JEREZ","BANCO MARE NOSTRUM (BMN)","BANCO ZARAGOZANO","BANCOFAR","BANCOFAR (Cesión de créditos)","BANKIA","BANZANO HIPOTECARIO","BARCLAYS BANK SUCURSAL EN ESPAÑA","BFA","CAIXA D´ESTALVIS SAGRADA FAMILIA","Caixa Estalvis Laietana","CAIXA GIRONA","CAIXA LAIETANA","CAIXA PENEDÈS","CAIXABANK","CAIXALEASING Y FACTORING","Caja Adherida de Sant Joan de les Abadesses","Caja Adherida del Círculo Obrero de Banyoles","CAJA ÁVILA","Caja de Ahorros de La Rioja","Caja de Ahorros de La Seo de Urgell","Caja de Ahorros de Palamós","Caja de Ahorros de Valencia, Castellón y Alicante","Caja de Ahorros de Villarreal","CAJA DE AHORROS MUNICIPAL DE BURGOS","Caja de Ahorros Provincial de Ciudad Real","CAJA DE AHORROS PROVINCIAL DE GUADALAJARA","CAJA DE AHORROS PROVINCIAL SAN FERNANDO DE SEVILLA Y JEREZ","Caja de Ahorros y Monte de Piedad de Alcalá de Henares","Caja de Ahorros y Monte de Piedad de Alcira","Caja de Ahorros y Monte de Piedad de Ampurdán","Caja de Ahorros y Monte de Piedad de Ávila","CAJA DE AHORROS Y MONTE DE PIEDAD DE BARCELONA","Caja de Ahorros y Monte de Piedad de Ceuta","Caja de Ahorros y Monte de Piedad de Játiva","CAJA DE AHORROS Y MONTE DE PIEDAD DE LÉRIDA","CAJA DE AHORROS Y MONTE DE PIEDAD DE NAVARRA","Caja de Ahorros y Monte de Piedad de Segorbe","Caja de Ahorros y Monte de Piedad de Segovia","CAJA DE AHORROS Y MONTE DE PIEDAD MUNICIPAL DE PAMPLONA","CAJA DE AHORROS Y PENSIONES DE BARCELONA","Caja de Ahorros y Préstamos de Carlet","Caja de Ahorros y Socorros y Monte de Piedad de Alberique","Caja de Ahorros y Socorros y Monte de Piedad de Gandía","Caja de Crédito de Granollers","Caja de Crédito Industrial Cooperativo, Sociedad Cooperativa de Crédito Limitada","Caja de Crédito Mediterránea, Cooperativa de Crédito","Caja de Inversión, Sociedad Cooperativa de Crédito Limitada","CAJA DE PENSIONES PARA LA VEJEZ Y DE AHORROS ¿CATALUÑA y BALEARES?","Caja de Previsión Social del Reino de Valencia","CAJA GENERAL DE AHORROS DE CANARIAS","CAJA GRANADA","CAJA INSULAR CANARIAS","CAJA MADRID","CAJA MURCIA","CAJA RIOJA","Caja Rural de Cantabria, Sdad. Coop. Cto. Ltda.","CAJA RURAL DE TALAVERA","Caja Rural Provincial de Barcelona, Sdad. Coop. Catalana Cto. Ltda.","Caja Rural Provincial de Gerona, Sdad. Coop. Cto. Ltda.","Caja Rural Provincial de Madrid, Sdad. Coop. Cto. Ltda.","Caja Rural Provincial de Patencia, Sdad. Coop. Cto. Ltda.","Caja Rural Provincial, Sdad. Coop. de Cto. Agrario Ltda. de Reus","CAJA SEGOVIA","CAJASOL","DEUTSCHE BANK (Cesión de operaciones financieras)","HIPOTECAIXA","ISBANC","MICROBANK DE LA CAIXA - CRITERIA CAIXACORP","MONTE DE PIEDAD Y CAJA DE AHORROS DE HUELVA Y SEVILLA","MONTE DE PIEDAD Y CAJA DE AHORROS SAN FERNANDO DE HUELVA, JEREZ Y SEVILLA","PROMINMO","SA NOSTRA","SERVIHABITAT","Sindicato de Banqueros de Barcelona, S.A."
+];
+
+// ============================================================
 // CAMPOS COMUNES DE ACTIVIDADES
 // ============================================================
 
@@ -1361,12 +1373,6 @@ export default function FichaExpediente() {
     mostrarFincas,
     setMostrarFincas,
   ] = useState(false);
-
-  const [
-    mostrarRegistros,
-    setMostrarRegistros,
-  ] = useState(false);
-
   const [
     mostrarAcciones,
     setMostrarAcciones,
@@ -1415,33 +1421,20 @@ export default function FichaExpediente() {
     setFincaForm,
   ] = useState({
     numero_finca: "",
-    registro: "",
-    municipio: "",
+    cru_idufir: "",
     provincia: "",
-    tomo: "",
-    libro: "",
-    folio: "",
+    poblacion: "",
+    registro: "",
+    seccion: "",
+    cuantia: "",
     inscripcion: "",
-    observaciones: "",
+    contrato: "",
+    fecha_constitucion: "",
+    subrogado: "",
+    entidad_original: "",
   });
 
-  const [
-    registroForm,
-    setRegistroForm,
-  ] = useState({
-    registro: "",
-    registrador: "",
-    municipio: "",
-    provincia: "",
-    numero_finca: "",
-    tomo: "",
-    libro: "",
-    folio: "",
-    inscripcion: "",
-    observaciones: "",
-  });
-
-  const [
+const [
     accionForm,
     setAccionForm,
   ] = useState({
@@ -1682,56 +1675,6 @@ export default function FichaExpediente() {
     });
 
     setMostrarDefecto(false);
-  }
-
-
-  // ==========================================================
-  // REGISTROS
-  // ==========================================================
-
-  function abrirRegistros() {
-    setRegistroForm({
-      registro:
-        expediente?.registro ||
-        "",
-      registrador:
-        "",
-      municipio:
-        expediente?.poblacion ||
-        "",
-      provincia:
-        expediente?.provincia ||
-        "",
-      numero_finca:
-        expediente?.finca ||
-        "",
-      tomo:
-        "",
-      libro:
-        "",
-      folio:
-        "",
-      inscripcion:
-        "",
-      observaciones:
-        "",
-    });
-
-    setMostrarRegistros(true);
-  }
-
-
-  function guardarRegistro() {
-    console.log(
-      "REGISTRO EXPEDIENTE:",
-      {
-        expediente:
-          expediente?.id_expediente,
-        ...registroForm,
-      }
-    );
-
-    setMostrarRegistros(false);
   }
 
 
@@ -2150,23 +2093,32 @@ export default function FichaExpediente() {
 
   function abrirFincas() {
     setFincaForm({
-      numero_finca:
-        expediente?.finca ||
+      numero_finca: expediente?.finca || "",
+      cru_idufir:
+        expediente?.cru_idufir ||
+        expediente?.cru ||
+        expediente?.idufir ||
         "",
-      registro:
-        expediente?.registro ||
-        "",
-      municipio:
+      provincia: expediente?.provincia || "",
+      poblacion:
         expediente?.poblacion ||
+        expediente?.municipio ||
         "",
-      provincia:
-        expediente?.provincia ||
-        "",
-      tomo: "",
-      libro: "",
-      folio: "",
-      inscripcion: "",
-      observaciones: "",
+      registro: expediente?.registro || "",
+      seccion: expediente?.seccion || "",
+      cuantia: expediente?.cuantia || "",
+      inscripcion: expediente?.inscripcion || "",
+      contrato: expediente?.contrato || "",
+      fecha_constitucion:
+        expediente?.fecha_constitucion || "",
+      subrogado:
+        expediente?.subrogado === true
+          ? "SI"
+          : expediente?.subrogado === false
+            ? "NO"
+            : expediente?.subrogado || "",
+      entidad_original:
+        expediente?.entidad_original || "",
     });
 
     setMostrarFincas(true);
@@ -2307,122 +2259,87 @@ export default function FichaExpediente() {
             </div>
           </div>
   {/* ===================================================
-            COLUMNA 2
+            BLOQUES SUPERIORES
         ==================================================== */}
 
-        <div className="space-y-4">
-
-          {/* TITULARES */}
-
-          <Seccion
-            titulo="Titulares"
-            subtitulo="Titulares del expediente"
-            icono="titular"
+        <div
+          className="
+            min-w-0
+            flex-1
+            xl:max-w-[900px]
+          "
+        >
+          <div
+            className="
+              grid
+              grid-cols-1
+              gap-3
+              md:grid-cols-3
+            "
           >
-            <div
-              className="
-                grid
-                grid-cols-2
-                gap-2
-              "
+
+            <Seccion
+              titulo="Titulares"
+              subtitulo="Titulares del expediente"
+              icono="titular"
+              className="h-full"
             >
+              <div className="grid grid-cols-2 gap-2">
+                <Dato
+                  campo="Nombre titular"
+                  valor={expediente.nombre_titular}
+                  destaque
+                />
+                <Dato
+                  campo="NIF titular"
+                  valor={expediente.nif_titular}
+                />
+              </div>
+            </Seccion>
 
-              <Dato
-                campo="Nombre titular"
-                valor={
-                  expediente.nombre_titular
-                }
-                destaque
-              />
-
-              <Dato
-                campo="NIF titular"
-                valor={
-                  expediente.nif_titular
-                }
-              />
-
-            </div>
-          </Seccion>
-
-
-          {/* SOLICITANTES */}
-
-          <Seccion
-            titulo="Solicitantes"
-            subtitulo="Solicitantes del expediente"
-            icono="solicitante"
-          >
-            <div
-              className="
-                grid
-                grid-cols-2
-                gap-2
-              "
+            <Seccion
+              titulo="Solicitantes"
+              subtitulo="Solicitantes del expediente"
+              icono="solicitante"
+              className="h-full"
             >
+              <div className="grid grid-cols-2 gap-2">
+                <Dato
+                  campo="Nombre solicitante"
+                  valor={expediente.nombre_solicitante}
+                  destaque
+                />
+                <Dato
+                  campo="NIF solicitante"
+                  valor={expediente.nif_solicitante}
+                />
+              </div>
+            </Seccion>
 
-              <Dato
-                campo="Nombre solicitante"
-                valor={
-                  expediente.nombre_solicitante
-                }
-                destaque
-              />
-
-              <Dato
-                campo="NIF solicitante"
-                valor={
-                  expediente.nif_solicitante
-                }
-              />
-
-            </div>
-          </Seccion>
-
-
-          {/* AGREGAR EXPEDIENTES */}
-
-          <Seccion
-            titulo="Expedientes relacionados"
-            subtitulo="Agrupación automática por NIF"
-            icono="titular"
-          >
-            <p
-              className="
-                text-xs
-                leading-5
-                text-slate-500
-              "
+            <Seccion
+              titulo="Expedientes relacionados"
+              subtitulo="Agrupación automática por NIF"
+              icono="titular"
+              className="h-full"
             >
-              El sistema buscará otros expedientes
-              cuyo titular tenga el mismo NIF.
-            </p>
+              <p className="text-xs leading-5 text-slate-500">
+                El sistema buscará otros expedientes cuyo titular tenga el mismo NIF.
+              </p>
 
-            <button
-              type="button"
-              onClick={
-                abrirAgregarExpedientes
-              }
-              className="
-                mt-3
-                w-full
-                rounded-xl
-                border
-                border-blue-100
-                bg-blue-50
-                px-4
-                py-3
-                text-xs
-                font-bold
-                text-blue-700
-                transition
-                hover:bg-blue-100
-              "
-            >
-              ➕ Agregar expedientes
-            </button>
-          </Seccion>
+              <button
+                type="button"
+                onClick={abrirAgregarExpedientes}
+                className="
+                  mt-3 w-full rounded-xl border border-blue-100
+                  bg-blue-50 px-3 py-2.5 text-xs font-bold
+                  text-blue-700 transition hover:bg-blue-100
+                "
+              >
+                ➕ Agregar expedientes
+              </button>
+            </Seccion>
 
+          </div>
         </div>
 
 
@@ -2581,121 +2498,68 @@ export default function FichaExpediente() {
           </Seccion>
 
 
-          {/* FINCAS */}
+         
+
+
+          {/* FINCAS Y REGISTROS */}
 
           <Seccion
-            titulo="Fincas"
-            subtitulo="Información de las fincas vinculadas"
+            titulo="Fincas y Registros"
+            subtitulo="Datos registrales del expediente"
             icono="finca"
           >
-            <div
-              className="
-                grid
-                grid-cols-2
-                gap-2
-              "
-            >
+            <div className="grid grid-cols-2 gap-2">
+
               <Dato
                 campo="Finca"
-                valor={
-                  expediente.finca
-                }
+                valor={expediente.finca}
                 destaque
               />
 
               <Dato
-                campo="Estado registral"
+                campo="CRU/Idufir"
                 valor={
-                  expediente.registral_estado
+                  expediente.cru_idufir ||
+                  expediente.cru ||
+                  expediente.idufir
                 }
-                estado
               />
 
               <Dato
-                campo="Fecha registral"
-                valor={
-                  expediente.registral_fecha
-                }
-                tipo="fecha"
+                campo="Provincia"
+                valor={expediente.provincia}
               />
+
+              <Dato
+                campo="Población"
+                valor={
+                  expediente.poblacion ||
+                  expediente.municipio
+                }
+              />
+
+              <Dato
+                campo="Registro"
+                valor={expediente.registro}
+              />
+
+              <Dato
+                campo="Inscripción"
+                valor={expediente.inscripcion}
+              />
+
             </div>
 
             <button
               type="button"
-              onClick={
-                abrirFincas
-              }
+              onClick={abrirFincas}
               className="
-                mt-3
-                w-full
-                rounded-xl
-                border
-                border-blue-100
-                bg-blue-50
-                px-3
-                py-2.5
-                text-xs
-                font-bold
-                text-blue-700
-                transition
-                hover:bg-blue-100
+                mt-3 w-full rounded-xl border border-blue-100
+                bg-blue-50 px-3 py-2.5 text-xs font-bold
+                text-blue-700 transition hover:bg-blue-100
               "
             >
-              🏠 Gestionar finca
-            </button>
-          </Seccion>
-
-
-          {/* REGISTROS */}
-
-          <Seccion
-            titulo="Registros"
-            subtitulo="Datos registrales del expediente"
-            icono="registro"
-          >
-            <div
-              className="
-                space-y-2
-              "
-            >
-              <Dato
-                campo="Registro"
-                valor={
-                  expediente.registro
-                }
-              />
-
-              <Dato
-                campo="Estado registral"
-                valor={
-                  expediente.registral_estado
-                }
-                estado
-              />
-            </div>
-
-            <button
-              type="button"
-              onClick={
-                abrirRegistros
-              }
-              className="
-                mt-3
-                w-full
-                rounded-xl
-                border
-                border-blue-100
-                bg-blue-50
-                px-3
-                py-2.5
-                text-xs
-                font-bold
-                text-blue-700
-                transition
-                hover:bg-blue-100
-              "
-            >
-              📚 Gestionar registro
+              ＋ Nueva Finca
             </button>
           </Seccion>
 
@@ -2727,7 +2591,7 @@ export default function FichaExpediente() {
                 hover:bg-blue-100
               "
             >
-              ⚡ Gestionar acciones
+⚡ Gestionar acciones
             </button>
 
             {errorAcciones && (
@@ -2912,18 +2776,12 @@ export default function FichaExpediente() {
                 destaque
               />
 
-              <Dato
-                campo="Provisión"
+                           <Dato
+                campo="Observaciones"
                 valor={
-                  expediente.tipo_provision
+                  expediente.Observaciones
                 }
-              />
-
-              <Dato
-                campo="ID provisión"
-                valor={
-                  expediente.id_provision
-                }
+                destaque
               />
 
             </div>
@@ -3003,64 +2861,9 @@ export default function FichaExpediente() {
           </Seccion>
 
 
-          {/* OBSERVACIONES */}
 
-          <Seccion
-            titulo="Observaciones"
-            subtitulo="Información adicional"
-            icono="observaciones"
-          >
 
-            <div
-              className="
-                min-h-[90px]
-                whitespace-pre-wrap
-                rounded-xl
-                border
-                border-slate-200
-                bg-slate-50
-                p-4
-                text-xs
-                leading-5
-                text-slate-600
-              "
-            >
-              {
-                valorVisible(
-                  expediente.observaciones
-                )
-              }
-            </div>
-
-            <button
-              type="button"
-              onClick={
-                abrirObservaciones
-              }
-              className="
-                mt-3
-                w-full
-                rounded-xl
-                border
-                border-blue-100
-                bg-blue-50
-                px-4
-                py-3
-                text-xs
-                font-bold
-                text-blue-700
-                transition
-                hover:bg-blue-100
-              "
-            >
-              💬 Gestionar observaciones
-            </button>
-
-          </Seccion>
-
-        </div>
-
-      </div>
+            
 
 
       {/* =====================================================
@@ -3460,19 +3263,17 @@ export default function FichaExpediente() {
 
 
       {/* =====================================================
-          MODAL FINCAS
+          MODAL FINCAS Y REGISTROS
       ====================================================== */}
 
       <Modal
-        open={
-          mostrarFincas
-        }
+        open={mostrarFincas}
         onClose={() =>
           setMostrarFincas(false)
         }
-        titulo="🏠 Fincas del expediente"
-        subtitulo="Datos de la finca que vamos a vincular"
-        ancho="max-w-4xl"
+        titulo="🏠 Nueva Finca y Registro"
+        subtitulo="Datos registrales del expediente"
+        ancho="max-w-5xl"
         footer={
           <>
             <Boton
@@ -3480,381 +3281,159 @@ export default function FichaExpediente() {
                 setMostrarFincas(false)
               }
             >
-              Cancelar
+              Cerrar
             </Boton>
 
             <Boton
               tipo="primary"
-              onClick={
-                guardarFinca
-              }
+              onClick={guardarFinca}
             >
-              💾 Guardar finca
+              💾 Guardar
             </Boton>
           </>
         }
       >
 
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-4
-            md:grid-cols-2
-          "
-        >
+        <div className="grid grid-cols-1 gap-x-4 gap-y-1 md:grid-cols-2">
 
           <CampoFormulario
-            label="Número de finca"
-            value={
-              fincaForm.numero_finca
-            }
+            label="Finca"
+            value={fincaForm.numero_finca}
             onChange={(valor) =>
-              setFincaForm(
-                (actual) => ({
-                  ...actual,
-                  numero_finca:
-                    valor,
-                })
-              )
+              setFincaForm((actual) => ({
+                ...actual,
+                numero_finca: valor,
+              }))
             }
           />
 
           <CampoFormulario
-            label="Registro"
-            value={
-              fincaForm.registro
-            }
+            label="CRU/Idufir"
+            value={fincaForm.cru_idufir}
             onChange={(valor) =>
-              setFincaForm(
-                (actual) => ({
-                  ...actual,
-                  registro:
-                    valor,
-                })
-              )
+              setFincaForm((actual) => ({
+                ...actual,
+                cru_idufir: valor,
+              }))
             }
           />
 
-          <CampoFormulario
-            label="Municipio"
-            value={
-              fincaForm.municipio
-            }
-            onChange={(valor) =>
-              setFincaForm(
-                (actual) => ({
-                  ...actual,
-                  municipio:
-                    valor,
-                })
-              )
-            }
-          />
-
-          <CampoFormulario
+          <CampoSelect
             label="Provincia"
-            value={
-              fincaForm.provincia
-            }
+            value={fincaForm.provincia}
+            opciones={PROVINCIAS_FINCA}
             onChange={(valor) =>
-              setFincaForm(
-                (actual) => ({
-                  ...actual,
-                  provincia:
-                    valor,
-                })
-              )
+              setFincaForm((actual) => ({
+                ...actual,
+                provincia: valor,
+              }))
             }
           />
 
           <CampoFormulario
-            label="Tomo"
-            value={
-              fincaForm.tomo
-            }
+            label="Población"
+            value={fincaForm.poblacion}
             onChange={(valor) =>
-              setFincaForm(
-                (actual) => ({
-                  ...actual,
-                  tomo: valor,
-                })
-              )
+              setFincaForm((actual) => ({
+                ...actual,
+                poblacion: valor,
+              }))
             }
           />
 
           <CampoFormulario
-            label="Libro"
-            value={
-              fincaForm.libro
-            }
+            label="Registro (número - Nombre)"
+            value={fincaForm.registro}
             onChange={(valor) =>
-              setFincaForm(
-                (actual) => ({
-                  ...actual,
-                  libro: valor,
-                })
-              )
+              setFincaForm((actual) => ({
+                ...actual,
+                registro: valor,
+              }))
             }
           />
 
           <CampoFormulario
-            label="Folio"
-            value={
-              fincaForm.folio
-            }
+            label="Sección"
+            value={fincaForm.seccion}
             onChange={(valor) =>
-              setFincaForm(
-                (actual) => ({
-                  ...actual,
-                  folio: valor,
-                })
-              )
+              setFincaForm((actual) => ({
+                ...actual,
+                seccion: valor,
+              }))
+            }
+          />
+
+          <CampoFormulario
+            label="Cuantía"
+            value={fincaForm.cuantia}
+            tipo="number"
+            onChange={(valor) =>
+              setFincaForm((actual) => ({
+                ...actual,
+                cuantia: valor,
+              }))
             }
           />
 
           <CampoFormulario
             label="Inscripción"
-            value={
-              fincaForm.inscripcion
-            }
+            value={fincaForm.inscripcion}
             onChange={(valor) =>
-              setFincaForm(
-                (actual) => ({
-                  ...actual,
-                  inscripcion:
-                    valor,
-                })
-              )
+              setFincaForm((actual) => ({
+                ...actual,
+                inscripcion: valor,
+              }))
+            }
+          />
+
+          <CampoFormulario
+            label="Contrato"
+            value={fincaForm.contrato}
+            onChange={(valor) =>
+              setFincaForm((actual) => ({
+                ...actual,
+                contrato: valor,
+              }))
+            }
+          />
+
+          <CampoFormulario
+            label="Fecha Constitución"
+            value={fincaForm.fecha_constitucion}
+            tipo="date"
+            onChange={(valor) =>
+              setFincaForm((actual) => ({
+                ...actual,
+                fecha_constitucion: valor,
+              }))
+            }
+          />
+
+          <CampoSelect
+            label="Subrogado"
+            value={fincaForm.subrogado}
+            opciones={["NO", "SI"]}
+            onChange={(valor) =>
+              setFincaForm((actual) => ({
+                ...actual,
+                subrogado: valor,
+              }))
+            }
+          />
+
+          <CampoSelect
+            label="Entidad Original"
+            value={fincaForm.entidad_original}
+            opciones={ENTIDADES_ORIGINALES_FINCA}
+            onChange={(valor) =>
+              setFincaForm((actual) => ({
+                ...actual,
+                entidad_original: valor,
+              }))
             }
           />
 
         </div>
-
-        <CampoFormulario
-          label="Observaciones de la finca"
-          value={
-            fincaForm.observaciones
-          }
-          textarea
-          onChange={(valor) =>
-            setFincaForm(
-              (actual) => ({
-                ...actual,
-                observaciones:
-                  valor,
-              })
-            )
-          }
-        />
-
-      </Modal>
-
-
-      {/* =====================================================
-          MODAL REGISTROS
-      ====================================================== */}
-
-      <Modal
-        open={
-          mostrarRegistros
-        }
-        onClose={() =>
-          setMostrarRegistros(false)
-        }
-        titulo="📚 Registros del expediente"
-        subtitulo="Información del Registro de la Propiedad"
-        ancho="max-w-4xl"
-        footer={
-          <>
-            <Boton
-              onClick={() =>
-                setMostrarRegistros(false)
-              }
-            >
-              Cancelar
-            </Boton>
-
-            <Boton
-              tipo="primary"
-              onClick={
-                guardarRegistro
-              }
-            >
-              💾 Guardar registro
-            </Boton>
-          </>
-        }
-      >
-
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-4
-            md:grid-cols-2
-          "
-        >
-
-          <CampoFormulario
-            label="Registro"
-            value={
-              registroForm.registro
-            }
-            onChange={(valor) =>
-              setRegistroForm(
-                (actual) => ({
-                  ...actual,
-                  registro:
-                    valor,
-                })
-              )
-            }
-          />
-
-          <CampoFormulario
-            label="Registrador"
-            value={
-              registroForm.registrador
-            }
-            onChange={(valor) =>
-              setRegistroForm(
-                (actual) => ({
-                  ...actual,
-                  registrador:
-                    valor,
-                })
-              )
-            }
-          />
-
-          <CampoFormulario
-            label="Municipio"
-            value={
-              registroForm.municipio
-            }
-            onChange={(valor) =>
-              setRegistroForm(
-                (actual) => ({
-                  ...actual,
-                  municipio:
-                    valor,
-                })
-              )
-            }
-          />
-
-          <CampoFormulario
-            label="Provincia"
-            value={
-              registroForm.provincia
-            }
-            onChange={(valor) =>
-              setRegistroForm(
-                (actual) => ({
-                  ...actual,
-                  provincia:
-                    valor,
-                })
-              )
-            }
-          />
-
-          <CampoFormulario
-            label="Número de finca"
-            value={
-              registroForm.numero_finca
-            }
-            onChange={(valor) =>
-              setRegistroForm(
-                (actual) => ({
-                  ...actual,
-                  numero_finca:
-                    valor,
-                })
-              )
-            }
-          />
-
-          <CampoFormulario
-            label="Tomo"
-            value={
-              registroForm.tomo
-            }
-            onChange={(valor) =>
-              setRegistroForm(
-                (actual) => ({
-                  ...actual,
-                  tomo: valor,
-                })
-              )
-            }
-          />
-
-          <CampoFormulario
-            label="Libro"
-            value={
-              registroForm.libro
-            }
-            onChange={(valor) =>
-              setRegistroForm(
-                (actual) => ({
-                  ...actual,
-                  libro: valor,
-                })
-              )
-            }
-          />
-
-          <CampoFormulario
-            label="Folio"
-            value={
-              registroForm.folio
-            }
-            onChange={(valor) =>
-              setRegistroForm(
-                (actual) => ({
-                  ...actual,
-                  folio: valor,
-                })
-              )
-            }
-          />
-
-          <CampoFormulario
-            label="Inscripción"
-            value={
-              registroForm.inscripcion
-            }
-            onChange={(valor) =>
-              setRegistroForm(
-                (actual) => ({
-                  ...actual,
-                  inscripcion:
-                    valor,
-                })
-              )
-            }
-          />
-
-        </div>
-
-        <CampoFormulario
-          label="Observaciones del registro"
-          value={
-            registroForm.observaciones
-          }
-          textarea
-          onChange={(valor) =>
-            setRegistroForm(
-              (actual) => ({
-                ...actual,
-                observaciones:
-                  valor,
-              })
-            )
-          }
-        />
 
       </Modal>
 
