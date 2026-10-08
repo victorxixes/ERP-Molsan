@@ -1,28 +1,12 @@
-Callback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import {
-  Link,
-  useParams,
-} from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
-import {
-  obtenerExpediente,
-  obtenerListadoExpedientes,
-  enviarExpedienteANotario,
-} from "../../api/expedientes";
+import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario } from "../../api/expedientes";
 
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 
-import {
-  obtenerCatalogoAcciones,
-  obtenerAccionesExpediente,
-  asignarAccionExpediente,
-  eliminarAccionExpediente,
-} from "../../api/expedienteAcciones";
+import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
 
 // ============================================================
