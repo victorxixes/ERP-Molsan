@@ -2871,20 +2871,6 @@ const [
               />
 
               <Dato
-                campo="Notario"
-                valor={
-                  expediente.notario
-                }
-              />
-
-              <Dato
-                campo="ID notario"
-                valor={
-                  expediente.id_notario
-                }
-              />
-
-              <Dato
                 campo="Apoderado"
                 valor={
                   expediente.apoderado
