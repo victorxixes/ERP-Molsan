@@ -223,7 +223,9 @@ from backend.app.acciones_expediente.models import (
     AccionExpediente,
 )
 
-
+from backend.app.expediente_acciones.models import (
+    ExpedienteAccion,
+)
 # ============================================================
 # STATIC FILES
 # ============================================================
@@ -496,7 +498,9 @@ from backend.app.acciones_expediente.router import (
     router as acciones_expediente_router,
 )
 
-
+from backend.app.expediente_acciones.router import (
+    router as expediente_acciones_router,
+)
 # ============================================================
 # HERRAMIENTAS SWAGGER
 # ============================================================
@@ -838,7 +842,10 @@ app.include_router(
     prefix="/api",
 )
 
-
+app.include_router(
+    expediente_acciones_router,
+    prefix="/api",
+)
 # ============================================================
 # HERRAMIENTAS SWAGGER
 # ============================================================
