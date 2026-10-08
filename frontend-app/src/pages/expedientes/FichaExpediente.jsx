@@ -2691,7 +2691,7 @@ const [
            w-full
           grid-cols-1
           gap-4
-          xl:grid-cols-4
+          xl:grid-cols-3
         "
       >
 
@@ -3073,10 +3073,8 @@ const [
 
         </div>
 
-      </div>
-
  {/* ===================================================
-            COLUMNA 4
+            COLUMNA 3 — INFORMACIÓN CREDITICIA
         ==================================================== */}
 
         <div>
@@ -3187,6 +3185,8 @@ const [
           </Seccion>
 
         </div>
+
+      </div>
 
       {/* =====================================================
           MODAL ACTIVIDADES
