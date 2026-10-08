@@ -3027,8 +3027,56 @@ const [
 
       
 
+       
+
         {/* ===================================================
             COLUMNA 3
+        ==================================================== */}
+
+        <div className="space-y-4">
+
+          {/* NOTARIO */}
+
+          <Seccion
+            titulo="Notario"
+            subtitulo="Información del notario asociado"
+            icono="notario"
+            colapsable
+          >
+
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
+            >
+
+              <Dato
+                campo="Nombre notario"
+                valor={
+                  expediente.nombre_notario
+                }
+                destaque
+              />
+
+              <Dato
+                campo="NIF notario"
+                valor={
+                  expediente.nif_notario
+                }
+              />
+
+            </div>
+
+          </Seccion>
+
+        </div>
+
+      </div>
+
+ {/* ===================================================
+            COLUMNA 4
         ==================================================== */}
 
         <div>
@@ -3139,54 +3187,6 @@ const [
           </Seccion>
 
         </div>
-
-
-        {/* ===================================================
-            COLUMNA 4
-        ==================================================== */}
-
-        <div className="space-y-4">
-
-          {/* NOTARIO */}
-
-          <Seccion
-            titulo="Notario"
-            subtitulo="Información del notario asociado"
-            icono="notario"
-            colapsable
-          >
-
-            <div
-              className="
-                grid
-                grid-cols-2
-                gap-2
-              "
-            >
-
-              <Dato
-                campo="Nombre notario"
-                valor={
-                  expediente.nombre_notario
-                }
-                destaque
-              />
-
-              <Dato
-                campo="NIF notario"
-                valor={
-                  expediente.nif_notario
-                }
-              />
-
-            </div>
-
-          </Seccion>
-
-        </div>
-
-      </div>
-
 
       {/* =====================================================
           MODAL ACTIVIDADES
