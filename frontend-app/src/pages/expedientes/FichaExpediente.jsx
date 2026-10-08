@@ -1401,11 +1401,13 @@ export default function FichaExpediente() {
     cargandoRelacionados,
     setCargandoRelacionados,
   ] = useState(false);
-\n  const [
+
+  const [
     expedienteRelacionadoManual,
     setExpedienteRelacionadoManual,
   ] = useState("");
-\n  const [
+
+  const [
     errorRelacionManual,
     setErrorRelacionManual,
   ] = useState("");
