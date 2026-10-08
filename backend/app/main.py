@@ -882,7 +882,18 @@ app.include_router(
     agenda_router,
     prefix="/api",
 )
+print("\n================ RUTAS AGENDA REGISTRADAS ================")
 
+for ruta in app.routes:
+    if "/api/agenda" in getattr(ruta, "path", ""):
+        print(
+            "RUTA:",
+            getattr(ruta, "path", None),
+            "METHODS:",
+            getattr(ruta, "methods", None),
+        )
+
+print("===========================================================\n")
 
 # ============================================================
 # EMPLEADOS
