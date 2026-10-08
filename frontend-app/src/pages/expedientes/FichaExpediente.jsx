@@ -3079,13 +3079,6 @@ const [
                 }
               />
 
-              <Dato
-                campo="Notario"
-                valor={
-                  expediente.notario
-                }
-              />
-
             </div>
 
           </Seccion>
