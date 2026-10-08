@@ -2272,7 +2272,7 @@ const [
           <div
             className="
               grid
-              grid-cols-3
+              grid-cols-1
               gap-3
               md:grid-cols-3
             "
@@ -2860,10 +2860,9 @@ const [
 
           </Seccion>
 
+        </div>
 
-
-
-            
+      </div>
 
 
       {/* =====================================================
@@ -3271,7 +3270,7 @@ const [
         onClose={() =>
           setMostrarFincas(false)
         }
-        titulo="🏠 Nueva Finca y Registro"
+        titulo="🏠 Nueva Finca"
         subtitulo="Datos registrales del expediente"
         ancho="max-w-5xl"
         footer={
@@ -4100,18 +4099,40 @@ function CampoSelect({
         "
       >
 
+        <option value="">
+          — Seleccionar —
+        </option>
+
         {opciones.map(
-          (opcion) => (
-            <option
-              key={opcion}
-              value={opcion}
-            >
-              {
-                opcion ||
-                "Seleccionar…"
-              }
-            </option>
-          )
+          (opcion, indice) => {
+            const esObjeto =
+              opcion &&
+              typeof opcion === "object";
+
+            const valor =
+              esObjeto
+                ? String(
+                    opcion.value ?? ""
+                  )
+                : String(
+                    opcion ?? ""
+                  );
+
+            const texto =
+              esObjeto
+                ? opcion.label ?? valor
+                : opcion ||
+                  "Seleccionar…";
+
+            return (
+              <option
+                key={`${valor}-${indice}`}
+                value={valor}
+              >
+                {texto}
+              </option>
+            );
+          }
         )}
 
       </select>
