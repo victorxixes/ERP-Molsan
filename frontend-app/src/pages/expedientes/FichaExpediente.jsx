@@ -1923,8 +1923,7 @@ export default function FichaExpediente() {
       >
         <div
           className="
-            mx-auto
-            max-w-[1700px]
+           w-full
             rounded-2xl
             border
             border-white/80
@@ -1963,8 +1962,7 @@ export default function FichaExpediente() {
       >
         <div
           className="
-            mx-auto
-            max-w-[1700px]
+             w-full
             rounded-2xl
             border
             border-red-200
@@ -2030,8 +2028,7 @@ export default function FichaExpediente() {
 
       <section
         className="
-          mx-auto
-          max-w-[1700px]
+           w-full
           overflow-hidden
           rounded-[24px]
           border
@@ -2204,9 +2201,8 @@ export default function FichaExpediente() {
 
       <div
         className="
-          mx-auto
           grid
-          max-w-[1700px]
+           w-full
           grid-cols-1
           gap-4
           xl:grid-cols-4
