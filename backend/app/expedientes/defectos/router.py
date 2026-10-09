@@ -20,6 +20,7 @@ from backend.app.expedientes.defectos.models import (
     DefectoSubtipo,
     ExpedienteDefecto,
 )
+from backend.app.tipos_carga_hipotecaria.models import TipoCargaHipotecaria
 
 
 # ============================================================
@@ -66,6 +67,7 @@ class SubtipoRespuesta(BaseModel):
 
 class DefectoCrear(BaseModel):
     documento: Optional[str] = None
+    tipo_carga_hipotecaria_id: Optional[int] = None
     motivo_defecto: Optional[str] = None
     subtipo_defecto_id: Optional[int] = None
     # Se mantiene el texto libre para compatibilidad con la ficha actual.
@@ -80,6 +82,7 @@ class DefectoCrear(BaseModel):
 
 class DefectoActualizar(BaseModel):
     documento: Optional[str] = None
+    tipo_carga_hipotecaria_id: Optional[int] = None
     motivo_defecto: Optional[str] = None
     subtipo_defecto_id: Optional[int] = None
     subtipo_defecto: Optional[str] = None
@@ -321,7 +324,27 @@ def sincronizar_campos_compatibilidad(
     db.add(expediente)
 
 
-def datos_defecto(defecto):
+def obtener_tipo_carga_activo(db: Session, tipo_id: Optional[int]):
+    """Valida el tipo de carga hipotecaria seleccionado en el catálogo común."""
+    if tipo_id is None:
+        return None
+    tipo = (
+        db.query(TipoCargaHipotecaria)
+        .filter(
+            TipoCargaHipotecaria.id == tipo_id,
+            TipoCargaHipotecaria.activo.is_(True),
+        )
+        .first()
+    )
+    if tipo is None:
+        raise HTTPException(
+            status_code=400,
+            detail="El tipo de carga hipotecaria no existe o está inactivo.",
+        )
+    return tipo
+
+
+def datos_defecto(defecto, db: Optional[Session] = None):
     """
     Convierte el defecto en datos JSON sin incluir el PDF binario.
     """
@@ -331,6 +354,7 @@ def datos_defecto(defecto):
         "id",
         "id_defecto",
         "documento",
+        "tipo_carga_hipotecaria_id",
         "motivo_defecto",
         "subtipo_defecto_id",
         "subtipo_defecto",
@@ -353,6 +377,15 @@ def datos_defecto(defecto):
                 valor = valor.isoformat()
 
             resultado[campo] = valor
+
+    tipo_id = resultado.get("tipo_carga_hipotecaria_id")
+    if db is not None and tipo_id is not None:
+        tipo = db.query(TipoCargaHipotecaria).filter(
+            TipoCargaHipotecaria.id == tipo_id
+        ).first()
+        resultado["tipo_carga_hipotecaria_nombre"] = tipo.nombre if tipo else None
+    else:
+        resultado["tipo_carga_hipotecaria_nombre"] = None
 
     return resultado
 
@@ -553,7 +586,7 @@ def listar_defectos_expediente(
         "id_expediente": str(expediente.id_expediente),
         "total": len(defectos),
         "defectos": [
-            datos_defecto(defecto)
+            datos_defecto(defecto, db)
             for defecto in defectos
         ],
     }
@@ -581,6 +614,7 @@ def crear_defecto(
         db,
         datos.subtipo_defecto_id,
     )
+    obtener_tipo_carga_activo(db, datos.tipo_carga_hipotecaria_id)
 
     valores = datos.dict()
     valores["subtipo_defecto"] = (
@@ -627,7 +661,7 @@ def crear_defecto(
         return {
             "ok": True,
             "mensaje": "Defecto registrado correctamente",
-            "defecto": datos_defecto(defecto),
+            "defecto": datos_defecto(defecto, db),
         }
 
     except HTTPException:
@@ -665,6 +699,9 @@ def actualizar_defecto(
     valores = datos.dict(exclude_unset=True)
 
     try:
+        if "tipo_carga_hipotecaria_id" in valores:
+            obtener_tipo_carga_activo(db, valores["tipo_carga_hipotecaria_id"])
+
         if "subtipo_defecto_id" in valores:
             subtipo = obtener_subtipo_activo(db, valores["subtipo_defecto_id"])
             actualizar_nombre_subtipo(defecto, subtipo)
@@ -695,7 +732,7 @@ def actualizar_defecto(
         return {
             "ok": True,
             "mensaje": "Defecto actualizado correctamente",
-            "defecto": datos_defecto(defecto),
+            "defecto": datos_defecto(defecto, db),
         }
 
     except HTTPException:
@@ -734,7 +771,7 @@ def registrar_subsanacion_defecto(
         return {
             "ok": True,
             "mensaje": "Subsanación registrada correctamente",
-            "defecto": datos_defecto(defecto),
+            "defecto": datos_defecto(defecto, db),
         }
     except Exception as exc:
         db.rollback()
@@ -823,7 +860,7 @@ async def subir_calificacion_defecto(
         return {
             "ok": True,
             "mensaje": "PDF de calificación guardado correctamente",
-            "defecto": datos_defecto(defecto),
+            "defecto": datos_defecto(defecto, db),
         }
 
     except Exception as exc:
