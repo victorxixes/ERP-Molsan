@@ -10,6 +10,7 @@ import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpedi
 
 import {
   listarDefectosExpediente,
+  listarSubtiposDefecto,
   crearDefectoExpediente,
   actualizarDefectoExpediente,
   registrarSubsanacionDefecto,
@@ -349,6 +350,7 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
 const DEFECTO_VACIO = {
   tipo_carga_hipotecaria_id: "",
   motivo_defecto: "",
+  subtipo_defecto_id: "",
   subtipo_defecto: "",
   fecha_notificacion_registro: "",
   fecha_vencimiento_presentacion: "",
@@ -1568,6 +1570,7 @@ const [
 
 const [defectosRegistrados, setDefectosRegistrados] = useState([]);
 const [tiposCargaHipotecaria, setTiposCargaHipotecaria] = useState([]);
+const [subtiposDefecto, setSubtiposDefecto] = useState([]);
 const [defectoForm, setDefectoForm] = useState({ ...DEFECTO_VACIO });
 const [defectoEditandoId, setDefectoEditandoId] = useState(null);
 const [guardandoDefecto, setGuardandoDefecto] = useState(false);
@@ -1881,6 +1884,18 @@ async function abrirDefecto() {
   }
 
   try {
+    const subtipos = await listarSubtiposDefecto();
+    setSubtiposDefecto(Array.isArray(subtipos) ? subtipos.filter((item) => item.activo !== false) : []);
+  } catch (error) {
+    console.error("Error cargando subtipos de defecto:", error);
+    setSubtiposDefecto([]);
+    setErrorDefecto(
+      error?.response?.data?.detail ||
+      "No se ha podido cargar el catálogo de subtipos de defecto."
+    );
+  }
+
+  try {
     await cargarDefectosRegistrados();
   } catch (error) {
     console.error("Error cargando defectos:", error);
@@ -1897,6 +1912,9 @@ function editarDefectoRegistrado(defecto) {
   setDefectoForm({
     tipo_carga_hipotecaria_id: defecto.tipo_carga_hipotecaria_id == null ? "" : String(defecto.tipo_carga_hipotecaria_id),
     motivo_defecto: defecto.motivo_defecto || "",
+    subtipo_defecto_id: defecto.subtipo_defecto_id == null
+      ? String(subtiposDefecto.find((item) => item.nombre === defecto.subtipo_defecto)?.id ?? "")
+      : String(defecto.subtipo_defecto_id),
     subtipo_defecto: defecto.subtipo_defecto || "",
     fecha_notificacion_registro: defecto.fecha_notificacion_registro || "",
     fecha_vencimiento_presentacion: defecto.fecha_vencimiento_presentacion || "",
@@ -1935,6 +1953,7 @@ async function guardarDefectoRegistral() {
     const payload = {
       ...defectoForm,
       tipo_carga_hipotecaria_id: defectoForm.tipo_carga_hipotecaria_id ? Number(defectoForm.tipo_carga_hipotecaria_id) : null,
+      subtipo_defecto_id: defectoForm.subtipo_defecto_id ? Number(defectoForm.subtipo_defecto_id) : null,
       subtipo_defecto: defectoForm.subtipo_defecto || null,
       fecha_notificacion_registro: defectoForm.fecha_notificacion_registro || null,
       fecha_vencimiento_presentacion: defectoForm.fecha_vencimiento_presentacion || null,
@@ -4211,19 +4230,32 @@ async function descargarPDFCalificacion(defecto) {
 
         <label className="block text-sm font-medium text-slate-700 md:col-span-2">
           Subtipo del Defecto
-          <input
-            type="text"
-            maxLength={500}
-            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
-            value={defectoForm.subtipo_defecto}
-            onChange={(e) =>
+          <select
+            className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm"
+            value={defectoForm.subtipo_defecto_id}
+            onChange={(e) => {
+              const subtipoSeleccionado = subtiposDefecto.find(
+                (item) => String(item.id) === e.target.value
+              );
               setDefectoForm((actual) => ({
                 ...actual,
-                subtipo_defecto: e.target.value,
-              }))
-            }
-            placeholder="Introduce el subtipo del defecto"
-          />
+                subtipo_defecto_id: e.target.value,
+                subtipo_defecto: subtipoSeleccionado?.nombre || "",
+              }));
+            }}
+          >
+            <option value="">Selecciona un subtipo de defecto…</option>
+            {subtiposDefecto.map((subtipo) => (
+              <option key={subtipo.id} value={String(subtipo.id)}>
+                {subtipo.nombre}{subtipo.descripcion ? ` — ${subtipo.descripcion}` : ""}
+              </option>
+            ))}
+          </select>
+          {subtiposDefecto.length === 0 && (
+            <span className="mt-1 block text-xs font-normal text-amber-700">
+              No hay subtipos activos disponibles. Comprueba que el catálogo se haya cargado.
+            </span>
+          )}
         </label>
 
         <label className="block text-sm font-medium text-slate-700">
