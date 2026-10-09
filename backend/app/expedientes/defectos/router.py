@@ -107,7 +107,7 @@ class DefectoRespuesta(BaseModel):
 def obtener_expediente(db: Session, id_expediente: int) -> Expediente:
     expediente = (
         db.query(Expediente)
-        .filter(Expediente.id_expediente == id_expediente)
+        .filter(Expediente.id_expediente == str(id_expediente))
         .first()
     )
     if not expediente:
@@ -362,15 +362,16 @@ def crear_defecto(
     sincronizar_campos_compatibilidad(defecto)
     db.add(defecto)
 
-    try:
-        db.commit()
-        db.refresh(defecto)
-    except Exception:
-        db.rollback()
-        raise HTTPException(
-            status_code=500,
-            detail="No se pudo crear el defecto.",
-        )
+try:
+    db.commit()
+    db.refresh(defecto)
+except Exception as error:
+    db.rollback()
+    print(f"ERROR AL CREAR DEFECTO: {repr(error)}")
+    raise HTTPException(
+        status_code=500,
+        detail=f"No se pudo crear el defecto: {str(error)[:1000]}",
+    )
 
     return defecto
 
