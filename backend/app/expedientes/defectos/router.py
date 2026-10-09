@@ -68,20 +68,26 @@ class DefectoCrear(BaseModel):
     documento: Optional[str] = None
     motivo_defecto: Optional[str] = None
     subtipo_defecto_id: Optional[int] = None
+    # Se mantiene el texto libre para compatibilidad con la ficha actual.
+    subtipo_defecto: Optional[str] = None
     fecha_notificacion_registro: Optional[date] = None
     fecha_vencimiento_presentacion: Optional[date] = None
     fecha_entrada_subsanacion: Optional[date] = None
-    observaciones_registro: Optional[str] = None
+    # Campo histórico de texto, distinto del PDF adjunto.
+    calificacion_registro: Optional[str] = None
+    observaciones_registro: Optional[str] = Field(None, max_length=200)
 
 
 class DefectoActualizar(BaseModel):
     documento: Optional[str] = None
     motivo_defecto: Optional[str] = None
     subtipo_defecto_id: Optional[int] = None
+    subtipo_defecto: Optional[str] = None
     fecha_notificacion_registro: Optional[date] = None
     fecha_vencimiento_presentacion: Optional[date] = None
     fecha_entrada_subsanacion: Optional[date] = None
-    observaciones_registro: Optional[str] = None
+    calificacion_registro: Optional[str] = None
+    observaciones_registro: Optional[str] = Field(None, max_length=200)
 
 
 # ============================================================
@@ -299,23 +305,19 @@ def sincronizar_campos_compatibilidad(
     """
     Actualiza campos históricos del expediente, si existen en el modelo.
     """
-    defectos = consulta_defectos_expediente(
-        db,
-        expediente,
-    ).all()
-
-    hay_defectos = bool(defectos)
+    defectos = consulta_defectos_expediente(db, expediente).all()
+    abiertos = [d for d in defectos if not getattr(d, "fecha_entrada_subsanacion", None)]
+    ultimo_abierto = abiertos[-1] if abiertos else None
 
     if hasattr(expediente, "tiene_defectos_abiertos"):
-        expediente.tiene_defectos_abiertos = hay_defectos
-
+        # En el modelo de Expediente este campo histórico es texto.
+        expediente.tiene_defectos_abiertos = "SI" if abiertos else "NO"
     if hasattr(expediente, "tipo_error"):
-        expediente.tipo_error = (
-            getattr(defectos[-1], "motivo_defecto", None)
-            if hay_defectos
-            else None
-        )
-
+        expediente.tipo_error = getattr(ultimo_abierto, "motivo_defecto", None) if ultimo_abierto else None
+    if hasattr(expediente, "falta_defecto"):
+        expediente.falta_defecto = getattr(ultimo_abierto, "subtipo_defecto", None) if ultimo_abierto else None
+    if hasattr(expediente, "descripcion_error"):
+        expediente.descripcion_error = getattr(ultimo_abierto, "calificacion_registro", None) if ultimo_abierto else None
     db.add(expediente)
 
 
@@ -336,6 +338,7 @@ def datos_defecto(defecto):
         "fecha_vencimiento_presentacion",
         "fecha_entrada_subsanacion",
         "observaciones_registro",
+        "calificacion_registro",
         "calificacion_nombre",
         "calificacion_content_type",
         "calificacion_tamano",
@@ -363,14 +366,13 @@ def datos_defecto(defecto):
     response_model=list[SubtipoRespuesta],
 )
 def listar_subtipos_defecto(
+    incluir_inactivos: bool = False,
     db: Session = Depends(get_db),
 ):
-    return (
-        db.query(DefectoSubtipo)
-        .filter(DefectoSubtipo.activo.is_(True))
-        .order_by(DefectoSubtipo.nombre.asc())
-        .all()
-    )
+    consulta = db.query(DefectoSubtipo)
+    if not incluir_inactivos:
+        consulta = consulta.filter(DefectoSubtipo.activo.is_(True))
+    return consulta.order_by(DefectoSubtipo.nombre.asc()).all()
 
 
 @router.post(
@@ -581,9 +583,8 @@ def crear_defecto(
     )
 
     valores = datos.dict()
-
     valores["subtipo_defecto"] = (
-        subtipo.nombre if subtipo is not None else None
+        subtipo.nombre if subtipo is not None else (datos.subtipo_defecto.strip() if datos.subtipo_defecto and datos.subtipo_defecto.strip() else None)
     )
 
     columnas_modelo = {
@@ -665,15 +666,12 @@ def actualizar_defecto(
 
     try:
         if "subtipo_defecto_id" in valores:
-            subtipo = obtener_subtipo_activo(
-                db,
-                valores["subtipo_defecto_id"],
-            )
-
-            actualizar_nombre_subtipo(
-                defecto,
-                subtipo,
-            )
+            subtipo = obtener_subtipo_activo(db, valores["subtipo_defecto_id"])
+            actualizar_nombre_subtipo(defecto, subtipo)
+            # El ID del catálogo prevalece sobre el texto enviado por formularios antiguos.
+            valores["subtipo_defecto"] = subtipo.nombre if subtipo is not None else None
+        elif "subtipo_defecto" in valores and valores["subtipo_defecto"] is not None:
+            valores["subtipo_defecto"] = valores["subtipo_defecto"].strip() or None
 
         columnas_modelo = {
             columna.name
@@ -712,6 +710,36 @@ def actualizar_defecto(
             status_code=500,
             detail="No se pudo actualizar el defecto",
         )
+
+
+# ============================================================
+# DEFECTOS — REGISTRAR SUBSANACIÓN
+# URL: PATCH /api/expedientes/{id_expediente}/defectos/{defecto_id}/subsanacion
+# ============================================================
+
+@router.patch("/{id_expediente}/defectos/{defecto_id}/subsanacion")
+def registrar_subsanacion_defecto(
+    id_expediente: str,
+    defecto_id: int,
+    fecha_entrada: date,
+    db: Session = Depends(get_db),
+):
+    expediente, defecto = obtener_defecto_de_expediente(db, id_expediente, defecto_id)
+    try:
+        defecto.fecha_entrada_subsanacion = fecha_entrada
+        db.flush()
+        sincronizar_campos_compatibilidad(db, expediente)
+        db.commit()
+        db.refresh(defecto)
+        return {
+            "ok": True,
+            "mensaje": "Subsanación registrada correctamente",
+            "defecto": datos_defecto(defecto),
+        }
+    except Exception as exc:
+        db.rollback()
+        print("ERROR REGISTRANDO SUBSANACIÓN:", repr(exc))
+        raise HTTPException(status_code=500, detail="No se pudo registrar la subsanación del defecto")
 
 
 # ============================================================
