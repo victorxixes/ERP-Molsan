@@ -13,6 +13,8 @@ import {
   crearDefectoExpediente,
   actualizarDefectoExpediente,
   registrarSubsanacionDefecto,
+  subirCalificacionRegistro,
+  obtenerCalificacionRegistro,
 } from "../../api/expedienteDefectos";
 
 // ============================================================
@@ -1568,6 +1570,7 @@ const [defectoForm, setDefectoForm] = useState({ ...DEFECTO_VACIO });
 const [defectoEditandoId, setDefectoEditandoId] = useState(null);
 const [guardandoDefecto, setGuardandoDefecto] = useState(false);
 const [errorDefecto, setErrorDefecto] = useState("");
+const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   
   // ----------------------------------------------------------
   // PPAD — CONCEPTOS DEL EXPEDIENTE
@@ -1847,14 +1850,20 @@ async function cargarDefectosRegistrados() {
   const numero = expediente?.id_expediente;
   if (!numero) return;
 
-  const lista = await listarDefectosExpediente(numero);
-  setDefectosRegistrados(Array.isArray(lista) ? lista : []);
+  const respuesta = await listarDefectosExpediente(numero);
+  const lista = Array.isArray(respuesta)
+    ? respuesta
+    : Array.isArray(respuesta?.defectos)
+      ? respuesta.defectos
+      : [];
+  setDefectosRegistrados(lista);
 }
 
 async function abrirDefecto() {
   setErrorDefecto("");
   setDefectoEditandoId(null);
   setDefectoForm({ ...DEFECTO_VACIO });
+  setArchivoCalificacion(null);
   setMostrarDefecto(true);
 
   try {
@@ -1869,7 +1878,8 @@ async function abrirDefecto() {
 }
 
 function editarDefectoRegistrado(defecto) {
-  setDefectoEditandoId(defecto.id);
+  setDefectoEditandoId(defecto.id ?? defecto.id_defecto);
+  setArchivoCalificacion(null);
   setDefectoForm({
     documento: defecto.documento || DEFECTO_VACIO.documento,
     motivo_defecto: defecto.motivo_defecto || "",
@@ -1888,50 +1898,48 @@ async function guardarDefectoRegistral() {
     setErrorDefecto("No se ha identificado el expediente.");
     return;
   }
-
   if (!defectoForm.motivo_defecto) {
     setErrorDefecto("Selecciona un motivo del defecto.");
     return;
   }
-
-  if (
-    defectoForm.observaciones_registro &&
-    defectoForm.observaciones_registro.length > 200
-  ) {
+  if (defectoForm.observaciones_registro && defectoForm.observaciones_registro.length > 200) {
     setErrorDefecto("Las observaciones no pueden superar 200 caracteres.");
+    return;
+  }
+  if (archivoCalificacion && archivoCalificacion.size > 15 * 1024 * 1024) {
+    setErrorDefecto("El PDF no puede superar los 15 MB.");
+    return;
+  }
+  if (archivoCalificacion && !/\.pdf$/i.test(archivoCalificacion.name || "")) {
+    setErrorDefecto("El archivo adjunto debe ser un PDF.");
     return;
   }
 
   try {
     setGuardandoDefecto(true);
     setErrorDefecto("");
-
     const payload = {
       ...defectoForm,
       subtipo_defecto: defectoForm.subtipo_defecto || null,
-      fecha_notificacion_registro:
-        defectoForm.fecha_notificacion_registro || null,
-      fecha_vencimiento_presentacion:
-        defectoForm.fecha_vencimiento_presentacion || null,
+      fecha_notificacion_registro: defectoForm.fecha_notificacion_registro || null,
+      fecha_vencimiento_presentacion: defectoForm.fecha_vencimiento_presentacion || null,
       calificacion_registro: defectoForm.calificacion_registro || null,
       observaciones_registro: defectoForm.observaciones_registro || null,
-      fecha_entrada_subsanacion:
-        defectoForm.fecha_entrada_subsanacion || null,
+      fecha_entrada_subsanacion: defectoForm.fecha_entrada_subsanacion || null,
     };
 
-    let guardado;
+    const respuesta = defectoEditandoId
+      ? await actualizarDefectoExpediente(expediente.id_expediente, defectoEditandoId, payload)
+      : await crearDefectoExpediente(expediente.id_expediente, payload);
+    const guardado = respuesta?.defecto || respuesta || {};
+    const idDefecto = guardado.id ?? guardado.id_defecto ?? defectoEditandoId;
+    if (idDefecto) setDefectoEditandoId(idDefecto);
 
-    if (defectoEditandoId) {
-      guardado = await actualizarDefectoExpediente(
-        expediente.id_expediente,
-        defectoEditandoId,
-        payload
-      );
-    } else {
-      guardado = await crearDefectoExpediente(
-        expediente.id_expediente,
-        payload
-      );
+    if (archivoCalificacion) {
+      if (!idDefecto) {
+        throw new Error("El defecto se guardó, pero no se recibió su identificador para adjuntar el PDF.");
+      }
+      await subirCalificacionRegistro(expediente.id_expediente, idDefecto, archivoCalificacion);
     }
 
     setDefectoLocal({
@@ -1940,26 +1948,43 @@ async function guardarDefectoRegistral() {
       descripcion_error: guardado.calificacion_registro || "",
       fcierre_defecto: guardado.fecha_cierre_defecto || "",
     });
-
     setExpediente((actual) => ({
       ...actual,
-      tiene_defectos_abiertos: guardado.tiene_defectos_abiertos,
-      tipo_error: guardado.tipo_error,
-      falta_defecto: guardado.falta_defecto,
-      descripcion_error: guardado.descripcion_error,
+      tiene_defectos_abiertos: guardado.tiene_defectos_abiertos ?? actual?.tiene_defectos_abiertos,
+      tipo_error: guardado.tipo_error ?? guardado.motivo_defecto ?? actual?.tipo_error,
+      falta_defecto: guardado.falta_defecto ?? guardado.subtipo_defecto ?? actual?.falta_defecto,
+      descripcion_error: guardado.descripcion_error ?? guardado.calificacion_registro ?? actual?.descripcion_error,
     }));
 
     await cargarDefectosRegistrados();
     setDefectoEditandoId(null);
     setDefectoForm({ ...DEFECTO_VACIO });
+    setArchivoCalificacion(null);
   } catch (error) {
     console.error("Error guardando defecto:", error);
     setErrorDefecto(
-      error?.response?.data?.detail ||
-      "No se ha podido guardar el defecto."
+      error?.response?.data?.detail || error?.message || "No se ha podido guardar el defecto."
     );
   } finally {
     setGuardandoDefecto(false);
+  }
+}
+
+async function descargarPDFCalificacion(defecto) {
+  try {
+    const idDefecto = defecto?.id ?? defecto?.id_defecto;
+    if (!idDefecto || !expediente?.id_expediente) return;
+    const blob = await obtenerCalificacionRegistro(expediente.id_expediente, idDefecto);
+    const url = window.URL.createObjectURL(blob);
+    const enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = defecto.calificacion_nombre || `calificacion_defecto_${idDefecto}.pdf`;
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    setErrorDefecto(error?.response?.data?.detail || "No se ha podido descargar el PDF de calificación.");
   }
 }
 
@@ -4069,7 +4094,7 @@ async function guardarDefectoRegistral() {
         <div className="space-y-2">
           {defectosRegistrados.map((defecto) => (
             <div
-              key={defecto.id}
+              key={defecto.id ?? defecto.id_defecto}
               className="flex flex-col justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 md:flex-row md:items-center"
             >
               <div className="min-w-0">
@@ -4084,11 +4109,16 @@ async function guardarDefectoRegistral() {
                 </p>
               </div>
 
-              <Boton
-                onClick={() => editarDefectoRegistrado(defecto)}
-              >
-                ✏️ Editar
-              </Boton>
+              <div className="flex flex-wrap gap-2">
+                {defecto.calificacion_nombre && (
+                  <Boton onClick={() => descargarPDFCalificacion(defecto)}>
+                    📄 Descargar PDF
+                  </Boton>
+                )}
+                <Boton onClick={() => editarDefectoRegistrado(defecto)}>
+                  ✏️ Editar
+                </Boton>
+              </div>
             </div>
           ))}
         </div>
@@ -4208,6 +4238,20 @@ async function guardarDefectoRegistral() {
             }
             placeholder="Introduce la calificación del Registro"
           />
+        </label>
+
+        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+          PDF de calificación del Registro
+          <input
+            type="file"
+            accept="application/pdf,.pdf"
+            className="mt-1 block w-full rounded-xl border border-slate-300 bg-white p-3 text-sm"
+            onChange={(e) => setArchivoCalificacion(e.target.files?.[0] || null)}
+          />
+          <span className="mt-1 block text-xs font-normal text-slate-500">
+            PDF de hasta 15 MB. Se guardará al pulsar «Guardar defecto».
+            {archivoCalificacion ? ` Archivo seleccionado: ${archivoCalificacion.name}` : ""}
+          </span>
         </label>
 
         <label className="block text-sm font-medium text-slate-700 md:col-span-2">
