@@ -25,6 +25,10 @@ const FORM_INICIAL = {
   notario: null,
   tipo_documento: "",
 
+  // NUEVOS CAMPOS
+  formato_escritura: "Papel",
+  tipo_tramite: "Telemático",
+
   // DATOS DE FACTURACIÓN EDITABLES
   facturacion_nombre: "",
   facturacion_apellidos: "",
@@ -484,6 +488,16 @@ export default function EnviarANotarioModal({
       return;
     }
 
+    if (!form.formato_escritura) {
+      setError("Selecciona el formato de escritura.");
+      return;
+    }
+
+    if (!form.tipo_tramite) {
+      setError("Selecciona el tipo de trámite.");
+      return;
+    }
+
     if (!form.fecha_prevista_firma) {
       setError("Indica la Fecha prevista de firma.");
       return;
@@ -570,6 +584,11 @@ export default function EnviarANotarioModal({
       apoderado: form.notario.apoderado || "",
       tipo_firma: form.notario.tipo_firma || "",
       tipo_documento: form.tipo_documento,
+
+      // NUEVOS CAMPOS
+      formato_escritura: form.formato_escritura,
+      tipo_tramite: form.tipo_tramite,
+
       poblacion: form.notario.municipio || "",
       provincia: form.notario.provincia || "",
 
@@ -693,9 +712,7 @@ export default function EnviarANotarioModal({
 
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">
           <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 xl:gap-6">
-            {/* =================================================
-                COLUMNA IZQUIERDA — ENVÍO AL NOTARIO
-            ================================================= */}
+            {/* COLUMNA IZQUIERDA — ENVÍO AL NOTARIO */}
 
             <div className="min-w-0 space-y-6">
               <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
@@ -882,43 +899,96 @@ export default function EnviarANotarioModal({
                 )}
               </section>
 
-              {/* TIPO DE DOCUMENTO */}
+              {/* TIPO DE DOCUMENTO Y NUEVOS CAMPOS */}
 
               <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                 <TituloSeccion
                   titulo="4. Tipo de documento"
-                  descripcion="Selecciona el documento correspondiente al envío."
+                  descripcion="Selecciona el documento, el formato de escritura y la modalidad de tramitación."
                 />
 
-                <select
-                  value={form.tipo_documento}
-                  disabled={loading || loadingTipos}
-                  onChange={(event) =>
-                    cambiarCampo(
-                      "tipo_documento",
-                      event.target.value
-                    )
-                  }
-                  className={clasesInput()}
-                >
-                  <option value="">
-                    {loadingTipos
-                      ? "Cargando tipos de documento..."
-                      : "Seleccionar tipo de documento"}
-                  </option>
+                <div>
+                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                    Tipo de documento
+                    <span className="text-red-500"> *</span>
+                  </label>
 
-                  {tiposDocumento.map((tipo) => (
-                    <option key={tipo.id} value={tipo.nombre}>
-                      {tipo.nombre}
+                  <select
+                    value={form.tipo_documento}
+                    disabled={loading || loadingTipos}
+                    onChange={(event) =>
+                      cambiarCampo(
+                        "tipo_documento",
+                        event.target.value
+                      )
+                    }
+                    className={clasesInput()}
+                  >
+                    <option value="">
+                      {loadingTipos
+                        ? "Cargando tipos de documento..."
+                        : "Seleccionar tipo de documento"}
                     </option>
-                  ))}
-                </select>
+
+                    {tiposDocumento.map((tipo) => (
+                      <option key={tipo.id} value={tipo.nombre}>
+                        {tipo.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* FORMATO DE ESCRITURA */}
+
+                <div className="mt-4">
+                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                    Formato de escritura
+                    <span className="text-red-500"> *</span>
+                  </label>
+
+                  <select
+                    value={form.formato_escritura}
+                    disabled={loading}
+                    onChange={(event) =>
+                      cambiarCampo(
+                        "formato_escritura",
+                        event.target.value
+                      )
+                    }
+                    className={clasesInput()}
+                  >
+                    <option value="Papel">Papel</option>
+                    <option value="Digital">Digital</option>
+                  </select>
+                </div>
+
+                {/* TIPO DE TRÁMITE */}
+
+                <div className="mt-4">
+                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                    Tipo de trámite
+                    <span className="text-red-500"> *</span>
+                  </label>
+
+                  <select
+                    value={form.tipo_tramite}
+                    disabled={loading}
+                    onChange={(event) =>
+                      cambiarCampo(
+                        "tipo_tramite",
+                        event.target.value
+                      )
+                    }
+                    className={clasesInput()}
+                  >
+                    <option value="Telemático">Telemático</option>
+                    <option value="Presencial">Presencial</option>
+                  </select>
+                </div>
               </section>
             </div>
 
-            {/* =================================================
-                COLUMNA DERECHA — FACTURACIÓN
-            ================================================= */}
+            {/* COLUMNA DERECHA — FACTURACIÓN */}
 
             <div className="min-w-0">
               <section className="rounded-2xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-4 sm:p-5">
@@ -1151,6 +1221,16 @@ export default function EnviarANotarioModal({
               />
 
               <Resumen
+                label="Formato de escritura"
+                valor={form.formato_escritura}
+              />
+
+              <Resumen
+                label="Tipo de trámite"
+                valor={form.tipo_tramite}
+              />
+
+              <Resumen
                 label="Fecha de envío"
                 valor={formatearFecha(form.fecha_envio)}
               />
@@ -1235,6 +1315,8 @@ export default function EnviarANotarioModal({
                 loading ||
                 !form.notario ||
                 !form.tipo_documento ||
+                !form.formato_escritura ||
+                !form.tipo_tramite ||
                 !form.idioma ||
                 !form.fecha_envio ||
                 !form.fecha_solicitud_pnc ||
