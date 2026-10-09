@@ -1,4 +1,3 @@
-```python
 from datetime import date, datetime
 from io import BytesIO
 from typing import Optional
@@ -854,4 +853,3 @@ def descargar_calificacion_defecto(
             )
         },
     )
-```
