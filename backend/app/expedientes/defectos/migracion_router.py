@@ -40,6 +40,7 @@ def crear_tablas_defectos(db: Session = Depends(get_db)):
             "motivo_defecto": "VARCHAR(500)",
             "subtipo_defecto_id": "INTEGER",
             "subtipo_defecto": "VARCHAR(500)",
+            "tipo_carga_hipotecaria_id": "INTEGER",
             "fecha_notificacion_registro": "DATE",
             "fecha_vencimiento_presentacion": "DATE",
             "fecha_entrada_subsanacion": "DATE",
