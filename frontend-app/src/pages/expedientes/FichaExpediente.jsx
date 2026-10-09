@@ -15,6 +15,7 @@ import {
   registrarSubsanacionDefecto,
   subirCalificacionRegistro,
   obtenerCalificacionRegistro,
+  listarTiposCargaHipotecaria,
 } from "../../api/expedienteDefectos";
 
 // ============================================================
@@ -368,6 +369,7 @@ const MOTIVOS_DEFECTO = [
 
 const DEFECTO_VACIO = {
   documento: "CANCELACIÓN DE CONDICIÓN RESOLUTORIA",
+  tipo_carga_hipotecaria_id: "",
   motivo_defecto: "",
   subtipo_defecto: "",
   fecha_notificacion_registro: "",
@@ -1566,6 +1568,7 @@ const [
 
 
 const [defectosRegistrados, setDefectosRegistrados] = useState([]);
+const [tiposCargaHipotecaria, setTiposCargaHipotecaria] = useState([]);
 const [defectoForm, setDefectoForm] = useState({ ...DEFECTO_VACIO });
 const [defectoEditandoId, setDefectoEditandoId] = useState(null);
 const [guardandoDefecto, setGuardandoDefecto] = useState(false);
@@ -1867,6 +1870,18 @@ async function abrirDefecto() {
   setMostrarDefecto(true);
 
   try {
+    const tipos = await listarTiposCargaHipotecaria();
+    setTiposCargaHipotecaria(Array.isArray(tipos) ? tipos : []);
+  } catch (error) {
+    console.error("Error cargando tipos de carga hipotecaria:", error);
+    setTiposCargaHipotecaria([]);
+    setErrorDefecto(
+      error?.response?.data?.detail ||
+      "No se ha podido cargar el catálogo de tipos de carga hipotecaria."
+    );
+  }
+
+  try {
     await cargarDefectosRegistrados();
   } catch (error) {
     console.error("Error cargando defectos:", error);
@@ -1882,6 +1897,7 @@ function editarDefectoRegistrado(defecto) {
   setArchivoCalificacion(null);
   setDefectoForm({
     documento: defecto.documento || DEFECTO_VACIO.documento,
+    tipo_carga_hipotecaria_id: defecto.tipo_carga_hipotecaria_id == null ? "" : String(defecto.tipo_carga_hipotecaria_id),
     motivo_defecto: defecto.motivo_defecto || "",
     subtipo_defecto: defecto.subtipo_defecto || "",
     fecha_notificacion_registro: defecto.fecha_notificacion_registro || "",
@@ -1920,6 +1936,7 @@ async function guardarDefectoRegistral() {
     setErrorDefecto("");
     const payload = {
       ...defectoForm,
+      tipo_carga_hipotecaria_id: defectoForm.tipo_carga_hipotecaria_id ? Number(defectoForm.tipo_carga_hipotecaria_id) : null,
       subtipo_defecto: defectoForm.subtipo_defecto || null,
       fecha_notificacion_registro: defectoForm.fecha_notificacion_registro || null,
       fecha_vencimiento_presentacion: defectoForm.fecha_vencimiento_presentacion || null,
@@ -4102,6 +4119,15 @@ async function descargarPDFCalificacion(defecto) {
                   {defecto.motivo_defecto || defecto.tipo_error || "Defecto"}
                 </p>
 
+                {defecto.tipo_carga_hipotecaria_nombre || tiposCargaHipotecaria.find(
+                  (tipo) => String(tipo.id) === String(defecto.tipo_carga_hipotecaria_id)
+                )?.nombre ? (
+                  <p className="mt-1 text-xs font-medium text-indigo-700">
+                    Carga hipotecaria: {defecto.tipo_carga_hipotecaria_nombre || tiposCargaHipotecaria.find(
+                      (tipo) => String(tipo.id) === String(defecto.tipo_carga_hipotecaria_id)
+                    )?.nombre}
+                  </p>
+                ) : null}
                 <p className="mt-1 text-xs text-slate-500">
                   {defecto.fecha_entrada_subsanacion
                     ? `Subsanado: ${formatearFecha(defecto.fecha_entrada_subsanacion)}`
@@ -4149,6 +4175,32 @@ async function descargarPDFCalificacion(defecto) {
               CANCELACIÓN DE CONDICIÓN RESOLUTORIA
             </option>
           </select>
+        </label>
+
+        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+          Tipo de carga hipotecaria
+          <select
+            className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm"
+            value={defectoForm.tipo_carga_hipotecaria_id}
+            onChange={(e) =>
+              setDefectoForm((actual) => ({
+                ...actual,
+                tipo_carga_hipotecaria_id: e.target.value,
+              }))
+            }
+          >
+            <option value="">Selecciona un tipo de carga hipotecaria…</option>
+            {tiposCargaHipotecaria.map((tipo) => (
+              <option key={tipo.id} value={String(tipo.id)}>
+                {tipo.nombre}
+              </option>
+            ))}
+          </select>
+          {tiposCargaHipotecaria.length === 0 && (
+            <span className="mt-1 block text-xs font-normal text-amber-700">
+              No hay tipos activos disponibles en el catálogo.
+            </span>
+          )}
         </label>
 
         <label className="block text-sm font-medium text-slate-700">
