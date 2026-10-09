@@ -45,6 +45,7 @@ nombre: str = Field(..., min_length=1, max_length=200)
 descripcion: Optional[str] = None
 activo: bool = True
 
+
 class SubtipoRespuesta(BaseModel):
 id: int
 nombre: str
