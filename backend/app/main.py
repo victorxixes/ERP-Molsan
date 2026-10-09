@@ -1,4 +1,4 @@
-
+```python
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -547,21 +547,67 @@ def migrar_clientes_facturacion_envio_notario():
                 flush=True,
             )
 
+            # ====================================================
+            # DIAGNÓSTICO DE BLOQUEO EN LA CONSULTA
+            # ====================================================
+
+            # Si la consulta espera un bloqueo de tabla, PostgreSQL
+            # debe interrumpirla tras 5 segundos.
             print(
-                "[MIGRACION DIAG] Comprobando tabla expedientes...",
+                "[MIGRACION DIAG] Configurando límites de espera...",
                 flush=True,
             )
 
-            conexion.execute(text("SELECT 1 FROM expedientes LIMIT 1"))
+            conexion.execute(
+                text("SET LOCAL lock_timeout = '5s'")
+            )
+
+            conexion.execute(
+                text("SET LOCAL statement_timeout = '10s'")
+            )
+
+            print(
+                "[MIGRACION DIAG] Límites configurados.",
+                flush=True,
+            )
+
+            print(
+                "[MIGRACION DIAG] "
+                "Antes de ejecutar SELECT sobre expedientes",
+                flush=True,
+            )
+
+            resultado = conexion.execute(
+                text("SELECT 1 FROM expedientes LIMIT 1")
+            )
+
+            print(
+                "[MIGRACION DIAG] "
+                "SELECT ejecutado; antes de leer resultado",
+                flush=True,
+            )
+
+            resultado.fetchone()
+
+            print(
+                "[MIGRACION DIAG] "
+                "Lectura terminada correctamente",
+                flush=True,
+            )
 
             print(
                 "[MIGRACION DIAG] Tabla expedientes accesible.",
                 flush=True,
             )
 
+            # ====================================================
+            # AÑADIR COLUMNAS QUE FALTEN
+            # ====================================================
+
             for nombre_columna, tipo_columna in migraciones_columnas:
                 print(
-                    f"[MIGRACION DIAG] INICIO columna: {nombre_columna}",
+                    f"[MIGRACION DIAG] INICIO columna: "
+                    f"{nombre_columna}",
                     flush=True,
                 )
 
@@ -576,9 +622,14 @@ def migrar_clientes_facturacion_envio_notario():
                 )
 
                 print(
-                    f"[MIGRACION DIAG] FIN columna: {nombre_columna}",
+                    f"[MIGRACION DIAG] FIN columna: "
+                    f"{nombre_columna}",
                     flush=True,
                 )
+
+            # ====================================================
+            # ÍNDICE CLIENTE
+            # ====================================================
 
             print(
                 "[MIGRACION DIAG] INICIO creación de índice...",
@@ -601,7 +652,8 @@ def migrar_clientes_facturacion_envio_notario():
             )
 
         print(
-            "[MIGRACION DIAG] Migración completada correctamente.",
+            "[MIGRACION DIAG] "
+            "Migración completada correctamente.",
             flush=True,
         )
 
@@ -636,17 +688,22 @@ def instrumentar_inicio_aplicacion():
                 numero=indice,
             ):
                 print(
-                    f"[STARTUP DIAG] INICIO {numero}: {nombre_funcion}",
+                    f"[STARTUP DIAG] INICIO {numero}: "
+                    f"{nombre_funcion}",
                     flush=True,
                 )
 
                 try:
                     resultado = await funcion()
+
                     print(
-                        f"[STARTUP DIAG] FIN {numero}: {nombre_funcion}",
+                        f"[STARTUP DIAG] FIN {numero}: "
+                        f"{nombre_funcion}",
                         flush=True,
                     )
+
                     return resultado
+
                 except Exception as error:
                     print(
                         f"[STARTUP DIAG] ERROR {numero}: "
@@ -665,17 +722,22 @@ def instrumentar_inicio_aplicacion():
                 numero=indice,
             ):
                 print(
-                    f"[STARTUP DIAG] INICIO {numero}: {nombre_funcion}",
+                    f"[STARTUP DIAG] INICIO {numero}: "
+                    f"{nombre_funcion}",
                     flush=True,
                 )
 
                 try:
                     resultado = funcion()
+
                     print(
-                        f"[STARTUP DIAG] FIN {numero}: {nombre_funcion}",
+                        f"[STARTUP DIAG] FIN {numero}: "
+                        f"{nombre_funcion}",
                         flush=True,
                     )
+
                     return resultado
+
                 except Exception as error:
                     print(
                         f"[STARTUP DIAG] ERROR {numero}: "
@@ -696,3 +758,4 @@ def instrumentar_inicio_aplicacion():
 
 
 instrumentar_inicio_aplicacion()
+```
