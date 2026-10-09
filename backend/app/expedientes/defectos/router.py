@@ -11,44 +11,82 @@ from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.defectos.models import ExpedienteDefecto
 
 
+# ============================================================
+# ROUTER
+# ============================================================
+
 router = APIRouter(
     prefix="/expedientes",
     tags=["Defectos de expedientes"],
 )
 
 
+# ============================================================
+# ESQUEMAS PYDANTIC
+# ============================================================
+
 class DefectoBase(BaseModel):
-    documento: str = Field(
-        default="CANCELACIÓN DE CONDICIÓN RESOLUTORIA",
-        max_length=300,
-    )
-    motivo_defecto: str = Field(..., min_length=1, max_length=500)
+    documento: Optional[str] = Field(default=None, max_length=300)
+    motivo_defecto: Optional[str] = Field(default=None, max_length=500)
     subtipo_defecto: Optional[str] = Field(default=None, max_length=500)
+
     fecha_notificacion_registro: Optional[date] = None
     fecha_vencimiento_presentacion: Optional[date] = None
-    calificacion_registro: Optional[str] = Field(default=None, max_length=2000)
-    observaciones_registro: Optional[str] = Field(default=None, max_length=200)
+
+    calificacion_registro: Optional[str] = Field(
+        default=None,
+        max_length=2000,
+    )
+
+    observaciones_registro: Optional[str] = Field(
+        default=None,
+        max_length=200,
+    )
+
+    # Fecha de entrada en el Registro de la subsanación.
+    # Es independiente de fecha_cierre_defecto.
     fecha_entrada_subsanacion: Optional[date] = None
 
 
 class DefectoCrear(DefectoBase):
-    pass
+    documento: str = Field(
+        default="CANCELACIÓN DE CONDICIÓN RESOLUTORIA",
+        max_length=300,
+    )
+
+    motivo_defecto: str = Field(
+        ...,
+        min_length=1,
+        max_length=500,
+    )
 
 
 class DefectoActualizar(BaseModel):
     documento: Optional[str] = Field(default=None, max_length=300)
     motivo_defecto: Optional[str] = Field(default=None, max_length=500)
     subtipo_defecto: Optional[str] = Field(default=None, max_length=500)
+
     fecha_notificacion_registro: Optional[date] = None
     fecha_vencimiento_presentacion: Optional[date] = None
-    calificacion_registro: Optional[str] = Field(default=None, max_length=2000)
-    observaciones_registro: Optional[str] = Field(default=None, max_length=200)
+
+    calificacion_registro: Optional[str] = Field(
+        default=None,
+        max_length=2000,
+    )
+
+    observaciones_registro: Optional[str] = Field(
+        default=None,
+        max_length=200,
+    )
+
     fecha_entrada_subsanacion: Optional[date] = None
 
 
 class DefectoRespuesta(DefectoBase):
     id: int
     expediente_id: int
+
+    # Campos antiguos conservados por compatibilidad con la ficha.
     tiene_defectos_abiertos: Optional[str] = None
     tipo_error: Optional[str] = None
     descripcion_error: Optional[str] = None
@@ -59,26 +97,88 @@ class DefectoRespuesta(DefectoBase):
         orm_mode = True
 
 
-def buscar_expediente(db: Session, id_expediente: str) -> Expediente:
+# ============================================================
+# FUNCIONES AUXILIARES
+# ============================================================
+
+def buscar_expediente(
+    db: Session,
+    id_expediente: str,
+) -> Expediente:
+    """
+    Busca el expediente por su identificador de negocio.
+    expediente.id se utiliza como clave foránea del defecto.
+    """
+
     expediente = (
         db.query(Expediente)
         .filter(Expediente.id_expediente == id_expediente)
         .first()
     )
+
     if expediente is None:
-        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+        raise HTTPException(
+            status_code=404,
+            detail="Expediente no encontrado.",
+        )
+
     return expediente
 
 
-def actualizar_campos_compatibles(defecto: ExpedienteDefecto) -> None:
-    # Mantiene disponibles los campos antiguos usados por la ficha.
-    defecto.tipo_error = defecto.motivo_defecto
-    defecto.falta_defecto = defecto.subtipo_defecto or defecto.motivo_defecto
-    defecto.descripcion_error = defecto.calificacion_registro
-    defecto.tiene_defectos_abiertos = (
-        "NO" if defecto.fecha_entrada_subsanacion else "SI"
+def buscar_defecto(
+    db: Session,
+    expediente: Expediente,
+    defecto_id: int,
+) -> ExpedienteDefecto:
+    """
+    Busca un defecto y verifica que pertenezca al expediente indicado.
+    """
+
+    defecto = (
+        db.query(ExpedienteDefecto)
+        .filter(
+            ExpedienteDefecto.id == defecto_id,
+            ExpedienteDefecto.expediente_id == expediente.id,
+        )
+        .first()
     )
 
+    if defecto is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Defecto no encontrado en este expediente.",
+        )
+
+    return defecto
+
+
+def actualizar_campos_compatibles(
+    defecto: ExpedienteDefecto,
+) -> None:
+    """
+    Sincroniza los campos antiguos para mantener la compatibilidad
+    con las pantallas que todavía los consultan.
+    """
+
+    defecto.tipo_error = defecto.motivo_defecto
+
+    defecto.falta_defecto = (
+        defecto.subtipo_defecto or defecto.motivo_defecto
+    )
+
+    defecto.descripcion_error = defecto.calificacion_registro
+
+    defecto.tiene_defectos_abiertos = (
+        "NO"
+        if defecto.fecha_entrada_subsanacion
+        else "SI"
+    )
+
+
+# ============================================================
+# LISTAR DEFECTOS DE UN EXPEDIENTE
+# GET /expedientes/{id_expediente}/defectos
+# ============================================================
 
 @router.get(
     "/{id_expediente}/defectos",
@@ -89,13 +189,21 @@ def listar_defectos(
     db: Session = Depends(get_db),
 ):
     expediente = buscar_expediente(db, id_expediente)
+
     return (
         db.query(ExpedienteDefecto)
-        .filter(ExpedienteDefecto.expediente_id == expediente.id)
+        .filter(
+            ExpedienteDefecto.expediente_id == expediente.id
+        )
         .order_by(ExpedienteDefecto.id.desc())
         .all()
     )
 
+
+# ============================================================
+# CREAR DEFECTO
+# POST /expedientes/{id_expediente}/defectos
+# ============================================================
 
 @router.post(
     "/{id_expediente}/defectos",
@@ -110,17 +218,29 @@ def crear_defecto(
     expediente = buscar_expediente(db, id_expediente)
 
     valores = datos.dict()
+
     defecto = ExpedienteDefecto(
         expediente_id=expediente.id,
         **valores,
     )
+
     actualizar_campos_compatibles(defecto)
 
-    db.add(defecto)
-    db.commit()
-    db.refresh(defecto)
+    try:
+        db.add(defecto)
+        db.commit()
+        db.refresh(defecto)
+    except Exception:
+        db.rollback()
+        raise
+
     return defecto
 
+
+# ============================================================
+# ACTUALIZAR DEFECTO
+# PUT /expedientes/{id_expediente}/defectos/{defecto_id}
+# ============================================================
 
 @router.put(
     "/{id_expediente}/defectos/{defecto_id}",
@@ -134,26 +254,39 @@ def actualizar_defecto(
 ):
     expediente = buscar_expediente(db, id_expediente)
 
-    defecto = (
-        db.query(ExpedienteDefecto)
-        .filter(
-            ExpedienteDefecto.id == defecto_id,
-            ExpedienteDefecto.expediente_id == expediente.id,
-        )
-        .first()
+    defecto = buscar_defecto(
+        db=db,
+        expediente=expediente,
+        defecto_id=defecto_id,
     )
-    if defecto is None:
-        raise HTTPException(status_code=404, detail="Defecto no encontrado.")
 
-    for campo, valor in datos.dict(exclude_unset=True).items():
+    # Solo modifica los campos que el cliente ha enviado.
+    valores = datos.dict(exclude_unset=True)
+
+    for campo, valor in valores.items():
         setattr(defecto, campo, valor)
 
     actualizar_campos_compatibles(defecto)
 
-    db.commit()
-    db.refresh(defecto)
+    try:
+        db.commit()
+        db.refresh(defecto)
+    except Exception:
+        db.rollback()
+        raise
+
     return defecto
 
+
+# ============================================================
+# REGISTRAR SUBSANACIÓN
+# PATCH /expedientes/{id_expediente}/defectos/{defecto_id}/subsanacion
+#
+# Recibe la fecha mediante el parámetro:
+# fecha_entrada=AAAA-MM-DD
+#
+# No modifica fecha_cierre_defecto.
+# ============================================================
 
 @router.patch(
     "/{id_expediente}/defectos/{defecto_id}/subsanacion",
@@ -167,65 +300,21 @@ def registrar_subsanacion(
 ):
     expediente = buscar_expediente(db, id_expediente)
 
-    defecto = (
-        db.query(ExpedienteDefecto)
-        .filter(
-            ExpedienteDefecto.id == defecto_id,
-            ExpedienteDefecto.expediente_id == expediente.id,
-        )
-        .first()
+    defecto = buscar_defecto(
+        db=db,
+        expediente=expediente,
+        defecto_id=defecto_id,
     )
-    if defecto is None:
-        raise HTTPException(status_code=404, detail="Defecto no encontrado.")
 
     defecto.fecha_entrada_subsanacion = fecha_entrada
+
     actualizar_campos_compatibles(defecto)
 
-    db.commit()
-    db.refresh(defecto)
+    try:
+        db.commit()
+        db.refresh(defecto)
+    except Exception:
+        db.rollback()
+        raise
+
     return defecto
-
-from sqlalchemy import text
-from backend.app.database import engine
-
-
-@router.on_event("startup")
-def preparar_tabla_defectos():
-    with engine.begin() as conexion:
-        conexion.execute(text("""
-            CREATE TABLE IF NOT EXISTS expediente_defectos (
-                id SERIAL PRIMARY KEY,
-                expediente_id INTEGER NOT NULL
-                    REFERENCES expedientes(id),
-                tiene_defectos_abiertos VARCHAR(10),
-                tipo_error VARCHAR(300),
-                descripcion_error VARCHAR(1000),
-                falta_defecto VARCHAR(500),
-                fecha_cierre_defecto DATE,
-                documento VARCHAR(300),
-                motivo_defecto VARCHAR(500),
-                subtipo_defecto VARCHAR(500),
-                fecha_notificacion_registro DATE,
-                fecha_vencimiento_presentacion DATE,
-                calificacion_registro VARCHAR(2000),
-                observaciones_registro VARCHAR(200),
-                fecha_entrada_subsanacion DATE
-            )
-        """))
-
-        columnas = {
-            "documento": "VARCHAR(300)",
-            "motivo_defecto": "VARCHAR(500)",
-            "subtipo_defecto": "VARCHAR(500)",
-            "fecha_notificacion_registro": "DATE",
-            "fecha_vencimiento_presentacion": "DATE",
-            "calificacion_registro": "VARCHAR(2000)",
-            "observaciones_registro": "VARCHAR(200)",
-            "fecha_entrada_subsanacion": "DATE",
-        }
-
-        for nombre, tipo in columnas.items():
-            conexion.execute(text(
-                f"ALTER TABLE expediente_defectos "
-                f"ADD COLUMN IF NOT EXISTS {nombre} {tipo}"
-            ))
