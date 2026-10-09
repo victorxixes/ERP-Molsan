@@ -2880,12 +2880,6 @@ const [
                 estado
               />
 
-              <Dato
-                campo="Tipo operación"
-                valor={
-                  expediente.tipo_operacion
-                }
-              />
 
               <Dato
                 campo="Oficina"
@@ -3320,13 +3314,6 @@ const [
               "
             >
 
-              <Dato
-                campo="Nº expediente"
-                valor={
-                  expediente.id_expediente
-                }
-                destaque
-              />
 
               <Dato
                 campo="Contrato"
