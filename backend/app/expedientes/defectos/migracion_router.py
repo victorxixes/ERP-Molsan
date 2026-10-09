@@ -11,32 +11,32 @@ tags=["Mantenimiento temporal de defectos"],
 
 @router.post("/crear-tablas")
 def crear_tablas_defectos(db: Session = Depends(get_db)):
-"""
-Migración temporal para ejecutar desde Swagger.
-Crea el catálogo de subtipos y añade las columnas que falten.
-"""
+try:
+db.execute(text("""
+CREATE TABLE IF NOT EXISTS public.defecto_subtipos (
+id SERIAL PRIMARY KEY,
+nombre VARCHAR(200) NOT NULL UNIQUE,
+descripcion TEXT NULL,
+activo BOOLEAN NOT NULL DEFAULT TRUE,
+creado_en TIMESTAMPTZ NOT NULL DEFAULT NOW()
+)
+"""))
 
 ```
-try:
-    db.execute(text("""
-        CREATE TABLE IF NOT EXISTS defecto_subtipos (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(200) NOT NULL UNIQUE,
-            descripcion TEXT NULL,
-            activo BOOLEAN NOT NULL DEFAULT TRUE,
-            creado_en TIMESTAMPTZ NOT NULL DEFAULT NOW()
-        )
-    """))
-
-    db.execute(text("""
-        CREATE INDEX IF NOT EXISTS ix_defecto_subtipos_id
-        ON defecto_subtipos (id)
-    """))
-
     db.execute(text("""
         CREATE INDEX IF NOT EXISTS ix_defecto_subtipos_nombre
-        ON defecto_subtipos (nombre)
+        ON public.defecto_subtipos (nombre)
     """))
+
+    tabla = db.execute(text("""
+        SELECT to_regclass('public.expediente_defectos')
+    """)).scalar()
+
+    if tabla is None:
+        raise HTTPException(
+            status_code=500,
+            detail="No existe public.expediente_defectos. No se puede completar la migración."
+        )
 
     columnas = {
         "documento": "VARCHAR(300)",
@@ -55,29 +55,11 @@ try:
         "calificacion_subida_en": "TIMESTAMPTZ",
     }
 
-    tabla = db.execute(text("""
-        SELECT to_regclass('public.expediente_defectos')
-    """)).scalar()
-
-    if tabla is None:
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                "No existe la tabla expediente_defectos "
-                "en el esquema public. No se ha completado la migración."
-            ),
-        )
-
     for nombre, tipo in columnas.items():
         db.execute(text(
             f"ALTER TABLE public.expediente_defectos "
             f"ADD COLUMN IF NOT EXISTS {nombre} {tipo}"
         ))
-
-    db.execute(text("""
-        CREATE INDEX IF NOT EXISTS ix_expediente_defectos_expediente_id
-        ON public.expediente_defectos (expediente_id)
-    """))
 
     db.execute(text("""
         CREATE INDEX IF NOT EXISTS ix_expediente_defectos_subtipo_defecto_id
@@ -99,15 +81,16 @@ try:
                 REFERENCES public.defecto_subtipos(id)
                 ON DELETE SET NULL;
             END IF;
-        END $$
+        END
+        $$
     """))
 
     db.commit()
 
     return {
         "ok": True,
-        "mensaje": "Migración de defectos completada",
-        "tabla_subtipos": "defecto_subtipos",
+        "mensaje": "Migración completada",
+        "tabla": "public.defecto_subtipos",
         "columnas_revisadas": list(columnas.keys()),
     }
 
@@ -118,6 +101,6 @@ except Exception as exc:
     db.rollback()
     raise HTTPException(
         status_code=500,
-        detail=f"Error en la migración de defectos: {str(exc)}",
+        detail=str(exc),
     ) from exc
 ```
