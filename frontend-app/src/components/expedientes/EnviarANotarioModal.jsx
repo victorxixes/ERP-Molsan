@@ -62,7 +62,7 @@ const FORM_INICIAL = {
   // HORA PREVISTA DE FIRMA
   // ----------------------------------------------------------
 
-  hora_prevista_firma: "09:00",
+  hora_prevista_firma: "00:00",
 
   // ----------------------------------------------------------
   // NOTARIO
