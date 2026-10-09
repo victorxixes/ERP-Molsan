@@ -184,3 +184,48 @@ def registrar_subsanacion(
     db.commit()
     db.refresh(defecto)
     return defecto
+
+from sqlalchemy import text
+from backend.app.database import engine
+
+
+@router.on_event("startup")
+def preparar_tabla_defectos():
+    with engine.begin() as conexion:
+        conexion.execute(text("""
+            CREATE TABLE IF NOT EXISTS expediente_defectos (
+                id SERIAL PRIMARY KEY,
+                expediente_id INTEGER NOT NULL
+                    REFERENCES expedientes(id),
+                tiene_defectos_abiertos VARCHAR(10),
+                tipo_error VARCHAR(300),
+                descripcion_error VARCHAR(1000),
+                falta_defecto VARCHAR(500),
+                fecha_cierre_defecto DATE,
+                documento VARCHAR(300),
+                motivo_defecto VARCHAR(500),
+                subtipo_defecto VARCHAR(500),
+                fecha_notificacion_registro DATE,
+                fecha_vencimiento_presentacion DATE,
+                calificacion_registro VARCHAR(2000),
+                observaciones_registro VARCHAR(200),
+                fecha_entrada_subsanacion DATE
+            )
+        """))
+
+        columnas = {
+            "documento": "VARCHAR(300)",
+            "motivo_defecto": "VARCHAR(500)",
+            "subtipo_defecto": "VARCHAR(500)",
+            "fecha_notificacion_registro": "DATE",
+            "fecha_vencimiento_presentacion": "DATE",
+            "calificacion_registro": "VARCHAR(2000)",
+            "observaciones_registro": "VARCHAR(200)",
+            "fecha_entrada_subsanacion": "DATE",
+        }
+
+        for nombre, tipo in columnas.items():
+            conexion.execute(text(
+                f"ALTER TABLE expediente_defectos "
+                f"ADD COLUMN IF NOT EXISTS {nombre} {tipo}"
+            ))
