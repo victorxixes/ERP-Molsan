@@ -1,9 +1,11 @@
+```jsx
 // ============================================================
-// ERP MOLSAN — EXPEDIENTES 
+// ERP MOLSAN — EXPEDIENTES
 // MODAL "ENVÍO A NOTARIO"
 // PREMIUM 2027
 //
 // INCLUYE:
+// - Idioma del documento: Catalán / Castellano
 // - Fecha Solicitud PNC
 // - Nº de Solicitud
 // - Fecha prevista de firma
@@ -23,9 +25,7 @@ import {
 } from "react";
 
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
-
 import axios from "../../api/axios";
-
 
 // ============================================================
 // FORMULARIO INICIAL
@@ -36,58 +36,38 @@ const FORM_INICIAL = {
 
   fecha_envio: "",
 
-  // ----------------------------------------------------------
+  // IDIOMA DEL DOCUMENTO
+  idioma: "Catalán",
+
   // PNC
-  // ----------------------------------------------------------
-
   fecha_solicitud_pnc: "",
-
   numero_solicitud_pnc: "",
 
-  // ----------------------------------------------------------
   // FIRMA REAL
-  // ----------------------------------------------------------
-
   fecha_firma: "",
-
   protocolo: "",
 
-  // ----------------------------------------------------------
   // FECHA PREVISTA DE FIRMA
-  // ----------------------------------------------------------
-
   fecha_prevista_firma: "",
 
-  // ----------------------------------------------------------
   // HORA PREVISTA DE FIRMA
-  // ----------------------------------------------------------
-
   hora_prevista_firma: "00:00",
 
-  // ----------------------------------------------------------
   // NOTARIO
-  // ----------------------------------------------------------
-
   notario: null,
 
-  // ----------------------------------------------------------
   // TIPO DOCUMENTO
-  // ----------------------------------------------------------
-
   tipo_documento: "",
 };
-
 
 // ============================================================
 // FECHA ACTUAL LOCAL
 // ============================================================
 
 function fechaHoy() {
-
   const ahora = new Date();
 
-  const year =
-    ahora.getFullYear();
+  const year = ahora.getFullYear();
 
   const month = String(
     ahora.getMonth() + 1
@@ -100,29 +80,23 @@ function fechaHoy() {
   return `${year}-${month}-${day}`;
 }
 
-
 // ============================================================
 // SUMAR UNA HORA
 // ============================================================
 
 function sumarUnaHora(hora) {
-
   if (!hora) {
     return "";
   }
 
-  const partes =
-    String(hora).split(":");
+  const partes = String(hora).split(":");
 
   if (partes.length < 2) {
     return "";
   }
 
-  const horas =
-    Number(partes[0]);
-
-  const minutos =
-    Number(partes[1]);
+  const horas = Number(partes[0]);
+  const minutos = Number(partes[1]);
 
   if (
     Number.isNaN(horas) ||
@@ -132,24 +106,17 @@ function sumarUnaHora(hora) {
   }
 
   const totalMinutos =
-    horas * 60 +
-    minutos +
-    60;
+    horas * 60 + minutos + 60;
 
-  if (
-    totalMinutos >=
-    24 * 60
-  ) {
+  if (totalMinutos >= 24 * 60) {
     return "";
   }
 
-  const horasFinal =
-    Math.floor(
-      totalMinutos / 60
-    );
+  const horasFinal = Math.floor(
+    totalMinutos / 60
+  );
 
-  const minutosFinal =
-    totalMinutos % 60;
+  const minutosFinal = totalMinutos % 60;
 
   return `${String(
     horasFinal
@@ -158,38 +125,25 @@ function sumarUnaHora(hora) {
   ).padStart(2, "0")}`;
 }
 
-
 // ============================================================
 // FORMATEAR FECHA
 // ============================================================
 
 function formatearFecha(valor) {
-
   if (!valor) {
     return "—";
   }
 
-  const texto =
-    String(valor);
+  const texto = String(valor);
 
-  if (
-    /^\d{4}-\d{2}-\d{2}$/.test(
-      texto
-    )
-  ) {
-
-    const [
-      year,
-      month,
-      day,
-    ] = texto.split("-");
+  if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+    const [year, month, day] = texto.split("-");
 
     return `${day}/${month}/${year}`;
   }
 
   return texto;
 }
-
 
 // ============================================================
 // COMPONENTE
@@ -200,113 +154,71 @@ export default function EnviarANotarioModal({
   onClose,
   onGuardar,
 }) {
-
   // ==========================================================
   // FORMULARIO
   // ==========================================================
 
-  const [
-    form,
-    setForm,
-  ] = useState({
+  const [form, setForm] = useState({
     ...FORM_INICIAL,
-
-    fecha_envio:
-      fechaHoy(),
+    fecha_envio: fechaHoy(),
   });
-
 
   // ==========================================================
   // TIPOS DE DOCUMENTO
   // ==========================================================
 
-  const [
-    tiposDocumento,
-    setTiposDocumento,
-  ] = useState([]);
-
-
-  const [
-    loadingTipos,
-    setLoadingTipos,
-  ] = useState(false);
-
+  const [tiposDocumento, setTiposDocumento] = useState([]);
+  const [loadingTipos, setLoadingTipos] = useState(false);
 
   // ==========================================================
   // ESTADO GENERAL
   // ==========================================================
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(false);
-
-
-  const [
-    error,
-    setError,
-  ] = useState("");
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // ==========================================================
   // CARGAR TIPOS DE DOCUMENTO
   // ==========================================================
 
   useEffect(() => {
-
     let activo = true;
 
     async function cargarTiposDocumento() {
-
       try {
-
         setLoadingTipos(true);
 
-        const response =
-          await axios.get(
-            "/tipos-carga-hipotecaria/opciones"
-          );
+        const response = await axios.get(
+          "/tipos-carga-hipotecaria/opciones"
+        );
 
         if (!activo) {
           return;
         }
 
-        const datos =
-          Array.isArray(
-            response?.data
-          )
-            ? response.data
-            : [];
+        const datos = Array.isArray(response?.data)
+          ? response.data
+          : [];
 
-        setTiposDocumento(
-          datos
-        );
-
+        setTiposDocumento(datos);
       } catch (err) {
-
         console.error(
           "ERROR CARGANDO TIPOS DE DOCUMENTO:",
           err
         );
 
         if (activo) {
-
           setError(
             err?.response?.data?.detail ||
-            err?.response?.data?.message ||
-            "No se han podido cargar los tipos de documento."
+              err?.response?.data?.message ||
+              "No se han podido cargar los tipos de documento."
           );
-
         }
-
       } finally {
-
         if (activo) {
           setLoadingTipos(false);
         }
-
       }
-
     }
 
     cargarTiposDocumento();
@@ -314,29 +226,21 @@ export default function EnviarANotarioModal({
     return () => {
       activo = false;
     };
-
   }, []);
-
 
   // ==========================================================
   // ESC
   // ==========================================================
 
   useEffect(() => {
-
-    const handleEscape =
-      (event) => {
-
-        if (
-          event.key === "Escape" &&
-          !loading
-        ) {
-
-          onClose();
-
-        }
-
-      };
+    const handleEscape = (event) => {
+      if (
+        event.key === "Escape" &&
+        !loading
+      ) {
+        onClose();
+      }
+    };
 
     window.addEventListener(
       "keydown",
@@ -344,980 +248,695 @@ export default function EnviarANotarioModal({
     );
 
     return () => {
-
       window.removeEventListener(
         "keydown",
         handleEscape
       );
-
     };
-
-  }, [
-    loading,
-    onClose,
-  ]);
-
+  }, [loading, onClose]);
 
   // ==========================================================
   // CAMBIAR CAMPO
   // ==========================================================
 
-  const cambiarCampo =
-    useCallback(
-      (campo, valor) => {
+  const cambiarCampo = useCallback(
+    (campo, valor) => {
+      setForm((actual) => ({
+        ...actual,
+        [campo]: valor,
+      }));
 
-        setForm(
-          (actual) => ({
-            ...actual,
-
-            [campo]:
-              valor,
-          })
-        );
-
-        setError("");
-
-      },
-      []
-    );
-
+      setError("");
+    },
+    []
+  );
 
   // ==========================================================
   // CAMBIAR ESCRITURA FIRMADA
   // ==========================================================
 
-  const cambiarEscrituraFirmada =
-    useCallback(
-      (valor) => {
+  const cambiarEscrituraFirmada = useCallback(
+    (valor) => {
+      setForm((actual) => ({
+        ...actual,
+        escritura_firmada: valor,
 
-        setForm(
-          (actual) => ({
-            ...actual,
+        ...(valor === "No"
+          ? {
+              fecha_firma: "",
+              protocolo: "",
+            }
+          : {}),
+      }));
 
-            escritura_firmada:
-              valor,
-
-            ...(valor === "No"
-              ? {
-                  fecha_firma: "",
-                  protocolo: "",
-                }
-              : {}),
-          })
-        );
-
-        setError("");
-
-      },
-      []
-    );
-
+      setError("");
+    },
+    []
+  );
 
   // ==========================================================
   // SELECCIONAR NOTARIO
   // ==========================================================
 
-  const seleccionarNotario =
-    useCallback(
-      (notario) => {
-
-        if (!notario) {
-
-          setForm(
-            (actual) => ({
-              ...actual,
-
-              notario:
-                null,
-            })
-          );
-
-          setError("");
-
-          return;
-        }
-
-        setForm(
-          (actual) => ({
-            ...actual,
-
-            notario,
-          })
-        );
+  const seleccionarNotario = useCallback(
+    (notario) => {
+      if (!notario) {
+        setForm((actual) => ({
+          ...actual,
+          notario: null,
+        }));
 
         setError("");
+        return;
+      }
 
-      },
-      []
-    );
+      setForm((actual) => ({
+        ...actual,
+        notario,
+      }));
 
+      setError("");
+    },
+    []
+  );
 
   // ==========================================================
   // COMPROBAR SI YA EXISTE CITA
   // ==========================================================
 
-  const comprobarCitaExistente =
-    useCallback(
-      async () => {
-
-        if (
-          !expediente?.id_expediente ||
-          !form.fecha_prevista_firma
-        ) {
-
-          return null;
-
-        }
-
-
-        console.log(
-          "AGENDA — COMPROBANDO CITA EXISTENTE..."
-        );
-
-        console.log(
-          "AGENDA — EXPEDIENTE:",
-          expediente.id_expediente
-        );
-
-        console.log(
-          "AGENDA — FECHA:",
-          form.fecha_prevista_firma
-        );
-
-
-        const response =
-          await axios.get(
-            "/agenda/search",
-            {
-              params: {
-                id_expediente:
-                  expediente.id_expediente,
-
-                fecha:
-                  form.fecha_prevista_firma,
-              },
-            }
-          );
-
-
-        console.log(
-          "AGENDA — RESPUESTA BÚSQUEDA:",
-          response?.data
-        );
-
-
-        const datos =
-          response?.data;
-
-
-        if (
-          Array.isArray(datos) &&
-          datos.length > 0
-        ) {
-
-          console.warn(
-            "AGENDA — YA EXISTE CITA:",
-            datos[0]
-          );
-
-          return datos[0];
-
-        }
-
-
+  const comprobarCitaExistente = useCallback(
+    async () => {
+      if (
+        !expediente?.id_expediente ||
+        !form.fecha_prevista_firma
+      ) {
         return null;
+      }
 
-      },
-      [
-        expediente,
-        form.fecha_prevista_firma,
-      ]
-    );
+      console.log(
+        "AGENDA — COMPROBANDO CITA EXISTENTE..."
+      );
 
+      console.log(
+        "AGENDA — EXPEDIENTE:",
+        expediente.id_expediente
+      );
+
+      console.log(
+        "AGENDA — FECHA:",
+        form.fecha_prevista_firma
+      );
+
+      const response = await axios.get(
+        "/agenda/search",
+        {
+          params: {
+            id_expediente: expediente.id_expediente,
+            fecha: form.fecha_prevista_firma,
+          },
+        }
+      );
+
+      console.log(
+        "AGENDA — RESPUESTA BÚSQUEDA:",
+        response?.data
+      );
+
+      const datos = response?.data;
+
+      if (
+        Array.isArray(datos) &&
+        datos.length > 0
+      ) {
+        console.warn(
+          "AGENDA — YA EXISTE CITA:",
+          datos[0]
+        );
+
+        return datos[0];
+      }
+
+      return null;
+    },
+    [
+      expediente,
+      form.fecha_prevista_firma,
+    ]
+  );
 
   // ==========================================================
   // CREAR CITA EN AGENDA
   // ==========================================================
 
-  const crearCitaAgenda =
-    useCallback(
-      async () => {
+  const crearCitaAgenda = useCallback(
+    async () => {
+      console.log(
+        "=================================================="
+      );
 
-        console.log(
-          "=================================================="
+      console.log(
+        "AGENDA — INICIANDO CREACIÓN DE CITA"
+      );
+
+      console.log(
+        "=================================================="
+      );
+
+      // VALIDACIONES
+
+      if (!form.fecha_prevista_firma) {
+        throw new Error(
+          "Falta la Fecha prevista de firma."
+        );
+      }
+
+      if (!form.hora_prevista_firma) {
+        throw new Error(
+          "Falta la Hora prevista de firma."
+        );
+      }
+
+      if (!form.notario?.id) {
+        throw new Error("Falta el notario.");
+      }
+
+      if (!expediente?.id_expediente) {
+        throw new Error(
+          "Falta el número de expediente."
+        );
+      }
+
+      // COMPROBAR DUPLICADO
+
+      console.log(
+        "AGENDA — PASO 1: COMPROBAR DUPLICADO"
+      );
+
+      const citaExistente =
+        await comprobarCitaExistente();
+
+      console.log(
+        "AGENDA — PASO 2: COMPROBACIÓN FINALIZADA"
+      );
+
+      if (citaExistente) {
+        console.warn(
+          "AGENDA — YA EXISTE UNA CITA PARA ESTE EXPEDIENTE Y FECHA:",
+          citaExistente
         );
 
-        console.log(
-          "AGENDA — INICIANDO CREACIÓN DE CITA"
+        return citaExistente;
+      }
+
+      // HORA FINAL: DURACIÓN INICIAL DE UNA HORA
+
+      const horaFin = sumarUnaHora(
+        form.hora_prevista_firma
+      );
+
+      if (!horaFin) {
+        throw new Error(
+          "La hora prevista de firma debe permitir una duración de una hora. La última hora de inicio permitida es las 23:00."
         );
+      }
 
-        console.log(
-          "=================================================="
-        );
+      // EXPEDIENTE INTERNO
 
+      const expedienteId =
+        expediente?.id ??
+        expediente?.expediente_id ??
+        null;
 
-        // ----------------------------------------------------
-        // VALIDACIONES
-        // ----------------------------------------------------
+      // APODERADO
 
-        if (
-          !form.fecha_prevista_firma
-        ) {
+      const apoderadoId =
+        form.notario?.apoderado_id ??
+        expediente?.apoderado_id ??
+        null;
 
-          throw new Error(
-            "Falta la Fecha prevista de firma."
-          );
+      const apoderado =
+        form.notario?.apoderado || "";
 
-        }
+      // PAYLOAD AGENDA
 
+      const payloadAgenda = {
+        fecha: form.fecha_prevista_firma,
 
-        if (
-          !form.hora_prevista_firma
-        ) {
+        hora_inicio: form.hora_prevista_firma,
 
-          throw new Error(
-            "Falta la Hora prevista de firma."
-          );
+        hora_fin: horaFin,
 
-        }
+        tipo_cita: "Firma notarial",
 
+        notario_id: Number(form.notario.id),
 
-        if (
-          !form.notario?.id
-        ) {
+        tipo_firma:
+          form.notario.tipo_firma || null,
 
-          throw new Error(
-            "Falta el notario."
-          );
+        apoderado_id: apoderadoId
+          ? Number(apoderadoId)
+          : null,
 
-        }
+        apoderado: apoderado || null,
 
+        observaciones:
+          `Firma notarial — Expediente ${expediente.id_expediente} — Solicitud PNC ${form.numero_solicitud_pnc.trim()}`,
 
-        if (
-          !expediente?.id_expediente
-        ) {
+        expediente_id: expedienteId
+          ? Number(expedienteId)
+          : null,
+      };
 
-          throw new Error(
-            "Falta el número de expediente."
-          );
+      // LOG PAYLOAD
 
-        }
+      console.log(
+        "AGENDA — PAYLOAD:",
+        payloadAgenda
+      );
 
+      console.log(
+        "AGENDA — EXPEDIENTE ID INTERNO:",
+        expedienteId
+      );
 
-        // ----------------------------------------------------
-        // COMPROBAR DUPLICADO
-        // ----------------------------------------------------
+      console.log(
+        "AGENDA — EXPEDIENTE Nº:",
+        expediente.id_expediente
+      );
 
-        console.log(
-          "AGENDA — PASO 1: COMPROBAR DUPLICADO"
-        );
+      console.log(
+        "AGENDA — NOTARIO ID:",
+        form.notario.id
+      );
 
+      console.log(
+        "AGENDA — FECHA:",
+        form.fecha_prevista_firma
+      );
 
-        const citaExistente =
-          await comprobarCitaExistente();
+      console.log(
+        "AGENDA — HORA:",
+        form.hora_prevista_firma,
+        "→",
+        horaFin
+      );
 
+      // POST AGENDA
 
-        console.log(
-          "AGENDA — PASO 2: COMPROBACIÓN FINALIZADA"
-        );
+      console.log(
+        "AGENDA — PASO 3: ENVIANDO POST /agenda/"
+      );
 
+      const response = await axios.post(
+        "/agenda/",
+        payloadAgenda
+      );
 
-        if (citaExistente) {
+      console.log(
+        "AGENDA — PASO 4: CITA CREADA CORRECTAMENTE"
+      );
 
-          console.warn(
-            "AGENDA — YA EXISTE UNA CITA PARA ESTE EXPEDIENTE Y FECHA:",
-            citaExistente
-          );
-
-          return citaExistente;
-
-        }
-
-
-        // ----------------------------------------------------
-        // HORA FINAL
-        // Duración inicial: 1 hora
-        // ----------------------------------------------------
-
-        const horaFin =
-          sumarUnaHora(
-            form.hora_prevista_firma
-          );
-
-
-        if (!horaFin) {
-
-          throw new Error(
-            "La hora prevista de firma debe permitir una duración de una hora. La última hora de inicio permitida es las 23:00."
-          );
-
-        }
-
-
-        // ----------------------------------------------------
-        // EXPEDIENTE INTERNO
-        // ----------------------------------------------------
-
-        const expedienteId =
-          expediente?.id ??
-          expediente?.expediente_id ??
-          null;
-
-
-        // ----------------------------------------------------
-        // APODERADO
-        // ----------------------------------------------------
-
-        const apoderadoId =
-          form.notario?.apoderado_id ??
-          expediente?.apoderado_id ??
-          null;
-
-
-        const apoderado =
-          form.notario?.apoderado ||
-          "";
-
-
-        // ----------------------------------------------------
-        // PAYLOAD AGENDA
-        // ----------------------------------------------------
-
-        const payloadAgenda = {
-
-          fecha:
-            form.fecha_prevista_firma,
-
-          hora_inicio:
-            form.hora_prevista_firma,
-
-          hora_fin:
-            horaFin,
-
-          tipo_cita:
-            "Firma notarial",
-
-          notario_id:
-            Number(
-              form.notario.id
-            ),
-
-          tipo_firma:
-            form.notario.tipo_firma ||
-            null,
-
-          apoderado_id:
-            apoderadoId
-              ? Number(apoderadoId)
-              : null,
-
-          apoderado:
-            apoderado ||
-            null,
-
-          observaciones:
-            `Firma notarial — Expediente ${expediente.id_expediente} — Solicitud PNC ${form.numero_solicitud_pnc.trim()}`,
-
-          expediente_id:
-            expedienteId
-              ? Number(expedienteId)
-              : null,
-
-        };
-
-
-        // ----------------------------------------------------
-        // LOG PAYLOAD
-        // ----------------------------------------------------
-
-        console.log(
-          "AGENDA — PAYLOAD:",
-          payloadAgenda
-        );
-
-        console.log(
-          "AGENDA — EXPEDIENTE ID INTERNO:",
-          expedienteId
-        );
-
-        console.log(
-          "AGENDA — EXPEDIENTE Nº:",
-          expediente.id_expediente
-        );
-
-        console.log(
-          "AGENDA — NOTARIO ID:",
-          form.notario.id
-        );
-
-        console.log(
-          "AGENDA — FECHA:",
-          form.fecha_prevista_firma
-        );
-
-        console.log(
-          "AGENDA — HORA:",
-          form.hora_prevista_firma,
-          "→",
-          horaFin
-        );
-
-
-        // ----------------------------------------------------
-        // POST AGENDA
-        // ----------------------------------------------------
-
-        console.log(
-          "AGENDA — PASO 3: ENVIANDO POST /agenda/"
-        );
-
-
-        const response =
-          await axios.post(
-            "/agenda/",
-            payloadAgenda
-          );
-
-
-        console.log(
-          "AGENDA — PASO 4: CITA CREADA CORRECTAMENTE"
-        );
-
-        console.log(
-          "AGENDA — RESPUESTA:",
-          response?.data
-        );
-
-
-        return response?.data;
-
-      },
-      [
-        form,
-        expediente,
-        comprobarCitaExistente,
-      ]
-    );
-
+      console.log(
+        "AGENDA — RESPUESTA:",
+        response?.data
+      );
+
+      return response?.data;
+    },
+    [
+      form,
+      expediente,
+      comprobarCitaExistente,
+    ]
+  );
 
   // ==========================================================
   // GUARDAR
   // ==========================================================
 
-  const guardar =
-    useCallback(
-      async () => {
+  const guardar = useCallback(
+    async () => {
+      if (loading) {
+        return;
+      }
 
-        if (loading) {
+      setError("");
+
+      // EXPEDIENTE
+
+      if (!expediente?.id_expediente) {
+        setError(
+          "No se ha podido identificar el expediente."
+        );
+        return;
+      }
+
+      // FECHA ENVÍO
+
+      if (!form.fecha_envio) {
+        setError(
+          "La Fecha de envío es obligatoria."
+        );
+        return;
+      }
+
+      // IDIOMA
+
+      if (
+        !["Catalán", "Castellano"].includes(
+          form.idioma
+        )
+      ) {
+        setError(
+          "Selecciona el idioma del documento."
+        );
+        return;
+      }
+
+      // FECHA SOLICITUD PNC
+
+      if (!form.fecha_solicitud_pnc) {
+        setError(
+          "La Fecha Solicitud PNC es obligatoria."
+        );
+        return;
+      }
+
+      // Nº SOLICITUD PNC
+
+      if (!form.numero_solicitud_pnc.trim()) {
+        setError(
+          "El Nº de Solicitud es obligatorio."
+        );
+        return;
+      }
+
+      // NOTARIO
+
+      if (!form.notario?.id) {
+        setError("Selecciona un notario.");
+        return;
+      }
+
+      // TIPO DOCUMENTO
+
+      if (!form.tipo_documento) {
+        setError(
+          "Selecciona el Tipo documento."
+        );
+        return;
+      }
+
+      // FECHA PREVISTA
+
+      if (!form.fecha_prevista_firma) {
+        setError(
+          "Indica la Fecha prevista de firma."
+        );
+        return;
+      }
+
+      // HORA PREVISTA
+
+      if (!form.hora_prevista_firma) {
+        setError(
+          "Indica la Hora prevista de firma."
+        );
+        return;
+      }
+
+      // VALIDAR HORA PARA UNA HORA
+
+      const horaFinValidacion = sumarUnaHora(
+        form.hora_prevista_firma
+      );
+
+      if (!horaFinValidacion) {
+        setError(
+          "La hora prevista de firma no puede ser posterior a las 23:00 porque la cita tendrá una duración inicial de una hora."
+        );
+        return;
+      }
+
+      // VALIDAR FECHA PREVISTA
+
+      if (
+        form.fecha_prevista_firma <
+        form.fecha_envio
+      ) {
+        setError(
+          "La Fecha prevista de firma no puede ser anterior a la Fecha de envío."
+        );
+        return;
+      }
+
+      // VALIDAR FECHA PNC
+
+      if (
+        form.fecha_solicitud_pnc >
+        form.fecha_envio
+      ) {
+        setError(
+          "La Fecha Solicitud PNC no puede ser posterior a la Fecha de envío."
+        );
+        return;
+      }
+
+      // ESCRITURA FIRMADA
+
+      if (form.escritura_firmada === "Sí") {
+        if (!form.fecha_firma) {
+          setError("Indica la Fecha de firma.");
           return;
         }
 
-        setError("");
-
-
-        // ------------------------------------------------------
-        // EXPEDIENTE
-        // ------------------------------------------------------
+        if (!form.protocolo.trim()) {
+          setError("Indica el Protocolo.");
+          return;
+        }
 
         if (
-          !expediente?.id_expediente
+          form.fecha_envio >
+          form.fecha_firma
         ) {
-
           setError(
-            "No se ha podido identificar el expediente."
+            "La Fecha de envío no puede ser posterior a la Fecha de firma."
           );
-
           return;
         }
+      }
 
+      // NOMBRE COMPLETO NOTARIO
 
-        // ------------------------------------------------------
-        // FECHA ENVÍO
-        // ------------------------------------------------------
+      const nombreNotario =
+        `${form.notario.nombre || ""} ${
+          form.notario.apellidos || ""
+        }`.trim();
 
-        if (!form.fecha_envio) {
+      // PAYLOAD EXPEDIENTE
 
-          setError(
-            "La Fecha de envío es obligatoria."
-          );
+      const payload = {
+        id_expediente: expediente.id_expediente,
 
-          return;
-        }
+        escritura_firmada:
+          form.escritura_firmada === "Sí",
 
+        fecha_envio: form.fecha_envio,
 
-        // ------------------------------------------------------
-        // FECHA SOLICITUD PNC
-        // ------------------------------------------------------
+        // IDIOMA DEL DOCUMENTO
+        idioma: form.idioma,
 
-        if (
-          !form.fecha_solicitud_pnc
-        ) {
+        fecha_solicitud_pnc:
+          form.fecha_solicitud_pnc,
 
-          setError(
-            "La Fecha Solicitud PNC es obligatoria."
-          );
+        numero_solicitud_pnc:
+          form.numero_solicitud_pnc.trim(),
 
-          return;
-        }
+        fecha_firma:
+          form.escritura_firmada === "Sí"
+            ? form.fecha_firma
+            : null,
 
+        protocolo:
+          form.escritura_firmada === "Sí"
+            ? form.protocolo.trim()
+            : null,
 
-        // ------------------------------------------------------
-        // Nº SOLICITUD PNC
-        // ------------------------------------------------------
+        fecha_prevista_firma:
+          form.fecha_prevista_firma,
 
-        if (
-          !form.numero_solicitud_pnc.trim()
-        ) {
+        hora_prevista_firma:
+          form.hora_prevista_firma,
 
-          setError(
-            "El Nº de Solicitud es obligatorio."
-          );
+        notario_id: form.notario.id,
 
-          return;
-        }
+        nombre_notario: nombreNotario,
 
+        nif_notario:
+          form.notario.nif || "",
 
-        // ------------------------------------------------------
-        // NOTARIO
-        // ------------------------------------------------------
+        notario: nombreNotario,
 
-        if (
-          !form.notario?.id
-        ) {
+        apoderado:
+          form.notario.apoderado || "",
 
-          setError(
-            "Selecciona un notario."
-          );
+        tipo_firma:
+          form.notario.tipo_firma || "",
 
-          return;
-        }
+        tipo_documento: form.tipo_documento,
 
+        poblacion:
+          form.notario.municipio || "",
 
-        // ------------------------------------------------------
-        // TIPO DOCUMENTO
-        // ------------------------------------------------------
+        provincia:
+          form.notario.provincia || "",
+      };
 
-        if (
-          !form.tipo_documento
-        ) {
+      // INICIO GUARDADO
 
-          setError(
-            "Selecciona el Tipo documento."
-          );
+      try {
+        setLoading(true);
 
-          return;
-        }
+        console.log(
+          "=================================================="
+        );
 
+        console.log(
+          "ENVÍO A NOTARIO — INICIO"
+        );
 
-        // ------------------------------------------------------
-        // FECHA PREVISTA
-        // ------------------------------------------------------
+        console.log(
+          "EXPEDIENTE:",
+          expediente.id_expediente
+        );
 
-        if (
-          !form.fecha_prevista_firma
-        ) {
+        console.log(
+          "PAYLOAD EXPEDIENTE:",
+          payload
+        );
 
-          setError(
-            "Indica la Fecha prevista de firma."
-          );
+        console.log(
+          "=================================================="
+        );
 
-          return;
-        }
+        // PRIMERO GUARDAMOS EL ENVÍO DEL EXPEDIENTE
 
+        console.log("1. ANTES DE onGuardar()");
 
-        // ------------------------------------------------------
-        // HORA PREVISTA
-        // ------------------------------------------------------
+        await onGuardar(payload);
 
-        if (
-          !form.hora_prevista_firma
-        ) {
+        console.log("2. DESPUÉS DE onGuardar()");
 
-          setError(
-            "Indica la Hora prevista de firma."
-          );
+        console.log(
+          "3. AHORA VAMOS A CREAR LA CITA EN AGENDA"
+        );
 
-          return;
-        }
-
-
-        // ------------------------------------------------------
-        // VALIDAR HORA PARA 1 HORA
-        // ------------------------------------------------------
-
-        const horaFinValidacion =
-          sumarUnaHora(
-            form.hora_prevista_firma
-          );
-
-
-        if (!horaFinValidacion) {
-
-          setError(
-            "La hora prevista de firma no puede ser posterior a las 23:00 porque la cita tendrá una duración inicial de una hora."
-          );
-
-          return;
-        }
-
-
-        // ------------------------------------------------------
-        // VALIDAR FECHA PREVISTA
-        // ------------------------------------------------------
-
-        if (
-          form.fecha_prevista_firma <
-          form.fecha_envio
-        ) {
-
-          setError(
-            "La Fecha prevista de firma no puede ser anterior a la Fecha de envío."
-          );
-
-          return;
-        }
-
-
-        // ------------------------------------------------------
-        // VALIDAR FECHA PNC
-        // ------------------------------------------------------
-
-        if (
-          form.fecha_solicitud_pnc >
-          form.fecha_envio
-        ) {
-
-          setError(
-            "La Fecha Solicitud PNC no puede ser posterior a la Fecha de envío."
-          );
-
-          return;
-        }
-
-
-        // ------------------------------------------------------
-        // ESCRITURA FIRMADA
-        // ------------------------------------------------------
-
-        if (
-          form.escritura_firmada ===
-          "Sí"
-        ) {
-
-          if (!form.fecha_firma) {
-
-            setError(
-              "Indica la Fecha de firma."
-            );
-
-            return;
-          }
-
-
-          if (
-            !form.protocolo.trim()
-          ) {
-
-            setError(
-              "Indica el Protocolo."
-            );
-
-            return;
-          }
-
-
-          if (
-            form.fecha_envio >
-            form.fecha_firma
-          ) {
-
-            setError(
-              "La Fecha de envío no puede ser posterior a la Fecha de firma."
-            );
-
-            return;
-          }
-
-        }
-
-
-        // ------------------------------------------------------
-        // NOMBRE COMPLETO NOTARIO
-        // ------------------------------------------------------
-
-        const nombreNotario =
-          `${form.notario.nombre || ""} ${
-            form.notario.apellidos || ""
-          }`.trim();
-
-
-        // ------------------------------------------------------
-        // PAYLOAD EXPEDIENTE
-        // ------------------------------------------------------
-
-        const payload = {
-
-          id_expediente:
-            expediente.id_expediente,
-
-          escritura_firmada:
-            form.escritura_firmada ===
-            "Sí",
-
-          fecha_envio:
-            form.fecha_envio,
-
-          fecha_solicitud_pnc:
-            form.fecha_solicitud_pnc,
-
-          numero_solicitud_pnc:
-            form.numero_solicitud_pnc.trim(),
-
-          fecha_firma:
-            form.escritura_firmada ===
-            "Sí"
-              ? form.fecha_firma
-              : null,
-
-          protocolo:
-            form.escritura_firmada ===
-            "Sí"
-              ? form.protocolo.trim()
-              : null,
-
-          fecha_prevista_firma:
-            form.fecha_prevista_firma,
-
-          hora_prevista_firma:
-            form.hora_prevista_firma,
-
-          notario_id:
-            form.notario.id,
-
-          nombre_notario:
-            nombreNotario,
-
-          nif_notario:
-            form.notario.nif ||
-            "",
-
-          notario:
-            nombreNotario,
-
-          apoderado:
-            form.notario.apoderado ||
-            "",
-
-          tipo_firma:
-            form.notario.tipo_firma ||
-            "",
-
-          tipo_documento:
-            form.tipo_documento,
-
-          poblacion:
-            form.notario.municipio ||
-            "",
-
-          provincia:
-            form.notario.provincia ||
-            "",
-
-        };
-
-
-        // ------------------------------------------------------
-        // INICIO GUARDADO
-        // ------------------------------------------------------
+        // CREAR CITA
 
         try {
-
-          setLoading(true);
-
+          const cita = await crearCitaAgenda();
 
           console.log(
+            "4. CITA DE AGENDA PROCESADA:",
+            cita
+          );
+        } catch (agendaError) {
+          console.error(
             "=================================================="
           );
 
-          console.log(
-            "ENVÍO A NOTARIO — INICIO"
+          console.error(
+            "AGENDA — ERROR CREANDO CITA"
           );
 
-          console.log(
-            "EXPEDIENTE:",
-            expediente.id_expediente
+          console.error(
+            "AGENDA — ERROR COMPLETO:",
+            agendaError
           );
 
-          console.log(
-            "PAYLOAD EXPEDIENTE:",
-            payload
+          console.error(
+            "AGENDA — RESPONSE:",
+            agendaError?.response?.data
           );
 
-          console.log(
+          console.error(
+            "AGENDA — STATUS:",
+            agendaError?.response?.status
+          );
+
+          console.error(
             "=================================================="
           );
 
-
-          // ----------------------------------------------------
-          // PRIMERO GUARDAMOS EL ENVÍO DEL EXPEDIENTE
-          // ----------------------------------------------------
-
-          console.log(
-            "1. ANTES DE onGuardar()"
-          );
-
-
-          await onGuardar(
-            payload
-          );
-
-
-          // ----------------------------------------------------
-          // ESTA LÍNEA ES MUY IMPORTANTE PARA EL DIAGNÓSTICO
-          // ----------------------------------------------------
-
-          console.log(
-            "2. DESPUÉS DE onGuardar()"
-          );
-
-
-          console.log(
-            "3. AHORA VAMOS A CREAR LA CITA EN AGENDA"
-          );
-
-
-          // ----------------------------------------------------
-          // CREAR CITA
-          // ----------------------------------------------------
-
-          try {
-
-            const cita =
-              await crearCitaAgenda();
-
-
-            console.log(
-              "4. CITA DE AGENDA PROCESADA:",
-              cita
-            );
-
-          } catch (agendaError) {
-
-            console.error(
-              "=================================================="
-            );
-
-            console.error(
-              "AGENDA — ERROR CREANDO CITA"
-            );
-
-            console.error(
-              "AGENDA — ERROR COMPLETO:",
-              agendaError
-            );
-
-            console.error(
-              "AGENDA — RESPONSE:",
-              agendaError?.response?.data
-            );
-
-            console.error(
-              "AGENDA — STATUS:",
-              agendaError?.response?.status
-            );
-
-            console.error(
-              "=================================================="
-            );
-
-
-            throw new Error(
-              agendaError?.response?.data?.detail ||
+          throw new Error(
+            agendaError?.response?.data?.detail ||
               agendaError?.response?.data?.message ||
               agendaError?.message ||
               "El envío se ha guardado, pero no se ha podido crear la cita en Agenda."
-            );
-
-          }
-
-
-          // ----------------------------------------------------
-          // TODO CORRECTO
-          // ----------------------------------------------------
-
-          console.log(
-            "=================================================="
           );
+        }
 
-          console.log(
-            "5. ENVÍO A NOTARIO COMPLETADO CORRECTAMENTE"
-          );
+        // TODO CORRECTO
 
-          console.log(
-            "=================================================="
-          );
+        console.log(
+          "=================================================="
+        );
 
+        console.log(
+          "5. ENVÍO A NOTARIO COMPLETADO CORRECTAMENTE"
+        );
 
-          // ----------------------------------------------------
-          // CERRAR MODAL
-          // ----------------------------------------------------
+        console.log(
+          "=================================================="
+        );
 
-          onClose();
+        // CERRAR MODAL
 
-        } catch (err) {
+        onClose();
+      } catch (err) {
+        console.error(
+          "=================================================="
+        );
 
-          console.error(
-            "=================================================="
-          );
+        console.error(
+          "ERROR ENVIANDO EXPEDIENTE A NOTARIO"
+        );
 
-          console.error(
-            "ERROR ENVIANDO EXPEDIENTE A NOTARIO"
-          );
+        console.error("ERROR:", err);
 
-          console.error(
-            "ERROR:",
-            err
-          );
+        console.error(
+          "RESPONSE:",
+          err?.response?.data
+        );
 
-          console.error(
-            "RESPONSE:",
-            err?.response?.data
-          );
+        console.error(
+          "STATUS:",
+          err?.response?.status
+        );
 
-          console.error(
-            "STATUS:",
-            err?.response?.status
-          );
+        console.error(
+          "=================================================="
+        );
 
-          console.error(
-            "=================================================="
-          );
-
-
-          setError(
-            err?.response?.data?.detail ||
+        setError(
+          err?.response?.data?.detail ||
             err?.response?.data?.message ||
             err?.message ||
             "No se ha podido completar el envío a notario."
-          );
-
-        } finally {
-
-          setLoading(false);
-
-        }
-
-      },
-      [
-        loading,
-        expediente,
-        form,
-        onGuardar,
-        crearCitaAgenda,
-        onClose,
-      ]
-    );
-
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      loading,
+      expediente,
+      form,
+      onGuardar,
+      crearCitaAgenda,
+      onClose,
+    ]
+  );
 
   // ==========================================================
   // SI NO HAY EXPEDIENTE
@@ -1327,10 +946,7 @@ export default function EnviarANotarioModal({
     return null;
   }
 
-
-  const notario =
-    form.notario;
-
+  const notario = form.notario;
 
   // ==========================================================
   // RENDER
@@ -1350,20 +966,14 @@ export default function EnviarANotarioModal({
         p-4
       "
       onMouseDown={(event) => {
-
         if (
-          event.target ===
-            event.currentTarget &&
+          event.target === event.currentTarget &&
           !loading
         ) {
-
           onClose();
-
         }
-
       }}
     >
-
       <div
         className="
           w-full
@@ -1381,10 +991,7 @@ export default function EnviarANotarioModal({
           event.stopPropagation()
         }
       >
-
-        {/* ====================================================
-            CABECERA
-        ==================================================== */}
+        {/* CABECERA */}
 
         <div
           className="
@@ -1403,17 +1010,8 @@ export default function EnviarANotarioModal({
             border-slate-200
           "
         >
-
           <div>
-
-            <div
-              className="
-                flex
-                items-center
-                gap-3
-              "
-            >
-
+            <div className="flex items-center gap-3">
               <div
                 className="
                   flex
@@ -1430,7 +1028,6 @@ export default function EnviarANotarioModal({
               </div>
 
               <div>
-
                 <h2
                   className="
                     text-xl
@@ -1441,25 +1038,15 @@ export default function EnviarANotarioModal({
                   Envío a notario
                 </h2>
 
-                <p
-                  className="
-                    mt-0.5
-                    text-sm
-                    text-slate-500
-                  "
-                >
+                <p className="mt-0.5 text-sm text-slate-500">
                   Expediente{" "}
                   <strong>
                     {expediente.id_expediente}
                   </strong>
                 </p>
-
               </div>
-
             </div>
-
           </div>
-
 
           <button
             type="button"
@@ -1480,63 +1067,28 @@ export default function EnviarANotarioModal({
           >
             ✕
           </button>
-
         </div>
 
-
-        {/* ====================================================
-            CONTENIDO
-        ==================================================== */}
+        {/* CONTENIDO */}
 
         <div className="px-6 py-6">
-
-          {/* ==================================================
-              ESCRITURA FIRMADA
-          ================================================== */}
+          {/* ESCRITURA FIRMADA */}
 
           <section className="mb-6">
-
             <div className="mb-4">
-
-              <h3
-                className="
-                  text-sm
-                  font-bold
-                  text-slate-800
-                "
-              >
+              <h3 className="text-sm font-bold text-slate-800">
                 Escritura
               </h3>
 
-              <p
-                className="
-                  mt-1
-                  text-xs
-                  text-slate-500
-                "
-              >
+              <p className="mt-1 text-xs text-slate-500">
                 Indica si la escritura ya ha sido firmada.
               </p>
-
             </div>
 
-
-            <div
-              className="
-                grid
-                grid-cols-2
-                gap-3
-              "
-            >
-
-              {[
-                "No",
-                "Sí",
-              ].map((opcion) => {
-
+            <div className="grid grid-cols-2 gap-3">
+              {["No", "Sí"].map((opcion) => {
                 const activa =
-                  form.escritura_firmada ===
-                  opcion;
+                  form.escritura_firmada === opcion;
 
                 return (
                   <button
@@ -1544,9 +1096,7 @@ export default function EnviarANotarioModal({
                     type="button"
                     disabled={loading}
                     onClick={() =>
-                      cambiarEscrituraFirmada(
-                        opcion
-                      )
+                      cambiarEscrituraFirmada(opcion)
                     }
                     className={`
                       rounded-2xl
@@ -1556,7 +1106,6 @@ export default function EnviarANotarioModal({
                       text-sm
                       font-semibold
                       transition
-
                       ${
                         activa
                           ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]"
@@ -1564,85 +1113,81 @@ export default function EnviarANotarioModal({
                       }
                     `}
                   >
-                    {opcion === "Sí"
-                      ? "✓ Sí"
-                      : "○ No"}
+                    {opcion === "Sí" ? "✓ Sí" : "○ No"}
                   </button>
                 );
-
               })}
-
             </div>
-
           </section>
 
-
-          {/* ==================================================
-              DATOS DEL ENVÍO / PNC
-          ================================================== */}
+          {/* DATOS DEL ENVÍO / PNC */}
 
           <section className="mb-6">
-
             <div className="mb-4">
-
-              <h3
-                className="
-                  text-sm
-                  font-bold
-                  text-slate-800
-                "
-              >
+              <h3 className="text-sm font-bold text-slate-800">
                 Datos del envío
               </h3>
 
-              <p
-                className="
-                  mt-1
-                  text-xs
-                  text-slate-500
-                "
-              >
+              <p className="mt-1 text-xs text-slate-500">
                 Información de la solicitud PNC y del envío a notario.
               </p>
-
             </div>
 
-
-            <div
-              className="
-                grid
-                grid-cols-1
-                gap-4
-                md:grid-cols-2
-              "
-            >
-
-              {/* =================================================
-                  FECHA ENVÍO
-              ================================================= */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* IDIOMA */}
 
               <div>
+                <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                  Idioma
+                  <span className="text-red-500"> *</span>
+                </label>
 
-                <label
+                <select
+                  value={form.idioma}
+                  disabled={loading}
+                  onChange={(event) =>
+                    cambiarCampo(
+                      "idioma",
+                      event.target.value
+                    )
+                  }
                   className="
-                    mb-1.5
-                    block
+                    w-full
+                    rounded-xl
+                    border
+                    border-slate-300
+                    bg-white
+                    px-3
+                    py-2.5
                     text-sm
-                    font-semibold
                     text-slate-700
+                    outline-none
+                    focus:border-[var(--erp-primary)]
+                    focus:ring-2
+                    focus:ring-[var(--erp-primary-soft)]
                   "
                 >
+                  <option value="Catalán">
+                    Catalán
+                  </option>
+
+                  <option value="Castellano">
+                    Castellano
+                  </option>
+                </select>
+              </div>
+
+              {/* FECHA ENVÍO */}
+
+              <div>
+                <label className="mb-1.5 block text-sm font-semibold text-slate-700">
                   Fecha de envío
-                  <span className="text-red-500">
-                    {" "}*
-                  </span>
+                  <span className="text-red-500"> *</span>
                 </label>
 
                 <input
                   type="date"
-                  value={
-                    form.fecha_envio
-                  }
+                  value={form.fecha_envio}
                   disabled={loading}
                   onChange={(event) =>
                     cambiarCampo(
@@ -1666,40 +1211,20 @@ export default function EnviarANotarioModal({
                     focus:ring-[var(--erp-primary-soft)]
                   "
                 />
-
               </div>
 
-
-              {/* =================================================
-                  FECHA SOLICITUD PNC
-              ================================================= */}
+              {/* FECHA SOLICITUD PNC */}
 
               <div>
-
-                <label
-                  className="
-                    mb-1.5
-                    block
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                  "
-                >
+                <label className="mb-1.5 block text-sm font-semibold text-slate-700">
                   Fecha Solicitud PNC
-                  <span className="text-red-500">
-                    {" "}*
-                  </span>
+                  <span className="text-red-500"> *</span>
                 </label>
 
                 <input
                   type="date"
-                  value={
-                    form.fecha_solicitud_pnc
-                  }
-                  max={
-                    form.fecha_envio ||
-                    undefined
-                  }
+                  value={form.fecha_solicitud_pnc}
+                  max={form.fecha_envio || undefined}
                   disabled={loading}
                   onChange={(event) =>
                     cambiarCampo(
@@ -1723,36 +1248,19 @@ export default function EnviarANotarioModal({
                     focus:ring-[var(--erp-primary-soft)]
                   "
                 />
-
               </div>
 
-
-              {/* =================================================
-                  Nº SOLICITUD
-              ================================================= */}
+              {/* Nº SOLICITUD */}
 
               <div>
-
-                <label
-                  className="
-                    mb-1.5
-                    block
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                  "
-                >
+                <label className="mb-1.5 block text-sm font-semibold text-slate-700">
                   Nº de Solicitud
-                  <span className="text-red-500">
-                    {" "}*
-                  </span>
+                  <span className="text-red-500"> *</span>
                 </label>
 
                 <input
                   type="text"
-                  value={
-                    form.numero_solicitud_pnc
-                  }
+                  value={form.numero_solicitud_pnc}
                   disabled={loading}
                   onChange={(event) =>
                     cambiarCampo(
@@ -1777,59 +1285,26 @@ export default function EnviarANotarioModal({
                     focus:ring-[var(--erp-primary-soft)]
                   "
                 />
-
               </div>
-
             </div>
-
           </section>
 
-
-          {/* ==================================================
-              FECHAS DE FIRMA
-          ================================================== */}
+          {/* FECHAS DE FIRMA */}
 
           <section className="mb-6">
-
-            <div
-              className="
-                grid
-                grid-cols-1
-                gap-4
-                md:grid-cols-2
-              "
-            >
-
-              {/* =================================================
-                  FECHA PREVISTA FIRMA
-              ================================================= */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* FECHA PREVISTA FIRMA */}
 
               <div>
-
-                <label
-                  className="
-                    mb-1.5
-                    block
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                  "
-                >
+                <label className="mb-1.5 block text-sm font-semibold text-slate-700">
                   Fecha prevista de firma
-                  <span className="text-red-500">
-                    {" "}*
-                  </span>
+                  <span className="text-red-500"> *</span>
                 </label>
 
                 <input
                   type="date"
-                  value={
-                    form.fecha_prevista_firma
-                  }
-                  min={
-                    form.fecha_envio ||
-                    undefined
-                  }
+                  value={form.fecha_prevista_firma}
+                  min={form.fecha_envio || undefined}
                   disabled={loading}
                   onChange={(event) =>
                     cambiarCampo(
@@ -1854,45 +1329,22 @@ export default function EnviarANotarioModal({
                   "
                 />
 
-                <p
-                  className="
-                    mt-1
-                    text-[11px]
-                    text-slate-400
-                  "
-                >
+                <p className="mt-1 text-[11px] text-slate-400">
                   Se creará automáticamente la cita de firma en Agenda.
                 </p>
-
               </div>
 
-
-              {/* =================================================
-                  HORA PREVISTA FIRMA
-              ================================================= */}
+              {/* HORA PREVISTA FIRMA */}
 
               <div>
-
-                <label
-                  className="
-                    mb-1.5
-                    block
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                  "
-                >
+                <label className="mb-1.5 block text-sm font-semibold text-slate-700">
                   Hora prevista de firma
-                  <span className="text-red-500">
-                    {" "}*
-                  </span>
+                  <span className="text-red-500"> *</span>
                 </label>
 
                 <input
                   type="time"
-                  value={
-                    form.hora_prevista_firma
-                  }
+                  value={form.hora_prevista_firma}
                   disabled={loading}
                   onChange={(event) =>
                     cambiarCampo(
@@ -1917,52 +1369,24 @@ export default function EnviarANotarioModal({
                   "
                 />
 
-                <p
-                  className="
-                    mt-1
-                    text-[11px]
-                    text-slate-400
-                  "
-                >
+                <p className="mt-1 text-[11px] text-slate-400">
                   La cita tendrá una duración inicial de una hora.
                 </p>
-
               </div>
 
+              {/* FECHA FIRMA REAL */}
 
-              {/* =================================================
-                  FECHA FIRMA REAL
-              ================================================= */}
-
-              {form.escritura_firmada ===
-                "Sí" && (
-
+              {form.escritura_firmada === "Sí" && (
                 <div>
-
-                  <label
-                    className="
-                      mb-1.5
-                      block
-                      text-sm
-                      font-semibold
-                      text-slate-700
-                    "
-                  >
+                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">
                     Fecha de firma
-                    <span className="text-red-500">
-                      {" "}*
-                    </span>
+                    <span className="text-red-500"> *</span>
                   </label>
 
                   <input
                     type="date"
-                    value={
-                      form.fecha_firma
-                    }
-                    min={
-                      form.fecha_envio ||
-                      undefined
-                    }
+                    value={form.fecha_firma}
+                    min={form.fecha_envio || undefined}
                     disabled={loading}
                     onChange={(event) =>
                       cambiarCampo(
@@ -1986,43 +1410,22 @@ export default function EnviarANotarioModal({
                       focus:ring-[var(--erp-primary-soft)]
                     "
                   />
-
                 </div>
-
               )}
-
             </div>
 
+            {/* PROTOCOLO */}
 
-            {/* ==================================================
-                PROTOCOLO
-            ================================================== */}
-
-            {form.escritura_firmada ===
-              "Sí" && (
-
+            {form.escritura_firmada === "Sí" && (
               <div className="mt-4">
-
-                <label
-                  className="
-                    mb-1.5
-                    block
-                    text-sm
-                    font-semibold
-                    text-slate-700
-                  "
-                >
+                <label className="mb-1.5 block text-sm font-semibold text-slate-700">
                   Protocolo
-                  <span className="text-red-500">
-                    {" "}*
-                  </span>
+                  <span className="text-red-500"> *</span>
                 </label>
 
                 <input
                   type="text"
-                  value={
-                    form.protocolo
-                  }
+                  value={form.protocolo}
                   disabled={loading}
                   onChange={(event) =>
                     cambiarCampo(
@@ -2047,141 +1450,72 @@ export default function EnviarANotarioModal({
                     focus:ring-[var(--erp-primary-soft)]
                   "
                 />
-
               </div>
-
             )}
-
           </section>
 
-
-          {/* ==================================================
-              NOTARIO
-          ================================================== */}
+          {/* NOTARIO */}
 
           <section className="mb-6">
-
             <div className="mb-4">
-
-              <h3
-                className="
-                  text-sm
-                  font-bold
-                  text-slate-800
-                "
-              >
+              <h3 className="text-sm font-bold text-slate-800">
                 Notaría
               </h3>
 
-              <p
-                className="
-                  mt-1
-                  text-xs
-                  text-slate-500
-                "
-              >
+              <p className="mt-1 text-xs text-slate-500">
                 Selecciona el notario desde el catálogo CTN.
               </p>
-
             </div>
-
 
             <AutocompleteNotario
               value={notario}
               disabled={loading}
-              onSelect={
-                seleccionarNotario
-              }
+              onSelect={seleccionarNotario}
             />
 
-
-            {/* =================================================
-                DATOS AUTOMÁTICOS
-            ================================================= */}
+            {/* DATOS AUTOMÁTICOS */}
 
             {notario && (
-
-              <div
-                className="
-                  mt-4
-                  grid
-                  grid-cols-1
-                  gap-3
-                  md:grid-cols-2
-                "
-              >
-
+              <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
                 <CampoAutomatico
                   label="Apoderado"
-                  valor={
-                    notario.apoderado
-                  }
+                  valor={notario.apoderado}
                 />
 
                 <CampoAutomatico
                   label="Tipo de firma"
-                  valor={
-                    notario.tipo_firma
-                  }
+                  valor={notario.tipo_firma}
                 />
 
                 <CampoAutomatico
                   label="NIF notario"
-                  valor={
-                    notario.nif
-                  }
+                  valor={notario.nif}
                 />
 
                 <CampoAutomatico
                   label="Población"
-                  valor={
-                    notario.municipio
-                  }
+                  valor={notario.municipio}
                 />
 
                 <CampoAutomatico
                   label="Provincia"
-                  valor={
-                    notario.provincia
-                  }
+                  valor={notario.provincia}
                 />
-
               </div>
-
             )}
-
           </section>
 
-
-          {/* ==================================================
-              TIPO DOCUMENTO
-          ================================================== */}
+          {/* TIPO DOCUMENTO */}
 
           <section className="mb-6">
-
-            <label
-              className="
-                mb-1.5
-                block
-                text-sm
-                font-semibold
-                text-slate-700
-              "
-            >
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
               Tipo documento
-              <span className="text-red-500">
-                {" "}*
-              </span>
+              <span className="text-red-500"> *</span>
             </label>
 
             <select
-              value={
-                form.tipo_documento
-              }
-              disabled={
-                loading ||
-                loadingTipos
-              }
+              value={form.tipo_documento}
+              disabled={loading || loadingTipos}
               onChange={(event) =>
                 cambiarCampo(
                   "tipo_documento",
@@ -2204,37 +1538,26 @@ export default function EnviarANotarioModal({
                 focus:ring-[var(--erp-primary-soft)]
               "
             >
-
               <option value="">
                 {loadingTipos
                   ? "Cargando tipos de documento..."
                   : "Seleccionar tipo de documento"}
               </option>
 
-              {tiposDocumento.map(
-                (tipo) => (
-
-                  <option
-                    key={tipo.id}
-                    value={tipo.nombre}
-                  >
-                    {tipo.nombre}
-                  </option>
-
-                )
-              )}
-
+              {tiposDocumento.map((tipo) => (
+                <option
+                  key={tipo.id}
+                  value={tipo.nombre}
+                >
+                  {tipo.nombre}
+                </option>
+              ))}
             </select>
-
           </section>
 
-
-          {/* ==================================================
-              RESUMEN
-          ================================================== */}
+          {/* RESUMEN */}
 
           {notario && (
-
             <section
               className="
                 rounded-2xl
@@ -2244,7 +1567,6 @@ export default function EnviarANotarioModal({
                 p-4
               "
             >
-
               <div
                 className="
                   mb-3
@@ -2258,30 +1580,27 @@ export default function EnviarANotarioModal({
                 Resumen del envío
               </div>
 
-
-              <div
-                className="
-                  grid
-                  grid-cols-1
-                  gap-3
-                  sm:grid-cols-2
-                "
-              >
-
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Resumen
                   label="Expediente"
-                  valor={
-                    expediente.id_expediente
-                  }
+                  valor={expediente.id_expediente}
                 />
 
                 <Resumen
                   label="Notario"
-                  valor={
-                    `${notario.nombre || ""} ${
-                      notario.apellidos || ""
-                    }`.trim()
-                  }
+                  valor={`${notario.nombre || ""} ${
+                    notario.apellidos || ""
+                  }`.trim()}
+                />
+
+                <Resumen
+                  label="Idioma del documento"
+                  valor={form.idioma}
+                />
+
+                <Resumen
+                  label="Tipo documento"
+                  valor={form.tipo_documento}
                 />
 
                 <Resumen
@@ -2293,9 +1612,7 @@ export default function EnviarANotarioModal({
 
                 <Resumen
                   label="Nº de Solicitud"
-                  valor={
-                    form.numero_solicitud_pnc
-                  }
+                  valor={form.numero_solicitud_pnc}
                 />
 
                 <Resumen
@@ -2314,10 +1631,7 @@ export default function EnviarANotarioModal({
 
                 <Resumen
                   label="Hora prevista"
-                  valor={
-                    form.hora_prevista_firma ||
-                    "—"
-                  }
+                  valor={form.hora_prevista_firma || "—"}
                 />
 
                 <Resumen
@@ -2331,25 +1645,15 @@ export default function EnviarANotarioModal({
 
                 <Resumen
                   label="Modalidad"
-                  valor={
-                    notario.tipo_firma ||
-                    "—"
-                  }
+                  valor={notario.tipo_firma || "—"}
                 />
-
               </div>
-
             </section>
-
           )}
 
-
-          {/* ==================================================
-              ERROR
-          ================================================== */}
+          {/* ERROR */}
 
           {error && (
-
             <div
               className="
                 mt-5
@@ -2365,15 +1669,10 @@ export default function EnviarANotarioModal({
             >
               {error}
             </div>
-
           )}
-
         </div>
 
-
-        {/* ====================================================
-            PIE
-        ==================================================== */}
+        {/* PIE */}
 
         <div
           className="
@@ -2389,7 +1688,6 @@ export default function EnviarANotarioModal({
             sm:justify-end
           "
         >
-
           <button
             type="button"
             disabled={loading}
@@ -2412,13 +1710,14 @@ export default function EnviarANotarioModal({
             Cancelar
           </button>
 
-
           <button
             type="button"
             disabled={
               loading ||
               !form.notario ||
               !form.tipo_documento ||
+              !form.idioma ||
+              !form.fecha_envio ||
               !form.fecha_solicitud_pnc ||
               !form.numero_solicitud_pnc.trim() ||
               !form.fecha_prevista_firma ||
@@ -2444,15 +1743,11 @@ export default function EnviarANotarioModal({
               ? "Guardando..."
               : "Enviar a notario"}
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 }
-
 
 // ============================================================
 // CAMPO AUTOMÁTICO
@@ -2462,10 +1757,8 @@ function CampoAutomatico({
   label,
   valor,
 }) {
-
   return (
     <div>
-
       <label
         className="
           mb-1
@@ -2497,11 +1790,9 @@ function CampoAutomatico({
       >
         {valor || "—"}
       </div>
-
     </div>
   );
 }
-
 
 // ============================================================
 // RESUMEN
@@ -2511,10 +1802,8 @@ function Resumen({
   label,
   valor,
 }) {
-
   return (
     <div>
-
       <div
         className="
           text-[11px]
@@ -2536,7 +1825,7 @@ function Resumen({
       >
         {valor || "—"}
       </div>
-
     </div>
   );
 }
+```
