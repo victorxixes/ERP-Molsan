@@ -1522,6 +1522,20 @@ const [
     setDefectoLocal,
   ] = useState(null);
 
+
+  // ----------------------------------------------------------
+  // PPAD — CONCEPTOS DEL EXPEDIENTE
+  // Se conservan por expediente en este navegador.
+  // ----------------------------------------------------------
+  const [ppadItems, setPpadItems] = useState([]);
+  const [mostrarFormularioPpad, setMostrarFormularioPpad] = useState(false);
+  const [ppadEditandoId, setPpadEditandoId] = useState(null);
+  const [ppadForm, setPpadForm] = useState({
+    concepto: "",
+    importe: "",
+    imputableA: "Molsan",
+  });
+
   // ==========================================================
   // CARGAR EXPEDIENTE
   // ==========================================================
@@ -1592,6 +1606,17 @@ const [
             );
           } catch {
             setExpedientesManuales([]);
+          }
+
+          try {
+            const ppadGuardados = JSON.parse(
+              localStorage.getItem(
+                `erp_expediente_ppad_${datos?.id_expediente || id}`
+              ) || "[]"
+            );
+            setPpadItems(Array.isArray(ppadGuardados) ? ppadGuardados : []);
+          } catch {
+            setPpadItems([]);
           }
 
           if (
@@ -2244,12 +2269,80 @@ const [
 
 
 
+    function abrirNuevoPpad() {
+    setPpadEditandoId(null);
+    setPpadForm({ concepto: "", importe: "", imputableA: "Molsan" });
+    setMostrarFormularioPpad(true);
+  }
+
+  function editarPpad(item) {
+    setPpadEditandoId(item.id);
+    setPpadForm({
+      concepto: item.concepto || "",
+      importe: item.importe ?? "",
+      imputableA: item.imputableA || "Molsan",
+    });
+    setMostrarFormularioPpad(true);
+  }
+
+  function cancelarPpad() {
+    setMostrarFormularioPpad(false);
+    setPpadEditandoId(null);
+    setPpadForm({ concepto: "", importe: "", imputableA: "Molsan" });
+  }
+
+  function aceptarPpad() {
+    const concepto = ppadForm.concepto.trim();
+    const importeTexto = String(ppadForm.importe).trim();
+    if (!concepto || !importeTexto) return;
+
+    const importeNormalizado = importeTexto.replace(/\s/g, "").replace(/\.(?=\d{3}(?:\D|$))/g, "").replace(",", ".");
+    const importeNumero = Number(importeNormalizado);
+    if (!Number.isFinite(importeNumero)) return;
+
+    const nuevo = {
+      id: ppadEditandoId || `ppad-${Date.now()}`,
+      concepto,
+      importe: importeNumero,
+      imputableA: ppadForm.imputableA === "Externo" ? "Externo" : "Molsan",
+    };
+    const actualizados = ppadEditandoId
+      ? ppadItems.map((item) => item.id === ppadEditandoId ? nuevo : item)
+      : [...ppadItems, nuevo];
+    setPpadItems(actualizados);
+    try {
+      localStorage.setItem(
+        `erp_expediente_ppad_${expediente?.id_expediente || id}`,
+        JSON.stringify(actualizados)
+      );
+    } catch (err) {
+      console.error("No se han podido guardar los datos PPAD en este navegador:", err);
+    }
+    cancelarPpad();
+  }
+
+  function eliminarPpad(itemId) {
+    const actualizados = ppadItems.filter((item) => item.id !== itemId);
+    setPpadItems(actualizados);
+    try {
+      localStorage.setItem(
+        `erp_expediente_ppad_${expediente?.id_expediente || id}`,
+        JSON.stringify(actualizados)
+      );
+    } catch (err) {
+      console.error("No se han podido actualizar los datos PPAD:", err);
+    }
+    if (ppadEditandoId === itemId) cancelarPpad();
+  }
+
+
+
   // ==========================================================
   // LOADING
   // ==========================================================
 
   if (loading) {
-    return (
+  return (
       <div
         className="
           erp-page
@@ -2787,6 +2880,12 @@ const [
                 estado
               />
 
+              <Dato
+                campo="Tipo operación"
+                valor={
+                  expediente.tipo_operacion
+                }
+              />
 
               <Dato
                 campo="Oficina"
@@ -3110,6 +3209,94 @@ const [
 
           </Seccion>
 
+          {/* PPAD */}
+          <Seccion
+            titulo="PPAD"
+            subtitulo="Conceptos, importes e imputación"
+            icono="economico"
+            colapsable
+            compacto
+          >
+            <div className="space-y-3">
+              {ppadItems.length === 0 && !mostrarFormularioPpad && (
+                <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
+                  Todavía no hay conceptos PPAD añadidos.
+                </p>
+              )}
+
+              {ppadItems.map((item) => (
+                <div key={item.id} className="rounded-xl border border-slate-200 bg-white p-3">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Concepto</div>
+                      <div className="mt-1 break-words text-xs font-semibold text-slate-800">{item.concepto}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Importe</div>
+                      <div className="mt-1 text-xs font-semibold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Imputable a</div>
+                      <div className="mt-1 text-xs font-semibold text-slate-800">{item.imputableA}</div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex justify-end gap-2">
+                    <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>
+                    <Boton tipo="danger" onClick={() => eliminarPpad(item.id)}>Eliminar</Boton>
+                  </div>
+                </div>
+              ))}
+
+              {mostrarFormularioPpad && (
+                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <label className="block sm:col-span-2">
+                      <span className="mb-1 block text-xs font-semibold text-slate-600">Concepto</span>
+                      <input
+                        type="text"
+                        value={ppadForm.concepto}
+                        onChange={(event) => setPpadForm((actual) => ({ ...actual, concepto: event.target.value }))}
+                        placeholder="Introduce el concepto"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        autoFocus
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1 block text-xs font-semibold text-slate-600">Importe (€)</span>
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={ppadForm.importe}
+                        onChange={(event) => setPpadForm((actual) => ({ ...actual, importe: event.target.value }))}
+                        placeholder="0,00"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1 block text-xs font-semibold text-slate-600">Imputable a</span>
+                      <select
+                        value={ppadForm.imputableA}
+                        onChange={(event) => setPpadForm((actual) => ({ ...actual, imputableA: event.target.value }))}
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                      >
+                        <option value="Molsan">Molsan</option>
+                        <option value="Externo">Externo</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div className="mt-3 flex flex-wrap justify-end gap-2">
+                    <Boton tipo="secondary" onClick={cancelarPpad}>Cancelar</Boton>
+                    <Boton tipo="primary" onClick={aceptarPpad} disabled={!ppadForm.concepto.trim() || !String(ppadForm.importe).trim()}>Aceptar</Boton>
+                  </div>
+                </div>
+              )}
+
+              {!mostrarFormularioPpad && (
+                <Boton tipo="primary" onClick={abrirNuevoPpad}>＋ Añadir concepto PPAD</Boton>
+              )}
+            </div>
+          </Seccion>
+
         </div>
 
  {/* ===================================================
@@ -3133,6 +3320,13 @@ const [
               "
             >
 
+              <Dato
+                campo="Nº expediente"
+                valor={
+                  expediente.id_expediente
+                }
+                destaque
+              />
 
               <Dato
                 campo="Contrato"
@@ -4359,6 +4553,7 @@ function CampoFormulario({
   tipo = "text",
   placeholder = "",
 }) {
+
   return (
     <div className="mt-4">
 
