@@ -794,3 +794,89 @@ def migrar_clientes_facturacion_envio_notario():
         )
         raise
 
+# ============================================================
+# DIAGNÓSTICO TEMPORAL — IDENTIFICAR BLOQUEOS EN STARTUP
+# ============================================================
+
+import inspect
+
+
+def instrumentar_inicio_aplicacion():
+    manejadores_originales = list(app.router.on_startup)
+    manejadores_instrumentados = []
+
+    for indice, manejador in enumerate(manejadores_originales):
+        nombre = getattr(
+            manejador,
+            "__qualname__",
+            getattr(manejador, "__name__", repr(manejador)),
+        )
+
+        if inspect.iscoroutinefunction(manejador):
+
+            async def manejador_async(
+                funcion=manejador,
+                nombre_funcion=nombre,
+                numero=indice,
+            ):
+                print(
+                    f"[STARTUP DIAG] INICIO {numero}: {nombre_funcion}",
+                    flush=True,
+                )
+
+                try:
+                    resultado = await funcion()
+                    print(
+                        f"[STARTUP DIAG] FIN {numero}: {nombre_funcion}",
+                        flush=True,
+                    )
+                    return resultado
+                except Exception as error:
+                    print(
+                        f"[STARTUP DIAG] ERROR {numero}: "
+                        f"{nombre_funcion}: {error!r}",
+                        flush=True,
+                    )
+                    raise
+
+            manejadores_instrumentados.append(manejador_async)
+
+        else:
+
+            def manejador_sync(
+                funcion=manejador,
+                nombre_funcion=nombre,
+                numero=indice,
+            ):
+                print(
+                    f"[STARTUP DIAG] INICIO {numero}: {nombre_funcion}",
+                    flush=True,
+                )
+
+                try:
+                    resultado = funcion()
+                    print(
+                        f"[STARTUP DIAG] FIN {numero}: {nombre_funcion}",
+                        flush=True,
+                    )
+                    return resultado
+                except Exception as error:
+                    print(
+                        f"[STARTUP DIAG] ERROR {numero}: "
+                        f"{nombre_funcion}: {error!r}",
+                        flush=True,
+                    )
+                    raise
+
+            manejadores_instrumentados.append(manejador_sync)
+
+    app.router.on_startup[:] = manejadores_instrumentados
+
+    print(
+        f"[STARTUP DIAG] Total de tareas de inicio: "
+        f"{len(manejadores_instrumentados)}",
+        flush=True,
+    )
+
+
+instrumentar_inicio_aplicacion()
