@@ -119,4 +119,4 @@ except Exception as exc:
         status_code=500,
         detail=str(exc),
     ) from exc
-```
+
