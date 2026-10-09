@@ -1853,7 +1853,10 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
 async function cargarDefectosRegistrados() {
   const numero = expediente?.id_expediente;
-  if (!numero) return;
+  if (!numero) {
+    setDefectosRegistrados([]);
+    return;
+  }
 
   const respuesta = await listarDefectosExpediente(numero);
   const lista = Array.isArray(respuesta)
@@ -1863,6 +1866,48 @@ async function cargarDefectosRegistrados() {
       : [];
   setDefectosRegistrados(lista);
 }
+
+// Consultar los defectos al abrir/cambiar de expediente, no solo al abrir el modal.
+// El indicador de la cabecera se basa exclusivamente en registros devueltos por la API.
+useEffect(() => {
+  const numeroExpediente = expediente?.id_expediente;
+
+  if (!numeroExpediente) {
+    setDefectosRegistrados([]);
+    return undefined;
+  }
+
+  let cancelado = false;
+
+  async function cargarDefectosIniciales() {
+    try {
+      const respuesta = await listarDefectosExpediente(numeroExpediente);
+      const lista = Array.isArray(respuesta)
+        ? respuesta
+        : Array.isArray(respuesta?.defectos)
+          ? respuesta.defectos
+          : [];
+
+      if (!cancelado) {
+        setDefectosRegistrados(lista);
+      }
+    } catch (error) {
+      console.error(
+        "Error consultando los defectos registrados del expediente:",
+        error
+      );
+      if (!cancelado) {
+        setDefectosRegistrados([]);
+      }
+    }
+  }
+
+  cargarDefectosIniciales();
+
+  return () => {
+    cancelado = true;
+  };
+}, [expediente?.id_expediente]);
 
 async function abrirDefecto() {
   setErrorDefecto("");
@@ -2714,11 +2759,8 @@ async function descargarPDFCalificacion(defecto) {
   }
 
 
-  const tieneDefecto =
-    Boolean(
-      expediente.tiene_defectos_abiertos ||
-      defectoLocal
-    );
+  // Solo se considera que hay defecto si existe al menos un registro real en la API.
+  const tieneDefecto = defectosRegistrados.length > 0;
 
 
   // ==========================================================
@@ -3080,20 +3122,29 @@ async function descargarPDFCalificacion(defecto) {
             )}
 
             <Boton
-              onClick={
-                abrirActividades
-              }
+              onClick={abrirActividades}
             >
               ⚙️ Ver actividades
             </Boton>
 
+            <button
+              type="button"
+              onClick={abrirDefecto}
+              className="
+                inline-flex items-center justify-center gap-2
+                rounded-xl border border-blue-200 bg-blue-50
+                px-4 py-2.5 text-xs font-bold text-blue-700
+                shadow-sm transition hover:bg-blue-100
+                focus:outline-none focus:ring-2 focus:ring-blue-300
+              "
+              title="Registrar un defecto registral"
+            >
+              ➕ Alta defecto
+            </button>
+
             <Boton
               tipo="primary"
-              onClick={() =>
-                setMostrarEnviarNotario(
-                  true
-                )
-              }
+              onClick={() => setMostrarEnviarNotario(true)}
             >
               📤 Enviar a notario
             </Boton>
