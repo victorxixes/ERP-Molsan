@@ -1,4 +1,3 @@
-```python
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -758,4 +757,3 @@ def instrumentar_inicio_aplicacion():
 
 
 instrumentar_inicio_aplicacion()
-```
