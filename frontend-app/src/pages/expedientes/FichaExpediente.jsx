@@ -1853,17 +1853,16 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
 async function cargarDefectosRegistrados() {
   const numero = expediente?.id_expediente;
-  if (!numero) {
-    setDefectosRegistrados([]);
-    return;
-  }
+  if (!numero) return;
 
   const respuesta = await listarDefectosExpediente(numero);
+
   const lista = Array.isArray(respuesta)
     ? respuesta
     : Array.isArray(respuesta?.defectos)
       ? respuesta.defectos
       : [];
+
   setDefectosRegistrados(lista);
 }
 
@@ -2760,8 +2759,9 @@ async function descargarPDFCalificacion(defecto) {
 
 
   // Solo se considera que hay defecto si existe al menos un registro real en la API.
-  const tieneDefecto = defectosRegistrados.length > 0;
-
+const tieneDefecto = defectosRegistrados.some(
+  (defecto) => !defecto.fecha_entrada_subsanacion
+);
 
   // ==========================================================
   // RENDER
