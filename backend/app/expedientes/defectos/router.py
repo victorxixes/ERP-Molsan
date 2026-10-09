@@ -1,623 +1,751 @@
-from datetime import date
+from datetime import date, datetime
 from io import BytesIO
 from typing import Optional
 from urllib.parse import quote
 
 from fastapi import (
-APIRouter,
-Depends,
-File,
-HTTPException,
-UploadFile,
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    UploadFile,
 )
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.defectos.models import (
-DefectoSubtipo,
-ExpedienteDefecto,
+    DefectoSubtipo,
+    ExpedienteDefecto,
 )
 
+
+# ============================================================
+# CONFIGURACIÓN
+# ============================================================
+
 router = APIRouter(
-prefix="/expedientes",
-tags=["Defectos de expedientes"],
+    prefix="/expedientes",
+    tags=["Defectos de expedientes"],
 )
 
 MAX_PDF_BYTES = 15 * 1024 * 1024
 
+
 # ============================================================
-
-# ESQUEMAS
-
+# ESQUEMAS — SUBTIPOS DE DEFECTO
 # ============================================================
 
 class SubtipoCrear(BaseModel):
-nombre: str = Field(..., min_length=1, max_length=200)
-descripcion: Optional[str] = None
-activo: bool = True
+    nombre: str = Field(..., min_length=1, max_length=200)
+    descripcion: Optional[str] = None
+    activo: bool = True
+
 
 class SubtipoActualizar(BaseModel):
-nombre: str = Field(..., min_length=1, max_length=200)
-descripcion: Optional[str] = None
-activo: bool = True
+    nombre: str = Field(..., min_length=1, max_length=200)
+    descripcion: Optional[str] = None
+    activo: bool = True
 
 
 class SubtipoRespuesta(BaseModel):
-id: int
-nombre: str
-descripcion: Optional[str] = None
-activo: bool
+    id: int
+    nombre: str
+    descripcion: Optional[str] = None
+    activo: bool
+
+    class Config:
+        orm_mode = True
 
 
-class Config:
-    orm_mode = True
-
+# ============================================================
+# ESQUEMAS — DEFECTOS
+# ============================================================
 
 class DefectoCrear(BaseModel):
-documento: Optional[str] = Field(None, max_length=300)
-motivo_defecto: str = Field(..., min_length=1, max_length=500)
-subtipo_defecto_id: Optional[int] = None
-fecha_notificacion_registro: Optional[date] = None
-fecha_vencimiento_presentacion: Optional[date] = None
-fecha_entrada_subsanacion: Optional[date] = None
-observaciones_registro: Optional[str] = Field(None, max_length=200)
+    documento: Optional[str] = None
+    motivo_defecto: Optional[str] = None
+    subtipo_defecto_id: Optional[int] = None
+    fecha_notificacion_registro: Optional[date] = None
+    fecha_vencimiento_presentacion: Optional[date] = None
+    fecha_entrada_subsanacion: Optional[date] = None
+    observaciones_registro: Optional[str] = None
+
 
 class DefectoActualizar(BaseModel):
-documento: Optional[str] = Field(None, max_length=300)
-motivo_defecto: Optional[str] = Field(None, min_length=1, max_length=500)
-subtipo_defecto_id: Optional[int] = None
-fecha_notificacion_registro: Optional[date] = None
-fecha_vencimiento_presentacion: Optional[date] = None
-fecha_entrada_subsanacion: Optional[date] = None
-observaciones_registro: Optional[str] = Field(None, max_length=200)
-fecha_cierre_defecto: Optional[date] = None
-
-class DefectoRespuesta(BaseModel):
-id: int
-expediente_id: int
-documento: Optional[str] = None
-motivo_defecto: Optional[str] = None
-subtipo_defecto_id: Optional[int] = None
-subtipo_defecto: Optional[str] = None
-fecha_notificacion_registro: Optional[date] = None
-fecha_vencimiento_presentacion: Optional[date] = None
-fecha_entrada_subsanacion: Optional[date] = None
-fecha_cierre_defecto: Optional[date] = None
-observaciones_registro: Optional[str] = None
-tiene_defectos_abiertos: Optional[str] = None
-calificacion_nombre: Optional[str] = None
-calificacion_content_type: Optional[str] = None
-calificacion_tamano: Optional[int] = None
-
-
-class Config:
-    orm_mode = True
+    documento: Optional[str] = None
+    motivo_defecto: Optional[str] = None
+    subtipo_defecto_id: Optional[int] = None
+    fecha_notificacion_registro: Optional[date] = None
+    fecha_vencimiento_presentacion: Optional[date] = None
+    fecha_entrada_subsanacion: Optional[date] = None
+    observaciones_registro: Optional[str] = None
 
 
 # ============================================================
-
-# UTILIDADES
-
+# FUNCIONES AUXILIARES
 # ============================================================
 
-def obtener_expediente(db: Session, id_expediente: int) -> Expediente:
-# expedientes.id_expediente es VARCHAR en PostgreSQL.
-expediente = (
-db.query(Expediente)
-.filter(Expediente.id_expediente == str(id_expediente))
-.first()
-)
+def obtener_expediente(
+    db: Session,
+    id_expediente: str,
+):
+    """
+    Busca el expediente por su identificador externo.
 
-
-if not expediente:
-    raise HTTPException(
-        status_code=404,
-        detail=f"No se ha encontrado el expediente {id_expediente}.",
+    IMPORTANTE:
+    Expediente.id_expediente es de tipo texto en la base de datos.
+    Por eso se convierte el identificador recibido a str.
+    """
+    expediente = (
+        db.query(Expediente)
+        .filter(
+            Expediente.id_expediente == str(id_expediente)
+        )
+        .first()
     )
 
-return expediente
+    if expediente is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No existe el expediente {id_expediente}",
+        )
 
-
-def obtener_defecto(
-db: Session,
-expediente_id: int,
-defecto_id: int,
-) -> ExpedienteDefecto:
-defecto = (
-db.query(ExpedienteDefecto)
-.filter(
-ExpedienteDefecto.id == defecto_id,
-ExpedienteDefecto.expediente_id == expediente_id,
-)
-.first()
-)
-
-
-if not defecto:
-    raise HTTPException(
-        status_code=404,
-        detail="Defecto no encontrado.",
-    )
-
-return defecto
+    return expediente
 
 
 def obtener_subtipo_activo(
-db: Session,
-subtipo_id: int,
-) -> DefectoSubtipo:
-subtipo = (
-db.query(DefectoSubtipo)
-.filter(
-DefectoSubtipo.id == subtipo_id,
-DefectoSubtipo.activo.is_(True),
-)
-.first()
-)
+    db: Session,
+    subtipo_id: Optional[int],
+):
+    if subtipo_id is None:
+        return None
 
-
-if not subtipo:
-    raise HTTPException(
-        status_code=400,
-        detail="El subtipo seleccionado no existe o está inactivo.",
+    subtipo = (
+        db.query(DefectoSubtipo)
+        .filter(
+            DefectoSubtipo.id == subtipo_id,
+            DefectoSubtipo.activo.is_(True),
+        )
+        .first()
     )
 
-return subtipo
+    if subtipo is None:
+        raise HTTPException(
+            status_code=400,
+            detail="El subtipo de defecto no existe o está inactivo",
+        )
+
+    return subtipo
+
+
+def obtener_defecto(
+    db: Session,
+    defecto_id: int,
+):
+    """
+    Busca un defecto por su clave primaria.
+    Admite los nombres habituales de clave primaria.
+    """
+    if hasattr(ExpedienteDefecto, "id"):
+        campo_id = getattr(ExpedienteDefecto, "id")
+    elif hasattr(ExpedienteDefecto, "id_defecto"):
+        campo_id = getattr(ExpedienteDefecto, "id_defecto")
+    else:
+        raise HTTPException(
+            status_code=500,
+            detail="No se encuentra la clave primaria del modelo de defectos",
+        )
+
+    defecto = (
+        db.query(ExpedienteDefecto)
+        .filter(campo_id == defecto_id)
+        .first()
+    )
+
+    if defecto is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No existe el defecto {defecto_id}",
+        )
+
+    return defecto
+
+
+def campo_relacion_expediente():
+    """
+    Detecta el nombre de la columna que relaciona el defecto
+    con el expediente.
+    """
+    if hasattr(ExpedienteDefecto, "expediente_id"):
+        return getattr(ExpedienteDefecto, "expediente_id")
+
+    if hasattr(ExpedienteDefecto, "id_expediente"):
+        return getattr(ExpedienteDefecto, "id_expediente")
+
+    raise HTTPException(
+        status_code=500,
+        detail="El modelo ExpedienteDefecto no tiene una relación reconocida con Expediente",
+    )
 
 
 def sincronizar_campos_compatibilidad(
-defecto: ExpedienteDefecto,
-) -> None:
-"""Mantiene actualizados los campos históricos usados por otras pantallas."""
-defecto.tipo_error = defecto.motivo_defecto
-defecto.falta_defecto = (
-defecto.subtipo_defecto or defecto.motivo_defecto
-)
+    db: Session,
+    expediente,
+):
+    """
+    Actualiza los campos de compatibilidad del expediente, si existen
+    en el modelo actual.
+    """
+    relacion = campo_relacion_expediente()
+
+    consulta = db.query(ExpedienteDefecto).filter(
+        relacion == getattr(expediente, "id", None)
+    )
+
+    # Si la relación guarda el identificador externo como texto,
+    # intenta también esa forma de identificación.
+    if hasattr(ExpedienteDefecto, "id_expediente"):
+        consulta = db.query(ExpedienteDefecto).filter(
+            ExpedienteDefecto.id_expediente
+            == str(expediente.id_expediente)
+        )
+
+    defectos = consulta.all()
+    hay_defectos = len(defectos) > 0
+
+    if hasattr(expediente, "tiene_defectos_abiertos"):
+        expediente.tiene_defectos_abiertos = hay_defectos
+
+    if hasattr(expediente, "tipo_error"):
+        expediente.tipo_error = (
+            getattr(defectos[-1], "motivo_defecto", None)
+            if hay_defectos
+            else None
+        )
+
+    db.add(expediente)
 
 
-# La entrada de subsanación no equivale al cierre del defecto.
-if defecto.fecha_cierre_defecto:
-    defecto.tiene_defectos_abiertos = "NO"
-else:
-    defecto.tiene_defectos_abiertos = "SI"
+def datos_defecto(defecto):
+    """
+    Devuelve únicamente los datos del defecto.
+    Evita incluir el contenido binario del PDF en las respuestas JSON.
+    """
+    resultado = {}
+
+    campos = [
+        "id",
+        "id_defecto",
+        "documento",
+        "motivo_defecto",
+        "subtipo_defecto_id",
+        "subtipo_defecto",
+        "fecha_notificacion_registro",
+        "fecha_vencimiento_presentacion",
+        "fecha_entrada_subsanacion",
+        "observaciones_registro",
+        "calificacion_nombre",
+        "calificacion_content_type",
+        "calificacion_tamano",
+        "calificacion_subida_en",
+    ]
+
+    for campo in campos:
+        if hasattr(defecto, campo):
+            valor = getattr(defecto, campo)
+
+            if isinstance(valor, (date, datetime)):
+                valor = valor.isoformat()
+
+            resultado[campo] = valor
+
+    return resultado
+
+
+def actualizar_nombre_subtipo(
+    defecto,
+    subtipo,
+):
+    """
+    Mantiene el nombre del subtipo en el defecto si el modelo
+    dispone de ese campo de compatibilidad.
+    """
+    if hasattr(defecto, "subtipo_defecto"):
+        defecto.subtipo_defecto = (
+            subtipo.nombre if subtipo is not None else None
+        )
 
 
 # ============================================================
-
-# CATÁLOGO DE SUBTIPOS
-
-# Base URL: /api/expedientes/subtipos-defecto
-
+# CRUD — SUBTIPOS DE DEFECTO
 # ============================================================
 
 @router.get(
-"/subtipos-defecto",
-response_model=list[SubtipoRespuesta],
+    "/subtipos-defecto",
+    response_model=list[SubtipoRespuesta],
 )
 def listar_subtipos_defecto(
-incluir_inactivos: bool = False,
-db: Session = Depends(get_db),
+    db: Session = Depends(get_db),
 ):
-consulta = db.query(DefectoSubtipo)
-
-
-if not incluir_inactivos:
-    consulta = consulta.filter(
-        DefectoSubtipo.activo.is_(True)
+    return (
+        db.query(DefectoSubtipo)
+        .filter(DefectoSubtipo.activo.is_(True))
+        .order_by(DefectoSubtipo.nombre.asc())
+        .all()
     )
-
-return consulta.order_by(
-    DefectoSubtipo.nombre.asc()
-).all()
 
 
 @router.post(
-"/subtipos-defecto",
-response_model=SubtipoRespuesta,
-status_code=201,
+    "/subtipos-defecto",
+    response_model=SubtipoRespuesta,
+    status_code=201,
 )
 def crear_subtipo_defecto(
-datos: SubtipoCrear,
-db: Session = Depends(get_db),
+    datos: SubtipoCrear,
+    db: Session = Depends(get_db),
 ):
-nombre = " ".join(datos.nombre.strip().split())
+    nombre = datos.nombre.strip()
 
+    if not nombre:
+        raise HTTPException(
+            status_code=400,
+            detail="El nombre del subtipo es obligatorio",
+        )
 
-if not nombre:
-    raise HTTPException(
-        status_code=400,
-        detail="El nombre es obligatorio.",
+    existente = (
+        db.query(DefectoSubtipo)
+        .filter(
+            DefectoSubtipo.nombre == nombre,
+            DefectoSubtipo.activo.is_(True),
+        )
+        .first()
     )
 
-existente = (
-    db.query(DefectoSubtipo)
-    .filter(
-        func.lower(DefectoSubtipo.nombre) == nombre.lower()
-    )
-    .first()
-)
+    if existente:
+        raise HTTPException(
+            status_code=409,
+            detail="Ya existe un subtipo activo con ese nombre",
+        )
 
-if existente:
-    raise HTTPException(
-        status_code=409,
-        detail="Ya existe un subtipo con ese nombre.",
+    subtipo = DefectoSubtipo(
+        nombre=nombre,
+        descripcion=datos.descripcion,
+        activo=datos.activo,
     )
 
-subtipo = DefectoSubtipo(
-    nombre=nombre,
-    descripcion=datos.descripcion,
-    activo=datos.activo,
-)
-db.add(subtipo)
-
-try:
-    db.commit()
-    db.refresh(subtipo)
-except Exception as error:
-    db.rollback()
-    print(f"ERROR AL CREAR SUBTIPO DE DEFECTO: {repr(error)}")
-    raise HTTPException(
-        status_code=500,
-        detail=f"No se pudo guardar el subtipo: {str(error)[:1000]}",
-    )
-
-return subtipo
+    try:
+        db.add(subtipo)
+        db.commit()
+        db.refresh(subtipo)
+        return subtipo
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudo crear el subtipo de defecto",
+        )
 
 
 @router.put(
-"/subtipos-defecto/{subtipo_id}",
-response_model=SubtipoRespuesta,
+    "/subtipos-defecto/{subtipo_id}",
+    response_model=SubtipoRespuesta,
 )
 def actualizar_subtipo_defecto(
-subtipo_id: int,
-datos: SubtipoActualizar,
-db: Session = Depends(get_db),
+    subtipo_id: int,
+    datos: SubtipoActualizar,
+    db: Session = Depends(get_db),
 ):
-subtipo = (
-db.query(DefectoSubtipo)
-.filter(DefectoSubtipo.id == subtipo_id)
-.first()
-)
-
-
-if not subtipo:
-    raise HTTPException(
-        status_code=404,
-        detail="Subtipo no encontrado.",
+    subtipo = (
+        db.query(DefectoSubtipo)
+        .filter(DefectoSubtipo.id == subtipo_id)
+        .first()
     )
 
-nombre = " ".join(datos.nombre.strip().split())
+    if subtipo is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No existe el subtipo de defecto",
+        )
 
-if not nombre:
-    raise HTTPException(
-        status_code=400,
-        detail="El nombre es obligatorio.",
+    nombre = datos.nombre.strip()
+
+    if not nombre:
+        raise HTTPException(
+            status_code=400,
+            detail="El nombre del subtipo es obligatorio",
+        )
+
+    duplicado = (
+        db.query(DefectoSubtipo)
+        .filter(
+            DefectoSubtipo.nombre == nombre,
+            DefectoSubtipo.id != subtipo_id,
+            DefectoSubtipo.activo.is_(True),
+        )
+        .first()
     )
 
-duplicado = (
-    db.query(DefectoSubtipo)
-    .filter(
-        func.lower(DefectoSubtipo.nombre) == nombre.lower(),
-        DefectoSubtipo.id != subtipo_id,
-    )
-    .first()
-)
+    if duplicado:
+        raise HTTPException(
+            status_code=409,
+            detail="Ya existe otro subtipo activo con ese nombre",
+        )
 
-if duplicado:
-    raise HTTPException(
-        status_code=409,
-        detail="Ya existe otro subtipo con ese nombre.",
-    )
+    subtipo.nombre = nombre
+    subtipo.descripcion = datos.descripcion
+    subtipo.activo = datos.activo
 
-subtipo.nombre = nombre
-subtipo.descripcion = datos.descripcion
-subtipo.activo = datos.activo
-
-try:
-    db.commit()
-    db.refresh(subtipo)
-except Exception as error:
-    db.rollback()
-    print(f"ERROR AL ACTUALIZAR SUBTIPO DE DEFECTO: {repr(error)}")
-    raise HTTPException(
-        status_code=500,
-        detail=f"No se pudo actualizar el subtipo: {str(error)[:1000]}",
-    )
-
-return subtipo
+    try:
+        db.commit()
+        db.refresh(subtipo)
+        return subtipo
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudo actualizar el subtipo de defecto",
+        )
 
 
 @router.delete("/subtipos-defecto/{subtipo_id}")
 def desactivar_subtipo_defecto(
-subtipo_id: int,
-db: Session = Depends(get_db),
+    subtipo_id: int,
+    db: Session = Depends(get_db),
 ):
-subtipo = (
-db.query(DefectoSubtipo)
-.filter(DefectoSubtipo.id == subtipo_id)
-.first()
-)
-
-
-if not subtipo:
-    raise HTTPException(
-        status_code=404,
-        detail="Subtipo no encontrado.",
+    subtipo = (
+        db.query(DefectoSubtipo)
+        .filter(DefectoSubtipo.id == subtipo_id)
+        .first()
     )
 
-# No borramos el registro: los defectos históricos pueden referenciarlo.
-subtipo.activo = False
+    if subtipo is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No existe el subtipo de defecto",
+        )
 
-try:
-    db.commit()
-except Exception as error:
-    db.rollback()
-    print(f"ERROR AL DESACTIVAR SUBTIPO DE DEFECTO: {repr(error)}")
-    raise HTTPException(
-        status_code=500,
-        detail=f"No se pudo desactivar el subtipo: {str(error)[:1000]}",
-    )
+    # Desactivación lógica para conservar el histórico.
+    subtipo.activo = False
 
-return {
-    "ok": True,
-    "mensaje": "Subtipo desactivado.",
-}
+    try:
+        db.commit()
+        return {
+            "ok": True,
+            "mensaje": "Subtipo desactivado correctamente",
+        }
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudo desactivar el subtipo de defecto",
+        )
 
 
 # ============================================================
-
-# DEFECTOS POR EXPEDIENTE
-
+# DEFECTOS — LISTADO POR EXPEDIENTE
 # ============================================================
 
-@router.get(
-"/{id_expediente}/defectos",
-response_model=list[DefectoRespuesta],
-)
-def listar_defectos(
-id_expediente: int,
-db: Session = Depends(get_db),
+@router.get("/{id_expediente}/defectos")
+def listar_defectos_expediente(
+    id_expediente: str,
+    db: Session = Depends(get_db),
 ):
-expediente = obtener_expediente(db, id_expediente)
+    expediente = obtener_expediente(db, id_expediente)
+    relacion = campo_relacion_expediente()
+
+    # La relación puede utilizar la clave interna o el identificador
+    # externo del expediente.
+    consulta = db.query(ExpedienteDefecto)
+
+    if hasattr(ExpedienteDefecto, "expediente_id"):
+        consulta = consulta.filter(
+            ExpedienteDefecto.expediente_id == expediente.id
+        )
+    else:
+        consulta = consulta.filter(
+            relacion == str(expediente.id_expediente)
+        )
+
+    defectos = consulta.all()
+
+    return {
+        "id_expediente": str(expediente.id_expediente),
+        "total": len(defectos),
+        "defectos": [
+            datos_defecto(defecto)
+            for defecto in defectos
+        ],
+    }
 
 
-return (
-    db.query(ExpedienteDefecto)
-    .filter(
-        ExpedienteDefecto.expediente_id == expediente.id
-    )
-    .order_by(ExpedienteDefecto.id.desc())
-    .all()
-)
-
+# ============================================================
+# DEFECTOS — CREAR
+# ============================================================
 
 @router.post(
-"/{id_expediente}/defectos",
-response_model=DefectoRespuesta,
-status_code=201,
+    "/{id_expediente}/defectos",
+    status_code=201,
 )
 def crear_defecto(
-id_expediente: int,
-datos: DefectoCrear,
-db: Session = Depends(get_db),
+    id_expediente: str,
+    datos: DefectoCrear,
+    db: Session = Depends(get_db),
 ):
-expediente = obtener_expediente(db, id_expediente)
-
-
-subtipo = None
-
-if datos.subtipo_defecto_id is not None:
+    expediente = obtener_expediente(db, id_expediente)
     subtipo = obtener_subtipo_activo(
         db,
         datos.subtipo_defecto_id,
     )
 
-defecto = ExpedienteDefecto(
-    expediente_id=expediente.id,
-    documento=datos.documento,
-    motivo_defecto=datos.motivo_defecto.strip(),
-    subtipo_defecto_id=subtipo.id if subtipo else None,
-    subtipo_defecto=subtipo.nombre if subtipo else None,
-    fecha_notificacion_registro=datos.fecha_notificacion_registro,
-    fecha_vencimiento_presentacion=datos.fecha_vencimiento_presentacion,
-    fecha_entrada_subsanacion=datos.fecha_entrada_subsanacion,
-    observaciones_registro=datos.observaciones_registro,
-    tiene_defectos_abiertos="SI",
-)
+    valores = datos.dict()
 
-sincronizar_campos_compatibilidad(defecto)
-db.add(defecto)
-
-try:
-    db.commit()
-    db.refresh(defecto)
-except Exception as error:
-    db.rollback()
-    print(f"ERROR AL CREAR DEFECTO: {repr(error)}")
-    raise HTTPException(
-        status_code=500,
-        detail=f"No se pudo crear el defecto: {str(error)[:1000]}",
+    valores["subtipo_defecto"] = (
+        subtipo.nombre if subtipo is not None else None
     )
 
-return defecto
+    # Detecta la columna de relación existente en el modelo.
+    if hasattr(ExpedienteDefecto, "expediente_id"):
+        valores["expediente_id"] = expediente.id
+    elif hasattr(ExpedienteDefecto, "id_expediente"):
+        valores["id_expediente"] = str(expediente.id_expediente)
+    else:
+        raise HTTPException(
+            status_code=500,
+            detail="No se ha encontrado la relación del defecto con el expediente",
+        )
+
+    # Evita pasar campos de compatibilidad que no existan en el modelo.
+    columnas_modelo = {
+        columna.name
+        for columna in ExpedienteDefecto.__table__.columns
+    }
+
+    valores_validos = {
+        clave: valor
+        for clave, valor in valores.items()
+        if clave in columnas_modelo
+    }
+
+    try:
+        defecto = ExpedienteDefecto(**valores_validos)
+
+        db.add(defecto)
+        db.flush()
+
+        sincronizar_campos_compatibilidad(
+            db,
+            expediente,
+        )
+
+        db.commit()
+        db.refresh(defecto)
+
+        return {
+            "ok": True,
+            "mensaje": "Defecto registrado correctamente",
+            "defecto": datos_defecto(defecto),
+        }
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except Exception as exc:
+        db.rollback()
+        print(
+            "ERROR CREANDO DEFECTO:",
+            repr(exc),
+        )
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "No se pudo registrar el defecto. "
+                "Revisa los logs del backend para conocer el error concreto."
+            ),
+        )
 
 
-@router.put(
-"/{id_expediente}/defectos/{defecto_id}",
-response_model=DefectoRespuesta,
-)
+# ============================================================
+# DEFECTOS — ACTUALIZAR
+# ============================================================
+
+@router.put("/defectos/{defecto_id}")
 def actualizar_defecto(
-id_expediente: int,
-defecto_id: int,
-datos: DefectoActualizar,
-db: Session = Depends(get_db),
+    defecto_id: int,
+    datos: DefectoActualizar,
+    db: Session = Depends(get_db),
 ):
-expediente = obtener_expediente(db, id_expediente)
-defecto = obtener_defecto(
-db,
-expediente.id,
-defecto_id,
-)
+    defecto = obtener_defecto(db, defecto_id)
 
+    valores = datos.dict(exclude_unset=True)
 
-cambios = datos.dict(exclude_unset=True)
+    if "subtipo_defecto_id" in valores:
+        subtipo = obtener_subtipo_activo(
+            db,
+            valores["subtipo_defecto_id"],
+        )
 
-if (
-    "subtipo_defecto_id" in cambios
-    and cambios["subtipo_defecto_id"] is not None
-):
-    subtipo = obtener_subtipo_activo(
-        db,
-        cambios["subtipo_defecto_id"],
-    )
-    defecto.subtipo_defecto = subtipo.nombre
-    defecto.subtipo_defecto_id = subtipo.id
-    cambios.pop("subtipo_defecto_id", None)
+        actualizar_nombre_subtipo(
+            defecto,
+            subtipo,
+        )
 
-elif cambios.get("subtipo_defecto_id") is None:
-    defecto.subtipo_defecto_id = None
-    defecto.subtipo_defecto = None
-    cambios.pop("subtipo_defecto_id", None)
+    columnas_modelo = {
+        columna.name
+        for columna in ExpedienteDefecto.__table__.columns
+    }
 
-for campo, valor in cambios.items():
-    setattr(defecto, campo, valor)
+    for campo, valor in valores.items():
+        if campo in columnas_modelo:
+            setattr(defecto, campo, valor)
 
-sincronizar_campos_compatibilidad(defecto)
+    try:
+        db.commit()
+        db.refresh(defecto)
 
-try:
-    db.commit()
-    db.refresh(defecto)
-except Exception as error:
-    db.rollback()
-    print(f"ERROR AL ACTUALIZAR DEFECTO: {repr(error)}")
-    raise HTTPException(
-        status_code=500,
-        detail=f"No se pudo actualizar el defecto: {str(error)[:1000]}",
-    )
+        return {
+            "ok": True,
+            "mensaje": "Defecto actualizado correctamente",
+            "defecto": datos_defecto(defecto),
+        }
 
-return defecto
+    except Exception as exc:
+        db.rollback()
+        print(
+            "ERROR ACTUALIZANDO DEFECTO:",
+            repr(exc),
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudo actualizar el defecto",
+        )
 
 
 # ============================================================
-
-# CALIFICACIÓN DEL REGISTRO: SUBIDA Y DESCARGA DEL PDF
-
+# DEFECTOS — SUBIR PDF DE CALIFICACIÓN
 # ============================================================
 
-@router.post(
-"/{id_expediente}/defectos/{defecto_id}/calificacion"
-)
-async def subir_calificacion_registro(
-id_expediente: int,
-defecto_id: int,
-fichero: UploadFile = File(...),
-db: Session = Depends(get_db),
+@router.post("/defectos/{defecto_id}/calificacion")
+async def subir_calificacion_defecto(
+    defecto_id: int,
+    fichero: UploadFile = File(...),
+    db: Session = Depends(get_db),
 ):
-expediente = obtener_expediente(db, id_expediente)
-defecto = obtener_defecto(
-db,
-expediente.id,
-defecto_id,
-)
+    defecto = obtener_defecto(db, defecto_id)
 
+    nombre = fichero.filename or "calificacion.pdf"
+    content_type = fichero.content_type or ""
 
-nombre = (
-    (fichero.filename or "calificacion.pdf")
-    .replace("\\", "/")
-    .split("/")[-1]
-)
+    if not nombre.lower().endswith(".pdf") and content_type != "application/pdf":
+        raise HTTPException(
+            status_code=400,
+            detail="El fichero debe ser un PDF",
+        )
 
-if not nombre.lower().endswith(".pdf"):
-    raise HTTPException(
-        status_code=400,
-        detail="Solo se permiten archivos PDF.",
-    )
+    contenido = await fichero.read()
 
-try:
-    contenido = await fichero.read(MAX_PDF_BYTES + 1)
+    if not contenido:
+        raise HTTPException(
+            status_code=400,
+            detail="El fichero está vacío",
+        )
 
     if len(contenido) > MAX_PDF_BYTES:
         raise HTTPException(
             status_code=413,
-            detail="El PDF supera el límite de 15 MB.",
+            detail="El PDF supera el límite de 15 MB",
         )
 
     if not contenido.startswith(b"%PDF-"):
         raise HTTPException(
             status_code=400,
-            detail="El archivo seleccionado no parece ser un PDF válido.",
+            detail="El contenido recibido no parece ser un PDF válido",
         )
 
-    defecto.calificacion_archivo = contenido
-    defecto.calificacion_nombre = nombre[:255]
-    defecto.calificacion_content_type = "application/pdf"
-    defecto.calificacion_tamano = len(contenido)
+    campos_archivo = {
+        "calificacion_archivo": contenido,
+        "calificacion_nombre": nombre,
+        "calificacion_content_type": "application/pdf",
+        "calificacion_tamano": len(contenido),
+        "calificacion_subida_en": datetime.utcnow(),
+    }
+
+    columnas_modelo = {
+        columna.name
+        for columna in ExpedienteDefecto.__table__.columns
+    }
+
+    for campo, valor in campos_archivo.items():
+        if campo in columnas_modelo:
+            setattr(defecto, campo, valor)
+
+    if "calificacion_archivo" not in columnas_modelo:
+        raise HTTPException(
+            status_code=500,
+            detail="El modelo no tiene el campo calificacion_archivo",
+        )
 
     try:
         db.commit()
-    except Exception as error:
+        db.refresh(defecto)
+
+        return {
+            "ok": True,
+            "mensaje": "PDF de calificación guardado correctamente",
+            "defecto": datos_defecto(defecto),
+        }
+
+    except Exception as exc:
         db.rollback()
-        print(f"ERROR AL GUARDAR CALIFICACIÓN PDF: {repr(error)}")
+        print(
+            "ERROR SUBIENDO CALIFICACION:",
+            repr(exc),
+        )
         raise HTTPException(
             status_code=500,
-            detail=f"No se pudo guardar el PDF: {str(error)[:1000]}",
+            detail="No se pudo guardar el PDF de calificación",
         )
 
-finally:
-    await fichero.close()
 
-return {
-    "ok": True,
-    "nombre": defecto.calificacion_nombre,
-    "tamano": defecto.calificacion_tamano,
-}
+# ============================================================
+# DEFECTOS — DESCARGAR PDF DE CALIFICACIÓN
+# ============================================================
 
-
-@router.get(
-"/{id_expediente}/defectos/{defecto_id}/calificacion"
-)
-def descargar_calificacion_registro(
-id_expediente: int,
-defecto_id: int,
-db: Session = Depends(get_db),
+@router.get("/defectos/{defecto_id}/calificacion")
+def descargar_calificacion_defecto(
+    defecto_id: int,
+    db: Session = Depends(get_db),
 ):
-expediente = obtener_expediente(db, id_expediente)
-defecto = obtener_defecto(
-db,
-expediente.id,
-defecto_id,
-)
+    defecto = obtener_defecto(db, defecto_id)
 
-
-if not defecto.calificacion_archivo:
-    raise HTTPException(
-        status_code=404,
-        detail="Este defecto no tiene PDF adjunto.",
+    contenido = getattr(
+        defecto,
+        "calificacion_archivo",
+        None,
     )
 
-nombre = defecto.calificacion_nombre or "calificacion.pdf"
+    if not contenido:
+        raise HTTPException(
+            status_code=404,
+            detail="Este defecto no tiene ningún PDF de calificación adjunto",
+        )
 
-nombre_ascii = "".join(
-    caracter
-    if caracter.isascii() and caracter.isalnum()
-    else "_"
-    for caracter in nombre
-) or "calificacion.pdf"
+    nombre = (
+        getattr(defecto, "calificacion_nombre", None)
+        or f"calificacion_defecto_{defecto_id}.pdf"
+    )
 
-return StreamingResponse(
-    BytesIO(defecto.calificacion_archivo),
-    media_type="application/pdf",
-    headers={
-        "Content-Disposition": (
-            f'inline; filename="{nombre_ascii}"; '
-            f"filename*=UTF-8''{quote(nombre)}"
-        ),
-        "Content-Length": str(len(defecto.calificacion_archivo)),
-        "X-Content-Type-Options": "nosniff",
-    },
-)
-```
+    nombre_seguro = quote(nombre)
+
+    return StreamingResponse(
+        BytesIO(contenido),
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": (
+                f"attachment; filename*=UTF-8''{nombre_seguro}"
+            )
+        },
+    )
