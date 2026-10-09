@@ -1,3 +1,4 @@
+```python
 from sqlalchemy import (
     Column,
     Integer,
@@ -8,9 +9,41 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
 )
+from sqlalchemy.orm import relationship
 
 from backend.app.database import Base
 
+
+# ============================================================
+# CLIENTES
+# ============================================================
+
+class Cliente(Base):
+    __tablename__ = "clientes"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    nombre = Column(String(200), nullable=True)
+    apellidos = Column(String(300), nullable=True)
+    dni_nif = Column(String(50), unique=True, index=True, nullable=True)
+
+    direccion = Column(String(300), nullable=True)
+    codigo_postal = Column(String(20), nullable=True)
+    poblacion = Column(String(200), nullable=True)
+    provincia = Column(String(200), nullable=True)
+
+    telefono = Column(String(50), nullable=True)
+    email = Column(String(200), nullable=True)
+
+    expedientes = relationship(
+        "Expediente",
+        back_populates="cliente",
+    )
+
+
+# ============================================================
+# EXPEDIENTES
+# ============================================================
 
 class Expediente(Base):
     __tablename__ = "expedientes"
@@ -18,11 +51,26 @@ class Expediente(Base):
     # IDENTIFICACIÓN INTERNA
     id = Column(Integer, primary_key=True, index=True)
 
-    # RELACIÓN CON CLIENTE TITULAR
-    cliente_id = Column(Integer, ForeignKey("clientes.id"), nullable=True)
+    # RELACIÓN CON EL CLIENTE
+    cliente_id = Column(
+        Integer,
+        ForeignKey("clientes.id"),
+        nullable=True,
+        index=True,
+    )
+
+    cliente = relationship(
+        "Cliente",
+        back_populates="expedientes",
+    )
 
     # IDENTIFICACIÓN DEL EXPEDIENTE
-    id_expediente = Column(String(100), unique=True, index=True, nullable=False)
+    id_expediente = Column(
+        String(100),
+        unique=True,
+        index=True,
+        nullable=False,
+    )
 
     # ESTADOS
     estado_expediente = Column(String(200), nullable=True)
@@ -41,9 +89,12 @@ class Expediente(Base):
     fecha_inicio_actividad = Column(Date, nullable=True)
     fecha_fin_actividad = Column(Date, nullable=True)
 
-    # NUEVOS CAMPOS PERSISTENTES DEL ENVÍO A NOTARIO
+    # ENVÍO A NOTARIO
     fecha_envio_notario = Column(Date, nullable=True)
     fecha_solicitud_pnc = Column(Date, nullable=True)
+    numero_solicitud_pnc = Column(String(200), nullable=True)
+    escritura_firmada = Column(Boolean, nullable=True)
+    hora_prevista_firma = Column(Time, nullable=True)
 
     # TITULAR
     nombre_titular = Column(String(300), nullable=True)
@@ -61,9 +112,6 @@ class Expediente(Base):
     tipo_documento = Column(String(300), nullable=True)
     poblacion = Column(String(200), nullable=True)
     provincia = Column(String(200), nullable=True)
-    numero_solicitud_pnc = Column(String(200), nullable=True)
-    escritura_firmada = Column(Boolean, nullable=True)
-    hora_prevista_firma = Column(Time, nullable=True)
 
     # NOTARIO
     nombre_notario = Column(String(300), nullable=True)
@@ -131,9 +179,19 @@ class Expediente(Base):
     observaciones = Column(String(2000), nullable=True)
 
     # FACTURACIÓN
+    facturacion_nombre = Column(String(300), nullable=True)
+    facturacion_dni_nif = Column(String(50), nullable=True)
+    facturacion_direccion = Column(String(300), nullable=True)
+    facturacion_codigo_postal = Column(String(20), nullable=True)
+    facturacion_poblacion = Column(String(200), nullable=True)
+    facturacion_provincia = Column(String(200), nullable=True)
+    facturacion_telefono = Column(String(50), nullable=True)
+    facturacion_email = Column(String(200), nullable=True)
+
     facturacion_estado = Column(String(200), nullable=True)
     facturacion_fecha = Column(Date, nullable=True)
 
     # REGISTRAL
     registral_estado = Column(String(200), nullable=True)
     registral_fecha = Column(Date, nullable=True)
+```
