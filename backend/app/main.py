@@ -243,6 +243,11 @@ from backend.app.empleados.router import (
     router as empleados_router,
 )
 
+# DEFECTOS
+from backend.app.expedientes.defectos.router import (
+    router as defectos_router,
+)
+
 # MAESTROS
 from backend.app.maestros.router import (
     router as maestros_router,
@@ -487,6 +492,9 @@ app.include_router(ctn_router, prefix="/api")
 
 # DASHBOARD
 app.include_router(dashboard_router, prefix="/api")
+
+# DEFECTOS
+app.include_router(defectos_router,prefix="/api",)
 
 # UTILIDADES
 app.include_router(utilidades_router, prefix="/api")
