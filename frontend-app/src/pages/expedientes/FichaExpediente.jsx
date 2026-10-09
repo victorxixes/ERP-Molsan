@@ -1076,8 +1076,8 @@ function Dato({
         min-w-0
         rounded-xl
         border
-        px-3
-        py-3
+        px-2
+        py-2
         ${
           destaque
             ? "border-blue-100 bg-blue-50/60"
@@ -1087,7 +1087,7 @@ function Dato({
     >
       <p
         className="
-          mb-1.5
+          mb-1
           truncate
           text-[9px]
           font-bold
@@ -2910,8 +2910,8 @@ const [
           grid
            w-full
           grid-cols-1
-          gap-4
-          xl:grid-cols-3
+          gap-3
+          xl:grid-cols-4
         "
       >
 
@@ -3354,6 +3354,12 @@ const [
 
           </Seccion>
 
+        </div>
+
+        {/* ===================================================
+            COLUMNA 3 — PPAD
+        ==================================================== */}
+        <div className="min-w-0 space-y-3">
           {/* PPAD */}
           <Seccion
             titulo="PPAD"
@@ -3448,7 +3454,7 @@ const [
             COLUMNA 3 — INFORMACIÓN CREDITICIA
         ==================================================== */}
 
-        <div>
+        <div className="min-w-0">
 
           <Seccion
             titulo="Información crediticia"
