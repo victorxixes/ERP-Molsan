@@ -9,6 +9,7 @@ export async function listarDefectosExpediente(idExpediente) {
   const response = await axios.get(
     `/expedientes/${encodeURIComponent(idExpediente)}/defectos`
   );
+
   return response.data;
 }
 
@@ -17,6 +18,7 @@ export async function crearDefectoExpediente(idExpediente, datos) {
     `/expedientes/${encodeURIComponent(idExpediente)}/defectos`,
     datos
   );
+
   return response.data;
 }
 
@@ -29,10 +31,12 @@ export async function actualizarDefectoExpediente(
     `/expedientes/${encodeURIComponent(idExpediente)}/defectos/${defectoId}`,
     datos
   );
+
   return response.data;
 }
 
 // Registrar la fecha de entrada de la subsanación.
+// Requiere que el router de backend tenga la ruta PATCH correspondiente.
 export async function registrarSubsanacionDefecto(
   idExpediente,
   defectoId,
@@ -47,6 +51,7 @@ export async function registrarSubsanacionDefecto(
       },
     }
   );
+
   return response.data;
 }
 
@@ -60,6 +65,7 @@ export async function listarSubtiposDefecto(incluirInactivos = false) {
       incluir_inactivos: incluirInactivos,
     },
   });
+
   return response.data;
 }
 
@@ -68,6 +74,7 @@ export async function crearSubtipoDefecto(datos) {
     "/expedientes/subtipos-defecto",
     datos
   );
+
   return response.data;
 }
 
@@ -76,6 +83,7 @@ export async function actualizarSubtipoDefecto(subtipoId, datos) {
     `/expedientes/subtipos-defecto/${subtipoId}`,
     datos
   );
+
   return response.data;
 }
 
@@ -83,6 +91,20 @@ export async function desactivarSubtipoDefecto(subtipoId) {
   const response = await axios.delete(
     `/expedientes/subtipos-defecto/${subtipoId}`
   );
+
+  return response.data;
+}
+
+// ============================================================
+// CATÁLOGO DE TIPOS DE CARGA HIPOTECARIA
+// Utiliza el router ya existente en el backend.
+// ============================================================
+
+export async function listarTiposCargaHipotecaria() {
+  const response = await axios.get(
+    "/tipos-carga-hipotecaria/opciones"
+  );
+
   return response.data;
 }
 
