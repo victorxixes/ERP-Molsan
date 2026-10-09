@@ -2604,6 +2604,51 @@ const [
                 El sistema buscará otros expedientes cuyo titular tenga el mismo NIF.
               </p>
 
+              {(() => {
+                const listaVisibles = expedientesRelacionados.length > 0
+                  ? expedientesRelacionados
+                  : expedientesManuales.map((item) => ({ ...item, _manual: true }));
+
+                return listaVisibles.length > 0 ? (
+                  <div className="mt-3 space-y-2">
+                    {listaVisibles.map((relacionado) => (
+                      <div
+                        key={String(relacionado.id_expediente)}
+                        className="flex min-w-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-xs font-bold text-blue-700">
+                            {valorVisible(relacionado.id_expediente)}
+                          </div>
+                          <div className="truncate text-[10px] text-slate-500">
+                            {relacionado._manual ? "Añadido manualmente" : "Encontrado por NIF"}
+                            {relacionado.actividad_actual
+                              ? ` · ${relacionado.actividad_actual}`
+                              : ""}
+                          </div>
+                        </div>
+                        <Link
+                          to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`}
+                          className="shrink-0 rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-[10px] font-bold text-blue-700 hover:bg-blue-100"
+                        >
+                          Ver
+                        </Link>
+                        {relacionado._manual && (
+                          <button
+                            type="button"
+                            onClick={() => eliminarExpedienteRelacionado(relacionado.id_expediente)}
+                            className="shrink-0 rounded-md border border-red-200 bg-red-50 px-2 py-1 text-[10px] font-bold text-red-700 hover:bg-red-100"
+                            title="Eliminar expediente relacionado"
+                          >
+                            Eliminar
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
+
               <button
                 type="button"
                 onClick={abrirAgregarExpedientes}
