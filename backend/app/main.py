@@ -1,10 +1,12 @@
+```python
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
 
 import os
 
- 
+
 # ============================================================
 # APP
 # ============================================================
@@ -48,176 +50,67 @@ from backend.app.database import (
 
 # ============================================================
 # MODELOS
-#
-# IMPORTANTE:
-#
-# Se mantienen importados para que SQLAlchemy conozca todos
-# los modelos y sus relaciones.
-#
-# IMPORTANTE:
-#
-# NO ejecutamos aquí:
-#
-#   Base.metadata.create_all()
-#   ALTER TABLE
-#   CREATE INDEX
-#   CREATE FOREIGN KEY
-#   INSERT de datos iniciales
-#
-# El servidor debe poder arrancar sin ejecutar migraciones
-# ni operaciones pesadas sobre PostgreSQL.
 # ============================================================
-
-
-# ------------------------------------------------------------
-# EXPEDIENTES
-# ------------------------------------------------------------
 
 from backend.app.expedientes.models import (
     Expediente,
 )
 
-
-# ------------------------------------------------------------
-# FINCAS Y REGISTROS
-# ------------------------------------------------------------
-
 from backend.app.expedientes.fincasyregistros.models import (
     ExpedienteFinca,
 )
-
-
-# ------------------------------------------------------------
-# GASTOS
-# ------------------------------------------------------------
 
 from backend.app.expedientes.gastos.models import (
     ExpedienteGasto,
 )
 
-
-# ------------------------------------------------------------
-# DEFECTOS
-# ------------------------------------------------------------
-
 from backend.app.expedientes.defectos.models import (
     ExpedienteDefecto,
 )
-
-
-# ------------------------------------------------------------
-# ROLES
-# ------------------------------------------------------------
 
 from backend.app.seguridad.roles.models import (
     Rol,
 )
 
-
-# ------------------------------------------------------------
-# NOTARIAS
-#
-# Cita tiene relación con Notaria.
-# ------------------------------------------------------------
-
 from backend.app.ctn.models import (
     Notaria,
 )
-
-
-# ------------------------------------------------------------
-# CITAS
-#
-# Cita tiene relaciones con:
-# - Notaria
-# - Empleado
-# - Expediente
-# ------------------------------------------------------------
 
 from backend.app.agenda.models import (
     Cita,
 )
 
-
-# ------------------------------------------------------------
-# EMPLEADOS
-#
-# Empleado tiene relaciones con Rol y Cita.
-# ------------------------------------------------------------
-
 from backend.app.empleados.models import (
     Empleado,
 )
-
-
-# ------------------------------------------------------------
-# MENSAJES
-#
-# Mensaje tiene relación con Empleado.
-# ------------------------------------------------------------
 
 from backend.app.mensajes.models import (
     Mensaje,
 )
 
-
-# ------------------------------------------------------------
-# MUNICIPIOS
-# ------------------------------------------------------------
-
 from backend.app.municipios.models import (
     Municipio,
 )
-
-
-# ------------------------------------------------------------
-# ENTIDADES BANCARIAS
-# ------------------------------------------------------------
 
 from backend.app.entidades_bancarias.models import (
     EntidadBancaria,
 )
 
-
-# ------------------------------------------------------------
-# REGISTROS DE LA PROPIEDAD
-# ------------------------------------------------------------
-
 from backend.app.registros_propiedad.models import (
     RegistroPropiedad,
 )
-
-
-# ------------------------------------------------------------
-# OFICINAS LIQUIDADORAS
-# ------------------------------------------------------------
 
 from backend.app.oficinas_liquidadoras.models import (
     OficinaLiquidadora,
 )
 
-
-# ------------------------------------------------------------
-# TIPOS DE CARGA HIPOTECARIA
-# ------------------------------------------------------------
-
 from backend.app.tipos_carga_hipotecaria.models import (
     TipoCargaHipotecaria,
 )
 
-
-# ------------------------------------------------------------
-# TIPOS DE CONCEPTO DE GASTOS
-# ------------------------------------------------------------
-
 from backend.app.tipos_concepto_gastos.models import (
     TipoConceptoGastos,
 )
-
-
-# ------------------------------------------------------------
-# ACCIONES DEL EXPEDIENTE
-# ------------------------------------------------------------
 
 from backend.app.acciones_expediente.models import (
     AccionExpediente,
@@ -226,6 +119,8 @@ from backend.app.acciones_expediente.models import (
 from backend.app.expediente_acciones.models import (
     ExpedienteAccion,
 )
+
+
 # ============================================================
 # STATIC FILES
 # ============================================================
@@ -235,19 +130,14 @@ STATIC_DIR = os.path.join(
     "static",
 )
 
-
-# Evita que StaticFiles falle si la carpeta todavía no existe.
 os.makedirs(
     STATIC_DIR,
     exist_ok=True,
 )
 
-
 app.mount(
     "/static",
-    StaticFiles(
-        directory=STATIC_DIR
-    ),
+    StaticFiles(directory=STATIC_DIR),
     name="static",
 )
 
@@ -263,12 +153,9 @@ os.makedirs(
     exist_ok=True,
 )
 
-
 app.mount(
     "/static/mensajes",
-    StaticFiles(
-        directory=TMP_MENSAJES
-    ),
+    StaticFiles(directory=TMP_MENSAJES),
     name="mensajes",
 )
 
@@ -283,18 +170,14 @@ FOTOS_DIR = os.path.join(
     "fotos",
 )
 
-
 os.makedirs(
     FOTOS_DIR,
     exist_ok=True,
 )
 
-
 app.mount(
     "/api/fotos",
-    StaticFiles(
-        directory=FOTOS_DIR
-    ),
+    StaticFiles(directory=FOTOS_DIR),
     name="fotos",
 )
 
@@ -303,19 +186,14 @@ app.mount(
 # IMPORTAR ROUTERS
 # ============================================================
 
-
-# ============================================================
 # AUTH
-# ============================================================
 
 from backend.app.auth.router import (
     router as auth_router,
 )
 
 
-# ============================================================
 # SEGURIDAD
-# ============================================================
 
 from backend.app.seguridad.roles.roles_router import (
     router as roles_router,
@@ -358,36 +236,28 @@ from backend.app.seguridad.admin_router import (
 )
 
 
-# ============================================================
 # AGENDA
-# ============================================================
 
 from backend.app.agenda.router import (
     router as agenda_router,
 )
 
 
-# ============================================================
 # EMPLEADOS
-# ============================================================
 
 from backend.app.empleados.router import (
     router as empleados_router,
 )
 
 
-# ============================================================
 # MAESTROS
-# ============================================================
 
 from backend.app.maestros.router import (
     router as maestros_router,
 )
 
 
-# ============================================================
 # INTRANET
-# ============================================================
 
 from backend.app.intranet.router import (
     router as intranet_router,
@@ -402,9 +272,7 @@ from backend.app.intranet.noticias.router import (
 )
 
 
-# ============================================================
 # WEBSOCKETS
-# ============================================================
 
 from backend.app.websockets.intranet_ws import (
     router as intranet_ws_router,
@@ -427,72 +295,56 @@ from backend.app.notificaciones.router_ws import (
 )
 
 
-# ============================================================
 # REALTIME
-# ============================================================
 
 from backend.app.realtime.router import (
     router as realtime_router,
 )
 
 
-# ============================================================
 # MENSAJES
-# ============================================================
 
 from backend.app.mensajes.router import (
     router as mensajes_router,
 )
 
 
-# ============================================================
 # MUNICIPIOS
-# ============================================================
 
 from backend.app.municipios.router import (
     router as municipios_router,
 )
 
 
-# ============================================================
 # ENTIDADES BANCARIAS
-# ============================================================
 
 from backend.app.entidades_bancarias.router import (
     router as entidades_bancarias_router,
 )
 
 
-# ============================================================
 # REGISTROS DE LA PROPIEDAD
-# ============================================================
 
 from backend.app.registros_propiedad.router import (
     router as registros_propiedad_router,
 )
 
 
-# ============================================================
 # OFICINAS LIQUIDADORAS
-# ============================================================
 
 from backend.app.oficinas_liquidadoras.router import (
     router as oficinas_liquidadoras_router,
 )
 
 
-# ============================================================
 # TIPOS DE CONCEPTO DE GASTOS
-# ============================================================
 
 from backend.app.tipos_concepto_gastos.router import (
     router as tipos_concepto_gastos_router,
 )
 
 
-# ============================================================
 # ACCIONES DEL EXPEDIENTE
-# ============================================================
 
 from backend.app.acciones_expediente.router import (
     router as acciones_expediente_router,
@@ -501,9 +353,9 @@ from backend.app.acciones_expediente.router import (
 from backend.app.expediente_acciones.router import (
     router as expediente_acciones_router,
 )
-# ============================================================
+
+
 # HERRAMIENTAS SWAGGER
-# ============================================================
 
 from backend.app.herramientasswager.crear_tablas import (
     router as herramientas_router,
@@ -530,27 +382,21 @@ from backend.app.herramientasswager.asignar_bloqueo_router import (
 )
 
 
-# ============================================================
 # CTN
-# ============================================================
 
 from backend.app.ctn.router import (
     router as ctn_router,
 )
 
 
-# ============================================================
 # DASHBOARD
-# ============================================================
 
 from backend.app.dashboard.router import (
     router as dashboard_router,
 )
 
 
-# ============================================================
 # UTILIDADES
-# ============================================================
 
 from backend.app.Utilidades.router import (
     router as utilidades_router,
@@ -565,18 +411,14 @@ from backend.app.Utilidades.importadores.router_absis import (
 )
 
 
-# ============================================================
 # EXPEDIENTES
-# ============================================================
 
 from backend.app.expedientes.router import (
     router as expedientes_router,
 )
 
 
-# ============================================================
 # TIPOS DE CARGA HIPOTECARIA
-# ============================================================
 
 from backend.app.tipos_carga_hipotecaria.router import (
     router as tipos_carga_hipotecaria_router,
@@ -587,10 +429,7 @@ from backend.app.tipos_carga_hipotecaria.router import (
 # INCLUIR ROUTERS
 # ============================================================
 
-
-# ============================================================
 # AUTH
-# ============================================================
 
 app.include_router(
     auth_router,
@@ -598,9 +437,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # SEGURIDAD
-# ============================================================
 
 app.include_router(
     roles_router,
@@ -653,9 +490,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # AGENDA
-# ============================================================
 
 app.include_router(
     agenda_router,
@@ -663,35 +498,19 @@ app.include_router(
 )
 
 
-# ============================================================
 # DEBUG — RUTAS AGENDA
-# ============================================================
 
 print(
     "\n================ RUTAS AGENDA REGISTRADAS ================"
 )
 
 for ruta in app.routes:
-
-    if "/api/agenda" in getattr(
-        ruta,
-        "path",
-        "",
-    ):
-
+    if "/api/agenda" in getattr(ruta, "path", ""):
         print(
             "RUTA:",
-            getattr(
-                ruta,
-                "path",
-                None,
-            ),
+            getattr(ruta, "path", None),
             "METHODS:",
-            getattr(
-                ruta,
-                "methods",
-                None,
-            ),
+            getattr(ruta, "methods", None),
         )
 
 print(
@@ -699,9 +518,7 @@ print(
 )
 
 
-# ============================================================
 # EMPLEADOS
-# ============================================================
 
 app.include_router(
     empleados_router,
@@ -709,9 +526,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # MAESTROS
-# ============================================================
 
 app.include_router(
     maestros_router,
@@ -719,9 +534,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # INTRANET
-# ============================================================
 
 app.include_router(
     intranet_router,
@@ -739,9 +552,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # WEBSOCKETS
-# ============================================================
 
 app.include_router(
     intranet_ws_router,
@@ -764,18 +575,14 @@ app.include_router(
 )
 
 
-# ============================================================
 # REALTIME
-# ============================================================
 
 app.include_router(
     realtime_router,
 )
 
 
-# ============================================================
 # MENSAJES REST
-# ============================================================
 
 app.include_router(
     mensajes_router,
@@ -783,9 +590,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # MUNICIPIOS
-# ============================================================
 
 app.include_router(
     municipios_router,
@@ -793,9 +598,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # ENTIDADES BANCARIAS
-# ============================================================
 
 app.include_router(
     entidades_bancarias_router,
@@ -803,9 +606,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # REGISTROS DE LA PROPIEDAD
-# ============================================================
 
 app.include_router(
     registros_propiedad_router,
@@ -813,9 +614,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # OFICINAS LIQUIDADORAS
-# ============================================================
 
 app.include_router(
     oficinas_liquidadoras_router,
@@ -823,9 +622,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # TIPOS DE CONCEPTO DE GASTOS
-# ============================================================
 
 app.include_router(
     tipos_concepto_gastos_router,
@@ -833,9 +630,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # ACCIONES DEL EXPEDIENTE
-# ============================================================
 
 app.include_router(
     acciones_expediente_router,
@@ -846,9 +641,9 @@ app.include_router(
     expediente_acciones_router,
     prefix="/api",
 )
-# ============================================================
+
+
 # HERRAMIENTAS SWAGGER
-# ============================================================
 
 app.include_router(
     herramientas_router,
@@ -878,9 +673,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # CTN
-# ============================================================
 
 app.include_router(
     ctn_router,
@@ -888,9 +681,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # DASHBOARD
-# ============================================================
 
 app.include_router(
     dashboard_router,
@@ -898,9 +689,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # UTILIDADES
-# ============================================================
 
 app.include_router(
     utilidades_router,
@@ -918,9 +707,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # TIPOS DE CARGA HIPOTECARIA
-# ============================================================
 
 app.include_router(
     tipos_carga_hipotecaria_router,
@@ -928,9 +715,7 @@ app.include_router(
 )
 
 
-# ============================================================
 # EXPEDIENTES
-# ============================================================
 
 app.include_router(
     expedientes_router,
@@ -939,5 +724,55 @@ app.include_router(
 
 
 # ============================================================
+# MIGRACIÓN AUTOMÁTICA — ENVÍO A NOTARIO
+# ============================================================
+
+@app.on_event("startup")
+def migrar_columnas_envio_notario():
+    """
+    Comprueba y crea únicamente las columnas que falten
+    en la tabla expedientes.
+
+    No elimina ni recrea tablas.
+    Requiere que el usuario de base de datos tenga permisos
+    para modificar la tabla.
+    """
+
+    columnas = [
+        ("fecha_envio_notario", "DATE"),
+        ("fecha_solicitud_pnc", "DATE"),
+        ("numero_solicitud_pnc", "VARCHAR(200)"),
+        ("escritura_firmada", "BOOLEAN"),
+        ("hora_prevista_firma", "TIME"),
+    ]
+
+    try:
+        with engine.begin() as conexion:
+            for nombre_columna, tipo_columna in columnas:
+                conexion.execute(
+                    text(
+                        f"""
+                        ALTER TABLE expedientes
+                        ADD COLUMN IF NOT EXISTS
+                        {nombre_columna} {tipo_columna}
+                        """
+                    )
+                )
+
+        print(
+            "MIGRACIÓN ENVÍO A NOTARIO: "
+            "columnas comprobadas correctamente."
+        )
+
+    except Exception as error:
+        print(
+            "ERROR EN MIGRACIÓN ENVÍO A NOTARIO:",
+            str(error),
+        )
+        raise
+
+
+# ============================================================
 # FIN MAIN
 # ============================================================
+```
