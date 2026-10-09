@@ -1,4 +1,3 @@
-```python
 from sqlalchemy import (
     Column,
     Integer,
@@ -201,4 +200,4 @@ class Expediente(Base):
     # REGISTRAL
     registral_estado = Column(String(200), nullable=True)
     registral_fecha = Column(Date, nullable=True)
-```
+
