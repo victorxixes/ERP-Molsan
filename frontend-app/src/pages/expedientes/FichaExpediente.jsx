@@ -3493,6 +3493,13 @@ const [
                 }
               />
 
+                            <Dato
+                campo="Idioma"
+                valor={
+                  expediente.idioma
+                }
+              />
+              
               <Dato
                 campo="Nº solicitud SIA"
                 valor={
