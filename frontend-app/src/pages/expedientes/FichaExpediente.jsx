@@ -1536,6 +1536,16 @@ const [
     imputableA: "Molsan",
   });
 
+  // OBSERVACIONES DEL EXPEDIENTE (guardado local en este navegador)
+  const [observacionesExpediente, setObservacionesExpediente] = useState([]);
+  const [mostrarFormularioObservacion, setMostrarFormularioObservacion] = useState(false);
+  const [nuevaObservacion, setNuevaObservacion] = useState("");
+  const [visibilidadObservacion, setVisibilidadObservacion] = useState({
+    interno: true,
+    notario: false,
+    apoderado: false,
+  });
+
   // ==========================================================
   // CARGAR EXPEDIENTE
   // ==========================================================
@@ -1617,6 +1627,19 @@ const [
             setPpadItems(Array.isArray(ppadGuardados) ? ppadGuardados : []);
           } catch {
             setPpadItems([]);
+          }
+
+          try {
+            const observacionesGuardadas = JSON.parse(
+              localStorage.getItem(
+                `erp_expediente_observaciones_${datos?.id_expediente || id}`
+              ) || "[]"
+            );
+            setObservacionesExpediente(
+              Array.isArray(observacionesGuardadas) ? observacionesGuardadas : []
+            );
+          } catch {
+            setObservacionesExpediente([]);
           }
 
           if (
@@ -1981,8 +2004,67 @@ const [
 
 
   // ==========================================================
-  // OBSERVACIONES
+  // OBSERVACIONES DEL EXPEDIENTE
   // ==========================================================
+
+  function guardarObservacionesExpediente(lista) {
+    setObservacionesExpediente(lista);
+    try {
+      localStorage.setItem(
+        `erp_expediente_observaciones_${expediente?.id_expediente || id}`,
+        JSON.stringify(lista)
+      );
+    } catch (err) {
+      console.error("No se pudieron guardar las observaciones localmente:", err);
+    }
+  }
+
+  function obtenerNombreUsuarioActual() {
+    const claves = ["user", "usuario", "currentUser", "auth-storage", "authStore", "user-storage"];
+    for (const clave of claves) {
+      try {
+        const valor = localStorage.getItem(clave);
+        if (!valor) continue;
+        const datos = JSON.parse(valor);
+        const candidatos = [datos, datos?.state?.user, datos?.user, datos?.usuario, datos?.empleado];
+        for (const candidato of candidatos) {
+          const nombre = candidato?.nombre_completo || candidato?.nombreCompleto || candidato?.nombre || candidato?.full_name || candidato?.username || candidato?.usuario || candidato?.email;
+          if (nombre && typeof nombre === "string") return nombre;
+        }
+      } catch {
+        // La clave puede no contener JSON; se prueba la siguiente.
+      }
+    }
+    return "Usuario conectado";
+  }
+
+  function agregarObservacionExpediente() {
+    const texto = nuevaObservacion.trim();
+    if (!texto) return;
+
+    const destinos = [];
+    if (visibilidadObservacion.interno) destinos.push("Departamento interno");
+    if (visibilidadObservacion.notario) destinos.push("Notario");
+    if (visibilidadObservacion.apoderado) destinos.push("Apoderado");
+
+    const observacion = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      comentario: texto,
+      autor: obtenerNombreUsuarioActual(),
+      fecha: new Date().toISOString(),
+      visibilidad: destinos.length ? destinos : ["Departamento interno"],
+    };
+    guardarObservacionesExpediente([observacion, ...observacionesExpediente]);
+    setNuevaObservacion("");
+    setVisibilidadObservacion({ interno: true, notario: false, apoderado: false });
+    setMostrarFormularioObservacion(false);
+  }
+
+  function eliminarObservacionExpediente(observacionId) {
+    guardarObservacionesExpediente(
+      observacionesExpediente.filter((item) => item.id !== observacionId)
+    );
+  }
 
   function abrirObservaciones() {
     setComentario(
@@ -3152,6 +3234,75 @@ const [
                 Este expediente todavía no tiene acciones asignadas.
               </div>
             )}
+          </Seccion>
+
+          {/* OBSERVACIONES */}
+          <Seccion
+            titulo="Observaciones"
+            subtitulo="Comentarios, autor y visibilidad"
+            icono="observaciones"
+            colapsable
+            compacto
+          >
+            <div className="space-y-3">
+              {observacionesExpediente.length === 0 && (
+                <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
+                  Todavía no hay observaciones añadidas.
+                </p>
+              )}
+
+              {observacionesExpediente.map((observacion) => (
+                <article key={observacion.id} className="rounded-xl border border-slate-200 bg-white p-3">
+                  <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{observacion.comentario}</p>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+                    <span>{observacion.autor || "Usuario conectado"}</span>
+                    <time dateTime={observacion.fecha}>
+                      {observacion.fecha ? new Date(observacion.fecha).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "Fecha no disponible"}
+                    </time>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {(observacion.visibilidad || ["Departamento interno"]).map((destino) => (
+                      <span key={destino} className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-semibold text-blue-700">Visible: {destino}</span>
+                    ))}
+                  </div>
+                  <div className="mt-2 flex justify-end">
+                    <button type="button" onClick={() => eliminarObservacionExpediente(observacion.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100">
+                      Eliminar
+                    </button>
+                  </div>
+                </article>
+              ))}
+
+              {mostrarFormularioObservacion ? (
+                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3 space-y-3">
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-semibold text-slate-600">Comentario</span>
+                    <textarea value={nuevaObservacion} onChange={(event) => setNuevaObservacion(event.target.value)} rows={4} placeholder="Escribe la observación..." className="w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  </label>
+                  <div>
+                    <p className="mb-2 text-xs font-semibold text-slate-600">Visibilidad de la observación</p>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                      {[
+                        { key: "interno", label: "Departamento interno" },
+                        { key: "notario", label: "Visible para el Notario" },
+                        { key: "apoderado", label: "Visible para el Apoderado" },
+                      ].map((opcion) => (
+                        <label key={opcion.key} className="flex items-start gap-2 rounded-lg border border-slate-200 bg-white p-2 text-xs text-slate-700">
+                          <input type="checkbox" checked={visibilidadObservacion[opcion.key]} onChange={(event) => setVisibilidadObservacion((actual) => ({ ...actual, [opcion.key]: event.target.checked }))} className="mt-0.5" />
+                          <span>{opcion.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Boton onClick={() => { setMostrarFormularioObservacion(false); setNuevaObservacion(""); }}>Cancelar</Boton>
+                    <Boton tipo="primary" onClick={agregarObservacionExpediente} disabled={!nuevaObservacion.trim()}>Guardar observación</Boton>
+                  </div>
+                </div>
+              ) : (
+                <Boton tipo="primary" onClick={() => setMostrarFormularioObservacion(true)}>＋ Añadir observación</Boton>
+              )}
+            </div>
           </Seccion>
 
         </div>
