@@ -1,3 +1,4 @@
+```python
 from sqlalchemy import (
     Column,
     Integer,
@@ -15,6 +16,7 @@ from backend.app.database import Base
 
 # ============================================================
 # CLIENTES
+# IMPORTANTE: coincide con la tabla clientes existente
 # ============================================================
 
 class Cliente(Base):
@@ -22,17 +24,26 @@ class Cliente(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    nombre = Column(String(200), nullable=True)
-    apellidos = Column(String(300), nullable=True)
-    dni_nif = Column(String(50), unique=True, index=True, nullable=True)
+    nombre_completo = Column(String, nullable=True)
+    dni = Column(String, nullable=True)
 
-    direccion = Column(String(300), nullable=True)
-    codigo_postal = Column(String(20), nullable=True)
-    poblacion = Column(String(200), nullable=True)
-    provincia = Column(String(200), nullable=True)
+    telefono = Column(String, nullable=True)
+    email = Column(String, nullable=True)
 
-    telefono = Column(String(50), nullable=True)
-    email = Column(String(200), nullable=True)
+    direccion = Column(String, nullable=True)
+    codigo_postal = Column(String, nullable=True)
+    poblacion = Column(String, nullable=True)
+    provincia = Column(String, nullable=True)
+    idioma = Column(String, nullable=True)
+
+    nombre_facturacion = Column(String, nullable=True)
+    dni_facturacion = Column(String, nullable=True)
+    telefono_facturacion = Column(String, nullable=True)
+    email_facturacion = Column(String, nullable=True)
+    direccion_facturacion = Column(String, nullable=True)
+    codigo_postal_facturacion = Column(String, nullable=True)
+    poblacion_facturacion = Column(String, nullable=True)
+    provincia_facturacion = Column(String, nullable=True)
 
     expedientes = relationship(
         "Expediente",
@@ -47,10 +58,8 @@ class Cliente(Base):
 class Expediente(Base):
     __tablename__ = "expedientes"
 
-    # IDENTIFICACIÓN INTERNA
     id = Column(Integer, primary_key=True, index=True)
 
-    # RELACIÓN CON EL CLIENTE
     cliente_id = Column(
         Integer,
         ForeignKey("clientes.id"),
@@ -63,7 +72,6 @@ class Expediente(Base):
         back_populates="expedientes",
     )
 
-    # IDENTIFICACIÓN DEL EXPEDIENTE
     id_expediente = Column(
         String(100),
         unique=True,
@@ -177,7 +185,7 @@ class Expediente(Base):
     # OBSERVACIONES
     observaciones = Column(String(2000), nullable=True)
 
-    # FACTURACIÓN
+    # FACTURACIÓN PROPIA DEL EXPEDIENTE
     facturacion_nombre = Column(String(300), nullable=True)
     facturacion_dni_nif = Column(String(50), nullable=True)
     facturacion_direccion = Column(String(300), nullable=True)
@@ -193,4 +201,4 @@ class Expediente(Base):
     # REGISTRAL
     registral_estado = Column(String(200), nullable=True)
     registral_fecha = Column(Date, nullable=True)
-
+```
