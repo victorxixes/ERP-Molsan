@@ -346,6 +346,17 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
 
 
 
+const DEFECTO_VACIO = {
+  tipo_carga_hipotecaria_id: "",
+  motivo_defecto: "",
+  subtipo_defecto: "",
+  fecha_notificacion_registro: "",
+  fecha_vencimiento_presentacion: "",
+  calificacion_registro: "",
+  observaciones_registro: "",
+  fecha_entrada_subsanacion: "",
+};
+
 const MOTIVOS_DEFECTO = [
   { codigo: "112", texto: "Anterior a LCI_Defectos en aspectos relacionados con el cliente" },
   { codigo: "116", texto: "Anterior a LCI_Defectos en documento judicial" },
@@ -1884,7 +1895,6 @@ function editarDefectoRegistrado(defecto) {
   setDefectoEditandoId(defecto.id ?? defecto.id_defecto);
   setArchivoCalificacion(null);
   setDefectoForm({
-    documento: defecto.documento || DEFECTO_VACIO.documento,
     tipo_carga_hipotecaria_id: defecto.tipo_carga_hipotecaria_id == null ? "" : String(defecto.tipo_carga_hipotecaria_id),
     motivo_defecto: defecto.motivo_defecto || "",
     subtipo_defecto: defecto.subtipo_defecto || "",
