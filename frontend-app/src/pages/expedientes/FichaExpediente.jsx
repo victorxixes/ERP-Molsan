@@ -8,6 +8,12 @@ import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModa
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
+import {
+  listarDefectosExpediente,
+  crearDefectoExpediente,
+  actualizarDefectoExpediente,
+  registrarSubsanacionDefecto,
+} from "../../api/expedienteDefectos";
 
 // ============================================================
 // HELPERS
@@ -220,6 +226,7 @@ const ENTIDADES_ORIGINALES_FINCA = [
 "BANCA CÍVICA","Banca Jover, S.A.","BANCAJA","BANCO DE EUROPA","BANCO DE FOMENTO (Cesión de oficinas)","Banco de la Pequeña y Mediana Empresa, S.A.","BANCO DE LAS ISLAS CANARIAS","BANCO DE MURCIA","BANCO DE VALENCIA","BANCO GRANADA JEREZ","BANCO MARE NOSTRUM (BMN)","BANCO ZARAGOZANO","BANCOFAR","BANCOFAR (Cesión de créditos)","BANKIA","BANZANO HIPOTECARIO","BARCLAYS BANK SUCURSAL EN ESPAÑA","BFA","CAIXA D´ESTALVIS SAGRADA FAMILIA","Caixa Estalvis Laietana","CAIXA GIRONA","CAIXA LAIETANA","CAIXA PENEDÈS","CAIXABANK","CAIXALEASING Y FACTORING","Caja Adherida de Sant Joan de les Abadesses","Caja Adherida del Círculo Obrero de Banyoles","CAJA ÁVILA","Caja de Ahorros de La Rioja","Caja de Ahorros de La Seo de Urgell","Caja de Ahorros de Palamós","Caja de Ahorros de Valencia, Castellón y Alicante","Caja de Ahorros de Villarreal","CAJA DE AHORROS MUNICIPAL DE BURGOS","Caja de Ahorros Provincial de Ciudad Real","CAJA DE AHORROS PROVINCIAL DE GUADALAJARA","CAJA DE AHORROS PROVINCIAL SAN FERNANDO DE SEVILLA Y JEREZ","Caja de Ahorros y Monte de Piedad de Alcalá de Henares","Caja de Ahorros y Monte de Piedad de Alcira","Caja de Ahorros y Monte de Piedad de Ampurdán","Caja de Ahorros y Monte de Piedad de Ávila","CAJA DE AHORROS Y MONTE DE PIEDAD DE BARCELONA","Caja de Ahorros y Monte de Piedad de Ceuta","Caja de Ahorros y Monte de Piedad de Játiva","CAJA DE AHORROS Y MONTE DE PIEDAD DE LÉRIDA","CAJA DE AHORROS Y MONTE DE PIEDAD DE NAVARRA","Caja de Ahorros y Monte de Piedad de Segorbe","Caja de Ahorros y Monte de Piedad de Segovia","CAJA DE AHORROS Y MONTE DE PIEDAD MUNICIPAL DE PAMPLONA","CAJA DE AHORROS Y PENSIONES DE BARCELONA","Caja de Ahorros y Préstamos de Carlet","Caja de Ahorros y Socorros y Monte de Piedad de Alberique","Caja de Ahorros y Socorros y Monte de Piedad de Gandía","Caja de Crédito de Granollers","Caja de Crédito Industrial Cooperativo, Sociedad Cooperativa de Crédito Limitada","Caja de Crédito Mediterránea, Cooperativa de Crédito","Caja de Inversión, Sociedad Cooperativa de Crédito Limitada","CAJA DE PENSIONES PARA LA VEJEZ Y DE AHORROS ¿CATALUÑA y BALEARES?","Caja de Previsión Social del Reino de Valencia","CAJA GENERAL DE AHORROS DE CANARIAS","CAJA GRANADA","CAJA INSULAR CANARIAS","CAJA MADRID","CAJA MURCIA","CAJA RIOJA","Caja Rural de Cantabria, Sdad. Coop. Cto. Ltda.","CAJA RURAL DE TALAVERA","Caja Rural Provincial de Barcelona, Sdad. Coop. Catalana Cto. Ltda.","Caja Rural Provincial de Gerona, Sdad. Coop. Cto. Ltda.","Caja Rural Provincial de Madrid, Sdad. Coop. Cto. Ltda.","Caja Rural Provincial de Patencia, Sdad. Coop. Cto. Ltda.","Caja Rural Provincial, Sdad. Coop. de Cto. Agrario Ltda. de Reus","CAJA SEGOVIA","CAJASOL","DEUTSCHE BANK (Cesión de operaciones financieras)","HIPOTECAIXA","ISBANC","MICROBANK DE LA CAIXA - CRITERIA CAIXACORP","MONTE DE PIEDAD Y CAJA DE AHORROS DE HUELVA Y SEVILLA","MONTE DE PIEDAD Y CAJA DE AHORROS SAN FERNANDO DE HUELVA, JEREZ Y SEVILLA","PROMINMO","SA NOSTRA","SERVIHABITAT","Sindicato de Banqueros de Barcelona, S.A."
 ];
 
+
 // ============================================================
 // CAMPOS COMUNES DE ACTIVIDADES
 // ============================================================
@@ -334,6 +341,39 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
   },
 ];
 
+
+
+const MOTIVOS_DEFECTO = [
+  { codigo: "112", texto: "Anterior a LCI_Defectos en aspectos relacionados con el cliente" },
+  { codigo: "116", texto: "Anterior a LCI_Defectos en documento judicial" },
+  { codigo: "115", texto: "Anterior a LCI_Defectos relacionados con alguna cláusula de la hipoteca u otra garantía" },
+  { codigo: "113", texto: "Anterior a LCI_Defectos relacionados con aspectos de la finca" },
+  { codigo: "114", texto: "Anterior a LCI_Defectos relacionados con la Ley 1/13, de 14 de mayo (reforma de la ley hipotecaria)" },
+  { codigo: "118", texto: "Anterior a LCI_Falta un documento judicial previo" },
+  { codigo: "121", texto: "Anterior a LCI_Falta un documento previo a aportar por el Client" },
+  { codigo: "120", texto: "Anterior a LCI_Falta un documento previo a aportar por la Oficina" },
+  { codigo: "117", texto: "Anterior a LCI_Falta un documento previo de una Administración u Organismo Público" },
+  { codigo: "119", texto: "Anterior a LCI_Falta un documento previo del Registro Mercantil" },
+  { codigo: "127", texto: "LCI_Constitución P.Hipotecario-Defect.ámbito de aplicación (empleados y casos extrapolados)" },
+  { codigo: "125", texto: "LCI_Constitución P.Hipotecario-Defect.carácter documental (acta, inscripción CGC, protocolización)" },
+  { codigo: "124", texto: "LCI_Constitución P.Hipotecario-Defect.cláusula préstamo Hip(vencimiento,demora,comisión,tasación)" },
+  { codigo: "126", texto: "LCI_Constitución P.Hipotecario-Defect.falta transparencia (escritura,proyecto,FEIN-ANEXOS)" },
+  { codigo: "123", texto: "LCI_Constitución Préstamo Hipotecario-Defectos relacionados con aspectos de la finca." },
+  { codigo: "122", texto: "LCI_Constitución Préstamo Hipotecario-Defectos relacionados con los intervinientes" },
+  { codigo: "128", texto: "LCI_Novaciones-Defectos por no cumplir la Ley 5/2019." },
+  { codigo: "129", texto: "LCI_Subrogaciones deudor (con o sin novación)-Defectos por no cumplir la Ley 5/2019." },
+];
+
+const DEFECTO_VACIO = {
+  documento: "CANCELACIÓN DE CONDICIÓN RESOLUTORIA",
+  motivo_defecto: "",
+  subtipo_defecto: "",
+  fecha_notificacion_registro: "",
+  fecha_vencimiento_presentacion: "",
+  calificacion_registro: "",
+  observaciones_registro: "",
+  fecha_entrada_subsanacion: "",
+};
 
 // ============================================================
 // CAMPOS ESPECÍFICOS DE ACTIVIDADES
@@ -1523,6 +1563,12 @@ const [
   ] = useState(null);
 
 
+const [defectosRegistrados, setDefectosRegistrados] = useState([]);
+const [defectoForm, setDefectoForm] = useState({ ...DEFECTO_VACIO });
+const [defectoEditandoId, setDefectoEditandoId] = useState(null);
+const [guardandoDefecto, setGuardandoDefecto] = useState(false);
+const [errorDefecto, setErrorDefecto] = useState("");
+  
   // ----------------------------------------------------------
   // PPAD — CONCEPTOS DEL EXPEDIENTE
   // Se conservan por expediente en este navegador.
@@ -1796,29 +1842,126 @@ const [
   // DEFECTO
   // ==========================================================
 
-  function abrirDefecto() {
-    setMostrarDefecto(true);
+
+async function cargarDefectosRegistrados() {
+  const numero = expediente?.id_expediente;
+  if (!numero) return;
+
+  const lista = await listarDefectosExpediente(numero);
+  setDefectosRegistrados(Array.isArray(lista) ? lista : []);
+}
+
+async function abrirDefecto() {
+  setErrorDefecto("");
+  setDefectoEditandoId(null);
+  setDefectoForm({ ...DEFECTO_VACIO });
+  setMostrarDefecto(true);
+
+  try {
+    await cargarDefectosRegistrados();
+  } catch (error) {
+    console.error("Error cargando defectos:", error);
+    setErrorDefecto(
+      error?.response?.data?.detail ||
+      "No se han podido cargar los defectos del expediente."
+    );
+  }
+}
+
+function editarDefectoRegistrado(defecto) {
+  setDefectoEditandoId(defecto.id);
+  setDefectoForm({
+    documento: defecto.documento || DEFECTO_VACIO.documento,
+    motivo_defecto: defecto.motivo_defecto || "",
+    subtipo_defecto: defecto.subtipo_defecto || "",
+    fecha_notificacion_registro: defecto.fecha_notificacion_registro || "",
+    fecha_vencimiento_presentacion: defecto.fecha_vencimiento_presentacion || "",
+    calificacion_registro: defecto.calificacion_registro || "",
+    observaciones_registro: defecto.observaciones_registro || "",
+    fecha_entrada_subsanacion: defecto.fecha_entrada_subsanacion || "",
+  });
+  setErrorDefecto("");
+}
+
+async function guardarDefectoRegistral() {
+  if (!expediente?.id_expediente) {
+    setErrorDefecto("No se ha identificado el expediente.");
+    return;
   }
 
+  if (!defectoForm.motivo_defecto) {
+    setErrorDefecto("Selecciona un motivo del defecto.");
+    return;
+  }
 
-  function guardarDefectoLocal() {
+  if (
+    defectoForm.observaciones_registro &&
+    defectoForm.observaciones_registro.length > 200
+  ) {
+    setErrorDefecto("Las observaciones no pueden superar 200 caracteres.");
+    return;
+  }
+
+  try {
+    setGuardandoDefecto(true);
+    setErrorDefecto("");
+
+    const payload = {
+      ...defectoForm,
+      subtipo_defecto: defectoForm.subtipo_defecto || null,
+      fecha_notificacion_registro:
+        defectoForm.fecha_notificacion_registro || null,
+      fecha_vencimiento_presentacion:
+        defectoForm.fecha_vencimiento_presentacion || null,
+      calificacion_registro: defectoForm.calificacion_registro || null,
+      observaciones_registro: defectoForm.observaciones_registro || null,
+      fecha_entrada_subsanacion:
+        defectoForm.fecha_entrada_subsanacion || null,
+    };
+
+    let guardado;
+
+    if (defectoEditandoId) {
+      guardado = await actualizarDefectoExpediente(
+        expediente.id_expediente,
+        defectoEditandoId,
+        payload
+      );
+    } else {
+      guardado = await crearDefectoExpediente(
+        expediente.id_expediente,
+        payload
+      );
+    }
+
     setDefectoLocal({
-      tipo_error:
-        expediente?.tipo_error ||
-        "",
-      falta_defecto:
-        expediente?.falta_defecto ||
-        "",
-      descripcion_error:
-        expediente?.descripcion_error ||
-        "",
-      fcierre_defecto:
-        expediente?.fcierre_defecto ||
-        "",
+      tipo_error: guardado.motivo_defecto || "",
+      falta_defecto: guardado.subtipo_defecto || "",
+      descripcion_error: guardado.calificacion_registro || "",
+      fcierre_defecto: guardado.fecha_cierre_defecto || "",
     });
 
-    setMostrarDefecto(false);
+    setExpediente((actual) => ({
+      ...actual,
+      tiene_defectos_abiertos: guardado.tiene_defectos_abiertos,
+      tipo_error: guardado.tipo_error,
+      falta_defecto: guardado.falta_defecto,
+      descripcion_error: guardado.descripcion_error,
+    }));
+
+    await cargarDefectosRegistrados();
+    setDefectoEditandoId(null);
+    setDefectoForm({ ...DEFECTO_VACIO });
+  } catch (error) {
+    console.error("Error guardando defecto:", error);
+    setErrorDefecto(
+      error?.response?.data?.detail ||
+      "No se ha podido guardar el defecto."
+    );
+  } finally {
+    setGuardandoDefecto(false);
   }
+}
 
 
   // ==========================================================
@@ -3877,82 +4020,251 @@ const [
           MODAL DEFECTO
       ====================================================== */}
 
-      <Modal
-        open={
-          mostrarDefecto
-        }
-        onClose={() =>
-          setMostrarDefecto(false)
-        }
-        titulo="⚠️ Defecto registral"
-        subtitulo={
-          `Expediente ${valorVisible(
-            expediente.id_expediente
-          )}`
-        }
-        ancho="max-w-2xl"
-        footer={
-          <>
-            <Boton
-              onClick={() =>
-                setMostrarDefecto(false)
-              }
-            >
-              Cerrar
-            </Boton>
-
-            <Boton
-              tipo="primary"
-              onClick={
-                guardarDefectoLocal
-              }
-            >
-              ✏️ Guardar
-            </Boton>
-          </>
-        }
+     
+<Modal
+  open={mostrarDefecto}
+  onClose={() => setMostrarDefecto(false)}
+  titulo="⚠️ Alta de defecto registral"
+  subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`}
+  ancho="max-w-4xl"
+  footer={
+    <>
+      <Boton
+        onClick={() => {
+          setDefectoEditandoId(null);
+          setDefectoForm({ ...DEFECTO_VACIO });
+          setMostrarDefecto(false);
+        }}
       >
+        Cerrar
+      </Boton>
 
-        <div
-          className="
-            space-y-3
-          "
-        >
+      <Boton
+        tipo="primary"
+        disabled={guardandoDefecto}
+        onClick={guardarDefectoRegistral}
+      >
+        {guardandoDefecto ? "Guardando…" : "💾 Guardar defecto"}
+      </Boton>
+    </>
+  }
+>
+  <div className="space-y-6">
+    {errorDefecto && (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        {errorDefecto}
+      </div>
+    )}
 
-          <Dato
-            campo="Tipo error"
-            valor={
-              expediente.tipo_error
-            }
-          />
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <h3 className="mb-3 text-sm font-bold text-slate-800">
+        Defectos registrados
+      </h3>
 
-          <Dato
-            campo="Falta / defecto"
-            valor={
-              expediente.falta_defecto
-            }
-          />
+      {defectosRegistrados.length === 0 ? (
+        <p className="text-sm text-slate-500">
+          Todavía no hay defectos registrados para este expediente.
+        </p>
+      ) : (
+        <div className="space-y-2">
+          {defectosRegistrados.map((defecto) => (
+            <div
+              key={defecto.id}
+              className="flex flex-col justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 md:flex-row md:items-center"
+            >
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-slate-800">
+                  {defecto.motivo_defecto || defecto.tipo_error || "Defecto"}
+                </p>
 
-          <Dato
-            campo="Descripción"
-            valor={
-              expediente.descripcion_error
-            }
-            multilinea
-          />
+                <p className="mt-1 text-xs text-slate-500">
+                  {defecto.fecha_entrada_subsanacion
+                    ? `Subsanado: ${formatearFecha(defecto.fecha_entrada_subsanacion)}`
+                    : "Pendiente de subsanación"}
+                </p>
+              </div>
 
-          <Dato
-            campo="Fecha cierre defecto"
-            valor={
-              expediente.fcierre_defecto
-            }
-            tipo="fecha"
-          />
-
+              <Boton
+                onClick={() => editarDefectoRegistrado(defecto)}
+              >
+                ✏️ Editar
+              </Boton>
+            </div>
+          ))}
         </div>
+      )}
+    </div>
 
-      </Modal>
+    <div>
+      <h3 className="mb-3 text-sm font-bold text-slate-800">
+        {defectoEditandoId
+          ? `Modificar defecto nº ${defectoEditandoId}`
+          : "Datos del nuevo defecto"}
+      </h3>
 
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <label className="block text-sm font-medium text-slate-700">
+          Documento *
+          <select
+            className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm"
+            value={defectoForm.documento}
+            onChange={(e) =>
+              setDefectoForm((actual) => ({
+                ...actual,
+                documento: e.target.value,
+              }))
+            }
+          >
+            <option value="CANCELACIÓN DE CONDICIÓN RESOLUTORIA">
+              CANCELACIÓN DE CONDICIÓN RESOLUTORIA
+            </option>
+          </select>
+        </label>
+
+        <label className="block text-sm font-medium text-slate-700">
+          Motivos del Defecto *
+          <select
+            required
+            className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm"
+            value={defectoForm.motivo_defecto}
+            onChange={(e) =>
+              setDefectoForm((actual) => ({
+                ...actual,
+                motivo_defecto: e.target.value,
+              }))
+            }
+          >
+            <option value="">Selecciona un motivo…</option>
+            {MOTIVOS_DEFECTO.map((motivo) => (
+              <option
+                key={motivo.codigo}
+                value={`${motivo.codigo}.${motivo.texto}`}
+              >
+                {motivo.codigo}.{motivo.texto}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+          Subtipo del Defecto
+          <input
+            type="text"
+            maxLength={500}
+            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+            value={defectoForm.subtipo_defecto}
+            onChange={(e) =>
+              setDefectoForm((actual) => ({
+                ...actual,
+                subtipo_defecto: e.target.value,
+              }))
+            }
+            placeholder="Introduce el subtipo del defecto"
+          />
+        </label>
+
+        <label className="block text-sm font-medium text-slate-700">
+          Fecha Notificación Registro
+          <input
+            type="date"
+            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+            value={defectoForm.fecha_notificacion_registro}
+            onChange={(e) =>
+              setDefectoForm((actual) => ({
+                ...actual,
+                fecha_notificacion_registro: e.target.value,
+              }))
+            }
+          />
+        </label>
+
+        <label className="block text-sm font-medium text-slate-700">
+          Fecha Vencimiento Presentación Registro
+          <input
+            type="date"
+            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+            value={defectoForm.fecha_vencimiento_presentacion}
+            onChange={(e) =>
+              setDefectoForm((actual) => ({
+                ...actual,
+                fecha_vencimiento_presentacion: e.target.value,
+              }))
+            }
+          />
+        </label>
+
+        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+          Calificación del Registro
+          <textarea
+            rows={3}
+            maxLength={2000}
+            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+            value={defectoForm.calificacion_registro}
+            onChange={(e) =>
+              setDefectoForm((actual) => ({
+                ...actual,
+                calificacion_registro: e.target.value,
+              }))
+            }
+            placeholder="Introduce la calificación del Registro"
+          />
+        </label>
+
+        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+          Observaciones
+          <span className="ml-2 text-xs font-normal text-slate-400">
+            {defectoForm.observaciones_registro.length}/200 caracteres
+          </span>
+          <textarea
+            rows={3}
+            maxLength={200}
+            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+            value={defectoForm.observaciones_registro}
+            onChange={(e) =>
+              setDefectoForm((actual) => ({
+                ...actual,
+                observaciones_registro: e.target.value,
+              }))
+            }
+            placeholder="Observaciones del defecto"
+          />
+        </label>
+
+        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+          Fecha Entrada Registro Subsanación
+          <input
+            type="date"
+            className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm"
+            value={defectoForm.fecha_entrada_subsanacion}
+            onChange={(e) =>
+              setDefectoForm((actual) => ({
+                ...actual,
+                fecha_entrada_subsanacion: e.target.value,
+              }))
+            }
+          />
+          <span className="mt-1 block text-xs font-normal text-slate-500">
+            Rellena esta fecha cuando la subsanación haya entrado en el Registro.
+          </span>
+        </label>
+      </div>
+
+      {defectoEditandoId && (
+        <div className="mt-4 flex justify-end">
+          <Boton
+            onClick={() => {
+              setDefectoEditandoId(null);
+              setDefectoForm({ ...DEFECTO_VACIO });
+              setErrorDefecto("");
+            }}
+          >
+            Cancelar edición
+          </Boton>
+        </div>
+      )}
+    </div>
+  </div>
+</Modal>
 
       {/* =====================================================
           MODAL FINCAS Y REGISTROS
