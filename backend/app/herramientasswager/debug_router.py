@@ -1,4 +1,3 @@
-```python
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -328,4 +327,4 @@ def obtener_contenido(
             status_code=500,
             detail="No se pudo consultar el contenido de la tabla.",
         )
-```
+
