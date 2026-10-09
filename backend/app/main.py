@@ -51,7 +51,9 @@ from backend.app.database import (
 # MODELOS
 # ============================================================
 
+
 from backend.app.expedientes.models import (
+    Cliente,
     Expediente,
 )
 
@@ -723,31 +725,94 @@ app.include_router(
 
 
 # ============================================================
-# MIGRACIÓN AUTOMÁTICA — ENVÍO A NOTARIO
+# MIGRACIÓN AUTOMÁTICA — CLIENTES, FACTURACIÓN Y ENVÍO A NOTARIO
 # ============================================================
 
 @app.on_event("startup")
-def migrar_columnas_envio_notario():
+def migrar_clientes_facturacion_envio_notario():
     """
-    Comprueba y crea únicamente las columnas que falten
-    en la tabla expedientes.
+    Crea la tabla clientes si no existe y añade las columnas
+    que falten en expedientes.
 
-    No elimina ni recrea tablas.
-    Requiere que el usuario de base de datos tenga permisos
-    para modificar la tabla.
+    No elimina tablas ni datos existentes.
     """
 
-    columnas = [
+    migraciones_columnas = [
+        # Relación con el cliente
+        ("cliente_id", "INTEGER"),
+
+        # Envío a notario
         ("fecha_envio_notario", "DATE"),
         ("fecha_solicitud_pnc", "DATE"),
         ("numero_solicitud_pnc", "VARCHAR(200)"),
         ("escritura_firmada", "BOOLEAN"),
         ("hora_prevista_firma", "TIME"),
+
+        # Datos de facturación
+        ("facturacion_nombre", "VARCHAR(300)"),
+        ("facturacion_dni_nif", "VARCHAR(50)"),
+        ("facturacion_direccion", "VARCHAR(300)"),
+        ("facturacion_codigo_postal", "VARCHAR(20)"),
+        ("facturacion_poblacion", "VARCHAR(200)"),
+        ("facturacion_provincia", "VARCHAR(200)"),
+        ("facturacion_telefono", "VARCHAR(50)"),
+        ("facturacion_email", "VARCHAR(200)"),
     ]
 
     try:
         with engine.begin() as conexion:
-            for nombre_columna, tipo_columna in columnas:
+
+            # ------------------------------------------------
+            # 1. CREAR TABLA CLIENTES SI NO EXISTE
+            # ------------------------------------------------
+
+            conexion.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS clientes (
+                        id SERIAL PRIMARY KEY,
+                        nombre VARCHAR(200),
+                        apellidos VARCHAR(300),
+                        dni_nif VARCHAR(50),
+                        direccion VARCHAR(300),
+                        codigo_postal VARCHAR(20),
+                        poblacion VARCHAR(200),
+                        provincia VARCHAR(200),
+                        telefono VARCHAR(50),
+                        email VARCHAR(200)
+                    )
+                    """
+                )
+            )
+
+            # Índice único para el DNI/NIF.
+            # PostgreSQL permite varios valores NULL.
+            conexion.execute(
+                text(
+                    """
+                    CREATE UNIQUE INDEX IF NOT EXISTS
+                    ix_clientes_dni_nif
+                    ON clientes (dni_nif)
+                    """
+                )
+            )
+
+            # Índice del identificador interno del cliente.
+            conexion.execute(
+                text(
+                    """
+                    CREATE INDEX IF NOT EXISTS
+                    ix_clientes_id
+                    ON clientes (id)
+                    """
+                )
+            )
+
+            # ------------------------------------------------
+            # 2. COMPROBAR Y AÑADIR COLUMNAS DE EXPEDIENTES
+            # ------------------------------------------------
+
+            for nombre_columna, tipo_columna in migraciones_columnas:
                 conexion.execute(
                     text(
                         f"""
@@ -758,18 +823,32 @@ def migrar_columnas_envio_notario():
                     )
                 )
 
+            # ------------------------------------------------
+            # 3. ÍNDICE DE LA RELACIÓN CON CLIENTES
+            # ------------------------------------------------
+
+            conexion.execute(
+                text(
+                    """
+                    CREATE INDEX IF NOT EXISTS
+                    ix_expedientes_cliente_id
+                    ON expedientes (cliente_id)
+                    """
+                )
+            )
+
         print(
-            "MIGRACIÓN ENVÍO A NOTARIO: "
-            "columnas comprobadas correctamente."
+            "MIGRACIÓN CLIENTES / FACTURACIÓN / ENVÍO A NOTARIO: "
+            "comprobación completada correctamente."
         )
 
     except Exception as error:
         print(
-            "ERROR EN MIGRACIÓN ENVÍO A NOTARIO:",
-            str(error),
+            "ERROR EN MIGRACIÓN CLIENTES / FACTURACIÓN / "
+            "ENVÍO A NOTARIO:",
+            repr(error),
         )
         raise
-
 
 # ============================================================
 # FIN MAIN
