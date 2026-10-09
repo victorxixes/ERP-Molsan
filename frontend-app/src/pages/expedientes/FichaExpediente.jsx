@@ -367,18 +367,6 @@ const MOTIVOS_DEFECTO = [
   { codigo: "129", texto: "LCI_Subrogaciones deudor (con o sin novación)-Defectos por no cumplir la Ley 5/2019." },
 ];
 
-const DEFECTO_VACIO = {
-  documento: "CANCELACIÓN DE CONDICIÓN RESOLUTORIA",
-  tipo_carga_hipotecaria_id: "",
-  motivo_defecto: "",
-  subtipo_defecto: "",
-  fecha_notificacion_registro: "",
-  fecha_vencimiento_presentacion: "",
-  calificacion_registro: "",
-  observaciones_registro: "",
-  fecha_entrada_subsanacion: "",
-};
-
 // ============================================================
 // CAMPOS ESPECÍFICOS DE ACTIVIDADES
 // ============================================================
