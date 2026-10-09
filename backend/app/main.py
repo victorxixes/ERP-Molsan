@@ -504,7 +504,6 @@ app.include_router(expedientes_router, prefix="/api")
 # MIGRACIÓN AUTOMÁTICA — CLIENTES, FACTURACIÓN Y ENVÍO A NOTARIO
 # ============================================================
 
-@app.on_event("startup")
 def migrar_clientes_facturacion_envio_notario():
     print(
         "[MOLSAN STARTUP TEST 2026-10-09] "
