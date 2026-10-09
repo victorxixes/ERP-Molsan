@@ -4147,24 +4147,7 @@ async function descargarPDFCalificacion(defecto) {
       </h3>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <label className="block text-sm font-medium text-slate-700">
-          Documento *
-          <select
-            className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm"
-            value={defectoForm.documento}
-            onChange={(e) =>
-              setDefectoForm((actual) => ({
-                ...actual,
-                documento: e.target.value,
-              }))
-            }
-          >
-            <option value="CANCELACIÓN DE CONDICIÓN RESOLUTORIA">
-              CANCELACIÓN DE CONDICIÓN RESOLUTORIA
-            </option>
-          </select>
-        </label>
-
+          
         <label className="block text-sm font-medium text-slate-700 md:col-span-2">
           Tipo de carga hipotecaria
           <select
