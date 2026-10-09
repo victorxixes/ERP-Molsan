@@ -67,6 +67,7 @@ from backend.app.expedientes.gastos.models import (
 
 from backend.app.expedientes.defectos.models import (
     ExpedienteDefecto,
+    DefectoSubtipo,
 )
 
 from backend.app.seguridad.roles.models import (
