@@ -193,6 +193,10 @@ from backend.app.auth.router import (
     router as auth_router,
 )
 
+from backend.app.expedientes.defectos.migracion_router import (
+    router as migracion_defectos_router,
+)
+
 # SEGURIDAD
 from backend.app.seguridad.roles.roles_router import (
     router as roles_router,
@@ -508,6 +512,8 @@ app.include_router(tipos_carga_hipotecaria_router, prefix="/api")
 # EXPEDIENTES
 app.include_router(expedientes_router, prefix="/api")
 
+
+app.include_router(migracion_defectos_router, prefix="/api")
 
 # ============================================================
 # MIGRACIÓN AUTOMÁTICA — CLIENTES, FACTURACIÓN Y ENVÍO A NOTARIO
