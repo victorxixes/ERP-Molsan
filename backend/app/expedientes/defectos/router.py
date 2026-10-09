@@ -362,6 +362,7 @@ def crear_defecto(
     sincronizar_campos_compatibilidad(defecto)
     db.add(defecto)
 
+```
 try:
     db.commit()
     db.refresh(defecto)
@@ -373,7 +374,8 @@ except Exception as error:
         detail=f"No se pudo crear el defecto: {str(error)[:1000]}",
     )
 
-    return defecto
+return defecto
+```
 
 
 @router.put(
