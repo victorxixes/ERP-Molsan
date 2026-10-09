@@ -22,7 +22,7 @@ creado_en TIMESTAMPTZ NOT NULL DEFAULT NOW()
 )
 """))
 
-```
+
     db.execute(text("""
         CREATE INDEX IF NOT EXISTS ix_defecto_subtipos_nombre
         ON public.defecto_subtipos (nombre)
