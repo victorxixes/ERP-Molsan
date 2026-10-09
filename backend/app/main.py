@@ -682,6 +682,37 @@ def migrar_clientes_facturacion_envio_notario():
 # DIAGNÓSTICO TEMPORAL — IDENTIFICAR BLOQUEOS EN STARTUP
 # ============================================================
 
+
+# ============================================================
+# INICIALIZAR TABLA DE ACCIONES ASIGNADAS A EXPEDIENTES
+# ============================================================
+
+@app.on_event("startup")
+def inicializar_tabla_expediente_acciones():
+    print(
+        "[EXPEDIENTE ACCIONES] Comprobando tabla...",
+        flush=True,
+    )
+
+    try:
+        ExpedienteAccion.__table__.create(
+            bind=engine,
+            checkfirst=True,
+        )
+
+        print(
+            "[EXPEDIENTE ACCIONES] Tabla disponible correctamente.",
+            flush=True,
+        )
+
+    except Exception as error:
+        print(
+            "[EXPEDIENTE ACCIONES] Error al inicializar tabla: "
+            f"{error!r}",
+            flush=True,
+        )
+        raise
+        
 def instrumentar_inicio_aplicacion():
     manejadores_originales = list(app.router.on_startup)
     manejadores_instrumentados = []
