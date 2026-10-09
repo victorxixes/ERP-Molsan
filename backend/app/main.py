@@ -729,25 +729,21 @@ app.include_router(
 # ============================================================
 
 
+
 @app.on_event("startup")
 def migrar_clientes_facturacion_envio_notario():
     """
-    Conserva la tabla clientes existente y añade únicamente
-    las columnas que falten en expedientes.
-    No borra ni recrea tablas.
+    Diagnóstico temporal de la migración.
+    No borra ni recrea tablas ni columnas.
     """
 
     migraciones_columnas = [
         ("cliente_id", "INTEGER"),
-
-        # Envío a notario
         ("fecha_envio_notario", "DATE"),
         ("fecha_solicitud_pnc", "DATE"),
         ("numero_solicitud_pnc", "VARCHAR(200)"),
         ("escritura_firmada", "BOOLEAN"),
         ("hora_prevista_firma", "TIME"),
-
-        # Facturación específica del expediente
         ("facturacion_nombre", "VARCHAR(300)"),
         ("facturacion_dni_nif", "VARCHAR(50)"),
         ("facturacion_direccion", "VARCHAR(300)"),
@@ -758,9 +754,36 @@ def migrar_clientes_facturacion_envio_notario():
         ("facturacion_email", "VARCHAR(200)"),
     ]
 
+    print(
+        "[MIGRACION DIAG] Comprobando conexión a base de datos...",
+        flush=True,
+    )
+
     try:
         with engine.begin() as conexion:
+            print(
+                "[MIGRACION DIAG] Conexión obtenida correctamente.",
+                flush=True,
+            )
+
+            print(
+                "[MIGRACION DIAG] Comprobando tabla expedientes...",
+                flush=True,
+            )
+
+            conexion.execute(text("SELECT 1 FROM expedientes LIMIT 1"))
+
+            print(
+                "[MIGRACION DIAG] Tabla expedientes accesible.",
+                flush=True,
+            )
+
             for nombre_columna, tipo_columna in migraciones_columnas:
+                print(
+                    f"[MIGRACION DIAG] INICIO columna: {nombre_columna}",
+                    flush=True,
+                )
+
                 conexion.execute(
                     text(
                         f"""
@@ -770,6 +793,16 @@ def migrar_clientes_facturacion_envio_notario():
                         """
                     )
                 )
+
+                print(
+                    f"[MIGRACION DIAG] FIN columna: {nombre_columna}",
+                    flush=True,
+                )
+
+            print(
+                "[MIGRACION DIAG] INICIO creación de índice...",
+                flush=True,
+            )
 
             conexion.execute(
                 text(
@@ -781,19 +814,22 @@ def migrar_clientes_facturacion_envio_notario():
                 )
             )
 
+            print(
+                "[MIGRACION DIAG] FIN creación de índice.",
+                flush=True,
+            )
+
         print(
-            "MIGRACIÓN CLIENTES / FACTURACIÓN / ENVÍO A NOTARIO: "
-            "comprobación completada."
+            "[MIGRACION DIAG] Migración completada correctamente.",
+            flush=True,
         )
 
     except Exception as error:
         print(
-            "ERROR EN MIGRACIÓN CLIENTES / FACTURACIÓN / "
-            "ENVÍO A NOTARIO:",
-            repr(error),
+            f"[MIGRACION DIAG] ERROR: {error!r}",
+            flush=True,
         )
         raise
-
 # ============================================================
 # DIAGNÓSTICO TEMPORAL — IDENTIFICAR BLOQUEOS EN STARTUP
 # ============================================================
