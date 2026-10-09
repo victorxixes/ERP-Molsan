@@ -1,25 +1,38 @@
+
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from backend.app.database import Base
+
 
 class ExpedienteDefecto(Base):
     __tablename__ = "expediente_defectos"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
 
-    # Relación con expediente
-    expediente_id = Column(Integer, ForeignKey("expedientes.id"))
+    # Relación con el identificador interno de expedientes.id
+    expediente_id = Column(
+        Integer,
+        ForeignKey("expedientes.id"),
+        nullable=False,
+        index=True,
+    )
 
-    # Estado del defecto
-    tiene_defectos_abiertos = Column(String(10))   # SI / NO
+    # Compatibilidad con los campos anteriores
+    tiene_defectos_abiertos = Column(String(10), nullable=True)
+    tipo_error = Column(String(300), nullable=True)
+    descripcion_error = Column(String(1000), nullable=True)
+    falta_defecto = Column(String(500), nullable=True)
+    fecha_cierre_defecto = Column(Date, nullable=True)
 
-    # Tipo de error
-    tipo_error = Column(String(300))
+    # Alta del defecto registral
+    documento = Column(String(300), nullable=True)
+    motivo_defecto = Column(String(500), nullable=True)
+    subtipo_defecto = Column(String(500), nullable=True)
 
-    # Descripción del error
-    descripcion_error = Column(String(1000))
+    # Fechas y datos de la calificación
+    fecha_notificacion_registro = Column(Date, nullable=True)
+    fecha_vencimiento_presentacion = Column(Date, nullable=True)
+    calificacion_registro = Column(String(2000), nullable=True)
+    observaciones_registro = Column(String(200), nullable=True)
 
-    # Qué falta para resolver el defecto
-    falta_defecto = Column(String(500))
-
-    # Fecha de cierre del defecto
-    fecha_cierre_defecto = Column(Date)
+    # Se registra por separado; no equivale a la fecha de cierre
+    fecha_entrada_subsanacion = Column(Date, nullable=True)
