@@ -4190,22 +4190,6 @@ const [
       </div>
     )}
 
-    <CampoSelect
-      label="Estado"
-      value={accionForm.estado}
-      onChange={(valor) =>
-        setAccionForm((actual) => ({
-          ...actual,
-          estado: valor,
-        }))
-      }
-      opciones={[
-        "Pendiente",
-        "En curso",
-        "Realizada",
-        "Cancelada",
-      ]}
-    />
 
     <CampoFormulario
       label="Fecha"
@@ -4215,18 +4199,6 @@ const [
         setAccionForm((actual) => ({
           ...actual,
           fecha: valor,
-        }))
-      }
-    />
-
-    <CampoFormulario
-      label="Observaciones"
-      value={accionForm.observaciones}
-      textarea
-      onChange={(valor) =>
-        setAccionForm((actual) => ({
-          ...actual,
-          observaciones: valor,
         }))
       }
     />
