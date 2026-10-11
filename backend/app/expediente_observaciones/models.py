@@ -3,10 +3,10 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    ForeignKey,
-    Numeric,
+    Text,
+    Boolean,
     DateTime,
-    CheckConstraint,
+    ForeignKey,
     Index,
 )
 from sqlalchemy.sql import func
@@ -14,8 +14,8 @@ from sqlalchemy.sql import func
 from backend.app.database import Base
 
 
-class ExpedientePPAD(Base):
-    __tablename__ = "expediente_ppad"
+class ExpedienteObservacion(Base):
+    __tablename__ = "expediente_observaciones"
 
     id = Column(Integer, primary_key=True, index=True)
 
@@ -26,40 +26,51 @@ class ExpedientePPAD(Base):
         index=True,
     )
 
-    # Concepto del importe
-    concepto = Column(String(500), nullable=False)
+    # Texto de la observación
+    comentario = Column(Text, nullable=False)
 
-    # Importe en euros, con dos decimales
-    importe = Column(Numeric(14, 2), nullable=False, default=0)
-
-    # Destino de la imputación
-    imputable_a = Column(
+    # Gestor, Visible notario o Visible apoderado
+    visibilidad = Column(
         String(30),
         nullable=False,
-        default="Molsan",
-        server_default="Molsan",
+        default="Gestor",
+        server_default="Gestor",
     )
 
-    fecha_creacion = Column(
+    # Empleado al que se dirige la observación.
+    # Se utiliza cuando la visibilidad es Gestor.
+    empleado_destinatario_id = Column(
+        Integer,
+        ForeignKey("empleados.id"),
+        nullable=True,
+        index=True,
+    )
+
+    # Empleado que registra la observación
+    autor_empleado_id = Column(
+        Integer,
+        ForeignKey("empleados.id"),
+        nullable=True,
+        index=True,
+    )
+
+    fecha = Column(
         DateTime(timezone=True),
         nullable=False,
         server_default=func.now(),
     )
 
-    fecha_modificacion = Column(
-        DateTime(timezone=True),
+    activo = Column(
+        Boolean,
         nullable=False,
-        server_default=func.now(),
-        onupdate=func.now(),
+        default=True,
+        server_default="true",
     )
 
     __table_args__ = (
-        CheckConstraint(
-            "imputable_a IN ('Molsan', 'Externo')",
-            name="ck_expediente_ppad_imputable_a",
-        ),
         Index(
-            "ix_expediente_ppad_expediente",
+            "ix_expediente_observaciones_expediente_fecha",
             "expediente_id",
+            "fecha",
         ),
     )
