@@ -3653,7 +3653,7 @@ const tieneDefecto = defectosRegistrados.some(
             COLUMNA CENTRAL — NOTARIO Y ENVÍO
         ==================================================== */}
 
-        <div className="min-w-0 space-y-3 xl:col-span-3">
+        <div className="min-w-0 space-y-3 xl:col-span-2">
 
           {/* NOTARIO */}
 
@@ -3795,7 +3795,7 @@ const tieneDefecto = defectosRegistrados.some(
             INFORMACIÓN CREDITICIA
         ==================================================== */}
 
-        <div className="min-w-0 xl:col-span-4">
+        <div className="min-w-0 xl:col-span-5">
 
           <Seccion
             titulo="Información crediticia"
@@ -3857,14 +3857,6 @@ const tieneDefecto = defectosRegistrados.some(
                 }
                 tipo="numero"
                 destaque
-              />
-
-              <Dato
-                campo="Saldo real"
-                valor={
-                  expediente.saldo_real
-                }
-                tipo="numero"
               />
 
               <Dato
