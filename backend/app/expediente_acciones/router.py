@@ -1,4 +1,4 @@
-from datetime import date
+
 from typing import List
 
 from fastapi import (
@@ -66,15 +66,64 @@ def validar_estado(estado: str):
         raise HTTPException(
             status_code=400,
             detail=(
-                "Estado no válido. "
-                "Estados permitidos: "
+                "Estado no válido. Estados permitidos: "
                 + ", ".join(sorted(ESTADOS_VALIDOS))
             ),
         )
 
 
+def accion_a_dict(accion):
+    """
+    Convierte la acción SQLAlchemy en un diccionario
+    compatible con la respuesta de Pydantic.
+    """
+
+    if accion is None:
+        return None
+
+    return {
+        "id": accion.id,
+        "departamento": accion.departamento,
+        "seccion": accion.seccion,
+        "actividad": accion.actividad,
+        "descripcion": accion.descripcion,
+        "activo": accion.activo,
+    }
+
+
+def relacion_a_dict(relacion, accion=None):
+    """
+    Serializa la asignación y la acción del catálogo.
+    """
+
+    return {
+        "id": relacion.id,
+        "expediente_id": relacion.expediente_id,
+        "accion_id": relacion.accion_id,
+        "estado": relacion.estado,
+        "fecha": relacion.fecha,
+        "observaciones": relacion.observaciones,
+        "activo": relacion.activo,
+        "accion": accion_a_dict(accion),
+    }
+
+
+def obtener_accion_catalogo(
+    db: Session,
+    accion_id: int,
+):
+    return (
+        db.query(AccionExpediente)
+        .filter(
+            AccionExpediente.id == accion_id
+        )
+        .first()
+    )
+
+
 # ============================================================
 # LISTAR ACCIONES DEL EXPEDIENTE
+# GET /expediente/{id_expediente}
 # ============================================================
 
 @router.get(
@@ -90,14 +139,14 @@ def listar_acciones_expediente(
         id_expediente,
     )
 
-    acciones = (
+    relaciones = (
         db.query(ExpedienteAccion)
         .filter(
             ExpedienteAccion.expediente_id == expediente.id,
-            ExpedienteAccion.activo == True,
+            ExpedienteAccion.activo.is_(True),
         )
         .order_by(
-            ExpedienteAccion.fecha.asc(),
+            ExpedienteAccion.fecha.asc().nullslast(),
             ExpedienteAccion.id.asc(),
         )
         .all()
@@ -105,26 +154,17 @@ def listar_acciones_expediente(
 
     resultado = []
 
-    for relacion in acciones:
-        accion = (
-            db.query(AccionExpediente)
-            .filter(
-                AccionExpediente.id == relacion.accion_id
-            )
-            .first()
+    for relacion in relaciones:
+        accion = obtener_accion_catalogo(
+            db,
+            relacion.accion_id,
         )
 
         resultado.append(
-            {
-                "id": relacion.id,
-                "expediente_id": relacion.expediente_id,
-                "accion_id": relacion.accion_id,
-                "estado": relacion.estado,
-                "fecha": relacion.fecha,
-                "observaciones": relacion.observaciones,
-                "activo": relacion.activo,
-                "accion": accion,
-            }
+            relacion_a_dict(
+                relacion,
+                accion,
+            )
         )
 
     return resultado
@@ -132,6 +172,7 @@ def listar_acciones_expediente(
 
 # ============================================================
 # ASIGNAR ACCIÓN AL EXPEDIENTE
+# POST /expediente/{id_expediente}
 # ============================================================
 
 @router.post(
@@ -150,12 +191,9 @@ def asignar_accion_expediente(
 
     validar_estado(datos.estado)
 
-    accion = (
-        db.query(AccionExpediente)
-        .filter(
-            AccionExpediente.id == datos.accion_id
-        )
-        .first()
+    accion = obtener_accion_catalogo(
+        db,
+        datos.accion_id,
     )
 
     if not accion:
@@ -186,24 +224,23 @@ def asignar_accion_expediente(
                 detail="Esta acción ya está asignada al expediente.",
             )
 
+        # Reactivar una asignación retirada anteriormente.
         existente.activo = True
         existente.estado = datos.estado
         existente.fecha = datos.fecha
         existente.observaciones = datos.observaciones
 
-        db.commit()
-        db.refresh(existente)
+        try:
+            db.commit()
+            db.refresh(existente)
+        except Exception:
+            db.rollback()
+            raise
 
-        return {
-            "id": existente.id,
-            "expediente_id": existente.expediente_id,
-            "accion_id": existente.accion_id,
-            "estado": existente.estado,
-            "fecha": existente.fecha,
-            "observaciones": existente.observaciones,
-            "activo": existente.activo,
-            "accion": accion,
-        }
+        return relacion_a_dict(
+            existente,
+            accion,
+        )
 
     relacion = ExpedienteAccion(
         expediente_id=expediente.id,
@@ -214,24 +251,23 @@ def asignar_accion_expediente(
         activo=True,
     )
 
-    db.add(relacion)
-    db.commit()
-    db.refresh(relacion)
+    try:
+        db.add(relacion)
+        db.commit()
+        db.refresh(relacion)
+    except Exception:
+        db.rollback()
+        raise
 
-    return {
-        "id": relacion.id,
-        "expediente_id": relacion.expediente_id,
-        "accion_id": relacion.accion_id,
-        "estado": relacion.estado,
-        "fecha": relacion.fecha,
-        "observaciones": relacion.observaciones,
-        "activo": relacion.activo,
-        "accion": accion,
-    }
+    return relacion_a_dict(
+        relacion,
+        accion,
+    )
 
 
 # ============================================================
-# MODIFICAR ACCIÓN DEL EXPEDIENTE
+# MODIFICAR ACCIÓN ASIGNADA
+# PUT /{relacion_id}
 # ============================================================
 
 @router.put(
@@ -270,31 +306,27 @@ def actualizar_accion_expediente(
     if datos.activo is not None:
         relacion.activo = datos.activo
 
-    db.commit()
-    db.refresh(relacion)
+    try:
+        db.commit()
+        db.refresh(relacion)
+    except Exception:
+        db.rollback()
+        raise
 
-    accion = (
-        db.query(AccionExpediente)
-        .filter(
-            AccionExpediente.id == relacion.accion_id
-        )
-        .first()
+    accion = obtener_accion_catalogo(
+        db,
+        relacion.accion_id,
     )
 
-    return {
-        "id": relacion.id,
-        "expediente_id": relacion.expediente_id,
-        "accion_id": relacion.accion_id,
-        "estado": relacion.estado,
-        "fecha": relacion.fecha,
-        "observaciones": relacion.observaciones,
-        "activo": relacion.activo,
-        "accion": accion,
-    }
+    return relacion_a_dict(
+        relacion,
+        accion,
+    )
 
 
 # ============================================================
-# ELIMINAR ACCIÓN DEL EXPEDIENTE
+# RETIRAR ACCIÓN DEL EXPEDIENTE
+# DELETE /{relacion_id}
 # ============================================================
 
 @router.delete(
@@ -318,9 +350,14 @@ def eliminar_accion_expediente(
             detail="No existe esta acción asignada al expediente.",
         )
 
+    # Borrado lógico: no se elimina la acción del catálogo.
     relacion.activo = False
 
-    db.commit()
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
 
     return {
         "status": "ok",
