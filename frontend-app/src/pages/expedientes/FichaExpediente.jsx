@@ -3245,7 +3245,7 @@ const tieneDefecto = defectosRegistrados.some(
            w-full
           grid-cols-1
           gap-3
-          xl:grid-cols-4
+          xl:grid-cols-12
         "
       >
 
@@ -3253,7 +3253,7 @@ const tieneDefecto = defectosRegistrados.some(
             COLUMNA 1
         ==================================================== */}
 
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4 xl:col-span-3">
 
           {/* ESTADO */}
 
@@ -3650,10 +3650,10 @@ const tieneDefecto = defectosRegistrados.some(
        
 
         {/* ===================================================
-            COLUMNA 3
+            COLUMNA CENTRAL — NOTARIO Y ENVÍO
         ==================================================== */}
 
-        <div className="space-y-3">
+        <div className="min-w-0 space-y-3 xl:col-span-4">
 
           {/* NOTARIO */}
 
@@ -3779,7 +3779,7 @@ const tieneDefecto = defectosRegistrados.some(
         {/* ===================================================
             COLUMNA 3 — PPAD
         ==================================================== */}
-        <div className="min-w-0 space-y-3">
+        <div className="min-w-0 space-y-3 xl:col-span-2">
           {/* PPAD */}
           <Seccion
             titulo="PPAD"
@@ -3873,10 +3873,10 @@ const tieneDefecto = defectosRegistrados.some(
         </div>
 
  {/* ===================================================
-            COLUMNA 3 — INFORMACIÓN CREDITICIA
+            INFORMACIÓN CREDITICIA
         ==================================================== */}
 
-        <div className="min-w-0">
+        <div className="min-w-0 xl:col-span-3">
 
           <Seccion
             titulo="Información crediticia"
@@ -3967,7 +3967,7 @@ const tieneDefecto = defectosRegistrados.some(
                            <Dato
                 campo="Observaciones"
                 valor={
-                  expediente.Observaciones
+                  expediente.observaciones ?? expediente.Observaciones
                 }
                 destaque
               />
