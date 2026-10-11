@@ -3897,8 +3897,10 @@ const tieneDefecto = defectosRegistrados.some(
 
         </div>
 
-        {/* ENVÍO A NOTARIO: BLOQUE CENTRAL DE ANCHO COMPLETO */}
-        <div className="min-w-0 xl:col-span-12">
+      </div>
+
+      {/* ENVÍO A NOTARIO: BLOQUE COMPLETO DEBAJO DE LOS BLOQUES PRINCIPALES */}
+      <div className="mt-3 min-w-0 w-full">
           {/* =====================================================
               FICHA COMPLETA DE ENVÍO A NOTARIO
               Muestra todos los campos persistidos del formulario.
@@ -3962,8 +3964,6 @@ const tieneDefecto = defectosRegistrados.some(
             </section>
           )}
         </div>
-
-      </div>
 
       {/* =====================================================
           MODAL ACTIVIDADES
