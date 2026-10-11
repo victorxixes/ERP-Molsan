@@ -399,6 +399,16 @@ from backend.app.tipos_carga_hipotecaria.router import (
 )
 
 
+# PPAD
+from backend.app.expediente_ppad.router import (
+    router as expediente_ppad_router,
+)
+
+# OBSERVACIONES
+from backend.app.expediente_observaciones.router import (
+    router as expediente_observaciones_router,
+)
+
 # ============================================================
 # INCLUIR ROUTERS
 # ============================================================
