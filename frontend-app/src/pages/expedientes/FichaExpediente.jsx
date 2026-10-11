@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Link, useParams } from "react-router-dom";
+import axios from "../../api/axios";
 
 import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario } from "../../api/expedientes";
 
@@ -1578,10 +1579,12 @@ const [errorDefecto, setErrorDefecto] = useState("");
 const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   
   // ----------------------------------------------------------
-  // PPAD — CONCEPTOS DEL EXPEDIENTE
-  // Se conservan por expediente en este navegador.
+  // PPAD — datos persistidos en el backend
   // ----------------------------------------------------------
   const [ppadItems, setPpadItems] = useState([]);
+  const [cargandoPpad, setCargandoPpad] = useState(false);
+  const [guardandoPpad, setGuardandoPpad] = useState(false);
+  const [errorPpad, setErrorPpad] = useState("");
   const [mostrarFormularioPpad, setMostrarFormularioPpad] = useState(false);
   const [ppadEditandoId, setPpadEditandoId] = useState(null);
   const [ppadForm, setPpadForm] = useState({
@@ -1590,15 +1593,16 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     imputableA: "Molsan",
   });
 
-  // OBSERVACIONES DEL EXPEDIENTE (guardado local en este navegador)
+  // OBSERVACIONES — datos persistidos en el backend
   const [observacionesExpediente, setObservacionesExpediente] = useState([]);
+  const [cargandoObservaciones, setCargandoObservaciones] = useState(false);
+  const [guardandoObservacion, setGuardandoObservacion] = useState(false);
+  const [errorObservaciones, setErrorObservaciones] = useState("");
+  const [empleadosObservaciones, setEmpleadosObservaciones] = useState([]);
+  const [destinatarioObservacion, setDestinatarioObservacion] = useState("");
   const [mostrarFormularioObservacion, setMostrarFormularioObservacion] = useState(false);
   const [nuevaObservacion, setNuevaObservacion] = useState("");
-  const [visibilidadObservacion, setVisibilidadObservacion] = useState({
-    interno: true,
-    notario: false,
-    apoderado: false,
-  });
+  const [visibilidadObservacion, setVisibilidadObservacion] = useState("Gestor");
 
   // ==========================================================
   // CARGAR EXPEDIENTE
@@ -1670,30 +1674,6 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
             );
           } catch {
             setExpedientesManuales([]);
-          }
-
-          try {
-            const ppadGuardados = JSON.parse(
-              localStorage.getItem(
-                `erp_expediente_ppad_${datos?.id_expediente || id}`
-              ) || "[]"
-            );
-            setPpadItems(Array.isArray(ppadGuardados) ? ppadGuardados : []);
-          } catch {
-            setPpadItems([]);
-          }
-
-          try {
-            const observacionesGuardadas = JSON.parse(
-              localStorage.getItem(
-                `erp_expediente_observaciones_${datos?.id_expediente || id}`
-              ) || "[]"
-            );
-            setObservacionesExpediente(
-              Array.isArray(observacionesGuardadas) ? observacionesGuardadas : []
-            );
-          } catch {
-            setObservacionesExpediente([]);
           }
 
           if (
@@ -2250,66 +2230,114 @@ async function descargarPDFCalificacion(defecto) {
 
 
   // ==========================================================
-  // OBSERVACIONES DEL EXPEDIENTE
+  // OBSERVACIONES DEL EXPEDIENTE — API
   // ==========================================================
 
-  function guardarObservacionesExpediente(lista) {
-    setObservacionesExpediente(lista);
+  const numeroExpedienteApi = expediente?.id_expediente || id;
+
+  const cargarObservacionesExpediente = useCallback(async () => {
+    if (!numeroExpedienteApi) {
+      setObservacionesExpediente([]);
+      return;
+    }
+    setCargandoObservaciones(true);
+    setErrorObservaciones("");
     try {
-      localStorage.setItem(
-        `erp_expediente_observaciones_${expediente?.id_expediente || id}`,
-        JSON.stringify(lista)
+      const respuesta = await axios.get(
+        `/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones`
+      );
+      setObservacionesExpediente(
+        Array.isArray(respuesta.data?.items) ? respuesta.data.items : []
       );
     } catch (err) {
-      console.error("No se pudieron guardar las observaciones localmente:", err);
+      console.error("Error cargando observaciones del expediente:", err);
+      setErrorObservaciones(
+        err?.response?.data?.detail || "No se pudieron cargar las observaciones."
+      );
+      setObservacionesExpediente([]);
+    } finally {
+      setCargandoObservaciones(false);
     }
-  }
+  }, [numeroExpedienteApi]);
 
-  function obtenerNombreUsuarioActual() {
-    const claves = ["user", "usuario", "currentUser", "auth-storage", "authStore", "user-storage"];
-    for (const clave of claves) {
+  useEffect(() => {
+    if (!numeroExpedienteApi) return;
+    cargarObservacionesExpediente();
+  }, [numeroExpedienteApi, cargarObservacionesExpediente]);
+
+  useEffect(() => {
+    let cancelado = false;
+    async function cargarEmpleadosObservaciones() {
       try {
-        const valor = localStorage.getItem(clave);
-        if (!valor) continue;
-        const datos = JSON.parse(valor);
-        const candidatos = [datos, datos?.state?.user, datos?.user, datos?.usuario, datos?.empleado];
-        for (const candidato of candidatos) {
-          const nombre = candidato?.nombre_completo || candidato?.nombreCompleto || candidato?.nombre || candidato?.full_name || candidato?.username || candidato?.usuario || candidato?.email;
-          if (nombre && typeof nombre === "string") return nombre;
+        const respuesta = await axios.get(
+          `/expedientes/${encodeURIComponent(numeroExpedienteApi || id)}/observaciones/empleados`
+        );
+        if (!cancelado) {
+          const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
+          setEmpleadosObservaciones(lista);
+          if (lista.length && !destinatarioObservacion) {
+            setDestinatarioObservacion(String(lista[0].id));
+          }
         }
-      } catch {
-        // La clave puede no contener JSON; se prueba la siguiente.
+      } catch (err) {
+        if (!cancelado) {
+          console.error("Error cargando empleados destinatarios:", err);
+          setEmpleadosObservaciones([]);
+        }
       }
     }
-    return "Usuario conectado";
-  }
+    if (numeroExpedienteApi || id) cargarEmpleadosObservaciones();
+    return () => { cancelado = true; };
+  }, [numeroExpedienteApi, id]);
 
-  function agregarObservacionExpediente() {
+  async function agregarObservacionExpediente() {
     const texto = nuevaObservacion.trim();
-    if (!texto) return;
-
-    const destinos = [];
-    if (visibilidadObservacion.interno) destinos.push("Departamento interno");
-    if (visibilidadObservacion.notario) destinos.push("Notario");
-    if (visibilidadObservacion.apoderado) destinos.push("Apoderado");
-
-    const observacion = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      comentario: texto,
-      autor: obtenerNombreUsuarioActual(),
-      fecha: new Date().toISOString(),
-      visibilidad: destinos.length ? destinos : ["Departamento interno"],
-    };
-    guardarObservacionesExpediente([observacion, ...observacionesExpediente]);
-    setNuevaObservacion("");
-    setVisibilidadObservacion({ interno: true, notario: false, apoderado: false });
-    setMostrarFormularioObservacion(false);
+    if (!texto || !numeroExpedienteApi) return;
+    if (visibilidadObservacion === "Gestor" && !destinatarioObservacion) {
+      setErrorObservaciones("Selecciona el empleado destinatario de la observación.");
+      return;
+    }
+    setGuardandoObservacion(true);
+    setErrorObservaciones("");
+    try {
+      await axios.post(
+        `/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones`,
+        {
+          comentario: texto,
+          visibilidad: visibilidadObservacion,
+          empleado_destinatario_id: visibilidadObservacion === "Gestor"
+            ? Number(destinatarioObservacion)
+            : null,
+        }
+      );
+      setNuevaObservacion("");
+      setVisibilidadObservacion("Gestor");
+      setMostrarFormularioObservacion(false);
+      await cargarObservacionesExpediente();
+    } catch (err) {
+      console.error("Error guardando observación:", err);
+      setErrorObservaciones(
+        err?.response?.data?.detail || "No se pudo guardar la observación."
+      );
+    } finally {
+      setGuardandoObservacion(false);
+    }
   }
 
-  function eliminarObservacionExpediente(observacionId) {
-    guardarObservacionesExpediente(
-      observacionesExpediente.filter((item) => item.id !== observacionId)
-    );
+  async function eliminarObservacionExpediente(observacionId) {
+    if (!numeroExpedienteApi) return;
+    setErrorObservaciones("");
+    try {
+      await axios.delete(
+        `/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones/${observacionId}`
+      );
+      await cargarObservacionesExpediente();
+    } catch (err) {
+      console.error("Error desactivando observación:", err);
+      setErrorObservaciones(
+        err?.response?.data?.detail || "No se pudo eliminar la observación."
+      );
+    }
   }
 
   function abrirObservaciones() {
@@ -2597,9 +2625,44 @@ async function descargarPDFCalificacion(defecto) {
 
 
 
-    function abrirNuevoPpad() {
+  // ==========================================================
+  // PPAD — API
+  // ==========================================================
+
+  const cargarPpad = useCallback(async () => {
+    const numero = expediente?.id_expediente || id;
+    if (!numero) {
+      setPpadItems([]);
+      return;
+    }
+    setCargandoPpad(true);
+    setErrorPpad("");
+    try {
+      const respuesta = await axios.get(
+        `/expedientes/${encodeURIComponent(numero)}/ppad`
+      );
+      const lista = Array.isArray(respuesta.data?.items) ? respuesta.data.items : [];
+      setPpadItems(lista.map((item) => ({
+        ...item,
+        imputableA: item.imputable_a || item.imputableA || "Molsan",
+      })));
+    } catch (err) {
+      console.error("Error cargando PPAD:", err);
+      setErrorPpad(err?.response?.data?.detail || "No se pudieron cargar los conceptos PPAD.");
+      setPpadItems([]);
+    } finally {
+      setCargandoPpad(false);
+    }
+  }, [expediente?.id_expediente, id]);
+
+  useEffect(() => {
+    if (expediente?.id_expediente || id) cargarPpad();
+  }, [expediente?.id_expediente, id, cargarPpad]);
+
+  function abrirNuevoPpad() {
     setPpadEditandoId(null);
     setPpadForm({ concepto: "", importe: "", imputableA: "Molsan" });
+    setErrorPpad("");
     setMostrarFormularioPpad(true);
   }
 
@@ -2608,8 +2671,9 @@ async function descargarPDFCalificacion(defecto) {
     setPpadForm({
       concepto: item.concepto || "",
       importe: item.importe ?? "",
-      imputableA: item.imputableA || "Molsan",
+      imputableA: item.imputable_a || item.imputableA || "Molsan",
     });
+    setErrorPpad("");
     setMostrarFormularioPpad(true);
   }
 
@@ -2619,48 +2683,65 @@ async function descargarPDFCalificacion(defecto) {
     setPpadForm({ concepto: "", importe: "", imputableA: "Molsan" });
   }
 
-  function aceptarPpad() {
+  async function aceptarPpad() {
+    const numero = expediente?.id_expediente || id;
     const concepto = ppadForm.concepto.trim();
     const importeTexto = String(ppadForm.importe).trim();
-    if (!concepto || !importeTexto) return;
+    if (!numero || !concepto || !importeTexto) return;
 
-    const importeNormalizado = importeTexto.replace(/\s/g, "").replace(/\.(?=\d{3}(?:\D|$))/g, "").replace(",", ".");
+    const importeNormalizado = importeTexto
+      .replace(/\s/g, "")
+      .replace(/\.(?=\d{3}(?:\D|$))/g, "")
+      .replace(",", ".");
     const importeNumero = Number(importeNormalizado);
-    if (!Number.isFinite(importeNumero)) return;
-
-    const nuevo = {
-      id: ppadEditandoId || `ppad-${Date.now()}`,
-      concepto,
-      importe: importeNumero,
-      imputableA: ppadForm.imputableA === "Externo" ? "Externo" : "Molsan",
-    };
-    const actualizados = ppadEditandoId
-      ? ppadItems.map((item) => item.id === ppadEditandoId ? nuevo : item)
-      : [...ppadItems, nuevo];
-    setPpadItems(actualizados);
-    try {
-      localStorage.setItem(
-        `erp_expediente_ppad_${expediente?.id_expediente || id}`,
-        JSON.stringify(actualizados)
-      );
-    } catch (err) {
-      console.error("No se han podido guardar los datos PPAD en este navegador:", err);
+    if (!Number.isFinite(importeNumero) || importeNumero < 0) {
+      setErrorPpad("Introduce un importe válido igual o superior a cero.");
+      return;
     }
-    cancelarPpad();
+
+    setGuardandoPpad(true);
+    setErrorPpad("");
+    try {
+      const payload = {
+        concepto,
+        importe: importeNumero,
+        imputable_a: ppadForm.imputableA === "Externo" ? "Externo" : "Molsan",
+      };
+      if (ppadEditandoId !== null && ppadEditandoId !== undefined) {
+        await axios.put(
+          `/expedientes/${encodeURIComponent(numero)}/ppad/${ppadEditandoId}`,
+          payload
+        );
+      } else {
+        await axios.post(
+          `/expedientes/${encodeURIComponent(numero)}/ppad`,
+          payload
+        );
+      }
+      cancelarPpad();
+      await cargarPpad();
+    } catch (err) {
+      console.error("Error guardando PPAD:", err);
+      setErrorPpad(err?.response?.data?.detail || "No se pudo guardar el concepto PPAD.");
+    } finally {
+      setGuardandoPpad(false);
+    }
   }
 
-  function eliminarPpad(itemId) {
-    const actualizados = ppadItems.filter((item) => item.id !== itemId);
-    setPpadItems(actualizados);
+  async function eliminarPpad(itemId) {
+    const numero = expediente?.id_expediente || id;
+    if (!numero) return;
+    setErrorPpad("");
     try {
-      localStorage.setItem(
-        `erp_expediente_ppad_${expediente?.id_expediente || id}`,
-        JSON.stringify(actualizados)
+      await axios.delete(
+        `/expedientes/${encodeURIComponent(numero)}/ppad/${itemId}`
       );
+      if (ppadEditandoId === itemId) cancelarPpad();
+      await cargarPpad();
     } catch (err) {
-      console.error("No se han podido actualizar los datos PPAD:", err);
+      console.error("Error eliminando PPAD:", err);
+      setErrorPpad(err?.response?.data?.detail || "No se pudo eliminar el concepto PPAD.");
     }
-    if (ppadEditandoId === itemId) cancelarPpad();
   }
 
 
@@ -3498,7 +3579,9 @@ const tieneDefecto = defectosRegistrados.some(
             compacto
           >
             <div className="space-y-3">
-              {observacionesExpediente.length === 0 && (
+              {errorObservaciones && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorObservaciones}</p>}
+              {cargandoObservaciones && <p className="text-xs text-slate-500">Cargando observaciones…</p>}
+              {!cargandoObservaciones && observacionesExpediente.length === 0 && (
                 <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
                   Todavía no hay observaciones añadidas.
                 </p>
@@ -3514,9 +3597,8 @@ const tieneDefecto = defectosRegistrados.some(
                     </time>
                   </div>
                   <div className="mt-2 flex flex-wrap gap-1.5">
-                    {(observacion.visibilidad || ["Departamento interno"]).map((destino) => (
-                      <span key={destino} className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-semibold text-blue-700">Visible: {destino}</span>
-                    ))}
+                    <span className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-semibold text-blue-700">Visible: {observacion.visibilidad || "Gestor"}</span>
+                    {observacion.empleado_destinatario && <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">Destinatario: {observacion.empleado_destinatario}</span>}
                   </div>
                   <div className="mt-2 flex justify-end">
                     <button type="button" onClick={() => eliminarObservacionExpediente(observacion.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100">
@@ -3532,24 +3614,26 @@ const tieneDefecto = defectosRegistrados.some(
                     <span className="mb-1 block text-xs font-semibold text-slate-600">Comentario</span>
                     <textarea value={nuevaObservacion} onChange={(event) => setNuevaObservacion(event.target.value)} rows={4} placeholder="Escribe la observación..." className="w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
                   </label>
-                  <div>
-                    <p className="mb-2 text-xs font-semibold text-slate-600">Visibilidad de la observación</p>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                      {[
-                        { key: "interno", label: "Departamento interno" },
-                        { key: "notario", label: "Visible para el Notario" },
-                        { key: "apoderado", label: "Visible para el Apoderado" },
-                      ].map((opcion) => (
-                        <label key={opcion.key} className="flex items-start gap-2 rounded-lg border border-slate-200 bg-white p-2 text-xs text-slate-700">
-                          <input type="checkbox" checked={visibilidadObservacion[opcion.key]} onChange={(event) => setVisibilidadObservacion((actual) => ({ ...actual, [opcion.key]: event.target.checked }))} className="mt-0.5" />
-                          <span>{opcion.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-semibold text-slate-600">Visibilidad</span>
+                    <select value={visibilidadObservacion} onChange={(event) => setVisibilidadObservacion(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                      <option value="Gestor">Departamento interno (Gestor)</option>
+                      <option value="Visible notario">Visible para el notario</option>
+                      <option value="Visible apoderado">Visible para el apoderado</option>
+                    </select>
+                  </label>
+                  {visibilidadObservacion === "Gestor" && (
+                    <label className="block">
+                      <span className="mb-1 block text-xs font-semibold text-slate-600">Empleado destinatario</span>
+                      <select value={destinatarioObservacion} onChange={(event) => setDestinatarioObservacion(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                        <option value="">Selecciona un empleado</option>
+                        {empleadosObservaciones.map((empleado) => <option key={empleado.id} value={empleado.id}>{empleado.nombre}</option>)}
+                      </select>
+                    </label>
+                  )}
                   <div className="flex justify-end gap-2">
                     <Boton onClick={() => { setMostrarFormularioObservacion(false); setNuevaObservacion(""); }}>Cancelar</Boton>
-                    <Boton tipo="primary" onClick={agregarObservacionExpediente} disabled={!nuevaObservacion.trim()}>Guardar observación</Boton>
+                    <Boton tipo="primary" onClick={agregarObservacionExpediente} disabled={!nuevaObservacion.trim() || guardandoObservacion || (visibilidadObservacion === "Gestor" && !destinatarioObservacion)}>{guardandoObservacion ? "Guardando…" : "Guardar observación"}</Boton>
                   </div>
                 </div>
               ) : (
@@ -3622,7 +3706,9 @@ const tieneDefecto = defectosRegistrados.some(
             compacto
           >
             <div className="space-y-3">
-              {ppadItems.length === 0 && !mostrarFormularioPpad && (
+              {errorPpad && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorPpad}</p>}
+              {cargandoPpad && <p className="text-xs text-slate-500">Cargando conceptos PPAD…</p>}
+              {ppadItems.length === 0 && !cargandoPpad && !mostrarFormularioPpad && (
                 <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
                   Todavía no hay conceptos PPAD añadidos.
                 </p>
@@ -3641,7 +3727,7 @@ const tieneDefecto = defectosRegistrados.some(
                     </div>
                     <div>
                       <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Imputable a</div>
-                      <div className="mt-1 text-xs font-semibold text-slate-800">{item.imputableA}</div>
+                      <div className="mt-1 text-xs font-semibold text-slate-800">{item.imputable_a || item.imputableA || "Molsan"}</div>
                     </div>
                   </div>
                   <div className="mt-3 flex justify-end gap-2">
@@ -3690,7 +3776,7 @@ const tieneDefecto = defectosRegistrados.some(
                   </div>
                   <div className="mt-3 flex flex-wrap justify-end gap-2">
                     <Boton tipo="secondary" onClick={cancelarPpad}>Cancelar</Boton>
-                    <Boton tipo="primary" onClick={aceptarPpad} disabled={!ppadForm.concepto.trim() || !String(ppadForm.importe).trim()}>Aceptar</Boton>
+                    <Boton tipo="primary" onClick={aceptarPpad} disabled={!ppadForm.concepto.trim() || !String(ppadForm.importe).trim() || guardandoPpad}>{guardandoPpad ? "Guardando…" : "Aceptar"}</Boton>
                   </div>
                 </div>
               )}
