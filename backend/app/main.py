@@ -519,6 +519,12 @@ app.include_router(expedientes_router, prefix="/api")
 
 app.include_router(migracion_defectos_router, prefix="/api")
 
+# PPAD
+app.include_router(expediente_ppad_router, prefix="/api",)
+
+# OBSERVACIONES
+app.include_router(expediente_observaciones_router, prefix="/api",)
+
 # ============================================================
 # MIGRACIÓN AUTOMÁTICA — CLIENTES, FACTURACIÓN Y ENVÍO A NOTARIO
 # ============================================================
