@@ -3691,6 +3691,76 @@ const tieneDefecto = defectosRegistrados.some(
 
           </Seccion>
 
+          {/* ENVÍO A NOTARIO — DATOS PERSISTIDOS */}
+          {(expediente.fecha_envio ||
+            expediente.apoderado ||
+            expediente.tipo_documento ||
+            expediente.fecha_prevista_firma ||
+            expediente.hora_prevista_firma ||
+            expediente.fecha_firma ||
+            expediente.protocolo ||
+            expediente.tipo_firma ||
+            expediente.poblacion ||
+            expediente.provincia) && (
+            <section className="min-w-0 overflow-hidden rounded-2xl border border-blue-200 bg-white shadow-sm">
+              <div className="flex items-center gap-3 border-b border-blue-100 bg-blue-50/80 px-4 py-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-white text-lg">
+                  🏛️
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-sm font-bold text-slate-800">
+                    Envío a notario
+                  </h3>
+                  <p className="mt-0.5 text-[11px] text-slate-500">
+                    Datos guardados del envío y de la firma
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[9px] font-bold text-emerald-700">
+                  Guardado
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2">
+                {expediente.fecha_envio && (
+                  <Dato campo="Fecha de envío" valor={expediente.fecha_envio} tipo="fecha" />
+                )}
+                {expediente.nombre_notario && (
+                  <Dato campo="Notario" valor={expediente.nombre_notario} />
+                )}
+                {expediente.nif_notario && (
+                  <Dato campo="NIF notario" valor={expediente.nif_notario} />
+                )}
+                {expediente.apoderado && (
+                  <Dato campo="Apoderado" valor={expediente.apoderado} />
+                )}
+                {expediente.tipo_documento && (
+                  <Dato campo="Tipo de documento" valor={expediente.tipo_documento} />
+                )}
+                {expediente.tipo_firma && (
+                  <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
+                )}
+                {expediente.fecha_prevista_firma && (
+                  <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
+                )}
+                {expediente.hora_prevista_firma && (
+                  <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
+                )}
+                {expediente.fecha_firma && (
+                  <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
+                )}
+                {expediente.protocolo && (
+                  <Dato campo="Protocolo" valor={expediente.protocolo} />
+                )}
+                {expediente.poblacion && (
+                  <Dato campo="Población" valor={expediente.poblacion} />
+                )}
+                {expediente.provincia && (
+                  <Dato campo="Provincia" valor={expediente.provincia} />
+                )}
+              </div>
+            </section>
+          )}
+
         </div>
 
         {/* ===================================================
