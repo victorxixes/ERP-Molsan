@@ -3253,7 +3253,7 @@ const tieneDefecto = defectosRegistrados.some(
             COLUMNA 1
         ==================================================== */}
 
-        <div className="min-w-0 space-y-4 xl:col-span-3">
+        <div className="min-w-0 space-y-4 xl:col-span-2">
 
           {/* ESTADO */}
 
@@ -3653,7 +3653,7 @@ const tieneDefecto = defectosRegistrados.some(
             COLUMNA CENTRAL — NOTARIO Y ENVÍO
         ==================================================== */}
 
-        <div className="min-w-0 space-y-3 xl:col-span-4">
+        <div className="min-w-0 space-y-3 xl:col-span-6">
 
           {/* NOTARIO */}
 
@@ -3695,43 +3695,22 @@ const tieneDefecto = defectosRegistrados.some(
               FICHA COMPLETA DE ENVÍO A NOTARIO
               Muestra todos los campos persistidos del formulario.
           ====================================================== */}
-          {(expediente.fecha_envio_notario ||
-            expediente.fecha_envio ||
-            expediente.fecha_solicitud_pnc ||
-            expediente.numero_solicitud_pnc ||
-            expediente.escritura_firmada !== null && expediente.escritura_firmada !== undefined ||
-            expediente.apoderado ||
-            expediente.tipo_documento ||
-            expediente.tipo_firma ||
-            expediente.fecha_prevista_firma ||
-            expediente.hora_prevista_firma ||
-            expediente.fecha_firma ||
-            expediente.protocolo ||
-            expediente.poblacion ||
-            expediente.provincia) && (
-            <section className="min-w-0 overflow-hidden rounded-2xl border border-indigo-200 bg-white shadow-[0_12px_30px_rgba(30,41,59,0.08)]">
-              <div className="flex items-center gap-3 border-b border-indigo-100 bg-gradient-to-r from-indigo-50 to-blue-50 px-4 py-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">
-                  🏛️
-                </div>
+          {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
+            <section className="min-w-0 overflow-hidden rounded-2xl border-2 border-indigo-200 bg-white shadow-[0_14px_34px_rgba(30,41,59,0.10)]">
+              <div className="flex items-center gap-3 border-b border-indigo-100 bg-gradient-to-r from-indigo-50 to-blue-50 px-4 py-3 sm:px-5">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">🏛️</div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-sm font-extrabold text-slate-800">
-                    Ficha de envío a notario
-                  </h3>
-                  <p className="mt-0.5 text-[11px] text-slate-500">
-                    Información completa registrada en el envío
-                  </p>
+                  <h3 className="text-sm font-extrabold text-slate-800">Envío a notario</h3>
+                  <p className="mt-0.5 text-[11px] text-slate-500">Datos completos del envío, firma y facturación</p>
                 </div>
-                <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">
-                  Guardado
-                </span>
+                <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">Guardado</span>
               </div>
-
-              <div className="space-y-3 p-3">
+              <div className="space-y-4 p-4 sm:p-5">
                 <div>
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Fecha de envío" valor={expediente.fecha_envio_notario || expediente.fecha_envio} tipo="fecha" />
+                    <Dato campo="Idioma del documento" valor={expediente.idioma} />
                     <Dato campo="Fecha solicitud PNC" valor={expediente.fecha_solicitud_pnc} tipo="fecha" />
                     <Dato campo="Número solicitud PNC" valor={expediente.numero_solicitud_pnc} />
                     <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
@@ -3739,36 +3718,37 @@ const tieneDefecto = defectosRegistrados.some(
                     <Dato campo="Apoderado" valor={expediente.apoderado} />
                   </div>
                 </div>
-
                 <div className="border-t border-slate-100 pt-3">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de la escritura y firma</p>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Escritura y firma</p>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Tipo de documento" valor={expediente.tipo_documento} />
+                    <Dato campo="Formato de escritura" valor={expediente.formato_escritura} />
+                    <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite} />
                     <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
                     <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
                     <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
                     <Dato campo="Escritura firmada" valor={expediente.escritura_firmada === true ? "Sí" : expediente.escritura_firmada === false ? "No" : null} />
                     <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
                     <Dato campo="Protocolo" valor={expediente.protocolo} />
+                    <Dato campo="Población notario" valor={expediente.poblacion} />
+                    <Dato campo="Provincia notario" valor={expediente.provincia} />
                   </div>
                 </div>
-
                 <div className="border-t border-slate-100 pt-3">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Localización</p>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
-                    <Dato campo="Población" valor={expediente.poblacion} />
-                    <Dato campo="Provincia" valor={expediente.provincia} />
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de facturación</p>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    <Dato campo="Nombre" valor={expediente.facturacion_nombre} />
+                    <Dato campo="Apellidos" valor={expediente.facturacion_apellidos} />
+                    <Dato campo="Dirección" valor={expediente.facturacion_direccion} />
+                    <Dato campo="Código postal" valor={expediente.facturacion_codigo_postal} />
+                    <Dato campo="Población" valor={expediente.facturacion_poblacion} />
+                    <Dato campo="Provincia" valor={expediente.facturacion_provincia} />
+                    <Dato campo="Teléfono" valor={expediente.facturacion_telefono} />
+                    <Dato campo="Email" valor={expediente.facturacion_email} />
                   </div>
                 </div>
-
-                <div className="flex justify-end border-t border-slate-100 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setMostrarEnviarNotario(true)}
-                    className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 transition hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                  >
-                    ✎ Revisar datos del envío
-                  </button>
+                <div className="flex justify-end border-t border-slate-100 pt-3">
+                  <button type="button" onClick={() => setMostrarEnviarNotario(true)} className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 transition hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300">✎ Revisar datos del envío</button>
                 </div>
               </div>
             </section>
@@ -3876,7 +3856,7 @@ const tieneDefecto = defectosRegistrados.some(
             INFORMACIÓN CREDITICIA
         ==================================================== */}
 
-        <div className="min-w-0 xl:col-span-3">
+        <div className="min-w-0 xl:col-span-2">
 
           <Seccion
             titulo="Información crediticia"
