@@ -110,6 +110,10 @@ from backend.app.tipos_carga_hipotecaria.models import (
     TipoCargaHipotecaria,
 )
 
+from backend.app.expediente_ppad.models import ExpedientePPAD
+
+from backend.app.expediente_observaciones.models import ExpedienteObservacion
+
 from backend.app.tipos_concepto_gastos.models import (
     TipoConceptoGastos,
 )
@@ -702,6 +706,30 @@ def inicializar_tabla_expediente_acciones():
 
         print(
             "[EXPEDIENTE ACCIONES] Tabla disponible correctamente.",
+            flush=True,
+        )
+
+        # ====================================================
+        # INICIALIZAR TABLAS PPAD Y OBSERVACIONES DE EXPEDIENTE
+        # ====================================================
+
+        print(
+            "[PPAD/OBSERVACIONES] Comprobando tablas...",
+            flush=True,
+        )
+
+        ExpedientePPAD.__table__.create(
+            bind=engine,
+            checkfirst=True,
+        )
+
+        ExpedienteObservacion.__table__.create(
+            bind=engine,
+            checkfirst=True,
+        )
+
+        print(
+            "[PPAD/OBSERVACIONES] Tablas disponibles correctamente.",
             flush=True,
         )
 
