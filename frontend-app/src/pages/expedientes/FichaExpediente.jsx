@@ -3691,72 +3691,85 @@ const tieneDefecto = defectosRegistrados.some(
 
           </Seccion>
 
-          {/* ENVÍO A NOTARIO — DATOS PERSISTIDOS */}
-          {(expediente.fecha_envio ||
+          {/* =====================================================
+              FICHA COMPLETA DE ENVÍO A NOTARIO
+              Muestra todos los campos persistidos del formulario.
+          ====================================================== */}
+          {(expediente.fecha_envio_notario ||
+            expediente.fecha_envio ||
+            expediente.fecha_solicitud_pnc ||
+            expediente.numero_solicitud_pnc ||
+            expediente.escritura_firmada !== null && expediente.escritura_firmada !== undefined ||
             expediente.apoderado ||
             expediente.tipo_documento ||
+            expediente.tipo_firma ||
             expediente.fecha_prevista_firma ||
             expediente.hora_prevista_firma ||
             expediente.fecha_firma ||
             expediente.protocolo ||
-            expediente.tipo_firma ||
             expediente.poblacion ||
             expediente.provincia) && (
-            <section className="min-w-0 overflow-hidden rounded-2xl border border-blue-200 bg-white shadow-sm">
-              <div className="flex items-center gap-3 border-b border-blue-100 bg-blue-50/80 px-4 py-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-white text-lg">
+            <section className="min-w-0 overflow-hidden rounded-2xl border border-indigo-200 bg-white shadow-[0_12px_30px_rgba(30,41,59,0.08)]">
+              <div className="flex items-center gap-3 border-b border-indigo-100 bg-gradient-to-r from-indigo-50 to-blue-50 px-4 py-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">
                   🏛️
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-sm font-bold text-slate-800">
-                    Envío a notario
+                  <h3 className="text-sm font-extrabold text-slate-800">
+                    Ficha de envío a notario
                   </h3>
                   <p className="mt-0.5 text-[11px] text-slate-500">
-                    Datos guardados del envío y de la firma
+                    Información completa registrada en el envío
                   </p>
                 </div>
-                <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[9px] font-bold text-emerald-700">
+                <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">
                   Guardado
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2">
-                {expediente.fecha_envio && (
-                  <Dato campo="Fecha de envío" valor={expediente.fecha_envio} tipo="fecha" />
-                )}
-                {expediente.nombre_notario && (
-                  <Dato campo="Notario" valor={expediente.nombre_notario} />
-                )}
-                {expediente.nif_notario && (
-                  <Dato campo="NIF notario" valor={expediente.nif_notario} />
-                )}
-                {expediente.apoderado && (
-                  <Dato campo="Apoderado" valor={expediente.apoderado} />
-                )}
-                {expediente.tipo_documento && (
-                  <Dato campo="Tipo de documento" valor={expediente.tipo_documento} />
-                )}
-                {expediente.tipo_firma && (
-                  <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
-                )}
-                {expediente.fecha_prevista_firma && (
-                  <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
-                )}
-                {expediente.hora_prevista_firma && (
-                  <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
-                )}
-                {expediente.fecha_firma && (
-                  <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
-                )}
-                {expediente.protocolo && (
-                  <Dato campo="Protocolo" valor={expediente.protocolo} />
-                )}
-                {expediente.poblacion && (
-                  <Dato campo="Población" valor={expediente.poblacion} />
-                )}
-                {expediente.provincia && (
-                  <Dato campo="Provincia" valor={expediente.provincia} />
-                )}
+              <div className="space-y-3 p-3">
+                <div>
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                    <Dato campo="Fecha de envío" valor={expediente.fecha_envio_notario || expediente.fecha_envio} tipo="fecha" />
+                    <Dato campo="Fecha solicitud PNC" valor={expediente.fecha_solicitud_pnc} tipo="fecha" />
+                    <Dato campo="Número solicitud PNC" valor={expediente.numero_solicitud_pnc} />
+                    <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
+                    <Dato campo="NIF notario" valor={expediente.nif_notario} />
+                    <Dato campo="Apoderado" valor={expediente.apoderado} />
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-100 pt-3">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de la escritura y firma</p>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                    <Dato campo="Tipo de documento" valor={expediente.tipo_documento} />
+                    <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
+                    <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
+                    <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
+                    <Dato campo="Escritura firmada" valor={expediente.escritura_firmada === true ? "Sí" : expediente.escritura_firmada === false ? "No" : null} />
+                    <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
+                    <Dato campo="Protocolo" valor={expediente.protocolo} />
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-100 pt-3">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Localización</p>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                    <Dato campo="Población" valor={expediente.poblacion} />
+                    <Dato campo="Provincia" valor={expediente.provincia} />
+                  </div>
+                </div>
+
+                <div className="flex justify-end border-t border-slate-100 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setMostrarEnviarNotario(true)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 transition hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  >
+                    ✎ Revisar datos del envío
+                  </button>
+                </div>
               </div>
             </section>
           )}
