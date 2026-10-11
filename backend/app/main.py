@@ -110,9 +110,13 @@ from backend.app.tipos_carga_hipotecaria.models import (
     TipoCargaHipotecaria,
 )
 
-from backend.app.expediente_ppad.models import ExpedientePPAD
+from backend.app.expediente_ppad.models import (
+    ExpedientePPAD
+)
 
-from backend.app.expediente_observaciones.models import ExpedienteObservacion
+from backend.app.expediente_observaciones.models import (
+    ExpedienteObservacion
+)
 
 from backend.app.tipos_concepto_gastos.models import (
     TipoConceptoGastos,
