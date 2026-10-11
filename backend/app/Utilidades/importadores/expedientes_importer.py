@@ -1,4 +1,5 @@
 import io
+import unicodedata
 from datetime import date, datetime
 from typing import Any
 
@@ -74,6 +75,14 @@ def normalizar_nombre_columna(nombre: Any) -> str:
         return ""
 
     texto = str(nombre).strip().upper()
+
+    # Elimina tildes para que OBSERVACIÓN y OBSERVACION,
+    # por ejemplo, se reconozcan como el mismo encabezado.
+    texto = "".join(
+        caracter
+        for caracter in unicodedata.normalize("NFKD", texto)
+        if not unicodedata.combining(caracter)
+    )
 
     reemplazos = {
         " ": "",
@@ -313,6 +322,34 @@ def importar_excel_expedientes(
         f"TOTAL COLUMNAS EXCEL: {len(df.columns)}",
         flush=True,
     )
+
+    # Detectar explícitamente la columna de observaciones. Se aceptan
+    # distintas denominaciones habituales del Excel de origen.
+    columna_observaciones = obtener_columna_real(
+        df.columns,
+        "OBSERVACIONES",
+        "OBSERVACION",
+        "OBSERVACIÓN",
+        "OBSERVACIONS",
+        "OBSERVATION",
+        "OBSERVACIONES EXPEDIENTE",
+        "OBSERVACION EXPEDIENTE",
+        "OBSERVACIONES DEL EXPEDIENTE",
+        "OBSERVACION DEL EXPEDIENTE",
+    )
+
+    if columna_observaciones is None:
+        print(
+            "IMPORTADOR: no se ha detectado una columna de observaciones "
+            "con los nombres conocidos. Se revisarán los encabezados del log.",
+            flush=True,
+        )
+    else:
+        print(
+            "COLUMNA OBSERVACIONES DETECTADA: "
+            f"[{columna_observaciones}]",
+            flush=True,
+        )
 
     # ========================================================
     # 2) MOSTRAR COLUMNAS REALES
@@ -1022,10 +1059,24 @@ def importar_excel_expedientes(
             # OBSERVACIONES
             # ------------------------------------------------
 
-            exp.observaciones = obtener_valor(
+            valor_observaciones = obtener_valor(
                 row,
                 "OBSERVACIONES",
+                "OBSERVACION",
+                "OBSERVACIÓN",
+                "OBSERVACIONS",
+                "OBSERVATION",
+                "OBSERVACIONES EXPEDIENTE",
+                "OBSERVACION EXPEDIENTE",
+                "OBSERVACIONES DEL EXPEDIENTE",
+                "OBSERVACION DEL EXPEDIENTE",
             )
+
+            # No borrar el dato que ya existe en la base de datos si la
+            # fila del Excel no trae observaciones o viene vacía.
+            # El modelo limita el campo a 2.000 caracteres.
+            if valor_observaciones is not None:
+                exp.observaciones = str(valor_observaciones).strip()[:2000]
 
             # ------------------------------------------------
             # FACTURACIÓN
