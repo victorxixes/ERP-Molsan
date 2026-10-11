@@ -4648,11 +4648,9 @@ const tieneDefecto = defectosRegistrados.some(
       }
       opciones={accionesCatalogo.map((accion) => ({
         value: String(accion.id),
-        label: `${accion.descripcion}${
-          accion.actividad
-            ? ` — ${accion.actividad}`
-            : ""
-        }`,
+        // En la ficha se muestra únicamente la descripción.
+        // El ID real se conserva para guardar la asignación.
+        label: accion.descripcion,
       }))}
     />
 
