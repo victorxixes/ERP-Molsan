@@ -3653,7 +3653,7 @@ const tieneDefecto = defectosRegistrados.some(
             COLUMNA CENTRAL — NOTARIO Y ENVÍO
         ==================================================== */}
 
-        <div className="min-w-0 space-y-3 xl:col-span-4">
+        <div className="min-w-0 space-y-3 xl:col-span-3">
 
           {/* NOTARIO */}
 
@@ -3698,7 +3698,7 @@ const tieneDefecto = defectosRegistrados.some(
         {/* ===================================================
             COLUMNA 3 — PPAD
         ==================================================== */}
-        <div className="min-w-0 space-y-3 xl:col-span-4">
+        <div className="min-w-0 space-y-3 xl:col-span-3">
           {/* PPAD */}
           <Seccion
             titulo="PPAD"
