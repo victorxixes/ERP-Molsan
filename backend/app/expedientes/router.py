@@ -362,3 +362,57 @@ def obtener_expediente(id_expediente: str, db: Session = Depends(get_db)):
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
     return expediente_a_dict(expediente)
+
+@router.post("/migraciones/actualizar-envio-notario")
+def actualizar_columnas_envio_notario(
+    db: Session = Depends(get_db),
+):
+    """
+    Añade las columnas necesarias para guardar los datos
+    adicionales del envío a notario y de facturación.
+    No elimina ni modifica columnas existentes.
+    """
+    sentencias = [
+        """
+        ALTER TABLE expedientes
+        ADD COLUMN IF NOT EXISTS idioma_documento VARCHAR(100)
+        """,
+        """
+        ALTER TABLE expedientes
+        ADD COLUMN IF NOT EXISTS formato_escritura VARCHAR(200)
+        """,
+        """
+        ALTER TABLE expedientes
+        ADD COLUMN IF NOT EXISTS tipo_tramite VARCHAR(200)
+        """,
+        """
+        ALTER TABLE expedientes
+        ADD COLUMN IF NOT EXISTS facturacion_apellidos VARCHAR(300)
+        """,
+    ]
+
+    try:
+        for sentencia in sentencias:
+            db.execute(text(sentencia))
+
+        db.commit()
+
+        return {
+            "ok": True,
+            "mensaje": "Base de datos actualizada correctamente.",
+            "tabla": "expedientes",
+            "columnas": [
+                "idioma_documento",
+                "formato_escritura",
+                "tipo_tramite",
+                "facturacion_apellidos",
+            ],
+        }
+
+    except Exception as exc:
+        db.rollback()
+        print("ERROR EN MIGRACIÓN DE ENVÍO A NOTARIO:", repr(exc))
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudieron añadir las columnas a la base de datos.",
+        )
