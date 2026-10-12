@@ -100,6 +100,61 @@ function obtenerValor(objeto, ...claves) {
   return "";
 }
 
+function crearFormularioDesdeExpediente(expediente) {
+  const nombreNotario = obtenerValor(
+    expediente,
+    "nombre_notario",
+    "notario"
+  );
+  const partesNombre = nombreNotario.split(/\s+/).filter(Boolean);
+  const horaGuardada = obtenerValor(expediente, "hora_prevista_firma");
+  const firmaValor = expediente?.escritura_firmada;
+  const escrituraFirmada =
+    firmaValor === true ||
+    ["sí", "si", "true", "1"].includes(String(firmaValor ?? "").trim().toLowerCase());
+
+  return {
+    ...FORM_INICIAL,
+    escritura_firmada: escrituraFirmada ? "Sí" : "No",
+    fecha_envio:
+      obtenerValor(expediente, "fecha_envio_notario", "fecha_envio") || fechaHoy(),
+    idioma:
+      obtenerValor(expediente, "idioma_documento", "idioma") || FORM_INICIAL.idioma,
+    fecha_solicitud_pnc: obtenerValor(expediente, "fecha_solicitud_pnc"),
+    numero_solicitud_pnc: obtenerValor(expediente, "numero_solicitud_pnc"),
+    fecha_firma: obtenerValor(expediente, "fecha_firma"),
+    protocolo: obtenerValor(expediente, "protocolo"),
+    fecha_prevista_firma: obtenerValor(expediente, "fecha_prevista_firma"),
+    hora_prevista_firma: horaGuardada ? horaGuardada.slice(0, 5) : FORM_INICIAL.hora_prevista_firma,
+    notario: nombreNotario
+      ? {
+          id: expediente?.notario_id ?? null,
+          nombre: partesNombre[0] || "",
+          apellidos: partesNombre.slice(1).join(" "),
+          nif: obtenerValor(expediente, "nif_notario"),
+          municipio: obtenerValor(expediente, "poblacion"),
+          provincia: obtenerValor(expediente, "provincia"),
+          apoderado: obtenerValor(expediente, "apoderado"),
+          tipo_firma: obtenerValor(expediente, "tipo_firma"),
+        }
+      : null,
+    tipo_documento: obtenerValor(expediente, "tipo_documento"),
+    formato_escritura:
+      obtenerValor(expediente, "formato_escritura") || FORM_INICIAL.formato_escritura,
+    tipo_tramite:
+      obtenerValor(expediente, "tipo_tramite") || FORM_INICIAL.tipo_tramite,
+    facturacion_nombre: obtenerValor(expediente, "facturacion_nombre", "nombre_facturacion"),
+    facturacion_apellidos: obtenerValor(expediente, "facturacion_apellidos", "apellidos_facturacion"),
+    facturacion_dni_nif: obtenerValor(expediente, "facturacion_dni_nif", "dni_facturacion", "nif_facturacion"),
+    facturacion_direccion: obtenerValor(expediente, "facturacion_direccion", "direccion_facturacion"),
+    facturacion_codigo_postal: obtenerValor(expediente, "facturacion_codigo_postal", "codigo_postal_facturacion"),
+    facturacion_poblacion: obtenerValor(expediente, "facturacion_poblacion", "poblacion_facturacion"),
+    facturacion_provincia: obtenerValor(expediente, "facturacion_provincia", "provincia_facturacion"),
+    facturacion_telefono: obtenerValor(expediente, "facturacion_telefono", "telefono_facturacion"),
+    facturacion_email: obtenerValor(expediente, "facturacion_email", "email_facturacion"),
+  };
+}
+
 function clasesInput(extra = "") {
   return `
     w-full rounded-xl border border-slate-300 bg-white
@@ -190,58 +245,9 @@ export default function EnviarANotarioModal({
   onClose,
   onGuardar,
 }) {
-  const [form, setForm] = useState(() => ({
-    ...FORM_INICIAL,
-    fecha_envio: fechaHoy(),
-
-    // Cargar datos existentes si el expediente los contiene.
-    facturacion_nombre: obtenerValor(
-      expediente,
-      "facturacion_nombre",
-      "nombre_facturacion"
-    ),
-    facturacion_apellidos: obtenerValor(
-      expediente,
-      "facturacion_apellidos",
-      "apellidos_facturacion"
-    ),
-    facturacion_dni_nif: obtenerValor(
-      expediente,
-      "facturacion_dni_nif",
-      "dni_facturacion",
-      "nif_facturacion"
-    ),
-    facturacion_direccion: obtenerValor(
-      expediente,
-      "facturacion_direccion",
-      "direccion_facturacion"
-    ),
-    facturacion_codigo_postal: obtenerValor(
-      expediente,
-      "facturacion_codigo_postal",
-      "codigo_postal_facturacion"
-    ),
-    facturacion_poblacion: obtenerValor(
-      expediente,
-      "facturacion_poblacion",
-      "poblacion_facturacion"
-    ),
-    facturacion_provincia: obtenerValor(
-      expediente,
-      "facturacion_provincia",
-      "provincia_facturacion"
-    ),
-    facturacion_telefono: obtenerValor(
-      expediente,
-      "facturacion_telefono",
-      "telefono_facturacion"
-    ),
-    facturacion_email: obtenerValor(
-      expediente,
-      "facturacion_email",
-      "email_facturacion"
-    ),
-  }));
+  const [form, setForm] = useState(() =>
+    crearFormularioDesdeExpediente(expediente)
+  );
 
   const [tiposDocumento, setTiposDocumento] = useState([]);
   const [loadingTipos, setLoadingTipos] = useState(false);
