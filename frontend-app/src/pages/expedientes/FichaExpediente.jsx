@@ -1440,6 +1440,12 @@ export default function FichaExpediente() {
     mostrarFincas,
     setMostrarFincas,
   ] = useState(false);
+
+  // Modal de carpeta digital del expediente.
+  const [
+    mostrarCarpetaDigital,
+    setMostrarCarpetaDigital,
+  ] = useState(false);
   const [
     mostrarAcciones,
     setMostrarAcciones,
