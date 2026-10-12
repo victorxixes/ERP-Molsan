@@ -3665,8 +3665,12 @@ const tieneDefecto = defectosRegistrados.some(
        
 
         {/* ===================================================
-            COLUMNA 3 — PPAD
+            ZONA DERECHA — PPAD, INFORMACIÓN CREDITICIA Y ENVÍO
+            Se mantiene a la derecha de Fincas, Acciones y Observaciones.
         ==================================================== */}
+        <div className="min-w-0 xl:col-span-8">
+          <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
+        {/* PPAD */}
         <div className="min-w-0 space-y-2 xl:col-span-3">
           {/* PPAD */}
           <Seccion
@@ -3812,8 +3816,8 @@ const tieneDefecto = defectosRegistrados.some(
         </div>
 
 
-        {/* ENVÍO A NOTARIO: DEBAJO DE PPAD E INFORMACIÓN CREDITICIA, A TODO EL ANCHO */}
-        <div className="min-w-0 w-full xl:col-span-12">
+        {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
+        <div className="min-w-0 w-full xl:col-span-8">
           <div className="flex w-full min-w-0 justify-center">
           {/* =====================================================
               FICHA COMPLETA DE ENVÍO A NOTARIO
@@ -3884,6 +3888,8 @@ const tieneDefecto = defectosRegistrados.some(
                 </div>
               </div>
             </section>
+          </div>
+        </div>
           </div>
         </div>
       </div>
