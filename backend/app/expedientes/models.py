@@ -13,11 +13,6 @@ from sqlalchemy.orm import relationship
 from backend.app.database import Base
 
 
-# ============================================================
-# CLIENTES
-# IMPORTANTE: coincide con la tabla clientes existente
-# ============================================================
-
 class Cliente(Base):
     __tablename__ = "clientes"
 
@@ -25,10 +20,8 @@ class Cliente(Base):
 
     nombre_completo = Column(String, nullable=True)
     dni = Column(String, nullable=True)
-
     telefono = Column(String, nullable=True)
     email = Column(String, nullable=True)
-
     direccion = Column(String, nullable=True)
     codigo_postal = Column(String, nullable=True)
     poblacion = Column(String, nullable=True)
@@ -49,10 +42,6 @@ class Cliente(Base):
         back_populates="cliente",
     )
 
-
-# ============================================================
-# EXPEDIENTES
-# ============================================================
 
 class Expediente(Base):
     __tablename__ = "expedientes"
@@ -78,11 +67,10 @@ class Expediente(Base):
         nullable=False,
     )
 
-    # ESTADOS
     estado_expediente = Column(String(200), nullable=True)
     estado_expediente_ancert = Column(String(200), nullable=True)
 
-    # FECHAS
+    # FECHAS DEL EXPEDIENTE
     fecha_alta = Column(Date, nullable=True)
     fecha_firma = Column(Date, nullable=True)
     fecha_inscripcion = Column(Date, nullable=True)
@@ -95,27 +83,27 @@ class Expediente(Base):
     fecha_inicio_actividad = Column(Date, nullable=True)
     fecha_fin_actividad = Column(Date, nullable=True)
 
-    # ENVÍO A NOTARIO
+    # ENVÍO A NOTARIO Y SOLICITUD PNC
     fecha_envio_notario = Column(Date, nullable=True)
     fecha_solicitud_pnc = Column(Date, nullable=True)
     numero_solicitud_pnc = Column(String(200), nullable=True)
     escritura_firmada = Column(Boolean, nullable=True)
     hora_prevista_firma = Column(Time, nullable=True)
 
-    # TITULAR
+    # PERSONAS DEL EXPEDIENTE
     nombre_titular = Column(String(300), nullable=True)
     nif_titular = Column(String(50), nullable=True)
-
-    # SOLICITANTE
     nombre_solicitante = Column(String(300), nullable=True)
     nif_solicitante = Column(String(50), nullable=True)
-
-    # APODERADO
     apoderado = Column(String(300), nullable=True)
 
-    # DATOS DEL ENVÍO A NOTARIO
+    # DATOS DE FIRMA Y DOCUMENTACIÓN
     tipo_firma = Column(String(100), nullable=True)
     tipo_documento = Column(String(300), nullable=True)
+    idioma_documento = Column(String(100), nullable=True)
+    formato_escritura = Column(String(200), nullable=True)
+    tipo_tramite = Column(String(200), nullable=True)
+
     poblacion = Column(String(200), nullable=True)
     provincia = Column(String(200), nullable=True)
 
@@ -129,34 +117,29 @@ class Expediente(Base):
     dan = Column(String(200), nullable=True)
     oficina_alta = Column(String(200), nullable=True)
 
-    # ECONÓMICOS
+    # INFORMACIÓN ECONÓMICA
     capital = Column(Float, nullable=True)
     importe = Column(Float, nullable=True)
     saldo_real = Column(Float, nullable=True)
     saldo_disponible = Column(Float, nullable=True)
 
-    # PROVISIÓN
     id_provision = Column(String(100), nullable=True)
     tipo_provision = Column(String(100), nullable=True)
 
-    # OPERACIÓN
+    # INFORMACIÓN DEL CONTRATO Y OPERACIÓN
     contrato = Column(String(200), nullable=True)
     num_solicitud_sia = Column(String(200), nullable=True)
     tipo_operacion = Column(String(300), nullable=True)
     subtipo_operacion = Column(String(300), nullable=True)
     vinccanc = Column(String(200), nullable=True)
     protocolo = Column(String(200), nullable=True)
-
-    # GTG / BANKIA
     origen_bankia = Column(String(200), nullable=True)
     producto_gtg = Column(String(300), nullable=True)
     dt = Column(String(200), nullable=True)
 
-    # ACTIVIDAD
+    # ACTIVIDAD Y GESTORÍA
     actividad_actual = Column(String(300), nullable=True)
     estado_actividad = Column(String(200), nullable=True)
-
-    # GESTORÍA
     id_gestoria_tramite = Column(String(100), nullable=True)
     nombre_gestoria = Column(String(300), nullable=True)
     gestoria = Column(String(300), nullable=True)
@@ -171,33 +154,26 @@ class Expediente(Base):
     falta_defecto = Column(String(1000), nullable=True)
     fcierre_defecto = Column(Date, nullable=True)
 
-    # CGN
+    # OTROS DATOS DEL EXPEDIENTE
     id_expediente_cgn = Column(String(200), nullable=True)
-
-    # ACTA
     tipo_acta = Column(String(200), nullable=True)
-
-    # OTROS
     lucy = Column(String(200), nullable=True)
     indicador_tt = Column(String(200), nullable=True)
-
-    # OBSERVACIONES
     observaciones = Column(String(2000), nullable=True)
 
     # FACTURACIÓN PROPIA DEL EXPEDIENTE
     facturacion_nombre = Column(String(300), nullable=True)
+    facturacion_apellidos = Column(String(300), nullable=True)
     facturacion_dni_nif = Column(String(50), nullable=True)
-    facturacion_direccion = Column(String(300), nullable=True)
-    facturacion_codigo_postal = Column(String(20), nullable=True)
+    facturacion_direccion = Column(String(500), nullable=True)
+    facturacion_codigo_postal = Column(String(30), nullable=True)
     facturacion_poblacion = Column(String(200), nullable=True)
     facturacion_provincia = Column(String(200), nullable=True)
     facturacion_telefono = Column(String(50), nullable=True)
-    facturacion_email = Column(String(200), nullable=True)
-
+    facturacion_email = Column(String(320), nullable=True)
     facturacion_estado = Column(String(200), nullable=True)
     facturacion_fecha = Column(Date, nullable=True)
 
-    # REGISTRAL
+    # ESTADO REGISTRAL
     registral_estado = Column(String(200), nullable=True)
     registral_fecha = Column(Date, nullable=True)
-
