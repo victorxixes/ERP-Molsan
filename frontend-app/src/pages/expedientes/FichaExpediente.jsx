@@ -3808,6 +3808,7 @@ const tieneDefecto = defectosRegistrados.some(
               className="
                 grid
                 grid-cols-2
+                lg:grid-cols-3
                 gap-1.5
               "
             >
