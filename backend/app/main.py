@@ -102,6 +102,10 @@ from backend.app.registros_propiedad.models import (
     RegistroPropiedad,
 )
 
+from backend.app.carpeta_digital.models import (
+    DocumentoCarpetaDigital,
+)
+
 from backend.app.oficinas_liquidadoras.models import (
     OficinaLiquidadora,
 )
@@ -220,6 +224,11 @@ from backend.app.seguridad.asignar_password_router import (
 
 from backend.app.seguridad.permisos.permisos_router import (
     router as permisos_router,
+)
+
+# CARPETA DIGITAL DE EXPEDIENTES
+from backend.app.carpeta_digital.router import (
+    router as carpeta_digital_router,
 )
 
 from backend.app.seguridad.permisos.asignar_router import (
@@ -433,6 +442,8 @@ app.include_router(admin_router, prefix="/api")
 # AGENDA
 app.include_router(agenda_router, prefix="/api")
 
+# CARPETA DIGITAL
+app.include_router(carpeta_digital_router, prefix="/api",)
 
 # ============================================================
 # DEBUG — RUTAS AGENDA
