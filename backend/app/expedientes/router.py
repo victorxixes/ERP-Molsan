@@ -1216,7 +1216,7 @@ def enviar_a_notario(
 
     return respuesta
 
-
+```python
 # ============================================================
 # DIAGNÓSTICO TEMPORAL DE BLOQUEOS POSTGRESQL
 # ============================================================
@@ -1229,6 +1229,9 @@ def diagnostico_bloqueos(
         resultado = db.execute(text("""
             SELECT
                 a.pid AS proceso,
+                a.usename AS usuario_bd,
+                a.application_name AS aplicacion,
+                a.client_addr AS direccion_cliente,
                 a.state AS estado,
                 a.wait_event_type AS tipo_espera,
                 a.wait_event AS evento_espera,
@@ -1239,12 +1242,20 @@ def diagnostico_bloqueos(
                     )::integer
                     ELSE NULL
                 END AS segundos_transaccion,
+                CASE
+                    WHEN a.query_start IS NOT NULL
+                    THEN EXTRACT(
+                        EPOCH FROM (NOW() - a.query_start)
+                    )::integer
+                    ELSE NULL
+                END AS segundos_consulta,
                 pg_blocking_pids(a.pid) AS bloqueado_por,
-                LEFT(a.query, 200) AS consulta
+                LEFT(a.query, 300) AS consulta
             FROM pg_stat_activity a
             WHERE a.datname = current_database()
               AND a.pid <> pg_backend_pid()
             ORDER BY
+                cardinality(pg_blocking_pids(a.pid)) DESC,
                 a.xact_start NULLS LAST,
                 a.query_start NULLS LAST
             LIMIT 100
@@ -1266,9 +1277,9 @@ def diagnostico_bloqueos(
         print("ERROR DIAGNÓSTICO BLOQUEOS:", repr(exc))
         raise HTTPException(
             status_code=500,
-            detail="No se pudieron consultar las sesiones de PostgreSQL.",
+            detail="No se pudieron consultar las sesiones de PostgreSQL."
         )
-
+```
 # ============================================================
 # CONSULTAR UN EXPEDIENTE
 # ============================================================
