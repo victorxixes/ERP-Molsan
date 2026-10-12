@@ -20,7 +20,7 @@ const FORM_INICIAL = {
   protocolo: "",
 
   fecha_prevista_firma: "",
-  hora_prevista_firma: "00:00",
+  hora_prevista_firma: "09:00",
 
   notario: null,
   tipo_documento: "",
@@ -32,6 +32,7 @@ const FORM_INICIAL = {
   // DATOS DE FACTURACIÓN EDITABLES
   facturacion_nombre: "",
   facturacion_apellidos: "",
+  facturacion_dni_nif: "",
   facturacion_direccion: "",
   facturacion_codigo_postal: "",
   facturacion_poblacion: "",
@@ -204,6 +205,12 @@ export default function EnviarANotarioModal({
       "facturacion_apellidos",
       "apellidos_facturacion"
     ),
+    facturacion_dni_nif: obtenerValor(
+      expediente,
+      "facturacion_dni_nif",
+      "dni_facturacion",
+      "nif_facturacion"
+    ),
     facturacion_direccion: obtenerValor(
       expediente,
       "facturacion_direccion",
@@ -339,113 +346,7 @@ export default function EnviarANotarioModal({
   }, []);
 
   // ==========================================================
-  // COMPROBAR CITA EXISTENTE
-  // ==========================================================
-
-  const comprobarCitaExistente = useCallback(async () => {
-    if (
-      !expediente?.id_expediente ||
-      !form.fecha_prevista_firma
-    ) {
-      return null;
-    }
-
-    const response = await axios.get("/agenda/search", {
-      params: {
-        id_expediente: expediente.id_expediente,
-        fecha: form.fecha_prevista_firma,
-      },
-    });
-
-    const datos = response?.data;
-
-    if (Array.isArray(datos) && datos.length > 0) {
-      return datos[0];
-    }
-
-    return null;
-  }, [expediente, form.fecha_prevista_firma]);
-
-  // ==========================================================
-  // CREAR CITA EN AGENDA
-  // ==========================================================
-
-  const crearCitaAgenda = useCallback(async () => {
-    if (!form.fecha_prevista_firma) {
-      throw new Error("Falta la Fecha prevista de firma.");
-    }
-
-    if (!form.hora_prevista_firma) {
-      throw new Error("Falta la Hora prevista de firma.");
-    }
-
-    if (!form.notario?.id) {
-      throw new Error("Falta el notario.");
-    }
-
-    if (!expediente?.id_expediente) {
-      throw new Error("Falta el número de expediente.");
-    }
-
-    const citaExistente = await comprobarCitaExistente();
-
-    if (citaExistente) {
-      console.warn(
-        "AGENDA — YA EXISTE UNA CITA PARA ESTE EXPEDIENTE Y FECHA:",
-        citaExistente
-      );
-
-      return citaExistente;
-    }
-
-    const horaFin = sumarUnaHora(form.hora_prevista_firma);
-
-    if (!horaFin) {
-      throw new Error(
-        "La hora prevista de firma debe permitir una duración de una hora. La última hora de inicio permitida es las 23:00."
-      );
-    }
-
-    const expedienteId =
-      expediente?.id ??
-      expediente?.expediente_id ??
-      null;
-
-    const apoderadoId =
-      form.notario?.apoderado_id ??
-      expediente?.apoderado_id ??
-      null;
-
-    const payloadAgenda = {
-      fecha: form.fecha_prevista_firma,
-      hora_inicio: form.hora_prevista_firma,
-      hora_fin: horaFin,
-      tipo_cita: "Firma notarial",
-      notario_id: Number(form.notario.id),
-      tipo_firma: form.notario.tipo_firma || null,
-      apoderado_id: apoderadoId ? Number(apoderadoId) : null,
-      apoderado: form.notario.apoderado || null,
-      observaciones:
-        `Firma notarial — Expediente ${expediente.id_expediente}` +
-        ` — Solicitud PNC ${form.numero_solicitud_pnc.trim()}`,
-      expediente_id: expedienteId ? Number(expedienteId) : null,
-    };
-
-    console.log("AGENDA — PAYLOAD:", payloadAgenda);
-
-    const response = await axios.post("/agenda/", payloadAgenda);
-
-    console.log("AGENDA — CITA CREADA:", response?.data);
-
-    return response?.data;
-  }, [
-    form,
-    expediente,
-    comprobarCitaExistente,
-  ]);
-
-  // ==========================================================
-  // GUARDAR ENVÍO Y CREAR CITA
+  // GUARDAR ENVÍO Y DATOS DEL EXPEDIENTE
   // ==========================================================
 
   const guardar = useCallback(async () => {
@@ -559,7 +460,7 @@ export default function EnviarANotarioModal({
 
       escritura_firmada: form.escritura_firmada === "Sí",
       fecha_envio: form.fecha_envio,
-      idioma: form.idioma,
+      idioma_documento: form.idioma,
 
       fecha_solicitud_pnc: form.fecha_solicitud_pnc,
       numero_solicitud_pnc: form.numero_solicitud_pnc.trim(),
@@ -595,6 +496,7 @@ export default function EnviarANotarioModal({
       // DATOS DE FACTURACIÓN
       facturacion_nombre: form.facturacion_nombre.trim(),
       facturacion_apellidos: form.facturacion_apellidos.trim(),
+      facturacion_dni_nif: form.facturacion_dni_nif.trim(),
       facturacion_direccion: form.facturacion_direccion.trim(),
       facturacion_codigo_postal:
         form.facturacion_codigo_postal.trim(),
@@ -611,27 +513,10 @@ export default function EnviarANotarioModal({
       console.log("EXPEDIENTE:", expediente.id_expediente);
       console.log("PAYLOAD EXPEDIENTE:", payload);
 
-      // Primero guardamos el envío y los datos de facturación.
+      // El endpoint de envío a notario guarda los datos del expediente
+      // y crea/actualiza la cita de Agenda en una única operación.
+      // No hacemos un segundo POST a /agenda/ para evitar duplicados.
       await onGuardar(payload);
-
-      // Después creamos la cita de Agenda.
-      try {
-        const cita = await crearCitaAgenda();
-        console.log("AGENDA — CITA PROCESADA:", cita);
-      } catch (agendaError) {
-        console.error("AGENDA — ERROR CREANDO CITA:", agendaError);
-        console.error(
-          "AGENDA — RESPONSE:",
-          agendaError?.response?.data
-        );
-
-        throw new Error(
-          agendaError?.response?.data?.detail ||
-            agendaError?.response?.data?.message ||
-            agendaError?.message ||
-            "El envío se ha guardado, pero no se ha podido crear la cita en Agenda."
-        );
-      }
 
       console.log("ENVÍO A NOTARIO — COMPLETADO");
       onClose();
@@ -654,7 +539,6 @@ export default function EnviarANotarioModal({
     expediente,
     form,
     onGuardar,
-    crearCitaAgenda,
     onClose,
   ]);
 
@@ -793,7 +677,7 @@ export default function EnviarANotarioModal({
               <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                 <TituloSeccion
                   titulo="2. Planificación de la firma"
-                  descripcion="Se creará una cita de Agenda vinculada al expediente y al notario."
+                  descripcion="El envío guardará la planificación y el backend creará o actualizará la cita de Agenda."
                 />
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -1030,6 +914,17 @@ export default function EnviarANotarioModal({
                   />
 
                   <CampoTexto
+                    label="DNI / NIF de facturación"
+                    value={form.facturacion_dni_nif}
+                    disabled={loading}
+                    autoComplete="off"
+                    placeholder="DNI o NIF"
+                    onChange={(v) =>
+                      cambiarCampo("facturacion_dni_nif", v)
+                    }
+                  />
+
+                  <CampoTexto
                     label="Dirección"
                     value={form.facturacion_direccion}
                     disabled={loading}
@@ -1140,6 +1035,13 @@ export default function EnviarANotarioModal({
                     </strong>{" "}
                     {`${form.facturacion_nombre} ${form.facturacion_apellidos}`.trim() ||
                       "—"}
+                  </p>
+
+                  <p className="break-words">
+                    <strong className="text-slate-700">
+                      DNI / NIF:
+                    </strong>{" "}
+                    {form.facturacion_dni_nif || "—"}
                   </p>
 
                   <p className="break-words">
