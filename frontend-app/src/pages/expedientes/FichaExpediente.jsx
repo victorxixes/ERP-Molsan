@@ -1102,6 +1102,7 @@ function Dato({
   destaque = false,
   estado = false,
   multilinea = false,
+  compacto = false,
 }) {
   let contenido =
     valorVisible(valor);
@@ -1122,8 +1123,7 @@ function Dato({
         min-w-0
         rounded-xl
         border
-        px-2
-        py-2
+        ${compacto ? "px-1.5 py-1.5 rounded-lg" : "px-2 py-2 rounded-xl"}
         ${
           destaque
             ? "border-blue-100 bg-blue-50/60"
@@ -1152,7 +1152,7 @@ function Dato({
       ) : (
         <div
           className={`
-            text-xs
+            ${compacto ? "text-[11px] leading-tight" : "text-xs"}
             font-medium
             ${
               destaque
@@ -3698,7 +3698,7 @@ const tieneDefecto = defectosRegistrados.some(
         {/* ===================================================
             COLUMNA 3 — PPAD
         ==================================================== */}
-        <div className="min-w-0 space-y-3 xl:col-span-3">
+        <div className="min-w-0 space-y-2 xl:col-span-3">
           {/* PPAD */}
           <Seccion
             titulo="PPAD"
@@ -3707,7 +3707,7 @@ const tieneDefecto = defectosRegistrados.some(
             colapsable
             compacto
           >
-            <div className="space-y-3">
+            <div className="space-y-2">
               {errorPpad && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorPpad}</p>}
               {cargandoPpad && <p className="text-xs text-slate-500">Cargando conceptos PPAD…</p>}
               {ppadItems.length === 0 && !cargandoPpad && !mostrarFormularioPpad && (
@@ -3717,22 +3717,22 @@ const tieneDefecto = defectosRegistrados.some(
               )}
 
               {ppadItems.map((item) => (
-                <div key={item.id} className="rounded-xl border border-slate-200 bg-white p-3">
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <div key={item.id} className="rounded-lg border border-slate-200 bg-white p-2">
+                  <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3">
                     <div className="min-w-0">
                       <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Concepto</div>
-                      <div className="mt-1 break-words text-xs font-semibold text-slate-800">{item.concepto}</div>
+                      <div className="mt-0.5 break-words text-[11px] leading-tight font-semibold text-slate-800">{item.concepto}</div>
                     </div>
                     <div>
                       <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Importe</div>
-                      <div className="mt-1 text-xs font-semibold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</div>
+                      <div className="mt-0.5 text-[11px] leading-tight font-semibold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</div>
                     </div>
                     <div>
                       <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Imputable a</div>
-                      <div className="mt-1 text-xs font-semibold text-slate-800">{item.imputable_a || item.imputableA || "Molsan"}</div>
+                      <div className="mt-0.5 text-[11px] leading-tight font-semibold text-slate-800">{item.imputable_a || item.imputableA || "Molsan"}</div>
                     </div>
                   </div>
-                  <div className="mt-3 flex justify-end gap-2">
+                  <div className="mt-2 flex justify-end gap-2">
                     <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>
                     <Boton tipo="danger" onClick={() => eliminarPpad(item.id)}>Eliminar</Boton>
                   </div>
@@ -3808,7 +3808,7 @@ const tieneDefecto = defectosRegistrados.some(
               className="
                 grid
                 grid-cols-2
-                gap-2
+                gap-1.5
               "
             >
 
@@ -3818,6 +3818,7 @@ const tieneDefecto = defectosRegistrados.some(
                 valor={
                   expediente.contrato
                 }
+                compacto
               />
 
               <Dato
@@ -3825,6 +3826,7 @@ const tieneDefecto = defectosRegistrados.some(
                 valor={
                   expediente.tipo_operacion
                 }
+                compacto
               />
 
               <Dato
@@ -3832,6 +3834,7 @@ const tieneDefecto = defectosRegistrados.some(
                 valor={
                   expediente.subtipo_operacion
                 }
+                compacto
               />
 
               <Dato
@@ -3839,6 +3842,7 @@ const tieneDefecto = defectosRegistrados.some(
                 valor={
                   expediente.num_solicitud_sia
                 }
+                compacto
               />
 
               <Dato
@@ -3848,6 +3852,7 @@ const tieneDefecto = defectosRegistrados.some(
                 }
                 tipo="numero"
                 destaque
+                compacto
               />
 
               <Dato
@@ -3857,6 +3862,7 @@ const tieneDefecto = defectosRegistrados.some(
                 }
                 tipo="numero"
                 destaque
+                compacto
               />
 
               <Dato
@@ -3865,6 +3871,7 @@ const tieneDefecto = defectosRegistrados.some(
                   expediente.saldo_disponible
                 }
                 tipo="numero"
+                compacto
               />
 
               <Dato
@@ -3873,6 +3880,7 @@ const tieneDefecto = defectosRegistrados.some(
                   expediente.finca
                 }
                 destaque
+                compacto
               />
 
                            <Dato
@@ -3881,6 +3889,7 @@ const tieneDefecto = defectosRegistrados.some(
                   expediente.observaciones ?? expediente.Observaciones
                 }
                 destaque
+                compacto
               />
 
             </div>
