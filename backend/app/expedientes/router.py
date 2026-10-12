@@ -1251,91 +1251,66 @@ def obtener_expediente(
 def actualizar_columnas_envio_notario(
     db: Session = Depends(get_db),
 ):
-    sentencias = [
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS idioma_documento VARCHAR(100)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS formato_escritura VARCHAR(200)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS tipo_tramite VARCHAR(200)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS facturacion_nombre VARCHAR(300)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS facturacion_apellidos VARCHAR(300)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS facturacion_dni_nif VARCHAR(50)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS facturacion_direccion VARCHAR(500)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS facturacion_codigo_postal VARCHAR(30)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS facturacion_poblacion VARCHAR(200)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS facturacion_provincia VARCHAR(200)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS facturacion_telefono VARCHAR(50)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS facturacion_email VARCHAR(320)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS facturacion_estado VARCHAR(200)
-        """,
-        """
-        ALTER TABLE expedientes
-        ADD COLUMN IF NOT EXISTS facturacion_fecha DATE
-        """,
+    columnas = [
+        ("idioma_documento", "VARCHAR(100)"),
+        ("formato_escritura", "VARCHAR(200)"),
+        ("tipo_tramite", "VARCHAR(200)"),
+        ("facturacion_nombre", "VARCHAR(300)"),
+        ("facturacion_apellidos", "VARCHAR(300)"),
+        ("facturacion_dni_nif", "VARCHAR(50)"),
+        ("facturacion_direccion", "VARCHAR(500)"),
+        ("facturacion_codigo_postal", "VARCHAR(30)"),
+        ("facturacion_poblacion", "VARCHAR(200)"),
+        ("facturacion_provincia", "VARCHAR(200)"),
+        ("facturacion_telefono", "VARCHAR(50)"),
+        ("facturacion_email", "VARCHAR(320)"),
+        ("facturacion_estado", "VARCHAR(200)"),
+        ("facturacion_fecha", "DATE"),
     ]
 
+    print(
+        "INICIO MIGRACIÓN ENVÍO A NOTARIO: "
+        f"{len(columnas)} columnas",
+        flush=True,
+    )
+
     try:
-        for sentencia in sentencias:
-            db.execute(text(sentencia))
+        # PostgreSQL: no dejar la petición esperando indefinidamente
+        # si otra operación mantiene bloqueada la tabla expedientes.
+        db.execute(text("SET LOCAL lock_timeout = '5s'"))
+        db.execute(text("SET LOCAL statement_timeout = '20s'"))
+
+        for indice, (columna, tipo_sql) in enumerate(columnas, start=1):
+            print(
+                f"MIGRACIÓN ENVÍO A NOTARIO "
+                f"[{indice}/{len(columnas)}]: comprobando {columna}",
+                flush=True,
+            )
+
+            db.execute(
+                text(
+                    f"ALTER TABLE expedientes "
+                    f"ADD COLUMN IF NOT EXISTS {columna} {tipo_sql}"
+                )
+            )
+
+            print(
+                f"MIGRACIÓN ENVÍO A NOTARIO: {columna} OK",
+                flush=True,
+            )
 
         db.commit()
+
+        print(
+            "FIN MIGRACIÓN ENVÍO A NOTARIO: completada correctamente",
+            flush=True,
+        )
 
         return {
             "ok": True,
             "mensaje": "Base de datos actualizada correctamente.",
             "tabla": "expedientes",
-            "columnas": [
-                "idioma_documento",
-                "formato_escritura",
-                "tipo_tramite",
-                "facturacion_nombre",
-                "facturacion_apellidos",
-                "facturacion_dni_nif",
-                "facturacion_direccion",
-                "facturacion_codigo_postal",
-                "facturacion_poblacion",
-                "facturacion_provincia",
-                "facturacion_telefono",
-                "facturacion_email",
-                "facturacion_estado",
-                "facturacion_fecha",
-            ],
+            "columnas": [columna for columna, _ in columnas],
         }
 
     except Exception as exc:
@@ -1344,12 +1319,29 @@ def actualizar_columnas_envio_notario(
         print(
             "ERROR EN MIGRACIÓN DE ENVÍO A NOTARIO:",
             repr(exc),
+            flush=True,
         )
+
+        mensaje_error = str(exc).lower()
+        if (
+            "lock timeout" in mensaje_error
+            or "statement timeout" in mensaje_error
+            or "canceling statement due to" in mensaje_error
+        ):
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "La migración no pudo completarse porque PostgreSQL "
+                    "está esperando un bloqueo o ha superado el tiempo "
+                    "máximo de ejecución. No se han confirmado cambios. "
+                    "Revisa los logs de Render y vuelve a intentarlo."
+                ),
+            )
 
         raise HTTPException(
             status_code=500,
             detail=(
-                "No se pudieron añadir las columnas "
-                "a la base de datos."
+                "No se pudieron añadir las columnas a la base de datos. "
+                "Revisa los logs del backend de Render."
             ),
         )
