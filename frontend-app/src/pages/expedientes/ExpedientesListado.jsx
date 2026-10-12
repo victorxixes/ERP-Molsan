@@ -1151,6 +1151,14 @@ export default function ExpedientesListado() {
               filtrosAplicados.fechaFin ||
               undefined,
 
+                        protocolo:
+              filtrosAplicados.protocolo ||
+              undefined,
+
+                        finca:
+              filtrosAplicados.fechaFinfinca ||
+              undefined,
+            
             notario:
               filtrosAplicados.notario ||
               undefined,
@@ -1546,6 +1554,12 @@ export default function ExpedientesListado() {
       fechaFin:
         filtroFechaFin,
 
+            protocolo:
+        filtroprotocolo,
+
+            finca:
+        filtroFinca,
+      
       notario:
         filtroNotario.trim(),
 
@@ -1584,6 +1598,10 @@ export default function ExpedientesListado() {
 
     setFiltroNotario("");
 
+    setFiltroFinca("");
+
+    setFiltroProtocolo("");
+    
     setFiltroOficina("");
 
     setFiltroImporteMin("");
@@ -1603,6 +1621,10 @@ export default function ExpedientesListado() {
 
       notario: "",
 
+      finca: "",
+
+      protocolo: "",
+      
       oficina: "",
 
       importeMin: "",
@@ -1844,6 +1866,14 @@ export default function ExpedientesListado() {
             filtrosAplicados.fechaInicio ||
             undefined,
 
+            protocolo:
+            filtrosAplicados.protocolo ||
+            undefined,
+
+            finca:
+            filtrosAplicados.finca ||
+            undefined,
+          
           fechaFin:
             filtrosAplicados.fechaFin ||
             undefined,
