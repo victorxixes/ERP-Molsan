@@ -3761,7 +3761,7 @@ const tieneDefecto = defectosRegistrados.some(
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Fecha de envío" valor={expediente.fecha_envio_notario || expediente.fecha_envio} tipo="fecha" />
-                    <Dato campo="Idioma del documento" valor={expediente.idioma ?? expediente.idioma_documento ?? expediente.lengua_documento} />
+                    <Dato campo="Idioma del documento" valor={expediente.idioma_documento ?? expediente.idioma ?? expediente.lengua_documento} />
                     <Dato campo="Fecha solicitud PNC" valor={expediente.fecha_solicitud_pnc ?? expediente.fecha_pnc ?? expediente.pnc_fecha_solicitud} tipo="fecha" />
                     <Dato campo="Número solicitud PNC" valor={expediente.numero_solicitud_pnc ?? expediente.num_solicitud_pnc ?? expediente.pnc_numero_solicitud} />
                     <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
@@ -3790,6 +3790,7 @@ const tieneDefecto = defectosRegistrados.some(
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Nombre" valor={expediente.facturacion_nombre ?? expediente.nombre_facturacion ?? expediente.nombre_cliente_facturacion} />
                     <Dato campo="Apellidos" valor={expediente.facturacion_apellidos ?? expediente.apellidos_facturacion ?? expediente.apellidos_cliente_facturacion} />
+                    <Dato campo="DNI / NIF de facturación" valor={expediente.facturacion_dni_nif ?? expediente.dni_facturacion ?? expediente.nif_facturacion} />
                     <Dato campo="Dirección" valor={expediente.facturacion_direccion ?? expediente.direccion_facturacion ?? expediente.direccion_cliente_facturacion} />
                     <Dato campo="Código postal" valor={expediente.facturacion_codigo_postal ?? expediente.codigo_postal_facturacion ?? expediente.cp_facturacion} />
                     <Dato campo="Población" valor={expediente.facturacion_poblacion ?? expediente.poblacion_facturacion ?? expediente.municipio_facturacion} />
