@@ -5117,6 +5117,7 @@ const tieneDefecto = defectosRegistrados.some(
           expediente={
             expediente
           }
+          cuantiaFincas={fincaRegistrada?.cuantia ?? expediente?.cuantia ?? ""}
           onClose={() =>
             setMostrarEnviarNotario(
               false
