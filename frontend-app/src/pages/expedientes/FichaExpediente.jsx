@@ -3796,109 +3796,36 @@ const tieneDefecto = defectosRegistrados.some(
         ==================================================== */}
 
         <div className="min-w-0 xl:col-span-5">
-
           <Seccion
             titulo="Información crediticia"
             subtitulo="Datos económicos y contractuales"
             icono="economico"
             colapsable
           >
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-1.5">
+              <Dato campo="Contrato" valor={expediente.contrato} compacto />
+              <Dato campo="Capital" valor={expediente.capital} tipo="numero" destaque compacto />
 
-            <div
-              className="
-                grid
-                grid-cols-2
-                lg:grid-cols-3
-                gap-1.5
-              "
-            >
+              <Dato campo="Tipo operación" valor={expediente.tipo_operacion} compacto />
+              <Dato campo="Subtipo operación" valor={expediente.subtipo_operacion} compacto />
 
+              <Dato campo="Nº solicitud SIA" valor={expediente.num_solicitud_sia} compacto />
+              <Dato campo="Importe" valor={expediente.importe} tipo="numero" destaque compacto />
 
-              <Dato
-                campo="Contrato"
-                valor={
-                  expediente.contrato
-                }
-                compacto
-              />
+              <Dato campo="Saldo disponible" valor={expediente.saldo_disponible} tipo="numero" compacto />
+              <Dato campo="Finca" valor={expediente.finca} destaque compacto />
 
-              <Dato
-                campo="Tipo operación"
-                valor={
-                  expediente.tipo_operacion
-                }
-                compacto
-              />
-
-              <Dato
-                campo="Subtipo operación"
-                valor={
-                  expediente.subtipo_operacion
-                }
-                compacto
-              />
-
-              <Dato
-                campo="Nº solicitud SIA"
-                valor={
-                  expediente.num_solicitud_sia
-                }
-                compacto
-              />
-
-              <Dato
-                campo="Capital"
-                valor={
-                  expediente.capital
-                }
-                tipo="numero"
-                destaque
-                compacto
-              />
-
-              <Dato
-                campo="Importe"
-                valor={
-                  expediente.importe
-                }
-                tipo="numero"
-                destaque
-                compacto
-              />
-
-              <Dato
-                campo="Saldo disponible"
-                valor={
-                  expediente.saldo_disponible
-                }
-                tipo="numero"
-                compacto
-              />
-
-              <Dato
-                campo="Finca"
-                valor={
-                  expediente.finca
-                }
-                destaque
-                compacto
-              />
-
-                           <Dato
-                campo="Observaciones"
-                valor={
-                  expediente.observaciones ?? expediente.Observaciones
-                }
-                destaque
-                compacto
-              />
-
+              <div className="min-w-0">
+                <Dato
+                  campo="Observaciones"
+                  valor={expediente.observaciones ?? expediente.Observaciones}
+                  destaque
+                  compacto
+                />
+              </div>
             </div>
-
           </Seccion>
-
         </div>
-
       </div>
 
       {/* ENVÍO A NOTARIO: BLOQUE COMPLETO DEBAJO DE LOS BLOQUES PRINCIPALES */}
