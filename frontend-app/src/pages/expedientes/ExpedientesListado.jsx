@@ -2901,6 +2901,8 @@ export default function ExpedientesListado() {
               </div>
               <FiltroInput label="NIF / nombre notario" value={filtroNotario} onChange={setFiltroNotario} placeholder="Nombre o NIF" />
               <FiltroInput label="Oficina" value={filtroOficina} onChange={setFiltroOficina} placeholder="Oficina" />
+              <FiltroInput label="Protocolo" value={filtroProtocolo} onChange={setFiltroProtocolo} placeholder="Protocolo" />
+              <FiltroInput label="Finca" value={filtroFinca} onChange={setFiltroFinca} placeholder="Finca" />
               <FiltroInput label="Fecha inicio" type="date" value={filtroFechaInicio} onChange={setFiltroFechaInicio} />
               <FiltroInput label="Fecha fin" type="date" value={filtroFechaFin} onChange={setFiltroFechaFin} />
               <FiltroInput label="Importe mínimo" type="number" value={filtroImporteMin} onChange={setFiltroImporteMin} placeholder="0,00" />
