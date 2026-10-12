@@ -1522,6 +1522,12 @@ export default function FichaExpediente() {
     entidad_original: "",
   });
 
+  const [fincasExpediente, setFincasExpediente] = useState([]);
+  const [cargandoFincas, setCargandoFincas] = useState(false);
+  const [errorFincas, setErrorFincas] = useState("");
+  const [fincaEditandoId, setFincaEditandoId] = useState(null);
+  const [guardandoFinca, setGuardandoFinca] = useState(false);
+
   const [
     fincaRegistrada,
     setFincaRegistrada,
@@ -1610,6 +1616,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   const [mostrarFormularioObservacion, setMostrarFormularioObservacion] = useState(false);
   const [nuevaObservacion, setNuevaObservacion] = useState("");
   const [visibilidadObservacion, setVisibilidadObservacion] = useState("Gestor");
+  const [observacionEditandoId, setObservacionEditandoId] = useState(null);
 
   // ==========================================================
   // CARGAR EXPEDIENTE
@@ -2307,28 +2314,46 @@ async function descargarPDFCalificacion(defecto) {
     setGuardandoObservacion(true);
     setErrorObservaciones("");
     try {
-      await axios.post(
-        `/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones`,
-        {
-          comentario: texto,
-          visibilidad: visibilidadObservacion,
-          empleado_destinatario_id: visibilidadObservacion === "Gestor"
-            ? Number(destinatarioObservacion)
-            : null,
-        }
-      );
+      const payload = {
+        comentario: texto,
+        visibilidad: visibilidadObservacion,
+        empleado_destinatario_id: visibilidadObservacion === "Gestor"
+          ? Number(destinatarioObservacion)
+          : null,
+      };
+      if (observacionEditandoId !== null) {
+        await axios.put(
+          `/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones/${observacionEditandoId}`,
+          payload
+        );
+      } else {
+        await axios.post(
+          `/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones`,
+          payload
+        );
+      }
       setNuevaObservacion("");
       setVisibilidadObservacion("Gestor");
+      setObservacionEditandoId(null);
       setMostrarFormularioObservacion(false);
       await cargarObservacionesExpediente();
     } catch (err) {
       console.error("Error guardando observación:", err);
-      setErrorObservaciones(
-        err?.response?.data?.detail || "No se pudo guardar la observación."
-      );
+      setErrorObservaciones(err?.response?.data?.detail || "No se pudo guardar la observación.");
     } finally {
       setGuardandoObservacion(false);
     }
+  }
+
+  function editarObservacionExpediente(observacion) {
+    setObservacionEditandoId(observacion.id);
+    setNuevaObservacion(observacion.comentario || "");
+    setVisibilidadObservacion(observacion.visibilidad || "Gestor");
+    setDestinatarioObservacion(
+      observacion.empleado_destinatario_id ? String(observacion.empleado_destinatario_id) : ""
+    );
+    setMostrarFormularioObservacion(true);
+    setErrorObservaciones("");
   }
 
   async function eliminarObservacionExpediente(observacionId) {
@@ -2841,6 +2866,58 @@ async function descargarPDFCalificacion(defecto) {
   }
 
 
+  const numeroExpedienteFincas = expediente?.id_expediente || id;
+
+  const cargarFincasExpediente = useCallback(async () => {
+    if (!numeroExpedienteFincas) {
+      setFincasExpediente([]);
+      return;
+    }
+    setCargandoFincas(true);
+    setErrorFincas("");
+    try {
+      const respuesta = await axios.get(
+        `/expedientes/${encodeURIComponent(numeroExpedienteFincas)}/fincas`
+      );
+      const lista = Array.isArray(respuesta.data?.items)
+        ? respuesta.data.items
+        : Array.isArray(respuesta.data) ? respuesta.data : [];
+      setFincasExpediente(lista);
+      if (lista.length) {
+        const principal = lista[0];
+        setFincaRegistrada({
+          numero_finca: principal.finca || "",
+          cru_idufir: principal.cru_idufir || "",
+          provincia: principal.provincia || "",
+          poblacion: principal.poblacion || "",
+          registro: principal.registro || "",
+          seccion: principal.seccion || "",
+          cuantia: principal.cuantia || "",
+          inscripcion: principal.inscripcion || "",
+          contrato: principal.contrato || "",
+          fecha_constitucion: principal.fecha_constitucion || "",
+          subrogado: principal.subrogado || "",
+          entidad_original: principal.entidad_original || "",
+        });
+      } else {
+        setFincaRegistrada({
+          numero_finca: "", cru_idufir: "", provincia: "", poblacion: "",
+          registro: "", seccion: "", cuantia: "", inscripcion: "", contrato: "",
+          fecha_constitucion: "", subrogado: "", entidad_original: "",
+        });
+      }
+    } catch (err) {
+      console.error("Error cargando fincas del expediente:", err);
+      setErrorFincas(err?.response?.data?.detail || "No se pudieron cargar las fincas.");
+    } finally {
+      setCargandoFincas(false);
+    }
+  }, [numeroExpedienteFincas]);
+
+  useEffect(() => {
+    cargarFincasExpediente();
+  }, [cargarFincasExpediente]);
+
   if (!expediente) {
     return null;
   }
@@ -2859,66 +2936,84 @@ const tieneDefecto = defectosRegistrados.some(
   // FINCAS
   // ==========================================================
 
-  function abrirFincas() {
-    setFincaForm({
-      numero_finca: expediente?.finca || "",
-      cru_idufir:
-        expediente?.cru_idufir ||
-        expediente?.cru ||
-        expediente?.idufir ||
-        "",
-      provincia: expediente?.provincia || "",
-      poblacion:
-        expediente?.poblacion ||
-        expediente?.municipio ||
-        "",
-      registro: expediente?.registro || "",
-      seccion: expediente?.seccion || "",
-      cuantia: expediente?.cuantia || "",
-      inscripcion: expediente?.inscripcion || "",
-      contrato: expediente?.contrato || "",
-      fecha_constitucion:
-        expediente?.fecha_constitucion || "",
-      subrogado:
-        expediente?.subrogado === true
-          ? "SI"
-          : expediente?.subrogado === false
-            ? "NO"
-            : expediente?.subrogado || "",
-      entidad_original:
-        expediente?.entidad_original || "",
-    });
 
+
+  function abrirFincas(finca = null) {
+    setFincaEditandoId(finca?.id ?? null);
+    setFincaForm({
+      numero_finca: finca?.finca || "",
+      cru_idufir: finca?.cru_idufir || "",
+      provincia: finca?.provincia || expediente?.provincia || "",
+      poblacion: finca?.poblacion || expediente?.poblacion || "",
+      registro: finca?.registro || "",
+      seccion: finca?.seccion || "",
+      cuantia: finca?.cuantia ?? "",
+      inscripcion: finca?.inscripcion || "",
+      contrato: finca?.contrato || expediente?.contrato || "",
+      fecha_constitucion: finca?.fecha_constitucion || "",
+      subrogado: finca?.subrogado || "",
+      entidad_original: finca?.entidad_original || "",
+    });
+    setErrorFincas("");
     setMostrarFincas(true);
   }
 
-
-  function guardarFinca() {
-    const datos = {
-      ...fincaForm,
+  async function guardarFinca() {
+    const numero = numeroExpedienteFincas;
+    if (!numero) {
+      setErrorFincas("No se ha podido identificar el expediente.");
+      return;
+    }
+    const payload = {
+      finca: String(fincaForm.numero_finca || "").trim() || null,
+      cru_idufir: String(fincaForm.cru_idufir || "").trim() || null,
+      provincia: String(fincaForm.provincia || "").trim() || null,
+      poblacion: String(fincaForm.poblacion || "").trim() || null,
+      registro: String(fincaForm.registro || "").trim() || null,
+      seccion: String(fincaForm.seccion || "").trim() || null,
+      cuantia: fincaForm.cuantia === "" ? null : String(fincaForm.cuantia),
+      inscripcion: String(fincaForm.inscripcion || "").trim() || null,
+      contrato: String(fincaForm.contrato || "").trim() || null,
+      fecha_constitucion: fincaForm.fecha_constitucion || null,
+      subrogado: fincaForm.subrogado || null,
+      entidad_original: String(fincaForm.entidad_original || "").trim() || null,
     };
+    setGuardandoFinca(true);
+    setErrorFincas("");
+    try {
+      if (fincaEditandoId !== null) {
+        await axios.put(
+          `/expedientes/${encodeURIComponent(numero)}/fincas/${fincaEditandoId}`,
+          payload
+        );
+      } else {
+        await axios.post(
+          `/expedientes/${encodeURIComponent(numero)}/fincas`,
+          payload
+        );
+      }
+      setMostrarFincas(false);
+      setFincaEditandoId(null);
+      await cargarFincasExpediente();
+    } catch (err) {
+      console.error("Error guardando finca:", err);
+      setErrorFincas(err?.response?.data?.detail || "No se pudo guardar la finca.");
+    } finally {
+      setGuardandoFinca(false);
+    }
+  }
 
-    setFincaRegistrada(datos);
-
-    setExpediente((actual) => ({
-      ...actual,
-      finca: datos.numero_finca,
-      cru_idufir: datos.cru_idufir,
-      provincia: datos.provincia,
-      poblacion: datos.poblacion,
-      registro: datos.registro,
-      seccion: datos.seccion,
-      cuantia: datos.cuantia,
-      inscripcion: datos.inscripcion,
-      contrato: datos.contrato,
-      fecha_constitucion:
-        datos.fecha_constitucion,
-      subrogado: datos.subrogado,
-      entidad_original:
-        datos.entidad_original,
-    }));
-
-    setMostrarFincas(false);
+  async function eliminarFinca(fincaId) {
+    if (!fincaId || !numeroExpedienteFincas) return;
+    if (!window.confirm("¿Seguro que quieres eliminar esta finca del expediente?")) return;
+    try {
+      await axios.delete(
+        `/expedientes/${encodeURIComponent(numeroExpedienteFincas)}/fincas/${fincaId}`
+      );
+      await cargarFincasExpediente();
+    } catch (err) {
+      setErrorFincas(err?.response?.data?.detail || "No se pudo eliminar la finca.");
+    }
   }
 
   return (
@@ -3356,43 +3451,37 @@ const tieneDefecto = defectosRegistrados.some(
             icono="finca"
             colapsable
           >
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-              <Dato
-                campo="Finca"
-                valor={fincaRegistrada.numero_finca || expediente?.finca}
-                destaque
-              />
-              <Dato
-                campo="Registro (número - Nombre)"
-                valor={[
-                  fincaRegistrada.registro_numero ||
-                    fincaRegistrada.numero_registro ||
-                    expediente?.registro_numero ||
-                    expediente?.numero_registro ||
-                    (typeof fincaRegistrada.registro === "number" ? fincaRegistrada.registro : ""),
-                  fincaRegistrada.registro_nombre ||
-                    fincaRegistrada.nombre_registro ||
-                    expediente?.registro_nombre ||
-                    expediente?.nombre_registro ||
-                    (typeof fincaRegistrada.registro === "string" && !/^\d+$/.test(fincaRegistrada.registro.trim())
-                      ? fincaRegistrada.registro
-                      : ""),
-                ].filter((parte) => parte !== null && parte !== undefined && String(parte).trim() !== "").join(" - ")}
-              />
-              <Dato
-                campo="Capital"
-                valor={expediente?.capital ?? fincaRegistrada.capital ?? fincaRegistrada.cuantia}
-                tipo="numero"
-                destaque
-              />
+            {errorFincas && <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorFincas}</p>}
+            {cargandoFincas && <p className="text-xs text-slate-500">Cargando fincas...</p>}
+            {!cargandoFincas && fincasExpediente.length === 0 && (
+              <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
+                No hay fincas registradas en la tabla de fincas de este expediente.
+              </p>
+            )}
+            <div className="space-y-3">
+              {fincasExpediente.map((finca) => (
+                <article key={finca.id} className="rounded-xl border border-slate-200 bg-white p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-bold text-slate-800">Finca {finca.finca || "—"}</p>
+                      <p className="mt-1 text-xs text-slate-500">{[finca.registro, finca.seccion, finca.poblacion, finca.provincia].filter(Boolean).join(" · ") || "Sin datos registrales"}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => abrirFincas(finca)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700">Editar</button>
+                      <button type="button" onClick={() => eliminarFinca(finca.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700">Eliminar</button>
+                    </div>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+                    <div><span className="block text-slate-400">CRU/Idufir</span><strong>{finca.cru_idufir || "—"}</strong></div>
+                    <div><span className="block text-slate-400">Cuantía</span><strong>{finca.cuantia || "—"}</strong></div>
+                    <div><span className="block text-slate-400">Inscripción</span><strong>{finca.inscripcion || "—"}</strong></div>
+                    <div><span className="block text-slate-400">Contrato</span><strong>{finca.contrato || "—"}</strong></div>
+                  </div>
+                </article>
+              ))}
             </div>
-
-            <button
-              type="button"
-              onClick={abrirFincas}
-              className="mt-3 w-full rounded-xl border border-blue-100 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100"
-            >
-              ＋ Nueva Finca
+            <button type="button" onClick={() => abrirFincas()} className="mt-3 w-full rounded-xl border border-blue-100 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100">
+              ＋ Nueva finca
             </button>
           </Seccion>
 
@@ -3538,9 +3627,12 @@ const tieneDefecto = defectosRegistrados.some(
                     <span className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-semibold text-blue-700">Visible: {observacion.visibilidad || "Gestor"}</span>
                     {observacion.empleado_destinatario && <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">Destinatario: {observacion.empleado_destinatario}</span>}
                   </div>
-                  <div className="mt-2 flex justify-end">
+                  <div className="mt-2 flex justify-end gap-2">
+                    <button type="button" onClick={() => editarObservacionExpediente(observacion)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700 hover:bg-blue-100">
+                      Editar
+                    </button>
                     <button type="button" onClick={() => eliminarObservacionExpediente(observacion.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100">
-                      Eliminar
+                      Desactivar
                     </button>
                   </div>
                 </article>
@@ -3549,7 +3641,7 @@ const tieneDefecto = defectosRegistrados.some(
               {mostrarFormularioObservacion ? (
                 <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3 space-y-3">
                   <label className="block">
-                    <span className="mb-1 block text-xs font-semibold text-slate-600">Comentario</span>
+                    <span className="mb-1 block text-xs font-semibold text-slate-600">{observacionEditandoId !== null ? "Editar comentario" : "Comentario"}</span>
                     <textarea value={nuevaObservacion} onChange={(event) => setNuevaObservacion(event.target.value)} rows={4} placeholder="Escribe la observación..." className="w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
                   </label>
                   <label className="block">
@@ -3570,8 +3662,8 @@ const tieneDefecto = defectosRegistrados.some(
                     </label>
                   )}
                   <div className="flex justify-end gap-2">
-                    <Boton onClick={() => { setMostrarFormularioObservacion(false); setNuevaObservacion(""); }}>Cancelar</Boton>
-                    <Boton tipo="primary" onClick={agregarObservacionExpediente} disabled={!nuevaObservacion.trim() || guardandoObservacion || (visibilidadObservacion === "Gestor" && !destinatarioObservacion)}>{guardandoObservacion ? "Guardando…" : "Guardar observación"}</Boton>
+                    <Boton onClick={() => { setMostrarFormularioObservacion(false); setNuevaObservacion(""); setObservacionEditandoId(null); }}>Cancelar</Boton>
+                    <Boton tipo="primary" onClick={agregarObservacionExpediente} disabled={!nuevaObservacion.trim() || guardandoObservacion || (visibilidadObservacion === "Gestor" && !destinatarioObservacion)}>{guardandoObservacion ? "Guardando…" : observacionEditandoId !== null ? "Guardar cambios" : "Guardar observación"}</Boton>
                   </div>
                 </div>
               ) : (
@@ -4444,10 +4536,11 @@ const tieneDefecto = defectosRegistrados.some(
 
       <Modal
         open={mostrarFincas}
-        onClose={() =>
-          setMostrarFincas(false)
-        }
-        titulo="🏠 Nueva Finca"
+        onClose={() => {
+          setMostrarFincas(false);
+          setFincaEditandoId(null);
+        }}
+        titulo={fincaEditandoId !== null ? "🏠 Editar finca" : "🏠 Nueva finca"}
         subtitulo="Datos registrales del expediente"
         ancho="max-w-5xl"
         footer={
@@ -4463,8 +4556,9 @@ const tieneDefecto = defectosRegistrados.some(
             <Boton
               tipo="primary"
               onClick={guardarFinca}
+              disabled={guardandoFinca}
             >
-              💾 Guardar
+              {guardandoFinca ? "Guardando..." : "💾 Guardar finca"}
             </Boton>
           </>
         }
