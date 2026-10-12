@@ -209,6 +209,10 @@ from backend.app.expedientes.defectos.migracion_router import (
     router as migracion_defectos_router,
 )
 
+from backend.app.expedientes.fincasyregistros.router import (
+    router as expedientes_fincas_router,
+)
+
 # SEGURIDAD
 from backend.app.seguridad.roles.roles_router import (
     router as roles_router,
@@ -438,6 +442,7 @@ app.include_router(ficha_empleado_router, prefix="/api")
 app.include_router(seguridad_auditoria_router, prefix="/api")
 app.include_router(seguridad_logs_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
+app.include_router(expedientes_fincas_router, prefix="/api",)
 
 # AGENDA
 app.include_router(agenda_router, prefix="/api")
