@@ -2778,6 +2778,58 @@ async function descargarPDFCalificacion(defecto) {
 
 
 
+  const numeroExpedienteFincas = expediente?.id_expediente || id;
+
+  const cargarFincasExpediente = useCallback(async () => {
+    if (!numeroExpedienteFincas) {
+      setFincasExpediente([]);
+      return;
+    }
+    setCargandoFincas(true);
+    setErrorFincas("");
+    try {
+      const respuesta = await axios.get(
+        `/expedientes/${encodeURIComponent(numeroExpedienteFincas)}/fincas`
+      );
+      const lista = Array.isArray(respuesta.data?.items)
+        ? respuesta.data.items
+        : Array.isArray(respuesta.data) ? respuesta.data : [];
+      setFincasExpediente(lista);
+      if (lista.length) {
+        const principal = lista[0];
+        setFincaRegistrada({
+          numero_finca: principal.finca || "",
+          cru_idufir: principal.cru_idufir || "",
+          provincia: principal.provincia || "",
+          poblacion: principal.poblacion || "",
+          registro: principal.registro || "",
+          seccion: principal.seccion || "",
+          cuantia: principal.cuantia || "",
+          inscripcion: principal.inscripcion || "",
+          contrato: principal.contrato || "",
+          fecha_constitucion: principal.fecha_constitucion || "",
+          subrogado: principal.subrogado || "",
+          entidad_original: principal.entidad_original || "",
+        });
+      } else {
+        setFincaRegistrada({
+          numero_finca: "", cru_idufir: "", provincia: "", poblacion: "",
+          registro: "", seccion: "", cuantia: "", inscripcion: "", contrato: "",
+          fecha_constitucion: "", subrogado: "", entidad_original: "",
+        });
+      }
+    } catch (err) {
+      console.error("Error cargando fincas del expediente:", err);
+      setErrorFincas(err?.response?.data?.detail || "No se pudieron cargar las fincas.");
+    } finally {
+      setCargandoFincas(false);
+    }
+  }, [numeroExpedienteFincas]);
+
+  useEffect(() => {
+    cargarFincasExpediente();
+  }, [cargarFincasExpediente]);
+
   // ==========================================================
   // LOADING
   // ==========================================================
@@ -2865,58 +2917,6 @@ async function descargarPDFCalificacion(defecto) {
     );
   }
 
-
-  const numeroExpedienteFincas = expediente?.id_expediente || id;
-
-  const cargarFincasExpediente = useCallback(async () => {
-    if (!numeroExpedienteFincas) {
-      setFincasExpediente([]);
-      return;
-    }
-    setCargandoFincas(true);
-    setErrorFincas("");
-    try {
-      const respuesta = await axios.get(
-        `/expedientes/${encodeURIComponent(numeroExpedienteFincas)}/fincas`
-      );
-      const lista = Array.isArray(respuesta.data?.items)
-        ? respuesta.data.items
-        : Array.isArray(respuesta.data) ? respuesta.data : [];
-      setFincasExpediente(lista);
-      if (lista.length) {
-        const principal = lista[0];
-        setFincaRegistrada({
-          numero_finca: principal.finca || "",
-          cru_idufir: principal.cru_idufir || "",
-          provincia: principal.provincia || "",
-          poblacion: principal.poblacion || "",
-          registro: principal.registro || "",
-          seccion: principal.seccion || "",
-          cuantia: principal.cuantia || "",
-          inscripcion: principal.inscripcion || "",
-          contrato: principal.contrato || "",
-          fecha_constitucion: principal.fecha_constitucion || "",
-          subrogado: principal.subrogado || "",
-          entidad_original: principal.entidad_original || "",
-        });
-      } else {
-        setFincaRegistrada({
-          numero_finca: "", cru_idufir: "", provincia: "", poblacion: "",
-          registro: "", seccion: "", cuantia: "", inscripcion: "", contrato: "",
-          fecha_constitucion: "", subrogado: "", entidad_original: "",
-        });
-      }
-    } catch (err) {
-      console.error("Error cargando fincas del expediente:", err);
-      setErrorFincas(err?.response?.data?.detail || "No se pudieron cargar las fincas.");
-    } finally {
-      setCargandoFincas(false);
-    }
-  }, [numeroExpedienteFincas]);
-
-  useEffect(() => {
-    cargarFincasExpediente();
-  }, [cargarFincasExpediente]);
 
   if (!expediente) {
     return null;
