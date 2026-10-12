@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, func, and_
+from sqlalchemy import or_, func, and_, text
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, date, time
