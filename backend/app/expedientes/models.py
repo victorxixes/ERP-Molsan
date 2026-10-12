@@ -1,3 +1,4 @@
+
 from sqlalchemy import (
     Column,
     Integer,
@@ -145,6 +146,9 @@ class Expediente(Base):
     gestoria = Column(String(300), nullable=True)
 
     # FINCA
+    # Actualmente se almacena como texto.
+    # No se define una relación con RegistroPropiedad porque
+    # el vínculo no aparece en el modelo facilitado.
     finca = Column(String(200), nullable=True)
 
     # DEFECTOS
