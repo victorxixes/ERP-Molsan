@@ -3265,7 +3265,7 @@ const tieneDefecto = defectosRegistrados.some(
             COLUMNA 1
         ==================================================== */}
 
-        <div className="min-w-0 space-y-4 xl:col-span-2">
+        <div className="min-w-0 space-y-4 xl:col-span-4">
 
           {/* ESTADO */}
 
