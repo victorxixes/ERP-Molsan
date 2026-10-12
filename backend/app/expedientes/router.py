@@ -1327,6 +1327,52 @@ def diagnostico_bloqueos_expedientes(db: Session = Depends(get_db)):
             detail="No se pudieron consultar los bloqueos de expedientes."
         )
 
+
+@router.get("/diagnostico-espera-migracion")
+def diagnostico_espera_migracion(db: Session = Depends(get_db)):
+    try:
+        resultado = db.execute(text("""
+            SELECT
+                bloqueado.pid AS proceso_bloqueado,
+                bloqueado.state AS estado_bloqueado,
+                bloqueado.wait_event_type AS tipo_espera,
+                bloqueado.wait_event AS evento_espera,
+                LEFT(bloqueado.query, 300) AS consulta_bloqueada,
+                bloqueador.pid AS proceso_bloqueador,
+                bloqueador.state AS estado_bloqueador,
+                CASE
+                    WHEN bloqueador.xact_start IS NOT NULL
+                    THEN EXTRACT(
+                        EPOCH FROM (NOW() - bloqueador.xact_start)
+                    )::integer
+                    ELSE NULL
+                END AS segundos_transaccion_bloqueador,
+                LEFT(bloqueador.query, 300) AS consulta_bloqueador
+            FROM pg_stat_activity bloqueado
+            JOIN pg_stat_activity bloqueador
+              ON bloqueador.pid = ANY(
+                  pg_blocking_pids(bloqueado.pid)
+              )
+            WHERE bloqueado.datname = current_database()
+              AND bloqueado.pid <> pg_backend_pid()
+            ORDER BY bloqueado.query_start NULLS LAST
+        """))
+
+        filas = [dict(fila) for fila in resultado.mappings().all()]
+
+        return {
+            "ok": True,
+            "total_esperas": len(filas),
+            "esperas": filas
+        }
+
+    except Exception as exc:
+        db.rollback()
+        print("ERROR DIAGNOSTICO ESPERA MIGRACION:", repr(exc))
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudieron consultar las esperas de la base de datos."
+        )
 # ============================================================
 # CONSULTAR UN EXPEDIENTE
 # ============================================================
