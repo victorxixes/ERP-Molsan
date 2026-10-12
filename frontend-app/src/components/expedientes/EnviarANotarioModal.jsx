@@ -242,6 +242,7 @@ function TituloSeccion({ titulo, descripcion }) {
 
 export default function EnviarANotarioModal({
   expediente,
+  cuantiaFincas = "",
   onClose,
   onGuardar,
 }) {
@@ -491,6 +492,9 @@ export default function EnviarANotarioModal({
       apoderado: form.notario.apoderado || "",
       tipo_firma: form.notario.tipo_firma || "",
       tipo_documento: form.tipo_documento,
+      cuantia: cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
+        ? cuantiaFincas
+        : (expediente?.cuantia ?? expediente?.finca_cuantia ?? ""),
 
       // NUEVOS CAMPOS
       formato_escritura: form.formato_escritura,
@@ -828,6 +832,19 @@ export default function EnviarANotarioModal({
                   </select>
                 </div>
 
+                {/* CUANTÍA: se toma de Fincas y Registros y se muestra tras el tipo de documento */}
+                <div className="mt-4">
+                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                    Cuantía
+                  </label>
+                  <div className="flex min-h-[42px] items-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-700">
+                    {cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
+                      ? String(cuantiaFincas)
+                      : String(expediente?.cuantia ?? expediente?.finca_cuantia ?? "—")}
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">Importe procedente de Fincas y Registros.</p>
+                </div>
+
                 {/* FORMATO DE ESCRITURA */}
 
                 <div className="mt-4">
@@ -1126,6 +1143,13 @@ export default function EnviarANotarioModal({
               <Resumen
                 label="Tipo de documento"
                 valor={form.tipo_documento}
+              />
+
+              <Resumen
+                label="Cuantía"
+                valor={String(cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
+                  ? cuantiaFincas
+                  : (expediente?.cuantia ?? expediente?.finca_cuantia ?? "—"))}
               />
 
               <Resumen
