@@ -1216,7 +1216,6 @@ def enviar_a_notario(
 
     return respuesta
 
-```python
 # ============================================================
 # DIAGNÓSTICO TEMPORAL DE BLOQUEOS POSTGRESQL
 # ============================================================
@@ -1279,7 +1278,7 @@ def diagnostico_bloqueos(
             status_code=500,
             detail="No se pudieron consultar las sesiones de PostgreSQL."
         )
-```
+
 # ============================================================
 # CONSULTAR UN EXPEDIENTE
 # ============================================================
