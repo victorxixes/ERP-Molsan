@@ -1279,6 +1279,54 @@ def diagnostico_bloqueos(
             detail="No se pudieron consultar las sesiones de PostgreSQL."
         )
 
+
+@router.get("/diagnostico-bloqueos-expedientes")
+def diagnostico_bloqueos_expedientes(db: Session = Depends(get_db)):
+    try:
+        resultado = db.execute(text("""
+            SELECT
+                a.pid AS proceso,
+                a.usename AS usuario,
+                a.state AS estado,
+                a.wait_event_type AS tipo_espera,
+                a.wait_event AS evento_espera,
+                l.mode AS tipo_bloqueo,
+                l.granted AS bloqueo_concedido,
+                n.nspname AS esquema,
+                c.relname AS tabla,
+                CASE
+                    WHEN a.xact_start IS NOT NULL
+                    THEN EXTRACT(EPOCH FROM (NOW() - a.xact_start))::integer
+                    ELSE NULL
+                END AS segundos_transaccion,
+                pg_blocking_pids(a.pid) AS bloqueado_por,
+                LEFT(a.query, 250) AS consulta
+            FROM pg_locks l
+            JOIN pg_stat_activity a ON a.pid = l.pid
+            JOIN pg_class c ON c.oid = l.relation
+            JOIN pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relname = 'expedientes'
+              AND n.nspname = 'public'
+            ORDER BY l.granted ASC, a.xact_start NULLS LAST
+        """))
+
+        filas = [dict(fila) for fila in resultado.mappings().all()]
+
+        return {
+            "ok": True,
+            "tabla": "public.expedientes",
+            "total_bloqueos": len(filas),
+            "bloqueos": filas
+        }
+
+    except Exception as exc:
+        db.rollback()
+        print("ERROR DIAGNÓSTICO BLOQUEOS EXPEDIENTES:", repr(exc))
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudieron consultar los bloqueos de expedientes."
+        )
+
 # ============================================================
 # CONSULTAR UN EXPEDIENTE
 # ============================================================
