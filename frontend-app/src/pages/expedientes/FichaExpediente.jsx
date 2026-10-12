@@ -3806,7 +3806,7 @@ const tieneDefecto = defectosRegistrados.some(
                 </div>
               </div>
             </section>
-      )}
+          </div>
         </div>
 
   {mostrarCarpetaDigital && (
