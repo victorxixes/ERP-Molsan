@@ -1,4 +1,5 @@
-from datetime import datetime, date, time, timedelta
+
+from datetime import datetime, date, time
 from typing import Optional
 import io
 import json
@@ -19,31 +20,25 @@ from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
 
 
-router = APIRouter(
-    prefix="/expedientes",
-    tags=["Expedientes"],
-)
+router = APIRouter(prefix="/expedientes", tags=["Expedientes"])
 
 
 # ============================================================
-# MODELO DE DATOS: ENVÍO A NOTARIO
+# ENVÍO A NOTARIO
 # ============================================================
 
 class EnvioANotarioRequest(BaseModel):
     escritura_firmada: bool = False
-
     fecha_envio: date
     fecha_solicitud_pnc: date
     numero_solicitud_pnc: str
 
     fecha_firma: Optional[date] = None
     protocolo: Optional[str] = None
-
     notario_id: Optional[int] = None
     nombre_notario: str
     nif_notario: Optional[str] = None
     notario: Optional[str] = None
-
     apoderado: Optional[str] = None
 
     tipo_firma: str
@@ -52,14 +47,12 @@ class EnvioANotarioRequest(BaseModel):
     idioma_documento: Optional[str] = None
     formato_escritura: Optional[str] = None
     tipo_tramite: Optional[str] = None
-
     poblacion: Optional[str] = None
     provincia: Optional[str] = None
 
     fecha_prevista_firma: Optional[date] = None
     hora_prevista_firma: Optional[time] = time(9, 0)
 
-    # DATOS DE FACTURACIÓN DEL EXPEDIENTE
     facturacion_nombre: Optional[str] = None
     facturacion_apellidos: Optional[str] = None
     facturacion_dni_nif: Optional[str] = None
@@ -72,26 +65,19 @@ class EnvioANotarioRequest(BaseModel):
 
 
 # ============================================================
-# ACTIVIDADES DEL EXPEDIENTE
+# ACTIVIDADES
 # ============================================================
 
 ACTIVIDADES_EXPEDIENTES = [
     {
         "key": "documentacion-previa",
         "label": "Documentación previa",
-        "aliases": [
-            "Documentación previa",
-            "Documentacion previa",
-        ],
+        "aliases": ["Documentación previa", "Documentacion previa"],
     },
     {
         "key": "sede-notarial",
         "label": "Sede notarial",
-        "aliases": [
-            "Sede notarial",
-            "Sede Notarial",
-            "Sede NOTARIAL",
-        ],
+        "aliases": ["Sede notarial", "Sede Notarial", "Sede NOTARIAL"],
     },
     {
         "key": "sede-notarial-protocolo",
@@ -125,18 +111,12 @@ ACTIVIDADES_EXPEDIENTES = [
     {
         "key": "defectos-registrales",
         "label": "Defectos registrales",
-        "aliases": [
-            "Defectos registrales",
-            "Defectos Registrales",
-        ],
+        "aliases": ["Defectos registrales", "Defectos Registrales"],
     },
     {
         "key": "facturacion-cierre",
         "label": "Facturación y cierre",
-        "aliases": [
-            "Facturación y cierre",
-            "Facturacion y cierre",
-        ],
+        "aliases": ["Facturación y cierre", "Facturacion y cierre"],
     },
 ]
 
@@ -145,17 +125,12 @@ def normalizar_actividad_texto(valor: Optional[str]) -> str:
     if valor is None:
         return ""
 
-    texto = unicodedata.normalize(
-        "NFD",
-        str(valor).strip().lower(),
-    )
-
+    texto = unicodedata.normalize("NFD", str(valor).strip().lower())
     texto = "".join(
         caracter
         for caracter in texto
         if unicodedata.category(caracter) != "Mn"
     )
-
     return " ".join(texto.split())
 
 
@@ -171,7 +146,6 @@ def resolver_actividad(valor: Optional[str]) -> Optional[str]:
             actividad["label"],
             *actividad["aliases"],
         ]
-
         if any(
             normalizada == normalizar_actividad_texto(item)
             for item in valores
@@ -185,17 +159,11 @@ def condicion_actividad(clave_actividad: str):
     actividad = func.trim(Expediente.actividad_actual)
 
     if clave_actividad == "documentacion-previa":
-        return or_(
-            actividad.ilike("Documentación previa"),
-            actividad.ilike("Documentacion previa"),
-        )
+        return actividad.ilike("Documentación previa")
 
     if clave_actividad == "sede-notarial":
         return and_(
-            or_(
-                actividad.ilike("Sede notarial"),
-                actividad.ilike("Sede Notarial"),
-            ),
+            actividad.ilike("Sede notarial"),
             Expediente.fecha_firma.is_(None),
         )
 
@@ -203,9 +171,7 @@ def condicion_actividad(clave_actividad: str):
         return and_(
             or_(
                 actividad.ilike("Sede notarial"),
-                actividad.ilike("Sede Notarial"),
                 actividad.ilike("Sede notarial con protocolo"),
-                actividad.ilike("Sede Notarial con protocolo"),
             ),
             Expediente.fecha_firma.isnot(None),
         )
@@ -227,10 +193,7 @@ def condicion_actividad(clave_actividad: str):
         )
 
     if clave_actividad == "defectos-registrales":
-        return or_(
-            actividad.ilike("Defectos registrales"),
-            actividad.ilike("Defectos Registrales"),
-        )
+        return actividad.ilike("Defectos registrales")
 
     if clave_actividad == "facturacion-cierre":
         return or_(
@@ -246,104 +209,40 @@ def condicion_actividad(clave_actividad: str):
 # ============================================================
 
 CAMPOS_EXPEDIENTE = [
-    "id",
-    "cliente_id",
-    "id_expediente",
-    "estado_expediente",
-    "estado_expediente_ancert",
-
-    "fecha_alta",
-    "fecha_firma",
-    "fecha_inscripcion",
-    "fecha_entregado_cliente",
-    "fecha_prevista_firma",
-    "fecha_vencimiento",
-    "fecha_sol_cgn",
-    "fecha_firma_prev_val",
-    "fecha_firma_prev_cli",
-    "fecha_inicio_actividad",
-    "fecha_fin_actividad",
-
-    "fecha_envio_notario",
-    "fecha_solicitud_pnc",
-    "numero_solicitud_pnc",
-    "escritura_firmada",
+    "id", "cliente_id", "id_expediente",
+    "estado_expediente", "estado_expediente_ancert",
+    "fecha_alta", "fecha_firma", "fecha_inscripcion",
+    "fecha_entregado_cliente", "fecha_prevista_firma",
+    "fecha_vencimiento", "fecha_sol_cgn",
+    "fecha_firma_prev_val", "fecha_firma_prev_cli",
+    "fecha_inicio_actividad", "fecha_fin_actividad",
+    "fecha_envio_notario", "fecha_solicitud_pnc",
+    "numero_solicitud_pnc", "escritura_firmada",
     "hora_prevista_firma",
-
-    "nombre_titular",
-    "nif_titular",
-    "nombre_solicitante",
-    "nif_solicitante",
-    "apoderado",
-
-    "nombre_notario",
-    "nif_notario",
-    "notario",
-
-    "tipo_firma",
-    "tipo_documento",
-    "idioma_documento",
-    "formato_escritura",
-    "tipo_tramite",
-    "poblacion",
-    "provincia",
-
-    "oficina",
-    "dan",
-    "oficina_alta",
-
-    "capital",
-    "importe",
-    "saldo_real",
-    "saldo_disponible",
-    "id_provision",
-    "tipo_provision",
-
-    "contrato",
-    "num_solicitud_sia",
-    "tipo_operacion",
-    "subtipo_operacion",
-    "vinccanc",
-    "protocolo",
-    "origen_bankia",
-    "producto_gtg",
-    "dt",
-
-    "actividad_actual",
-    "estado_actividad",
-    "id_gestoria_tramite",
-    "nombre_gestoria",
-    "gestoria",
-    "finca",
-
-    "tiene_defectos_abiertos",
-    "tipo_error",
-    "descripcion_error",
-    "falta_defecto",
-    "fcierre_defecto",
-
-    "id_expediente_cgn",
-    "tipo_acta",
-    "lucy",
-    "indicador_tt",
+    "nombre_titular", "nif_titular",
+    "nombre_solicitante", "nif_solicitante", "apoderado",
+    "nombre_notario", "nif_notario", "notario",
+    "tipo_firma", "tipo_documento", "idioma_documento",
+    "formato_escritura", "tipo_tramite", "poblacion", "provincia",
+    "oficina", "dan", "oficina_alta",
+    "capital", "importe", "saldo_real", "saldo_disponible",
+    "id_provision", "tipo_provision",
+    "contrato", "num_solicitud_sia", "tipo_operacion",
+    "subtipo_operacion", "vinccanc", "protocolo",
+    "origen_bankia", "producto_gtg", "dt",
+    "actividad_actual", "estado_actividad",
+    "id_gestoria_tramite", "nombre_gestoria", "gestoria", "finca",
+    "tiene_defectos_abiertos", "tipo_error", "descripcion_error",
+    "falta_defecto", "fcierre_defecto",
+    "id_expediente_cgn", "tipo_acta", "lucy", "indicador_tt",
     "observaciones",
-
-    "facturacion_nombre",
-    "facturacion_apellidos",
-    "facturacion_dni_nif",
-    "facturacion_direccion",
-    "facturacion_codigo_postal",
-    "facturacion_poblacion",
-    "facturacion_provincia",
-    "facturacion_telefono",
-    "facturacion_email",
-    "facturacion_estado",
-    "facturacion_fecha",
-
-    "registral_estado",
-    "registral_fecha",
+    "facturacion_nombre", "facturacion_apellidos",
+    "facturacion_dni_nif", "facturacion_direccion",
+    "facturacion_codigo_postal", "facturacion_poblacion",
+    "facturacion_provincia", "facturacion_telefono",
+    "facturacion_email", "facturacion_estado", "facturacion_fecha",
+    "registral_estado", "registral_fecha",
 ]
-
 
 COLUMNAS_ORDENABLES = {
     campo: getattr(Expediente, campo)
@@ -352,17 +251,12 @@ COLUMNAS_ORDENABLES = {
 }
 
 
-# ============================================================
-# COLUMNAS DEL EXCEL
-# ============================================================
-
 COLUMNAS_EXCEL = [
     ("ID", "id"),
     ("CLIENTEID", "cliente_id"),
     ("IDEXPEDIENTE", "id_expediente"),
     ("ESTADOEXPEDIENTE", "estado_expediente"),
     ("ESTADOEXPEDIENTEANCERT", "estado_expediente_ancert"),
-
     ("FECHAALTA", "fecha_alta"),
     ("FECHAFIRMA", "fecha_firma"),
     ("FECHAINSCRIPCION", "fecha_inscripcion"),
@@ -377,17 +271,14 @@ COLUMNAS_EXCEL = [
     ("FECHAENVIONOTARIO", "fecha_envio_notario"),
     ("FECHASOLICITUDPNC", "fecha_solicitud_pnc"),
     ("NUMEROSOLICITUDPNC", "numero_solicitud_pnc"),
-
     ("NOMBRETITULAR", "nombre_titular"),
     ("NIFTITULAR", "nif_titular"),
     ("NOMBRESOLICITANTE", "nombre_solicitante"),
     ("NIFSOLICITANTE", "nif_solicitante"),
     ("APODERADO", "apoderado"),
-
     ("NOMBRENOTARIO", "nombre_notario"),
     ("NIFNOTARIO", "nif_notario"),
     ("NOTARIO", "notario"),
-
     ("TIPOFIRMA", "tipo_firma"),
     ("TIPODOCUMENTO", "tipo_documento"),
     ("IDIOMADOCUMENTO", "idioma_documento"),
@@ -395,18 +286,15 @@ COLUMNAS_EXCEL = [
     ("TIPOTRAMITE", "tipo_tramite"),
     ("POBLACION", "poblacion"),
     ("PROVINCIA", "provincia"),
-
     ("OFICINA", "oficina"),
     ("DAN", "dan"),
     ("OFICINAALTA", "oficina_alta"),
-
     ("CAPITAL", "capital"),
     ("IMPORTE", "importe"),
     ("SALDOREAL", "saldo_real"),
     ("SALDODISPONIBLE", "saldo_disponible"),
     ("IDPROVISION", "id_provision"),
     ("TIPOPROVISION", "tipo_provision"),
-
     ("CONTRATO", "contrato"),
     ("NUMSOLICITUDSIA", "num_solicitud_sia"),
     ("TIPOOPERACION", "tipo_operacion"),
@@ -416,26 +304,22 @@ COLUMNAS_EXCEL = [
     ("ORIGENBANKIA", "origen_bankia"),
     ("PRODUCTOGTG", "producto_gtg"),
     ("DT", "dt"),
-
     ("ACTIVIDADACTUAL", "actividad_actual"),
     ("ESTADOACTIVIDAD", "estado_actividad"),
     ("IDGESTORIATRAMITE", "id_gestoria_tramite"),
     ("NOMBREGESTORIA", "nombre_gestoria"),
     ("GESTORIA", "gestoria"),
     ("FINCA", "finca"),
-
     ("TIENEDEFECTOSABIERTOS", "tiene_defectos_abiertos"),
     ("TIPOERROR", "tipo_error"),
     ("DESCRIPCIONERROR", "descripcion_error"),
     ("FALTADEFECTO", "falta_defecto"),
     ("FCIERREDEFECTO", "fcierre_defecto"),
-
     ("IDEXPEDIENTECGN", "id_expediente_cgn"),
     ("TIPOACTA", "tipo_acta"),
     ("LUCY", "lucy"),
     ("INDICADORTT", "indicador_tt"),
     ("OBSERVACIONES", "observaciones"),
-
     ("FACTURACIONNOMBRE", "facturacion_nombre"),
     ("FACTURACIONAPELLIDOS", "facturacion_apellidos"),
     ("FACTURACIONDNINIF", "facturacion_dni_nif"),
@@ -447,14 +331,13 @@ COLUMNAS_EXCEL = [
     ("FACTURACIONEMAIL", "facturacion_email"),
     ("FACTURACIONESTADO", "facturacion_estado"),
     ("FACTURACIONFECHA", "facturacion_fecha"),
-
     ("REGISTRALESTADO", "registral_estado"),
     ("REGISTRALFECHA", "registral_fecha"),
 ]
 
 
 # ============================================================
-# SERIALIZACIÓN DE EXPEDIENTES
+# SERIALIZACIÓN
 # ============================================================
 
 def expediente_a_dict(expediente: Expediente) -> dict:
@@ -462,10 +345,8 @@ def expediente_a_dict(expediente: Expediente) -> dict:
 
     for campo in CAMPOS_EXPEDIENTE:
         valor = getattr(expediente, campo, None)
-
         if isinstance(valor, (date, datetime, time)):
             valor = valor.isoformat()
-
         resultado[campo] = valor
 
     return resultado
@@ -475,20 +356,12 @@ def expediente_a_dict(expediente: Expediente) -> dict:
 # FILTROS
 # ============================================================
 
-def parsear_fecha(
-    valor: Optional[str],
-    nombre_campo: str,
-) -> Optional[date]:
-
+def parsear_fecha(valor: Optional[str], nombre_campo: str) -> Optional[date]:
     if not valor:
         return None
 
     try:
-        return datetime.strptime(
-            valor,
-            "%Y-%m-%d",
-        ).date()
-
+        return datetime.strptime(valor, "%Y-%m-%d").date()
     except ValueError:
         raise HTTPException(
             status_code=400,
@@ -496,8 +369,6 @@ def parsear_fecha(
         )
 
 
-def aplicar_filtros(
-    
 def aplicar_filtros(
     q,
     nif=None,
@@ -545,7 +416,7 @@ def aplicar_filtros(
             return campo.ilike(f"%{str(valor).strip()}%")
         return None
 
-    # Compatibilidad con el filtro antiguo NIF
+    # Compatibilidad con el filtro antiguo de NIF
     if nif and nif.strip():
         patron = f"%{nif.strip()}%"
         q = q.filter(
@@ -555,45 +426,33 @@ def aplicar_filtros(
             )
         )
 
-    # Titular
-    condicion = contiene(Expediente.nombre_titular, nombreTitular)
-    if condicion is not None:
-        q = q.filter(condicion)
+    # Titular y solicitante
+    for campo, valor in [
+        (Expediente.nombre_titular, nombreTitular),
+        (Expediente.nif_titular, nifTitular),
+        (Expediente.nombre_solicitante, nombreSolicitante),
+        (Expediente.nif_solicitante, nifSolicitante),
+    ]:
+        condicion = contiene(campo, valor)
+        if condicion is not None:
+            q = q.filter(condicion)
 
-    condicion = contiene(Expediente.nif_titular, nifTitular)
-    if condicion is not None:
-        q = q.filter(condicion)
-
-    # Solicitante
-    condicion = contiene(Expediente.nombre_solicitante, nombreSolicitante)
-    if condicion is not None:
-        q = q.filter(condicion)
-
-    condicion = contiene(Expediente.nif_solicitante, nifSolicitante)
-    if condicion is not None:
-        q = q.filter(condicion)
-
-    # Fechas de alta
+    # Fecha de alta: fecha_alta es Date en el modelo
     if fecha_inicio:
         q = q.filter(Expediente.fecha_alta >= fecha_inicio)
 
     if fecha_fin:
-        q = q.filter(
-            Expediente.fecha_alta < (
-                datetime.combine(fecha_fin, time.min) + timedelta(days=1)
-            )
-        )
+        q = q.filter(Expediente.fecha_alta <= fecha_fin)
 
-    # Notario
-    condicion = contiene(Expediente.nombre_notario, nombreNotario)
-    if condicion is not None:
-        q = q.filter(condicion)
+    # Notario: filtros separados y filtro antiguo
+    for campo, valor in [
+        (Expediente.nombre_notario, nombreNotario),
+        (Expediente.nif_notario, nifNotario),
+    ]:
+        condicion = contiene(campo, valor)
+        if condicion is not None:
+            q = q.filter(condicion)
 
-    condicion = contiene(Expediente.nif_notario, nifNotario)
-    if condicion is not None:
-        q = q.filter(condicion)
-
-    # Compatibilidad con el filtro antiguo de notario
     if notario and notario.strip():
         patron = f"%{notario.strip()}%"
         q = q.filter(
@@ -622,33 +481,32 @@ def aplicar_filtros(
         if condicion is not None:
             q = q.filter(condicion)
 
-    # Estado de actividad y estado del expediente
-    condicion = contiene(Expediente.estado_actividad, estadoActividad)
-    if condicion is not None:
-        q = q.filter(condicion)
+    # Estado de actividad y expediente
+    for campo, valor in [
+        (Expediente.estado_actividad, estadoActividad),
+        (Expediente.estado_expediente, estadoExpediente),
+    ]:
+        condicion = contiene(campo, valor)
+        if condicion is not None:
+            q = q.filter(condicion)
 
-    condicion = contiene(Expediente.estado_expediente, estadoExpediente)
-    if condicion is not None:
-        q = q.filter(condicion)
+    # Finca y observaciones
+    for campo, valor in [
+        (Expediente.finca, finca),
+        (Expediente.observaciones, observaciones),
+    ]:
+        condicion = contiene(campo, valor)
+        if condicion is not None:
+            q = q.filter(condicion)
 
-    # Finca
-    condicion = contiene(Expediente.finca, finca)
-    if condicion is not None:
-        q = q.filter(condicion)
-
-    # Observaciones
-    condicion = contiene(Expediente.observaciones, observaciones)
-    if condicion is not None:
-        q = q.filter(condicion)
-
-    # Importe
+    # Importe: conserva los parámetros anteriores de rango
     if importeMin is not None:
         q = q.filter(Expediente.importe >= importeMin)
 
     if importeMax is not None:
         q = q.filter(Expediente.importe <= importeMax)
 
-    # Saldos: permiten buscar por valor exacto
+    # Saldos exactos
     if saldoReal is not None:
         q = q.filter(Expediente.saldo_real == saldoReal)
 
@@ -663,7 +521,17 @@ def aplicar_filtros(
 # ============================================================
 
 @router.get("/listado")
-def listado_expedientes
+def listado_expedientes(
+    pagina: int = Query(1, ge=1),
+    porPagina: int = Query(20, ge=1, le=200),
+    nif: Optional[str] = None,
+    actividad: Optional[str] = None,
+    fechaInicio: Optional[str] = None,
+    fechaFin: Optional[str] = None,
+    notario: Optional[str] = None,
+    oficina: Optional[str] = None,
+    importeMin: Optional[float] = None,
+    importeMax: Optional[float] = None,
     nombreTitular: Optional[str] = None,
     nifTitular: Optional[str] = None,
     nombreSolicitante: Optional[str] = None,
@@ -676,20 +544,10 @@ def listado_expedientes
     estadoActividad: Optional[str] = None,
     estadoExpediente: Optional[str] = None,
     observaciones: Optional[str] = None,
-    pagina: int = Query(1, ge=1),
-    porPagina: int = Query(20, ge=1, le=200),
-    nif: Optional[str] = None,
-    actividad: Optional[str] = None,
-    fechaInicio: Optional[str] = None,
-    fechaFin: Optional[str] = None,
-    notario: Optional[str] = None,
-    oficina: Optional[str] = None,
-    importeMin: Optional[float] = None,
-    importeMax: Optional[float] = None,
     ordenMultiple: Optional[str] = Query(None),
     db: Session = Depends(get_db),
 ):
-        q = aplicar_filtros(
+    q = aplicar_filtros(
         db.query(Expediente),
         nif=nif,
         actividad=actividad,
@@ -718,7 +576,6 @@ def listado_expedientes
     if ordenMultiple:
         try:
             ordenes = json.loads(ordenMultiple)
-
         except (json.JSONDecodeError, TypeError, ValueError):
             raise HTTPException(
                 status_code=400,
@@ -735,23 +592,14 @@ def listado_expedientes
             if not isinstance(orden, dict):
                 continue
 
-            campo = COLUMNAS_ORDENABLES.get(
-                orden.get("columna")
-            )
-
+            campo = COLUMNAS_ORDENABLES.get(orden.get("columna"))
             if campo is None:
                 continue
 
-            direccion = str(
-                orden.get("direccion", "asc")
-            ).lower()
-
+            direccion = str(orden.get("direccion", "asc")).lower()
             q = q.order_by(
-                campo.desc()
-                if direccion == "desc"
-                else campo.asc()
+                campo.desc() if direccion == "desc" else campo.asc()
             )
-
             orden_aplicado = True
 
     if not orden_aplicado:
@@ -762,16 +610,8 @@ def listado_expedientes
         )
 
     total = q.count()
-
-    total_paginas = max(
-        1,
-        (total + porPagina - 1) // porPagina,
-    )
-
-    pagina_real = min(
-        pagina,
-        total_paginas,
-    )
+    total_paginas = max(1, (total + porPagina - 1) // porPagina)
+    pagina_real = min(pagina, total_paginas)
 
     items_db = (
         q.offset((pagina_real - 1) * porPagina)
@@ -792,13 +632,11 @@ def listado_expedientes
 
 
 # ============================================================
-# RESUMEN DE EXPEDIENTES POR ACTIVIDAD
+# RESUMEN POR ACTIVIDAD
 # ============================================================
 
 @router.get("/resumen")
-def resumen_expedientes(
-    db: Session = Depends(get_db),
-):
+def resumen_expedientes(db: Session = Depends(get_db)):
     total_expedientes = (
         db.query(func.count(Expediente.id)).scalar() or 0
     )
@@ -806,27 +644,20 @@ def resumen_expedientes(
     actividades = []
 
     for actividad in ACTIVIDADES_EXPEDIENTES:
-        condicion = condicion_actividad(
-            actividad["key"]
-        )
+        condicion = condicion_actividad(actividad["key"])
 
-        if condicion is not None:
-            total = (
-                db.query(func.count(Expediente.id))
-                .filter(condicion)
-                .scalar()
-                or 0
-            )
-        else:
-            total = 0
+        total = (
+            db.query(func.count(Expediente.id))
+            .filter(condicion)
+            .scalar()
+            or 0
+        ) if condicion is not None else 0
 
-        actividades.append(
-            {
-                "key": actividad["key"],
-                "actividad": actividad["label"],
-                "total": int(total),
-            }
-        )
+        actividades.append({
+            "key": actividad["key"],
+            "actividad": actividad["label"],
+            "total": int(total),
+        })
 
     return {
         "total": int(total_expedientes),
@@ -835,11 +666,19 @@ def resumen_expedientes(
 
 
 # ============================================================
-# EXPORTACIÓN A EXCEL
+# EXPORTACIÓN A EXCEL CON LOS MISMOS FILTROS
 # ============================================================
 
 @router.get("/exportar-excel")
 def exportar_excel_expedientes(
+    nif: Optional[str] = None,
+    actividad: Optional[str] = None,
+    fechaInicio: Optional[str] = None,
+    fechaFin: Optional[str] = None,
+    notario: Optional[str] = None,
+    oficina: Optional[str] = None,
+    importeMin: Optional[float] = None,
+    importeMax: Optional[float] = None,
     nombreTitular: Optional[str] = None,
     nifTitular: Optional[str] = None,
     nombreSolicitante: Optional[str] = None,
@@ -852,21 +691,9 @@ def exportar_excel_expedientes(
     estadoActividad: Optional[str] = None,
     estadoExpediente: Optional[str] = None,
     observaciones: Optional[str] = None,
-    pagina: int = Query(1, ge=1),
-    porPagina: int = Query(20, ge=1, le=200),
-    nif: Optional[str] = None,
-    actividad: Optional[str] = None,
-    fechaInicio: Optional[str] = None,
-    fechaFin: Optional[str] = None,
-    notario: Optional[str] = None,
-    oficina: Optional[str] = None,
-    importeMin: Optional[float] = None,
-    importeMax: Optional[float] = None,
-    ordenMultiple: Optional[str] = Query(None),
     db: Session = Depends(get_db),
 ):
     q = aplicar_filtros(
-        q = aplicar_filtros(
         db.query(Expediente),
         nif=nif,
         actividad=actividad,
@@ -890,89 +717,42 @@ def exportar_excel_expedientes(
         observaciones=observaciones,
     )
 
-    expedientes = (
-        q.order_by(
-            Expediente.fecha_alta.desc(),
-            Expediente.id_expediente.desc(),
-            Expediente.id.desc(),
-        )
-        .all()
-    )
+    expedientes = q.order_by(
+        Expediente.fecha_alta.desc(),
+        Expediente.id_expediente.desc(),
+        Expediente.id.desc(),
+    ).all()
 
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Expedientes"
 
-    for col, (cabecera, _) in enumerate(
-        COLUMNAS_EXCEL,
-        start=1,
-    ):
-        ws.cell(
-            row=1,
-            column=col,
-            value=cabecera,
-        ).font = Font(bold=True)
+    for col, (cabecera, _) in enumerate(COLUMNAS_EXCEL, start=1):
+        ws.cell(row=1, column=col, value=cabecera).font = Font(bold=True)
 
-    for fila, expediente in enumerate(
-        expedientes,
-        start=2,
-    ):
-        for col, (_, atributo) in enumerate(
-            COLUMNAS_EXCEL,
-            start=1,
-        ):
-            valor = getattr(
-                expediente,
-                atributo,
-                None,
-            )
-
-            cell = ws.cell(
-                row=fila,
-                column=col,
-                value=valor,
-            )
+    for fila, expediente in enumerate(expedientes, start=2):
+        for col, (_, atributo) in enumerate(COLUMNAS_EXCEL, start=1):
+            valor = getattr(expediente, atributo, None)
+            cell = ws.cell(row=fila, column=col, value=valor)
 
             if isinstance(valor, (date, datetime)):
                 cell.number_format = "dd/mm/yyyy"
-
             elif isinstance(valor, time):
                 cell.number_format = "hh:mm"
 
     ws.freeze_panes = "A2"
+    ultima_columna = get_column_letter(len(COLUMNAS_EXCEL))
+    ws.auto_filter.ref = f"A1:{ultima_columna}{len(expedientes) + 1}"
 
-    ultima_columna = get_column_letter(
-        len(COLUMNAS_EXCEL)
-    )
-
-    ws.auto_filter.ref = (
-        f"A1:{ultima_columna}{len(expedientes) + 1}"
-    )
-
-    for col, (cabecera, _) in enumerate(
-        COLUMNAS_EXCEL,
-        start=1,
-    ):
+    for col, (cabecera, _) in enumerate(COLUMNAS_EXCEL, start=1):
         max_length = len(str(cabecera))
 
-        for fila in range(
-            2,
-            min(len(expedientes) + 2, 500),
-        ):
-            valor = ws.cell(
-                row=fila,
-                column=col,
-            ).value
-
+        for fila in range(2, min(len(expedientes) + 2, 500)):
+            valor = ws.cell(row=fila, column=col).value
             if valor is not None:
-                max_length = max(
-                    max_length,
-                    len(str(valor)),
-                )
+                max_length = max(max_length, len(str(valor)))
 
-        ws.column_dimensions[
-            get_column_letter(col)
-        ].width = min(
+        ws.column_dimensions[get_column_letter(col)].width = min(
             max(max_length + 2, 12),
             45,
         )
@@ -988,9 +768,7 @@ def exportar_excel_expedientes(
             "spreadsheetml.sheet"
         ),
         headers={
-            "Content-Disposition": (
-                'attachment; filename="expedientes.xlsx"'
-            )
+            "Content-Disposition": 'attachment; filename="expedientes.xlsx"'
         },
     )
 
@@ -1007,38 +785,22 @@ def crear_o_actualizar_cita_agenda(
     if not datos.fecha_prevista_firma:
         return None
 
-    hora_inicio = (
-        datos.hora_prevista_firma
-        or time(9, 0)
-    )
+    hora_inicio = datos.hora_prevista_firma or time(9, 0)
 
-    minutos_inicio = (
-        hora_inicio.hour * 60
-        + hora_inicio.minute
-    )
+    minutos_inicio = hora_inicio.hour * 60 + hora_inicio.minute
+    minutos_fin = min(minutos_inicio + 60, 23 * 60 + 59)
 
-    minutos_fin = min(
-        minutos_inicio + 60,
-        23 * 60 + 59,
-    )
-
-    hora_fin = time(
-        minutos_fin // 60,
-        minutos_fin % 60,
-    )
+    hora_fin = time(minutos_fin // 60, minutos_fin % 60)
 
     cita = (
         db.query(Cita)
-        .filter(
-            Cita.expediente_id == expediente.id
-        )
+        .filter(Cita.expediente_id == expediente.id)
         .order_by(Cita.id.desc())
         .first()
     )
 
     observaciones = (
-        f"Firma prevista — Expediente "
-        f"{expediente.id_expediente}"
+        f"Firma prevista — Expediente {expediente.id_expediente}"
     )
 
     if cita:
@@ -1050,7 +812,6 @@ def crear_o_actualizar_cita_agenda(
         cita.tipo_firma = datos.tipo_firma
         cita.apoderado = datos.apoderado
         cita.observaciones = observaciones
-
         return cita
 
     cita = Cita(
@@ -1066,7 +827,6 @@ def crear_o_actualizar_cita_agenda(
     )
 
     db.add(cita)
-
     return cita
 
 
@@ -1082,43 +842,26 @@ def enviar_a_notario(
 ):
     expediente = (
         db.query(Expediente)
-        .filter(
-            Expediente.id_expediente == id_expediente
-        )
+        .filter(Expediente.id_expediente == id_expediente)
         .first()
     )
 
     if expediente is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Expediente no encontrado.",
-        )
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
     if not datos.nombre_notario.strip():
-        raise HTTPException(
-            status_code=400,
-            detail="Debes seleccionar un notario.",
-        )
+        raise HTTPException(status_code=400, detail="Debes seleccionar un notario.")
 
     if not datos.tipo_firma.strip():
-        raise HTTPException(
-            status_code=400,
-            detail="El Tipo de firma es obligatorio.",
-        )
+        raise HTTPException(status_code=400, detail="El Tipo de firma es obligatorio.")
 
     if not datos.tipo_documento.strip():
-        raise HTTPException(
-            status_code=400,
-            detail="El Tipo documento es obligatorio.",
-        )
+        raise HTTPException(status_code=400, detail="El Tipo documento es obligatorio.")
 
     if datos.fecha_solicitud_pnc > datos.fecha_envio:
         raise HTTPException(
             status_code=400,
-            detail=(
-                "La fecha de solicitud PNC no puede ser "
-                "posterior a la fecha de envío."
-            ),
+            detail="La fecha de solicitud PNC no puede ser posterior a la fecha de envío.",
         )
 
     if not datos.numero_solicitud_pnc.strip():
@@ -1127,135 +870,85 @@ def enviar_a_notario(
             detail="El número de solicitud PNC es obligatorio.",
         )
 
-    if (
-        datos.fecha_prevista_firma
-        and datos.fecha_prevista_firma < datos.fecha_envio
-    ):
+    if datos.fecha_prevista_firma and datos.fecha_prevista_firma < datos.fecha_envio:
         raise HTTPException(
             status_code=400,
-            detail=(
-                "La Fecha prevista de firma no puede ser "
-                "anterior a la Fecha de envío."
-            ),
+            detail="La Fecha prevista de firma no puede ser anterior a la Fecha de envío.",
         )
 
     if datos.escritura_firmada:
         if not datos.fecha_firma:
             raise HTTPException(
                 status_code=400,
-                detail=(
-                    "Si la escritura está firmada debes indicar "
-                    "la Fecha de firma."
-                ),
+                detail="Si la escritura está firmada debes indicar la Fecha de firma.",
             )
 
         if datos.fecha_envio > datos.fecha_firma:
             raise HTTPException(
                 status_code=400,
-                detail=(
-                    "La Fecha de envío no puede ser posterior "
-                    "a la Fecha de firma."
-                ),
+                detail="La Fecha de envío no puede ser posterior a la Fecha de firma.",
             )
 
         if not datos.protocolo or not datos.protocolo.strip():
             raise HTTPException(
                 status_code=400,
-                detail=(
-                    "Si la escritura está firmada debes indicar "
-                    "el Protocolo."
-                ),
+                detail="Si la escritura está firmada debes indicar el Protocolo.",
             )
 
     try:
-        # ESTADO DE LA ESCRITURA
         if datos.escritura_firmada:
             expediente.fecha_firma = datos.fecha_firma
             expediente.protocolo = datos.protocolo.strip()
-            expediente.actividad_actual = (
-                "Sede notarial con protocolo"
-            )
+            expediente.actividad_actual = "Sede notarial con protocolo"
         else:
             expediente.fecha_firma = None
             expediente.protocolo = None
             expediente.actividad_actual = "Sede notarial"
 
-        # DATOS DEL ENVÍO
         expediente.fecha_envio_notario = datos.fecha_envio
         expediente.fecha_solicitud_pnc = datos.fecha_solicitud_pnc
-        expediente.numero_solicitud_pnc = (
-            datos.numero_solicitud_pnc.strip()
-        )
+        expediente.numero_solicitud_pnc = datos.numero_solicitud_pnc.strip()
         expediente.escritura_firmada = datos.escritura_firmada
-        expediente.hora_prevista_firma = (
-            datos.hora_prevista_firma or time(9, 0)
-        )
+        expediente.hora_prevista_firma = datos.hora_prevista_firma or time(9, 0)
         expediente.fecha_inicio_actividad = datos.fecha_envio
 
-        # DATOS DEL NOTARIO
         expediente.nombre_notario = datos.nombre_notario.strip()
-
         expediente.nif_notario = (
             datos.nif_notario.strip()
             if datos.nif_notario and datos.nif_notario.strip()
             else None
         )
-
         expediente.notario = (
             datos.notario.strip()
             if datos.notario and datos.notario.strip()
             else datos.nombre_notario.strip()
         )
-
         expediente.apoderado = (
             datos.apoderado.strip()
             if datos.apoderado and datos.apoderado.strip()
             else None
         )
 
-        # DATOS DEL DOCUMENTO
         expediente.tipo_firma = datos.tipo_firma.strip()
         expediente.tipo_documento = datos.tipo_documento.strip()
 
-        expediente.idioma_documento = (
-            datos.idioma_documento.strip()
-            if datos.idioma_documento
-            and datos.idioma_documento.strip()
-            else None
-        )
-
-        expediente.formato_escritura = (
-            datos.formato_escritura.strip()
-            if datos.formato_escritura
-            and datos.formato_escritura.strip()
-            else None
-        )
-
-        expediente.tipo_tramite = (
-            datos.tipo_tramite.strip()
-            if datos.tipo_tramite
-            and datos.tipo_tramite.strip()
-            else None
-        )
-
-        expediente.poblacion = (
-            datos.poblacion.strip()
-            if datos.poblacion and datos.poblacion.strip()
-            else None
-        )
-
-        expediente.provincia = (
-            datos.provincia.strip()
-            if datos.provincia and datos.provincia.strip()
-            else None
-        )
-
-        if datos.fecha_prevista_firma:
-            expediente.fecha_prevista_firma = (
-                datos.fecha_prevista_firma
+        for campo in [
+            "idioma_documento",
+            "formato_escritura",
+            "tipo_tramite",
+            "poblacion",
+            "provincia",
+        ]:
+            valor = getattr(datos, campo, None)
+            setattr(
+                expediente,
+                campo,
+                valor.strip() or None if valor is not None else None,
             )
 
-        # DATOS DE FACTURACIÓN
+        if datos.fecha_prevista_firma:
+            expediente.fecha_prevista_firma = datos.fecha_prevista_firma
+
         campos_facturacion = [
             "facturacion_nombre",
             "facturacion_apellidos",
@@ -1270,22 +963,11 @@ def enviar_a_notario(
 
         for campo in campos_facturacion:
             valor = getattr(datos, campo, None)
-
             if valor is not None:
                 valor = valor.strip() or None
+            setattr(expediente, campo, valor)
 
-            setattr(
-                expediente,
-                campo,
-                valor,
-            )
-
-        # CITA VINCULADA A AGENDA
-        cita = crear_o_actualizar_cita_agenda(
-            db,
-            expediente,
-            datos,
-        )
+        cita = crear_o_actualizar_cita_agenda(db, expediente, datos)
 
         db.add(expediente)
         db.commit()
@@ -1300,42 +982,24 @@ def enviar_a_notario(
 
     except Exception as exc:
         db.rollback()
-
-        print(
-            "ERROR ENVIANDO EXPEDIENTE A NOTARIO:",
-            repr(exc),
-        )
-
+        print("ERROR ENVIANDO EXPEDIENTE A NOTARIO:", repr(exc))
         raise HTTPException(
             status_code=500,
-            detail=(
-                "No se pudo guardar el envío a notario "
-                "ni crear la cita de Agenda."
-            ),
+            detail="No se pudo guardar el envío a notario ni crear la cita de Agenda.",
         )
 
     respuesta = expediente_a_dict(expediente)
-
-    respuesta["agenda_cita_creada"] = (
-        cita is not None
-    )
-
-    respuesta["agenda_cita_id"] = (
-        cita.id
-        if cita is not None
-        else None
-    )
-
+    respuesta["agenda_cita_creada"] = cita is not None
+    respuesta["agenda_cita_id"] = cita.id if cita is not None else None
     return respuesta
 
+
 # ============================================================
-# DIAGNÓSTICO TEMPORAL DE BLOQUEOS POSTGRESQL
+# DIAGNÓSTICOS DE BLOQUEOS POSTGRESQL
 # ============================================================
 
 @router.get("/diagnostico-bloqueos")
-def diagnostico_bloqueos(
-    db: Session = Depends(get_db),
-):
+def diagnostico_bloqueos(db: Session = Depends(get_db)):
     try:
         resultado = db.execute(text("""
             SELECT
@@ -1348,16 +1012,12 @@ def diagnostico_bloqueos(
                 a.wait_event AS evento_espera,
                 CASE
                     WHEN a.xact_start IS NOT NULL
-                    THEN EXTRACT(
-                        EPOCH FROM (NOW() - a.xact_start)
-                    )::integer
+                    THEN EXTRACT(EPOCH FROM (NOW() - a.xact_start))::integer
                     ELSE NULL
                 END AS segundos_transaccion,
                 CASE
                     WHEN a.query_start IS NOT NULL
-                    THEN EXTRACT(
-                        EPOCH FROM (NOW() - a.query_start)
-                    )::integer
+                    THEN EXTRACT(EPOCH FROM (NOW() - a.query_start))::integer
                     ELSE NULL
                 END AS segundos_consulta,
                 pg_blocking_pids(a.pid) AS bloqueado_por,
@@ -1372,10 +1032,7 @@ def diagnostico_bloqueos(
             LIMIT 100
         """))
 
-        filas = [
-            dict(fila)
-            for fila in resultado.mappings().all()
-        ]
+        filas = [dict(fila) for fila in resultado.mappings().all()]
 
         return {
             "ok": True,
@@ -1388,7 +1045,7 @@ def diagnostico_bloqueos(
         print("ERROR DIAGNÓSTICO BLOQUEOS:", repr(exc))
         raise HTTPException(
             status_code=500,
-            detail="No se pudieron consultar las sesiones de PostgreSQL."
+            detail="No se pudieron consultar las sesiones de PostgreSQL.",
         )
 
 
@@ -1428,7 +1085,7 @@ def diagnostico_bloqueos_expedientes(db: Session = Depends(get_db)):
             "ok": True,
             "tabla": "public.expedientes",
             "total_bloqueos": len(filas),
-            "bloqueos": filas
+            "bloqueos": filas,
         }
 
     except Exception as exc:
@@ -1436,7 +1093,7 @@ def diagnostico_bloqueos_expedientes(db: Session = Depends(get_db)):
         print("ERROR DIAGNÓSTICO BLOQUEOS EXPEDIENTES:", repr(exc))
         raise HTTPException(
             status_code=500,
-            detail="No se pudieron consultar los bloqueos de expedientes."
+            detail="No se pudieron consultar los bloqueos de expedientes.",
         )
 
 
@@ -1454,17 +1111,13 @@ def diagnostico_espera_migracion(db: Session = Depends(get_db)):
                 bloqueador.state AS estado_bloqueador,
                 CASE
                     WHEN bloqueador.xact_start IS NOT NULL
-                    THEN EXTRACT(
-                        EPOCH FROM (NOW() - bloqueador.xact_start)
-                    )::integer
+                    THEN EXTRACT(EPOCH FROM (NOW() - bloqueador.xact_start))::integer
                     ELSE NULL
                 END AS segundos_transaccion_bloqueador,
                 LEFT(bloqueador.query, 300) AS consulta_bloqueador
             FROM pg_stat_activity bloqueado
             JOIN pg_stat_activity bloqueador
-              ON bloqueador.pid = ANY(
-                  pg_blocking_pids(bloqueado.pid)
-              )
+              ON bloqueador.pid = ANY(pg_blocking_pids(bloqueado.pid))
             WHERE bloqueado.datname = current_database()
               AND bloqueado.pid <> pg_backend_pid()
             ORDER BY bloqueado.query_start NULLS LAST
@@ -1475,7 +1128,7 @@ def diagnostico_espera_migracion(db: Session = Depends(get_db)):
         return {
             "ok": True,
             "total_esperas": len(filas),
-            "esperas": filas
+            "esperas": filas,
         }
 
     except Exception as exc:
@@ -1483,8 +1136,10 @@ def diagnostico_espera_migracion(db: Session = Depends(get_db)):
         print("ERROR DIAGNOSTICO ESPERA MIGRACION:", repr(exc))
         raise HTTPException(
             status_code=500,
-            detail="No se pudieron consultar las esperas de la base de datos."
+            detail="No se pudieron consultar las esperas de la base de datos.",
         )
+
+
 # ============================================================
 # CONSULTAR UN EXPEDIENTE
 # ============================================================
@@ -1496,29 +1151,22 @@ def obtener_expediente(
 ):
     expediente = (
         db.query(Expediente)
-        .filter(
-            Expediente.id_expediente == id_expediente
-        )
+        .filter(Expediente.id_expediente == id_expediente)
         .first()
     )
 
     if expediente is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Expediente no encontrado.",
-        )
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
     return expediente_a_dict(expediente)
 
 
 # ============================================================
-# MIGRACIÓN DE COLUMNAS
+# MIGRACIÓN DE COLUMNAS DE ENVÍO A NOTARIO
 # ============================================================
 
 @router.post("/migraciones/actualizar-envio-notario")
-def actualizar_columnas_envio_notario(
-    db: Session = Depends(get_db),
-):
+def actualizar_columnas_envio_notario(db: Session = Depends(get_db)):
     columnas = [
         ("idioma_documento", "VARCHAR(100)"),
         ("formato_escritura", "VARCHAR(200)"),
@@ -1537,42 +1185,31 @@ def actualizar_columnas_envio_notario(
     ]
 
     print(
-        "INICIO MIGRACIÓN ENVÍO A NOTARIO: "
-        f"{len(columnas)} columnas",
+        f"INICIO MIGRACIÓN ENVÍO A NOTARIO: {len(columnas)} columnas",
         flush=True,
     )
 
     try:
-        # PostgreSQL: no dejar la petición esperando indefinidamente
-        # si otra operación mantiene bloqueada la tabla expedientes.
         db.execute(text("SET LOCAL lock_timeout = '5s'"))
         db.execute(text("SET LOCAL statement_timeout = '20s'"))
 
         for indice, (columna, tipo_sql) in enumerate(columnas, start=1):
             print(
-                f"MIGRACIÓN ENVÍO A NOTARIO "
-                f"[{indice}/{len(columnas)}]: comprobando {columna}",
+                f"MIGRACIÓN ENVÍO A NOTARIO [{indice}/{len(columnas)}]: "
+                f"comprobando {columna}",
                 flush=True,
             )
 
-            db.execute(
-                text(
-                    f"ALTER TABLE expedientes "
-                    f"ADD COLUMN IF NOT EXISTS {columna} {tipo_sql}"
-                )
-            )
+            db.execute(text(
+                f"ALTER TABLE expedientes "
+                f"ADD COLUMN IF NOT EXISTS {columna} {tipo_sql}"
+            ))
 
-            print(
-                f"MIGRACIÓN ENVÍO A NOTARIO: {columna} OK",
-                flush=True,
-            )
+            print(f"MIGRACIÓN ENVÍO A NOTARIO: {columna} OK", flush=True)
 
         db.commit()
 
-        print(
-            "FIN MIGRACIÓN ENVÍO A NOTARIO: completada correctamente",
-            flush=True,
-        )
+        print("FIN MIGRACIÓN ENVÍO A NOTARIO: completada correctamente", flush=True)
 
         return {
             "ok": True,
@@ -1583,14 +1220,10 @@ def actualizar_columnas_envio_notario(
 
     except Exception as exc:
         db.rollback()
-
-        print(
-            "ERROR EN MIGRACIÓN DE ENVÍO A NOTARIO:",
-            repr(exc),
-            flush=True,
-        )
+        print("ERROR EN MIGRACIÓN DE ENVÍO A NOTARIO:", repr(exc), flush=True)
 
         mensaje_error = str(exc).lower()
+
         if (
             "lock timeout" in mensaje_error
             or "statement timeout" in mensaje_error
@@ -1601,8 +1234,8 @@ def actualizar_columnas_envio_notario(
                 detail=(
                     "La migración no pudo completarse porque PostgreSQL "
                     "está esperando un bloqueo o ha superado el tiempo "
-                    "máximo de ejecución. No se han confirmado cambios. "
-                    "Revisa los logs de Render y vuelve a intentarlo."
+                    "máximo de ejecución. Revisa los logs de Render y "
+                    "vuelve a intentarlo."
                 ),
             )
 
