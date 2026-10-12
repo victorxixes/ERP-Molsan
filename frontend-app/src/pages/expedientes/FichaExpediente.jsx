@@ -3828,23 +3828,30 @@ const tieneDefecto = defectosRegistrados.some(
         </div>
       </div>
 
-      {/* ENVÍO A NOTARIO: BLOQUE COMPLETO DEBAJO DE LOS BLOQUES PRINCIPALES */}
-      <div className="mt-3 min-w-0 w-full">
+      {/* ENVÍO A NOTARIO: BLOQUE BLANCO, CENTRADO Y SIEMPRE DISPONIBLE */}
+      <div className="mt-4 flex w-full min-w-0 justify-center">
           {/* =====================================================
               FICHA COMPLETA DE ENVÍO A NOTARIO
-              Muestra todos los campos persistidos del formulario.
+              El botón abre el modal para completar y guardar el encargo.
           ====================================================== */}
-          {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
-            <section className="min-w-0 overflow-hidden rounded-2xl border-2 border-indigo-200 bg-white shadow-[0_14px_34px_rgba(30,41,59,0.10)]">
-              <div className="flex items-center gap-3 border-b border-indigo-100 bg-gradient-to-r from-indigo-50 to-blue-50 px-4 py-3 sm:px-5">
+            <section className="w-full max-w-5xl min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(30,41,59,0.08)]">
+              <div className="flex flex-wrap items-center justify-center gap-3 border-b border-slate-100 bg-white px-4 py-4 text-center sm:px-5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">🏛️</div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-extrabold text-slate-800">Envío a notario</h3>
-                  <p className="mt-0.5 text-[11px] text-slate-500">Datos completos del envío, firma y facturación</p>
+                  <p className="mt-0.5 text-[11px] text-slate-500">Encargo al notario, datos de firma y facturación</p>
                 </div>
-                <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">Guardado</span>
+                {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
+                  <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">Datos guardados</span>
+                )}
               </div>
               <div className="space-y-4 p-4 sm:p-5">
+                {!(expediente.fecha_envio_notario || expediente.fecha_envio) && (
+                  <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">
+                    Todavía no se ha registrado el encargo. Pulsa «Enviar a notario» para completar los datos y guardarlos en el expediente.
+                  </p>
+                )}
+                {(expediente.fecha_envio_notario || expediente.fecha_envio) && <>
                 <div>
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -3886,12 +3893,12 @@ const tieneDefecto = defectosRegistrados.some(
                     <Dato campo="Email" valor={expediente.facturacion_email} />
                   </div>
                 </div>
-                <div className="flex justify-end border-t border-slate-100 pt-3">
-                  <button type="button" onClick={() => setMostrarEnviarNotario(true)} className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 transition hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300">✎ Revisar datos del envío</button>
+                </>}
+                <div className="flex justify-center border-t border-slate-100 pt-4">
+                  <button type="button" onClick={() => setMostrarEnviarNotario(true)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2">🏛️ {expediente.fecha_envio_notario || expediente.fecha_envio ? "Revisar / modificar encargo" : "Enviar a notario"}</button>
                 </div>
               </div>
             </section>
-          )}
         </div>
 
       {/* =====================================================
