@@ -896,12 +896,20 @@ export default function ExpedientesListado() {
     setFiltroFechaInicio,
   ] = useState("");
 
+  const [
+    filtroProtocolo,
+    setFiltroProtocolo,
+  ] = useState("");
 
   const [
     filtroFechaFin,
     setFiltroFechaFin,
   ] = useState("");
 
+  const [
+    filtroFinca,
+    setFiltroFinca,
+  ] = useState("");
 
   const [
     filtroNotario,
@@ -944,6 +952,10 @@ export default function ExpedientesListado() {
 
     fechaFin: "",
 
+    protocolo: "",
+
+    finca: "",
+    
     notario: "",
 
     oficina: "",
