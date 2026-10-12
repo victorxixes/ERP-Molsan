@@ -876,94 +876,35 @@ export default function ExpedientesListado() {
 
 
   // ==========================================================
-  // FILTROS EDITABLES
+  // FILTROS EDITABLES — FILTROS AVANZADOS DEFINITIVOS
   // ==========================================================
+  const [filtroOficina, setFiltroOficina] = useState("");
+  const [filtroFechaInicio, setFiltroFechaInicio] = useState("");
+  const [filtroFechaFin, setFiltroFechaFin] = useState("");
+  const [filtroNifTitular, setFiltroNifTitular] = useState("");
+  const [filtroNombreTitular, setFiltroNombreTitular] = useState("");
+  const [filtroNifSolicitante, setFiltroNifSolicitante] = useState("");
+  const [filtroNombreSolicitante, setFiltroNombreSolicitante] = useState("");
+  const [filtroNotario, setFiltroNotario] = useState("");
+  const [filtroNifNotario, setFiltroNifNotario] = useState("");
+  const [filtroFinca, setFiltroFinca] = useState("");
+  const [filtroRegistroPropiedad, setFiltroRegistroPropiedad] = useState("");
+  const [filtroSaldoReal, setFiltroSaldoReal] = useState("");
+  const [filtroSaldoDisponible, setFiltroSaldoDisponible] = useState("");
+  const [filtroImporte, setFiltroImporte] = useState("");
+  const [filtroObservaciones, setFiltroObservaciones] = useState("");
+  const [filtroEstadoActividad, setFiltroEstadoActividad] = useState("");
+  const [filtroActividad, setFiltroActividad] = useState("");
+  const [filtroEstadoExpediente, setFiltroEstadoExpediente] = useState("");
 
-  const [
-    filtroNif,
-    setFiltroNif,
-  ] = useState("");
-
-
-  const [
-    filtroActividad,
-    setFiltroActividad,
-  ] = useState("");
-
-
-  const [
-    filtroFechaInicio,
-    setFiltroFechaInicio,
-  ] = useState("");
-
-  const [
-    filtroProtocolo,
-    setFiltroProtocolo,
-  ] = useState("");
-
-  const [
-    filtroFechaFin,
-    setFiltroFechaFin,
-  ] = useState("");
-
-  const [
-    filtroFinca,
-    setFiltroFinca,
-  ] = useState("");
-
-  const [
-    filtroNotario,
-    setFiltroNotario,
-  ] = useState("");
-
-
-  const [
-    filtroOficina,
-    setFiltroOficina,
-  ] = useState("");
-
-
-  const [
-    filtroImporteMin,
-    setFiltroImporteMin,
-  ] = useState("");
-
-
-  const [
-    filtroImporteMax,
-    setFiltroImporteMax,
-  ] = useState("");
-
-
-  // ==========================================================
-  // FILTROS APLICADOS
-  // ==========================================================
-
-  const [
-    filtrosAplicados,
-    setFiltrosAplicados,
-  ] = useState({
-
-    nif: "",
-
-    actividad: "",
-
-    fechaInicio: "",
-
-    fechaFin: "",
-
-    protocolo: "",
-
-    finca: "",
-    
-    notario: "",
-
-    oficina: "",
-
-    importeMin: "",
-
-    importeMax: "",
-
+  const [filtrosAplicados, setFiltrosAplicados] = useState({
+    oficina: "", fechaInicio: "", fechaFin: "",
+    nifTitular: "", nombreTitular: "",
+    nifSolicitante: "", nombreSolicitante: "",
+    notario: "", nifNotario: "", finca: "",
+    registroPropiedad: "", saldoReal: "", saldoDisponible: "",
+    importe: "", observaciones: "", estadoActividad: "",
+    actividad: "", estadoExpediente: "",
   });
 
 
@@ -1135,51 +1076,24 @@ export default function ExpedientesListado() {
 
             porPagina,
 
-            nif:
-              filtrosAplicados.nif ||
-              undefined,
-
-            actividad:
-              filtrosAplicados.actividad ||
-              undefined,
-
-            fechaInicio:
-              filtrosAplicados.fechaInicio ||
-              undefined,
-
-            fechaFin:
-              filtrosAplicados.fechaFin ||
-              undefined,
-
-                        protocolo:
-              filtrosAplicados.protocolo ||
-              undefined,
-
-                        finca:
-              filtrosAplicados.fechaFinfinca ||
-              undefined,
-            
-            notario:
-              filtrosAplicados.notario ||
-              undefined,
-
-            oficina:
-              filtrosAplicados.oficina ||
-              undefined,
-
-            importeMin:
-              filtrosAplicados.importeMin !== ""
-                ? Number(
-                    filtrosAplicados.importeMin
-                  )
-                : undefined,
-
-            importeMax:
-              filtrosAplicados.importeMax !== ""
-                ? Number(
-                    filtrosAplicados.importeMax
-                  )
-                : undefined,
+            oficina: filtrosAplicados.oficina || undefined,
+            fechaInicio: filtrosAplicados.fechaInicio || undefined,
+            fechaFin: filtrosAplicados.fechaFin || undefined,
+            nifTitular: filtrosAplicados.nifTitular || undefined,
+            nombreTitular: filtrosAplicados.nombreTitular || undefined,
+            nifSolicitante: filtrosAplicados.nifSolicitante || undefined,
+            nombreSolicitante: filtrosAplicados.nombreSolicitante || undefined,
+            notario: filtrosAplicados.notario || undefined,
+            nifNotario: filtrosAplicados.nifNotario || undefined,
+            finca: filtrosAplicados.finca || undefined,
+            registroPropiedad: filtrosAplicados.registroPropiedad || undefined,
+            saldoReal: filtrosAplicados.saldoReal !== "" ? Number(filtrosAplicados.saldoReal) : undefined,
+            saldoDisponible: filtrosAplicados.saldoDisponible !== "" ? Number(filtrosAplicados.saldoDisponible) : undefined,
+            importe: filtrosAplicados.importe !== "" ? Number(filtrosAplicados.importe) : undefined,
+            observaciones: filtrosAplicados.observaciones || undefined,
+            estadoActividad: filtrosAplicados.estadoActividad || undefined,
+            actividad: filtrosAplicados.actividad || undefined,
+            estadoExpediente: filtrosAplicados.estadoExpediente || undefined,
 
             ordenMultiple:
               ordenMultiple.length > 0
@@ -1539,46 +1453,28 @@ export default function ExpedientesListado() {
   // ==========================================================
 
   const aplicarFiltros = () => {
-
     setFiltrosAplicados({
-
-      nif:
-        filtroNif.trim(),
-
-      actividad:
-        filtroActividad.trim(),
-
-      fechaInicio:
-        filtroFechaInicio,
-
-      fechaFin:
-        filtroFechaFin,
-
-            protocolo:
-        filtroprotocolo,
-
-            finca:
-        filtroFinca,
-      
-      notario:
-        filtroNotario.trim(),
-
-      oficina:
-        filtroOficina.trim(),
-
-      importeMin:
-        filtroImporteMin,
-
-      importeMax:
-        filtroImporteMax,
-
+      oficina: filtroOficina.trim(),
+      fechaInicio: filtroFechaInicio,
+      fechaFin: filtroFechaFin,
+      nifTitular: filtroNifTitular.trim(),
+      nombreTitular: filtroNombreTitular.trim(),
+      nifSolicitante: filtroNifSolicitante.trim(),
+      nombreSolicitante: filtroNombreSolicitante.trim(),
+      notario: filtroNotario.trim(),
+      nifNotario: filtroNifNotario.trim(),
+      finca: filtroFinca.trim(),
+      registroPropiedad: filtroRegistroPropiedad,
+      saldoReal: filtroSaldoReal,
+      saldoDisponible: filtroSaldoDisponible,
+      importe: filtroImporte,
+      observaciones: filtroObservaciones.trim(),
+      estadoActividad: filtroEstadoActividad,
+      actividad: filtroActividad,
+      estadoExpediente: filtroEstadoExpediente.trim(),
     });
-
-
     setPagina(1);
-
     setError("");
-
   };
 
 
@@ -1587,57 +1483,35 @@ export default function ExpedientesListado() {
   // ==========================================================
 
   const limpiarFiltros = () => {
-
-    setFiltroNif("");
-
-    setFiltroActividad("");
-
-    setFiltroFechaInicio("");
-
-    setFiltroFechaFin("");
-
-    setFiltroNotario("");
-
-    setFiltroFinca("");
-
-    setFiltroProtocolo("");
-    
     setFiltroOficina("");
-
-    setFiltroImporteMin("");
-
-    setFiltroImporteMax("");
-
-
+    setFiltroFechaInicio("");
+    setFiltroFechaFin("");
+    setFiltroNifTitular("");
+    setFiltroNombreTitular("");
+    setFiltroNifSolicitante("");
+    setFiltroNombreSolicitante("");
+    setFiltroNotario("");
+    setFiltroNifNotario("");
+    setFiltroFinca("");
+    setFiltroRegistroPropiedad("");
+    setFiltroSaldoReal("");
+    setFiltroSaldoDisponible("");
+    setFiltroImporte("");
+    setFiltroObservaciones("");
+    setFiltroEstadoActividad("");
+    setFiltroActividad("");
+    setFiltroEstadoExpediente("");
     setFiltrosAplicados({
-
-      nif: "",
-
-      actividad: "",
-
-      fechaInicio: "",
-
-      fechaFin: "",
-
-      notario: "",
-
-      finca: "",
-
-      protocolo: "",
-      
-      oficina: "",
-
-      importeMin: "",
-
-      importeMax: "",
-
+      oficina: "", fechaInicio: "", fechaFin: "",
+      nifTitular: "", nombreTitular: "",
+      nifSolicitante: "", nombreSolicitante: "",
+      notario: "", nifNotario: "", finca: "",
+      registroPropiedad: "", saldoReal: "", saldoDisponible: "",
+      importe: "", observaciones: "", estadoActividad: "",
+      actividad: "", estadoExpediente: "",
     });
-
-
     setPagina(1);
-
     setError("");
-
   };
 
 
@@ -1853,53 +1727,24 @@ export default function ExpedientesListado() {
 
 
         await exportarExcelExpedientes({
-
-          nif:
-            filtrosAplicados.nif ||
-            undefined,
-
-          actividad:
-            filtrosAplicados.actividad ||
-            undefined,
-
-          fechaInicio:
-            filtrosAplicados.fechaInicio ||
-            undefined,
-
-            protocolo:
-            filtrosAplicados.protocolo ||
-            undefined,
-
-            finca:
-            filtrosAplicados.finca ||
-            undefined,
-          
-          fechaFin:
-            filtrosAplicados.fechaFin ||
-            undefined,
-
-          notario:
-            filtrosAplicados.notario ||
-            undefined,
-
-          oficina:
-            filtrosAplicados.oficina ||
-            undefined,
-
-          importeMin:
-            filtrosAplicados.importeMin !== ""
-              ? Number(
-                  filtrosAplicados.importeMin
-                )
-              : undefined,
-
-          importeMax:
-            filtrosAplicados.importeMax !== ""
-              ? Number(
-                  filtrosAplicados.importeMax
-                )
-              : undefined,
-
+          oficina: filtrosAplicados.oficina || undefined,
+          fechaInicio: filtrosAplicados.fechaInicio || undefined,
+          fechaFin: filtrosAplicados.fechaFin || undefined,
+          nifTitular: filtrosAplicados.nifTitular || undefined,
+          nombreTitular: filtrosAplicados.nombreTitular || undefined,
+          nifSolicitante: filtrosAplicados.nifSolicitante || undefined,
+          nombreSolicitante: filtrosAplicados.nombreSolicitante || undefined,
+          notario: filtrosAplicados.notario || undefined,
+          nifNotario: filtrosAplicados.nifNotario || undefined,
+          finca: filtrosAplicados.finca || undefined,
+          registroPropiedad: filtrosAplicados.registroPropiedad || undefined,
+          saldoReal: filtrosAplicados.saldoReal !== "" ? Number(filtrosAplicados.saldoReal) : undefined,
+          saldoDisponible: filtrosAplicados.saldoDisponible !== "" ? Number(filtrosAplicados.saldoDisponible) : undefined,
+          importe: filtrosAplicados.importe !== "" ? Number(filtrosAplicados.importe) : undefined,
+          observaciones: filtrosAplicados.observaciones || undefined,
+          estadoActividad: filtrosAplicados.estadoActividad || undefined,
+          actividad: filtrosAplicados.actividad || undefined,
+          estadoExpediente: filtrosAplicados.estadoExpediente || undefined,
         });
 
       } catch (
@@ -2881,32 +2726,44 @@ export default function ExpedientesListado() {
               </button>
             </div>
 
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-              <FiltroInput label="NIF titular" value={filtroNif} onChange={setFiltroNif} placeholder="NIF / CIF" />
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <FiltroInput label="Oficina" value={filtroOficina} onChange={setFiltroOficina} placeholder="Código o nombre de oficina" />
+              <FiltroInput label="Fecha de alta desde" type="date" value={filtroFechaInicio} onChange={setFiltroFechaInicio} />
+              <FiltroInput label="Fecha de alta hasta" type="date" value={filtroFechaFin} onChange={setFiltroFechaFin} />
+              <FiltroInput label="NIF titular" value={filtroNifTitular} onChange={setFiltroNifTitular} placeholder="NIF / CIF titular" />
+              <FiltroInput label="Nombre titular" value={filtroNombreTitular} onChange={setFiltroNombreTitular} placeholder="Nombre o razón social" />
+              <FiltroInput label="NIF solicitante" value={filtroNifSolicitante} onChange={setFiltroNifSolicitante} placeholder="NIF / CIF solicitante" />
+              <FiltroInput label="Nombre solicitante" value={filtroNombreSolicitante} onChange={setFiltroNombreSolicitante} placeholder="Nombre o razón social" />
+              <FiltroInput label="Notario" value={filtroNotario} onChange={setFiltroNotario} placeholder="Nombre del notario" />
+              <FiltroInput label="NIF notario" value={filtroNifNotario} onChange={setFiltroNifNotario} placeholder="NIF notario" />
+              <FiltroInput label="Finca" value={filtroFinca} onChange={setFiltroFinca} placeholder="Número o referencia de finca" />
               <div>
-                <label className="block text-xs font-bold mb-2" style={{ color: "var(--erp-text-soft)" }}>
-                  Actividad actual
-                </label>
-                <select
-                  value={filtroActividad}
-                  onChange={(event) => setFiltroActividad(event.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border outline-none text-sm transition-all focus:ring-2"
-                  style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)", "--tw-ring-color": "var(--erp-primary-soft)" }}
-                >
-                  <option value="">Todas las actividades</option>
-                  {actividades.map((item) => (
-                    <option key={item.actividad} value={item.actividad}>{item.actividad}</option>
-                  ))}
+                <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Registro de la Propiedad</label>
+                <select value={filtroRegistroPropiedad} onChange={(event) => setFiltroRegistroPropiedad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                  <option value="">Todos los registros</option>
+                  {[...new Set(expedientes.map((item) => item.registro_propiedad || item.nombre_registro || item.registro).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es")).map((registro) => <option key={registro} value={registro}>{registro}</option>)}
+                </select>
+                <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>La lista se nutre de los registros presentes en los datos recibidos por el listado.</p>
+              </div>
+              <FiltroInput label="Saldo real" type="number" value={filtroSaldoReal} onChange={setFiltroSaldoReal} placeholder="Importe exacto" />
+              <FiltroInput label="Saldo disponible" type="number" value={filtroSaldoDisponible} onChange={setFiltroSaldoDisponible} placeholder="Importe exacto" />
+              <FiltroInput label="Importe" type="number" value={filtroImporte} onChange={setFiltroImporte} placeholder="Importe exacto" />
+              <FiltroInput label="Observaciones" value={filtroObservaciones} onChange={setFiltroObservaciones} placeholder="Texto a buscar" />
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Estado actividad</label>
+                <select value={filtroEstadoActividad} onChange={(event) => setFiltroEstadoActividad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                  <option value="">Todos los estados</option>
+                  {[...new Set(expedientes.map((item) => item.estado_actividad).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es")).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
               </div>
-              <FiltroInput label="NIF / nombre notario" value={filtroNotario} onChange={setFiltroNotario} placeholder="Nombre o NIF" />
-              <FiltroInput label="Oficina" value={filtroOficina} onChange={setFiltroOficina} placeholder="Oficina" />
-              <FiltroInput label="Protocolo" value={filtroProtocolo} onChange={setFiltroProtocolo} placeholder="Protocolo" />
-              <FiltroInput label="Finca" value={filtroFinca} onChange={setFiltroFinca} placeholder="Finca" />
-              <FiltroInput label="Fecha inicio" type="date" value={filtroFechaInicio} onChange={setFiltroFechaInicio} />
-              <FiltroInput label="Fecha fin" type="date" value={filtroFechaFin} onChange={setFiltroFechaFin} />
-              <FiltroInput label="Importe mínimo" type="number" value={filtroImporteMin} onChange={setFiltroImporteMin} placeholder="0,00" />
-              <FiltroInput label="Importe máximo" type="number" value={filtroImporteMax} onChange={setFiltroImporteMax} placeholder="0,00" />
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Actividad actual</label>
+                <select value={filtroActividad} onChange={(event) => setFiltroActividad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                  <option value="">Todas las actividades</option>
+                  {actividades.map((item) => <option key={item.actividad} value={item.actividad}>{item.actividad}</option>)}
+                </select>
+              </div>
+              <FiltroInput label="Estado expediente" value={filtroEstadoExpediente} onChange={setFiltroEstadoExpediente} placeholder="Estado del expediente" />
             </div>
 
             <div className="px-6 py-4 border-t flex flex-wrap items-center justify-end gap-3" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
@@ -3026,6 +2883,7 @@ function FiltroInput({
   value,
   onChange,
   type = "text",
+  placeholder = "",
 }) {
 
   return (
@@ -3050,6 +2908,8 @@ function FiltroInput({
 
       <input
         type={type}
+
+        placeholder={placeholder}
 
         value={value}
 
