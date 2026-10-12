@@ -6,6 +6,7 @@ import axios from "../../api/axios";
 import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario } from "../../api/expedientes";
 
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
+import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
@@ -1417,6 +1418,8 @@ export default function FichaExpediente() {
     mostrarActividades,
     setMostrarActividades,
   ] = useState(false);
+
+  const [mostrarCarpetaDigital, setMostrarCarpetaDigital] = useState(false);
 
   const [
     actividadSeleccionada,
@@ -3049,8 +3052,7 @@ const tieneDefecto = defectosRegistrados.some(
               grid
               grid-cols-1
               gap-2
-              md:grid-cols-2
-              xl:grid-cols-4
+              md:grid-cols-3
             "
           >
 
@@ -3163,56 +3165,18 @@ const tieneDefecto = defectosRegistrados.some(
               </button>
             </Seccion>
 
-            <Seccion
-              titulo="Notario"
-              subtitulo="Información del notario asociado"
-              icono="notario"
-              className="h-full"
-              compacto
-              colapsable
-            >
-              <div className="grid grid-cols-1 gap-2">
-                <Dato
-                  campo="Nombre notario"
-                  valor={expediente.nombre_notario || "María del Camino Quiroga Martínez"}
-                  destaque
-                />
-                <Dato
-                  campo="NIF notario"
-                  valor={expediente.nif_notario || "09753953K"}
-                />
-              </div>
-            </Seccion>
-
           </div>
         </div>
 
 
           <div
-            className="flex flex-col items-stretch gap-2"
+            className="
+              flex
+              flex-wrap
+              items-center
+              gap-2
+            "
           >
-
-            <button
-              type="button"
-              onClick={abrirDefecto}
-              className="
-                inline-flex items-center justify-center gap-2
-                rounded-xl border border-blue-200 bg-blue-50
-                px-4 py-2.5 text-xs font-bold text-blue-700
-                shadow-sm transition hover:bg-blue-100
-                focus:outline-none focus:ring-2 focus:ring-blue-300
-              "
-              title="Registrar un defecto registral"
-            >
-              ➕ Alta defecto
-            </button>
-
-            <Boton
-              onClick={abrirActividades}
-            >
-              ⚙️ Ver actividades
-            </Boton>
-
 
             {tieneDefecto && (
               <button
@@ -3241,6 +3205,37 @@ const tieneDefecto = defectosRegistrados.some(
               </button>
             )}
 
+            <Boton
+              onClick={abrirActividades}
+            >
+              ⚙️ Ver actividades
+            </Boton>
+
+            <Boton tipo="primary" onClick={() => setMostrarCarpetaDigital(true)}>
+              📁 Carpeta digital
+            </Boton>
+
+            <button
+              type="button"
+              onClick={abrirDefecto}
+              className="
+                inline-flex items-center justify-center gap-2
+                rounded-xl border border-blue-200 bg-blue-50
+                px-4 py-2.5 text-xs font-bold text-blue-700
+                shadow-sm transition hover:bg-blue-100
+                focus:outline-none focus:ring-2 focus:ring-blue-300
+              "
+              title="Registrar un defecto registral"
+            >
+              ➕ Alta defecto
+            </button>
+
+            <Boton
+              tipo="primary"
+              onClick={() => setMostrarEnviarNotario(true)}
+            >
+              📤 Enviar a notario
+            </Boton>
 
           </div>
         </div>
@@ -3265,7 +3260,7 @@ const tieneDefecto = defectosRegistrados.some(
             COLUMNA 1
         ==================================================== */}
 
-        <div className="min-w-0 space-y-4 xl:col-span-4">
+        <div className="min-w-0 space-y-4 xl:col-span-2">
 
           {/* ESTADO */}
 
@@ -3278,8 +3273,7 @@ const tieneDefecto = defectosRegistrados.some(
             <div
               className="
                 grid
-                grid-cols-1
-                md:grid-cols-3
+                grid-cols-2
                 gap-2
               "
             >
@@ -3341,7 +3335,7 @@ const tieneDefecto = defectosRegistrados.some(
          
 
 
-          {/* FINCAS Y REGISTROS — SOLO LOS TRES DATOS SOLICITADOS */}
+          {/* FINCAS Y REGISTROS */}
 
           <Seccion
             titulo="Fincas y Registros"
@@ -3349,50 +3343,132 @@ const tieneDefecto = defectosRegistrados.some(
             icono="finca"
             colapsable
           >
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-2">
+
               <Dato
                 campo="Finca"
-                valor={fincaRegistrada.numero_finca || expediente?.finca}
+                valor={fincaRegistrada.numero_finca}
                 destaque
               />
-              <Dato
-                campo="Registro (número - Nombre)"
-                valor={[
-                  fincaRegistrada.registro_numero ||
-                    fincaRegistrada.numero_registro ||
-                    expediente?.registro_numero ||
-                    expediente?.numero_registro ||
-                    (typeof fincaRegistrada.registro === "number" ? fincaRegistrada.registro : ""),
-                  fincaRegistrada.registro_nombre ||
-                    fincaRegistrada.nombre_registro ||
-                    expediente?.registro_nombre ||
-                    expediente?.nombre_registro ||
-                    (typeof fincaRegistrada.registro === "string" && !/^\d+$/.test(fincaRegistrada.registro.trim())
-                      ? fincaRegistrada.registro
-                      : ""),
-                ].filter((parte) => parte !== null && parte !== undefined && String(parte).trim() !== "").join(" - ")}
-              />
-              <Dato
-                campo="Capital"
-                valor={expediente?.capital ?? fincaRegistrada.capital ?? fincaRegistrada.cuantia}
-                tipo="numero"
-                destaque
-              />
+
+              {esDisponible(
+                fincaRegistrada.cru_idufir
+              ) && (
+                <Dato
+                  campo="CRU/Idufir"
+                  valor={fincaRegistrada.cru_idufir}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.provincia
+              ) && (
+                <Dato
+                  campo="Provincia"
+                  valor={fincaRegistrada.provincia}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.poblacion
+              ) && (
+                <Dato
+                  campo="Población"
+                  valor={fincaRegistrada.poblacion}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.registro
+              ) && (
+                <Dato
+                  campo="Registro"
+                  valor={fincaRegistrada.registro}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.inscripcion
+              ) && (
+                <Dato
+                  campo="Inscripción"
+                  valor={fincaRegistrada.inscripcion}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.seccion
+              ) && (
+                <Dato
+                  campo="Sección"
+                  valor={fincaRegistrada.seccion}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.cuantia
+              ) && (
+                <Dato
+                  campo="Cuantía"
+                  valor={fincaRegistrada.cuantia}
+                  tipo="numero"
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.contrato
+              ) && (
+                <Dato
+                  campo="Contrato"
+                  valor={fincaRegistrada.contrato}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.fecha_constitucion
+              ) && (
+                <Dato
+                  campo="Fecha constitución"
+                  valor={fincaRegistrada.fecha_constitucion}
+                  tipo="fecha"
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.subrogado
+              ) && (
+                <Dato
+                  campo="Subrogado"
+                  valor={fincaRegistrada.subrogado}
+                />
+              )}
+
+              {esDisponible(
+                fincaRegistrada.entidad_original
+              ) && (
+                <Dato
+                  campo="Entidad original"
+                  valor={fincaRegistrada.entidad_original}
+                />
+              )}
+
             </div>
 
             <button
               type="button"
               onClick={abrirFincas}
-              className="mt-3 w-full rounded-xl border border-blue-100 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100"
+              className="
+                mt-3 w-full rounded-xl border border-blue-100
+                bg-blue-50 px-3 py-2.5 text-xs font-bold
+                text-blue-700 transition hover:bg-blue-100
+              "
             >
               ＋ Nueva Finca
             </button>
           </Seccion>
 
 
-
-
-                    {/* ACCIONES */}
+          {/* ACCIONES */}
 
           <Seccion
             titulo="Acciones"
@@ -3581,12 +3657,54 @@ const tieneDefecto = defectosRegistrados.some(
        
 
         {/* ===================================================
-            ZONA DERECHA — PPAD, INFORMACIÓN CREDITICIA Y ENVÍO
-            Se mantiene a la derecha de Fincas, Acciones y Observaciones.
+            COLUMNA CENTRAL — NOTARIO Y ENVÍO
         ==================================================== */}
-        <div className="min-w-0 xl:col-span-8">
-          <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
-        {/* PPAD */}
+
+        <div className="min-w-0 space-y-3 xl:col-span-2">
+
+          {/* NOTARIO */}
+
+          <Seccion
+            titulo="Notario"
+            subtitulo="Información del notario asociado"
+            icono="notario"
+            colapsable
+          >
+
+            <div
+              className="
+                grid
+                grid-cols-2
+                gap-2
+              "
+            >
+
+              <Dato
+                campo="Nombre notario"
+                valor={
+                  expediente.nombre_notario
+                }
+                destaque
+              />
+
+              <Dato
+                campo="NIF notario"
+                valor={
+                  expediente.nif_notario
+                }
+              />
+
+            </div>
+
+          </Seccion>
+
+
+
+        </div>
+
+        {/* ===================================================
+            COLUMNA 3 — PPAD
+        ==================================================== */}
         <div className="min-w-0 space-y-2 xl:col-span-3">
           {/* PPAD */}
           <Seccion
@@ -3691,35 +3809,20 @@ const tieneDefecto = defectosRegistrados.some(
             icono="economico"
             colapsable
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-1.5">
-              {/* Fila 1: Contrato · Capital · Tipo operación · Subtipo · Importe · Saldo disponible */}
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Contrato" valor={expediente.contrato} compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Capital" valor={expediente.capital} tipo="numero" destaque compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Tipo operación" valor={expediente.tipo_operacion} compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Subtipo operación" valor={expediente.subtipo_operacion} compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Importe" valor={expediente.importe} tipo="numero" destaque compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Saldo disponible" valor={expediente.saldo_disponible} tipo="numero" compacto />
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-1.5">
+              <Dato campo="Contrato" valor={expediente.contrato} compacto />
+              <Dato campo="Capital" valor={expediente.capital} tipo="numero" destaque compacto />
 
-              {/* Fila 2: Nº solicitud SIA · Finca · Observaciones */}
-              <div className="min-w-0 xl:col-span-2">
-                <Dato campo="Nº solicitud SIA" valor={expediente.num_solicitud_sia} compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-2">
-                <Dato campo="Finca" valor={expediente.finca} destaque compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-2">
+              <Dato campo="Tipo operación" valor={expediente.tipo_operacion} compacto />
+              <Dato campo="Subtipo operación" valor={expediente.subtipo_operacion} compacto />
+
+              <Dato campo="Nº solicitud SIA" valor={expediente.num_solicitud_sia} compacto />
+              <Dato campo="Importe" valor={expediente.importe} tipo="numero" destaque compacto />
+
+              <Dato campo="Saldo disponible" valor={expediente.saldo_disponible} tipo="numero" compacto />
+              <Dato campo="Finca" valor={expediente.finca} destaque compacto />
+
+              <div className="min-w-0">
                 <Dato
                   campo="Observaciones"
                   valor={expediente.observaciones ?? expediente.Observaciones}
@@ -3730,65 +3833,43 @@ const tieneDefecto = defectosRegistrados.some(
             </div>
           </Seccion>
         </div>
+      </div>
 
-
-        {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
-        <div className="min-w-0 w-full xl:col-span-8">
-          <div className="flex w-full min-w-0 justify-center">
+      {/* ENVÍO A NOTARIO: BLOQUE COMPLETO DEBAJO DE LOS BLOQUES PRINCIPALES */}
+      <div className="mt-3 min-w-0 w-full">
           {/* =====================================================
               FICHA COMPLETA DE ENVÍO A NOTARIO
-              El botón abre el modal para completar y guardar el encargo.
+              Muestra todos los campos persistidos del formulario.
           ====================================================== */}
-            <section className="w-full max-w-none min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(30,41,59,0.08)]">
-              <div className="flex flex-wrap items-center justify-center gap-3 border-b border-slate-100 bg-white px-4 py-4 text-center sm:px-5">
+          {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
+            <section className="min-w-0 overflow-hidden rounded-2xl border-2 border-indigo-200 bg-white shadow-[0_14px_34px_rgba(30,41,59,0.10)]">
+              <div className="flex items-center gap-3 border-b border-indigo-100 bg-gradient-to-r from-indigo-50 to-blue-50 px-4 py-3 sm:px-5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">🏛️</div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-extrabold text-slate-800">Envío a notario</h3>
-                  <p className="mt-0.5 text-[11px] text-slate-500">Encargo al notario, datos de firma y facturación</p>
+                  <p className="mt-0.5 text-[11px] text-slate-500">Datos completos del envío, firma y facturación</p>
                 </div>
-                {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
-                  <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">Datos guardados</span>
-                )}
+                <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">Guardado</span>
               </div>
               <div className="space-y-4 p-4 sm:p-5">
-                {!(expediente.fecha_envio_notario || expediente.fecha_envio) && (
-                  <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">
-                    Todavía no se ha registrado el encargo. Pulsa «Enviar a notario» para completar los datos y guardarlos en el expediente.
-                  </p>
-                )}
-                {(expediente.fecha_envio_notario || expediente.fecha_envio) && <>
                 <div>
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Fecha de envío" valor={expediente.fecha_envio_notario || expediente.fecha_envio} tipo="fecha" />
-                    <Dato campo="Idioma del documento" valor={expediente.idioma_documento ?? expediente.idioma ?? expediente.lengua_documento} />
-                    <Dato campo="Fecha solicitud PNC" valor={expediente.fecha_solicitud_pnc ?? expediente.fecha_pnc ?? expediente.pnc_fecha_solicitud} tipo="fecha" />
-                    <Dato campo="Número solicitud PNC" valor={expediente.numero_solicitud_pnc ?? expediente.num_solicitud_pnc ?? expediente.pnc_numero_solicitud} />
+                    <Dato campo="Idioma del documento" valor={expediente.idioma} />
+                    <Dato campo="Fecha solicitud PNC" valor={expediente.fecha_solicitud_pnc} tipo="fecha" />
+                    <Dato campo="Número solicitud PNC" valor={expediente.numero_solicitud_pnc} />
                     <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
                     <Dato campo="NIF notario" valor={expediente.nif_notario} />
                     <Dato campo="Apoderado" valor={expediente.apoderado} />
                   </div>
                 </div>
                 <div className="border-t border-slate-100 pt-3">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de facturación</p>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                    <Dato campo="Nombre" valor={expediente.facturacion_nombre ?? expediente.nombre_facturacion ?? expediente.nombre_cliente_facturacion} />
-                    <Dato campo="Apellidos" valor={expediente.facturacion_apellidos ?? expediente.apellidos_facturacion ?? expediente.apellidos_cliente_facturacion} />
-                    <Dato campo="DNI / NIF de facturación" valor={expediente.facturacion_dni_nif ?? expediente.dni_facturacion ?? expediente.nif_facturacion} />
-                    <Dato campo="Dirección" valor={expediente.facturacion_direccion ?? expediente.direccion_facturacion ?? expediente.direccion_cliente_facturacion} />
-                    <Dato campo="Código postal" valor={expediente.facturacion_codigo_postal ?? expediente.codigo_postal_facturacion ?? expediente.cp_facturacion} />
-                    <Dato campo="Población" valor={expediente.facturacion_poblacion ?? expediente.poblacion_facturacion ?? expediente.municipio_facturacion} />
-                    <Dato campo="Provincia" valor={expediente.facturacion_provincia ?? expediente.provincia_facturacion} />
-                    <Dato campo="Teléfono" valor={expediente.facturacion_telefono ?? expediente.telefono_facturacion ?? expediente.telefono_cliente_facturacion} />
-                    <Dato campo="Email" valor={expediente.facturacion_email ?? expediente.email_facturacion ?? expediente.correo_facturacion} />
-                  </div>
-                </div>
-                <div className="border-t border-slate-100 pt-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Escritura y firma</p>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-6">
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Tipo de documento" valor={expediente.tipo_documento} />
-                    <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
-                    <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite ?? expediente.tipo_tramite_notarial ?? expediente.tramite} />
+                    <Dato campo="Formato de escritura" valor={expediente.formato_escritura} />
+                    <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite} />
                     <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
                     <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
                     <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
@@ -3799,18 +3880,33 @@ const tieneDefecto = defectosRegistrados.some(
                     <Dato campo="Provincia notario" valor={expediente.provincia} />
                   </div>
                 </div>
-                </>}
-                <div className="flex justify-center border-t border-slate-100 pt-4">
-                  <button type="button" onClick={() => setMostrarEnviarNotario(true)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2">🏛️ {expediente.fecha_envio_notario || expediente.fecha_envio ? "Revisar / modificar encargo" : "Enviar a notario"}</button>
+                <div className="border-t border-slate-100 pt-3">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de facturación</p>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    <Dato campo="Nombre" valor={expediente.facturacion_nombre} />
+                    <Dato campo="Apellidos" valor={expediente.facturacion_apellidos} />
+                    <Dato campo="Dirección" valor={expediente.facturacion_direccion} />
+                    <Dato campo="Código postal" valor={expediente.facturacion_codigo_postal} />
+                    <Dato campo="Población" valor={expediente.facturacion_poblacion} />
+                    <Dato campo="Provincia" valor={expediente.facturacion_provincia} />
+                    <Dato campo="Teléfono" valor={expediente.facturacion_telefono} />
+                    <Dato campo="Email" valor={expediente.facturacion_email} />
+                  </div>
+                </div>
+                <div className="flex justify-end border-t border-slate-100 pt-3">
+                  <button type="button" onClick={() => setMostrarEnviarNotario(true)} className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 transition hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300">✎ Revisar datos del envío</button>
                 </div>
               </div>
             </section>
-          </div>
+          )}
         </div>
-          </div>
-        </div>
-      </div>
 
+      {mostrarCarpetaDigital && (
+        <CarpetaDigitalModal
+          expedienteId={id || expediente?.id_expediente || expediente?.id}
+          onClose={() => setMostrarCarpetaDigital(false)}
+        />
+      )}
 
       {/* =====================================================
           MODAL ACTIVIDADES
