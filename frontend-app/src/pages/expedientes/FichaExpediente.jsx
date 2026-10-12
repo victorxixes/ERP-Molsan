@@ -3341,7 +3341,7 @@ const tieneDefecto = defectosRegistrados.some(
          
 
 
-          {/* FINCAS Y REGISTROS */}
+          {/* FINCAS Y REGISTROS — SOLO LOS TRES DATOS SOLICITADOS */}
 
           <Seccion
             titulo="Fincas y Registros"
@@ -3349,136 +3349,41 @@ const tieneDefecto = defectosRegistrados.some(
             icono="finca"
             colapsable
           >
-            <div className="grid grid-cols-2 gap-2">
-
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               <Dato
                 campo="Finca"
-                valor={fincaRegistrada.numero_finca}
+                valor={fincaRegistrada.numero_finca || expediente?.finca}
                 destaque
               />
-
-              {esDisponible(
-                fincaRegistrada,
-                "cru_idufir"
-              ) && (
-                <Dato
-                  campo="CRU/Idufir"
-                  valor={fincaRegistrada.cru_idufir}
-                />
-              )}
-
-              {esDisponible(
-                fincaRegistrada,
-                "provincia"
-              ) && (
-                <Dato
-                  campo="Provincia"
-                  valor={fincaRegistrada.provincia}
-                />
-              )}
-
-              {esDisponible(
-                fincaRegistrada,
-                "poblacion"
-              ) && (
-                <Dato
-                  campo="Población"
-                  valor={fincaRegistrada.poblacion}
-                />
-              )}
-
-              {esDisponible(
-                fincaRegistrada,
-                "registro"
-              ) && (
-                <Dato
-                  campo="Registro"
-                  valor={fincaRegistrada.registro}
-                />
-              )}
-
-              {esDisponible(
-                fincaRegistrada,
-                "inscripcion"
-              ) && (
-                <Dato
-                  campo="Inscripción"
-                  valor={fincaRegistrada.inscripcion}
-                />
-              )}
-
-              {esDisponible(
-                fincaRegistrada,
-                "seccion"
-              ) && (
-                <Dato
-                  campo="Sección"
-                  valor={fincaRegistrada.seccion}
-                />
-              )}
-
-              {esDisponible(
-                fincaRegistrada,
-                "cuantia"
-              ) && (
-                <Dato
-                  campo="Cuantía"
-                  valor={fincaRegistrada.cuantia}
-                  tipo="numero"
-                />
-              )}
-
-              {esDisponible(
-                fincaRegistrada,
-                "contrato"
-              ) && (
-                <Dato
-                  campo="Contrato"
-                  valor={fincaRegistrada.contrato}
-                />
-              )}
-
-              {esDisponible(
-                fincaRegistrada,
-                "fecha_constitucion"
-              ) && (
-                <Dato
-                  campo="Fecha constitución"
-                  valor={fincaRegistrada.fecha_constitucion}
-                  tipo="fecha"
-                />
-              )}
-
-              {esDisponible(
-                fincaRegistrada,
-                "subrogado"
-              ) && (
-                <Dato
-                  campo="Subrogado"
-                  valor={fincaRegistrada.subrogado}
-                />
-              )}
-
-              {esDisponible(
-                fincaRegistrada,
-                "entidad_original"
-              ) && (
-                <Dato
-                  campo="Entidad original"
-                  valor={fincaRegistrada.entidad_original}
-                />
-              )}
-
+              <Dato
+                campo="Registro (número - Nombre)"
+                valor={[
+                  fincaRegistrada.registro_numero ||
+                    fincaRegistrada.numero_registro ||
+                    expediente?.registro_numero ||
+                    expediente?.numero_registro ||
+                    (typeof fincaRegistrada.registro === "number" ? fincaRegistrada.registro : ""),
+                  fincaRegistrada.registro_nombre ||
+                    fincaRegistrada.nombre_registro ||
+                    expediente?.registro_nombre ||
+                    expediente?.nombre_registro ||
+                    (typeof fincaRegistrada.registro === "string" && !/^\d+$/.test(fincaRegistrada.registro.trim())
+                      ? fincaRegistrada.registro
+                      : ""),
+                ].filter((parte) => parte !== null && parte !== undefined && String(parte).trim() !== "").join(" - ")}
+              />
+              <Dato
+                campo="Capital"
+                valor={expediente?.capital ?? fincaRegistrada.capital ?? fincaRegistrada.cuantia}
+                tipo="numero"
+                destaque
+              />
             </div>
 
             <button
               type="button"
               onClick={abrirFincas}
-              className="
-                mt-3 w-full rounded-xl border border-blue-100
-                bg-blue-50 px-3 py-2.5 text-xs font-bold
-                text-blue-700 transition hover:bg-blue-100
-              "
+              className="mt-3 w-full rounded-xl border border-blue-100 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100"
             >
               ＋ Nueva Finca
             </button>
@@ -3487,8 +3392,7 @@ const tieneDefecto = defectosRegistrados.some(
 
 
 
-
-          {/* ACCIONES */}
+                    {/* ACCIONES */}
 
           <Seccion
             titulo="Acciones"
@@ -3857,9 +3761,9 @@ const tieneDefecto = defectosRegistrados.some(
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Fecha de envío" valor={expediente.fecha_envio_notario || expediente.fecha_envio} tipo="fecha" />
-                    <Dato campo="Idioma del documento" valor={expediente.idioma} />
-                    <Dato campo="Fecha solicitud PNC" valor={expediente.fecha_solicitud_pnc} tipo="fecha" />
-                    <Dato campo="Número solicitud PNC" valor={expediente.numero_solicitud_pnc} />
+                    <Dato campo="Idioma del documento" valor={expediente.idioma ?? expediente.idioma_documento ?? expediente.lengua_documento} />
+                    <Dato campo="Fecha solicitud PNC" valor={expediente.fecha_solicitud_pnc ?? expediente.fecha_pnc ?? expediente.pnc_fecha_solicitud} tipo="fecha" />
+                    <Dato campo="Número solicitud PNC" valor={expediente.numero_solicitud_pnc ?? expediente.num_solicitud_pnc ?? expediente.pnc_numero_solicitud} />
                     <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
                     <Dato campo="NIF notario" valor={expediente.nif_notario} />
                     <Dato campo="Apoderado" valor={expediente.apoderado} />
@@ -3869,8 +3773,8 @@ const tieneDefecto = defectosRegistrados.some(
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Escritura y firma</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Tipo de documento" valor={expediente.tipo_documento} />
-                    <Dato campo="Formato de escritura" valor={expediente.formato_escritura} />
-                    <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite} />
+                    <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
+                    <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite ?? expediente.tipo_tramite_notarial ?? expediente.tramite} />
                     <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
                     <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
                     <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
@@ -3884,14 +3788,14 @@ const tieneDefecto = defectosRegistrados.some(
                 <div className="border-t border-slate-100 pt-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de facturación</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    <Dato campo="Nombre" valor={expediente.facturacion_nombre} />
-                    <Dato campo="Apellidos" valor={expediente.facturacion_apellidos} />
-                    <Dato campo="Dirección" valor={expediente.facturacion_direccion} />
-                    <Dato campo="Código postal" valor={expediente.facturacion_codigo_postal} />
-                    <Dato campo="Población" valor={expediente.facturacion_poblacion} />
-                    <Dato campo="Provincia" valor={expediente.facturacion_provincia} />
-                    <Dato campo="Teléfono" valor={expediente.facturacion_telefono} />
-                    <Dato campo="Email" valor={expediente.facturacion_email} />
+                    <Dato campo="Nombre" valor={expediente.facturacion_nombre ?? expediente.nombre_facturacion ?? expediente.nombre_cliente_facturacion} />
+                    <Dato campo="Apellidos" valor={expediente.facturacion_apellidos ?? expediente.apellidos_facturacion ?? expediente.apellidos_cliente_facturacion} />
+                    <Dato campo="Dirección" valor={expediente.facturacion_direccion ?? expediente.direccion_facturacion ?? expediente.direccion_cliente_facturacion} />
+                    <Dato campo="Código postal" valor={expediente.facturacion_codigo_postal ?? expediente.codigo_postal_facturacion ?? expediente.cp_facturacion} />
+                    <Dato campo="Población" valor={expediente.facturacion_poblacion ?? expediente.poblacion_facturacion ?? expediente.municipio_facturacion} />
+                    <Dato campo="Provincia" valor={expediente.facturacion_provincia ?? expediente.provincia_facturacion} />
+                    <Dato campo="Teléfono" valor={expediente.facturacion_telefono ?? expediente.telefono_facturacion ?? expediente.telefono_cliente_facturacion} />
+                    <Dato campo="Email" valor={expediente.facturacion_email ?? expediente.email_facturacion ?? expediente.correo_facturacion} />
                   </div>
                 </div>
                 </>}
