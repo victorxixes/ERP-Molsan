@@ -3358,7 +3358,8 @@ const tieneDefecto = defectosRegistrados.some(
               />
 
               {esDisponible(
-                fincaRegistrada.cru_idufir
+                fincaRegistrada,
+                "cru_idufir"
               ) && (
                 <Dato
                   campo="CRU/Idufir"
@@ -3367,7 +3368,8 @@ const tieneDefecto = defectosRegistrados.some(
               )}
 
               {esDisponible(
-                fincaRegistrada.provincia
+                fincaRegistrada,
+                "provincia"
               ) && (
                 <Dato
                   campo="Provincia"
@@ -3376,7 +3378,8 @@ const tieneDefecto = defectosRegistrados.some(
               )}
 
               {esDisponible(
-                fincaRegistrada.poblacion
+                fincaRegistrada,
+                "poblacion"
               ) && (
                 <Dato
                   campo="Población"
@@ -3385,7 +3388,8 @@ const tieneDefecto = defectosRegistrados.some(
               )}
 
               {esDisponible(
-                fincaRegistrada.registro
+                fincaRegistrada,
+                "registro"
               ) && (
                 <Dato
                   campo="Registro"
@@ -3394,7 +3398,8 @@ const tieneDefecto = defectosRegistrados.some(
               )}
 
               {esDisponible(
-                fincaRegistrada.inscripcion
+                fincaRegistrada,
+                "inscripcion"
               ) && (
                 <Dato
                   campo="Inscripción"
@@ -3403,7 +3408,8 @@ const tieneDefecto = defectosRegistrados.some(
               )}
 
               {esDisponible(
-                fincaRegistrada.seccion
+                fincaRegistrada,
+                "seccion"
               ) && (
                 <Dato
                   campo="Sección"
@@ -3412,7 +3418,8 @@ const tieneDefecto = defectosRegistrados.some(
               )}
 
               {esDisponible(
-                fincaRegistrada.cuantia
+                fincaRegistrada,
+                "cuantia"
               ) && (
                 <Dato
                   campo="Cuantía"
@@ -3422,7 +3429,8 @@ const tieneDefecto = defectosRegistrados.some(
               )}
 
               {esDisponible(
-                fincaRegistrada.contrato
+                fincaRegistrada,
+                "contrato"
               ) && (
                 <Dato
                   campo="Contrato"
@@ -3431,7 +3439,8 @@ const tieneDefecto = defectosRegistrados.some(
               )}
 
               {esDisponible(
-                fincaRegistrada.fecha_constitucion
+                fincaRegistrada,
+                "fecha_constitucion"
               ) && (
                 <Dato
                   campo="Fecha constitución"
@@ -3441,7 +3450,8 @@ const tieneDefecto = defectosRegistrados.some(
               )}
 
               {esDisponible(
-                fincaRegistrada.subrogado
+                fincaRegistrada,
+                "subrogado"
               ) && (
                 <Dato
                   campo="Subrogado"
@@ -3450,7 +3460,8 @@ const tieneDefecto = defectosRegistrados.some(
               )}
 
               {esDisponible(
-                fincaRegistrada.entidad_original
+                fincaRegistrada,
+                "entidad_original"
               ) && (
                 <Dato
                   campo="Entidad original"
