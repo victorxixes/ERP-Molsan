@@ -1218,6 +1218,58 @@ def enviar_a_notario(
 
 
 # ============================================================
+# DIAGNÓSTICO TEMPORAL DE BLOQUEOS POSTGRESQL
+# ============================================================
+
+@router.get("/diagnostico-bloqueos")
+def diagnostico_bloqueos(
+    db: Session = Depends(get_db),
+):
+    try:
+        resultado = db.execute(text("""
+            SELECT
+                a.pid AS proceso,
+                a.state AS estado,
+                a.wait_event_type AS tipo_espera,
+                a.wait_event AS evento_espera,
+                CASE
+                    WHEN a.xact_start IS NOT NULL
+                    THEN EXTRACT(
+                        EPOCH FROM (NOW() - a.xact_start)
+                    )::integer
+                    ELSE NULL
+                END AS segundos_transaccion,
+                pg_blocking_pids(a.pid) AS bloqueado_por,
+                LEFT(a.query, 200) AS consulta
+            FROM pg_stat_activity a
+            WHERE a.datname = current_database()
+              AND a.pid <> pg_backend_pid()
+            ORDER BY
+                a.xact_start NULLS LAST,
+                a.query_start NULLS LAST
+            LIMIT 100
+        """))
+
+        filas = [
+            dict(fila)
+            for fila in resultado.mappings().all()
+        ]
+
+        return {
+            "ok": True,
+            "total_sesiones": len(filas),
+            "sesiones": filas,
+        }
+
+    except Exception as exc:
+        db.rollback()
+        print("ERROR DIAGNÓSTICO BLOQUEOS:", repr(exc))
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudieron consultar las sesiones de PostgreSQL.",
+        )
+
+# ============================================================
 # CONSULTAR UN EXPEDIENTE
 # ============================================================
 
