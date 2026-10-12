@@ -5129,6 +5129,9 @@ const tieneDefecto = defectosRegistrados.some(
         />
       )}
 
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
