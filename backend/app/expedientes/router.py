@@ -1,4 +1,4 @@
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 from typing import Optional
 import io
 import json
@@ -497,6 +497,8 @@ def parsear_fecha(
 
 
 def aplicar_filtros(
+    
+def aplicar_filtros(
     q,
     nif=None,
     actividad=None,
@@ -506,16 +508,21 @@ def aplicar_filtros(
     oficina=None,
     importeMin=None,
     importeMax=None,
+    nombreTitular=None,
+    nifTitular=None,
+    nombreSolicitante=None,
+    nifSolicitante=None,
+    nombreNotario=None,
+    nifNotario=None,
+    finca=None,
+    saldoReal=None,
+    saldoDisponible=None,
+    estadoActividad=None,
+    estadoExpediente=None,
+    observaciones=None,
 ):
-    fecha_inicio = parsear_fecha(
-        fechaInicio,
-        "fechaInicio",
-    )
-
-    fecha_fin = parsear_fecha(
-        fechaFin,
-        "fechaFin",
-    )
+    fecha_inicio = parsear_fecha(fechaInicio, "fechaInicio")
+    fecha_fin = parsear_fecha(fechaFin, "fechaFin")
 
     if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
         raise HTTPException(
@@ -530,12 +537,17 @@ def aplicar_filtros(
     ):
         raise HTTPException(
             status_code=400,
-            detail="El importe mínimo no puede ser superior al importe máximo.",
+            detail="El importe mínimo no puede ser superior al máximo.",
         )
 
+    def contiene(campo, valor):
+        if valor is not None and str(valor).strip():
+            return campo.ilike(f"%{str(valor).strip()}%")
+        return None
+
+    # Compatibilidad con el filtro antiguo NIF
     if nif and nif.strip():
         patron = f"%{nif.strip()}%"
-
         q = q.filter(
             or_(
                 Expediente.nif_titular.ilike(patron),
@@ -543,33 +555,47 @@ def aplicar_filtros(
             )
         )
 
-    if actividad and actividad.strip():
-        clave = resolver_actividad(actividad)
+    # Titular
+    condicion = contiene(Expediente.nombre_titular, nombreTitular)
+    if condicion is not None:
+        q = q.filter(condicion)
 
-        if clave is None:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Actividad no válida: {actividad}",
-            )
+    condicion = contiene(Expediente.nif_titular, nifTitular)
+    if condicion is not None:
+        q = q.filter(condicion)
 
-        condicion = condicion_actividad(clave)
+    # Solicitante
+    condicion = contiene(Expediente.nombre_solicitante, nombreSolicitante)
+    if condicion is not None:
+        q = q.filter(condicion)
 
-        if condicion is not None:
-            q = q.filter(condicion)
+    condicion = contiene(Expediente.nif_solicitante, nifSolicitante)
+    if condicion is not None:
+        q = q.filter(condicion)
 
+    # Fechas de alta
     if fecha_inicio:
-        q = q.filter(
-            Expediente.fecha_alta >= fecha_inicio,
-        )
+        q = q.filter(Expediente.fecha_alta >= fecha_inicio)
 
     if fecha_fin:
         q = q.filter(
-            Expediente.fecha_alta <= fecha_fin,
+            Expediente.fecha_alta < (
+                datetime.combine(fecha_fin, time.min) + timedelta(days=1)
+            )
         )
 
+    # Notario
+    condicion = contiene(Expediente.nombre_notario, nombreNotario)
+    if condicion is not None:
+        q = q.filter(condicion)
+
+    condicion = contiene(Expediente.nif_notario, nifNotario)
+    if condicion is not None:
+        q = q.filter(condicion)
+
+    # Compatibilidad con el filtro antiguo de notario
     if notario and notario.strip():
         patron = f"%{notario.strip()}%"
-
         q = q.filter(
             or_(
                 Expediente.nombre_notario.ilike(patron),
@@ -578,22 +604,56 @@ def aplicar_filtros(
             )
         )
 
-    if oficina and oficina.strip():
-        q = q.filter(
-            Expediente.oficina.ilike(
-                f"%{oficina.strip()}%",
-            )
-        )
+    # Oficina
+    condicion = contiene(Expediente.oficina, oficina)
+    if condicion is not None:
+        q = q.filter(condicion)
 
+    # Actividad actual
+    if actividad and actividad.strip():
+        clave = resolver_actividad(actividad)
+        if clave is None:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Actividad no válida: {actividad}",
+            )
+
+        condicion = condicion_actividad(clave)
+        if condicion is not None:
+            q = q.filter(condicion)
+
+    # Estado de actividad y estado del expediente
+    condicion = contiene(Expediente.estado_actividad, estadoActividad)
+    if condicion is not None:
+        q = q.filter(condicion)
+
+    condicion = contiene(Expediente.estado_expediente, estadoExpediente)
+    if condicion is not None:
+        q = q.filter(condicion)
+
+    # Finca
+    condicion = contiene(Expediente.finca, finca)
+    if condicion is not None:
+        q = q.filter(condicion)
+
+    # Observaciones
+    condicion = contiene(Expediente.observaciones, observaciones)
+    if condicion is not None:
+        q = q.filter(condicion)
+
+    # Importe
     if importeMin is not None:
-        q = q.filter(
-            Expediente.importe >= importeMin,
-        )
+        q = q.filter(Expediente.importe >= importeMin)
 
     if importeMax is not None:
-        q = q.filter(
-            Expediente.importe <= importeMax,
-        )
+        q = q.filter(Expediente.importe <= importeMax)
+
+    # Saldos: permiten buscar por valor exacto
+    if saldoReal is not None:
+        q = q.filter(Expediente.saldo_real == saldoReal)
+
+    if saldoDisponible is not None:
+        q = q.filter(Expediente.saldo_disponible == saldoDisponible)
 
     return q
 
@@ -603,7 +663,19 @@ def aplicar_filtros(
 # ============================================================
 
 @router.get("/listado")
-def listado_expedientes(
+def listado_expedientes
+    nombreTitular: Optional[str] = None,
+    nifTitular: Optional[str] = None,
+    nombreSolicitante: Optional[str] = None,
+    nifSolicitante: Optional[str] = None,
+    nombreNotario: Optional[str] = None,
+    nifNotario: Optional[str] = None,
+    finca: Optional[str] = None,
+    saldoReal: Optional[float] = None,
+    saldoDisponible: Optional[float] = None,
+    estadoActividad: Optional[str] = None,
+    estadoExpediente: Optional[str] = None,
+    observaciones: Optional[str] = None,
     pagina: int = Query(1, ge=1),
     porPagina: int = Query(20, ge=1, le=200),
     nif: Optional[str] = None,
@@ -617,16 +689,28 @@ def listado_expedientes(
     ordenMultiple: Optional[str] = Query(None),
     db: Session = Depends(get_db),
 ):
-    q = aplicar_filtros(
+        q = aplicar_filtros(
         db.query(Expediente),
-        nif,
-        actividad,
-        fechaInicio,
-        fechaFin,
-        notario,
-        oficina,
-        importeMin,
-        importeMax,
+        nif=nif,
+        actividad=actividad,
+        fechaInicio=fechaInicio,
+        fechaFin=fechaFin,
+        notario=notario,
+        oficina=oficina,
+        importeMin=importeMin,
+        importeMax=importeMax,
+        nombreTitular=nombreTitular,
+        nifTitular=nifTitular,
+        nombreSolicitante=nombreSolicitante,
+        nifSolicitante=nifSolicitante,
+        nombreNotario=nombreNotario,
+        nifNotario=nifNotario,
+        finca=finca,
+        saldoReal=saldoReal,
+        saldoDisponible=saldoDisponible,
+        estadoActividad=estadoActividad,
+        estadoExpediente=estadoExpediente,
+        observaciones=observaciones,
     )
 
     orden_aplicado = False
