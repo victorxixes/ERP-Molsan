@@ -4164,7 +4164,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                 </div>
                   <div className="border-t border-slate-100 pt-3">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Tipo de documento y cuantía/p>
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Tipo de documento y cuantía</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
                     <Dato campo="NIF notario" valor={expediente.nif_notario} />
