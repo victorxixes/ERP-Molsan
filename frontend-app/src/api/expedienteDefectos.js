@@ -140,4 +140,28 @@ export async function obtenerCalificacionRegistro(
   );
 
   return response.data;
+
+  
+/**
+ * Registra una calificación registral en la carpeta digital.
+ * El PDF se conserva también en el módulo de defectos,
+ * mediante subirCalificacionRegistro().
+ */
+export async function subirCalificacionACarpetaDigital(
+  idExpediente,
+  archivo,
+  categoria = "Defecto registral"
+) {
+  const datos = new FormData();
+  datos.append("archivo", archivo);
+  datos.append("categoria", categoria);
+
+  const response = await axios.post(
+    `/expedientes/${encodeURIComponent(idExpediente)}/carpeta-digital`,
+    datos
+  );
+
+  return response.data;
+}
+
 }
