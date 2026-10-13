@@ -250,6 +250,16 @@ export default function EnviarANotarioModal({
     crearFormularioDesdeExpediente(expediente)
   );
 
+  // Lista de documentos de escritura. El primero conserva la cuantía
+  // procedente de Fincas y Registros; los adicionales tienen cuantía propia.
+  const [documentosEscritura, setDocumentosEscritura] = useState(() => {
+    const inicial = crearFormularioDesdeExpediente(expediente);
+    const cuantiaInicial = cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
+      ? String(cuantiaFincas)
+      : String(expediente?.cuantia ?? expediente?.finca_cuantia ?? "");
+    return [{ id: 1, tipo_documento: inicial.tipo_documento || "", cuantia: cuantiaInicial }];
+  });
+
   const [tiposDocumento, setTiposDocumento] = useState([]);
   const [loadingTipos, setLoadingTipos] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -401,8 +411,8 @@ export default function EnviarANotarioModal({
       return;
     }
 
-    if (!form.tipo_documento) {
-      setError("Selecciona el Tipo documento.");
+    if (!documentosEscritura.length || documentosEscritura.some((documento) => !documento.tipo_documento)) {
+      setError("Selecciona el tipo de documento para cada documento añadido.");
       return;
     }
 
@@ -501,10 +511,15 @@ export default function EnviarANotarioModal({
       notario: nombreNotario,
       apoderado: form.notario.apoderado || "",
       tipo_firma: form.notario.tipo_firma || "",
-      tipo_documento: form.tipo_documento,
-      cuantia: cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
+      tipo_documento: documentosEscritura[0]?.tipo_documento || form.tipo_documento,
+      cuantia: documentosEscritura[0]?.cuantia ?? (cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
         ? cuantiaFincas
-        : (expediente?.cuantia ?? expediente?.finca_cuantia ?? ""),
+        : (expediente?.cuantia ?? expediente?.finca_cuantia ?? "")),
+      // Se envía también la lista completa para que cada documento conserve su cuantía.
+      documentos_escritura: documentosEscritura.map(({ tipo_documento, cuantia }) => ({
+        tipo_documento,
+        cuantia,
+      })),
 
       // NUEVOS CAMPOS
       formato_escritura: form.formato_escritura,
@@ -558,6 +573,7 @@ export default function EnviarANotarioModal({
     loading,
     expediente,
     form,
+    documentosEscritura,
     onGuardar,
     onClose,
   ]);
@@ -834,48 +850,84 @@ export default function EnviarANotarioModal({
                   descripcion="Selecciona el documento, el formato de escritura y la modalidad de tramitación."
                 />
 
-                <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">
-                    Tipo de documento
-                    <span className="text-red-500"> *</span>
-                  </label>
+                <div className="space-y-4">
+                  {documentosEscritura.map((documento, indice) => (
+                    <div
+                      key={documento.id}
+                      className="rounded-xl border border-slate-200 bg-slate-50/70 p-3 sm:p-4"
+                    >
+                      <div className="mb-3 flex items-center justify-between gap-3">
+                        <span className="text-sm font-bold text-slate-700">
+                          Documento {indice + 1}
+                        </span>
+                        {indice > 0 && (
+                          <button
+                            type="button"
+                            disabled={loading}
+                            onClick={() => setDocumentosEscritura((actuales) => actuales.filter((item) => item.id !== documento.id))}
+                            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                          >
+                            Quitar documento
+                          </button>
+                        )}
+                      </div>
 
-                  <select
-                    value={form.tipo_documento}
+                      <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                        Tipo de documento <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        value={documento.tipo_documento}
+                        disabled={loading || loadingTipos}
+                        onChange={(event) => {
+                          const valor = event.target.value;
+                          setDocumentosEscritura((actuales) => actuales.map((item) => item.id === documento.id ? { ...item, tipo_documento: valor } : item));
+                          if (indice === 0) cambiarCampo("tipo_documento", valor);
+                        }}
+                        className={clasesInput()}
+                      >
+                        <option value="">
+                          {loadingTipos ? "Cargando tipos de documento..." : "Seleccionar tipo de documento"}
+                        </option>
+                        {tiposDocumento.map((tipo) => (
+                          <option key={tipo.id} value={tipo.nombre}>{tipo.nombre}</option>
+                        ))}
+                      </select>
+
+                      <div className="mt-3">
+                        <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                          Cuantía
+                        </label>
+                        {indice === 0 ? (
+                          <div className="flex min-h-[42px] items-center rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5 text-sm font-semibold text-slate-700">
+                            {documento.cuantia !== "" ? documento.cuantia : "—"}
+                          </div>
+                        ) : (
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={documento.cuantia}
+                            disabled={loading}
+                            placeholder="Cuantía de este documento"
+                            onChange={(event) => setDocumentosEscritura((actuales) => actuales.map((item) => item.id === documento.id ? { ...item, cuantia: event.target.value } : item))}
+                            className={clasesInput()}
+                          />
+                        )}
+                        {indice === 0 && (
+                          <p className="mt-1 text-xs text-slate-500">Importe procedente de Fincas y Registros.</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
                     disabled={loading || loadingTipos}
-                    onChange={(event) =>
-                      cambiarCampo(
-                        "tipo_documento",
-                        event.target.value
-                      )
-                    }
-                    className={clasesInput()}
+                    onClick={() => setDocumentosEscritura((actuales) => [...actuales, { id: Date.now(), tipo_documento: "", cuantia: "" }])}
+                    className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-primary)]/30 bg-[var(--erp-primary-soft)] px-4 py-2.5 text-sm font-bold text-[var(--erp-primary)] transition hover:opacity-80 disabled:opacity-50"
                   >
-                    <option value="">
-                      {loadingTipos
-                        ? "Cargando tipos de documento..."
-                        : "Seleccionar tipo de documento"}
-                    </option>
-
-                    {tiposDocumento.map((tipo) => (
-                      <option key={tipo.id} value={tipo.nombre}>
-                        {tipo.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* CUANTÍA: se toma de Fincas y Registros y se muestra tras el tipo de documento */}
-                <div className="mt-4">
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">
-                    Cuantía
-                  </label>
-                  <div className="flex min-h-[42px] items-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-700">
-                    {cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
-                      ? String(cuantiaFincas)
-                      : String(expediente?.cuantia ?? expediente?.finca_cuantia ?? "—")}
-                  </div>
-                  <p className="mt-1 text-xs text-slate-500">Importe procedente de Fincas y Registros.</p>
+                    <span className="text-lg leading-none">+</span> Añadir otro documento y cuantía
+                  </button>
                 </div>
 
                 {/* FORMATO DE ESCRITURA */}
@@ -1279,7 +1331,8 @@ export default function EnviarANotarioModal({
               disabled={
                 loading ||
                 !form.notario ||
-                !form.tipo_documento ||
+                !documentosEscritura.length ||
+                documentosEscritura.some((documento) => !documento.tipo_documento) ||
                 !form.formato_escritura ||
                 !form.tipo_tramite ||
                 !form.idioma ||
