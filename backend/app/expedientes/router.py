@@ -1,3 +1,4 @@
+
 from datetime import datetime, date, time
 from typing import Optional, List
 import io
@@ -16,13 +17,78 @@ from sqlalchemy.orm import Session
 
 from backend.app.agenda.models import Cita
 from backend.app.database import get_db
-from backend.app.expedientes.models import Expediente, ExpedienteDocumentoEscritura
+from backend.app.expedientes.models import (
+    Expediente,
+    ExpedienteDocumentoEscritura,
+)
+from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 
 
 router = APIRouter(
     prefix="/expedientes",
     tags=["Expedientes"],
 )
+
+
+# ============================================================
+# DOCUMENTACIÓN PREVIA: REQUISITOS
+# ============================================================
+
+DOCUMENTOS_OBLIGATORIOS_DOCUMENTACION_PREVIA = [
+    "Hoja de Encargo firmada",
+    "Justificante de cancelación",
+    "Nota simple registral",
+]
+
+
+def documentos_pendientes_documentacion_previa(
+    db: Session,
+    id_expediente: str,
+) -> list[str]:
+    """
+    Comprueba las categorías obligatorias existentes en la
+    carpeta digital del expediente.
+
+    Se considera presente una categoría cuando existe al menos
+    un registro documental asociado a ella.
+    """
+    encontrados = (
+        db.query(DocumentoCarpetaDigital.categoria)
+        .filter(
+            DocumentoCarpetaDigital.expediente_id == str(id_expediente),
+            DocumentoCarpetaDigital.categoria.in_(
+                DOCUMENTOS_OBLIGATORIOS_DOCUMENTACION_PREVIA
+            ),
+        )
+        .distinct()
+        .all()
+    )
+
+    categorias_guardadas = {
+        categoria
+        for (categoria,) in encontrados
+    }
+
+    return [
+        categoria
+        for categoria in DOCUMENTOS_OBLIGATORIOS_DOCUMENTACION_PREVIA
+        if categoria not in categorias_guardadas
+    ]
+
+
+def envio_notario_guardado(expediente: Expediente) -> bool:
+    """
+    Comprueba que el expediente contiene los datos básicos
+    necesarios para considerar guardado el envío a notario.
+    """
+    return bool(
+        expediente.fecha_envio_notario
+        and expediente.fecha_solicitud_pnc
+        and expediente.numero_solicitud_pnc
+        and expediente.numero_solicitud_pnc.strip()
+        and expediente.nombre_notario
+        and expediente.nombre_notario.strip()
+    )
 
 
 # ============================================================
@@ -54,6 +120,7 @@ class EnvioANotarioRequest(BaseModel):
     tipo_firma: str
     tipo_documento: str
     documentos_escritura: Optional[List[DocumentoEscrituraRequest]] = None
+
     # Alias compatible con el modal frontend que envía "documentos".
     documentos: Optional[List[DocumentoEscrituraRequest]] = None
     cuantia: Optional[float] = None
@@ -477,7 +544,6 @@ def expediente_a_dict(expediente: Expediente) -> dict:
 
         resultado[campo] = valor
 
-    # Compatibilidad: devolver también las filas de escritura asociadas.
     try:
         resultado["documentos_escritura"] = [
             {
@@ -485,7 +551,9 @@ def expediente_a_dict(expediente: Expediente) -> dict:
                 "tipo_documento": documento.tipo_documento,
                 "cuantia": documento.cuantia,
             }
-            for documento in (getattr(expediente, "documentos_escritura", None) or [])
+            for documento in (
+                getattr(expediente, "documentos_escritura", None) or []
+            )
         ]
     except Exception:
         resultado["documentos_escritura"] = []
@@ -529,15 +597,8 @@ def aplicar_filtros(
     importeMin=None,
     importeMax=None,
 ):
-    fecha_inicio = parsear_fecha(
-        fechaInicio,
-        "fechaInicio",
-    )
-
-    fecha_fin = parsear_fecha(
-        fechaFin,
-        "fechaFin",
-    )
+    fecha_inicio = parsear_fecha(fechaInicio, "fechaInicio")
+    fecha_fin = parsear_fecha(fechaFin, "fechaFin")
 
     if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
         raise HTTPException(
@@ -557,7 +618,6 @@ def aplicar_filtros(
 
     if nif and nif.strip():
         patron = f"%{nif.strip()}%"
-
         q = q.filter(
             or_(
                 Expediente.nif_titular.ilike(patron),
@@ -580,18 +640,13 @@ def aplicar_filtros(
             q = q.filter(condicion)
 
     if fecha_inicio:
-        q = q.filter(
-            Expediente.fecha_alta >= fecha_inicio,
-        )
+        q = q.filter(Expediente.fecha_alta >= fecha_inicio)
 
     if fecha_fin:
-        q = q.filter(
-            Expediente.fecha_alta <= fecha_fin,
-        )
+        q = q.filter(Expediente.fecha_alta <= fecha_fin)
 
     if notario and notario.strip():
         patron = f"%{notario.strip()}%"
-
         q = q.filter(
             or_(
                 Expediente.nombre_notario.ilike(patron),
@@ -602,20 +657,14 @@ def aplicar_filtros(
 
     if oficina and oficina.strip():
         q = q.filter(
-            Expediente.oficina.ilike(
-                f"%{oficina.strip()}%",
-            )
+            Expediente.oficina.ilike(f"%{oficina.strip()}%")
         )
 
     if importeMin is not None:
-        q = q.filter(
-            Expediente.importe >= importeMin,
-        )
+        q = q.filter(Expediente.importe >= importeMin)
 
     if importeMax is not None:
-        q = q.filter(
-            Expediente.importe <= importeMax,
-        )
+        q = q.filter(Expediente.importe <= importeMax)
 
     return q
 
@@ -656,7 +705,6 @@ def listado_expedientes(
     if ordenMultiple:
         try:
             ordenes = json.loads(ordenMultiple)
-
         except (json.JSONDecodeError, TypeError, ValueError):
             raise HTTPException(
                 status_code=400,
@@ -673,9 +721,7 @@ def listado_expedientes(
             if not isinstance(orden, dict):
                 continue
 
-            campo = COLUMNAS_ORDENABLES.get(
-                orden.get("columna")
-            )
+            campo = COLUMNAS_ORDENABLES.get(orden.get("columna"))
 
             if campo is None:
                 continue
@@ -685,9 +731,7 @@ def listado_expedientes(
             ).lower()
 
             q = q.order_by(
-                campo.desc()
-                if direccion == "desc"
-                else campo.asc()
+                campo.desc() if direccion == "desc" else campo.asc()
             )
 
             orden_aplicado = True
@@ -700,16 +744,8 @@ def listado_expedientes(
         )
 
     total = q.count()
-
-    total_paginas = max(
-        1,
-        (total + porPagina - 1) // porPagina,
-    )
-
-    pagina_real = min(
-        pagina,
-        total_paginas,
-    )
+    total_paginas = max(1, (total + porPagina - 1) // porPagina)
+    pagina_real = min(pagina, total_paginas)
 
     items_db = (
         q.offset((pagina_real - 1) * porPagina)
@@ -744,9 +780,7 @@ def resumen_expedientes(
     actividades = []
 
     for actividad in ACTIVIDADES_EXPEDIENTES:
-        condicion = condicion_actividad(
-            actividad["key"]
-        )
+        condicion = condicion_actividad(actividad["key"])
 
         if condicion is not None:
             total = (
@@ -758,13 +792,11 @@ def resumen_expedientes(
         else:
             total = 0
 
-        actividades.append(
-            {
-                "key": actividad["key"],
-                "actividad": actividad["label"],
-                "total": int(total),
-            }
-        )
+        actividades.append({
+            "key": actividad["key"],
+            "actividad": actividad["label"],
+            "total": int(total),
+        })
 
     return {
         "total": int(total_expedientes),
@@ -813,29 +845,16 @@ def exportar_excel_expedientes(
     ws = wb.active
     ws.title = "Expedientes"
 
-    for col, (cabecera, _) in enumerate(
-        COLUMNAS_EXCEL,
-        start=1,
-    ):
+    for col, (cabecera, _) in enumerate(COLUMNAS_EXCEL, start=1):
         ws.cell(
             row=1,
             column=col,
             value=cabecera,
         ).font = Font(bold=True)
 
-    for fila, expediente in enumerate(
-        expedientes,
-        start=2,
-    ):
-        for col, (_, atributo) in enumerate(
-            COLUMNAS_EXCEL,
-            start=1,
-        ):
-            valor = getattr(
-                expediente,
-                atributo,
-                None,
-            )
+    for fila, expediente in enumerate(expedientes, start=2):
+        for col, (_, atributo) in enumerate(COLUMNAS_EXCEL, start=1):
+            valor = getattr(expediente, atributo, None)
 
             cell = ws.cell(
                 row=fila,
@@ -845,47 +864,26 @@ def exportar_excel_expedientes(
 
             if isinstance(valor, (date, datetime)):
                 cell.number_format = "dd/mm/yyyy"
-
             elif isinstance(valor, time):
                 cell.number_format = "hh:mm"
 
     ws.freeze_panes = "A2"
 
-    ultima_columna = get_column_letter(
-        len(COLUMNAS_EXCEL)
-    )
+    ultima_columna = get_column_letter(len(COLUMNAS_EXCEL))
+    ws.auto_filter.ref = f"A1:{ultima_columna}{len(expedientes) + 1}"
 
-    ws.auto_filter.ref = (
-        f"A1:{ultima_columna}{len(expedientes) + 1}"
-    )
-
-    for col, (cabecera, _) in enumerate(
-        COLUMNAS_EXCEL,
-        start=1,
-    ):
+    for col, (cabecera, _) in enumerate(COLUMNAS_EXCEL, start=1):
         max_length = len(str(cabecera))
 
-        for fila in range(
-            2,
-            min(len(expedientes) + 2, 500),
-        ):
-            valor = ws.cell(
-                row=fila,
-                column=col,
-            ).value
+        for fila in range(2, min(len(expedientes) + 2, 500)):
+            valor = ws.cell(row=fila, column=col).value
 
             if valor is not None:
-                max_length = max(
-                    max_length,
-                    len(str(valor)),
-                )
+                max_length = max(max_length, len(str(valor)))
 
         ws.column_dimensions[
             get_column_letter(col)
-        ].width = min(
-            max(max_length + 2, 12),
-            45,
-        )
+        ].width = min(max(max_length + 2, 12), 45)
 
     buffer = io.BytesIO()
     wb.save(buffer)
@@ -917,20 +915,14 @@ def crear_o_actualizar_cita_agenda(
     if not datos.fecha_prevista_firma:
         return None
 
-    hora_inicio = (
-        datos.hora_prevista_firma
-        or time(9, 0)
-    )
+    hora_inicio = datos.hora_prevista_firma or time(9, 0)
 
     minutos_inicio = (
         hora_inicio.hour * 60
         + hora_inicio.minute
     )
 
-    minutos_fin = min(
-        minutos_inicio + 60,
-        23 * 60 + 59,
-    )
+    minutos_fin = min(minutos_inicio + 60, 23 * 60 + 59)
 
     hora_fin = time(
         minutos_fin // 60,
@@ -939,16 +931,13 @@ def crear_o_actualizar_cita_agenda(
 
     cita = (
         db.query(Cita)
-        .filter(
-            Cita.expediente_id == expediente.id
-        )
+        .filter(Cita.expediente_id == expediente.id)
         .order_by(Cita.id.desc())
         .first()
     )
 
     observaciones = (
-        f"Firma prevista — Expediente "
-        f"{expediente.id_expediente}"
+        f"Firma prevista — Expediente {expediente.id_expediente}"
     )
 
     if cita:
@@ -960,7 +949,6 @@ def crear_o_actualizar_cita_agenda(
         cita.tipo_firma = datos.tipo_firma
         cita.apoderado = datos.apoderado
         cita.observaciones = observaciones
-
         return cita
 
     cita = Cita(
@@ -976,7 +964,6 @@ def crear_o_actualizar_cita_agenda(
     )
 
     db.add(cita)
-
     return cita
 
 
@@ -992,9 +979,7 @@ def enviar_a_notario(
 ):
     expediente = (
         db.query(Expediente)
-        .filter(
-            Expediente.id_expediente == id_expediente
-        )
+        .filter(Expediente.id_expediente == id_expediente)
         .first()
     )
 
@@ -1016,23 +1001,38 @@ def enviar_a_notario(
             detail="El Tipo de firma es obligatorio.",
         )
 
-    documentos_recibidos = datos.documentos_escritura or datos.documentos or []
+    documentos_recibidos = (
+        datos.documentos_escritura
+        or datos.documentos
+        or []
+    )
+
     documentos_limpios = []
+
     for documento in documentos_recibidos:
         tipo = (documento.tipo_documento or "").strip()
+
         if not tipo:
             continue
+
         cuantia = documento.cuantia
+
         if cuantia is not None and cuantia < 0:
             raise HTTPException(
                 status_code=400,
                 detail="La cuantía de un documento no puede ser negativa.",
             )
-        documentos_limpios.append({"tipo_documento": tipo, "cuantia": cuantia})
 
-    # Clientes antiguos que todavía envían solo tipo_documento siguen funcionando.
+        documentos_limpios.append({
+            "tipo_documento": tipo,
+            "cuantia": cuantia,
+        })
+
     if not documentos_limpios and datos.tipo_documento.strip():
-        documentos_limpios = [{"tipo_documento": datos.tipo_documento.strip(), "cuantia": None}]
+        documentos_limpios = [{
+            "tipo_documento": datos.tipo_documento.strip(),
+            "cuantia": None,
+        }]
 
     if not documentos_limpios:
         raise HTTPException(
@@ -1096,17 +1096,15 @@ def enviar_a_notario(
             )
 
     try:
-        # ESTADO DE LA ESCRITURA
+        # Guardar los datos de firma, pero no cambiar la actividad.
+        # La transición se realiza por separado tras validar
+        # los documentos obligatorios.
         if datos.escritura_firmada:
             expediente.fecha_firma = datos.fecha_firma
             expediente.protocolo = datos.protocolo.strip()
-            expediente.actividad_actual = (
-                "Sede notarial con protocolo"
-            )
         else:
             expediente.fecha_firma = None
             expediente.protocolo = None
-            expediente.actividad_actual = "Sede notarial"
 
         # DATOS DEL ENVÍO
         expediente.fecha_envio_notario = datos.fecha_envio
@@ -1143,8 +1141,9 @@ def enviar_a_notario(
 
         # DATOS DEL DOCUMENTO
         expediente.tipo_firma = datos.tipo_firma.strip()
-        # Campo antiguo conservado para compatibilidad con importaciones y pantallas previas.
-        expediente.tipo_documento = documentos_limpios[0]["tipo_documento"]
+        expediente.tipo_documento = (
+            documentos_limpios[0]["tipo_documento"]
+        )
 
         expediente.idioma_documento = (
             datos.idioma_documento.strip()
@@ -1203,23 +1202,21 @@ def enviar_a_notario(
             if valor is not None:
                 valor = valor.strip() or None
 
-            setattr(
-                expediente,
-                campo,
-                valor,
-            )
+            setattr(expediente, campo, valor)
 
-        # DOCUMENTOS DE ESCRITURA: reemplazar el conjunto en una única transacción.
-        # La tabla se crea mediante el endpoint de migración incluido abajo.
+        # DOCUMENTOS DE ESCRITURA
         db.query(ExpedienteDocumentoEscritura).filter(
             ExpedienteDocumentoEscritura.expediente_id == expediente.id
         ).delete(synchronize_session=False)
+
         for documento in documentos_limpios:
-            db.add(ExpedienteDocumentoEscritura(
-                expediente_id=expediente.id,
-                tipo_documento=documento["tipo_documento"],
-                cuantia=documento["cuantia"],
-            ))
+            db.add(
+                ExpedienteDocumentoEscritura(
+                    expediente_id=expediente.id,
+                    tipo_documento=documento["tipo_documento"],
+                    cuantia=documento["cuantia"],
+                )
+            )
 
         # CITA VINCULADA A AGENDA
         cita = crear_o_actualizar_cita_agenda(
@@ -1245,6 +1242,7 @@ def enviar_a_notario(
         print(
             "ERROR ENVIANDO EXPEDIENTE A NOTARIO:",
             repr(exc),
+            flush=True,
         )
 
         raise HTTPException(
@@ -1256,16 +1254,155 @@ def enviar_a_notario(
         )
 
     respuesta = expediente_a_dict(expediente)
+    respuesta["agenda_cita_creada"] = cita is not None
+    respuesta["agenda_cita_id"] = cita.id if cita is not None else None
 
-    respuesta["agenda_cita_creada"] = (
-        cita is not None
+    return respuesta
+
+
+# ============================================================
+# VALIDACIÓN DE DOCUMENTACIÓN PREVIA
+# ============================================================
+
+@router.get("/{id_expediente}/documentacion-previa/validacion")
+def validar_documentacion_previa(
+    id_expediente: str,
+    db: Session = Depends(get_db),
+):
+    expediente = (
+        db.query(Expediente)
+        .filter(Expediente.id_expediente == id_expediente)
+        .first()
     )
 
-    respuesta["agenda_cita_id"] = (
-        cita.id
-        if cita is not None
-        else None
+    if expediente is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Expediente no encontrado.",
+        )
+
+    pendientes = documentos_pendientes_documentacion_previa(
+        db,
+        id_expediente,
     )
+
+    envio_guardado = envio_notario_guardado(expediente)
+
+    return {
+        "id_expediente": expediente.id_expediente,
+        "actividad_actual": expediente.actividad_actual,
+        "fecha_envio_notario": (
+            expediente.fecha_envio_notario.isoformat()
+            if expediente.fecha_envio_notario
+            else None
+        ),
+        "envio_notario_guardado": envio_guardado,
+        "documentos_obligatorios": (
+            DOCUMENTOS_OBLIGATORIOS_DOCUMENTACION_PREVIA
+        ),
+        "documentos_pendientes": pendientes,
+        "documentacion_completa": len(pendientes) == 0,
+        "puede_avanzar": (
+            envio_guardado and len(pendientes) == 0
+        ),
+    }
+
+
+# ============================================================
+# AVANZAR DE DOCUMENTACIÓN PREVIA A SEDE NOTARIAL
+# ============================================================
+
+@router.post("/{id_expediente}/avanzar-actividad")
+def avanzar_actividad_expediente(
+    id_expediente: str,
+    db: Session = Depends(get_db),
+):
+    expediente = (
+        db.query(Expediente)
+        .filter(Expediente.id_expediente == id_expediente)
+        .first()
+    )
+
+    if expediente is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Expediente no encontrado.",
+        )
+
+    actividad_actual = resolver_actividad(
+        expediente.actividad_actual
+    )
+
+    if actividad_actual != "documentacion-previa":
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Solo se puede avanzar desde "
+                "Documentación previa."
+            ),
+        )
+
+    if not envio_notario_guardado(expediente):
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Primero debes guardar correctamente "
+                "el envío a notario."
+            ),
+        )
+
+    pendientes = documentos_pendientes_documentacion_previa(
+        db,
+        id_expediente,
+    )
+
+    if pendientes:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "mensaje": (
+                    "No se puede avanzar. Faltan documentos "
+                    "obligatorios en la carpeta digital."
+                ),
+                "documentos_pendientes": pendientes,
+            },
+        )
+
+    try:
+        escritura_con_protocolo = bool(
+            expediente.escritura_firmada
+            and expediente.fecha_firma
+            and expediente.protocolo
+            and expediente.protocolo.strip()
+        )
+
+        if escritura_con_protocolo:
+            expediente.actividad_actual = (
+                "Sede notarial con protocolo"
+            )
+        else:
+            expediente.actividad_actual = "Sede notarial"
+
+        db.add(expediente)
+        db.commit()
+        db.refresh(expediente)
+
+    except Exception as exc:
+        db.rollback()
+
+        print(
+            "ERROR AVANZANDO ACTIVIDAD:",
+            repr(exc),
+            flush=True,
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudo actualizar la actividad del expediente.",
+        )
+
+    respuesta = expediente_a_dict(expediente)
+    respuesta["actividad_actualizada"] = True
 
     return respuesta
 
@@ -1281,9 +1418,7 @@ def obtener_expediente(
 ):
     expediente = (
         db.query(Expediente)
-        .filter(
-            Expediente.id_expediente == id_expediente
-        )
+        .filter(Expediente.id_expediente == id_expediente)
         .first()
     )
 
@@ -1328,12 +1463,13 @@ def actualizar_columnas_envio_notario(
     )
 
     try:
-        # PostgreSQL: no dejar la petición esperando indefinidamente
-        # si otra operación mantiene bloqueada la tabla expedientes.
         db.execute(text("SET LOCAL lock_timeout = '5s'"))
         db.execute(text("SET LOCAL statement_timeout = '20s'"))
 
-        for indice, (columna, tipo_sql) in enumerate(columnas, start=1):
+        for indice, (columna, tipo_sql) in enumerate(
+            columnas,
+            start=1,
+        ):
             print(
                 f"MIGRACIÓN ENVÍO A NOTARIO "
                 f"[{indice}/{len(columnas)}]: comprobando {columna}",
@@ -1355,13 +1491,16 @@ def actualizar_columnas_envio_notario(
         db.execute(text("""
             CREATE TABLE IF NOT EXISTS expediente_documentos_escritura (
                 id SERIAL PRIMARY KEY,
-                expediente_id INTEGER NOT NULL REFERENCES expedientes(id) ON DELETE CASCADE,
+                expediente_id INTEGER NOT NULL
+                    REFERENCES expedientes(id) ON DELETE CASCADE,
                 tipo_documento VARCHAR(300) NOT NULL,
                 cuantia DOUBLE PRECISION NULL
             )
         """))
+
         db.execute(text("""
-            CREATE INDEX IF NOT EXISTS ix_expediente_documentos_escritura_expediente_id
+            CREATE INDEX IF NOT EXISTS
+            ix_expediente_documentos_escritura_expediente_id
             ON expediente_documentos_escritura (expediente_id)
         """))
 
@@ -1389,6 +1528,7 @@ def actualizar_columnas_envio_notario(
         )
 
         mensaje_error = str(exc).lower()
+
         if (
             "lock timeout" in mensaje_error
             or "statement timeout" in mensaje_error
