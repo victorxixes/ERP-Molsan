@@ -1922,3 +1922,107 @@ def actualizar_columnas_envio_notario(
         "columnas_pendientes": [],
     }
 
+
+# ============================================================
+# DIAGNÓSTICO DETALLADO DE BLOQUEOS DE EXPEDIENTES
+# ============================================================
+
+@router.get("/migraciones/diagnostico-bloqueos")
+def diagnosticar_bloqueos_expedientes(
+    db: Session = Depends(get_db),
+):
+    """
+    Consulta sesiones PostgreSQL relacionadas con expedientes,
+    transacciones abiertas y sesiones bloqueantes.
+
+    No cancela consultas ni modifica datos.
+    """
+    try:
+        filas = db.execute(text("""
+            SELECT
+                a.pid,
+                a.usename,
+                a.application_name,
+                a.client_addr::text AS cliente,
+                a.state,
+                a.wait_event_type,
+                a.wait_event,
+                a.xact_start,
+                CASE
+                    WHEN a.xact_start IS NOT NULL
+                    THEN EXTRACT(
+                        EPOCH FROM (
+                            clock_timestamp() - a.xact_start
+                        )
+                    )::integer
+                    ELSE NULL
+                END AS segundos_transaccion,
+                a.query_start,
+                CASE
+                    WHEN a.query_start IS NOT NULL
+                    THEN EXTRACT(
+                        EPOCH FROM (
+                            clock_timestamp() - a.query_start
+                        )
+                    )::integer
+                    ELSE NULL
+                END AS segundos_consulta,
+                pg_blocking_pids(a.pid) AS bloqueadores,
+                LEFT(a.query, 500) AS consulta
+            FROM pg_stat_activity a
+            WHERE a.datname = current_database()
+              AND a.pid <> pg_backend_pid()
+              AND (
+                    a.wait_event_type = 'Lock'
+                    OR a.state = 'idle in transaction'
+                    OR a.query ILIKE '%expedientes%'
+                    OR a.pid IN (
+                        SELECT UNNEST(pg_blocking_pids(b.pid))
+                        FROM pg_stat_activity b
+                        WHERE b.datname = current_database()
+                          AND (
+                              b.wait_event_type = 'Lock'
+                              OR b.query ILIKE '%expedientes%'
+                          )
+                    )
+              )
+            ORDER BY
+                CASE
+                    WHEN a.wait_event_type = 'Lock' THEN 0
+                    WHEN a.state = 'idle in transaction' THEN 1
+                    ELSE 2
+                END,
+                a.xact_start NULLS LAST
+            LIMIT 50
+        """)).mappings().all()
+
+        sesiones = [dict(fila) for fila in filas]
+
+        return {
+            "ok": True,
+            "total": len(sesiones),
+            "sesiones": sesiones,
+            "mensaje": (
+                "Se han encontrado sesiones relevantes."
+                if sesiones
+                else (
+                    "No se encontraron sesiones relevantes "
+                    "en el momento de la consulta."
+                )
+            ),
+        }
+
+    except Exception as exc:
+        db.rollback()
+        print(
+            "ERROR DIAGNOSTICANDO BLOQUEOS:",
+            repr(exc),
+            flush=True,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "No se pudo consultar el diagnóstico de PostgreSQL: "
+                f"{str(exc)[:300]}"
+            ),
+        )
