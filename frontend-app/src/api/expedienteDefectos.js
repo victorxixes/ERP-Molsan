@@ -1,4 +1,3 @@
-```javascript
 import axios from "./axios";
 
 // ============================================================
@@ -163,4 +162,4 @@ export async function subirCalificacionACarpetaDigital(
 
   return response.data;
 }
-```
+
