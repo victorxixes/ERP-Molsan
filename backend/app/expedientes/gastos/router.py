@@ -11,7 +11,7 @@ from backend.app.expedientes.gastos.models import ExpedienteGasto
 
 
 router = APIRouter(
-    prefix="/api/expedientes",
+    prefix="/expedientes",
     tags=["Gastos de expedientes"],
 )
 
@@ -49,7 +49,7 @@ class GastoRespuesta(GastoBase):
 
 
 # ============================================================
-# LISTAR GASTOS DE UN EXPEDIENTE
+# LISTAR GASTOS
 # GET /api/expedientes/{expediente_id}/gastos
 # ============================================================
 
@@ -63,8 +63,13 @@ def listar_gastos(
 ):
     return (
         db.query(ExpedienteGasto)
-        .filter(ExpedienteGasto.expediente_id == expediente_id)
-        .order_by(ExpedienteGasto.fecha.desc(), ExpedienteGasto.id.desc())
+        .filter(
+            ExpedienteGasto.expediente_id == expediente_id
+        )
+        .order_by(
+            ExpedienteGasto.fecha.desc(),
+            ExpedienteGasto.id.desc(),
+        )
         .all()
     )
 
@@ -101,7 +106,7 @@ def crear_gasto(
     except Exception:
         db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail="No se ha podido guardar el gasto.",
         )
 
@@ -134,13 +139,13 @@ def actualizar_gasto(
 
     if gasto is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No se ha encontrado el gasto de este expediente.",
+            status_code=404,
+            detail="No se ha encontrado el gasto del expediente.",
         )
 
     cambios = datos.dict(exclude_unset=True)
 
-    if "tipo" in cambios and cambios["tipo"] is not None:
+    if cambios.get("tipo") is not None:
         cambios["tipo"] = cambios["tipo"].strip()
 
     for campo, valor in cambios.items():
@@ -152,7 +157,7 @@ def actualizar_gasto(
     except Exception:
         db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail="No se ha podido actualizar el gasto.",
         )
 
@@ -184,8 +189,8 @@ def eliminar_gasto(
 
     if gasto is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No se ha encontrado el gasto de este expediente.",
+            status_code=404,
+            detail="No se ha encontrado el gasto del expediente.",
         )
 
     try:
@@ -194,7 +199,7 @@ def eliminar_gasto(
     except Exception:
         db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail="No se ha podido eliminar el gasto.",
         )
 
