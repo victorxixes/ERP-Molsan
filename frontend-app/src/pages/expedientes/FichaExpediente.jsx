@@ -349,12 +349,13 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
 ];
 
 const DEFECTO_VACIO = {
-  tipo_carga_hipotecaria_id: "",
+ tipo_carga_hipotecaria_id: "",
   motivo_defecto: "",
   subtipo_defecto_id: "",
   subtipo_defecto: "",
   fecha_notificacion_registro: "",
   fecha_vencimiento_presentacion: "",
+  fecha_cierre_defecto: "",
   calificacion_registro: "",
   observaciones_registro: "",
   fecha_entrada_subsanacion: "",
@@ -1958,6 +1959,7 @@ function editarDefectoRegistrado(defecto) {
     calificacion_registro: defecto.calificacion_registro || "",
     observaciones_registro: defecto.observaciones_registro || "",
     fecha_entrada_subsanacion: defecto.fecha_entrada_subsanacion || "",
+    fecha_cierre_defecto: defecto.fecha_cierre_defecto || "",
   });
   setErrorDefecto("");
 }
@@ -1997,6 +1999,7 @@ async function guardarDefectoRegistral() {
       calificacion_registro: defectoForm.calificacion_registro || null,
       observaciones_registro: defectoForm.observaciones_registro || null,
       fecha_entrada_subsanacion: defectoForm.fecha_entrada_subsanacion || null,
+      fecha_cierre_defecto: defectoForm.fecha_cierre_defecto || null,
     };
 
     const respuesta = defectoEditandoId
