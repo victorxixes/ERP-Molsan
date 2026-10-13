@@ -3881,7 +3881,11 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
                     <Dato campo="NIF notario" valor={expediente.nif_notario} />
                     <Dato campo="Apoderado" valor={expediente.apoderado} />
-                  </div>
+                    <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
+                    <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
+                    <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
+                    <Dato campo="Escritura firmada" valor={expediente.escritura_firmada === true ? "Sí" : expediente.escritura_firmada === false ? "No" : null} />
+                   </div>
                 </div>
                 <div className="border-t border-slate-100 pt-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de facturación</p>
@@ -3897,28 +3901,79 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Email" valor={expediente.facturacion_email ?? expediente.email_facturacion ?? expediente.correo_facturacion} />
                   </div>
                 </div>
-                  <div className="border-t border-slate-100 pt-3">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Escritura y firma</p>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    <Dato
-                      campo="Documentos y cuantías"
-                      valor={Array.isArray(expediente.documentos_escritura) && expediente.documentos_escritura.length
-                        ? expediente.documentos_escritura.map((documento) =>
-                            `${documento.tipo_documento || "Documento"}${documento.cuantia != null ? ` — ${documento.cuantia} €` : ""}`
-                          ).join(" | ")
-                        : expediente.tipo_documento}
-                    />
-                    <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
-                    <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite ?? expediente.tipo_tramite_notarial ?? expediente.tramite} />
-                    <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
-                    <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
-                    <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
-                    <Dato campo="Escritura firmada" valor={expediente.escritura_firmada === true ? "Sí" : expediente.escritura_firmada === false ? "No" : null} />
-                    <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
-                    <Dato campo="Protocolo" valor={expediente.protocolo} />
-                    <Dato campo="Población notario" valor={expediente.poblacion} />
-                    <Dato campo="Provincia notario" valor={expediente.provincia} />
-                  </div>
+                <div className="border-t border-slate-100 pt-3">
+  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">
+    Escritura y firma
+  </p>
+
+  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+    <Dato
+      campo="Documento notarial"
+      valor={
+        Array.isArray(expediente.documentos_escritura) &&
+        expediente.documentos_escritura.length
+          ? expediente.documentos_escritura
+              .map((documento) =>
+                `${documento.tipo_documento || "Documento"}${
+                  documento.cuantia != null && documento.cuantia !== ""
+                    ? ` — ${documento.cuantia} €`
+                    : ""
+                }`
+              )
+              .join(" | ")
+          : expediente.tipo_documento
+      }
+    />
+
+    <Dato
+      campo="Cuantía del documento"
+      valor={
+        Array.isArray(expediente.documentos_escritura) &&
+        expediente.documentos_escritura.length
+          ? expediente.documentos_escritura
+              .map((documento) => documento.cuantia)
+              .filter((cuantia) => cuantia != null && cuantia !== "")
+              .map((cuantia) =>
+                `${Number(cuantia).toLocaleString("es-ES", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })} €`
+              )
+              .join(" | ") || expediente.cuantia ?? expediente.cuantia_documento ?? ""
+          : expediente.cuantia ?? expediente.cuantia_documento ?? ""
+      }
+    />
+
+    <Dato
+      campo="Formato de escritura"
+      valor={
+        expediente.formato_escritura ??
+        expediente.formato_escritura_notarial
+      }
+    />
+
+    <Dato
+      campo="Tipo de trámite"
+      valor={
+        expediente.tipo_tramite ??
+        expediente.tipo_tramite_notarial ??
+        expediente.tramite
+      }
+    />
+
+    <Dato campo="Protocolo" valor={expediente.protocolo} />
+
+    <Dato
+      campo="Fecha de firma"
+      valor={expediente.fecha_firma}
+      tipo="fecha"
+    />
+
+    <Dato campo="Población notario" valor={expediente.poblacion} />
+
+    <Dato campo="Provincia notario" valor={expediente.provincia} />
+  </div>
+</div>
                 </div>
                 </>}
                 <div className="flex justify-center border-t border-slate-100 pt-4">
