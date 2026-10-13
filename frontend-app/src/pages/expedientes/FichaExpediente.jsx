@@ -19,6 +19,7 @@ import {
   subirCalificacionRegistro,
   obtenerCalificacionRegistro,
   listarTiposCargaHipotecaria,
+  subirCalificacionACarpetaDigital,
 } from "../../api/expedienteDefectos";
 
 // ============================================================
@@ -346,8 +347,6 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
     multilinea: true,
   },
 ];
-
-
 
 const DEFECTO_VACIO = {
   tipo_carga_hipotecaria_id: "",
@@ -2008,11 +2007,37 @@ async function guardarDefectoRegistral() {
     if (idDefecto) setDefectoEditandoId(idDefecto);
 
     if (archivoCalificacion) {
-      if (!idDefecto) {
-        throw new Error("El defecto se guardó, pero no se recibió su identificador para adjuntar el PDF.");
-      }
-      await subirCalificacionRegistro(expediente.id_expediente, idDefecto, archivoCalificacion);
-    }
+  if (!idDefecto) {
+    throw new Error(
+      "El defecto se guardó, pero no se recibió su identificador para adjuntar el PDF."
+    );
+  }
+
+  // 1. Guardar el PDF en el registro del defecto.
+  await subirCalificacionRegistro(
+    expediente.id_expediente,
+    idDefecto,
+    archivoCalificacion
+  );
+
+  // 2. Copiar el PDF a la carpeta digital.
+  try {
+    await subirCalificacionACarpetaDigital(
+      expediente.id_expediente,
+      archivoCalificacion,
+      "Defecto registral"
+    );
+  } catch (errorCarpeta) {
+    console.error(
+      "El PDF se guardó en el defecto, pero falló la copia a la carpeta digital:",
+      errorCarpeta
+    );
+
+    setErrorDefecto(
+      "El defecto y su PDF se han guardado, pero no se pudo copiar el documento a la carpeta digital. Puedes adjuntarlo manualmente en Actividad 05."
+    );
+  }
+}
 
     setDefectoLocal({
       tipo_error: guardado.motivo_defecto || "",
