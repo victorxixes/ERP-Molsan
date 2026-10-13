@@ -1,5 +1,5 @@
 from datetime import date, datetime, time
-from typing import Optional, List
+from typing import Optional, List, Any, Dict
 import io
 import json
 import unicodedata
@@ -12,6 +12,7 @@ from fastapi import APIRouter, Query, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy import or_, func, and_, text
+from sqlalchemy.sql.sqltypes import Date, DateTime, Time, Integer, Float, Numeric, Boolean
 from sqlalchemy.orm import Session
 
 from backend.app.agenda.models import Cita
@@ -166,6 +167,8 @@ ACTIVIDADES_EXPEDIENTES = [
             "Sede notarial",
             "Sede Notarial",
             "Sede NOTARIAL",
+            "Sede notarial sin protocolo",
+            "Sede Notarial sin protocolo",
         ],
     },
     {
@@ -270,6 +273,8 @@ def condicion_actividad(clave_actividad: str):
             or_(
                 actividad.ilike("Sede notarial"),
                 actividad.ilike("Sede Notarial"),
+                actividad.ilike("Sede notarial sin protocolo"),
+                actividad.ilike("Sede Notarial sin protocolo"),
             ),
             Expediente.fecha_firma.is_(None),
         )
@@ -324,6 +329,7 @@ CAMPOS_EXPEDIENTE = [
     "id",
     "cliente_id",
     "id_expediente",
+    "notario_id",
     "estado_expediente",
     "estado_expediente_ancert",
 
@@ -417,6 +423,25 @@ CAMPOS_EXPEDIENTE = [
 
     "registral_estado",
     "registral_fecha",
+
+    # Campos del flujo de actividades (si existen en el modelo).
+    "ultima_accion",
+    "fecha_ultima_accion",
+    "sol",
+    "cs",
+    "ns",
+    "asiento_presentacion_libro_diario",
+    "numero_entrada",
+    "fecha_recogida_notario_presentacion_telematica",
+    "copia_simple_escritura",
+    "fecha_presentacion_tributaria",
+    "fecha_liquidacion_tributaria",
+    "oficina_liquidadora",
+    "base_imponible",
+    "tributacion",
+    "impuesto_ajd_itp",
+    "fecha_vencimiento_asiento",
+    "escritura_simple_cancelacion",
 ]
 
 
@@ -1259,11 +1284,14 @@ def enviar_a_notario(
             flush=True,
         )
 
+        # Devolvemos una causa legible para que el frontend no oculte
+        # el motivo real (por ejemplo, una clave foránea de notario).
         raise HTTPException(
             status_code=500,
             detail=(
-                "No se pudo guardar el envío a notario "
-                "ni crear la cita de Agenda."
+                "No se pudo guardar el envío a notario ni crear la cita "
+                "de Agenda. Causa técnica: "
+                f"{str(exc)[:500]}"
             ),
         )
 
@@ -1323,7 +1351,152 @@ def validar_documentacion_previa(
 
 
 # ============================================================
-# AVANZAR DE DOCUMENTACIÓN PREVIA A SEDE NOTARIAL
+# DATOS DE COMUNICACIÓN A ABSIS — DOCUMENTACIÓN PREVIA
+# ============================================================
+
+CAMPOS_ABSIS_DOCUMENTACION_PREVIA = {
+    "certificado_saldo_cero_erroneo",
+    "solicitud_cancelacion_notarial",
+    "certificado_cancelacion_administrativo",
+    "nota_simple_registral",
+    "mover_siguiente_actividad",
+}
+
+
+def asegurar_tabla_estado_absis(db: Session) -> None:
+    """Crea la tabla auxiliar si todavía no existe en PostgreSQL."""
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS expediente_documentacion_previa_absis (
+            expediente_id VARCHAR(100) PRIMARY KEY,
+            certificado_saldo_cero_erroneo BOOLEAN NOT NULL DEFAULT FALSE,
+            solicitud_cancelacion_notarial BOOLEAN NOT NULL DEFAULT FALSE,
+            certificado_cancelacion_administrativo BOOLEAN NOT NULL DEFAULT FALSE,
+            nota_simple_registral BOOLEAN NOT NULL DEFAULT FALSE,
+            mover_siguiente_actividad BOOLEAN NOT NULL DEFAULT FALSE,
+            enviado_a_absis BOOLEAN NOT NULL DEFAULT FALSE,
+            fecha_actualizacion TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    # Compatibilidad si la tabla ya existía antes de incorporar el selector Sí/No.
+    db.execute(text("ALTER TABLE expediente_documentacion_previa_absis ADD COLUMN IF NOT EXISTS mover_siguiente_actividad BOOLEAN NOT NULL DEFAULT FALSE"))
+    db.flush()
+
+
+def leer_estado_absis(db: Session, id_expediente: str) -> dict:
+    asegurar_tabla_estado_absis(db)
+    fila = db.execute(text("""
+        SELECT certificado_saldo_cero_erroneo,
+               solicitud_cancelacion_notarial,
+               certificado_cancelacion_administrativo,
+               nota_simple_registral,
+               mover_siguiente_actividad,
+               enviado_a_absis,
+               fecha_actualizacion
+        FROM expediente_documentacion_previa_absis
+        WHERE expediente_id = :expediente_id
+    """), {"expediente_id": str(id_expediente)}).mappings().first()
+    if not fila:
+        return {
+            "certificado_saldo_cero_erroneo": False,
+            "solicitud_cancelacion_notarial": False,
+            "certificado_cancelacion_administrativo": False,
+            "nota_simple_registral": False,
+            "mover_siguiente_actividad": False,
+            "enviado_a_absis": False,
+            "fecha_actualizacion": None,
+        }
+    return dict(fila)
+
+
+@router.get("/{id_expediente}/documentacion-previa/absis")
+def obtener_estado_absis_documentacion_previa(
+    id_expediente: str,
+    db: Session = Depends(get_db),
+):
+    expediente = db.query(Expediente).filter(
+        Expediente.id_expediente == str(id_expediente)
+    ).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    try:
+        estado = leer_estado_absis(db, id_expediente)
+        db.commit()
+        return estado
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudo cargar el estado de ABSIS: {str(exc)[:300]}")
+
+
+@router.put("/{id_expediente}/documentacion-previa/absis")
+def guardar_estado_absis_documentacion_previa(
+    id_expediente: str,
+    datos: Dict[str, Any],
+    db: Session = Depends(get_db),
+):
+    expediente = db.query(Expediente).filter(
+        Expediente.id_expediente == str(id_expediente)
+    ).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    valores = {campo: bool(datos.get(campo, False)) for campo in CAMPOS_ABSIS_DOCUMENTACION_PREVIA}
+    try:
+        asegurar_tabla_estado_absis(db)
+        db.execute(text("""
+            INSERT INTO expediente_documentacion_previa_absis (
+                expediente_id, certificado_saldo_cero_erroneo,
+                solicitud_cancelacion_notarial, certificado_cancelacion_administrativo,
+                nota_simple_registral, mover_siguiente_actividad, enviado_a_absis, fecha_actualizacion
+            ) VALUES (
+                :expediente_id, :certificado_saldo_cero_erroneo,
+                :solicitud_cancelacion_notarial, :certificado_cancelacion_administrativo,
+                :nota_simple_registral, :mover_siguiente_actividad, FALSE, CURRENT_TIMESTAMP
+            )
+            ON CONFLICT (expediente_id) DO UPDATE SET
+                certificado_saldo_cero_erroneo = EXCLUDED.certificado_saldo_cero_erroneo,
+                solicitud_cancelacion_notarial = EXCLUDED.solicitud_cancelacion_notarial,
+                certificado_cancelacion_administrativo = EXCLUDED.certificado_cancelacion_administrativo,
+                nota_simple_registral = EXCLUDED.nota_simple_registral,
+                mover_siguiente_actividad = EXCLUDED.mover_siguiente_actividad,
+                enviado_a_absis = FALSE,
+                fecha_actualizacion = CURRENT_TIMESTAMP
+        """), {"expediente_id": str(id_expediente), **valores})
+        db.commit()
+        return leer_estado_absis(db, id_expediente)
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudieron guardar los datos de ABSIS: {str(exc)[:300]}")
+
+
+@router.post("/{id_expediente}/documentacion-previa/enviar-a-absis")
+def registrar_envio_absis_documentacion_previa(
+    id_expediente: str,
+    db: Session = Depends(get_db),
+):
+    expediente = db.query(Expediente).filter(
+        Expediente.id_expediente == str(id_expediente)
+    ).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    try:
+        asegurar_tabla_estado_absis(db)
+        # Este endpoint registra el estado de preparación local. La transmisión real
+        # requiere una API/credencial ABSIS, que no está definida en este proyecto.
+        db.execute(text("""
+            INSERT INTO expediente_documentacion_previa_absis (expediente_id, enviado_a_absis)
+            VALUES (:expediente_id, TRUE)
+            ON CONFLICT (expediente_id) DO UPDATE SET
+                enviado_a_absis = TRUE,
+                fecha_actualizacion = CURRENT_TIMESTAMP
+        """), {"expediente_id": str(id_expediente)})
+        db.commit()
+        return {**leer_estado_absis(db, id_expediente), "mensaje": "Información registrada localmente para ABSIS; no se ha transmitido a un sistema ABSIS externo."}
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudo registrar el envío a ABSIS: {str(exc)[:300]}")
+
+
+# ============================================================
+# AVANZAR DE DOCUMENTACIÓN PREVIA A SEDE NOTARIAL SIN PROTOCOLO
 # ============================================================
 
 @router.post("/{id_expediente}/avanzar-actividad")
@@ -1365,6 +1538,14 @@ def avanzar_actividad_expediente(
             ),
         )
 
+    estado_absis = leer_estado_absis(db, id_expediente)
+    db.commit()
+    if not estado_absis.get("mover_siguiente_actividad", False):
+        raise HTTPException(
+            status_code=409,
+            detail="Confirma Sí en «Mover el expediente a la siguiente actividad» antes de avanzar.",
+        )
+
     pendientes = documentos_pendientes_documentacion_previa(
         db,
         id_expediente,
@@ -1383,19 +1564,9 @@ def avanzar_actividad_expediente(
         )
 
     try:
-        escritura_con_protocolo = bool(
-            expediente.escritura_firmada
-            and expediente.fecha_firma
-            and expediente.protocolo
-            and expediente.protocolo.strip()
-        )
-
-        if escritura_con_protocolo:
-            expediente.actividad_actual = (
-                "Sede notarial con protocolo"
-            )
-        else:
-            expediente.actividad_actual = "Sede notarial"
+        # La salida de Documentación previa siempre es esta actividad exacta.
+        # La actividad con protocolo se alcanzará en su fase correspondiente.
+        expediente.actividad_actual = "Sede notarial sin protocolo"
 
         db.add(expediente)
         db.commit()
@@ -1418,6 +1589,124 @@ def avanzar_actividad_expediente(
     respuesta = expediente_a_dict(expediente)
     respuesta["actividad_actualizada"] = True
 
+    return respuesta
+
+
+
+
+# ============================================================
+# GUARDAR CAMPOS DE LAS ACTIVIDADES
+# ============================================================
+
+class ActualizarCamposActividadRequest(BaseModel):
+    campos: Dict[str, Any]
+
+
+CAMPOS_EDITABLES_ACTIVIDAD = {
+    campo
+    for actividad in ACTIVIDADES_EXPEDIENTES
+    for campo in {
+        "fecha_inicio_actividad", "fecha_fin_actividad",
+        "ultima_accion", "fecha_ultima_accion", "sol", "cs", "ns",
+        "fecha_envio_notario", "fecha_envio", "apoderado",
+        "tipo_documento", "poblacion", "provincia", "tipo_firma",
+        "fecha_prevista_firma", "fecha_firma", "protocolo",
+        "asiento_presentacion_libro_diario", "fecha_presentacion",
+        "numero_entrada", "fecha_recogida_notario_presentacion_telematica",
+        "copia_simple_escritura", "fecha_presentacion_tributaria",
+        "fecha_liquidacion_tributaria", "oficina_liquidadora",
+        "base_imponible", "tributacion", "impuesto_ajd_itp",
+        "fecha_vencimiento_asiento", "fecha_inscripcion",
+        "escritura_simple_cancelacion", "registral_estado", "registral_fecha",
+        "tiene_defectos_abiertos", "tipo_error", "falta_defecto",
+        "descripcion_error", "fcierre_defecto", "facturacion_estado",
+        "facturacion_fecha", "fecha_entregado_cliente",
+    }
+}
+
+
+def convertir_valor_actividad(columna, valor):
+    if valor == "":
+        return None
+    tipo = columna.type
+    if isinstance(tipo, DateTime):
+        return datetime.fromisoformat(valor) if isinstance(valor, str) else valor
+    if isinstance(tipo, Date):
+        return date.fromisoformat(valor[:10]) if isinstance(valor, str) else valor
+    if isinstance(tipo, Time):
+        return time.fromisoformat(valor) if isinstance(valor, str) else valor
+    if isinstance(tipo, Boolean):
+        if isinstance(valor, bool):
+            return valor
+        return str(valor).strip().lower() in ("1", "true", "sí", "si", "yes", "on")
+    if isinstance(tipo, (Integer,)):
+        return int(valor) if valor is not None else None
+    if isinstance(tipo, (Float, Numeric)):
+        return float(valor) if valor is not None else None
+    return valor
+
+
+@router.put("/{id_expediente}/actividad")
+def actualizar_campos_actividad(
+    id_expediente: str,
+    datos: ActualizarCamposActividadRequest,
+    db: Session = Depends(get_db),
+):
+    expediente = (
+        db.query(Expediente)
+        .filter(Expediente.id_expediente == id_expediente)
+        .first()
+    )
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    if not datos.campos:
+        raise HTTPException(status_code=400, detail="No se han enviado campos para guardar.")
+
+    columnas = {col.name: col for col in Expediente.__table__.columns}
+    guardados = []
+    no_disponibles = []
+
+    for nombre, valor in datos.campos.items():
+        if nombre not in CAMPOS_EDITABLES_ACTIVIDAD:
+            continue
+        columna = columnas.get(nombre)
+        if columna is None:
+            no_disponibles.append(nombre)
+            continue
+        try:
+            setattr(expediente, nombre, convertir_valor_actividad(columna, valor))
+            guardados.append(nombre)
+        except (TypeError, ValueError) as exc:
+            raise HTTPException(
+                status_code=422,
+                detail=f"Valor no válido para {nombre}: {exc}",
+            )
+
+    if not guardados:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "mensaje": "Ninguno de los campos enviados existe en el modelo de expediente.",
+                "campos_no_disponibles": no_disponibles,
+            },
+        )
+
+    try:
+        db.add(expediente)
+        db.commit()
+        db.refresh(expediente)
+    except Exception as exc:
+        db.rollback()
+        print("ERROR GUARDANDO CAMPOS DE ACTIVIDAD:", repr(exc), flush=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"No se pudieron guardar los campos de la actividad: {str(exc)[:400]}",
+        )
+
+    respuesta = expediente_a_dict(expediente)
+    respuesta["campos_guardados"] = guardados
+    respuesta["campos_no_disponibles"] = no_disponibles
     return respuesta
 
 
