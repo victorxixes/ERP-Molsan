@@ -3907,43 +3907,55 @@ const cuantiaFincasParaEnvio =
   </p>
 
   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-    <Dato
-      campo="Documento notarial"
-      valor={
-        Array.isArray(expediente.documentos_escritura) &&
-        expediente.documentos_escritura.length
-          ? expediente.documentos_escritura
-              .map((documento) =>
-                `${documento.tipo_documento || "Documento"}${
-                  documento.cuantia != null && documento.cuantia !== ""
-                    ? ` — ${documento.cuantia} €`
-                    : ""
-                }`
-              )
-              .join(" | ")
-          : expediente.tipo_documento
-      }
-    />
+<Dato
+  campo="Documento notarial"
+  valor={
+    Array.isArray(expediente.documentos_escritura) &&
+    expediente.documentos_escritura.length > 0
+      ? expediente.documentos_escritura
+          .map((documento) => documento.tipo_documento || "Documento")
+          .join(" | ")
+      : expediente.tipo_documento
+  }
+/>
 
-    <Dato
-      campo="Cuantía del documento"
-      valor={
-        Array.isArray(expediente.documentos_escritura) &&
-        expediente.documentos_escritura.length
-          ? expediente.documentos_escritura
-              .map((documento) => documento.cuantia)
-              .filter((cuantia) => cuantia != null && cuantia !== "")
-              .map((cuantia) =>
-                `${Number(cuantia).toLocaleString("es-ES", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })} €`
-              )
-              .join(" | ") || (expediente.cuantia ?? expediente.cuantia_documento ?? "")
-          : expediente.cuantia ?? expediente.cuantia_documento ?? ""
-      }
-    />
+<Dato
+  campo="Cuantía del documento"
+  valor={(() => {
+    const documentos = expediente.documentos_escritura;
 
+    if (Array.isArray(documentos) && documentos.length > 0) {
+      const cuantias = documentos
+        .map((documento) => documento.cuantia)
+        .filter((cuantia) => cuantia !== null && cuantia !== undefined && cuantia !== "");
+
+      if (cuantias.length > 0) {
+        return cuantias
+          .map((cuantia) =>
+            `${Number(cuantia).toLocaleString("es-ES", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`
+          )
+          .join(" | ");
+      }
+    }
+
+    const cuantiaGuardada =
+      expediente.cuantia ??
+      expediente.cuantia_documento ??
+      expediente.finca_cuantia;
+
+    return cuantiaGuardada !== null &&
+      cuantiaGuardada !== undefined &&
+      cuantiaGuardada !== ""
+      ? `${Number(cuantiaGuardada).toLocaleString("es-ES", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })} €`
+      : null;
+  })()}
+/>
     <Dato
       campo="Formato de escritura"
       valor={
