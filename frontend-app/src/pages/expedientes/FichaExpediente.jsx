@@ -4029,15 +4029,7 @@ const cuantiaFincasParaEnvio =
                   <div className="border-t border-slate-100 pt-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Escritura y firma</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    <Dato
-                      campo="Documentos y cuantías"
-                      valor={Array.isArray(expediente.documentos_escritura) && expediente.documentos_escritura.length
-                        ? expediente.documentos_escritura.map((documento) =>
-                            `${documento.tipo_documento || "Documento"}${documento.cuantia != null ? ` — ${documento.cuantia} €` : ""}`
-                          ).join(" | ")
-                        : expediente.tipo_documento}
-                    />
-                     <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
+                    <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
                     <Dato campo="NIF notario" valor={expediente.nif_notario} />
                     <Dato campo="Población notario" valor={expediente.poblacion} />
                     <Dato campo="Provincia notario" valor={expediente.provincia} />
@@ -4046,6 +4038,14 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Escritura firmada" valor={expediente.escritura_firmada === true ? "Sí" : expediente.escritura_firmada === false ? "No" : null} />
                     <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
                     <Dato campo="Protocolo" valor={expediente.protocolo} />
+                    <Dato
+                      campo="Documentos y cuantías"
+                      valor={Array.isArray(expediente.documentos_escritura) && expediente.documentos_escritura.length
+                        ? expediente.documentos_escritura.map((documento) =>
+                            `${documento.tipo_documento || "Documento"}${documento.cuantia != null ? ` — ${documento.cuantia} €` : ""}`
+                          ).join(" | ")
+                        : expediente.tipo_documento}
+                    />
                     </div>
                 </div>
                 </>}
