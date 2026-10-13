@@ -1,3 +1,4 @@
+
 from datetime import date, datetime
 from io import BytesIO
 from typing import Optional
@@ -70,15 +71,19 @@ class DefectoCrear(BaseModel):
     tipo_carga_hipotecaria_id: Optional[int] = None
     motivo_defecto: Optional[str] = None
     subtipo_defecto_id: Optional[int] = None
-    # Se mantiene el texto libre para compatibilidad con la ficha actual.
     subtipo_defecto: Optional[str] = None
+
     fecha_notificacion_registro: Optional[date] = None
     fecha_vencimiento_presentacion: Optional[date] = None
     fecha_entrada_subsanacion: Optional[date] = None
-    # Campo histórico de texto, distinto del PDF adjunto.
-    calificacion_registro: Optional[str] = None
-    observaciones_registro: Optional[str] = Field(None, max_length=200)
     fecha_cierre_defecto: Optional[date] = None
+
+    # Texto histórico de la calificación; no es el PDF.
+    calificacion_registro: Optional[str] = None
+    observaciones_registro: Optional[str] = Field(
+        None,
+        max_length=200,
+    )
 
 
 class DefectoActualizar(BaseModel):
@@ -87,12 +92,17 @@ class DefectoActualizar(BaseModel):
     motivo_defecto: Optional[str] = None
     subtipo_defecto_id: Optional[int] = None
     subtipo_defecto: Optional[str] = None
+
     fecha_notificacion_registro: Optional[date] = None
     fecha_vencimiento_presentacion: Optional[date] = None
     fecha_entrada_subsanacion: Optional[date] = None
-    calificacion_registro: Optional[str] = None
-    observaciones_registro: Optional[str] = Field(None, max_length=200)
     fecha_cierre_defecto: Optional[date] = None
+
+    calificacion_registro: Optional[str] = None
+    observaciones_registro: Optional[str] = Field(
+        None,
+        max_length=200,
+    )
 
 
 # ============================================================
@@ -104,7 +114,7 @@ def obtener_expediente(
     id_expediente: str,
 ):
     """
-    Busca el expediente por su identificador externo.
+    Busca un expediente mediante su identificador externo de ABSIS.
     """
     expediente = (
         db.query(Expediente)
@@ -123,38 +133,15 @@ def obtener_expediente(
     return expediente
 
 
-def campo_relacion_expediente():
-    """
-    Detecta la columna que relaciona el defecto con el expediente.
-    """
-    columnas = {
-        columna.name
-        for columna in ExpedienteDefecto.__table__.columns
-    }
-
-    if "expediente_id" in columnas:
-        return ExpedienteDefecto.expediente_id
-
-    if "id_expediente" in columnas:
-        return ExpedienteDefecto.id_expediente
-
-    raise HTTPException(
-        status_code=500,
-        detail=(
-            "El modelo ExpedienteDefecto no tiene una columna "
-            "de relación reconocida con Expediente"
-        ),
-    )
-
-
 def consulta_defectos_expediente(
     db: Session,
     expediente,
 ):
     """
-    Construye la consulta usando la relación que existe en el modelo.
-    expediente_id utiliza la clave interna; id_expediente utiliza
-    el identificador externo del expediente.
+    Consulta los defectos vinculados al expediente.
+
+    expediente_id utiliza la clave primaria interna.
+    id_expediente utiliza el identificador externo de ABSIS.
     """
     columnas = {
         columna.name
@@ -176,7 +163,10 @@ def consulta_defectos_expediente(
 
     raise HTTPException(
         status_code=500,
-        detail="No se puede determinar la relación del defecto",
+        detail=(
+            "No se puede determinar la relación entre "
+            "los defectos y el expediente"
+        ),
     )
 
 
@@ -214,7 +204,7 @@ def actualizar_nombre_subtipo(
     subtipo,
 ):
     """
-    Mantiene el nombre del subtipo si el modelo tiene ese campo.
+    Mantiene sincronizados el identificador y el nombre del subtipo.
     """
     if hasattr(defecto, "subtipo_defecto"):
         defecto.subtipo_defecto = (
@@ -269,7 +259,7 @@ def obtener_defecto_de_expediente(
     defecto_id: int,
 ):
     """
-    Comprueba que el defecto exista y pertenezca al expediente indicado.
+    Comprueba que el defecto pertenezca al expediente solicitado.
     """
     expediente = obtener_expediente(db, id_expediente)
     defecto = obtener_defecto(db, defecto_id)
@@ -280,14 +270,14 @@ def obtener_defecto_de_expediente(
     }
 
     if "expediente_id" in columnas:
-        pertenece = (
-            defecto.expediente_id == expediente.id
-        )
+        pertenece = defecto.expediente_id == expediente.id
+
     elif "id_expediente" in columnas:
         pertenece = (
             str(defecto.id_expediente)
             == str(expediente.id_expediente)
         )
+
     else:
         raise HTTPException(
             status_code=500,
@@ -308,28 +298,92 @@ def sincronizar_campos_compatibilidad(
     expediente,
 ):
     """
-    Actualiza campos históricos del expediente, si existen en el modelo.
+    Sincroniza el estado de los defectos con los campos históricos
+    del expediente.
+
+    REGLA MOLSAN:
+    - Un defecto nuevo queda abierto.
+    - Fecha de subsanación y fecha de cierre son iguales.
+    - Un defecto con fecha de cierre queda cerrado.
+    - El expediente sigue teniendo defectos abiertos si queda
+      al menos un defecto sin cerrar.
+    - fcierre_defecto del expediente refleja la fecha de cierre
+      más reciente de sus defectos.
     """
-    defectos = consulta_defectos_expediente(db, expediente).all()
-    abiertos = [d for d in defectos if not getattr(d, "fecha_entrada_subsanacion", None)]
+    defectos = (
+        consulta_defectos_expediente(db, expediente)
+        .order_by(ExpedienteDefecto.id.asc())
+        .all()
+    )
+
+    # Normalizar los registros existentes para que la fecha de cierre
+    # coincida siempre con la fecha de presentación de la subsanación.
+    for defecto in defectos:
+        if hasattr(defecto, "fecha_entrada_subsanacion") and hasattr(
+            defecto, "fecha_cierre_defecto"
+        ):
+            defecto.fecha_cierre_defecto = (
+                defecto.fecha_entrada_subsanacion
+            )
+
+    abiertos = [
+        defecto
+        for defecto in defectos
+        if not getattr(defecto, "fecha_cierre_defecto", None)
+    ]
+
     ultimo_abierto = abiertos[-1] if abiertos else None
 
     if hasattr(expediente, "tiene_defectos_abiertos"):
-        # En el modelo de Expediente este campo histórico es texto.
-        expediente.tiene_defectos_abiertos = "SI" if abiertos else "NO"
+        expediente.tiene_defectos_abiertos = (
+            "SI" if abiertos else "NO"
+        )
+
     if hasattr(expediente, "tipo_error"):
-        expediente.tipo_error = getattr(ultimo_abierto, "motivo_defecto", None) if ultimo_abierto else None
+        expediente.tipo_error = (
+            getattr(ultimo_abierto, "motivo_defecto", None)
+            if ultimo_abierto is not None
+            else None
+        )
+
     if hasattr(expediente, "falta_defecto"):
-        expediente.falta_defecto = getattr(ultimo_abierto, "subtipo_defecto", None) if ultimo_abierto else None
+        expediente.falta_defecto = (
+            getattr(ultimo_abierto, "subtipo_defecto", None)
+            if ultimo_abierto is not None
+            else None
+        )
+
     if hasattr(expediente, "descripcion_error"):
-        expediente.descripcion_error = getattr(ultimo_abierto, "calificacion_registro", None) if ultimo_abierto else None
+        expediente.descripcion_error = (
+            getattr(ultimo_abierto, "calificacion_registro", None)
+            if ultimo_abierto is not None
+            else None
+        )
+
+    fechas_cierre = [
+        defecto.fecha_cierre_defecto
+        for defecto in defectos
+        if getattr(defecto, "fecha_cierre_defecto", None) is not None
+    ]
+
+    if hasattr(expediente, "fcierre_defecto"):
+        expediente.fcierre_defecto = (
+            max(fechas_cierre) if fechas_cierre else None
+        )
+
     db.add(expediente)
 
 
-def obtener_tipo_carga_activo(db: Session, tipo_id: Optional[int]):
-    """Valida el tipo de carga hipotecaria seleccionado en el catálogo común."""
+def obtener_tipo_carga_activo(
+    db: Session,
+    tipo_id: Optional[int],
+):
+    """
+    Valida el tipo de carga hipotecaria seleccionado.
+    """
     if tipo_id is None:
         return None
+
     tipo = (
         db.query(TipoCargaHipotecaria)
         .filter(
@@ -338,17 +392,29 @@ def obtener_tipo_carga_activo(db: Session, tipo_id: Optional[int]):
         )
         .first()
     )
+
     if tipo is None:
         raise HTTPException(
             status_code=400,
-            detail="El tipo de carga hipotecaria no existe o está inactivo.",
+            detail=(
+                "El tipo de carga hipotecaria no existe "
+                "o está inactivo."
+            ),
         )
+
     return tipo
 
 
-def datos_defecto(defecto, db: Optional[Session] = None):
+def datos_defecto(
+    defecto,
+    db: Optional[Session] = None,
+    expediente=None,
+):
     """
-    Convierte el defecto en datos JSON sin incluir el PDF binario.
+    Convierte el defecto en datos JSON, sin incluir el PDF binario.
+
+    Si se proporciona expediente, añade los campos históricos
+    sincronizados para que la ficha pueda actualizar su estado.
     """
     resultado = {}
 
@@ -363,17 +429,13 @@ def datos_defecto(defecto, db: Optional[Session] = None):
         "fecha_notificacion_registro",
         "fecha_vencimiento_presentacion",
         "fecha_entrada_subsanacion",
+        "fecha_cierre_defecto",
         "observaciones_registro",
         "calificacion_registro",
         "calificacion_nombre",
         "calificacion_content_type",
         "calificacion_tamano",
         "calificacion_subida_en",
-        "tiene_defectos_abiertos",
-        "tipo_error",
-        "descripcion_error",
-        "falta_defecto",
-        "fecha_cierre_defecto",
     ]
 
     for campo in campos:
@@ -386,13 +448,43 @@ def datos_defecto(defecto, db: Optional[Session] = None):
             resultado[campo] = valor
 
     tipo_id = resultado.get("tipo_carga_hipotecaria_id")
+
     if db is not None and tipo_id is not None:
-        tipo = db.query(TipoCargaHipotecaria).filter(
-            TipoCargaHipotecaria.id == tipo_id
-        ).first()
-        resultado["tipo_carga_hipotecaria_nombre"] = tipo.nombre if tipo else None
+        tipo = (
+            db.query(TipoCargaHipotecaria)
+            .filter(TipoCargaHipotecaria.id == tipo_id)
+            .first()
+        )
+        resultado["tipo_carga_hipotecaria_nombre"] = (
+            tipo.nombre if tipo else None
+        )
     else:
         resultado["tipo_carga_hipotecaria_nombre"] = None
+
+    # Estos campos pertenecen al expediente, no al defecto individual.
+    if expediente is not None:
+        resultado["tiene_defectos_abiertos"] = getattr(
+            expediente, "tiene_defectos_abiertos", None
+        )
+        resultado["tipo_error"] = getattr(
+            expediente, "tipo_error", None
+        )
+        resultado["falta_defecto"] = getattr(
+            expediente, "falta_defecto", None
+        )
+        resultado["descripcion_error"] = getattr(
+            expediente, "descripcion_error", None
+        )
+
+        fecha_cierre_expediente = getattr(
+            expediente, "fcierre_defecto", None
+        )
+
+        resultado["fcierre_defecto"] = (
+            fecha_cierre_expediente.isoformat()
+            if fecha_cierre_expediente
+            else None
+        )
 
     return resultado
 
@@ -410,9 +502,15 @@ def listar_subtipos_defecto(
     db: Session = Depends(get_db),
 ):
     consulta = db.query(DefectoSubtipo)
+
     if not incluir_inactivos:
-        consulta = consulta.filter(DefectoSubtipo.activo.is_(True))
-    return consulta.order_by(DefectoSubtipo.nombre.asc()).all()
+        consulta = consulta.filter(
+            DefectoSubtipo.activo.is_(True)
+        )
+
+    return consulta.order_by(
+        DefectoSubtipo.nombre.asc()
+    ).all()
 
 
 @router.post(
@@ -579,21 +677,19 @@ def listar_defectos_expediente(
     id_expediente: str,
     db: Session = Depends(get_db),
 ):
-    expediente = obtener_expediente(
-        db,
-        id_expediente,
-    )
+    expediente = obtener_expediente(db, id_expediente)
 
-    defectos = consulta_defectos_expediente(
-        db,
-        expediente,
-    ).all()
+    defectos = (
+        consulta_defectos_expediente(db, expediente)
+        .order_by(ExpedienteDefecto.id.asc())
+        .all()
+    )
 
     return {
         "id_expediente": str(expediente.id_expediente),
         "total": len(defectos),
         "defectos": [
-            datos_defecto(defecto, db)
+            datos_defecto(defecto, db, expediente)
             for defecto in defectos
         ],
     }
@@ -612,63 +708,80 @@ def crear_defecto(
     datos: DefectoCrear,
     db: Session = Depends(get_db),
 ):
-    expediente = obtener_expediente(
-        db,
-        id_expediente,
-    )
-
-    subtipo = obtener_subtipo_activo(
-        db,
-        datos.subtipo_defecto_id,
-    )
-    obtener_tipo_carga_activo(db, datos.tipo_carga_hipotecaria_id)
-
-    valores = datos.dict()
-    valores["subtipo_defecto"] = (
-        subtipo.nombre if subtipo is not None else (datos.subtipo_defecto.strip() if datos.subtipo_defecto and datos.subtipo_defecto.strip() else None)
-    )
-
-    columnas_modelo = {
-        columna.name
-        for columna in ExpedienteDefecto.__table__.columns
-    }
-
-    if "expediente_id" in columnas_modelo:
-        valores["expediente_id"] = expediente.id
-    elif "id_expediente" in columnas_modelo:
-        valores["id_expediente"] = str(
-            expediente.id_expediente
-        )
-    else:
-        raise HTTPException(
-            status_code=500,
-            detail="No se ha encontrado la relación del defecto con el expediente",
-        )
-
-    valores_validos = {
-        clave: valor
-        for clave, valor in valores.items()
-        if clave in columnas_modelo
-    }
+    expediente = obtener_expediente(db, id_expediente)
 
     try:
+        subtipo = obtener_subtipo_activo(
+            db,
+            datos.subtipo_defecto_id,
+        )
+
+        obtener_tipo_carga_activo(
+            db,
+            datos.tipo_carga_hipotecaria_id,
+        )
+
+        valores = datos.dict()
+
+        if subtipo is not None:
+            valores["subtipo_defecto"] = subtipo.nombre
+        else:
+            valores["subtipo_defecto"] = (
+                datos.subtipo_defecto.strip()
+                if datos.subtipo_defecto
+                and datos.subtipo_defecto.strip()
+                else None
+            )
+
+        # Regla MOLSAN: la fecha de cierre coincide con la fecha
+        # de subsanación. Sin subsanación, el defecto queda abierto.
+        valores["fecha_cierre_defecto"] = (
+            valores.get("fecha_entrada_subsanacion")
+        )
+
+        columnas_modelo = {
+            columna.name
+            for columna in ExpedienteDefecto.__table__.columns
+        }
+
+        if "expediente_id" in columnas_modelo:
+            valores["expediente_id"] = expediente.id
+
+        elif "id_expediente" in columnas_modelo:
+            valores["id_expediente"] = str(
+                expediente.id_expediente
+            )
+
+        else:
+            raise HTTPException(
+                status_code=500,
+                detail=(
+                    "No se ha encontrado la relación del defecto "
+                    "con el expediente"
+                ),
+            )
+
+        valores_validos = {
+            clave: valor
+            for clave, valor in valores.items()
+            if clave in columnas_modelo
+        }
+
         defecto = ExpedienteDefecto(**valores_validos)
 
         db.add(defecto)
         db.flush()
 
-        sincronizar_campos_compatibilidad(
-            db,
-            expediente,
-        )
+        sincronizar_campos_compatibilidad(db, expediente)
 
         db.commit()
         db.refresh(defecto)
+        db.refresh(expediente)
 
         return {
             "ok": True,
             "mensaje": "Defecto registrado correctamente",
-            "defecto": datos_defecto(defecto, db),
+            "defecto": datos_defecto(defecto, db, expediente),
         }
 
     except HTTPException:
@@ -681,13 +794,15 @@ def crear_defecto(
 
         raise HTTPException(
             status_code=500,
-            detail="No se pudo registrar el defecto. Revisa los logs del backend.",
+            detail=(
+                "No se pudo registrar el defecto. "
+                "Revisa los logs del backend."
+            ),
         )
 
 
 # ============================================================
 # DEFECTOS — ACTUALIZAR
-# URL: PUT /api/expedientes/{id_expediente}/defectos/{defecto_id}
 # ============================================================
 
 @router.put("/{id_expediente}/defectos/{defecto_id}")
@@ -707,15 +822,28 @@ def actualizar_defecto(
 
     try:
         if "tipo_carga_hipotecaria_id" in valores:
-            obtener_tipo_carga_activo(db, valores["tipo_carga_hipotecaria_id"])
+            obtener_tipo_carga_activo(
+                db,
+                valores["tipo_carga_hipotecaria_id"],
+            )
 
         if "subtipo_defecto_id" in valores:
-            subtipo = obtener_subtipo_activo(db, valores["subtipo_defecto_id"])
-            actualizar_nombre_subtipo(defecto, subtipo)
-            # El ID del catálogo prevalece sobre el texto enviado por formularios antiguos.
-            valores["subtipo_defecto"] = subtipo.nombre if subtipo is not None else None
-        elif "subtipo_defecto" in valores and valores["subtipo_defecto"] is not None:
-            valores["subtipo_defecto"] = valores["subtipo_defecto"].strip() or None
+            subtipo = obtener_subtipo_activo(
+                db,
+                valores["subtipo_defecto_id"],
+            )
+
+            valores["subtipo_defecto"] = (
+                subtipo.nombre if subtipo is not None else None
+            )
+
+        elif (
+            "subtipo_defecto" in valores
+            and valores["subtipo_defecto"] is not None
+        ):
+            valores["subtipo_defecto"] = (
+                valores["subtipo_defecto"].strip() or None
+            )
 
         columnas_modelo = {
             columna.name
@@ -726,20 +854,27 @@ def actualizar_defecto(
             if campo in columnas_modelo:
                 setattr(defecto, campo, valor)
 
+        # No permitir fechas de cierre independientes de la fecha
+        # de presentación de la subsanación.
+        if hasattr(defecto, "fecha_cierre_defecto"):
+            defecto.fecha_cierre_defecto = getattr(
+                defecto,
+                "fecha_entrada_subsanacion",
+                None,
+            )
+
         db.flush()
 
-        sincronizar_campos_compatibilidad(
-            db,
-            expediente,
-        )
+        sincronizar_campos_compatibilidad(db, expediente)
 
         db.commit()
         db.refresh(defecto)
+        db.refresh(expediente)
 
         return {
             "ok": True,
             "mensaje": "Defecto actualizado correctamente",
-            "defecto": datos_defecto(defecto, db),
+            "defecto": datos_defecto(defecto, db, expediente),
         }
 
     except HTTPException:
@@ -758,37 +893,56 @@ def actualizar_defecto(
 
 # ============================================================
 # DEFECTOS — REGISTRAR SUBSANACIÓN
-# URL: PATCH /api/expedientes/{id_expediente}/defectos/{defecto_id}/subsanacion
 # ============================================================
 
-@router.patch("/{id_expediente}/defectos/{defecto_id}/subsanacion")
+@router.patch(
+    "/{id_expediente}/defectos/{defecto_id}/subsanacion"
+)
 def registrar_subsanacion_defecto(
     id_expediente: str,
     defecto_id: int,
     fecha_entrada: date,
     db: Session = Depends(get_db),
 ):
-    expediente, defecto = obtener_defecto_de_expediente(db, id_expediente, defecto_id)
+    expediente, defecto = obtener_defecto_de_expediente(
+        db,
+        id_expediente,
+        defecto_id,
+    )
+
     try:
+        # Registrar la presentación y cerrar el defecto en la misma fecha.
         defecto.fecha_entrada_subsanacion = fecha_entrada
+        defecto.fecha_cierre_defecto = fecha_entrada
+
         db.flush()
+
         sincronizar_campos_compatibilidad(db, expediente)
+
         db.commit()
         db.refresh(defecto)
+        db.refresh(expediente)
+
         return {
             "ok": True,
-            "mensaje": "Subsanación registrada correctamente",
-            "defecto": datos_defecto(defecto, db),
+            "mensaje": (
+                "Subsanación registrada y defecto cerrado correctamente"
+            ),
+            "defecto": datos_defecto(defecto, db, expediente),
         }
+
     except Exception as exc:
         db.rollback()
         print("ERROR REGISTRANDO SUBSANACIÓN:", repr(exc))
-        raise HTTPException(status_code=500, detail="No se pudo registrar la subsanación del defecto")
+
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudo registrar la subsanación del defecto",
+        )
 
 
 # ============================================================
 # DEFECTOS — SUBIR PDF DE CALIFICACIÓN
-# URL: POST /api/expedientes/{id_expediente}/defectos/{defecto_id}/calificacion
 # ============================================================
 
 @router.post(
@@ -800,7 +954,7 @@ async def subir_calificacion_defecto(
     fichero: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    _, defecto = obtener_defecto_de_expediente(
+    expediente, defecto = obtener_defecto_de_expediente(
         db,
         id_expediente,
         defecto_id,
@@ -863,11 +1017,12 @@ async def subir_calificacion_defecto(
 
         db.commit()
         db.refresh(defecto)
+        db.refresh(expediente)
 
         return {
             "ok": True,
             "mensaje": "PDF de calificación guardado correctamente",
-            "defecto": datos_defecto(defecto, db),
+            "defecto": datos_defecto(defecto, db, expediente),
         }
 
     except Exception as exc:
@@ -882,7 +1037,6 @@ async def subir_calificacion_defecto(
 
 # ============================================================
 # DEFECTOS — DESCARGAR PDF DE CALIFICACIÓN
-# URL: GET /api/expedientes/{id_expediente}/defectos/{defecto_id}/calificacion
 # ============================================================
 
 @router.get(
@@ -908,7 +1062,10 @@ def descargar_calificacion_defecto(
     if not contenido:
         raise HTTPException(
             status_code=404,
-            detail="Este defecto no tiene ningún PDF de calificación adjunto",
+            detail=(
+                "Este defecto no tiene ningún PDF "
+                "de calificación adjunto"
+            ),
         )
 
     nombre = (
