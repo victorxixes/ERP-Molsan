@@ -15,10 +15,44 @@ from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 
 router = APIRouter(prefix="/expedientes", tags=["Carpeta digital"])
 CATEGORIAS = {
-    "Documentos Absis", "Hoja de Encargo firmada", "Justificante de cancelación",
-    "Nota simple registral", "Mails de la Oficina", "Escrituras/borradores",
-    "Presentación Registro", "AJD/ITP", "Otra documentación", "Factura notarial",
-    "Factura Registral", "Hoja de Inscripción", "Escritura digital final",
+    # Documentación previa
+    "Documentos Absis",
+    "Hoja de Encargo firmada",
+    "Justificante de cancelación",
+    "Nota simple registral",
+    "Escrituras/borradores",
+
+    # Sede notarial
+    "Presentación Registro",
+    "Copia simple",
+
+    # Liquidación impuestos
+    "AJD/ITP",
+    "Otros impuestos",
+
+    # Gestión económica
+    "Factura notarial",
+    "Factura Registral",
+    "Honorarios gestoría",
+    "Otros pagos",
+
+    # Defectos registrales
+    "Defecto registral",
+    "Subsanación del defecto",
+
+    # Tramitación inscripción
+    "Hoja de Inscripción",
+
+    # Facturación y cierre
+    "Escritura digital final",
+
+    # Documentación general
+    "Mails de la Oficina",
+    "Otra documentación",
+
+    # Compatibilidad con categorías anteriores
+    "Mails de la oficina",
+    "Borradores de escrituras",
 }
 MAX_BYTES = int(os.getenv("CARPETA_DIGITAL_MAX_BYTES", str(100 * 1024 * 1024)))
 # En Render, configura CARPETA_DIGITAL_DIR con la ruta del disco persistente, por ejemplo /var/data/carpeta_digital.
