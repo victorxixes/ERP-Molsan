@@ -4315,8 +4315,8 @@ const cuantiaFincasParaEnvio =
                   <div className="mt-3 space-y-2">
                     <p className="text-xs font-bold text-slate-700">Documentos que se informan a ABSIS</p>
                     {[
-                      ["solicitud_cancelacion_notarial", "Solicitud de cancelación notarial"],
-                      ["certificado_cancelacion_administrativo", "Certificado de cancelación administrativo"],
+                      ["solicitud_cancelacion_notarial", "Hoja de Encargo firmada"],
+                      ["certificado_cancelacion_administrativo", "Justificante de cancelación"],
                       ["nota_simple_registral", "Nota simple registral"],
                     ].map(([key, label]) => (
                       <label key={key} className="flex items-center gap-3 rounded-lg border border-slate-100 px-3 py-2 text-sm text-slate-700">
