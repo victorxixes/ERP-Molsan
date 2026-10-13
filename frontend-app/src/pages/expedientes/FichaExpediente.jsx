@@ -4039,18 +4039,44 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
                     <Dato campo="Protocolo" valor={expediente.protocolo} />
                     <Dato
-                      campo="Tipo del documento formalizado"
-                      valor={Array.isArray(expediente.documentos_escritura) && expediente.documentos_escritura.length
-                        ? expediente.documentos_escritura.map((documento) =>
-                            `${documento.tipo_documento || "Documento"}
-                        : expediente.tipo_documento}
-                    />
-                     <Dato
-                      campo="Cuantía del documento"
-                          `${documento.cuantia || "Cuantá"}${documento.cuantia != null ? ` — ${documento.cuantia} €` : ""}`
-                          ).join(" | ")
-                        : expediente.cuantia}
-                    />
+  campo="Tipo del documento formalizado"
+  valor={
+    Array.isArray(expediente.documentos_escritura) &&
+    expediente.documentos_escritura.length > 0
+      ? expediente.documentos_escritura
+          .map((documento) => documento.tipo_documento || "Documento")
+          .join(" | ")
+      : expediente.tipo_documento
+  }
+/>
+<Dato
+  campo="Cuantía del documento"
+  valor={
+    Array.isArray(expediente.documentos_escritura) &&
+    expediente.documentos_escritura.length > 0
+      ? expediente.documentos_escritura
+          .map((documento) => {
+            if (documento.cuantia == null || documento.cuantia === "") {
+              return "Sin cuantía";
+            }
+
+            return `${Number(documento.cuantia).toLocaleString(
+              "es-ES",
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }
+            )} €`;
+          })
+          .join(" | ")
+      : expediente.cuantia != null
+        ? `${Number(expediente.cuantia).toLocaleString("es-ES", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })} €`
+        : null
+  }
+/>
                     </div>
                 </div>
                 </>}
