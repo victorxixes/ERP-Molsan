@@ -1430,6 +1430,17 @@ export default function FichaExpediente() {
   const [guardandoActividad, setGuardandoActividad] = useState(false);
   const [errorActividad, setErrorActividad] = useState("");
   const [mensajeActividad, setMensajeActividad] = useState("");
+  const [estadoDocumentacionAbsis, setEstadoDocumentacionAbsis] = useState({
+    certificado_saldo_cero_erroneo: false,
+    solicitud_cancelacion_notarial: false,
+    certificado_cancelacion_administrativo: false,
+    nota_simple_registral: false,
+    mover_siguiente_actividad: false,
+    enviado_a_absis: false,
+  });
+  const [cargandoEstadoAbsis, setCargandoEstadoAbsis] = useState(false);
+  const [enviandoAbsis, setEnviandoAbsis] = useState(false);
+  const [documentosCarpetaPrevia, setDocumentosCarpetaPrevia] = useState([]);
 
   const [
     mostrarDefecto,
@@ -1824,6 +1835,42 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setErrorActividad("");
     setMensajeActividad("");
     setMostrarActividades(true);
+    if (expediente?.id_expediente) {
+      setCargandoEstadoAbsis(true);
+      axios.get(`/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/absis`)
+        .then((res) => setEstadoDocumentacionAbsis((actual) => ({ ...actual, ...(res?.data || {}) })))
+        .catch(() => {})
+        .finally(() => setCargandoEstadoAbsis(false));
+    }
+  }
+
+  async function guardarEstadoAbsis(marcarEnviado = false) {
+    if (!expediente?.id_expediente || enviandoAbsis) return;
+    setEnviandoAbsis(true);
+    setErrorActividad("");
+    setMensajeActividad("");
+    try {
+      const payload = { ...estadoDocumentacionAbsis };
+      const res = await axios.put(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/absis`,
+        payload
+      );
+      setEstadoDocumentacionAbsis((actual) => ({ ...actual, ...(res?.data || payload) }));
+      if (marcarEnviado) {
+        const enviado = await axios.post(
+          `/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/enviar-a-absis`
+        );
+        setEstadoDocumentacionAbsis((actual) => ({ ...actual, ...(enviado?.data || {}), enviado_a_absis: true }));
+        setMensajeActividad("La información de Documentación previa se ha registrado para ABSIS. La transmisión externa requiere que el backend tenga configurada la integración con ABSIS.");
+      } else {
+        setMensajeActividad("Los datos de comunicación a ABSIS se han guardado.");
+      }
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setErrorActividad(typeof detail === "string" ? detail : detail?.mensaje || JSON.stringify(detail) || err?.message || "No se pudieron guardar los datos de ABSIS.");
+    } finally {
+      setEnviandoAbsis(false);
+    }
   }
 
   async function avanzarActividad() {
@@ -1831,7 +1878,15 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setGuardandoActividad(true);
     setErrorActividad("");
     setMensajeActividad("");
+    if (!estadoDocumentacionAbsis.mover_siguiente_actividad) {
+      setErrorActividad("Selecciona Sí en «Mover el expediente a la siguiente actividad» para confirmar el avance.");
+      return;
+    }
     try {
+      await axios.put(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/absis`,
+        estadoDocumentacionAbsis
+      );
       const response = await axios.post(
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/avanzar-actividad`
       );
@@ -4228,6 +4283,63 @@ const cuantiaFincasParaEnvio =
             </div>
 
 
+            {actividadSeleccionada === "documentacion-previa" && (
+              <div className="mb-4 space-y-4">
+                <CarpetaDigitalModal
+                  expedienteId={expediente?.id_expediente || id}
+                  modoActividad
+                  onDocumentosChange={setDocumentosCarpetaPrevia}
+                />
+
+                <section className="rounded-xl border border-slate-200 bg-white p-4">
+                  <div className="mb-3">
+                    <h4 className="text-sm font-extrabold text-slate-800">Cambio de actividad para informar a ABSIS</h4>
+                    <p className="mt-1 text-xs text-slate-500">Estos datos se guardan para el expediente y no modifican las otras actividades.</p>
+                  </div>
+                  {cargandoEstadoAbsis ? <p className="text-xs text-slate-500">Cargando estado de ABSIS…</p> : null}
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="rounded-lg border border-slate-200 p-3">
+                      <span className="mb-2 block text-xs font-bold text-slate-700">Certificado Saldo «0» erróneo</span>
+                      <select value={estadoDocumentacionAbsis.certificado_saldo_cero_erroneo ? "si" : "no"} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, certificado_saldo_cero_erroneo: e.target.value === "si" }))} disabled={enviandoAbsis} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                        <option value="no">No</option><option value="si">Sí</option>
+                      </select>
+                    </label>
+                    <div className="rounded-lg border border-slate-200 p-3">
+                      <span className="mb-1 block text-xs font-bold text-slate-700">Fecha envío a notario</span>
+                      <p className="text-sm font-semibold text-slate-800">{expediente?.fecha_envio_notario || expediente?.fecha_envio ? new Date(expediente.fecha_envio_notario || expediente.fecha_envio).toLocaleDateString("es-ES") : "Pendiente de envío"}</p>
+                      <p className="mt-1 text-[11px] text-slate-500">Vinculada al envío guardado en Enviar a notario.</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <p className="text-xs font-bold text-slate-700">Documentos que se informan a ABSIS</p>
+                    {[
+                      ["solicitud_cancelacion_notarial", "Solicitud de cancelación notarial"],
+                      ["certificado_cancelacion_administrativo", "Certificado de cancelación administrativo"],
+                      ["nota_simple_registral", "Nota simple registral"],
+                    ].map(([key, label]) => (
+                      <label key={key} className="flex items-center gap-3 rounded-lg border border-slate-100 px-3 py-2 text-sm text-slate-700">
+                        <input type="checkbox" checked={!!estadoDocumentacionAbsis[key]} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, [key]: e.target.checked }))} disabled={enviandoAbsis} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
+                        <span className="flex-1">{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50/40 p-3">
+                    <span className="mb-2 block text-xs font-extrabold text-slate-700">Mover el expediente a la siguiente actividad</span>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: true }))} disabled={enviandoAbsis} />Sí</label>
+                      <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: false }))} disabled={enviandoAbsis} />No</label>
+                    </div>
+                    <p className="mt-2 text-[11px] text-slate-500">Al confirmar el avance, el backend comprobará el envío a notario y los tres documentos obligatorios.</p>
+                  </div>
+                  <div className="mt-4 flex flex-wrap justify-end gap-2">
+                    <Boton onClick={() => guardarEstadoAbsis(false)} disabled={enviandoAbsis || cargandoEstadoAbsis}>{enviandoAbsis ? "Guardando…" : "💾 Guardar datos ABSIS"}</Boton>
+                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={enviandoAbsis || cargandoEstadoAbsis}>{enviandoAbsis ? "Procesando…" : estadoDocumentacionAbsis.enviado_a_absis ? "✓ Registrado para ABSIS" : "📨 Enviar a ABSIS"}</Boton>
+                  </div>
+                  {estadoDocumentacionAbsis.enviado_a_absis && <p className="mt-2 text-right text-xs font-semibold text-emerald-700">Solicitud registrada para ABSIS.</p>}
+                </section>
+              </div>
+            )}
+
             <div
               className="
                 grid
@@ -4305,8 +4417,8 @@ const cuantiaFincasParaEnvio =
                 </Boton>
               )}
               {actividadSeleccionada === "documentacion-previa" && actividadActual === "documentacion-previa" && (
-                <Boton tipo="primary" onClick={avanzarActividad} disabled={guardandoActividad}>
-                  {guardandoActividad ? "Validando…" : "➡️ Avanzar a sede notarial"}
+                <Boton tipo="primary" onClick={avanzarActividad} disabled={guardandoActividad || !estadoDocumentacionAbsis.mover_siguiente_actividad}>
+                  {guardandoActividad ? "Validando…" : "➡️ Mover a Sede notarial sin protocolo"}
                 </Boton>
               )}
             </div>
