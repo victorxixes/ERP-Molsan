@@ -4082,11 +4082,13 @@ const cuantiaFincasParaEnvio =
         }
         titulo="⚙️ Actividades del expediente"
         subtitulo={
-          `Expediente ${valorVisible(
-            expediente.id_expediente
-          )} · actividad actual: ${valorVisible(
-            expediente.actividad_actual
-          )}`
+          actividadSeleccionada === "documentacion-previa"
+            ? ""
+            : `Expediente ${valorVisible(
+                expediente.id_expediente
+              )} · actividad actual: ${valorVisible(
+                expediente.actividad_actual
+              )}`
         }
         ancho="max-w-[1200px]"
         footer={
@@ -4190,7 +4192,7 @@ const cuantiaFincasParaEnvio =
 
                     </div>
 
-                    {esActual && (
+                    {esActual && actividadSeleccionada !== "documentacion-previa" && (
                       <span
                         className="
                           mt-2
@@ -4273,7 +4275,7 @@ const cuantiaFincasParaEnvio =
 
               </div>
 
-              {actividadSeleccionada ===
+              {actividadSeleccionada !== "documentacion-previa" && actividadSeleccionada ===
                 actividadActual && (
                 <EstadoBadge
                   valor="Actividad actual"
@@ -4340,15 +4342,16 @@ const cuantiaFincasParaEnvio =
               </div>
             )}
 
-            <div
-              className="
-                grid
-                grid-cols-1
-                gap-2
-                sm:grid-cols-2
-                xl:grid-cols-3
-              "
-            >
+            {actividadSeleccionada !== "documentacion-previa" && (
+              <div
+                className="
+                  grid
+                  grid-cols-1
+                  gap-2
+                  sm:grid-cols-2
+                  xl:grid-cols-3
+                "
+              >
 
               {camposActividad.map((campo) => {
                 const esComun = CAMPOS_COMUNES_ACTIVIDAD.some((item) => item.key === campo.key);
@@ -4395,7 +4398,8 @@ const cuantiaFincasParaEnvio =
                 );
               })}
 
-            </div>
+              </div>
+            )}
 
 
             {errorActividad && (
@@ -4423,7 +4427,7 @@ const cuantiaFincasParaEnvio =
               )}
             </div>
 
-            {!camposActividad.some(
+            {actividadSeleccionada !== "documentacion-previa" && !camposActividad.some(
               (campo) =>
                 esDisponible(
                   expediente,
