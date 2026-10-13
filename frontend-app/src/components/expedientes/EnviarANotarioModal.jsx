@@ -254,9 +254,25 @@ export default function EnviarANotarioModal({
   // procedente de Fincas y Registros; los adicionales tienen cuantía propia.
   const [documentosEscritura, setDocumentosEscritura] = useState(() => {
     const inicial = crearFormularioDesdeExpediente(expediente);
-    const cuantiaInicial = cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
+    const cuantiaFincasDisponible =
+      cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined;
+    const cuantiaInicial = cuantiaFincasDisponible
       ? String(cuantiaFincas)
       : String(expediente?.cuantia ?? expediente?.finca_cuantia ?? "");
+    const guardados = Array.isArray(expediente?.documentos_escritura)
+      ? expediente.documentos_escritura
+      : [];
+
+    if (guardados.length) {
+      return guardados.map((documento, indice) => ({
+        id: documento?.id ?? indice + 1,
+        tipo_documento: String(documento?.tipo_documento ?? ""),
+        cuantia: documento?.cuantia === null || documento?.cuantia === undefined || documento?.cuantia === ""
+          ? (indice === 0 ? cuantiaInicial : "")
+          : String(documento.cuantia),
+      }));
+    }
+
     return [{ id: 1, tipo_documento: inicial.tipo_documento || "", cuantia: cuantiaInicial }];
   });
 
@@ -353,12 +369,52 @@ export default function EnviarANotarioModal({
     setError("");
   }, []);
 
-  const seleccionarNotario = useCallback((notario) => {
-    setForm((actual) => ({
-      ...actual,
-      notario: notario || null,
-    }));
+  const seleccionarNotario = useCallback((notarioSeleccionado) => {
+    if (!notarioSeleccionado) {
+      setForm((actual) => ({ ...actual, notario: null }));
+      setError("");
+      return;
+    }
 
+    // Normalizamos nombres alternativos usados por el catálogo CTN para que
+    // la selección rellene siempre NIF, apoderado, firma, población y provincia.
+    const nombreCompleto = String(
+      notarioSeleccionado.nombre ??
+      notarioSeleccionado.nombre_notario ??
+      notarioSeleccionado.nombres ??
+      notarioSeleccionado.notario ??
+      ""
+    ).trim();
+    const apellidosRecibidos = String(
+      notarioSeleccionado.apellidos ??
+      notarioSeleccionado.apellido ??
+      notarioSeleccionado.apellidos_notario ??
+      ""
+    ).trim();
+    const partesNombre = nombreCompleto.split(/\s+/).filter(Boolean);
+    const nombre = apellidosRecibidos
+      ? String(notarioSeleccionado.nombre ?? notarioSeleccionado.nombres ?? nombreCompleto).trim()
+      : (partesNombre.length < 2 ? nombreCompleto : partesNombre.shift());
+    const apellidos = apellidosRecibidos || partesNombre.join(" ");
+
+    const normalizado = {
+      ...notarioSeleccionado,
+      id: Number(
+        notarioSeleccionado.id ??
+        notarioSeleccionado.notario_id ??
+        notarioSeleccionado.id_notario ??
+        0
+      ),
+      nombre: nombre || "",
+      apellidos: apellidos || "",
+      nif: notarioSeleccionado.nif ?? notarioSeleccionado.nif_notario ?? notarioSeleccionado.documento ?? "",
+      municipio: notarioSeleccionado.municipio ?? notarioSeleccionado.poblacion ?? notarioSeleccionado.localidad ?? "",
+      provincia: notarioSeleccionado.provincia ?? notarioSeleccionado.provincia_notario ?? "",
+      apoderado: notarioSeleccionado.apoderado ?? notarioSeleccionado.nombre_apoderado ?? "",
+      tipo_firma: notarioSeleccionado.tipo_firma ?? notarioSeleccionado.tipoFirma ?? notarioSeleccionado.tipo_firma_notarial ?? "",
+    };
+
+    setForm((actual) => ({ ...actual, notario: normalizado }));
     setError("");
   }, []);
 
@@ -406,8 +462,8 @@ export default function EnviarANotarioModal({
       return;
     }
 
-    if (!form.notario?.id) {
-      setError("Selecciona un notario.");
+    if (!form.notario?.id || !Number.isFinite(Number(form.notario.id)) || Number(form.notario.id) <= 0) {
+      setError("Busca y selecciona un notario válido del catálogo. No introduzcas un ID manual ni uses 0.");
       return;
     }
 
@@ -897,24 +953,18 @@ export default function EnviarANotarioModal({
                         <label className="mb-1.5 block text-sm font-semibold text-slate-700">
                           Cuantía
                         </label>
-                        {indice === 0 ? (
-                          <div className="flex min-h-[42px] items-center rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5 text-sm font-semibold text-slate-700">
-                            {documento.cuantia !== "" ? documento.cuantia : "—"}
-                          </div>
-                        ) : (
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={documento.cuantia}
-                            disabled={loading}
-                            placeholder="Cuantía de este documento"
-                            onChange={(event) => setDocumentosEscritura((actuales) => actuales.map((item) => item.id === documento.id ? { ...item, cuantia: event.target.value } : item))}
-                            className={clasesInput()}
-                          />
-                        )}
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={documento.cuantia}
+                          disabled={loading}
+                          placeholder="Cuantía de este documento (€)"
+                          onChange={(event) => setDocumentosEscritura((actuales) => actuales.map((item) => item.id === documento.id ? { ...item, cuantia: event.target.value } : item))}
+                          className={clasesInput()}
+                        />
                         {indice === 0 && (
-                          <p className="mt-1 text-xs text-slate-500">Importe procedente de Fincas y Registros.</p>
+                          <p className="mt-1 text-xs text-slate-500">Se propone el importe de Fincas y Registros; puedes corregirlo antes de guardar.</p>
                         )}
                       </div>
                     </div>
