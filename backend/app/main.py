@@ -745,6 +745,25 @@ def inicializar_tabla_expediente_acciones():
             flush=True,
         )
 
+                # ====================================================
+        # INICIALIZAR TABLA DE CARPETA DIGITAL
+        # ====================================================
+
+        print(
+            "[CARPETA DIGITAL] Comprobando tabla...",
+            flush=True,
+        )
+
+        DocumentoCarpetaDigital.__table__.create(
+            bind=engine,
+            checkfirst=True,
+        )
+
+        print(
+            "[CARPETA DIGITAL] Tabla disponible correctamente.",
+            flush=True,
+        )
+        
         # ====================================================
         # INICIALIZAR TABLAS PPAD Y OBSERVACIONES DE EXPEDIENTE
         # ====================================================
