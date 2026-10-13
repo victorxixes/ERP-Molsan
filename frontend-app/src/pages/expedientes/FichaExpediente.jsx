@@ -19,7 +19,6 @@ import {
   subirCalificacionRegistro,
   obtenerCalificacionRegistro,
   listarTiposCargaHipotecaria,
-  subirCalificacionACarpetaDigital,
 } from "../../api/expedienteDefectos";
 
 // ============================================================
@@ -348,14 +347,15 @@ const CAMPOS_COMUNES_ACTIVIDAD = [
   },
 ];
 
+
+
 const DEFECTO_VACIO = {
- tipo_carga_hipotecaria_id: "",
+  tipo_carga_hipotecaria_id: "",
   motivo_defecto: "",
   subtipo_defecto_id: "",
   subtipo_defecto: "",
   fecha_notificacion_registro: "",
   fecha_vencimiento_presentacion: "",
-  fecha_cierre_defecto: "",
   calificacion_registro: "",
   observaciones_registro: "",
   fecha_entrada_subsanacion: "",
@@ -1959,7 +1959,6 @@ function editarDefectoRegistrado(defecto) {
     calificacion_registro: defecto.calificacion_registro || "",
     observaciones_registro: defecto.observaciones_registro || "",
     fecha_entrada_subsanacion: defecto.fecha_entrada_subsanacion || "",
-    fecha_cierre_defecto: defecto.fecha_cierre_defecto || "",
   });
   setErrorDefecto("");
 }
@@ -1999,7 +1998,6 @@ async function guardarDefectoRegistral() {
       calificacion_registro: defectoForm.calificacion_registro || null,
       observaciones_registro: defectoForm.observaciones_registro || null,
       fecha_entrada_subsanacion: defectoForm.fecha_entrada_subsanacion || null,
-      fecha_cierre_defecto: defectoForm.fecha_cierre_defecto || null,
     };
 
     const respuesta = defectoEditandoId
@@ -2010,37 +2008,11 @@ async function guardarDefectoRegistral() {
     if (idDefecto) setDefectoEditandoId(idDefecto);
 
     if (archivoCalificacion) {
-  if (!idDefecto) {
-    throw new Error(
-      "El defecto se guardó, pero no se recibió su identificador para adjuntar el PDF."
-    );
-  }
-
-  // 1. Guardar el PDF en el registro del defecto.
-  await subirCalificacionRegistro(
-    expediente.id_expediente,
-    idDefecto,
-    archivoCalificacion
-  );
-
-  // 2. Copiar el PDF a la carpeta digital.
-  try {
-    await subirCalificacionACarpetaDigital(
-      expediente.id_expediente,
-      archivoCalificacion,
-      "Defecto registral"
-    );
-  } catch (errorCarpeta) {
-    console.error(
-      "El PDF se guardó en el defecto, pero falló la copia a la carpeta digital:",
-      errorCarpeta
-    );
-
-    setErrorDefecto(
-      "El defecto y su PDF se han guardado, pero no se pudo copiar el documento a la carpeta digital. Puedes adjuntarlo manualmente en Actividad 05."
-    );
-  }
-}
+      if (!idDefecto) {
+        throw new Error("El defecto se guardó, pero no se recibió su identificador para adjuntar el PDF.");
+      }
+      await subirCalificacionRegistro(expediente.id_expediente, idDefecto, archivoCalificacion);
+    }
 
     setDefectoLocal({
       tipo_error: guardado.motivo_defecto || "",
@@ -3909,11 +3881,7 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
                     <Dato campo="NIF notario" valor={expediente.nif_notario} />
                     <Dato campo="Apoderado" valor={expediente.apoderado} />
-                    <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
-                    <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
-                    <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
-                    <Dato campo="Escritura firmada" valor={expediente.escritura_firmada === true ? "Sí" : expediente.escritura_firmada === false ? "No" : null} />
-                   </div>
+                  </div>
                 </div>
                 <div className="border-t border-slate-100 pt-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de facturación</p>
@@ -3929,95 +3897,41 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Email" valor={expediente.facturacion_email ?? expediente.email_facturacion ?? expediente.correo_facturacion} />
                   </div>
                 </div>
-                <div className="border-t border-slate-100 pt-3">
-  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">
-    Escritura y firma
-  </p>
-
-  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-<Dato
-  campo="Documento notarial"
-  valor={
-    Array.isArray(expediente.documentos_escritura) &&
-    expediente.documentos_escritura.length > 0
-      ? expediente.documentos_escritura
-          .map((documento) => documento.tipo_documento || "Documento")
-          .join(" | ")
-      : expediente.tipo_documento
-  }
-/>
-
-<Dato
-  campo="Cuantía del documento"
-  valor={(() => {
-    const documentos = expediente.documentos_escritura;
-
-    if (Array.isArray(documentos) && documentos.length > 0) {
-      const cuantias = documentos
-        .map((documento) => documento.cuantia)
-        .filter((cuantia) => cuantia !== null && cuantia !== undefined && cuantia !== "");
-
-      if (cuantias.length > 0) {
-        return cuantias
-          .map((cuantia) =>
-            `${Number(cuantia).toLocaleString("es-ES", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })} €`
-          )
-          .join(" | ");
-      }
-    }
-
-    const cuantiaGuardada =
-      expediente.cuantia ??
-      expediente.cuantia_documento ??
-      expediente.finca_cuantia;
-
-    return cuantiaGuardada !== null &&
-      cuantiaGuardada !== undefined &&
-      cuantiaGuardada !== ""
-      ? `${Number(cuantiaGuardada).toLocaleString("es-ES", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })} €`
-      : null;
-  })()}
-/>
-    <Dato
-      campo="Formato de escritura"
-      valor={
-        expediente.formato_escritura ??
-        expediente.formato_escritura_notarial
-      }
-    />
-
-    <Dato
-      campo="Tipo de trámite"
-      valor={
-        expediente.tipo_tramite ??
-        expediente.tipo_tramite_notarial ??
-        expediente.tramite
-      }
-    />
-
-    <Dato campo="Protocolo" valor={expediente.protocolo} />
-
-    <Dato
-      campo="Fecha de firma"
-      valor={expediente.fecha_firma}
-      tipo="fecha"
-    />
-
-    <Dato campo="Población notario" valor={expediente.poblacion} />
-
-    <Dato campo="Provincia notario" valor={expediente.provincia} />
-  </div>
-</div>
-                </>}
-                <div className="flex justify-center border-t border-slate-100 pt-4">
-                  <button type="button" onClick={() => setMostrarEnviarNotario(true)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2">🏛️ {expediente.fecha_envio_notario || expediente.fecha_envio ? "Revisar / modificar encargo" : "Enviar a notario"}</button>
+                  <div className="border-t border-slate-100 pt-3">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Escritura y firma</p>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    <Dato
+                      campo="Documentos y cuantías"
+                      valor={Array.isArray(expediente.documentos_escritura) && expediente.documentos_escritura.length
+                        ? expediente.documentos_escritura.map((documento) =>
+                            `${documento.tipo_documento || "Documento"}${documento.cuantia != null ? ` — ${documento.cuantia} €` : ""}`
+                          ).join(" | ")
+                        : expediente.tipo_documento}
+                    />
+                    <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
+                    <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite ?? expediente.tipo_tramite_notarial ?? expediente.tramite} />
+                    <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
+                    <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
+                    <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
+                    <Dato campo="Escritura firmada" valor={expediente.escritura_firmada === true ? "Sí" : expediente.escritura_firmada === false ? "No" : null} />
+                    <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
+                    <Dato campo="Protocolo" valor={expediente.protocolo} />
+                    <Dato campo="Población notario" valor={expediente.poblacion} />
+                    <Dato campo="Provincia notario" valor={expediente.provincia} />
+                  </div>
                 </div>
+                </>}
+                {actividadActual === "documentacion-previa" && (
+                  <div className="flex justify-center border-t border-slate-100 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setMostrarEnviarNotario(true)}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2"
+                    >
+                      🏛️ {expediente.fecha_envio_notario || expediente.fecha_envio ? "Revisar / modificar encargo" : "Enviar a notario"}
+                    </button>
+                  </div>
+                )}
               </div>
             </section>
           </div>
