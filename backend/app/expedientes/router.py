@@ -2026,3 +2026,56 @@ def diagnosticar_bloqueos_expedientes(
                 f"{str(exc)[:300]}"
             ),
         )
+
+
+@router.get("/migraciones/diagnostico-lock-expedientes")
+def diagnosticar_lock_expedientes(db: Session = Depends(get_db)):
+    try:
+        filas = db.execute(text("""
+            SELECT
+                a.pid,
+                a.state,
+                a.xact_start,
+                a.wait_event_type,
+                a.wait_event,
+                l.locktype,
+                l.mode,
+                l.granted,
+                n.nspname AS esquema,
+                c.relname AS tabla,
+                LEFT(a.query, 400) AS consulta,
+                pg_blocking_pids(a.pid) AS bloqueadores
+            FROM pg_stat_activity a
+            LEFT JOIN pg_locks l ON l.pid = a.pid
+            LEFT JOIN pg_class c ON c.oid = l.relation
+            LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
+            WHERE a.datname = current_database()
+              AND a.pid <> pg_backend_pid()
+              AND (
+                  c.relname = 'expedientes'
+                  OR a.state = 'idle in transaction'
+                  OR cardinality(pg_blocking_pids(a.pid)) > 0
+              )
+            ORDER BY
+                CASE
+                    WHEN cardinality(pg_blocking_pids(a.pid)) > 0 THEN 0
+                    WHEN a.state = 'idle in transaction' THEN 1
+                    ELSE 2
+                END,
+                a.xact_start NULLS LAST
+            LIMIT 100
+        """)).mappings().all()
+
+        return {
+            "ok": True,
+            "total": len(filas),
+            "sesiones": [dict(f) for f in filas]
+        }
+
+    except Exception as exc:
+        db.rollback()
+        print("ERROR DIAGNOSTICO LOCK EXPEDIENTES:", repr(exc), flush=True)
+        raise HTTPException(
+            status_code=500,
+            detail="Error consultando bloqueos: " + str(exc)[:300]
+        )
