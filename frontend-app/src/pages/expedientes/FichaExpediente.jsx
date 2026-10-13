@@ -1426,6 +1426,11 @@ export default function FichaExpediente() {
     "documentacion-previa"
   );
 
+  const [actividadDraft, setActividadDraft] = useState({});
+  const [guardandoActividad, setGuardandoActividad] = useState(false);
+  const [errorActividad, setErrorActividad] = useState("");
+  const [mensajeActividad, setMensajeActividad] = useState("");
+
   const [
     mostrarDefecto,
     setMostrarDefecto,
@@ -1814,11 +1819,75 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   // ==========================================================
 
   function abrirActividades() {
-    setActividadSeleccionada(
-      actividadActual
-    );
-
+    setActividadSeleccionada(actividadActual);
+    setActividadDraft({ ...(expediente || {}) });
+    setErrorActividad("");
+    setMensajeActividad("");
     setMostrarActividades(true);
+  }
+
+  async function avanzarActividad() {
+    if (!expediente?.id_expediente || guardandoActividad) return;
+    setGuardandoActividad(true);
+    setErrorActividad("");
+    setMensajeActividad("");
+    try {
+      const response = await axios.post(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/avanzar-actividad`
+      );
+      await cargarExpediente();
+      setActividadSeleccionada(resolverActividadActual(response?.data || expediente));
+      setActividadDraft((actual) => ({ ...actual, ...(response?.data || {}) }));
+      setMensajeActividad("La actividad se ha actualizado correctamente.");
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setErrorActividad(
+        typeof detail === "string"
+          ? detail
+          : detail?.mensaje
+            ? `${detail.mensaje}${Array.isArray(detail.documentos_pendientes) ? ` Faltan: ${detail.documentos_pendientes.join(", ")}.` : ""}`
+            : JSON.stringify(detail) || err?.message || "No se pudo avanzar la actividad."
+      );
+    } finally {
+      setGuardandoActividad(false);
+    }
+  }
+
+  async function guardarCamposActividad() {
+    if (!expediente?.id_expediente || guardandoActividad) return;
+    const camposEspecificos = CAMPOS_ACTIVIDADES[actividadSeleccionada] || [];
+    const campos = {};
+    for (const campo of camposEspecificos) {
+      if (Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)) {
+        campos[campo.key] = actividadDraft[campo.key] ?? "";
+      }
+    }
+    if (!Object.keys(campos).length) {
+      setErrorActividad("Esta actividad no tiene campos editables disponibles en el expediente.");
+      return;
+    }
+    setGuardandoActividad(true);
+    setErrorActividad("");
+    setMensajeActividad("");
+    try {
+      const response = await axios.put(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
+        { campos }
+      );
+      await cargarExpediente();
+      setActividadDraft((actual) => ({ ...actual, ...(response?.data || {}) }));
+      setMensajeActividad("Los datos de la actividad se han guardado.");
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setErrorActividad(
+        typeof detail === "string"
+          ? detail
+          : detail?.mensaje || JSON.stringify(detail) ||
+            err?.message || "No se pudieron guardar los datos de la actividad."
+      );
+    } finally {
+      setGuardandoActividad(false);
+    }
   }
 
 
@@ -4010,11 +4079,11 @@ const cuantiaFincasParaEnvio =
                       actividad.key
                     }
                     type="button"
-                    onClick={() =>
-                      setActividadSeleccionada(
-                        actividad.key
-                      )
-                    }
+                    onClick={() => {
+                      setActividadSeleccionada(actividad.key);
+                      setErrorActividad("");
+                      setMensajeActividad("");
+                    }}
                     className={`
                       w-full
                       rounded-xl
@@ -4169,47 +4238,78 @@ const cuantiaFincasParaEnvio =
               "
             >
 
-              {camposActividad.map(
-                (campo) => {
-
-                  if (
-                    !esDisponible(
-                      expediente,
-                      campo.key
-                    )
-                  ) {
-                    return null;
-                  }
-
+              {camposActividad.map((campo) => {
+                const esComun = CAMPOS_COMUNES_ACTIVIDAD.some((item) => item.key === campo.key);
+                const valorActual = actividadDraft[campo.key] ?? expediente?.[campo.key] ?? "";
+                if (esComun || campo.key === "fecha_envio") {
+                  if (!esDisponible(expediente, campo.key)) return null;
                   return (
                     <Dato
-                      key={
-                        campo.key
-                      }
-                      campo={
-                        campo.label
-                      }
-                      valor={
-                        expediente[
-                          campo.key
-                        ]
-                      }
-                      tipo={
-                        campo.tipo
-                      }
-                      estado={
-                        campo.estado
-                      }
-                      multilinea={
-                        campo.multilinea
-                      }
+                      key={campo.key}
+                      campo={campo.label}
+                      valor={expediente[campo.key]}
+                      tipo={campo.tipo}
+                      estado={campo.estado}
+                      multilinea={campo.multilinea}
                     />
                   );
                 }
-              )}
+                if (!esDisponible(expediente, campo.key) && !Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)) {
+                  // Los campos previstos que aún no existen en el modelo no se inventan en pantalla.
+                  return null;
+                }
+                return (
+                  <label key={campo.key} className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">{campo.label}</span>
+                    {campo.multilinea ? (
+                      <textarea
+                        rows={3}
+                        value={String(valorActual ?? "")}
+                        disabled={guardandoActividad}
+                        onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
+                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
+                      />
+                    ) : (
+                      <input
+                        type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"}
+                        step={campo.tipo === "numero" ? "0.01" : undefined}
+                        value={campo.tipo === "fecha" ? String(valorActual ?? "").slice(0, 10) : String(valorActual ?? "")}
+                        disabled={guardandoActividad}
+                        onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
+                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
+                      />
+                    )}
+                  </label>
+                );
+              })}
 
             </div>
 
+
+            {errorActividad && (
+              <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {errorActividad}
+              </div>
+            )}
+            {mensajeActividad && (
+              <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+                {mensajeActividad}
+              </div>
+            )}
+            <div className="mt-4 flex flex-wrap justify-end gap-2">
+              {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).some((campo) =>
+                Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
+              ) && (
+                <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad}>
+                  {guardandoActividad ? "Guardando…" : "💾 Guardar datos de actividad"}
+                </Boton>
+              )}
+              {actividadSeleccionada === "documentacion-previa" && actividadActual === "documentacion-previa" && (
+                <Boton tipo="primary" onClick={avanzarActividad} disabled={guardandoActividad}>
+                  {guardandoActividad ? "Validando…" : "➡️ Avanzar a sede notarial"}
+                </Boton>
+              )}
+            </div>
 
             {!camposActividad.some(
               (campo) =>
