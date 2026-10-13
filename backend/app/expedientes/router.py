@@ -2079,3 +2079,68 @@ def diagnosticar_lock_expedientes(db: Session = Depends(get_db)):
             status_code=500,
             detail="Error consultando bloqueos: " + str(exc)[:300]
         )
+
+@router.get("/migraciones/diagnostico-espera-ddl")
+def diagnosticar_espera_ddl(db: Session = Depends(get_db)):
+    try:
+        filas = db.execute(text("""
+            SELECT
+                a.pid,
+                a.state,
+                a.wait_event_type,
+                a.wait_event,
+                a.xact_start,
+                a.query_start,
+                pg_blocking_pids(a.pid) AS bloqueadores,
+                LEFT(a.query, 500) AS consulta
+            FROM pg_stat_activity a
+            WHERE a.datname = current_database()
+              AND a.pid <> pg_backend_pid()
+              AND (
+                  a.wait_event_type = 'Lock'
+                  OR a.query ILIKE '%ALTER TABLE%expedientes%'
+                  OR a.query ILIKE '%ADD COLUMN%'
+              )
+            ORDER BY a.query_start NULLS LAST
+            LIMIT 100
+        """)).mappings().all()
+
+        resultado = []
+        for fila in filas:
+            item = dict(fila)
+            pids = item.get("bloqueadores") or []
+
+            if pids:
+                bloqueadores = db.execute(text("""
+                    SELECT
+                        pid,
+                        state,
+                        xact_start,
+                        wait_event_type,
+                        wait_event,
+                        LEFT(query, 500) AS consulta
+                    FROM pg_stat_activity
+                    WHERE pid = ANY(:pids)
+                """), {"pids": pids}).mappings().all()
+
+                item["detalle_bloqueadores"] = [
+                    dict(b) for b in bloqueadores
+                ]
+            else:
+                item["detalle_bloqueadores"] = []
+
+            resultado.append(item)
+
+        return {
+            "ok": True,
+            "total": len(resultado),
+            "sesiones": resultado
+        }
+
+    except Exception as exc:
+        db.rollback()
+        print("ERROR DIAGNOSTICO ESPERA DDL:", repr(exc), flush=True)
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudo consultar la espera DDL: " + str(exc)[:300]
+        )
