@@ -2928,6 +2928,14 @@ const tieneDefecto = defectosRegistrados.some(
   (defecto) => !defecto.fecha_entrada_subsanacion
 );
 
+// La cuantía que se envía al modal procede de Fincas y Registros.
+// Si hay varias fincas, se toma la primera que tenga cuantía informada.
+const cuantiaFincasParaEnvio =
+  fincasExpediente.find((finca) => finca?.cuantia !== null && finca?.cuantia !== undefined && finca?.cuantia !== "")?.cuantia
+  ?? fincaRegistrada?.cuantia
+  ?? expediente?.cuantia
+  ?? "";
+
   // ==========================================================
   // RENDER
   // ==========================================================
@@ -3276,12 +3284,12 @@ const tieneDefecto = defectosRegistrados.some(
               <div className="grid grid-cols-1 gap-2">
                 <Dato
                   campo="Nombre notario"
-                  valor={expediente.nombre_notario || "María del Camino Quiroga Martínez"}
+                  valor={expediente.nombre_notario || expediente.notario}
                   destaque
                 />
                 <Dato
                   campo="NIF notario"
-                  valor={expediente.nif_notario || "09753953K"}
+                  valor={expediente.nif_notario}
                 />
               </div>
             </Seccion>
@@ -3315,6 +3323,13 @@ const tieneDefecto = defectosRegistrados.some(
               ⚙️ Ver actividades
             </Boton>
 
+            <Boton
+              tipo="primary"
+              onClick={() => setMostrarCarpetaDigital(true)}
+              className="w-full"
+            >
+              📁 Carpeta digital
+            </Boton>
 
             {tieneDefecto && (
               <button
@@ -5224,7 +5239,7 @@ const tieneDefecto = defectosRegistrados.some(
           expediente={
             expediente
           }
-          cuantiaFincas={fincaRegistrada?.cuantia ?? expediente?.cuantia ?? ""}
+          cuantiaFincas={cuantiaFincasParaEnvio}
           onClose={() =>
             setMostrarEnviarNotario(
               false
