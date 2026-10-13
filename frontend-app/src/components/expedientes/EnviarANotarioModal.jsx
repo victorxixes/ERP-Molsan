@@ -755,11 +755,28 @@ export default function EnviarANotarioModal({
                   descripcion="Selecciona el notario desde el catálogo CTN."
                 />
 
-                <AutocompleteNotario
-                  value={notario}
-                  disabled={loading}
-                  onSelect={seleccionarNotario}
-                />
+                <div className="space-y-2">
+                  <AutocompleteNotario
+                    value={notario}
+                    disabled={loading}
+                    onSelect={seleccionarNotario}
+                  />
+
+                  {notario && (
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        disabled={loading}
+                        onClick={() => seleccionarNotario(null)}
+                        className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label="Quitar notario seleccionado y buscar otro"
+                      >
+                        <span aria-hidden="true">✕</span>
+                        Quitar notario y buscar otro
+                      </button>
+                    </div>
+                  )}
+                </div>
 
                 {notario && (
                   <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
