@@ -1742,6 +1742,12 @@ def obtener_expediente(
 def actualizar_columnas_envio_notario(
     db: Session = Depends(get_db),
 ):
+    """Migra el esquema del envío a notario en pasos confirmados por separado.
+
+    Primero crea y confirma la tabla de documentos de escritura. Después añade
+    las columnas de expedientes una a una, para que un timeout en una columna
+    no deshaga la creación de la tabla ni el trabajo ya confirmado.
+    """
     columnas = [
         ("idioma_documento", "VARCHAR(100)"),
         ("formato_escritura", "VARCHAR(200)"),
@@ -1761,36 +1767,16 @@ def actualizar_columnas_envio_notario(
 
     print(
         "INICIO MIGRACIÓN ENVÍO A NOTARIO: "
-        f"{len(columnas)} columnas",
+        f"{len(columnas)} columnas; creando primero la tabla documental",
         flush=True,
     )
 
+    # PASO 1: crear la tabla que utiliza enviar_a_notario y confirmar este
+    # cambio por separado. Así, un fallo posterior al añadir columnas no
+    # provoca que PostgreSQL deshaga la creación de la tabla.
     try:
         db.execute(text("SET LOCAL lock_timeout = '5s'"))
         db.execute(text("SET LOCAL statement_timeout = '20s'"))
-
-        for indice, (columna, tipo_sql) in enumerate(
-            columnas,
-            start=1,
-        ):
-            print(
-                f"MIGRACIÓN ENVÍO A NOTARIO "
-                f"[{indice}/{len(columnas)}]: comprobando {columna}",
-                flush=True,
-            )
-
-            db.execute(
-                text(
-                    f"ALTER TABLE expedientes "
-                    f"ADD COLUMN IF NOT EXISTS {columna} {tipo_sql}"
-                )
-            )
-
-            print(
-                f"MIGRACIÓN ENVÍO A NOTARIO: {columna} OK",
-                flush=True,
-            )
-
         db.execute(text("""
             CREATE TABLE IF NOT EXISTS expediente_documentos_escritura (
                 id SERIAL PRIMARY KEY,
@@ -1800,57 +1786,139 @@ def actualizar_columnas_envio_notario(
                 cuantia DOUBLE PRECISION NULL
             )
         """))
-
         db.execute(text("""
             CREATE INDEX IF NOT EXISTS
             ix_expediente_documentos_escritura_expediente_id
             ON expediente_documentos_escritura (expediente_id)
         """))
-
         db.commit()
-
         print(
-            "FIN MIGRACIÓN ENVÍO A NOTARIO: completada correctamente",
+            "MIGRACIÓN ENVÍO A NOTARIO: tabla e índice confirmados",
             flush=True,
         )
-
-        return {
-            "ok": True,
-            "mensaje": "Base de datos actualizada correctamente.",
-            "tabla": "expedientes",
-            "columnas": [columna for columna, _ in columnas],
-        }
-
     except Exception as exc:
         db.rollback()
-
         print(
-            "ERROR EN MIGRACIÓN DE ENVÍO A NOTARIO:",
+            "ERROR CREANDO expediente_documentos_escritura:",
             repr(exc),
             flush=True,
         )
-
-        mensaje_error = str(exc).lower()
-
-        if (
-            "lock timeout" in mensaje_error
-            or "statement timeout" in mensaje_error
-            or "canceling statement due to" in mensaje_error
+        mensaje = str(exc).lower()
+        if any(
+            token in mensaje
+            for token in (
+                "lock timeout",
+                "statement timeout",
+                "canceling statement due to",
+                "could not obtain lock",
+            )
         ):
             raise HTTPException(
                 status_code=503,
                 detail=(
-                    "La migración no pudo completarse porque PostgreSQL "
-                    "está esperando un bloqueo o ha superado el tiempo "
-                    "máximo de ejecución. No se han confirmado cambios. "
-                    "Revisa los logs de Render y vuelve a intentarlo."
+                    "PostgreSQL no pudo crear/verificar "
+                    "expediente_documentos_escritura porque está esperando "
+                    "un bloqueo o ha superado el tiempo máximo. La tabla "
+                    "no se ha confirmado; revisa los logs de Render."
                 ),
             )
-
         raise HTTPException(
             status_code=500,
             detail=(
-                "No se pudieron añadir las columnas a la base de datos. "
-                "Revisa los logs del backend de Render."
+                "No se pudo crear/verificar la tabla "
+                "expediente_documentos_escritura. Causa técnica: "
+                f"{str(exc)[:400]}"
             ),
         )
+
+    # PASO 2: añadir cada columna en su propia transacción. Se vuelve a
+    # configurar lock_timeout/statement_timeout porque SET LOCAL termina
+    # al hacer commit o rollback.
+    columnas_confirmadas = []
+    columnas_pendientes = []
+
+    for indice, (columna, tipo_sql) in enumerate(columnas, start=1):
+        try:
+            print(
+                f"MIGRACIÓN ENVÍO A NOTARIO [{indice}/{len(columnas)}]: "
+                f"comprobando {columna}",
+                flush=True,
+            )
+            db.execute(text("SET LOCAL lock_timeout = '5s'"))
+            db.execute(text("SET LOCAL statement_timeout = '20s'"))
+            db.execute(text(
+                f"ALTER TABLE expedientes "
+                f"ADD COLUMN IF NOT EXISTS {columna} {tipo_sql}"
+            ))
+            db.commit()
+            columnas_confirmadas.append(columna)
+            print(
+                f"MIGRACIÓN ENVÍO A NOTARIO: {columna} confirmada",
+                flush=True,
+            )
+        except Exception as exc:
+            db.rollback()
+            columnas_pendientes.append({
+                "columna": columna,
+                "error": str(exc)[:300],
+            })
+            print(
+                f"ERROR MIGRANDO COLUMNA {columna}: {repr(exc)}",
+                flush=True,
+            )
+            # No seguir intentando bloquear expedientes si ya se ha
+            # detectado un timeout; devolver el diagnóstico al operador.
+            mensaje = str(exc).lower()
+            if any(
+                token in mensaje
+                for token in (
+                    "lock timeout",
+                    "statement timeout",
+                    "canceling statement due to",
+                    "could not obtain lock",
+                )
+            ):
+                break
+
+    if columnas_pendientes:
+        timeout = any(
+            any(
+                token in pendiente["error"].lower()
+                for token in (
+                    "lock timeout",
+                    "statement timeout",
+                    "canceling statement due to",
+                    "could not obtain lock",
+                )
+            )
+            for pendiente in columnas_pendientes
+        )
+        raise HTTPException(
+            status_code=503 if timeout else 500,
+            detail={
+                "mensaje": (
+                    "La tabla expediente_documentos_escritura está creada "
+                    "y confirmada, pero la migración de columnas no ha "
+                    "terminado. Puedes volver a ejecutar este endpoint; "
+                    "ADD COLUMN IF NOT EXISTS permite reintentarlo."
+                ),
+                "tabla_confirmada": "expediente_documentos_escritura",
+                "columnas_confirmadas": columnas_confirmadas,
+                "columnas_pendientes": columnas_pendientes,
+            },
+        )
+
+    print(
+        "FIN MIGRACIÓN ENVÍO A NOTARIO: tabla y columnas confirmadas",
+        flush=True,
+    )
+    return {
+        "ok": True,
+        "mensaje": "Base de datos actualizada correctamente.",
+        "tabla_documentos": "expediente_documentos_escritura",
+        "tabla_documentos_confirmada": True,
+        "tabla_expedientes": "expedientes",
+        "columnas_confirmadas": columnas_confirmadas,
+        "columnas_pendientes": [],
+    }
+
