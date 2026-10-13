@@ -158,3 +158,35 @@ ACTIVIDADES_EXPEDIENTES = [
             "Documentación previa",
             "Documentacion previa",
         ],
+    },
+    {
+        "key": "sede-notarial",
+        "label": "Sede notarial",
+        "aliases": [
+            "Sede notarial",
+            "Sede Notarial",
+            "Sede NOTARIAL",
+        ],
+    },
+    {
+        "key": "sede-notarial-protocolo",
+        "label": "Sede notarial con protocolo",
+        "aliases": [
+            "Sede notarial con protocolo",
+            "Sede Notarial con protocolo",
+            "Sede NOTARIAL con protocolo",
+        ],
+    },
+    {
+        "key": "liquidacion-impuestos",
+        "label": "Liquidación de impuestos",
+        "aliases": [
+            "Liquidación de impuestos",
+            "Liquidacion de impuestos",
+            "Liquidación impuestos",
+            "Liquidacion impuestos",
+        ],
+    },
+    {
+        "key": "tramitacion-inscripcion",
+        "label": "Tramitación inscripción",
