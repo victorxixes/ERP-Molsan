@@ -78,6 +78,7 @@ class DefectoCrear(BaseModel):
     # Campo histórico de texto, distinto del PDF adjunto.
     calificacion_registro: Optional[str] = None
     observaciones_registro: Optional[str] = Field(None, max_length=200)
+    fecha_cierre_defecto: Optional[date] = None
 
 
 class DefectoActualizar(BaseModel):
@@ -91,6 +92,7 @@ class DefectoActualizar(BaseModel):
     fecha_entrada_subsanacion: Optional[date] = None
     calificacion_registro: Optional[str] = None
     observaciones_registro: Optional[str] = Field(None, max_length=200)
+    fecha_cierre_defecto: Optional[date] = None
 
 
 # ============================================================
@@ -367,6 +369,11 @@ def datos_defecto(defecto, db: Optional[Session] = None):
         "calificacion_content_type",
         "calificacion_tamano",
         "calificacion_subida_en",
+        "tiene_defectos_abiertos",
+        "tipo_error",
+        "descripcion_error",
+        "falta_defecto",
+        "fecha_cierre_defecto",
     ]
 
     for campo in campos:
