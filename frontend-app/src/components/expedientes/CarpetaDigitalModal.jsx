@@ -38,11 +38,14 @@ const ACTIVIDADES = [
     categorias: ["Factura notarial", "Factura Registral"],
   },
   {
-    numero: "05",
-    titulo: "Defectos registrales",
-    descripcion: "Documentación relativa a defectos y subsanaciones.",
-    categorias: [],
-  },
+  numero: "05",
+  titulo: "Defectos registrales",
+  descripcion: "Documentación relativa a defectos y subsanaciones.",
+  categorias: [
+    "Defecto registral",
+    "Subsanación del defecto",
+  ],
+},
   {
     numero: "06",
     titulo: "Tramitación inscripción",
