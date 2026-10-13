@@ -229,17 +229,51 @@ export default function CarpetaDigitalModal({ expedienteId, onClose, modoActivid
           {error && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
           {cargando ? <p className="rounded-xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">Cargando documentos…</p> : <>
             <div className="rounded-xl border border-indigo-100 bg-indigo-50/60 px-4 py-3 text-xs text-indigo-900"><strong>Preparado para automatización documental.</strong> Esta estructura permite clasificar los PDF por actividad. La lectura automática del contenido y la cumplimentación de campos quedan pendientes de conectar con el módulo de extracción documental.</div>
-            {BLOQUES.map(renderBloque)}
-            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <button type="button" onClick={() => setOtrosAbierto((v) => !v)} aria-expanded={otrosAbiertos} className={`flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition ${otrosAbiertos ? "bg-slate-50" : "hover:bg-slate-50"}`}>
-                <span className="flex min-w-0 items-center gap-3"><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black ${otrosCantidad ? "bg-emerald-100 text-emerald-700" : "bg-indigo-50 text-indigo-700"}`}>{otrosCantidad}</span><span><span className="block text-sm font-extrabold text-slate-900">Otros</span><span className="mt-0.5 block text-xs text-slate-500">Documentación complementaria y comunicaciones de oficina.</span></span></span><span className={`shrink-0 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600 transition ${otrosAbiertos ? "rotate-180" : ""}`} aria-hidden="true">⌄</span>
-              </button>
-              {otrosAbiertos && <div className="border-t border-slate-100 bg-slate-50/50 p-3 sm:p-4"><div className="grid gap-3 xl:grid-cols-2">{CATEGORIAS_OTROS.map(renderCategoria)}</div></div>}
-            </section>
-          </>}
-        </div>
-        {!modoActividad && <footer className="flex justify-end border-t border-slate-200 bg-slate-50 px-5 py-3"><button type="button" onClick={onClose} className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-slate-700">Terminar</button></footer>}
-      </section>
-    </div>
-  );
-}
+           
+            {BLOQUES
+              .filter((bloque) => !modoActividad || bloque.id === "documentacion-previa")
+              .map(renderBloque)}
+
+            {!modoActividad && (
+              <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => setOtrosAbierto((v) => !v)}
+                  aria-expanded={otrosAbiertos}
+                  className={`flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition ${
+                    otrosAbiertos ? "bg-slate-50" : "hover:bg-slate-50"
+                  }`}
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black ${
+                      otrosCantidad ? "bg-emerald-100 text-emerald-700" : "bg-indigo-50 text-indigo-700"
+                    }`}>
+                      {otrosCantidad}
+                    </span>
+                    <span>
+                      <span className="block text-sm font-extrabold text-slate-900">Otros</span>
+                      <span className="mt-0.5 block text-xs text-slate-500">
+                        Documentación complementaria y comunicaciones de oficina.
+                      </span>
+                    </span>
+                  </span>
+                  <span
+                    className={`shrink-0 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600 transition ${
+                      otrosAbiertos ? "rotate-180" : ""
+                    }`}
+                    aria-hidden="true"
+                  >
+                    ⌄
+                  </span>
+                </button>
+
+                {otrosAbiertos && (
+                  <div className="border-t border-slate-100 bg-slate-50/50 p-3 sm:p-4">
+                    <div className="grid gap-3 xl:grid-cols-2">
+                      {CATEGORIAS_OTROS.map(renderCategoria)}
+                    </div>
+                  </div>
+                )}
+              </section>
+            )}
+
