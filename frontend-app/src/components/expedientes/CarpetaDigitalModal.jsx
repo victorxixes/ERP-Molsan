@@ -1,222 +1,73 @@
+```jsx
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 
 // ============================================================
-// ESTRUCTURA DE LA CARPETA DIGITAL
-// Los valores enviados al backend se mantienen separados
-// de los títulos visibles para conservar compatibilidad.
+// CATEGORÍAS ADMITIDAS POR EL BACKEND ACTUAL
+// No cambiar estos valores sin actualizar también el router.
 // ============================================================
 
 const ACTIVIDADES = [
   {
-    id: "documentacion-previa",
     numero: "01",
     titulo: "Documentación previa",
     descripcion: "Documentación inicial del expediente.",
-    icono: "📄",
-    color: "blue",
     categorias: [
-      { valor: "Documentos Absis", titulo: "Documentos Absis" },
-      {
-        valor: "Hoja de Encargo firmada",
-        titulo: "Hoja de Encargo firmada",
-      },
-      {
-        valor: "Justificante de cancelación",
-        titulo: "Justificante de cancelación",
-      },
-      {
-        valor: "Nota simple registral",
-        titulo: "Nota simple registral",
-      },
-      {
-        valor: "Escrituras/borradores",
-        titulo: "Borradores de escrituras",
-        alias: ["Borradores de escrituras"],
-      },
+      "Documentos Absis",
+      "Hoja de Encargo firmada",
+      "Justificante de cancelación",
+      "Nota simple registral",
+      "Escrituras/borradores",
     ],
   },
   {
-    id: "sede-notarial",
     numero: "02",
     titulo: "Sede notarial",
-    descripcion: "Presentación y documentación notarial.",
-    icono: "🏛️",
-    color: "emerald",
-    categorias: [
-      { valor: "Presentación Registro", titulo: "Presentación Registro" },
-      { valor: "Copia simple", titulo: "Copia simple" },
-    ],
+    descripcion: "Documentación relacionada con la gestión notarial.",
+    categorias: ["Presentación Registro"],
   },
   {
-    id: "liquidacion-impuestos",
     numero: "03",
-    titulo: "Liquidación impuestos",
-    descripcion: "Documentación de liquidaciones tributarias.",
-    icono: "📑",
-    color: "amber",
-    categorias: [
-      { valor: "AJD/ITP", titulo: "AJD/ITP" },
-      { valor: "Otros impuestos", titulo: "Otros impuestos" },
-    ],
+    titulo: "Liquidación de impuestos",
+    descripcion: "Justificantes y documentación tributaria.",
+    categorias: ["AJD/ITP"],
   },
   {
-    id: "gestion-economica",
     numero: "04",
     titulo: "Gestión económica",
-    descripcion: "Facturas, honorarios y otros pagos.",
-    icono: "💼",
-    color: "violet",
-    categorias: [
-      { valor: "Factura notarial", titulo: "Factura notarial" },
-      { valor: "Factura Registral", titulo: "Factura Registral" },
-      { valor: "Honorarios gestoría", titulo: "Honorarios gestoría" },
-      { valor: "Otros pagos", titulo: "Otros pagos" },
-    ],
+    descripcion: "Facturas y documentación económica.",
+    categorias: ["Factura notarial", "Factura Registral"],
   },
   {
-    id: "defectos-registrales",
     numero: "05",
     titulo: "Defectos registrales",
-    descripcion: "Defectos detectados y su subsanación.",
-    icono: "⚠️",
-    color: "rose",
-    categorias: [
-      { valor: "Defecto registral", titulo: "Defecto registral" },
-      {
-        valor: "Subsanación del defecto",
-        titulo: "Subsanación del defecto",
-      },
-    ],
+    descripcion: "Documentación relativa a defectos y subsanaciones.",
+    categorias: [],
   },
   {
-    id: "tramitacion-inscripcion",
     numero: "06",
     titulo: "Tramitación inscripción",
-    descripcion: "Documentación de la inscripción.",
-    icono: "🗂️",
-    color: "cyan",
-    categorias: [
-      { valor: "Hoja de Inscripción", titulo: "Hoja de Inscripción" },
-    ],
+    descripcion: "Documentación de la inscripción registral.",
+    categorias: ["Hoja de Inscripción"],
   },
   {
-    id: "facturacion-cierre",
     numero: "07",
     titulo: "Facturación y cierre",
     descripcion: "Documentación final del expediente.",
-    icono: "🏁",
-    color: "indigo",
-    categorias: [
-      {
-        valor: "Escritura digital final",
-        titulo: "Escritura digital final",
-      },
-    ],
+    categorias: ["Escritura digital final"],
   },
   {
-    id: "documentacion-general",
     numero: "08",
     titulo: "Documentación general",
     descripcion: "Correos y documentación complementaria.",
-    icono: "📁",
-    color: "blue",
-    categorias: [
-      {
-        valor: "Mails de la Oficina",
-        titulo: "Mails de la oficina",
-        alias: ["Mails de la oficina"],
-      },
-      {
-        valor: "Otra documentación",
-        titulo: "Otra documentación",
-      },
-    ],
+    categorias: ["Mails de la Oficina", "Otra documentación"],
   },
 ];
 
 const BASE = (id) =>
-  `/expedientes/${encodeURIComponent(id)}/carpeta-digital`;
-
-const COLORES = {
-  blue: {
-    borde: "border-blue-200",
-    fondo: "bg-blue-50/70",
-    icono: "bg-blue-600 text-white",
-    numero: "bg-blue-100 text-blue-700",
-    titulo: "text-blue-800",
-    acento: "text-blue-700",
-    subida:
-      "border-blue-200 text-blue-700 hover:border-blue-400 hover:bg-blue-50",
-    foco: "focus-visible:ring-blue-500",
-  },
-  emerald: {
-    borde: "border-emerald-200",
-    fondo: "bg-emerald-50/50",
-    icono: "bg-emerald-600 text-white",
-    numero: "bg-emerald-100 text-emerald-700",
-    titulo: "text-emerald-800",
-    acento: "text-emerald-700",
-    subida:
-      "border-emerald-200 text-emerald-700 hover:border-emerald-400 hover:bg-emerald-50",
-    foco: "focus-visible:ring-emerald-500",
-  },
-  amber: {
-    borde: "border-amber-200",
-    fondo: "bg-amber-50/50",
-    icono: "bg-amber-500 text-white",
-    numero: "bg-amber-100 text-amber-800",
-    titulo: "text-amber-800",
-    acento: "text-amber-700",
-    subida:
-      "border-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-50",
-    foco: "focus-visible:ring-amber-500",
-  },
-  violet: {
-    borde: "border-violet-200",
-    fondo: "bg-violet-50/50",
-    icono: "bg-violet-600 text-white",
-    numero: "bg-violet-100 text-violet-700",
-    titulo: "text-violet-800",
-    acento: "text-violet-700",
-    subida:
-      "border-violet-200 text-violet-700 hover:border-violet-400 hover:bg-violet-50",
-    foco: "focus-visible:ring-violet-500",
-  },
-  rose: {
-    borde: "border-rose-200",
-    fondo: "bg-rose-50/50",
-    icono: "bg-rose-600 text-white",
-    numero: "bg-rose-100 text-rose-700",
-    titulo: "text-rose-800",
-    acento: "text-rose-700",
-    subida:
-      "border-rose-200 text-rose-700 hover:border-rose-400 hover:bg-rose-50",
-    foco: "focus-visible:ring-rose-500",
-  },
-  cyan: {
-    borde: "border-cyan-200",
-    fondo: "bg-cyan-50/50",
-    icono: "bg-cyan-600 text-white",
-    numero: "bg-cyan-100 text-cyan-700",
-    titulo: "text-cyan-800",
-    acento: "text-cyan-700",
-    subida:
-      "border-cyan-200 text-cyan-700 hover:border-cyan-400 hover:bg-cyan-50",
-    foco: "focus-visible:ring-cyan-500",
-  },
-  indigo: {
-    borde: "border-indigo-200",
-    fondo: "bg-indigo-50/50",
-    icono: "bg-indigo-600 text-white",
-    numero: "bg-indigo-100 text-indigo-700",
-    titulo: "text-indigo-800",
-    acento: "text-indigo-700",
-    subida:
-      "border-indigo-200 text-indigo-700 hover:border-indigo-400 hover:bg-indigo-50",
-    foco: "focus-visible:ring-indigo-500",
-  },
-};
+  "/expedientes/" +
+  encodeURIComponent(id) +
+  "/carpeta-digital";
 
 export default function CarpetaDigitalModal({
   expedienteId,
@@ -226,11 +77,25 @@ export default function CarpetaDigitalModal({
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [subiendo, setSubiendo] = useState("");
-  const [categoriasAbiertas, setCategoriasAbiertas] = useState({});
+
+  // Todas las actividades aparecen extendidas al abrir el modal.
+  // Cada actividad se puede ocultar o extender independientemente.
+  const [actividadesAbiertas, setActividadesAbiertas] = useState({
+    "01": true,
+    "02": true,
+    "03": true,
+    "04": true,
+    "05": true,
+    "06": true,
+    "07": true,
+    "08": true,
+  });
 
   const cargar = useCallback(async () => {
     if (!expedienteId) {
-      setError("No se ha encontrado el identificador del expediente.");
+      setError(
+        "No se ha encontrado el identificador del expediente."
+      );
       setCargando(false);
       return;
     }
@@ -239,10 +104,12 @@ export default function CarpetaDigitalModal({
       setCargando(true);
       setError("");
 
-      const res = await axios.get(BASE(expedienteId));
+      const respuesta = await axios.get(BASE(expedienteId));
 
       setDocumentos(
-        Array.isArray(res.data) ? res.data : res.data?.items || []
+        Array.isArray(respuesta.data)
+          ? respuesta.data
+          : respuesta.data?.items || []
       );
     } catch (e) {
       setError(
@@ -258,11 +125,46 @@ export default function CarpetaDigitalModal({
     cargar();
   }, [cargar]);
 
-  async function subir(event, categoria) {
-    const archivos = Array.from(event.target.files || []);
+  function alternarActividad(numero) {
+    setActividadesAbiertas((actual) => ({
+      ...actual,
+      [numero]: !actual[numero],
+    }));
+  }
 
-    // Permite seleccionar otra vez el mismo archivo.
-    event.target.value = "";
+  function extenderTodas() {
+    setActividadesAbiertas({
+      "01": true,
+      "02": true,
+      "03": true,
+      "04": true,
+      "05": true,
+      "06": true,
+      "07": true,
+      "08": true,
+    });
+  }
+
+  function ocultarTodas() {
+    setActividadesAbiertas({
+      "01": false,
+      "02": false,
+      "03": false,
+      "04": false,
+      "05": false,
+      "06": false,
+      "07": false,
+      "08": false,
+    });
+  }
+
+  async function subir(evento, categoria) {
+    const archivos = Array.from(
+      evento.target.files || []
+    );
+
+    // Permite volver a seleccionar el mismo archivo.
+    evento.target.value = "";
 
     if (!archivos.length) return;
 
@@ -271,39 +173,38 @@ export default function CarpetaDigitalModal({
 
     try {
       for (const archivo of archivos) {
-        const data = new FormData();
+        const datos = new FormData();
 
-        data.append("archivo", archivo);
-        data.append("categoria", categoria);
+        datos.append("archivo", archivo);
+        datos.append("categoria", categoria);
 
-        await axios.post(BASE(expedienteId), data);
+        await axios.post(BASE(expedienteId), datos);
       }
 
       await cargar();
     } catch (e) {
       setError(
         e?.response?.data?.detail ||
-          "No se pudo guardar uno de los archivos. Comprueba las categorías admitidas por el backend."
+          "No se pudo guardar uno de los archivos."
       );
-
-      // Actualiza el listado por si se guardaron algunos archivos
-      // antes de producirse el error.
-      await cargar();
     } finally {
       setSubiendo("");
     }
   }
 
-  async function descargar(doc, abrir = false) {
-    try {
-      setError("");
+  async function descargar(documento, abrir = false) {
+    setError("");
 
-      const res = await axios.get(
-        `${BASE(expedienteId)}/${doc.id}/descargar`,
+    try {
+      const respuesta = await axios.get(
+        BASE(expedienteId) +
+          "/" +
+          documento.id +
+          "/descargar",
         { responseType: "blob" }
       );
 
-      const url = URL.createObjectURL(res.data);
+      const url = URL.createObjectURL(respuesta.data);
 
       if (abrir) {
         const ventana = window.open(
@@ -313,24 +214,25 @@ export default function CarpetaDigitalModal({
         );
 
         if (!ventana) {
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = doc.nombre_original || "documento";
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
+          setError(
+            "El navegador ha bloqueado la ventana. Utiliza Descargar."
+          );
         }
       } else {
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = doc.nombre_original || "documento";
+        const enlace = document.createElement("a");
 
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+        enlace.href = url;
+        enlace.download =
+          documento.nombre_original || "documento";
+
+        document.body.appendChild(enlace);
+        enlace.click();
+        enlace.remove();
       }
 
-      window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+      window.setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 60000);
     } catch (e) {
       setError(
         e?.response?.data?.detail ||
@@ -339,17 +241,19 @@ export default function CarpetaDigitalModal({
     }
   }
 
-  async function eliminar(doc) {
+  async function eliminar(documento) {
     const confirmar = window.confirm(
-      `¿Eliminar el archivo «${doc.nombre_original}»?`
+      `¿Quieres eliminar el archivo «${documento.nombre_original}»?`
     );
 
     if (!confirmar) return;
 
-    try {
-      setError("");
+    setError("");
 
-      await axios.delete(`${BASE(expedienteId)}/${doc.id}`);
+    try {
+      await axios.delete(
+        BASE(expedienteId) + "/" + documento.id
+      );
 
       await cargar();
     } catch (e) {
@@ -360,391 +264,366 @@ export default function CarpetaDigitalModal({
     }
   }
 
-  function documentosDeCategoria(categoria) {
-    // Compatibilidad con los nombres históricos que ya pudieran
-    // existir en la base de datos.
-    const valores = [
-      categoria.valor,
-      ...(categoria.alias || []),
-    ];
-
-    return documentos.filter((doc) =>
-      valores.includes(doc.categoria)
+  function documentosCategoria(categoria) {
+    return documentos.filter(
+      (documento) => documento.categoria === categoria
     );
   }
 
-  function documentosDeActividad(actividad) {
-    return actividad.categorias.reduce(
-      (total, categoria) =>
-        total + documentosDeCategoria(categoria).length,
-      0
-    );
-  }
+  function formatoBytes(bytes) {
+    const cantidad = Number(bytes) || 0;
 
-  function bytes(n) {
-    const numero = Number(n) || 0;
-
-    if (numero < 1024) return `${numero} B`;
-
-    if (numero < 1048576) {
-      return `${(numero / 1024).toFixed(1)} KB`;
+    if (cantidad < 1024) {
+      return `${cantidad} B`;
     }
 
-    return `${(numero / 1048576).toFixed(1)} MB`;
+    if (cantidad < 1048576) {
+      return `${(cantidad / 1024).toFixed(1)} KB`;
+    }
+
+    return `${(cantidad / 1048576).toFixed(1)} MB`;
   }
 
-  function fecha(valor) {
-    if (!valor) return "";
-
-    const date = new Date(valor);
-
-    if (Number.isNaN(date.getTime())) return "";
-
-    return date.toLocaleString("es-ES", {
-      dateStyle: "short",
-      timeStyle: "short",
-    });
-  }
-
-  const totalDocumentos = documentos.length;
+  const totalCategorias = ACTIVIDADES.reduce(
+    (total, actividad) =>
+      total + actividad.categorias.length,
+    0
+  );
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:p-5"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-2 sm:p-5"
+      onMouseDown={(evento) => {
+        if (evento.target === evento.currentTarget) {
+          onClose();
+        }
       }}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-label="Carpeta digital del expediente"
-        className="flex max-h-[94vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        className="flex max-h-[96vh] w-full max-w-[1600px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-2xl"
       >
         {/* CABECERA */}
-        <header className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4 sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-2xl text-white shadow-sm">
-              📁
-            </div>
+        <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-4 sm:px-6">
+          <div className="min-w-0">
+            <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">
+              MOLSAN ERP · Gestión documental
+            </p>
 
-            <div className="min-w-0">
-              <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-blue-600">
-                MOLSAN ERP · DOCUMENTACIÓN
-              </p>
+            <h2 className="mt-1 text-lg font-extrabold text-slate-900 sm:text-xl">
+              📁 Carpeta digital
+            </h2>
 
-              <h2 className="mt-0.5 text-xl font-extrabold tracking-tight text-slate-900">
-                Carpeta digital
-              </h2>
-
-              <p className="mt-0.5 text-xs text-slate-500">
-                Expediente{" "}
-                <span className="font-bold text-slate-700">
-                  {expedienteId || "—"}
-                </span>
-                <span className="mx-2 text-slate-300">·</span>
-                {totalDocumentos} archivo(s)
-              </p>
-            </div>
+            <p className="mt-1 text-xs text-slate-500">
+              Expediente {expedienteId || "—"} ·{" "}
+              {documentos.length} documento(s)
+            </p>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 transition hover:bg-slate-100"
           >
-            ✕ <span className="hidden sm:inline">Cerrar</span>
+            ✕ Cerrar
           </button>
         </header>
 
         {/* CONTENIDO */}
-        <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50/70 p-3 sm:p-5">
-          {error && (
-            <div
-              role="alert"
-              className="mb-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
-              <span aria-hidden="true">⚠️</span>
-              <p className="min-w-0 flex-1">{error}</p>
+        <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-5">
+          {/* CONTROLES GENERALES */}
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white p-3">
+            <div>
+              <p className="text-sm font-bold text-slate-800">
+                Actividades del expediente
+              </p>
+
+              <p className="mt-1 text-xs text-slate-500">
+                Oculta o extiende cada bloque de forma independiente.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={extenderTodas}
+                className="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 transition hover:bg-indigo-100"
+              >
+                ⬇ Extender todas
+              </button>
 
               <button
                 type="button"
-                onClick={() => setError("")}
-                className="shrink-0 rounded px-1 font-bold hover:bg-red-100"
-                aria-label="Cerrar mensaje"
+                onClick={ocultarTodas}
+                className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-100"
               >
-                ✕
+                ⬆ Ocultar todas
               </button>
+            </div>
+          </div>
+
+          {/* ERRORES */}
+          {error && (
+            <div
+              role="alert"
+              className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
+              {error}
             </div>
           )}
 
+          {/* CARGA */}
           {cargando ? (
-            <div className="flex min-h-64 flex-col items-center justify-center gap-3">
-              <div className="h-9 w-9 animate-spin rounded-full border-4 border-blue-100 border-t-blue-600" />
-              <p className="text-sm font-medium text-slate-500">
+            <div className="rounded-xl border border-slate-200 bg-white py-12 text-center">
+              <p className="text-sm font-semibold text-slate-600">
                 Cargando carpeta digital…
               </p>
             </div>
           ) : (
             <>
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <h3 className="text-sm font-extrabold text-slate-800">
-                    Organización documental
-                  </h3>
-                  <p className="mt-1 text-xs text-slate-500">
-                    Documentos agrupados por actividad del expediente.
-                  </p>
-                </div>
-
-                <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600">
-                  7 actividades
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {/*
+                Tres columnas en escritorio:
+                fila 1: actividades 01, 02, 03
+                fila 2: actividades 04, 05, 06
+                fila 3: actividades 07, 08
+              */}
+              <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
                 {ACTIVIDADES.map((actividad) => {
-                  const color = COLORES[actividad.color];
-                  const totalActividad =
-                    documentosDeActividad(actividad);
-                  const esCierre =
-                    actividad.id === "facturacion-cierre";
+                  const abierta =
+                    !!actividadesAbiertas[actividad.numero];
+
+                  const cantidadDocumentos =
+                    actividad.categorias.reduce(
+                      (total, categoria) =>
+                        total +
+                        documentosCategoria(categoria).length,
+                      0
+                    );
 
                   return (
                     <article
-                      key={actividad.id}
-                      className={`flex min-w-0 flex-col overflow-hidden rounded-xl border bg-white shadow-sm transition-shadow hover:shadow-md ${color.borde} ${
-                        esCierre ? "md:col-span-2 xl:col-span-3" : ""
-                      }`}
+                      key={actividad.numero}
+                      className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
                     >
-                      {/* CABECERA DE ACTIVIDAD */}
-                      <div
-                        className={`flex items-start gap-3 border-b border-slate-100 px-4 py-3 ${color.fondo}`}
-                      >
-                        <div
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl shadow-sm ${color.icono}`}
-                        >
-                          {actividad.icono}
+                      {/* CABECERA PLEGABLE DE LA ACTIVIDAD */}
+                      <div className="flex items-center gap-3 bg-gradient-to-r from-slate-50 to-white p-3 sm:p-4">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-indigo-50 text-sm font-extrabold text-indigo-700">
+                          {actividad.numero}
                         </div>
 
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span
-                              className={`text-[10px] font-extrabold tracking-wider ${color.acento}`}
-                            >
-                              ACTIVIDAD {actividad.numero}
-                            </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            alternarActividad(actividad.numero)
+                          }
+                          aria-expanded={abierta}
+                          className="min-w-0 flex-1 text-left"
+                        >
+                          <span className="block text-[10px] font-extrabold uppercase tracking-wider text-indigo-600">
+                            ACTIVIDAD {actividad.numero}
+                          </span>
 
-                            <span
-                              className={`rounded-md px-2 py-0.5 text-[10px] font-extrabold ${color.numero}`}
-                            >
-                              {totalActividad}
-                            </span>
-                          </div>
-
-                          <h3
-                            className={`mt-0.5 text-sm font-extrabold ${color.titulo}`}
-                          >
+                          <span className="mt-1 block text-sm font-extrabold leading-snug text-slate-900">
                             {actividad.titulo}
-                          </h3>
+                          </span>
 
-                          <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                          <span className="mt-1 block text-xs text-slate-500">
+                            {cantidadDocumentos} documento(s)
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            alternarActividad(actividad.numero)
+                          }
+                          aria-expanded={abierta}
+                          aria-label={
+                            abierta
+                              ? `Ocultar ${actividad.titulo}`
+                              : `Extender ${actividad.titulo}`
+                          }
+                          title={
+                            abierta
+                              ? "Ocultar actividad"
+                              : "Extender actividad"
+                          }
+                          className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+                        >
+                          {abierta ? "Ocultar ↑" : "Extender ↓"}
+                        </button>
+                      </div>
+
+                      {/* CONTENIDO EXPANDIBLE */}
+                      {abierta && (
+                        <div className="space-y-3 border-t border-slate-100 p-3 sm:p-4">
+                          <p className="text-xs leading-relaxed text-slate-500">
                             {actividad.descripcion}
                           </p>
-                        </div>
-                      </div>
 
-                      {/* CATEGORÍAS */}
-                      <div
-                        className={`flex flex-1 flex-col gap-3 p-3 sm:p-4 ${
-                          esCierre
-                            ? "xl:grid xl:grid-cols-2 xl:items-start xl:gap-4"
-                            : ""
-                        }`}
-                      >
-                        {actividad.categorias.map((categoria) => {
-                          const lista =
-                            documentosDeCategoria(categoria);
-                          const clave =
-                            `${actividad.id}:${categoria.valor}`;
-                          const abierta =
-                            !!categoriasAbiertas[clave];
-                          const mostrar =
-                            abierta ? lista : lista.slice(0, 3);
+                          {actividad.categorias.length === 0 ? (
+                            <div className="rounded-lg border border-dashed border-amber-200 bg-amber-50 p-3">
+                              <p className="text-xs font-bold text-amber-800">
+                                Categorías pendientes de configurar
+                              </p>
 
-                          return (
-                            <section
-                              key={categoria.valor}
-                              className="min-w-0 rounded-lg border border-slate-200 bg-white p-3"
-                            >
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="min-w-0">
-                                  <h4 className="break-words text-xs font-bold leading-5 text-slate-800">
-                                    {categoria.titulo}
-                                  </h4>
+                              <p className="mt-1 text-xs leading-relaxed text-amber-700">
+                                Las categorías de defectos registrales
+                                y subsanaciones todavía deben habilitarse
+                                en el backend antes de poder adjuntar
+                                archivos en esta actividad.
+                              </p>
+                            </div>
+                          ) : (
+                            actividad.categorias.map((categoria) => {
+                              const lista =
+                                documentosCategoria(categoria);
 
-                                  <p className="mt-0.5 text-[10px] text-slate-400">
-                                    {lista.length} archivo(s)
-                                  </p>
-                                </div>
-
-                                <span className="flex h-6 min-w-6 shrink-0 items-center justify-center rounded-md bg-slate-100 px-1.5 text-[10px] font-extrabold text-slate-600">
-                                  {lista.length}
-                                </span>
-                              </div>
-
-                              {/* ADJUNTAR */}
-                              <label
-                                className={`mt-3 flex min-h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed px-3 py-2 text-center text-[11px] font-bold transition focus-within:ring-2 ${color.subida} ${color.foco} ${
-                                  subiendo === categoria.valor
-                                    ? "pointer-events-none opacity-60"
-                                    : ""
-                                }`}
-                              >
-                                <span className="text-base leading-none">
-                                  {subiendo === categoria.valor
-                                    ? "⏳"
-                                    : "+"}
-                                </span>
-
-                                <span>
-                                  {subiendo === categoria.valor
-                                    ? "Guardando archivos…"
-                                    : "Adjuntar archivo(s)"}
-                                </span>
-
-                                <input
-                                  className="sr-only"
-                                  type="file"
-                                  multiple
-                                  onChange={(e) =>
-                                    subir(e, categoria.valor)
-                                  }
-                                  disabled={!!subiendo}
-                                  aria-label={`Adjuntar archivos: ${categoria.titulo}`}
-                                />
-                              </label>
-
-                              {/* LISTADO */}
-                              {lista.length > 0 && (
-                                <ul className="mt-2 divide-y divide-slate-100">
-                                  {mostrar.map((doc) => (
-                                    <li
-                                      key={doc.id}
-                                      className="flex min-w-0 items-center gap-2 py-2"
-                                    >
-                                      <div className="flex h-8 w-7 shrink-0 items-center justify-center rounded-md bg-red-50 text-sm">
-                                        📕
-                                      </div>
-
-                                      <div className="min-w-0 flex-1">
-                                        <p
-                                          className="truncate text-[11px] font-semibold text-slate-700"
-                                          title={doc.nombre_original}
-                                        >
-                                          {doc.nombre_original}
-                                        </p>
-
-                                        <p className="mt-0.5 text-[10px] text-slate-400">
-                                          {bytes(doc.tamano_bytes)} 
-                                          {doc.fecha_subida
-                                            ? ` · ${fecha(doc.fecha_subida)}`
-                                            : ""}
-                                        </p>
-                                      </div>
-
-                                      <div className="flex shrink-0 items-center gap-0.5">
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            descargar(doc, true)
-                                          }
-                                          title="Ver documento"
-                                          aria-label={`Ver ${doc.nombre_original}`}
-                                          className="rounded-md px-2 py-1.5 text-[10px] font-bold text-blue-700 transition hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                                        >
-                                          Ver
-                                        </button>
-
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            descargar(doc, false)
-                                          }
-                                          title="Descargar documento"
-                                          aria-label={`Descargar ${doc.nombre_original}`}
-                                          className="rounded-md px-2 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                                        >
-                                          ↓
-                                        </button>
-
-                                        <button
-                                          type="button"
-                                          onClick={() => eliminar(doc)}
-                                          title="Eliminar documento"
-                                          aria-label={`Eliminar ${doc.nombre_original}`}
-                                          className="rounded-md px-2 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-                                        >
-                                          ✕
-                                        </button>
-                                      </div>
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-
-                              {lista.length === 0 && (
-                                <p className="py-3 text-center text-[10px] text-slate-400">
-                                  No hay documentos adjuntos.
-                                </p>
-                              )}
-
-                              {lista.length > 3 && (
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setCategoriasAbiertas((actual) => ({
-                                      ...actual,
-                                      [clave]: !actual[clave],
-                                    }))
-                                  }
-                                  className={`mt-1 flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[10px] font-bold transition hover:bg-slate-50 ${color.acento}`}
+                              return (
+                                <div
+                                  key={categoria}
+                                  className="min-w-0 rounded-lg border border-slate-200 bg-slate-50/70 p-3"
                                 >
-                                  {abierta
-                                    ? "Mostrar menos"
-                                    : `Ver todos los documentos (${lista.length})`}
+                                  {/* CATEGORÍA */}
+                                  <div className="flex items-start justify-between gap-2">
+                                    <h4 className="min-w-0 break-words text-xs font-extrabold text-slate-800">
+                                      {categoria === "Mails de la Oficina"
+                                        ? "Correos de la oficina"
+                                        : categoria}
+                                    </h4>
 
-                                  <span
-                                    className={`transition-transform ${
-                                      abierta ? "rotate-180" : ""
+                                    <span className="shrink-0 rounded-full border border-slate-200 bg-white px-2 py-1 text-[10px] font-extrabold text-slate-600">
+                                      {lista.length}
+                                    </span>
+                                  </div>
+
+                                  {/* ADJUNTAR */}
+                                  <label
+                                    className={`mt-3 flex items-center justify-center rounded-lg border border-dashed px-3 py-2.5 text-center text-xs font-bold transition ${
+                                      subiendo === categoria
+                                        ? "cursor-wait border-slate-200 bg-slate-100 text-slate-400"
+                                        : "cursor-pointer border-indigo-200 bg-white text-indigo-700 hover:border-indigo-400 hover:bg-indigo-50"
                                     }`}
                                   >
-                                    ⌄
-                                  </span>
-                                </button>
-                              )}
-                            </section>
-                          );
-                        })}
-                      </div>
+                                    {subiendo === categoria
+                                      ? "Guardando archivos…"
+                                      : "＋ Adjuntar archivo(s)"}
+
+                                    <input
+                                      className="hidden"
+                                      type="file"
+                                      multiple
+                                      disabled={!!subiendo}
+                                      onChange={(evento) =>
+                                        subir(evento, categoria)
+                                      }
+                                    />
+                                  </label>
+
+                                  {/* LISTADO COMPLETO DE DOCUMENTOS */}
+                                  {lista.length > 0 ? (
+                                    <ul className="mt-2 divide-y divide-slate-200">
+                                      {lista.map((documento) => (
+                                        <li
+                                          key={documento.id}
+                                          className="flex min-w-0 items-center gap-1.5 py-2"
+                                        >
+                                          <div className="min-w-0 flex-1">
+                                            <p
+                                              className="break-words text-xs font-semibold text-slate-700"
+                                              title={
+                                                documento.nombre_original
+                                              }
+                                            >
+                                              📄{" "}
+                                              {documento.nombre_original}
+                                            </p>
+
+                                            <p className="mt-1 text-[10px] text-slate-400">
+                                              {formatoBytes(
+                                                documento.tamano_bytes
+                                              )}
+                                              {documento.fecha_subida
+                                                ? ` · ${new Date(
+                                                    documento.fecha_subida
+                                                  ).toLocaleString("es-ES")}`
+                                                : ""}
+                                            </p>
+                                          </div>
+
+                                          <div className="flex shrink-0 items-center gap-1">
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                descargar(documento, true)
+                                              }
+                                              title="Abrir documento"
+                                              className="rounded-md border border-indigo-100 bg-white px-2 py-1.5 text-[10px] font-bold text-indigo-700 hover:bg-indigo-50"
+                                            >
+                                              Ver
+                                            </button>
+
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                descargar(documento, false)
+                                              }
+                                              title="Descargar documento"
+                                              className="rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[10px] font-bold text-slate-700 hover:bg-slate-100"
+                                            >
+                                              ↓
+                                            </button>
+
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                eliminar(documento)
+                                              }
+                                              title="Eliminar documento"
+                                              className="rounded-md border border-red-100 bg-white px-2 py-1.5 text-[10px] font-bold text-red-600 hover:bg-red-50"
+                                            >
+                                              ✕
+                                            </button>
+                                          </div>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  ) : (
+                                    <p className="py-3 text-center text-[11px] text-slate-400">
+                                      No hay documentos adjuntos.
+                                    </p>
+                                  )}
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+                      )}
                     </article>
                   );
                 })}
               </div>
+
+              <p className="mt-4 text-center text-[10px] text-slate-400">
+                {totalCategorias} categorías documentales configuradas ·
+                Los documentos se conservan al ocultar una actividad.
+              </p>
             </>
           )}
         </div>
 
         {/* PIE */}
-        <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-3 sm:px-6">
-          <p className="hidden text-[11px] text-slate-400 sm:block">
-            MOLSAN ERP · Gestión documental del expediente
-          </p>
+        <footer className="flex shrink-0 justify-between gap-3 border-t border-slate-200 bg-white px-4 py-3 sm:px-6">
+          <span className="self-center text-xs text-slate-500">
+            {documentos.length} documento(s) en total
+          </span>
 
           <button
             type="button"
             onClick={onClose}
-            className="ml-auto rounded-lg bg-slate-900 px-5 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2"
+            className="rounded-lg bg-slate-900 px-5 py-2.5 text-xs font-extrabold text-white transition hover:bg-slate-700"
           >
             Terminar
           </button>
@@ -753,3 +632,4 @@ export default function CarpetaDigitalModal({
     </div>
   );
 }
+```
