@@ -134,8 +134,8 @@ function crearFormularioDesdeExpediente(expediente) {
           nif: obtenerValor(expediente, "nif_notario"),
           municipio: obtenerValor(expediente, "poblacion"),
           provincia: obtenerValor(expediente, "provincia"),
-          apoderado: obtenerValor(expediente, "apoderado"),
-          tipo_firma: obtenerValor(expediente, "tipo_firma"),
+          apoderado: obtenerValor(expediente, "apoderado", "nombre_apoderado", "apoderado_nombre"),
+          tipo_firma: obtenerValor(expediente, "tipo_firma", "tipoFirma", "tipo_firma_notarial"),
         }
       : null,
     tipo_documento: obtenerValor(expediente, "tipo_documento"),
@@ -381,6 +381,8 @@ export default function EnviarANotarioModal({
     const nombreCompleto = String(
       notarioSeleccionado.nombre ??
       notarioSeleccionado.nombre_notario ??
+      notarioSeleccionado.notario_nombre ??
+      notarioSeleccionado.nombre_completo ??
       notarioSeleccionado.nombres ??
       notarioSeleccionado.notario ??
       ""
@@ -403,6 +405,8 @@ export default function EnviarANotarioModal({
         notarioSeleccionado.id ??
         notarioSeleccionado.notario_id ??
         notarioSeleccionado.id_notario ??
+        notarioSeleccionado.notaria_id ??
+        notarioSeleccionado.id_notaria ??
         0
       ),
       nombre: nombre || "",
@@ -410,8 +414,20 @@ export default function EnviarANotarioModal({
       nif: notarioSeleccionado.nif ?? notarioSeleccionado.nif_notario ?? notarioSeleccionado.documento ?? "",
       municipio: notarioSeleccionado.municipio ?? notarioSeleccionado.poblacion ?? notarioSeleccionado.localidad ?? "",
       provincia: notarioSeleccionado.provincia ?? notarioSeleccionado.provincia_notario ?? "",
-      apoderado: notarioSeleccionado.apoderado ?? notarioSeleccionado.nombre_apoderado ?? "",
-      tipo_firma: notarioSeleccionado.tipo_firma ?? notarioSeleccionado.tipoFirma ?? notarioSeleccionado.tipo_firma_notarial ?? "",
+      apoderado:
+        notarioSeleccionado.apoderado ??
+        notarioSeleccionado.nombre_apoderado ??
+        notarioSeleccionado.apoderado_nombre ??
+        notarioSeleccionado.apoderado_notarial ??
+        notarioSeleccionado.apoderado_nombre_completo ??
+        "",
+      tipo_firma:
+        notarioSeleccionado.tipo_firma ??
+        notarioSeleccionado.tipoFirma ??
+        notarioSeleccionado.tipo_firma_notarial ??
+        notarioSeleccionado.firma ??
+        notarioSeleccionado.modalidad_firma ??
+        "",
     };
 
     setForm((actual) => ({ ...actual, notario: normalizado }));
@@ -616,11 +632,14 @@ export default function EnviarANotarioModal({
       console.error("RESPONSE:", err?.response?.data);
       console.error("STATUS:", err?.response?.status);
 
+      const detalle = err?.response?.data?.detail;
       setError(
-        err?.response?.data?.detail ||
-          err?.response?.data?.message ||
-          err?.message ||
-          "No se ha podido completar el envío a notario."
+        typeof detalle === "string"
+          ? detalle
+          : detalle?.mensaje || JSON.stringify(detalle) ||
+            err?.response?.data?.message ||
+            err?.message ||
+            "No se ha podido completar el envío a notario."
       );
     } finally {
       setLoading(false);
