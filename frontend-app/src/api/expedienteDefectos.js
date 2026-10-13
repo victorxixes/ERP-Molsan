@@ -1,4 +1,4 @@
-
+```javascript
 import axios from "./axios";
 
 // ============================================================
@@ -35,8 +35,10 @@ export async function actualizarDefectoExpediente(
   return response.data;
 }
 
-// Registrar la fecha de entrada de la subsanación.
-// Requiere que el router de backend tenga la ruta PATCH correspondiente.
+// ============================================================
+// REGISTRO DE SUBSANACIÓN
+// ============================================================
+
 export async function registrarSubsanacionDefecto(
   idExpediente,
   defectoId,
@@ -97,7 +99,6 @@ export async function desactivarSubtipoDefecto(subtipoId) {
 
 // ============================================================
 // CATÁLOGO DE TIPOS DE CARGA HIPOTECARIA
-// Utiliza el router ya existente en el backend.
 // ============================================================
 
 export async function listarTiposCargaHipotecaria() {
@@ -140,13 +141,12 @@ export async function obtenerCalificacionRegistro(
   );
 
   return response.data;
+}
 
-  
-/**
- * Registra una calificación registral en la carpeta digital.
- * El PDF se conserva también en el módulo de defectos,
- * mediante subirCalificacionRegistro().
- */
+// ============================================================
+// COPIAR CALIFICACIÓN REGISTRAL A LA CARPETA DIGITAL
+// ============================================================
+
 export async function subirCalificacionACarpetaDigital(
   idExpediente,
   archivo,
@@ -163,5 +163,4 @@ export async function subirCalificacionACarpetaDigital(
 
   return response.data;
 }
-
-}
+```
