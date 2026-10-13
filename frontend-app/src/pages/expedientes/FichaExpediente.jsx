@@ -3939,7 +3939,7 @@ const cuantiaFincasParaEnvio =
                   maximumFractionDigits: 2,
                 })} €`
               )
-              .join(" | ") || expediente.cuantia ?? expediente.cuantia_documento ?? ""
+              .join(" | ") || (expediente.cuantia ?? expediente.cuantia_documento ?? "")
           : expediente.cuantia ?? expediente.cuantia_documento ?? ""
       }
     />
@@ -3974,7 +3974,6 @@ const cuantiaFincasParaEnvio =
     <Dato campo="Provincia notario" valor={expediente.provincia} />
   </div>
 </div>
-                </div>
                 </>}
                 <div className="flex justify-center border-t border-slate-100 pt-4">
                   <button type="button" onClick={() => setMostrarEnviarNotario(true)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2">🏛️ {expediente.fecha_envio_notario || expediente.fecha_envio ? "Revisar / modificar encargo" : "Enviar a notario"}</button>
