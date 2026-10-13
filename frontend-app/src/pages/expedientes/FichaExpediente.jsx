@@ -1452,6 +1452,21 @@ export default function FichaExpediente() {
     setMostrarEnviarNotario,
   ] = useState(false);
 
+  // Gastos vinculados al expediente y al documento formalizado.
+  const [mostrarFormularioGasto, setMostrarFormularioGasto] = useState(false);
+  const [gastosExpediente, setGastosExpediente] = useState([]);
+  const [cargandoGastos, setCargandoGastos] = useState(false);
+  const [guardandoGasto, setGuardandoGasto] = useState(false);
+  const [errorGastos, setErrorGastos] = useState("");
+  const [mensajeGastos, setMensajeGastos] = useState("");
+  const [gastoForm, setGastoForm] = useState({
+    tipo: "",
+    descripcion: "",
+    importe: "",
+    fecha: new Date().toLocaleDateString("sv-SE"),
+    documento_url: "",
+  });
+
   const [
     mostrarFincas,
     setMostrarFincas,
@@ -1962,6 +1977,128 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
     setMostrarEnviarNotario(false);
   }
+
+
+  // ==========================================================
+  // GASTOS DEL EXPEDIENTE
+  // ==========================================================
+
+  async function cargarGastosExpediente() {
+    const expedienteId = expediente?.id_expediente || id || expediente?.id;
+    if (!expedienteId) return;
+
+    setCargandoGastos(true);
+    setErrorGastos("");
+    try {
+      const respuesta = await axios.get(
+        `/expedientes/${encodeURIComponent(expedienteId)}/gastos`
+      );
+      const datos = respuesta?.data;
+      const lista = Array.isArray(datos)
+        ? datos
+        : Array.isArray(datos?.items)
+          ? datos.items
+          : Array.isArray(datos?.gastos)
+            ? datos.gastos
+            : [];
+      setGastosExpediente(lista);
+    } catch (err) {
+      setErrorGastos(
+        err?.response?.data?.detail ||
+        "No se pudieron cargar los gastos del expediente."
+      );
+    } finally {
+      setCargandoGastos(false);
+    }
+  }
+
+  async function guardarGastoExpediente(event) {
+    event.preventDefault();
+    const expedienteId = expediente?.id_expediente || id || expediente?.id;
+    const importe = Number(String(gastoForm.importe).replace(",", "."));
+
+    if (!expedienteId) {
+      setErrorGastos("No se ha identificado el expediente.");
+      return;
+    }
+    if (!gastoForm.tipo.trim()) {
+      setErrorGastos("Indica el tipo de gasto.");
+      return;
+    }
+    if (!gastoForm.descripcion.trim()) {
+      setErrorGastos("Indica la descripción del gasto.");
+      return;
+    }
+    if (!gastoForm.importe || !Number.isFinite(importe) || importe < 0) {
+      setErrorGastos("Indica un importe válido.");
+      return;
+    }
+    if (!gastoForm.fecha) {
+      setErrorGastos("Indica la fecha del gasto.");
+      return;
+    }
+
+    setGuardandoGasto(true);
+    setErrorGastos("");
+    setMensajeGastos("");
+    try {
+      await axios.post(
+        `/expedientes/${encodeURIComponent(expedienteId)}/gastos`,
+        {
+          tipo: gastoForm.tipo.trim(),
+          descripcion: gastoForm.descripcion.trim(),
+          importe,
+          fecha: gastoForm.fecha,
+          documento_url: gastoForm.documento_url.trim() || null,
+        }
+      );
+      setGastoForm({
+        tipo: "",
+        descripcion: "",
+        importe: "",
+        fecha: new Date().toLocaleDateString("sv-SE"),
+        documento_url: "",
+      });
+      setMensajeGastos("El gasto se ha registrado correctamente.");
+      setMostrarFormularioGasto(false);
+      await cargarGastosExpediente();
+    } catch (err) {
+      const detalle = err?.response?.data?.detail;
+      setErrorGastos(
+        typeof detalle === "string"
+          ? detalle
+          : "No se pudo registrar el gasto. Comprueba los campos requeridos por el router de gastos."
+      );
+    } finally {
+      setGuardandoGasto(false);
+    }
+  }
+
+  async function eliminarGastoExpediente(gasto) {
+    if (!window.confirm(`¿Eliminar el gasto «${gasto.descripcion || gasto.tipo || gasto.id}»?`)) return;
+    const expedienteId = expediente?.id_expediente || id || expediente?.id;
+    try {
+      setErrorGastos("");
+      await axios.delete(
+        `/expedientes/${encodeURIComponent(expedienteId)}/gastos/${encodeURIComponent(gasto.id)}`
+      );
+      setMensajeGastos("El gasto se ha eliminado.");
+      await cargarGastosExpediente();
+    } catch (err) {
+      setErrorGastos(
+        err?.response?.data?.detail ||
+        "No se pudo eliminar el gasto."
+      );
+    }
+  }
+
+  useEffect(() => {
+    if (expediente && (expediente.fecha_envio_notario || expediente.fecha_envio)) {
+      cargarGastosExpediente();
+    }
+    // La recarga se controla al cambiar el expediente o cuando se registra un gasto.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expediente?.id_expediente, expediente?.fecha_envio_notario, expediente?.fecha_envio]);
 
 
   // ==========================================================
@@ -4078,6 +4215,143 @@ const cuantiaFincasParaEnvio =
   }
 />
                     </div>
+
+                    {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
+                      <section className="mt-4 rounded-xl border border-indigo-100 bg-white p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div>
+                            <h4 className="text-sm font-extrabold text-slate-800">Gastos del expediente</h4>
+                            <p className="mt-1 text-xs text-slate-500">
+                              Registra los gastos derivados de la escritura. El importe del gasto es independiente de la cuantía del documento formalizado.
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setErrorGastos("");
+                              setMensajeGastos("");
+                              setMostrarFormularioGasto((actual) => !actual);
+                            }}
+                            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700"
+                          >
+                            {mostrarFormularioGasto ? "Cancelar" : "＋ Registrar gasto"}
+                          </button>
+                        </div>
+
+                        {errorGastos && (
+                          <div role="alert" className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                            {errorGastos}
+                          </div>
+                        )}
+                        {mensajeGastos && (
+                          <div role="status" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+                            {mensajeGastos}
+                          </div>
+                        )}
+
+                        {mostrarFormularioGasto && (
+                          <form onSubmit={guardarGastoExpediente} className="mt-4 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:grid-cols-2">
+                            <label className="block">
+                              <span className="mb-1 block text-xs font-bold text-slate-700">Tipo de gasto *</span>
+                              <input
+                                required
+                                value={gastoForm.tipo}
+                                onChange={(e) => setGastoForm((actual) => ({ ...actual, tipo: e.target.value }))}
+                                placeholder="Ej. Notaría, Registro, Impuestos…"
+                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                              />
+                            </label>
+                            <label className="block">
+                              <span className="mb-1 block text-xs font-bold text-slate-700">Importe (€) *</span>
+                              <input
+                                required
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={gastoForm.importe}
+                                onChange={(e) => setGastoForm((actual) => ({ ...actual, importe: e.target.value }))}
+                                placeholder="0,00"
+                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                              />
+                            </label>
+                            <label className="block sm:col-span-2">
+                              <span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span>
+                              <input
+                                required
+                                value={gastoForm.descripcion}
+                                onChange={(e) => setGastoForm((actual) => ({ ...actual, descripcion: e.target.value }))}
+                                placeholder="Descripción del gasto"
+                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                              />
+                            </label>
+                            <label className="block">
+                              <span className="mb-1 block text-xs font-bold text-slate-700">Fecha *</span>
+                              <input
+                                required
+                                type="date"
+                                value={gastoForm.fecha}
+                                onChange={(e) => setGastoForm((actual) => ({ ...actual, fecha: e.target.value }))}
+                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                              />
+                            </label>
+                            <label className="block">
+                              <span className="mb-1 block text-xs font-bold text-slate-700">Documento justificativo (URL, opcional)</span>
+                              <input
+                                type="url"
+                                value={gastoForm.documento_url}
+                                onChange={(e) => setGastoForm((actual) => ({ ...actual, documento_url: e.target.value }))}
+                                placeholder="https://…"
+                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                              />
+                            </label>
+                            <div className="flex justify-end gap-2 sm:col-span-2">
+                              <button
+                                type="button"
+                                onClick={() => setMostrarFormularioGasto(false)}
+                                disabled={guardandoGasto}
+                                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600"
+                              >
+                                Cancelar
+                              </button>
+                              <button
+                                type="submit"
+                                disabled={guardandoGasto}
+                                className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50"
+                              >
+                                {guardandoGasto ? "Guardando…" : "Guardar gasto"}
+                              </button>
+                            </div>
+                          </form>
+                        )}
+
+                        <div className="mt-3">
+                          {cargandoGastos ? (
+                            <p className="py-3 text-xs text-slate-500">Cargando gastos…</p>
+                          ) : gastosExpediente.length === 0 ? (
+                            <p className="py-3 text-xs text-slate-500">Todavía no hay gastos registrados en este expediente.</p>
+                          ) : (
+                            <ul className="divide-y divide-slate-100">
+                              {gastosExpediente.map((gasto) => (
+                                <li key={gasto.id} className="flex flex-wrap items-center gap-3 py-3">
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-bold text-slate-800">{gasto.descripcion || gasto.tipo || "Gasto"}</p>
+                                    <p className="mt-0.5 text-[11px] text-slate-500">
+                                      {[gasto.tipo, gasto.fecha ? formatearFecha(gasto.fecha) : null].filter(Boolean).join(" · ")}
+                                    </p>
+                                  </div>
+                                  <span className="text-sm font-extrabold text-slate-800">
+                                    {gasto.importe == null ? "—" : `${Number(gasto.importe).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}
+                                  </span>
+                                  <button type="button" onClick={() => eliminarGastoExpediente(gasto)} className="rounded-md px-2 py-1 text-xs font-bold text-red-600 hover:bg-red-50">
+                                    Eliminar
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </section>
+                    )}
                 </div>
                 </>}
                 {actividadActual === "documentacion-previa" && (
