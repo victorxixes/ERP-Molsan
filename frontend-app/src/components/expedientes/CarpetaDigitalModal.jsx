@@ -267,7 +267,7 @@ export default function CarpetaDigitalModal({ expedienteId, onClose, modoActivid
                   </span>
                 </button>
 
-                {otrosAbiertos && (
+                                {otrosAbiertos && (
                   <div className="border-t border-slate-100 bg-slate-50/50 p-3 sm:p-4">
                     <div className="grid gap-3 xl:grid-cols-2">
                       {CATEGORIAS_OTROS.map(renderCategoria)}
@@ -276,4 +276,9 @@ export default function CarpetaDigitalModal({ expedienteId, onClose, modoActivid
                 )}
               </section>
             )}
-
+          </>}
+        </div>
+      </section>
+    </div>
+  );
+}
