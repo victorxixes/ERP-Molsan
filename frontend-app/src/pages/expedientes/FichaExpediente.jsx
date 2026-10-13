@@ -4004,7 +4004,12 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Número solicitud PNC" valor={expediente.numero_solicitud_pnc ?? expediente.num_solicitud_pnc ?? expediente.pnc_numero_solicitud} />
                     <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
                     <Dato campo="NIF notario" valor={expediente.nif_notario} />
+                    <Dato campo="Población notario" valor={expediente.poblacion} />
+                    <Dato campo="Provincia notario" valor={expediente.provincia} />
                     <Dato campo="Apoderado" valor={expediente.apoderado} />
+                     <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
+                    <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
+                    <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
                   </div>
                 </div>
                 <div className="border-t border-slate-100 pt-3">
@@ -4032,17 +4037,16 @@ const cuantiaFincasParaEnvio =
                           ).join(" | ")
                         : expediente.tipo_documento}
                     />
+                     <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
+                    <Dato campo="NIF notario" valor={expediente.nif_notario} />
+                    <Dato campo="Población notario" valor={expediente.poblacion} />
+                    <Dato campo="Provincia notario" valor={expediente.provincia} />
                     <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
                     <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite ?? expediente.tipo_tramite_notarial ?? expediente.tramite} />
-                    <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
-                    <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
-                    <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
                     <Dato campo="Escritura firmada" valor={expediente.escritura_firmada === true ? "Sí" : expediente.escritura_firmada === false ? "No" : null} />
                     <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
                     <Dato campo="Protocolo" valor={expediente.protocolo} />
-                    <Dato campo="Población notario" valor={expediente.poblacion} />
-                    <Dato campo="Provincia notario" valor={expediente.provincia} />
-                  </div>
+                    </div>
                 </div>
                 </>}
                 {actividadActual === "documentacion-previa" && (
