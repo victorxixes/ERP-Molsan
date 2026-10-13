@@ -230,6 +230,10 @@ from backend.app.seguridad.permisos.permisos_router import (
     router as permisos_router,
 )
 
+from backend.app.expedientes.gastos.router import (
+    router as gastos_router,
+)
+
 # CARPETA DIGITAL DE EXPEDIENTES
 from backend.app.carpeta_digital.router import (
     router as carpeta_digital_router,
@@ -442,7 +446,8 @@ app.include_router(ficha_empleado_router, prefix="/api")
 app.include_router(seguridad_auditoria_router, prefix="/api")
 app.include_router(seguridad_logs_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
-app.include_router(expedientes_fincas_router, prefix="/api",)
+app.include_router(expedientes_fincas_router, prefix="/api")
+app.include_router(gastos_router, prefix="/api")
 
 # AGENDA
 app.include_router(agenda_router, prefix="/api")
