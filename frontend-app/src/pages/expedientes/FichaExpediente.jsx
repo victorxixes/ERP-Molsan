@@ -1459,13 +1459,26 @@ export default function FichaExpediente() {
   const [guardandoGasto, setGuardandoGasto] = useState(false);
   const [errorGastos, setErrorGastos] = useState("");
   const [mensajeGastos, setMensajeGastos] = useState("");
+  const [conceptosGasto, setConceptosGasto] = useState([]);
+  const [cargandoConceptosGasto, setCargandoConceptosGasto] = useState(false);
   const [gastoForm, setGastoForm] = useState({
-    tipo: "",
-    descripcion: "",
-    importe: "",
-    fecha: new Date().toLocaleDateString("sv-SE"),
-    documento_url: "",
+    tipo: "", descripcion: "", importe: "", fecha: new Date().toLocaleDateString("sv-SE"), documento_url: "",
+    nif_notario: "", nombre_notario: "", pagador: "", cuenta_bancaria: "", medio_pago: "Transferencia",
+    numero_factura: "", fecha_factura: new Date().toLocaleDateString("sv-SE"), importe_total_bruto: "",
+    base_exenta_impuestos: "0.00", base_sujeta_impuestos: "", tramo_impuesto: "General", tipo_impuesto: "IVA 21%",
+    porcentaje_impuesto: "21", base_exenta_retencion: "0.00", base_sujeta_retencion: "0.00",
+    tipo_retencion: "IRPF profesionales", porcentaje_retencion: "15", documento_carpeta_id: "", estado_pago: "Pendiente",
   });
+
+  const numeroDecimalGasto = (valor) => {
+    if (valor === "" || valor === null || valor === undefined) return 0;
+    const n = Number(String(valor).replace(/\s/g, "").replace(",", "."));
+    return Number.isFinite(n) ? n : 0;
+  };
+  const baseImponibleGasto = numeroDecimalGasto(gastoForm.base_sujeta_impuestos);
+  const impuestoCalculadoGasto = Math.round(baseImponibleGasto * numeroDecimalGasto(gastoForm.porcentaje_impuesto)) / 100;
+  const retencionCalculadaGasto = Math.round(numeroDecimalGasto(gastoForm.base_sujeta_retencion) * numeroDecimalGasto(gastoForm.porcentaje_retencion)) / 100;
+  const resultadoCalculadoGasto = Math.round((numeroDecimalGasto(gastoForm.base_exenta_impuestos) + baseImponibleGasto + impuestoCalculadoGasto - retencionCalculadaGasto) * 100) / 100;
 
   const [
     mostrarFincas,
@@ -1984,7 +1997,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   // ==========================================================
 
   async function cargarGastosExpediente() {
-    const expedienteId = expediente?.id_expediente || id || expediente?.id;
+    const expedienteId = expediente?.id ?? (Number.isFinite(Number(id)) ? Number(id) : null);
     if (!expedienteId) return;
 
     setCargandoGastos(true);
@@ -2014,7 +2027,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
   async function guardarGastoExpediente(event) {
     event.preventDefault();
-    const expedienteId = expediente?.id_expediente || id || expediente?.id;
+    const expedienteId = expediente?.id ?? (Number.isFinite(Number(id)) ? Number(id) : null);
     const importe = Number(String(gastoForm.importe).replace(",", "."));
 
     if (!expedienteId) {
@@ -2045,20 +2058,22 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       await axios.post(
         `/expedientes/${encodeURIComponent(expedienteId)}/gastos`,
         {
-          tipo: gastoForm.tipo.trim(),
-          descripcion: gastoForm.descripcion.trim(),
-          importe,
-          fecha: gastoForm.fecha,
+          tipo: gastoForm.tipo.trim(), descripcion: gastoForm.descripcion.trim(), importe: Number((gastoForm.importe_total_bruto || gastoForm.importe || resultadoCalculadoGasto).toString().replace(",", ".")), fecha: gastoForm.fecha,
           documento_url: gastoForm.documento_url.trim() || null,
+          nif_notario: gastoForm.nif_notario.trim() || null, nombre_notario: gastoForm.nombre_notario.trim() || null,
+          pagador: gastoForm.pagador.trim() || null, cuenta_bancaria: gastoForm.cuenta_bancaria.trim() || null,
+          medio_pago: gastoForm.medio_pago || null, numero_factura: gastoForm.numero_factura.trim() || null,
+          fecha_factura: gastoForm.fecha_factura || null, importe_total_bruto: numeroDecimalGasto(gastoForm.importe_total_bruto || gastoForm.importe),
+          base_exenta_impuestos: numeroDecimalGasto(gastoForm.base_exenta_impuestos), base_sujeta_impuestos: baseImponibleGasto,
+          tramo_impuesto: gastoForm.tramo_impuesto || null, tipo_impuesto: gastoForm.tipo_impuesto || null,
+          porcentaje_impuesto: numeroDecimalGasto(gastoForm.porcentaje_impuesto), importe_impuesto: impuestoCalculadoGasto,
+          base_exenta_retencion: numeroDecimalGasto(gastoForm.base_exenta_retencion), base_sujeta_retencion: numeroDecimalGasto(gastoForm.base_sujeta_retencion),
+          tipo_retencion: gastoForm.tipo_retencion || null, porcentaje_retencion: numeroDecimalGasto(gastoForm.porcentaje_retencion), importe_retencion: retencionCalculadaGasto,
+          importe_resultante: resultadoCalculadoGasto, documento_carpeta_id: gastoForm.documento_carpeta_id ? Number(gastoForm.documento_carpeta_id) : null,
+          estado_pago: gastoForm.estado_pago || "Pendiente",
         }
       );
-      setGastoForm({
-        tipo: "",
-        descripcion: "",
-        importe: "",
-        fecha: new Date().toLocaleDateString("sv-SE"),
-        documento_url: "",
-      });
+      setGastoForm({ tipo: "", descripcion: "", importe: "", fecha: new Date().toLocaleDateString("sv-SE"), documento_url: "", nif_notario: "", nombre_notario: "", pagador: "", cuenta_bancaria: "", medio_pago: "Transferencia", numero_factura: "", fecha_factura: new Date().toLocaleDateString("sv-SE"), importe_total_bruto: "", base_exenta_impuestos: "0.00", base_sujeta_impuestos: "", tramo_impuesto: "General", tipo_impuesto: "IVA 21%", porcentaje_impuesto: "21", base_exenta_retencion: "0.00", base_sujeta_retencion: "0.00", tipo_retencion: "IRPF profesionales", porcentaje_retencion: "15", documento_carpeta_id: "", estado_pago: "Pendiente" });
       setMensajeGastos("El gasto se ha registrado correctamente.");
       setMostrarFormularioGasto(false);
       await cargarGastosExpediente();
@@ -2076,7 +2091,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
   async function eliminarGastoExpediente(gasto) {
     if (!window.confirm(`¿Eliminar el gasto «${gasto.descripcion || gasto.tipo || gasto.id}»?`)) return;
-    const expedienteId = expediente?.id_expediente || id || expediente?.id;
+    const expedienteId = expediente?.id ?? (Number.isFinite(Number(id)) ? Number(id) : null);
     try {
       setErrorGastos("");
       await axios.delete(
@@ -2093,12 +2108,25 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   }
 
   useEffect(() => {
-    if (expediente && (expediente.fecha_envio_notario || expediente.fecha_envio)) {
-      cargarGastosExpediente();
-    }
-    // La recarga se controla al cambiar el expediente o cuando se registra un gasto.
+    if (expediente?.id || id) cargarGastosExpediente();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [expediente?.id_expediente, expediente?.fecha_envio_notario, expediente?.fecha_envio]);
+  }, [expediente?.id, id]);
+
+  useEffect(() => {
+    if (!mostrarFormularioGasto || conceptosGasto.length) return;
+    let activo = true;
+    setCargandoConceptosGasto(true);
+    axios.get("/tipos-concepto-gastos/opciones")
+      .then((respuesta) => {
+        if (!activo) return;
+        const datos = respuesta?.data;
+        const lista = Array.isArray(datos) ? datos : Array.isArray(datos?.items) ? datos.items : Array.isArray(datos?.opciones) ? datos.opciones : [];
+        setConceptosGasto(lista.map((x) => typeof x === "string" ? { value: x, label: x } : ({ value: x.value ?? x.nombre ?? x.tipo ?? x.id, label: x.label ?? x.nombre ?? x.descripcion ?? x.value })).filter((x) => x.value && x.label));
+      })
+      .catch(() => { if (activo) setErrorGastos("No se pudo cargar el catálogo de conceptos de gasto."); })
+      .finally(() => { if (activo) setCargandoConceptosGasto(false); });
+    return () => { activo = false; };
+  }, [mostrarFormularioGasto, conceptosGasto.length]);
 
 
   // ==========================================================
@@ -4230,7 +4258,11 @@ const cuantiaFincasParaEnvio =
                             onClick={() => {
                               setErrorGastos("");
                               setMensajeGastos("");
-                              setMostrarFormularioGasto((actual) => !actual);
+                              setMostrarFormularioGasto((actual) => {
+                                const abrir = !actual;
+                                if (abrir) setGastoForm((g) => ({ ...g, nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "", nombre_notario: g.nombre_notario || expediente?.notario || expediente?.nombre_notario || "", pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" ") }));
+                                return abrir;
+                              });
                             }}
                             className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700"
                           >
@@ -4250,77 +4282,41 @@ const cuantiaFincasParaEnvio =
                         )}
 
                         {mostrarFormularioGasto && (
-                          <form onSubmit={guardarGastoExpediente} className="mt-4 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:grid-cols-2">
-                            <label className="block">
-                              <span className="mb-1 block text-xs font-bold text-slate-700">Tipo de gasto *</span>
-                              <input
-                                required
-                                value={gastoForm.tipo}
-                                onChange={(e) => setGastoForm((actual) => ({ ...actual, tipo: e.target.value }))}
-                                placeholder="Ej. Notaría, Registro, Impuestos…"
-                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                              />
-                            </label>
-                            <label className="block">
-                              <span className="mb-1 block text-xs font-bold text-slate-700">Importe (€) *</span>
-                              <input
-                                required
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={gastoForm.importe}
-                                onChange={(e) => setGastoForm((actual) => ({ ...actual, importe: e.target.value }))}
-                                placeholder="0,00"
-                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                              />
-                            </label>
-                            <label className="block sm:col-span-2">
-                              <span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span>
-                              <input
-                                required
-                                value={gastoForm.descripcion}
-                                onChange={(e) => setGastoForm((actual) => ({ ...actual, descripcion: e.target.value }))}
-                                placeholder="Descripción del gasto"
-                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                              />
-                            </label>
-                            <label className="block">
-                              <span className="mb-1 block text-xs font-bold text-slate-700">Fecha *</span>
-                              <input
-                                required
-                                type="date"
-                                value={gastoForm.fecha}
-                                onChange={(e) => setGastoForm((actual) => ({ ...actual, fecha: e.target.value }))}
-                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                              />
-                            </label>
-                            <label className="block">
-                              <span className="mb-1 block text-xs font-bold text-slate-700">Documento justificativo (URL, opcional)</span>
-                              <input
-                                type="url"
-                                value={gastoForm.documento_url}
-                                onChange={(e) => setGastoForm((actual) => ({ ...actual, documento_url: e.target.value }))}
-                                placeholder="https://…"
-                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                              />
-                            </label>
-                            <div className="flex justify-end gap-2 sm:col-span-2">
-                              <button
-                                type="button"
-                                onClick={() => setMostrarFormularioGasto(false)}
-                                disabled={guardandoGasto}
-                                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600"
-                              >
-                                Cancelar
-                              </button>
-                              <button
-                                type="submit"
-                                disabled={guardandoGasto}
-                                className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50"
-                              >
-                                {guardandoGasto ? "Guardando…" : "Guardar gasto"}
-                              </button>
+                          <form onSubmit={guardarGastoExpediente} className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+                            <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
+                              <div><h5 className="text-sm font-extrabold text-slate-900">Registro de factura y pago</h5><p className="mt-1 text-xs text-slate-500">El registro no ejecuta una transferencia bancaria.</p></div>
+                              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-bold text-amber-800">Pago: pendiente</span>
                             </div>
+                            <div className="grid gap-4 lg:grid-cols-2">
+                              <div className="space-y-3">
+                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Factura y proveedor</h6>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}</select></label>
+                                <div className="grid gap-3 sm:grid-cols-2">
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Nombre del notario</span><input value={gastoForm.nombre_notario} onChange={(e)=>setGastoForm(a=>({...a,nombre_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                </div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Pagador / razón social</span><input value={gastoForm.pagador} onChange={(e)=>setGastoForm(a=>({...a,pagador:e.target.value}))} placeholder="Nombre de facturación" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <div className="grid gap-3 sm:grid-cols-2">
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Número de factura</span><input value={gastoForm.numero_factura} onChange={(e)=>setGastoForm(a=>({...a,numero_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de factura *</span><input required type="date" value={gastoForm.fecha_factura} onChange={(e)=>setGastoForm(a=>({...a,fecha_factura:e.target.value,fecha:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                </div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Cuenta bancaria / IBAN</span><input value={gastoForm.cuenta_bancaria} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value.toUpperCase()}))} placeholder="ES… (editable; no se autocompleta)" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Medio de pago</span><select value={gastoForm.medio_pago} onChange={(e)=>setGastoForm(a=>({...a,medio_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Estado</span><select value={gastoForm.estado_pago} onChange={(e)=>setGastoForm(a=>({...a,estado_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Pendiente</option><option>Pagado</option><option>Anulado</option></select></label></div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Documento / URL de factura</span><input type="url" value={gastoForm.documento_url} onChange={(e)=>setGastoForm(a=>({...a,documento_url:e.target.value}))} placeholder="https://…" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                              </div>
+                              <div className="space-y-3">
+                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Impuestos y retenciones</h6>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-slate-700">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>)}</div>
+                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">IRPF (%)</span><input type="number" min="1" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value,importe:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                              </div>
+                            </div>
+                            <div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-slate-200 pt-4"><button type="button" onClick={()=>setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoGasto || cargandoConceptosGasto} className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoGasto ? "Guardando…" : "Registrar gasto"}</button></div>
                           </form>
                         )}
 
