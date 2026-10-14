@@ -1,4 +1,4 @@
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from typing import Optional, List, Any, Dict
 import io
 import json
@@ -21,6 +21,8 @@ from backend.app.expedientes.models import (
     Expediente,
     ExpedienteDocumentoEscritura,
 )
+from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
+from backend.app.expedientes.defectos.models import ExpedienteDefecto
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 
 
@@ -28,6 +30,39 @@ router = APIRouter(
     prefix="/expedientes",
     tags=["Expedientes"],
 )
+
+
+@router.post("/migraciones/actividades")
+def migrar_campos_workflow_actividades(db: Session = Depends(get_db)):
+    """Migración idempotente para columnas del circuito de actividades.
+
+    Debe ejecutarse una vez desde Swagger después de desplegar el modelo y el router.
+    No consulta el ORM antes de crear las columnas, por lo que también sirve si aún faltan.
+    """
+    columnas = {
+        "fecha_envio": "DATE",
+        "asiento_presentacion_libro_diario": "VARCHAR(300)",
+        "fecha_presentacion": "DATE",
+        "numero_entrada": "VARCHAR(200)",
+        "fecha_recogida_notario_presentacion_telematica": "DATE",
+        "copia_simple_escritura": "VARCHAR(500)",
+        "fecha_presentacion_tributaria": "DATE",
+        "fecha_liquidacion_tributaria": "DATE",
+        "oficina_liquidadora": "VARCHAR(200)",
+        "base_imponible": "DOUBLE PRECISION",
+        "tributacion": "VARCHAR(100)",
+        "impuesto_ajd_itp": "VARCHAR(20)",
+        "fecha_vencimiento_asiento": "DATE",
+        "escritura_simple_cancelacion": "VARCHAR(500)",
+    }
+    try:
+        for nombre, tipo_sql in columnas.items():
+            db.execute(text(f"ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS {nombre} {tipo_sql}"))
+        db.commit()
+        return {"ok": True, "mensaje": "Migración de actividades completada.", "columnas_creadas_o_verificadas": list(columnas.keys())}
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudo migrar las columnas de actividades: {str(exc)[:400]}")
 
 
 # ============================================================
@@ -214,6 +249,7 @@ ACTIVIDADES_EXPEDIENTES = [
         "aliases": [
             "Facturación y cierre",
             "Facturacion y cierre",
+            "Cierre del expediente",
         ],
     },
 ]
@@ -316,6 +352,7 @@ def condicion_actividad(clave_actividad: str):
         return or_(
             actividad.ilike("Facturación y cierre"),
             actividad.ilike("Facturacion y cierre"),
+            actividad.ilike("Cierre del expediente"),
         )
 
     return None
@@ -346,10 +383,24 @@ CAMPOS_EXPEDIENTE = [
     "fecha_fin_actividad",
 
     "fecha_envio_notario",
+    "fecha_envio",
     "fecha_solicitud_pnc",
     "numero_solicitud_pnc",
     "escritura_firmada",
     "hora_prevista_firma",
+    "asiento_presentacion_libro_diario",
+    "fecha_presentacion",
+    "numero_entrada",
+    "fecha_recogida_notario_presentacion_telematica",
+    "copia_simple_escritura",
+    "fecha_presentacion_tributaria",
+    "fecha_liquidacion_tributaria",
+    "oficina_liquidadora",
+    "base_imponible",
+    "tributacion",
+    "impuesto_ajd_itp",
+    "fecha_vencimiento_asiento",
+    "escritura_simple_cancelacion",
 
     "nombre_titular",
     "nif_titular",
@@ -1499,99 +1550,168 @@ def registrar_envio_absis_documentacion_previa(
 # AVANZAR DE DOCUMENTACIÓN PREVIA A SEDE NOTARIAL SIN PROTOCOLO
 # ============================================================
 
-@router.post("/{id_expediente}/avanzar-actividad")
-def avanzar_actividad_expediente(
-    id_expediente: str,
-    db: Session = Depends(get_db),
-):
-    expediente = (
-        db.query(Expediente)
-        .filter(Expediente.id_expediente == id_expediente)
-        .first()
-    )
+class AvanzarActividadRequest(BaseModel):
+    actividad_destino: Optional[str] = None
 
-    if expediente is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Expediente no encontrado.",
-        )
 
-    actividad_actual = resolver_actividad(
-        expediente.actividad_actual
-    )
+def _valor_no_vacio(valor):
+    return valor is not None and str(valor).strip() != ""
 
-    if actividad_actual != "documentacion-previa":
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                "Solo se puede avanzar desde "
-                "Documentación previa."
-            ),
-        )
 
-    if not envio_notario_guardado(expediente):
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                "Primero debes guardar correctamente "
-                "el envío a notario."
-            ),
-        )
-
-    estado_absis = leer_estado_absis(db, id_expediente)
-    db.commit()
-    if not estado_absis.get("mover_siguiente_actividad", False):
-        raise HTTPException(
-            status_code=409,
-            detail="Confirma Sí en «Mover el expediente a la siguiente actividad» antes de avanzar.",
-        )
-
-    pendientes = documentos_pendientes_documentacion_previa(
-        db,
-        id_expediente,
-    )
-
+def _validar_campos_obligatorios(expediente, nombres, etiquetas):
+    pendientes = [etiquetas.get(nombre, nombre) for nombre in nombres
+                  if not _valor_no_vacio(getattr(expediente, nombre, None))]
     if pendientes:
         raise HTTPException(
             status_code=409,
-            detail={
-                "mensaje": (
-                    "No se puede avanzar. Faltan documentos "
-                    "obligatorios en la carpeta digital."
-                ),
-                "documentos_pendientes": pendientes,
-            },
+            detail={"mensaje": "No se puede avanzar: faltan campos obligatorios.", "campos_pendientes": pendientes},
         )
 
-    try:
-        # La salida de Documentación previa siempre es esta actividad exacta.
-        # La actividad con protocolo se alcanzará en su fase correspondiente.
-        expediente.actividad_actual = "Sede notarial sin protocolo"
 
+def _categorias_documentales(db: Session, id_expediente: str) -> list[str]:
+    return [str(categoria or "") for (categoria,) in db.query(DocumentoCarpetaDigital.categoria).filter(
+        DocumentoCarpetaDigital.expediente_id == str(id_expediente)
+    ).all()]
+
+
+def _tiene_categoria_documental(categorias: list[str], *terminos: str) -> bool:
+    normalizadas = [normalizar_actividad_texto(categoria) for categoria in categorias]
+    return any(all(normalizar_actividad_texto(termino) in categoria for termino in terminos)
+               for categoria in normalizadas)
+
+
+def _defectos_abiertos(db: Session, expediente) -> list:
+    columnas = {c.name for c in ExpedienteDefecto.__table__.columns}
+    consulta = db.query(ExpedienteDefecto)
+    if "expediente_id" in columnas:
+        consulta = consulta.filter(ExpedienteDefecto.expediente_id == expediente.id)
+    elif "id_expediente" in columnas:
+        consulta = consulta.filter(ExpedienteDefecto.id_expediente == str(expediente.id_expediente))
+    else:
+        raise HTTPException(status_code=500, detail="No se puede verificar la relación de los defectos con el expediente.")
+    defectos = consulta.all()
+    abiertos = []
+    for defecto in defectos:
+        cerrado = any(_valor_no_vacio(getattr(defecto, campo, None)) for campo in (
+            "fecha_cierre_defecto", "fecha_subsanacion", "fecha_entrada_subsanacion", "fcierre_defecto"
+        ))
+        if not cerrado:
+            abiertos.append(defecto)
+    return abiertos
+
+
+@router.post("/{id_expediente}/avanzar-actividad")
+def avanzar_actividad_expediente(
+    id_expediente: str,
+    datos: Optional[AvanzarActividadRequest] = None,
+    db: Session = Depends(get_db),
+):
+    expediente = db.query(Expediente).filter(
+        Expediente.id_expediente == str(id_expediente)
+    ).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    actual = resolver_actividad(expediente.actividad_actual)
+    destino_solicitado = (datos.actividad_destino if datos else None)
+    destino = resolver_actividad(destino_solicitado) if destino_solicitado else None
+    categorias = _categorias_documentales(db, id_expediente)
+
+    if actual == "documentacion-previa":
+        if destino not in (None, "sede-notarial"):
+            raise HTTPException(status_code=409, detail="Desde Documentación previa solo se puede pasar a Sede notarial.")
+        if not envio_notario_guardado(expediente):
+            raise HTTPException(status_code=409, detail="Primero debes completar y guardar el modal «Enviar a notario».")
+        estado_absis = leer_estado_absis(db, id_expediente)
+        if not estado_absis.get("mover_siguiente_actividad", False):
+            raise HTTPException(status_code=409, detail="Confirma Sí en «Mover el expediente a la siguiente actividad» antes de avanzar.")
+        pendientes = documentos_pendientes_documentacion_previa(db, id_expediente)
+        if pendientes:
+            raise HTTPException(status_code=409, detail={"mensaje": "Faltan documentos obligatorios en la carpeta digital.", "documentos_pendientes": pendientes})
+        fincas = db.query(ExpedienteFinca).filter(ExpedienteFinca.expediente_id == expediente.id).all()
+        if not fincas:
+            raise HTTPException(status_code=409, detail="Antes de avanzar debes informar al menos una finca y su registro de la propiedad.")
+        fincas_incompletas = [
+            f for f in fincas
+            if not _valor_no_vacio(getattr(f, "finca", None))
+            or not _valor_no_vacio(getattr(f, "registro", None))
+        ]
+        if fincas_incompletas:
+            raise HTTPException(status_code=409, detail="Todas las fincas deben tener informados el número de finca y el Registro de la Propiedad.")
+        expediente.actividad_actual = "Sede notarial"
+
+    elif actual == "sede-notarial":
+        if not (_valor_no_vacio(expediente.protocolo) and _valor_no_vacio(expediente.fecha_firma)):
+            raise HTTPException(status_code=409, detail="Sede notarial permanece activa hasta informar protocolo y fecha de firma.")
+        expediente.actividad_actual = "Sede notarial con protocolo"
+
+    elif actual == "sede-notarial-protocolo":
+        requeridos = ["apoderado", "tipo_documento", "poblacion", "provincia", "tipo_firma", "fecha_firma", "protocolo", "asiento_presentacion_libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"]
+        etiquetas = {"apoderado":"Apoderado", "tipo_documento":"Tipo documento", "poblacion":"Población", "provincia":"Provincia", "tipo_firma":"Tipo firma", "fecha_firma":"Fecha firma", "protocolo":"Protocolo", "asiento_presentacion_libro_diario":"Asiento presentación / Libro diario", "fecha_presentacion":"Fecha presentación", "numero_entrada":"Número de entrada", "fecha_recogida_notario_presentacion_telematica":"Fecha recogida notario o presentación telemática"}
+        _validar_campos_obligatorios(expediente, requeridos, etiquetas)
+        if str(expediente.apoderado).strip() not in ("Gestoría", "CaixaBank"):
+            raise HTTPException(status_code=409, detail="Apoderado debe ser Gestoría o CaixaBank.")
+        if not (_tiene_categoria_documental(categorias, "copia simple") or _tiene_categoria_documental(categorias, "copia", "escritura")):
+            raise HTTPException(status_code=409, detail={"mensaje":"No se puede avanzar sin la copia simple de escritura en la carpeta digital.", "documentos_pendientes":["Copia simple de escritura"]})
+        expediente.actividad_actual = "Liquidación de impuestos"
+
+    elif actual == "liquidacion-impuestos":
+        requeridos = ["fecha_presentacion_tributaria", "fecha_liquidacion_tributaria", "oficina_liquidadora", "base_imponible", "tributacion", "impuesto_ajd_itp"]
+        etiquetas = {"fecha_presentacion_tributaria":"Fecha presentación tributaria", "fecha_liquidacion_tributaria":"Fecha liquidación tributaria", "oficina_liquidadora":"Oficina liquidadora / comunidad autónoma", "base_imponible":"Base imponible (€)", "tributacion":"Tributación", "impuesto_ajd_itp":"Impuesto (AJD / ITP)"}
+        _validar_campos_obligatorios(expediente, requeridos, etiquetas)
+        comunidades = {"andalucia", "aragon", "asturias", "illes balears", "canarias", "cantabria", "castilla-la mancha", "castilla y leon", "cataluna", "comunitat valenciana", "extremadura", "galicia", "comunidad de madrid", "region de murcia", "comunidad foral de navarra", "pais vasco", "la rioja", "ceuta", "melilla"}
+        if normalizar_actividad_texto(expediente.oficina_liquidadora) not in comunidades:
+            raise HTTPException(status_code=409, detail="Selecciona una oficina liquidadora o comunidad autónoma válida.")
+        if normalizar_actividad_texto(expediente.tributacion) not in {"prescrito", "exento", "bonificacion", "renuncia", "ajd", "tpo"}:
+            raise HTTPException(status_code=409, detail="Selecciona una opción válida en Tributación.")
+        if str(expediente.impuesto_ajd_itp).strip().upper() not in ("AJD", "ITP"):
+            raise HTTPException(status_code=409, detail="El impuesto debe ser AJD o ITP.")
+        if float(expediente.base_imponible or 0) < 0:
+            raise HTTPException(status_code=409, detail="La base imponible no puede ser negativa.")
+        expediente.actividad_actual = "Tramitación inscripción"
+        if not getattr(expediente, "fecha_presentacion", None):
+            expediente.fecha_presentacion = expediente.fecha_liquidacion_tributaria
+
+    elif actual == "tramitacion-inscripcion":
+        requeridos = ["fecha_presentacion", "fecha_vencimiento_asiento", "fecha_inscripcion", "escritura_simple_cancelacion", "registral_estado", "registral_fecha"]
+        etiquetas = {"fecha_presentacion":"Fecha presentación", "fecha_vencimiento_asiento":"Fecha vencimiento asiento", "fecha_inscripcion":"Fecha inscripción", "escritura_simple_cancelacion":"Hoja de inscripción", "registral_estado":"Estado registral", "registral_fecha":"Fecha registral"}
+        _validar_campos_obligatorios(expediente, requeridos, etiquetas)
+        if not (_tiene_categoria_documental(categorias, "hoja de inscripcion") or _tiene_categoria_documental(categorias, "inscripcion")):
+            raise HTTPException(status_code=409, detail={"mensaje":"Falta incorporar la hoja de inscripción a la carpeta digital.", "documentos_pendientes":["Hoja de inscripción"]})
+        abiertos = _defectos_abiertos(db, expediente)
+        if abiertos:
+            expediente.actividad_actual = "Defectos registrales"
+        else:
+            expediente.actividad_actual = "Cierre del expediente"
+
+    elif actual == "defectos-registrales":
+        abiertos = _defectos_abiertos(db, expediente)
+        if abiertos:
+            raise HTTPException(status_code=409, detail="No se puede avanzar al cierre mientras existan defectos registrales abiertos.")
+        expediente.actividad_actual = "Cierre del expediente"
+
+    elif actual == "facturacion-cierre":
+        if not (str(getattr(expediente, "facturacion_estado", "") or "").strip().lower() in ("generada", "generado", "registrada", "registrado", "cerrada", "cerrado") and getattr(expediente, "facturacion_fecha", None) and getattr(expediente, "fecha_fin_actividad", None)):
+            raise HTTPException(status_code=409, detail="El cierre solo se completa después de generar y registrar los honorarios de gestoría.")
+        expediente.estado_actividad = "Cerrada"
+    else:
+        raise HTTPException(status_code=409, detail=f"No se puede avanzar desde la actividad actual: {expediente.actividad_actual or 'sin actividad'}.")
+
+    try:
         db.add(expediente)
         db.commit()
         db.refresh(expediente)
-
+    except HTTPException:
+        db.rollback()
+        raise
     except Exception as exc:
         db.rollback()
-
-        print(
-            "ERROR AVANZANDO ACTIVIDAD:",
-            repr(exc),
-            flush=True,
-        )
-
-        raise HTTPException(
-            status_code=500,
-            detail="No se pudo actualizar la actividad del expediente.",
-        )
+        raise HTTPException(status_code=500, detail=f"No se pudo actualizar la actividad: {str(exc)[:300]}")
 
     respuesta = expediente_a_dict(expediente)
     respuesta["actividad_actualizada"] = True
-
+    respuesta["actividad_actual"] = expediente.actividad_actual
     return respuesta
-
-
 
 
 # ============================================================
@@ -1691,6 +1811,9 @@ def actualizar_campos_actividad(
                 "campos_no_disponibles": no_disponibles,
             },
         )
+
+    if "fecha_presentacion" in guardados and resolver_actividad(expediente.actividad_actual) == "tramitacion-inscripcion" and expediente.fecha_presentacion:
+        expediente.fecha_vencimiento_asiento = expediente.fecha_presentacion + timedelta(days=60)
 
     try:
         db.add(expediente)
@@ -1922,225 +2045,3 @@ def actualizar_columnas_envio_notario(
         "columnas_pendientes": [],
     }
 
-
-# ============================================================
-# DIAGNÓSTICO DETALLADO DE BLOQUEOS DE EXPEDIENTES
-# ============================================================
-
-@router.get("/migraciones/diagnostico-bloqueos")
-def diagnosticar_bloqueos_expedientes(
-    db: Session = Depends(get_db),
-):
-    """
-    Consulta sesiones PostgreSQL relacionadas con expedientes,
-    transacciones abiertas y sesiones bloqueantes.
-
-    No cancela consultas ni modifica datos.
-    """
-    try:
-        filas = db.execute(text("""
-            SELECT
-                a.pid,
-                a.usename,
-                a.application_name,
-                a.client_addr::text AS cliente,
-                a.state,
-                a.wait_event_type,
-                a.wait_event,
-                a.xact_start,
-                CASE
-                    WHEN a.xact_start IS NOT NULL
-                    THEN EXTRACT(
-                        EPOCH FROM (
-                            clock_timestamp() - a.xact_start
-                        )
-                    )::integer
-                    ELSE NULL
-                END AS segundos_transaccion,
-                a.query_start,
-                CASE
-                    WHEN a.query_start IS NOT NULL
-                    THEN EXTRACT(
-                        EPOCH FROM (
-                            clock_timestamp() - a.query_start
-                        )
-                    )::integer
-                    ELSE NULL
-                END AS segundos_consulta,
-                pg_blocking_pids(a.pid) AS bloqueadores,
-                LEFT(a.query, 500) AS consulta
-            FROM pg_stat_activity a
-            WHERE a.datname = current_database()
-              AND a.pid <> pg_backend_pid()
-              AND (
-                    a.wait_event_type = 'Lock'
-                    OR a.state = 'idle in transaction'
-                    OR a.query ILIKE '%expedientes%'
-                    OR a.pid IN (
-                        SELECT UNNEST(pg_blocking_pids(b.pid))
-                        FROM pg_stat_activity b
-                        WHERE b.datname = current_database()
-                          AND (
-                              b.wait_event_type = 'Lock'
-                              OR b.query ILIKE '%expedientes%'
-                          )
-                    )
-              )
-            ORDER BY
-                CASE
-                    WHEN a.wait_event_type = 'Lock' THEN 0
-                    WHEN a.state = 'idle in transaction' THEN 1
-                    ELSE 2
-                END,
-                a.xact_start NULLS LAST
-            LIMIT 50
-        """)).mappings().all()
-
-        sesiones = [dict(fila) for fila in filas]
-
-        return {
-            "ok": True,
-            "total": len(sesiones),
-            "sesiones": sesiones,
-            "mensaje": (
-                "Se han encontrado sesiones relevantes."
-                if sesiones
-                else (
-                    "No se encontraron sesiones relevantes "
-                    "en el momento de la consulta."
-                )
-            ),
-        }
-
-    except Exception as exc:
-        db.rollback()
-        print(
-            "ERROR DIAGNOSTICANDO BLOQUEOS:",
-            repr(exc),
-            flush=True,
-        )
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                "No se pudo consultar el diagnóstico de PostgreSQL: "
-                f"{str(exc)[:300]}"
-            ),
-        )
-
-
-@router.get("/migraciones/diagnostico-lock-expedientes")
-def diagnosticar_lock_expedientes(db: Session = Depends(get_db)):
-    try:
-        filas = db.execute(text("""
-            SELECT
-                a.pid,
-                a.state,
-                a.xact_start,
-                a.wait_event_type,
-                a.wait_event,
-                l.locktype,
-                l.mode,
-                l.granted,
-                n.nspname AS esquema,
-                c.relname AS tabla,
-                LEFT(a.query, 400) AS consulta,
-                pg_blocking_pids(a.pid) AS bloqueadores
-            FROM pg_stat_activity a
-            LEFT JOIN pg_locks l ON l.pid = a.pid
-            LEFT JOIN pg_class c ON c.oid = l.relation
-            LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
-            WHERE a.datname = current_database()
-              AND a.pid <> pg_backend_pid()
-              AND (
-                  c.relname = 'expedientes'
-                  OR a.state = 'idle in transaction'
-                  OR cardinality(pg_blocking_pids(a.pid)) > 0
-              )
-            ORDER BY
-                CASE
-                    WHEN cardinality(pg_blocking_pids(a.pid)) > 0 THEN 0
-                    WHEN a.state = 'idle in transaction' THEN 1
-                    ELSE 2
-                END,
-                a.xact_start NULLS LAST
-            LIMIT 100
-        """)).mappings().all()
-
-        return {
-            "ok": True,
-            "total": len(filas),
-            "sesiones": [dict(f) for f in filas]
-        }
-
-    except Exception as exc:
-        db.rollback()
-        print("ERROR DIAGNOSTICO LOCK EXPEDIENTES:", repr(exc), flush=True)
-        raise HTTPException(
-            status_code=500,
-            detail="Error consultando bloqueos: " + str(exc)[:300]
-        )
-
-@router.get("/migraciones/diagnostico-espera-ddl")
-def diagnosticar_espera_ddl(db: Session = Depends(get_db)):
-    try:
-        filas = db.execute(text("""
-            SELECT
-                a.pid,
-                a.state,
-                a.wait_event_type,
-                a.wait_event,
-                a.xact_start,
-                a.query_start,
-                pg_blocking_pids(a.pid) AS bloqueadores,
-                LEFT(a.query, 500) AS consulta
-            FROM pg_stat_activity a
-            WHERE a.datname = current_database()
-              AND a.pid <> pg_backend_pid()
-              AND (
-                  a.wait_event_type = 'Lock'
-                  OR a.query ILIKE '%ALTER TABLE%expedientes%'
-                  OR a.query ILIKE '%ADD COLUMN%'
-              )
-            ORDER BY a.query_start NULLS LAST
-            LIMIT 100
-        """)).mappings().all()
-
-        resultado = []
-        for fila in filas:
-            item = dict(fila)
-            pids = item.get("bloqueadores") or []
-
-            if pids:
-                bloqueadores = db.execute(text("""
-                    SELECT
-                        pid,
-                        state,
-                        xact_start,
-                        wait_event_type,
-                        wait_event,
-                        LEFT(query, 500) AS consulta
-                    FROM pg_stat_activity
-                    WHERE pid = ANY(:pids)
-                """), {"pids": pids}).mappings().all()
-
-                item["detalle_bloqueadores"] = [
-                    dict(b) for b in bloqueadores
-                ]
-            else:
-                item["detalle_bloqueadores"] = []
-
-            resultado.append(item)
-
-        return {
-            "ok": True,
-            "total": len(resultado),
-            "sesiones": resultado
-        }
-
-    except Exception as exc:
-        db.rollback()
-        print("ERROR DIAGNOSTICO ESPERA DDL:", repr(exc), flush=True)
-        raise HTTPException(
-            status_code=500,
-            detail="No se pudo consultar la espera DDL: " + str(exc)[:300]
-        )
