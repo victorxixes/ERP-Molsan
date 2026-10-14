@@ -2735,35 +2735,56 @@ async function descargarPDFCalificacion(defecto) {
   }
 
 
-  function guardarObservacion() {
-    console.log(
-      "OBSERVACION EXPEDIENTE:",
-      {
-        expediente:
-          expediente?.id_expediente,
-        comentario,
-        visiones:
-          visionesComentario,
+  async function guardarObservacion() {
+    const texto = String(comentario || "").trim();
+    if (!texto) {
+      window.alert("Escribe el comentario antes de guardar.");
+      return;
+    }
+    if (!numeroExpedienteApi) {
+      window.alert("No se ha podido identificar el expediente.");
+      return;
+    }
+
+    // El router exige un destinatario para la visibilidad Gestor.
+    const visibilidades = [];
+    if (visionesComentario.actividad) visibilidades.push("Gestor");
+    if (visionesComentario.notario) visibilidades.push("Visible notario");
+    if (visionesComentario.apoderado) visibilidades.push("Visible apoderado");
+
+    if (!visibilidades.length) {
+      window.alert("Selecciona al menos un destino para el comentario.");
+      return;
+    }
+    if (visibilidades.includes("Gestor") && !destinatarioObservacion) {
+      window.alert("No hay un empleado destinatario disponible para la observación interna. Comprueba la sección Observaciones y vuelve a intentarlo.");
+      return;
+    }
+
+    try {
+      for (const visibilidad of visibilidades) {
+        await axios.post(
+          `/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones`,
+          {
+            comentario: texto,
+            visibilidad,
+            empleado_destinatario_id: visibilidad === "Gestor"
+              ? Number(destinatarioObservacion)
+              : null,
+          }
+        );
       }
-    );
 
-    /*
-     * Dejamos la observación inmediatamente visible
-     * en la ficha.
-     *
-     * La persistencia definitiva se conectará al
-     * sistema de observaciones/mensajes.
-     */
-
-    setExpediente(
-      (actual) => ({
-        ...actual,
-        observaciones:
-          comentario,
-      })
-    );
-
-    setMostrarObservaciones(false);
+      setExpediente((actual) => ({ ...actual, observaciones: texto }));
+      await cargarObservacionesExpediente();
+      setMostrarObservaciones(false);
+    } catch (err) {
+      console.error("Error guardando observación desde el modal:", err);
+      window.alert(
+        err?.response?.data?.detail ||
+        "No se pudo guardar la observación. Revisa la conexión con el backend."
+      );
+    }
   }
 
 
