@@ -1,23 +1,24 @@
 import { create } from "zustand";
-import * as api from "../api/ctn";
+import {
+  listarNotarias,
+  obtenerNotaria,
+  obtenerFirmasNotaria,
+  obtenerHistoricoFirmasNotaria,
+  listarNotariasAsociadas,
+  asociarNotarios as apiAsociarNotarios,
+  desasociarNotarios as apiDesasociarNotarios,
+} from "../api/ctn";
+
+const mensajeError = (error, defecto) =>
+  error?.response?.data?.detail || error?.message || defecto;
 
 export const useCtnStore = create((set, get) => ({
-  // ============================================================
-  // ESTADO GENERAL
-  // ============================================================
-
   items: [],
   total: 0,
   page: 1,
   page_size: 15,
-
   notaria: null,
-
-  // Estadísticas antiguas de agenda.
-  // No representan firmas realmente realizadas.
   firmas: null,
-
-  // Histórico real obtenido desde los expedientes.
   historicoFirmas: [],
   resumenHistoricoFirmas: {
     total: 0,
@@ -25,328 +26,128 @@ export const useCtnStore = create((set, get) => ({
     total_presencial: 0,
     total_sin_clasificar: 0,
   },
-
-  // Asociaciones recíprocas entre notarios.
   notariasAsociadas: [],
-
   loading: false,
   loadingListado: false,
+  loadingDetalle: false,
   loadingHistoricoFirmas: false,
   loadingAsociadas: false,
-
   error: null,
 
-  // ============================================================
-  // LISTADO DE NOTARIOS
-  // ============================================================
-
-  cargarNotarias: async (
-    filtros = {},
-    page = 1,
-    page_size = 15,
-  ) => {
-    set({
-      loading: true,
-      loadingListado: true,
-      error: null,
-    });
-
+  cargarNotarias: async (filtros = {}, pagina = 1, pageSize = 15) => {
+    set({ loading: true, loadingListado: true, error: null });
     try {
-      const res = await api.listarNotarias({
+      const response = await listarNotarias({
         ...filtros,
-        page,
-        page_size,
+        page: pagina,
+        page_size: pageSize,
       });
-
-      const data = res.data || {};
-
+      const data = response?.data ?? response ?? {};
       set({
-        items: data.items || [],
-        total: data.total || 0,
-        page: data.page || page,
-        page_size: data.page_size || page_size,
+        items: Array.isArray(data.items) ? data.items : [],
+        total: Number(data.total || 0),
+        page: Number(data.page || pagina),
+        page_size: Number(data.page_size || pageSize),
         loading: false,
         loadingListado: false,
       });
-
       return data;
     } catch (error) {
-      set({
-        loading: false,
-        loadingListado: false,
-        error:
-          error?.response?.data?.detail ||
-          error?.message ||
-          "No se ha podido cargar el listado de notarías.",
-      });
-
+      set({ loading: false, loadingListado: false, error: mensajeError(error, "No se pudo cargar el listado CTN") });
       throw error;
     }
   },
-
-  // ============================================================
-  // FICHA DE NOTARIO
-  // ============================================================
 
   cargarNotaria: async (id) => {
-    set({
-      loading: true,
-      error: null,
-    });
-
+    set({ loading: true, loadingDetalle: true, error: null });
     try {
-      const res = await api.obtenerNotaria(id);
-      const data = res.data || {};
-
-      set({
-        notaria: data,
-        notariasAsociadas: data.notarios_asociados || [],
-        loading: false,
-      });
-
+      const response = await obtenerNotaria(id);
+      const data = response?.data ?? response;
+      set({ notaria: data, loading: false, loadingDetalle: false });
       return data;
     } catch (error) {
-      set({
-        notaria: null,
-        notariasAsociadas: [],
-        loading: false,
-        error:
-          error?.response?.data?.detail ||
-          error?.message ||
-          "No se ha podido cargar la ficha del notario.",
-      });
-
+      set({ loading: false, loadingDetalle: false, error: mensajeError(error, "No se pudo cargar la ficha del notario") });
       throw error;
     }
   },
-
-  // ============================================================
-  // ESTADÍSTICAS DE AGENDA EXISTENTES
-  // ============================================================
 
   cargarFirmasNotaria: async (id) => {
     try {
-      const res = await api.obtenerFirmasNotaria(id);
-
-      set({
-        firmas: res.data || null,
-      });
-
-      return res.data;
-    } catch (error) {
-      set({ firmas: null });
-      throw error;
-    }
-  },
-
-  // ============================================================
-  // HISTÓRICO REAL DE FIRMAS
-  // ============================================================
-
-  cargarHistoricoFirmasNotaria: async (
-    id,
-    filtros = {},
-  ) => {
-    set({
-      loadingHistoricoFirmas: true,
-      error: null,
-    });
-
-    try {
-      const res = await api.obtenerHistoricoFirmasNotaria(
-        id,
-        filtros,
-      );
-
-      const data = res.data || {};
-      const items = data.items || [];
-
-      set({
-        historicoFirmas: items,
-        resumenHistoricoFirmas: {
-          total: data.total ?? items.length,
-          total_vc: data.total_vc ?? 0,
-          total_presencial: data.total_presencial ?? 0,
-          total_sin_clasificar:
-            data.total_sin_clasificar ?? 0,
-        },
-        loadingHistoricoFirmas: false,
-      });
-
+      const response = await obtenerFirmasNotaria(id);
+      const data = response?.data ?? response;
+      set({ firmas: data });
       return data;
     } catch (error) {
+      set({ error: mensajeError(error, "No se pudo cargar el resumen de agenda") });
+      throw error;
+    }
+  },
+
+  cargarHistoricoFirmasNotaria: async (id, filtros = {}) => {
+    set({ loadingHistoricoFirmas: true, error: null });
+    try {
+      const response = await obtenerHistoricoFirmasNotaria(id, filtros);
+      const data = response?.data ?? response ?? {};
       set({
-        historicoFirmas: [],
+        historicoFirmas: Array.isArray(data.items) ? data.items : [],
         resumenHistoricoFirmas: {
-          total: 0,
-          total_vc: 0,
-          total_presencial: 0,
-          total_sin_clasificar: 0,
+          total: Number(data.total || 0),
+          total_vc: Number(data.total_vc || 0),
+          total_presencial: Number(data.total_presencial || 0),
+          total_sin_clasificar: Number(data.total_sin_clasificar || 0),
         },
         loadingHistoricoFirmas: false,
-        error:
-          error?.response?.data?.detail ||
-          error?.message ||
-          "No se ha podido cargar el histórico de firmas.",
       });
-
+      return data;
+    } catch (error) {
+      set({ loadingHistoricoFirmas: false, error: mensajeError(error, "No se pudo cargar el histórico de firmas") });
       throw error;
     }
   },
-
-  // ============================================================
-  // LISTADO DE NOTARIOS ASOCIADOS
-  // ============================================================
 
   cargarNotariasAsociadas: async (id) => {
-    set({
-      loadingAsociadas: true,
-      error: null,
-    });
-
+    set({ loadingAsociadas: true, error: null });
     try {
-      const res = await api.listarNotariasAsociadas(id);
-      const data = res.data || {};
-      const items = data.items || [];
-
-      set({
-        notariasAsociadas: items,
-        loadingAsociadas: false,
-      });
-
+      const response = await listarNotariasAsociadas(id);
+      const data = response?.data ?? response ?? {};
+      const items = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
+      set({ notariasAsociadas: items, loadingAsociadas: false });
       return items;
     } catch (error) {
-      set({
-        notariasAsociadas: [],
-        loadingAsociadas: false,
-        error:
-          error?.response?.data?.detail ||
-          error?.message ||
-          "No se han podido cargar los notarios asociados.",
-      });
-
+      set({ loadingAsociadas: false, error: mensajeError(error, "No se pudieron cargar los notarios asociados") });
       throw error;
     }
   },
-
-  // ============================================================
-  // ASOCIAR DOS NOTARIOS
-  // La API debe guardar la relación en ambos sentidos.
-  // ============================================================
 
   asociarNotarios: async (notariaId, asociadaId) => {
-    if (!notariaId || !asociadaId) {
-      throw new Error("Debes seleccionar los dos notarios.");
-    }
-
-    if (Number(notariaId) === Number(asociadaId)) {
-      throw new Error(
-        "Un notario no puede asociarse consigo mismo.",
-      );
-    }
-
-    try {
-      await api.asociarNotarios(notariaId, asociadaId);
-
-      // Recargamos las relaciones de la ficha actual.
-      await get().cargarNotariasAsociadas(notariaId);
-
-      // Actualizamos también la ficha si está cargada.
-      const fichaActual = get().notaria;
-
-      if (
-        fichaActual &&
-        Number(fichaActual.id) === Number(notariaId)
-      ) {
-        set({
-          notaria: {
-            ...fichaActual,
-            notarios_asociados: get().notariasAsociadas,
-          },
-        });
-      }
-
-      return true;
-    } catch (error) {
-      set({
-        error:
-          error?.response?.data?.detail ||
-          error?.message ||
-          "No se ha podido asociar a los notarios.",
-      });
-
-      throw error;
-    }
+    const response = await apiAsociarNotarios(notariaId, asociadaId);
+    await Promise.all([
+      get().cargarNotariasAsociadas(notariaId),
+      get().cargarNotaria(notariaId),
+    ]);
+    return response?.data ?? response;
   },
-
-  // ============================================================
-  // DESASOCIAR DOS NOTARIOS
-  // La API debe eliminar la relación en ambos sentidos.
-  // ============================================================
 
   desasociarNotarios: async (notariaId, asociadaId) => {
-    try {
-      await api.desasociarNotarios(notariaId, asociadaId);
-
-      await get().cargarNotariasAsociadas(notariaId);
-
-      const fichaActual = get().notaria;
-
-      if (
-        fichaActual &&
-        Number(fichaActual.id) === Number(notariaId)
-      ) {
-        set({
-          notaria: {
-            ...fichaActual,
-            notarios_asociados: get().notariasAsociadas,
-          },
-        });
-      }
-
-      return true;
-    } catch (error) {
-      set({
-        error:
-          error?.response?.data?.detail ||
-          error?.message ||
-          "No se ha podido eliminar la asociación.",
-      });
-
-      throw error;
-    }
+    const response = await apiDesasociarNotarios(notariaId, asociadaId);
+    await Promise.all([
+      get().cargarNotariasAsociadas(notariaId),
+      get().cargarNotaria(notariaId),
+    ]);
+    return response?.data ?? response;
   },
 
-  // ============================================================
-  // LIMPIEZA DEL ESTADO DE CTN
-  // ============================================================
+  limpiarHistoricoFirmas: () => set({
+    historicoFirmas: [],
+    resumenHistoricoFirmas: { total: 0, total_vc: 0, total_presencial: 0, total_sin_clasificar: 0 },
+  }),
 
-  limpiarHistoricoFirmas: () => {
-    set({
-      historicoFirmas: [],
-      resumenHistoricoFirmas: {
-        total: 0,
-        total_vc: 0,
-        total_presencial: 0,
-        total_sin_clasificar: 0,
-      },
-    });
-  },
-
-  limpiarFichaNotaria: () => {
-    set({
-      notaria: null,
-      firmas: null,
-      historicoFirmas: [],
-      resumenHistoricoFirmas: {
-        total: 0,
-        total_vc: 0,
-        total_presencial: 0,
-        total_sin_clasificar: 0,
-      },
-      notariasAsociadas: [],
-      error: null,
-    });
-  },
+  limpiarFichaNotaria: () => set({
+    notaria: null,
+    firmas: null,
+    historicoFirmas: [],
+    resumenHistoricoFirmas: { total: 0, total_vc: 0, total_presencial: 0, total_sin_clasificar: 0 },
+    notariasAsociadas: [],
+    error: null,
+  }),
 }));
-
