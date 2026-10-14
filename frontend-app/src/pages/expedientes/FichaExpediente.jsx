@@ -192,6 +192,54 @@ function obtenerArrayRespuesta(
 // ACTIVIDADES REALES DEL WORKFLOW
 // ============================================================
 
+
+function normalizarTextoWorkflow(valor) {
+  return String(valor ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function validarCamposWorkflow(actividad, datos) {
+  const obligatorios = {
+    "sede-notarial-protocolo": [
+      ["apoderado", "Apoderado"], ["tipo_documento", "Tipo documento"],
+      ["poblacion", "Población"], ["provincia", "Provincia"], ["tipo_firma", "Tipo firma"],
+      ["fecha_firma", "Fecha firma"], ["protocolo", "Protocolo"],
+      ["asiento_presentacion_libro_diario", "Asiento presentación / Libro diario"],
+      ["fecha_presentacion", "Fecha presentación"], ["numero_entrada", "Número de entrada"],
+      ["fecha_recogida_notario_presentacion_telematica", "Fecha recogida notario o presentación telemática"],
+    ],
+    "liquidacion-impuestos": [
+      ["fecha_presentacion_tributaria", "Fecha presentación tributaria"],
+      ["fecha_liquidacion_tributaria", "Fecha liquidación tributaria"],
+      ["oficina_liquidadora", "Oficina liquidadora / comunidad autónoma"],
+      ["base_imponible", "Base imponible (€)"], ["tributacion", "Tributación"],
+      ["impuesto_ajd_itp", "Impuesto (AJD / ITP)"],
+    ],
+    "tramitacion-inscripcion": [
+      ["fecha_presentacion", "Fecha presentación"], ["fecha_vencimiento_asiento", "Fecha vencimiento asiento"],
+      ["fecha_inscripcion", "Fecha inscripción"], ["escritura_simple_cancelacion", "Hoja de inscripción"],
+      ["registral_estado", "Estado registral"], ["registral_fecha", "Fecha registral"],
+    ],
+  };
+  return (obligatorios[actividad] || [])
+    .filter(([clave]) => datos?.[clave] === undefined || datos?.[clave] === null || String(datos[clave]).trim() === "")
+    .map(([, etiqueta]) => etiqueta);
+}
+
+function documentoWorkflowPresente(documentos, palabras) {
+  return (Array.isArray(documentos) ? documentos : []).some((doc) => {
+    const categoria = normalizarTextoWorkflow(doc?.categoria || doc?.categoria_nombre || doc?.tipo_documento || doc?.nombre_categoria || "");
+    const nombre = normalizarTextoWorkflow(doc?.nombre_original || doc?.nombre || doc?.nombre_archivo || doc?.filename || "");
+    return palabras.some((grupo) => {
+      const coincide = (texto) => grupo.every((palabra) => texto.includes(normalizarTextoWorkflow(palabra)));
+      return coincide(categoria) || coincide(nombre);
+    });
+  });
+}
+
 const ACTIVIDADES_EXPEDIENTES = [
   {
     key: "documentacion-previa",
@@ -419,6 +467,17 @@ const CAMPOS_ACTIVIDADES = {
     },
 
     {
+      key: "ultima_accion",
+      label: "Última acción",
+    },
+
+    {
+      key: "fecha_ultima_accion",
+      label: "Fecha última acción",
+      tipo: "fecha",
+    },
+
+    {
       key: "sol",
       label: "SOL",
     },
@@ -475,6 +534,17 @@ const CAMPOS_ACTIVIDADES = {
     {
       key: "fecha_firma",
       label: "Fecha firma",
+      tipo: "fecha",
+    },
+
+    {
+      key: "ultima_accion",
+      label: "Última acción",
+    },
+
+    {
+      key: "fecha_ultima_accion",
+      label: "Fecha última acción",
       tipo: "fecha",
     },
 
@@ -540,7 +610,7 @@ const CAMPOS_ACTIVIDADES = {
 
     {
       key: "asiento_presentacion",
-      label: "Asiento presentación",
+      label: "Asiento presentació",
     },
 
         {
@@ -565,7 +635,6 @@ const CAMPOS_ACTIVIDADES = {
       tipo: "fecha",
     },
 
-   
   ],
 
   "liquidacion-impuestos": [
@@ -624,6 +693,7 @@ const CAMPOS_ACTIVIDADES = {
       tipo: "fecha",
     },
 
+
   ],
 
   "defectos-registrales": [
@@ -638,10 +708,6 @@ const CAMPOS_ACTIVIDADES = {
       label: "Tipo error",
     },
 
-    {
-      key: "falta_defecto",
-      label: "Falta / defecto",
-    },
 
     {
       key: "descripcion_error",
@@ -655,14 +721,17 @@ const CAMPOS_ACTIVIDADES = {
       tipo: "fecha",
     },
 
+
+
+    {
+      key: "registral_fecha",
+      label: "Fecha registral",
+      tipo: "fecha",
+    },
   ],
 
   "facturacion-cierre": [
-    {
-      key: "facturacion_estado",
-      label: "Estado facturación",
-      estado: true,
-    },
+
     {
       key: "facturacion_fecha",
       label: "Fecha facturación",
@@ -730,9 +799,8 @@ function resolverActividadActual(
   }
 
   if (
-    actividad.includes(
-      "facturacion y cierre"
-    )
+    actividad.includes("facturacion y cierre") ||
+    actividad.includes("cierre del expediente")
   ) {
     return "facturacion-cierre";
   }
@@ -1938,13 +2006,25 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
   async function avanzarActividad() {
     if (!expediente?.id_expediente || guardandoActividad) return;
-    setGuardandoActividad(true);
     setErrorActividad("");
     setMensajeActividad("");
     if (!estadoDocumentacionAbsis.mover_siguiente_actividad) {
       setErrorActividad("Selecciona Sí en «Mover el expediente a la siguiente actividad» para confirmar el avance.");
       return;
     }
+    if (!Array.isArray(fincasExpediente) || fincasExpediente.length === 0) {
+      setErrorActividad("Antes de pasar a Sede notarial debes informar las fincas y sus registros de la propiedad.");
+      return;
+    }
+    const fincasIncompletas = fincasExpediente.filter((finca) =>
+      !String(finca?.finca ?? finca?.numero_finca ?? "").trim() ||
+      !String(finca?.registro ?? finca?.registro_propiedad ?? finca?.registro_propiedad_nombre ?? "").trim()
+    );
+    if (fincasIncompletas.length) {
+      setErrorActividad("Todas las fincas deben tener informado el número de finca y el Registro de la Propiedad. Completa Fincas y Registros antes de avanzar.");
+      return;
+    }
+    setGuardandoActividad(true);
     try {
       await axios.put(
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/absis`,
@@ -1973,6 +2053,23 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
   async function enviarSedeNotarialProtocoloAbsis() {
     if (!expediente?.id_expediente || guardandoActividad || enviandoAbsis) return;
+    const pendientesCampos = validarCamposWorkflow("sede-notarial-protocolo", actividadDraft);
+    if (pendientesCampos.length) {
+      setErrorActividad(`No se puede avanzar. Completa estos campos obligatorios: ${pendientesCampos.join(", ")}.`);
+      setMensajeActividad("");
+      return;
+    }
+    try {
+      const docs = await axios.get(`/expedientes/${encodeURIComponent(expediente.id_expediente)}/carpeta-digital`);
+      const listaDocs = Array.isArray(docs.data) ? docs.data : docs.data?.items || [];
+      if (!documentoWorkflowPresente(listaDocs, [["copia simple"], ["copia", "escritura"]])) {
+        setErrorActividad("No se puede avanzar: falta subir la copia simple de escritura a la carpeta digital.");
+        return;
+      }
+    } catch (errorDocumentos) {
+      setErrorActividad("No se pudo verificar la copia simple en la carpeta digital. Actualiza la carpeta y vuelve a intentarlo.");
+      return;
+    }
     setGuardandoActividad(true);
     setEnviandoAbsis(true);
     setErrorActividad("");
@@ -1989,24 +2086,31 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
         { campos }
       );
-      const respuesta = await axios.post(
-        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/sede-notarial-protocolo/enviar-a-absis`,
-        { ...campos, mover_siguiente_actividad: !!actividadDraft.mover_siguiente_actividad }
-      );
+      let respuestaAvance = null;
+      if (actividadDraft.mover_siguiente_actividad) {
+        respuestaAvance = await axios.post(
+          `/expedientes/${encodeURIComponent(expediente.id_expediente)}/avanzar-actividad`,
+          { actividad_destino: "liquidacion-impuestos" }
+        );
+      }
       await cargarExpediente();
-      setActividadDraft((actual) => ({ ...actual, ...(respuesta?.data || {}), ...campos }));
+      const datosRespuesta = respuestaAvance?.data || {};
+      setActividadDraft((actual) => ({ ...actual, ...datosRespuesta, ...campos }));
+      if (actividadDraft.mover_siguiente_actividad) setActividadSeleccionada("liquidacion-impuestos");
       setMensajeActividad(
         actividadDraft.mover_siguiente_actividad
-          ? "Datos guardados y solicitud de envío a ABSIS registrada, incluyendo la indicación de mover a la siguiente actividad."
-          : "Datos guardados y solicitud de envío a ABSIS registrada. El expediente permanece en esta actividad."
+          ? "Datos guardados y actividad avanzada tras validar la copia simple y los campos obligatorios."
+          : "Datos guardados. El expediente permanece en Sede notarial con protocolo."
       );
     } catch (err) {
       const detail = err?.response?.data?.detail;
       setErrorActividad(
         typeof detail === "string"
           ? detail
-          : detail?.mensaje || JSON.stringify(detail) || err?.message ||
-            "No se pudo enviar la información de Sede notarial con protocolo a ABSIS. Comprueba que el backend tenga habilitado este endpoint."
+          : detail?.mensaje
+            ? `${detail.mensaje}${Array.isArray(detail.documentos_pendientes) ? ` Faltan: ${detail.documentos_pendientes.join(", ")}.` : ""}${Array.isArray(detail.campos_pendientes) ? ` Campos pendientes: ${detail.campos_pendientes.join(", ")}.` : ""}`
+            : JSON.stringify(detail) || err?.message ||
+              "No se pudieron guardar o avanzar los datos de Sede notarial con protocolo."
       );
     } finally {
       setGuardandoActividad(false);
@@ -2016,6 +2120,28 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
   async function enviarActividadAbsis(tipoActividad) {
     if (!expediente?.id_expediente || guardandoActividad || enviandoAbsis) return;
+    const pendientesCampos = validarCamposWorkflow(tipoActividad, actividadDraft);
+    if (pendientesCampos.length) {
+      setErrorActividad(`No se puede avanzar. Completa estos campos obligatorios: ${pendientesCampos.join(", ")}.`);
+      setMensajeActividad("");
+      return;
+    }
+    if (tipoActividad === "tramitacion-inscripcion") {
+      try {
+        const docs = await axios.get(`/expedientes/${encodeURIComponent(expediente.id_expediente)}/carpeta-digital`);
+        const listaDocs = Array.isArray(docs.data) ? docs.data : docs.data?.items || [];
+        if (!documentoWorkflowPresente(listaDocs, [["hoja de inscripcion"], ["inscripcion"]])) {
+          setErrorActividad("No se puede avanzar: falta incorporar la hoja de inscripción a la carpeta digital.");
+          return;
+        }
+        const abiertos = Array.isArray(defectosRegistrados) ? defectosRegistrados.filter((defecto) => !defecto.fecha_entrada_subsanacion && !defecto.fecha_cierre_defecto && !defecto.fcierre_defecto) : [];
+        // El backend decide el destino: si hay defectos abiertos, deriva a
+        // «Defectos registrales»; nunca permite ir directamente al cierre.
+      } catch (errorDocumentos) {
+        setErrorActividad("No se pudo verificar la hoja de inscripción en la carpeta digital.");
+        return;
+      }
+    }
     const claves = CAMPOS_ACTIVIDADES[tipoActividad] || [];
     const campos = {};
     for (const campo of claves) {
@@ -2036,24 +2162,38 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
         { campos: camposActividad }
       );
-      const respuesta = await axios.post(
-        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/${tipoActividad}/enviar-a-absis`,
-        campos
-      );
+      let respuestaAvance = null;
+      if (campos.mover_siguiente_actividad) {
+        const destinos = {
+          "liquidacion-impuestos": "tramitacion-inscripcion",
+          "tramitacion-inscripcion": "facturacion-cierre",
+        };
+        respuestaAvance = await axios.post(
+          `/expedientes/${encodeURIComponent(expediente.id_expediente)}/avanzar-actividad`,
+          { actividad_destino: destinos[tipoActividad] }
+        );
+      }
       await cargarExpediente();
-      setActividadDraft((actual) => ({ ...actual, ...(respuesta?.data || {}), ...campos }));
+      const datosRespuesta = respuestaAvance?.data || {};
+      setActividadDraft((actual) => ({ ...actual, ...datosRespuesta, ...campos }));
+      if (campos.mover_siguiente_actividad) {
+        const nuevaActividad = resolverActividadActual(datosRespuesta);
+        if (nuevaActividad) setActividadSeleccionada(nuevaActividad);
+      }
       setMensajeActividad(
         campos.mover_siguiente_actividad
-          ? "Datos guardados y solicitud de envío a ABSIS registrada. Se ha indicado avanzar a la siguiente actividad."
-          : "Datos guardados y solicitud de envío a ABSIS registrada. El expediente permanece en esta actividad."
+          ? "Datos guardados. La actividad se ha avanzado tras validar los requisitos."
+          : "Datos guardados. El expediente permanece en esta actividad."
       );
     } catch (err) {
       const detail = err?.response?.data?.detail;
       setErrorActividad(
         typeof detail === "string"
           ? detail
-          : detail?.mensaje || JSON.stringify(detail) || err?.message ||
-            `No se pudo enviar a ABSIS. Comprueba que el backend tenga habilitada la ruta de ${tipoActividad}.`
+          : detail?.mensaje
+            ? `${detail.mensaje}${Array.isArray(detail.documentos_pendientes) ? ` Faltan: ${detail.documentos_pendientes.join(", ")}.` : ""}${Array.isArray(detail.campos_pendientes) ? ` Campos pendientes: ${detail.campos_pendientes.join(", ")}.` : ""}`
+            : JSON.stringify(detail) || err?.message ||
+              `No se pudieron guardar o avanzar los datos de ${tipoActividad}.`
       );
     } finally {
       setGuardandoActividad(false);
@@ -2101,40 +2241,79 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   }
 
   async function generarHonorariosGestoria() {
-    if (!expediente?.id_expediente || generandoHonorariosGestoria) return;
+    if (!expediente?.id_expediente || !expediente?.id || generandoHonorariosGestoria) return;
     const calculo = calcularHonorariosGestoria();
+    const fechaHoy = new Date().toLocaleDateString("sv-SE");
+    const descripcionHonorarios = `Honorarios de gestoría - Expediente ${expediente.id_expediente}`;
     setHonorariosGestoria(calculo);
     setGenerandoHonorariosGestoria(true);
     setErrorHonorariosGestoria("");
     setMensajeHonorariosGestoria("");
     try {
-      const respuesta = await axios.post(
-        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/generar`,
-        {
-          importe: calculo.importe,
-          tarifa: calculo.tarifa,
-          concepto: "Honorarios de gestoría",
-          entidad: calculo.entidad,
-          id_expediente: expediente.id_expediente,
-        }
+      // Reutiliza el módulo de gastos ya existente para que el concepto quede registrado,
+      // en vez de depender de una ruta específica de honorarios que no existe en el backend.
+      const respuestaGastos = await axios.get(
+        `/expedientes/${encodeURIComponent(expediente.id)}/gastos`
       );
-      setHonorariosGestoria((actual) => ({ ...actual, ...(respuesta?.data || {}), guardado: true }));
-      setMensajeHonorariosGestoria("Honorarios de gestoría generados y registrados.");
-    } catch (err) {
-      const status = err?.response?.status;
-      const detail = err?.response?.data?.detail;
-      if (status === 404 || status === 405) {
-        setMensajeHonorariosGestoria(
-          `Importe calculado: ${calculo.importe.toFixed(2).replace(".", ",")} €. El backend todavía no dispone de una ruta compatible para registrar automáticamente este concepto.`
+      const datosGastos = respuestaGastos?.data;
+      const listaGastos = Array.isArray(datosGastos)
+        ? datosGastos
+        : Array.isArray(datosGastos?.items)
+          ? datosGastos.items
+          : Array.isArray(datosGastos?.gastos)
+            ? datosGastos.gastos
+            : [];
+      const existente = listaGastos.find((gasto) =>
+        normalizarTextoWorkflow(gasto?.descripcion) === normalizarTextoWorkflow(descripcionHonorarios)
+      );
+      let gastoRegistrado = existente;
+      if (!gastoRegistrado) {
+        const gastoResponse = await axios.post(
+          `/expedientes/${encodeURIComponent(expediente.id)}/gastos`,
+          {
+            tipo: "Honorarios de gestoría",
+            descripcion: descripcionHonorarios,
+            importe: calculo.importe,
+            fecha: fechaHoy,
+            importe_total_bruto: calculo.importe,
+            importe_resultante: calculo.importe,
+            estado_pago: "Pendiente",
+          }
         );
-      } else {
-        setErrorHonorariosGestoria(
-          typeof detail === "string"
-            ? detail
-            : detail?.mensaje || JSON.stringify(detail) || err?.message ||
-              "No se pudieron registrar los honorarios. El importe calculado se mantiene visible."
-        );
+        gastoRegistrado = gastoResponse?.data || null;
       }
+      // Marca facturación y fin de actividad solo después de tener el gasto registrado.
+      await axios.put(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
+        { campos: {
+          facturacion_estado: "Generada",
+          facturacion_fecha: gastoRegistrado?.fecha || fechaHoy,
+          fecha_fin_actividad: fechaHoy,
+        } }
+      );
+      // El endpoint de workflow comprueba de nuevo los requisitos de cierre.
+      const respuestaCierre = await axios.post(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/avanzar-actividad`,
+        { actividad_destino: "facturacion-cierre" }
+      );
+      setHonorariosGestoria({
+        ...calculo,
+        guardado: true,
+        gasto_id: gastoRegistrado?.id,
+        fecha: gastoRegistrado?.fecha || fechaHoy,
+      });
+      await cargarGastosExpediente();
+      await cargarExpediente();
+      setActividadSeleccionada(resolverActividadActual(respuestaCierre?.data || { actividad_actual: "Cierre del expediente" }));
+      setMensajeHonorariosGestoria("Honorarios registrados como gasto y cierre del expediente completado.");
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setErrorHonorariosGestoria(
+        typeof detail === "string"
+          ? detail
+          : detail?.mensaje || JSON.stringify(detail) || err?.message ||
+            "No se pudieron registrar los honorarios o completar el cierre del expediente."
+      );
     } finally {
       setGenerandoHonorariosGestoria(false);
     }
@@ -5109,7 +5288,7 @@ const cuantiaFincasParaEnvio =
                 </div>
                 <div className="mt-3 flex justify-end">
                   <Boton tipo="primary" onClick={enviarSedeNotarialProtocoloAbsis} disabled={guardandoActividad || enviandoAbsis}>
-                    {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
+                    {guardandoActividad ? "Guardando…" : actividadDraft.mover_siguiente_actividad ? "💾 Guardar y avanzar" : "💾 Guardar datos"}
                   </Boton>
                 </div>
               </section>
@@ -5227,7 +5406,7 @@ const cuantiaFincasParaEnvio =
                 </div>
                 <div className="mt-3 flex justify-end">
                   <Boton tipo="primary" onClick={() => enviarActividadAbsis("liquidacion-impuestos")} disabled={guardandoActividad || enviandoAbsis}>
-                    {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
+                    {guardandoActividad ? "Guardando…" : actividadDraft.mover_siguiente_actividad !== false ? "💾 Guardar y avanzar" : "💾 Guardar datos"}
                   </Boton>
                 </div>
               </section>
@@ -5262,7 +5441,7 @@ const cuantiaFincasParaEnvio =
                 </div>
                 <div className="mt-3 flex justify-end">
                   <Boton tipo="primary" onClick={() => enviarActividadAbsis("tramitacion-inscripcion")} disabled={guardandoActividad || enviandoAbsis}>
-                    {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
+                    {guardandoActividad ? "Guardando…" : actividadDraft.mover_siguiente_actividad !== false ? "💾 Guardar y avanzar" : "💾 Guardar datos"}
                   </Boton>
                 </div>
               </section>
