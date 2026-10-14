@@ -108,6 +108,14 @@ function normalizarTexto(valor) {
 }
 
 
+function sumarUnaHoraTexto(hora) {
+  if (!hora) return "";
+  const coincidencia = String(hora).match(/^(\d{1,2}):(\d{2})/);
+  if (!coincidencia) return "";
+  const minutos = (Number(coincidencia[1]) * 60 + Number(coincidencia[2]) + 60) % (24 * 60);
+  return `${String(Math.floor(minutos / 60)).padStart(2, "0")}:${String(minutos % 60).padStart(2, "0")}`;
+}
+
 function esDisponible(
   objeto,
   campo
@@ -4749,6 +4757,32 @@ const cuantiaFincasParaEnvio =
               </div>
             )}
 
+            {actividadSeleccionada === "sede-notarial" && (
+              <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-sm font-extrabold text-slate-800">Datos de Sede notarial</h3>
+                  <span className="text-[11px] font-medium text-slate-500">Datos guardados desde «Enviar a notario»</span>
+                </div>
+                <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                  <Dato campo="Expediente" valor={expediente?.id_expediente ?? expediente?.expediente} />
+                  <Dato campo="Notario" valor={expediente?.nombre_notario ?? expediente?.notario} />
+                  <Dato campo="Tipo de documento" valor={expediente?.tipo_documento ?? expediente?.documentos_escritura?.map((d) => d?.tipo_documento).filter(Boolean).join(" · ")} />
+                  <Dato campo="Cuantía" valor={expediente?.cuantia ?? expediente?.documentos_escritura?.[0]?.cuantia ?? expediente?.finca_cuantia} tipo="numero" />
+                  <Dato campo="Formato de escritura" valor={expediente?.formato_escritura ?? expediente?.formato_escritura_notarial} />
+                  <Dato campo="Tipo de trámite" valor={expediente?.tipo_tramite ?? expediente?.tipo_tramite_notarial ?? expediente?.tramite} />
+                  <Dato campo="Fecha de envío" valor={expediente?.fecha_envio} tipo="fecha" />
+                  <Dato campo="Fecha solicitud PNC" valor={expediente?.fecha_solicitud_pnc ?? expediente?.fecha_pnc ?? expediente?.pnc_fecha_solicitud} tipo="fecha" />
+                  <Dato campo="N.º de solicitud" valor={expediente?.numero_solicitud_pnc ?? expediente?.num_solicitud_pnc ?? expediente?.pnc_numero_solicitud} />
+                  <Dato campo="Fecha prevista de firma" valor={expediente?.fecha_prevista_firma} tipo="fecha" />
+                  <Dato campo="Hora prevista" valor={expediente?.hora_prevista_firma} />
+                  <Dato campo="Fin previsto" valor={expediente?.fin_previsto_firma ?? expediente?.hora_fin_prevista ?? sumarUnaHoraTexto(expediente?.hora_prevista_firma)} />
+                  <Dato campo="Modalidad de firma" valor={expediente?.tipo_firma ?? expediente?.tipo_firma_notarial} />
+                  <Dato campo="Idioma" valor={expediente?.idioma_documento ?? expediente?.idioma ?? expediente?.lengua_documento} />
+                  <Dato campo="Escritura firmada" valor={expediente?.escritura_firmada === true || expediente?.escritura_firmada === "Sí" ? "Sí" : expediente?.escritura_firmada === false || expediente?.escritura_firmada === "No" ? "No" : null} />
+                </div>
+              </section>
+            )}
+
             {actividadSeleccionada !== "documentacion-previa" && (
               <div
                 className="
@@ -4760,7 +4794,10 @@ const cuantiaFincasParaEnvio =
                 "
               >
 
-              {camposActividad.map((campo) => {
+              {(actividadSeleccionada === "sede-notarial"
+                ? camposActividad.filter((campo) => CAMPOS_COMUNES_ACTIVIDAD.some((item) => item.key === campo.key))
+                : camposActividad
+              ).map((campo) => {
                 const esComun = CAMPOS_COMUNES_ACTIVIDAD.some((item) => item.key === campo.key);
                 const valorActual = actividadDraft[campo.key] ?? expediente?.[campo.key] ?? "";
                 if (esComun || campo.key === "fecha_envio") {
