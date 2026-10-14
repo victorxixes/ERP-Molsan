@@ -2029,7 +2029,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   async function guardarGastoExpediente(event) {
     event.preventDefault();
     const expedienteId = expediente?.id ?? (Number.isFinite(Number(id)) ? Number(id) : null);
-    const importe = Number(String(gastoForm.importe).replace(",", "."));
+    const brutoIntroducido = numeroDecimalGasto(gastoForm.importe_total_bruto);
 
     if (!expedienteId) {
       setErrorGastos("No se ha identificado el expediente.");
@@ -2043,8 +2043,12 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       setErrorGastos("Indica la descripción del gasto.");
       return;
     }
-    if (!gastoForm.importe || !Number.isFinite(importe) || importe < 0) {
-      setErrorGastos("Indica un importe válido.");
+    if (gastoForm.importe_total_bruto === "" || !Number.isFinite(brutoIntroducido) || brutoIntroducido < 0) {
+      setErrorGastos("Indica un importe bruto de factura válido.");
+      return;
+    }
+    if (!Number.isFinite(resultadoCalculadoGasto) || resultadoCalculadoGasto < 0) {
+      setErrorGastos("El resultado neto no puede ser negativo. Revisa el bruto y la retención.");
       return;
     }
     if (!gastoForm.fecha) {
