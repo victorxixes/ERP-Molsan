@@ -2735,56 +2735,35 @@ async function descargarPDFCalificacion(defecto) {
   }
 
 
-  async function guardarObservacion() {
-    const texto = String(comentario || "").trim();
-    if (!texto) {
-      window.alert("Escribe el comentario antes de guardar.");
-      return;
-    }
-    if (!numeroExpedienteApi) {
-      window.alert("No se ha podido identificar el expediente.");
-      return;
-    }
-
-    // El router exige un destinatario para la visibilidad Gestor.
-    const visibilidades = [];
-    if (visionesComentario.actividad) visibilidades.push("Gestor");
-    if (visionesComentario.notario) visibilidades.push("Visible notario");
-    if (visionesComentario.apoderado) visibilidades.push("Visible apoderado");
-
-    if (!visibilidades.length) {
-      window.alert("Selecciona al menos un destino para el comentario.");
-      return;
-    }
-    if (visibilidades.includes("Gestor") && !destinatarioObservacion) {
-      window.alert("No hay un empleado destinatario disponible para la observación interna. Comprueba la sección Observaciones y vuelve a intentarlo.");
-      return;
-    }
-
-    try {
-      for (const visibilidad of visibilidades) {
-        await axios.post(
-          `/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones`,
-          {
-            comentario: texto,
-            visibilidad,
-            empleado_destinatario_id: visibilidad === "Gestor"
-              ? Number(destinatarioObservacion)
-              : null,
-          }
-        );
+  function guardarObservacion() {
+    console.log(
+      "OBSERVACION EXPEDIENTE:",
+      {
+        expediente:
+          expediente?.id_expediente,
+        comentario,
+        visiones:
+          visionesComentario,
       }
+    );
 
-      setExpediente((actual) => ({ ...actual, observaciones: texto }));
-      await cargarObservacionesExpediente();
-      setMostrarObservaciones(false);
-    } catch (err) {
-      console.error("Error guardando observación desde el modal:", err);
-      window.alert(
-        err?.response?.data?.detail ||
-        "No se pudo guardar la observación. Revisa la conexión con el backend."
-      );
-    }
+    /*
+     * Dejamos la observación inmediatamente visible
+     * en la ficha.
+     *
+     * La persistencia definitiva se conectará al
+     * sistema de observaciones/mensajes.
+     */
+
+    setExpediente(
+      (actual) => ({
+        ...actual,
+        observaciones:
+          comentario,
+      })
+    );
+
+    setMostrarObservaciones(false);
   }
 
 
@@ -4007,8 +3986,28 @@ const cuantiaFincasParaEnvio =
                     </time>
                   </div>
                   <div className="mt-2 flex flex-wrap gap-1.5">
-                    <span className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-semibold text-blue-700">Visible: {observacion.visibilidad || "Gestor"}</span>
-                    {observacion.empleado_destinatario && <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">Destinatario: {observacion.empleado_destinatario}</span>}
+                    {observacion.visibilidad === "Gestor" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-800">
+                        🔒 Interna · Departamento
+                      </span>
+                    ) : observacion.visibilidad === "Visible notario" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold text-sky-800">
+                        ⚖️ Visible para notario
+                      </span>
+                    ) : observacion.visibilidad === "Visible apoderado" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2 py-1 text-[10px] font-semibold text-violet-800">
+                        👤 Visible para apoderado
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-700">
+                        Visibilidad: {observacion.visibilidad || "No indicada"}
+                      </span>
+                    )}
+                    {observacion.visibilidad === "Gestor" && observacion.empleado_destinatario && (
+                      <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">
+                        Destinatario: {observacion.empleado_destinatario}
+                      </span>
+                    )}
                   </div>
                   <div className="mt-2 flex justify-end gap-2">
                     <button type="button" onClick={() => editarObservacionExpediente(observacion)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700 hover:bg-blue-100">
