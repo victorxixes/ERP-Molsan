@@ -1,4 +1,3 @@
-```javascript
 import { create } from "zustand";
 import * as api from "../api/ctn";
 
@@ -350,4 +349,4 @@ export const useCtnStore = create((set, get) => ({
     });
   },
 }));
-```
+
