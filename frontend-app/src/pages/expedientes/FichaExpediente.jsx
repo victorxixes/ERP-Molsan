@@ -5035,18 +5035,38 @@ const cuantiaFincasParaEnvio =
               >
 
               {(actividadSeleccionada === "sede-notarial"
-                ? camposActividad.filter((campo) => CAMPOS_COMUNES_ACTIVIDAD.some((item) => item.key === campo.key))
+                ? camposActividad.filter((campo) => {
+                    const camposSedePermitidos = new Set([
+                      "estado_expediente",
+                      "estado_actividad",
+                      "fecha_alta",
+                      "actividad_actual",
+                      "nombre_titular",
+                      "nif_titular",
+                      "nombre_solicitante",
+                      "nif_solicitante",
+                      "oficina",
+                      "capital",
+                      "importe",
+                      "saldo_real",
+                      "saldo_disponible",
+                      "contrato",
+                      "tipo_operacion",
+                      "subtipo_operacion",
+                    ]);
+                    return camposSedePermitidos.has(campo.key);
+                  })
                 : camposActividad
               ).map((campo) => {
                 const esComun = CAMPOS_COMUNES_ACTIVIDAD.some((item) => item.key === campo.key);
                 const valorActual = actividadDraft[campo.key] ?? expediente?.[campo.key] ?? "";
                 if (esComun || campo.key === "fecha_envio") {
-                  if (!esDisponible(expediente, campo.key)) return null;
+                  if (actividadSeleccionada !== "sede-notarial" && !esDisponible(expediente, campo.key)) return null;
                   return (
                     <Dato
                       key={campo.key}
                       campo={campo.label}
-                      valor={expediente[campo.key]}
+                      valor={expediente?.[campo.key]}
                       tipo={campo.tipo}
                       estado={campo.estado}
                       multilinea={campo.multilinea}
