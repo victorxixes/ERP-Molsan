@@ -1,4 +1,3 @@
-```javascript
 import axios from "./axios";
 
 /**
@@ -72,4 +71,4 @@ export const desasociarNotarios = (notariaId, asociadaId) =>
   axios.delete(
     `/ctn/notarias/${notariaId}/asociadas/${asociadaId}`,
   );
-```
+
