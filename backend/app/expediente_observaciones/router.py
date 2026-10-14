@@ -234,6 +234,10 @@ def crear_observacion(
     datos: ObservacionCreate,
     db: Session = Depends(get_db),
 ):
+    # IMPORTANTE: este router todavía no recibe el empleado autenticado.
+    # No asignamos autor_empleado_id desde el cliente ni inventamos un autor.
+    # Para guardar el autor real, hay que integrar aquí la dependencia de
+    # autenticación/usuario actual que utilice el resto del backend.
     expediente = _comprobar_expediente(db, expediente_id)
 
     if datos.visibilidad == "Gestor":
@@ -255,11 +259,6 @@ def crear_observacion(
                 ),
             )
 
-    # Nota: este router no recibe actualmente el usuario autenticado.
-    # Por ello no se asigna autor_empleado_id aquí: hacerlo sin una
-    # dependencia de autenticación fiable podría atribuir la observación
-    # a un empleado incorrecto. El autor se podrá guardar al conectar
-    # el usuario autenticado de la aplicación.
     item = ExpedienteObservacion(
         expediente_id=expediente.id,
         comentario=datos.comentario,
