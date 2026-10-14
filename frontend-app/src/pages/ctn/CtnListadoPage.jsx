@@ -3,163 +3,169 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useCtn } from "../../hooks/useCtn";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 
-const PAGE_SIZE = 15;
+// ============================================================
+// HELPERS
+// ============================================================
 
-const FILTROS_INICIALES = {
-  provincia: "",
-  municipio: "",
-  vc: "",
-  apoderado: "",
-  q: "",
-  asociado: "",
-};
+function texto(valor) {
+  if (valor === null || valor === undefined || valor === "") {
+    return "—";
+  }
 
-function mostrar(valor) {
-  return valor === null || valor === undefined || valor === ""
-    ? "—"
-    : String(valor);
+  return String(valor);
 }
 
-function nombreCompleto(notario) {
-  return [
-    notario?.nombre,
-    notario?.apellidos,
+function obtenerNombreCompleto(notaria) {
+  if (!notaria) return "—";
+
+  const nombre = [
+    notaria.nombre,
+    notaria.apellidos,
   ]
     .filter(Boolean)
     .join(" ")
     .trim();
+
+  return nombre || notaria.nombre_completo || "—";
 }
 
-function obtenerAsociados(notaria) {
-  const asociados =
-    notaria?.notarios_asociados ??
-    notaria?.notarias_asociadas ??
-    notaria?.asociados ??
-    [];
+function obtenerNombreAsociado(notaria) {
+  if (!notaria) return "—";
 
-  if (Array.isArray(asociados)) {
-    return asociados
+  if (notaria.notario_asociado) {
+    if (typeof notaria.notario_asociado === "string") {
+      return notaria.notario_asociado;
+    }
+
+    return (
+      obtenerNombreCompleto(notaria.notario_asociado) +
+      (notaria.notario_asociado.nif
+        ? ` (${notaria.notario_asociado.nif})`
+        : "")
+    );
+  }
+
+  if (notaria.notarios_asociados?.length) {
+    return notaria.notarios_asociados
+      .map((asociado) => {
+        const nombre = obtenerNombreCompleto(asociado);
+
+        return asociado.nif
+          ? `${nombre} (${asociado.nif})`
+          : nombre;
+      })
+      .join(", ");
+  }
+
+  if (notaria.asociados?.length) {
+    return notaria.asociados
       .map((asociado) => {
         if (typeof asociado === "string") return asociado;
 
-        return (
-          asociado?.nombre_completo ||
-          nombreCompleto(asociado) ||
-          asociado?.nif ||
-          ""
-        );
+        const nombre = obtenerNombreCompleto(asociado);
+
+        return asociado.nif
+          ? `${nombre} (${asociado.nif})`
+          : nombre;
       })
-      .filter(Boolean);
+      .join(", ");
   }
 
-  if (typeof notaria?.notario_asociado === "string") {
-    return notaria.notario_asociado
-      .split(",")
-      .map((nombre) => nombre.trim())
-      .filter(Boolean);
-  }
-
-  return [];
+  return "—";
 }
 
-function CampoFiltro({ label, value, placeholder, onChange }) {
-  return (
-    <label className="block">
-      <span className="mb-1 block text-sm font-medium text-[var(--erp-text)]">
-        {label}
-      </span>
-
-      <input
-        type="text"
-        value={value}
-        placeholder={placeholder}
-        onChange={(evento) => onChange(evento.target.value)}
-        className="w-full rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface-soft)] px-3 py-2 text-sm text-[var(--erp-text)] outline-none transition focus:border-[var(--erp-primary)] focus:ring-2 focus:ring-[var(--erp-primary-soft)]"
-      />
-    </label>
-  );
-}
+// ============================================================
+// COMPONENTE
+// ============================================================
 
 export default function CtnListadoPage() {
   const {
-    items,
-    total,
+    items = [],
+    total = 0,
     cargarNotarias,
-    loading,
+    loading = false,
   } = useCtn();
 
-  const [filtros, setFiltros] = useState(FILTROS_INICIALES);
-  const [filtrosAplicados, setFiltrosAplicados] = useState(
-    FILTROS_INICIALES,
-  );
+  const PAGE_SIZE = 15;
 
   const [pagina, setPagina] = useState(1);
+
+  const [filtros, setFiltros] = useState({
+    provincia: "",
+    municipio: "",
+    vc: "",
+    apoderado: "",
+    asociado: "",
+    q: "",
+  });
+
   const [orden, setOrden] = useState({
-    campo: null,
+    campo: "nombre",
     direccion: "asc",
   });
 
   const [modalOpen, setModalOpen] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [errorExcel, setErrorExcel] = useState("");
 
   // ==========================================================
   // CARGA DEL LISTADO
   // ==========================================================
 
+  const cargarListado = useCallback(
+    (paginaDestino = pagina, filtrosDestino = filtros) => {
+      if (typeof cargarNotarias !== "function") return;
+
+      cargarNotarias(
+        filtrosDestino,
+        paginaDestino,
+        PAGE_SIZE
+      );
+    },
+    [cargarNotarias, pagina, filtros]
+  );
+
   useEffect(() => {
-    let activo = true;
-
-    Promise.resolve(
-      cargarNotarias(filtrosAplicados, pagina, PAGE_SIZE),
-    ).catch((error) => {
-      if (activo) {
-        console.error("Error cargando notarías:", error);
-      }
-    });
-
-    return () => {
-      activo = false;
-    };
-  }, [cargarNotarias, filtrosAplicados, pagina]);
+    cargarListado(pagina, filtros);
+  }, [cargarListado, pagina, filtros]);
 
   // ==========================================================
-  // CAMBIOS DE FILTRO
+  // FILTROS
   // ==========================================================
 
-  const cambiarFiltro = useCallback((campo, valor) => {
+  const cambiarFiltro = (campo, valor) => {
     setFiltros((actuales) => ({
       ...actuales,
       [campo]: valor,
     }));
-  }, []);
 
-  const aplicarFiltros = useCallback(() => {
     setPagina(1);
-    setOrden({
-      campo: null,
-      direccion: "asc",
-    });
-    setFiltrosAplicados({ ...filtros });
-  }, [filtros]);
+  };
 
-  const limpiarFiltros = useCallback(() => {
-    const vacios = { ...FILTROS_INICIALES };
+  const limpiarFiltros = () => {
+    const filtrosVacios = {
+      provincia: "",
+      municipio: "",
+      vc: "",
+      apoderado: "",
+      asociado: "",
+      q: "",
+    };
 
-    setFiltros(vacios);
-    setFiltrosAplicados(vacios);
+    setFiltros(filtrosVacios);
     setPagina(1);
-    setOrden({
-      campo: null,
-      direccion: "asc",
-    });
-  }, []);
+    cargarListado(1, filtrosVacios);
+  };
+
+  const aplicarFiltros = () => {
+    setPagina(1);
+    cargarListado(1, filtros);
+  };
 
   // ==========================================================
   // ORDENACIÓN
   // ==========================================================
 
-  const cambiarOrden = useCallback((campo) => {
+  const cambiarOrden = (campo) => {
     setOrden((actual) => ({
       campo,
       direccion:
@@ -167,113 +173,137 @@ export default function CtnListadoPage() {
           ? "desc"
           : "asc",
     }));
-  }, []);
+  };
+
+  const indicadorOrden = (campo) => {
+    if (orden.campo !== campo) return "";
+
+    return orden.direccion === "asc" ? " ▲" : " ▼";
+  };
 
   const itemsOrdenados = useMemo(() => {
-    if (!Array.isArray(items)) return [];
+    const copia = [...items];
 
-    if (!orden.campo) return items;
+    const valorCampo = (item, campo) => {
+      switch (campo) {
+        case "nombre":
+          return obtenerNombreCompleto(item);
 
-    return [...items].sort((a, b) => {
-      let valorA;
-      let valorB;
+        case "codigo":
+          return item.codigo;
 
-      if (orden.campo === "notarios_asociados") {
-        valorA = obtenerAsociados(a).join(", ");
-        valorB = obtenerAsociados(b).join(", ");
-      } else {
-        valorA = a?.[orden.campo];
-        valorB = b?.[orden.campo];
+        case "telefono":
+          return item.telefono;
+
+        case "provincia":
+          return item.provincia;
+
+        case "municipio":
+          return item.municipio;
+
+        case "cp":
+          return item.cp;
+
+        case "direccion":
+          return item.direccion;
+
+        case "notario_asociado":
+          return obtenerNombreAsociado(item);
+
+        default:
+          return item[campo];
       }
+    };
 
-      const textoA = String(valorA ?? "")
-        .trim()
-        .toLocaleLowerCase("es");
+    copia.sort((a, b) => {
+      const valorA = valorCampo(a, orden.campo);
+      const valorB = valorCampo(b, orden.campo);
 
-      const textoB = String(valorB ?? "")
-        .trim()
-        .toLocaleLowerCase("es");
+      const textoA =
+        valorA === null || valorA === undefined
+          ? ""
+          : String(valorA);
 
-      const numeroA = Number(textoA);
-      const numeroB = Number(textoB);
+      const textoB =
+        valorB === null || valorB === undefined
+          ? ""
+          : String(valorB);
 
-      const ambosNumericos =
-        textoA !== "" &&
-        textoB !== "" &&
-        Number.isFinite(numeroA) &&
-        Number.isFinite(numeroB);
-
-      const resultado = ambosNumericos
-        ? numeroA - numeroB
-        : textoA.localeCompare(textoB, "es", {
-            numeric: true,
-            sensitivity: "base",
-          });
+      const comparacion = textoA.localeCompare(
+        textoB,
+        "es",
+        {
+          numeric: true,
+          sensitivity: "base",
+        }
+      );
 
       return orden.direccion === "asc"
-        ? resultado
-        : -resultado;
+        ? comparacion
+        : -comparacion;
     });
+
+    return copia;
   }, [items, orden]);
 
-  const totalPaginas = Math.ceil((total || 0) / PAGE_SIZE);
-
   // ==========================================================
-  // MODAL DE DETALLE
+  // PAGINACIÓN
   // ==========================================================
 
-  const abrirDetalle = useCallback((notaria) => {
-    setSelected(notaria);
-    setModalOpen(true);
-  }, []);
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(Number(total || 0) / PAGE_SIZE)
+  );
 
-  const cerrarDetalle = useCallback(() => {
-    setModalOpen(false);
-    setSelected(null);
-  }, []);
+  const irPagina = (destino) => {
+    if (destino < 1 || destino > totalPaginas) return;
+
+    setPagina(destino);
+  };
 
   // ==========================================================
-  // EXPORTACIÓN EXCEL
+  // EXCEL
   // ==========================================================
 
-  const descargarExcel = useCallback(async () => {
-    setErrorExcel("");
-
+  const exportarExcel = async () => {
     try {
-      const baseUrl = import.meta.env.VITE_API_URL;
-
-      if (!baseUrl) {
-        throw new Error(
-          "No está configurada la variable VITE_API_URL.",
-        );
-      }
+      const baseUrl = (
+        import.meta.env.VITE_API_URL || ""
+      ).replace(/\/$/, "");
 
       const params = new URLSearchParams();
 
-      Object.entries(filtrosAplicados).forEach(([clave, valor]) => {
-        if (typeof valor === "string" && valor.trim()) {
-          params.set(clave, valor.trim());
+      Object.entries(filtros).forEach(([clave, valor]) => {
+        if (
+          valor !== undefined &&
+          valor !== null &&
+          String(valor).trim() !== ""
+        ) {
+          params.set(clave, String(valor).trim());
         }
       });
 
-      const token = localStorage.getItem("token");
-      const cabeceras = {};
-
-      if (token) {
-        cabeceras.Authorization = `Bearer ${token}`;
-      }
+      const token =
+        localStorage.getItem("token") ||
+        localStorage.getItem("access_token");
 
       const respuesta = await fetch(
         `${baseUrl}/ctn/exportar-excel?${params.toString()}`,
         {
           method: "GET",
-          headers: cabeceras,
-        },
+          headers: token
+            ? {
+                Authorization: `Bearer ${token}`,
+              }
+            : {},
+        }
       );
 
       if (!respuesta.ok) {
+        const detalle = await respuesta.text();
+
         throw new Error(
-          `No se pudo exportar el Excel (HTTP ${respuesta.status}).`,
+          detalle || `Error HTTP ${respuesta.status}`
         );
       }
 
@@ -282,54 +312,38 @@ export default function CtnListadoPage() {
       const enlace = document.createElement("a");
 
       enlace.href = url;
-      enlace.download = "notarias.xlsx";
+      enlace.download = "listado_ctn.xlsx";
 
       document.body.appendChild(enlace);
       enlace.click();
       enlace.remove();
 
-      window.setTimeout(() => {
-        window.URL.revokeObjectURL(url);
-      }, 1000);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error exportando notarías:", error);
-      setErrorExcel(
-        error?.message || "No se ha podido descargar el Excel.",
+      console.error("Error al exportar CTN:", error);
+
+      window.alert(
+        "No se ha podido exportar el listado CTN. " +
+          (error?.message || "")
       );
     }
-  }, [filtrosAplicados]);
+  };
 
   // ==========================================================
-  // CABECERA ORDENABLE
+  // DETALLE
   // ==========================================================
 
-  const CabeceraOrdenable = ({
-    campo,
-    children,
-    className = "",
-  }) => {
-    const activa = orden.campo === campo;
+  const abrirDetalle = (notaria) => {
+    setSelected(notaria);
+    setModalOpen(true);
+  };
 
-    return (
-      <th
-        className={`whitespace-nowrap px-3 py-3 text-left font-semibold text-[var(--erp-text)] ${className}`}
-      >
-        <button
-          type="button"
-          onClick={() => cambiarOrden(campo)}
-          className="inline-flex items-center gap-2 hover:text-[var(--erp-primary)]"
-        >
-          <span>{children}</span>
-          <span className={activa ? "text-[var(--erp-primary)]" : "opacity-40"}>
-            {activa
-              ? orden.direccion === "asc"
-                ? "↑"
-                : "↓"
-              : "↕"}
-          </span>
-        </button>
-      </th>
-    );
+  const cerrarDetalle = () => {
+    setModalOpen(false);
+    setSelected(null);
+
+    // Recarga por si se han modificado datos o asociaciones.
+    cargarListado(pagina, filtros);
   };
 
   // ==========================================================
@@ -337,246 +351,324 @@ export default function CtnListadoPage() {
   // ==========================================================
 
   return (
-    <div className="space-y-6">
-      <section className="erp-card space-y-4 p-4 shadow-sm">
+    <div className="ctn-listado-page">
+      <div className="ctn-listado-header">
         <div>
-          <h2 className="text-base font-semibold text-[var(--erp-text)]">
-            Directorio de notarías
-          </h2>
-          <p className="mt-1 text-sm text-[var(--erp-text-soft)]">
-            Busca notarías, consulta sus asociaciones y accede a su ficha.
+          <h1>CTN · Notarios</h1>
+          <p>
+            Gestión del censo notarial y de sus notarios asociados.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <CampoFiltro
-            label="Búsqueda general"
-            placeholder="Nombre, apellidos, código o NIF"
-            value={filtros.q}
-            onChange={(valor) => cambiarFiltro("q", valor)}
-          />
+        <button
+          type="button"
+          onClick={exportarExcel}
+          className="ctn-btn ctn-btn-excel"
+        >
+          Exportar Excel
+        </button>
+      </div>
 
-          <CampoFiltro
-            label="Provincia"
-            placeholder="Provincia"
-            value={filtros.provincia}
-            onChange={(valor) => cambiarFiltro("provincia", valor)}
-          />
+      {/* FILTROS */}
 
-          <CampoFiltro
-            label="Municipio"
-            placeholder="Municipio"
-            value={filtros.municipio}
-            onChange={(valor) => cambiarFiltro("municipio", valor)}
-          />
+      <section className="ctn-filtros">
+        <div className="ctn-filtros-grid">
+          <label>
+            Búsqueda general
+            <input
+              type="text"
+              value={filtros.q}
+              onChange={(e) =>
+                cambiarFiltro("q", e.target.value)
+              }
+              placeholder="Nombre, apellidos, código o NIF"
+            />
+          </label>
 
-          <CampoFiltro
-            label="Videoconferencia"
-            placeholder="Valor de VC"
-            value={filtros.vc}
-            onChange={(valor) => cambiarFiltro("vc", valor)}
-          />
+          <label>
+            Provincia
+            <input
+              type="text"
+              value={filtros.provincia}
+              onChange={(e) =>
+                cambiarFiltro("provincia", e.target.value)
+              }
+              placeholder="Provincia"
+            />
+          </label>
 
-          <CampoFiltro
-            label="Apoderado"
-            placeholder="Nombre del apoderado"
-            value={filtros.apoderado}
-            onChange={(valor) => cambiarFiltro("apoderado", valor)}
-          />
+          <label>
+            Municipio
+            <input
+              type="text"
+              value={filtros.municipio}
+              onChange={(e) =>
+                cambiarFiltro("municipio", e.target.value)
+              }
+              placeholder="Municipio"
+            />
+          </label>
 
-          <CampoFiltro
-            label="Notario asociado"
-            placeholder="Nombre, apellidos o NIF"
-            value={filtros.asociado}
-            onChange={(valor) => cambiarFiltro("asociado", valor)}
-          />
+          <label>
+            Videoconferencia
+            <select
+              value={filtros.vc}
+              onChange={(e) =>
+                cambiarFiltro("vc", e.target.value)
+              }
+            >
+              <option value="">Todos</option>
+              <option value="SI">Sí</option>
+              <option value="NO">No</option>
+            </select>
+          </label>
+
+          <label>
+            Apoderado
+            <input
+              type="text"
+              value={filtros.apoderado}
+              onChange={(e) =>
+                cambiarFiltro("apoderado", e.target.value)
+              }
+              placeholder="Nombre del apoderado"
+            />
+          </label>
+
+          <label>
+            Notario asociado
+            <input
+              type="text"
+              value={filtros.asociado}
+              onChange={(e) =>
+                cambiarFiltro("asociado", e.target.value)
+              }
+              placeholder="Nombre, apellidos o NIF"
+            />
+          </label>
         </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="ctn-filtros-acciones">
           <button
             type="button"
             onClick={aplicarFiltros}
-            className="rounded-xl bg-[var(--erp-primary)] px-4 py-2 text-white shadow-sm transition hover:opacity-90"
+            className="ctn-btn ctn-btn-primary"
           >
-            Aplicar filtros
+            Buscar
           </button>
 
           <button
             type="button"
             onClick={limpiarFiltros}
-            className="rounded-xl border border-[var(--erp-border)] px-4 py-2 text-[var(--erp-text)] transition hover:bg-[var(--erp-surface-soft)]"
+            className="ctn-btn ctn-btn-secondary"
           >
             Limpiar filtros
           </button>
-
-          <button
-            type="button"
-            onClick={descargarExcel}
-            className="rounded-xl bg-[var(--erp-success)] px-4 py-2 text-white shadow-sm transition hover:opacity-90"
-          >
-            Descargar Excel
-          </button>
         </div>
-
-        {errorExcel && (
-          <p role="alert" className="text-sm text-red-600">
-            {errorExcel}
-          </p>
-        )}
       </section>
 
-      {loading ? (
-        <section className="erp-card p-6">
-          <p className="animate-pulse text-sm text-[var(--erp-text-soft)]">
-            Cargando notarías...
-          </p>
-        </section>
-      ) : (
-        <section className="erp-card overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--erp-border)] bg-[var(--erp-surface-soft)]">
-                  <CabeceraOrdenable campo="codigo">Código</CabeceraOrdenable>
-                  <CabeceraOrdenable campo="telefono">Teléfono</CabeceraOrdenable>
-                  <CabeceraOrdenable campo="nombre">Nombre</CabeceraOrdenable>
-                  <CabeceraOrdenable campo="apellidos">Apellidos</CabeceraOrdenable>
-                  <CabeceraOrdenable campo="provincia">Provincia</CabeceraOrdenable>
-                  <CabeceraOrdenable campo="municipio">Municipio</CabeceraOrdenable>
-                  <CabeceraOrdenable campo="cp">CP</CabeceraOrdenable>
-                  <CabeceraOrdenable campo="direccion">Dirección</CabeceraOrdenable>
-                  <CabeceraOrdenable campo="notarios_asociados">
-                    Notarios asociados
-                  </CabeceraOrdenable>
-                  <th className="whitespace-nowrap px-3 py-3 text-left font-semibold text-[var(--erp-text)]">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
+      {/* RESUMEN */}
 
-              <tbody>
-                {itemsOrdenados.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={10}
-                      className="px-4 py-10 text-center text-sm text-[var(--erp-text-soft)]"
-                    >
-                      No se han encontrado notarías.
+      <div className="ctn-listado-resumen">
+        <span>
+          Total de notarios: <strong>{total}</strong>
+        </span>
+
+        <span>
+          Página <strong>{pagina}</strong> de{" "}
+          <strong>{totalPaginas}</strong>
+        </span>
+      </div>
+
+      {/* TABLA */}
+
+      <section className="ctn-tabla-contenedor">
+        <div className="ctn-tabla-scroll">
+          <table className="ctn-tabla">
+            <thead>
+              <tr>
+                <th>
+                  <button
+                    type="button"
+                    onClick={() => cambiarOrden("codigo")}
+                    className="ctn-orden"
+                  >
+                    Código{indicadorOrden("codigo")}
+                  </button>
+                </th>
+
+                <th>
+                  <button
+                    type="button"
+                    onClick={() => cambiarOrden("telefono")}
+                    className="ctn-orden"
+                  >
+                    Teléfono{indicadorOrden("telefono")}
+                  </button>
+                </th>
+
+                <th>
+                  <button
+                    type="button"
+                    onClick={() => cambiarOrden("nombre")}
+                    className="ctn-orden"
+                  >
+                    Nombre y apellidos{indicadorOrden("nombre")}
+                  </button>
+                </th>
+
+                <th>
+                  <button
+                    type="button"
+                    onClick={() => cambiarOrden("provincia")}
+                    className="ctn-orden"
+                  >
+                    Provincia{indicadorOrden("provincia")}
+                  </button>
+                </th>
+
+                <th>
+                  <button
+                    type="button"
+                    onClick={() => cambiarOrden("municipio")}
+                    className="ctn-orden"
+                  >
+                    Municipio{indicadorOrden("municipio")}
+                  </button>
+                </th>
+
+                <th>
+                  <button
+                    type="button"
+                    onClick={() => cambiarOrden("cp")}
+                    className="ctn-orden"
+                  >
+                    CP{indicadorOrden("cp")}
+                  </button>
+                </th>
+
+                <th>
+                  <button
+                    type="button"
+                    onClick={() => cambiarOrden("direccion")}
+                    className="ctn-orden"
+                  >
+                    Dirección{indicadorOrden("direccion")}
+                  </button>
+                </th>
+
+                <th>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      cambiarOrden("notario_asociado")
+                    }
+                    className="ctn-orden"
+                  >
+                    Notario asociado
+                    {indicadorOrden("notario_asociado")}
+                  </button>
+                </th>
+
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={9} className="ctn-tabla-vacio">
+                    Cargando notarios…
+                  </td>
+                </tr>
+              ) : itemsOrdenados.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="ctn-tabla-vacio">
+                    No se han encontrado notarios con los filtros
+                    indicados.
+                  </td>
+                </tr>
+              ) : (
+                itemsOrdenados.map((notaria) => (
+                  <tr key={notaria.id}>
+                    <td>{texto(notaria.codigo)}</td>
+                    <td>{texto(notaria.telefono)}</td>
+                    <td>{obtenerNombreCompleto(notaria)}</td>
+                    <td>{texto(notaria.provincia)}</td>
+                    <td>{texto(notaria.municipio)}</td>
+                    <td>{texto(notaria.cp)}</td>
+                    <td>{texto(notaria.direccion)}</td>
+
+                    <td>
+                      {obtenerNombreAsociado(notaria)}
+                    </td>
+
+                    <td>
+                      <button
+                        type="button"
+                        className="ctn-btn ctn-btn-small"
+                        onClick={() => abrirDetalle(notaria)}
+                      >
+                        Ver detalle
+                      </button>
                     </td>
                   </tr>
-                ) : (
-                  itemsOrdenados.map((notaria) => {
-                    const asociados = obtenerAsociados(notaria);
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-                    return (
-                      <tr
-                        key={notaria.id}
-                        className="border-b border-[var(--erp-border)] bg-[var(--erp-surface)] transition-colors last:border-b-0 hover:bg-[var(--erp-primary-soft)]"
-                      >
-                        <td className="whitespace-nowrap px-3 py-3 font-medium">
-                          {mostrar(notaria.codigo)}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-3">
-                          {mostrar(notaria.telefono)}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-3 font-medium">
-                          {mostrar(notaria.nombre)}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-3">
-                          {mostrar(notaria.apellidos)}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-3">
-                          {mostrar(notaria.provincia)}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-3">
-                          {mostrar(notaria.municipio)}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-3">
-                          {mostrar(notaria.cp)}
-                        </td>
-                        <td className="min-w-[200px] px-3 py-3">
-                          {mostrar(notaria.direccion)}
-                        </td>
-                        <td className="min-w-[220px] px-3 py-3">
-                          {asociados.length === 0 ? (
-                            <span className="text-[var(--erp-text-soft)]">
-                              Sin asociaciones
-                            </span>
-                          ) : (
-                            <div className="flex flex-wrap gap-1.5">
-                              {asociados.map((nombre, indice) => (
-                                <span
-                                  key={`${notaria.id}-${indice}-${nombre}`}
-                                  className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-2 py-1 text-xs text-blue-800"
-                                >
-                                  {nombre}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-3">
-                          <button
-                            type="button"
-                            onClick={() => abrirDetalle(notaria)}
-                            className="inline-flex items-center rounded-lg border border-blue-100 bg-[var(--erp-primary-soft)] px-3 py-1.5 text-xs font-medium text-[var(--erp-primary)] transition hover:bg-blue-100"
-                          >
-                            Ver detalle
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+      {/* PAGINACIÓN */}
 
-          <div className="flex flex-col gap-3 border-t border-[var(--erp-border)] bg-[var(--erp-surface-soft)] p-4 sm:flex-row sm:items-center sm:justify-between">
-            <button
-              type="button"
-              disabled={pagina <= 1}
-              onClick={() => setPagina((actual) => Math.max(1, actual - 1))}
-              className="rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 transition hover:bg-[var(--erp-primary-soft)] disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              ← Anterior
-            </button>
+      <div className="ctn-paginacion">
+        <button
+          type="button"
+          onClick={() => irPagina(1)}
+          disabled={pagina <= 1 || loading}
+        >
+          « Primera
+        </button>
 
-            <span className="text-center text-sm text-[var(--erp-text-soft)]">
-              Página <strong className="text-[var(--erp-text)]">{pagina}</strong>
-              {" "}de{" "}
-              <strong className="text-[var(--erp-text)]">
-                {totalPaginas || 1}
-              </strong>
-              {" · "}Total de notarías:{" "}
-              <strong className="text-[var(--erp-text)]">{total ?? 0}</strong>
-              {" · "}Mostradas:{" "}
-              <strong className="text-[var(--erp-text)]">
-                {itemsOrdenados.length}
-              </strong>
-            </span>
+        <button
+          type="button"
+          onClick={() => irPagina(pagina - 1)}
+          disabled={pagina <= 1 || loading}
+        >
+          ‹ Anterior
+        </button>
 
-            <button
-              type="button"
-              disabled={!totalPaginas || pagina >= totalPaginas}
-              onClick={() =>
-                setPagina((actual) =>
-                  Math.min(totalPaginas || 1, actual + 1),
-                )
-              }
-              className="rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 transition hover:bg-[var(--erp-primary-soft)] disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Siguiente →
-            </button>
-          </div>
-        </section>
+        <span>
+          Página {pagina} de {totalPaginas}
+        </span>
+
+        <button
+          type="button"
+          onClick={() => irPagina(pagina + 1)}
+          disabled={pagina >= totalPaginas || loading}
+        >
+          Siguiente ›
+        </button>
+
+        <button
+          type="button"
+          onClick={() => irPagina(totalPaginas)}
+          disabled={pagina >= totalPaginas || loading}
+        >
+          Última »
+        </button>
+      </div>
+
+      {/* MODAL DE DETALLE */}
+
+      {modalOpen && (
+        <ModalCtnDetalle
+          open={modalOpen}
+          onClose={cerrarDetalle}
+          notaria={selected}
+        />
       )}
-
-      <ModalCtnDetalle
-        open={modalOpen}
-        onClose={cerrarDetalle}
-        notaria={selected}
-      />
     </div>
   );
 }
