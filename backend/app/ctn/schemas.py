@@ -1,33 +1,48 @@
-from pydantic import BaseModel
+```python
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
+
+
+class NotarioAsociadoResponse(BaseModel):
+    id: int
+    nombre: Optional[str] = None
+    apellidos: Optional[str] = None
+    nombre_completo: Optional[str] = None
+    nif: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
 
 class NotariaBase(BaseModel):
-    codigo: str | None = None
-    nombre: str | None = None
-    apellidos: str | None = None
-    nif: str | None = None
-    telefono: str | None = None
+    codigo: Optional[str] = None
+    nombre: Optional[str] = None
+    apellidos: Optional[str] = None
+    nif: Optional[str] = None
+    telefono: Optional[str] = None
 
-    departamento_cancelaciones: str | None = None
-    departamento_copias: str | None = None
-    otros_departamentos: str | None = None
+    departamento_cancelaciones: Optional[str] = None
+    departamento_copias: Optional[str] = None
+    otros_departamentos: Optional[str] = None
 
-    cp: str | None = None
-    provincia: str | None = None
-    municipio: str | None = None
-    direccion: str | None = None   # ← FALTABA ESTO
+    cp: Optional[str] = None
+    provincia: Optional[str] = None
+    municipio: Optional[str] = None
+    direccion: Optional[str] = None
 
-    vc: str | None = None
+    vc: Optional[str] = None
 
-    apoderado: str | None = None
-    apoderado_s: str | None = None
+    apoderado: Optional[str] = None
+    apoderado_s: Optional[str] = None
 
-    observacion: str | None = None
-
-    apoderado_id: int | None = None
+    observacion: Optional[str] = None
+    apoderado_id: Optional[int] = None
 
 
 class NotariaCreate(NotariaBase):
     pass
+
 
 class NotariaUpdate(NotariaBase):
     pass
@@ -35,6 +50,12 @@ class NotariaUpdate(NotariaBase):
 
 class NotariaResponse(NotariaBase):
     id: int
+    nombre_completo: Optional[str] = None
+    notarios_asociados: List[NotarioAsociadoResponse] = Field(
+        default_factory=list
+    )
+    notario_asociado: Optional[str] = None
 
     class Config:
         orm_mode = True
+```
