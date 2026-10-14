@@ -467,17 +467,6 @@ const CAMPOS_ACTIVIDADES = {
     },
 
     {
-      key: "ultima_accion",
-      label: "Última acción",
-    },
-
-    {
-      key: "fecha_ultima_accion",
-      label: "Fecha última acción",
-      tipo: "fecha",
-    },
-
-    {
       key: "sol",
       label: "SOL",
     },
@@ -537,16 +526,7 @@ const CAMPOS_ACTIVIDADES = {
       tipo: "fecha",
     },
 
-    {
-      key: "ultima_accion",
-      label: "Última acción",
-    },
 
-    {
-      key: "fecha_ultima_accion",
-      label: "Fecha última acción",
-      tipo: "fecha",
-    },
 
     {
       key: "sol",
