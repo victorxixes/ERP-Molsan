@@ -1,955 +1,286 @@
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  listarNotarias,
+  obtenerNotaria,
+  obtenerHistoricoFirmasNotaria,
+  listarNotariasAsociadas,
+  asociarNotarios,
+  desasociarNotarios,
+} from "../../api/ctn";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { useCtn } from "../../hooks/useCtn";
-import { listarNotarias } from "../../api/ctn";
-
-// ============================================================
-// HELPERS
-// ============================================================
-
-function texto(valor) {
-  if (valor === null || valor === undefined || valor === "") {
-    return "—";
-  }
-  return String(valor);
-}
-
-function fechaVisible(valor) {
-  if (!valor) return "—";
-
-  const fecha = String(valor).slice(0, 10);
-  const partes = fecha.split("-");
-
-  if (partes.length !== 3) return fecha;
-
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
-}
-
-function importeVisible(valor) {
-  if (valor === null || valor === undefined || valor === "") {
-    return "—";
-  }
-
-  const numero = Number(valor);
-
-  if (!Number.isFinite(numero)) return String(valor);
-
-  return numero.toLocaleString("es-ES", {
-    style: "currency",
-    currency: "EUR",
-  });
-}
-
-function nombreNotario(notario) {
-  return [
-    notario?.nombre,
-    notario?.apellidos,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .trim() || "Notario sin nombre";
-}
-
-function mensajeError(error, alternativo) {
-  return (
-    error?.response?.data?.detail ||
-    error?.message ||
-    alternativo
-  );
-}
-
-const inputClass =
-  "w-full rounded-xl border border-[var(--erp-border,#d1d5db)] " +
-  "bg-[var(--erp-card,#fff)] px-3 py-2 text-sm " +
-  "text-[var(--erp-text,#111827)] outline-none " +
-  "focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
-
-const buttonClass =
-  "inline-flex items-center justify-center gap-2 rounded-xl " +
-  "border border-[var(--erp-border,#d1d5db)] px-3 py-2 " +
-  "text-sm font-medium transition hover:bg-gray-50 disabled:opacity-50";
-
-const primaryButtonClass =
-  "inline-flex items-center justify-center gap-2 rounded-xl " +
-  "bg-blue-700 px-4 py-2 text-sm font-semibold text-white " +
-  "transition hover:bg-blue-800 disabled:opacity-50";
-
-const cardClass =
-  "rounded-2xl border border-[var(--erp-border,#e5e7eb)] " +
-  "bg-[var(--erp-card,#fff)] p-4 shadow-sm";
-
-// ============================================================
-// COMPONENTE PRINCIPAL
-// ============================================================
+const valor = (v) => (v === null || v === undefined || v === "" ? "—" : String(v));
+const nombreNotario = (n) => [n?.nombre, n?.apellidos].filter(Boolean).join(" ").trim() || n?.nombre_completo || "Notario";
+const dataDe = (r) => r?.data ?? r;
 
 export default function CtnDetallePage() {
-  const { id } = useParams();
+  const params = useParams();
+  const navigate = useNavigate();
+  const notariaId = params.id || params.notariaId;
 
-  const {
-    notaria,
-    historicoFirmas,
-    resumenHistoricoFirmas,
-    notariasAsociadas,
-    loading,
-    loadingHistoricoFirmas,
-    loadingAsociadas,
-    error,
-    cargarNotaria,
-    cargarHistoricoFirmasNotaria,
-    cargarNotariasAsociadas,
-    asociarNotarios,
-    desasociarNotarios,
-  } = useCtn();
-
-  const [errorLocal, setErrorLocal] = useState("");
-  const [guardandoAsociacion, setGuardandoAsociacion] =
-    useState(false);
-
+  const [notaria, setNotaria] = useState(null);
+  const [asociadas, setAsociadas] = useState([]);
   const [busquedaNotario, setBusquedaNotario] = useState("");
-  const [resultadosNotarios, setResultadosNotarios] = useState([]);
-  const [buscandoNotarios, setBuscandoNotarios] = useState(false);
-  const [notarioSeleccionado, setNotarioSeleccionado] =
-    useState(null);
+  const [resultados, setResultados] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [guardandoAsociacion, setGuardandoAsociacion] = useState(false);
+  const [error, setError] = useState("");
 
-  const [modalFirmasAbierto, setModalFirmasAbierto] =
-    useState(false);
-  const [modalidadActiva, setModalidadActiva] = useState("VC");
-  const [busquedaFirma, setBusquedaFirma] = useState("");
-  const [busquedaAplicada, setBusquedaAplicada] = useState("");
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [modalModalidad, setModalModalidad] = useState("VC");
+  const [filtroHistorico, setFiltroHistorico] = useState("");
+  const [historico, setHistorico] = useState([]);
+  const [cargandoHistorico, setCargandoHistorico] = useState(false);
+  const [totales, setTotales] = useState({ total: 0, total_vc: 0, total_presencial: 0, total_sin_clasificar: 0 });
 
-  const datosNotaria = notaria || {};
-
-  const nombreCompleto = useMemo(
-    () => nombreNotario(datosNotaria),
-    [datosNotaria],
-  );
-
-  // ----------------------------------------------------------
-  // CARGA INICIAL
-  // ----------------------------------------------------------
-
-  const cargar = useCallback(async () => {
-    if (!id) return;
-
-    setErrorLocal("");
-
+  const cargarFicha = useCallback(async () => {
+    if (!notariaId) return;
+    setCargando(true);
+    setError("");
     try {
-      await Promise.all([
-        cargarNotaria(id),
-        cargarNotariasAsociadas(id),
-        cargarHistoricoFirmasNotaria(id),
+      const [rNotaria, rAsociadas] = await Promise.all([
+        obtenerNotaria(notariaId),
+        listarNotariasAsociadas(notariaId),
       ]);
-    } catch (err) {
-      setErrorLocal(
-        mensajeError(
-          err,
-          "No se ha podido cargar toda la información del notario.",
-        ),
-      );
+      const n = dataDe(rNotaria);
+      const a = dataDe(rAsociadas);
+      setNotaria(n);
+      setAsociadas(Array.isArray(a) ? a : (a?.items || []));
+    } catch (e) {
+      setError(e?.response?.data?.detail || e?.message || "No se pudo cargar la ficha del notario.");
+    } finally {
+      setCargando(false);
     }
-  }, [
-    id,
-    cargarNotaria,
-    cargarNotariasAsociadas,
-    cargarHistoricoFirmasNotaria,
-  ]);
+  }, [notariaId]);
+
+  useEffect(() => { cargarFicha(); }, [cargarFicha]);
 
   useEffect(() => {
-    cargar();
-  }, [cargar]);
-
-  // ----------------------------------------------------------
-  // BUSCAR NOTARIOS PARA ASOCIAR
-  // ----------------------------------------------------------
-
-  const buscarNotarios = useCallback(async () => {
     const termino = busquedaNotario.trim();
-
     if (termino.length < 2) {
-      setResultadosNotarios([]);
-      setErrorLocal(
-        "Introduce al menos dos caracteres del nombre o del NIF.",
-      );
+      setResultados([]);
       return;
     }
+    let activo = true;
+    listarNotarias({ q: termino, page: 1, page_size: 30 })
+      .then((r) => {
+        if (!activo) return;
+        const d = dataDe(r);
+        const lista = Array.isArray(d?.items) ? d.items : [];
+        const idsAsociados = new Set(asociadas.map((x) => Number(x.id)));
+        setResultados(lista.filter((x) => Number(x.id) !== Number(notariaId) && !idsAsociados.has(Number(x.id))));
+      })
+      .catch(() => { if (activo) setResultados([]); });
+    return () => { activo = false; };
+  }, [busquedaNotario, asociadas, notariaId]);
 
-    setBuscandoNotarios(true);
-    setErrorLocal("");
-
+  const cargarHistorico = useCallback(async (modalidad, q = "") => {
+    if (!notariaId) return;
+    setCargandoHistorico(true);
+    setError("");
     try {
-      const respuesta = await listarNotarias({
-        q: termino,
-        page: 1,
-        page_size: 30,
-      });
-
-      const items = respuesta.data?.items || [];
-
-      setResultadosNotarios(
-        items.filter(
-          (item) => Number(item.id) !== Number(id),
-        ),
-      );
-    } catch (err) {
-      setErrorLocal(
-        mensajeError(
-          err,
-          "No se ha podido realizar la búsqueda de notarios.",
-        ),
-      );
-      setResultadosNotarios([]);
+      const r = await obtenerHistoricoFirmasNotaria(notariaId, { modalidad, q });
+      const d = dataDe(r) || {};
+      setHistorico(Array.isArray(d.items) ? d.items : []);
+      if (!String(q || "").trim() && !modalidad) {
+        setTotales({
+          total: Number(d.total || 0),
+          total_vc: Number(d.total_vc || 0),
+          total_presencial: Number(d.total_presencial || 0),
+          total_sin_clasificar: Number(d.total_sin_clasificar || 0),
+        });
+      }
+    } catch (e) {
+      setError(e?.response?.data?.detail || e?.message || "No se pudo cargar el histórico de firmas.");
+      setHistorico([]);
     } finally {
-      setBuscandoNotarios(false);
+      setCargandoHistorico(false);
     }
-  }, [busquedaNotario, id]);
+  }, [notariaId]);
 
-  // ----------------------------------------------------------
-  // CREAR ASOCIACIÓN RECÍPROCA
-  // ----------------------------------------------------------
+  // Carga el histórico completo al entrar para calcular los totales de ambas tarjetas.
+  useEffect(() => {
+    cargarHistorico(undefined, "");
+  }, [cargarHistorico]);
 
-  async function guardarAsociacion() {
-    if (!notarioSeleccionado) {
-      setErrorLocal("Selecciona un notario de los resultados.");
-      return;
-    }
+  const abrirHistorico = async (modalidad) => {
+    setModalModalidad(modalidad);
+    setFiltroHistorico("");
+    setModalAbierto(true);
+    await cargarHistorico(modalidad, "");
+  };
 
+  const buscarHistorico = async (e) => {
+    e?.preventDefault?.();
+    await cargarHistorico(modalModalidad, filtroHistorico);
+  };
+
+  const agregarAsociacion = async (asociadaId) => {
     setGuardandoAsociacion(true);
-    setErrorLocal("");
-
+    setError("");
     try {
-      await asociarNotarios(
-        Number(id),
-        Number(notarioSeleccionado.id),
-      );
-
-      await cargarNotaria(id);
-
-      setNotarioSeleccionado(null);
+      await asociarNotarios(notariaId, asociadaId);
       setBusquedaNotario("");
-      setResultadosNotarios([]);
-    } catch (err) {
-      setErrorLocal(
-        mensajeError(
-          err,
-          "No se ha podido guardar la asociación.",
-        ),
-      );
+      setResultados([]);
+      await cargarFicha();
+    } catch (e) {
+      setError(e?.response?.data?.detail || e?.message || "No se pudo crear la asociación.");
     } finally {
       setGuardandoAsociacion(false);
     }
-  }
+  };
 
-  // ----------------------------------------------------------
-  // ELIMINAR ASOCIACIÓN RECÍPROCA
-  // ----------------------------------------------------------
-
-  async function eliminarAsociacion(asociada) {
-    const confirmar = window.confirm(
-      `¿Eliminar la asociación entre ${nombreCompleto} y ` +
-      `${nombreNotario(asociada)}? La relación desaparecerá ` +
-      "también de la ficha del otro notario.",
-    );
-
-    if (!confirmar) return;
-
-    setErrorLocal("");
-
+  const quitarAsociacion = async (asociadaId) => {
+    if (!window.confirm("¿Eliminar la asociación entre ambos notarios?")) return;
+    setGuardandoAsociacion(true);
+    setError("");
     try {
-      await desasociarNotarios(
-        Number(id),
-        Number(asociada.id),
-      );
-
-      await cargarNotaria(id);
-    } catch (err) {
-      setErrorLocal(
-        mensajeError(
-          err,
-          "No se ha podido eliminar la asociación.",
-        ),
-      );
+      await desasociarNotarios(notariaId, asociadaId);
+      await cargarFicha();
+    } catch (e) {
+      setError(e?.response?.data?.detail || e?.message || "No se pudo eliminar la asociación.");
+    } finally {
+      setGuardandoAsociacion(false);
     }
-  }
+  };
 
-  // ----------------------------------------------------------
-  // HISTÓRICO REAL DE FIRMAS
-  // ----------------------------------------------------------
+  const firmasVC = Number(totales.total_vc || 0);
+  const firmasPresenciales = Number(totales.total_presencial || 0);
+  const modalidadTexto = modalModalidad === "VC" ? "Videoconferencia" : "Presencial";
 
-  async function abrirHistorico(modalidad) {
-    setModalidadActiva(modalidad);
-    setBusquedaFirma("");
-    setBusquedaAplicada("");
-    setModalFirmasAbierto(true);
-    setErrorLocal("");
-
-    try {
-      await cargarHistoricoFirmasNotaria(id, { modalidad });
-    } catch (err) {
-      setErrorLocal(
-        mensajeError(
-          err,
-          "No se ha podido cargar el histórico de firmas.",
-        ),
-      );
-    }
-  }
-
-  async function aplicarBusquedaFirmas(evento) {
-    evento?.preventDefault();
-
-    const termino = busquedaFirma.trim();
-    setBusquedaAplicada(termino);
-
-    try {
-      await cargarHistoricoFirmasNotaria(id, {
-        modalidad: modalidadActiva,
-        q: termino || undefined,
-      });
-    } catch (err) {
-      setErrorLocal(
-        mensajeError(
-          err,
-          "No se ha podido filtrar el histórico.",
-        ),
-      );
-    }
-  }
-
-  async function cambiarModalidad(modalidad) {
-    setModalidadActiva(modalidad);
-    setBusquedaAplicada("");
-
-    try {
-      await cargarHistoricoFirmasNotaria(id, {
-        modalidad,
-      });
-    } catch (err) {
-      setErrorLocal(
-        mensajeError(
-          err,
-          "No se ha podido cargar el histórico de firmas.",
-        ),
-      );
-    }
-  }
-
-  const firmasVisibles = useMemo(() => {
-    return (historicoFirmas || []).filter((firma) => {
-      if (modalidadActiva === "VC") {
-        return firma.modalidad === "VC";
-      }
-
-      return firma.modalidad === "PRESENCIAL";
-    });
-  }, [historicoFirmas, modalidadActiva]);
-
-  // ----------------------------------------------------------
-  // ESTADOS DE CARGA
-  // ----------------------------------------------------------
-
-  if (loading && !notaria) {
-    return (
-      <div className="p-6 text-sm text-gray-500">
-        Cargando ficha del notario...
-      </div>
-    );
-  }
-
-  if (!notaria) {
-    return (
-      <div className="space-y-4 p-6">
-        <p className="text-sm text-red-600">
-          {errorLocal || error || "No se ha encontrado el notario."}
-        </p>
-
-        <Link
-          to="/ctn"
-          className={buttonClass}
-        >
-          Volver al listado CTN
-        </Link>
-      </div>
-    );
-  }
-
-  // ==========================================================
-  // RENDER
-  // ==========================================================
+  if (cargando) return <div className="ctn-detalle-page"><p>Cargando ficha CTN…</p></div>;
+  if (!notaria) return <div className="ctn-detalle-page"><p>{error || "No se ha encontrado el notario."}</p><button onClick={() => navigate(-1)}>Volver</button></div>;
 
   return (
-    <div className="erp-page w-full space-y-6 p-4 text-[var(--erp-text)] sm:p-6">
-      {/* CABECERA */}
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="ctn-detalle-page" style={{ padding: 20, maxWidth: 1400, margin: "0 auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <div>
-          <Link
-            to="/ctn"
-            className="mb-2 inline-flex text-sm text-blue-700 hover:underline"
-          >
-            ← Volver a CTN
-          </Link>
-
-          <h1 className="text-2xl font-bold">
-            Ficha del notario
-          </h1>
-
-          <p className="mt-1 text-sm text-gray-500">
-            {nombreCompleto} · NIF: {texto(datosNotaria.nif)}
-          </p>
+          <h1 style={{ marginBottom: 4 }}>{nombreNotario(notaria)}</h1>
+          <div style={{ opacity: 0.75 }}>Ficha CTN · NIF: {valor(notaria.nif)} · Código: {valor(notaria.codigo)}</div>
         </div>
-
-        <button
-          type="button"
-          className={buttonClass}
-          onClick={cargar}
-          disabled={loading}
-        >
-          {loading ? "Actualizando..." : "Actualizar ficha"}
-        </button>
+        <button type="button" onClick={() => navigate(-1)}>Volver al listado</button>
       </div>
 
-      {(errorLocal || error) && (
-        <div
-          role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
-        >
-          {errorLocal || error}
-        </div>
-      )}
+      {error && <div role="alert" style={{ margin: "14px 0", padding: 12, border: "1px solid #d88", borderRadius: 8 }}>{error}</div>}
 
-      {/* DATOS DEL NOTARIO */}
-
-      <section className={cardClass}>
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-semibold">
-            Datos del notario
-          </h2>
-
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600">
-            Código: {texto(datosNotaria.codigo)}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Dato label="Nombre" valor={datosNotaria.nombre} />
-          <Dato label="Apellidos" valor={datosNotaria.apellidos} />
-          <Dato label="NIF" valor={datosNotaria.nif} />
-          <Dato label="Teléfono" valor={datosNotaria.telefono} />
-          <Dato label="Provincia" valor={datosNotaria.provincia} />
-          <Dato label="Municipio" valor={datosNotaria.municipio} />
-          <Dato label="Código postal" valor={datosNotaria.cp} />
-          <Dato label="Dirección" valor={datosNotaria.direccion} />
-          <Dato
-            label="Videoconferencia habilitada"
-            valor={
-              datosNotaria.vc
-                ? String(datosNotaria.vc)
-                : "No informado"
-            }
-          />
-          <Dato label="Apoderado" valor={datosNotaria.apoderado} />
-          <Dato
-            label="Apoderado suplente"
-            valor={datosNotaria.apoderado_s}
-          />
-          <Dato
-            label="Departamento de cancelaciones"
-            valor={datosNotaria.departamento_cancelaciones}
-          />
-          <Dato
-            label="Departamento de copias"
-            valor={datosNotaria.departamento_copias}
-          />
-          <Dato
-            label="Otros departamentos"
-            valor={datosNotaria.otros_departamentos}
-          />
-        </div>
-
-        {datosNotaria.observacion && (
-          <div className="mt-4 border-t border-gray-100 pt-4">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Observaciones
-            </p>
-            <p className="whitespace-pre-wrap text-sm">
-              {datosNotaria.observacion}
-            </p>
-          </div>
-        )}
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 12, marginTop: 20 }}>
+        <Info titulo="Teléfono" valor={notaria.telefono} />
+        <Info titulo="Dirección" valor={notaria.direccion} />
+        <Info titulo="Municipio" valor={notaria.municipio} />
+        <Info titulo="Provincia" valor={notaria.provincia} />
+        <Info titulo="Código postal" valor={notaria.cp} />
+        <Info titulo="Videoconferencia habilitada" valor={notaria.vc} />
+        <Info titulo="Apoderado" valor={notaria.apoderado} />
+        <Info titulo="Observaciones" valor={notaria.observacion} />
       </section>
 
-      {/* NOTARIOS ASOCIADOS */}
-
-      <section className={cardClass}>
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold">
-            Notarios asociados
-          </h2>
-          <p className="mt-1 text-sm text-gray-500">
-            La asociación se guarda en las dos fichas. Si se elimina
-            desde cualquiera de ellas, desaparece de ambas.
-          </p>
+      <h2 style={{ marginTop: 28 }}>Histórico de firmas reales</h2>
+      <p style={{ opacity: 0.75 }}>Se consideran expedientes con fecha de firma registrada. Las citas de agenda no se contabilizan como firmas realizadas.</p>
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 14 }}>
+        <div style={tarjeta}>
+          <h3>Videoconferencia</h3>
+          <p style={{ fontSize: 28, fontWeight: 700, margin: "8px 0" }}>{firmasVC}</p>
+          <button type="button" onClick={() => abrirHistorico("VC")}>Mostrar listado</button>
         </div>
+        <div style={tarjeta}>
+          <h3>Presencial</h3>
+          <p style={{ fontSize: 28, fontWeight: 700, margin: "8px 0" }}>{firmasPresenciales}</p>
+          <button type="button" onClick={() => abrirHistorico("PRESENCIAL")}>Mostrar listado</button>
+        </div>
+        <div style={tarjeta}>
+          <h3>Sin modalidad clasificada</h3>
+          <p style={{ fontSize: 28, fontWeight: 700, margin: "8px 0" }}>{Number(totales.total_sin_clasificar || 0)}</p>
+          <p style={{ fontSize: 13, opacity: 0.75 }}>El endpoint de histórico debe devolver este total para que se muestre correctamente.</p>
+        </div>
+      </section>
 
-        <form
-          className="grid grid-cols-1 items-end gap-3 md:grid-cols-[1fr_auto]"
-          onSubmit={(evento) => {
-            evento.preventDefault();
-            buscarNotarios();
-          }}
-        >
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              Buscar notario por nombre, apellidos o NIF
-            </label>
-
-            <input
-              className={inputClass}
-              value={busquedaNotario}
-              onChange={(evento) =>
-                setBusquedaNotario(evento.target.value)
-              }
-              placeholder="Ej.: Pepe García Sánchez o NIF..."
-            />
-          </div>
-
-          <button
-            type="submit"
-            className={buttonClass}
-            disabled={buscandoNotarios}
-          >
-            {buscandoNotarios ? "Buscando..." : "Buscar notario"}
-          </button>
-        </form>
-
-        {resultadosNotarios.length > 0 && (
-          <div className="mt-3 overflow-hidden rounded-xl border border-gray-200">
-            {resultadosNotarios.map((resultado) => (
-              <button
-                key={resultado.id}
-                type="button"
-                onClick={() => setNotarioSeleccionado(resultado)}
-                className={
-                  "flex w-full flex-wrap items-center justify-between gap-3 " +
-                  "border-b border-gray-100 p-3 text-left last:border-b-0 " +
-                  (Number(notarioSeleccionado?.id) === Number(resultado.id)
-                    ? "bg-blue-50"
-                    : "hover:bg-gray-50")
-                }
-              >
-                <span>
-                  <span className="block font-medium">
-                    {nombreNotario(resultado)}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    NIF: {texto(resultado.nif)} · Código: {texto(resultado.codigo)}
-                  </span>
-                </span>
-
-                <span className="text-sm text-blue-700">
-                  {Number(notarioSeleccionado?.id) === Number(resultado.id)
-                    ? "Seleccionado"
-                    : "Seleccionar"}
-                </span>
-              </button>
+      <section style={{ ...tarjeta, marginTop: 24 }}>
+        <h2 style={{ marginTop: 0 }}>Notarios asociados</h2>
+        <p style={{ opacity: 0.75 }}>Las asociaciones se guardan en ambos sentidos. Eliminar una asociación desde cualquiera de las dos fichas la elimina para ambos notarios.</p>
+        <label style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>Buscar notario por nombre, apellidos o NIF</label>
+        <input
+          value={busquedaNotario}
+          onChange={(e) => setBusquedaNotario(e.target.value)}
+          placeholder="Escribe al menos 2 caracteres…"
+          style={{ width: "100%", maxWidth: 520, padding: 10, boxSizing: "border-box" }}
+        />
+        {resultados.length > 0 && (
+          <div style={{ marginTop: 8, maxWidth: 720, border: "1px solid #ddd", borderRadius: 8, overflow: "hidden" }}>
+            {resultados.map((n) => (
+              <div key={n.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, padding: 10, borderBottom: "1px solid #eee" }}>
+                <span>{nombreNotario(n)} · NIF: {valor(n.nif)}</span>
+                <button type="button" disabled={guardandoAsociacion} onClick={() => agregarAsociacion(n.id)}>Asociar</button>
+              </div>
             ))}
           </div>
         )}
-
-        {buscandoNotarios && (
-          <p className="mt-3 text-sm text-gray-500">
-            Buscando en el catálogo de notarías...
-          </p>
-        )}
-
-        {notarioSeleccionado && (
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-200 bg-blue-50 p-3">
-            <div className="text-sm">
-              <span className="block font-semibold">
-                Notario seleccionado
-              </span>
-              {nombreNotario(notarioSeleccionado)} · {texto(notarioSeleccionado.nif)}
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                type="button"
-                className={buttonClass}
-                onClick={() => setNotarioSeleccionado(null)}
-              >
-                Cancelar
-              </button>
-
-              <button
-                type="button"
-                className={primaryButtonClass}
-                disabled={guardandoAsociacion}
-                onClick={guardarAsociacion}
-              >
-                {guardandoAsociacion
-                  ? "Guardando..."
-                  : "Asociar notarios"}
-              </button>
-            </div>
-          </div>
-        )}
-
-        <div className="mt-5">
-          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <h3 className="font-semibold">
-              Asociaciones actuales
-            </h3>
-            <span className="text-xs text-gray-500">
-              {notariasAsociadas.length} asociada(s)
-            </span>
-          </div>
-
-          {loadingAsociadas ? (
-            <p className="text-sm text-gray-500">
-              Cargando asociaciones...
-            </p>
-          ) : notariasAsociadas.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-gray-300 p-4 text-sm text-gray-500">
-              Este notario todavía no tiene otros notarios asociados.
-            </p>
-          ) : (
-            <div className="overflow-x-auto rounded-xl border border-gray-200">
-              <table className="w-full min-w-[520px] text-sm">
-                <thead className="bg-gray-50 text-left text-xs uppercase text-gray-500">
-                  <tr>
-                    <th className="px-3 py-3">Notario asociado</th>
-                    <th className="px-3 py-3">NIF</th>
-                    <th className="px-3 py-3 text-right">Acciones</th>
+        {busquedaNotario.trim().length >= 2 && resultados.length === 0 && <p style={{ opacity: 0.7 }}>No hay resultados nuevos para asociar.</p>}
+        <h3 style={{ marginTop: 22 }}>Asociaciones actuales ({asociadas.length})</h3>
+        {asociadas.length === 0 ? <p>No hay notarios asociados.</p> : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead><tr><th style={th}>Notario</th><th style={th}>NIF</th><th style={th}>Municipio</th><th style={th}>Acción</th></tr></thead>
+              <tbody>
+                {asociadas.map((n) => (
+                  <tr key={n.id}>
+                    <td style={td}>{nombreNotario(n)}</td>
+                    <td style={td}>{valor(n.nif)}</td>
+                    <td style={td}>{valor(n.municipio)}</td>
+                    <td style={td}><button type="button" disabled={guardandoAsociacion} onClick={() => quitarAsociacion(n.id)}>Eliminar asociación</button></td>
                   </tr>
-                </thead>
-
-                <tbody>
-                  {notariasAsociadas.map((asociada) => (
-                    <tr
-                      key={asociada.id}
-                      className="border-t border-gray-100"
-                    >
-                      <td className="px-3 py-3 font-medium">
-                        {nombreNotario(asociada)}
-                      </td>
-
-                      <td className="px-3 py-3">
-                        {texto(asociada.nif)}
-                      </td>
-
-                      <td className="px-3 py-3 text-right">
-                        <button
-                          type="button"
-                          className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50"
-                          onClick={() => eliminarAsociacion(asociada)}
-                        >
-                          Eliminar asociación
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* HISTÓRICO REAL DE FIRMAS */}
-
-      <section className={cardClass}>
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold">
-            Histórico de firmas realizadas
-          </h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Se cuentan expedientes con fecha de firma informada.
-            Las citas de agenda no se consideran firmas realizadas.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-5">
-            <p className="text-sm font-medium text-blue-800">
-              Firmas por videoconferencia
-            </p>
-
-            <p className="mt-2 text-3xl font-bold text-blue-950">
-              {resumenHistoricoFirmas.total_vc}
-            </p>
-
-            <p className="mt-1 text-xs text-blue-800">
-              Expedientes firmados clasificados como VC
-            </p>
-
-            <button
-              type="button"
-              className={`${primaryButtonClass} mt-4`}
-              onClick={() => abrirHistorico("VC")}
-            >
-              Mostrar listado
-            </button>
+                ))}
+              </tbody>
+            </table>
           </div>
-
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5">
-            <p className="text-sm font-medium text-emerald-800">
-              Firmas presenciales
-            </p>
-
-            <p className="mt-2 text-3xl font-bold text-emerald-950">
-              {resumenHistoricoFirmas.total_presencial}
-            </p>
-
-            <p className="mt-1 text-xs text-emerald-800">
-              Expedientes firmados clasificados como presencial
-            </p>
-
-            <button
-              type="button"
-              className={`${buttonClass} mt-4`}
-              onClick={() => abrirHistorico("PRESENCIAL")}
-            >
-              Mostrar listado
-            </button>
-          </div>
-        </div>
-
-        {resumenHistoricoFirmas.total_sin_clasificar > 0 && (
-          <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-            Hay {resumenHistoricoFirmas.total_sin_clasificar} expediente(s)
-            con fecha de firma cuyo tipo de firma no está clasificado
-            como videoconferencia o presencial.
-          </p>
         )}
-
-        <div className="mt-4 text-xs text-gray-500">
-          Total de expedientes firmados encontrados:{" "}
-          <strong>{resumenHistoricoFirmas.total}</strong>
-        </div>
       </section>
 
-      {/* MODAL DE HISTÓRICO */}
-
-      {modalFirmasAbierto && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-3 sm:p-6"
-          role="presentation"
-          onMouseDown={(evento) => {
-            if (evento.target === evento.currentTarget) {
-              setModalFirmasAbierto(false);
-            }
-          }}
-        >
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="ctn-historico-titulo"
-            className="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white text-gray-900 shadow-2xl"
-          >
-            <header className="flex flex-wrap items-start justify-between gap-3 border-b border-gray-200 p-4 sm:p-5">
-              <div>
-                <h2
-                  id="ctn-historico-titulo"
-                  className="text-xl font-bold"
-                >
-                  Histórico de firmas
-                </h2>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  {nombreCompleto} · NIF {texto(datosNotaria.nif)}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                className={buttonClass}
-                onClick={() => setModalFirmasAbierto(false)}
-              >
-                Cerrar
-              </button>
-            </header>
-
-            <div className="border-b border-gray-200 px-4 pt-3 sm:px-5">
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  className={
-                    modalidadActiva === "VC"
-                      ? primaryButtonClass
-                      : buttonClass
-                  }
-                  onClick={() => cambiarModalidad("VC")}
-                >
-                  Videoconferencia
-                </button>
-
-                <button
-                  type="button"
-                  className={
-                    modalidadActiva === "PRESENCIAL"
-                      ? primaryButtonClass
-                      : buttonClass
-                  }
-                  onClick={() => cambiarModalidad("PRESENCIAL")}
-                >
-                  Presencial
-                </button>
-              </div>
-
-              <form
-                className="my-3 flex flex-col gap-2 sm:flex-row"
-                onSubmit={aplicarBusquedaFirmas}
-              >
-                <input
-                  className={inputClass}
-                  value={busquedaFirma}
-                  onChange={(evento) =>
-                    setBusquedaFirma(evento.target.value)
-                  }
-                  placeholder="Buscar expediente, titular, NIF, protocolo u oficina..."
-                />
-
-                <button
-                  type="submit"
-                  className={primaryButtonClass}
-                >
-                  Buscar
-                </button>
-
-                {busquedaAplicada && (
-                  <button
-                    type="button"
-                    className={buttonClass}
-                    onClick={() => {
-                      setBusquedaFirma("");
-                      setBusquedaAplicada("");
-                      cargarHistoricoFirmasNotaria(id, {
-                        modalidad: modalidadActiva,
-                      }).catch(() => {});
-                    }}
-                  >
-                    Limpiar
-                  </button>
-                )}
-              </form>
+      {modalAbierto && (
+        <div role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }} style={overlay}>
+          <div role="dialog" aria-modal="true" aria-label={`Firmas realizadas: ${modalidadTexto}`} style={modal}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <div><h2 style={{ margin: 0 }}>Firmas realizadas · {modalidadTexto}</h2><p style={{ margin: "6px 0 14px", opacity: 0.75 }}>{nombreNotario(notaria)}</p></div>
+              <button type="button" onClick={() => setModalAbierto(false)}>Cerrar</button>
             </div>
-
-            <div className="min-h-0 flex-1 overflow-auto p-4 sm:p-5">
-              {loadingHistoricoFirmas ? (
-                <p className="py-10 text-center text-sm text-gray-500">
-                  Cargando expedientes firmados...
-                </p>
-              ) : firmasVisibles.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500">
-                  No se han encontrado expedientes firmados para esta
-                  modalidad y estos criterios de búsqueda.
-                </p>
-              ) : (
-                <div className="overflow-x-auto rounded-xl border border-gray-200">
-                  <table className="w-full min-w-[1050px] text-sm">
-                    <thead className="sticky top-0 bg-gray-100 text-left text-xs uppercase text-gray-600">
-                      <tr>
-                        <th className="px-3 py-3">Expediente</th>
-                        <th className="px-3 py-3">Fecha firma</th>
-                        <th className="px-3 py-3">Protocolo</th>
-                        <th className="px-3 py-3">Titular</th>
-                        <th className="px-3 py-3">NIF titular</th>
-                        <th className="px-3 py-3">Solicitante</th>
-                        <th className="px-3 py-3">Oficina</th>
-                        <th className="px-3 py-3 text-right">Capital</th>
-                        <th className="px-3 py-3">Estado</th>
+            <form onSubmit={buscarHistorico} style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
+              <input value={filtroHistorico} onChange={(e) => setFiltroHistorico(e.target.value)} placeholder="Buscar expediente, titular, NIF o protocolo" style={{ flex: 1, minWidth: 240, padding: 9 }} />
+              <button type="submit">Buscar</button>
+            </form>
+            {cargandoHistorico ? <p>Cargando firmas…</p> : historico.length === 0 ? <p>No se han encontrado firmas registradas para esta modalidad.</p> : (
+              <div style={{ overflow: "auto", maxHeight: "60vh" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 850 }}>
+                  <thead><tr>{["Fecha firma", "Expediente", "Titular", "NIF titular", "Solicitante", "Protocolo", "Oficina", "Importe"].map((x) => <th key={x} style={th}>{x}</th>)}</tr></thead>
+                  <tbody>
+                    {historico.map((f, i) => (
+                      <tr key={f.id ?? `${f.id_expediente}-${i}`}>
+                        <td style={td}>{valor(f.fecha_firma)}</td>
+                        <td style={td}>{valor(f.id_expediente)}</td>
+                        <td style={td}>{valor(f.nombre_titular)}</td>
+                        <td style={td}>{valor(f.nif_titular)}</td>
+                        <td style={td}>{valor(f.nombre_solicitante)}</td>
+                        <td style={td}>{valor(f.protocolo)}</td>
+                        <td style={td}>{valor(f.oficina)}</td>
+                        <td style={td}>{valor(f.importe ?? f.capital)}</td>
                       </tr>
-                    </thead>
-
-                    <tbody>
-                      {firmasVisibles.map((firma) => (
-                        <tr
-                          key={firma.id ?? firma.id_expediente}
-                          className="border-t border-gray-100 hover:bg-gray-50"
-                        >
-                          <td className="px-3 py-3 font-medium">
-                            {firma.id_expediente ? (
-                              <Link
-                                to={`/expedientes/${encodeURIComponent(
-                                  firma.id_expediente,
-                                )}`}
-                                className="text-blue-700 hover:underline"
-                                onClick={() => setModalFirmasAbierto(false)}
-                              >
-                                {firma.id_expediente}
-                              </Link>
-                            ) : (
-                              "—"
-                            )}
-                          </td>
-
-                          <td className="whitespace-nowrap px-3 py-3">
-                            {fechaVisible(firma.fecha_firma)}
-                          </td>
-
-                          <td className="px-3 py-3">
-                            {texto(firma.protocolo)}
-                          </td>
-
-                          <td className="px-3 py-3">
-                            {texto(firma.nombre_titular)}
-                          </td>
-
-                          <td className="px-3 py-3">
-                            {texto(firma.nif_titular)}
-                          </td>
-
-                          <td className="px-3 py-3">
-                            {texto(firma.nombre_solicitante)}
-                          </td>
-
-                          <td className="px-3 py-3">
-                            {texto(firma.oficina)}
-                          </td>
-
-                          <td className="whitespace-nowrap px-3 py-3 text-right">
-                            {importeVisible(
-                              firma.capital ?? firma.importe,
-                            )}
-                          </td>
-
-                          <td className="px-3 py-3">
-                            {texto(firma.estado_expediente)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {!loadingHistoricoFirmas && firmasVisibles.length > 0 && (
-                <p className="mt-3 text-xs text-gray-500">
-                  Expedientes mostrados: {firmasVisibles.length}
-                </p>
-              )}
-            </div>
-          </section>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <div style={{ marginTop: 12, opacity: 0.75 }}>Resultados: {historico.length}</div>
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-// ============================================================
-// DATO DE FICHA
-// ============================================================
-
-function Dato({ label, valor }) {
-  return (
-    <div className="min-w-0">
-      <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">
-        {label}
-      </p>
-      <p className="break-words text-sm font-medium">
-        {texto(valor)}
-      </p>
-    </div>
-  );
+function Info({ titulo, valor: contenido }) {
+  return <div style={tarjeta}><div style={{ fontSize: 13, opacity: 0.7 }}>{titulo}</div><div style={{ fontWeight: 600, marginTop: 5, whiteSpace: "pre-wrap" }}>{valor(contenido)}</div></div>;
 }
+
+const tarjeta = { border: "1px solid #ddd", borderRadius: 12, padding: 16, background: "var(--ctn-card-bg, #fff)" };
+const th = { textAlign: "left", padding: 9, borderBottom: "1px solid #ddd", whiteSpace: "nowrap" };
+const td = { padding: 9, borderBottom: "1px solid #eee", verticalAlign: "top" };
+const overlay = { position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 18 };
+const modal = { width: "min(1200px, 100%)", maxHeight: "90vh", overflow: "auto", background: "white", color: "#222", borderRadius: 14, padding: 20, boxShadow: "0 20px 60px rgba(0,0,0,.25)" };
