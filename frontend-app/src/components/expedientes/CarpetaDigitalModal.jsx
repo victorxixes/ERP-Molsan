@@ -218,7 +218,7 @@ export default function CarpetaDigitalModal({ expedienteId, onClose, modoActivid
   const otrosAbiertos = otrosAbierto;
 
   return (
-    <div className={modoActividad ? "w-full space-y-3" : "fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6"} onMouseDown={(e) => { if (!modoActividad && e.target === e.currentTarget) onClose?.(); }}>
+    <div className={modoActividad ? "w-full space-y-3" : "fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6"} onMouseDown={(e) => { if (!modoActividad && e.target === e.currentTarget) onClose?.(); }}>
       <section role={modoActividad ? undefined : "dialog"} aria-modal={modoActividad ? undefined : "true"} aria-label="Carpeta digital del expediente" className={modoActividad ? "w-full space-y-3" : "flex max-h-[94vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"}>
         {!modoActividad && <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
           <div><p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Documentación</p><h2 className="mt-1 text-lg font-bold text-slate-900">Carpeta digital</h2><p className="text-xs text-slate-500">Expediente {expedienteId || "—"} · {totalArchivos} archivo(s)</p></div>
