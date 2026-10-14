@@ -71,6 +71,15 @@ function formatearFecha(valor) {
 }
 
 
+function sumarDiasNaturales(fechaISO, dias) {
+  if (!fechaISO || !/^\\d{4}-\\d{2}-\\d{2}/.test(String(fechaISO))) return "";
+  const [year, month, day] = String(fechaISO).slice(0, 10).split("-").map(Number);
+  const fecha = new Date(Date.UTC(year, month - 1, day));
+  fecha.setUTCDate(fecha.getUTCDate() + dias);
+  return `${fecha.getUTCFullYear()}-${String(fecha.getUTCMonth() + 1).padStart(2, "0")}-${String(fecha.getUTCDate()).padStart(2, "0")}`;
+}
+
+
 function formatearNumero(valor) {
   if (
     valor === null ||
@@ -592,91 +601,68 @@ const CAMPOS_ACTIVIDADES = {
 
   "liquidacion-impuestos": [
     {
-      key: "ultima_accion",
-      label: "Última acción",
-    },
-
-    {
-      key: "fecha_ultima_accion",
-      label: "Fecha última acción",
-      tipo: "fecha",
-    },
-
-    {
       key: "fecha_presentacion_tributaria",
       label: "Fecha presentación tributaria",
       tipo: "fecha",
     },
-
     {
       key: "fecha_liquidacion_tributaria",
       label: "Fecha liquidación tributaria",
       tipo: "fecha",
     },
-
     {
       key: "oficina_liquidadora",
-      label: "Oficina liquidadora",
+      label: "Oficina liquidadora / comunidad autónoma",
+      opciones: [
+        "Andalucía", "Aragón", "Asturias", "Illes Balears", "Canarias",
+        "Cantabria", "Castilla-La Mancha", "Castilla y León", "Cataluña",
+        "Comunitat Valenciana", "Extremadura", "Galicia", "Comunidad de Madrid",
+        "Región de Murcia", "Comunidad Foral de Navarra", "País Vasco",
+        "La Rioja", "Ceuta", "Melilla"
+      ],
     },
-
     {
       key: "base_imponible",
-      label: "Base imponible",
+      label: "Base imponible (€)",
       tipo: "numero",
     },
-
     {
       key: "tributacion",
       label: "Tributación",
+      opciones: ["Prescrito", "Exento", "Bonificación", "Renuncia", "AJD", "TPO"],
     },
-
     {
       key: "impuesto_ajd_itp",
-      label: "Impuesto AJD / ITP",
+      label: "Impuesto (AJD / ITP)",
+      opciones: ["AJD", "ITP"],
     },
   ],
 
   "tramitacion-inscripcion": [
     {
-      key: "ultima_accion",
-      label: "Última acción",
-    },
-
-    {
-      key: "fecha_ultima_accion",
-      label: "Fecha última acción",
-      tipo: "fecha",
-    },
-
-    {
       key: "fecha_presentacion",
       label: "Fecha presentación",
       tipo: "fecha",
     },
-
     {
       key: "fecha_vencimiento_asiento",
-      label: "Fecha vencimiento asiento",
+      label: "Fecha vencimiento asiento (+60 días naturales)",
       tipo: "fecha",
     },
-
     {
       key: "fecha_inscripcion",
       label: "Fecha inscripción",
       tipo: "fecha",
     },
-
     {
       key: "escritura_simple_cancelacion",
-      label: "Escritura simple cancelación",
+      label: "Hoja de inscripción",
     },
-
     {
       key: "registral_estado",
       label: "Estado registral",
       estado: true,
     },
-
     {
       key: "registral_fecha",
       label: "Fecha registral",
@@ -1929,7 +1915,16 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       fecha_presentacion: expediente?.fecha_presentacion || fechaFirma,
       fecha_recogida_notario_presentacion_telematica:
         expediente?.fecha_recogida_notario_presentacion_telematica || fechaFirma,
-      mover_siguiente_actividad: expediente?.mover_siguiente_actividad ?? false,
+      fecha_presentacion_tributaria:
+        expediente?.fecha_presentacion_tributaria || fechaFirma,
+      fecha_liquidacion_tributaria:
+        expediente?.fecha_liquidacion_tributaria || fechaFirma,
+      fecha_vencimiento_asiento:
+        expediente?.fecha_vencimiento_asiento ||
+        sumarDiasNaturales(expediente?.fecha_liquidacion_tributaria || fechaFirma, 60),
+      mover_siguiente_actividad:
+        expediente?.mover_siguiente_actividad ??
+        (actividadActual === "liquidacion-impuestos" || actividadActual === "tramitacion-inscripcion"),
     });
     setErrorActividad("");
     setMensajeActividad("");
@@ -2049,6 +2044,54 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       setEnviandoAbsis(false);
     }
   }
+
+  async function enviarActividadAbsis(tipoActividad) {
+    if (!expediente?.id_expediente || guardandoActividad || enviandoAbsis) return;
+    const claves = CAMPOS_ACTIVIDADES[tipoActividad] || [];
+    const campos = {};
+    for (const campo of claves) {
+      if (Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)) {
+        campos[campo.key] = actividadDraft[campo.key] ?? "";
+      }
+    }
+    campos.mover_siguiente_actividad = actividadDraft.mover_siguiente_actividad ?? true;
+
+    setGuardandoActividad(true);
+    setEnviandoAbsis(true);
+    setErrorActividad("");
+    setMensajeActividad("");
+    try {
+      const camposActividad = { ...campos };
+      delete camposActividad.mover_siguiente_actividad;
+      await axios.put(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
+        { campos: camposActividad }
+      );
+      const respuesta = await axios.post(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/${tipoActividad}/enviar-a-absis`,
+        campos
+      );
+      await cargarExpediente();
+      setActividadDraft((actual) => ({ ...actual, ...(respuesta?.data || {}), ...campos }));
+      setMensajeActividad(
+        campos.mover_siguiente_actividad
+          ? "Datos guardados y solicitud de envío a ABSIS registrada. Se ha indicado avanzar a la siguiente actividad."
+          : "Datos guardados y solicitud de envío a ABSIS registrada. El expediente permanece en esta actividad."
+      );
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setErrorActividad(
+        typeof detail === "string"
+          ? detail
+          : detail?.mensaje || JSON.stringify(detail) || err?.message ||
+            `No se pudo enviar a ABSIS. Comprueba que el backend tenga habilitada la ruta de ${tipoActividad}.`
+      );
+    } finally {
+      setGuardandoActividad(false);
+      setEnviandoAbsis(false);
+    }
+  }
+
 
   async function guardarCamposActividad() {
     if (!expediente?.id_expediente || guardandoActividad) return;
@@ -4605,21 +4648,44 @@ const cuantiaFincasParaEnvio =
                     type="button"
                     onClick={() => {
                       setActividadSeleccionada(actividad.key);
-                      if (actividad.key === "sede-notarial-protocolo") {
+                      if (["sede-notarial-protocolo", "liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividad.key)) {
                         const fechaFirma = String(actividadDraft?.fecha_firma || expediente?.fecha_firma || "").slice(0, 10);
+                        const fechaLiquidacion = String(
+                          actividadDraft?.fecha_liquidacion_tributaria ||
+                          expediente?.fecha_liquidacion_tributaria ||
+                          fechaFirma
+                        ).slice(0, 10);
                         setActividadDraft((actual) => {
-                          const camposProtocolo = CAMPOS_ACTIVIDADES["sede-notarial-protocolo"] || [];
+                          const camposActividadActual = CAMPOS_ACTIVIDADES[actividad.key] || [];
                           const base = { ...actual };
-                          for (const campo of camposProtocolo) {
+                          for (const campo of camposActividadActual) {
                             if (!Object.prototype.hasOwnProperty.call(base, campo.key)) base[campo.key] = "";
                           }
+                          if (actividad.key === "sede-notarial-protocolo") {
+                            return {
+                              ...base,
+                              apoderado: base.apoderado || "Gestoría",
+                              fecha_presentacion: base.fecha_presentacion || fechaFirma,
+                              fecha_recogida_notario_presentacion_telematica:
+                                base.fecha_recogida_notario_presentacion_telematica || fechaFirma,
+                              mover_siguiente_actividad: base.mover_siguiente_actividad ?? false,
+                            };
+                          }
+                          if (actividad.key === "liquidacion-impuestos") {
+                            return {
+                              ...base,
+                              fecha_presentacion_tributaria: base.fecha_presentacion_tributaria || fechaFirma,
+                              fecha_liquidacion_tributaria: base.fecha_liquidacion_tributaria || fechaFirma,
+                              mover_siguiente_actividad: base.mover_siguiente_actividad ?? true,
+                            };
+                          }
+                          const fechaPresentacion = base.fecha_presentacion || fechaLiquidacion;
                           return {
                             ...base,
-                            apoderado: base.apoderado || "Gestoría",
-                            fecha_presentacion: base.fecha_presentacion || fechaFirma,
-                            fecha_recogida_notario_presentacion_telematica:
-                              base.fecha_recogida_notario_presentacion_telematica || fechaFirma,
-                            mover_siguiente_actividad: base.mover_siguiente_actividad ?? false,
+                            fecha_presentacion: fechaPresentacion,
+                            fecha_vencimiento_asiento:
+                              base.fecha_vencimiento_asiento || sumarDiasNaturales(fechaPresentacion, 60),
+                            mover_siguiente_actividad: base.mover_siguiente_actividad ?? true,
                           };
                         });
                       }
@@ -4905,6 +4971,7 @@ const cuantiaFincasParaEnvio =
                         onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
                         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400"
                       >
+                        <option value="">Seleccionar…</option>
                         {campo.opciones.map((opcion) => <option key={opcion} value={opcion}>{opcion}</option>)}
                       </select>
                     ) : (
@@ -4915,16 +4982,23 @@ const cuantiaFincasParaEnvio =
                         disabled={guardandoActividad}
                         onChange={(event) => setActividadDraft((actual) => {
                           const nuevoValor = event.target.value;
-                          if (campo.key !== "fecha_firma" || actividadSeleccionada !== "sede-notarial-protocolo") {
-                            return { ...actual, [campo.key]: nuevoValor };
+                          if (campo.key === "fecha_firma" && actividadSeleccionada === "sede-notarial-protocolo") {
+                            const fechaAnterior = String(actual.fecha_firma || "").slice(0, 10);
+                            return {
+                              ...actual,
+                              fecha_firma: nuevoValor,
+                              fecha_presentacion: !actual.fecha_presentacion || String(actual.fecha_presentacion).slice(0, 10) === fechaAnterior ? nuevoValor : actual.fecha_presentacion,
+                              fecha_recogida_notario_presentacion_telematica: !actual.fecha_recogida_notario_presentacion_telematica || String(actual.fecha_recogida_notario_presentacion_telematica).slice(0, 10) === fechaAnterior ? nuevoValor : actual.fecha_recogida_notario_presentacion_telematica,
+                            };
                           }
-                          const fechaAnterior = String(actual.fecha_firma || "").slice(0, 10);
-                          return {
-                            ...actual,
-                            fecha_firma: nuevoValor,
-                            fecha_presentacion: !actual.fecha_presentacion || String(actual.fecha_presentacion).slice(0, 10) === fechaAnterior ? nuevoValor : actual.fecha_presentacion,
-                            fecha_recogida_notario_presentacion_telematica: !actual.fecha_recogida_notario_presentacion_telematica || String(actual.fecha_recogida_notario_presentacion_telematica).slice(0, 10) === fechaAnterior ? nuevoValor : actual.fecha_recogida_notario_presentacion_telematica,
-                          };
+                          if (campo.key === "fecha_presentacion" && actividadSeleccionada === "tramitacion-inscripcion") {
+                            return {
+                              ...actual,
+                              fecha_presentacion: nuevoValor,
+                              fecha_vencimiento_asiento: sumarDiasNaturales(nuevoValor, 60),
+                            };
+                          }
+                          return { ...actual, [campo.key]: nuevoValor };
                         })}
                         className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
                       />
@@ -4966,6 +5040,76 @@ const cuantiaFincasParaEnvio =
                 </div>
                 <div className="mt-3 flex justify-end">
                   <Boton tipo="primary" onClick={enviarSedeNotarialProtocoloAbsis} disabled={guardandoActividad || enviandoAbsis}>
+                    {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
+                  </Boton>
+                </div>
+              </section>
+            )}
+
+            {actividadSeleccionada === "liquidacion-impuestos" && (
+              <section className="mt-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4">
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="text-xs font-extrabold text-slate-700">Impuesto (AJD / ITP)</p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      {actividadDraft?.impuesto_ajd_itp
+                        ? `Documento asociado: ${actividadDraft.impuesto_ajd_itp}`
+                        : "Pendiente de recibir el justificante tributario del notario en Notargest."}
+                    </p>
+                    <p className="mt-1 text-[11px] text-slate-500">La asociación automática del PDF desde Notargest requiere conectar la integración documental.</p>
+                    <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
+                      📁 Abrir carpeta digital
+                    </button>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="mb-2 text-xs font-extrabold text-slate-700">Mover el expediente a la siguiente actividad</p>
+                    <div className="flex gap-5">
+                      <label className="flex items-center gap-2 text-sm text-slate-700">
+                        <input type="radio" name="moverActividadLiquidacion" checked={actividadDraft.mover_siguiente_actividad !== false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || enviandoAbsis} /> Sí
+                      </label>
+                      <label className="flex items-center gap-2 text-sm text-slate-700">
+                        <input type="radio" name="moverActividadLiquidacion" checked={actividadDraft.mover_siguiente_actividad === false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || enviandoAbsis} /> No
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 flex justify-end">
+                  <Boton tipo="primary" onClick={() => enviarActividadAbsis("liquidacion-impuestos")} disabled={guardandoActividad || enviandoAbsis}>
+                    {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
+                  </Boton>
+                </div>
+              </section>
+            )}
+
+            {actividadSeleccionada === "tramitacion-inscripcion" && (
+              <section className="mt-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4">
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="text-xs font-extrabold text-slate-700">Hoja de inscripción</p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      {actividadDraft?.escritura_simple_cancelacion || expediente?.escritura_simple_cancelacion
+                        ? "Hay una referencia guardada al documento de inscripción."
+                        : "Pendiente de que se incorpore la hoja de inscripción a la carpeta digital."}
+                    </p>
+                    <p className="mt-1 text-[11px] text-slate-500">La subida y vinculación automática desde Notargest requiere conectar la integración documental.</p>
+                    <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
+                      📁 Abrir carpeta digital
+                    </button>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="mb-2 text-xs font-extrabold text-slate-700">Mover el expediente a la siguiente actividad</p>
+                    <div className="flex gap-5">
+                      <label className="flex items-center gap-2 text-sm text-slate-700">
+                        <input type="radio" name="moverActividadInscripcion" checked={actividadDraft.mover_siguiente_actividad !== false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || enviandoAbsis} /> Sí
+                      </label>
+                      <label className="flex items-center gap-2 text-sm text-slate-700">
+                        <input type="radio" name="moverActividadInscripcion" checked={actividadDraft.mover_siguiente_actividad === false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || enviandoAbsis} /> No
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 flex justify-end">
+                  <Boton tipo="primary" onClick={() => enviarActividadAbsis("tramitacion-inscripcion")} disabled={guardandoActividad || enviandoAbsis}>
                     {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
                   </Boton>
                 </div>
