@@ -52,6 +52,7 @@ import Utilidades from "./pages/herramientas/Utilidades.jsx";
 import CrearNoticia from "./pages/herramientas/CrearNoticia.jsx";
 import SubirDocumento from "./pages/herramientas/SubirDocumento.jsx";
 import Informes from "./pages/informes/Informes.jsx";
+import MantenimientoTecnico from "./pages/herramientas/MantenimientoTecnico.jsx";
 
 /* LOGS */
 import Logs from "./pages/logs/Logs.jsx";
