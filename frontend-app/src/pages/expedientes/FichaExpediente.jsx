@@ -539,10 +539,15 @@ const CAMPOS_ACTIVIDADES = {
     },
 
     {
-      key: "asiento_presentacion_libro_diario",
-      label: "Asiento presentación / Libro diario",
+      key: "asiento_presentacion",
+      label: "Asiento presentación",
     },
 
+        {
+      key: "libro_diario",
+      label: "Libro diario",
+    },
+    
     {
       key: "fecha_presentacion",
       label: "Fecha presentación",
@@ -558,11 +563,6 @@ const CAMPOS_ACTIVIDADES = {
       key: "fecha_recogida_notario_presentacion_telematica",
       label: "Fecha recogida notario o presentación telemática",
       tipo: "fecha",
-    },
-
-    {
-      key: "copia_simple_escritura",
-      label: "Copia simple escritura",
     },
 
    
@@ -623,20 +623,7 @@ const CAMPOS_ACTIVIDADES = {
       label: "Fecha inscripción",
       tipo: "fecha",
     },
-    {
-      key: "escritura_simple_cancelacion",
-      label: "Hoja de inscripción",
-    },
-    {
-      key: "registral_estado",
-      label: "Estado registral",
-      estado: true,
-    },
-    {
-      key: "registral_fecha",
-      label: "Fecha registral",
-      tipo: "fecha",
-    },
+
   ],
 
   "defectos-registrales": [
@@ -668,17 +655,6 @@ const CAMPOS_ACTIVIDADES = {
       tipo: "fecha",
     },
 
-    {
-      key: "registral_estado",
-      label: "Estado registral",
-      estado: true,
-    },
-
-    {
-      key: "registral_fecha",
-      label: "Fecha registral",
-      tipo: "fecha",
-    },
   ],
 
   "facturacion-cierre": [
