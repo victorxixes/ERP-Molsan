@@ -396,7 +396,10 @@ export default function App() {
             element={<SubirDocumento />}
           />
 
-
+          <Route
+            path="herramientas/mantenimiento-tecnico"
+            element={<MantenimientoTecnico />}
+          />    
           {/* ==================================================
               LOGS
               ================================================== */}
