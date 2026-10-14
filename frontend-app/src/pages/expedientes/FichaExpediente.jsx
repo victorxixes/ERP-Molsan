@@ -1461,6 +1461,59 @@ export default function FichaExpediente() {
   const [mensajeGastos, setMensajeGastos] = useState("");
   const [conceptosGasto, setConceptosGasto] = useState([]);
   const [cargandoConceptosGasto, setCargandoConceptosGasto] = useState(false);
+  const [documentosFacturaGasto, setDocumentosFacturaGasto] = useState([]);
+  const [documentoFacturaSeleccionado, setDocumentoFacturaSeleccionado] = useState("");
+  const [urlVistaPreviaFactura, setUrlVistaPreviaFactura] = useState("");
+  const [cargandoVistaPreviaFactura, setCargandoVistaPreviaFactura] = useState(false);
+  const [errorVistaPreviaFactura, setErrorVistaPreviaFactura] = useState("");
+  const expedienteIdGastos = expediente?.id_expediente || id;
+  const documentosFacturaElegibles = documentosFacturaGasto.filter((doc) =>
+    ["factura notarial", "factura registral", "factura registro"].includes(String(doc.categoria || doc.categoria_nombre || "").trim().toLowerCase())
+  );
+  useEffect(() => {
+    if (!mostrarFormularioGasto || !expedienteIdGastos) return;
+    let activo = true;
+    axios.get(`/expedientes/${encodeURIComponent(expedienteIdGastos)}/carpeta-digital`)
+      .then((res) => {
+        if (!activo) return;
+        const lista = Array.isArray(res.data) ? res.data : res.data?.items || [];
+        setDocumentosFacturaGasto(lista);
+        const elegible = lista.find((doc) =>
+          ["factura notarial", "factura registral", "factura registro"].includes(String(doc.categoria || doc.categoria_nombre || "").trim().toLowerCase())
+          && /\.pdf$/i.test(String(doc.nombre_original || doc.nombre || ""))
+        );
+        if (elegible) setDocumentoFacturaSeleccionado(String(elegible.id));
+      })
+      .catch(() => { if (activo) setErrorVistaPreviaFactura("No se pudieron cargar las facturas de la Carpeta Digital."); });
+    return () => { activo = false; };
+  }, [mostrarFormularioGasto, expedienteIdGastos]);
+  useEffect(() => {
+    if (!mostrarFormularioGasto || !documentoFacturaSeleccionado || !expedienteIdGastos) {
+      setUrlVistaPreviaFactura("");
+      return;
+    }
+    let activo = true;
+    let urlTemporal = "";
+    const doc = documentosFacturaGasto.find((d) => String(d.id) === String(documentoFacturaSeleccionado));
+    if (!doc) return;
+    if (!/\.pdf$/i.test(String(doc.nombre_original || doc.nombre || ""))) {
+      setErrorVistaPreviaFactura("La vista previa integrada está disponible para archivos PDF.");
+      setUrlVistaPreviaFactura("");
+      return;
+    }
+    setCargandoVistaPreviaFactura(true);
+    setErrorVistaPreviaFactura("");
+    axios.get(`/expedientes/${encodeURIComponent(expedienteIdGastos)}/carpeta-digital/${doc.id}/descargar`, { responseType: "blob" })
+      .then((res) => {
+        if (!activo) return;
+        urlTemporal = URL.createObjectURL(res.data);
+        setUrlVistaPreviaFactura(urlTemporal);
+      })
+      .catch((e) => { if (activo) setErrorVistaPreviaFactura(e?.response?.data?.detail || "No se pudo cargar la vista previa del PDF."); })
+      .finally(() => { if (activo) setCargandoVistaPreviaFactura(false); });
+    return () => { activo = false; if (urlTemporal) URL.revokeObjectURL(urlTemporal); };
+  }, [mostrarFormularioGasto, documentoFacturaSeleccionado, documentosFacturaGasto, expedienteIdGastos]);
+
   const [gastoForm, setGastoForm] = useState({
     tipo: "", descripcion: "", importe: "", fecha: new Date().toLocaleDateString("sv-SE"), documento_url: "",
     nif_notario: "", nombre_notario: "", pagador: "", cuenta_bancaria: "", medio_pago: "Transferencia",
@@ -4288,14 +4341,15 @@ const cuantiaFincasParaEnvio =
 
                         {mostrarFormularioGasto && (
                           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-gasto">
-                            <div className="flex max-h-[94vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                            <div className="flex max-h-[94vh] w-full max-w-[96vw] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
                           <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
                             <div className="flex items-start justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-4">
                               <div><h5 id="titulo-modal-gasto" className="text-base font-extrabold text-slate-900">Registrar gasto · Factura y pago</h5><p className="mt-1 text-xs text-slate-500">El registro no ejecuta una transferencia bancaria.</p></div>
                               <button type="button" aria-label="Cerrar ventana" onClick={() => setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-lg leading-none text-slate-600 hover:bg-slate-100 disabled:opacity-50">×</button>
                               <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-bold text-amber-800">Pago: pendiente</span>
                             </div>
-                            <div className="min-h-0 flex-1 overflow-y-auto p-5"><div className="grid gap-4 lg:grid-cols-2">
+                            <div className="min-h-0 flex-1 overflow-y-auto p-5"><div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(360px,0.9fr)]">
+                              <div className="min-w-0">
                               <div className="space-y-3">
                                 <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Factura y proveedor</h6>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}</select></label>
@@ -4312,6 +4366,7 @@ const cuantiaFincasParaEnvio =
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Medio de pago</span><select value={gastoForm.medio_pago} onChange={(e)=>setGastoForm(a=>({...a,medio_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Estado</span><select value={gastoForm.estado_pago} onChange={(e)=>setGastoForm(a=>({...a,estado_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Pendiente</option><option>Pagado</option><option>Anulado</option></select></label></div>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Documento / URL de factura</span><input type="url" value={gastoForm.documento_url} onChange={(e)=>setGastoForm(a=>({...a,documento_url:e.target.value}))} placeholder="https://…" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                               </div>
+                              </div>
                               <div className="space-y-3">
                                 <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Impuestos y retenciones</h6>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
@@ -4323,6 +4378,23 @@ const cuantiaFincasParaEnvio =
                                 <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                               </div>
+                              <aside className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <div className="mb-3">
+                                  <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-600">Factura de Carpeta Digital</h6>
+                                  <p className="mt-1 text-[11px] text-slate-500">Factura notarial o registral · PDF</p>
+                                </div>
+                                <label className="mb-3 block">
+                                  <span className="mb-1 block text-xs font-bold text-slate-700">Documento a revisar</span>
+                                  <select value={documentoFacturaSeleccionado} onChange={(e) => { setDocumentoFacturaSeleccionado(e.target.value); setGastoForm(a => ({...a, documento_carpeta_id: e.target.value})); }} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs">
+                                    <option value="">Selecciona una factura PDF…</option>
+                                    {documentosFacturaElegibles.map((doc) => <option key={doc.id} value={String(doc.id)}>{doc.nombre_original || doc.nombre || `Documento ${doc.id}`} · {doc.categoria || doc.categoria_nombre}</option>)}
+                                  </select>
+                                </label>
+                                {cargandoVistaPreviaFactura ? <p className="p-4 text-xs text-slate-500">Cargando PDF…</p> : null}
+                                {errorVistaPreviaFactura ? <p role="alert" className="mb-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">{errorVistaPreviaFactura}</p> : null}
+                                {urlVistaPreviaFactura ? <iframe title="Vista previa de factura" src={urlVistaPreviaFactura} className="h-[58vh] min-h-[360px] w-full rounded-lg border border-slate-200 bg-white" /> : null}
+                                {!urlVistaPreviaFactura && !cargandoVistaPreviaFactura && !errorVistaPreviaFactura ? <p className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-center text-xs text-slate-500">No hay ningún PDF seleccionado. Comprueba que la factura esté en Gestión económica de la Carpeta Digital.</p> : null}
+                              </aside>
                             </div></div>
                             <div className="flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-white px-5 py-4"><button type="button" onClick={()=>setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoGasto || cargandoConceptosGasto} className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoGasto ? "Guardando…" : "Registrar gasto"}</button></div>
                           </form>
