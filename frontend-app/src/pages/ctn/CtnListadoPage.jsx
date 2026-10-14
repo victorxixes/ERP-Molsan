@@ -1,20 +1,26 @@
+
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useCtn } from "../../hooks/useCtn";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 
-// ============================================================
-// HELPERS
-// ============================================================
+const PAGE_SIZE = 15;
 
-function textoVisible(valor) {
-  if (valor === null || valor === undefined || valor === "") {
-    return "—";
-  }
+const FILTROS_INICIALES = {
+  provincia: "",
+  municipio: "",
+  vc: "",
+  apoderado: "",
+  q: "",
+  asociado: "",
+};
 
-  return String(valor);
+function mostrar(valor) {
+  return valor === null || valor === undefined || valor === ""
+    ? "—"
+    : String(valor);
 }
 
-function obtenerNombreNotario(notario) {
+function nombreCompleto(notario) {
   return [
     notario?.nombre,
     notario?.apellidos,
@@ -34,22 +40,20 @@ function obtenerAsociados(notaria) {
   if (Array.isArray(asociados)) {
     return asociados
       .map((asociado) => {
-        if (typeof asociado === "string") {
-          return asociado;
-        }
+        if (typeof asociado === "string") return asociado;
 
         return (
-          obtenerNombreNotario(asociado) ||
+          asociado?.nombre_completo ||
+          nombreCompleto(asociado) ||
           asociado?.nif ||
-          asociado?.codigo ||
           ""
         );
       })
       .filter(Boolean);
   }
 
-  if (typeof asociados === "string") {
-    return asociados
+  if (typeof notaria?.notario_asociado === "string") {
+    return notaria.notario_asociado
       .split(",")
       .map((nombre) => nombre.trim())
       .filter(Boolean);
@@ -58,9 +62,23 @@ function obtenerAsociados(notaria) {
   return [];
 }
 
-// ============================================================
-// COMPONENTE
-// ============================================================
+function CampoFiltro({ label, value, placeholder, onChange }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-sm font-medium text-[var(--erp-text)]">
+        {label}
+      </span>
+
+      <input
+        type="text"
+        value={value}
+        placeholder={placeholder}
+        onChange={(evento) => onChange(evento.target.value)}
+        className="w-full rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface-soft)] px-3 py-2 text-sm text-[var(--erp-text)] outline-none transition focus:border-[var(--erp-primary)] focus:ring-2 focus:ring-[var(--erp-primary-soft)]"
+      />
+    </label>
+  );
+}
 
 export default function CtnListadoPage() {
   const {
@@ -70,65 +88,51 @@ export default function CtnListadoPage() {
     loading,
   } = useCtn();
 
-  const [filtros, setFiltros] = useState({
-    provincia: "",
-    municipio: "",
-    vc: "",
-    apoderado: "",
-    q: "",
-    asociado: "",
-  });
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selected, setSelected] = useState(null);
+  const [filtros, setFiltros] = useState(FILTROS_INICIALES);
+  const [filtrosAplicados, setFiltrosAplicados] = useState(
+    FILTROS_INICIALES,
+  );
 
   const [pagina, setPagina] = useState(1);
-  const PAGE_SIZE = 15;
-
   const [orden, setOrden] = useState({
     campo: null,
     direccion: "asc",
   });
 
-  // ==========================================================
-  // ORDENACIÓN
-  // ==========================================================
-
-  const cambiarOrden = useCallback((campo) => {
-    setOrden((prev) => {
-      if (prev.campo === campo) {
-        return {
-          campo,
-          direccion:
-            prev.direccion === "asc" ? "desc" : "asc",
-        };
-      }
-
-      return {
-        campo,
-        direccion: "asc",
-      };
-    });
-  }, []);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [errorExcel, setErrorExcel] = useState("");
 
   // ==========================================================
-  // CARGAR NOTARÍAS
-  // El filtro "asociado" se aplica localmente porque el
-  // endpoint actual de listado no necesariamente lo admite.
+  // CARGA DEL LISTADO
   // ==========================================================
-
-  const filtrosServidor = useMemo(() => {
-    const { asociado, ...resto } = filtros;
-    return resto;
-  }, [filtros]);
 
   useEffect(() => {
-    cargarNotarias(filtrosServidor, pagina, PAGE_SIZE);
-  }, [cargarNotarias, filtrosServidor, pagina]);
+    let activo = true;
+
+    Promise.resolve(
+      cargarNotarias(filtrosAplicados, pagina, PAGE_SIZE),
+    ).catch((error) => {
+      if (activo) {
+        console.error("Error cargando notarías:", error);
+      }
+    });
+
+    return () => {
+      activo = false;
+    };
+  }, [cargarNotarias, filtrosAplicados, pagina]);
 
   // ==========================================================
-  // APLICAR FILTROS
+  // CAMBIOS DE FILTRO
   // ==========================================================
+
+  const cambiarFiltro = useCallback((campo, valor) => {
+    setFiltros((actuales) => ({
+      ...actuales,
+      [campo]: valor,
+    }));
+  }, []);
 
   const aplicarFiltros = useCallback(() => {
     setPagina(1);
@@ -136,79 +140,41 @@ export default function CtnListadoPage() {
       campo: null,
       direccion: "asc",
     });
-
-    cargarNotarias(filtrosServidor, 1, PAGE_SIZE);
-  }, [filtrosServidor, cargarNotarias]);
+    setFiltrosAplicados({ ...filtros });
+  }, [filtros]);
 
   const limpiarFiltros = useCallback(() => {
-    const vacios = {
-      provincia: "",
-      municipio: "",
-      vc: "",
-      apoderado: "",
-      q: "",
-      asociado: "",
-    };
+    const vacios = { ...FILTROS_INICIALES };
 
     setFiltros(vacios);
+    setFiltrosAplicados(vacios);
     setPagina(1);
     setOrden({
       campo: null,
       direccion: "asc",
     });
-
-    cargarNotarias(
-      {
-        provincia: "",
-        municipio: "",
-        vc: "",
-        apoderado: "",
-        q: "",
-      },
-      1,
-      PAGE_SIZE,
-    );
-  }, [cargarNotarias]);
-
-  // ==========================================================
-  // ABRIR DETALLE
-  // ==========================================================
-
-  const abrirDetalle = useCallback((notaria) => {
-    setSelected(notaria);
-    setModalOpen(true);
   }, []);
 
   // ==========================================================
-  // FILTRAR ASOCIACIONES EN EL LISTADO CARGADO
+  // ORDENACIÓN
   // ==========================================================
 
-  const itemsFiltrados = useMemo(() => {
-    if (!Array.isArray(items)) return [];
-
-    const termino = filtros.asociado.trim().toLocaleLowerCase("es");
-
-    if (!termino) return items;
-
-    return items.filter((notaria) => {
-      const asociados = obtenerAsociados(notaria);
-
-      return asociados.some((nombre) =>
-        nombre.toLocaleLowerCase("es").includes(termino),
-      );
-    });
-  }, [items, filtros.asociado]);
-
-  // ==========================================================
-  // ORDENAR RESULTADOS
-  // ==========================================================
+  const cambiarOrden = useCallback((campo) => {
+    setOrden((actual) => ({
+      campo,
+      direccion:
+        actual.campo === campo && actual.direccion === "asc"
+          ? "desc"
+          : "asc",
+    }));
+  }, []);
 
   const itemsOrdenados = useMemo(() => {
-    if (!orden.campo) return itemsFiltrados;
+    if (!Array.isArray(items)) return [];
 
-    const copia = [...itemsFiltrados];
+    if (!orden.campo) return items;
 
-    copia.sort((a, b) => {
+    return [...items].sort((a, b) => {
       let valorA;
       let valorB;
 
@@ -248,33 +214,32 @@ export default function CtnListadoPage() {
         ? resultado
         : -resultado;
     });
+  }, [items, orden]);
 
-    return copia;
-  }, [itemsFiltrados, orden]);
-
-  // ==========================================================
-  // PAGINACIÓN
-  // ==========================================================
-
-  const totalPaginas = Math.ceil(total / PAGE_SIZE);
+  const totalPaginas = Math.ceil((total || 0) / PAGE_SIZE);
 
   // ==========================================================
-  // EXPORTAR EXCEL
+  // MODAL DE DETALLE
+  // ==========================================================
+
+  const abrirDetalle = useCallback((notaria) => {
+    setSelected(notaria);
+    setModalOpen(true);
+  }, []);
+
+  const cerrarDetalle = useCallback(() => {
+    setModalOpen(false);
+    setSelected(null);
+  }, []);
+
+  // ==========================================================
+  // EXPORTACIÓN EXCEL
   // ==========================================================
 
   const descargarExcel = useCallback(async () => {
+    setErrorExcel("");
+
     try {
-      const params = new URLSearchParams();
-
-      Object.entries(filtrosServidor).forEach(([key, value]) => {
-        if (
-          typeof value === "string" &&
-          value.trim() !== ""
-        ) {
-          params.append(key, value.trim());
-        }
-      });
-
       const baseUrl = import.meta.env.VITE_API_URL;
 
       if (!baseUrl) {
@@ -283,21 +248,36 @@ export default function CtnListadoPage() {
         );
       }
 
-      const urlExcel =
-        `${baseUrl}/ctn/exportar-excel?${params.toString()}`;
+      const params = new URLSearchParams();
 
-      const res = await fetch(urlExcel, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+      Object.entries(filtrosAplicados).forEach(([clave, valor]) => {
+        if (typeof valor === "string" && valor.trim()) {
+          params.set(clave, valor.trim());
+        }
       });
 
-      if (!res.ok) {
-        throw new Error(`Error HTTP ${res.status}`);
+      const token = localStorage.getItem("token");
+      const cabeceras = {};
+
+      if (token) {
+        cabeceras.Authorization = `Bearer ${token}`;
       }
 
-      const blob = await res.blob();
+      const respuesta = await fetch(
+        `${baseUrl}/ctn/exportar-excel?${params.toString()}`,
+        {
+          method: "GET",
+          headers: cabeceras,
+        },
+      );
+
+      if (!respuesta.ok) {
+        throw new Error(
+          `No se pudo exportar el Excel (HTTP ${respuesta.status}).`,
+        );
+      }
+
+      const blob = await respuesta.blob();
       const url = window.URL.createObjectURL(blob);
       const enlace = document.createElement("a");
 
@@ -308,15 +288,16 @@ export default function CtnListadoPage() {
       enlace.click();
       enlace.remove();
 
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Error descargando Excel:", err);
-
-      window.alert(
-        err?.message || "No se ha podido descargar el Excel.",
+      window.setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 1000);
+    } catch (error) {
+      console.error("Error exportando notarías:", error);
+      setErrorExcel(
+        error?.message || "No se ha podido descargar el Excel.",
       );
     }
-  }, [filtrosServidor]);
+  }, [filtrosAplicados]);
 
   // ==========================================================
   // CABECERA ORDENABLE
@@ -331,22 +312,15 @@ export default function CtnListadoPage() {
 
     return (
       <th
-        className={`px-3 py-3 text-left font-semibold whitespace-nowrap select-none ${className}`}
+        className={`whitespace-nowrap px-3 py-3 text-left font-semibold text-[var(--erp-text)] ${className}`}
       >
         <button
           type="button"
           onClick={() => cambiarOrden(campo)}
-          className="inline-flex items-center gap-2 font-semibold text-[var(--erp-text)] hover:text-[var(--erp-primary)]"
+          className="inline-flex items-center gap-2 hover:text-[var(--erp-primary)]"
         >
           <span>{children}</span>
-
-          <span
-            className={
-              activa
-                ? "text-xs text-[var(--erp-primary)]"
-                : "text-xs opacity-40"
-            }
-          >
+          <span className={activa ? "text-[var(--erp-primary)]" : "opacity-40"}>
             {activa
               ? orden.direccion === "asc"
                 ? "↑"
@@ -364,165 +338,117 @@ export default function CtnListadoPage() {
 
   return (
     <div className="space-y-6">
-      {/* FILTROS */}
-
       <section className="erp-card space-y-4 p-4 shadow-sm">
         <div>
-          <h2 className="text-base font-semibold">
-            Filtros de notarías
+          <h2 className="text-base font-semibold text-[var(--erp-text)]">
+            Directorio de notarías
           </h2>
-
           <p className="mt-1 text-sm text-[var(--erp-text-soft)]">
-            Busca notarías por sus datos y consulta las asociaciones.
+            Busca notarías, consulta sus asociaciones y accede a su ficha.
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           <CampoFiltro
             label="Búsqueda general"
-            placeholder="Nombre, apellidos, código o NIF..."
+            placeholder="Nombre, apellidos, código o NIF"
             value={filtros.q}
-            onChange={(valor) =>
-              setFiltros((prev) => ({ ...prev, q: valor }))
-            }
+            onChange={(valor) => cambiarFiltro("q", valor)}
           />
 
           <CampoFiltro
             label="Provincia"
             placeholder="Provincia"
             value={filtros.provincia}
-            onChange={(valor) =>
-              setFiltros((prev) => ({
-                ...prev,
-                provincia: valor,
-              }))
-            }
+            onChange={(valor) => cambiarFiltro("provincia", valor)}
           />
 
           <CampoFiltro
             label="Municipio"
             placeholder="Municipio"
             value={filtros.municipio}
-            onChange={(valor) =>
-              setFiltros((prev) => ({
-                ...prev,
-                municipio: valor,
-              }))
-            }
+            onChange={(valor) => cambiarFiltro("municipio", valor)}
           />
 
           <CampoFiltro
             label="Videoconferencia"
-            placeholder="Sí / No"
+            placeholder="Valor de VC"
             value={filtros.vc}
-            onChange={(valor) =>
-              setFiltros((prev) => ({ ...prev, vc: valor }))
-            }
+            onChange={(valor) => cambiarFiltro("vc", valor)}
           />
 
           <CampoFiltro
             label="Apoderado"
             placeholder="Nombre del apoderado"
             value={filtros.apoderado}
-            onChange={(valor) =>
-              setFiltros((prev) => ({
-                ...prev,
-                apoderado: valor,
-              }))
-            }
+            onChange={(valor) => cambiarFiltro("apoderado", valor)}
           />
 
           <CampoFiltro
             label="Notario asociado"
-            placeholder="Nombre o apellidos del asociado"
+            placeholder="Nombre, apellidos o NIF"
             value={filtros.asociado}
-            onChange={(valor) =>
-              setFiltros((prev) => ({
-                ...prev,
-                asociado: valor,
-              }))
-            }
+            onChange={(valor) => cambiarFiltro("asociado", valor)}
           />
         </div>
 
         <div className="flex flex-wrap gap-3">
           <button
             type="button"
-            className="rounded-xl bg-[var(--erp-primary)] px-4 py-2 text-white shadow-sm transition hover:opacity-90"
             onClick={aplicarFiltros}
+            className="rounded-xl bg-[var(--erp-primary)] px-4 py-2 text-white shadow-sm transition hover:opacity-90"
           >
             Aplicar filtros
           </button>
 
           <button
             type="button"
-            className="rounded-xl border border-[var(--erp-border)] px-4 py-2 transition hover:bg-[var(--erp-surface-soft)]"
             onClick={limpiarFiltros}
+            className="rounded-xl border border-[var(--erp-border)] px-4 py-2 text-[var(--erp-text)] transition hover:bg-[var(--erp-surface-soft)]"
           >
             Limpiar filtros
           </button>
 
           <button
             type="button"
-            className="rounded-xl bg-[var(--erp-success)] px-4 py-2 text-white shadow-sm transition hover:opacity-90"
             onClick={descargarExcel}
+            className="rounded-xl bg-[var(--erp-success)] px-4 py-2 text-white shadow-sm transition hover:opacity-90"
           >
             Descargar Excel
           </button>
         </div>
+
+        {errorExcel && (
+          <p role="alert" className="text-sm text-red-600">
+            {errorExcel}
+          </p>
+        )}
       </section>
 
-      {/* TABLA */}
-
       {loading ? (
-        <div className="erp-card p-6">
+        <section className="erp-card p-6">
           <p className="animate-pulse text-sm text-[var(--erp-text-soft)]">
             Cargando notarías...
           </p>
-        </div>
+        </section>
       ) : (
         <section className="erp-card overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--erp-border)] bg-[var(--erp-surface-soft)]">
-                  <CabeceraOrdenable campo="codigo">
-                    Código
-                  </CabeceraOrdenable>
-
-                  <CabeceraOrdenable campo="telefono">
-                    Teléfono
-                  </CabeceraOrdenable>
-
-                  <CabeceraOrdenable campo="nombre">
-                    Nombre
-                  </CabeceraOrdenable>
-
-                  <CabeceraOrdenable campo="apellidos">
-                    Apellidos
-                  </CabeceraOrdenable>
-
-                  <CabeceraOrdenable campo="provincia">
-                    Provincia
-                  </CabeceraOrdenable>
-
-                  <CabeceraOrdenable campo="municipio">
-                    Municipio
-                  </CabeceraOrdenable>
-
-                  <CabeceraOrdenable campo="cp">
-                    CP
-                  </CabeceraOrdenable>
-
-                  <CabeceraOrdenable campo="direccion">
-                    Dirección
-                  </CabeceraOrdenable>
-
+                  <CabeceraOrdenable campo="codigo">Código</CabeceraOrdenable>
+                  <CabeceraOrdenable campo="telefono">Teléfono</CabeceraOrdenable>
+                  <CabeceraOrdenable campo="nombre">Nombre</CabeceraOrdenable>
+                  <CabeceraOrdenable campo="apellidos">Apellidos</CabeceraOrdenable>
+                  <CabeceraOrdenable campo="provincia">Provincia</CabeceraOrdenable>
+                  <CabeceraOrdenable campo="municipio">Municipio</CabeceraOrdenable>
+                  <CabeceraOrdenable campo="cp">CP</CabeceraOrdenable>
+                  <CabeceraOrdenable campo="direccion">Dirección</CabeceraOrdenable>
                   <CabeceraOrdenable campo="notarios_asociados">
                     Notarios asociados
                   </CabeceraOrdenable>
-
-                  <th className="px-3 py-3 text-left font-semibold text-[var(--erp-text)]">
+                  <th className="whitespace-nowrap px-3 py-3 text-left font-semibold text-[var(--erp-text)]">
                     Acciones
                   </th>
                 </tr>
@@ -535,7 +461,7 @@ export default function CtnListadoPage() {
                       colSpan={10}
                       className="px-4 py-10 text-center text-sm text-[var(--erp-text-soft)]"
                     >
-                      No se han encontrado notarías con estos filtros.
+                      No se han encontrado notarías.
                     </td>
                   </tr>
                 ) : (
@@ -548,37 +474,29 @@ export default function CtnListadoPage() {
                         className="border-b border-[var(--erp-border)] bg-[var(--erp-surface)] transition-colors last:border-b-0 hover:bg-[var(--erp-primary-soft)]"
                       >
                         <td className="whitespace-nowrap px-3 py-3 font-medium">
-                          {textoVisible(notaria.codigo)}
+                          {mostrar(notaria.codigo)}
                         </td>
-
                         <td className="whitespace-nowrap px-3 py-3">
-                          {textoVisible(notaria.telefono)}
+                          {mostrar(notaria.telefono)}
                         </td>
-
                         <td className="whitespace-nowrap px-3 py-3 font-medium">
-                          {textoVisible(notaria.nombre)}
+                          {mostrar(notaria.nombre)}
                         </td>
-
                         <td className="whitespace-nowrap px-3 py-3">
-                          {textoVisible(notaria.apellidos)}
+                          {mostrar(notaria.apellidos)}
                         </td>
-
                         <td className="whitespace-nowrap px-3 py-3">
-                          {textoVisible(notaria.provincia)}
+                          {mostrar(notaria.provincia)}
                         </td>
-
                         <td className="whitespace-nowrap px-3 py-3">
-                          {textoVisible(notaria.municipio)}
+                          {mostrar(notaria.municipio)}
                         </td>
-
                         <td className="whitespace-nowrap px-3 py-3">
-                          {textoVisible(notaria.cp)}
+                          {mostrar(notaria.cp)}
                         </td>
-
                         <td className="min-w-[200px] px-3 py-3">
-                          {textoVisible(notaria.direccion)}
+                          {mostrar(notaria.direccion)}
                         </td>
-
                         <td className="min-w-[220px] px-3 py-3">
                           {asociados.length === 0 ? (
                             <span className="text-[var(--erp-text-soft)]">
@@ -597,7 +515,6 @@ export default function CtnListadoPage() {
                             </div>
                           )}
                         </td>
-
                         <td className="whitespace-nowrap px-3 py-3">
                           <button
                             type="button"
@@ -615,41 +532,39 @@ export default function CtnListadoPage() {
             </table>
           </div>
 
-          {/* PAGINACIÓN */}
-
           <div className="flex flex-col gap-3 border-t border-[var(--erp-border)] bg-[var(--erp-surface-soft)] p-4 sm:flex-row sm:items-center sm:justify-between">
             <button
               type="button"
-              className="rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 transition hover:bg-[var(--erp-primary-soft)] disabled:cursor-not-allowed disabled:opacity-40"
               disabled={pagina <= 1}
-              onClick={() => setPagina((actual) => actual - 1)}
+              onClick={() => setPagina((actual) => Math.max(1, actual - 1))}
+              className="rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 transition hover:bg-[var(--erp-primary-soft)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               ← Anterior
             </button>
 
             <span className="text-center text-sm text-[var(--erp-text-soft)]">
-              Página <strong className="text-[var(--erp-text)]">{pagina}</strong>{" "}
-              de{" "}
+              Página <strong className="text-[var(--erp-text)]">{pagina}</strong>
+              {" "}de{" "}
               <strong className="text-[var(--erp-text)]">
                 {totalPaginas || 1}
               </strong>
-              {" · "}Total:{" "}
+              {" · "}Total de notarías:{" "}
+              <strong className="text-[var(--erp-text)]">{total ?? 0}</strong>
+              {" · "}Mostradas:{" "}
               <strong className="text-[var(--erp-text)]">
-                {total}
+                {itemsOrdenados.length}
               </strong>
-              {filtros.asociado.trim() && (
-                <>
-                  {" · "}En esta página con asociación coincidente:{" "}
-                  <strong>{itemsOrdenados.length}</strong>
-                </>
-              )}
             </span>
 
             <button
               type="button"
+              disabled={!totalPaginas || pagina >= totalPaginas}
+              onClick={() =>
+                setPagina((actual) =>
+                  Math.min(totalPaginas || 1, actual + 1),
+                )
+              }
               className="rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 transition hover:bg-[var(--erp-primary-soft)] disabled:cursor-not-allowed disabled:opacity-40"
-              disabled={pagina >= totalPaginas || totalPaginas === 0}
-              onClick={() => setPagina((actual) => actual + 1)}
             >
               Siguiente →
             </button>
@@ -657,34 +572,11 @@ export default function CtnListadoPage() {
         </section>
       )}
 
-      {/* MODAL EXISTENTE */}
-
       <ModalCtnDetalle
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={cerrarDetalle}
         notaria={selected}
       />
     </div>
-  );
-}
-
-// ============================================================
-// CAMPO DE FILTRO
-// ============================================================
-
-function CampoFiltro({ label, placeholder, value, onChange }) {
-  return (
-    <label className="block">
-      <span className="mb-1 block text-sm font-medium text-[var(--erp-text)]">
-        {label}
-      </span>
-
-      <input
-        className="w-full rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface-soft)] px-3 py-2 text-sm text-[var(--erp-text)] outline-none transition focus:border-[var(--erp-primary)] focus:ring-2 focus:ring-[var(--erp-primary-soft)]"
-        placeholder={placeholder}
-        value={value}
-        onChange={(evento) => onChange(evento.target.value)}
-      />
-    </label>
   );
 }
