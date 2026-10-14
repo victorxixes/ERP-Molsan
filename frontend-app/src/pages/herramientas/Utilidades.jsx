@@ -199,7 +199,14 @@ export default function Utilidades() {
           link="/herramientas/importador-absis"
           destacado
         />
-
+        
+<Card
+  icon="🛠️"
+  titulo="Mantenimiento técnico"
+  descripcion="Diagnóstico de base de datos y ejecución controlada de tareas técnicas."
+  link="/herramientas/mantenimiento-tecnico"
+/>
+        
       </div>
 
     </div>
