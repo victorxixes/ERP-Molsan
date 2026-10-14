@@ -4770,7 +4770,7 @@ const cuantiaFincasParaEnvio =
                   <Dato campo="Cuantía" valor={expediente?.cuantia ?? expediente?.documentos_escritura?.[0]?.cuantia ?? expediente?.finca_cuantia} tipo="numero" />
                   <Dato campo="Formato de escritura" valor={expediente?.formato_escritura ?? expediente?.formato_escritura_notarial} />
                   <Dato campo="Tipo de trámite" valor={expediente?.tipo_tramite ?? expediente?.tipo_tramite_notarial ?? expediente?.tramite} />
-                  <Dato campo="Fecha de envío" valor={expediente?.fecha_envio} tipo="fecha" />
+                  <Dato campo="Fecha de envío" valor={expediente?.fecha_envio_notario || expediente?.fecha_envio} tipo="fecha" />
                   <Dato campo="Fecha solicitud PNC" valor={expediente?.fecha_solicitud_pnc ?? expediente?.fecha_pnc ?? expediente?.pnc_fecha_solicitud} tipo="fecha" />
                   <Dato campo="N.º de solicitud" valor={expediente?.numero_solicitud_pnc ?? expediente?.num_solicitud_pnc ?? expediente?.pnc_numero_solicitud} />
                   <Dato campo="Fecha prevista de firma" valor={expediente?.fecha_prevista_firma} tipo="fecha" />
