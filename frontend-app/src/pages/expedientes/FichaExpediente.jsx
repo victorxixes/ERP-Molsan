@@ -231,7 +231,7 @@ const ACTIVIDADES_EXPEDIENTES = [
 
   {
     key: "facturacion-cierre",
-    label: "Facturación y cierre",
+    label: "Cierre del expediente",
     icono: "🧾",
   },
 ];
@@ -718,19 +718,16 @@ const CAMPOS_ACTIVIDADES = {
       label: "Estado facturación",
       estado: true,
     },
-
     {
       key: "facturacion_fecha",
       label: "Fecha facturación",
       tipo: "fecha",
     },
-
     {
       key: "fecha_entregado_cliente",
       label: "Fecha entregado cliente",
       tipo: "fecha",
     },
-
     {
       key: "fecha_fin_actividad",
       label: "Fin actividad",
@@ -1435,6 +1432,33 @@ export default function FichaExpediente() {
   const [cargandoEstadoAbsis, setCargandoEstadoAbsis] = useState(false);
   const [enviandoAbsis, setEnviandoAbsis] = useState(false);
   const [documentosCarpetaPrevia, setDocumentosCarpetaPrevia] = useState([]);
+  const [documentosCierre, setDocumentosCierre] = useState([]);
+  const [cargandoDocumentosCierre, setCargandoDocumentosCierre] = useState(false);
+  const [errorDocumentosCierre, setErrorDocumentosCierre] = useState("");
+  const [honorariosGestoria, setHonorariosGestoria] = useState(null);
+  const [generandoHonorariosGestoria, setGenerandoHonorariosGestoria] = useState(false);
+  const [errorHonorariosGestoria, setErrorHonorariosGestoria] = useState("");
+  const [mensajeHonorariosGestoria, setMensajeHonorariosGestoria] = useState("");
+
+  const cargarDocumentosCierre = useCallback(async () => {
+    const numero = expediente?.id_expediente || id;
+    if (!numero) return;
+    setCargandoDocumentosCierre(true);
+    setErrorDocumentosCierre("");
+    try {
+      const respuesta = await axios.get(`/expedientes/${encodeURIComponent(numero)}/carpeta-digital`);
+      const lista = Array.isArray(respuesta.data) ? respuesta.data : respuesta.data?.items || [];
+      setDocumentosCierre(lista);
+    } catch (error) {
+      setErrorDocumentosCierre(error?.response?.data?.detail || "No se pudieron cargar los documentos de la carpeta digital.");
+    } finally {
+      setCargandoDocumentosCierre(false);
+    }
+  }, [expediente?.id_expediente, id]);
+
+  useEffect(() => {
+    if (actividadSeleccionada === "facturacion-cierre") cargarDocumentosCierre();
+  }, [actividadSeleccionada, cargarDocumentosCierre]);
 
   const [
     mostrarDefecto,
@@ -2089,6 +2113,85 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     } finally {
       setGuardandoActividad(false);
       setEnviandoAbsis(false);
+    }
+  }
+
+
+  function calcularHonorariosGestoria() {
+    const datos = expediente || {};
+    const entidad = [
+      datos.entidad_bancaria,
+      datos.nombre_entidad,
+      datos.entidad,
+      datos.banco,
+      datos.entidad_financiera,
+      datos.entidad_solicitante,
+      datos.entidad_original,
+      datos.entidad_crediticia,
+      datos.banco_acreedor,
+      ...(Array.isArray(fincasExpediente) ? fincasExpediente.map((f) => f?.entidad_original) : []),
+    ].filter(Boolean).join(" ").toLowerCase();
+
+    const provinciasCanarias = [
+      "las palmas", "palmas (las)", "santa cruz de tenerife",
+      "tenerife", "canarias", "canary islands",
+    ];
+    const ubicacion = [
+      datos.comunidad_autonoma,
+      datos.comunidad,
+      datos.provincia,
+      datos.provincia_finca,
+      datos.oficina_liquidadora,
+      datos.registro_propiedad,
+      ...(Array.isArray(fincasExpediente) ? fincasExpediente.flatMap((f) => [f?.provincia, f?.poblacion, f?.comunidad_autonoma]) : []),
+    ].filter(Boolean).join(" ").toLowerCase();
+
+    if (provinciasCanarias.some((termino) => ubicacion.includes(termino))) {
+      return { importe: 69, tarifa: "Canarias", entidad: entidad || "No identificada" };
+    }
+    if (entidad.includes("caixabank") || entidad.includes("caixa bank") || entidad.includes("la caixa") || /(^|\\W)caixa(\\W|$)/.test(entidad)) {
+      return { importe: 83, tarifa: "CaixaBank", entidad: entidad || "CaixaBank" };
+    }
+    return { importe: 111, tarifa: "Otras entidades", entidad: entidad || "No identificada" };
+  }
+
+  async function generarHonorariosGestoria() {
+    if (!expediente?.id_expediente || generandoHonorariosGestoria) return;
+    const calculo = calcularHonorariosGestoria();
+    setHonorariosGestoria(calculo);
+    setGenerandoHonorariosGestoria(true);
+    setErrorHonorariosGestoria("");
+    setMensajeHonorariosGestoria("");
+    try {
+      const respuesta = await axios.post(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/generar`,
+        {
+          importe: calculo.importe,
+          tarifa: calculo.tarifa,
+          concepto: "Honorarios de gestoría",
+          entidad: calculo.entidad,
+          id_expediente: expediente.id_expediente,
+        }
+      );
+      setHonorariosGestoria((actual) => ({ ...actual, ...(respuesta?.data || {}), guardado: true }));
+      setMensajeHonorariosGestoria("Honorarios de gestoría generados y registrados.");
+    } catch (err) {
+      const status = err?.response?.status;
+      const detail = err?.response?.data?.detail;
+      if (status === 404 || status === 405) {
+        setMensajeHonorariosGestoria(
+          `Importe calculado: ${calculo.importe.toFixed(2).replace(".", ",")} €. El backend todavía no dispone de una ruta compatible para registrar automáticamente este concepto.`
+        );
+      } else {
+        setErrorHonorariosGestoria(
+          typeof detail === "string"
+            ? detail
+            : detail?.mensaje || JSON.stringify(detail) || err?.message ||
+              "No se pudieron registrar los honorarios. El importe calculado se mantiene visible."
+        );
+      }
+    } finally {
+      setGenerandoHonorariosGestoria(false);
     }
   }
 
@@ -4648,6 +4751,7 @@ const cuantiaFincasParaEnvio =
                     type="button"
                     onClick={() => {
                       setActividadSeleccionada(actividad.key);
+                      if (actividad.key === "defectos-registrales") cargarDocumentosCierre();
                       if (["sede-notarial-protocolo", "liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividad.key)) {
                         const fechaFirma = String(actividadDraft?.fecha_firma || expediente?.fecha_firma || "").slice(0, 10);
                         const fechaLiquidacion = String(
@@ -5046,6 +5150,89 @@ const cuantiaFincasParaEnvio =
               </section>
             )}
 
+            {actividadSeleccionada === "defectos-registrales" && (
+              <section className="mt-3 rounded-2xl border border-amber-200 bg-amber-50/30 p-4">
+                <div className="mb-3">
+                  <h3 className="text-sm font-extrabold text-slate-800">Carpeta digital de defectos</h3>
+                  <p className="mt-1 text-xs text-slate-500">Dos categorías separadas para la calificación registral y la documentación de subsanación.</p>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {[
+                    {
+                      key: "defecto-registral",
+                      titulo: "Defecto registral",
+                      descripcion: "Calificación o nota de defectos emitida por el Registro.",
+                    },
+                    {
+                      key: "subsanacion-del-defecto",
+                      titulo: "Subsanación del defecto",
+                      descripcion: "Documentos que acreditan la subsanación del defecto.",
+                    },
+                  ].map((categoria) => {
+                    const documentos = (Array.isArray(documentosCierre) ? documentosCierre : []).filter((doc) => {
+                      const categoriaDoc = String(
+                        doc?.categoria || doc?.categoria_nombre || doc?.tipo_documento ||
+                        doc?.nombre_categoria || doc?.metadata?.categoria || ""
+                      ).toLowerCase();
+                      const nombreDoc = String(
+                        doc?.nombre_original || doc?.nombre || doc?.nombre_archivo || doc?.filename || ""
+                      ).toLowerCase();
+                      const clave = categoria.key.toLowerCase();
+                      const etiqueta = categoria.titulo.toLowerCase();
+                      if (categoria.key === "defecto-registral") {
+                        return (categoriaDoc.includes("defecto") && !categoriaDoc.includes("subsan")) ||
+                          (nombreDoc.includes("defecto") && !nombreDoc.includes("subsan"));
+                      }
+                      return categoriaDoc.includes("subsan") || nombreDoc.includes("subsan");
+                    });
+                    return (
+                      <article key={categoria.key} className="rounded-xl border border-slate-200 bg-white p-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <h4 className="text-sm font-extrabold text-slate-800">{categoria.titulo}</h4>
+                            <p className="mt-1 text-xs text-slate-500">{categoria.descripcion}</p>
+                          </div>
+                          <span className="shrink-0 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">
+                            {documentos.length} archivo(s)
+                          </span>
+                        </div>
+                        <div className="mt-3 border-t border-slate-100 pt-3">
+                          {documentos.length ? (
+                            <ul className="space-y-2">
+                              {documentos.map((doc, index) => {
+                                const url = doc?.url || doc?.url_descarga || doc?.download_url || doc?.ruta;
+                                return (
+                                  <li key={doc?.id || doc?.id_documento || index} className="flex items-center justify-between gap-2 text-xs">
+                                    <span className="min-w-0 break-words font-medium text-slate-700">{doc?.nombre_original || doc?.nombre || doc?.nombre_archivo || doc?.filename || `Archivo ${index + 1}`}</span>
+                                    {url && <a href={url} target="_blank" rel="noreferrer" className="shrink-0 font-bold text-blue-700 underline">Ver PDF</a>}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          ) : (
+                            <p className="text-xs text-slate-400">Todavía no hay documentos en esta categoría.</p>
+                          )}
+                        </div>
+                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                          <span className="text-[11px] text-slate-500">{documentos.length} archivo(s)</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMostrarCarpetaDigital(true);
+                              cargarDocumentosCierre();
+                            }}
+                            className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100"
+                          >
+                            ＋ Adjuntar/ver PDF
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
             {actividadSeleccionada === "liquidacion-impuestos" && (
               <section className="mt-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4">
                 <div className="grid gap-3 md:grid-cols-2">
@@ -5114,6 +5301,179 @@ const cuantiaFincasParaEnvio =
                   </Boton>
                 </div>
               </section>
+            )}
+
+            {actividadSeleccionada === "facturacion-cierre" && (
+              <div className="mt-4 space-y-4">
+                <section className="rounded-2xl border border-slate-200 bg-white p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-sm font-extrabold text-slate-800">Resumen de actividades y documentos</h3>
+                      <p className="mt-1 text-xs text-slate-500">Actividades del expediente y documentos visibles en la carpeta digital.</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={cargarDocumentosCierre}
+                        disabled={cargandoDocumentosCierre}
+                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                      >
+                        {cargandoDocumentosCierre ? "Actualizando…" : "↻ Actualizar documentos"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMostrarCarpetaDigital(true)}
+                        className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100"
+                      >
+                        📁 Consultar carpeta digital
+                      </button>
+                    </div>
+                  </div>
+                  {cargandoDocumentosCierre && <p className="mt-3 text-xs text-slate-500">Cargando documentos de la carpeta digital…</p>}
+                  {errorDocumentosCierre && <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorDocumentosCierre}</p>}
+                  <div className="mt-3 space-y-2">
+                    {ACTIVIDADES_EXPEDIENTES.map((actividad, indice) => {
+                      const documentosActividad = (Array.isArray(documentosCierre) ? documentosCierre : []).filter((doc) => {
+                        const nombreActividad = String(
+                          doc?.actividad || doc?.actividad_nombre || doc?.nombre_actividad ||
+                          doc?.fase || doc?.categoria_actividad || doc?.metadata?.actividad || ""
+                        ).toLowerCase();
+                        const etiqueta = `${actividad.key} ${actividad.label}`.toLowerCase();
+                        if (!nombreActividad) return false;
+                        return nombreActividad.includes(actividad.key.toLowerCase()) ||
+                          nombreActividad.includes(actividad.label.toLowerCase()) ||
+                          (actividad.key === "facturacion-cierre" && nombreActividad.includes("cierre"));
+                      });
+                      return (
+                        <article key={actividad.key} className="rounded-xl border border-slate-200 p-3">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex min-w-0 items-center gap-2">
+                              <span className="text-lg">{actividad.icono}</span>
+                              <div>
+                                <p className="text-xs font-bold text-slate-800">{indice + 1}. {actividad.label}</p>
+                                <p className="text-[11px] text-slate-500">
+                                  {actividad.key === actividadActual ? "Actividad actual" : "Actividad del circuito"}
+                                </p>
+                              </div>
+                            </div>
+                            <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">
+                              {documentosActividad.length} documento(s)
+                            </span>
+                          </div>
+                          {documentosActividad.length > 0 ? (
+                            <ul className="mt-2 space-y-1 border-t border-slate-100 pt-2">
+                              {documentosActividad.map((doc, docIndex) => (
+                                <li key={doc?.id || doc?.id_documento || doc?.url || docIndex} className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                                  <span className="font-medium text-slate-700">{doc?.nombre || doc?.nombre_archivo || doc?.filename || doc?.titulo || `Documento ${docIndex + 1}`}</span>
+                                  {(doc?.url || doc?.url_descarga || doc?.ruta || doc?.download_url) && (
+                                    <a href={doc.url || doc.url_descarga || doc.ruta || doc.download_url} target="_blank" rel="noreferrer" className="font-semibold text-blue-700 underline">Abrir documento</a>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="mt-2 text-[11px] text-slate-400">No hay documentos de esta actividad cargados en la lista disponible. Si el documento está en la carpeta digital, revisa allí su categoría/actividad.</p>
+                          )}
+                        </article>
+                      );
+                    })}
+                    {documentosCierre.filter((doc) => {
+                      const nombreActividad = String(
+                        doc?.actividad || doc?.actividad_nombre || doc?.nombre_actividad ||
+                        doc?.fase || doc?.categoria_actividad || doc?.metadata?.actividad ||
+                        doc?.categoria_actividad_nombre || ""
+                      ).toLowerCase();
+                      return !nombreActividad || !ACTIVIDADES_EXPEDIENTES.some((actividad) =>
+                        nombreActividad.includes(actividad.key.toLowerCase()) ||
+                        nombreActividad.includes(actividad.label.toLowerCase()) ||
+                        (actividad.key === "facturacion-cierre" && nombreActividad.includes("cierre"))
+                      );
+                    }).length > 0 && (
+                      <article className="rounded-xl border border-amber-200 bg-amber-50/50 p-3">
+                        <p className="text-xs font-bold text-slate-800">Documentos sin actividad identificada</p>
+                        <p className="mt-1 text-[11px] text-slate-500">Estos documentos están en la carpeta digital, pero no incluyen una actividad reconocible en sus metadatos.</p>
+                        <ul className="mt-2 space-y-1 border-t border-amber-100 pt-2">
+                          {documentosCierre.filter((doc) => {
+                            const nombreActividad = String(
+                              doc?.actividad || doc?.actividad_nombre || doc?.nombre_actividad ||
+                              doc?.fase || doc?.categoria_actividad || doc?.metadata?.actividad ||
+                              doc?.categoria_actividad_nombre || ""
+                            ).toLowerCase();
+                            return !nombreActividad || !ACTIVIDADES_EXPEDIENTES.some((actividad) =>
+                              nombreActividad.includes(actividad.key.toLowerCase()) ||
+                              nombreActividad.includes(actividad.label.toLowerCase()) ||
+                              (actividad.key === "facturacion-cierre" && nombreActividad.includes("cierre"))
+                            );
+                          }).map((doc, docIndex) => (
+                            <li key={doc?.id || doc?.id_documento || docIndex} className="text-xs text-slate-700">
+                              {doc?.nombre_original || doc?.nombre || doc?.nombre_archivo || doc?.filename || `Documento ${docIndex + 1}`}
+                              {doc?.categoria || doc?.categoria_nombre ? ` · ${doc.categoria || doc.categoria_nombre}` : ""}
+                            </li>
+                          ))}
+                        </ul>
+                      </article>
+                    )}
+                  </div>
+                </section>
+
+                <section className="rounded-2xl border border-slate-200 bg-white p-4">
+                  <div className="mb-3">
+                    <h3 className="text-sm font-extrabold text-slate-800">Garantías</h3>
+                    <p className="mt-1 text-xs text-slate-500">Fincas y registros vinculados al expediente.</p>
+                  </div>
+                  {errorFincas && <p className="mb-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{errorFincas}</p>}
+                  {cargandoFincas ? (
+                    <p className="text-xs text-slate-500">Cargando garantías…</p>
+                  ) : fincasExpediente.length === 0 ? (
+                    <p className="rounded-xl border border-dashed border-slate-200 p-3 text-xs text-slate-500">No hay fincas ni registros vinculados.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {fincasExpediente.map((finca, i) => (
+                        <article key={finca.id || `${finca.finca}-${i}`} className="rounded-xl border border-slate-200 p-3">
+                          <p className="text-xs font-bold text-slate-800">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                          <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
+                            <div><span className="block text-slate-400">Registro</span><strong>{finca.registro || "—"}</strong></div>
+                            <div><span className="block text-slate-400">Sección</span><strong>{finca.seccion || "—"}</strong></div>
+                            <div><span className="block text-slate-400">Población</span><strong>{finca.poblacion || "—"}</strong></div>
+                            <div><span className="block text-slate-400">Provincia</span><strong>{finca.provincia || "—"}</strong></div>
+                            <div><span className="block text-slate-400">CRU/Idufir</span><strong>{finca.cru_idufir || "—"}</strong></div>
+                            <div><span className="block text-slate-400">Inscripción</span><strong>{finca.inscripcion || "—"}</strong></div>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
+                </section>
+
+                <section className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h3 className="text-sm font-extrabold text-slate-800">Honorarios de gestoría</h3>
+                      <p className="mt-1 text-xs text-slate-600">Canarias: 69 € · CaixaBank: 83 € · Otras entidades: 111 €.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={generarHonorariosGestoria}
+                      disabled={generandoHonorariosGestoria}
+                      className="rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-extrabold text-white hover:bg-emerald-800 disabled:opacity-50"
+                    >
+                      {generandoHonorariosGestoria ? "Generando…" : "💶 Generar honorarios de gestoría"}
+                    </button>
+                  </div>
+                  {honorariosGestoria && (
+                    <div className="mt-3 rounded-xl border border-emerald-200 bg-white p-3">
+                      <p className="text-xs text-slate-500">Tarifa aplicada: {honorariosGestoria.tarifa}</p>
+                      <p className="mt-1 text-2xl font-extrabold text-emerald-800">
+                        {Number(honorariosGestoria.importe).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
+                      </p>
+                      <p className="mt-1 text-[11px] text-slate-500">Entidad detectada: {honorariosGestoria.entidad || "No identificada"}</p>
+                      {honorariosGestoria.guardado && <p className="mt-1 text-xs font-semibold text-emerald-700">Registrado en el backend.</p>}
+                    </div>
+                  )}
+                  {mensajeHonorariosGestoria && <p className="mt-2 text-xs font-semibold text-emerald-800">{mensajeHonorariosGestoria}</p>}
+                  {errorHonorariosGestoria && <p className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorHonorariosGestoria}</p>}
+                </section>
+              </div>
             )}
 
             {errorActividad && (
