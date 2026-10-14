@@ -86,6 +86,7 @@ from backend.app.empleados.models import (
     Empleado,
 )
 
+
 from backend.app.mensajes.models import (
     Mensaje,
 )
@@ -261,6 +262,10 @@ from backend.app.seguridad.logs.router import (
 
 from backend.app.seguridad.admin_router import (
     router as admin_router,
+)
+
+from backend.app.expedientes.gastos.migracion_router import (
+    router as migracion_gastos_router,
 )
 
 # AGENDA
@@ -454,6 +459,8 @@ app.include_router(agenda_router, prefix="/api")
 
 # CARPETA DIGITAL
 app.include_router(carpeta_digital_router, prefix="/api",)
+
+app.include_router(migracion_gastos_router, prefix="/api")
 
 # ============================================================
 # DEBUG — RUTAS AGENDA
