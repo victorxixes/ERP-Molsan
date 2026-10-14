@@ -517,6 +517,7 @@ const CAMPOS_ACTIVIDADES = {
     {
       key: "apoderado",
       label: "Apoderado",
+      opciones: ["Gestoría", "CaixaBank"],
     },
 
     {
@@ -552,7 +553,7 @@ const CAMPOS_ACTIVIDADES = {
 
     {
       key: "asiento_presentacion_libro_diario",
-      label: "Asiento presentación libro diario",
+      label: "Asiento presentación / Libro diario",
     },
 
     {
@@ -563,13 +564,12 @@ const CAMPOS_ACTIVIDADES = {
 
     {
       key: "numero_entrada",
-      label: "Número entrada",
+      label: "Número de entrada",
     },
 
     {
       key: "fecha_recogida_notario_presentacion_telematica",
-      label:
-        "Fecha recogida notario / presentación telemática",
+      label: "Fecha recogida notario o presentación telemática",
       tipo: "fecha",
     },
 
@@ -1921,7 +1921,16 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
   function abrirActividades() {
     setActividadSeleccionada(actividadActual);
-    setActividadDraft({ ...(expediente || {}) });
+    const fechaFirma = String(expediente?.fecha_firma || "").slice(0, 10);
+    setActividadDraft({
+      ...(expediente || {}),
+      ...Object.fromEntries((CAMPOS_ACTIVIDADES[actividadActual] || []).map((campo) => [campo.key, expediente?.[campo.key] ?? ""])),
+      apoderado: expediente?.apoderado || "Gestoría",
+      fecha_presentacion: expediente?.fecha_presentacion || fechaFirma,
+      fecha_recogida_notario_presentacion_telematica:
+        expediente?.fecha_recogida_notario_presentacion_telematica || fechaFirma,
+      mover_siguiente_actividad: expediente?.mover_siguiente_actividad ?? false,
+    });
     setErrorActividad("");
     setMensajeActividad("");
     setMostrarActividades(true);
@@ -1995,6 +2004,49 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       );
     } finally {
       setGuardandoActividad(false);
+    }
+  }
+
+  async function enviarSedeNotarialProtocoloAbsis() {
+    if (!expediente?.id_expediente || guardandoActividad || enviandoAbsis) return;
+    setGuardandoActividad(true);
+    setEnviandoAbsis(true);
+    setErrorActividad("");
+    setMensajeActividad("");
+    try {
+      const camposEspecificos = CAMPOS_ACTIVIDADES["sede-notarial-protocolo"] || [];
+      const campos = {};
+      for (const campo of camposEspecificos) {
+        if (Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)) {
+          campos[campo.key] = actividadDraft[campo.key] ?? "";
+        }
+      }
+      await axios.put(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
+        { campos }
+      );
+      const respuesta = await axios.post(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/sede-notarial-protocolo/enviar-a-absis`,
+        { ...campos, mover_siguiente_actividad: !!actividadDraft.mover_siguiente_actividad }
+      );
+      await cargarExpediente();
+      setActividadDraft((actual) => ({ ...actual, ...(respuesta?.data || {}), ...campos }));
+      setMensajeActividad(
+        actividadDraft.mover_siguiente_actividad
+          ? "Datos guardados y solicitud de envío a ABSIS registrada, incluyendo la indicación de mover a la siguiente actividad."
+          : "Datos guardados y solicitud de envío a ABSIS registrada. El expediente permanece en esta actividad."
+      );
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setErrorActividad(
+        typeof detail === "string"
+          ? detail
+          : detail?.mensaje || JSON.stringify(detail) || err?.message ||
+            "No se pudo enviar la información de Sede notarial con protocolo a ABSIS. Comprueba que el backend tenga habilitado este endpoint."
+      );
+    } finally {
+      setGuardandoActividad(false);
+      setEnviandoAbsis(false);
     }
   }
 
@@ -4553,6 +4605,24 @@ const cuantiaFincasParaEnvio =
                     type="button"
                     onClick={() => {
                       setActividadSeleccionada(actividad.key);
+                      if (actividad.key === "sede-notarial-protocolo") {
+                        const fechaFirma = String(actividadDraft?.fecha_firma || expediente?.fecha_firma || "").slice(0, 10);
+                        setActividadDraft((actual) => {
+                          const camposProtocolo = CAMPOS_ACTIVIDADES["sede-notarial-protocolo"] || [];
+                          const base = { ...actual };
+                          for (const campo of camposProtocolo) {
+                            if (!Object.prototype.hasOwnProperty.call(base, campo.key)) base[campo.key] = "";
+                          }
+                          return {
+                            ...base,
+                            apoderado: base.apoderado || "Gestoría",
+                            fecha_presentacion: base.fecha_presentacion || fechaFirma,
+                            fecha_recogida_notario_presentacion_telematica:
+                              base.fecha_recogida_notario_presentacion_telematica || fechaFirma,
+                            mover_siguiente_actividad: base.mover_siguiente_actividad ?? false,
+                          };
+                        });
+                      }
                       setErrorActividad("");
                       setMensajeActividad("");
                     }}
@@ -4828,13 +4898,34 @@ const cuantiaFincasParaEnvio =
                         onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
                         className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
                       />
+                    ) : campo.opciones ? (
+                      <select
+                        value={String(valorActual || (campo.key === "apoderado" ? "Gestoría" : ""))}
+                        disabled={guardandoActividad}
+                        onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400"
+                      >
+                        {campo.opciones.map((opcion) => <option key={opcion} value={opcion}>{opcion}</option>)}
+                      </select>
                     ) : (
                       <input
                         type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"}
                         step={campo.tipo === "numero" ? "0.01" : undefined}
                         value={campo.tipo === "fecha" ? String(valorActual ?? "").slice(0, 10) : String(valorActual ?? "")}
                         disabled={guardandoActividad}
-                        onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
+                        onChange={(event) => setActividadDraft((actual) => {
+                          const nuevoValor = event.target.value;
+                          if (campo.key !== "fecha_firma" || actividadSeleccionada !== "sede-notarial-protocolo") {
+                            return { ...actual, [campo.key]: nuevoValor };
+                          }
+                          const fechaAnterior = String(actual.fecha_firma || "").slice(0, 10);
+                          return {
+                            ...actual,
+                            fecha_firma: nuevoValor,
+                            fecha_presentacion: !actual.fecha_presentacion || String(actual.fecha_presentacion).slice(0, 10) === fechaAnterior ? nuevoValor : actual.fecha_presentacion,
+                            fecha_recogida_notario_presentacion_telematica: !actual.fecha_recogida_notario_presentacion_telematica || String(actual.fecha_recogida_notario_presentacion_telematica).slice(0, 10) === fechaAnterior ? nuevoValor : actual.fecha_recogida_notario_presentacion_telematica,
+                          };
+                        })}
                         className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400"
                       />
                     )}
@@ -4845,6 +4936,41 @@ const cuantiaFincasParaEnvio =
               </div>
             )}
 
+            {actividadSeleccionada === "sede-notarial-protocolo" && (
+              <section className="mt-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4">
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="text-xs font-extrabold text-slate-700">Copia simple de escritura</p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      {actividadDraft?.copia_simple_escritura || expediente?.copia_simple_escritura
+                        ? "Hay una referencia guardada a la copia simple."
+                        : "Pendiente de que el notario la suba a la carpeta digital."}
+                    </p>
+                    <p className="mt-1 text-[11px] text-slate-500">La vinculación automática con Notargest se completará cuando esté disponible la integración de documentos.</p>
+                    <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
+                      📁 Abrir carpeta digital
+                    </button>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="mb-2 text-xs font-extrabold text-slate-700">Mover el expediente a la siguiente actividad</p>
+                    <div className="flex gap-5">
+                      <label className="flex items-center gap-2 text-sm text-slate-700">
+                        <input type="radio" name="moverActividadProtocolo" checked={!!actividadDraft.mover_siguiente_actividad} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || enviandoAbsis} /> Sí
+                      </label>
+                      <label className="flex items-center gap-2 text-sm text-slate-700">
+                        <input type="radio" name="moverActividadProtocolo" checked={!actividadDraft.mover_siguiente_actividad} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || enviandoAbsis} /> No
+                      </label>
+                    </div>
+                    <p className="mt-2 text-[11px] text-slate-500">La selección se incluye en la solicitud enviada a ABSIS.</p>
+                  </div>
+                </div>
+                <div className="mt-3 flex justify-end">
+                  <Boton tipo="primary" onClick={enviarSedeNotarialProtocoloAbsis} disabled={guardandoActividad || enviandoAbsis}>
+                    {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
+                  </Boton>
+                </div>
+              </section>
+            )}
 
             {errorActividad && (
               <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
