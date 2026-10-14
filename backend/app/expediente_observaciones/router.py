@@ -255,6 +255,11 @@ def crear_observacion(
                 ),
             )
 
+    # Nota: este router no recibe actualmente el usuario autenticado.
+    # Por ello no se asigna autor_empleado_id aquí: hacerlo sin una
+    # dependencia de autenticación fiable podría atribuir la observación
+    # a un empleado incorrecto. El autor se podrá guardar al conectar
+    # el usuario autenticado de la aplicación.
     item = ExpedienteObservacion(
         expediente_id=expediente.id,
         comentario=datos.comentario,
