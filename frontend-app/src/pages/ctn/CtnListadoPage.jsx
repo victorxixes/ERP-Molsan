@@ -37,7 +37,8 @@ export default function CtnListadoPage() {
   const [orden, setOrden] = useState({ campo: "apellidos", direccion: "asc" });
   const [filtros, setFiltros] = useState({ q: "", provincia: "", municipio: "", vc: "", apoderado: "", asociado: "" });
   const [filtrosAplicados, setFiltrosAplicados] = useState({ q: "", provincia: "", municipio: "", vc: "", apoderado: "", asociado: "" });
-   const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const cargarListado = useCallback(async (paginaSolicitada = pagina, filtrosActuales = filtrosAplicados) => {
     setCargando(true);
@@ -73,7 +74,8 @@ export default function CtnListadoPage() {
       setCargando(false);
     }
   }, [pagina, filtrosAplicados]);
-   useEffect(() => {
+
+  useEffect(() => {
     cargarListado(pagina, filtrosAplicados);
   }, [pagina, filtrosAplicados, cargarListado]);
 
@@ -109,7 +111,8 @@ export default function CtnListadoPage() {
     setFiltrosAplicados(vacios);
     setPagina(1);
   };
-   const ordenarPor = (campo) => setOrden((actual) => ({
+
+  const ordenarPor = (campo) => setOrden((actual) => ({
     campo,
     direccion: actual.campo === campo && actual.direccion === "asc" ? "desc" : "asc",
   }));
@@ -149,7 +152,8 @@ export default function CtnListadoPage() {
       setExportando(false);
     }
   };
-   return (
+
+  return (
     <main className="ctn-listado-page">
       <header className="ctn-listado-header">
         <div>
@@ -187,7 +191,8 @@ export default function CtnListadoPage() {
           </div>
         </form>
       </section>
-       <section className="ctn-listado-resumen" aria-label="Resumen del listado">
+
+      <section className="ctn-listado-resumen" aria-label="Resumen del listado">
         <div><span>Total de notarios</span><strong>{total.toLocaleString("es-ES")}</strong></div>
         <div><span>Resultados en esta página</span><strong>{items.length}</strong></div>
         <div><span>Página actual</span><strong>{pagina} / {totalPaginas}</strong></div>
@@ -227,7 +232,7 @@ export default function CtnListadoPage() {
                     <td>{item.distancia_km == null ? "—" : `${Number(item.distancia_km).toLocaleString("es-ES", { maximumFractionDigits: 1 })} km`}</td>
                     <td><button type="button" className="ctn-btn ctn-btn-primary ctn-btn-small" onClick={() => setNotariaSeleccionada(item)}>Ver ficha</button></td>
                   </tr>)}
-               </tbody>
+            </tbody>
           </table>
         </div>
         <footer className="ctn-paginacion">
@@ -249,3 +254,6 @@ export default function CtnListadoPage() {
           onCerrar={() => setNotariaSeleccionada(null)}
         />
       )}
+    </main>
+  );
+}
