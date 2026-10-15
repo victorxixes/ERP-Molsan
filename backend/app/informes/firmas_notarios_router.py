@@ -7,6 +7,7 @@ import unicodedata
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
@@ -266,6 +267,87 @@ def informe_firmas(
         ],
         "por_tipo_operacion": resumen["por_tipo_operacion"],
         "items": items,
+    }
+
+
+class ActualizarDatosFirmaRequest(BaseModel):
+    """Corrección verificada de los datos de una firma histórica."""
+    modalidad: Optional[str] = None
+    fecha_envio: Optional[date] = None
+
+
+@router.put("/firmas/{id_expediente}/datos")
+def actualizar_datos_firma(
+    id_expediente: str,
+    datos: ActualizarDatosFirmaRequest,
+    db: Session = Depends(get_db),
+):
+    """Permite completar modalidad real y fecha de envío de un expediente firmado.
+
+    No crea firmas ni consulta Agenda. Solo modifica un expediente que ya tiene
+    fecha_firma. Los datos deben introducirse a partir de documentación verificada.
+    """
+    campos_enviados = getattr(datos, "__fields_set__", set())
+    if not campos_enviados.intersection({"modalidad", "fecha_envio"}):
+        raise HTTPException(status_code=400, detail="Indica la modalidad y/o la fecha de envío que quieres corregir.")
+
+    expediente = (
+        db.query(Expediente)
+        .filter(Expediente.id_expediente == str(id_expediente))
+        .first()
+    )
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    if not getattr(expediente, "fecha_firma", None):
+        raise HTTPException(status_code=409, detail="Solo se pueden corregir datos de un expediente con fecha de firma registrada.")
+
+    # Valida las fechas antes de mutar el objeto, para que un error de
+    # validación no deje cambios pendientes en la sesión.
+    if "fecha_envio" in campos_enviados and datos.fecha_envio:
+        if expediente.fecha_firma and datos.fecha_envio > expediente.fecha_firma:
+            raise HTTPException(status_code=400, detail="La fecha de envío no puede ser posterior a la fecha de firma.")
+
+    modalidad_guardada = getattr(expediente, "tipo_firma", None)
+    fecha_envio_guardada = _fecha_envio(expediente)
+
+    if "modalidad" in campos_enviados:
+        valor = _normalizar(datos.modalidad).replace(" ", "_")
+        if valor in {"vc", "video", "videoconferencia", "videoconference"}:
+            modalidad_guardada = "Videoconferencia"
+        elif valor in {"p", "presencial", "fisica", "physical"}:
+            modalidad_guardada = "Presencial"
+        elif valor in {"", "sin_clasificar", "no_informada", "sin_dato"}:
+            modalidad_guardada = None
+        else:
+            raise HTTPException(status_code=400, detail="La modalidad debe ser VC, PRESENCIAL o SIN_CLASIFICAR.")
+        expediente.tipo_firma = modalidad_guardada
+
+    if "fecha_envio" in campos_enviados:
+        fecha_envio_guardada = datos.fecha_envio
+        # Ambos campos existen en el modelo: el primero es el dato del envío
+        # al notario; el segundo se utiliza en las actividades del expediente.
+        expediente.fecha_envio_notario = fecha_envio_guardada
+        expediente.fecha_envio = fecha_envio_guardada
+
+    try:
+        db.add(expediente)
+        db.commit()
+        db.refresh(expediente)
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudieron guardar los datos de la firma: {str(exc)[:300]}")
+
+    envio = _fecha_envio(expediente)
+    dias = _dias_envio_firma(expediente)
+    modalidad_resultante = _clasificar_modalidad(getattr(expediente, "tipo_firma", None))
+    return {
+        "ok": True,
+        "id_expediente": expediente.id_expediente,
+        "fecha_firma": expediente.fecha_firma.isoformat() if expediente.fecha_firma else None,
+        "fecha_envio": envio.isoformat() if envio else None,
+        "dias_envio_firma": dias,
+        "tipo_firma": getattr(expediente, "tipo_firma", None),
+        "modalidad": modalidad_resultante,
     }
 
 
