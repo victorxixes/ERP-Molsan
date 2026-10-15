@@ -21,6 +21,7 @@ import {
   obtenerCalificacionRegistro,
   listarDocumentosCarpetaDigital,
   subirCalificacionACarpetaDigital,
+  listarHistorialDefectosExpediente,
   listarTiposCargaHipotecaria,
 } from "../../api/expedienteDefectos";
 
@@ -1710,6 +1711,9 @@ const [defectoEditandoId, setDefectoEditandoId] = useState(null);
 const [guardandoDefecto, setGuardandoDefecto] = useState(false);
 const [errorDefecto, setErrorDefecto] = useState("");
 const [archivoCalificacion, setArchivoCalificacion] = useState(null);
+const [historialDefectos, setHistorialDefectos] = useState([]);
+const [cargandoHistorialDefectos, setCargandoHistorialDefectos] = useState(false);
+const [errorHistorialDefectos, setErrorHistorialDefectos] = useState("");
   
   // ----------------------------------------------------------
   // PPAD — datos persistidos en el backend
@@ -2426,6 +2430,33 @@ async function cargarDefectosRegistrados() {
   setDefectosRegistrados(lista);
 }
 
+async function cargarHistorialDefectos() {
+  const numero = expediente?.id_expediente;
+  if (!numero) {
+    setHistorialDefectos([]);
+    return;
+  }
+  try {
+    setCargandoHistorialDefectos(true);
+    setErrorHistorialDefectos("");
+    const respuesta = await listarHistorialDefectosExpediente(numero, 100);
+    const lista = Array.isArray(respuesta)
+      ? respuesta
+      : Array.isArray(respuesta?.historial)
+        ? respuesta.historial
+        : [];
+    setHistorialDefectos(lista);
+  } catch (error) {
+    console.error("Error consultando el historial de defectos:", error);
+    setErrorHistorialDefectos(
+      error?.response?.data?.detail ||
+      "No se pudo cargar el historial. Comprueba que el backend y la migración estén desplegados."
+    );
+  } finally {
+    setCargandoHistorialDefectos(false);
+  }
+}
+
 // Consultar los defectos al abrir/cambiar de expediente, no solo al abrir el modal.
 // El indicador de la cabecera se basa exclusivamente en registros devueltos por la API.
 useEffect(() => {
@@ -2467,6 +2498,11 @@ useEffect(() => {
     cancelado = true;
   };
 }, [expediente?.id_expediente]);
+
+useEffect(() => {
+  if (!mostrarDefecto || !expediente?.id_expediente) return;
+  cargarHistorialDefectos();
+}, [mostrarDefecto, expediente?.id_expediente]);
 
 async function abrirDefecto() {
   setErrorDefecto("");
@@ -2648,6 +2684,7 @@ async function guardarDefectoRegistral() {
     }));
 
     await cargarDefectosRegistrados();
+    await cargarHistorialDefectos();
     setDefectoEditandoId(null);
     setDefectoForm({ ...DEFECTO_VACIO });
     setArchivoCalificacion(null);
@@ -5660,6 +5697,51 @@ const cuantiaFincasParaEnvio =
         </div>
       )}
     </div>
+
+    <section className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 className="text-sm font-bold text-slate-800">Historial de defectos</h3>
+          <p className="mt-1 text-xs text-slate-500">Registro cronológico de altas, modificaciones, subsanaciones y documentos.</p>
+        </div>
+        <Boton onClick={cargarHistorialDefectos} disabled={cargandoHistorialDefectos}>
+          {cargandoHistorialDefectos ? "Actualizando…" : "↻ Actualizar"}
+        </Boton>
+      </div>
+
+      {errorHistorialDefectos && (
+        <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+          {errorHistorialDefectos}
+        </div>
+      )}
+
+      {cargandoHistorialDefectos && historialDefectos.length === 0 ? (
+        <p className="text-sm text-slate-500">Cargando historial…</p>
+      ) : historialDefectos.length === 0 ? (
+        <p className="text-sm text-slate-500">Todavía no hay eventos de historial registrados.</p>
+      ) : (
+        <ol className="space-y-3">
+          {historialDefectos.map((evento) => (
+            <li key={evento.id} className="relative border-l-2 border-indigo-200 pb-1 pl-4">
+              <span className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-indigo-500" />
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <p className="text-sm font-semibold text-slate-800">
+                  {String(evento.accion || "Evento").replaceAll("_", " ").replace(/\b\w/g, (letra) => letra.toUpperCase())}
+                </p>
+                <time className="text-xs text-slate-500">
+                  {evento.creado_en ? new Date(evento.creado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "Fecha no disponible"}
+                </time>
+              </div>
+              <p className="mt-1 text-sm text-slate-600">{evento.resumen || "Sin descripción adicional."}</p>
+              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500">
+                {evento.defecto_id != null && <span>Defecto #{evento.defecto_id}</span>}
+                {evento.usuario && <span>Usuario: {evento.usuario}</span>}
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
 
     <div>
       <h3 className="mb-3 text-sm font-bold text-slate-800">
