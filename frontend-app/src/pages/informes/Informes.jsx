@@ -2617,6 +2617,243 @@ const APARTADOS_INFORMES = [
   },
 ];
 
+// ============================================================
+// INFORME DE FIRMAS REALES Y INFORME DE NOTARIOS
+// Los dos informes consultan Expediente.fecha_firma; no usan citas
+// de Agenda como si fueran firmas realizadas.
+// ============================================================
+
+function fechaISOInforme(fecha) {
+  const year = fecha.getFullYear();
+  const month = String(fecha.getMonth() + 1).padStart(2, "0");
+  const day = String(fecha.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function filtrosInformeIniciales() {
+  const hoy = new Date();
+  return {
+    fecha_desde: fechaISOInforme(new Date(hoy.getFullYear(), hoy.getMonth(), 1)),
+    fecha_hasta: fechaISOInforme(hoy),
+    modalidad: "",
+    tipo_operacion: "",
+    notario: "",
+    apoderado: "",
+    q: "",
+  };
+}
+
+function fechaInformeVisible(valor) {
+  if (!valor) return "—";
+  const texto = String(valor);
+  const match = texto.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : texto;
+}
+
+function numeroInforme(valor, decimales = 0) {
+  if (valor === null || valor === undefined || valor === "" || Number.isNaN(Number(valor))) return "—";
+  return Number(valor).toLocaleString("es-ES", {
+    minimumFractionDigits: decimales,
+    maximumFractionDigits: decimales,
+  });
+}
+
+function escaparHTMLInforme(valor) {
+  return String(valor ?? "—").replace(/[&<>"']/g, (caracter) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[caracter]));
+}
+
+function imprimirInforme(titulo, periodo, columnas, filas) {
+  const ventana = window.open("", "_blank");
+  if (!ventana) {
+    window.alert("El navegador ha bloqueado la ventana de impresión. Permite las ventanas emergentes para exportar a PDF.");
+    return;
+  }
+  const th = columnas.map((c) => `<th>${escaparHTMLInforme(c.label)}</th>`).join("");
+  const trs = filas.map((fila) => `<tr>${columnas.map((c) => `<td>${escaparHTMLInforme(c.render ? c.render(fila) : fila[c.key])}</td>`).join("")}</tr>`).join("");
+  ventana.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"/><title>${escaparHTMLInforme(titulo)}</title><style>
+    @page{size:landscape;margin:12mm}body{font-family:Arial,sans-serif;color:#24344d;padding:12px}h1{color:#183b66;margin:0 0 4px}p{color:#7186a3;margin:0 0 18px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:9px}th{background:#edf4fc;color:#31577f;text-align:left}th,td{border:1px solid #dbe7f4;padding:6px;vertical-align:top}tr:nth-child(even){background:#f8fbfe}
+    </style></head><body><h1>${escaparHTMLInforme(titulo)}</h1><p>Periodo: ${escaparHTMLInforme(periodo)} · Registros: ${filas.length}</p><table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table><script>window.onload=()=>window.print();</script></body></html>`);
+  ventana.document.close();
+}
+
+function descargarBlobInforme(blob, nombre) {
+  const url = URL.createObjectURL(blob);
+  const enlace = document.createElement("a");
+  enlace.href = url;
+  enlace.download = nombre;
+  document.body.appendChild(enlace);
+  enlace.click();
+  enlace.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+function CampoFiltroInforme({ label, value, onChange, type = "text", placeholder = "" }) {
+  return (
+    <label className="block min-w-0">
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span>
+      <input type={type} value={value ?? ""} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+    </label>
+  );
+}
+
+function SelectFiltroInforme({ label, value, onChange, children }) {
+  return (
+    <label className="block min-w-0">
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</span>
+      <select value={value ?? ""} onChange={(e) => onChange(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">{children}</select>
+    </label>
+  );
+}
+
+function InformeKpi({ titulo, valor, subtitulo, icono }) {
+  return (
+    <div className="rounded-2xl border border-white/80 bg-white/75 p-4 shadow-[0_8px_25px_rgba(55,85,120,0.07)] backdrop-blur-xl">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{titulo}</div>
+          <div className="mt-2 text-2xl font-bold tracking-tight text-slate-800">{valor}</div>
+          {subtitulo && <div className="mt-1 text-xs text-slate-400">{subtitulo}</div>}
+        </div>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-lg">{icono}</span>
+      </div>
+    </div>
+  );
+}
+
+function AvisoInforme({ error }) {
+  if (!error) return null;
+  return <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>;
+}
+
+function PanelEstadoInforme({ loading, vacio, textoVacio = "No hay registros para los filtros seleccionados." }) {
+  if (loading) return <div className="px-5 py-12 text-center text-sm text-slate-500">Consultando datos reales del ERP…</div>;
+  if (vacio) return <div className="px-5 py-12 text-center text-sm text-slate-500"><div className="mb-2 text-3xl">📭</div>{textoVacio}</div>;
+  return null;
+}
+
+async function descargarExcelBackend(url, params, nombre) {
+  const respuesta = await axios.get(url, { params, responseType: "blob" });
+  descargarBlobInforme(respuesta.data, nombre);
+}
+
+// ------------------------------ INFORME DE FIRMAS ------------------------------
+function InformeFirmas() {
+  const [filtros, setFiltros] = useState(filtrosInformeIniciales);
+  const [aplicados, setAplicados] = useState(filtrosInformeIniciales);
+  const [datos, setDatos] = useState({ resumen: {}, por_tipo_operacion: [], items: [] });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [exportando, setExportando] = useState(false);
+
+  useEffect(() => {
+    let activo = true;
+    const cargar = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+        const respuesta = await axios.get(`${API_BASE}/informes/firmas`, { params });
+        if (activo) setDatos({ resumen: respuesta.data?.resumen || {}, por_tipo_operacion: respuesta.data?.por_tipo_operacion || [], items: respuesta.data?.items || [] });
+      } catch (e) {
+        if (activo) {
+          setDatos({ resumen: {}, por_tipo_operacion: [], items: [] });
+          setError(e?.response?.data?.detail || "No se ha podido cargar el informe de firmas. Comprueba que el endpoint de informes esté instalado en el backend.");
+        }
+      } finally {
+        if (activo) setLoading(false);
+      }
+    };
+    cargar();
+    return () => { activo = false; };
+  }, [aplicados]);
+
+  const cambiar = (campo, valor) => setFiltros((actual) => ({ ...actual, [campo]: valor }));
+  const aplicar = (e) => {
+    e.preventDefault();
+    if (filtros.fecha_desde && filtros.fecha_hasta && filtros.fecha_desde > filtros.fecha_hasta) {
+      setError("La fecha desde no puede ser posterior a la fecha hasta.");
+      return;
+    }
+    setError("");
+    setAplicados({ ...filtros });
+  };
+  const limpiar = () => {
+    const inicial = filtrosInformeIniciales();
+    setFiltros(inicial);
+    setAplicados(inicial);
+    setError("");
+  };
+  const periodo = `${fechaInformeVisible(aplicados.fecha_desde)} – ${fechaInformeVisible(aplicados.fecha_hasta)}`;
+  const resumen = datos.resumen || {};
+  const filas = datos.items || [];
+  const columnasPDF = [
+    { key: "fecha_firma", label: "Fecha firma", render: (f) => fechaInformeVisible(f.fecha_firma) },
+    { key: "id_expediente", label: "N.º expediente" },
+    { key: "nombre_titular", label: "Titular" },
+    { key: "tipo_operacion", label: "Tipo operación" },
+    { key: "modalidad", label: "Modalidad", render: (f) => f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : "Sin clasificar" },
+    { key: "nombre_notario", label: "Notario" },
+    { key: "apoderado", label: "Apoderado" },
+    { key: "dias_envio_firma", label: "Días envío-firma" },
+    { key: "protocolo", label: "Protocolo" },
+  ];
+
+  const exportarExcel = async () => {
+    setExportando(true);
+    setError("");
+    try {
+      const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+      await descargarExcelBackend(`${API_BASE}/informes/firmas/exportar-excel`, params, `informe_firmas_${aplicados.fecha_desde || "desde_inicio"}_${aplicados.fecha_hasta || "hasta_hoy"}.xlsx`);
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo exportar el informe de firmas a Excel.");
+    } finally { setExportando(false); }
+  };
+
+  return (
+    <section className="space-y-5">
+      <header className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
+        <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">✍️</span><div><h2 className="text-xl font-bold text-slate-800">Informe de firmas</h2><p className="mt-1 text-sm text-slate-500">Histórico de firmas reales a partir de expedientes con fecha de firma registrada. Las citas de Agenda no se consideran firmas realizadas.</p></div></div>
+      </header>
+
+      <form onSubmit={aplicar} className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl md:p-6">
+        <div className="mb-4 flex items-center justify-between gap-3"><div><h3 className="font-bold text-slate-800">Filtros del informe</h3><p className="mt-1 text-xs text-slate-500">El periodo se aplica a la fecha real de firma.</p></div><button type="button" onClick={limpiar} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Restablecer</button></div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <CampoFiltroInforme label="Fecha firma desde" type="date" value={filtros.fecha_desde} onChange={(v) => cambiar("fecha_desde", v)} />
+          <CampoFiltroInforme label="Fecha firma hasta" type="date" value={filtros.fecha_hasta} onChange={(v) => cambiar("fecha_hasta", v)} />
+          <SelectFiltroInforme label="Modalidad" value={filtros.modalidad} onChange={(v) => cambiar("modalidad", v)}><option value="">Todas las modalidades</option><option value="VC">Videoconferencia</option><option value="PRESENCIAL">Presencial</option><option value="SIN_CLASIFICAR">Sin clasificar</option></SelectFiltroInforme>
+          <CampoFiltroInforme label="Tipo de operación" value={filtros.tipo_operacion} onChange={(v) => cambiar("tipo_operacion", v)} placeholder="Filtrar operación" />
+          <CampoFiltroInforme label="Notario" value={filtros.notario} onChange={(v) => cambiar("notario", v)} placeholder="Nombre o NIF" />
+          <CampoFiltroInforme label="Apoderado" value={filtros.apoderado} onChange={(v) => cambiar("apoderado", v)} placeholder="Nombre del apoderado" />
+          <div className="sm:col-span-2"><CampoFiltroInforme label="Buscar expediente, titular, solicitante o protocolo" value={filtros.q} onChange={(v) => cambiar("q", v)} placeholder="N.º expediente, NIF, titular…" /></div>
+        </div>
+        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">Aplicar filtros</button></div>
+      </form>
+
+      <AvisoInforme error={error} />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <InformeKpi icono="✍️" titulo="Firmas reales" valor={numeroInforme(resumen.total_firmas)} subtitulo="Expedientes con fecha de firma" />
+        <InformeKpi icono="💻" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
+        <InformeKpi icono="🏛️" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
+        <InformeKpi icono="❔" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} />
+        <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
+      </div>
+
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Resumen por tipo de operación</h3><p className="mt-1 text-xs text-slate-500">Conteo de firmas reales y días medios cuando existen fecha de envío y de firma.</p></div><span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{periodo}</span></div>
+        {loading ? <PanelEstadoInforme loading /> : datos.por_tipo_operacion.length === 0 ? <PanelEstadoInforme vacio /> : <div className="overflow-x-auto"><table className="w-full min-w-[650px] text-sm"><thead className="bg-blue-50/70 text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="px-5 py-3 text-left">Tipo de operación</th><th className="px-5 py-3 text-right">Firmas</th><th className="px-5 py-3 text-right">VC</th><th className="px-5 py-3 text-right">Presencial</th><th className="px-5 py-3 text-right">Media días</th></tr></thead><tbody>{datos.por_tipo_operacion.map((f, i) => <tr key={`${f.tipo_operacion}-${i}`} className="border-t border-slate-100 hover:bg-blue-50/40"><td className="px-5 py-3 font-medium text-slate-700">{f.tipo_operacion}</td><td className="px-5 py-3 text-right font-semibold">{numeroInforme(f.total_firmas)}</td><td className="px-5 py-3 text-right">{numeroInforme(f.vc)}</td><td className="px-5 py-3 text-right">{numeroInforme(f.presencial)}</td><td className="px-5 py-3 text-right text-blue-700">{f.media_dias == null ? "—" : `${numeroInforme(f.media_dias, 1)} días`}</td></tr>)}</tbody></table></div>}
+      </section>
+
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Detalle de firmas</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(filas.length)} registros recibidos del backend.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "📗 Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 Exportar PDF</button></div></div>
+        {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[620px] overflow-auto"><table className="w-full min-w-[1300px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{columnasPDF.map((c) => <th key={c.key} className="whitespace-nowrap px-4 py-3">{c.label}</th>)}</tr></thead><tbody>{filas.map((f, i) => <tr key={f.id ?? `${f.id_expediente}-${i}`} className="border-t border-slate-100 hover:bg-blue-50/40"><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td><td className="px-4 py-3 font-semibold text-blue-700">{f.id_expediente || "—"}</td><td className="max-w-[240px] px-4 py-3">{f.nombre_titular || "—"}</td><td className="px-4 py-3">{f.tipo_operacion || "—"}</td><td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : "Sin clasificar"}</td><td className="px-4 py-3">{f.nombre_notario || "—"}</td><td className="px-4 py-3">{f.apoderado || "—"}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td><td className="px-4 py-3 text-right">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td><td className="px-4 py-3">{f.protocolo || "—"}</td></tr>)}</tbody></table></div>}
+      </section>
+    </section>
+  );
+}
+
+
 function ApartadoInformePendiente({ apartado }) {
   const detalle = {
     firmas: {
@@ -2735,6 +2972,8 @@ export default function Informes() {
 
       {apartadoActivo === "apoderados" ? (
         <InformeCitasApoderados />
+      ) : apartadoActivo === "firmas" ? (
+        <InformeFirmas />
       ) : (
         <ApartadoInformePendiente apartado={apartadoSeleccionado} />
       )}
