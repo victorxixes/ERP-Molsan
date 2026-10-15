@@ -1092,7 +1092,7 @@ export default function ExpedientesListado() {
             importe: filtrosAplicados.importe !== "" ? Number(filtrosAplicados.importe) : undefined,
             observaciones: filtrosAplicados.observaciones || undefined,
             estadoActividad: filtrosAplicados.estadoActividad || undefined,
-            actividad: filtrosAplicados.actividad || undefined,
+            actividadActual: filtrosAplicados.actividad || undefined,
             estadoExpediente: filtrosAplicados.estadoExpediente || undefined,
 
             ordenMultiple:
@@ -1743,7 +1743,7 @@ export default function ExpedientesListado() {
           importe: filtrosAplicados.importe !== "" ? Number(filtrosAplicados.importe) : undefined,
           observaciones: filtrosAplicados.observaciones || undefined,
           estadoActividad: filtrosAplicados.estadoActividad || undefined,
-          actividad: filtrosAplicados.actividad || undefined,
+          actividadActual: filtrosAplicados.actividad || undefined,
           estadoExpediente: filtrosAplicados.estadoExpediente || undefined,
         });
 
