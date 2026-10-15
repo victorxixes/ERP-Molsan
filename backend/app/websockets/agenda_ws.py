@@ -1,12 +1,14 @@
+import jwt
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from typing import List
+
+from backend.app.config import settings
 
 router = APIRouter(prefix="/ws", tags=["Agenda WebSocket"])
 
 
 class AgendaWebSocketManager:
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
+        self.active_connections = []
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
@@ -24,26 +26,34 @@ class AgendaWebSocketManager:
                 self.disconnect(connection)
 
 
-# Instancia global del manager
 manager = AgendaWebSocketManager()
 
 
-# Función para enviar eventos desde el router
 async def enviar_evento(tipo: str, cita: dict):
-    await manager.broadcast({
-        "tipo": tipo,
-        "cita": cita
-    })
+    await manager.broadcast({"tipo": tipo, "cita": cita})
 
 
-# WebSocket principal
 @router.websocket("/agenda")
 async def agenda_ws(websocket: WebSocket):
-    await manager.connect(websocket)
+    token = websocket.query_params.get("token", "").strip()
+    if not token:
+        await websocket.close(code=4401, reason="Token requerido")
+        return
 
     try:
+        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM])
+        usuario_id = int(payload.get("id"))
+        if usuario_id <= 0:
+            raise ValueError("Identificador de usuario no válido")
+    except (jwt.InvalidTokenError, TypeError, ValueError):
+        await websocket.close(code=4401, reason="Token no válido")
+        return
+
+    # Solo autenticamos aquí; la autorización por ámbito del calendario debe
+    # aplicarse a los eventos antes de habilitar datos de agenda por departamento.
+    await manager.connect(websocket)
+    try:
         while True:
-            # Mantener la conexión viva; ignoramos el contenido
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
