@@ -17,7 +17,9 @@ from fastapi.dependencies.utils import get_dependant
 from fastapi.routing import APIRoute
 from starlette.routing import Mount
 
+from fastapi import Depends
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 
 
 RUTAS_PUBLICAS_EXACTAS = {
@@ -30,6 +32,28 @@ RUTAS_PUBLICAS_EXACTAS = {
 }
 
 
+
+
+def _permiso_requerido_para_ruta(path: str, methods: set[str]):
+    """Permisos estrictos para administración de roles y seguridad."""
+    ruta = path.rstrip("/") or "/"
+    metodo = next(iter(sorted(methods)), "GET")
+    if ruta.startswith("/api/seguridad/roles") or ruta.startswith("/api/seguridad/permisos"):
+        accion = {"GET": "ver", "HEAD": "ver", "POST": "crear", "PUT": "editar", "PATCH": "editar", "DELETE": "eliminar"}.get(metodo, "editar")
+        return ("seguridad", accion)
+    if ruta.startswith("/api/seguridad/asignar"):
+        return ("empleados", "editar")
+    if ruta.startswith("/api/admin") or ruta.startswith("/api/crear-tablas"):
+        return ("seguridad", "editar")
+    return None
+
+def _dependencia_permiso(modulo: str, accion: str):
+    def comprobar_permiso(usuario=Depends(get_current_user)):
+        require_perm_modulo(usuario, modulo, accion)
+        return usuario
+    comprobar_permiso.__name__ = f"permiso_{modulo}_{accion}"
+    comprobar_permiso.__qualname__ = comprobar_permiso.__name__
+    return comprobar_permiso
 
 def _ya_tiene_autenticacion(dependant: Any) -> bool:
     """Evita añadir get_current_user dos veces a una ruta."""
@@ -66,21 +90,22 @@ def proteger_rutas_api(app: Any) -> dict[str, int]:
         if not path.startswith("/api/"):
             continue
 
-        # Solo se deja público el inicio de sesión y health explícito.
         if path in RUTAS_PUBLICAS_EXACTAS:
             omitidas += 1
             continue
+
+        regla = _permiso_requerido_para_ruta(path, set(getattr(route, "methods", set()) or set()))
+        if regla and not getattr(route, "_molsan_perm_guarded", False):
+            modulo, accion = regla
+            dep_permiso = get_dependant(path=route.path_format, call=_dependencia_permiso(modulo, accion))
+            route.dependant.dependencies.append(dep_permiso)
+            setattr(route, "_molsan_perm_guarded", True)
 
         if _ya_tiene_autenticacion(route.dependant):
             omitidas += 1
             continue
 
-        dependencia = get_dependant(
-            path=route.path_format,
-            call=get_current_user,
-        )
-        # APIRoute conserva este objeto en el handler ya construido;
-        # añadir a su lista de dependencias permite resolverlo por petición.
+        dependencia = get_dependant(path=route.path_format, call=get_current_user)
         route.dependant.dependencies.append(dependencia)
         protegidas += 1
 
