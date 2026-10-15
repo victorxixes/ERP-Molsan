@@ -641,7 +641,7 @@ export default function EnviarANotarioModal({
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:p-5"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-3"
       onMouseDown={(event) => {
         if (
           event.target === event.currentTarget &&
@@ -652,7 +652,7 @@ export default function EnviarANotarioModal({
       }}
     >
       <div
-        className="flex max-h-[96vh] w-full max-w-[1600px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"
+        className="flex h-[97vh] max-h-[98vh] w-[99vw] max-w-[2200px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"
         onMouseDown={(event) => event.stopPropagation()}
       >
         {/* CABECERA */}
@@ -687,10 +687,10 @@ export default function EnviarANotarioModal({
 
         {/* CONTENIDO: DOCUMENTACIÓN PREVIA A LA IZQUIERDA + FORMULARIO */}
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">
-          <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(330px,0.9fr)_minmax(0,1.8fr)] xl:gap-6">
+        <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-4 2xl:px-5">
+          <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1.25fr)] xl:gap-5 2xl:gap-6">
             {/* COLUMNA IZQUIERDA — DOCUMENTACIÓN PREVIA COMPARTIDA CON CARPETA DIGITAL */}
-            <aside className="min-w-0 xl:sticky xl:top-2">
+            <aside className="min-w-0">
               <div className="mb-3 rounded-2xl border border-indigo-200 bg-indigo-50/70 px-4 py-3">
                 <div className="flex items-start gap-3">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-lg shadow-sm">📂</span>
@@ -711,7 +711,7 @@ export default function EnviarANotarioModal({
 
             {/* COLUMNA DERECHA — DATOS DEL ENVÍO Y FACTURACIÓN */}
             <div className="min-w-0">
-              <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 xl:gap-6">
+              <div className="grid grid-cols-1 items-start gap-5 2xl:grid-cols-2 2xl:gap-6">
             {/* COLUMNA IZQUIERDA — ENVÍO AL NOTARIO */}
 
             <div className="min-w-0 space-y-6">
