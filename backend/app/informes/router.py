@@ -10,7 +10,7 @@ from backend.app.informes.service import (
 from backend.app.informes.schemas import InformeFila, InformeIndividual
 
 
-router = APIRouter(prefix="/informes/apoderados", tags=["Informes SJ-2026"])
+router = APIRouter(prefix="/informes/apoderados", tags=["Informes"])
 
 
 # ---------------------------------------------------------
