@@ -51,8 +51,8 @@ const BLOQUES = [
     titulo: "Facturación y cierre",
     descripcion: "Documentación final para completar y cerrar el expediente.",
     categorias: [
-      { etiqueta: "Escritura digital final", categoria: "Escritura digital final" },
-      { etiqueta: "Otra documentación", categoria: "Otra documentación" },
+    { etiqueta: "Documento de inscripción", categoria: "Hoja de Inscripción" },
+  { etiqueta: "Expediente digital completo", categoria: "Otra documentación" },
     ],
   },
   {
@@ -60,10 +60,10 @@ const BLOQUES = [
     titulo: "Gestión económica",
     descripcion: "Facturas y justificantes económicos asociados al expediente.",
     categorias: [
-      { etiqueta: "Factura notarial", categoria: "Factura notarial" },
-      { etiqueta: "Factura registral", categoria: "Factura Registral" },
-      { etiqueta: "Otros impuestos", categoria: "Otros impuestos" },
-      { etiqueta: "Otros pagos", categoria: "Otros pagos" },
+     { etiqueta: "Factura notarial", categoria: "Factura notarial" },
+  { etiqueta: "Factura registral", categoria: "Factura Registral" },
+  { etiqueta: "Factura impuestos", categoria: "Otros impuestos" },
+  { etiqueta: "Otros documentos económicos", categoria: "Otros pagos" },
     ],
   },
 ];
