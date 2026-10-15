@@ -248,11 +248,11 @@ export default function CtnListadoPage() {
       </section>
 
       {notariaSeleccionada && (
-        <ModalCtnDetalle
-          notaria={notariaSeleccionada}
-          onClose={() => setNotariaSeleccionada(null)}
-          onCerrar={() => setNotariaSeleccionada(null)}
-        />
+     <ModalCtnDetalle
+  open={Boolean(notariaSeleccionada)}
+  notaria={notariaSeleccionada}
+  onClose={() => setNotariaSeleccionada(null)}
+/>
       )}
     </main>
   );
