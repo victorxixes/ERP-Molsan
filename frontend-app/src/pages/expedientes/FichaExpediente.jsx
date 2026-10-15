@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Link, useParams } from "react-router-dom";
 import axios from "../../api/axios";
+import { useAuthStore } from "../../store/authStore";
 
 import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario } from "../../api/expedientes";
 
@@ -1385,6 +1386,7 @@ function Boton({
 
 export default function FichaExpediente() {
   const { id } = useParams();
+  const empleadoSesion = useAuthStore((s) => s.empleado);
 
   const [
     expediente,
@@ -2168,24 +2170,28 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setErrorHonorariosGestoria("");
     setMensajeHonorariosGestoria("");
     try {
+      const conceptoPpad = `Honorarios de gestoría - ${calculo.tarifa} - ${calculo.entidad}`;
       const respuesta = await axios.post(
-        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/generar`,
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/ppad`,
         {
           importe: calculo.importe,
-          tarifa: calculo.tarifa,
-          concepto: "Honorarios de gestoría",
-          entidad: calculo.entidad,
-          id_expediente: expediente.id_expediente,
+          concepto: conceptoPpad,
+          imputable_a: "Molsan",
         }
       );
       setHonorariosGestoria((actual) => ({ ...actual, ...(respuesta?.data || {}), guardado: true }));
-      setMensajeHonorariosGestoria("Honorarios de gestoría generados y registrados.");
+      setMensajeHonorariosGestoria(
+        respuesta?.data?.ya_existia
+          ? "Estos honorarios ya estaban registrados en PPAD; no se ha creado un duplicado."
+          : "Honorarios de gestoría registrados en PPAD."
+      );
+      await cargarPpad();
     } catch (err) {
       const status = err?.response?.status;
       const detail = err?.response?.data?.detail;
       if (status === 404 || status === 405) {
-        setMensajeHonorariosGestoria(
-          `Importe calculado: ${calculo.importe.toFixed(2).replace(".", ",")} €. El backend todavía no dispone de una ruta compatible para registrar automáticamente este concepto.`
+        setErrorHonorariosGestoria(
+          "No está disponible la ruta de PPAD del backend. No se han registrado los honorarios."
         );
       } else {
         setErrorHonorariosGestoria(
@@ -2946,35 +2952,56 @@ async function descargarPDFCalificacion(defecto) {
   }
 
 
-  function guardarObservacion() {
-    console.log(
-      "OBSERVACION EXPEDIENTE:",
-      {
-        expediente:
-          expediente?.id_expediente,
-        comentario,
-        visiones:
-          visionesComentario,
+  async function guardarObservacion() {
+    const texto = String(comentario || "").trim();
+    if (!texto) {
+      setErrorObservaciones("Escribe un comentario antes de guardarlo.");
+      return;
+    }
+    if (!numeroExpedienteApi) {
+      setErrorObservaciones("No se ha identificado el expediente.");
+      return;
+    }
+    const visiones = Object.entries(visionesComentario)
+      .filter(([, marcado]) => Boolean(marcado))
+      .map(([vision]) => vision);
+    if (!visiones.length) {
+      setErrorObservaciones("Selecciona al menos un destino del comentario.");
+      return;
+    }
+    if (visiones.includes("actividad") && !destinatarioObservacion) {
+      setErrorObservaciones("No hay un empleado destinatario disponible para el comentario interno.");
+      return;
+    }
+    setGuardandoObservacion(true);
+    setErrorObservaciones("");
+    try {
+      const respuesta = await axios.post(
+        `/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones/comentario-ficha`,
+        {
+          comentario: texto,
+          visiones,
+          empleado_destinatario_id: visiones.includes("actividad")
+            ? Number(destinatarioObservacion)
+            : null,
+        }
+      );
+      if (visiones.includes("actividad")) {
+        setExpediente((actual) => ({
+          ...actual,
+          observaciones: respuesta?.data?.observaciones_expediente ?? texto,
+        }));
       }
-    );
-
-    /*
-     * Dejamos la observación inmediatamente visible
-     * en la ficha.
-     *
-     * La persistencia definitiva se conectará al
-     * sistema de observaciones/mensajes.
-     */
-
-    setExpediente(
-      (actual) => ({
-        ...actual,
-        observaciones:
-          comentario,
-      })
-    );
-
-    setMostrarObservaciones(false);
+      await cargarObservacionesExpediente();
+      setMostrarObservaciones(false);
+    } catch (err) {
+      console.error("Error guardando el comentario:", err);
+      setErrorObservaciones(
+        err?.response?.data?.detail || "No se pudo guardar el comentario. No se han confirmado los cambios."
+      );
+    } finally {
+      setGuardandoObservacion(false);
+    }
   }
 
 
@@ -4220,14 +4247,16 @@ const cuantiaFincasParaEnvio =
                       </span>
                     )}
                   </div>
-                  <div className="mt-2 flex justify-end gap-2">
-                    <button type="button" onClick={() => editarObservacionExpediente(observacion)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700 hover:bg-blue-100">
-                      Editar
-                    </button>
-                    <button type="button" onClick={() => eliminarObservacionExpediente(observacion.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100">
-                      Desactivar
-                    </button>
-                  </div>
+                  {Number(observacion.autor_empleado_id) === Number(empleadoSesion?.id) && (
+                    <div className="mt-2 flex justify-end gap-2">
+                      <button type="button" onClick={() => editarObservacionExpediente(observacion)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700 hover:bg-blue-100">
+                        Editar
+                      </button>
+                      <button type="button" onClick={() => eliminarObservacionExpediente(observacion.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100">
+                        Desactivar
+                      </button>
+                    </div>
+                  )}
                 </article>
               ))}
 
@@ -4462,7 +4491,6 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Provincia notario" valor={expediente.provincia} />
                     <Dato campo="Apoderado" valor={expediente.apoderado} />
                      <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
-                    <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
                     <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
                     <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
                   </div>
@@ -4484,7 +4512,13 @@ const cuantiaFincasParaEnvio =
                   <div className="border-t border-slate-100 pt-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Tipo de documento y cuantía</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                     <Dato campo="Escritura firmada" valor={expediente.escritura_firmada === true ? "Sí" : expediente.escritura_firmada === false ? "No" : null} />
+                    <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
+                    <Dato campo="NIF notario" valor={expediente.nif_notario} />
+                    <Dato campo="Población notario" valor={expediente.poblacion} />
+                    <Dato campo="Provincia notario" valor={expediente.provincia} />
+                    <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
+                    <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite ?? expediente.tipo_tramite_notarial ?? expediente.tramite} />
+                    <Dato campo="Escritura firmada" valor={expediente.escritura_firmada === true ? "Sí" : expediente.escritura_firmada === false ? "No" : null} />
                     <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
                     <Dato campo="Protocolo" valor={expediente.protocolo} />
                     <Dato
@@ -6352,17 +6386,19 @@ const cuantiaFincasParaEnvio =
 
             <Boton
               tipo="primary"
-              onClick={
-                guardarObservacion
-              }
+              onClick={guardarObservacion}
+              disabled={guardandoObservacion || (visionesComentario.actividad && !destinatarioObservacion)}
             >
-              💾 Guardar comentario
+              {guardandoObservacion ? "Guardando…" : "💾 Guardar comentario"}
             </Boton>
           </>
         }
       >
 
         <div className="space-y-5">
+          {errorObservaciones && (
+            <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorObservaciones}</p>
+          )}
 
           <CampoFormulario
             label="Comentario"
@@ -6448,7 +6484,15 @@ const cuantiaFincasParaEnvio =
               />
 
             </div>
-
+            {visionesComentario.actividad && (
+              <label className="mt-3 block">
+                <span className="mb-1 block text-xs font-semibold text-slate-600">Empleado destinatario del comentario interno</span>
+                <select value={destinatarioObservacion} onChange={(event) => setDestinatarioObservacion(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                  <option value="">Selecciona un empleado</option>
+                  {empleadosObservaciones.map((empleado) => <option key={empleado.id} value={empleado.id}>{empleado.nombre}</option>)}
+                </select>
+              </label>
+            )}
           </div>
 
         </div>
