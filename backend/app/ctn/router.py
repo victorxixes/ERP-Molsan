@@ -16,7 +16,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Session
 from openpyxl import Workbook
 
-from backend.app.database import Base, get_db
+from backend.app.database import Base, get_db, engine
 from backend.app.ctn.models import Notaria
 from backend.app.ctn.service import obtener_notaria
 from backend.app.ctn.schemas import NotariaResponse
@@ -59,6 +59,16 @@ else:
         ),
     )
 
+@router.on_event("startup")
+def crear_tabla_asociaciones_ctn():
+    """
+    Crea la tabla de asociaciones CTN si todavía no existe.
+    No elimina ni recrea la tabla de notarios.
+    """
+    notarios_asociados_table.create(
+        bind=engine,
+        checkfirst=True,
+    )
 
 # ============================================================
 # HELPERS
