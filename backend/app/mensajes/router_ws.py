@@ -1,461 +1,182 @@
+"""WebSocket de Mensajes con validación de identidad y destinatarios."""
+
+import json
+import re
+from pathlib import Path
+
+import jwt
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
-import json
-import jwt
 
 from backend.app.config import settings
 from backend.app.database import SessionLocal
 from backend.app.empleados.models import Empleado
 from backend.app.mensajes.ws_manager import manager
 
-
-# =========================================================
-# ROUTER WEBSOCKET MENSAJES
-# =========================================================
-
 router = APIRouter()
+CARPETA_MENSAJES = Path("/tmp/mensajes")
+EXTENSIONES_ADJUNTOS = {"pdf", "doc", "docx", "jpg", "jpeg", "png"}
+MAX_TEXTO = 10_000
 
 
-# =========================================================
-# WEBSOCKET
-# =========================================================
+def _empleado_activo(db: Session, empleado_id: int):
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    if not empleado:
+        return None
+    if hasattr(empleado, "activo") and empleado.activo is False:
+        return None
+    return empleado
+
+
+def _archivo_mensaje_valido(valor: object) -> bool:
+    """Acepta únicamente URLs locales de adjuntos existentes, nunca URLs arbitrarias."""
+    if not isinstance(valor, str):
+        return False
+    url = valor.strip()
+    prefijo = "/static/mensajes/"
+    if not url.startswith(prefijo):
+        return False
+    nombre = url[len(prefijo):]
+    # Sin querystring, subdirectorios, barra invertida ni traversal.
+    if not nombre or "/" in nombre or "\\" in nombre or ".." in nombre or "?" in nombre or "#" in nombre:
+        return False
+    if "." not in nombre:
+        return False
+    base, extension = nombre.rsplit(".", 1)
+    if extension.lower() not in EXTENSIONES_ADJUNTOS:
+        return False
+    # Acepta el UUID hexadecimal actual y el UUID con guiones de adjuntos anteriores.
+    if not re.fullmatch(r"[0-9a-fA-F-]{32,36}", base):
+        return False
+    ruta = (CARPETA_MENSAJES / nombre).resolve()
+    try:
+        ruta.relative_to(CARPETA_MENSAJES.resolve())
+    except ValueError:
+        return False
+    return ruta.is_file()
+
 
 @router.websocket("/ws/mensajes/{empleado_id}")
-async def mensajes_ws(
-    websocket: WebSocket,
-    empleado_id: int,
-):
-    """
-    WebSocket de mensajería.
-
-    Soporta:
-
-    - JWT
-    - online
-    - offline
-    - typing
-    - mensajes
-    - archivos
-    - múltiples pestañas
-    """
-
+async def mensajes_ws(websocket: WebSocket, empleado_id: int):
+    """Conexión realtime autenticada: el ID de ruta debe coincidir con el JWT."""
     db: Session = SessionLocal()
-
-    # =====================================================
-    # TOKEN
-    # =====================================================
-
-    token = websocket.query_params.get(
-        "token"
-    )
-
-    if not token:
-
-        await websocket.close(
-            code=4001
-        )
-
-        db.close()
-
-        return
-
-    # =====================================================
-    # VALIDAR JWT
-    # =====================================================
-
+    conectado = False
     try:
-
-        payload = jwt.decode(
-            token,
-            settings.JWT_SECRET,
-            algorithms=[
-                settings.ALGORITHM
-            ],
-        )
-
-        usuario_id = payload.get(
-            "id"
-        )
-
-        if usuario_id is None:
-
-            await websocket.close(
-                code=4002
-            )
-
-            db.close()
-
+        token = websocket.query_params.get("token")
+        if not token:
+            await websocket.close(code=4001, reason="Falta el token")
             return
 
-        usuario_id = int(
-            usuario_id
-        )
+        try:
+            payload = jwt.decode(
+                token,
+                settings.JWT_SECRET,
+                algorithms=[settings.ALGORITHM],
+            )
+            usuario_id = int(payload.get("id"))
+        except (jwt.InvalidTokenError, TypeError, ValueError):
+            await websocket.close(code=4005, reason="Token inválido")
+            return
 
         if usuario_id != empleado_id:
-
-            await websocket.close(
-                code=4003
-            )
-
-            db.close()
-
+            await websocket.close(code=4003, reason="El token no corresponde al empleado")
             return
 
-    except jwt.ExpiredSignatureError:
+        empleado = _empleado_activo(db, empleado_id)
+        if not empleado:
+            await websocket.close(code=4006, reason="Empleado inexistente o inactivo")
+            return
 
-        await websocket.close(
-            code=4004
-        )
+        primera_conexion = await manager.connect(websocket, empleado_id)
+        conectado = True
 
-        db.close()
-
-        return
-
-    except Exception as exc:
-
-        print(
-            "[WS-MSG] Error JWT:",
-            exc,
-            flush=True,
-        )
-
-        await websocket.close(
-            code=4005
-        )
-
-        db.close()
-
-        return
-
-    # =====================================================
-    # COMPROBAR EMPLEADO
-    # =====================================================
-
-    empleado = (
-        db.query(Empleado)
-        .filter(
-            Empleado.id == empleado_id
-        )
-        .first()
-    )
-
-    if not empleado:
-
-        await websocket.close(
-            code=4006
-        )
-
-        db.close()
-
-        return
-
-    # =====================================================
-    # CONECTAR
-    # =====================================================
-
-    try:
-
-        es_primera_conexion = (
-            await manager.connect(
-                websocket,
-                empleado_id,
-            )
-        )
-
-        print(
-            f"[WS-MSG] Conectado: {empleado_id}",
-            flush=True,
-        )
-
-        # =================================================
-        # ONLINE
-        # =================================================
-
-        if es_primera_conexion:
-
-            await manager.broadcast(
-                {
-                    "tipo": "online",
-                    "id": empleado.id,
-                    "nombre": empleado.nombre,
-                    "apellidos": empleado.apellidos,
-                    "foto": empleado.foto,
-                }
-            )
-
-        # =================================================
-        # BUCLE
-        # =================================================
+        if primera_conexion:
+            await manager.broadcast({
+                "tipo": "online",
+                "id": empleado.id,
+                "nombre": empleado.nombre,
+                "apellidos": empleado.apellidos,
+                "foto": empleado.foto,
+            })
 
         while True:
-
             try:
-
-                msg = await websocket.receive_text()
-
+                mensaje_recibido = await websocket.receive_text()
             except WebSocketDisconnect:
-
                 break
 
-            except Exception as exc:
-
-                print(
-                    "[WS-MSG] Error recibiendo "
-                    f"mensaje de {empleado_id}: {exc}",
-                    flush=True,
-                )
-
-                break
-
-            # =================================================
-            # PING
-            # =================================================
-
-            if msg == "ping":
-
-                try:
-
-                    await websocket.send_text(
-                        "pong"
-                    )
-
-                except Exception:
-
-                    pass
-
+            if mensaje_recibido == "ping":
+                await websocket.send_text("pong")
                 continue
-
-            # =================================================
-            # JSON
-            # =================================================
 
             try:
-
-                data = json.loads(
-                    msg
-                )
-
-            except Exception:
-
+                data = json.loads(mensaje_recibido)
+            except (json.JSONDecodeError, TypeError):
+                continue
+            if not isinstance(data, dict):
                 continue
 
-            if not isinstance(
-                data,
-                dict,
-            ):
-
+            tipo = data.get("tipo")
+            if tipo not in {"typing", "mensaje", "archivo"}:
                 continue
 
-            tipo = data.get(
-                "tipo"
-            )
-
-            if not tipo:
-
+            try:
+                destinatario_id = int(data.get("destinatario_id"))
+            except (TypeError, ValueError):
+                continue
+            if destinatario_id <= 0 or destinatario_id == empleado_id:
                 continue
 
-            # =================================================
-            # TYPING
-            # =================================================
+            destinatario = _empleado_activo(db, destinatario_id)
+            if destinatario is None:
+                # No filtrar detalles del destinatario por el socket; simplemente ignorar.
+                continue
 
             if tipo == "typing":
-
-                try:
-
-                    destinatario_id = int(
-                        data.get(
-                            "destinatario_id"
-                        )
-                    )
-
-                except (
-                    TypeError,
-                    ValueError,
-                ):
-
-                    continue
-
-                if destinatario_id <= 0:
-
-                    continue
-
-                await manager.send_to_user(
-                    destinatario_id,
-                    {
-                        "tipo": "typing",
-                        "from": empleado_id,
-                    },
-                )
-
+                await manager.send_to_user(destinatario_id, {
+                    "tipo": "typing",
+                    "from": empleado_id,
+                })
                 continue
 
-            # =================================================
-            # MENSAJE
-            # =================================================
-
             if tipo == "mensaje":
-
-                try:
-
-                    destinatario_id = int(
-                        data.get(
-                            "destinatario_id"
-                        )
-                    )
-
-                except (
-                    TypeError,
-                    ValueError,
-                ):
-
+                contenido = data.get("contenido")
+                if not isinstance(contenido, str):
                     continue
-
-                if destinatario_id <= 0:
-
+                contenido = contenido.strip()
+                if not contenido or len(contenido) > MAX_TEXTO:
                     continue
-
-                contenido = data.get(
-                    "contenido"
-                )
-
-                if contenido is None:
-
-                    continue
-
-                contenido = str(
-                    contenido
-                ).strip()
-
-                if not contenido:
-
-                    continue
-
-                # -------------------------------------------------
-                # GUARDAR + DISTRIBUIR
-                # -------------------------------------------------
-
                 await manager.enviar_mensaje_ws(
                     remitente_id=empleado_id,
                     destinatario_id=destinatario_id,
                     contenido=contenido,
                 )
-
                 continue
 
-            # =================================================
-            # ARCHIVO
-            # =================================================
-
             if tipo == "archivo":
-
-                try:
-
-                    destinatario_id = int(
-                        data.get(
-                            "destinatario_id"
-                        )
-                    )
-
-                except (
-                    TypeError,
-                    ValueError,
-                ):
-
+                archivo_url = data.get("archivo_url")
+                if not _archivo_mensaje_valido(archivo_url):
                     continue
-
-                if destinatario_id <= 0:
-
-                    continue
-
-                archivo_url = data.get(
-                    "archivo_url"
-                )
-
-                if not archivo_url:
-
-                    continue
-
-                archivo_url = str(
-                    archivo_url
-                ).strip()
-
-                if not archivo_url:
-
-                    continue
-
-                # -------------------------------------------------
-                # GUARDAR + DISTRIBUIR
-                # -------------------------------------------------
-
                 await manager.enviar_archivo_ws(
                     remitente_id=empleado_id,
                     destinatario_id=destinatario_id,
-                    archivo_url=archivo_url,
+                    archivo_url=archivo_url.strip(),
                 )
-
-                continue
 
     except WebSocketDisconnect:
-
         pass
-
     except Exception as exc:
-
-        print(
-            "[WS-MSG] Error general "
-            f"empleado {empleado_id}: {exc}",
-            flush=True,
-        )
-
-    finally:
-
-        # =====================================================
-        # DESCONECTAR
-        # =====================================================
-
-        era_ultima_conexion = (
-            manager.disconnect(
-                websocket,
-                empleado_id,
-            )
-        )
-
-        print(
-            f"[WS-MSG] Desconectado: {empleado_id}",
-            flush=True,
-        )
-
-        # =====================================================
-        # OFFLINE
-        # =====================================================
-
-        if era_ultima_conexion:
-
-            try:
-
-                await manager.broadcast(
-                    {
-                        "tipo": "offline",
-                        "id": empleado_id,
-                    }
-                )
-
-            except Exception as exc:
-
-                print(
-                    "[WS-MSG] Error broadcast offline:",
-                    exc,
-                    flush=True,
-                )
-
-        # =====================================================
-        # CERRAR DB
-        # =====================================================
-
+        print(f"[WS-MSG] Error general empleado {empleado_id}: {exc}", flush=True)
         try:
-
-            db.close()
-
+            await websocket.close(code=1011, reason="Error interno del WebSocket")
         except Exception:
-
             pass
+    finally:
+        if conectado:
+            ultima_conexion = manager.disconnect(websocket, empleado_id)
+            if ultima_conexion:
+                try:
+                    await manager.broadcast({"tipo": "offline", "id": empleado_id})
+                except Exception as exc:
+                    print(f"[WS-MSG] Error broadcast offline: {exc}", flush=True)
+        db.close()
