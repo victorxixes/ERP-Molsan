@@ -1,9 +1,12 @@
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
+import mimetypes
+import re
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from sqlalchemy import func
+from fastapi.responses import FileResponse
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import get_current_user
@@ -107,14 +110,12 @@ def enviar(
 
 
 @router.post("/upload")
-async def subir_archivo(file: UploadFile = File(...)):
-    """Sube adjuntos para el flujo realtime existente.
-
-    IMPORTANTE: se mantiene temporalmente compatible con el fetch actual de
-    Mensajes.jsx, que aún no envía Authorization. Por ello esta ruta continúa
-    sin autenticación hasta que se actualice también ese componente. Está
-    limitada por extensión y tamaño, pero no debe considerarse cerrada.
-    """
+async def subir_archivo(
+    file: UploadFile = File(...),
+    usuario_actual: Empleado = Depends(get_current_user),
+):
+    """Sube un adjunto solo para un usuario autenticado."""
+    _usuario_actual_id(usuario_actual)
     nombre_original = Path(file.filename or "").name
     if not nombre_original or nombre_original in {".", ".."}:
         raise HTTPException(status_code=400, detail="No se recibió un nombre de archivo válido")
@@ -141,6 +142,49 @@ async def subir_archivo(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail="No se pudo guardar el archivo") from exc
 
     return {"status": "ok", "archivo_url": f"/static/mensajes/{nombre}"}
+
+
+@router.get("/archivo/{nombre}")
+def descargar_archivo(
+    nombre: str,
+    db: Session = Depends(get_db),
+    usuario_actual: Empleado = Depends(get_current_user),
+):
+    """Descarga un adjunto solo si pertenece a una conversación del usuario."""
+    actual_id = _usuario_actual_id(usuario_actual)
+
+    # UUID hexadecimal (versiones nuevas) o UUID con guiones (legadas).
+    if not re.fullmatch(r"[0-9a-fA-F-]{32,36}\.(pdf|doc|docx|jpg|jpeg|png)", nombre or ""):
+        raise HTTPException(status_code=404, detail="Adjunto no encontrado")
+
+    sufijo = f"/static/mensajes/{nombre}"
+    mensaje_visible = (
+        db.query(Mensaje.id)
+        .filter(
+            Mensaje.archivo_url.endswith(sufijo),
+            or_(
+                Mensaje.remitente_id == actual_id,
+                Mensaje.destinatario_id == actual_id,
+            ),
+        )
+        .first()
+    )
+    if not mensaje_visible:
+        # No revelar si el archivo existe para otro usuario.
+        raise HTTPException(status_code=404, detail="Adjunto no encontrado")
+
+    root = CARPETA_MENSAJES.resolve()
+    ruta = (root / nombre).resolve()
+    if ruta.parent != root or not ruta.is_file():
+        raise HTTPException(status_code=404, detail="El archivo no está disponible")
+
+    mime, _ = mimetypes.guess_type(nombre)
+    return FileResponse(
+        path=str(ruta),
+        media_type=mime or "application/octet-stream",
+        filename=nombre,
+        content_disposition_type="inline",
+    )
 
 
 @router.get("/{usuario_id}/{otro_id}")
