@@ -52,14 +52,26 @@ function normalizarModalidad(valorModalidad) {
     return "Videoconferencia";
   }
 
-  if (
-    texto === "PRESENCIAL" ||
-    texto.includes("PRESENCIAL")
-  ) {
+  if (texto === "PRESENCIAL" || texto.includes("PRESENCIAL")) {
     return "Presencial";
   }
 
   return "Sin clasificar";
+}
+
+function construirDireccionMapa(notario) {
+  const direccion = [
+    notario?.direccion,
+    notario?.cp || notario?.codigo_postal,
+    notario?.municipio,
+    notario?.provincia,
+    notario?.pais,
+  ]
+    .filter((parte) => parte !== null && parte !== undefined)
+    .map((parte) => String(parte).trim())
+    .filter(Boolean);
+
+  return [...new Set(direccion)].join(", ");
 }
 
 export default function ModalCtnDetalle({
@@ -317,6 +329,19 @@ export default function ModalCtnDetalle({
   if (!open || !notaria) return null;
 
   const datosNotario = ficha || notaria;
+  const direccionMapa = construirDireccionMapa(datosNotario);
+
+  const mapaUrl = direccionMapa
+    ? `https://www.google.com/maps?q=${encodeURIComponent(
+        direccionMapa
+      )}&output=embed`
+    : "";
+
+  const enlaceGoogleMaps = direccionMapa
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        direccionMapa
+      )}`
+    : "";
 
   return (
     <div
@@ -371,6 +396,8 @@ export default function ModalCtnDetalle({
             </p>
           )}
 
+          {/* DATOS GENERALES */}
+
           <section className="ctn-modal-seccion">
             <div className="ctn-modal-seccion-titulo">
               <h3>Datos del notario</h3>
@@ -413,7 +440,10 @@ export default function ModalCtnDetalle({
                 valor={datosNotario.provincia}
               />
 
-              <Dato titulo="Videoconferencia" valor={datosNotario.vc} />
+              <Dato
+                titulo="Videoconferencia"
+                valor={datosNotario.vc}
+              />
 
               <Dato
                 titulo="Apoderado"
@@ -430,6 +460,63 @@ export default function ModalCtnDetalle({
               />
             </div>
           </section>
+
+          {/* MAPA DE UBICACIÓN */}
+
+          <section className="ctn-modal-seccion">
+            <div className="ctn-modal-seccion-titulo">
+              <h3>Ubicación del notario</h3>
+
+              {direccionMapa && (
+                <a
+                  className="ctn-mapa-enlace"
+                  href={enlaceGoogleMaps}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Abrir en Google Maps ↗
+                </a>
+              )}
+            </div>
+
+            {direccionMapa ? (
+              <>
+                <p className="ctn-mapa-direccion">
+                  <strong>Dirección:</strong> {direccionMapa}
+                </p>
+
+                <div className="ctn-mapa-contenedor">
+                  <iframe
+                    title={`Mapa de ubicación de ${nombreNotario(
+                      datosNotario
+                    )}`}
+                    src={mapaUrl}
+                    width="100%"
+                    height="320"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                  />
+                </div>
+
+                <p className="ctn-mapa-ayuda">
+                  La ubicación se calcula a partir de la dirección
+                  registrada en la ficha del notario. Comprueba el
+                  resultado en Google Maps si la dirección está
+                  incompleta.
+                </p>
+              </>
+            ) : (
+              <p className="ctn-modal-vacio">
+                No hay una dirección disponible para mostrar el
+                mapa. Completa la dirección, municipio o provincia
+                del notario.
+              </p>
+            )}
+          </section>
+
+          {/* HISTÓRICO DE FIRMAS REALES */}
 
           <section className="ctn-modal-seccion">
             <div className="ctn-modal-seccion-titulo">
@@ -494,7 +581,9 @@ export default function ModalCtnDetalle({
                 >
                   <option value="VC">Videoconferencia</option>
                   <option value="PRESENCIAL">Presencial</option>
-                  <option value="">Todas las modalidades</option>
+                  <option value="">
+                    Todas las modalidades
+                  </option>
                 </select>
               </label>
 
@@ -615,6 +704,8 @@ export default function ModalCtnDetalle({
               Registros mostrados: {listadoFirmas.length}
             </p>
           </section>
+
+          {/* ASOCIACIONES ENTRE NOTARIOS */}
 
           <section className="ctn-modal-seccion">
             <div className="ctn-modal-seccion-titulo">
