@@ -1,14 +1,8 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from backend.app.database import get_db
+"""Router de borrado de roles deshabilitado por seguridad.
 
-router = APIRouter(
-    prefix="/debug",
-    tags=["Debug"]
-)
+La ruta anterior ejecutaba DROP TABLE roles sin autenticación ni confirmación.
+No se exporta ninguna operación destructiva.
+"""
+from fastapi import APIRouter
 
-@router.delete("/drop/roles")
-def drop_roles(db: Session = Depends(get_db)):
-    db.execute("DROP TABLE IF EXISTS roles;")
-    db.commit()
-    return {"estado": "OK", "detalle": "Tabla roles eliminada"}
+router = APIRouter(prefix="/debug", tags=["Operaciones destructivas deshabilitadas"])
