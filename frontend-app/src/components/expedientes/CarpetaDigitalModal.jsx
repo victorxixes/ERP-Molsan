@@ -114,7 +114,7 @@ const CATEGORIAS_OTROS = [
 ];
 
 const BASE = (id) =>
-  `/expedientes/${encodeURIComponent(id)}/carpeta-digital`;
+  "/expedientes/" + encodeURIComponent(id) + "/carpeta-digital";
 
 export default function CarpetaDigitalModal({
   expedienteId,
