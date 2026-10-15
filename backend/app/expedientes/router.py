@@ -54,6 +54,12 @@ def migrar_campos_workflow_actividades(db: Session = Depends(get_db)):
         "impuesto_ajd_itp": "VARCHAR(20)",
         "fecha_vencimiento_asiento": "DATE",
         "escritura_simple_cancelacion": "VARCHAR(500)",
+        # Campos usados por el formulario y el listado de actividades.
+        "ultima_accion": "VARCHAR(500)",
+        "fecha_ultima_accion": "DATE",
+        "sol": "VARCHAR(100)",
+        "cs": "VARCHAR(100)",
+        "ns": "VARCHAR(100)",
     }
     try:
         for nombre, tipo_sql in columnas.items():
@@ -570,6 +576,11 @@ COLUMNAS_EXCEL = [
 
     ("ACTIVIDADACTUAL", "actividad_actual"),
     ("ESTADOACTIVIDAD", "estado_actividad"),
+    ("ULTIMAACCION", "ultima_accion"),
+    ("FECHAULTIMAACCION", "fecha_ultima_accion"),
+    ("SOL", "sol"),
+    ("CS", "cs"),
+    ("NS", "ns"),
     ("IDGESTORIATRAMITE", "id_gestoria_tramite"),
     ("NOMBREGESTORIA", "nombre_gestoria"),
     ("GESTORIA", "gestoria"),
@@ -672,7 +683,21 @@ def aplicar_filtros(
     importeMin=None,
     importeMax=None,
     numeroExpediente=None,
+    nifTitular=None,
+    nombreTitular=None,
+    nifSolicitante=None,
+    nombreSolicitante=None,
+    nifNotario=None,
+    finca=None,
+    registroPropiedad=None,
+    saldoReal=None,
+    saldoDisponible=None,
+    importe=None,
+    observaciones=None,
+    estadoActividad=None,
+    estadoExpediente=None,
 ):
+    """Aplica los mismos filtros a listado y exportación Excel."""
     fecha_inicio = parsear_fecha(fechaInicio, "fechaInicio")
     fecha_fin = parsear_fecha(fechaFin, "fechaFin")
 
@@ -682,74 +707,91 @@ def aplicar_filtros(
             detail="La fecha de inicio no puede ser posterior a la fecha de fin.",
         )
 
-    if (
-        importeMin is not None
-        and importeMax is not None
-        and importeMin > importeMax
-    ):
+    if importeMin is not None and importeMax is not None and importeMin > importeMax:
         raise HTTPException(
             status_code=400,
             detail="El importe mínimo no puede ser superior al importe máximo.",
         )
 
-    # Número de expediente: admite el número completo o una parte.
-    # Se convierte a texto para que funcione tanto si la columna se almacena
-    # como VARCHAR como si el esquema existente la tiene como numérica.
-    if numeroExpediente is not None and str(numeroExpediente).strip():
-        patron_expediente = f"%{str(numeroExpediente).strip()}%"
-        q = q.filter(
-            cast(Expediente.id_expediente, String).ilike(patron_expediente)
-        )
+    def texto(valor):
+        return str(valor).strip() if valor is not None else ""
 
-    if nif and nif.strip():
-        patron = f"%{nif.strip()}%"
-        q = q.filter(
-            or_(
-                Expediente.nif_titular.ilike(patron),
-                Expediente.nif_solicitante.ilike(patron),
-            )
-        )
+    def filtro_texto(columna, valor):
+        patron = f"%{texto(valor)}%"
+        return columna.ilike(patron)
 
-    if actividad and actividad.strip():
-        clave = resolver_actividad(actividad)
+    if numeroExpediente and texto(numeroExpediente):
+        q = q.filter(cast(Expediente.id_expediente, String).ilike(f"%{texto(numeroExpediente)}%"))
 
+    # Filtro legado mantenido para llamadas existentes.
+    if texto(nif):
+        patron = f"%{texto(nif)}%"
+        q = q.filter(or_(Expediente.nif_titular.ilike(patron), Expediente.nif_solicitante.ilike(patron)))
+
+    if texto(nifTitular):
+        q = q.filter(filtro_texto(Expediente.nif_titular, nifTitular))
+    if texto(nombreTitular):
+        q = q.filter(filtro_texto(Expediente.nombre_titular, nombreTitular))
+    if texto(nifSolicitante):
+        q = q.filter(filtro_texto(Expediente.nif_solicitante, nifSolicitante))
+    if texto(nombreSolicitante):
+        q = q.filter(filtro_texto(Expediente.nombre_solicitante, nombreSolicitante))
+
+    if texto(actividad):
+        clave = resolver_actividad(texto(actividad))
         if clave is None:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Actividad no válida: {actividad}",
-            )
-
+            raise HTTPException(status_code=400, detail=f"Actividad no válida: {actividad}")
         condicion = condicion_actividad(clave)
-
         if condicion is not None:
             q = q.filter(condicion)
 
     if fecha_inicio:
         q = q.filter(Expediente.fecha_alta >= fecha_inicio)
-
     if fecha_fin:
         q = q.filter(Expediente.fecha_alta <= fecha_fin)
 
-    if notario and notario.strip():
-        patron = f"%{notario.strip()}%"
-        q = q.filter(
-            or_(
-                Expediente.nombre_notario.ilike(patron),
-                Expediente.nif_notario.ilike(patron),
-                Expediente.notario.ilike(patron),
-            )
-        )
+    if texto(notario):
+        patron = f"%{texto(notario)}%"
+        q = q.filter(or_(Expediente.nombre_notario.ilike(patron), Expediente.nif_notario.ilike(patron), Expediente.notario.ilike(patron)))
+    if texto(nifNotario):
+        q = q.filter(filtro_texto(Expediente.nif_notario, nifNotario))
+    if texto(oficina):
+        q = q.filter(Expediente.oficina.ilike(f"%{texto(oficina)}%"))
 
-    if oficina and oficina.strip():
-        q = q.filter(
-            Expediente.oficina.ilike(f"%{oficina.strip()}%")
+    # Finca y Registro también se buscan en la relación ExpedienteFinca.
+    # Se usa IN/EXISTS lógico para no duplicar expedientes con varias fincas.
+    if texto(finca):
+        patron_finca = f"%{texto(finca)}%"
+        ids_finca = q.session.query(ExpedienteFinca.expediente_id).filter(
+            ExpedienteFinca.finca.ilike(patron_finca)
         )
+        q = q.filter(or_(Expediente.finca.ilike(patron_finca), Expediente.id.in_(ids_finca)))
 
+    if texto(registroPropiedad):
+        patron_registro = f"%{texto(registroPropiedad)}%"
+        ids_registro = q.session.query(ExpedienteFinca.expediente_id).filter(
+            ExpedienteFinca.registro.ilike(patron_registro)
+        )
+        q = q.filter(Expediente.id.in_(ids_registro))
+
+    if saldoReal is not None:
+        q = q.filter(Expediente.saldo_real == saldoReal)
+    if saldoDisponible is not None:
+        q = q.filter(Expediente.saldo_disponible == saldoDisponible)
+    if importe is not None:
+        q = q.filter(Expediente.importe == importe)
     if importeMin is not None:
         q = q.filter(Expediente.importe >= importeMin)
-
     if importeMax is not None:
         q = q.filter(Expediente.importe <= importeMax)
+
+    if texto(observaciones):
+        patron_obs = f"%{texto(observaciones)}%"
+        q = q.filter(Expediente.observaciones.ilike(patron_obs))
+    if texto(estadoActividad):
+        q = q.filter(Expediente.estado_actividad.ilike(f"%{texto(estadoActividad)}%"))
+    if texto(estadoExpediente):
+        q = q.filter(Expediente.estado_expediente.ilike(f"%{texto(estadoExpediente)}%"))
 
     return q
 
@@ -771,6 +813,19 @@ def listado_expedientes(
     importeMin: Optional[float] = None,
     importeMax: Optional[float] = None,
     numeroExpediente: Optional[str] = Query(None, description="Número completo o parcial del expediente"),
+    nifTitular: Optional[str] = None,
+    nombreTitular: Optional[str] = None,
+    nifSolicitante: Optional[str] = None,
+    nombreSolicitante: Optional[str] = None,
+    nifNotario: Optional[str] = None,
+    finca: Optional[str] = None,
+    registroPropiedad: Optional[str] = None,
+    saldoReal: Optional[float] = None,
+    saldoDisponible: Optional[float] = None,
+    importe: Optional[float] = None,
+    observaciones: Optional[str] = None,
+    estadoActividad: Optional[str] = None,
+    estadoExpediente: Optional[str] = None,
     ordenMultiple: Optional[str] = Query(None),
     db: Session = Depends(get_db),
 ):
@@ -785,6 +840,19 @@ def listado_expedientes(
         importeMin=importeMin,
         importeMax=importeMax,
         numeroExpediente=numeroExpediente,
+        nifTitular=nifTitular,
+        nombreTitular=nombreTitular,
+        nifSolicitante=nifSolicitante,
+        nombreSolicitante=nombreSolicitante,
+        nifNotario=nifNotario,
+        finca=finca,
+        registroPropiedad=registroPropiedad,
+        saldoReal=saldoReal,
+        saldoDisponible=saldoDisponible,
+        importe=importe,
+        observaciones=observaciones,
+        estadoActividad=estadoActividad,
+        estadoExpediente=estadoExpediente,
     )
 
     orden_aplicado = False
@@ -906,6 +974,19 @@ def exportar_excel_expedientes(
     importeMin: Optional[float] = None,
     importeMax: Optional[float] = None,
     numeroExpediente: Optional[str] = Query(None, description="Número completo o parcial del expediente"),
+    nifTitular: Optional[str] = None,
+    nombreTitular: Optional[str] = None,
+    nifSolicitante: Optional[str] = None,
+    nombreSolicitante: Optional[str] = None,
+    nifNotario: Optional[str] = None,
+    finca: Optional[str] = None,
+    registroPropiedad: Optional[str] = None,
+    saldoReal: Optional[float] = None,
+    saldoDisponible: Optional[float] = None,
+    importe: Optional[float] = None,
+    observaciones: Optional[str] = None,
+    estadoActividad: Optional[str] = None,
+    estadoExpediente: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
     q = aplicar_filtros(
@@ -919,6 +1000,19 @@ def exportar_excel_expedientes(
         importeMin=importeMin,
         importeMax=importeMax,
         numeroExpediente=numeroExpediente,
+        nifTitular=nifTitular,
+        nombreTitular=nombreTitular,
+        nifSolicitante=nifSolicitante,
+        nombreSolicitante=nombreSolicitante,
+        nifNotario=nifNotario,
+        finca=finca,
+        registroPropiedad=registroPropiedad,
+        saldoReal=saldoReal,
+        saldoDisponible=saldoDisponible,
+        importe=importe,
+        observaciones=observaciones,
+        estadoActividad=estadoActividad,
+        estadoExpediente=estadoExpediente,
     )
 
     expedientes = (
@@ -1742,7 +1836,7 @@ CAMPOS_EDITABLES_ACTIVIDAD = {
     for campo in {
         "fecha_inicio_actividad", "fecha_fin_actividad",
         "ultima_accion", "fecha_ultima_accion", "sol", "cs", "ns",
-        "fecha_envio_notario", "fecha_envio", "apoderado",
+        "fecha_envio_notario", "fecha_envio", "apoderado", "observaciones",
         "tipo_documento", "poblacion", "provincia", "tipo_firma",
         "fecha_prevista_firma", "fecha_firma", "protocolo",
         "asiento_presentacion_libro_diario", "fecha_presentacion",
