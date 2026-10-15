@@ -1,8 +1,10 @@
-from openpyxl import load_workbook
-from sqlalchemy.orm import Session
 from io import BytesIO
 
-from backend.app.ctn.models import Notaria   # ruta correcta
+from openpyxl import load_workbook
+from sqlalchemy.orm import Session
+
+from backend.app.ctn.models import Notaria
+
 
 HEADER_MAP = {
     "Código": "codigo",
@@ -23,72 +25,79 @@ HEADER_MAP = {
     "Observación": "observacion",
 }
 
-def normalizar_vc(vc: str) -> str:
-    if not vc:
-        return "Presencial"
-    vc = vc.strip().upper()
-    if vc == "SI":
+
+def limpiar_texto(valor):
+    if valor is None:
+        return ""
+    resultado = str(valor).strip()
+    return "" if resultado.lower() == "none" else resultado
+
+
+def normalizar_vc(valor) -> str:
+    """Guarda solo los dos valores canónicos que usa el catálogo CTN."""
+    texto = limpiar_texto(valor).casefold().replace("í", "i")
+    compacto = texto.replace(" ", "").replace("-", "").replace("_", "")
+    if compacto in {"si", "s", "vc", "videoconferencia", "videoconference", "true", "1"}:
         return "VideoConferencia"
     return "Presencial"
 
-def limpiar_texto(v):
-    if v is None:
-        return ""
-    v = str(v).strip()
-    if v.lower() == "none":
-        return ""
-    return v
 
 def importar_ctn_desde_excel(db: Session, contenido: bytes) -> int:
-    # ⭐ BORRAR TODO ANTES DE IMPORTAR
-    db.query(Notaria).delete()
-    db.commit()
+    """Importa CTN de forma transaccional.
 
-    wb = load_workbook(BytesIO(contenido))
-    ws = wb.active
+    El archivo se lee y valida íntegramente antes de tocar datos existentes.
+    Si falla cualquier inserción, se revierte también el borrado, preservando el
+    catálogo previo. No se hace commit intermedio.
+    """
+    if not contenido:
+        raise ValueError("El fichero Excel está vacío.")
 
-    filas = list(ws.iter_rows(values_only=True))
+    try:
+        wb = load_workbook(BytesIO(contenido), read_only=True, data_only=True)
+        ws = wb.active
+        filas = ws.iter_rows(values_only=True)
+        headers = None
+        datos_importar = []
 
-    # Buscar cabecera
-    header_row_index = None
-    for i, fila in enumerate(filas):
-        if fila and "Código" in fila:
-            header_row_index = i
-            break
+        for fila in filas:
+            if fila and any(limpiar_texto(celda) == "Código" for celda in fila if celda is not None):
+                headers = [limpiar_texto(celda) for celda in fila]
+                break
+        if headers is None:
+            raise ValueError("No se encontraron cabeceras válidas: falta la columna 'Código'.")
 
-    if header_row_index is None:
-        raise Exception("No se encontraron cabeceras válidas en el Excel")
+        cabeceras_requeridas = {"Código", "Nombre", "Apellidos"}
+        faltan = cabeceras_requeridas.difference(set(headers))
+        if faltan:
+            raise ValueError("Faltan columnas obligatorias: " + ", ".join(sorted(faltan)))
 
-    headers = filas[header_row_index]
-    data_rows = filas[header_row_index + 1:]
+        for fila in filas:
+            if not fila or all(celda is None for celda in fila):
+                continue
+            datos = {}
+            for idx, header in enumerate(headers):
+                campo = HEADER_MAP.get(header)
+                if campo:
+                    valor = fila[idx] if idx < len(fila) else None
+                    datos[campo] = limpiar_texto(valor)
+            # No insertar filas sin código: evita registros huérfanos al importar.
+            if not datos.get("codigo"):
+                continue
+            datos["vc"] = normalizar_vc(datos.get("vc"))
+            for campo in ("apoderado", "apoderado_s", "observacion"):
+                datos[campo] = limpiar_texto(datos.get(campo))
+            datos_importar.append(datos)
+        wb.close()
 
-    insertados = 0
+        if not datos_importar:
+            raise ValueError("El Excel no contiene notarías con código válido; no se han modificado datos.")
 
-    for row in data_rows:
-        if not row or all(cell is None for cell in row):
-            continue
+        # Una sola transacción: el rollback recupera los registros anteriores.
+        db.query(Notaria).delete(synchronize_session=False)
+        db.add_all([Notaria(**datos) for datos in datos_importar])
+        db.commit()
+        return len(datos_importar)
 
-        datos = {}
-
-        for idx, header in enumerate(headers):
-            if header in HEADER_MAP:
-                campo = HEADER_MAP[header]
-                valor = row[idx] if idx < len(row) else None
-                datos[campo] = limpiar_texto(valor)
-
-        # Normalizar VC
-        datos["vc"] = normalizar_vc(datos.get("vc"))
-
-        # Normalizar apoderados
-        datos["apoderado"] = limpiar_texto(datos.get("apoderado"))
-        datos["apoderado_s"] = limpiar_texto(datos.get("apoderado_s"))
-
-        # Normalizar observación
-        datos["observacion"] = limpiar_texto(datos.get("observacion"))
-
-        notaria = Notaria(**datos)
-        db.add(notaria)
-        insertados += 1
-
-    db.commit()
-    return insertados
+    except Exception:
+        db.rollback()
+        raise
