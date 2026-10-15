@@ -1,76 +1,54 @@
 import { useEffect, useRef } from "react";
 import { useNotificacionesStore } from "../store/notificacionesStore";
 
-/**
- * Hook WebSocket de notificaciones — SJ‑2026 Premium
- * - Sin reconexiones infinitas
- * - Sin bucles
- * - Compatible con Render (403 fix)
- * - Estable y seguro
- */
-
+/** WebSocket de notificaciones autenticado con el JWT de sesión. */
 export const useNotificacionesWS = (empleadoId) => {
   const wsRef = useRef(null);
   const addNotificacion = useNotificacionesStore((s) => s.addNotificacion);
 
   useEffect(() => {
-    if (!empleadoId) return;
+    if (!empleadoId || wsRef.current) return undefined;
 
-    // Si ya está conectado, no volver a conectar
-    if (wsRef.current) return;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("WS Notificaciones: no hay token de sesión; no se abre la conexión.");
+      return undefined;
+    }
+
+    const wsBase = String(import.meta.env.VITE_WS_URL || "").replace(/\/$/, "");
+    if (!wsBase) {
+      console.warn("WS Notificaciones: falta VITE_WS_URL.");
+      return undefined;
+    }
 
     let ws;
-
     try {
       ws = new WebSocket(
-        `${import.meta.env.VITE_WS_URL}/ws/notificaciones/${empleadoId}`
+        `${wsBase}/ws/notificaciones/${encodeURIComponent(empleadoId)}?token=${encodeURIComponent(token)}`
       );
     } catch (err) {
-      console.warn("WS Notificaciones: error creando WebSocket:", err);
-      return;
+      console.warn("WS Notificaciones: no se pudo crear la conexión:", err);
+      return undefined;
     }
 
     wsRef.current = ws;
-
-    ws.onopen = () => {
-      console.log("WS Notificaciones conectado");
-    };
-
     ws.onmessage = (event) => {
       if (!event.data) return;
-
-      let data;
       try {
-        data = JSON.parse(event.data);
+        const data = JSON.parse(event.data);
+        if (data?.tipo) addNotificacion(data);
       } catch {
-        return;
+        // Ignorar mensajes que no sean JSON.
       }
-
-      if (!data?.tipo) return;
-
-      // Guardar notificación en Zustand
-      addNotificacion(data);
     };
-
-    ws.onerror = () => {
-      // 🔥 IMPORTANTE: NO reconectar automáticamente
-      // Render bloquea WS con 403 → reconectar crea bucles infinitos
-      console.warn("WS Notificaciones error.");
-    };
-
+    ws.onerror = () => console.warn("WS Notificaciones: error de conexión.");
     ws.onclose = () => {
-      console.log("WS Notificaciones cerrado");
-      wsRef.current = null;
-
-      // 🔥 NO reconectar automáticamente
-      // Render no permite reconexiones agresivas
+      if (wsRef.current === ws) wsRef.current = null;
     };
 
     return () => {
-      try {
-        ws.close();
-      } catch {}
-      wsRef.current = null;
+      if (wsRef.current === ws) wsRef.current = null;
+      try { ws.close(); } catch { /* no-op */ }
     };
   }, [empleadoId, addNotificacion]);
 
