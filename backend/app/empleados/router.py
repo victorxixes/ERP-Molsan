@@ -37,6 +37,27 @@ from backend.app.seguridad.auditoria.service import (
     obtener_auditoria_empleado,
 )
 
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
+
+
+def _permiso_empleados(accion: str):
+    """Exige permiso granular en el módulo Empleados para cada operación."""
+    def comprobar(usuario=Depends(get_current_user)):
+        require_perm_modulo(usuario, "empleados", accion)
+        return usuario
+    comprobar.__name__ = f"permiso_empleados_{accion}"
+    return comprobar
+
+
+def _permiso_seguridad(accion: str):
+    """Reserva operaciones sensibles a usuarios autorizados por Seguridad."""
+    def comprobar(usuario=Depends(get_current_user)):
+        require_perm_modulo(usuario, "seguridad", accion)
+        return usuario
+    comprobar.__name__ = f"permiso_seguridad_{accion}"
+    return comprobar
+
 
 # =========================================================
 # ROUTER
@@ -74,6 +95,7 @@ def search_empleados(
     q: str | None = None,
     activo: bool | None = None,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_empleados("ver")),
 ):
 
     return listar_empleados(
@@ -118,6 +140,7 @@ def listar(
     q: str | None = None,
     activo: bool | None = None,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_empleados("ver")),
 ):
 
     return listar_empleados(
@@ -135,6 +158,7 @@ def listar(
 def obtener(
     empleado_id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_empleados("ver")),
 ):
 
     empleado = obtener_empleado(
@@ -160,6 +184,7 @@ def obtener(
 def ficha(
     empleado_id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_empleados("ver")),
 ):
 
     empleado = obtener_empleado_ficha(
@@ -193,6 +218,7 @@ def ficha(
 def crear(
     data: EmpleadoCreate,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_empleados("crear")),
 ):
 
     try:
@@ -221,6 +247,7 @@ def editar(
     empleado_id: int,
     data: EmpleadoUpdate,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_empleados("editar")),
 ):
 
     empleado = editar_empleado(
@@ -247,6 +274,7 @@ def editar(
 def eliminar(
     empleado_id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_empleados("eliminar")),
 ):
 
     resultado = eliminar_empleado(
@@ -275,6 +303,7 @@ def subir_foto(
     empleado_id: int,
     foto: UploadFile = File(...),
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_empleados("editar")),
 ):
 
     # -----------------------------------------------------
@@ -529,6 +558,7 @@ def subir_foto(
 def obtener_foto(
     empleado_id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_empleados("ver")),
 ):
 
     empleado = obtener_empleado(
@@ -598,6 +628,7 @@ def actualizar_modulos(
     empleado_id: int,
     modulos_visibles_list: list,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_empleados("editar")),
 ):
 
     empleado = actualizar_modulos_visibles(
@@ -625,6 +656,7 @@ def actualizar_permisos(
     empleado_id: int,
     permisos_modulo_dict: dict,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_seguridad("editar")),
 ):
 
     empleado = actualizar_permisos_modulo(
@@ -651,6 +683,7 @@ def actualizar_permisos(
 def resetear_password(
     empleado_id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_seguridad("editar")),
 ):
 
     resultado = reset_password(
