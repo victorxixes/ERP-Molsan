@@ -934,7 +934,7 @@ def inicializar_tabla_historial_defectos():
         print("[DEFECTOS] Tabla de historial disponible.", flush=True)
     except Exception as exc:
         print("[DEFECTOS] ERROR creando tabla de historial:", repr(exc), flush=True)
-import axios from "./axios";
+
 
 // ============================================================
 // DEFECTOS DE EXPEDIENTES
