@@ -19,6 +19,7 @@ import {
 } from "../../store/seguridadStore";
 
 import MODULOS_ERP from "../../config/modulos";
+import AuthenticatedPhoto from "../AuthenticatedPhoto";
 
 // ============================================================
 // PERMISOS ESTÁNDAR DEL ERP
@@ -2022,7 +2023,7 @@ const permisosDisponibles =
 
                 {foto ? (
 
-                  <img
+                  <AuthenticatedPhoto
                     src={foto}
                     alt={
                       nombreEmpleado
@@ -2597,7 +2598,7 @@ const permisosDisponibles =
 
                           {foto ? (
 
-                            <img
+                            <AuthenticatedPhoto
                               src={foto}
                               alt={
                                 nombreEmpleado
