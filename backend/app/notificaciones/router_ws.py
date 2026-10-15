@@ -1,5 +1,9 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from threading import Lock
+
+import jwt
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
+from backend.app.config import settings
 
 router_notif = APIRouter(prefix="/ws", tags=["notificaciones_ws"])
 
@@ -7,67 +11,66 @@ router_notif = APIRouter(prefix="/ws", tags=["notificaciones_ws"])
 conexiones = {}
 lock = Lock()
 
+
 @router_notif.get("/notificaciones/test")
 async def notif_test():
     return {"status": "ok"}
-    
+
+
 async def send_notif_to_user(empleado_id: int, data: dict):
-    """Enviar notificación a un usuario (todas sus pestañas)."""
+    """Enviar notificación solo a las pestañas del usuario indicado."""
     with lock:
-        lista = conexiones.get(empleado_id, [])
+        lista = list(conexiones.get(empleado_id, []))
 
     muertos = []
-
     for ws in lista:
         try:
             await ws.send_json(data)
         except Exception:
             muertos.append(ws)
 
-    # Limpieza
     if muertos:
         with lock:
-            for ws in muertos:
-                try:
-                    lista.remove(ws)
-                except:
-                    pass
+            conexiones[empleado_id] = [
+                ws for ws in conexiones.get(empleado_id, []) if ws not in muertos
+            ]
+            if not conexiones[empleado_id]:
+                conexiones.pop(empleado_id, None)
 
 
 @router_notif.websocket("/notificaciones/{empleado_id}")
 async def ws_notificaciones(websocket: WebSocket, empleado_id: int):
-    # 🔥 Render exige aceptar la conexión ANTES de cualquier validación
+    # No aceptar ni registrar al cliente hasta autenticar la identidad.
+    token = websocket.query_params.get("token", "").strip()
+    if not token:
+        await websocket.close(code=4401, reason="Token requerido")
+        return
+
+    try:
+        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM])
+        token_id = int(payload.get("id"))
+    except (jwt.InvalidTokenError, TypeError, ValueError):
+        await websocket.close(code=4401, reason="Token no válido")
+        return
+
+    if token_id != empleado_id:
+        await websocket.close(code=4403, reason="El token no corresponde al empleado solicitado")
+        return
+
     await websocket.accept()
-
-    # Registrar conexión
     with lock:
-        if empleado_id not in conexiones:
-            conexiones[empleado_id] = []
-        conexiones[empleado_id].append(websocket)
-
-    print(f"[WS-NOTIF] Conectado {empleado_id}")
+        conexiones.setdefault(empleado_id, []).append(websocket)
 
     try:
         while True:
-            # 🔥 Render envía pings automáticos → ignorarlos
-            try:
-                msg = await websocket.receive_text()
-            except WebSocketDisconnect:
-                break
-            except Exception:
-                continue
-
-            if msg == "ping":
-                continue
-
-            # No procesamos nada, este WS solo recibe notificaciones
-            continue
-
+            # Se recibe texto para detectar desconexión. No se procesan comandos del cliente.
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        pass
     finally:
-        print(f"[WS-NOTIF] Desconectado {empleado_id}")
-
         with lock:
-            try:
-                conexiones[empleado_id].remove(websocket)
-            except:
-                pass
+            actuales = conexiones.get(empleado_id, [])
+            if websocket in actuales:
+                actuales.remove(websocket)
+            if not actuales:
+                conexiones.pop(empleado_id, None)
