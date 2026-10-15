@@ -86,10 +86,94 @@ function normalizar(valor) {
 
 function resolverBloque(actividadId) {
   const valor = normalizar(actividadId);
+
   if (!valor) return null;
-  if (valor.includes("documentacion-previa")) return BLOQUES[0];
-  if (valor.includes("sede-notarial")) return BLOQUES[1];
-  return BLOQUES.find((bloque) => valor === bloque.id || valor.includes(bloque.id)) || null;
+
+  const equivalencias = [
+    {
+      bloque: "documentacion-previa",
+      alias: [
+        "documentacion-previa",
+        "documentacion previa",
+        "documentación previa",
+        "documentos previos",
+      ],
+    },
+    {
+      bloque: "sede-notarial",
+      alias: [
+        "sede-notarial",
+        "sede notarial",
+        "firma notarial",
+        "sede-notarial-protocolo",
+        "sede notarial con protocolo",
+      ],
+    },
+    {
+      bloque: "liquidacion-impuestos",
+      alias: [
+        "liquidacion-impuestos",
+        "liquidacion de impuestos",
+        "liquidación de impuestos",
+      ],
+    },
+    {
+      bloque: "tramitacion-inscripcion",
+      alias: [
+        "tramitacion-inscripcion",
+        "tramitacion inscripcion",
+        "tramitación inscripción",
+        "tramitacion registral",
+      ],
+    },
+    {
+      bloque: "defectos-registrales",
+      alias: [
+        "defectos-registrales",
+        "defectos registrales",
+        "defecto registral",
+        "subsanacion del defecto",
+      ],
+    },
+    {
+      bloque: "facturacion-cierre",
+      alias: [
+        "facturacion-cierre",
+        "facturacion y cierre",
+        "facturación y cierre",
+        "cierre de expediente",
+      ],
+    },
+    {
+      bloque: "gestion-economica",
+      alias: [
+        "gestion-economica",
+        "gestion economica",
+        "gestión económica",
+      ],
+    },
+  ];
+
+  for (const equivalencia of equivalencias) {
+    const coincide = equivalencia.alias.some((alias) => {
+      const normalizado = normalizar(alias);
+
+      return (
+        valor === normalizado ||
+        valor.includes(normalizado)
+      );
+    });
+
+    if (coincide) {
+      return BLOQUES.find(
+        (bloque) => bloque.id === equivalencia.bloque
+      ) || null;
+    }
+  }
+
+  return BLOQUES.find(
+    (bloque) => valor === bloque.id
+  ) || null;
 }
 
 export default function CarpetaDigitalModal({
