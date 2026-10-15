@@ -976,4 +976,343 @@
   .ctn-btn {
     transition: none;
   }
+  
+/* =========================================================
+   CTN — ADAPTACIÓN VISUAL AL MÓDULO EXPEDIENTES
+   Añadir al FINAL de src/css/CtnListadoPage.css
+   ========================================================= */
+
+.ctn-listado-page {
+  --ctn-bg: #eef3f9;
+  --ctn-panel: #ffffff;
+  --ctn-border: #d4e0ef;
+  --ctn-text: #1c2d49;
+  --ctn-muted: #71839e;
+  --ctn-primary: #3158b5;
+  --ctn-primary-dark: #254795;
+  --ctn-accent: #d4e1f2;
+
+  color: #1c2d49;
+  background: #eef3f9;
+}
+
+/* Contenedor general de la ficha */
+.ctn-modal-panel {
+  background: #eef3f9;
+  color: #1c2d49;
+  border: 1px solid #d4e0ef;
+  border-radius: 13px;
+  box-shadow: 0 12px 38px rgba(32, 56, 91, 0.18);
+}
+
+/* ENCABEZADO BLANCO, como el resto del ERP */
+.ctn-modal-header {
+  color: #1c2d49;
+  background: #ffffff;
+  border-bottom: 1px solid #d4e0ef;
+  padding: 20px 24px;
+}
+
+.ctn-modal-header h2 {
+  color: #1c2d49;
+  font-size: 22px;
+  font-weight: 750;
+  letter-spacing: -0.35px;
+}
+
+.ctn-modal-header p {
+  color: #71839e;
+}
+
+.ctn-modal-eyebrow {
+  color: #3158b5;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+/* Botón de cerrar sobre el encabezado blanco */
+.ctn-modal-cerrar {
+  color: #3158b5;
+  background: #f1f5fc;
+  border: 1px solid #d4e0ef;
+  border-radius: 7px;
+}
+
+.ctn-modal-cerrar:hover {
+  color: #ffffff;
+  background: #3158b5;
+  border-color: #3158b5;
+}
+
+/* Interior de la ficha */
+.ctn-modal-contenido {
+  background: #eef3f9;
+  padding: 16px 18px;
+}
+
+.ctn-modal-seccion {
+  background: #ffffff;
+  border: 1px solid #d4e0ef;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(30, 55, 90, 0.035);
+  padding: 16px;
+}
+
+.ctn-modal-seccion-titulo {
+  border-bottom: 1px solid #e0e8f3;
+}
+
+.ctn-modal-seccion-titulo h3 {
+  color: #1c2d49;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.ctn-modal-seccion-titulo > span {
+  color: #607795;
+  background: #f0f4fa;
+  border: 1px solid #dce5f1;
+  border-radius: 5px;
+}
+
+/* Datos generales del notario */
+.ctn-modal-dato {
+  background: #f6f8fc;
+  border: 1px solid #e5ebf4;
+  border-radius: 7px;
+  min-height: 60px;
+  padding: 10px;
+}
+
+.ctn-modal-dato > span {
+  color: #71839e;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.ctn-modal-dato > strong {
+  color: #334763;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+/* Resumen de firmas: tarjetas limpias y uniformes */
+.ctn-modal-resumen-firmas > div {
+  background: #ffffff;
+  border: 1px solid #d9e4f2;
+  border-radius: 9px;
+  box-shadow: none;
+}
+
+.ctn-modal-resumen-firmas > div > span {
+  color: #657995;
+  font-size: 10px;
+}
+
+.ctn-modal-resumen-firmas > div > strong {
+  color: #3158b5;
+  font-size: 24px;
+}
+
+.ctn-modal-resumen-firmas > div > button {
+  color: #3158b5;
+}
+
+.ctn-modal-resumen-firmas > div > small {
+  color: #8493a8;
+}
+
+/* Inputs y selectores del modal */
+.ctn-modal-overlay input,
+.ctn-modal-overlay select {
+  min-height: 36px;
+  color: #334763;
+  background: #ffffff;
+  border: 1px solid #d2deef;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.ctn-modal-overlay input:focus,
+.ctn-modal-overlay select:focus {
+  outline: none;
+  border-color: #6487d8;
+  box-shadow: 0 0 0 3px rgba(49, 88, 181, 0.09);
+}
+
+/* Tablas del histórico y de notarios asociados */
+.ctn-modal-tabla-scroll {
+  border: 1px solid #d9e3f0;
+  border-radius: 7px;
+}
+
+.ctn-modal-tabla {
+  background: #ffffff;
+  font-size: 11px;
+}
+
+.ctn-modal-tabla th {
+  color: #ffffff;
+  background: #3158b5;
+  border-bottom: 1px solid #294c9c;
+  font-size: 10px;
+  font-weight: 750;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 11px 12px;
+}
+
+.ctn-modal-tabla td {
+  color: #3d4d63;
+  border-bottom: 1px solid #dce5f1;
+  padding: 11px 12px;
+}
+
+.ctn-modal-tabla tbody tr:hover td {
+  background: #f3f7ff;
+}
+
+.ctn-modal-tabla td strong {
+  color: #243955;
+}
+
+/* Mensajes sin resultados */
+.ctn-modal-vacio {
+  color: #7c8da6;
+  background: #f8fafd;
+  border: 1px dashed #d4e0ef;
+  border-radius: 7px;
+  font-size: 11px;
+}
+
+.ctn-modal-pie-tabla {
+  color: #8191a8;
+}
+
+/* Búsqueda de notarios asociados */
+.ctn-modal-resultados {
+  background: #f4f7fc;
+  border: 1px solid #dce5f1;
+  border-radius: 8px;
+}
+
+.ctn-modal-resultados > div {
+  background: #ffffff;
+  border: 1px solid #e0e8f3;
+  border-radius: 6px;
+}
+
+.ctn-modal-resultados strong {
+  color: #263b55;
+}
+
+.ctn-modal-resultados small {
+  color: #8191a8;
+}
+
+/* Botones con el azul usado en Expedientes */
+.ctn-btn-primary {
+  color: #ffffff;
+  background: #3158b5;
+  border-color: #3158b5;
+  border-radius: 7px;
+}
+
+.ctn-btn-primary:hover:not(:disabled) {
+  background: #254795;
+  border-color: #254795;
+}
+
+.ctn-btn-secondary {
+  color: #3158b5;
+  background: #ffffff;
+  border-color: #d2deef;
+  border-radius: 7px;
+}
+
+.ctn-btn-secondary:hover:not(:disabled) {
+  background: #f3f7ff;
+  border-color: #b8c9e8;
+}
+
+.ctn-btn-danger {
+  color: #a51e2c;
+  background: #fff5f5;
+  border-color: #efc8cd;
+  border-radius: 7px;
+}
+
+.ctn-btn-excel {
+  color: #ffffff;
+  background: #188653;
+  border-color: #188653;
+  border-radius: 7px;
+}
+
+/* Pie fijo del modal */
+.ctn-modal-footer {
+  background: #ffffff;
+  border-top: 1px solid #dce5f1;
+  padding: 12px 18px;
+}
+
+.ctn-modal-footer > span {
+  color: #8292a8;
+}
+
+/* Listado CTN: filtros, tabla y paginación */
+.ctn-filtros,
+.ctn-tabla-contenedor {
+  background: #ffffff;
+  border: 1px solid #d4e0ef;
+  border-radius: 11px;
+  box-shadow: 0 1px 3px rgba(30, 55, 90, 0.035);
+}
+
+.ctn-tabla-cabecera {
+  background: #ffffff;
+  border-bottom: 1px solid #dce5f1;
+}
+
+.ctn-tabla th {
+  color: #ffffff;
+  background: #3158b5;
+  border-bottom: 1px solid #294c9c;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.ctn-tabla td {
+  color: #3d4d63;
+  border-bottom: 1px solid #dce5f1;
+}
+
+.ctn-tabla tbody tr:hover td {
+  background: #f3f7ff;
+}
+
+.ctn-paginacion {
+  background: #ffffff;
+  border-top: 1px solid #dce5f1;
+}
+
+/* Adaptación a móvil */
+@media (max-width: 760px) {
+  .ctn-modal-header {
+    padding: 15px;
+  }
+
+  .ctn-modal-header h2 {
+    font-size: 18px;
+  }
+
+  .ctn-modal-contenido {
+    padding: 10px;
+  }
+
+  .ctn-modal-seccion {
+    padding: 12px;
+  }
+}
 }
