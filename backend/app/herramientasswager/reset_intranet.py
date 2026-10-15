@@ -1,31 +1,12 @@
+"""Restablecimiento destructivo de Intranet deshabilitado por seguridad.
+
+La antigua ruta eliminaba dos tablas con CASCADE y después recreaba metadatos.
+Se conserva el objeto router porque main.py lo importa, pero no se registra
+ningún endpoint hasta diseñar una herramienta administrativa autenticada.
+"""
 from fastapi import APIRouter
-from sqlalchemy import text
-from backend.app.database import Base, engine
 
 router = APIRouter(
     prefix="/utilidades",
-    tags=["Utilidades"]
+    tags=["Restablecimiento deshabilitado"],
 )
-
-@router.post("/reset_intranet")
-def reset_intranet():
-    try:
-        with engine.connect() as conn:
-            # BORRAR SOLO LAS TABLAS DE INTRANET
-            conn.execute(text("DROP TABLE IF EXISTS intranet_documentos CASCADE;"))
-            conn.execute(text("DROP TABLE IF EXISTS intranet_noticias CASCADE;"))
-            conn.commit()
-
-        # RECREAR TABLAS SEGÚN LOS MODELOS ACTUALES
-        Base.metadata.create_all(bind=engine)
-
-        return {
-            "status": "ok",
-            "message": "Tablas de Intranet (documentos y noticias) borradas y recreadas correctamente."
-        }
-
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": str(e)
-        }
