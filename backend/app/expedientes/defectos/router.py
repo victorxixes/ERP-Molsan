@@ -1,5 +1,6 @@
 
 from datetime import date, datetime
+import json
 from io import BytesIO
 from typing import Optional
 from urllib.parse import quote
@@ -21,6 +22,7 @@ from backend.app.expedientes.defectos.models import (
     DefectoSubtipo,
     ExpedienteDefecto,
 )
+from backend.app.expedientes.defectos.historial_model import HistorialDefecto
 from backend.app.tipos_carga_hipotecaria.models import TipoCargaHipotecaria
 
 
@@ -672,6 +674,50 @@ def desactivar_subtipo_defecto(
 # DEFECTOS — LISTAR POR EXPEDIENTE
 # ============================================================
 
+def registrar_evento_defecto(db, expediente, defecto, accion, resumen, cambios=None):
+    """Añade una entrada de auditoría en la misma transacción del cambio."""
+    evento = HistorialDefecto(
+        expediente_id_externo=str(getattr(expediente, "id_expediente", "")),
+        expediente_pk=getattr(expediente, "id", None),
+        defecto_id=getattr(defecto, "id", None) if defecto is not None else None,
+        accion=accion,
+        resumen=resumen[:500],
+        cambios_json=json.dumps(cambios or {}, ensure_ascii=False, default=str),
+    )
+    db.add(evento)
+    return evento
+
+
+@router.get("/{id_expediente}/defectos/historial")
+def listar_historial_defectos(id_expediente: str, limite: int = 100, db: Session = Depends(get_db)):
+    expediente = obtener_expediente(db, id_expediente)
+    limite = max(1, min(int(limite), 500))
+    eventos = (
+        db.query(HistorialDefecto)
+        .filter(HistorialDefecto.expediente_id_externo == str(expediente.id_expediente))
+        .order_by(HistorialDefecto.creado_en.desc(), HistorialDefecto.id.desc())
+        .limit(limite)
+        .all()
+    )
+    resultado = []
+    for evento in eventos:
+        try:
+            cambios = json.loads(evento.cambios_json or "{}")
+        except (TypeError, ValueError):
+            cambios = {}
+        resultado.append({
+            "id": evento.id,
+            "id_expediente": evento.expediente_id_externo,
+            "defecto_id": evento.defecto_id,
+            "accion": evento.accion,
+            "resumen": evento.resumen,
+            "cambios": cambios,
+            "usuario": evento.usuario,
+            "creado_en": evento.creado_en.isoformat() if evento.creado_en else None,
+        })
+    return {"id_expediente": str(expediente.id_expediente), "total": len(resultado), "historial": resultado}
+
+
 @router.get("/{id_expediente}/defectos")
 def listar_defectos_expediente(
     id_expediente: str,
@@ -773,6 +819,11 @@ def crear_defecto(
         db.flush()
 
         sincronizar_campos_compatibilidad(db, expediente)
+        registrar_evento_defecto(
+            db, expediente, defecto, "CREADO",
+            "Defecto registral creado",
+            {k: valores.get(k) for k in ("documento", "motivo_defecto", "subtipo_defecto", "fecha_notificacion_registro", "fecha_vencimiento_presentacion") if valores.get(k) is not None},
+        )
 
         db.commit()
         db.refresh(defecto)
@@ -819,6 +870,10 @@ def actualizar_defecto(
     )
 
     valores = datos.dict(exclude_unset=True)
+    valores_anteriores = {
+        campo: getattr(defecto, campo, None)
+        for campo in valores
+    }
 
     try:
         if "tipo_carga_hipotecaria_id" in valores:
@@ -866,6 +921,16 @@ def actualizar_defecto(
         db.flush()
 
         sincronizar_campos_compatibilidad(db, expediente)
+        cambios = {}
+        for campo, anterior in valores_anteriores.items():
+            nuevo = getattr(defecto, campo, None)
+            if str(anterior) != str(nuevo):
+                cambios[campo] = {"antes": anterior, "despues": nuevo}
+        if cambios:
+            registrar_evento_defecto(
+                db, expediente, defecto, "ACTUALIZADO",
+                "Datos del defecto registral actualizados", cambios,
+            )
 
         db.commit()
         db.refresh(defecto)
@@ -918,6 +983,11 @@ def registrar_subsanacion_defecto(
         db.flush()
 
         sincronizar_campos_compatibilidad(db, expediente)
+        registrar_evento_defecto(
+            db, expediente, defecto, "SUBSANADO",
+            "Subsanación presentada y defecto cerrado",
+            {"fecha_entrada_subsanacion": fecha_entrada.isoformat(), "fecha_cierre_defecto": fecha_entrada.isoformat()},
+        )
 
         db.commit()
         db.refresh(defecto)
@@ -1015,6 +1085,11 @@ async def subir_calificacion_defecto(
             if campo in columnas_modelo:
                 setattr(defecto, campo, valor)
 
+        registrar_evento_defecto(
+            db, expediente, defecto, "PDF_CALIFICACION",
+            "PDF de calificación registral cargado",
+            {"nombre": nombre, "tamano": len(contenido)},
+        )
         db.commit()
         db.refresh(defecto)
         db.refresh(expediente)
