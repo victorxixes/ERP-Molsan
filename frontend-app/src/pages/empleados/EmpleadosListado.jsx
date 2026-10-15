@@ -5,6 +5,8 @@ import {
   useMemo,
 } from "react";
 
+import AuthenticatedPhoto from "../../components/AuthenticatedPhoto";
+
 import {
   buscarEmpleados,
 } from "../../api/empleados";
@@ -1393,7 +1395,7 @@ export default function EmpleadosListado({
                         bg-[var(--erp-surface-soft)]
                       ">
 
-                        <img
+                        <AuthenticatedPhoto
                           src={foto}
                           alt="Foto empleado"
                           className="
