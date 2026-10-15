@@ -38,8 +38,10 @@ CATEGORIAS = {
     # Gestión económica
     "Factura notarial",
     "Factura Registral",
+    "Factura impuestos",
     "Honorarios gestoría",
     "Otros pagos",
+    "Otros documentos económicos",
     # Defectos registrales
     "Defecto registral",
     "Subsanación del defecto",
@@ -47,6 +49,8 @@ CATEGORIAS = {
     "Hoja de Inscripción",
     # Facturación y cierre
     "Escritura digital final",
+    "Documento de inscripción",
+    "Expediente digital completo",
     # Documentación general
     "Mails de la Oficina",
     "Otra documentación",
