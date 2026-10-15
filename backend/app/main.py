@@ -410,6 +410,10 @@ from backend.app.informes.router import (
     router as informes_router,
 )
 
+from backend.app.informes.firmas_notarios_router import (
+    router as informes_firmas_notarios_router,
+)
+
 from backend.app.Utilidades.importadores.router_absis import (
     router as router_absis,
 )
@@ -550,6 +554,7 @@ app.include_router(defectos_router,prefix="/api",)
 # UTILIDADES
 app.include_router(utilidades_router, prefix="/api")
 app.include_router(informes_router, prefix="/api")
+app.include_router(informes_firmas_notarios_router, prefix="/api")
 app.include_router(router_absis, prefix="/api")
 
 # TIPOS DE CARGA HIPOTECARIA
