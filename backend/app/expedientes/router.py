@@ -697,6 +697,7 @@ def aplicar_filtros(
     observaciones=None,
     estadoActividad=None,
     estadoExpediente=None,
+    actividadActual=None,
 ):
     """Aplica los mismos filtros a listado y exportación Excel."""
     fecha_inicio = parsear_fecha(fechaInicio, "fechaInicio")
@@ -791,6 +792,10 @@ def aplicar_filtros(
         q = q.filter(Expediente.observaciones.ilike(patron_obs))
     if texto(estadoActividad):
         q = q.filter(Expediente.estado_actividad.ilike(f"%{texto(estadoActividad)}%"))
+    # Actividad actual es un campo persistido distinto de la actividad derivada
+    # por fechas que se conserva en el parámetro legado `actividad`.
+    if texto(actividadActual):
+        q = q.filter(Expediente.actividad_actual.ilike(f"%{texto(actividadActual)}%"))
     if texto(estadoExpediente):
         q = q.filter(Expediente.estado_expediente.ilike(f"%{texto(estadoExpediente)}%"))
 
@@ -827,6 +832,7 @@ def listado_expedientes(
     observaciones: Optional[str] = None,
     estadoActividad: Optional[str] = None,
     estadoExpediente: Optional[str] = None,
+    actividadActual: Optional[str] = Query(None, description="Filtra por el valor almacenado en actividad_actual"),
     ordenMultiple: Optional[str] = Query(None),
     db: Session = Depends(get_db),
 ):
@@ -854,6 +860,7 @@ def listado_expedientes(
         observaciones=observaciones,
         estadoActividad=estadoActividad,
         estadoExpediente=estadoExpediente,
+        actividadActual=actividadActual,
     )
 
     orden_aplicado = False
@@ -988,6 +995,7 @@ def exportar_excel_expedientes(
     observaciones: Optional[str] = None,
     estadoActividad: Optional[str] = None,
     estadoExpediente: Optional[str] = None,
+    actividadActual: Optional[str] = Query(None, description="Filtra por el valor almacenado en actividad_actual"),
     db: Session = Depends(get_db),
 ):
     q = aplicar_filtros(
@@ -1014,6 +1022,7 @@ def exportar_excel_expedientes(
         observaciones=observaciones,
         estadoActividad=estadoActividad,
         estadoExpediente=estadoExpediente,
+        actividadActual=actividadActual,
     )
 
     expedientes = (
