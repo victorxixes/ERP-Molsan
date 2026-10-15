@@ -1,11 +1,14 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy.orm import Session
-from backend.app.database import get_db
+"""Aplicación FastAPI de reset de base de datos deshabilitada.
 
-app = FastAPI()
+La versión anterior publicaba POST /drop-roles y ejecutaba DROP TABLE.
+Se conserva el objeto app para no romper herramientas que importen este módulo,
+pero la aplicación no expone operaciones de borrado.
+"""
+from fastapi import FastAPI
 
-@app.post("/drop-roles")
-def drop_roles(db: Session = Depends(get_db)):
-    db.execute("DROP TABLE IF EXISTS roles CASCADE;")
-    db.commit()
-    return {"estado": "OK", "tabla_borrada": "roles"}
+app = FastAPI(
+    title="Operaciones de base de datos deshabilitadas",
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+)
