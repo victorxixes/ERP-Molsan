@@ -927,5 +927,14 @@ def instrumentar_inicio_aplicacion():
         flush=True,
     )
 
+@app.on_event("startup")
+def inicializar_tabla_historial_defectos():
+    try:
+        HistorialDefecto.__table__.create(bind=engine, checkfirst=True)
+        print("[DEFECTOS] Tabla de historial disponible.", flush=True)
+    except Exception as exc:
+        print("[DEFECTOS] ERROR creando tabla de historial:", repr(exc), flush=True)
+
+
 
 instrumentar_inicio_aplicacion()
