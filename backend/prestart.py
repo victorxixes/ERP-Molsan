@@ -1,33 +1,17 @@
-import sys
-import os
-from sqlalchemy import text
+"""Hook prestart seguro: no modifica ni recrea tablas automáticamente.
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))      # /app/backend
-APP_DIR = os.path.join(BASE_DIR, "app")                    # /app/backend/app
+La versión anterior ejecutaba DROP TABLE agenda_citas CASCADE al ejecutarse,
+con riesgo de pérdida de citas y de objetos relacionados. Las migraciones de
+agenda deben ser idempotentes y revisadas; este hook queda como no-op seguro.
+"""
 
-sys.path.append(BASE_DIR)
-sys.path.append(APP_DIR)
+def main() -> None:
+    print(
+        "PRESTART seguro: no se han modificado tablas. "
+        "Ejecuta migraciones explícitas y revisadas para cambios de esquema.",
+        flush=True,
+    )
 
-from backend.app.database import engine
 
-
-print(">>> Ejecutando prestart.py para recrear agenda_citas...")
-
-with engine.begin() as conn:
-    conn.execute(text("DROP TABLE IF EXISTS agenda_citas CASCADE;"))
-    conn.execute(text("""
-        CREATE TABLE agenda_citas (
-            id SERIAL PRIMARY KEY,
-            fecha DATE NOT NULL,
-            hora_inicio TIME NOT NULL,
-            hora_fin TIME NOT NULL,
-            tipo_cita VARCHAR NOT NULL,
-            notario_id INTEGER,
-            tipo_firma VARCHAR,
-            apoderado_id INTEGER,
-            observaciones VARCHAR,
-            estado VARCHAR DEFAULT 'Pendiente'
-        );
-    """))
-
-print(">>> Tabla agenda_citas recreada correctamente.")
+if __name__ == "__main__":
+    main()
