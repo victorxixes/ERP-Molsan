@@ -152,9 +152,12 @@ os.makedirs(
     exist_ok=True,
 )
 
+# El montaje público /static no debe exponer fotos personales bajo /static/fotos.
+from backend.app.auth.public_static import PublicStaticFiles
+
 app.mount(
     "/static",
-    StaticFiles(directory=STATIC_DIR),
+    PublicStaticFiles(directory=STATIC_DIR),
     name="static",
 )
 
