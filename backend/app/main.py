@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import FileResponse
 from pathlib import Path
@@ -13,9 +14,7 @@ import inspect
 # APP
 # ============================================================
 
-app = FastAPI(
-    title="Agenda Intranet Backend"
-)
+app = FastAPI(title="Agenda Intranet Backend")
 
 
 # ============================================================
@@ -44,115 +43,45 @@ app.add_middleware(
 # BASE DE DATOS
 # ============================================================
 
-from backend.app.database import (
-    Base,
-    engine,
-)
+from backend.app.database import Base, engine
 
 
 # ============================================================
 # MODELOS
 # ============================================================
 
-from backend.app.expedientes.models import (
-    Cliente,
-    Expediente,
-)
-
-from backend.app.expedientes.fincasyregistros.models import (
-    ExpedienteFinca,
-)
-
-from backend.app.expedientes.gastos.models import (
-    ExpedienteGasto,
-)
-
+from backend.app.expedientes.models import Cliente, Expediente
+from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
+from backend.app.expedientes.gastos.models import ExpedienteGasto
 from backend.app.expedientes.defectos.models import (
     ExpedienteDefecto,
     DefectoSubtipo,
 )
-
-from backend.app.seguridad.roles.models import (
-    Rol,
-)
-
-from backend.app.ctn.models import (
-    Notaria,
-)
-
-from backend.app.agenda.models import (
-    Cita,
-)
-
-from backend.app.empleados.models import (
-    Empleado,
-)
-
-
-from backend.app.mensajes.models import (
-    Mensaje,
-)
-
-from backend.app.municipios.models import (
-    Municipio,
-)
-
-from backend.app.entidades_bancarias.models import (
-    EntidadBancaria,
-)
-
-from backend.app.registros_propiedad.models import (
-    RegistroPropiedad,
-)
-
-from backend.app.carpeta_digital.models import (
-    DocumentoCarpetaDigital,
-)
-
-from backend.app.oficinas_liquidadoras.models import (
-    OficinaLiquidadora,
-)
-
-from backend.app.tipos_carga_hipotecaria.models import (
-    TipoCargaHipotecaria,
-)
-
-from backend.app.expediente_ppad.models import (
-    ExpedientePPAD
-)
-
-from backend.app.expediente_observaciones.models import (
-    ExpedienteObservacion
-)
-
-from backend.app.tipos_concepto_gastos.models import (
-    TipoConceptoGastos,
-)
-
-from backend.app.acciones_expediente.models import (
-    AccionExpediente,
-)
-
-from backend.app.expediente_acciones.models import (
-    ExpedienteAccion,
-)
+from backend.app.seguridad.roles.models import Rol
+from backend.app.ctn.models import Notaria
+from backend.app.agenda.models import Cita
+from backend.app.empleados.models import Empleado
+from backend.app.mensajes.models import Mensaje
+from backend.app.municipios.models import Municipio
+from backend.app.entidades_bancarias.models import EntidadBancaria
+from backend.app.registros_propiedad.models import RegistroPropiedad
+from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
+from backend.app.oficinas_liquidadoras.models import OficinaLiquidadora
+from backend.app.tipos_carga_hipotecaria.models import TipoCargaHipotecaria
+from backend.app.expediente_ppad.models import ExpedientePPAD
+from backend.app.expediente_observaciones.models import ExpedienteObservacion
+from backend.app.tipos_concepto_gastos.models import TipoConceptoGastos
+from backend.app.acciones_expediente.models import AccionExpediente
+from backend.app.expediente_acciones.models import ExpedienteAccion
 
 
 # ============================================================
 # STATIC FILES
 # ============================================================
 
-STATIC_DIR = os.path.join(
-    os.path.dirname(__file__),
-    "static",
-)
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+os.makedirs(STATIC_DIR, exist_ok=True)
 
-os.makedirs(
-    STATIC_DIR,
-    exist_ok=True,
-)
-
-# El montaje público /static no debe exponer fotos personales bajo /static/fotos.
 from backend.app.auth.public_static import PublicStaticFiles
 
 app.mount(
@@ -167,11 +96,7 @@ app.mount(
 # ============================================================
 
 TMP_MENSAJES = "/tmp/mensajes"
-
-os.makedirs(
-    TMP_MENSAJES,
-    exist_ok=True,
-)
+os.makedirs(TMP_MENSAJES, exist_ok=True)
 
 app.mount(
     "/static/mensajes",
@@ -181,28 +106,24 @@ app.mount(
 
 
 # ============================================================
-# STATIC — FOTOS
+# STATIC — FOTOS PROTEGIDAS
 # ============================================================
 
-FOTOS_DIR = os.path.join(
-    os.path.dirname(__file__),
-    "static",
-    "fotos",
-)
+FOTOS_DIR = os.path.join(STATIC_DIR, "fotos")
+os.makedirs(FOTOS_DIR, exist_ok=True)
 
-os.makedirs(
-    FOTOS_DIR,
-    exist_ok=True,
-)
-
-# Las fotografías de empleados contienen datos personales. No se publican como
-# StaticFiles: se sirven mediante una ruta autenticada y con permiso de lectura
-# del módulo Empleados. Las URLs existentes /api/fotos/... se conservan.
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 
 FOTOS_ROOT = Path(FOTOS_DIR).resolve()
-EXTENSIONES_FOTO_PERMITIDAS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+EXTENSIONES_FOTO_PERMITIDAS = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+    ".gif",
+}
+
 
 @app.get("/api/fotos/{ruta:path}", include_in_schema=False)
 def servir_fotografia_empleado(
@@ -211,12 +132,19 @@ def servir_fotografia_empleado(
 ):
     require_perm_modulo(usuario, "empleados", "ver")
 
-    # Resolver la ruta completa y comprobar que no escapa del directorio de fotos.
     fichero = (FOTOS_ROOT / ruta).resolve()
+
     if FOTOS_ROOT not in fichero.parents or not fichero.is_file():
-        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
+        raise HTTPException(
+            status_code=404,
+            detail="Fotografía no encontrada",
+        )
+
     if fichero.suffix.lower() not in EXTENSIONES_FOTO_PERMITIDAS:
-        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
+        raise HTTPException(
+            status_code=404,
+            detail="Fotografía no encontrada",
+        )
 
     return FileResponse(
         path=str(fichero),
@@ -228,10 +156,7 @@ def servir_fotografia_empleado(
 # IMPORTAR ROUTERS
 # ============================================================
 
-# AUTH
-from backend.app.auth.router import (
-    router as auth_router,
-)
+from backend.app.auth.router import router as auth_router
 
 from backend.app.expedientes.defectos.migracion_router import (
     router as migracion_defectos_router,
@@ -241,128 +166,70 @@ from backend.app.expedientes.fincasyregistros.router import (
     router as expedientes_fincas_router,
 )
 
-# SEGURIDAD
-from backend.app.seguridad.roles.roles_router import (
-    router as roles_router,
-)
-
+from backend.app.seguridad.roles.roles_router import router as roles_router
 from backend.app.seguridad.roles.asignar_rol_router import (
     router as asignar_rol_router,
 )
-
 from backend.app.seguridad.asignar_password_router import (
     router as asignar_password_router,
 )
-
 from backend.app.seguridad.permisos.permisos_router import (
     router as permisos_router,
 )
-
-from backend.app.expedientes.gastos.router import (
-    router as gastos_router,
-)
-
-# CARPETA DIGITAL DE EXPEDIENTES
-from backend.app.carpeta_digital.router import (
-    router as carpeta_digital_router,
-)
-
+from backend.app.expedientes.gastos.router import router as gastos_router
+from backend.app.carpeta_digital.router import router as carpeta_digital_router
 from backend.app.seguridad.permisos.asignar_router import (
     router as asignar_router,
 )
-
 from backend.app.seguridad.permisos.repair_create_permisos_raw import (
     router as permisos_repair_router,
 )
-
 from backend.app.seguridad.obtener_ficha_empleado import (
     router as ficha_empleado_router,
 )
-
 from backend.app.seguridad.auditoria.router import (
     router as seguridad_auditoria_router,
 )
-
-from backend.app.seguridad.logs.router import (
-    router as seguridad_logs_router,
-)
-
-from backend.app.seguridad.admin_router import (
-    router as admin_router,
-)
-
+from backend.app.seguridad.logs.router import router as seguridad_logs_router
+from backend.app.seguridad.admin_router import router as admin_router
 from backend.app.expedientes.gastos.migracion_router import (
     router as migracion_gastos_router,
 )
 
 # AGENDA
-from backend.app.agenda.router import (
-    router as agenda_router,
-)
+from backend.app.agenda.router import router as agenda_router
 
 # EMPLEADOS
-from backend.app.empleados.router import (
-    router as empleados_router,
-)
+from backend.app.empleados.router import router as empleados_router
 
 # DEFECTOS
-from backend.app.expedientes.defectos.router import (
-    router as defectos_router,
-)
+from backend.app.expedientes.defectos.router import router as defectos_router
 
 # MAESTROS
-from backend.app.maestros.router import (
-    router as maestros_router,
-)
+from backend.app.maestros.router import router as maestros_router
 
 # INTRANET
-from backend.app.intranet.router import (
-    router as intranet_router,
-)
-
+from backend.app.intranet.router import router as intranet_router
 from backend.app.intranet.documentos.router import (
     router as documentos_router,
 )
-
-from backend.app.intranet.noticias.router import (
-    router as noticias_router,
-)
+from backend.app.intranet.noticias.router import router as noticias_router
 
 # WEBSOCKETS
-from backend.app.websockets.intranet_ws import (
-    router as intranet_ws_router,
-)
-
-from backend.app.websockets.empleados_ws import (
-    router as empleados_ws_router,
-)
-
-from backend.app.websockets.agenda_ws import (
-    router as agenda_ws_router,
-)
-
-from backend.app.mensajes.router_ws import (
-    router as mensajes_ws_router,
-)
-
-from backend.app.notificaciones.router_ws import (
-    router_notif,
-)
+from backend.app.websockets.intranet_ws import router as intranet_ws_router
+from backend.app.websockets.empleados_ws import router as empleados_ws_router
+from backend.app.websockets.agenda_ws import router as agenda_ws_router
+from backend.app.mensajes.router_ws import router as mensajes_ws_router
+from backend.app.notificaciones.router_ws import router_notif
 
 # REALTIME
-from backend.app.realtime.router import (
-    router as realtime_router,
-)
+from backend.app.realtime.router import router as realtime_router
 
 # MENSAJES
-from backend.app.mensajes.router import (
-    router as mensajes_router,
-)
+from backend.app.mensajes.router import router as mensajes_router
 
 # MUNICIPIOS
-from backend.app.municipios.router import (
-    router as municipios_router,
-)
+from backend.app.municipios.router import router as municipios_router
 
 # ENTIDADES BANCARIAS
 from backend.app.entidades_bancarias.router import (
@@ -388,7 +255,6 @@ from backend.app.tipos_concepto_gastos.router import (
 from backend.app.acciones_expediente.router import (
     router as acciones_expediente_router,
 )
-
 from backend.app.expediente_acciones.router import (
     router as expediente_acciones_router,
 )
@@ -397,64 +263,45 @@ from backend.app.expediente_acciones.router import (
 from backend.app.herramientasswager.crear_tablas import (
     router as herramientas_router,
 )
-
 from backend.app.herramientasswager.reset_intranet import (
     router as reset_intranet_router,
 )
-
 from backend.app.herramientasswager.debug_router import (
     router as debug_router,
 )
-
 from backend.app.herramientasswager.borrar_roles import (
     router as borrar_roles_router,
 )
-
 from backend.app.herramientasswager.borrar_tablas import (
     router as borrar_tablas_router,
 )
-
 from backend.app.herramientasswager.asignar_bloqueo_router import (
     router as asignar_bloqueo_router,
 )
 
 # CTN
-from backend.app.ctn.router import (
-    router as ctn_router,
-)
+from backend.app.ctn.router import router as ctn_router
 
 # DASHBOARD
-from backend.app.dashboard.router import (
-    router as dashboard_router,
-)
+from backend.app.dashboard.router import router as dashboard_router
 
 # UTILIDADES
-from backend.app.Utilidades.router import (
-    router as utilidades_router,
-)
-
-from backend.app.informes.router import (
-    router as informes_router,
-)
-
+from backend.app.Utilidades.router import router as utilidades_router
+from backend.app.informes.router import router as informes_router
 from backend.app.informes.firmas_notarios_router import (
     router as informes_firmas_notarios_router,
 )
-
 from backend.app.Utilidades.importadores.router_absis import (
     router as router_absis,
 )
 
 # EXPEDIENTES
-from backend.app.expedientes.router import (
-    router as expedientes_router,
-)
+from backend.app.expedientes.router import router as expedientes_router
 
 # TIPOS DE CARGA HIPOTECARIA
 from backend.app.tipos_carga_hipotecaria.router import (
     router as tipos_carga_hipotecaria_router,
 )
-
 
 # PPAD
 from backend.app.expediente_ppad.router import (
@@ -465,6 +312,7 @@ from backend.app.expediente_ppad.router import (
 from backend.app.expediente_observaciones.router import (
     router as expediente_observaciones_router,
 )
+
 
 # ============================================================
 # INCLUIR ROUTERS
@@ -489,14 +337,10 @@ app.include_router(gastos_router, prefix="/api")
 app.include_router(agenda_router, prefix="/api")
 
 # CARPETA DIGITAL
-app.include_router(carpeta_digital_router, prefix="/api",)
-
+app.include_router(carpeta_digital_router, prefix="/api")
 app.include_router(migracion_gastos_router, prefix="/api")
 
-# ============================================================
-# DEBUG — RUTAS AGENDA
-# ============================================================
-
+# DIAGNÓSTICO DE RUTAS DE AGENDA
 print(
     "\n================ RUTAS AGENDA REGISTRADAS ================",
     flush=True,
@@ -516,7 +360,6 @@ print(
     "===========================================================\n",
     flush=True,
 )
-
 
 # EMPLEADOS
 app.include_router(empleados_router, prefix="/api")
@@ -576,9 +419,9 @@ app.include_router(ctn_router, prefix="/api")
 app.include_router(dashboard_router, prefix="/api")
 
 # DEFECTOS
-app.include_router(defectos_router,prefix="/api",)
+app.include_router(defectos_router, prefix="/api")
 
-# UTILIDADES
+# UTILIDADES E INFORMES
 app.include_router(utilidades_router, prefix="/api")
 app.include_router(informes_router, prefix="/api")
 app.include_router(informes_firmas_notarios_router, prefix="/api")
@@ -589,28 +432,52 @@ app.include_router(tipos_carga_hipotecaria_router, prefix="/api")
 
 # EXPEDIENTES
 app.include_router(expedientes_router, prefix="/api")
-
-
 app.include_router(migracion_defectos_router, prefix="/api")
 
 # PPAD
-app.include_router(expediente_ppad_router, prefix="/api",)
+app.include_router(expediente_ppad_router, prefix="/api")
 
 # OBSERVACIONES
-app.include_router(expediente_observaciones_router, prefix="/api",)
+app.include_router(expediente_observaciones_router, prefix="/api")
+
 
 # ============================================================
-# MIGRACIÓN AUTOMÁTICA — CLIENTES, FACTURACIÓN Y ENVÍO A NOTARIO
+# MIGRACIÓN DE ESQUEMA DE EXPEDIENTES
 # ============================================================
 
-def migrar_clientes_facturacion_envio_notario():
+def migrar_esquema_expedientes_inicio():
+    """
+    Añade columnas de workflow, clientes y facturación si faltan.
+    No elimina tablas ni sobrescribe los datos existentes.
+    """
     print(
-        "[MOLSAN STARTUP TEST 2026-10-09] "
-        "LA FUNCION DE MIGRACION HA COMENZADO",
+        "[MIGRACION STARTUP] Iniciando migración de expedientes...",
         flush=True,
     )
 
-    migraciones_columnas = [
+    columnas = [
+        # Actividades y workflow
+        ("fecha_envio", "DATE"),
+        ("asiento_presentacion_libro_diario", "VARCHAR(300)"),
+        ("fecha_presentacion", "DATE"),
+        ("numero_entrada", "VARCHAR(200)"),
+        ("fecha_recogida_notario_presentacion_telematica", "DATE"),
+        ("copia_simple_escritura", "VARCHAR(500)"),
+        ("fecha_presentacion_tributaria", "DATE"),
+        ("fecha_liquidacion_tributaria", "DATE"),
+        ("oficina_liquidadora", "VARCHAR(200)"),
+        ("base_imponible", "DOUBLE PRECISION"),
+        ("tributacion", "VARCHAR(100)"),
+        ("impuesto_ajd_itp", "VARCHAR(20)"),
+        ("fecha_vencimiento_asiento", "DATE"),
+        ("escritura_simple_cancelacion", "VARCHAR(500)"),
+        ("ultima_accion", "VARCHAR(500)"),
+        ("fecha_ultima_accion", "DATE"),
+        ("sol", "VARCHAR(100)"),
+        ("cs", "VARCHAR(100)"),
+        ("ns", "VARCHAR(100)"),
+
+        # Clientes, envío a notario y facturación
         ("cliente_id", "INTEGER"),
         ("fecha_envio_notario", "DATE"),
         ("fecha_solicitud_pnc", "DATE"),
@@ -627,154 +494,53 @@ def migrar_clientes_facturacion_envio_notario():
         ("facturacion_email", "VARCHAR(200)"),
     ]
 
-    print(
-        "[MIGRACION DIAG] Comprobando conexión a base de datos...",
-        flush=True,
-    )
-
     try:
-        print(
-            "[MOLSAN STARTUP TEST] ANTES DE engine.begin()",
-            flush=True,
-        )
-
         with engine.begin() as conexion:
-            print(
-                "[MOLSAN STARTUP TEST] CONEXION OBTENIDA",
-                flush=True,
-            )
+            conexion.execute(text("SET LOCAL lock_timeout = '15s'"))
+            conexion.execute(text("SET LOCAL statement_timeout = '60s'"))
 
-            # ====================================================
-            # DIAGNÓSTICO DE BLOQUEO EN LA CONSULTA
-            # ====================================================
-
-            # Si la consulta espera un bloqueo de tabla, PostgreSQL
-            # debe interrumpirla tras 5 segundos.
-            print(
-                "[MIGRACION DIAG] Configurando límites de espera...",
-                flush=True,
-            )
-
-            conexion.execute(
-                text("SET LOCAL lock_timeout = '5s'")
-            )
-
-            conexion.execute(
-                text("SET LOCAL statement_timeout = '10s'")
-            )
-
-            print(
-                "[MIGRACION DIAG] Límites configurados.",
-                flush=True,
-            )
-
-            print(
-                "[MIGRACION DIAG] "
-                "Antes de ejecutar SELECT sobre expedientes",
-                flush=True,
-            )
-
-            resultado = conexion.execute(
-                text("SELECT 1 FROM expedientes LIMIT 1")
-            )
-
-            print(
-                "[MIGRACION DIAG] "
-                "SELECT ejecutado; antes de leer resultado",
-                flush=True,
-            )
-
-            resultado.fetchone()
-
-            print(
-                "[MIGRACION DIAG] "
-                "Lectura terminada correctamente",
-                flush=True,
-            )
-
-            print(
-                "[MIGRACION DIAG] Tabla expedientes accesible.",
-                flush=True,
-            )
-
-            # ====================================================
-            # AÑADIR COLUMNAS QUE FALTEN
-            # ====================================================
-
-            for nombre_columna, tipo_columna in migraciones_columnas:
-                print(
-                    f"[MIGRACION DIAG] INICIO columna: "
-                    f"{nombre_columna}",
-                    flush=True,
-                )
-
+            for nombre, tipo_sql in columnas:
                 conexion.execute(
                     text(
-                        f"""
-                        ALTER TABLE expedientes
-                        ADD COLUMN IF NOT EXISTS
-                        {nombre_columna} {tipo_columna}
-                        """
+                        f'ALTER TABLE expedientes '
+                        f'ADD COLUMN IF NOT EXISTS "{nombre}" {tipo_sql}'
                     )
                 )
 
                 print(
-                    f"[MIGRACION DIAG] FIN columna: "
-                    f"{nombre_columna}",
+                    f"[MIGRACION STARTUP] Columna comprobada: {nombre}",
                     flush=True,
                 )
 
-            # ====================================================
-            # ÍNDICE CLIENTE
-            # ====================================================
-
-            print(
-                "[MIGRACION DIAG] INICIO creación de índice...",
-                flush=True,
-            )
-
             conexion.execute(
                 text(
-                    """
-                    CREATE INDEX IF NOT EXISTS
-                    ix_expedientes_cliente_id
-                    ON expedientes (cliente_id)
-                    """
+                    "CREATE INDEX IF NOT EXISTS "
+                    "ix_expedientes_cliente_id "
+                    "ON expedientes (cliente_id)"
                 )
             )
 
-            print(
-                "[MIGRACION DIAG] FIN creación de índice.",
-                flush=True,
-            )
-
         print(
-            "[MIGRACION DIAG] "
-            "Migración completada correctamente.",
+            "[MIGRACION STARTUP] Migración completada correctamente.",
             flush=True,
         )
 
     except Exception as error:
         print(
-            f"[MIGRACION DIAG] ERROR: {error!r}",
+            f"[MIGRACION STARTUP] ERROR: {error!r}",
             flush=True,
         )
         raise
 
 
 # ============================================================
-# DIAGNÓSTICO TEMPORAL — IDENTIFICAR BLOQUEOS EN STARTUP
-# ============================================================
-
-
-# ============================================================
-# INICIALIZAR TABLA DE ACCIONES ASIGNADAS A EXPEDIENTES
+# INICIALIZAR TABLAS AUXILIARES
 # ============================================================
 
 @app.on_event("startup")
-def inicializar_tabla_expediente_acciones():
+def inicializar_tablas_auxiliares():
     print(
-        "[EXPEDIENTE ACCIONES] Comprobando tabla...",
+        "[INICIALIZACION] Comprobando tablas auxiliares...",
         flush=True,
     )
 
@@ -783,18 +549,8 @@ def inicializar_tabla_expediente_acciones():
             bind=engine,
             checkfirst=True,
         )
-
         print(
-            "[EXPEDIENTE ACCIONES] Tabla disponible correctamente.",
-            flush=True,
-        )
-
-                # ====================================================
-        # INICIALIZAR TABLA DE CARPETA DIGITAL
-        # ====================================================
-
-        print(
-            "[CARPETA DIGITAL] Comprobando tabla...",
+            "[EXPEDIENTE ACCIONES] Tabla disponible.",
             flush=True,
         )
 
@@ -802,18 +558,8 @@ def inicializar_tabla_expediente_acciones():
             bind=engine,
             checkfirst=True,
         )
-
         print(
-            "[CARPETA DIGITAL] Tabla disponible correctamente.",
-            flush=True,
-        )
-        
-        # ====================================================
-        # INICIALIZAR TABLAS PPAD Y OBSERVACIONES DE EXPEDIENTE
-        # ====================================================
-
-        print(
-            "[PPAD/OBSERVACIONES] Comprobando tablas...",
+            "[CARPETA DIGITAL] Tabla disponible.",
             flush=True,
         )
 
@@ -828,18 +574,22 @@ def inicializar_tabla_expediente_acciones():
         )
 
         print(
-            "[PPAD/OBSERVACIONES] Tablas disponibles correctamente.",
+            "[PPAD/OBSERVACIONES] Tablas disponibles.",
             flush=True,
         )
 
     except Exception as error:
         print(
-            "[EXPEDIENTE ACCIONES] Error al inicializar tabla: "
-            f"{error!r}",
+            f"[INICIALIZACION] ERROR en tablas auxiliares: {error!r}",
             flush=True,
         )
         raise
-        
+
+
+# ============================================================
+# INSTRUMENTACIÓN DEL ARRANQUE
+# ============================================================
+
 def instrumentar_inicio_aplicacion():
     manejadores_originales = list(app.router.on_startup)
     manejadores_instrumentados = []
@@ -859,8 +609,7 @@ def instrumentar_inicio_aplicacion():
                 numero=indice,
             ):
                 print(
-                    f"[STARTUP DIAG] INICIO {numero}: "
-                    f"{nombre_funcion}",
+                    f"[STARTUP DIAG] INICIO {numero}: {nombre_funcion}",
                     flush=True,
                 )
 
@@ -868,11 +617,9 @@ def instrumentar_inicio_aplicacion():
                     resultado = await funcion()
 
                     print(
-                        f"[STARTUP DIAG] FIN {numero}: "
-                        f"{nombre_funcion}",
+                        f"[STARTUP DIAG] FIN {numero}: {nombre_funcion}",
                         flush=True,
                     )
-
                     return resultado
 
                 except Exception as error:
@@ -893,8 +640,7 @@ def instrumentar_inicio_aplicacion():
                 numero=indice,
             ):
                 print(
-                    f"[STARTUP DIAG] INICIO {numero}: "
-                    f"{nombre_funcion}",
+                    f"[STARTUP DIAG] INICIO {numero}: {nombre_funcion}",
                     flush=True,
                 )
 
@@ -902,11 +648,9 @@ def instrumentar_inicio_aplicacion():
                     resultado = funcion()
 
                     print(
-                        f"[STARTUP DIAG] FIN {numero}: "
-                        f"{nombre_funcion}",
+                        f"[STARTUP DIAG] FIN {numero}: {nombre_funcion}",
                         flush=True,
                     )
-
                     return resultado
 
                 except Exception as error:
@@ -927,5 +671,15 @@ def instrumentar_inicio_aplicacion():
         flush=True,
     )
 
+
+# ============================================================
+# ORDEN DE ARRANQUE
+# ============================================================
+
+# La migración se ejecuta antes de crear o comprobar las tablas auxiliares.
+app.router.on_startup.insert(
+    0,
+    migrar_esquema_expedientes_inicio,
+)
 
 instrumentar_inicio_aplicacion()
