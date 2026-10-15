@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE } from "../../api/config";
 import Chart from "chart.js/auto";
@@ -2746,6 +2746,11 @@ function InformeFirmas() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [exportando, setExportando] = useState(false);
+  const [recarga, setRecarga] = useState(0);
+  const [editandoId, setEditandoId] = useState("");
+  const [edicionFirma, setEdicionFirma] = useState({ modalidad: "SIN_CLASIFICAR", fecha_envio: "" });
+  const [guardandoDatosFirma, setGuardandoDatosFirma] = useState(false);
+  const [mensajeEdicionFirma, setMensajeEdicionFirma] = useState("");
 
   useEffect(() => {
     let activo = true;
@@ -2767,7 +2772,7 @@ function InformeFirmas() {
     };
     cargar();
     return () => { activo = false; };
-  }, [aplicados]);
+  }, [aplicados, recarga]);
 
   const cambiar = (campo, valor) => setFiltros((actual) => ({ ...actual, [campo]: valor }));
   const aplicar = (e) => {
@@ -2788,6 +2793,11 @@ function InformeFirmas() {
   const periodo = `${fechaInformeVisible(aplicados.fecha_desde)} – ${fechaInformeVisible(aplicados.fecha_hasta)}`;
   const resumen = datos.resumen || {};
   const filas = datos.items || [];
+  const firmasSinClasificar = Number(resumen.sin_clasificar || 0);
+  const firmasSinTiempo = Math.max(
+    0,
+    Number(resumen.total_firmas || 0) - Number(resumen.firmas_con_tiempo_calculable || 0)
+  );
   const columnasPDF = [
     { key: "fecha_firma", label: "Fecha firma", render: (f) => fechaInformeVisible(f.fecha_firma) },
     { key: "id_expediente", label: "N.º expediente" },
@@ -2796,9 +2806,44 @@ function InformeFirmas() {
     { key: "modalidad", label: "Modalidad", render: (f) => f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : "Sin clasificar" },
     { key: "nombre_notario", label: "Notario" },
     { key: "apoderado", label: "Apoderado" },
+    { key: "fecha_envio", label: "Fecha envío", render: (f) => fechaInformeVisible(f.fecha_envio) },
     { key: "dias_envio_firma", label: "Días envío-firma" },
     { key: "protocolo", label: "Protocolo" },
   ];
+
+  const iniciarEdicionFirma = (fila) => {
+    setEditandoId(String(fila.id_expediente || ""));
+    setEdicionFirma({
+      modalidad: fila.modalidad === "VC" ? "VC" : fila.modalidad === "PRESENCIAL" ? "PRESENCIAL" : "SIN_CLASIFICAR",
+      fecha_envio: String(fila.fecha_envio || "").slice(0, 10),
+    });
+    setMensajeEdicionFirma("");
+    setError("");
+  };
+
+  const guardarDatosFirma = async (fila) => {
+    if (!fila?.id_expediente || guardandoDatosFirma) return;
+    setGuardandoDatosFirma(true);
+    setError("");
+    setMensajeEdicionFirma("");
+    try {
+      await axios.put(
+        `${API_BASE}/informes/firmas/${encodeURIComponent(fila.id_expediente)}/datos`,
+        {
+          modalidad: edicionFirma.modalidad,
+          fecha_envio: edicionFirma.fecha_envio || null,
+        }
+      );
+      setMensajeEdicionFirma(`Datos de la firma del expediente ${fila.id_expediente} guardados correctamente.`);
+      setEditandoId("");
+      setRecarga((valor) => valor + 1);
+    } catch (e) {
+      const detail = e?.response?.data?.detail;
+      setError(typeof detail === "string" ? detail : detail?.mensaje || JSON.stringify(detail) || "No se pudieron guardar los datos de la firma.");
+    } finally {
+      setGuardandoDatosFirma(false);
+    }
+  };
 
   const exportarExcel = async () => {
     setExportando(true);
@@ -2832,6 +2877,17 @@ function InformeFirmas() {
       </form>
 
       <AvisoInforme error={error} />
+      {mensajeEdicionFirma && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensajeEdicionFirma}</div>}
+      {(firmasSinClasificar > 0 || firmasSinTiempo > 0) && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="font-bold">Hay datos históricos pendientes de completar</p>
+          <p className="mt-1">
+            {firmasSinClasificar > 0 ? `${numeroInforme(firmasSinClasificar)} firma(s) sin modalidad confirmada. ` : ""}
+            {firmasSinTiempo > 0 ? `${numeroInforme(firmasSinTiempo)} firma(s) sin fecha de envío válida. ` : ""}
+            Utiliza «Completar datos» en cada fila e introduce solo información verificada. No se deduce la modalidad ni la fecha a partir de las citas de Agenda.
+          </p>
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <InformeKpi icono="✍️" titulo="Firmas reales" valor={numeroInforme(resumen.total_firmas)} subtitulo="Expedientes con fecha de firma" />
         <InformeKpi icono="💻" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
@@ -2846,8 +2902,33 @@ function InformeFirmas() {
       </section>
 
       <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Detalle de firmas</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(filas.length)} registros recibidos del backend.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "📗 Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 Exportar PDF</button></div></div>
-        {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[620px] overflow-auto"><table className="w-full min-w-[1300px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{columnasPDF.map((c) => <th key={c.key} className="whitespace-nowrap px-4 py-3">{c.label}</th>)}</tr></thead><tbody>{filas.map((f, i) => <tr key={f.id ?? `${f.id_expediente}-${i}`} className="border-t border-slate-100 hover:bg-blue-50/40"><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td><td className="px-4 py-3 font-semibold text-blue-700">{f.id_expediente || "—"}</td><td className="max-w-[240px] px-4 py-3">{f.nombre_titular || "—"}</td><td className="px-4 py-3">{f.tipo_operacion || "—"}</td><td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : "Sin clasificar"}</td><td className="px-4 py-3">{f.nombre_notario || "—"}</td><td className="px-4 py-3">{f.apoderado || "—"}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td><td className="px-4 py-3 text-right">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td><td className="px-4 py-3">{f.protocolo || "—"}</td></tr>)}</tbody></table></div>}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4"><div><h3 className="font-bold text-slate-800">Detalle de firmas</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(filas.length)} registros recibidos del backend. Puedes completar modalidad y fecha de envío desde la columna de acciones.</p></div><div className="flex flex-wrap gap-2"><button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "📗 Exportar Excel"}</button><button type="button" disabled={loading || filas.length === 0} onClick={() => imprimirInforme("Informe de firmas reales", periodo, columnasPDF, filas)} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 Exportar PDF</button></div></div>
+        {loading ? <PanelEstadoInforme loading /> : filas.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales para el periodo y los filtros seleccionados." /> : <div className="max-h-[700px] overflow-auto"><table className="w-full min-w-[1420px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{columnasPDF.map((c) => <th key={c.key} className="whitespace-nowrap px-4 py-3">{c.label}</th>)}<th className="whitespace-nowrap px-4 py-3">Acciones</th></tr></thead><tbody>{filas.map((f, i) => <Fragment key={f.id ?? `${f.id_expediente}-${i}`}>
+          <tr className="border-t border-slate-100 hover:bg-blue-50/40">
+            <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td>
+            <td className="px-4 py-3 font-semibold text-blue-700">{f.id_expediente || "—"}</td>
+            <td className="max-w-[240px] px-4 py-3">{f.nombre_titular || "—"}</td>
+            <td className="px-4 py-3">{f.tipo_operacion || "—"}</td>
+            <td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span className="font-semibold text-amber-700">Sin clasificar</span>}</td>
+            <td className="px-4 py-3">{f.nombre_notario || "—"}</td>
+            <td className="px-4 py-3">{f.apoderado || "—"}</td>
+            <td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td>
+            <td className="px-4 py-3 text-right">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td>
+            <td className="px-4 py-3">{f.protocolo || "—"}</td>
+            <td className="whitespace-nowrap px-4 py-3"><button type="button" onClick={() => String(editandoId) === String(f.id_expediente) ? setEditandoId("") : iniciarEdicionFirma(f)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">{String(editandoId) === String(f.id_expediente) ? "Cancelar" : (f.modalidad === "SIN_CLASIFICAR" || !f.fecha_envio ? "Completar datos" : "Editar datos")}</button></td>
+          </tr>
+          {String(editandoId) === String(f.id_expediente) && (
+            <tr key={`${f.id_expediente}-editar`} className="border-t border-blue-100 bg-blue-50/60">
+              <td colSpan={11} className="px-4 py-4">
+                <div className="grid grid-cols-1 items-end gap-3 rounded-xl border border-blue-100 bg-white p-4 md:grid-cols-[minmax(220px,1fr)_minmax(220px,1fr)_auto]">
+                  <label className="block min-w-0"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Fecha real de envío al notario</span><input type="date" max={String(f.fecha_firma || "").slice(0, 10)} value={edicionFirma.fecha_envio} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, fecha_envio: e.target.value }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /></label>
+                  <label className="block min-w-0"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Modalidad real de firma</span><select value={edicionFirma.modalidad} disabled={guardandoDatosFirma} onChange={(e) => setEdicionFirma((actual) => ({ ...actual, modalidad: e.target.value }))} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"><option value="SIN_CLASIFICAR">Sin clasificar</option><option value="VC">Videoconferencia</option><option value="PRESENCIAL">Presencial</option></select><span className="mt-1 block text-[11px] text-slate-400">Selecciona solo la modalidad confirmada para esta firma.</span></label>
+                  <div className="flex flex-wrap gap-2"><button type="button" disabled={guardandoDatosFirma} onClick={() => guardarDatosFirma(f)} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{guardandoDatosFirma ? "Guardando…" : "Guardar datos"}</button><button type="button" disabled={guardandoDatosFirma} onClick={() => setEditandoId("")} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cancelar</button></div>
+                </div>
+              </td>
+            </tr>
+          )}
+        </Fragment>)}</tbody></table></div>}
       </section>
     </section>
   );
