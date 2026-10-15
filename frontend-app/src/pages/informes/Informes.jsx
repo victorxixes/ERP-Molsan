@@ -25,7 +25,7 @@ const MESES = [
    ESTILO GLASS LUXE CLARO
 ============================================================ */
 
-export default function Informes() {
+function InformeCitasApoderados() {
 
   const hoy = new Date();
 
@@ -483,7 +483,7 @@ export default function Informes() {
           <div class="card">
 
             <h1>
-              Informe de Apoderados
+              Informe de Citas de Apoderados
             </h1>
 
             <h2>
@@ -2582,4 +2582,162 @@ function GraficoCard({
 
   );
 
+}
+
+// ============================================================
+// ERP MOLSAN — CONTENEDOR DEL MÓDULO INFORMES
+// Los informes que todavía no tienen backend quedan preparados
+// como apartados independientes, sin mostrar datos ficticios.
+// ============================================================
+
+const APARTADOS_INFORMES = [
+  {
+    key: "apoderados",
+    titulo: "Informe citas apoderados",
+    descripcion: "Citas presenciales, videoconferencias y desplazamientos.",
+    icono: "👥",
+  },
+  {
+    key: "firmas",
+    titulo: "Informe firmas",
+    descripcion: "Seguimiento de las firmas realizadas.",
+    icono: "✍️",
+  },
+  {
+    key: "facturacion",
+    titulo: "Informes de facturación",
+    descripcion: "Resumen de importes, facturas y estados.",
+    icono: "🧾",
+  },
+  {
+    key: "notarios",
+    titulo: "Informes de notarios",
+    descripcion: "Actividad y estadísticas por notario.",
+    icono: "🏛️",
+  },
+];
+
+function ApartadoInformePendiente({ apartado }) {
+  const detalle = {
+    firmas: {
+      encabezado: "Informe de firmas",
+      descripcion:
+        "Aquí construiremos el informe de firmas con filtros por periodo y los indicadores acordados antes de conectarlo al backend.",
+      indicadores: [
+        { titulo: "Firmas realizadas", texto: "Conteo de firmas confirmadas" },
+        { titulo: "Modalidad", texto: "Presencial y videoconferencia, si consta" },
+        { titulo: "Desglose", texto: "Por fecha, operación y notario" },
+      ],
+    },
+    facturacion: {
+      encabezado: "Informes de facturación",
+      descripcion:
+        "Aquí construiremos los informes económicos a partir de los datos reales de facturación del ERP.",
+      indicadores: [
+        { titulo: "Importes", texto: "Totales por periodo" },
+        { titulo: "Estado", texto: "Facturas y expedientes pendientes o cerrados" },
+        { titulo: "Desglose", texto: "Por oficina y expediente, según los datos disponibles" },
+      ],
+    },
+    notarios: {
+      encabezado: "Informes de notarios",
+      descripcion:
+        "Aquí construiremos los indicadores de actividad notarial usando los datos reales del catálogo CTN, las firmas y los expedientes.",
+      indicadores: [
+        { titulo: "Actividad", texto: "Expedientes gestionados por notario" },
+        { titulo: "Firmas", texto: "Desglose según la información registrada" },
+        { titulo: "Periodo", texto: "Filtros temporales y posibilidad de exportar" },
+      ],
+    },
+  }[apartado.key];
+
+  return (
+    <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl">
+      <div className="border-b border-slate-200/80 px-6 py-5">
+        <div className="flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">
+            {apartado.icono}
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-slate-800">{detalle.encabezado}</h2>
+            <p className="mt-1 text-sm leading-relaxed text-slate-500">{detalle.descripcion}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-6">
+        <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <strong>En preparación.</strong> Este apartado está creado en el menú. Falta definir sus filtros e indicadores y conectar el endpoint correspondiente; no se muestran cifras ficticias.
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {detalle.indicadores.map((indicador) => (
+            <div key={indicador.titulo} className="rounded-xl border border-slate-200 bg-white p-4">
+              <div className="text-sm font-bold text-slate-700">{indicador.titulo}</div>
+              <p className="mt-2 text-sm leading-relaxed text-slate-500">{indicador.texto}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function Informes() {
+  const [apartadoActivo, setApartadoActivo] = useState("apoderados");
+  const apartadoSeleccionado = APARTADOS_INFORMES.find(
+    (apartado) => apartado.key === apartadoActivo
+  ) || APARTADOS_INFORMES[0];
+
+  return (
+    <div className="min-h-screen space-y-5 bg-gradient-to-br from-[#eef5fb] via-[#f7faff] to-[#eaf2fb] p-4 text-slate-700 md:p-6">
+      <header className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-blue-100 text-xl shadow-sm">📊</div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800 md:text-3xl">Informes</h1>
+            <p className="mt-1 text-sm text-slate-500">Selecciona el tipo de informe que quieres consultar.</p>
+          </div>
+        </div>
+      </header>
+
+      <nav aria-label="Apartados de informes" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {APARTADOS_INFORMES.map((apartado) => {
+          const activo = apartado.key === apartadoActivo;
+          return (
+            <button
+              key={apartado.key}
+              type="button"
+              onClick={() => setApartadoActivo(apartado.key)}
+              aria-pressed={activo}
+              className={`flex min-h-[100px] items-start gap-3 rounded-2xl border p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                activo
+                  ? "border-blue-400 bg-blue-50 ring-2 ring-blue-100"
+                  : "border-white/80 bg-white/75 hover:border-blue-200"
+              }`}
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-white text-xl">
+                {apartado.icono}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className={`block text-sm font-bold ${activo ? "text-blue-800" : "text-slate-800"}`}>
+                  {apartado.titulo}
+                </span>
+                <span className="mt-1 block text-xs leading-relaxed text-slate-500">
+                  {apartado.descripcion}
+                </span>
+              </span>
+              {activo && <span className="mt-1 text-xs font-bold text-blue-600">●</span>}
+            </button>
+          );
+        })}
+      </nav>
+
+      {apartadoActivo === "apoderados" ? (
+        <InformeCitasApoderados />
+      ) : (
+        <ApartadoInformePendiente apartado={apartadoSeleccionado} />
+      )}
+    </div>
+  );
 }
