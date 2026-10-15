@@ -2,58 +2,64 @@ import { useEffect, useRef } from "react";
 import { useIntranetStore } from "../store/intranetStore";
 
 /**
- * WebSocket de Intranet — Versión SJ‑2026 Premium
- * - Conexión blindada para Render/StrictMode
- * - Actualiza documentos y noticias en tiempo real
- * - Cierre seguro y limpieza completa
+ * WebSocket autenticado de Intranet.
+ * Reutiliza el JWT de sesión y mantiene la actualización en tiempo real
+ * de documentos y noticias. Si no hay token, no abre una conexión anónima.
  */
 export const useIntranetWS = () => {
   const cargarDocumentos = useIntranetStore((s) => s.cargarDocumentos);
   const cargarNoticias = useIntranetStore((s) => s.cargarNoticias);
-
   const wsRef = useRef(null);
 
   useEffect(() => {
-    // Evitar doble conexión
-    if (wsRef.current) return;
+    if (wsRef.current) return undefined;
 
-    // Cerrar WS previo si existiera
+    let token = null;
     try {
-      wsRef.current?.close();
-    } catch {}
+      token = window.localStorage.getItem("token");
+    } catch {
+      token = null;
+    }
+    if (!token) return undefined;
 
-    const ws = new WebSocket(`${import.meta.env.VITE_WS_URL}/ws/intranet`);
+    const configuredWs = String(import.meta.env.VITE_WS_URL || "").replace(/\/+$/, "");
+    const configuredApi = String(
+      import.meta.env.VITE_API_URL || "https://agenda-intranet-b.onrender.com"
+    ).replace(/\/+$/, "");
+    const wsBase = configuredWs || configuredApi.replace(/^http:/i, "ws:").replace(/^https:/i, "wss:");
+    if (!wsBase) return undefined;
+
+    const ws = new WebSocket(`${wsBase}/ws/intranet?token=${encodeURIComponent(token)}`);
     wsRef.current = ws;
 
     ws.onmessage = (event) => {
       if (!event.data) return;
-
       let data;
       try {
         data = JSON.parse(event.data);
       } catch {
         return;
       }
-
       if (!data?.tipo) return;
-
-      if (data.tipo.includes("documento")) cargarDocumentos();
-      if (data.tipo.includes("noticia")) cargarNoticias();
+      if (String(data.tipo).toLowerCase().includes("documento")) cargarDocumentos();
+      if (String(data.tipo).toLowerCase().includes("noticia")) cargarNoticias();
     };
 
     ws.onerror = () => {
-      console.warn("WS Intranet error. Modo offline.");
+      console.warn("WS Intranet: conexión no disponible.");
     };
 
     ws.onclose = () => {
-      console.warn("WS Intranet cerrado.");
+      if (wsRef.current === ws) wsRef.current = null;
     };
 
     return () => {
       try {
-        wsRef.current?.close();
-      } catch {}
-      wsRef.current = null;
+        ws.close();
+      } catch {
+        // La conexión puede haberse cerrado ya.
+      }
+      if (wsRef.current === ws) wsRef.current = null;
     };
-  }, []);
+  }, [cargarDocumentos, cargarNoticias]);
 };
