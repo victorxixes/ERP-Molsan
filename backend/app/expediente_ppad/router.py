@@ -1,4 +1,3 @@
-
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -6,6 +5,7 @@ from pydantic import BaseModel, Field, validator
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 from backend.app.expedientes.models import Expediente
 from backend.app.expediente_ppad.models import ExpedientePPAD
 
@@ -13,6 +13,7 @@ from backend.app.expediente_ppad.models import ExpedientePPAD
 router = APIRouter(
     prefix="/expedientes/{expediente_id}/ppad",
     tags=["Expedientes - PPAD"],
+    dependencies=[Depends(get_current_user)],
 )
 
 
@@ -38,9 +39,7 @@ class PPADCreate(BaseModel):
 
 class PPADUpdate(BaseModel):
     concepto: str | None = Field(None, min_length=1, max_length=500)
-    importe: Decimal | None = Field(
-        None, ge=0, max_digits=14, decimal_places=2
-    )
+    importe: Decimal | None = Field(None, ge=0, max_digits=14, decimal_places=2)
     imputable_a: str | None = None
 
     @validator("concepto")
@@ -62,26 +61,14 @@ class PPADUpdate(BaseModel):
         return value
 
 
-def _comprobar_expediente(
-    db: Session,
-    expediente_id: int,
-) -> Expediente:
-    """
-    Recibe el número de expediente visible en el ERP y devuelve
-    el objeto Expediente, cuya propiedad id es la clave primaria interna.
-    """
+def _comprobar_expediente(db: Session, expediente_id: int) -> Expediente:
     expediente = (
         db.query(Expediente)
         .filter(Expediente.id_expediente == str(expediente_id))
         .first()
     )
-
     if not expediente:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="El expediente no existe.",
-        )
-
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El expediente no existe.")
     return expediente
 
 
@@ -92,77 +79,52 @@ def _ppad_dict(item: ExpedientePPAD):
         "concepto": item.concepto,
         "importe": float(item.importe or 0),
         "imputable_a": item.imputable_a,
-        "fecha_creacion": (
-            item.fecha_creacion.isoformat()
-            if item.fecha_creacion
-            else None
-        ),
-        "fecha_modificacion": (
-            item.fecha_modificacion.isoformat()
-            if item.fecha_modificacion
-            else None
-        ),
+        "fecha_creacion": item.fecha_creacion.isoformat() if item.fecha_creacion else None,
+        "fecha_modificacion": item.fecha_modificacion.isoformat() if item.fecha_modificacion else None,
     }
 
 
-def _obtener_ppad(
-    db: Session,
-    expediente_pk: int,
-    ppad_id: int,
-) -> ExpedientePPAD:
+def _obtener_ppad(db: Session, expediente_pk: int, ppad_id: int) -> ExpedientePPAD:
     item = (
         db.query(ExpedientePPAD)
-        .filter(
-            ExpedientePPAD.id == ppad_id,
-            ExpedientePPAD.expediente_id == expediente_pk,
-        )
+        .filter(ExpedientePPAD.id == ppad_id, ExpedientePPAD.expediente_id == expediente_pk)
         .first()
     )
-
     if not item:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="El registro PPAD no existe en este expediente.",
-        )
-
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El registro PPAD no existe en este expediente.")
     return item
 
 
 @router.get("", summary="Listar registros PPAD de un expediente")
-def listar_ppad(
-    expediente_id: int,
-    db: Session = Depends(get_db),
-):
+def listar_ppad(expediente_id: int, db: Session = Depends(get_db)):
     expediente = _comprobar_expediente(db, expediente_id)
-
     items = (
         db.query(ExpedientePPAD)
         .filter(ExpedientePPAD.expediente_id == expediente.id)
-        .order_by(
-            ExpedientePPAD.fecha_creacion.desc(),
-            ExpedientePPAD.id.desc(),
-        )
+        .order_by(ExpedientePPAD.fecha_creacion.desc(), ExpedientePPAD.id.desc())
         .all()
     )
-
-    return {
-        "expediente_id": expediente_id,
-        "total": len(items),
-        "items": [_ppad_dict(item) for item in items],
-    }
+    return {"expediente_id": expediente_id, "total": len(items), "items": [_ppad_dict(item) for item in items]}
 
 
-@router.post(
-    "",
-    status_code=status.HTTP_201_CREATED,
-    summary="Crear registro PPAD",
-)
-def crear_ppad(
-    expediente_id: int,
-    datos: PPADCreate,
-    db: Session = Depends(get_db),
-):
+@router.post("", status_code=status.HTTP_201_CREATED, summary="Crear registro PPAD")
+def crear_ppad(expediente_id: int, datos: PPADCreate, db: Session = Depends(get_db)):
     expediente = _comprobar_expediente(db, expediente_id)
+
+    # Evita duplicados al repetir la acción de generación automática.
+    if datos.concepto.startswith("Honorarios de gestoría - "):
+        existente = (
+            db.query(ExpedientePPAD)
+            .filter(
+                ExpedientePPAD.expediente_id == expediente.id,
+                ExpedientePPAD.concepto == datos.concepto,
+            )
+            .first()
+        )
+        if existente:
+            resultado = _ppad_dict(existente)
+            resultado["ya_existia"] = True
+            return resultado
 
     item = ExpedientePPAD(
         expediente_id=expediente.id,
@@ -170,79 +132,45 @@ def crear_ppad(
         importe=datos.importe,
         imputable_a=datos.imputable_a,
     )
-
     db.add(item)
-
     try:
         db.commit()
         db.refresh(item)
     except Exception:
         db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="No se pudo guardar el registro PPAD.",
-        )
-
-    return _ppad_dict(item)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="No se pudo guardar el registro PPAD.")
+    resultado = _ppad_dict(item)
+    resultado["ya_existia"] = False
+    return resultado
 
 
 @router.put("/{ppad_id}", summary="Modificar registro PPAD")
-def modificar_ppad(
-    expediente_id: int,
-    ppad_id: int,
-    datos: PPADUpdate,
-    db: Session = Depends(get_db),
-):
+def modificar_ppad(expediente_id: int, ppad_id: int, datos: PPADUpdate, db: Session = Depends(get_db)):
     expediente = _comprobar_expediente(db, expediente_id)
     item = _obtener_ppad(db, expediente.id, ppad_id)
-
     cambios = datos.dict(exclude_unset=True)
-
     if not cambios:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No se han enviado cambios.",
-        )
-
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se han enviado cambios.")
     for campo, valor in cambios.items():
         if valor is not None:
             setattr(item, campo, valor)
-
     try:
         db.commit()
         db.refresh(item)
     except Exception:
         db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="No se pudo modificar el registro PPAD.",
-        )
-
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="No se pudo modificar el registro PPAD.")
     return _ppad_dict(item)
 
 
 @router.delete("/{ppad_id}", summary="Eliminar registro PPAD")
-def eliminar_ppad(
-    expediente_id: int,
-    ppad_id: int,
-    db: Session = Depends(get_db),
-):
+def eliminar_ppad(expediente_id: int, ppad_id: int, db: Session = Depends(get_db)):
     expediente = _comprobar_expediente(db, expediente_id)
     item = _obtener_ppad(db, expediente.id, ppad_id)
-
     db.delete(item)
-
     try:
         db.commit()
     except Exception:
         db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="No se pudo eliminar el registro PPAD.",
-        )
-
-    return {
-        "ok": True,
-        "mensaje": "Registro PPAD eliminado.",
-        "id": ppad_id,
-    }
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="No se pudo eliminar el registro PPAD.")
+    return {"ok": True, "mensaje": "Registro PPAD eliminado.", "id": ppad_id}
