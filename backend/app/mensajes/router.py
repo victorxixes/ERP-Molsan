@@ -1,12 +1,14 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import func
-from uuid import uuid4
-import os
 from datetime import datetime
+from pathlib import Path
+from uuid import uuid4
 
-from backend.app.empleados.models import Empleado
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+
+from backend.app.auth.dependencies import get_current_user
 from backend.app.database import get_db
+from backend.app.empleados.models import Empleado
 from backend.app.mensajes.models import Mensaje
 from backend.app.mensajes.schemas import MensajeCreate
 from backend.app.mensajes.service import (
@@ -18,329 +20,172 @@ from backend.app.mensajes.service import (
 from backend.app.mensajes.ws_manager import manager
 
 
-# =========================================================
-# ROUTER MENSAJES
-# =========================================================
-
 router = APIRouter(
     prefix="/mensajes",
     tags=["Mensajes"],
     redirect_slashes=False,
 )
 
+# Conserva la misma ubicación que main.py monta como /static/mensajes.
+CARPETA_MENSAJES = Path("/tmp/mensajes")
+MAX_ARCHIVO_BYTES = 20 * 1024 * 1024
+EXTENSIONES_PERMITIDAS = {"pdf", "doc", "docx", "jpg", "jpeg", "png"}
 
-# =========================================================
-# EMPLEADOS CONECTADOS
-# =========================================================
+
+def _usuario_actual_id(usuario: Empleado) -> int:
+    try:
+        return int(usuario.id)
+    except (AttributeError, TypeError, ValueError):
+        raise HTTPException(status_code=401, detail="No se pudo identificar al usuario autenticado")
+
 
 @router.get("/conectados")
 def conectados(
-    usuario_id: int | None = Query(
-        None,
-        description="ID del empleado actual para calcular mensajes pendientes",
-    ),
+    usuario_id: int | None = None,
     db: Session = Depends(get_db),
+    usuario_actual: Empleado = Depends(get_current_user),
 ):
-    """
-    Devuelve los empleados actualmente conectados.
-
-    Además devuelve:
-
-        mensajes_no_leidos
-
-    para cada empleado.
-
-    El contador representa mensajes que ese empleado
-    ha enviado al usuario actual y todavía están sin leer.
-
-    Ejemplo:
-
-    {
-        "id": 15,
-        "nombre": "Víctor",
-        "apellidos": "Tomás",
-        "foto": "/static/fotos/15.jpg",
-        "rol": "empleado",
-        "mensajes_no_leidos": 3
-    }
-    """
-
-    resultado = []
-
-    # ---------------------------------------------------------
-    # IDS CONECTADOS
-    # ---------------------------------------------------------
+    """Lista empleados conectados y mensajes pendientes del usuario autenticado."""
+    actual_id = _usuario_actual_id(usuario_actual)
+    if usuario_id is not None and int(usuario_id) != actual_id:
+        raise HTTPException(status_code=403, detail="No puedes consultar los contadores de otro usuario")
 
     empleados_ids = manager.obtener_ids_conectados()
-
     if not empleados_ids:
-        return resultado
+        return []
 
-    # ---------------------------------------------------------
-    # CONTADORES DE MENSAJES NO LEÍDOS
-    # ---------------------------------------------------------
-
-    pendientes_por_usuario = {}
-
-    if usuario_id:
-
-        filas = (
-            db.query(
-                Mensaje.remitente_id,
-                func.count(Mensaje.id),
-            )
-            .filter(
-                Mensaje.destinatario_id == usuario_id,
-                Mensaje.leido.is_(False),
-                Mensaje.remitente_id.in_(empleados_ids),
-            )
-            .group_by(
-                Mensaje.remitente_id
-            )
-            .all()
-        )
-
-        pendientes_por_usuario = {
-            int(remitente_id): int(cantidad)
-            for remitente_id, cantidad in filas
-        }
-
-    # ---------------------------------------------------------
-    # EMPLEADOS
-    # ---------------------------------------------------------
-
-    empleados = (
-        db.query(Empleado)
+    filas = (
+        db.query(Mensaje.remitente_id, func.count(Mensaje.id))
         .filter(
-            Empleado.id.in_(empleados_ids)
+            Mensaje.destinatario_id == actual_id,
+            Mensaje.leido.is_(False),
+            Mensaje.remitente_id.in_(empleados_ids),
         )
+        .group_by(Mensaje.remitente_id)
         .all()
     )
+    pendientes = {int(remitente_id): int(cantidad) for remitente_id, cantidad in filas}
+    empleados = db.query(Empleado).filter(Empleado.id.in_(empleados_ids)).all()
+    por_id = {empleado.id: empleado for empleado in empleados}
 
-    empleados_por_id = {
-        empleado.id: empleado
-        for empleado in empleados
-    }
-
-    # ---------------------------------------------------------
-    # RESULTADO
-    # ---------------------------------------------------------
-
+    resultado = []
     for empleado_id in empleados_ids:
-
-        empleado = empleados_por_id.get(
-            empleado_id
-        )
-
+        empleado = por_id.get(empleado_id)
         if not empleado:
             continue
-
-        resultado.append(
-            {
-                "id": empleado.id,
-                "nombre": empleado.nombre,
-                "apellidos": empleado.apellidos,
-                "foto": empleado.foto,
-                "rol": (
-                    empleado.rol.nombre
-                    if empleado.rol
-                    else None
-                ),
-                "mensajes_no_leidos": pendientes_por_usuario.get(
-                    empleado.id,
-                    0,
-                ),
-            }
-        )
-
+        resultado.append({
+            "id": empleado.id,
+            "nombre": empleado.nombre,
+            "apellidos": empleado.apellidos,
+            "foto": empleado.foto,
+            "rol": empleado.rol.nombre if empleado.rol else None,
+            "mensajes_no_leidos": pendientes.get(empleado.id, 0),
+        })
     return resultado
 
-
-# =========================================================
-# ENVIAR MENSAJE REST
-# =========================================================
 
 @router.post("")
 def enviar(
     datos: MensajeCreate,
     db: Session = Depends(get_db),
+    usuario_actual: Empleado = Depends(get_current_user),
 ):
-    """
-    Envío tradicional REST.
-
-    Se mantiene por compatibilidad.
-
-    La mensajería realtime utiliza WebSocket.
-    """
+    """Envía por REST únicamente en nombre del usuario autenticado."""
+    actual_id = _usuario_actual_id(usuario_actual)
+    if int(datos.remitente_id) != actual_id:
+        raise HTTPException(status_code=403, detail="No puedes enviar mensajes usando otro remitente")
+    if int(datos.destinatario_id) == actual_id:
+        raise HTTPException(status_code=400, detail="No puedes enviarte un mensaje a ti mismo")
+    destinatario = db.query(Empleado).filter(Empleado.id == datos.destinatario_id).first()
+    if not destinatario:
+        raise HTTPException(status_code=404, detail="El destinatario no existe")
 
     d = datos.dict()
-
     d["fecha"] = datetime.now()
     d["leido"] = False
+    return enviar_mensaje(db, d)
 
-    return enviar_mensaje(
-        db,
-        d,
-    )
-
-
-# =========================================================
-# SUBIR ARCHIVO
-# =========================================================
 
 @router.post("/upload")
-def subir_archivo(
-    file: UploadFile = File(...),
-):
+async def subir_archivo(file: UploadFile = File(...)):
+    """Sube adjuntos para el flujo realtime existente.
+
+    IMPORTANTE: se mantiene temporalmente compatible con el fetch actual de
+    Mensajes.jsx, que aún no envía Authorization. Por ello esta ruta continúa
+    sin autenticación hasta que se actualice también ese componente. Está
+    limitada por extensión y tamaño, pero no debe considerarse cerrada.
     """
-    Sube un archivo temporalmente.
-
-    El registro del mensaje se crea posteriormente
-    mediante WebSocket.
-    """
-
-    if not file.filename:
-        return {
-            "status": "error",
-            "msg": "No se recibió ningún archivo.",
-        }
-
-    # ---------------------------------------------------------
-    # EXTENSIÓN
-    # ---------------------------------------------------------
-
-    nombre_original = file.filename
-
+    nombre_original = Path(file.filename or "").name
+    if not nombre_original or nombre_original in {".", ".."}:
+        raise HTTPException(status_code=400, detail="No se recibió un nombre de archivo válido")
     if "." not in nombre_original:
-        return {
-            "status": "error",
-            "msg": "El archivo no tiene extensión.",
-        }
+        raise HTTPException(status_code=400, detail="El archivo no tiene extensión")
+    ext = nombre_original.rsplit(".", 1)[-1].lower().strip()
+    if ext not in EXTENSIONES_PERMITIDAS:
+        raise HTTPException(status_code=400, detail=f"Extensión no permitida: .{ext}")
 
-    ext = (
-        nombre_original
-        .rsplit(".", 1)[-1]
-        .lower()
-        .strip()
-    )
+    contenido = await file.read(MAX_ARCHIVO_BYTES + 1)
+    await file.close()
+    if len(contenido) > MAX_ARCHIVO_BYTES:
+        raise HTTPException(status_code=413, detail="El archivo supera el límite de 20 MB")
+    if not contenido:
+        raise HTTPException(status_code=400, detail="El archivo está vacío")
 
-    extensiones_permitidas = {
-        "pdf",
-        "doc",
-        "docx",
-        "jpg",
-        "jpeg",
-        "png",
-    }
-
-    if ext not in extensiones_permitidas:
-        return {
-            "status": "error",
-            "msg": f"Extensión no permitida: .{ext}",
-        }
-
-    # ---------------------------------------------------------
-    # NOMBRE SEGURO
-    # ---------------------------------------------------------
-
-    nombre = f"{uuid4()}.{ext}"
-
-    carpeta_tmp = "/tmp/mensajes"
-
-    os.makedirs(
-        carpeta_tmp,
-        exist_ok=True,
-    )
-
-    ruta_tmp = os.path.join(
-        carpeta_tmp,
-        nombre,
-    )
-
-    # ---------------------------------------------------------
-    # GUARDAR
-    # ---------------------------------------------------------
-
+    nombre = f"{uuid4().hex}.{ext}"
     try:
+        CARPETA_MENSAJES.mkdir(parents=True, exist_ok=True)
+        ruta = CARPETA_MENSAJES / nombre
+        ruta.write_bytes(contenido)
+    except OSError as exc:
+        print(f"[MENSAJES] Error guardando archivo: {exc}", flush=True)
+        raise HTTPException(status_code=500, detail="No se pudo guardar el archivo") from exc
 
-        contenido = file.file.read()
+    return {"status": "ok", "archivo_url": f"/static/mensajes/{nombre}"}
 
-        with open(
-            ruta_tmp,
-            "wb",
-        ) as f:
-            f.write(contenido)
-
-    except Exception as exc:
-
-        print(
-            f"[MENSAJES] Error guardando archivo: {exc}",
-            flush=True,
-        )
-
-        return {
-            "status": "error",
-            "msg": "No se pudo guardar el archivo.",
-        }
-
-    # ---------------------------------------------------------
-    # URL
-    # ---------------------------------------------------------
-
-    archivo_url = (
-        f"/static/mensajes/{nombre}"
-    )
-
-    return {
-        "status": "ok",
-        "archivo_url": archivo_url,
-    }
-
-
-# =========================================================
-# CONVERSACIÓN
-# =========================================================
 
 @router.get("/{usuario_id}/{otro_id}")
 def conversacion(
     usuario_id: int,
     otro_id: int,
     db: Session = Depends(get_db),
+    usuario_actual: Empleado = Depends(get_current_user),
 ):
-    return listar_conversacion(
-        db,
-        usuario_id,
-        otro_id,
-    )
+    """No permite cambiar usuario_id para leer conversaciones ajenas."""
+    actual_id = _usuario_actual_id(usuario_actual)
+    if usuario_id != actual_id:
+        raise HTTPException(status_code=403, detail="No puedes consultar la conversación de otro usuario")
+    if otro_id == actual_id:
+        raise HTTPException(status_code=400, detail="El interlocutor debe ser otro usuario")
+    return listar_conversacion(db, actual_id, otro_id)
 
-
-# =========================================================
-# MARCAR MENSAJE COMO LEÍDO
-# =========================================================
 
 @router.put("/leido/{mensaje_id}")
 def leido(
     mensaje_id: int,
     db: Session = Depends(get_db),
+    usuario_actual: Empleado = Depends(get_current_user),
 ):
-    return marcar_leido(
-        db,
-        mensaje_id,
-    )
+    """Solo el destinatario del mensaje puede marcarlo como leído."""
+    actual_id = _usuario_actual_id(usuario_actual)
+    mensaje = db.query(Mensaje).filter(Mensaje.id == mensaje_id).first()
+    if not mensaje:
+        raise HTTPException(status_code=404, detail="Mensaje no encontrado")
+    if int(mensaje.destinatario_id) != actual_id:
+        raise HTTPException(status_code=403, detail="Solo el destinatario puede marcar este mensaje como leído")
+    return marcar_leido(db, mensaje_id)
 
-
-# =========================================================
-# MARCAR CONVERSACIÓN COMO LEÍDA
-# =========================================================
 
 @router.put("/leido/conversacion/{usuario_id}/{otro_id}")
 def marcar_conversacion(
     usuario_id: int,
     otro_id: int,
     db: Session = Depends(get_db),
+    usuario_actual: Empleado = Depends(get_current_user),
 ):
-    return marcar_conversacion_leida(
-        db,
-        usuario_id,
-        otro_id,
-    )
+    """Marca como leídos solo los mensajes que el interlocutor envió al usuario actual."""
+    actual_id = _usuario_actual_id(usuario_actual)
+    if usuario_id != actual_id:
+        raise HTTPException(status_code=403, detail="No puedes marcar la conversación de otro usuario")
+    if otro_id == actual_id:
+        raise HTTPException(status_code=400, detail="El interlocutor debe ser otro usuario")
+    return marcar_conversacion_leida(db, actual_id, otro_id)
