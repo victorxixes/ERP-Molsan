@@ -1,5 +1,5 @@
 // ============================================================
-// ERP SJ‑2026 — Punto de entrada principal
+// ERP SJ-2026 — Punto de entrada principal
 // ============================================================
 
 import React, { useEffect } from "react";
@@ -9,16 +9,19 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { useAuthStore } from "./store/authStore";
 
-// Estilos globales SJ‑2026
+// Añade JWT a llamadas fetch antiguas al backend; Axios ya lo hace solo.
+import "./api/fetchAuth";
+
+// Estilos globales SJ-2026
 import "./css/index.css";
 
 // ============================================================
-// Root — Inicialización del ERP SJ‑2026
+// Root — Inicialización del ERP SJ-2026
 // ============================================================
 
 function Root() {
   useEffect(() => {
-    // 🔥 Hidratar auth al arrancar (SJ‑2026)
+    // Hidratar auth al arrancar.
     useAuthStore.getState().init();
   }, []);
 
@@ -38,4 +41,3 @@ function Root() {
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Root />
 );
-
