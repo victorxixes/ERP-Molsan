@@ -4945,11 +4945,22 @@ const cuantiaFincasParaEnvio =
             </div>
 
 
+            {actividadSeleccionada !== "documentacion-previa" && (
+              <div className="mb-4">
+                <CarpetaDigitalModal
+                  expedienteId={expediente?.id_expediente || id}
+                  modoActividad
+                  actividadId={actividadSeleccionada}
+                />
+              </div>
+            )}
+
             {actividadSeleccionada === "documentacion-previa" && (
               <div className="mb-4 space-y-4">
                 <CarpetaDigitalModal
                   expedienteId={expediente?.id_expediente || id}
                   modoActividad
+                  actividadId={actividadSeleccionada}
                   onDocumentosChange={setDocumentosCarpetaPrevia}
                 />
 
@@ -5151,89 +5162,6 @@ const cuantiaFincasParaEnvio =
                   <Boton tipo="primary" onClick={enviarSedeNotarialProtocoloAbsis} disabled={guardandoActividad || enviandoAbsis}>
                     {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
                   </Boton>
-                </div>
-              </section>
-            )}
-
-            {actividadSeleccionada === "defectos-registrales" && (
-              <section className="mt-3 rounded-2xl border border-amber-200 bg-amber-50/30 p-4">
-                <div className="mb-3">
-                  <h3 className="text-sm font-extrabold text-slate-800">Carpeta digital de defectos</h3>
-                  <p className="mt-1 text-xs text-slate-500">Dos categorías separadas para la calificación registral y la documentación de subsanación.</p>
-                </div>
-                <div className="grid gap-3 md:grid-cols-2">
-                  {[
-                    {
-                      key: "defecto-registral",
-                      titulo: "Defecto registral",
-                      descripcion: "Calificación o nota de defectos emitida por el Registro.",
-                    },
-                    {
-                      key: "subsanacion-del-defecto",
-                      titulo: "Subsanación del defecto",
-                      descripcion: "Documentos que acreditan la subsanación del defecto.",
-                    },
-                  ].map((categoria) => {
-                    const documentos = (Array.isArray(documentosCierre) ? documentosCierre : []).filter((doc) => {
-                      const categoriaDoc = String(
-                        doc?.categoria || doc?.categoria_nombre || doc?.tipo_documento ||
-                        doc?.nombre_categoria || doc?.metadata?.categoria || ""
-                      ).toLowerCase();
-                      const nombreDoc = String(
-                        doc?.nombre_original || doc?.nombre || doc?.nombre_archivo || doc?.filename || ""
-                      ).toLowerCase();
-                      const clave = categoria.key.toLowerCase();
-                      const etiqueta = categoria.titulo.toLowerCase();
-                      if (categoria.key === "defecto-registral") {
-                        return (categoriaDoc.includes("defecto") && !categoriaDoc.includes("subsan")) ||
-                          (nombreDoc.includes("defecto") && !nombreDoc.includes("subsan"));
-                      }
-                      return categoriaDoc.includes("subsan") || nombreDoc.includes("subsan");
-                    });
-                    return (
-                      <article key={categoria.key} className="rounded-xl border border-slate-200 bg-white p-4">
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <h4 className="text-sm font-extrabold text-slate-800">{categoria.titulo}</h4>
-                            <p className="mt-1 text-xs text-slate-500">{categoria.descripcion}</p>
-                          </div>
-                          <span className="shrink-0 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">
-                            {documentos.length} archivo(s)
-                          </span>
-                        </div>
-                        <div className="mt-3 border-t border-slate-100 pt-3">
-                          {documentos.length ? (
-                            <ul className="space-y-2">
-                              {documentos.map((doc, index) => {
-                                const url = doc?.url || doc?.url_descarga || doc?.download_url || doc?.ruta;
-                                return (
-                                  <li key={doc?.id || doc?.id_documento || index} className="flex items-center justify-between gap-2 text-xs">
-                                    <span className="min-w-0 break-words font-medium text-slate-700">{doc?.nombre_original || doc?.nombre || doc?.nombre_archivo || doc?.filename || `Archivo ${index + 1}`}</span>
-                                    {url && <a href={url} target="_blank" rel="noreferrer" className="shrink-0 font-bold text-blue-700 underline">Ver PDF</a>}
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          ) : (
-                            <p className="text-xs text-slate-400">Todavía no hay documentos en esta categoría.</p>
-                          )}
-                        </div>
-                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                          <span className="text-[11px] text-slate-500">{documentos.length} archivo(s)</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setMostrarCarpetaDigital(true);
-                              cargarDocumentosCierre();
-                            }}
-                            className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100"
-                          >
-                            ＋ Adjuntar/ver PDF
-                          </button>
-                        </div>
-                      </article>
-                    );
-                  })}
                 </div>
               </section>
             )}
