@@ -11,7 +11,7 @@ from openpyxl.utils import get_column_letter
 from fastapi import APIRouter, Query, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from sqlalchemy import or_, func, and_, text
+from sqlalchemy import or_, func, and_, text, cast, String
 from sqlalchemy.sql.sqltypes import Date, DateTime, Time, Integer, Float, Numeric, Boolean
 from sqlalchemy.orm import Session
 
@@ -671,6 +671,7 @@ def aplicar_filtros(
     oficina=None,
     importeMin=None,
     importeMax=None,
+    numeroExpediente=None,
 ):
     fecha_inicio = parsear_fecha(fechaInicio, "fechaInicio")
     fecha_fin = parsear_fecha(fechaFin, "fechaFin")
@@ -689,6 +690,15 @@ def aplicar_filtros(
         raise HTTPException(
             status_code=400,
             detail="El importe mínimo no puede ser superior al importe máximo.",
+        )
+
+    # Número de expediente: admite el número completo o una parte.
+    # Se convierte a texto para que funcione tanto si la columna se almacena
+    # como VARCHAR como si el esquema existente la tiene como numérica.
+    if numeroExpediente is not None and str(numeroExpediente).strip():
+        patron_expediente = f"%{str(numeroExpediente).strip()}%"
+        q = q.filter(
+            cast(Expediente.id_expediente, String).ilike(patron_expediente)
         )
 
     if nif and nif.strip():
@@ -760,19 +770,21 @@ def listado_expedientes(
     oficina: Optional[str] = None,
     importeMin: Optional[float] = None,
     importeMax: Optional[float] = None,
+    numeroExpediente: Optional[str] = Query(None, description="Número completo o parcial del expediente"),
     ordenMultiple: Optional[str] = Query(None),
     db: Session = Depends(get_db),
 ):
     q = aplicar_filtros(
         db.query(Expediente),
-        nif,
-        actividad,
-        fechaInicio,
-        fechaFin,
-        notario,
-        oficina,
-        importeMin,
-        importeMax,
+        nif=nif,
+        actividad=actividad,
+        fechaInicio=fechaInicio,
+        fechaFin=fechaFin,
+        notario=notario,
+        oficina=oficina,
+        importeMin=importeMin,
+        importeMax=importeMax,
+        numeroExpediente=numeroExpediente,
     )
 
     orden_aplicado = False
@@ -893,18 +905,20 @@ def exportar_excel_expedientes(
     oficina: Optional[str] = None,
     importeMin: Optional[float] = None,
     importeMax: Optional[float] = None,
+    numeroExpediente: Optional[str] = Query(None, description="Número completo o parcial del expediente"),
     db: Session = Depends(get_db),
 ):
     q = aplicar_filtros(
         db.query(Expediente),
-        nif,
-        actividad,
-        fechaInicio,
-        fechaFin,
-        notario,
-        oficina,
-        importeMin,
-        importeMax,
+        nif=nif,
+        actividad=actividad,
+        fechaInicio=fechaInicio,
+        fechaFin=fechaFin,
+        notario=notario,
+        oficina=oficina,
+        importeMin=importeMin,
+        importeMax=importeMax,
+        numeroExpediente=numeroExpediente,
     )
 
     expedientes = (
