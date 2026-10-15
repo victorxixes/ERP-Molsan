@@ -2935,6 +2935,239 @@ function InformeFirmas() {
 }
 
 
+// ------------------------------ INFORME DE NOTARIOS ------------------------------
+function InformeNotarios() {
+  const [filtros, setFiltros] = useState(filtrosInformeIniciales);
+  const [aplicados, setAplicados] = useState(filtrosInformeIniciales);
+  const [datos, setDatos] = useState({ resumen: {}, por_notario: [], items: [] });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [exportando, setExportando] = useState(false);
+  const [exportandoDetalle, setExportandoDetalle] = useState(false);
+  const [claveNotarioSeleccionado, setClaveNotarioSeleccionado] = useState("");
+
+  useEffect(() => {
+    let activo = true;
+    const cargar = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+        const respuesta = await axios.get(`${API_BASE}/informes/notarios`, { params });
+        if (activo) {
+          setDatos({
+            resumen: respuesta.data?.resumen || {},
+            por_notario: respuesta.data?.por_notario || [],
+            items: respuesta.data?.items || [],
+          });
+        }
+      } catch (e) {
+        if (activo) {
+          setDatos({ resumen: {}, por_notario: [], items: [] });
+          setError(e?.response?.data?.detail || "No se ha podido cargar el informe de notarios. Comprueba que el endpoint esté desplegado en el backend.");
+        }
+      } finally {
+        if (activo) setLoading(false);
+      }
+    };
+    cargar();
+    return () => { activo = false; };
+  }, [aplicados]);
+
+  const cambiar = (campo, valor) => setFiltros((actual) => ({ ...actual, [campo]: valor }));
+  const aplicar = (e) => {
+    e.preventDefault();
+    if (filtros.fecha_desde && filtros.fecha_hasta && filtros.fecha_desde > filtros.fecha_hasta) {
+      setError("La fecha desde no puede ser posterior a la fecha hasta.");
+      return;
+    }
+    setError("");
+    setClaveNotarioSeleccionado("");
+    setAplicados({ ...filtros });
+  };
+  const limpiar = () => {
+    const inicial = filtrosInformeIniciales();
+    setFiltros(inicial);
+    setAplicados(inicial);
+    setClaveNotarioSeleccionado("");
+    setError("");
+  };
+
+  const resumen = datos.resumen || {};
+  const porNotario = datos.por_notario || [];
+  const items = datos.items || [];
+  const periodo = `${fechaInformeVisible(aplicados.fecha_desde)} – ${fechaInformeVisible(aplicados.fecha_hasta)}`;
+  const grupoSeleccionado = porNotario.find((f) => f.clave_notario === claveNotarioSeleccionado);
+  const detalle = claveNotarioSeleccionado
+    ? items.filter((f) => f.clave_notario === claveNotarioSeleccionado)
+    : items;
+
+  const columnasResumen = [
+    { key: "nombre_notario", label: "Notario" },
+    { key: "nif_notario", label: "NIF" },
+    { key: "total_firmas", label: "Firmados" },
+    { key: "vc", label: "Videoconferencia" },
+    { key: "presencial", label: "Presencial" },
+    { key: "sin_clasificar", label: "Sin clasificar" },
+    { key: "con_protocolo", label: "Con protocolo" },
+    { key: "media_dias_envio_firma", label: "Media envío-firma", render: (f) => f.media_dias_envio_firma == null ? "—" : `${numeroInforme(f.media_dias_envio_firma, 1)} días` },
+    { key: "ultima_firma", label: "Última firma", render: (f) => fechaInformeVisible(f.ultima_firma) },
+    { key: "tipos_operacion", label: "Tipos de operación", render: (f) => (f.tipos_operacion || []).join(", ") || "—" },
+  ];
+  const columnasDetalle = [
+    { key: "fecha_firma", label: "Fecha firma", render: (f) => fechaInformeVisible(f.fecha_firma) },
+    { key: "id_expediente", label: "N.º expediente" },
+    { key: "nombre_titular", label: "Titular" },
+    { key: "tipo_operacion", label: "Tipo operación" },
+    { key: "modalidad", label: "Modalidad", render: (f) => f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : "Sin clasificar" },
+    { key: "apoderado", label: "Apoderado" },
+    { key: "fecha_envio", label: "Fecha envío", render: (f) => fechaInformeVisible(f.fecha_envio) },
+    { key: "dias_envio_firma", label: "Días envío-firma" },
+    { key: "protocolo", label: "Protocolo" },
+    { key: "oficina", label: "Oficina" },
+  ];
+
+  const exportarExcel = async () => {
+    setExportando(true);
+    setError("");
+    try {
+      const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+      await descargarExcelBackend(`${API_BASE}/informes/notarios/exportar-excel`, params, `informe_notarios_${aplicados.fecha_desde || "desde_inicio"}_${aplicados.fecha_hasta || "hasta_hoy"}.xlsx`);
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo exportar el resumen de notarios a Excel.");
+    } finally {
+      setExportando(false);
+    }
+  };
+
+  const exportarDetalleExcel = async () => {
+    setExportandoDetalle(true);
+    setError("");
+    try {
+      const params = Object.fromEntries(Object.entries(aplicados).filter(([, v]) => v !== "" && v != null));
+      if (grupoSeleccionado?.nombre_notario) params.notario = grupoSeleccionado.nombre_notario;
+      await descargarExcelBackend(`${API_BASE}/informes/notarios/exportar-detalle-excel`, params, `detalle_firmas_notarios_${aplicados.fecha_desde || "desde_inicio"}_${aplicados.fecha_hasta || "hasta_hoy"}.xlsx`);
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo exportar el detalle de firmas a Excel.");
+    } finally {
+      setExportandoDetalle(false);
+    }
+  };
+
+  const exportarResumenPDF = () => imprimirInforme("Informe de notarios", periodo, columnasResumen, porNotario);
+  const exportarDetallePDF = () => imprimirInforme(
+    grupoSeleccionado ? `Firmas de ${grupoSeleccionado.nombre_notario}` : "Detalle de firmas por notario",
+    periodo,
+    columnasDetalle,
+    detalle
+  );
+
+  const topNotarios = porNotario.slice(0, 8);
+  const maxFirmasNotario = topNotarios.reduce((maximo, fila) => Math.max(maximo, Number(fila.total_firmas || 0)), 1);
+
+  return (
+    <section className="space-y-5">
+      <header className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
+        <div className="flex items-start gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">🏛️</span>
+          <div>
+            <h2 className="text-xl font-bold text-slate-800">Informes de notarios</h2>
+            <p className="mt-1 text-sm text-slate-500">Actividad notarial medida por expedientes con fecha de firma real. Se distinguen las firmas por videoconferencia, presenciales y las pendientes de clasificar.</p>
+          </div>
+        </div>
+      </header>
+
+      <form onSubmit={aplicar} className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl md:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div><h3 className="font-bold text-slate-800">Filtros del informe</h3><p className="mt-1 text-xs text-slate-500">Las fechas se aplican a la firma realizada, no a las citas previstas de Agenda.</p></div>
+          <button type="button" onClick={limpiar} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Restablecer</button>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <CampoFiltroInforme label="Fecha firma desde" type="date" value={filtros.fecha_desde} onChange={(v) => cambiar("fecha_desde", v)} />
+          <CampoFiltroInforme label="Fecha firma hasta" type="date" value={filtros.fecha_hasta} onChange={(v) => cambiar("fecha_hasta", v)} />
+          <SelectFiltroInforme label="Modalidad de firma" value={filtros.modalidad} onChange={(v) => cambiar("modalidad", v)}><option value="">Todas las modalidades</option><option value="VC">Videoconferencia</option><option value="PRESENCIAL">Presencial</option><option value="SIN_CLASIFICAR">Sin clasificar</option></SelectFiltroInforme>
+          <CampoFiltroInforme label="Tipo de operación" value={filtros.tipo_operacion} onChange={(v) => cambiar("tipo_operacion", v)} placeholder="Ej. Cancelación sin provisión" />
+          <CampoFiltroInforme label="Notario / NIF" value={filtros.notario} onChange={(v) => cambiar("notario", v)} placeholder="Nombre o NIF del notario" />
+          <CampoFiltroInforme label="Apoderado" value={filtros.apoderado} onChange={(v) => cambiar("apoderado", v)} placeholder="Nombre del apoderado" />
+          <div className="sm:col-span-2"><CampoFiltroInforme label="Búsqueda general" value={filtros.q} onChange={(v) => cambiar("q", v)} placeholder="Expediente, titular, solicitante, protocolo u oficina" /></div>
+        </div>
+        <div className="mt-4 flex flex-wrap justify-end gap-3"><button type="submit" className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">Aplicar filtros</button></div>
+      </form>
+
+      <AvisoInforme error={error} />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+        <InformeKpi icono="✍️" titulo="Expedientes firmados" valor={numeroInforme(resumen.total_firmas)} subtitulo="Firmas reales en el periodo" />
+        <InformeKpi icono="🏛️" titulo="Notarios con actividad" valor={numeroInforme(resumen.total_notarios)} subtitulo="Con al menos una firma" />
+        <InformeKpi icono="💻" titulo="Videoconferencia" valor={numeroInforme(resumen.videoconferencia)} />
+        <InformeKpi icono="🤝" titulo="Presencial" valor={numeroInforme(resumen.presencial)} />
+        <InformeKpi icono="❔" titulo="Sin clasificar" valor={numeroInforme(resumen.sin_clasificar)} subtitulo="Modalidad pendiente de confirmar" />
+        <InformeKpi icono="⏱️" titulo="Media envío-firma" valor={resumen.media_dias_envio_firma == null ? "—" : `${numeroInforme(resumen.media_dias_envio_firma, 1)} días`} subtitulo={`${numeroInforme(resumen.firmas_con_tiempo_calculable)} con fechas válidas`} />
+      </div>
+
+      {(Number(resumen.sin_clasificar || 0) > 0 || Number(resumen.sin_notario_identificado || 0) > 0 || (Number(resumen.total_firmas || 0) > Number(resumen.firmas_con_tiempo_calculable || 0))) && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="font-bold">Calidad de los datos del histórico</p>
+          <p className="mt-1">
+            {Number(resumen.sin_clasificar || 0) > 0 ? `${numeroInforme(resumen.sin_clasificar)} firma(s) sin modalidad confirmada. ` : ""}
+            {Number(resumen.sin_notario_identificado || 0) > 0 ? `${numeroInforme(resumen.sin_notario_identificado)} grupo(s) sin notario identificado. ` : ""}
+            {Number(resumen.total_firmas || 0) > Number(resumen.firmas_con_tiempo_calculable || 0) ? `${numeroInforme(Number(resumen.total_firmas || 0) - Number(resumen.firmas_con_tiempo_calculable || 0))} firma(s) sin fecha de envío válida.` : ""}
+          </p>
+        </div>
+      )}
+
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4">
+          <div><h3 className="font-bold text-slate-800">Ranking de actividad por notario</h3><p className="mt-1 text-xs text-slate-500">Los primeros puestos se ordenan por número de expedientes firmados en el periodo.</p></div>
+          <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">{periodo}</span>
+        </div>
+        {loading ? <PanelEstadoInforme loading /> : topNotarios.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas de notarios para este periodo y filtros." /> : (
+          <div className="space-y-4 p-5">
+            {topNotarios.map((fila, indice) => (
+              <button key={fila.clave_notario} type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === fila.clave_notario ? "" : fila.clave_notario)} className={`w-full rounded-xl border p-3 text-left transition hover:border-blue-200 hover:bg-blue-50/40 ${claveNotarioSeleccionado === fila.clave_notario ? "border-blue-300 bg-blue-50" : "border-slate-100 bg-white"}`}>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-blue-700">{indice + 1}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold text-slate-800">{fila.nombre_notario}</span><span className="block text-xs text-slate-400">{fila.nif_notario || "NIF no informado"}</span></span></div>
+                  <span className="shrink-0 text-lg font-bold text-slate-800">{numeroInforme(fila.total_firmas)}</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${Math.min(100, Math.max(0, (Number(fila.total_firmas || 0) / maxFirmasNotario) * 100))}%` }} /></div>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500"><span>VC: <strong className="text-slate-700">{numeroInforme(fila.vc)}</strong></span><span>Presencial: <strong className="text-slate-700">{numeroInforme(fila.presencial)}</strong></span><span>Sin clasificar: <strong className="text-slate-700">{numeroInforme(fila.sin_clasificar)}</strong></span><span>Última firma: <strong className="text-slate-700">{fechaInformeVisible(fila.ultima_firma)}</strong></span></div>
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4">
+          <div><h3 className="font-bold text-slate-800">Resumen por notario</h3><p className="mt-1 text-xs text-slate-500">Incluye firmas por modalidad, media entre envío y firma, protocolo y tipos de operación.</p></div>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" disabled={loading || exportando} onClick={exportarExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportando ? "Exportando…" : "📗 Excel resumen"}</button>
+            <button type="button" disabled={loading || porNotario.length === 0} onClick={exportarResumenPDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 PDF resumen</button>
+          </div>
+        </div>
+        {loading ? <PanelEstadoInforme loading /> : porNotario.length === 0 ? <PanelEstadoInforme vacio /> : (
+          <div className="max-h-[620px] overflow-auto"><table className="w-full min-w-[1400px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">NIF</th><th className="whitespace-nowrap px-4 py-3 text-right">Firmados</th><th className="whitespace-nowrap px-4 py-3 text-right">VC</th><th className="whitespace-nowrap px-4 py-3 text-right">Presencial</th><th className="whitespace-nowrap px-4 py-3 text-right">Sin clasificar</th><th className="whitespace-nowrap px-4 py-3 text-right">Con protocolo</th><th className="whitespace-nowrap px-4 py-3 text-right">Media días</th><th className="whitespace-nowrap px-4 py-3">Última firma</th><th className="whitespace-nowrap px-4 py-3">Operaciones</th><th className="whitespace-nowrap px-4 py-3">Detalle</th></tr></thead><tbody>{porNotario.map((f) => <tr key={f.clave_notario} className={`border-t border-slate-100 hover:bg-blue-50/40 ${claveNotarioSeleccionado === f.clave_notario ? "bg-blue-50/70" : ""}`}><td className="px-4 py-3 font-semibold text-slate-800">{f.nombre_notario}</td><td className="whitespace-nowrap px-4 py-3 text-slate-500">{f.nif_notario || "—"}</td><td className="px-4 py-3 text-right font-bold">{numeroInforme(f.total_firmas)}</td><td className="px-4 py-3 text-right text-blue-700">{numeroInforme(f.vc)}</td><td className="px-4 py-3 text-right text-emerald-700">{numeroInforme(f.presencial)}</td><td className="px-4 py-3 text-right text-amber-700">{numeroInforme(f.sin_clasificar)}</td><td className="px-4 py-3 text-right">{numeroInforme(f.con_protocolo)}</td><td className="px-4 py-3 text-right">{f.media_dias_envio_firma == null ? "—" : numeroInforme(f.media_dias_envio_firma, 1)}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.ultima_firma)}</td><td className="px-4 py-3" title={(f.tipos_operacion || []).join(", ")}>{numeroInforme(f.numero_tipos_operacion)}</td><td className="px-4 py-3"><button type="button" onClick={() => setClaveNotarioSeleccionado((actual) => actual === f.clave_notario ? "" : f.clave_notario)} className="whitespace-nowrap rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">{claveNotarioSeleccionado === f.clave_notario ? "Ocultar" : "Ver firmas"}</button></td></tr>)}</tbody></table></div>
+        )}
+      </section>
+
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-5 py-4">
+          <div><h3 className="font-bold text-slate-800">{grupoSeleccionado ? `Firmas de ${grupoSeleccionado.nombre_notario}` : "Detalle de firmas por notario"}</h3><p className="mt-1 text-xs text-slate-500">{numeroInforme(detalle.length)} expediente(s) con fecha de firma real. {grupoSeleccionado ? "Se ha filtrado el detalle por el notario seleccionado." : "Puedes seleccionar un notario en el ranking o en el resumen para acotar la lista."}</p></div>
+          <div className="flex flex-wrap gap-2">
+            {claveNotarioSeleccionado && <button type="button" onClick={() => setClaveNotarioSeleccionado("")} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Ver todos</button>}
+            <button type="button" disabled={loading || exportandoDetalle} onClick={exportarDetalleExcel} className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{exportandoDetalle ? "Exportando…" : "📗 Excel detalle"}</button>
+            <button type="button" disabled={loading || detalle.length === 0} onClick={exportarDetallePDF} className="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">📄 PDF detalle</button>
+          </div>
+        </div>
+        {loading ? <PanelEstadoInforme loading /> : detalle.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay firmas reales con los filtros seleccionados." /> : (
+          <div className="max-h-[650px] overflow-auto"><table className="w-full min-w-[1250px] text-sm"><thead className="sticky top-0 z-10 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr><th className="whitespace-nowrap px-4 py-3">Fecha firma</th><th className="whitespace-nowrap px-4 py-3">N.º expediente</th><th className="whitespace-nowrap px-4 py-3">Titular</th><th className="whitespace-nowrap px-4 py-3">Tipo operación</th><th className="whitespace-nowrap px-4 py-3">Modalidad</th><th className="whitespace-nowrap px-4 py-3">Notario</th><th className="whitespace-nowrap px-4 py-3">Apoderado</th><th className="whitespace-nowrap px-4 py-3">Fecha envío</th><th className="whitespace-nowrap px-4 py-3 text-right">Días envío-firma</th><th className="whitespace-nowrap px-4 py-3">Protocolo</th><th className="whitespace-nowrap px-4 py-3">Oficina</th></tr></thead><tbody>{detalle.map((f, i) => <tr key={f.id ?? `${f.id_expediente}-${i}`} className="border-t border-slate-100 hover:bg-blue-50/40"><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_firma)}</td><td className="px-4 py-3 font-semibold text-blue-700">{f.id_expediente || "—"}</td><td className="px-4 py-3">{f.nombre_titular || "—"}</td><td className="px-4 py-3">{f.tipo_operacion || "—"}</td><td className="px-4 py-3">{f.modalidad === "VC" ? "Videoconferencia" : f.modalidad === "PRESENCIAL" ? "Presencial" : <span className="font-semibold text-amber-700">Sin clasificar</span>}</td><td className="px-4 py-3">{f.nombre_notario || "—"}</td><td className="px-4 py-3">{f.apoderado || "—"}</td><td className="whitespace-nowrap px-4 py-3">{fechaInformeVisible(f.fecha_envio)}</td><td className="px-4 py-3 text-right">{f.dias_envio_firma == null ? "—" : numeroInforme(f.dias_envio_firma)}</td><td className="px-4 py-3">{f.protocolo || "—"}</td><td className="px-4 py-3">{f.oficina || "—"}</td></tr>)}</tbody></table></div>
+        )}
+      </section>
+    </section>
+  );
+}
+
+
 function ApartadoInformePendiente({ apartado }) {
   const detalle = {
     firmas: {
@@ -3055,6 +3288,8 @@ export default function Informes() {
         <InformeCitasApoderados />
       ) : apartadoActivo === "firmas" ? (
         <InformeFirmas />
+      ) : apartadoActivo === "notarios" ? (
+        <InformeNotarios />
       ) : (
         <ApartadoInformePendiente apartado={apartadoSeleccionado} />
       )}
