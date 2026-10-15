@@ -143,6 +143,18 @@ export async function obtenerCalificacionRegistro(
 }
 
 // ============================================================
+// CARPETA DIGITAL: LISTADO DE DOCUMENTOS
+// ============================================================
+
+export async function listarDocumentosCarpetaDigital(idExpediente) {
+  const response = await axios.get(
+    `/expedientes/${encodeURIComponent(idExpediente)}/carpeta-digital`
+  );
+
+  return response.data;
+}
+
+// ============================================================
 // COPIAR CALIFICACIÓN REGISTRAL A LA CARPETA DIGITAL
 // ============================================================
 
