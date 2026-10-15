@@ -789,7 +789,7 @@ def inicializar_tabla_expediente_acciones():
             flush=True,
         )
 
-                # ====================================================
+        # ====================================================
         # INICIALIZAR TABLA DE CARPETA DIGITAL
         # ====================================================
 
@@ -936,9 +936,9 @@ def inicializar_tabla_historial_defectos():
         print("[DEFECTOS] ERROR creando tabla de historial:", repr(exc), flush=True)
 
 
-// ============================================================
-// DEFECTOS DE EXPEDIENTES
-// ============================================================
+# ============================================================
+# DEFECTOS DE EXPEDIENTES
+# ============================================================
 
 export async function listarDefectosExpediente(idExpediente) {
   const response = await axios.get(
@@ -970,9 +970,9 @@ export async function actualizarDefectoExpediente(
   return response.data;
 }
 
-// ============================================================
-// REGISTRO DE SUBSANACIÓN
-// ============================================================
+# ============================================================
+# REGISTRO DE SUBSANACIÓN
+# ============================================================
 
 export async function registrarSubsanacionDefecto(
   idExpediente,
@@ -992,9 +992,9 @@ export async function registrarSubsanacionDefecto(
   return response.data;
 }
 
-// ============================================================
-// CATÁLOGO DE SUBTIPOS DE DEFECTO
-// ============================================================
+# ============================================================
+# CATÁLOGO DE SUBTIPOS DE DEFECTO
+# ============================================================
 
 export async function listarSubtiposDefecto(incluirInactivos = false) {
   const response = await axios.get("/expedientes/subtipos-defecto", {
@@ -1044,9 +1044,9 @@ export async function listarTiposCargaHipotecaria() {
   return response.data;
 }
 
-// ============================================================
-// PDF DE CALIFICACIÓN REGISTRAL
-// ============================================================
+# ============================================================
+# PDF DE CALIFICACIÓN REGISTRAL
+# ============================================================
 
 export async function subirCalificacionRegistro(
   idExpediente,
@@ -1078,9 +1078,9 @@ export async function obtenerCalificacionRegistro(
   return response.data;
 }
 
-// ============================================================
-// CARPETA DIGITAL: LISTADO DE DOCUMENTOS
-// ============================================================
+# ============================================================
+# CARPETA DIGITAL: LISTADO DE DOCUMENTOS
+# ============================================================
 
 export async function listarDocumentosCarpetaDigital(idExpediente) {
   const response = await axios.get(
@@ -1090,9 +1090,9 @@ export async function listarDocumentosCarpetaDigital(idExpediente) {
   return response.data;
 }
 
-// ============================================================
-// COPIAR CALIFICACIÓN REGISTRAL A LA CARPETA DIGITAL
-// ============================================================
+# ============================================================
+# COPIAR CALIFICACIÓN REGISTRAL A LA CARPETA DIGITAL
+# ============================================================
 
 export async function subirCalificacionACarpetaDigital(
   idExpediente,
@@ -1113,9 +1113,9 @@ export async function subirCalificacionACarpetaDigital(
 
 
 
-// ============================================================
-// HISTORIAL PERSISTENTE DE DEFECTOS
-// ============================================================
+# ============================================================
+# HISTORIAL PERSISTENTE DE DEFECTOS
+# ============================================================
 
 export async function listarHistorialDefectosExpediente(idExpediente, limite = 100) {
   const response = await axios.get(
