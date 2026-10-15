@@ -120,6 +120,8 @@ def _actividad_dashboard(
         "facturacion y cierre",
         "facturación y cierre",
         "facturacion_cierre",
+        "cierre del expediente",
+        "cierre_del_expediente",
     }:
         return "facturacion_cierre"
 
