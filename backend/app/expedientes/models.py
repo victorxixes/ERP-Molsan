@@ -61,6 +61,14 @@ class Expediente(Base):
     fecha_inicio_actividad = Column(Date, nullable=True)
     fecha_fin_actividad = Column(Date, nullable=True)
 
+    # Campos visibles en el circuito de actividades y en el listado.
+    # La migración idempotente del router crea estas columnas en PostgreSQL.
+    ultima_accion = Column(String(500), nullable=True)
+    fecha_ultima_accion = Column(Date, nullable=True)
+    sol = Column(String(100), nullable=True)
+    cs = Column(String(100), nullable=True)
+    ns = Column(String(100), nullable=True)
+
     fecha_envio_notario = Column(Date, nullable=True)
     # Campos complementarios de las actividades del workflow
     fecha_envio = Column(Date, nullable=True)
