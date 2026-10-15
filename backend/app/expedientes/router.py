@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.agenda.models import Cita
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 from backend.app.expedientes.models import (
     Expediente,
     ExpedienteDocumentoEscritura,
@@ -1939,6 +1940,81 @@ def actualizar_campos_actividad(
     respuesta["campos_guardados"] = guardados
     respuesta["campos_no_disponibles"] = no_disponibles
     return respuesta
+
+
+# ============================================================
+# REGISTRO LOCAL DE SOLICITUDES ABSIS PARA SEDE NOTARIAL CON PROTOCOLO
+# IMPORTANTE: guarda una solicitud pendiente; no llama a ABSIS ni cambia actividad.
+# ============================================================
+
+@router.post("/{id_expediente}/sede-notarial-protocolo/enviar-a-absis")
+def registrar_solicitud_absis_sede_notarial_protocolo(
+    id_expediente: str,
+    datos: Dict[str, Any],
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    expediente = (
+        db.query(Expediente)
+        .filter(Expediente.id_expediente == str(id_expediente))
+        .first()
+    )
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    mover = bool(datos.get("mover_siguiente_actividad", False))
+    payload_json = json.dumps(datos, ensure_ascii=False, default=str)
+    try:
+        db.execute(text("""
+            CREATE TABLE IF NOT EXISTS expediente_absis_solicitudes (
+                id BIGSERIAL PRIMARY KEY,
+                expediente_id VARCHAR(100) NOT NULL,
+                actividad VARCHAR(100) NOT NULL,
+                payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+                solicitado_por INTEGER NULL,
+                mover_siguiente_actividad BOOLEAN NOT NULL DEFAULT FALSE,
+                estado VARCHAR(40) NOT NULL DEFAULT 'PENDIENTE_CONFIGURACION',
+                creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        result = db.execute(text("""
+            INSERT INTO expediente_absis_solicitudes
+                (expediente_id, actividad, payload, solicitado_por,
+                 mover_siguiente_actividad, estado, creado_en)
+            VALUES
+                (:expediente_id, :actividad, CAST(:payload AS JSONB),
+                 :solicitado_por, :mover, 'PENDIENTE_CONFIGURACION', CURRENT_TIMESTAMP)
+            RETURNING id
+        """), {
+            "expediente_id": str(id_expediente),
+            "actividad": "sede-notarial-protocolo",
+            "payload": payload_json,
+            "solicitado_por": getattr(usuario, "id", None),
+            "mover": mover,
+        })
+        solicitud_id = result.scalar()
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"No se pudo registrar localmente la solicitud ABSIS: {str(exc)[:300]}",
+        )
+
+    return {
+        "ok": True,
+        "solicitud_id": solicitud_id,
+        "id_expediente": str(id_expediente),
+        "actividad": "sede-notarial-protocolo",
+        "registrado_localmente": True,
+        "transmitido_a_absis": False,
+        "mover_siguiente_actividad": mover,
+        "actividad_modificada": False,
+        "mensaje": (
+            "Solicitud guardada localmente. No se ha transmitido a ABSIS ni "
+            "se ha cambiado la actividad; falta configurar y probar la integración externa."
+        ),
+    }
 
 
 # ============================================================
