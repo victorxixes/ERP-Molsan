@@ -6,7 +6,11 @@ from backend.app.auth.schemas import LoginRequest
 from backend.app.empleados.service import login_empleado
 from backend.app.seguridad.auditoria.service import registrar_auditoria
 from backend.app.seguridad.logs.service import registrar_log
+from backend.app.auth.route_guard import registrar_guard_global
 
+# Instala una protección JWT global para las rutas HTTP /api.
+# Se ejecutará al arrancar, cuando todos los routers ya estén registrados.
+registrar_guard_global()
 
 router = APIRouter(
     prefix="/auth",
@@ -20,19 +24,7 @@ def login(
     request: Request,
     db: Session = Depends(get_db),
 ):
-    # ========================================================
-    # IP
-    # ========================================================
-
-    ip = (
-        request.client.host
-        if request.client
-        else None
-    )
-
-    # ========================================================
-    # LOGIN
-    # ========================================================
+    ip = request.client.host if request.client else None
 
     resultado = login_empleado(
         db,
@@ -40,22 +32,13 @@ def login(
         data.password,
     )
 
-    # ========================================================
-    # LOGIN INCORRECTO
-    # ========================================================
-
     if not resultado:
-
         registrar_log(
             db=db,
             evento="login_error",
-            detalle=(
-                f"Credenciales incorrectas "
-                f"para {data.usuario}"
-            ),
+            detalle=f"Credenciales incorrectas para {data.usuario}",
             ip=ip,
         )
-
         registrar_auditoria(
             db=db,
             usuario=data.usuario,
@@ -64,37 +47,20 @@ def login(
             descripcion="Credenciales incorrectas",
             ip=ip,
         )
-
         raise HTTPException(
             status_code=401,
             detail="Credenciales incorrectas",
         )
 
-    # ========================================================
-    # DATOS LOGIN CORRECTO
-    # ========================================================
-
     empleado = resultado["empleado"]
     token = resultado["token"]
-
-    # ========================================================
-    # LOG TÉCNICO
-    # ========================================================
 
     registrar_log(
         db=db,
         evento="login_success",
-        detalle=(
-            f"Inicio de sesión correcto "
-            f"para {data.usuario}"
-        ),
+        detalle=f"Inicio de sesión correcto para {data.usuario}",
         ip=ip,
     )
-
-    # ========================================================
-    # AUDITORÍA FUNCIONAL
-    # ========================================================
-
     registrar_auditoria(
         db=db,
         usuario=data.usuario,
@@ -103,10 +69,6 @@ def login(
         descripcion="Inicio de sesión",
         ip=ip,
     )
-
-    # ========================================================
-    # RESPUESTA
-    # ========================================================
 
     return {
         "token": token,
