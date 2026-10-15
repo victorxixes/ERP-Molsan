@@ -1,4 +1,3 @@
-```python
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
@@ -58,4 +57,4 @@ class NotariaResponse(NotariaBase):
 
     class Config:
         orm_mode = True
-```
+
