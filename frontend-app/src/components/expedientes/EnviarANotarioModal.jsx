@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
+import CarpetaDigitalModal from "./CarpetaDigitalModal";
 import axios from "../../api/axios";
 
 // ============================================================
@@ -134,8 +135,8 @@ function crearFormularioDesdeExpediente(expediente) {
           nif: obtenerValor(expediente, "nif_notario"),
           municipio: obtenerValor(expediente, "poblacion"),
           provincia: obtenerValor(expediente, "provincia"),
-          apoderado: obtenerValor(expediente, "apoderado", "nombre_apoderado", "apoderado_nombre"),
-          tipo_firma: obtenerValor(expediente, "tipo_firma", "tipoFirma", "tipo_firma_notarial"),
+          apoderado: obtenerValor(expediente, "apoderado"),
+          tipo_firma: obtenerValor(expediente, "tipo_firma"),
         }
       : null,
     tipo_documento: obtenerValor(expediente, "tipo_documento"),
@@ -381,8 +382,6 @@ export default function EnviarANotarioModal({
     const nombreCompleto = String(
       notarioSeleccionado.nombre ??
       notarioSeleccionado.nombre_notario ??
-      notarioSeleccionado.notario_nombre ??
-      notarioSeleccionado.nombre_completo ??
       notarioSeleccionado.nombres ??
       notarioSeleccionado.notario ??
       ""
@@ -405,8 +404,6 @@ export default function EnviarANotarioModal({
         notarioSeleccionado.id ??
         notarioSeleccionado.notario_id ??
         notarioSeleccionado.id_notario ??
-        notarioSeleccionado.notaria_id ??
-        notarioSeleccionado.id_notaria ??
         0
       ),
       nombre: nombre || "",
@@ -414,20 +411,8 @@ export default function EnviarANotarioModal({
       nif: notarioSeleccionado.nif ?? notarioSeleccionado.nif_notario ?? notarioSeleccionado.documento ?? "",
       municipio: notarioSeleccionado.municipio ?? notarioSeleccionado.poblacion ?? notarioSeleccionado.localidad ?? "",
       provincia: notarioSeleccionado.provincia ?? notarioSeleccionado.provincia_notario ?? "",
-      apoderado:
-        notarioSeleccionado.apoderado ??
-        notarioSeleccionado.nombre_apoderado ??
-        notarioSeleccionado.apoderado_nombre ??
-        notarioSeleccionado.apoderado_notarial ??
-        notarioSeleccionado.apoderado_nombre_completo ??
-        "",
-      tipo_firma:
-        notarioSeleccionado.tipo_firma ??
-        notarioSeleccionado.tipoFirma ??
-        notarioSeleccionado.tipo_firma_notarial ??
-        notarioSeleccionado.firma ??
-        notarioSeleccionado.modalidad_firma ??
-        "",
+      apoderado: notarioSeleccionado.apoderado ?? notarioSeleccionado.nombre_apoderado ?? "",
+      tipo_firma: notarioSeleccionado.tipo_firma ?? notarioSeleccionado.tipoFirma ?? notarioSeleccionado.tipo_firma_notarial ?? "",
     };
 
     setForm((actual) => ({ ...actual, notario: normalizado }));
@@ -632,14 +617,11 @@ export default function EnviarANotarioModal({
       console.error("RESPONSE:", err?.response?.data);
       console.error("STATUS:", err?.response?.status);
 
-      const detalle = err?.response?.data?.detail;
       setError(
-        typeof detalle === "string"
-          ? detalle
-          : detalle?.mensaje || JSON.stringify(detalle) ||
-            err?.response?.data?.message ||
-            err?.message ||
-            "No se ha podido completar el envío a notario."
+        err?.response?.data?.detail ||
+          err?.response?.data?.message ||
+          err?.message ||
+          "No se ha podido completar el envío a notario."
       );
     } finally {
       setLoading(false);
@@ -670,7 +652,7 @@ export default function EnviarANotarioModal({
       }}
     >
       <div
-        className="flex max-h-[96vh] w-full max-w-7xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"
+        className="flex max-h-[96vh] w-full max-w-[1600px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"
         onMouseDown={(event) => event.stopPropagation()}
       >
         {/* CABECERA */}
@@ -703,10 +685,33 @@ export default function EnviarANotarioModal({
           </button>
         </div>
 
-        {/* CONTENIDO: DOS COLUMNAS */}
+        {/* CONTENIDO: DOCUMENTACIÓN PREVIA A LA IZQUIERDA + FORMULARIO */}
 
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">
-          <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 xl:gap-6">
+          <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(330px,0.9fr)_minmax(0,1.8fr)] xl:gap-6">
+            {/* COLUMNA IZQUIERDA — DOCUMENTACIÓN PREVIA COMPARTIDA CON CARPETA DIGITAL */}
+            <aside className="min-w-0 xl:sticky xl:top-2">
+              <div className="mb-3 rounded-2xl border border-indigo-200 bg-indigo-50/70 px-4 py-3">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-lg shadow-sm">📂</span>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-extrabold text-slate-900">Documentación previa</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-slate-600">Adjunta y consulta los documentos necesarios para preparar el envío al notario.</p>
+                    <p className="mt-1 text-[11px] font-semibold text-indigo-700">Los archivos se guardan también en la Carpeta Digital del expediente.</p>
+                  </div>
+                </div>
+              </div>
+
+              <CarpetaDigitalModal
+                expedienteId={expediente.id_expediente}
+                modoActividad
+                actividadId="documentacion-previa"
+              />
+            </aside>
+
+            {/* COLUMNA DERECHA — DATOS DEL ENVÍO Y FACTURACIÓN */}
+            <div className="min-w-0">
+              <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 xl:gap-6">
             {/* COLUMNA IZQUIERDA — ENVÍO AL NOTARIO */}
 
             <div className="min-w-0 space-y-6">
@@ -1269,6 +1274,8 @@ export default function EnviarANotarioModal({
                   </p>
                 </div>
               </section>
+            </div>
+              </div>
             </div>
           </div>
 
