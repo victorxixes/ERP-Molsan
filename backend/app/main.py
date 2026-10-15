@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.responses import FileResponse
+from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
@@ -190,11 +192,33 @@ os.makedirs(
     exist_ok=True,
 )
 
-app.mount(
-    "/api/fotos",
-    StaticFiles(directory=FOTOS_DIR),
-    name="fotos",
-)
+# Las fotografías de empleados contienen datos personales. No se publican como
+# StaticFiles: se sirven mediante una ruta autenticada y con permiso de lectura
+# del módulo Empleados. Las URLs existentes /api/fotos/... se conservan.
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
+
+FOTOS_ROOT = Path(FOTOS_DIR).resolve()
+EXTENSIONES_FOTO_PERMITIDAS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+
+@app.get("/api/fotos/{ruta:path}", include_in_schema=False)
+def servir_fotografia_empleado(
+    ruta: str,
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "empleados", "ver")
+
+    # Resolver la ruta completa y comprobar que no escapa del directorio de fotos.
+    fichero = (FOTOS_ROOT / ruta).resolve()
+    if FOTOS_ROOT not in fichero.parents or not fichero.is_file():
+        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
+    if fichero.suffix.lower() not in EXTENSIONES_FOTO_PERMITIDAS:
+        raise HTTPException(status_code=404, detail="Fotografía no encontrada")
+
+    return FileResponse(
+        path=str(fichero),
+        headers={"Cache-Control": "private, no-store, max-age=0"},
+    )
 
 
 # ============================================================
