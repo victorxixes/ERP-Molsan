@@ -19,6 +19,8 @@ import {
   registrarSubsanacionDefecto,
   subirCalificacionRegistro,
   obtenerCalificacionRegistro,
+  listarDocumentosCarpetaDigital,
+  subirCalificacionACarpetaDigital,
   listarTiposCargaHipotecaria,
 } from "../../api/expedienteDefectos";
 
@@ -2571,11 +2573,64 @@ async function guardarDefectoRegistral() {
     const idDefecto = guardado.id ?? guardado.id_defecto ?? defectoEditandoId;
     if (idDefecto) setDefectoEditandoId(idDefecto);
 
+    let avisoCarpetaDigital = "";
+
     if (archivoCalificacion) {
       if (!idDefecto) {
         throw new Error("El defecto se guardó, pero no se recibió su identificador para adjuntar el PDF.");
       }
-      await subirCalificacionRegistro(expediente.id_expediente, idDefecto, archivoCalificacion);
+
+      // El PDF original se guarda primero en el registro del defecto.
+      await subirCalificacionRegistro(
+        expediente.id_expediente,
+        idDefecto,
+        archivoCalificacion
+      );
+
+      // Copia opcional a Carpeta Digital. Se consulta antes el listado para
+      // no duplicar la misma calificación si se vuelve a guardar el formulario.
+      const nombreCarpeta = `calificacion_defecto_${idDefecto}_${archivoCalificacion.name}`;
+      try {
+        const documentos = await listarDocumentosCarpetaDigital(
+          expediente.id_expediente
+        );
+        const listaDocumentos = Array.isArray(documentos)
+          ? documentos
+          : Array.isArray(documentos?.items)
+            ? documentos.items
+            : [];
+        const yaExiste = listaDocumentos.some((documento) =>
+          documento?.categoria === "Defecto registral" &&
+          documento?.nombre_original === nombreCarpeta
+        );
+
+        if (!yaExiste) {
+          const archivoCarpeta = new File(
+            [archivoCalificacion],
+            nombreCarpeta,
+            {
+              type: archivoCalificacion.type || "application/pdf",
+              lastModified: archivoCalificacion.lastModified,
+            }
+          );
+          await subirCalificacionACarpetaDigital(
+            expediente.id_expediente,
+            archivoCarpeta,
+            "Defecto registral"
+          );
+        }
+      } catch (errorCarpeta) {
+        console.error(
+          "El defecto y su PDF se guardaron, pero no se pudo completar la copia a Carpeta Digital:",
+          errorCarpeta
+        );
+        const detalle =
+          errorCarpeta?.response?.data?.detail ||
+          errorCarpeta?.message ||
+          "error desconocido";
+        avisoCarpetaDigital =
+          `El defecto y su PDF se han guardado, pero no se pudo verificar/copiar el documento a la Carpeta Digital: ${detalle}`;
+      }
     }
 
     setDefectoLocal({
@@ -2596,6 +2651,7 @@ async function guardarDefectoRegistral() {
     setDefectoEditandoId(null);
     setDefectoForm({ ...DEFECTO_VACIO });
     setArchivoCalificacion(null);
+    if (avisoCarpetaDigital) setErrorDefecto(avisoCarpetaDigital);
   } catch (error) {
     console.error("Error guardando defecto:", error);
     setErrorDefecto(
