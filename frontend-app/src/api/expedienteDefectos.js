@@ -175,3 +175,16 @@ export async function subirCalificacionACarpetaDigital(
   return response.data;
 }
 
+
+
+// ============================================================
+// HISTORIAL PERSISTENTE DE DEFECTOS
+// ============================================================
+
+export async function listarHistorialDefectosExpediente(idExpediente, limite = 100) {
+  const response = await axios.get(
+    `/expedientes/${encodeURIComponent(idExpediente)}/defectos/historial`,
+    { params: { limite } }
+  );
+  return response.data;
+}
