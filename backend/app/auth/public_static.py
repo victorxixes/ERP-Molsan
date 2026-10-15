@@ -1,4 +1,3 @@
-```python
 from starlette.exceptions import HTTPException
 from starlette.staticfiles import StaticFiles
 
@@ -22,4 +21,4 @@ class PublicStaticFiles(StaticFiles):
             )
 
         return await super().get_response(path, scope)
-```
+
