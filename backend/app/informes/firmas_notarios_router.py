@@ -366,3 +366,213 @@ def exportar_informe_firmas_excel(
     return _respuesta_excel("Informe firmas", COLUMNAS_FIRMAS_EXCEL, items, "informe_firmas.xlsx")
 
 
+
+
+# ============================================================
+# INFORME DE NOTARIOS — FIRMAS REALES
+# ============================================================
+
+def _clave_notario_item(item: dict) -> str:
+    nif = str(item.get("nif_notario") or "").strip().upper()
+    if nif:
+        return f"NIF:{nif}"
+    nombre = _normalizar(item.get("nombre_notario") or item.get("notario") or "")
+    if nombre:
+        return f"NOMBRE:{nombre}"
+    return "SIN_NOTARIO_IDENTIFICADO"
+
+
+def _resumen_por_notario(items: list[dict]) -> list[dict]:
+    grupos: dict[str, dict] = {}
+    for item in items:
+        clave = _clave_notario_item(item)
+        item["clave_notario"] = clave
+        nif = str(item.get("nif_notario") or "").strip().upper() or None
+        nombre = str(item.get("nombre_notario") or item.get("notario") or "").strip()
+        if not nombre:
+            nombre = f"Notario sin nombre ({nif})" if nif else "Sin notario identificado"
+
+        grupo = grupos.get(clave)
+        if grupo is None:
+            grupo = {
+                "clave_notario": clave,
+                "nombre_notario": nombre,
+                "nif_notario": nif,
+                "total_firmas": 0,
+                "vc": 0,
+                "presencial": 0,
+                "sin_clasificar": 0,
+                "firmas_con_tiempo_calculable": 0,
+                "_dias": [],
+                "_fechas": [],
+                "_operaciones": set(),
+                "_apoderados": set(),
+                "con_protocolo": 0,
+            }
+            grupos[clave] = grupo
+        elif not grupo.get("nif_notario") and nif:
+            grupo["nif_notario"] = nif
+        if nombre and (not grupo["nombre_notario"] or grupo["nombre_notario"] == "Sin notario identificado"):
+            grupo["nombre_notario"] = nombre
+
+        grupo["total_firmas"] += 1
+        modalidad = item.get("modalidad")
+        if modalidad == "VC":
+            grupo["vc"] += 1
+        elif modalidad == "PRESENCIAL":
+            grupo["presencial"] += 1
+        else:
+            grupo["sin_clasificar"] += 1
+
+        dias = item.get("dias_envio_firma")
+        if dias is not None:
+            grupo["_dias"].append(int(dias))
+            grupo["firmas_con_tiempo_calculable"] += 1
+
+        fecha_firma = item.get("fecha_firma")
+        if fecha_firma:
+            grupo["_fechas"].append(str(fecha_firma)[:10])
+        operacion = str(item.get("tipo_operacion") or "").strip()
+        if operacion:
+            grupo["_operaciones"].add(operacion)
+        apoderado = str(item.get("apoderado") or "").strip()
+        if apoderado:
+            grupo["_apoderados"].add(apoderado)
+        if str(item.get("protocolo") or "").strip():
+            grupo["con_protocolo"] += 1
+
+    resultado = []
+    for grupo in grupos.values():
+        dias = grupo.pop("_dias")
+        fechas = grupo.pop("_fechas")
+        operaciones = grupo.pop("_operaciones")
+        apoderados = grupo.pop("_apoderados")
+        grupo["media_dias_envio_firma"] = round(sum(dias) / len(dias), 1) if dias else None
+        grupo["ultima_firma"] = max(fechas) if fechas else None
+        grupo["tipos_operacion"] = sorted(operaciones, key=str.lower)
+        grupo["numero_tipos_operacion"] = len(operaciones)
+        grupo["apoderados"] = sorted(apoderados, key=str.lower)
+        grupo["numero_apoderados"] = len(apoderados)
+        resultado.append(grupo)
+
+    resultado.sort(key=lambda fila: (-fila["total_firmas"], _normalizar(fila["nombre_notario"])))
+    return resultado
+
+
+def _resumen_notarios(items: list[dict], por_notario: list[dict]) -> dict:
+    resumen_firmas = _resumen_firmas(items)
+    fechas = [str(item.get("fecha_firma"))[:10] for item in items if item.get("fecha_firma")]
+    return {
+        "total_firmas": int(resumen_firmas["total_firmas"]),
+        "total_notarios": sum(1 for fila in por_notario if fila["clave_notario"] != "SIN_NOTARIO_IDENTIFICADO"),
+        "videoconferencia": int(resumen_firmas["videoconferencia"]),
+        "presencial": int(resumen_firmas["presencial"]),
+        "sin_clasificar": int(resumen_firmas["sin_clasificar"]),
+        "firmas_con_tiempo_calculable": int(resumen_firmas["firmas_con_tiempo_calculable"]),
+        "media_dias_envio_firma": resumen_firmas["media_dias_envio_firma"],
+        "con_protocolo": sum(1 for item in items if str(item.get("protocolo") or "").strip()),
+        "ultima_firma": max(fechas) if fechas else None,
+        "sin_notario_identificado": sum(1 for fila in por_notario if fila["clave_notario"] == "SIN_NOTARIO_IDENTIFICADO"),
+    }
+
+
+COLUMNAS_NOTARIOS_EXCEL = [
+    ("Notario", "nombre_notario"),
+    ("NIF notario", "nif_notario"),
+    ("Expedientes firmados", "total_firmas"),
+    ("Videoconferencia", "vc"),
+    ("Presencial", "presencial"),
+    ("Sin clasificar", "sin_clasificar"),
+    ("Con protocolo", "con_protocolo"),
+    ("Firmas con tiempo calculable", "firmas_con_tiempo_calculable"),
+    ("Media días envío-firma", "media_dias_envio_firma"),
+    ("Última firma", "ultima_firma"),
+    ("Tipos de operación", "tipos_operacion_texto"),
+    ("Número de apoderados", "numero_apoderados"),
+]
+
+COLUMNAS_NOTARIOS_DETALLE_EXCEL = [
+    ("Nº expediente", "id_expediente"), ("Fecha firma", "fecha_firma"),
+    ("Fecha envío", "fecha_envio"), ("Días envío-firma", "dias_envio_firma"),
+    ("Notario", "nombre_notario"), ("NIF notario", "nif_notario"),
+    ("Modalidad", "modalidad"), ("Tipo operación", "tipo_operacion"),
+    ("Apoderado", "apoderado"), ("Protocolo", "protocolo"),
+    ("Titular", "nombre_titular"), ("NIF titular", "nif_titular"),
+    ("Oficina", "oficina"), ("Importe", "importe"), ("Capital", "capital"),
+]
+
+
+def _params_notarios_excel(por_notario: list[dict]) -> list[dict]:
+    filas = []
+    for fila in por_notario:
+        copia = dict(fila)
+        copia["tipos_operacion_texto"] = ", ".join(fila.get("tipos_operacion") or [])
+        filas.append(copia)
+    return filas
+
+
+@router.get("/notarios")
+def informe_notarios(
+    fecha_desde: Optional[date] = Query(None),
+    fecha_hasta: Optional[date] = Query(None),
+    modalidad: Optional[str] = Query(None),
+    tipo_operacion: Optional[str] = Query(None),
+    notario: Optional[str] = Query(None),
+    apoderado: Optional[str] = Query(None),
+    q: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+):
+    """Resume por notario únicamente expedientes con fecha_firma real."""
+    items = _firmas_query(
+        db,
+        **_params_firmas(fecha_desde, fecha_hasta, modalidad, tipo_operacion, notario, apoderado, q),
+    )
+    por_notario = _resumen_por_notario(items)
+    resumen = _resumen_notarios(items, por_notario)
+    return {
+        "periodo": {
+            "fecha_desde": fecha_desde.isoformat() if fecha_desde else None,
+            "fecha_hasta": fecha_hasta.isoformat() if fecha_hasta else None,
+        },
+        "resumen": resumen,
+        "por_notario": por_notario,
+        "items": items,
+    }
+
+
+@router.get("/notarios/exportar-excel")
+def exportar_informe_notarios_excel(
+    fecha_desde: Optional[date] = Query(None),
+    fecha_hasta: Optional[date] = Query(None),
+    modalidad: Optional[str] = Query(None),
+    tipo_operacion: Optional[str] = Query(None),
+    notario: Optional[str] = Query(None),
+    apoderado: Optional[str] = Query(None),
+    q: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+):
+    items = _firmas_query(
+        db,
+        **_params_firmas(fecha_desde, fecha_hasta, modalidad, tipo_operacion, notario, apoderado, q),
+    )
+    grupos = _resumen_por_notario(items)
+    filas = _params_notarios_excel(grupos)
+    return _respuesta_excel("Informe notarios", COLUMNAS_NOTARIOS_EXCEL, filas, "informe_notarios.xlsx")
+
+
+@router.get("/notarios/exportar-detalle-excel")
+def exportar_detalle_informe_notarios_excel(
+    fecha_desde: Optional[date] = Query(None),
+    fecha_hasta: Optional[date] = Query(None),
+    modalidad: Optional[str] = Query(None),
+    tipo_operacion: Optional[str] = Query(None),
+    notario: Optional[str] = Query(None),
+    apoderado: Optional[str] = Query(None),
+    q: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+):
+    items = _firmas_query(
+        db,
+        **_params_firmas(fecha_desde, fecha_hasta, modalidad, tipo_operacion, notario, apoderado, q),
+    )
+    return _respuesta_excel("Detalle firmas", COLUMNAS_NOTARIOS_DETALLE_EXCEL, items, "detalle_firmas_notarios.xlsx")
