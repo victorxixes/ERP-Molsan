@@ -15,9 +15,14 @@ from sqlalchemy import or_, func
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 from backend.app.expedientes.models import Expediente
 
-router = APIRouter(prefix="/informes", tags=["Informes"])
+router = APIRouter(
+    prefix="/informes",
+    tags=["Informes"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 def _normalizar(texto) -> str:
