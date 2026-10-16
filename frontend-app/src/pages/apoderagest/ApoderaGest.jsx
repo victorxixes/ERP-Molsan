@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
+import AutocompleteNotario from "../../components/agenda/AutocompleteNotario";
 import Agenda from "../agenda/Agenda";
 import Intranet from "../intranet/Intranet";
 import Mensajes from "../mensajes/Mensajes";
@@ -430,28 +431,25 @@ export default function ApoderaGest() {
 
           <div className="ag-panel ag-ctn-selector">
             <div className="ag-toolbar">
-              <label className="ag-busqueda">
-                <span aria-hidden="true">◇</span>
-                <select
-                  value={notariaSeleccionada}
-                  onChange={(e) => setNotariaSeleccionada(e.target.value)}
-                  aria-label="Seleccionar notaría"
-                  disabled={cargandoNotarias || !notarias.length}
-                >
-                  {!notarias.length ? (
-                    <option value="">
-                      {cargandoNotarias ? "Cargando notarías…" : "No hay notarías disponibles"}
-                    </option>
-                  ) : null}
-                  {notarias.map((n) => (
-                    <option key={n.id} value={String(n.id)}>
-                      {nombreNotaria(n)}{n.nif ? ` · ${n.nif}` : ""}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <div className="ag-ctn-buscador-notario">
+                <AutocompleteNotario
+                  value={notariaActual || null}
+                  disabled={cargandoNotarias}
+                  onSelect={(notario) => {
+                    if (!notario?.id) return;
+                    setNotarias((actuales) => {
+                      const existe = actuales.some((item) => String(item.id) === String(notario.id));
+                      return existe
+                        ? actuales.map((item) => String(item.id) === String(notario.id) ? { ...item, ...notario } : item)
+                        : [notario, ...actuales];
+                    });
+                    setNotariaSeleccionada(String(notario.id));
+                    setErrorCTN("");
+                  }}
+                />
+              </div>
               <span className="ag-resultados">
-                {notarias.length} {notarias.length === 1 ? "notaría disponible" : "notarías disponibles"}
+                {notarias.length} {notarias.length === 1 ? "notaría cargada" : "notarías cargadas"} · busca en el catálogo CTN
               </span>
             </div>
           </div>
