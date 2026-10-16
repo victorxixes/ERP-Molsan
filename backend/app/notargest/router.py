@@ -4,7 +4,7 @@ import secrets
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, constr
-from sqlalchemy import text
+from sqlalchemy import text, or_
 from sqlalchemy.orm import Session
 import jwt
 from backend.app.auth.dependencies import obtener_token_bearer
@@ -66,6 +66,9 @@ def login(data: LoginNotario, db: Session=Depends(get_db)):
     if not n or not n.notargest_habilitado: raise HTTPException(status_code=401, detail='Acceso no habilitado. Contacta con Molsan.')
     if n.notargest_password_hash:
         valido = verificar_password(data.password, n.notargest_password_hash)
+        # Durante el primer cambio de contraseña, aceptar el NIF normalizado.
+        if not valido and n.notargest_cambiar_password:
+            valido = hmac.compare_digest(normalizar_nif(data.password), nif)
     else:
         # Primer acceso: el usuario y la contraseña inicial son el CIF/NIF completo,
         # incluida la letra. Se normalizan espacios, guiones y mayúsculas/minúsculas.
@@ -86,17 +89,43 @@ def me(n=Depends(get_notario)):
 
 @router.post('/cambiar-password')
 def cambiar_password(data: CambioPassword, n=Depends(get_notario), db: Session=Depends(get_db)):
-    if not n.notargest_password_hash or not verificar_password(data.password_actual,n.notargest_password_hash): raise HTTPException(status_code=400,detail='La contraseña actual no es correcta')
+    password_actual_valida = bool(n.notargest_password_hash and verificar_password(data.password_actual, n.notargest_password_hash))
+    if not password_actual_valida and n.notargest_cambiar_password:
+        password_actual_valida = hmac.compare_digest(normalizar_nif(data.password_actual), normalizar_nif(n.nif or ''))
+    if not password_actual_valida:
+        raise HTTPException(status_code=400, detail='La contraseña provisional no es correcta. Introduce el CIF/NIF completo, incluida la letra.')
     if normalizar_nif(data.password_nueva)==normalizar_nif(n.nif or ''): raise HTTPException(status_code=400,detail='La nueva contraseña no puede ser el DNI/NIF')
     n.notargest_password_hash=hash_password(data.password_nueva); n.notargest_cambiar_password=False; db.commit()
     return {'ok':True,'mensaje':'Contraseña actualizada'}
 
 @router.get('/expedientes')
 def mis_expedientes(n=Depends(get_notario), db: Session=Depends(get_db)):
-    nombre=' '.join(x for x in [n.nombre,n.apellidos] if x).strip()
-    if not hasattr(Expediente,'nombre_notario'): return {'items':[],'total':0}
-    filas=db.query(Expediente).filter(Expediente.nombre_notario==nombre).order_by(Expediente.id.desc()).limit(500).all()
-    items=[]
+    nombre = ' '.join(x for x in [n.nombre, n.apellidos] if x).strip()
+    filtros = []
+    if hasattr(Expediente, 'nombre_notario') and nombre:
+        filtros.append(Expediente.nombre_notario == nombre)
+    if hasattr(Expediente, 'nif_notario') and n.nif:
+        filtros.append(text("upper(replace(replace(coalesce(nif_notario, ''), ' ', ''), '-', '')) = :nif").bindparams(nif=normalizar_nif(n.nif)))
+    if not filtros:
+        return {'items': [], 'total': 0}
+    filas = db.query(Expediente).filter(or_(*filtros)).order_by(Expediente.id.desc()).limit(500).all()
+    items = []
     for e in filas:
-        items.append({'id':getattr(e,'id',None),'numero_expediente':getattr(e,'numero_expediente',None) or getattr(e,'expediente',None) or getattr(e,'id',None),'titular':getattr(e,'nombre_titular',None) or getattr(e,'titular',None),'estado':getattr(e,'estado_expediente',None) or getattr(e,'estado',None),'actividad_actual':getattr(e,'actividad_actual',None),'fecha_envio_notario':str(getattr(e,'fecha_envio_notario','') or ''),'fecha_firma':str(getattr(e,'fecha_firma','') or '')})
-    return {'items':items,'total':len(items)}
+        actividad = getattr(e, 'actividad_actual', None)
+        fecha_firma = getattr(e, 'fecha_firma', None)
+        actividad_norm = (actividad or '').strip().casefold()
+        pendiente_presentacion = bool(fecha_firma and ('sede notarial' in actividad_norm or 'protocolo' in actividad_norm))
+        items.append({
+            'id': getattr(e, 'id', None),
+            'numero_expediente': getattr(e, 'numero_expediente', None) or getattr(e, 'id_expediente', None) or getattr(e, 'expediente', None) or getattr(e, 'id', None),
+            'titular': getattr(e, 'nombre_titular', None) or getattr(e, 'titular', None),
+            'estado': getattr(e, 'estado_expediente', None) or getattr(e, 'estado', None),
+            'actividad_actual': actividad,
+            'fecha_envio_notario': str(getattr(e, 'fecha_envio_notario', '') or ''),
+            'fecha_firma': str(fecha_firma or ''),
+            'numero_entrada': getattr(e, 'numero_entrada', None),
+            'asiento_presentacion_libro_diario': getattr(e, 'asiento_presentacion_libro_diario', None),
+            'fecha_presentacion': str(getattr(e, 'fecha_presentacion', '') or ''),
+            'pendiente_presentacion_registro': pendiente_presentacion and not getattr(e, 'fecha_presentacion', None),
+        })
+    return {'items': items, 'total': len(items)}
