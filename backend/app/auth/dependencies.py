@@ -82,8 +82,16 @@ def obtener_usuario_actual(
             else {}
         )
 
+        nombre = (getattr(empleado, "nombre", None) or "").strip()
+        apellidos = (getattr(empleado, "apellidos", None) or "").strip()
+        nombre_completo = " ".join(parte for parte in (nombre, apellidos) if parte)
+
         return {
             "id": empleado.id,
+            "empleado_id": empleado.id,
+            "nombre": nombre,
+            "apellidos": apellidos,
+            "nombre_completo": nombre_completo,
             "usuario": empleado.usuario or "",
             "rol_id": empleado.rol_id,
             "rol_nombre": empleado.rol.nombre if empleado.rol else None,
