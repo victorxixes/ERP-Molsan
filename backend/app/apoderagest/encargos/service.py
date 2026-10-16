@@ -7,7 +7,7 @@ los datos necesarios para el listado, el Dashboard y el histórico de firmas.
 
 import unicodedata
 
-from sqlalchemy import func, or_
+from sqlalchemy import func
 
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 
@@ -133,12 +133,23 @@ def listar_encargos(db, usuario, solo_pendientes=False):
     if not nombre or campo_apoderado is None:
         return []
 
-    # La normalización evita diferencias por mayúsculas, espacios y acentos.
+    # Normalización SQL compatible con PostgreSQL: elimina tildes frecuentes
+    # sin depender de que la extensión unaccent esté instalada.
+    # La comparación final en Python cubre además espacios y variantes Unicode.
+    alfabeto_con_tildes = "áéíóúüñ"
+    alfabeto_normal = "aeiouun"
+    nombre_sql = nombre.strip().lower()
     candidatos = (
         db.query(Expediente)
         .filter(
-            func.lower(func.trim(campo_apoderado)).in_(
-                {nombre.lower(), _normalizar(nombre)}
+            func.translate(
+                func.lower(func.trim(campo_apoderado)),
+                alfabeto_con_tildes,
+                alfabeto_normal,
+            ) == func.translate(
+                nombre_sql,
+                alfabeto_con_tildes,
+                alfabeto_normal,
             )
         )
         .order_by(
