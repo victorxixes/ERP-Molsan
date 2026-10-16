@@ -21,6 +21,7 @@ from backend.app.mensajes.service import (
     marcar_conversacion_leida,
 )
 from backend.app.mensajes.ws_manager import manager
+from backend.app.storage import MENSAJES_DIR
 
 
 router = APIRouter(
@@ -29,8 +30,11 @@ router = APIRouter(
     redirect_slashes=False,
 )
 
-# Conserva la misma ubicación que main.py monta como /static/mensajes.
-CARPETA_MENSAJES = Path("/tmp/mensajes")
+# El valor es persistente cuando MOLSAN_STORAGE_ROOT apunta al disco de Render.
+# Los adjuntos se descargan mediante esta API autorizada; no se deben exponer
+# desde un montaje estático público.
+CARPETA_MENSAJES = MENSAJES_DIR.resolve()
+CARPETA_MENSAJES.mkdir(parents=True, exist_ok=True)
 MAX_ARCHIVO_BYTES = 20 * 1024 * 1024
 EXTENSIONES_PERMITIDAS = {"pdf", "doc", "docx", "jpg", "jpeg", "png"}
 
@@ -125,19 +129,26 @@ async def subir_archivo(
     if ext not in EXTENSIONES_PERMITIDAS:
         raise HTTPException(status_code=400, detail=f"Extensión no permitida: .{ext}")
 
-    contenido = await file.read(MAX_ARCHIVO_BYTES + 1)
-    await file.close()
+    try:
+        contenido = await file.read(MAX_ARCHIVO_BYTES + 1)
+    finally:
+        await file.close()
     if len(contenido) > MAX_ARCHIVO_BYTES:
         raise HTTPException(status_code=413, detail="El archivo supera el límite de 20 MB")
     if not contenido:
         raise HTTPException(status_code=400, detail="El archivo está vacío")
 
     nombre = f"{uuid4().hex}.{ext}"
+    ruta = (CARPETA_MENSAJES / nombre).resolve()
+    if ruta.parent != CARPETA_MENSAJES:
+        raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
+    temporal = ruta.with_name(f".{ruta.name}.part")
     try:
         CARPETA_MENSAJES.mkdir(parents=True, exist_ok=True)
-        ruta = CARPETA_MENSAJES / nombre
-        ruta.write_bytes(contenido)
+        temporal.write_bytes(contenido)
+        temporal.replace(ruta)
     except OSError as exc:
+        temporal.unlink(missing_ok=True)
         print(f"[MENSAJES] Error guardando archivo: {exc}", flush=True)
         raise HTTPException(status_code=500, detail="No se pudo guardar el archivo") from exc
 
