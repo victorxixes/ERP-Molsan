@@ -317,7 +317,7 @@ from backend.app.expediente_observaciones.router import (
 from backend.app.provisiones.router import router as provisiones_router
 
 # APODERAGEST
-from backend.app.notargest.router import ( 
+from backend.app.apoderagest.router import ( 
     router as apoderagest_router,
 )
 
