@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { API_BASE } from "../../api/config";
+import "../../css/ApoderaGest.css";
 import "../../css/NotarGest.css";
 
 const TOKEN_KEY = "notargest_token";
@@ -69,7 +70,7 @@ export default function NotarGest() {
 
   function salir() { localStorage.removeItem(TOKEN_KEY); setToken(""); setNotario(null); setExpedientes([]); setPassword(""); setPasswordNueva(""); }
 
-  if (!token) return <main className="notargest ng-login-shell"><form className="ng-login" onSubmit={entrar}>
+  if (!token) return <main className="apoderagest notargest ng-login-shell"><form className="ng-login" onSubmit={entrar}>
     <span className="ng-sobrelinea">PORTAL PROFESIONAL</span><h1>NotarGest</h1><p>Acceso para notarías autorizadas por Molsan.</p>
     <label>DNI / NIF del notario<input autoComplete="username" value={usuario} onChange={e => setUsuario(e.target.value)} required /></label>
     <label>Contraseña<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required /></label>
@@ -85,7 +86,7 @@ export default function NotarGest() {
   </form></main>;
 
   const cuenta = (f) => expedientes.filter(f).length;
-  return <main className="notargest">
+  return <main className="apoderagest notargest">
     <header className="ng-cabecera"><div><span className="ng-sobrelinea">PORTAL PROFESIONAL · MOLSAN</span><h1>NotarGest</h1><p>{notario?.nombre || "Portal de la notaría"}</p></div><div className="ng-cabecera-acciones"><button className="ng-boton-secundario" onClick={cargar} disabled={cargando}>↻ Actualizar</button><button className="ng-boton-secundario" onClick={salir}>Cerrar sesión</button></div></header>
     <section className="ng-alerta"><div className="ng-alerta-icono">!</div><div><strong>Alertas de Molsan</strong><p>Comentarios y documentación pendientes de validar.</p></div><button onClick={() => setVista("alertas")}>Ver alertas →</button></section>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
