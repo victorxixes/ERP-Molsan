@@ -566,9 +566,23 @@ export default function ApoderaGest() {
             {!agenda.length ? <EstadoVacio icono="▦" titulo="No hay citas disponibles" detalle="Cuando existan citas asignadas, podrás consultarlas desde aquí." /> : (
               <div className="ag-proximas-lista">{agenda.slice(0, 5).map((cita, i) => (
                 <article className="ag-cita-item" key={cita.id ?? `${cita.fecha}-${i}`}>
-                  <div className="ag-cita-fecha"><strong>{fechaLegible(cita.fecha).split("/")[0]}</strong><span>{fechaLegible(cita.fecha).split("/").slice(1).join("/")}</span></div>
-                  <div className="ag-cita-info"><strong>{texto(cita.tipo_cita, "Cita")}</strong><span>{texto(cita.hora_inicio, "Hora pendiente")}{cita.expediente_id ? ` · Expediente ${cita.expediente_id}` : ""}</span></div>
-                  <span className="ag-cita-flecha">›</span>
+                  <div className="ag-cita-fecha">
+                    <strong>{fechaLegible(cita.fecha).split("/")[0]}</strong>
+                    <span>{fechaLegible(cita.fecha).split("/").slice(1).join("/")}</span>
+                  </div>
+                  <div className="ag-cita-info">
+                    <div className="ag-cita-titulo-fila">
+                      <strong>{texto(cita.tipo_cita, "Cita")}</strong>
+                      {cita.tipo_firma ? <span className="ag-cita-modalidad">{texto(cita.tipo_firma)}</span> : null}
+                    </div>
+                    <div className="ag-cita-datos">
+                      <span className="ag-cita-horario"><b>Horario</b>{texto(cita.hora_inicio, "—").slice(0, 5)} – {texto(cita.hora_fin, "—").slice(0, 5)}</span>
+                      <span><b>Notaría</b>{texto(cita.nombre_notario, "Sin notaría asignada")}</span>
+                      <span><b>Apoderado</b>{texto(cita.apoderado, "Sin apoderado asignado")}</span>
+                      {cita.id_expediente ? <span><b>Expediente</b>{texto(cita.id_expediente)}</span> : null}
+                    </div>
+                  </div>
+                  <span className="ag-cita-flecha" aria-hidden="true">›</span>
                 </article>
               ))}</div>
             )}
