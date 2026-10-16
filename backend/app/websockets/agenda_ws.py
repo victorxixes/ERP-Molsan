@@ -1,24 +1,29 @@
-import jwt
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
-from backend.app.config import settings
+from backend.app.auth.websocket_auth import autenticar_websocket
 
 router = APIRouter(prefix="/ws", tags=["Agenda WebSocket"])
 
 
 class AgendaWebSocketManager:
+    """Canal común de Agenda para empleados con permiso agenda.ver."""
     def __init__(self):
         self.active_connections = []
+        self.usuario_por_conexion = {}
 
-    async def connect(self, websocket: WebSocket):
+    async def connect(self, websocket: WebSocket, usuario_id: int):
         await websocket.accept()
         self.active_connections.append(websocket)
+        self.usuario_por_conexion[websocket] = usuario_id
 
     def disconnect(self, websocket: WebSocket):
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
+        self.usuario_por_conexion.pop(websocket, None)
 
     async def broadcast(self, message: dict):
+        # El canal representa la agenda compartida de la organización. Solo se
+        # registran aquí usuarios activos que superan la autorización agenda.ver.
         for connection in list(self.active_connections):
             try:
                 await connection.send_json(message)
@@ -35,25 +40,20 @@ async def enviar_evento(tipo: str, cita: dict):
 
 @router.websocket("/agenda")
 async def agenda_ws(websocket: WebSocket):
-    token = websocket.query_params.get("token", "").strip()
-    if not token:
-        await websocket.close(code=4401, reason="Token requerido")
-        return
-
+    token = websocket.query_params.get("token", "")
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM])
-        usuario_id = int(payload.get("id"))
-        if usuario_id <= 0:
-            raise ValueError("Identificador de usuario no válido")
-    except (jwt.InvalidTokenError, TypeError, ValueError):
-        await websocket.close(code=4401, reason="Token no válido")
+        usuario_id = autenticar_websocket(token, modulo="agenda", accion="ver")
+    except HTTPException as exc:
+        codigo = 4401 if exc.status_code == 401 else 4403
+        await websocket.close(code=codigo, reason=str(exc.detail)[:120])
         return
 
-    # Solo autenticamos aquí; la autorización por ámbito del calendario debe
-    # aplicarse a los eventos antes de habilitar datos de agenda por departamento.
-    await manager.connect(websocket)
+    await manager.connect(websocket, usuario_id)
     try:
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+    except Exception:
+        manager.disconnect(websocket)
+        raise
