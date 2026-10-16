@@ -446,12 +446,21 @@ app.include_router(expediente_observaciones_router, prefix="/api")
 # ============================================================
 
 def migrar_esquema_expedientes_inicio():
+    """Migra columnas pendientes sin ejecutar ALTER TABLE innecesarios.
+
+    En versiones anteriores se lanzaba ALTER TABLE ... IF NOT EXISTS para todas
+    las columnas en cada arranque, incluso si ya existían. PostgreSQL necesita
+    bloquear la tabla para procesar ALTER TABLE aunque la columna exista; eso
+    ocasionaba LockNotAvailable y dejaba el backend fuera de servicio.
+
+    Esta versión consulta primero el catálogo, solo altera columnas ausentes,
+    confirma cada columna por separado y reintenta bloqueos temporales. Un
+    advisory lock de sesión serializa los arranques que usan esta versión.
     """
-    Añade columnas de workflow, clientes y facturación si faltan.
-    No elimina tablas ni sobrescribe los datos existentes.
-    """
+    import time
+
     print(
-        "[MIGRACION STARTUP] Iniciando migración de expedientes...",
+        "[MIGRACION STARTUP] Revisando columnas pendientes de expedientes...",
         flush=True,
     )
 
@@ -476,7 +485,6 @@ def migrar_esquema_expedientes_inicio():
         ("sol", "VARCHAR(100)"),
         ("cs", "VARCHAR(100)"),
         ("ns", "VARCHAR(100)"),
-
         # Clientes, envío a notario y facturación
         ("cliente_id", "INTEGER"),
         ("fecha_envio_notario", "DATE"),
@@ -494,43 +502,178 @@ def migrar_esquema_expedientes_inicio():
         ("facturacion_email", "VARCHAR(200)"),
     ]
 
+    # La clave es fija para que todas las instancias de esta aplicación
+    # serialicen el proceso de migración sin depender de la tabla expedientes.
+    clave_bloqueo_migracion = 731208640224
+    conexion = None
+    bloqueo_adquirido = False
+
     try:
-        with engine.begin() as conexion:
-            conexion.execute(text("SET LOCAL lock_timeout = '15s'"))
-            conexion.execute(text("SET LOCAL statement_timeout = '60s'"))
+        conexion = engine.connect()
+        conexion.execute(
+            text("SELECT pg_advisory_lock(:clave)"),
+            {"clave": clave_bloqueo_migracion},
+        )
+        conexion.commit()
+        bloqueo_adquirido = True
 
-            for nombre, tipo_sql in columnas:
-                conexion.execute(
-                    text(
-                        f'ALTER TABLE expedientes '
-                        f'ADD COLUMN IF NOT EXISTS "{nombre}" {tipo_sql}'
-                    )
-                )
+        resultado = conexion.execute(
+            text(
+                "SELECT column_name "
+                "FROM information_schema.columns "
+                "WHERE table_schema = 'public' AND table_name = 'expedientes'"
+            )
+        )
+        columnas_existentes = {fila[0] for fila in resultado.fetchall()}
+        conexion.commit()
 
-                print(
-                    f"[MIGRACION STARTUP] Columna comprobada: {nombre}",
-                    flush=True,
-                )
-
-            conexion.execute(
-                text(
-                    "CREATE INDEX IF NOT EXISTS "
-                    "ix_expedientes_cliente_id "
-                    "ON expedientes (cliente_id)"
-                )
+        if not columnas_existentes:
+            raise RuntimeError(
+                "No se encuentra public.expedientes en PostgreSQL. "
+                "No se ha ejecutado ninguna alteración."
             )
 
+        pendientes = [
+            (nombre, tipo_sql)
+            for nombre, tipo_sql in columnas
+            if nombre not in columnas_existentes
+        ]
+        ya_existentes = len(columnas) - len(pendientes)
         print(
-            "[MIGRACION STARTUP] Migración completada correctamente.",
+            f"[MIGRACION STARTUP] {ya_existentes} columnas ya existen; "
+            f"{len(pendientes)} pendientes.",
             flush=True,
         )
 
+        for indice, (nombre, tipo_sql) in enumerate(pendientes, start=1):
+            creado = False
+            ultimo_error = None
+            for intento in range(1, 7):
+                try:
+                    with conexion.begin():
+                        conexion.execute(text("SET LOCAL lock_timeout = '8s'"))
+                        conexion.execute(text("SET LOCAL statement_timeout = '40s'"))
+                        conexion.execute(
+                            text(
+                                'ALTER TABLE public.expedientes '
+                                f'ADD COLUMN "{nombre}" {tipo_sql}'
+                            )
+                        )
+                    creado = True
+                    columnas_existentes.add(nombre)
+                    print(
+                        f"[MIGRACION STARTUP] Columna {nombre} añadida "
+                        f"({indice}/{len(pendientes)}).",
+                        flush=True,
+                    )
+                    break
+                except Exception as error:
+                    ultimo_error = error
+                    mensaje = str(error).lower()
+                    es_bloqueo_temporal = any(
+                        termino in mensaje
+                        for termino in (
+                            "locknotavailable",
+                            "lock timeout",
+                            "canceling statement due to lock timeout",
+                            "could not obtain lock",
+                        )
+                    )
+                    if not es_bloqueo_temporal or intento == 6:
+                        raise
+                    espera = min(2 * intento, 10)
+                    print(
+                        f"[MIGRACION STARTUP] Bloqueo temporal al añadir "
+                        f"{nombre}; reintento {intento}/6 en {espera}s: "
+                        f"{error!r}",
+                        flush=True,
+                    )
+                    time.sleep(espera)
+
+            if not creado:
+                raise RuntimeError(
+                    f"No se pudo añadir la columna {nombre}: {ultimo_error!r}"
+                )
+
+        indice = conexion.execute(
+            text(
+                "SELECT 1 FROM pg_indexes "
+                "WHERE schemaname = 'public' "
+                "AND indexname = 'ix_expedientes_cliente_id'"
+            )
+        ).first()
+        conexion.commit()
+        if not indice:
+            creado_indice = False
+            for intento in range(1, 7):
+                try:
+                    with conexion.begin():
+                        conexion.execute(text("SET LOCAL lock_timeout = '8s'"))
+                        conexion.execute(text("SET LOCAL statement_timeout = '40s'"))
+                        conexion.execute(
+                            text(
+                                "CREATE INDEX IF NOT EXISTS ix_expedientes_cliente_id "
+                                "ON public.expedientes (cliente_id)"
+                            )
+                        )
+                    creado_indice = True
+                    break
+                except Exception as error:
+                    mensaje = str(error).lower()
+                    es_bloqueo_temporal = any(
+                        termino in mensaje
+                        for termino in (
+                            "locknotavailable",
+                            "lock timeout",
+                            "canceling statement due to lock timeout",
+                            "could not obtain lock",
+                        )
+                    )
+                    if not es_bloqueo_temporal or intento == 6:
+                        raise
+                    espera = min(2 * intento, 10)
+                    print(
+                        "[MIGRACION STARTUP] Bloqueo temporal al crear índice; "
+                        f"reintento {intento}/6 en {espera}s: {error!r}",
+                        flush=True,
+                    )
+                    time.sleep(espera)
+            if not creado_indice:
+                raise RuntimeError(
+                    "No se pudo crear el índice ix_expedientes_cliente_id."
+                )
+
+        print(
+            "[MIGRACION STARTUP] Migración de expedientes completada.",
+            flush=True,
+        )
     except Exception as error:
+        if conexion is not None:
+            try:
+                conexion.rollback()
+            except Exception:
+                pass
         print(
             f"[MIGRACION STARTUP] ERROR: {error!r}",
             flush=True,
         )
         raise
+    finally:
+        if conexion is not None:
+            if bloqueo_adquirido:
+                try:
+                    conexion.execute(
+                        text("SELECT pg_advisory_unlock(:clave)"),
+                        {"clave": clave_bloqueo_migracion},
+                    )
+                    conexion.commit()
+                except Exception as error:
+                    print(
+                        f"[MIGRACION STARTUP] No se pudo liberar advisory lock: "
+                        f"{error!r}",
+                        flush=True,
+                    )
+            conexion.close()
 
 
 # ============================================================
