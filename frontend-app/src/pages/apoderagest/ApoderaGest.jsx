@@ -128,6 +128,7 @@ function TablaEncargos({ encargos, onFirmado }) {
   const [guardandoFirma, setGuardandoFirma] = useState({});
   const [erroresFirma, setErroresFirma] = useState({});
   const [mensajeFirma, setMensajeFirma] = useState({});
+  const [documentoVisor, setDocumentoVisor] = useState(null);
   const grupos = useMemo(() => agruparEncargosPorNotario(encargos), [encargos]);
 
   function cambiarFirma(id, campo, valor) {
