@@ -17,6 +17,7 @@ from sqlalchemy.sql.sqltypes import Date, DateTime, Time, Integer, Float, Numeri
 from sqlalchemy.orm import Session
 
 from backend.app.agenda.models import Cita
+from backend.app.empleados.models import Empleado
 from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
 from backend.app.expedientes.models import (
@@ -1138,6 +1139,35 @@ def crear_o_actualizar_cita_agenda(
         f"Firma prevista — Expediente {expediente.id_expediente}"
     )
 
+    # Vincula también la clave foránea del empleado cuando el nombre del
+    # apoderado del catálogo coincide con un empleado del ERP. Si no hay
+    # coincidencia, se conserva el nombre para la compatibilidad histórica.
+    apoderado_id = None
+    nombre_apoderado = (datos.apoderado or "").strip()
+    if nombre_apoderado:
+        apoderado_id = (
+            db.query(Empleado.id)
+            .filter(
+                func.translate(
+                    func.lower(func.trim(
+                        func.concat(
+                            func.coalesce(Empleado.nombre, ""),
+                            " ",
+                            func.coalesce(Empleado.apellidos, ""),
+                        )
+                    )),
+                    "áéíóúüñ",
+                    "aeiouun",
+                )
+                == func.translate(
+                    nombre_apoderado.lower(),
+                    "áéíóúüñ",
+                    "aeiouun",
+                )
+            )
+            .scalar()
+        )
+
     if cita:
         cita.fecha = datos.fecha_prevista_firma
         cita.hora_inicio = hora_inicio
@@ -1146,6 +1176,7 @@ def crear_o_actualizar_cita_agenda(
         cita.notario_id = datos.notario_id
         cita.tipo_firma = datos.tipo_firma
         cita.apoderado = datos.apoderado
+        cita.apoderado_id = apoderado_id
         cita.observaciones = observaciones
         return cita
 
@@ -1157,6 +1188,7 @@ def crear_o_actualizar_cita_agenda(
         notario_id=datos.notario_id,
         tipo_firma=datos.tipo_firma,
         apoderado=datos.apoderado,
+        apoderado_id=apoderado_id,
         expediente_id=expediente.id,
         observaciones=observaciones,
     )
