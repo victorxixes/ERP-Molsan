@@ -792,8 +792,8 @@ def aplicar_filtros(
         q = q.filter(Expediente.observaciones.ilike(patron_obs))
     if texto(estadoActividad):
         q = q.filter(Expediente.estado_actividad.ilike(f"%{texto(estadoActividad)}%"))
-    # Actividad actual es un campo persistido distinto de la actividad derivada
-    # por fechas que se conserva en el parámetro legado `actividad`.
+    # actividadActual es el valor persistido; no debe confundirse con
+    # el filtro legado `actividad`, que deriva una categoría del expediente.
     if texto(actividadActual):
         q = q.filter(Expediente.actividad_actual.ilike(f"%{texto(actividadActual)}%"))
     if texto(estadoExpediente):
@@ -1124,7 +1124,10 @@ def crear_o_actualizar_cita_agenda(
 
     cita = (
         db.query(Cita)
-        .filter(Cita.expediente_id == expediente.id)
+        .filter(
+            Cita.expediente_id == expediente.id,
+            func.lower(func.trim(func.coalesce(Cita.tipo_cita, ""))) == "firma notarial",
+        )
         .order_by(Cita.id.desc())
         .first()
     )
@@ -1316,6 +1319,8 @@ def enviar_a_notario(
 
         # DATOS DEL ENVÍO
         expediente.fecha_envio_notario = datos.fecha_envio
+        # Compatibilidad con listados e informes históricos que consumen fecha_envio.
+        expediente.fecha_envio = datos.fecha_envio
         expediente.fecha_solicitud_pnc = datos.fecha_solicitud_pnc
         expediente.numero_solicitud_pnc = (
             datos.numero_solicitud_pnc.strip()
