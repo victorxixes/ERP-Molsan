@@ -557,14 +557,20 @@ export default function ApoderaGest() {
         </section>
       ) : null}
 
-      {pestana === "Agenda" ? (
+           {pestana === "Agenda" ? (
         <section className="ag-contenido">
-          <div className="ag-titulo-seccion"><div><span className="ag-kicker">ORGANIZACIÓN</span><h2>Mi agenda de citas</h2>
-<p>
-  Consulta tus citas asignadas. Las citas de otros apoderados
-  no se muestran en este apartado.
-</p>          
-           <Agenda soloApoderado />
+          <div className="ag-titulo-seccion">
+            <div>
+              <span className="ag-kicker">ORGANIZACIÓN</span>
+              <h2>Mi agenda de citas</h2>
+              <p>
+                Consulta tus citas asignadas. Las citas de otros apoderados
+                no se muestran en este apartado.
+              </p>
+            </div>
+          </div>
+
+          <Agenda soloApoderado />
         </section>
       ) : null}
 
