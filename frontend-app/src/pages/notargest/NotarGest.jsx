@@ -75,13 +75,13 @@ export default function NotarGest() {
     <label>DNI / NIF del notario<input autoComplete="username" value={usuario} onChange={e => setUsuario(e.target.value)} required /></label>
     <label>Contraseña<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required /></label>
     {error && <div className="ng-error">{error}</div>}<button className="ng-login-submit" disabled={cargando}>{cargando ? "Accediendo…" : "Entrar en NotarGest"}</button>
-    <small>Usuario y contraseña inicial: CIF/NIF completo del notario, incluida la letra. En el primer acceso tendrás que crear una contraseña personal.</small>
+    <small>Usuario y contraseña: DNI/NIF completo del notario, incluida la letra.</small>
   </form></main>;
 
   if (requiereCambio) return <main className="apoderagest notargest ng-login-shell"><form className="ng-login" onSubmit={guardarPassword}>
-    <span className="ng-sobrelinea">SEGURIDAD DE LA CUENTA</span><h1>Crea tu contraseña</h1><p>Por seguridad, cambia la contraseña provisional antes de continuar.</p>
+    <span className="ng-sobrelinea">SEGURIDAD DE LA CUENTA</span><h1>Crea tu contraseña</h1><p>Introduce la contraseña provisional, que es el DNI/NIF completo del notario, incluida la letra.</p>
     <label>Contraseña provisional<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required /></label>
-    <label>Nueva contraseña (mínimo 10 caracteres)<input type="password" autoComplete="new-password" minLength={10} value={passwordNueva} onChange={e => setPasswordNueva(e.target.value)} required /></label>
+    <label>Nueva contraseña<input type="password" autoComplete="new-password" value={passwordNueva} onChange={e => setPasswordNueva(e.target.value)} required /></label>
     {error && <div className="ng-error">{error}</div>}<button className="ng-login-submit" disabled={cargando}>{cargando ? "Guardando…" : "Guardar contraseña"}</button>
   </form></main>;
 
