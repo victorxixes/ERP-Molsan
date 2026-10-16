@@ -1,9 +1,8 @@
 from threading import Lock
 
-import jwt
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
-from backend.app.config import settings
+from backend.app.auth.websocket_auth import autenticar_websocket
 
 router_notif = APIRouter(prefix="/ws", tags=["notificaciones_ws"])
 
@@ -14,13 +13,14 @@ lock = Lock()
 
 @router_notif.get("/notificaciones/test")
 async def notif_test():
+    # Diagnóstico inocuo; no expone datos ni identificadores de usuarios.
     return {"status": "ok"}
 
 
 async def send_notif_to_user(empleado_id: int, data: dict):
-    """Enviar notificación solo a las pestañas del usuario indicado."""
+    """Enviar una notificación exclusivamente a las sesiones del destinatario."""
     with lock:
-        lista = list(conexiones.get(empleado_id, []))
+        lista = list(conexiones.get(int(empleado_id), []))
 
     muertos = []
     for ws in lista:
@@ -31,29 +31,23 @@ async def send_notif_to_user(empleado_id: int, data: dict):
 
     if muertos:
         with lock:
-            conexiones[empleado_id] = [
-                ws for ws in conexiones.get(empleado_id, []) if ws not in muertos
-            ]
-            if not conexiones[empleado_id]:
-                conexiones.pop(empleado_id, None)
+            actuales = conexiones.get(int(empleado_id), [])
+            conexiones[int(empleado_id)] = [ws for ws in actuales if ws not in muertos]
+            if not conexiones[int(empleado_id)]:
+                conexiones.pop(int(empleado_id), None)
 
 
 @router_notif.websocket("/notificaciones/{empleado_id}")
 async def ws_notificaciones(websocket: WebSocket, empleado_id: int):
-    # No aceptar ni registrar al cliente hasta autenticar la identidad.
-    token = websocket.query_params.get("token", "").strip()
-    if not token:
-        await websocket.close(code=4401, reason="Token requerido")
-        return
-
+    token = websocket.query_params.get("token", "")
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM])
-        token_id = int(payload.get("id"))
-    except (jwt.InvalidTokenError, TypeError, ValueError):
-        await websocket.close(code=4401, reason="Token no válido")
+        usuario_id = autenticar_websocket(token)
+    except HTTPException as exc:
+        codigo = 4401 if exc.status_code == 401 else 4403
+        await websocket.close(code=codigo, reason=str(exc.detail)[:120])
         return
 
-    if token_id != empleado_id:
+    if usuario_id != empleado_id:
         await websocket.close(code=4403, reason="El token no corresponde al empleado solicitado")
         return
 
@@ -63,7 +57,6 @@ async def ws_notificaciones(websocket: WebSocket, empleado_id: int):
 
     try:
         while True:
-            # Se recibe texto para detectar desconexión. No se procesan comandos del cliente.
             await websocket.receive_text()
     except WebSocketDisconnect:
         pass
