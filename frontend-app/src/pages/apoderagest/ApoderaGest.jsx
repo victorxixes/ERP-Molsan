@@ -342,6 +342,23 @@ function TablaEncargos({ encargos, onFirmado }) {
           </section>
         );
       })}
+      {documentoVisor ? (
+        <div className="ag-visor-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarVisor(); }}>
+          <section className="ag-visor-modal" role="dialog" aria-modal="true" aria-label="Visor de documentos">
+            <header className="ag-visor-cabecera">
+              <div className="ag-visor-titulo"><span className="ag-visor-icono">▤</span><div><strong>{documentoVisor.categoria || "Documento de carpeta digital"}</strong><small>{documentoVisor.nombre}</small></div></div>
+              <div className="ag-visor-acciones"><button type="button" onClick={descargarDocumentoVisor}>Descargar</button><button type="button" className="ag-visor-cerrar" onClick={cerrarVisor} aria-label="Cerrar visor">×</button></div>
+            </header>
+            <div className="ag-visor-contenido">
+              {documentoVisor.previsualizable ? (
+                documentoVisor.mime.startsWith("image/") || ["png","jpg","jpeg","webp","gif"].includes(documentoVisor.nombre.split(".").pop()?.toLowerCase())
+                  ? <div className="ag-visor-imagen-contenedor"><img src={documentoVisor.url} alt={documentoVisor.nombre} className="ag-visor-imagen" /></div>
+                  : <iframe title={documentoVisor.nombre} src={documentoVisor.url} className="ag-visor-pdf" />
+              ) : <div className="ag-visor-estado"><strong>Vista previa no disponible para este formato.</strong><span>Descarga el archivo para abrirlo con la aplicación correspondiente.</span><button type="button" onClick={descargarDocumentoVisor}>Descargar documento</button></div>}
+            </div>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -669,24 +686,6 @@ export default function ApoderaGest() {
           <div className="ag-titulo-seccion"><div><span className="ag-kicker">COMUNICACIÓN CORPORATIVA</span><h2>Mensajes</h2><p>Mensajería del ERP-Molsan con contactos conectados, conversaciones, mensajes no leídos y archivos adjuntos.</p></div></div>
           {usuarioId ? <Mensajes usuarioId={usuarioId} /> : <div className="ag-panel" role="alert"><h3>No se ha podido identificar al usuario</h3><p>No es posible abrir Mensajes porque la sesión actual no contiene un identificador de empleado válido. Vuelve a iniciar sesión y prueba de nuevo.</p></div>}
         </section>
-      ) : null}
-
-      {documentoVisor ? (
-        <div className="ag-visor-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarVisor(); }}>
-          <section className="ag-visor-modal" role="dialog" aria-modal="true" aria-label="Visor de documentos">
-            <header className="ag-visor-cabecera">
-              <div className="ag-visor-titulo"><span className="ag-visor-icono">▤</span><div><strong>{documentoVisor.categoria || "Documento de carpeta digital"}</strong><small>{documentoVisor.nombre}</small></div></div>
-              <div className="ag-visor-acciones"><button type="button" onClick={descargarDocumentoVisor}>Descargar</button><button type="button" className="ag-visor-cerrar" onClick={cerrarVisor} aria-label="Cerrar visor">×</button></div>
-            </header>
-            <div className="ag-visor-contenido">
-              {documentoVisor.previsualizable ? (
-                documentoVisor.mime.startsWith("image/") || ["png","jpg","jpeg","webp","gif"].includes(documentoVisor.nombre.split(".").pop()?.toLowerCase())
-                  ? <div className="ag-visor-imagen-contenedor"><img src={documentoVisor.url} alt={documentoVisor.nombre} className="ag-visor-imagen" /></div>
-                  : <iframe title={documentoVisor.nombre} src={documentoVisor.url} className="ag-visor-pdf" />
-              ) : <div className="ag-visor-estado"><strong>Vista previa no disponible para este formato.</strong><span>Descarga el archivo para abrirlo con la aplicación correspondiente.</span><button type="button" onClick={descargarDocumentoVisor}>Descargar documento</button></div>}
-            </div>
-          </section>
-        </div>
       ) : null}
 
       {pestana === "Intranet" ? <Intranet /> : null}
