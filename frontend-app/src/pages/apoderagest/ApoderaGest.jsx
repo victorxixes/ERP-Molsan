@@ -169,15 +169,22 @@ function TablaEncargos({ encargos, onFirmado }) {
     try {
       const ruta = documento.url_descarga || `/expedientes/${encodeURIComponent(encargo.id_expediente)}/carpeta-digital/${documento.id}/descargar`;
       const res = await axios.get(ruta, { responseType: "blob" });
-      const blob = res.data instanceof Blob ? res.data : new Blob([res.data], { type: documento.tipo_mime || "" });
-      const url = URL.createObjectURL(blob);
       const nombre = documento.nombre_original || "Documento";
-      const mime = blob.type || documento.tipo_mime || "";
       const extension = nombre.split(".").pop()?.toLowerCase() || "";
-      const previsualizable = mime === "application/pdf" || mime.startsWith("image/") || ["pdf", "png", "jpg", "jpeg", "webp", "gif"].includes(extension);
+      const mimeOriginal = res.data instanceof Blob ? res.data.type : "";
+      const mimeDeclarado = documento.tipo_mime || mimeOriginal || "";
+      // Algunos endpoints entregan los PDF como application/octet-stream.
+      // Forzamos application/pdf para que el navegador lo renderice en el iframe
+      // del visor integrado, en lugar de intentar descargarlo como adjunto.
+      const mime = extension === "pdf" || mimeDeclarado.toLowerCase().includes("pdf")
+        ? "application/pdf"
+        : mimeDeclarado;
+      const blob = new Blob([res.data], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const previsualizable = mime === "application/pdf" || mime.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "gif"].includes(extension);
       setDocumentoVisor({ ...documento, nombre, url, mime, previsualizable });
     } catch (error) {
-      window.alert(error?.response?.data?.detail || "No se ha podido abrir el documento.");
+      window.alert(error?.response?.data?.detail || "No se ha podido abrir el documento en el visor.");
     }
   }
 
@@ -307,7 +314,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                                 {encargo.documentos.map((doc) => (
                                   <li key={doc.id}>
                                     <span><strong>{doc.categoria}</strong><small>{doc.nombre_original} · {fechaLegible(doc.fecha_subida)}</small></span>
-                                    <button type="button" onClick={() => abrirDocumento(encargo, doc)}>Ver documento</button>
+                                    <button type="button" onClick={() => abrirDocumento(encargo, doc)}>Ver en visor</button>
                                   </li>
                                 ))}
                               </ul>
