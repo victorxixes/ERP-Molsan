@@ -1,6 +1,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 import "../../css/ApoderaGest.css";
 
 const PESTANAS = [
@@ -329,7 +330,7 @@ function TablaHistoricoFirmas({ firmas, cargando }) {
 
 export default function ApoderaGest() {
   const [pestana, setPestana] = useState("Dashboard");
-
+  const [modalFichaAbierta, setModalFichaAbierta] = useState(false);
   const [dashboard, setDashboard] = useState(null);
   const [agenda, setAgenda] = useState([]);
   const [encargos, setEncargos] = useState([]);
@@ -959,9 +960,20 @@ export default function ApoderaGest() {
                       : ""}
                   </p>
                 </div>
-                <span className="ag-contador">
-                  {totalesFirmas.total} firmas
-                </span>
+                <div className="ag-acciones-notario">
+                  <span className="ag-contador">
+                    {totalesFirmas.total} firmas
+                  </span>
+
+                  <button
+                    type="button"
+                    className="ag-boton-actualizar"
+                    onClick={() => setModalFichaAbierta(true)}
+                    disabled={!notariaActual}
+                  >
+                    Ver ficha completa
+                  </button>
+                </div>
               </div>
             ) : null}
 
@@ -1048,7 +1060,13 @@ export default function ApoderaGest() {
           </div>
         </section>
       ) : null}
-
+      {pestana === "CTN" && notariaActual ? (
+        <ModalCtnDetalle
+          open={modalFichaAbierta}
+          notaria={notariaActual}
+          onClose={() => setModalFichaAbierta(false)}
+        />
+      ) : null}
       <footer className="ag-footer">
         <span>
           <strong>MOLSAN ERP</strong> · ApoderaGest
