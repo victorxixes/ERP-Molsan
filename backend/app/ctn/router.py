@@ -65,6 +65,7 @@ def _nombre_completo(notaria):
 def _notaria_basica(notaria):
     data = NotariaResponse.from_orm(notaria).dict()
     data["nombre_completo"] = _nombre_completo(notaria)
+    data["notargest_habilitado"] = bool(getattr(notaria, "notargest_habilitado", False))
     return data
 
 
