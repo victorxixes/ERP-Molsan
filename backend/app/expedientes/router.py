@@ -1,4 +1,5 @@
 from datetime import date, datetime, time, timedelta
+from decimal import Decimal
 from typing import Optional, List, Any, Dict
 import io
 import json
@@ -22,6 +23,7 @@ from backend.app.expedientes.models import (
     Expediente,
     ExpedienteDocumentoEscritura,
 )
+from backend.app.expediente_ppad.models import ExpedientePPAD
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.expedientes.defectos.models import ExpedienteDefecto
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
@@ -2028,6 +2030,115 @@ def registrar_solicitud_absis_sede_notarial_protocolo(
             "Solicitud guardada localmente. No se ha transmitido a ABSIS ni "
             "se ha cambiado la actividad; falta configurar y probar la integración externa."
         ),
+    }
+
+
+# ============================================================
+# HONORARIOS DE GESTORÍA: REGISTRO IDEMPOTENTE EN EL BLOQUE PPAD
+# ============================================================
+
+@router.post("/{id_expediente}/honorarios-gestoria/generar")
+def generar_honorarios_gestoria(
+    id_expediente: str,
+    datos: Dict[str, Any],
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Calcula la tarifa reconocida por el servidor y la registra en PPAD.
+
+    La petición puede repetirse sin generar conceptos duplicados. El importe que
+    envía el navegador no se considera autoritativo; se usa la tarifa conocida.
+    Este endpoint registra un concepto interno, no emite una factura fiscal.
+    """
+    expediente = (
+        db.query(Expediente)
+        .filter(Expediente.id_expediente == str(id_expediente))
+        .first()
+    )
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    # La tarifa se decide con los datos guardados, no con el importe que envía
+    # el navegador. Se consideran tanto los datos generales como las fincas.
+    fincas = (
+        db.query(ExpedienteFinca)
+        .filter(ExpedienteFinca.expediente_id == expediente.id)
+        .all()
+    )
+    entidades_guardadas = " ".join(
+        str(f.entidad_original or "") for f in fincas
+    ).strip()
+    entidad_solicitada = str(datos.get("entidad") or "").strip()
+    entidad = (entidades_guardadas or entidad_solicitada or "No identificada")[:300]
+    ubicacion_guardada = " ".join(
+        [str(expediente.provincia or "")]
+        + [str(v or "") for f in fincas for v in (f.provincia, f.poblacion, f.registro)]
+    ).casefold()
+    # Si el modelo histórico no conserva la entidad, se usa el dato que
+    # muestra la ficha como último recurso; la tarifa siempre es fija del servidor.
+    entidad_key = (entidades_guardadas or entidad_solicitada).casefold()
+
+    if any(termino in ubicacion_guardada for termino in (
+        "las palmas", "palmas (las)", "santa cruz de tenerife", "tenerife", "canarias", "canary islands"
+    )):
+        importe, tarifa = Decimal("69.00"), "Canarias"
+    elif any(termino in entidad_key for termino in (
+        "caixabank", "caixa bank", "la caixa"
+    )):
+        importe, tarifa = Decimal("83.00"), "CaixaBank"
+    else:
+        importe, tarifa = Decimal("111.00"), "Otras entidades"
+
+    imputable_a = str(datos.get("imputable_a") or "Molsan").strip()
+    if imputable_a not in ("Molsan", "Externo"):
+        raise HTTPException(status_code=422, detail="imputable_a debe ser Molsan o Externo.")
+
+    concepto = f"Honorarios de gestoría - {tarifa}"
+    existente = (
+        db.query(ExpedientePPAD)
+        .filter(
+            ExpedientePPAD.expediente_id == expediente.id,
+            ExpedientePPAD.concepto == concepto,
+        )
+        .order_by(ExpedientePPAD.id.desc())
+        .first()
+    )
+    ya_existia = existente is not None
+    registro = existente or ExpedientePPAD(
+        expediente_id=expediente.id,
+        concepto=concepto,
+        importe=importe,
+        imputable_a=imputable_a,
+    )
+    registro.importe = importe
+    registro.imputable_a = imputable_a
+    if not ya_existia:
+        db.add(registro)
+
+    try:
+        db.commit()
+        db.refresh(registro)
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"No se pudieron registrar los honorarios de gestoría: {str(exc)[:300]}",
+        )
+
+    return {
+        "ok": True,
+        "guardado": True,
+        "id": registro.id,
+        "ppad_id": registro.id,
+        "id_expediente": str(id_expediente),
+        "expediente_id": registro.expediente_id,
+        "concepto": registro.concepto,
+        "importe": float(registro.importe or 0),
+        "tarifa": tarifa,
+        "entidad": entidad,
+        "imputable_a": registro.imputable_a,
+        "ya_existia": ya_existia,
+        "mensaje": "Honorarios registrados en PPAD." if not ya_existia else "El concepto PPAD ya existía y se ha actualizado.",
     }
 
 
