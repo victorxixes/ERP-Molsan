@@ -3,6 +3,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 import Agenda from "../agenda/Agenda";
+import Intranet from "../intranet/Intranet";
+import Mensajes from "../mensajes/Mensajes";
+import { useAuthStore } from "../../store/authStore";
 import "../../css/ApoderaGest.css";
 
 const PESTANAS = [
@@ -331,6 +334,8 @@ function TablaHistoricoFirmas({ firmas, cargando }) {
 
 export default function ApoderaGest() {
   const [pestana, setPestana] = useState("Dashboard");
+  const empleado = useAuthStore((state) => state.empleado);
+  const usuarioId = empleado?.empleado_id ?? empleado?.id ?? null;
   const [modalFichaAbierta, setModalFichaAbierta] = useState(false);
   const [dashboard, setDashboard] = useState(null);
   const [agenda, setAgenda] = useState([]);
@@ -1022,30 +1027,34 @@ export default function ApoderaGest() {
         </section>
       ) : null}
 
-      {["Mensajes", "Intranet"].includes(pestana) ? (
-        <section className="ag-contenido">
-          <div className="ag-titulo-seccion">
-            <div>
-              <span className="ag-kicker">ESPACIO DE TRABAJO</span>
-              <h2>{pestana}</h2>
-              <p>
-                Acceso integrado a las herramientas corporativas de MOLSAN.
-              </p>
-            </div>
-          </div>
-          <div className="ag-panel ag-modulo-pendiente">
-            <div className="ag-modulo-pendiente-icono" aria-hidden="true">
-              {pestana === "Mensajes" ? "✉" : "⌂"}
-            </div>
-            <h3>{pestana}: integración pendiente</h3>
-            <p>
-              Esta sección debe enlazarse con la funcionalidad existente del
-              ERP. No se ha creado un sistema paralelo ni se han alterado los
-              módulos actuales.
-            </p>
-          </div>
-        </section>
-      ) : null}
+      {pestana === "Mensajes" ? (
+  <section className="ag-contenido">
+    <div className="ag-titulo-seccion">
+      <div>
+        <span className="ag-kicker">COMUNICACIÓN CORPORATIVA</span>
+        <h2>Mensajes</h2>
+        <p>
+          Mensajería del ERP-Molsan con contactos conectados,
+          conversaciones, mensajes no leídos y archivos adjuntos.
+        </p>
+      </div>
+    </div>
+
+    {usuarioId ? (
+      <Mensajes usuarioId={usuarioId} />
+    ) : (
+      <div className="ag-panel" role="alert">
+        <h3>No se ha podido identificar al usuario</h3>
+        <p>
+          No es posible abrir Mensajes porque la sesión actual
+          no contiene un identificador de empleado válido.
+          Vuelve a iniciar sesión y prueba de nuevo.
+        </p>
+      </div>
+    )}
+  </section>
+) : null}
+      {pestana === "Intranet" ? <Intranet /> : null}
       {pestana === "CTN" && notariaActual ? (
         <ModalCtnDetalle
           open={modalFichaAbierta}
