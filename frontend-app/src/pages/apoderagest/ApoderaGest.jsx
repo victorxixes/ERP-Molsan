@@ -101,49 +101,58 @@ function EstadoVacio({ icono = "◇", titulo, detalle }) {
   );
 }
 
+function agruparEncargosPorNotario(encargos) {
+  const grupos = new Map();
+  for (const encargo of encargos) {
+    const nombre = String(encargo.nombre_notario || encargo.notario || "Notario sin identificar").trim();
+    const clave = String(encargo.nif_notario || nombre).toLocaleLowerCase("es");
+    if (!grupos.has(clave)) grupos.set(clave, { clave, nombre, nif: encargo.nif_notario || "", expedientes: [] });
+    grupos.get(clave).expedientes.push(encargo);
+  }
+  return [...grupos.values()].sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+}
+
 function TablaEncargos({ encargos }) {
+  const [abiertos, setAbiertos] = useState({});
+  const grupos = useMemo(() => agruparEncargosPorNotario(encargos), [encargos]);
+
   if (!encargos.length) {
-    return (
-      <EstadoVacio
-        icono="▤"
-        titulo="Todavía no hay encargos asignados"
-        detalle="Los encargos disponibles para tu usuario se mostrarán en esta tabla."
-      />
-    );
+    return <EstadoVacio icono="▤" titulo="No hay encargos pendientes de firma" detalle="Aquí aparecen los expedientes enviados al notario que aún no tienen fecha de firma real ni protocolo." />;
   }
 
   return (
-    <div className="ag-tabla-marco">
-      <table className="ag-tabla">
-        <thead>
-          <tr>
-            <th>N.º expediente</th>
-            <th>Titular</th>
-            <th>Estado</th>
-            <th>Notario</th>
-            <th>Fecha de alta</th>
-            <th>Fecha de firma</th>
-          </tr>
-        </thead>
-        <tbody>
-          {encargos.map((encargo, indice) => (
-            <tr key={encargo.id ?? `${encargo.id_expediente}-${indice}`}>
-              <td>
-                <span className="ag-expediente">
-                  {texto(encargo.id_expediente || encargo.id)}
-                </span>
-              </td>
-              <td className="ag-celda-principal">{texto(encargo.titular)}</td>
-              <td>
-                <EstadoPill valor={encargo.estado} />
-              </td>
-              <td>{texto(encargo.notario)}</td>
-              <td>{fechaLegible(encargo.fecha_alta)}</td>
-              <td>{fechaLegible(encargo.fecha_firma)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="ag-encargos-agrupados">
+      {grupos.map((grupo) => {
+        const abierto = Boolean(abiertos[grupo.clave]);
+        return (
+          <section className="ag-panel ag-grupo-notario" key={grupo.clave}>
+            <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
+              <span className="ag-notario-grupo-icono" aria-hidden="true">{abierto ? "⌄" : "›"}</span>
+              <span className="ag-notario-grupo-info"><strong>{grupo.nombre}</strong><small>{grupo.nif || "NIF no disponible"}</small></span>
+              <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "expediente pendiente" : "expedientes pendientes"}</span>
+            </button>
+            {abierto ? (
+              <div className="ag-tabla-marco">
+                <table className="ag-tabla">
+                  <thead><tr><th>Expediente</th><th>Titular</th><th>Fecha prevista</th><th>Fecha de envío</th><th>Fincas</th><th>Registro de la Propiedad</th><th>Observaciones</th><th>Protocolo</th></tr></thead>
+                  <tbody>{grupo.expedientes.map((encargo, indice) => (
+                    <tr key={encargo.id ?? encargo.id_expediente ?? indice}>
+                      <td><span className="ag-expediente">{texto(encargo.id_expediente || encargo.id)}</span></td>
+                      <td className="ag-celda-principal">{texto(encargo.titular)}</td>
+                      <td>{fechaLegible(encargo.fecha_prevista_firma)}</td>
+                      <td>{fechaLegible(encargo.fecha_envio_notario)}</td>
+                      <td>{encargo.fincas?.length ? encargo.fincas.map(f => f.finca).filter(Boolean).join(", ") : texto(encargo.finca)}</td>
+                      <td>{encargo.registros?.length ? encargo.registros.join("; ") : "—"}</td>
+                      <td>{texto(encargo.observaciones)}</td>
+                      <td>{texto(encargo.protocolo, "Pendiente")}</td>
+                    </tr>
+                  ))}</tbody>
+                </table>
+              </div>
+            ) : null}
+          </section>
+        );
+      })}
     </div>
   );
 }
@@ -234,6 +243,12 @@ export default function ApoderaGest() {
         encargo.titular,
         encargo.estado,
         encargo.notario,
+        encargo.nombre_notario,
+        encargo.nif_notario,
+        encargo.fecha_envio_notario,
+        encargo.fecha_prevista_firma,
+        encargo.observaciones,
+        ...(encargo.fincas || []).flatMap((f) => [f.finca, f.registro, f.cru_idufir]),
       ].some((valor) => String(valor ?? "").toLowerCase().includes(termino))
     );
   }, [encargos, busquedaEncargos]);
