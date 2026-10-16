@@ -215,7 +215,8 @@ def proteger_rutas_api(app: Any) -> dict[str, int]:
         if not path.startswith("/api/"):
             continue
 
-        if path in RUTAS_PUBLICAS_EXACTAS:
+        if path in RUTAS_PUBLICAS_EXACTAS or path.startswith("/api/notargest/"):
+            # NotarGest valida su propio JWT con ámbito de notaría.
             continue
 
         if _ya_tiene_autenticacion(route.dependant):
