@@ -67,7 +67,7 @@ export default function LoginPage() {
         );
 
         if (ok) {
-          navigate("/dashboard");
+          navigate("/modulos");
           return;
         }
 
