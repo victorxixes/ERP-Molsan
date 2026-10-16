@@ -17,6 +17,8 @@ import LoginPage from "./pages/LoginPage";
 /* MODULOS */
 import ModulosSelector from "./pages/ModulosSelector";
 
+import ModuloPendiente from "./pages/ModuloPendiente";
+
 /* DASHBOARD */
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
 
@@ -188,6 +190,16 @@ export default function App() {
             path="apoderagest"
             element={<ApoderaGest />}
           />
+
+                <Route
+          path="cancelagest"
+          element={<ModuloPendiente nombre="CancelaGest" />}
+        />
+        
+        <Route
+          path="notargest"
+          element={<ModuloPendiente nombre="Notargest" />}
+        />
         
         {/* ====================================================
             RUTAS PRIVADAS
