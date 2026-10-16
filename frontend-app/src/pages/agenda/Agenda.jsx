@@ -1,7 +1,7 @@
+```jsx
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
 import { useAuthStore } from "../../store/authStore";
-
 import axios from "../../api/axios";
 
 import VistaMes from "./VistaMes";
@@ -10,7 +10,6 @@ import VistaDia from "./VistaDia";
 
 import ModalNuevaCita from "../../components/agenda/ModalNuevaCita.jsx";
 import AgendaToast from "../../components/agenda/AgendaToast.jsx";
-
 import SelectSJ from "../../components/ui/SelectSJ";
 
 const MESES = [
@@ -30,6 +29,7 @@ const MESES = [
 
 export default function Agenda({ soloApoderado = false } = {}) {
   const hoy = useMemo(() => new Date(), []);
+
   const [year, setYear] = useState(hoy.getFullYear());
   const [month, setMonth] = useState(hoy.getMonth() + 1);
   const [vista, setVista] = useState("mes");
@@ -44,10 +44,14 @@ export default function Agenda({ soloApoderado = false } = {}) {
     notify,
   } = useAgendaStore();
 
+  // ============================================================
+  // CITAS PERSONALES DEL APODERADO
+  // ============================================================
+
   const [citasApoderado, setCitasApoderado] = useState([]);
-const [cargandoApoderado, setCargandoApoderado] = useState(false);
-const [errorApoderado, setErrorApoderado] = useState("");
-  
+  const [cargandoApoderado, setCargandoApoderado] = useState(false);
+  const [errorApoderado, setErrorApoderado] = useState("");
+
   // ============================================================
   // PERMISOS
   // ============================================================
@@ -55,16 +59,23 @@ const [errorApoderado, setErrorApoderado] = useState("");
   const permisosAgenda = useAuthStore((s) => {
     const mod = s.empleado?.permisos_modulo;
 
-    if (!mod) return [];
-    if (!Array.isArray(mod.agenda)) return [];
+    if (!mod || !Array.isArray(mod.agenda)) {
+      return [];
+    }
 
     return mod.agenda;
   });
 
-  const puedeCrear = !soloApoderado && permisosAgenda.includes("crear");
-  const puedeEditar = !soloApoderado && permisosAgenda.includes("editar");
-  const puedeEliminar = !soloApoderado && permisosAgenda.includes("eliminar");
+  const puedeCrear =
+    !soloApoderado && permisosAgenda.includes("crear");
 
+  const puedeEditar =
+    !soloApoderado && permisosAgenda.includes("editar");
+
+  const puedeEliminar =
+    !soloApoderado && permisosAgenda.includes("eliminar");
+
+  // Se conserva para mantener la comprobación de permisos existente.
   const puedeVer =
     permisosAgenda.includes("ver") ||
     permisosAgenda.includes("editar") ||
@@ -81,78 +92,66 @@ const [errorApoderado, setErrorApoderado] = useState("");
   const [citaSeleccionada, setCitaSeleccionada] = useState(null);
 
   // ============================================================
-  // CARGAR MES
+  // CARGAR AGENDA
   // ============================================================
 
   useEffect(() => {
-  if (!soloApoderado) {
-    cargarMes(year, month);
-    return undefined;
-  }
+    if (!soloApoderado) {
+      cargarMes(year, month);
+      return undefined;
+    }
 
-  let activo = true;
+    let activo = true;
 
-  setCargandoApoderado(true);
-  setErrorApoderado("");
+    const cargarAgendaApoderado = async () => {
+      setCargandoApoderado(true);
+      setErrorApoderado("");
 
-  axios
-    .get("/apoderagest/agenda")
-    .then((respuesta) => {
-      if (!activo) return;
+      try {
+        const respuesta = await axios.get("/apoderagest/agenda");
 
-      const datos = respuesta?.data;
+        if (!activo) return;
 
-      const listado = Array.isArray(datos)
-        ? datos
-        : Array.isArray(datos?.items)
-          ? datos.items
-          : Array.isArray(datos?.resultados)
-            ? datos.resultados
-            : [];
+        const datos = respuesta?.data;
 
-      setCitasApoderado(listado);
-    })
-    .catch((err) => {
-      if (!activo) return;
+        const listado = Array.isArray(datos)
+          ? datos
+          : Array.isArray(datos?.items)
+            ? datos.items
+            : Array.isArray(datos?.resultados)
+              ? datos.resultados
+              : [];
 
-      setCitasApoderado([]);
-      setErrorApoderado(
-        err?.response?.data?.detail ||
-          "No se ha podido cargar tu agenda personal."
-      );
-    })
-    .finally(() => {
-      if (activo) setCargandoApoderado(false);
-    });
+        setCitasApoderado(listado);
+      } catch (err) {
+        if (!activo) return;
 
-  return () => {
-    activo = false;
-  };
-}, [soloApoderado, year, month, cargarMes]);
+        console.error(
+          "Error cargando la agenda personal del apoderado:",
+          err
+        );
 
-    // ============================================================
-  // SELECCIÓN DE DÍA Y APERTURA DE CITA
-  // ============================================================
+        setCitasApoderado([]);
 
-  const handleDiaClick = useCallback(
-    (fecha) => {
-      if (soloApoderado) {
-        return;
+        setErrorApoderado(
+          err?.response?.data?.detail ||
+            "No se ha podido cargar tu agenda personal."
+        );
+      } finally {
+        if (activo) {
+          setCargandoApoderado(false);
+        }
       }
+    };
 
-      abrirCrear(fecha);
-    },
-    [soloApoderado, abrirCrear]
-  );
+    cargarAgendaApoderado();
 
-  const handleCitaClick = useCallback(
-    (cita) => {
-      abrirEditar(cita);
-    },
-    [abrirEditar]
-  );
-  
-    // ============================================================
+    return () => {
+      activo = false;
+    };
+  }, [soloApoderado, year, month, cargarMes]);
+
+  // ============================================================
   // CREAR CITA
   // ============================================================
 
@@ -185,8 +184,6 @@ const [errorApoderado, setErrorApoderado] = useState("");
           return;
         }
 
-        // En ApoderaGest consultamos la cita personal sin habilitar
-        // acciones de edición o eliminación.
         const respuesta = await axios.get(`/agenda/${cita.id}`);
         const citaCompleta = respuesta?.data;
 
@@ -195,25 +192,35 @@ const [errorApoderado, setErrorApoderado] = useState("");
           return;
         }
 
-        setModalModo(soloApoderado || !puedeEditar ? "ver" : "editar");
+        // En la agenda personal el modal solo permite consultar.
+        const modo = soloApoderado || !puedeEditar ? "ver" : "editar";
+
+        setModalModo(modo);
         setFechaSeleccionada(citaCompleta.fecha || cita.fecha);
         setCitaSeleccionada(citaCompleta);
         setMostrarModal(true);
       } catch (err) {
         console.error("Error cargando cita completa:", err);
-        notify("Error al cargar la cita.");
+
+        notify(
+          err?.response?.data?.detail ||
+            "Error al cargar la cita."
+        );
       }
     },
     [soloApoderado, puedeEditar, notify]
   );
 
   // ============================================================
-  // SELECCIÓN DE DÍA Y APERTURA DE CITA
+  // SELECCIÓN DE DÍA Y CITA
+  // Importante: estas funciones se declaran después de abrirCrear
+  // y abrirEditar para evitar errores de inicialización.
   // ============================================================
 
   const handleDiaClick = useCallback(
     (fecha) => {
       if (soloApoderado) return;
+
       abrirCrear(fecha);
     },
     [soloApoderado, abrirCrear]
@@ -225,7 +232,7 @@ const [errorApoderado, setErrorApoderado] = useState("");
     },
     [abrirEditar]
   );
-  
+
   // ============================================================
   // GUARDAR CITA
   // ============================================================
@@ -233,6 +240,11 @@ const [errorApoderado, setErrorApoderado] = useState("");
   const guardarCita = useCallback(
     async (payload) => {
       try {
+        if (soloApoderado) {
+          setMostrarModal(false);
+          return;
+        }
+
         if (modalModo === "crear") {
           if (!puedeCrear) {
             notify("No tienes permiso para crear citas.");
@@ -274,6 +286,7 @@ const [errorApoderado, setErrorApoderado] = useState("");
       }
     },
     [
+      soloApoderado,
       modalModo,
       citaSeleccionada,
       crear,
@@ -292,6 +305,8 @@ const [errorApoderado, setErrorApoderado] = useState("");
   // ============================================================
 
   const borrarCita = useCallback(async () => {
+    if (soloApoderado) return;
+
     if (!citaSeleccionada) return;
 
     if (!puedeEliminar) {
@@ -309,6 +324,7 @@ const [errorApoderado, setErrorApoderado] = useState("");
       notify("Error al eliminar la cita.");
     }
   }, [
+    soloApoderado,
     citaSeleccionada,
     eliminar,
     notify,
@@ -344,23 +360,25 @@ const [errorApoderado, setErrorApoderado] = useState("");
   }, []);
 
   // ============================================================
-  // CITAS SEGURAS
+  // CITAS QUE SE MUESTRAN
   // ============================================================
 
-const citasSeguras = useMemo(() => {
-  const fuente = soloApoderado ? citasApoderado : citas;
-  const lista = Array.isArray(fuente) ? fuente : [];
+  const citasSeguras = useMemo(() => {
+    const fuente = soloApoderado ? citasApoderado : citas;
+    const lista = Array.isArray(fuente) ? fuente : [];
 
-  if (!soloApoderado) return lista;
+    if (!soloApoderado) {
+      return lista;
+    }
 
-  const mesSeleccionado =
-    `${year}-${String(month).padStart(2, "0")}`;
+    const mesSeleccionado =
+      `${year}-${String(month).padStart(2, "0")}`;
 
-  return lista.filter(
-    (cita) =>
-      String(cita.fecha ?? "").slice(0, 7) === mesSeleccionado
-  );
-}, [citas, citasApoderado, soloApoderado, year, month]);
+    return lista.filter((cita) => {
+      const fecha = String(cita?.fecha ?? "");
+      return fecha.slice(0, 7) === mesSeleccionado;
+    });
+  }, [citas, citasApoderado, soloApoderado, year, month]);
 
   // ============================================================
   // FECHA ACTUAL
@@ -370,17 +388,16 @@ const citasSeguras = useMemo(() => {
     year === hoy.getFullYear() &&
     month === hoy.getMonth() + 1;
 
+  // ============================================================
+  // RENDER
+  // ============================================================
+
   return (
     <div className="space-y-5 p-6 text-[var(--erp-text)] animate-fade-in">
-
-   
-      {/* ======================================================
-          NAVEGACIÓN
-          ====================================================== */}
+      {/* CABECERA Y NAVEGACIÓN */}
 
       <div className="erp-card p-4 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
-
           <button
             type="button"
             onClick={mesAnterior}
@@ -395,13 +412,14 @@ const citasSeguras = useMemo(() => {
               font-semibold
             "
             title="Mes anterior"
+            aria-label="Mes anterior"
           >
             ←
           </button>
 
           <SelectSJ
             value={year}
-            onChange={(v) => setYear(parseInt(v))}
+            onChange={(v) => setYear(parseInt(v, 10))}
             options={Array.from({ length: 10 }, (_, i) => {
               const y = hoy.getFullYear() - 5 + i;
 
@@ -415,7 +433,7 @@ const citasSeguras = useMemo(() => {
 
           <SelectSJ
             value={month}
-            onChange={(v) => setMonth(parseInt(v))}
+            onChange={(v) => setMonth(parseInt(v, 10))}
             options={MESES.map((nombre, index) => ({
               value: index + 1,
               label: nombre,
@@ -437,6 +455,7 @@ const citasSeguras = useMemo(() => {
               font-semibold
             "
             title="Mes siguiente"
+            aria-label="Mes siguiente"
           >
             →
           </button>
@@ -455,7 +474,7 @@ const citasSeguras = useMemo(() => {
             </span>
           )}
 
-          {/* VISTAS */}
+          {/* SELECTOR DE VISTA */}
 
           <div
             className="
@@ -492,12 +511,29 @@ const citasSeguras = useMemo(() => {
         </div>
       </div>
 
-      {/* ======================================================
-          CALENDARIO
-          ====================================================== */}
+      {/* ESTADO DE CARGA O ERROR DE LA AGENDA PERSONAL */}
+
+      {soloApoderado && cargandoApoderado && (
+        <div
+          className="erp-card p-4 text-sm text-[var(--erp-text-soft)]"
+          role="status"
+        >
+          Cargando tu agenda personal...
+        </div>
+      )}
+
+      {soloApoderado && errorApoderado && (
+        <div
+          className="erp-card p-4 text-sm text-red-600"
+          role="alert"
+        >
+          {errorApoderado}
+        </div>
+      )}
+
+      {/* CALENDARIO */}
 
       <div className="erp-card p-4 shadow-sm overflow-hidden">
-
         {vista === "mes" && (
           <VistaMes
             year={year}
@@ -519,7 +555,7 @@ const citasSeguras = useMemo(() => {
 
         {vista === "dia" && (
           <VistaDia
-            fechaDia={new Date()}
+            fechaDia={new Date(year, month - 1, hoy.getDate())}
             citas={citasSeguras}
             onCitaClick={handleCitaClick}
             onCrearCita={handleDiaClick}
@@ -527,9 +563,7 @@ const citasSeguras = useMemo(() => {
         )}
       </div>
 
-      {/* ======================================================
-          MODAL
-          ====================================================== */}
+      {/* MODAL */}
 
       {mostrarModal && (
         <ModalNuevaCita
@@ -539,7 +573,9 @@ const citasSeguras = useMemo(() => {
           onClose={() => setMostrarModal(false)}
           onGuardar={guardarCita}
           onDelete={
-            modalModo === "editar" && puedeEliminar
+            !soloApoderado &&
+            modalModo === "editar" &&
+            puedeEliminar
               ? borrarCita
               : null
           }
@@ -550,3 +586,4 @@ const citasSeguras = useMemo(() => {
     </div>
   );
 }
+```
