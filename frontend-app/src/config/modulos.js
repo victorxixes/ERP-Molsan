@@ -148,6 +148,25 @@ const MODULOS_ERP = [
     route: null,
     icon: "folder",
   },
+
+    {
+    key: "apoderagest",
+    label: "ApoderaGest",
+    route: "/apoderagest",
+    icon: "briefcase",
+  },
+  {
+    key: "cancelagest",
+    label: "CancelaGest",
+    route: "/cancelagest",
+    icon: "file-check",
+  },
+  {
+    key: "notargest",
+    label: "Notargest",
+    route: "/notargest",
+    icon: "landmark",
+  },
 ];
 
 export default MODULOS_ERP;
