@@ -48,6 +48,9 @@ class Expediente(Base):
 
     estado_expediente = Column(String(200), nullable=True)
     estado_expediente_ancert = Column(String(200), nullable=True)
+    notargest_estado = Column(String(80), nullable=True)
+    notargest_fecha_cierre = Column(Date, nullable=True)
+    notargest_fecha_envio_gestoria = Column(Date, nullable=True)
 
     # Control de liquidaciones sin tramitar, cambio de gestoría y bloqueos.
     liquidado_sin_tramitar = Column(Boolean, nullable=False, default=False)
