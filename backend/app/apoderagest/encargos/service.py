@@ -10,6 +10,8 @@ import unicodedata
 from sqlalchemy import func
 
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
+from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
+from backend.app.expediente_observaciones.models import ExpedienteObservacion
 
 from backend.app.expedientes.models import Expediente
 from backend.app.apoderagest.permissions import obtener_nombre_apoderado
@@ -68,7 +70,7 @@ def _nombre_notario(expediente):
     return _texto(getattr(expediente, "notario", None))
 
 
-def _expediente_a_dict(expediente, fincas=None):
+def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_apoderado=None):
     """Convierte un expediente en el formato consumido por ApoderaGest."""
     return {
         "id": getattr(expediente, "id", None),
@@ -79,9 +81,33 @@ def _expediente_a_dict(expediente, fincas=None):
             _texto(getattr(expediente, "estado_expediente", None))
             or _texto(getattr(expediente, "estado", None))
         ),
-        "fecha_alta": _fecha_texto(
-            getattr(expediente, "fecha_alta", None)
-        ),
+        "fecha_alta": _fecha_texto(getattr(expediente, "fecha_alta", None)),
+        "fecha_inscripcion": _fecha_texto(getattr(expediente, "fecha_inscripcion", None)),
+        "oficina": _texto(getattr(expediente, "oficina", None)),
+        "capital": getattr(expediente, "capital", None),
+        "importe": getattr(expediente, "importe", None),
+        "saldo_real": getattr(expediente, "saldo_real", None),
+        "saldo_disponible": getattr(expediente, "saldo_disponible", None),
+        "contrato": _texto(getattr(expediente, "contrato", None)),
+        "tipo_operacion": _texto(getattr(expediente, "tipo_operacion", None)),
+        "tipo_documento": _texto(getattr(expediente, "tipo_documento", None)),
+        "tipo_tramite": _texto(getattr(expediente, "tipo_tramite", None)),
+        "formato_escritura": _texto(getattr(expediente, "formato_escritura", None)),
+        "idioma_documento": _texto(getattr(expediente, "idioma_documento", None)),
+        "cuantia_documento": getattr(expediente, "importe", None),
+        "facturacion": {
+            "nombre": _texto(getattr(expediente, "facturacion_nombre", None)),
+            "apellidos": _texto(getattr(expediente, "facturacion_apellidos", None)),
+            "dni_nif": _texto(getattr(expediente, "facturacion_dni_nif", None)),
+            "direccion": _texto(getattr(expediente, "facturacion_direccion", None)),
+            "codigo_postal": _texto(getattr(expediente, "facturacion_codigo_postal", None)),
+            "poblacion": _texto(getattr(expediente, "facturacion_poblacion", None)),
+            "provincia": _texto(getattr(expediente, "facturacion_provincia", None)),
+            "telefono": _texto(getattr(expediente, "facturacion_telefono", None)),
+            "email": _texto(getattr(expediente, "facturacion_email", None)),
+            "estado": _texto(getattr(expediente, "facturacion_estado", None)),
+            "fecha": _fecha_texto(getattr(expediente, "facturacion_fecha", None)),
+        },
         "fecha_firma": _fecha_texto(
             getattr(expediente, "fecha_firma", None)
         ),
@@ -114,6 +140,8 @@ def _expediente_a_dict(expediente, fincas=None):
         ),
         "protocolo": _texto(getattr(expediente, "protocolo", None)),
         "fincas": fincas or [],
+        "documentos": documentos or [],
+        "observaciones_apoderado": observaciones_apoderado or [],
         "registros": list(dict.fromkeys(
             finca.get("registro") for finca in (fincas or []) if finca.get("registro")
         )),
@@ -191,9 +219,59 @@ def listar_encargos(db, usuario, solo_pendientes=False):
                 "provincia": _texto(getattr(f, "provincia", None)),
                 "poblacion": _texto(getattr(f, "poblacion", None)),
                 "cru_idufir": _texto(getattr(f, "cru_idufir", None)),
+                "seccion": _texto(getattr(f, "seccion", None)),
+                "cuantia": _texto(getattr(f, "cuantia", None)),
+                "inscripcion": _texto(getattr(f, "inscripcion", None)),
+                "contrato": _texto(getattr(f, "contrato", None)),
+                "fecha_constitucion": _fecha_texto(getattr(f, "fecha_constitucion", None)),
+                "subrogado": _texto(getattr(f, "subrogado", None)),
+                "entidad_original": _texto(getattr(f, "entidad_original", None)),
             }
             for f in filas_fincas
         ]
-        resultados.append(_expediente_a_dict(expediente, fincas))
+        documentos = (
+            db.query(DocumentoCarpetaDigital)
+            .filter(DocumentoCarpetaDigital.expediente_id == str(getattr(expediente, "id_expediente", "")))
+            .order_by(DocumentoCarpetaDigital.fecha_subida.desc())
+            .all()
+        )
+        categorias_apoderado = {
+            "Hoja de Encargo firmada",
+            "Justificante de cancelación",
+            "Nota simple registral",
+            "Escrituras/borradores",
+            "Borradores de escrituras",
+        }
+        documentos_apoderado = [
+            {
+                "id": documento.id,
+                "categoria": documento.categoria,
+                "nombre_original": documento.nombre_original,
+                "fecha_subida": _fecha_texto(documento.fecha_subida),
+                "url_descarga": f"/expedientes/{getattr(expediente, 'id_expediente', '')}/carpeta-digital/{documento.id}/descargar",
+            }
+            for documento in documentos
+            if documento.categoria in categorias_apoderado
+        ]
+
+        observaciones = (
+            db.query(ExpedienteObservacion)
+            .filter(
+                ExpedienteObservacion.expediente_id == expediente.id,
+                ExpedienteObservacion.activo.is_(True),
+                ExpedienteObservacion.visibilidad == "Visible apoderado",
+            )
+            .order_by(ExpedienteObservacion.fecha.desc(), ExpedienteObservacion.id.desc())
+            .all()
+        )
+        observaciones_apoderado = [
+            {
+                "id": item.id,
+                "comentario": item.comentario,
+                "fecha": _fecha_texto(item.fecha),
+            }
+            for item in observaciones
+        ]
+        resultados.append(_expediente_a_dict(expediente, fincas, documentos_apoderado, observaciones_apoderado))
 
     return resultados
