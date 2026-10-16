@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
 import { useAuthStore } from "../../store/authStore";
 
+import axios from "../../api/axios";
+
 import VistaMes from "./VistaMes";
 import VistaSemana from "./VistaSemana";
 import VistaDia from "./VistaDia";
@@ -26,7 +28,7 @@ const MESES = [
   "Diciembre",
 ];
 
-export default function Agenda() {
+export default function Agenda({ soloApoderado = false } = {}) {
   const hoy = useMemo(() => new Date(), []);
   const [year, setYear] = useState(hoy.getFullYear());
   const [month, setMonth] = useState(hoy.getMonth() + 1);
@@ -42,6 +44,10 @@ export default function Agenda() {
     notify,
   } = useAgendaStore();
 
+  const [citasApoderado, setCitasApoderado] = useState([]);
+const [cargandoApoderado, setCargandoApoderado] = useState(false);
+const [errorApoderado, setErrorApoderado] = useState("");
+  
   // ============================================================
   // PERMISOS
   // ============================================================
@@ -79,8 +85,41 @@ export default function Agenda() {
   // ============================================================
 
   useEffect(() => {
+  if (!soloApoderado) {
     cargarMes(year, month);
-  }, [year, month, cargarMes]);
+    return undefined;
+  }
+
+  let activo = true;
+
+  setCargandoApoderado(true);
+  setErrorApoderado("");
+
+  axios
+    .get("/apoderagest/agenda")
+    .then((respuesta) => {
+      if (!activo) return;
+
+      const datos = respuesta?.data;
+      setCitasApoderado(Array.isArray(datos) ? datos : []);
+    })
+    .catch((err) => {
+      if (!activo) return;
+
+      setCitasApoderado([]);
+      setErrorApoderado(
+        err?.response?.data?.detail ||
+          "No se ha podido cargar tu agenda personal."
+      );
+    })
+    .finally(() => {
+      if (activo) setCargandoApoderado(false);
+    });
+
+  return () => {
+    activo = false;
+  };
+}, [soloApoderado, year, month, cargarMes]);
 
   // ============================================================
   // CREAR CITA
@@ -247,24 +286,20 @@ export default function Agenda() {
   // CITAS SEGURAS
   // ============================================================
 
-  const citasSeguras = useMemo(
-    () => (Array.isArray(citas) ? citas : []),
-    [citas]
-  );
+const citasSeguras = useMemo(() => {
+  const fuente = soloApoderado ? citasApoderado : citas;
+  const lista = Array.isArray(fuente) ? fuente : [];
 
-  const handleCitaClick = useCallback(
-    (cita) => {
-      abrirEditar(cita);
-    },
-    [abrirEditar]
-  );
+  if (!soloApoderado) return lista;
 
-  const handleDiaClick = useCallback(
-    (fecha) => {
-      abrirCrear(fecha);
-    },
-    [abrirCrear]
+  const mesSeleccionado =
+    `${year}-${String(month).padStart(2, "0")}`;
+
+  return lista.filter(
+    (cita) =>
+      String(cita.fecha ?? "").slice(0, 7) === mesSeleccionado
   );
+}, [citas, citasApoderado, soloApoderado, year, month]);
 
   // ============================================================
   // FECHA ACTUAL
