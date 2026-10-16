@@ -14,6 +14,9 @@ import Layout from "./layout/Layout";
 /* LOGIN */
 import LoginPage from "./pages/LoginPage";
 
+/* MODULOS */
+import ModulosSelector from "./pages/ModulosSelector";
+
 /* DASHBOARD */
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
 
@@ -172,7 +175,20 @@ export default function App() {
           element={<LoginPage />}
         />
 
+        {/* ====================================================
+            MODULOS
+            ==================================================== */}
 
+                  <Route
+            path="modulos"
+            element={<ModulosSelector />}
+          />
+          
+          <Route
+            path="apoderagest"
+            element={<ApoderaGest />}
+          />
+        
         {/* ====================================================
             RUTAS PRIVADAS
             ==================================================== */}
