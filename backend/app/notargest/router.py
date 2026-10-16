@@ -64,12 +64,12 @@ def login(data: LoginNotario, db: Session=Depends(get_db)):
     nif = normalizar_nif(data.usuario)
     n = db.query(Notaria).filter(text("upper(replace(replace(nif, ' ', ''), '-', '')) = :nif")).params(nif=nif).first()
     if not n or not n.notargest_habilitado: raise HTTPException(status_code=401, detail='Acceso no habilitado. Contacta con Molsan.')
-    # El acceso de NotarGest se realiza con el DNI/NIF completo como usuario
-    # y como contraseña. Si la cuenta está en estado de primer acceso, la
-    # contraseña inicial es ese mismo DNI/NIF; no se exige una contraseña de
-    # 10 caracteres ni se fuerza un cambio al entrar.
+    # Acceso solicitado por Molsan: el DNI/NIF completo, incluida la letra,
+    # sirve como usuario y contraseña de acceso. Si se introduce el DNI/NIF
+    # como contraseña, sincronizamos la credencial para corregir hashes previos
+    # y eliminamos cualquier estado antiguo de cambio obligatorio.
     password_nif = hmac.compare_digest(normalizar_nif(data.password), nif)
-    if n.notargest_cambiar_password and password_nif:
+    if password_nif:
         n.notargest_password_hash = hash_password(nif)
         n.notargest_cambiar_password = False
         db.commit()
@@ -77,18 +77,14 @@ def login(data: LoginNotario, db: Session=Depends(get_db)):
     elif n.notargest_password_hash:
         valido = verificar_password(data.password, n.notargest_password_hash)
     else:
-        valido = password_nif
-        if valido:
-            n.notargest_password_hash = hash_password(nif)
-            n.notargest_cambiar_password = False
-            db.commit()
+        valido = False
     if not valido: raise HTTPException(status_code=401, detail='Credenciales incorrectas')
     token = jwt.encode({'tipo':'notargest','notaria_id':n.id,'exp':datetime.utcnow()+timedelta(hours=8)}, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
     return {'token':token,'requiere_cambio_password':False,'notario':{'id':n.id,'nombre':' '.join(x for x in [n.nombre,n.apellidos] if x),'nif':n.nif}}
 
 @router.get('/me')
 def me(n=Depends(get_notario)):
-    return {'id':n.id,'nombre':' '.join(x for x in [n.nombre,n.apellidos] if x),'nif':n.nif,'requiere_cambio_password':bool(n.notargest_cambiar_password)}
+    return {'id':n.id,'nombre':' '.join(x for x in [n.nombre,n.apellidos] if x),'nif':n.nif,'requiere_cambio_password':False}
 
 @router.post('/cambiar-password')
 def cambiar_password(data: CambioPassword, n=Depends(get_notario), db: Session=Depends(get_db)):
