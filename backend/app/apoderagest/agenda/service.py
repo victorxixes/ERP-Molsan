@@ -5,7 +5,7 @@ Utiliza la tabla compartida agenda_citas y devuelve datos relacionados
 del expediente y de la notaría cuando están disponibles.
 """
 
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from backend.app.agenda.models import Cita
 from backend.app.apoderagest.permissions import (
@@ -101,14 +101,30 @@ def listar_citas_apoderado(db, usuario):
 
     consulta = db.query(Cita)
 
-    if empleado_id is not None and campo_id is not None:
-        consulta = consulta.filter(campo_id == empleado_id)
-    elif nombre and campo_nombre is not None:
-        consulta = consulta.filter(
-            func.lower(func.trim(campo_nombre)) == nombre.strip().lower()
-        )
-    else:
+    if empleado_id is None and not nombre:
         return []
+
+    filtros = []
+    if empleado_id is not None and campo_id is not None:
+        filtros.append(campo_id == empleado_id)
+
+    if nombre and campo_nombre is not None:
+        # Compara nombres sin tildes para compatibilizar registros históricos.
+        filtros.append(
+            func.translate(
+                func.lower(func.trim(campo_nombre)),
+                "áéíóúüñ",
+                "aeiouun",
+            )
+            == func.translate(nombre.strip().lower(), "áéíóúüñ", "aeiouun")
+        )
+
+    if not filtros:
+        return []
+
+    # No depender únicamente del ID: citas antiguas pueden tener apoderado_id
+    # vacío y conservar correctamente el nombre del apoderado.
+    consulta = consulta.filter(or_(*filtros))
 
     citas = (
         consulta
