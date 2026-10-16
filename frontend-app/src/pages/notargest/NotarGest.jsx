@@ -78,7 +78,7 @@ export default function NotarGest() {
     <small>Primer acceso: utiliza el DNI/NIF registrado en CTN. El portal te pedirá cambiarlo por una contraseña personal.</small>
   </form></main>;
 
-  if (requiereCambio) return <main className="notargest ng-login-shell"><form className="ng-login" onSubmit={guardarPassword}>
+  if (requiereCambio) return <main className="apoderagest notargest ng-login-shell"><form className="ng-login" onSubmit={guardarPassword}>
     <span className="ng-sobrelinea">SEGURIDAD DE LA CUENTA</span><h1>Crea tu contraseña</h1><p>Por seguridad, cambia la contraseña provisional antes de continuar.</p>
     <label>Contraseña provisional<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required /></label>
     <label>Nueva contraseña (mínimo 10 caracteres)<input type="password" autoComplete="new-password" minLength={10} value={passwordNueva} onChange={e => setPasswordNueva(e.target.value)} required /></label>
