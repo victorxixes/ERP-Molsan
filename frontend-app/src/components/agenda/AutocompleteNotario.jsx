@@ -436,11 +436,9 @@ export default function AutocompleteNotario({
         };
 
 
-        setQuery(
-          `${n.nombre || ""} ${
-            n.apellidos || ""
-          }`.trim()
-        );
+        // El valor seleccionado se muestra desde la prop "value".
+        // Limpiar query evita relanzar la búsqueda y reabrir el desplegable.
+        setQuery("");
 
         setOpen(false);
 
