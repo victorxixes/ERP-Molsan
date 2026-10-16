@@ -7,7 +7,7 @@ const TOKEN_KEY = "notargest_token";
 const tareas = [
   ["factura", "Facturas notariales"],
   ["copia", "Copias simples"],
-  ["registro", "Presentación en el Registro"],
+  ["registro", "Pendientes presentación Registro"],
   ["ajd", "Liquidación AJD / ITP"],
   ["inscripcion", "Inscripciones registrales"],
   ["sin-provision", "Copias simples sin provisión"],
@@ -75,7 +75,7 @@ export default function NotarGest() {
     <label>DNI / NIF del notario<input autoComplete="username" value={usuario} onChange={e => setUsuario(e.target.value)} required /></label>
     <label>Contraseña<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required /></label>
     {error && <div className="ng-error">{error}</div>}<button className="ng-login-submit" disabled={cargando}>{cargando ? "Accediendo…" : "Entrar en NotarGest"}</button>
-    <small>Primer acceso: utiliza el DNI/NIF registrado en CTN. El portal te pedirá cambiarlo por una contraseña personal.</small>
+    <small>Usuario y contraseña inicial: CIF/NIF completo del notario, incluida la letra. En el primer acceso tendrás que crear una contraseña personal.</small>
   </form></main>;
 
   if (requiereCambio) return <main className="apoderagest notargest ng-login-shell"><form className="ng-login" onSubmit={guardarPassword}>
@@ -97,9 +97,9 @@ export default function NotarGest() {
       <button className="ng-contador ng-contador-rojo" onClick={() => setVista("defectos")}><span>Expedientes con defectos</span><strong>{cargando ? "…" : cuenta(x => String(x.actividad_actual || x.estado || "").toLowerCase().includes("defecto"))}</strong></button>
     </section>
     <section className="ng-panel"><div className="ng-panel-titulo"><h2>{vista === "inicio" ? "Mis tareas pendientes" : vista === "alertas" ? "Alertas de Molsan" : vista === "recepcion" ? "Pendientes de recepción" : vista === "firma" ? "Pendientes de firma" : vista === "defectos" ? "Expedientes con defectos" : tareas.find(x => x[0] === vista)?.[1] || "Mis tareas pendientes"}</h2>{vista !== "inicio" && <button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button>}</div>
-      {vista === "inicio" ? <div className="ng-lista-tareas">{tareas.map(([id, label]) => <button className="ng-tarea" key={id} onClick={() => setVista(id)}><span>{label}</span><strong>—</strong><span className="ng-flecha">›</span></button>)}</div>
+      {vista === "inicio" ? <div className="ng-lista-tareas">{tareas.map(([id, label]) => <button className="ng-tarea" key={id} onClick={() => setVista(id)}><span>{label}</span><strong>{id === "registro" ? cuenta(x => x.pendiente_presentacion_registro) : "—"}</strong><span className="ng-flecha">›</span></button>)}</div>
       : vista === "alertas" ? <p className="ng-mensaje">La integración de alertas de comentarios y documentos pendientes de validar está pendiente de conectar con los módulos internos de Molsan.</p>
-      : <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Expediente</th><th>Titular</th><th>Estado</th></tr></thead><tbody>{expedientes.filter(x => vista === "recepcion" ? !x.fecha_recepcion_notario : vista === "firma" ? !x.fecha_firma : vista === "defectos" ? String(x.actividad_actual || x.estado || "").toLowerCase().includes("defecto") : true).map((x,i) => <tr key={x.id || i}><td>{x.numero_expediente || x.id || "—"}</td><td>{x.titular || "—"}</td><td>{x.estado || x.actividad_actual || "En trámite"}</td></tr>)}</tbody></table>{expedientes.length === 0 && <p className="ng-mensaje">No hay expedientes asociados a esta notaría o todavía no se han vinculado.</p>}</div>}
+      : <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Expediente</th><th>Titular</th><th>Estado</th></tr></thead><tbody>{expedientes.filter(x => vista === "recepcion" ? !x.fecha_recepcion_notario : vista === "firma" ? !x.fecha_firma : vista === "defectos" ? String(x.actividad_actual || x.estado || "").toLowerCase().includes("defecto") : vista === "registro" ? x.pendiente_presentacion_registro : true).map((x,i) => <tr key={x.id || i}><td>{x.numero_expediente || x.id || "—"}</td><td>{x.titular || "—"}</td><td>{x.estado || x.actividad_actual || "En trámite"}</td></tr>)}</tbody></table>{expedientes.length === 0 && <p className="ng-mensaje">No hay expedientes asociados a esta notaría o todavía no se han vinculado.</p>}</div>}
     </section>
     <div className="ng-accesos"><button className="ng-acceso" onClick={() => setVista("documentacion")}><span className="ng-acceso-icono">↑</span><span><strong>Documentación</strong><small>Facturas, copias y documentos de trabajo.</small></span><b>→</b></button><button className="ng-acceso ng-acceso-verde" onClick={() => setVista("pagos")}><span className="ng-acceso-icono">€</span><span><strong>Pagos</strong><small>Pagos y justificantes.</small></span><b>→</b></button></div>
     {["documentacion","pagos"].includes(vista) && <section className="ng-panel"><div className="ng-panel-titulo"><h2>{vista === "documentacion" ? "Documentación" : "Pagos"}</h2><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div><p className="ng-mensaje">{vista === "documentacion" ? "La carga y descarga de documentos se debe conectar a la Carpeta Digital con permisos restringidos a esta notaría." : "La consulta de pagos y justificantes se debe conectar con los pagos de la Ficha de Expediente y limitar a esta notaría."}</p></section>}
