@@ -29,7 +29,10 @@ const BLOQUES = [
     id: "liquidacion-impuestos",
     titulo: "Liquidación de impuestos",
     descripcion: "Justificantes y documentación de la liquidación tributaria.",
-    categorias: [{ etiqueta: "AJD / ITP", categoria: "AJD/ITP" }],
+    categorias: [
+      { etiqueta: "AJD / ITP", categoria: "AJD/ITP" },
+      { etiqueta: "Otros impuestos", categoria: "Otros impuestos" },
+    ],
   },
   {
     id: "tramitacion-inscripcion",
@@ -49,21 +52,17 @@ const BLOQUES = [
   {
     id: "facturacion-cierre",
     titulo: "Facturación y cierre",
-    descripcion: "Documentación final para completar y cerrar el expediente.",
+    descripcion: "Escritura final, facturas y justificantes para completar y cerrar el expediente.",
     categorias: [
-    { etiqueta: "Documento de inscripción", categoria: "Hoja de Inscripción" },
-  { etiqueta: "Expediente digital completo", categoria: "Otra documentación" },
-    ],
-  },
-  {
-    id: "gestion-economica",
-    titulo: "Gestión económica",
-    descripcion: "Facturas y justificantes económicos asociados al expediente.",
-    categorias: [
-     { etiqueta: "Factura notarial", categoria: "Factura notarial" },
-  { etiqueta: "Factura registral", categoria: "Factura Registral" },
-  { etiqueta: "Factura impuestos", categoria: "Otros impuestos" },
-  { etiqueta: "Otros documentos económicos", categoria: "Otros pagos" },
+      { etiqueta: "Escritura digital final", categoria: "Escritura digital final" },
+      { etiqueta: "Documento de inscripción (archivo anterior)", categoria: "Documento de inscripción" },
+      { etiqueta: "Expediente digital completo (archivo anterior)", categoria: "Expediente digital completo" },
+      { etiqueta: "Factura notarial", categoria: "Factura notarial" },
+      { etiqueta: "Factura registral", categoria: "Factura Registral" },
+      { etiqueta: "Factura impuestos (categoría anterior)", categoria: "Factura impuestos" },
+      { etiqueta: "Honorarios de gestoría", categoria: "Honorarios gestoría" },
+      { etiqueta: "Otros pagos", categoria: "Otros pagos" },
+      { etiqueta: "Otros documentos económicos (categoría anterior)", categoria: "Otros documentos económicos" },
     ],
   },
 ];
@@ -86,94 +85,10 @@ function normalizar(valor) {
 
 function resolverBloque(actividadId) {
   const valor = normalizar(actividadId);
-
   if (!valor) return null;
-
-  const equivalencias = [
-    {
-      bloque: "documentacion-previa",
-      alias: [
-        "documentacion-previa",
-        "documentacion previa",
-        "documentación previa",
-        "documentos previos",
-      ],
-    },
-    {
-      bloque: "sede-notarial",
-      alias: [
-        "sede-notarial",
-        "sede notarial",
-        "firma notarial",
-        "sede-notarial-protocolo",
-        "sede notarial con protocolo",
-      ],
-    },
-    {
-      bloque: "liquidacion-impuestos",
-      alias: [
-        "liquidacion-impuestos",
-        "liquidacion de impuestos",
-        "liquidación de impuestos",
-      ],
-    },
-    {
-      bloque: "tramitacion-inscripcion",
-      alias: [
-        "tramitacion-inscripcion",
-        "tramitacion inscripcion",
-        "tramitación inscripción",
-        "tramitacion registral",
-      ],
-    },
-    {
-      bloque: "defectos-registrales",
-      alias: [
-        "defectos-registrales",
-        "defectos registrales",
-        "defecto registral",
-        "subsanacion del defecto",
-      ],
-    },
-    {
-      bloque: "facturacion-cierre",
-      alias: [
-        "facturacion-cierre",
-        "facturacion y cierre",
-        "facturación y cierre",
-        "cierre de expediente",
-      ],
-    },
-    {
-      bloque: "gestion-economica",
-      alias: [
-        "gestion-economica",
-        "gestion economica",
-        "gestión económica",
-      ],
-    },
-  ];
-
-  for (const equivalencia of equivalencias) {
-    const coincide = equivalencia.alias.some((alias) => {
-      const normalizado = normalizar(alias);
-
-      return (
-        valor === normalizado ||
-        valor.includes(normalizado)
-      );
-    });
-
-    if (coincide) {
-      return BLOQUES.find(
-        (bloque) => bloque.id === equivalencia.bloque
-      ) || null;
-    }
-  }
-
-  return BLOQUES.find(
-    (bloque) => valor === bloque.id
-  ) || null;
+  if (valor.includes("documentacion-previa")) return BLOQUES[0];
+  if (valor.includes("sede-notarial")) return BLOQUES[1];
+  return BLOQUES.find((bloque) => valor === bloque.id || valor.includes(bloque.id)) || null;
 }
 
 export default function CarpetaDigitalModal({
@@ -454,15 +369,15 @@ export default function CarpetaDigitalModal({
 
         {abierto && (
           <div className="border-t border-slate-100 bg-slate-50/50 p-3 sm:p-4">
-            <div className={`grid items-start gap-3 ${visorVisible ? "xl:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)]" : "grid-cols-1"}`}>
-              <div className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+            <div className={`grid items-start gap-3 ${visorVisible ? "2xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]" : "grid-cols-1"}`}>
+              <div className={`grid min-w-0 gap-3 ${modoActividad ? "grid-cols-1" : "md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2"}`}>
                 {bloque.categorias.map(renderCategoria)}
               </div>
 
               {visorVisible ? (
                 <aside className={`${visorAmpliadoAqui ? "fixed inset-3 z-[10500]" : "min-w-0"}`}>
                   <div className={`flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm ${
-                    visorAmpliadoAqui ? "h-full max-h-[calc(100vh-1.5rem)]" : "xl:sticky xl:top-3"
+                    visorAmpliadoAqui ? "h-full max-h-[calc(100vh-1.5rem)]" : "2xl:sticky 2xl:top-3"
                   }`}>
                     <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-3">
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">▤</span>
@@ -487,7 +402,7 @@ export default function CarpetaDigitalModal({
                       {cargandoVistaPrevia ? (
                         <div className="flex min-h-[340px] items-center justify-center text-sm text-slate-500">Cargando documento…</div>
                       ) : urlVistaPrevia && documentoVistaPrevia ? (
-                        <iframe title={`Vista previa: ${documentoVistaPrevia.nombre_original || "documento"}`} src={urlVistaPrevia} className={`w-full rounded-lg border border-slate-200 bg-white ${visorAmpliadoAqui ? "h-[calc(100vh-7rem)]" : "h-[440px] xl:h-[calc(100vh-18rem)] xl:min-h-[460px]"}`} />
+                        <iframe title={`Vista previa: ${documentoVistaPrevia.nombre_original || "documento"}`} src={urlVistaPrevia} className={`w-full rounded-lg border border-slate-200 bg-white ${visorAmpliadoAqui ? "h-[calc(100vh-7rem)]" : "h-[440px] 2xl:h-[calc(100vh-18rem)] 2xl:min-h-[460px]"}`} />
                       ) : (
                         <div className="flex min-h-[340px] flex-col items-center justify-center px-6 text-center">
                           <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">📄</span>
