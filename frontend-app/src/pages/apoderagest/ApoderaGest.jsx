@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
+import Agenda from "../agenda/Agenda";
 import "../../css/ApoderaGest.css";
 
 const PESTANAS = [
@@ -774,39 +775,24 @@ export default function ApoderaGest() {
         </section>
       ) : null}
 
+      
       {pestana === "Agenda" ? (
         <section className="ag-contenido">
           <div className="ag-titulo-seccion">
             <div>
               <span className="ag-kicker">ORGANIZACIÓN</span>
-              <h2>Mi agenda</h2>
+              <h2>Agenda corporativa compartida</h2>
               <p>
-                Consulta tus citas, horarios y datos de cada compromiso.
+                Esta es la agenda del ERP-Molsan. Las citas se consultan y
+                gestionan en el mismo backend, sin duplicar registros.
               </p>
             </div>
-            <span className="ag-contador">{agenda.length} citas</span>
           </div>
 
-          <div className="ag-panel">
-            <div className="ag-toolbar">
-              <label className="ag-busqueda">
-                <span aria-hidden="true">⌕</span>
-                <input
-                  type="search"
-                  value={busquedaAgenda}
-                  onChange={(event) => setBusquedaAgenda(event.target.value)}
-                  placeholder="Buscar por tipo, expediente u observaciones…"
-                  aria-label="Buscar en agenda"
-                />
-              </label>
-              <span className="ag-resultados">
-                {agendaFiltrada.length} resultados
-              </span>
-            </div>
-            <TablaCitas citas={agendaFiltrada} />
-          </div>
+          <Agenda />
         </section>
       ) : null}
+
 
       {pestana === "Encargos" ? (
         <section className="ag-contenido">
