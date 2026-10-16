@@ -114,6 +114,10 @@ import TiposCargaHipotecaria
 import TiposConceptoGastos
   from "./pages/herramientas/TiposConceptoGastos.jsx";
 
+/* APODERAGEST */
+import ApoderaGest 
+  from "./pages/apoderagest/ApoderaGest.jsx";
+
 
 /**
  * ============================================================
