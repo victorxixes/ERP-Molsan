@@ -1,4 +1,3 @@
-```jsx
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAgendaWS } from "../../hooks/useAgendaWS";
 import { useAgendaStore } from "../../store/agendaStore";
@@ -114,7 +113,12 @@ export default function Agenda() {
           return;
         }
 
-        const respuesta = await axios.get(`/agenda/${cita.id}`);
+        // Se construye la URL mediante concatenación para evitar
+        // problemas con la interpolación de la plantilla.
+        const respuesta = await axios.get(
+          "/agenda/" + encodeURIComponent(cita.id)
+        );
+
         const citaCompleta = respuesta?.data;
 
         if (!citaCompleta) {
@@ -122,7 +126,6 @@ export default function Agenda() {
           return;
         }
 
-        // El apoderado también puede editar si tiene permiso.
         // Si no tiene permiso de edición, abre la cita en consulta.
         const modo = puedeEditar ? "editar" : "ver";
 
@@ -285,7 +288,7 @@ export default function Agenda() {
     setMonth((actual) => actual + 1);
   }, [month]);
 
-  // Las dos secciones utilizan las citas del mismo almacén.
+  // Las vistas utilizan las citas del mismo almacén compartido.
   const citasSeguras = useMemo(() => {
     return Array.isArray(citas) ? citas : [];
   }, [citas]);
@@ -474,4 +477,3 @@ export default function Agenda() {
     </div>
   );
 }
-```
