@@ -1106,3 +1106,8 @@
 .ag-firma-ok{margin:10px 0 0;color:#13734f;font-size:12px;font-weight:700}
 @media(max-width:900px){.ag-encargo-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}.ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ag-firmar-controles{grid-template-columns:1fr}.ag-encargo-detalle-cabecera{align-items:flex-start;flex-direction:column}}
 @media(max-width:560px){.ag-encargo-resumen,.ag-encargo-grid{grid-template-columns:1fr}.ag-documentos-apoderado li{align-items:flex-start;flex-direction:column}}
+
+.ag-cuantias-documentos{display:grid;gap:7px;margin-top:12px}
+.ag-cuantias-documentos h5{margin:0;color:#53657e;font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.04em}
+.ag-cuantia-documento{display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid #e4eaf2;border-radius:8px;background:#fff;font-size:12px}
+.ag-cuantia-documento span{color:#526177}.ag-cuantia-documento strong{color:#1e355b}
