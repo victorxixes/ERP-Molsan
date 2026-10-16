@@ -1,5 +1,9 @@
 
-"""Servicios de consulta de encargos de ApoderaGest."""
+"""Servicios de consulta de encargos de ApoderaGest.
+
+Consulta los expedientes asignados al apoderado autenticado y devuelve
+los datos necesarios para el listado, el Dashboard y el histórico de firmas.
+"""
 
 from sqlalchemy import func
 
@@ -7,72 +11,118 @@ from backend.app.expedientes.models import Expediente
 from backend.app.apoderagest.permissions import obtener_nombre_apoderado
 
 
-def _campo_apoderado():
-    """Comprueba si el modelo actual contiene el campo esperado."""
-    return getattr(Expediente, "apoderado", None)
+def _texto(valor):
+    """Convierte un valor a texto, conservando los valores vacíos como None."""
+    if valor is None:
+        return None
+
+    resultado = str(valor).strip()
+    return resultado or None
+
+
+def _fecha_texto(valor):
+    """Serializa fechas sin generar cadenas vacías."""
+    if valor is None:
+        return None
+
+    return valor.isoformat() if hasattr(valor, "isoformat") else str(valor)
+
+
+def _nombre_titular(expediente):
+    """Obtiene el titular desde los datos del expediente o del cliente."""
+    nombre = _texto(getattr(expediente, "nombre_titular", None))
+    if nombre:
+        return nombre
+
+    cliente = getattr(expediente, "cliente", None)
+    if cliente is None:
+        return None
+
+    nombre_completo = _texto(getattr(cliente, "nombre_completo", None))
+    if nombre_completo:
+        return nombre_completo
+
+    partes = [
+        _texto(getattr(cliente, "nombre", None)),
+        _texto(getattr(cliente, "apellidos", None)),
+    ]
+
+    return " ".join(parte for parte in partes if parte) or None
+
+
+def _nombre_notario(expediente):
+    """Devuelve el nombre del notario usando los campos disponibles."""
+    nombre = _texto(getattr(expediente, "nombre_notario", None))
+    if nombre:
+        return nombre
+
+    return _texto(getattr(expediente, "notario", None))
+
+
+def _expediente_a_dict(expediente):
+    """Convierte un expediente en el formato consumido por ApoderaGest."""
+    return {
+        "id": getattr(expediente, "id", None),
+        "id_expediente": _texto(
+            getattr(expediente, "id_expediente", None)
+        ),
+        "estado": (
+            _texto(getattr(expediente, "estado_expediente", None))
+            or _texto(getattr(expediente, "estado", None))
+        ),
+        "fecha_alta": _fecha_texto(
+            getattr(expediente, "fecha_alta", None)
+        ),
+        "fecha_firma": _fecha_texto(
+            getattr(expediente, "fecha_firma", None)
+        ),
+        "tipo_firma": _texto(
+            getattr(expediente, "tipo_firma", None)
+        ),
+        "apoderado": _texto(
+            getattr(expediente, "apoderado", None)
+        ),
+        "notario": _nombre_notario(expediente),
+        "nombre_notario": _texto(
+            getattr(expediente, "nombre_notario", None)
+        ),
+        "nif_notario": _texto(
+            getattr(expediente, "nif_notario", None)
+        ),
+        "titular": _nombre_titular(expediente),
+        "nif_titular": _texto(
+            getattr(expediente, "nif_titular", None)
+        ),
+        "observaciones": _texto(
+            getattr(expediente, "observaciones", None)
+        ),
+    }
 
 
 def listar_encargos(db, usuario):
-    """
-    Devuelve exclusivamente expedientes cuyo campo apoderado
-    coincide con el nombre identificativo del usuario autenticado.
+    """Devuelve los expedientes asociados al apoderado autenticado.
 
-    Importante: si en la base de datos se almacena un ID en vez
-    de un nombre, habrá que adaptar el filtro al modelo real.
+    La búsqueda por nombre ignora diferencias entre mayúsculas y minúsculas
+    y espacios exteriores. No devuelve todos los expedientes si no se puede
+    identificar al apoderado.
     """
-    nombre = obtener_nombre_apoderado(usuario)
-    campo = _campo_apoderado()
+    nombre = _texto(obtener_nombre_apoderado(usuario))
+    campo_apoderado = getattr(Expediente, "apoderado", None)
 
-    if not nombre or campo is None:
+    if not nombre or campo_apoderado is None:
         return []
 
     expedientes = (
         db.query(Expediente)
-        .filter(func.lower(func.trim(campo)) == nombre.lower())
+        .filter(
+            func.lower(func.trim(campo_apoderado))
+            == nombre.lower()
+        )
+        .order_by(
+            Expediente.fecha_alta.desc().nullslast(),
+            Expediente.id.desc(),
+        )
         .all()
     )
 
-    resultado = []
-
-    for expediente in expedientes:
-        cliente = getattr(expediente, "cliente", None)
-
-        titular = None
-        if cliente is not None:
-            titular = getattr(cliente, "nombre_completo", None)
-
-            if not titular:
-                partes = [
-                    getattr(cliente, "nombre", None),
-                    getattr(cliente, "apellidos", None),
-                ]
-                titular = " ".join(
-                    str(parte).strip()
-                    for parte in partes
-                    if parte
-                ) or None
-
-        resultado.append({
-            "id": getattr(expediente, "id", None),
-            "id_expediente": getattr(
-                expediente, "id_expediente", None
-            ),
-            "estado": getattr(
-                expediente, "estado_expediente", None
-            ) or getattr(expediente, "estado", None),
-            "fecha_alta": (
-                str(getattr(expediente, "fecha_alta", ""))
-                if getattr(expediente, "fecha_alta", None)
-                else None
-            ),
-            "fecha_firma": (
-                str(getattr(expediente, "fecha_firma", ""))
-                if getattr(expediente, "fecha_firma", None)
-                else None
-            ),
-            "apoderado": getattr(expediente, "apoderado", None),
-            "notario": getattr(expediente, "notario", None),
-            "titular": titular,
-        })
-
-    return resultado
+    return [_expediente_a_dict(expediente) for expediente in expedientes]
