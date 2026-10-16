@@ -5,10 +5,19 @@ Consulta los expedientes asignados al apoderado autenticado y devuelve
 los datos necesarios para el listado, el Dashboard y el histórico de firmas.
 """
 
-from sqlalchemy import func
+import unicodedata
+
+from sqlalchemy import func, or_
+
+from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 
 from backend.app.expedientes.models import Expediente
 from backend.app.apoderagest.permissions import obtener_nombre_apoderado
+
+
+def _normalizar(valor):
+    texto = unicodedata.normalize("NFKD", str(valor or ""))
+    return "".join(c for c in texto if not unicodedata.combining(c)).strip().casefold()
 
 
 def _texto(valor):
@@ -59,7 +68,7 @@ def _nombre_notario(expediente):
     return _texto(getattr(expediente, "notario", None))
 
 
-def _expediente_a_dict(expediente):
+def _expediente_a_dict(expediente, fincas=None):
     """Convierte un expediente en el formato consumido por ApoderaGest."""
     return {
         "id": getattr(expediente, "id", None),
@@ -96,10 +105,22 @@ def _expediente_a_dict(expediente):
         "observaciones": _texto(
             getattr(expediente, "observaciones", None)
         ),
+        "fecha_envio_notario": _fecha_texto(
+            getattr(expediente, "fecha_envio_notario", None)
+            or getattr(expediente, "fecha_envio", None)
+        ),
+        "fecha_prevista_firma": _fecha_texto(
+            getattr(expediente, "fecha_prevista_firma", None)
+        ),
+        "protocolo": _texto(getattr(expediente, "protocolo", None)),
+        "fincas": fincas or [],
+        "registros": list(dict.fromkeys(
+            finca.get("registro") for finca in (fincas or []) if finca.get("registro")
+        )),
     }
 
 
-def listar_encargos(db, usuario):
+def listar_encargos(db, usuario, solo_pendientes=False):
     """Devuelve los expedientes asociados al apoderado autenticado.
 
     La búsqueda por nombre ignora diferencias entre mayúsculas y minúsculas
@@ -112,17 +133,56 @@ def listar_encargos(db, usuario):
     if not nombre or campo_apoderado is None:
         return []
 
-    expedientes = (
+    # La normalización evita diferencias por mayúsculas, espacios y acentos.
+    candidatos = (
         db.query(Expediente)
         .filter(
-            func.lower(func.trim(campo_apoderado))
-            == nombre.lower()
+            func.lower(func.trim(campo_apoderado)).in_(
+                {nombre.lower(), _normalizar(nombre)}
+            )
         )
         .order_by(
+            Expediente.fecha_prevista_firma.asc().nullslast(),
             Expediente.fecha_alta.desc().nullslast(),
             Expediente.id.desc(),
         )
         .all()
     )
 
-    return [_expediente_a_dict(expediente) for expediente in expedientes]
+    resultados = []
+    nombre_normalizado = _normalizar(nombre)
+    for expediente in candidatos:
+        apoderado = _texto(getattr(expediente, "apoderado", None))
+        # La comparación final normalizada es importante para los nombres con tildes.
+        if _normalizar(apoderado) != nombre_normalizado:
+            continue
+
+        fecha_envio = getattr(expediente, "fecha_envio_notario", None) or getattr(expediente, "fecha_envio", None)
+        if solo_pendientes:
+            # Debe existir envío guardado y no constar firma real ni protocolo.
+            if not fecha_envio:
+                continue
+            if getattr(expediente, "fecha_firma", None):
+                continue
+            if _texto(getattr(expediente, "protocolo", None)):
+                continue
+
+        filas_fincas = (
+            db.query(ExpedienteFinca)
+            .filter(ExpedienteFinca.expediente_id == expediente.id)
+            .order_by(ExpedienteFinca.id.asc())
+            .all()
+        )
+        fincas = [
+            {
+                "finca": _texto(getattr(f, "finca", None)),
+                "registro": _texto(getattr(f, "registro", None)),
+                "provincia": _texto(getattr(f, "provincia", None)),
+                "poblacion": _texto(getattr(f, "poblacion", None)),
+                "cru_idufir": _texto(getattr(f, "cru_idufir", None)),
+            }
+            for f in filas_fincas
+        ]
+        resultados.append(_expediente_a_dict(expediente, fincas))
+
+    return resultados
