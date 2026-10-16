@@ -15,7 +15,7 @@ const MODULOS = {
   cancelagest: {
     nombre: "CancelaGest",
     descripcion: "Gestión y seguimiento de cancelaciones hipotecarias.",
-    ruta: "/cancelagest",
+    ruta: "/dashboard",
     siglas: "CG",
     categoria: "GESTIÓN DE CANCELACIONES",
     estilo: "cg",
