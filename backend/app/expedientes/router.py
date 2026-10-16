@@ -379,6 +379,13 @@ CAMPOS_EXPEDIENTE = [
     "notario_id",
     "estado_expediente",
     "estado_expediente_ancert",
+    "liquidado_sin_tramitar",
+    "fecha_liquidacion_sin_tramitar",
+    "cambio_gestoria",
+    "fecha_cambio_gestoria",
+    "bloqueo_manual",
+    "motivo_bloqueo",
+    "fecha_bloqueo",
 
     "fecha_alta",
     "fecha_firma",
@@ -1798,6 +1805,9 @@ def avanzar_actividad_expediente(
     ).first()
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    motivo_bloqueo = motivo_bloqueo_expediente(expediente)
+    if motivo_bloqueo:
+        raise HTTPException(status_code=423, detail=f"Expediente bloqueado: {motivo_bloqueo}. No se puede avanzar la actividad.")
 
     actual = resolver_actividad(expediente.actividad_actual)
     destino_solicitado = (datos.actividad_destino if datos else None)
@@ -1966,6 +1976,9 @@ def actualizar_campos_actividad(
     )
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    motivo_bloqueo = motivo_bloqueo_expediente(expediente)
+    if motivo_bloqueo:
+        raise HTTPException(status_code=423, detail=f"Expediente bloqueado: {motivo_bloqueo}. No se pueden modificar las actividades.")
 
     if not datos.campos:
         raise HTTPException(status_code=400, detail="No se han enviado campos para guardar.")
@@ -2303,6 +2316,68 @@ def generar_honorarios_gestoria(
 # ============================================================
 # CONSULTAR UN EXPEDIENTE
 # ============================================================
+
+class ControlBloqueoRequest(BaseModel):
+    liquidado_sin_tramitar: bool = False
+    fecha_liquidacion_sin_tramitar: Optional[date] = None
+    cambio_gestoria: bool = False
+    fecha_cambio_gestoria: Optional[date] = None
+    bloqueo_manual: bool = False
+    motivo_bloqueo: Optional[str] = None
+    fecha_bloqueo: Optional[date] = None
+
+
+def motivo_bloqueo_expediente(expediente: Expediente) -> Optional[str]:
+    estado = str(getattr(expediente, "estado_expediente", "") or "").strip().upper()
+    if estado == "LST":
+        return "LIQUIDADO SIN TRAMITAR"
+    if estado == "RST":
+        return "RETENCIÓN SIN TRAMITAR"
+    if bool(getattr(expediente, "liquidado_sin_tramitar", False)):
+        return "LIQUIDADO SIN TRAMITAR"
+    if bool(getattr(expediente, "cambio_gestoria", False)):
+        return "CAMBIO DE GESTORÍA"
+    if bool(getattr(expediente, "bloqueo_manual", False)):
+        return str(getattr(expediente, "motivo_bloqueo", None) or "BLOQUEO MANUAL")
+    return None
+
+
+@router.put("/{id_expediente}/control-bloqueo")
+def actualizar_control_bloqueo(
+    id_expediente: str,
+    datos: ControlBloqueoRequest,
+    db: Session = Depends(get_db),
+):
+    expediente = db.query(Expediente).filter(
+        Expediente.id_expediente == str(id_expediente)
+    ).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    if datos.liquidado_sin_tramitar and not datos.fecha_liquidacion_sin_tramitar:
+        raise HTTPException(status_code=422, detail="Indica la fecha de liquidación sin tramitar.")
+    if datos.cambio_gestoria and not datos.fecha_cambio_gestoria:
+        raise HTTPException(status_code=422, detail="Indica la fecha del cambio de gestoría.")
+    if datos.bloqueo_manual and not (datos.motivo_bloqueo or "").strip():
+        raise HTTPException(status_code=422, detail="Indica el motivo del bloqueo manual.")
+
+    expediente.liquidado_sin_tramitar = datos.liquidado_sin_tramitar
+    expediente.fecha_liquidacion_sin_tramitar = datos.fecha_liquidacion_sin_tramitar if datos.liquidado_sin_tramitar else None
+    expediente.cambio_gestoria = datos.cambio_gestoria
+    expediente.fecha_cambio_gestoria = datos.fecha_cambio_gestoria if datos.cambio_gestoria else None
+    expediente.bloqueo_manual = datos.bloqueo_manual
+    expediente.motivo_bloqueo = (datos.motivo_bloqueo or "").strip() or None if datos.bloqueo_manual else None
+    expediente.fecha_bloqueo = datos.fecha_bloqueo if datos.bloqueo_manual else None
+
+    # Mantener los estados heredados LST/RST como bloqueos efectivos.
+    db.add(expediente)
+    db.commit()
+    db.refresh(expediente)
+    resultado = expediente_a_dict(expediente)
+    resultado["bloqueado"] = bool(motivo_bloqueo_expediente(expediente))
+    resultado["motivo_bloqueo_efectivo"] = motivo_bloqueo_expediente(expediente)
+    return resultado
+
 
 @router.get("/{id_expediente}")
 def obtener_expediente(
