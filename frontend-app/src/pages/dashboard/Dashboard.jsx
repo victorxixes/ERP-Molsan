@@ -263,16 +263,7 @@ export default function Dashboard() {
 
   return (
     <div className="erp-page w-full">
-      {/* CABECERA */}
-      <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-        <div>
-          <div className="text-2xl font-bold tracking-tight" style={{ color: "var(--erp-text)" }}>
-            Dashboard de Expedientes
-          </div>
-          <div className="mt-1 text-sm" style={{ color: "var(--erp-text-soft)" }}>
-            Visión general del circuito de expedientes
-          </div>
-        </div>
+      
         <button
           type="button"
           onClick={cargarDashboard}
