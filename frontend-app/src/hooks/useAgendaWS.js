@@ -2,11 +2,8 @@ import { useEffect, useRef } from "react";
 import { useAgendaStore } from "../store/agendaStore";
 
 /**
- * WebSocket de Agenda — Versión SJ‑2026 Premium
- * - Conexión blindada para Render / StrictMode
- * - Manejo de eventos crear/editar/eliminar
- * - Notificaciones premium
- * - Refresco automático de la vista actual
+ * WebSocket de Agenda autenticado.
+ * La API rechaza conexiones que no lleven un JWT válido y con permiso agenda.ver.
  */
 export function useAgendaWS() {
   const wsRef = useRef(null);
@@ -14,36 +11,37 @@ export function useAgendaWS() {
   const addCita = useAgendaStore((s) => s.addCita);
   const updateCita = useAgendaStore((s) => s.updateCita);
   const removeCita = useAgendaStore((s) => s.removeCita);
-
   const marcarResaltada = useAgendaStore((s) => s.marcarResaltada);
   const notify = useAgendaStore((s) => s.notify);
   const refrescarVista = useAgendaStore((s) => s.refrescarVista);
 
   useEffect(() => {
-    // Evitar doble conexión en StrictMode
-    if (wsRef.current) return;
+    if (wsRef.current) return undefined;
+
+    const token = window.localStorage.getItem("token");
+    const wsBase = String(import.meta.env.VITE_WS_URL || "").replace(/\/$/, "");
+    if (!token) {
+      console.warn("WS Agenda: no hay token de sesión.");
+      return undefined;
+    }
+    if (!wsBase) {
+      console.warn("WS Agenda: falta VITE_WS_URL.");
+      return undefined;
+    }
 
     let ws;
-
     try {
-      ws = new WebSocket(import.meta.env.VITE_WS_URL + "/ws/agenda");
-    } catch {
-      console.warn("WS Agenda no disponible (Render). Modo offline.");
-      return;
+      ws = new WebSocket(`${wsBase}/ws/agenda?token=${encodeURIComponent(token)}`);
+    } catch (error) {
+      console.warn("WS Agenda no disponible. Modo offline.", error);
+      return undefined;
     }
 
     wsRef.current = ws;
-
-    ws.onopen = () => {
-      console.log("WS Agenda conectado");
-    };
-
-    ws.onerror = () => {
-      console.warn("WS Agenda error. Modo offline.");
-    };
-
+    ws.onopen = () => console.info("WS Agenda conectado.");
+    ws.onerror = () => console.warn("WS Agenda error. Modo offline.");
     ws.onclose = () => {
-      console.warn("WS Agenda cerrado. Modo offline.");
+      if (wsRef.current === ws) wsRef.current = null;
     };
 
     ws.onmessage = async (msg) => {
@@ -51,42 +49,46 @@ export function useAgendaWS() {
         const data = JSON.parse(msg.data);
         if (!data?.tipo) return;
 
-        console.log("WS evento:", data);
-
         switch (data.tipo) {
           case "crear":
-            addCita(data.cita);
-            marcarResaltada(data.cita.id);
-            notify(
-              `Nueva cita creada: ${data.cita.tipo_cita} — ${data.cita.hora_inicio}`
-            );
-            // refrescarVista sin parámetros → usa fechaActual del store
+            if (data.cita) {
+              addCita(data.cita);
+              marcarResaltada(data.cita.id);
+              notify(`Nueva cita creada: ${data.cita.tipo_cita} — ${data.cita.hora_inicio}`);
+            }
             await refrescarVista();
             break;
-
           case "editar":
-            updateCita(data.cita);
-            notify(
-              `Cita actualizada: ${data.cita.tipo_cita} — ${data.cita.hora_inicio}`
-            );
+            if (data.cita) {
+              updateCita(data.cita);
+              notify(`Cita actualizada: ${data.cita.tipo_cita} — ${data.cita.hora_inicio}`);
+            }
             await refrescarVista();
             break;
-
           case "eliminar":
-            removeCita(data.id);
-            notify("Cita eliminada");
+            if (data.id !== undefined && data.id !== null) {
+              removeCita(data.id);
+              notify("Cita eliminada");
+            }
             await refrescarVista();
+            break;
+          default:
             break;
         }
-      } catch {
-        console.warn("WS mensaje inválido");
+      } catch (error) {
+        console.warn("WS Agenda: mensaje inválido.", error);
       }
     };
 
     return () => {
+      if (wsRef.current === ws) wsRef.current = null;
       try {
         ws.close();
-      } catch {}
+      } catch {
+        // La sesión puede haberse cerrado ya.
+      }
     };
   }, [addCita, updateCita, removeCita, marcarResaltada, notify, refrescarVista]);
+
+  return wsRef;
 }
