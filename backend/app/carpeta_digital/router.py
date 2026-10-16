@@ -50,9 +50,13 @@ CATEGORIAS = {
     # Documentación general
     "Mails de la Oficina",
     "Otra documentación",
-    # Compatibilidad con categorías anteriores
+    # Compatibilidad con categorías anteriores ya usadas en expedientes históricos.
     "Mails de la oficina",
     "Borradores de escrituras",
+    "Factura impuestos",
+    "Otros documentos económicos",
+    "Documento de inscripción",
+    "Expediente digital completo",
 }
 
 MAX_BYTES = int(os.getenv("CARPETA_DIGITAL_MAX_BYTES", str(100 * 1024 * 1024)))
