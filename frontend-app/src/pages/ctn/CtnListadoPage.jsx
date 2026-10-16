@@ -73,6 +73,7 @@ export default function CtnListadoPage() {
   const [exportando, setExportando] = useState(false);
   const [error, setError] = useState("");
   const [notariaSeleccionada, setNotariaSeleccionada] = useState(null);
+  const [cambiandoAcceso, setCambiandoAcceso] = useState(null);
 
   const [orden, setOrden] = useState({ campo: "apellidos", direccion: "asc" });
   const filtrosIniciales = {
@@ -178,6 +179,23 @@ export default function CtnListadoPage() {
   const indicadorOrden = (campo) => {
     if (orden.campo !== campo) return "↕";
     return orden.direccion === "asc" ? "↑" : "↓";
+  };
+
+  const cambiarAccesoNotarGest = async (notaria) => {
+    const nuevoEstado = !Boolean(notaria.notargest_habilitado);
+    if (!window.confirm(`¿Quieres ${nuevoEstado ? "habilitar" : "deshabilitar"} NotarGest para ${nombreNotario(notaria)}?`)) return;
+    setCambiandoAcceso(notaria.id);
+    setError("");
+    try {
+      const response = await fetch(`${API_BASE}/ctn/notarias/${notaria.id}/notargest?habilitado=${nuevoEstado}`, {
+        method: "PUT", headers: cabecerasConToken({ Accept: "application/json" }), credentials: "include",
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body?.detail || `Error HTTP ${response.status}`);
+      setItems((actuales) => actuales.map((item) => item.id === notaria.id ? { ...item, notargest_habilitado: nuevoEstado } : item));
+    } catch (err) {
+      setError(leerDetalleError(err, "No se ha podido actualizar el acceso a NotarGest."));
+    } finally { setCambiandoAcceso(null); }
   };
 
   const exportarExcel = async () => {
@@ -292,13 +310,13 @@ export default function CtnListadoPage() {
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("nif")}>NIF {indicadorOrden("nif")}</button></th>
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("municipio")}>Municipio {indicadorOrden("municipio")}</button></th>
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("provincia")}>Provincia {indicadorOrden("provincia")}</button></th>
-              <th>VC</th><th>Apoderado</th>
+              <th>VC</th><th>Apoderado</th><th>Acceso NotarGest</th>
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("notario_asociado")}>Notario asociado {indicadorOrden("notario_asociado")}</button></th>
               <th>Distancia</th><th>Acciones</th>
             </tr></thead>
             <tbody>
               {cargando && items.length === 0 ? (
-                <tr><td colSpan={10} className="ctn-tabla-vacio">Cargando notarios…</td></tr>
+                <tr><td colSpan={11} className="ctn-tabla-vacio">Cargando notarios…</td></tr>
               ) : filasOrdenadas.length === 0 ? (
                 <tr><td colSpan={10} className="ctn-tabla-vacio">No hay notarios que coincidan con los filtros.</td></tr>
               ) : filasOrdenadas.map((item) => {
@@ -310,6 +328,7 @@ export default function CtnListadoPage() {
                     <td>{texto(item.nif)}</td><td>{texto(item.municipio)}</td><td>{texto(item.provincia)}</td>
                     <td><span className={`ctn-etiqueta ${vc.clase}`}>{vc.texto}</span></td>
                     <td>{texto(item.apoderado)}</td><td>{texto(listaAsociados(item))}</td>
+                    <td><button type="button" className={`ctn-btn ctn-btn-small ${item.notargest_habilitado ? "ctn-btn-primary" : "ctn-btn-secondary"}`} onClick={() => cambiarAccesoNotarGest(item)} disabled={cambiandoAcceso === item.id || !String(item.nif || "").trim()} title={!item.nif ? "Esta notaría no tiene NIF/DNI registrado" : ""}>{cambiandoAcceso === item.id ? "Guardando…" : item.notargest_habilitado ? "✓ Habilitado" : "Habilitar"}</button></td>
                     <td>{item.distancia_km == null ? "—" : `${Number(item.distancia_km).toLocaleString("es-ES", { maximumFractionDigits: 1 })} km`}</td>
                     <td><button type="button" className="ctn-btn ctn-btn-primary ctn-btn-small" onClick={() => setNotariaSeleccionada(item)}>Ver ficha</button></td>
                   </tr>
