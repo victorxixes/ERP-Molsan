@@ -1,5 +1,4 @@
 from datetime import datetime
-import os
 from pathlib import Path
 from uuid import uuid4
 import mimetypes
@@ -30,9 +29,8 @@ router = APIRouter(
     redirect_slashes=False,
 )
 
-# Render: configura MENSAJES_DIR apuntando al directorio de un disco persistente.
-# /tmp solo se conserva como fallback de desarrollo; no garantiza persistencia.
-CARPETA_MENSAJES = Path(os.getenv("MENSAJES_DIR", "/tmp/mensajes")).expanduser().resolve()
+# Conserva la misma ubicación que main.py monta como /static/mensajes.
+CARPETA_MENSAJES = Path("/tmp/mensajes")
 MAX_ARCHIVO_BYTES = 20 * 1024 * 1024
 EXTENSIONES_PERMITIDAS = {"pdf", "doc", "docx", "jpg", "jpeg", "png"}
 
