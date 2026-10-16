@@ -1,4 +1,3 @@
-```jsx
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
 import { useAuthStore } from "../../store/authStore";
@@ -586,4 +585,4 @@ export default function Agenda({ soloApoderado = false } = {}) {
     </div>
   );
 }
-```
+
