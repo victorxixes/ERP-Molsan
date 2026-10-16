@@ -291,7 +291,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                                 {encargo.documentos.map((doc) => (
                                   <li key={doc.id}>
                                     <span><strong>{doc.categoria}</strong><small>{doc.nombre_original} · {fechaLegible(doc.fecha_subida)}</small></span>
-                                    <button type="button" onClick={() => abrirDocumento(encargo, doc)}>Descargar</button>
+                                    <button type="button" onClick={() => abrirDocumento(encargo, doc)}>Ver documento</button>
                                   </li>
                                 ))}
                               </ul>
