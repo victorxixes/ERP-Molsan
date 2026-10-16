@@ -1428,9 +1428,11 @@ export default function FichaExpediente() {
     nota_simple_registral: false,
     mover_siguiente_actividad: false,
     enviado_a_absis: false,
+    solicitud_registrada_localmente: false,
+    fecha_solicitud_local: null,
   });
   const [cargandoEstadoAbsis, setCargandoEstadoAbsis] = useState(false);
-  const [enviandoAbsis, setEnviandoAbsis] = useState(false);
+  const [registrandoSolicitudIntegracion, setRegistrandoSolicitudIntegracion] = useState(false);
   const [documentosCarpetaPrevia, setDocumentosCarpetaPrevia] = useState([]);
   const [documentosCierre, setDocumentosCierre] = useState([]);
   const [cargandoDocumentosCierre, setCargandoDocumentosCierre] = useState(false);
@@ -1962,41 +1964,53 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     }
   }
 
-  async function guardarEstadoAbsis(marcarEnviado = false) {
-    if (!expediente?.id_expediente || enviandoAbsis) return;
-    setEnviandoAbsis(true);
+  async function guardarEstadoAbsis(registrarSolicitudPendiente = false) {
+    if (!expediente?.id_expediente || registrandoSolicitudIntegracion) return;
+    setRegistrandoSolicitudIntegracion(true);
     setErrorActividad("");
     setMensajeActividad("");
+    let datosGuardados = false;
     try {
       const payload = { ...estadoDocumentacionAbsis };
       const res = await axios.put(
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/absis`,
         payload
       );
+      datosGuardados = true;
       setEstadoDocumentacionAbsis((actual) => ({ ...actual, ...(res?.data || payload) }));
-      if (marcarEnviado) {
-        const enviado = await axios.post(
+      if (registrarSolicitudPendiente) {
+        const solicitud = await axios.post(
           `/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/enviar-a-absis`
         );
-        setEstadoDocumentacionAbsis((actual) => ({ ...actual, ...(enviado?.data || {}), enviado_a_absis: true }));
-        setMensajeActividad("La información de Documentación previa se ha registrado para ABSIS. La transmisión externa requiere que el backend tenga configurada la integración con ABSIS.");
+        setEstadoDocumentacionAbsis((actual) => ({
+          ...actual,
+          ...(solicitud?.data || {}),
+          enviado_a_absis: false,
+          solicitud_registrada_localmente: true,
+        }));
+        setMensajeActividad(
+          "Solicitud registrada localmente. No se ha transmitido a ABSIS; la API externa queda pendiente de implementación."
+        );
       } else {
-        setMensajeActividad("Los datos de comunicación a ABSIS se han guardado.");
+        setMensajeActividad("Datos guardados en el ERP. No se ha realizado ningún envío externo.");
       }
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setErrorActividad(typeof detail === "string" ? detail : detail?.mensaje || JSON.stringify(detail) || err?.message || "No se pudieron guardar los datos de ABSIS.");
+      const causa = typeof detail === "string" ? detail : detail?.mensaje || JSON.stringify(detail) || err?.message || "Error no especificado.";
+      setErrorActividad(
+        datosGuardados
+          ? `Los datos quedaron guardados en el ERP, pero no se pudo registrar la solicitud pendiente: ${causa}`
+          : `No se pudieron guardar los datos para la futura integración: ${causa}`
+      );
     } finally {
-      setEnviandoAbsis(false);
+      setRegistrandoSolicitudIntegracion(false);
     }
   }
 
   async function avanzarActividad() {
     if (!expediente?.id_expediente || guardandoActividad) return;
 
-    // Validar antes de activar el estado de guardado para no dejar
-    // el formulario bloqueado cuando el usuario no confirma el avance.
-    if (!estadoDocumentacionAbsis.mover_siguiente_actividad) {
+    if (actividadActual === "documentacion-previa" && !estadoDocumentacionAbsis.mover_siguiente_actividad) {
       setErrorActividad("Selecciona Sí en «Mover el expediente a la siguiente actividad» para confirmar el avance.");
       return;
     }
@@ -2006,17 +2020,21 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setMensajeActividad("");
 
     try {
-      await axios.put(
-        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/absis`,
-        estadoDocumentacionAbsis
-      );
+      // Este selector solo pertenece al paso Documentación previa. En el resto
+      // de actividades se ejecuta la validación de avance del backend directamente.
+      if (actividadActual === "documentacion-previa") {
+        await axios.put(
+          `/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/absis`,
+          estadoDocumentacionAbsis
+        );
+      }
       const response = await axios.post(
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/avanzar-actividad`
       );
       await cargarExpediente();
       setActividadSeleccionada(resolverActividadActual(response?.data || expediente));
       setActividadDraft((actual) => ({ ...actual, ...(response?.data || {}) }));
-      setMensajeActividad("La actividad se ha actualizado correctamente.");
+      setMensajeActividad("La validación se ha completado y la actividad se ha actualizado correctamente.");
     } catch (err) {
       const detail = err?.response?.data?.detail;
       setErrorActividad(
@@ -2031,93 +2049,60 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     }
   }
 
-  async function enviarSedeNotarialProtocoloAbsis() {
-    if (!expediente?.id_expediente || guardandoActividad || enviandoAbsis) return;
-    setGuardandoActividad(true);
-    setEnviandoAbsis(true);
-    setErrorActividad("");
-    setMensajeActividad("");
-    try {
-      const camposEspecificos = CAMPOS_ACTIVIDADES["sede-notarial-protocolo"] || [];
-      const campos = {};
-      for (const campo of camposEspecificos) {
-        if (Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)) {
-          campos[campo.key] = actividadDraft[campo.key] ?? "";
-        }
-      }
-      await axios.put(
-        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
-        { campos }
-      );
-      const respuesta = await axios.post(
-        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/sede-notarial-protocolo/enviar-a-absis`,
-        { ...campos, mover_siguiente_actividad: !!actividadDraft.mover_siguiente_actividad }
-      );
-      await cargarExpediente();
-      setActividadDraft((actual) => ({ ...actual, ...(respuesta?.data || {}), ...campos }));
-      setMensajeActividad(
-        actividadDraft.mover_siguiente_actividad
-          ? "Datos guardados y solicitud de envío a ABSIS registrada, incluyendo la indicación de mover a la siguiente actividad."
-          : "Datos guardados y solicitud de envío a ABSIS registrada. El expediente permanece en esta actividad."
-      );
-    } catch (err) {
-      const detail = err?.response?.data?.detail;
-      setErrorActividad(
-        typeof detail === "string"
-          ? detail
-          : detail?.mensaje || JSON.stringify(detail) || err?.message ||
-            "No se pudo enviar la información de Sede notarial con protocolo a ABSIS. Comprueba que el backend tenga habilitado este endpoint."
-      );
-    } finally {
-      setGuardandoActividad(false);
-      setEnviandoAbsis(false);
-    }
-  }
-
-  async function enviarActividadAbsis(tipoActividad) {
-    if (!expediente?.id_expediente || guardandoActividad || enviandoAbsis) return;
-    const claves = CAMPOS_ACTIVIDADES[tipoActividad] || [];
+  async function registrarSolicitudIntegracionPendiente(tipoActividad) {
+    if (!expediente?.id_expediente || guardandoActividad || registrandoSolicitudIntegracion) return;
+    const camposEspecificos = CAMPOS_ACTIVIDADES[tipoActividad] || [];
     const campos = {};
-    for (const campo of claves) {
+    for (const campo of camposEspecificos) {
       if (Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)) {
         campos[campo.key] = actividadDraft[campo.key] ?? "";
       }
     }
-    campos.mover_siguiente_actividad = actividadDraft.mover_siguiente_actividad ?? true;
+    if (!Object.keys(campos).length) {
+      setErrorActividad("No hay campos de esta actividad disponibles para registrar la solicitud.");
+      return;
+    }
 
+    const moverSiguiente = Boolean(actividadDraft.mover_siguiente_actividad);
     setGuardandoActividad(true);
-    setEnviandoAbsis(true);
+    setRegistrandoSolicitudIntegracion(true);
     setErrorActividad("");
     setMensajeActividad("");
+    let datosActividadGuardados = false;
     try {
-      const camposActividad = { ...campos };
-      delete camposActividad.mover_siguiente_actividad;
+      // Primero se persisten los datos propios de la actividad en el ERP.
       await axios.put(
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
-        { campos: camposActividad }
+        { campos }
       );
+      datosActividadGuardados = true;
+      // Esta ruta solo guarda una petición pendiente; no llama a ABSIS.
       const respuesta = await axios.post(
-        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/${tipoActividad}/enviar-a-absis`,
-        campos
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/integraciones-pendientes/${encodeURIComponent(tipoActividad)}`,
+        { ...campos, mover_siguiente_actividad: moverSiguiente }
       );
       await cargarExpediente();
-      setActividadDraft((actual) => ({ ...actual, ...(respuesta?.data || {}), ...campos }));
+      setActividadDraft((actual) => ({ ...actual, ...campos }));
+      const solicitudId = respuesta?.data?.solicitud_id;
       setMensajeActividad(
-        campos.mover_siguiente_actividad
-          ? "Datos guardados y solicitud de envío a ABSIS registrada. Se ha indicado avanzar a la siguiente actividad."
-          : "Datos guardados y solicitud de envío a ABSIS registrada. El expediente permanece en esta actividad."
+        `Datos guardados y petición registrada localmente${solicitudId ? ` (n.º ${solicitudId})` : ""}. No se ha transmitido a ABSIS ni se ha cambiado la actividad. ` +
+        (moverSiguiente
+          ? "La preferencia de avance ha quedado anotada para la futura integración; puedes validar el avance desde el botón de actividad."
+          : "El expediente permanece en esta actividad.")
       );
     } catch (err) {
       const detail = err?.response?.data?.detail;
+      const causa = typeof detail === "string"
+        ? detail
+        : detail?.mensaje || JSON.stringify(detail) || err?.message || "Error no especificado.";
       setErrorActividad(
-        typeof detail === "string"
-          ? detail
-          : detail?.mensaje || JSON.stringify(detail) || err?.message ||
-            `No se pudo enviar a ABSIS. Comprueba que el backend tenga habilitada la ruta de ${tipoActividad}.`
+        datosActividadGuardados
+          ? `Los datos de actividad se guardaron, pero no se pudo registrar la solicitud pendiente: ${causa}`
+          : `No se pudieron guardar los datos de actividad: ${causa}`
       );
     } finally {
       setGuardandoActividad(false);
-      setEnviandoAbsis(false);
+      setRegistrandoSolicitudIntegracion(false);
     }
   }
 
@@ -4995,14 +4980,14 @@ const cuantiaFincasParaEnvio =
               <div className="mb-4 space-y-4">
                 <section className="rounded-xl border border-slate-200 bg-white p-4">
                   <div className="mb-3">
-                    <h4 className="text-sm font-extrabold text-slate-800">Cambio de actividad para informar a ABSIS</h4>
-                    <p className="mt-1 text-xs text-slate-500">Estos datos se guardan para el expediente y no modifican las otras actividades.</p>
+                    <h4 className="text-sm font-extrabold text-slate-800">Preparación de datos para la futura integración ABSIS</h4>
+                    <p className="mt-1 text-xs text-slate-500">Los datos se guardan en el ERP. Esta pantalla no transmite información a ABSIS.</p>
                   </div>
                   {cargandoEstadoAbsis ? <p className="text-xs text-slate-500">Cargando estado de ABSIS…</p> : null}
                   <div className="grid gap-3 md:grid-cols-2">
                     <label className="rounded-lg border border-slate-200 p-3">
                       <span className="mb-2 block text-xs font-bold text-slate-700">Certificado Saldo «0» erróneo</span>
-                      <select value={estadoDocumentacionAbsis.certificado_saldo_cero_erroneo ? "si" : "no"} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, certificado_saldo_cero_erroneo: e.target.value === "si" }))} disabled={enviandoAbsis} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                      <select value={estadoDocumentacionAbsis.certificado_saldo_cero_erroneo ? "si" : "no"} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, certificado_saldo_cero_erroneo: e.target.value === "si" }))} disabled={registrandoSolicitudIntegracion} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
                         <option value="no">No</option><option value="si">Sí</option>
                       </select>
                     </label>
@@ -5013,31 +4998,31 @@ const cuantiaFincasParaEnvio =
                     </div>
                   </div>
                   <div className="mt-3 space-y-2">
-                    <p className="text-xs font-bold text-slate-700">Documentos que se informan a ABSIS</p>
+                    <p className="text-xs font-bold text-slate-700">Documentos que incluirá la futura solicitud</p>
                     {[
                       ["solicitud_cancelacion_notarial", "Hoja de Encargo firmada"],
                       ["certificado_cancelacion_administrativo", "Justificante de cancelación"],
                       ["nota_simple_registral", "Nota simple registral"],
                     ].map(([key, label]) => (
                       <label key={key} className="flex items-center gap-3 rounded-lg border border-slate-100 px-3 py-2 text-sm text-slate-700">
-                        <input type="checkbox" checked={!!estadoDocumentacionAbsis[key]} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, [key]: e.target.checked }))} disabled={enviandoAbsis} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
+                        <input type="checkbox" checked={!!estadoDocumentacionAbsis[key]} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, [key]: e.target.checked }))} disabled={registrandoSolicitudIntegracion} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
                         <span className="flex-1">{label}</span>
                       </label>
                     ))}
                   </div>
                   <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50/40 p-3">
-                    <span className="mb-2 block text-xs font-extrabold text-slate-700">Mover el expediente a la siguiente actividad</span>
+                    <span className="mb-2 block text-xs font-extrabold text-slate-700">Solicitar avance al completar la futura integración</span>
                     <div className="flex gap-4">
-                      <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: true }))} disabled={enviandoAbsis} />Sí</label>
-                      <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: false }))} disabled={enviandoAbsis} />No</label>
+                      <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: true }))} disabled={registrandoSolicitudIntegracion} />Sí</label>
+                      <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: false }))} disabled={registrandoSolicitudIntegracion} />No</label>
                     </div>
-                    <p className="mt-2 text-[11px] text-slate-500">Al confirmar el avance, el backend comprobará el envío a notario y los tres documentos obligatorios.</p>
+                    <p className="mt-2 text-[11px] text-slate-500">Registrar la solicitud no envía nada ni avanza el expediente. El avance se valida por separado.</p>
                   </div>
                   <div className="mt-4 flex flex-wrap justify-end gap-2">
-                    <Boton onClick={() => guardarEstadoAbsis(false)} disabled={enviandoAbsis || cargandoEstadoAbsis}>{enviandoAbsis ? "Guardando…" : "💾 Guardar datos ABSIS"}</Boton>
-                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={enviandoAbsis || cargandoEstadoAbsis}>{enviandoAbsis ? "Procesando…" : estadoDocumentacionAbsis.enviado_a_absis ? "✓ Registrado para ABSIS" : "📨 Enviar a ABSIS"}</Boton>
+                    <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : "💾 Guardar datos para integración"}</Boton>
+                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : "📨 Registrar solicitud pendiente"}</Boton>
                   </div>
-                  {estadoDocumentacionAbsis.enviado_a_absis && <p className="mt-2 text-right text-xs font-semibold text-emerald-700">Solicitud registrada para ABSIS.</p>}
+                  {estadoDocumentacionAbsis.solicitud_registrada_localmente && <p className="mt-2 text-right text-xs font-semibold text-amber-700">Pendiente de API externa; todavía no transmitida a ABSIS.</p>}
                 </section>
               </div>
             )}
@@ -5175,21 +5160,21 @@ const cuantiaFincasParaEnvio =
                     </button>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <p className="mb-2 text-xs font-extrabold text-slate-700">Mover el expediente a la siguiente actividad</p>
+                    <p className="mb-2 text-xs font-extrabold text-slate-700">Solicitar avance al completar la futura integración</p>
                     <div className="flex gap-5">
                       <label className="flex items-center gap-2 text-sm text-slate-700">
-                        <input type="radio" name="moverActividadProtocolo" checked={!!actividadDraft.mover_siguiente_actividad} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || enviandoAbsis} /> Sí
+                        <input type="radio" name="moverActividadProtocolo" checked={!!actividadDraft.mover_siguiente_actividad} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> Sí
                       </label>
                       <label className="flex items-center gap-2 text-sm text-slate-700">
-                        <input type="radio" name="moverActividadProtocolo" checked={!actividadDraft.mover_siguiente_actividad} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || enviandoAbsis} /> No
+                        <input type="radio" name="moverActividadProtocolo" checked={!actividadDraft.mover_siguiente_actividad} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> No
                       </label>
                     </div>
-                    <p className="mt-2 text-[11px] text-slate-500">La selección se incluye en la solicitud enviada a ABSIS.</p>
+                    <p className="mt-2 text-[11px] text-slate-500">La preferencia se guarda en la solicitud pendiente. No modifica la actividad y no se realiza envío externo.</p>
                   </div>
                 </div>
                 <div className="mt-3 flex justify-end">
-                  <Boton tipo="primary" onClick={enviarSedeNotarialProtocoloAbsis} disabled={guardandoActividad || enviandoAbsis}>
-                    {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
+                  <Boton tipo="primary" onClick={() => registrarSolicitudIntegracionPendiente("sede-notarial-protocolo")} disabled={guardandoActividad || registrandoSolicitudIntegracion}>
+                    {registrandoSolicitudIntegracion ? "Registrando…" : "📨 Registrar solicitud pendiente"}
                   </Boton>
                 </div>
               </section>
@@ -5294,20 +5279,20 @@ const cuantiaFincasParaEnvio =
                     </button>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <p className="mb-2 text-xs font-extrabold text-slate-700">Mover el expediente a la siguiente actividad</p>
+                    <p className="mb-2 text-xs font-extrabold text-slate-700">Solicitar avance al completar la futura integración</p>
                     <div className="flex gap-5">
                       <label className="flex items-center gap-2 text-sm text-slate-700">
-                        <input type="radio" name="moverActividadLiquidacion" checked={actividadDraft.mover_siguiente_actividad !== false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || enviandoAbsis} /> Sí
+                        <input type="radio" name="moverActividadLiquidacion" checked={actividadDraft.mover_siguiente_actividad !== false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> Sí
                       </label>
                       <label className="flex items-center gap-2 text-sm text-slate-700">
-                        <input type="radio" name="moverActividadLiquidacion" checked={actividadDraft.mover_siguiente_actividad === false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || enviandoAbsis} /> No
+                        <input type="radio" name="moverActividadLiquidacion" checked={actividadDraft.mover_siguiente_actividad === false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> No
                       </label>
                     </div>
                   </div>
                 </div>
                 <div className="mt-3 flex justify-end">
-                  <Boton tipo="primary" onClick={() => enviarActividadAbsis("liquidacion-impuestos")} disabled={guardandoActividad || enviandoAbsis}>
-                    {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
+                  <Boton tipo="primary" onClick={() => registrarSolicitudIntegracionPendiente("liquidacion-impuestos")} disabled={guardandoActividad || registrandoSolicitudIntegracion}>
+                    {registrandoSolicitudIntegracion ? "Registrando…" : "📨 Registrar solicitud pendiente"}
                   </Boton>
                 </div>
               </section>
@@ -5329,20 +5314,20 @@ const cuantiaFincasParaEnvio =
                     </button>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <p className="mb-2 text-xs font-extrabold text-slate-700">Mover el expediente a la siguiente actividad</p>
+                    <p className="mb-2 text-xs font-extrabold text-slate-700">Solicitar avance al completar la futura integración</p>
                     <div className="flex gap-5">
                       <label className="flex items-center gap-2 text-sm text-slate-700">
-                        <input type="radio" name="moverActividadInscripcion" checked={actividadDraft.mover_siguiente_actividad !== false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || enviandoAbsis} /> Sí
+                        <input type="radio" name="moverActividadInscripcion" checked={actividadDraft.mover_siguiente_actividad !== false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> Sí
                       </label>
                       <label className="flex items-center gap-2 text-sm text-slate-700">
-                        <input type="radio" name="moverActividadInscripcion" checked={actividadDraft.mover_siguiente_actividad === false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || enviandoAbsis} /> No
+                        <input type="radio" name="moverActividadInscripcion" checked={actividadDraft.mover_siguiente_actividad === false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> No
                       </label>
                     </div>
                   </div>
                 </div>
                 <div className="mt-3 flex justify-end">
-                  <Boton tipo="primary" onClick={() => enviarActividadAbsis("tramitacion-inscripcion")} disabled={guardandoActividad || enviandoAbsis}>
-                    {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
+                  <Boton tipo="primary" onClick={() => registrarSolicitudIntegracionPendiente("tramitacion-inscripcion")} disabled={guardandoActividad || registrandoSolicitudIntegracion}>
+                    {registrandoSolicitudIntegracion ? "Registrando…" : "📨 Registrar solicitud pendiente"}
                   </Boton>
                 </div>
               </section>
@@ -5542,6 +5527,15 @@ const cuantiaFincasParaEnvio =
               {actividadSeleccionada === "documentacion-previa" && actividadActual === "documentacion-previa" && (
                 <Boton tipo="primary" onClick={avanzarActividad} disabled={guardandoActividad || !estadoDocumentacionAbsis.mover_siguiente_actividad}>
                   {guardandoActividad ? "Validando…" : "➡️ Mover a Sede notarial sin protocolo"}
+                </Boton>
+              )}
+              {actividadSeleccionada === actividadActual && actividadActual && actividadActual !== "documentacion-previa" && (
+                <Boton tipo="primary" onClick={avanzarActividad} disabled={guardandoActividad}>
+                  {guardandoActividad
+                    ? "Validando…"
+                    : actividadActual === "facturacion-cierre"
+                      ? "✅ Validar y cerrar expediente"
+                      : "➡️ Validar y avanzar actividad"}
                 </Boton>
               )}
             </div>
