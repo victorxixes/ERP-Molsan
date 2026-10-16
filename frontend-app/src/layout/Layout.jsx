@@ -1,217 +1,66 @@
 import { useEffect } from "react";
-import Sidebar from "../components/Sidebar";
 import { Outlet } from "react-router-dom";
-
+import Sidebar from "../components/Sidebar";
 import { useAuthStore } from "../store/authStore";
-
 import EmpleadoPerfilModal from "../components/SidebarPerfilModal";
-
 import { useNotificacionesWS } from "../hooks/useNotificacionesWS";
 import NotificacionesToast from "../components/notificaciones/NotificacionesToast";
+import ProvisionesLauncher from "../components/expedientes/ProvisionesLauncher";
 
-
-/**
- * ============================================================
- * LAYOUT PRINCIPAL — ERP SJ-2026
- * ============================================================
- *
- * Navegación superior en una única línea.
- *
- * Mantiene:
- *
- * - WebSocket empleados
- * - WebSocket notificaciones
- * - Perfil
- * - Notificaciones realtime
- * - Toast de notificaciones
- * - Outlet de React Router
- *
- * La navegación superior se gestiona desde Sidebar.jsx.
- * ============================================================
- */
-
+/** Layout principal de ERP-Molsan. Mantiene perfil, navegación,
+ * WebSockets de empleado/notificaciones y activa la herramienta
+ * de Provisiones solo dentro de la ficha de un expediente. */
 export default function Layout() {
+  const empleado = useAuthStore((s) => s.empleado);
+  const perfilModal = useAuthStore((s) => s.perfilModal);
+  const setPerfilModal = useAuthStore((s) => s.setPerfilModal);
 
-  const empleado = useAuthStore(
-    (s) => s.empleado
-  );
-
-  const perfilModal = useAuthStore(
-    (s) => s.perfilModal
-  );
-
-  const setPerfilModal = useAuthStore(
-    (s) => s.setPerfilModal
-  );
-
-
-  // ============================================================
-  // NOTIFICACIONES REALTIME
-  // ============================================================
-
-  useNotificacionesWS(
-    empleado?.id
-  );
-
-
-  // ============================================================
-  // WEBSOCKET GLOBAL DE EMPLEADOS
-  // ============================================================
+  useNotificacionesWS(empleado?.id);
 
   useEffect(() => {
+    if (!empleado?.id) return undefined;
+    const token = localStorage.getItem("token");
+    const base = String(import.meta.env.VITE_WS_URL || "").replace(/\/$/, "");
+    if (!token || !base) return undefined;
 
-    if (!empleado?.id) {
-      return;
+    let ws;
+    try {
+      ws = new WebSocket(`${base}/ws/empleados/${encodeURIComponent(empleado.id)}?token=${encodeURIComponent(token)}`);
+    } catch (err) {
+      console.warn("WS Empleados: no se pudo iniciar la conexión.", err);
+      return undefined;
     }
 
-    const token =
-      localStorage.getItem("token");
-
-
-    const ws = new WebSocket(
-      `${import.meta.env.VITE_WS_URL}/ws/empleados/${empleado.id}?token=${token}`
-    );
-
-
-    ws.onopen = () => {
-
-      console.log(
-        "WS Empleados conectado"
-      );
-
-    };
-
-
-    ws.onclose = () => {
-
-      console.log(
-        "WS Empleados cerrado"
-      );
-
-    };
-
-
+    ws.onopen = () => console.log("WS Empleados conectado");
+    ws.onclose = () => console.log("WS Empleados cerrado");
+    ws.onerror = () => console.warn("WS Empleados: error de conexión.");
     ws.onmessage = (event) => {
-
       try {
-
-        const data =
-          JSON.parse(
-            event.data
-          );
-
-        console.log(
-          "WS Empleados mensaje:",
-          data
-        );
-
-        /*
-         * Aquí puedes actualizar
-         * estado global si lo necesitas.
-         */
-
-      } catch (err) {
-
-        console.warn(
-          "WS Empleados error parseando mensaje:",
-          err
-        );
-
+        const data = JSON.parse(event.data);
+        if (data?.tipo && data.tipo !== "heartbeat") console.debug("WS Empleados evento:", data.tipo);
+      } catch {
+        // Se ignoran mensajes que no estén serializados en JSON.
       }
-
     };
-
 
     return () => {
-
-      try {
-
-        ws.close();
-
-      } catch {}
-
+      try { ws.close(); } catch { /* La conexión puede haberse cerrado previamente. */ }
     };
-
   }, [empleado?.id]);
 
-
-  // ============================================================
-  // RENDER
-  // ============================================================
-
   return (
-
-    <div
-      className="
-        min-h-screen
-        bg-[var(--erp-bg)]
-        text-[var(--erp-text)]
-      "
-    >
-
-      {/* ======================================================
-          MODAL PERFIL
-          ====================================================== */}
-
-      {perfilModal && (
-
-        <EmpleadoPerfilModal
-          id={perfilModal}
-          onClose={() =>
-            setPerfilModal(null)
-          }
-        />
-
-      )}
-
-
-      {/* ======================================================
-          NAVEGACIÓN SUPERIOR
-          ====================================================== */}
-
+    <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
+      {perfilModal && <EmpleadoPerfilModal id={perfilModal} onClose={() => setPerfilModal(null)} />}
       <Sidebar />
-
-
-      {/* ======================================================
-          POPUP REALTIME
-          ====================================================== */}
-
       <NotificacionesToast />
-
-
-      {/* ======================================================
-          CONTENIDO PRINCIPAL
-          ====================================================== */}
-
-      <main
-        className="
-          min-h-[calc(100vh-70px)]
-          relative
-        "
-      >
-
-        <div
-          className="
-            w-full
-            px-4
-            lg:px-6
-            py-6
-          "
-        >
-
-      <div
-  className="
-    w-full
-  "
->
-  <Outlet />
-</div>
-
+      <ProvisionesLauncher />
+      <main className="relative min-h-[calc(100vh-70px)]">
+        <div className="w-full px-4 py-6 lg:px-6">
+          <div className="w-full">
+            <Outlet />
+          </div>
         </div>
-
       </main>
-
     </div>
-
   );
 }
