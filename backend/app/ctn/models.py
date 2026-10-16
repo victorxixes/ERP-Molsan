@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Index
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, Index, Boolean
 from sqlalchemy.orm import relationship
 from backend.app.database import Base
 
@@ -36,6 +36,9 @@ class Notaria(Base):
     # Apoderados
     apoderado = Column(String(150), nullable=True, index=True)
     apoderado_s = Column(String(150), nullable=True)
+
+    # Acceso al portal externo NotarGest
+    notargest_habilitado = Column(Boolean, nullable=False, default=False, server_default="false")
 
     # Observaciones
     observacion = Column(Text, nullable=True)
