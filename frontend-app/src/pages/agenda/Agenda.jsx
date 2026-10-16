@@ -65,14 +65,9 @@ export default function Agenda({ soloApoderado = false } = {}) {
     return mod.agenda;
   });
 
-  const puedeCrear =
-    !soloApoderado && permisosAgenda.includes("crear");
-
-  const puedeEditar =
-    !soloApoderado && permisosAgenda.includes("editar");
-
-  const puedeEliminar =
-    !soloApoderado && permisosAgenda.includes("eliminar");
+  const puedeCrear = permisosAgenda.includes("crear");
+const puedeEditar = !soloApoderado && permisosAgenda.includes("editar");
+const puedeEliminar = !soloApoderado && permisosAgenda.includes("eliminar");
 
   // Se conserva para mantener la comprobación de permisos existente.
   const puedeVer =
@@ -156,7 +151,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
   const abrirCrear = useCallback(
     (fecha) => {
-      if (soloApoderado) return;
+      
 
       if (!puedeCrear) {
         notify("No tienes permiso para crear citas.");
@@ -239,11 +234,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
   const guardarCita = useCallback(
     async (payload) => {
       try {
-        if (soloApoderado) {
-          setMostrarModal(false);
-          return;
-        }
-
+        
         if (modalModo === "crear") {
           if (!puedeCrear) {
             notify("No tienes permiso para crear citas.");
