@@ -52,6 +52,9 @@ PREFIJOS_MODULO = (
     ("/api/carpeta-digital", "expedientes"),
     ("/api/agenda", "agenda"),
     ("/api/empleados", "empleados"),
+    # La fotografía protegida se registra directamente desde main.py y no
+    # cuelga del prefijo /api/empleados; debe usar los permisos de Empleados.
+    ("/api/fotos", "empleados"),
     ("/api/ctn", "ctn"),
     ("/api/notarios", "notarios"),
     ("/api/mensajes", "mensajes"),
