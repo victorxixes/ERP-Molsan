@@ -425,4 +425,7 @@ async def subir_factura_notarial(expediente_id: str, archivo: UploadFile = File(
         db.rollback()
         ruta.unlink(missing_ok=True)
         raise
-    return {"ok": True, "id": doc.id, "nombre": doc.nombre_original, "fecha_subida": _fecha(doc.fecha_subida)}
+    e.notargest_estado = "registro"
+    e.actividad_actual = ESTADOS_NOTARGEST["registro"]
+    db.commit()
+    return {"ok": True, "id": doc.id, "nombre": doc.nombre_original, "fecha_subida": _fecha(doc.fecha_subida), "estado": "registro"}
