@@ -67,9 +67,13 @@ def login(data: LoginNotario, db: Session=Depends(get_db)):
     if n.notargest_password_hash:
         valido = verificar_password(data.password, n.notargest_password_hash)
     else:
+        # Primer acceso: el usuario y la contraseña inicial son el CIF/NIF completo,
+        # incluida la letra. Se normalizan espacios, guiones y mayúsculas/minúsculas.
         valido = hmac.compare_digest(normalizar_nif(data.password), nif)
         if valido:
-            n.notargest_password_hash = hash_password(data.password)
+            # Guardar la versión canónica evita que el primer acceso con letra
+            # minúscula provoque que el siguiente acceso con mayúscula falle.
+            n.notargest_password_hash = hash_password(nif)
             n.notargest_cambiar_password = True
             db.commit()
     if not valido: raise HTTPException(status_code=401, detail='Credenciales incorrectas')
