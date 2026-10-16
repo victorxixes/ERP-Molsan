@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Link, useParams } from "react-router-dom";
 import axios from "../../api/axios";
-import { useAuthStore } from "../../store/authStore";
 
 import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario } from "../../api/expedientes";
 
@@ -19,9 +18,6 @@ import {
   registrarSubsanacionDefecto,
   subirCalificacionRegistro,
   obtenerCalificacionRegistro,
-  listarDocumentosCarpetaDigital,
-  subirCalificacionACarpetaDigital,
-  listarHistorialDefectosExpediente,
   listarTiposCargaHipotecaria,
 } from "../../api/expedienteDefectos";
 
@@ -1389,7 +1385,6 @@ function Boton({
 
 export default function FichaExpediente() {
   const { id } = useParams();
-  const empleadoSesion = useAuthStore((s) => s.empleado);
 
   const [
     expediente,
@@ -1711,9 +1706,6 @@ const [defectoEditandoId, setDefectoEditandoId] = useState(null);
 const [guardandoDefecto, setGuardandoDefecto] = useState(false);
 const [errorDefecto, setErrorDefecto] = useState("");
 const [archivoCalificacion, setArchivoCalificacion] = useState(null);
-const [historialDefectos, setHistorialDefectos] = useState([]);
-const [cargandoHistorialDefectos, setCargandoHistorialDefectos] = useState(false);
-const [errorHistorialDefectos, setErrorHistorialDefectos] = useState("");
   
   // ----------------------------------------------------------
   // PPAD — datos persistidos en el backend
@@ -2176,28 +2168,24 @@ const [errorHistorialDefectos, setErrorHistorialDefectos] = useState("");
     setErrorHonorariosGestoria("");
     setMensajeHonorariosGestoria("");
     try {
-      const conceptoPpad = `Honorarios de gestoría - ${calculo.tarifa} - ${calculo.entidad}`;
       const respuesta = await axios.post(
-        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/ppad`,
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/generar`,
         {
           importe: calculo.importe,
-          concepto: conceptoPpad,
-          imputable_a: "Molsan",
+          tarifa: calculo.tarifa,
+          concepto: "Honorarios de gestoría",
+          entidad: calculo.entidad,
+          id_expediente: expediente.id_expediente,
         }
       );
       setHonorariosGestoria((actual) => ({ ...actual, ...(respuesta?.data || {}), guardado: true }));
-      setMensajeHonorariosGestoria(
-        respuesta?.data?.ya_existia
-          ? "Estos honorarios ya estaban registrados en PPAD; no se ha creado un duplicado."
-          : "Honorarios de gestoría registrados en PPAD."
-      );
-      await cargarPpad();
+      setMensajeHonorariosGestoria("Honorarios de gestoría generados y registrados.");
     } catch (err) {
       const status = err?.response?.status;
       const detail = err?.response?.data?.detail;
       if (status === 404 || status === 405) {
-        setErrorHonorariosGestoria(
-          "No está disponible la ruta de PPAD del backend. No se han registrado los honorarios."
+        setMensajeHonorariosGestoria(
+          `Importe calculado: ${calculo.importe.toFixed(2).replace(".", ",")} €. El backend todavía no dispone de una ruta compatible para registrar automáticamente este concepto.`
         );
       } else {
         setErrorHonorariosGestoria(
@@ -2430,33 +2418,6 @@ async function cargarDefectosRegistrados() {
   setDefectosRegistrados(lista);
 }
 
-async function cargarHistorialDefectos() {
-  const numero = expediente?.id_expediente;
-  if (!numero) {
-    setHistorialDefectos([]);
-    return;
-  }
-  try {
-    setCargandoHistorialDefectos(true);
-    setErrorHistorialDefectos("");
-    const respuesta = await listarHistorialDefectosExpediente(numero, 100);
-    const lista = Array.isArray(respuesta)
-      ? respuesta
-      : Array.isArray(respuesta?.historial)
-        ? respuesta.historial
-        : [];
-    setHistorialDefectos(lista);
-  } catch (error) {
-    console.error("Error consultando el historial de defectos:", error);
-    setErrorHistorialDefectos(
-      error?.response?.data?.detail ||
-      "No se pudo cargar el historial. Comprueba que el backend y la migración estén desplegados."
-    );
-  } finally {
-    setCargandoHistorialDefectos(false);
-  }
-}
-
 // Consultar los defectos al abrir/cambiar de expediente, no solo al abrir el modal.
 // El indicador de la cabecera se basa exclusivamente en registros devueltos por la API.
 useEffect(() => {
@@ -2498,11 +2459,6 @@ useEffect(() => {
     cancelado = true;
   };
 }, [expediente?.id_expediente]);
-
-useEffect(() => {
-  if (!mostrarDefecto || !expediente?.id_expediente) return;
-  cargarHistorialDefectos();
-}, [mostrarDefecto, expediente?.id_expediente]);
 
 async function abrirDefecto() {
   setErrorDefecto("");
@@ -2609,64 +2565,11 @@ async function guardarDefectoRegistral() {
     const idDefecto = guardado.id ?? guardado.id_defecto ?? defectoEditandoId;
     if (idDefecto) setDefectoEditandoId(idDefecto);
 
-    let avisoCarpetaDigital = "";
-
     if (archivoCalificacion) {
       if (!idDefecto) {
         throw new Error("El defecto se guardó, pero no se recibió su identificador para adjuntar el PDF.");
       }
-
-      // El PDF original se guarda primero en el registro del defecto.
-      await subirCalificacionRegistro(
-        expediente.id_expediente,
-        idDefecto,
-        archivoCalificacion
-      );
-
-      // Copia opcional a Carpeta Digital. Se consulta antes el listado para
-      // no duplicar la misma calificación si se vuelve a guardar el formulario.
-      const nombreCarpeta = `calificacion_defecto_${idDefecto}_${archivoCalificacion.name}`;
-      try {
-        const documentos = await listarDocumentosCarpetaDigital(
-          expediente.id_expediente
-        );
-        const listaDocumentos = Array.isArray(documentos)
-          ? documentos
-          : Array.isArray(documentos?.items)
-            ? documentos.items
-            : [];
-        const yaExiste = listaDocumentos.some((documento) =>
-          documento?.categoria === "Defecto registral" &&
-          documento?.nombre_original === nombreCarpeta
-        );
-
-        if (!yaExiste) {
-          const archivoCarpeta = new File(
-            [archivoCalificacion],
-            nombreCarpeta,
-            {
-              type: archivoCalificacion.type || "application/pdf",
-              lastModified: archivoCalificacion.lastModified,
-            }
-          );
-          await subirCalificacionACarpetaDigital(
-            expediente.id_expediente,
-            archivoCarpeta,
-            "Defecto registral"
-          );
-        }
-      } catch (errorCarpeta) {
-        console.error(
-          "El defecto y su PDF se guardaron, pero no se pudo completar la copia a Carpeta Digital:",
-          errorCarpeta
-        );
-        const detalle =
-          errorCarpeta?.response?.data?.detail ||
-          errorCarpeta?.message ||
-          "error desconocido";
-        avisoCarpetaDigital =
-          `El defecto y su PDF se han guardado, pero no se pudo verificar/copiar el documento a la Carpeta Digital: ${detalle}`;
-      }
+      await subirCalificacionRegistro(expediente.id_expediente, idDefecto, archivoCalificacion);
     }
 
     setDefectoLocal({
@@ -2684,11 +2587,9 @@ async function guardarDefectoRegistral() {
     }));
 
     await cargarDefectosRegistrados();
-    await cargarHistorialDefectos();
     setDefectoEditandoId(null);
     setDefectoForm({ ...DEFECTO_VACIO });
     setArchivoCalificacion(null);
-    if (avisoCarpetaDigital) setErrorDefecto(avisoCarpetaDigital);
   } catch (error) {
     console.error("Error guardando defecto:", error);
     setErrorDefecto(
@@ -3047,27 +2948,36 @@ async function descargarPDFCalificacion(defecto) {
 
   async function guardarObservacion() {
     const texto = String(comentario || "").trim();
+
     if (!texto) {
       setErrorObservaciones("Escribe un comentario antes de guardarlo.");
       return;
     }
+
     if (!numeroExpedienteApi) {
       setErrorObservaciones("No se ha identificado el expediente.");
       return;
     }
+
     const visiones = Object.entries(visionesComentario)
       .filter(([, marcado]) => Boolean(marcado))
       .map(([vision]) => vision);
+
     if (!visiones.length) {
       setErrorObservaciones("Selecciona al menos un destino del comentario.");
       return;
     }
+
     if (visiones.includes("actividad") && !destinatarioObservacion) {
-      setErrorObservaciones("No hay un empleado destinatario disponible para el comentario interno.");
+      setErrorObservaciones(
+        "Selecciona el empleado destinatario del comentario interno."
+      );
       return;
     }
+
     setGuardandoObservacion(true);
     setErrorObservaciones("");
+
     try {
       const respuesta = await axios.post(
         `/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones/comentario-ficha`,
@@ -3079,18 +2989,21 @@ async function descargarPDFCalificacion(defecto) {
             : null,
         }
       );
+
       if (visiones.includes("actividad")) {
         setExpediente((actual) => ({
           ...actual,
           observaciones: respuesta?.data?.observaciones_expediente ?? texto,
         }));
       }
+
       await cargarObservacionesExpediente();
       setMostrarObservaciones(false);
     } catch (err) {
       console.error("Error guardando el comentario:", err);
       setErrorObservaciones(
-        err?.response?.data?.detail || "No se pudo guardar el comentario. No se han confirmado los cambios."
+        err?.response?.data?.detail ||
+          "No se pudo guardar el comentario. No se han confirmado los cambios."
       );
     } finally {
       setGuardandoObservacion(false);
@@ -4340,16 +4253,14 @@ const cuantiaFincasParaEnvio =
                       </span>
                     )}
                   </div>
-                  {Number(observacion.autor_empleado_id) === Number(empleadoSesion?.id) && (
-                    <div className="mt-2 flex justify-end gap-2">
-                      <button type="button" onClick={() => editarObservacionExpediente(observacion)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700 hover:bg-blue-100">
-                        Editar
-                      </button>
-                      <button type="button" onClick={() => eliminarObservacionExpediente(observacion.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100">
-                        Desactivar
-                      </button>
-                    </div>
-                  )}
+                  <div className="mt-2 flex justify-end gap-2">
+                    <button type="button" onClick={() => editarObservacionExpediente(observacion)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700 hover:bg-blue-100">
+                      Editar
+                    </button>
+                    <button type="button" onClick={() => eliminarObservacionExpediente(observacion.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100">
+                      Desactivar
+                    </button>
+                  </div>
                 </article>
               ))}
 
@@ -5067,22 +4978,11 @@ const cuantiaFincasParaEnvio =
             </div>
 
 
-            {actividadSeleccionada !== "documentacion-previa" && (
-              <div className="mb-4">
-                <CarpetaDigitalModal
-                  expedienteId={expediente?.id_expediente || id}
-                  modoActividad
-                  actividadId={actividadSeleccionada}
-                />
-              </div>
-            )}
-
             {actividadSeleccionada === "documentacion-previa" && (
               <div className="mb-4 space-y-4">
                 <CarpetaDigitalModal
                   expedienteId={expediente?.id_expediente || id}
                   modoActividad
-                  actividadId={actividadSeleccionada}
                   onDocumentosChange={setDocumentosCarpetaPrevia}
                 />
 
@@ -5284,6 +5184,89 @@ const cuantiaFincasParaEnvio =
                   <Boton tipo="primary" onClick={enviarSedeNotarialProtocoloAbsis} disabled={guardandoActividad || enviandoAbsis}>
                     {enviandoAbsis ? "Enviando…" : "📨 Enviar a ABSIS"}
                   </Boton>
+                </div>
+              </section>
+            )}
+
+            {actividadSeleccionada === "defectos-registrales" && (
+              <section className="mt-3 rounded-2xl border border-amber-200 bg-amber-50/30 p-4">
+                <div className="mb-3">
+                  <h3 className="text-sm font-extrabold text-slate-800">Carpeta digital de defectos</h3>
+                  <p className="mt-1 text-xs text-slate-500">Dos categorías separadas para la calificación registral y la documentación de subsanación.</p>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {[
+                    {
+                      key: "defecto-registral",
+                      titulo: "Defecto registral",
+                      descripcion: "Calificación o nota de defectos emitida por el Registro.",
+                    },
+                    {
+                      key: "subsanacion-del-defecto",
+                      titulo: "Subsanación del defecto",
+                      descripcion: "Documentos que acreditan la subsanación del defecto.",
+                    },
+                  ].map((categoria) => {
+                    const documentos = (Array.isArray(documentosCierre) ? documentosCierre : []).filter((doc) => {
+                      const categoriaDoc = String(
+                        doc?.categoria || doc?.categoria_nombre || doc?.tipo_documento ||
+                        doc?.nombre_categoria || doc?.metadata?.categoria || ""
+                      ).toLowerCase();
+                      const nombreDoc = String(
+                        doc?.nombre_original || doc?.nombre || doc?.nombre_archivo || doc?.filename || ""
+                      ).toLowerCase();
+                      const clave = categoria.key.toLowerCase();
+                      const etiqueta = categoria.titulo.toLowerCase();
+                      if (categoria.key === "defecto-registral") {
+                        return (categoriaDoc.includes("defecto") && !categoriaDoc.includes("subsan")) ||
+                          (nombreDoc.includes("defecto") && !nombreDoc.includes("subsan"));
+                      }
+                      return categoriaDoc.includes("subsan") || nombreDoc.includes("subsan");
+                    });
+                    return (
+                      <article key={categoria.key} className="rounded-xl border border-slate-200 bg-white p-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <h4 className="text-sm font-extrabold text-slate-800">{categoria.titulo}</h4>
+                            <p className="mt-1 text-xs text-slate-500">{categoria.descripcion}</p>
+                          </div>
+                          <span className="shrink-0 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">
+                            {documentos.length} archivo(s)
+                          </span>
+                        </div>
+                        <div className="mt-3 border-t border-slate-100 pt-3">
+                          {documentos.length ? (
+                            <ul className="space-y-2">
+                              {documentos.map((doc, index) => {
+                                const url = doc?.url || doc?.url_descarga || doc?.download_url || doc?.ruta;
+                                return (
+                                  <li key={doc?.id || doc?.id_documento || index} className="flex items-center justify-between gap-2 text-xs">
+                                    <span className="min-w-0 break-words font-medium text-slate-700">{doc?.nombre_original || doc?.nombre || doc?.nombre_archivo || doc?.filename || `Archivo ${index + 1}`}</span>
+                                    {url && <a href={url} target="_blank" rel="noreferrer" className="shrink-0 font-bold text-blue-700 underline">Ver PDF</a>}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          ) : (
+                            <p className="text-xs text-slate-400">Todavía no hay documentos en esta categoría.</p>
+                          )}
+                        </div>
+                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                          <span className="text-[11px] text-slate-500">{documentos.length} archivo(s)</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMostrarCarpetaDigital(true);
+                              cargarDocumentosCierre();
+                            }}
+                            className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100"
+                          >
+                            ＋ Adjuntar/ver PDF
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
                 </div>
               </section>
             )}
@@ -5697,51 +5680,6 @@ const cuantiaFincasParaEnvio =
         </div>
       )}
     </div>
-
-    <section className="rounded-xl border border-slate-200 bg-white p-4">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h3 className="text-sm font-bold text-slate-800">Historial de defectos</h3>
-          <p className="mt-1 text-xs text-slate-500">Registro cronológico de altas, modificaciones, subsanaciones y documentos.</p>
-        </div>
-        <Boton onClick={cargarHistorialDefectos} disabled={cargandoHistorialDefectos}>
-          {cargandoHistorialDefectos ? "Actualizando…" : "↻ Actualizar"}
-        </Boton>
-      </div>
-
-      {errorHistorialDefectos && (
-        <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
-          {errorHistorialDefectos}
-        </div>
-      )}
-
-      {cargandoHistorialDefectos && historialDefectos.length === 0 ? (
-        <p className="text-sm text-slate-500">Cargando historial…</p>
-      ) : historialDefectos.length === 0 ? (
-        <p className="text-sm text-slate-500">Todavía no hay eventos de historial registrados.</p>
-      ) : (
-        <ol className="space-y-3">
-          {historialDefectos.map((evento) => (
-            <li key={evento.id} className="relative border-l-2 border-indigo-200 pb-1 pl-4">
-              <span className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-indigo-500" />
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <p className="text-sm font-semibold text-slate-800">
-                  {String(evento.accion || "Evento").replaceAll("_", " ").replace(/\b\w/g, (letra) => letra.toUpperCase())}
-                </p>
-                <time className="text-xs text-slate-500">
-                  {evento.creado_en ? new Date(evento.creado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "Fecha no disponible"}
-                </time>
-              </div>
-              <p className="mt-1 text-sm text-slate-600">{evento.resumen || "Sin descripción adicional."}</p>
-              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500">
-                {evento.defecto_id != null && <span>Defecto #{evento.defecto_id}</span>}
-                {evento.usuario && <span>Usuario: {evento.usuario}</span>}
-              </div>
-            </li>
-          ))}
-        </ol>
-      )}
-    </section>
 
     <div>
       <h3 className="mb-3 text-sm font-bold text-slate-800">
@@ -6525,7 +6463,10 @@ const cuantiaFincasParaEnvio =
             <Boton
               tipo="primary"
               onClick={guardarObservacion}
-              disabled={guardandoObservacion || (visionesComentario.actividad && !destinatarioObservacion)}
+              disabled={
+                guardandoObservacion ||
+                (visionesComentario.actividad && !destinatarioObservacion)
+              }
             >
               {guardandoObservacion ? "Guardando…" : "💾 Guardar comentario"}
             </Boton>
@@ -6535,7 +6476,9 @@ const cuantiaFincasParaEnvio =
 
         <div className="space-y-5">
           {errorObservaciones && (
-            <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorObservaciones}</p>
+            <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+              {errorObservaciones}
+            </p>
           )}
 
           <CampoFormulario
@@ -6622,12 +6565,23 @@ const cuantiaFincasParaEnvio =
               />
 
             </div>
+
             {visionesComentario.actividad && (
               <label className="mt-3 block">
-                <span className="mb-1 block text-xs font-semibold text-slate-600">Empleado destinatario del comentario interno</span>
-                <select value={destinatarioObservacion} onChange={(event) => setDestinatarioObservacion(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                <span className="mb-1 block text-xs font-semibold text-slate-600">
+                  Empleado destinatario del comentario interno
+                </span>
+                <select
+                  value={destinatarioObservacion}
+                  onChange={(event) => setDestinatarioObservacion(event.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                >
                   <option value="">Selecciona un empleado</option>
-                  {empleadosObservaciones.map((empleado) => <option key={empleado.id} value={empleado.id}>{empleado.nombre}</option>)}
+                  {empleadosObservaciones.map((empleado) => (
+                    <option key={empleado.id} value={empleado.id}>
+                      {empleado.nombre}
+                    </option>
+                  ))}
                 </select>
               </label>
             )}
