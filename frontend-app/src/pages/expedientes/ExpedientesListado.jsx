@@ -1880,19 +1880,6 @@ export default function ExpedientesListado() {
       "
     >
 
-      {/* ======================================================
-          CABECERA
-      ====================================================== */}
-
-      <div className="w-full flex flex-col gap-1">
-        <h1 className="text-3xl font-bold text-[var(--erp-text)]">
-          Expedientes
-        </h1>
-        <p className="text-[var(--erp-text-soft)]">
-          Gestión y consulta de expedientes
-        </p>
-      </div>
-
 
       {/* ======================================================
           ERROR
