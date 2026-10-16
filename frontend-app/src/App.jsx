@@ -122,6 +122,7 @@ import TiposConceptoGastos
 /* APODERAGEST */
 import ApoderaGest 
   from "./pages/apoderagest/ApoderaGest.jsx";
+import NotarGest from "./pages/notargest/NotarGest.jsx";
 
 
 /**
@@ -198,7 +199,7 @@ export default function App() {
         
         <Route
           path="notargest"
-          element={<ModuloPendiente nombre="Notargest" />}
+          element={<NotarGest />}
         />
         
         {/* ====================================================
