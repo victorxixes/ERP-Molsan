@@ -1,21 +1,18 @@
 """WebSocket de Mensajes con validación de identidad y destinatarios."""
 
 import json
-import re
 from pathlib import Path
 
-import jwt
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
-from backend.app.config import settings
+from backend.app.auth.websocket_auth import autenticar_websocket
 from backend.app.database import SessionLocal
 from backend.app.empleados.models import Empleado
 from backend.app.mensajes.ws_manager import manager
+from backend.app.mensajes.adjuntos import ruta_adjunto_mensaje
 
 router = APIRouter()
-CARPETA_MENSAJES = Path("/tmp/mensajes")
-EXTENSIONES_ADJUNTOS = {"pdf", "doc", "docx", "jpg", "jpeg", "png"}
 MAX_TEXTO = 10_000
 
 
@@ -26,34 +23,6 @@ def _empleado_activo(db: Session, empleado_id: int):
     if hasattr(empleado, "activo") and empleado.activo is False:
         return None
     return empleado
-
-
-def _archivo_mensaje_valido(valor: object) -> bool:
-    """Acepta únicamente URLs locales de adjuntos existentes, nunca URLs arbitrarias."""
-    if not isinstance(valor, str):
-        return False
-    url = valor.strip()
-    prefijo = "/static/mensajes/"
-    if not url.startswith(prefijo):
-        return False
-    nombre = url[len(prefijo):]
-    # Sin querystring, subdirectorios, barra invertida ni traversal.
-    if not nombre or "/" in nombre or "\\" in nombre or ".." in nombre or "?" in nombre or "#" in nombre:
-        return False
-    if "." not in nombre:
-        return False
-    base, extension = nombre.rsplit(".", 1)
-    if extension.lower() not in EXTENSIONES_ADJUNTOS:
-        return False
-    # Acepta el UUID hexadecimal actual y el UUID con guiones de adjuntos anteriores.
-    if not re.fullmatch(r"[0-9a-fA-F-]{32,36}", base):
-        return False
-    ruta = (CARPETA_MENSAJES / nombre).resolve()
-    try:
-        ruta.relative_to(CARPETA_MENSAJES.resolve())
-    except ValueError:
-        return False
-    return ruta.is_file()
 
 
 @router.websocket("/ws/mensajes/{empleado_id}")
@@ -68,14 +37,16 @@ async def mensajes_ws(websocket: WebSocket, empleado_id: int):
             return
 
         try:
-            payload = jwt.decode(
-                token,
-                settings.JWT_SECRET,
-                algorithms=[settings.ALGORITHM],
+            usuario_id = autenticar_websocket(
+                token, modulo="mensajes", accion="ver"
             )
-            usuario_id = int(payload.get("id"))
-        except (jwt.InvalidTokenError, TypeError, ValueError):
-            await websocket.close(code=4005, reason="Token inválido")
+        except HTTPException as exc:
+            codigo = 4003 if exc.status_code == 403 else 4005
+            motivo = "Permiso insuficiente" if codigo == 4003 else "Token inválido o usuario inactivo"
+            await websocket.close(code=codigo, reason=motivo)
+            return
+        except Exception:
+            await websocket.close(code=4005, reason="No se pudo validar la sesión")
             return
 
         if usuario_id != empleado_id:
@@ -140,6 +111,17 @@ async def mensajes_ws(websocket: WebSocket, empleado_id: int):
                 continue
 
             if tipo == "mensaje":
+                try:
+                    autenticar_websocket(token, modulo="mensajes", accion="crear")
+                except HTTPException as exc:
+                    await websocket.send_json({"tipo": "error", "codigo": "permiso_insuficiente"})
+                    if exc.status_code == 401:
+                        await websocket.close(code=4005, reason="Sesión no válida")
+                        break
+                    continue
+                except Exception:
+                    await websocket.close(code=4005, reason="No se pudo validar la sesión")
+                    break
                 contenido = data.get("contenido")
                 if not isinstance(contenido, str):
                     continue
@@ -154,8 +136,19 @@ async def mensajes_ws(websocket: WebSocket, empleado_id: int):
                 continue
 
             if tipo == "archivo":
+                try:
+                    autenticar_websocket(token, modulo="mensajes", accion="crear")
+                except HTTPException as exc:
+                    await websocket.send_json({"tipo": "error", "codigo": "permiso_insuficiente"})
+                    if exc.status_code == 401:
+                        await websocket.close(code=4005, reason="Sesión no válida")
+                        break
+                    continue
+                except Exception:
+                    await websocket.close(code=4005, reason="No se pudo validar la sesión")
+                    break
                 archivo_url = data.get("archivo_url")
-                if not _archivo_mensaje_valido(archivo_url):
+                if ruta_adjunto_mensaje(archivo_url, exigir_existencia=True) is None:
                     continue
                 await manager.enviar_archivo_ws(
                     remitente_id=empleado_id,
