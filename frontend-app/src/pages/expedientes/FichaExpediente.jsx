@@ -4978,14 +4978,21 @@ const cuantiaFincasParaEnvio =
             </div>
 
 
+            <div className="mb-4 space-y-4">
+              <CarpetaDigitalModal
+                expedienteId={expediente?.id_expediente || id}
+                modoActividad
+                actividadId={actividadSeleccionada}
+                onDocumentosChange={
+                  actividadSeleccionada === "documentacion-previa"
+                    ? setDocumentosCarpetaPrevia
+                    : undefined
+                }
+              />
+            </div>
+
             {actividadSeleccionada === "documentacion-previa" && (
               <div className="mb-4 space-y-4">
-                <CarpetaDigitalModal
-                  expedienteId={expediente?.id_expediente || id}
-                  modoActividad
-                  onDocumentosChange={setDocumentosCarpetaPrevia}
-                />
-
                 <section className="rounded-xl border border-slate-200 bg-white p-4">
                   <div className="mb-3">
                     <h4 className="text-sm font-extrabold text-slate-800">Cambio de actividad para informar a ABSIS</h4>
