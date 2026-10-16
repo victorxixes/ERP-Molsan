@@ -1131,3 +1131,22 @@
 .ag-visor-estado{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:32px;color:#53647c;text-align:center;font-size:13px}
 .ag-visor-error{color:#a62a2a}
 @media(max-width:650px){.ag-visor-overlay{padding:7px}.ag-visor-modal{width:100%;height:94vh;border-radius:12px}.ag-visor-cabecera{align-items:flex-start;padding:11px;gap:8px}.ag-visor-titulo{gap:8px}.ag-visor-icono{width:34px;height:34px}.ag-visor-titulo strong{font-size:12px}.ag-visor-titulo small{max-width:46vw}.ag-visor-acciones{gap:4px}.ag-visor-acciones button{padding:8px;font-size:11px}.ag-visor-acciones .ag-visor-cerrar{width:32px;height:32px}.ag-visor-pdf{min-height:400px}}
+
+/* Dashboard · próximas citas con horario y responsables */
+.ag-panel-proximas .ag-proximas-lista{display:grid;gap:10px}
+.ag-panel-proximas .ag-cita-item{display:grid;grid-template-columns:64px minmax(0,1fr) 18px;align-items:start;gap:14px;padding:14px;border:1px solid #e3eaf3;border-radius:12px;background:#fff;transition:border-color .18s,box-shadow .18s}
+.ag-panel-proximas .ag-cita-item:hover{border-color:#c6d5ed;box-shadow:0 5px 16px rgba(30,55,90,.06)}
+.ag-panel-proximas .ag-cita-fecha{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:56px;padding:8px 4px;border:1px solid #dbe6f6;border-radius:10px;background:#f2f6fd;color:#294b85;text-align:center}
+.ag-panel-proximas .ag-cita-fecha strong{font-size:19px;line-height:1.1;font-weight:850}
+.ag-panel-proximas .ag-cita-fecha span{margin-top:4px;font-size:10px;font-weight:750}
+.ag-panel-proximas .ag-cita-info{display:grid;min-width:0;gap:10px}
+.ag-panel-proximas .ag-cita-titulo-fila{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.ag-panel-proximas .ag-cita-titulo-fila>strong{color:#1e2f4b;font-size:13px;font-weight:850}
+.ag-panel-proximas .ag-cita-modalidad{display:inline-flex;align-items:center;padding:4px 8px;border:1px solid #d8e4f6;border-radius:999px;background:#f1f6ff;color:#355b98;font-size:10px;font-weight:800}
+.ag-panel-proximas .ag-cita-datos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px}
+.ag-panel-proximas .ag-cita-datos>span{display:flex;min-width:0;flex-wrap:wrap;align-items:baseline;gap:5px;color:#4d5e76;font-size:11px;overflow-wrap:anywhere}
+.ag-panel-proximas .ag-cita-datos b{color:#8290a4;font-size:9px;font-weight:850;letter-spacing:.04em;text-transform:uppercase}
+.ag-panel-proximas .ag-cita-datos .ag-cita-horario{color:#1d5b4b;font-weight:800}
+.ag-panel-proximas .ag-cita-datos .ag-cita-horario b{color:#6e8c82}
+.ag-panel-proximas .ag-cita-flecha{align-self:center;color:#9aabc3;font-size:22px}
+@media(max-width:680px){.ag-panel-proximas .ag-cita-item{grid-template-columns:52px minmax(0,1fr);gap:10px;padding:11px}.ag-panel-proximas .ag-cita-flecha{display:none}.ag-panel-proximas .ag-cita-datos{grid-template-columns:1fr}.ag-panel-proximas .ag-cita-fecha{min-height:50px}.ag-panel-proximas .ag-cita-fecha strong{font-size:17px}}
