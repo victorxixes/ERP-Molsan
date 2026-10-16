@@ -236,6 +236,17 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <CampoDetalle etiqueta="Saldo disponible" valor={numeroLegible(encargo.saldo_disponible)} />
                               <CampoDetalle etiqueta="Observaciones generales" valor={encargo.observaciones} />
                             </div>
+                            {encargo.documentos_escritura?.length > 0 && (
+                              <div className="ag-cuantias-documentos">
+                                <h5>Documentos de escritura y cuantías</h5>
+                                {encargo.documentos_escritura.map((documento) => (
+                                  <div key={documento.id} className="ag-cuantia-documento">
+                                    <span>{texto(documento.tipo_documento, "Documento")}</span>
+                                    <strong>{documento.cuantia == null ? "Cuantía pendiente" : numeroLegible(documento.cuantia)}</strong>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </section>
                           <section className="ag-encargo-subpanel">
                             <h4>Datos de facturación</h4>
