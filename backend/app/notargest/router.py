@@ -187,7 +187,7 @@ def mis_expedientes(n=Depends(get_notario), db: Session = Depends(get_db)):
         item = _resumen(e, db)
         # Estados separados para que cada bandeja tenga una condición clara.
         actividad = (e.actividad_actual or "").casefold()
-        item["pendiente_recepcion"] = not bool(e.fecha_envio_notario) is False if False else bool(e.fecha_envio_notario and not e.fecha_firma)
+        item["pendiente_recepcion"] = bool(e.fecha_envio_notario and not e.fecha_firma)
         item["pendiente_firma"] = bool(e.fecha_prevista_firma and not e.fecha_firma)
         item["pendiente_presentacion_registro"] = bool(item["pendiente_presentacion_registro"])
         item["pendiente_factura_notaria"] = bool(e.fecha_firma and not item["factura_notarial"])
