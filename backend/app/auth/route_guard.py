@@ -26,6 +26,7 @@ from backend.app.auth.permissions import require_perm_modulo
 
 RUTAS_PUBLICAS_EXACTAS = {
     "/api/auth/login",
+    "/api/notargest/login",
     # Endpoint histórico conservado para no romper clientes antiguos.
     "/api/empleados/login",
     "/api/health",
