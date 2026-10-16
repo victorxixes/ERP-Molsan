@@ -1,8 +1,8 @@
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 
-const TABS = [
+const PESTANAS = [
   "Dashboard",
   "Agenda",
   "Encargos",
@@ -11,332 +11,276 @@ const TABS = [
   "CTN",
 ];
 
-function fechaBonita(valor) {
+function fechaLegible(valor) {
   if (!valor) return "—";
 
   const fecha = new Date(valor);
-
-  if (Number.isNaN(fecha.getTime())) {
-    return valor;
-  }
+  if (Number.isNaN(fecha.getTime())) return String(valor);
 
   return fecha.toLocaleDateString("es-ES");
 }
 
-function TarjetaMetrica({ titulo, valor }) {
-  return (
-    <article
-      style={{
-        border: "1px solid #e5e7eb",
-        borderRadius: 12,
-        padding: 18,
-        background: "var(--card-bg, #ffffff)",
-      }}
-    >
-      <div style={{ color: "#6b7280", fontSize: 13 }}>
-        {titulo}
-      </div>
+function numeroLegible(valor) {
+  return valor === null || valor === undefined
+    ? "Pendiente de integración"
+    : valor;
+}
 
-      <strong style={{ fontSize: 28 }}>
-        {valor ?? "—"}
-      </strong>
+function TarjetaIndicador({ titulo, valor, detalle }) {
+  return (
+    <article className="ag-card ag-indicador">
+      <div className="ag-indicador-titulo">{titulo}</div>
+      <div className="ag-indicador-valor">{valor}</div>
+      {detalle ? (
+        <div className="ag-indicador-detalle">{detalle}</div>
+      ) : null}
     </article>
   );
 }
 
 export default function ApoderaGest() {
-  const [tab, setTab] = useState("Dashboard");
+  const [pestana, setPestana] = useState("Dashboard");
   const [dashboard, setDashboard] = useState(null);
-  const [encargos, setEncargos] = useState([]);
   const [agenda, setAgenda] = useState([]);
+  const [encargos, setEncargos] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    let activo = true;
+  const cargarDatos = useCallback(async () => {
+    setCargando(true);
+    setError("");
 
-    async function cargarDatos() {
-      setCargando(true);
-      setError("");
+    try {
+      const [resDashboard, resAgenda, resEncargos] =
+        await Promise.all([
+          axios.get("/apoderagest/dashboard"),
+          axios.get("/apoderagest/agenda"),
+          axios.get("/apoderagest/encargos"),
+        ]);
 
-      try {
-        if (tab === "Dashboard") {
-          const respuesta = await axios.get(
-            "/apoderagest/dashboard"
-          );
-
-          if (activo) {
-            setDashboard(respuesta.data);
-          }
-        }
-
-        if (tab === "Encargos") {
-          const respuesta = await axios.get(
-            "/apoderagest/encargos"
-          );
-
-          if (activo) {
-            setEncargos(
-              Array.isArray(respuesta.data)
-                ? respuesta.data
-                : []
-            );
-          }
-        }
-
-        if (tab === "Agenda") {
-          const respuesta = await axios.get(
-            "/apoderagest/agenda"
-          );
-
-          if (activo) {
-            setAgenda(
-              Array.isArray(respuesta.data)
-                ? respuesta.data
-                : []
-            );
-          }
-        }
-      } catch (err) {
-        if (activo) {
-          setError(
-            err?.response?.data?.detail ||
-              err.message ||
-              "No se han podido cargar los datos."
-          );
-        }
-      } finally {
-        if (activo) {
-          setCargando(false);
-        }
-      }
+      setDashboard(resDashboard.data || {});
+      setAgenda(Array.isArray(resAgenda.data) ? resAgenda.data : []);
+      setEncargos(
+        Array.isArray(resEncargos.data) ? resEncargos.data : []
+      );
+    } catch (err) {
+      console.error("Error cargando ApoderaGest:", err);
+      setError(
+        err?.response?.data?.detail ||
+        "No se han podido cargar los datos de ApoderaGest."
+      );
+    } finally {
+      setCargando(false);
     }
+  }, []);
 
+  useEffect(() => {
     cargarDatos();
-
-    return () => {
-      activo = false;
-    };
-  }, [tab]);
+  }, [cargarDatos]);
 
   return (
-    <main style={{ padding: 24 }}>
-      <header style={{ marginBottom: 22 }}>
-        <h1 style={{ margin: 0 }}>ApoderaGest</h1>
+    <main className="apoderagest">
+      <header className="ag-header">
+        <div>
+          <div className="ag-eyebrow">ERP-MOLSAN · MÓDULO PROFESIONAL</div>
+          <h1>ApoderaGest</h1>
+          <p>
+            Gestión de encargos, firmas y actividad del apoderado.
+          </p>
+        </div>
 
-        <p style={{ color: "#6b7280" }}>
-          Gestión de encargos, agenda y actividad del apoderado.
-        </p>
+        <button
+          type="button"
+          className="ag-boton"
+          onClick={cargarDatos}
+          disabled={cargando}
+        >
+          {cargando ? "Actualizando…" : "Actualizar"}
+        </button>
       </header>
 
-      <nav
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 8,
-          marginBottom: 24,
-        }}
-      >
-        {TABS.map((nombre) => (
+      <nav className="ag-tabs" aria-label="Secciones de ApoderaGest">
+        {PESTANAS.map((nombre) => (
           <button
-            key={nombre}
             type="button"
-            onClick={() => setTab(nombre)}
-            aria-pressed={tab === nombre}
-            style={{
-              border: "1px solid #d1d5db",
-              borderRadius: 8,
-              padding: "10px 16px",
-              cursor: "pointer",
-              background:
-                tab === nombre ? "#1f2937" : "#ffffff",
-              color:
-                tab === nombre ? "#ffffff" : "#1f2937",
-            }}
+            key={nombre}
+            className={
+              pestana === nombre
+                ? "ag-tab ag-tab-activa"
+                : "ag-tab"
+            }
+            onClick={() => setPestana(nombre)}
           >
             {nombre}
           </button>
         ))}
       </nav>
 
-      {cargando && <p>Cargando información…</p>}
-
-      {error && (
-        <p role="alert" style={{ color: "#b91c1c" }}>
+      {error ? (
+        <div className="ag-error" role="alert">
           {error}
-        </p>
-      )}
+        </div>
+      ) : null}
 
-      {tab === "Dashboard" && dashboard && (
-        <section
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: 14,
-          }}
-        >
-          <TarjetaMetrica
-            titulo="Total de encargos"
-            valor={dashboard.total_encargos}
-          />
+      {cargando && !dashboard ? (
+        <p className="ag-mensaje">Cargando datos…</p>
+      ) : null}
 
-          <TarjetaMetrica
-            titulo="Firmados"
-            valor={dashboard.firmados}
-          />
+      {pestana === "Dashboard" ? (
+        <section className="ag-seccion">
+          <h2>Resumen de actividad</h2>
 
-          <TarjetaMetrica
-            titulo="Pendientes"
-            valor={dashboard.pendientes}
-          />
-
-          <TarjetaMetrica
-            titulo="Días medios hasta firma"
-            valor={dashboard.dias_medios_hasta_firma ?? "—"}
-          />
-
-          <TarjetaMetrica
-            titulo="Firmas presenciales"
-            valor={dashboard.firmas_presenciales ?? "Pendiente"}
-          />
-
-          <TarjetaMetrica
-            titulo="Videoconferencias"
-            valor={dashboard.firmas_videoconferencia ?? "Pendiente"}
-          />
-
-          <TarjetaMetrica
-            titulo="Kilómetros presenciales"
-            valor={dashboard.kilometros_presenciales ?? "Pendiente"}
-          />
-        </section>
-      )}
-
-      {tab === "Encargos" && (
-        <section style={{ overflowX: "auto" }}>
-          <h2>Mis encargos</h2>
-
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-            }}
-          >
-            <thead>
-              <tr>
-                {[
-                  "Expediente",
-                  "Titular",
-                  "Estado",
-                  "Fecha de alta",
-                  "Fecha de firma",
-                  "Notario",
-                ].map((titulo) => (
-                  <th
-                    key={titulo}
-                    style={{
-                      textAlign: "left",
-                      padding: 10,
-                      borderBottom: "1px solid #d1d5db",
-                    }}
-                  >
-                    {titulo}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              {encargos.map((encargo) => (
-                <tr key={encargo.id}>
-                  <td style={{ padding: 10 }}>
-                    {encargo.id_expediente || "—"}
-                  </td>
-
-                  <td style={{ padding: 10 }}>
-                    {encargo.titular || "—"}
-                  </td>
-
-                  <td style={{ padding: 10 }}>
-                    {encargo.estado_expediente || "—"}
-                  </td>
-
-                  <td style={{ padding: 10 }}>
-                    {fechaBonita(encargo.fecha_alta)}
-                  </td>
-
-                  <td style={{ padding: 10 }}>
-                    {fechaBonita(encargo.fecha_firma)}
-                  </td>
-
-                  <td style={{ padding: 10 }}>
-                    {encargo.notario || "—"}
-                  </td>
-                </tr>
-              ))}
-
-              {!encargos.length && !cargando && (
-                <tr>
-                  <td
-                    colSpan={6}
-                    style={{ padding: 14 }}
-                  >
-                    No hay encargos asignados.
-                  </td>
-                </tr>
+          <div className="ag-grid-indicadores">
+            <TarjetaIndicador
+              titulo="Total de encargos"
+              valor={dashboard?.total_encargos ?? "—"}
+            />
+            <TarjetaIndicador
+              titulo="Firmados"
+              valor={dashboard?.firmados ?? "—"}
+            />
+            <TarjetaIndicador
+              titulo="Pendientes"
+              valor={dashboard?.pendientes ?? "—"}
+            />
+            <TarjetaIndicador
+              titulo="Media hasta firma"
+              valor={
+                dashboard?.media_dias_hasta_firma == null
+                  ? "—"
+                  : `${dashboard.media_dias_hasta_firma} días`
+              }
+            />
+            <TarjetaIndicador
+              titulo="Firmas presenciales"
+              valor={numeroLegible(
+                dashboard?.firmas_presenciales
               )}
-            </tbody>
-          </table>
-        </section>
-      )}
+            />
+            <TarjetaIndicador
+              titulo="Firmas por videoconferencia"
+              valor={numeroLegible(
+                dashboard?.firmas_videoconferencia
+              )}
+            />
+            <TarjetaIndicador
+              titulo="Kilómetros presenciales"
+              valor={numeroLegible(
+                dashboard?.kilometros_presenciales
+              )}
+            />
+          </div>
 
-      {tab === "Agenda" && (
-        <section>
+          <div className="ag-card ag-resumen">
+            <h3>Próximas citas</h3>
+            {agenda.length === 0 ? (
+              <p>No hay citas disponibles para mostrar.</p>
+            ) : (
+              <ul className="ag-lista-citas">
+                {agenda.slice(0, 5).map((cita) => (
+                  <li key={cita.id}>
+                    <strong>{fechaLegible(cita.fecha)}</strong>
+                    {" · "}
+                    {cita.hora_inicio || "Hora pendiente"}
+                    {" · "}
+                    {cita.tipo_cita || "Cita"}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      ) : null}
+
+      {pestana === "Agenda" ? (
+        <section className="ag-seccion">
           <h2>Mi agenda</h2>
 
-          {!agenda.length && !cargando && (
-            <p>No hay citas asociadas a este apoderado.</p>
+          {agenda.length === 0 ? (
+            <div className="ag-card">
+              No hay citas asignadas para mostrar.
+            </div>
+          ) : (
+            <div className="ag-tabla-contenedor">
+              <table className="ag-tabla">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                    <th>Tipo de cita</th>
+                    <th>Expediente</th>
+                    <th>Observaciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {agenda.map((cita) => (
+                    <tr key={cita.id}>
+                      <td>{fechaLegible(cita.fecha)}</td>
+                      <td>{cita.hora_inicio || "—"}</td>
+                      <td>{cita.hora_fin || "—"}</td>
+                      <td>{cita.tipo_cita || "—"}</td>
+                      <td>{cita.expediente_id || "—"}</td>
+                      <td>{cita.observaciones || "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
-
-          {agenda.map((cita) => (
-            <article
-              key={cita.id}
-              style={{
-                padding: 14,
-                borderBottom: "1px solid #e5e7eb",
-              }}
-            >
-              <strong>
-                {fechaBonita(cita.fecha)}
-                {" · "}
-                {String(cita.hora_inicio || "").slice(0, 5)}
-              </strong>
-
-              <p style={{ marginBottom: 0 }}>
-                {cita.tipo_cita || "Cita"}
-              </p>
-
-              {cita.observaciones && (
-                <p style={{ color: "#6b7280" }}>
-                  {cita.observaciones}
-                </p>
-              )}
-            </article>
-          ))}
         </section>
-      )}
+      ) : null}
 
-      {["Mensajes", "Intranet", "CTN"].includes(tab) && (
-        <section>
-          <h2>{tab}</h2>
+      {pestana === "Encargos" ? (
+        <section className="ag-seccion">
+          <h2>Mis encargos</h2>
 
-          <p>
-            Esta sección debe reutilizar el módulo existente
-            de ERP-Molsan y mantener sus permisos actuales.
-          </p>
+          {encargos.length === 0 ? (
+            <div className="ag-card">
+              No hay encargos asignados para mostrar.
+            </div>
+          ) : (
+            <div className="ag-tabla-contenedor">
+              <table className="ag-tabla">
+                <thead>
+                  <tr>
+                    <th>Expediente</th>
+                    <th>Titular</th>
+                    <th>Estado</th>
+                    <th>Notario</th>
+                    <th>Alta</th>
+                    <th>Firma</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {encargos.map((encargo) => (
+                    <tr key={encargo.id}>
+                      <td>
+                        {encargo.id_expediente || encargo.id || "—"}
+                      </td>
+                      <td>{encargo.titular || "—"}</td>
+                      <td>{encargo.estado || "—"}</td>
+                      <td>{encargo.notario || "—"}</td>
+                      <td>{fechaLegible(encargo.fecha_alta)}</td>
+                      <td>{fechaLegible(encargo.fecha_firma)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
-      )}
+      ) : null}
+
+      {["Mensajes", "Intranet", "CTN"].includes(pestana) ? (
+        <section className="ag-seccion">
+          <h2>{pestana}</h2>
+          <div className="ag-card">
+            Esta sección debe conectarse a la funcionalidad existente
+            de ERP-Molsan. No se ha creado un sistema paralelo.
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }
