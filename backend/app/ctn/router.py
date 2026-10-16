@@ -3,7 +3,7 @@ import unicodedata
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
-from sqlalchemy import Column, ForeignKey, Integer, Table, and_, func, or_
+from sqlalchemy import Column, ForeignKey, Integer, Table, and_, func, or_, text
 from sqlalchemy.orm import Session
 from openpyxl import Workbook
 
@@ -533,4 +533,36 @@ def historico_firmas_notario(
         "total_vc": sum(1 for item in items if item["modalidad"] == "VC"),
         "total_presencial": sum(1 for item in items if item["modalidad"] == "PRESENCIAL"),
         "total_sin_clasificar": sum(1 for item in items if item["modalidad"] == "SIN_CLASIFICAR"),
+    }
+
+
+# ACCESO INDIVIDUAL A NOTARGEST
+@router.on_event("startup")
+def migrar_columna_acceso_notargest():
+    """Añade el indicador de acceso sin modificar los datos CTN existentes."""
+    with engine.begin() as conexion:
+        conexion.execute(text(
+            "ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS "
+            "notargest_habilitado BOOLEAN NOT NULL DEFAULT FALSE"
+        ))
+
+
+@router.put("/notarias/{notaria_id}/notargest")
+def cambiar_acceso_notargest(
+    notaria_id: int,
+    habilitado: bool = Query(...),
+    db: Session = Depends(get_db),
+):
+    """Habilita o revoca el acceso al portal para una notaría concreta."""
+    notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
+    if not notaria:
+        raise HTTPException(status_code=404, detail="Notaría no encontrada")
+    notaria.notargest_habilitado = bool(habilitado)
+    db.commit()
+    db.refresh(notaria)
+    return {
+        "ok": True,
+        "notaria_id": notaria.id,
+        "habilitado": bool(notaria.notargest_habilitado),
+        "mensaje": "Acceso a NotarGest habilitado" if habilitado else "Acceso a NotarGest deshabilitado",
     }
