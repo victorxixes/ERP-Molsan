@@ -6,21 +6,27 @@ import { useAuthStore } from "../store/authStore";
 const MODULOS = {
   apoderagest: {
     nombre: "ApoderaGest",
-    descripcion: "Gestión de encargos, firmas y actividad del apoderado.",
+    descripcion: "Encargos, firmas y actividad del apoderado.",
     ruta: "/apoderagest",
-    simbolo: "ApoderaGest",
+    siglas: "AG",
+    categoria: "GESTIÓN DE APODERADOS",
+    estilo: "ag",
   },
   cancelagest: {
     nombre: "CancelaGest",
-    descripcion: "Gestión de cancelaciones hipotecarias.",
+    descripcion: "Gestión y seguimiento de cancelaciones hipotecarias.",
     ruta: "/cancelagest",
-    simbolo: "CancelaGest",
+    siglas: "CG",
+    categoria: "GESTIÓN DE CANCELACIONES",
+    estilo: "cg",
   },
   notargest: {
     nombre: "Notargest",
-    descripcion: "Gestión del entorno de notaría.",
+    descripcion: "Herramientas y operaciones del entorno de notaría.",
     ruta: "/notargest",
-    simbolo: "NotarGest",
+    siglas: "NG",
+    categoria: "ENTORNO NOTARIAL",
+    estilo: "ng",
   },
 };
 
@@ -65,14 +71,12 @@ export default function ModulosSelector() {
       empleado.rol_nombre || empleado.rol?.nombre
     );
 
-    const esDirector = rol.includes("director");
-    const esApoderado = rol.includes("apoderado");
+    const visiblesRaw =
+      empleado.modulos_visibles_list ?? empleado.modulos_visibles;
 
-    const visibles = Array.isArray(empleado.modulos_visibles_list)
-      ? empleado.modulos_visibles_list.map(normalizar)
-      : Array.isArray(empleado.modulos_visibles)
-        ? empleado.modulos_visibles.map(normalizar)
-        : [];
+    const visibles = Array.isArray(visiblesRaw)
+      ? visiblesRaw.map(normalizar)
+      : [];
 
     const permisos =
       empleado.permisos_modulo_dict ||
@@ -81,13 +85,11 @@ export default function ModulosSelector() {
 
     let candidatos;
 
-    if (esDirector) {
+    if (rol.includes("director")) {
       candidatos = ["apoderagest", "cancelagest", "notargest"];
-    } else if (esApoderado) {
+    } else if (rol.includes("apoderado")) {
       candidatos = ["apoderagest", "cancelagest"];
     } else {
-      // Para roles con otro nombre, manda la configuración explícita
-      // de módulos visibles del empleado.
       candidatos = Object.keys(MODULOS);
     }
 
@@ -98,72 +100,128 @@ export default function ModulosSelector() {
   }, [empleado]);
 
   if (!empleado) {
-    return <p className="p-8 text-slate-600">Cargando sesión…</p>;
+    return (
+      <div className="mx-auto max-w-6xl p-8 text-sm text-slate-500">
+        Cargando sesión…
+      </div>
+    );
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10">
-      <header className="mb-8">
-        <p className="mb-2 text-xs font-bold uppercase tracking-widest text-blue-600">
-          MOLSAN ERP
-        </p>
-        <h1 className="text-3xl font-bold text-slate-900">
-          Selecciona un módulo
-        </h1>
-        <p className="mt-2 text-slate-500">
-          Hola, {empleado.nombre || empleado.usuario}.
-        </p>
+    <main className="relative isolate min-h-[calc(100vh-110px)] overflow-hidden rounded-3xl border border-white/80 bg-gradient-to-br from-slate-50 via-white to-blue-50/70 px-5 py-8 text-slate-800 shadow-sm sm:px-8 sm:py-10">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80 rounded-full border border-blue-100/70"
+      />
+
+      <header className="mb-9 flex flex-wrap items-center justify-between gap-5">
+        <div className="flex items-center gap-4">
+          <div className="grid h-14 w-14 place-items-center rounded-2xl border border-white bg-gradient-to-br from-blue-600 to-indigo-800 text-sm font-black tracking-wide text-white shadow-lg shadow-blue-900/15">
+            M
+          </div>
+          <div>
+            <p className="text-[10px] font-extrabold tracking-[0.2em] text-blue-700">
+              MOLSAN ERP · PREMIUM 2027
+            </p>
+            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+              Espacio de trabajo
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Hola, {empleado.nombre || empleado.usuario}. Selecciona el módulo al que quieres acceder.
+            </p>
+          </div>
+        </div>
+
+        <span className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-3 py-2 text-[11px] font-bold text-slate-600 shadow-sm">
+          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          Sesión activa
+        </span>
       </header>
 
+      <div className="mb-5">
+        <p className="text-[10px] font-extrabold tracking-[0.17em] text-slate-400">
+          TUS APLICACIONES
+        </p>
+        <div className="mt-3 h-px bg-gradient-to-r from-blue-200 via-slate-200 to-transparent" />
+      </div>
+
       {modulosDisponibles.length === 0 ? (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-900">
-          <h2 className="font-bold">No se han encontrado módulos autorizados</h2>
-          <p className="mt-2 text-sm">
-            Revisa los módulos visibles y el permiso «ver» de este empleado.
-            No se han modificado sus permisos.
+        <section className="rounded-2xl border border-amber-200 bg-amber-50/90 p-6">
+          <h2 className="font-bold text-amber-950">
+            No hay módulos disponibles para esta cuenta
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-amber-900">
+            Comprueba en la ficha del empleado los módulos visibles y que el permiso «ver» esté activado.
           </p>
-          <p className="mt-3 text-xs">
+          <p className="mt-3 break-all text-xs text-amber-800">
             Rol detectado: {empleado.rol_nombre || empleado.rol?.nombre || "No informado"}
           </p>
-          <p className="mt-1 break-all text-xs">
-            Módulos visibles: {JSON.stringify(empleado.modulos_visibles_list || empleado.modulos_visibles || [])}
-          </p>
-          <p className="mt-1 break-all text-xs">
-            Permisos: {JSON.stringify(empleado.permisos_modulo_dict || empleado.permisos_modulo || {})}
-          </p>
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard")}
-            className="mt-5 rounded-xl bg-slate-800 px-4 py-2 text-white"
-          >
-            Volver al Dashboard
-          </button>
-        </div>
+        </section>
       ) : (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {modulosDisponibles.map((modulo) => (
-            <button
-              key={modulo.clave}
-              type="button"
-              onClick={() => navigate(modulo.ruta)}
-              className="group rounded-3xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl"
-            >
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-lg font-extrabold text-blue-700">
-                {modulo.simbolo}
-              </div>
-              <h2 className="text-xl font-bold text-slate-900">
-                {modulo.nombre}
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                {modulo.descripcion}
-              </p>
-              <div className="mt-6 border-t border-slate-100 pt-4 font-semibold text-blue-700">
-                Entrar al módulo →
-              </div>
-            </button>
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {modulosDisponibles.map((modulo) => (
+              <button
+                key={modulo.clave}
+                type="button"
+                onClick={() => navigate(modulo.ruta)}
+                className="group relative flex min-h-[235px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/90 p-6 text-left shadow-[0_8px_26px_rgba(31,48,79,0.045)] transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_18px_38px_rgba(31,48,79,0.11)] focus:outline-none focus:ring-4 focus:ring-blue-100"
+              >
+                <div
+                  aria-hidden="true"
+                  className={`absolute inset-x-0 top-0 h-1 ${
+                    modulo.estilo === "ag"
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-400"
+                      : modulo.estilo === "cg"
+                        ? "bg-gradient-to-r from-emerald-600 to-teal-400"
+                        : "bg-gradient-to-r from-violet-600 to-fuchsia-400"
+                  }`}
+                />
+
+                <div className="flex w-full items-start justify-between gap-4">
+                  <div
+                    className={`grid h-14 w-14 place-items-center rounded-2xl border text-sm font-black tracking-wide transition group-hover:scale-[1.04] ${
+                      modulo.estilo === "ag"
+                        ? "border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-800"
+                        : modulo.estilo === "cg"
+                          ? "border-emerald-100 bg-gradient-to-br from-emerald-50 to-teal-100 text-emerald-800"
+                          : "border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-100 text-violet-800"
+                    }`}
+                  >
+                    {modulo.siglas}
+                  </div>
+                  <span className="mt-1 grid h-8 w-8 place-items-center rounded-full border border-slate-100 text-lg text-slate-400 transition group-hover:border-blue-100 group-hover:bg-blue-50 group-hover:text-blue-700">
+                    ↗
+                  </span>
+                </div>
+
+                <p className="mt-5 text-[9px] font-extrabold tracking-[0.15em] text-slate-400">
+                  {modulo.categoria}
+                </p>
+                <h2 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900">
+                  {modulo.nombre}
+                </h2>
+                <p className="mt-2 text-xs leading-6 text-slate-500">
+                  {modulo.descripcion}
+                </p>
+
+                <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
+                  <span className="text-[11px] font-extrabold text-blue-700">
+                    Abrir aplicación
+                  </span>
+                  <span className="text-sm text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-700">
+                    →
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <p className="mt-7 text-center text-[10px] font-medium tracking-wide text-slate-400">
+            MOLSAN ERP · Entorno corporativo de gestión
+          </p>
+        </>
       )}
-    </section>
+    </main>
   );
 }
