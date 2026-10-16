@@ -167,17 +167,14 @@ function TablaEncargos({ encargos, onFirmado }) {
 
   async function abrirDocumento(encargo, documento) {
     try {
-      const res = await axios.get(documento.url_descarga || `/expedientes/${encodeURIComponent(encargo.id_expediente)}/carpeta-digital/${documento.id}/descargar`, { responseType: "blob" });
-      const url = URL.createObjectURL(res.data instanceof Blob ? res.data : new Blob([res.data]));
-      const enlace = document.createElement("a");
-      enlace.href = url;
-      enlace.download = documento.nombre_original || "documento";
-      document.body.appendChild(enlace);
-      enlace.click();
-      enlace.remove();
+      const ruta = documento.url_descarga || `/expedientes/${encodeURIComponent(encargo.id_expediente)}/carpeta-digital/${documento.id}/descargar`;
+      const res = await axios.get(ruta, { responseType: "blob" });
+      const blob = res.data instanceof Blob ? res.data : new Blob([res.data]);
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank", "noopener,noreferrer");
       window.setTimeout(() => URL.revokeObjectURL(url), 60000);
     } catch (error) {
-      window.alert(error?.response?.data?.detail || "No se pudo descargar el documento.");
+      window.alert(error?.response?.data?.detail || "No se pudo abrir el documento.");
     }
   }
 
