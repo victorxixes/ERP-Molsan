@@ -2329,9 +2329,9 @@ class ControlBloqueoRequest(BaseModel):
 
 def motivo_bloqueo_expediente(expediente: Expediente) -> Optional[str]:
     estado = str(getattr(expediente, "estado_expediente", "") or "").strip().upper()
-    if estado == "LST":
+    if estado.startswith("LST"):
         return "LIQUIDADO SIN TRAMITAR"
-    if estado == "RST":
+    if estado.startswith("RST"):
         return "RETENCIÓN SIN TRAMITAR"
     if bool(getattr(expediente, "liquidado_sin_tramitar", False)):
         return "LIQUIDADO SIN TRAMITAR"
@@ -2354,7 +2354,7 @@ def actualizar_control_bloqueo(
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
-    if datos.liquidado_sin_tramitar and not datos.fecha_liquidacion_sin_tramitar:
+    if datos.liquidado_sin_tramitar and not datos.fecha_liquidacion_sin_tramitar and not str(expediente.estado_expediente or "").strip().upper().startswith("LST"):
         raise HTTPException(status_code=422, detail="Indica la fecha de liquidación sin tramitar.")
     if datos.cambio_gestoria and not datos.fecha_cambio_gestoria:
         raise HTTPException(status_code=422, detail="Indica la fecha del cambio de gestoría.")
