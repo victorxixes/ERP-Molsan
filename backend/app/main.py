@@ -316,6 +316,11 @@ from backend.app.expediente_observaciones.router import (
 # PROVISIONES DE FONDOS Y CANCELACIONES
 from backend.app.provisiones.router import router as provisiones_router
 
+# APODERAGEST
+from backend.app.notargest.router import ( 
+    router as apoderagest_router,
+)
+
 
 # ============================================================
 # INCLUIR ROUTERS
@@ -446,6 +451,8 @@ app.include_router(expediente_observaciones_router, prefix="/api")
 # Provisiones: el router aporta rutas relativas a /{id_expediente}/provisiones
 app.include_router(provisiones_router, prefix="/api/expedientes")
 
+#
+app.include_router(apoderagest_router, prefix="/api")
 
 # ============================================================
 # MIGRACIÓN DE ESQUEMA DE EXPEDIENTES
