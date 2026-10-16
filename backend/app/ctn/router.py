@@ -177,17 +177,41 @@ def _aplicar_filtros_notarias(
         )
 
     if q and q.strip():
-        termino = f"%{q.strip()}%"
-        query = query.filter(
-            or_(
-                func.unaccent(func.coalesce(Notaria.nombre, "")).ilike(func.unaccent(termino)),
-                func.unaccent(func.coalesce(Notaria.apellidos, "")).ilike(func.unaccent(termino)),
-                func.unaccent(func.coalesce(Notaria.nif, "")).ilike(func.unaccent(termino)),
-                func.unaccent(func.coalesce(Notaria.codigo, "")).ilike(func.unaccent(termino)),
-                func.unaccent(func.coalesce(Notaria.municipio, "")).ilike(func.unaccent(termino)),
-                func.unaccent(func.coalesce(Notaria.provincia, "")).ilike(func.unaccent(termino)),
-            )
+        # Buscar por palabras permite encontrar nombres compuestos aunque
+        # nombre y apellidos estén guardados en columnas distintas.
+        texto_busqueda = unicodedata.normalize("NFKD", q.strip().lower())
+        texto_busqueda = "".join(
+            caracter for caracter in texto_busqueda
+            if not unicodedata.combining(caracter)
         )
+        palabras = [
+            palabra for palabra in texto_busqueda.split()
+            if palabra not in {"notario", "notaria", "de", "del"}
+        ]
+        campos_busqueda = (
+            func.unaccent(func.coalesce(Notaria.nombre, "")),
+            func.unaccent(func.coalesce(Notaria.apellidos, "")),
+            func.unaccent(func.coalesce(Notaria.nif, "")),
+            func.unaccent(func.coalesce(Notaria.codigo, "")),
+            func.unaccent(func.coalesce(Notaria.municipio, "")),
+            func.unaccent(func.coalesce(Notaria.provincia, "")),
+            func.unaccent(
+                func.concat(
+                    func.coalesce(Notaria.nombre, ""),
+                    " ",
+                    func.coalesce(Notaria.apellidos, ""),
+                )
+            ),
+        )
+        # Cada palabra puede aparecer en cualquier campo, y en cualquier orden.
+        for palabra in palabras:
+            termino = f"%{palabra}%"
+            query = query.filter(
+                or_(*[
+                    campo.ilike(func.unaccent(termino))
+                    for campo in campos_busqueda
+                ])
+            )
 
     if asociado and asociado.strip():
         termino_asociado = f"%{asociado.strip()}%"
