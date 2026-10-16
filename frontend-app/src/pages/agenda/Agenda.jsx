@@ -152,12 +152,14 @@ const [errorApoderado, setErrorApoderado] = useState("");
     [abrirEditar]
   );
   
-  // ============================================================
+    // ============================================================
   // CREAR CITA
   // ============================================================
 
   const abrirCrear = useCallback(
     (fecha) => {
+      if (soloApoderado) return;
+
       if (!puedeCrear) {
         notify("No tienes permiso para crear citas.");
         return;
@@ -168,7 +170,7 @@ const [errorApoderado, setErrorApoderado] = useState("");
       setCitaSeleccionada(null);
       setMostrarModal(true);
     },
-    [puedeCrear, notify]
+    [soloApoderado, puedeCrear, notify]
   );
 
   // ============================================================
@@ -178,14 +180,23 @@ const [errorApoderado, setErrorApoderado] = useState("");
   const abrirEditar = useCallback(
     async (cita) => {
       try {
-        const res = await fetch(
-          `https://agenda-intranet-b.onrender.com/api/agenda/${cita.id}`
-        );
+        if (!cita?.id) {
+          notify("No se ha podido identificar la cita.");
+          return;
+        }
 
-        const citaCompleta = await res.json();
+        // En ApoderaGest consultamos la cita personal sin habilitar
+        // acciones de edición o eliminación.
+        const respuesta = await axios.get(`/agenda/${cita.id}`);
+        const citaCompleta = respuesta?.data;
 
-        setModalModo(puedeEditar ? "editar" : "ver");
-        setFechaSeleccionada(citaCompleta.fecha);
+        if (!citaCompleta) {
+          notify("No se ha encontrado la cita.");
+          return;
+        }
+
+        setModalModo(soloApoderado || !puedeEditar ? "ver" : "editar");
+        setFechaSeleccionada(citaCompleta.fecha || cita.fecha);
         setCitaSeleccionada(citaCompleta);
         setMostrarModal(true);
       } catch (err) {
@@ -193,9 +204,28 @@ const [errorApoderado, setErrorApoderado] = useState("");
         notify("Error al cargar la cita.");
       }
     },
-    [puedeEditar, notify]
+    [soloApoderado, puedeEditar, notify]
   );
 
+  // ============================================================
+  // SELECCIÓN DE DÍA Y APERTURA DE CITA
+  // ============================================================
+
+  const handleDiaClick = useCallback(
+    (fecha) => {
+      if (soloApoderado) return;
+      abrirCrear(fecha);
+    },
+    [soloApoderado, abrirCrear]
+  );
+
+  const handleCitaClick = useCallback(
+    (cita) => {
+      abrirEditar(cita);
+    },
+    [abrirEditar]
+  );
+  
   // ============================================================
   // GUARDAR CITA
   // ============================================================
