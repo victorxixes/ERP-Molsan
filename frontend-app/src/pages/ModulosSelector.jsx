@@ -8,19 +8,19 @@ const MODULOS = {
     nombre: "ApoderaGest",
     descripcion: "Gestión de encargos, firmas y actividad del apoderado.",
     ruta: "/apoderagest",
-    simbolo: "AG",
+    simbolo: "ApoderaGest",
   },
   cancelagest: {
     nombre: "CancelaGest",
     descripcion: "Gestión de cancelaciones hipotecarias.",
     ruta: "/cancelagest",
-    simbolo: "CG",
+    simbolo: "CancelaGest",
   },
   notargest: {
     nombre: "Notargest",
     descripcion: "Gestión del entorno de notaría.",
     ruta: "/notargest",
-    simbolo: "NG",
+    simbolo: "NotarGest",
   },
 };
 
