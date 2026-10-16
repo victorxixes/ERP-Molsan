@@ -41,17 +41,6 @@ function numeroLegible(valor) {
     : String(valor);
 }
 
-function importeLegible(valor) {
-  if (valor === null || valor === undefined || valor === "") return "—";
-  const numero = Number(valor);
-  return Number.isFinite(numero)
-    ? new Intl.NumberFormat("es-ES", {
-        style: "currency",
-        currency: "EUR",
-      }).format(numero)
-    : String(valor);
-}
-
 function EstadoPill({ valor }) {
   const estado = texto(valor, "Pendiente");
   const normalizado = estado.toLowerCase();
@@ -184,91 +173,6 @@ function normalizarRespuesta(respuesta) {
   return [];
 }
 
-function TablaHistoricoFirmas({ firmas, cargando }) {
-  if (cargando) {
-    return (
-      <div className="ag-cargando" role="status">
-        <span className="ag-spinner" />
-        <span>Cargando histórico de firmas reales…</span>
-      </div>
-    );
-  }
-
-  if (!firmas.length) {
-    return (
-      <EstadoVacio
-        icono="◇"
-        titulo="No hay firmas que coincidan"
-        detalle="Prueba con otra modalidad o cambia el texto de búsqueda. Solo se muestran expedientes con fecha de firma registrada."
-      />
-    );
-  }
-
-  return (
-    <div className="ag-tabla-marco">
-      <table className="ag-tabla">
-        <thead>
-          <tr>
-            <th>Fecha de firma</th>
-            <th>Expediente</th>
-            <th>Modalidad</th>
-            <th>Protocolo</th>
-            <th>Titular</th>
-            <th>NIF titular</th>
-            <th>Solicitante</th>
-            <th>Oficina</th>
-            <th>Importe</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          {firmas.map((firma, indice) => {
-            const modalidad = String(
-              firma.modalidad || firma.tipo_firma || ""
-            ).toUpperCase();
-
-            const modalidadLegible =
-              modalidad === "VC" || modalidad.includes("VIDEOCONFERENCIA")
-                ? "Videoconferencia"
-                : modalidad === "PRESENCIAL" || modalidad === "P"
-                  ? "Presencial"
-                  : modalidad === "SIN_CLASIFICAR"
-                    ? "Sin clasificar"
-                    : texto(firma.modalidad || firma.tipo_firma);
-
-            return (
-              <tr key={firma.id ?? `${firma.id_expediente}-${indice}`}>
-                <td>
-                  <span className="ag-celda-principal">
-                    {fechaLegible(firma.fecha_firma)}
-                  </span>
-                </td>
-                <td>
-                  <span className="ag-expediente">
-                    {texto(firma.id_expediente || firma.id)}
-                  </span>
-                </td>
-                <td>{modalidadLegible}</td>
-                <td>{texto(firma.protocolo)}</td>
-                <td>{texto(firma.nombre_titular || firma.titular)}</td>
-                <td>{texto(firma.nif_titular)}</td>
-                <td>{texto(firma.nombre_solicitante || firma.solicitante)}</td>
-                <td>{texto(firma.oficina || firma.oficina_notarial)}</td>
-                <td>{importeLegible(firma.importe ?? firma.capital)}</td>
-                <td>
-                  <EstadoPill
-                    valor={firma.estado_expediente || firma.estado}
-                  />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
 export default function ApoderaGest() {
   const [pestana, setPestana] = useState("Dashboard");
   const empleado = useAuthStore((state) => state.empleado);
@@ -285,17 +189,7 @@ export default function ApoderaGest() {
   // CTN: histórico real de firmas y ficha completa del notario integrada.
   const [notarias, setNotarias] = useState([]);
   const [notariaSeleccionada, setNotariaSeleccionada] = useState("");
-  const [busquedaFirmas, setBusquedaFirmas] = useState("");
-  const [modalidadFirmas, setModalidadFirmas] = useState("");
-  const [firmas, setFirmas] = useState([]);
-  const [totalesFirmas, setTotalesFirmas] = useState({
-    total: 0,
-    total_vc: 0,
-    total_presencial: 0,
-    total_sin_clasificar: 0,
-  });
   const [cargandoNotarias, setCargandoNotarias] = useState(false);
-  const [cargandoFirmas, setCargandoFirmas] = useState(false);
   const [errorCTN, setErrorCTN] = useState("");
   const [notariasCargadas, setNotariasCargadas] = useState(false);
 
@@ -367,15 +261,6 @@ export default function ApoderaGest() {
         return listado.length ? String(listado[0].id) : "";
       });
 
-      if (!listado.length) {
-        setFirmas([]);
-        setTotalesFirmas({
-          total: 0,
-          total_vc: 0,
-          total_presencial: 0,
-          total_sin_clasificar: 0,
-        });
-      }
     } catch (err) {
       console.error("Error cargando notarías CTN:", err);
       setErrorCTN(
@@ -387,80 +272,10 @@ export default function ApoderaGest() {
     }
   }, []);
 
-  const cargarHistoricoCTN = useCallback(async () => {
-    if (!notariaSeleccionada) {
-      setFirmas([]);
-      setTotalesFirmas({
-        total: 0,
-        total_vc: 0,
-        total_presencial: 0,
-        total_sin_clasificar: 0,
-      });
-      return;
-    }
-
-    setCargandoFirmas(true);
-    setErrorCTN("");
-
-    try {
-      const params = {};
-      if (modalidadFirmas) params.modalidad = modalidadFirmas;
-      if (busquedaFirmas.trim()) params.q = busquedaFirmas.trim();
-
-      const respuesta = await axios.get(
-        `/ctn/notarias/${encodeURIComponent(notariaSeleccionada)}/firmas/historico`,
-        { params }
-      );
-
-      const datos = respuesta?.data ?? respuesta;
-      const listado = Array.isArray(datos?.items)
-        ? datos.items
-        : Array.isArray(datos)
-          ? datos
-          : [];
-
-      setFirmas(listado);
-      setTotalesFirmas({
-        total: Number(datos?.total ?? listado.length),
-        total_vc: Number(datos?.total_vc ?? 0),
-        total_presencial: Number(datos?.total_presencial ?? 0),
-        total_sin_clasificar: Number(datos?.total_sin_clasificar ?? 0),
-      });
-    } catch (err) {
-      console.error("Error cargando histórico de firmas CTN:", err);
-      setFirmas([]);
-      setTotalesFirmas({
-        total: 0,
-        total_vc: 0,
-        total_presencial: 0,
-        total_sin_clasificar: 0,
-      });
-      setErrorCTN(
-        err?.response?.data?.detail ||
-          "No se ha podido cargar el histórico real de firmas."
-      );
-    } finally {
-      setCargandoFirmas(false);
-    }
-  }, [notariaSeleccionada, modalidadFirmas, busquedaFirmas]);
-
   useEffect(() => {
     if (pestana !== "CTN" || notariasCargadas) return;
     cargarNotariasCTN();
   }, [pestana, notariasCargadas, cargarNotariasCTN]);
-
-  useEffect(() => {
-    if (pestana !== "CTN" || !notariaSeleccionada) return undefined;
-
-    const temporizador = setTimeout(cargarHistoricoCTN, busquedaFirmas.trim() ? 300 : 0);
-    return () => clearTimeout(temporizador);
-  }, [
-    pestana,
-    notariaSeleccionada,
-    modalidadFirmas,
-    busquedaFirmas,
-    cargarHistoricoCTN,
-  ]);
 
   const fechaActual = new Intl.DateTimeFormat("es-ES", {
     weekday: "long",
@@ -595,38 +410,35 @@ export default function ApoderaGest() {
           </div>
 
           {errorCTN ? (
-            <div className="ag-alerta-error" role="alert"><span className="ag-alerta-icono">!</span><div><strong>Error en la integración CTN</strong><p>{errorCTN}</p></div><button type="button" onClick={() => notariasCargadas ? cargarHistoricoCTN() : cargarNotariasCTN()}>Reintentar</button></div>
+            <div className="ag-alerta-error" role="alert"><span className="ag-alerta-icono">!</span><div><strong>Error en la integración CTN</strong><p>{errorCTN}</p></div><button type="button" onClick={cargarNotariasCTN} disabled={cargandoNotarias}>Reintentar</button></div>
           ) : null}
 
-          <div className="ag-panel">
+          <div className="ag-panel ag-ctn-selector">
             <div className="ag-toolbar">
-              <label className="ag-busqueda"><span aria-hidden="true">◇</span>
-                <select value={notariaSeleccionada} onChange={(e) => setNotariaSeleccionada(e.target.value)} aria-label="Seleccionar notaría" disabled={cargandoNotarias || !notarias.length}>
-                  {!notarias.length ? <option value="">{cargandoNotarias ? "Cargando notarías…" : "No hay notarías disponibles"}</option> : null}
-                  {notarias.map((n) => <option key={n.id} value={String(n.id)}>{nombreNotaria(n)}{n.nif ? ` · ${n.nif}` : ""}</option>)}
+              <label className="ag-busqueda">
+                <span aria-hidden="true">◇</span>
+                <select
+                  value={notariaSeleccionada}
+                  onChange={(e) => setNotariaSeleccionada(e.target.value)}
+                  aria-label="Seleccionar notaría"
+                  disabled={cargandoNotarias || !notarias.length}
+                >
+                  {!notarias.length ? (
+                    <option value="">
+                      {cargandoNotarias ? "Cargando notarías…" : "No hay notarías disponibles"}
+                    </option>
+                  ) : null}
+                  {notarias.map((n) => (
+                    <option key={n.id} value={String(n.id)}>
+                      {nombreNotaria(n)}{n.nif ? ` · ${n.nif}` : ""}
+                    </option>
+                  ))}
                 </select>
               </label>
-              <label className="ag-busqueda"><span aria-hidden="true">⌕</span><input type="search" value={busquedaFirmas} onChange={(e) => setBusquedaFirmas(e.target.value)} placeholder="Buscar expediente, titular, NIF, protocolo…" aria-label="Buscar en histórico de firmas" /></label>
-              <label className="ag-busqueda"><span aria-hidden="true">▤</span>
-                <select value={modalidadFirmas} onChange={(e) => setModalidadFirmas(e.target.value)} aria-label="Filtrar por modalidad de firma">
-                  <option value="">Todas las modalidades</option><option value="VC">Videoconferencia</option><option value="PRESENCIAL">Presencial</option>
-                </select>
-              </label>
+              <span className="ag-resultados">
+                {notarias.length} {notarias.length === 1 ? "notaría disponible" : "notarías disponibles"}
+              </span>
             </div>
-
-            {notariaActual ? (
-              <div className="ag-panel-cabecera"><div><span className="ag-kicker">NOTARÍA SELECCIONADA</span><h3>{nombreNotaria(notariaActual)}</h3><p>NIF: {texto(notariaActual.nif)}{notariaActual.municipio ? ` · ${notariaActual.municipio}` : ""}{notariaActual.provincia ? ` · ${notariaActual.provincia}` : ""}</p></div><span className="ag-contador">{totalesFirmas.total} firmas</span></div>
-            ) : null}
-
-            <div className="ag-grid-kpi">
-              <TarjetaIndicador titulo="Firmas encontradas" valor={numeroLegible(totalesFirmas.total)} detalle="Expedientes con fecha de firma" icono="✓" variante="ag-kpi-azul" />
-              <TarjetaIndicador titulo="Videoconferencia" valor={numeroLegible(totalesFirmas.total_vc)} detalle="Firmas clasificadas como VC" icono="▣" variante="ag-kpi-violeta" />
-              <TarjetaIndicador titulo="Presenciales" valor={numeroLegible(totalesFirmas.total_presencial)} detalle="Firmas clasificadas como presenciales" icono="⌖" variante="ag-kpi-verde" />
-              <TarjetaIndicador titulo="Sin clasificar" valor={numeroLegible(totalesFirmas.total_sin_clasificar)} detalle="Modalidad no identificada" icono="◷" variante="ag-kpi-ambar" />
-            </div>
-
-            <div className="ag-panel-cabecera"><div><span className="ag-kicker">REGISTRO DE OPERACIONES</span><h3>Firmas realizadas</h3><p>Este histórico procede de expedientes con fecha de firma registrada. No representa las citas pendientes de agenda.</p></div><button type="button" className="ag-enlace-accion" onClick={cargarHistoricoCTN} disabled={cargandoFirmas || !notariaSeleccionada}>{cargandoFirmas ? "Consultando…" : "Actualizar histórico"} <span>↻</span></button></div>
-            <TablaHistoricoFirmas firmas={firmas} cargando={cargandoFirmas} />
           </div>
 
           {notariaActual ? (
