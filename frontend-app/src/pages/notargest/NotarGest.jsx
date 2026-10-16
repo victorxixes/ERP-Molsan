@@ -13,6 +13,7 @@ const bandejas = [
   { id: "inscripcion", titulo: "Inscripciones registrales", campo: "pendiente_inscripcion" },
   { id: "defectos", titulo: "Expedientes con defectos", campo: "con_defectos" },
   { id: "copia", titulo: "Copias simples pendientes", campo: "pendiente_copia_simple" },
+  { id: "cerrada", titulo: "Escrituras cerradas inscritas", campo: "escrituras_cerradas_inscritas" },
 ];
 const esFecha = (v) => v ? String(v).slice(0, 10).split("-").reverse().join("-") : "—";
 const texto = (v) => v === null || v === undefined || v === "" ? "—" : String(v);
@@ -29,6 +30,10 @@ export default function NotarGest() {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [firmaFecha, setFirmaFecha] = useState("");
+  const [protocolo, setProtocolo] = useState("");
+  const [fechaCierre, setFechaCierre] = useState("");
+  const [fechaEnvioGestoria, setFechaEnvioGestoria] = useState("");
 
   const peticion = useCallback(async (path, options = {}) => {
     const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(options.headers || {}) };
@@ -68,7 +73,7 @@ export default function NotarGest() {
     try {
       const id = encodeURIComponent(item.id_expediente || item.numero_expediente);
       const data = await peticion(`/notargest/expedientes/${id}`);
-      setDetalle(data); setVista("detalle");
+      setDetalle(data); setFirmaFecha(data.fecha_firma || ""); setProtocolo(data.protocolo || ""); setFechaCierre(data.notargest_fecha_cierre || ""); setFechaEnvioGestoria(data.notargest_fecha_envio_gestoria || ""); setVista("detalle");
     } catch (e) { setError(e.message); }
     finally { setCargando(false); }
   }
@@ -83,6 +88,37 @@ export default function NotarGest() {
     } catch (e) { setError(e.message); }
     finally { setCargando(false); }
   }
+  async function cambiarEstado(estado) {
+    if (!detalle) return;
+    setCargando(true); setError(""); setMensaje("");
+    try {
+      if (estado === "factura") await peticion("/notargest/expedientes/" + encodeURIComponent(detalle.id_expediente) + "/firma", { method: "PATCH", body: JSON.stringify({ fecha_firma: firmaFecha, protocolo }) });
+      await peticion("/notargest/expedientes/" + encodeURIComponent(detalle.id_expediente) + "/estado", { method: "POST", body: JSON.stringify({ estado }) });
+      const data = await peticion("/notargest/expedientes/" + encodeURIComponent(detalle.id_expediente));
+      setDetalle(data); setMensaje("Estado actualizado correctamente."); await cargar();
+    } catch (e) { setError(e.message); } finally { setCargando(false); }
+  }
+  async function subirDocumentoWorkflow(categoria, archivo) {
+    if (!detalle || !archivo) return;
+    setCargando(true); setError(""); setMensaje("");
+    try {
+      const body = new FormData(); body.append("categoria", categoria); body.append("archivo", archivo);
+      await peticion("/notargest/expedientes/" + encodeURIComponent(detalle.id_expediente) + "/documentos-workflow", { method: "POST", body });
+      const data = await peticion("/notargest/expedientes/" + encodeURIComponent(detalle.id_expediente));
+      setDetalle(data); setMensaje("Documento guardado en Carpeta Digital y estado actualizado."); await cargar();
+    } catch (e) { setError(e.message); } finally { setCargando(false); }
+  }
+  async function guardarCierre() {
+    if (!detalle) return;
+    setCargando(true); setError(""); setMensaje("");
+    try {
+      const body = { notargest_fecha_cierre: fechaCierre, notargest_fecha_envio_gestoria: fechaEnvioGestoria };
+      await peticion("/notargest/expedientes/" + encodeURIComponent(detalle.id_expediente) + "/cierre", { method: "PATCH", body: JSON.stringify(body) });
+      const data = await peticion("/notargest/expedientes/" + encodeURIComponent(detalle.id_expediente));
+      setDetalle(data); setMensaje("Fechas de cierre y envío a gestoría guardadas."); await cargar();
+    } catch (e) { setError(e.message); } finally { setCargando(false); }
+  }
+
   async function abrirDocumento(doc) {
     try {
       const id = encodeURIComponent(detalle.id_expediente);
@@ -129,6 +165,16 @@ export default function NotarGest() {
     </section>}
     {esDetalle && <section className="ng-panel ng-ficha"><div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("recepcion")}>← Volver al listado</button></div>
       <div className="ng-ficha-cuerpo">
+        <section className="ng-detalle-bloque ng-workflow"><h3>Gestión del estado</h3>
+          {detalle.notargest_estado === "recepcion" && <button className="ng-login-submit" disabled={cargando} onClick={() => cambiarEstado("firma")}>Marcar como recibido · Pasar a pendientes de firma</button>}
+          {detalle.notargest_estado === "firma" && <div className="ng-workflow-form"><label>Fecha de firma<input type="date" value={firmaFecha} onChange={e => setFirmaFecha(e.target.value)} /></label><label>Protocolo<input value={protocolo} onChange={e => setProtocolo(e.target.value)} placeholder="Número de protocolo" /></label><button className="ng-login-submit" disabled={cargando || !firmaFecha || !protocolo.trim()} onClick={() => cambiarEstado("factura")}>Guardar firma y pasar a pendientes de factura notaría</button></div>}
+          {detalle.notargest_estado === "factura" && <p>Adjunta la factura notarial desde su bandeja. Al subirla, el expediente pasará a presentación en Registro.</p>}
+          {detalle.notargest_estado === "registro" && <label className="ng-adjuntar">Subir justificante de presentación en Registro<input type="file" disabled={cargando} onChange={e => { subirDocumentoWorkflow("presentacion", e.target.files?.[0]); e.target.value = ""; }} /></label>}
+          {detalle.notargest_estado === "ajd" && <label className="ng-adjuntar">Subir justificante AJD / ITP<input type="file" disabled={cargando} onChange={e => { subirDocumentoWorkflow("ajd", e.target.files?.[0]); e.target.value = ""; }} /></label>}
+          {detalle.notargest_estado === "inscripcion" && <div className="ng-workflow-form"><label>Defecto registral (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("defecto", e.target.files?.[0]); e.target.value = ""; }} /></label><label>Hoja de inscripción (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("inscripcion", e.target.files?.[0]); e.target.value = ""; }} /></label><p>Ambos documentos se guardan en la Carpeta Digital del expediente.</p></div>}
+          {detalle.notargest_estado === "copia" && <label className="ng-adjuntar">Subir copia simple (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("copia", e.target.files?.[0]); e.target.value = ""; }} /></label>}
+          {detalle.notargest_estado === "cerrada" && <div className="ng-workflow-form"><label>Fecha de cierre<input type="date" value={fechaCierre} onChange={e => setFechaCierre(e.target.value)} /></label><label>Fecha de envío a gestoría<input type="date" value={fechaEnvioGestoria} onChange={e => setFechaEnvioGestoria(e.target.value)} /></label><button className="ng-login-submit" disabled={cargando || !fechaCierre} onClick={guardarCierre}>Guardar cierre y envío a gestoría</button></div>}
+        </section>
         <section className="ng-detalle-bloque"><h3>Datos del encargo y envío</h3><div className="ng-datos-grid">{[["Expediente",detalle.id_expediente],["Estado",detalle.estado],["Actividad",detalle.actividad_actual],["Oficina",detalle.oficina],["Fecha de alta",esFecha(detalle.fecha_alta)],["Fecha de envío",esFecha(detalle.fecha_envio_notario || detalle.fecha_envio)],["Solicitud PNC",detalle.numero_solicitud_pnc],["Fecha solicitud PNC",esFecha(detalle.fecha_solicitud_pnc)],["Fecha prevista de firma",esFecha(detalle.fecha_prevista_firma)],["Hora prevista",detalle.hora_prevista_firma],["Fecha de firma",esFecha(detalle.fecha_firma)],["Protocolo",detalle.protocolo],["Tipo de documento",detalle.tipo_documento],["Idioma",detalle.idioma_documento],["Formato",detalle.formato_escritura],["Trámite",detalle.tipo_tramite],["Tipo de firma",detalle.tipo_firma],["Solicitante",detalle.solicitante],["Titular",detalle.titular]].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div></section>
         <section className="ng-detalle-bloque"><h3>Fincas y registros</h3>{detalle.fincas?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Finca</th><th>CRU / IDUFIR</th><th>Registro</th><th>Provincia</th><th>Población</th><th>Sección</th><th>Inscripción</th><th>Cuantía</th></tr></thead><tbody>{detalle.fincas.map(f => <tr key={f.id}><td>{texto(f.finca)}</td><td>{texto(f.cru_idufir)}</td><td>{texto(f.registro)}</td><td>{texto(f.provincia)}</td><td>{texto(f.poblacion)}</td><td>{texto(f.seccion)}</td><td>{texto(f.inscripcion)}</td><td>{texto(f.cuantia)}</td></tr>)}</tbody></table></div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}</section>
         <section className="ng-detalle-bloque"><h3>Carpeta Digital · Documentación previa</h3><p className="ng-descripcion">Archivos disponibles del expediente, agrupados por categoría.</p>{detalle.documentos?.length ? <div className="ng-documentos">{detalle.documentos.map(d => <div className="ng-documento" key={d.id}><div><strong>{d.nombre}</strong><small>{d.categoria} · {esFecha(d.fecha_subida)}</small></div><button className="ng-boton-secundario" onClick={() => abrirDocumento(d)}>Abrir PDF / archivo</button></div>)}</div> : <p className="ng-mensaje">Todavía no hay documentos en la Carpeta Digital.</p>}</section>
