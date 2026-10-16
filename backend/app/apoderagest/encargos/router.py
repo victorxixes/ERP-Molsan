@@ -1,7 +1,7 @@
 
 """Endpoints de encargos de ApoderaGest."""
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
@@ -18,5 +18,6 @@ router = APIRouter(
 def obtener_encargos(
     db: Session = Depends(get_db),
     usuario=Depends(obtener_usuario_actual),
+    pendientes: bool = Query(True, description="Solo envíos pendientes de firma"),
 ):
-    return listar_encargos(db, usuario)
+    return listar_encargos(db, usuario, solo_pendientes=pendientes)
