@@ -4743,7 +4743,7 @@ const cuantiaFincasParaEnvio =
           {errorControlExpediente&&<p role="alert" className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{errorControlExpediente}</p>}
           <p className="text-xs text-slate-500">LST y RST bloquean automáticamente el expediente aunque se desmarquen las opciones.</p>
         </div>
-      </Modal>}
+      </Modal>
 
       {/* =====================================================
           MODAL ACTIVIDADES
