@@ -281,6 +281,7 @@ from backend.app.herramientasswager.asignar_bloqueo_router import (
 
 # CTN
 from backend.app.ctn.router import router as ctn_router
+from backend.app.notargest.router import router as notargest_router
 
 # DASHBOARD
 from backend.app.dashboard.router import router as dashboard_router
@@ -422,6 +423,7 @@ app.include_router(asignar_bloqueo_router, prefix="/api")
 
 # CTN
 app.include_router(ctn_router, prefix="/api")
+app.include_router(notargest_router, prefix="/api")
 
 # DASHBOARD
 app.include_router(dashboard_router, prefix="/api")
