@@ -61,9 +61,9 @@ const [errorApoderado, setErrorApoderado] = useState("");
     return mod.agenda;
   });
 
-  const puedeCrear = permisosAgenda.includes("crear");
-  const puedeEditar = permisosAgenda.includes("editar");
-  const puedeEliminar = permisosAgenda.includes("eliminar");
+  const puedeCrear = !soloApoderado && permisosAgenda.includes("crear");
+  const puedeEditar = !soloApoderado && permisosAgenda.includes("editar");
+  const puedeEliminar = !soloApoderado && permisosAgenda.includes("eliminar");
 
   const puedeVer =
     permisosAgenda.includes("ver") ||
@@ -101,7 +101,16 @@ const [errorApoderado, setErrorApoderado] = useState("");
       if (!activo) return;
 
       const datos = respuesta?.data;
-      setCitasApoderado(Array.isArray(datos) ? datos : []);
+
+      const listado = Array.isArray(datos)
+        ? datos
+        : Array.isArray(datos?.items)
+          ? datos.items
+          : Array.isArray(datos?.resultados)
+            ? datos.resultados
+            : [];
+
+      setCitasApoderado(listado);
     })
     .catch((err) => {
       if (!activo) return;
@@ -121,7 +130,29 @@ const [errorApoderado, setErrorApoderado] = useState("");
   };
 }, [soloApoderado, year, month, cargarMes]);
 
+    // ============================================================
+  // SELECCIÓN DE DÍA Y APERTURA DE CITA
   // ============================================================
+
+  const handleDiaClick = useCallback(
+    (fecha) => {
+      if (soloApoderado) {
+        return;
+      }
+
+      abrirCrear(fecha);
+    },
+    [soloApoderado, abrirCrear]
+  );
+
+  const handleCitaClick = useCallback(
+    (cita) => {
+      abrirEditar(cita);
+    },
+    [abrirEditar]
+  );
+  
+  # ============================================================
   // CREAR CITA
   // ============================================================
 
