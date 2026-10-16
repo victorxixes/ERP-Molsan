@@ -213,6 +213,8 @@ def guardar_comentario_ficha(expediente_id: int, datos: ObservacionComentarioFic
         destinos.append(("Visible apoderado", None))
     try:
         items = [_crear_observacion(db, expediente, usuario, datos.comentario, visibilidad, destinatario_id) for visibilidad, destinatario_id in destinos]
+        # Mantiene sincronizado el campo histórico que muestran el listado y la ficha.
+        expediente.observaciones = datos.comentario[:2000]
         db.commit()
         for item in items:
             db.refresh(item)
