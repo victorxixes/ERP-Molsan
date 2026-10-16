@@ -106,6 +106,9 @@ def _resumen(e, db):
         "solicitante": e.nombre_solicitante,
         "nif_solicitante": e.nif_solicitante,
         "estado": e.estado_expediente,
+        "notargest_estado": _estado_workflow(e),
+        "notargest_fecha_cierre": _fecha(getattr(e, "notargest_fecha_cierre", None)),
+        "notargest_fecha_envio_gestoria": _fecha(getattr(e, "notargest_fecha_envio_gestoria", None)),
         "estado_actividad": e.estado_actividad,
         "actividad_actual": actividad,
         "oficina": e.oficina or e.oficina_alta,
@@ -179,6 +182,128 @@ def cambiar_password(data: CambioPassword, n=Depends(get_notario), db: Session =
     db.commit()
     return {"ok": True, "mensaje": "Contraseña actualizada"}
 
+
+
+ESTADOS_NOTARGEST = {
+    "recepcion": "Pendientes de recepción",
+    "firma": "Pendientes de firma",
+    "factura": "Pendientes de factura notaría",
+    "registro": "Pendientes de presentación en Registro",
+    "ajd": "Liquidación AJD / ITP",
+    "inscripcion": "Pendientes de inscripción",
+    "copia": "Pendientes de copia simple",
+    "cerrada": "Escrituras cerradas inscritas",
+}
+
+@router.on_event("startup")
+def migrar_workflow_notargest():
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_estado VARCHAR(80)"))
+        conn.execute(text("ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_fecha_cierre DATE"))
+        conn.execute(text("ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_fecha_envio_gestoria DATE"))
+
+
+def _estado_workflow(e):
+    estado = getattr(e, "notargest_estado", None)
+    if estado in ESTADOS_NOTARGEST:
+        return estado
+    actividad = (getattr(e, "actividad_actual", None) or "").casefold()
+    if getattr(e, "notargest_fecha_cierre", None): return "cerrada"
+    if "copia simple" in actividad: return "copia"
+    if "inscrip" in actividad: return "inscripcion"
+    if any(x in actividad for x in ("ajd", "itp", "impuesto")): return "ajd"
+    if getattr(e, "fecha_firma", None): return "factura"
+    if getattr(e, "fecha_prevista_firma", None): return "firma"
+    if getattr(e, "fecha_envio_notario", None): return "recepcion"
+    return "recepcion"
+
+@router.post("/expedientes/{expediente_id}/estado")
+def cambiar_estado_workflow(expediente_id: str, data: dict, n=Depends(get_notario), db: Session = Depends(get_db)):
+    e = _expediente_autorizado(expediente_id, n, db)
+    destino = str(data.get("estado") or "").strip()
+    if destino not in ESTADOS_NOTARGEST:
+        raise HTTPException(status_code=400, detail="Estado NotarGest no válido")
+    actual = _estado_workflow(e)
+    permitidos = {"recepcion": {"firma"}, "firma": {"factura"}}
+    if destino not in permitidos.get(actual, set()):
+        raise HTTPException(status_code=400, detail=f"No se permite pasar de {ESTADOS_NOTARGEST.get(actual, actual)} a {ESTADOS_NOTARGEST[destino]} mediante este botón")
+    if destino == "factura" and (not e.fecha_firma or not (e.protocolo or "").strip()):
+        raise HTTPException(status_code=400, detail="Indica la fecha de firma y el protocolo antes de continuar")
+    e.notargest_estado = destino
+    if destino == "firma":
+        e.actividad_actual = ESTADOS_NOTARGEST[destino]
+    elif destino == "factura":
+        e.actividad_actual = ESTADOS_NOTARGEST[destino]
+    db.commit()
+    return {"ok": True, "estado": destino, "estado_texto": ESTADOS_NOTARGEST[destino]}
+
+@router.patch("/expedientes/{expediente_id}/firma")
+def actualizar_datos_firma(expediente_id: str, data: dict, n=Depends(get_notario), db: Session = Depends(get_db)):
+    e = _expediente_autorizado(expediente_id, n, db)
+    fecha = data.get("fecha_firma")
+    protocolo = str(data.get("protocolo") or "").strip()
+    if fecha:
+        try: e.fecha_firma = date.fromisoformat(str(fecha)[:10])
+        except ValueError: raise HTTPException(status_code=400, detail="La fecha de firma no es válida")
+    else:
+        e.fecha_firma = None
+    e.protocolo = protocolo or None
+    db.commit()
+    return {"ok": True, "fecha_firma": _fecha(e.fecha_firma), "protocolo": e.protocolo}
+
+@router.patch("/expedientes/{expediente_id}/cierre")
+def actualizar_cierre(expediente_id: str, data: dict, n=Depends(get_notario), db: Session = Depends(get_db)):
+    e = _expediente_autorizado(expediente_id, n, db)
+    for campo in ("notargest_fecha_cierre", "notargest_fecha_envio_gestoria"):
+        valor = data.get(campo)
+        if valor:
+            try: setattr(e, campo, date.fromisoformat(str(valor)[:10]))
+            except ValueError: raise HTTPException(status_code=400, detail=f"Fecha no válida: {campo}")
+    if e.notargest_fecha_cierre:
+        e.notargest_estado = "cerrada"
+        e.actividad_actual = ESTADOS_NOTARGEST["cerrada"]
+    db.commit()
+    return {"ok": True, "fecha_cierre": _fecha(e.notargest_fecha_cierre), "fecha_envio_gestoria": _fecha(e.notargest_fecha_envio_gestoria), "estado": _estado_workflow(e)}
+
+@router.post("/expedientes/{expediente_id}/documentos-workflow")
+async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...), archivo: UploadFile = File(...), n=Depends(get_notario), db: Session = Depends(get_db)):
+    e = _expediente_autorizado(expediente_id, n, db)
+    categorias = {
+        "factura": ("Factura notarial", "application/pdf", "registro"),
+        "presentacion": ("Presentación Registro", None, "ajd"),
+        "ajd": ("AJD/ITP", None, "inscripcion"),
+        "defecto": ("Defecto registral", None, None),
+        "inscripcion": ("Hoja de Inscripción", None, "copia"),
+        "copia": ("Copia simple", None, "cerrada"),
+    }
+    if categoria not in categorias:
+        raise HTTPException(status_code=400, detail="Tipo de documento no válido")
+    categoria_carpeta, mime_fijo, siguiente = categorias[categoria]
+    nombre = Path(archivo.filename or "documento").name
+    if categoria in ("factura", "defecto", "inscripcion", "copia") and not nombre.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Este documento debe adjuntarse en PDF")
+    contenido = await archivo.read(25 * 1024 * 1024 + 1)
+    if not contenido or len(contenido) > 25 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="El archivo está vacío o supera 25 MB")
+    nombre_guardado = f"{uuid.uuid4().hex}{Path(nombre).suffix[:20].lower()}"
+    ruta = (ROOT / nombre_guardado).resolve()
+    if ruta.parent != ROOT: raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
+    ruta.write_bytes(contenido)
+    try:
+        doc = DocumentoCarpetaDigital(expediente_id=str(e.id_expediente), categoria=categoria_carpeta, nombre_original=nombre, nombre_guardado=nombre_guardado, tipo_mime=mime_fijo or archivo.content_type or "application/octet-stream", tamano_bytes=len(contenido), fecha_subida=datetime.utcnow())
+        db.add(doc)
+        if siguiente:
+            e.notargest_estado = siguiente
+            e.actividad_actual = ESTADOS_NOTARGEST[siguiente]
+        elif categoria == "defecto":
+            e.notargest_estado = "inscripcion"
+            e.actividad_actual = ESTADOS_NOTARGEST["inscripcion"]
+            e.tiene_defectos_abiertos = "SI"
+        db.commit(); db.refresh(doc)
+    except Exception:
+        db.rollback(); ruta.unlink(missing_ok=True); raise
+    return {"ok": True, "id": doc.id, "categoria": doc.categoria, "nombre": doc.nombre_original, "estado": _estado_workflow(e)}
+
 @router.get("/expedientes")
 def mis_expedientes(n=Depends(get_notario), db: Session = Depends(get_db)):
     filas = _expedientes_de_notario(n, db)
@@ -187,13 +312,18 @@ def mis_expedientes(n=Depends(get_notario), db: Session = Depends(get_db)):
         item = _resumen(e, db)
         # Estados separados para que cada bandeja tenga una condición clara.
         actividad = (e.actividad_actual or "").casefold()
-        item["pendiente_recepcion"] = bool(e.fecha_envio_notario and not e.fecha_firma)
-        item["pendiente_firma"] = bool(e.fecha_prevista_firma and not e.fecha_firma)
-        item["pendiente_presentacion_registro"] = bool(item["pendiente_presentacion_registro"])
-        item["pendiente_factura_notaria"] = bool(e.fecha_firma and not item["factura_notarial"])
-        item["pendiente_copia_simple"] = "copia simple" in actividad
-        item["pendiente_ajd_itp"] = any(k in actividad for k in ("ajd", "itp", "impuesto"))
-        item["pendiente_inscripcion"] = "inscrip" in actividad
+        estado = _estado_workflow(e)
+        item["notargest_estado"] = estado
+        item["notargest_fecha_cierre"] = _fecha(getattr(e, "notargest_fecha_cierre", None))
+        item["notargest_fecha_envio_gestoria"] = _fecha(getattr(e, "notargest_fecha_envio_gestoria", None))
+        item["pendiente_recepcion"] = estado == "recepcion"
+        item["pendiente_firma"] = estado == "firma"
+        item["pendiente_factura_notaria"] = estado == "factura"
+        item["pendiente_presentacion_registro"] = estado == "registro"
+        item["pendiente_ajd_itp"] = estado == "ajd"
+        item["pendiente_inscripcion"] = estado == "inscripcion"
+        item["pendiente_copia_simple"] = estado == "copia"
+        item["escrituras_cerradas_inscritas"] = estado == "cerrada"
         item["con_defectos"] = "defecto" in actividad or bool(getattr(e, "tiene_defectos_abiertos", None))
         items.append(item)
     return {"items": items, "total": len(items)}
