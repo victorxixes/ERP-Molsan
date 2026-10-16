@@ -2354,3 +2354,10 @@ def actualizar_columnas_envio_notario(
         "columnas_pendientes": [],
     }
 
+
+# ============================================================
+# PROVISIONES DE FONDOS Y CANCELACIONES
+# Se monta dentro del router de Expedientes para conservar el RBAC existente.
+# ============================================================
+from backend.app.provisiones.router import router as provisiones_router
+router.include_router(provisiones_router)
