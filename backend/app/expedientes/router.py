@@ -1550,11 +1550,25 @@ def asegurar_tabla_estado_absis(db: Session) -> None:
             nota_simple_registral BOOLEAN NOT NULL DEFAULT FALSE,
             mover_siguiente_actividad BOOLEAN NOT NULL DEFAULT FALSE,
             enviado_a_absis BOOLEAN NOT NULL DEFAULT FALSE,
+            solicitud_registrada_localmente BOOLEAN NOT NULL DEFAULT FALSE,
+            fecha_solicitud_local TIMESTAMP WITHOUT TIME ZONE NULL,
             fecha_actualizacion TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
     """))
-    # Compatibilidad si la tabla ya existía antes de incorporar el selector Sí/No.
+    # Compatibilidad idempotente con instalaciones anteriores.
     db.execute(text("ALTER TABLE expediente_documentacion_previa_absis ADD COLUMN IF NOT EXISTS mover_siguiente_actividad BOOLEAN NOT NULL DEFAULT FALSE"))
+    db.execute(text("ALTER TABLE expediente_documentacion_previa_absis ADD COLUMN IF NOT EXISTS solicitud_registrada_localmente BOOLEAN NOT NULL DEFAULT FALSE"))
+    db.execute(text("ALTER TABLE expediente_documentacion_previa_absis ADD COLUMN IF NOT EXISTS fecha_solicitud_local TIMESTAMP WITHOUT TIME ZONE NULL"))
+    # La implementación anterior marcaba 'enviado_a_absis' aunque no había
+    # transporte externo. Convertimos esas marcas antiguas en solicitudes locales.
+    db.execute(text("""
+        UPDATE expediente_documentacion_previa_absis
+        SET solicitud_registrada_localmente = TRUE,
+            fecha_solicitud_local = COALESCE(fecha_solicitud_local, fecha_actualizacion),
+            enviado_a_absis = FALSE
+        WHERE enviado_a_absis IS TRUE
+          AND solicitud_registrada_localmente IS FALSE
+    """))
     db.flush()
 
 
@@ -1567,6 +1581,8 @@ def leer_estado_absis(db: Session, id_expediente: str) -> dict:
                nota_simple_registral,
                mover_siguiente_actividad,
                enviado_a_absis,
+               solicitud_registrada_localmente,
+               fecha_solicitud_local,
                fecha_actualizacion
         FROM expediente_documentacion_previa_absis
         WHERE expediente_id = :expediente_id
@@ -1579,6 +1595,8 @@ def leer_estado_absis(db: Session, id_expediente: str) -> dict:
             "nota_simple_registral": False,
             "mover_siguiente_actividad": False,
             "enviado_a_absis": False,
+            "solicitud_registrada_localmente": False,
+            "fecha_solicitud_local": None,
             "fecha_actualizacion": None,
         }
     return dict(fila)
@@ -1621,11 +1639,13 @@ def guardar_estado_absis_documentacion_previa(
             INSERT INTO expediente_documentacion_previa_absis (
                 expediente_id, certificado_saldo_cero_erroneo,
                 solicitud_cancelacion_notarial, certificado_cancelacion_administrativo,
-                nota_simple_registral, mover_siguiente_actividad, enviado_a_absis, fecha_actualizacion
+                nota_simple_registral, mover_siguiente_actividad, enviado_a_absis,
+                solicitud_registrada_localmente, fecha_solicitud_local, fecha_actualizacion
             ) VALUES (
                 :expediente_id, :certificado_saldo_cero_erroneo,
                 :solicitud_cancelacion_notarial, :certificado_cancelacion_administrativo,
-                :nota_simple_registral, :mover_siguiente_actividad, FALSE, CURRENT_TIMESTAMP
+                :nota_simple_registral, :mover_siguiente_actividad, FALSE,
+                FALSE, NULL, CURRENT_TIMESTAMP
             )
             ON CONFLICT (expediente_id) DO UPDATE SET
                 certificado_saldo_cero_erroneo = EXCLUDED.certificado_saldo_cero_erroneo,
@@ -1634,6 +1654,8 @@ def guardar_estado_absis_documentacion_previa(
                 nota_simple_registral = EXCLUDED.nota_simple_registral,
                 mover_siguiente_actividad = EXCLUDED.mover_siguiente_actividad,
                 enviado_a_absis = FALSE,
+                solicitud_registrada_localmente = FALSE,
+                fecha_solicitud_local = NULL,
                 fecha_actualizacion = CURRENT_TIMESTAMP
         """), {"expediente_id": str(id_expediente), **valores})
         db.commit()
@@ -1658,14 +1680,22 @@ def registrar_envio_absis_documentacion_previa(
         # Este endpoint registra el estado de preparación local. La transmisión real
         # requiere una API/credencial ABSIS, que no está definida en este proyecto.
         db.execute(text("""
-            INSERT INTO expediente_documentacion_previa_absis (expediente_id, enviado_a_absis)
-            VALUES (:expediente_id, TRUE)
+            INSERT INTO expediente_documentacion_previa_absis (
+                expediente_id, enviado_a_absis, solicitud_registrada_localmente,
+                fecha_solicitud_local, fecha_actualizacion
+            ) VALUES (:expediente_id, FALSE, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             ON CONFLICT (expediente_id) DO UPDATE SET
-                enviado_a_absis = TRUE,
+                enviado_a_absis = FALSE,
+                solicitud_registrada_localmente = TRUE,
+                fecha_solicitud_local = CURRENT_TIMESTAMP,
                 fecha_actualizacion = CURRENT_TIMESTAMP
         """), {"expediente_id": str(id_expediente)})
         db.commit()
-        return {**leer_estado_absis(db, id_expediente), "mensaje": "Información registrada localmente para ABSIS; no se ha transmitido a un sistema ABSIS externo."}
+        return {
+            **leer_estado_absis(db, id_expediente),
+            "transmitido_a_absis": False,
+            "mensaje": "Solicitud registrada localmente. No se ha transmitido a ABSIS; la API externa queda pendiente de implementación.",
+        }
     except Exception as exc:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"No se pudo registrar el envío a ABSIS: {str(exc)[:300]}")
@@ -2030,6 +2060,102 @@ def registrar_solicitud_absis_sede_notarial_protocolo(
             "Solicitud guardada localmente. No se ha transmitido a ABSIS ni "
             "se ha cambiado la actividad; falta configurar y probar la integración externa."
         ),
+    }
+
+
+# ============================================================
+# REGISTRO LOCAL DE PETICIONES PARA LA FUTURA INTEGRACIÓN EXTERNA
+# No envía datos a ABSIS; deja una entrada pendiente para trazabilidad.
+# ============================================================
+
+ACTIVIDADES_CON_SOLICITUD_EXTERNA_PENDIENTE = {
+    "sede-notarial-protocolo",
+    "liquidacion-impuestos",
+    "tramitacion-inscripcion",
+}
+
+
+def asegurar_tabla_solicitudes_integracion(db: Session) -> None:
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS expediente_absis_solicitudes (
+            id BIGSERIAL PRIMARY KEY,
+            expediente_id VARCHAR(100) NOT NULL,
+            actividad VARCHAR(100) NOT NULL,
+            payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+            solicitado_por INTEGER NULL,
+            mover_siguiente_actividad BOOLEAN NOT NULL DEFAULT FALSE,
+            estado VARCHAR(40) NOT NULL DEFAULT 'PENDIENTE_CONFIGURACION',
+            creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    db.flush()
+
+
+@router.post("/{id_expediente}/integraciones-pendientes/{actividad}")
+def registrar_solicitud_integracion_pendiente(
+    id_expediente: str,
+    actividad: str,
+    datos: Dict[str, Any],
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Registra localmente una solicitud que el equipo informático integrará después.
+
+    Este endpoint deliberadamente NO transmite información a ABSIS ni mueve
+    automáticamente la actividad del expediente.
+    """
+    actividad_normalizada = resolver_actividad(actividad)
+    if actividad_normalizada not in ACTIVIDADES_CON_SOLICITUD_EXTERNA_PENDIENTE:
+        raise HTTPException(status_code=422, detail="Esta actividad no admite solicitudes de integración pendientes.")
+
+    expediente = (
+        db.query(Expediente)
+        .filter(Expediente.id_expediente == str(id_expediente))
+        .first()
+    )
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    payload = dict(datos or {})
+    mover = bool(payload.get("mover_siguiente_actividad", False))
+    payload_json = json.dumps(payload, ensure_ascii=False, default=str)
+    try:
+        asegurar_tabla_solicitudes_integracion(db)
+        result = db.execute(text("""
+            INSERT INTO expediente_absis_solicitudes
+                (expediente_id, actividad, payload, solicitado_por,
+                 mover_siguiente_actividad, estado, creado_en)
+            VALUES
+                (:expediente_id, :actividad, CAST(:payload AS JSONB), :solicitado_por,
+                 :mover, 'PENDIENTE_CONFIGURACION', CURRENT_TIMESTAMP)
+            RETURNING id
+        """), {
+            "expediente_id": str(id_expediente),
+            "actividad": actividad_normalizada,
+            "payload": payload_json,
+            "solicitado_por": getattr(usuario, "id", None),
+            "mover": mover,
+        })
+        solicitud_id = result.scalar()
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"No se pudo registrar la solicitud de integración: {str(exc)[:300]}",
+        )
+
+    return {
+        "ok": True,
+        "solicitud_id": solicitud_id,
+        "id_expediente": str(id_expediente),
+        "actividad": actividad_normalizada,
+        "estado": "PENDIENTE_CONFIGURACION",
+        "registrado_localmente": True,
+        "transmitido_a_absis": False,
+        "actividad_modificada": False,
+        "mover_siguiente_actividad_solicitado": mover,
+        "mensaje": "Petición registrada en el ERP. No se ha enviado a ABSIS ni se ha cambiado la actividad; queda pendiente de la API externa.",
     }
 
 
