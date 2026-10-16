@@ -1,16 +1,16 @@
 from typing import Set
 import asyncio
 
-import jwt
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
-from backend.app.config import settings
+from backend.app.auth.websocket_auth import autenticar_websocket
 
 router = APIRouter(prefix="/ws", tags=["empleados_ws"])
 conexiones_empleados: Set[WebSocket] = set()
 
 
 async def broadcast_empleados(evento: dict):
+    """Broadcast interno a sesiones autenticadas; no acepta eventos del cliente."""
     conexiones_muertas = []
     for ws in list(conexiones_empleados):
         try:
@@ -23,16 +23,12 @@ async def broadcast_empleados(evento: dict):
 
 @router.websocket("/empleados/{empleado_id}")
 async def empleados_ws(websocket: WebSocket, empleado_id: int):
-    token = websocket.query_params.get("token", "").strip()
-    if not token:
-        await websocket.close(code=4401, reason="Token requerido")
-        return
-
+    token = websocket.query_params.get("token", "")
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM])
-        usuario_id = int(payload.get("id"))
-    except (jwt.InvalidTokenError, TypeError, ValueError):
-        await websocket.close(code=4401, reason="Token no válido")
+        usuario_id = autenticar_websocket(token)
+    except HTTPException as exc:
+        codigo = 4401 if exc.status_code == 401 else 4403
+        await websocket.close(code=codigo, reason=str(exc.detail)[:120])
         return
 
     if usuario_id != empleado_id:
@@ -50,7 +46,6 @@ async def empleados_ws(websocket: WebSocket, empleado_id: int):
                 if msg == "ping":
                     await websocket.send_text("pong")
             except asyncio.TimeoutError:
-                # Mantiene la conexión comprobando que sigue viva sin aceptar comandos.
                 await websocket.send_json({"tipo": "heartbeat"})
     except WebSocketDisconnect:
         pass
