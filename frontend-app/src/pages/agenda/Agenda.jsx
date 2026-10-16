@@ -27,7 +27,7 @@ const MESES = [
   "Diciembre",
 ];
 
-export default function Agenda() {
+export default function Agenda({ soloApoderado = false } = {}) {
   const hoy = useMemo(() => new Date(), []);
 
   // Conectar al canal común de actualizaciones de la agenda.
@@ -290,8 +290,46 @@ export default function Agenda() {
 
   // Las vistas utilizan las citas del mismo almacén compartido.
   const citasSeguras = useMemo(() => {
-    return Array.isArray(citas) ? citas : [];
-  }, [citas]);
+    const lista = Array.isArray(citas) ? citas : [];
+    if (!soloApoderado) return lista;
+
+    const empleado = useAuthStore.getState().empleado;
+    const empleadoId = empleado?.empleado_id ?? empleado?.id;
+    const normalizar = (valor) =>
+      String(valor ?? "")
+        .normalize("NFKD")
+        .replace(/[\\u0300-\\u036f]/g, "")
+        .trim()
+        .replace(/\\s+/g, " ")
+        .toLocaleLowerCase("es");
+
+    const nombreEmpleado = normalizar(
+      [empleado?.nombre, empleado?.apellidos].filter(Boolean).join(" ") ||
+      empleado?.nombre_completo ||
+      empleado?.nombreCompleto
+    );
+
+    return lista.filter((cita) => {
+      const idAsignado = cita.apoderado_id ?? cita.apoderado?.id ?? cita.apoderado?.empleado_id;
+      const nombreAsignado = normalizar(
+        cita.apoderado_nombre ||
+        (typeof cita.apoderado === "string" ? cita.apoderado : "") ||
+        cita.apoderado?.nombre_completo ||
+        [cita.apoderado?.nombre, cita.apoderado?.apellidos].filter(Boolean).join(" ")
+      );
+
+      const coincideId =
+        empleadoId != null &&
+        idAsignado != null &&
+        String(empleadoId) === String(idAsignado);
+      const coincideNombre =
+        nombreEmpleado &&
+        nombreAsignado &&
+        nombreEmpleado === nombreAsignado;
+
+      return Boolean(coincideId || coincideNombre);
+    });
+  }, [citas, soloApoderado]);
 
   // ============================================================
   // FECHA ACTUAL
