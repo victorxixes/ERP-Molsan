@@ -140,6 +140,10 @@ export default function AutocompleteNotario({
 
   const currentLabel = useMemo(() => {
 
+    // Mientras se escribe, priorizamos el texto introducido.
+    // Si el campo está vacío, mostramos el notario seleccionado.
+    if (query.trim()) return query;
+
     if (
       value &&
       (
@@ -155,7 +159,7 @@ export default function AutocompleteNotario({
       );
     }
 
-    return query;
+    return "";
 
   }, [value, query]);
 
