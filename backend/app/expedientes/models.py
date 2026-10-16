@@ -49,6 +49,15 @@ class Expediente(Base):
     estado_expediente = Column(String(200), nullable=True)
     estado_expediente_ancert = Column(String(200), nullable=True)
 
+    # Control de liquidaciones sin tramitar, cambio de gestoría y bloqueos.
+    liquidado_sin_tramitar = Column(Boolean, nullable=False, default=False)
+    fecha_liquidacion_sin_tramitar = Column(Date, nullable=True)
+    cambio_gestoria = Column(Boolean, nullable=False, default=False)
+    fecha_cambio_gestoria = Column(Date, nullable=True)
+    bloqueo_manual = Column(Boolean, nullable=False, default=False)
+    motivo_bloqueo = Column(String(1000), nullable=True)
+    fecha_bloqueo = Column(Date, nullable=True)
+
     fecha_alta = Column(Date, nullable=True)
     fecha_firma = Column(Date, nullable=True)
     fecha_inscripcion = Column(Date, nullable=True)
