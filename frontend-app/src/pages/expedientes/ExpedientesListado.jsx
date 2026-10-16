@@ -878,6 +878,7 @@ export default function ExpedientesListado() {
   // ==========================================================
   // FILTROS EDITABLES — FILTROS AVANZADOS DEFINITIVOS
   // ==========================================================
+  const [filtroNumeroExpediente, setFiltroNumeroExpediente] = useState("");
   const [filtroOficina, setFiltroOficina] = useState("");
   const [filtroFechaInicio, setFiltroFechaInicio] = useState("");
   const [filtroFechaFin, setFiltroFechaFin] = useState("");
@@ -898,6 +899,7 @@ export default function ExpedientesListado() {
   const [filtroEstadoExpediente, setFiltroEstadoExpediente] = useState("");
 
   const [filtrosAplicados, setFiltrosAplicados] = useState({
+    numeroExpediente: "",
     oficina: "", fechaInicio: "", fechaFin: "",
     nifTitular: "", nombreTitular: "",
     nifSolicitante: "", nombreSolicitante: "",
@@ -1076,6 +1078,7 @@ export default function ExpedientesListado() {
 
             porPagina,
 
+            numeroExpediente: filtrosAplicados.numeroExpediente || undefined,
             oficina: filtrosAplicados.oficina || undefined,
             fechaInicio: filtrosAplicados.fechaInicio || undefined,
             fechaFin: filtrosAplicados.fechaFin || undefined,
@@ -1454,6 +1457,7 @@ export default function ExpedientesListado() {
 
   const aplicarFiltros = () => {
     setFiltrosAplicados({
+      numeroExpediente: filtroNumeroExpediente.trim(),
       oficina: filtroOficina.trim(),
       fechaInicio: filtroFechaInicio,
       fechaFin: filtroFechaFin,
@@ -1483,6 +1487,7 @@ export default function ExpedientesListado() {
   // ==========================================================
 
   const limpiarFiltros = () => {
+    setFiltroNumeroExpediente("");
     setFiltroOficina("");
     setFiltroFechaInicio("");
     setFiltroFechaFin("");
@@ -1502,6 +1507,7 @@ export default function ExpedientesListado() {
     setFiltroActividad("");
     setFiltroEstadoExpediente("");
     setFiltrosAplicados({
+      numeroExpediente: "",
       oficina: "", fechaInicio: "", fechaFin: "",
       nifTitular: "", nombreTitular: "",
       nifSolicitante: "", nombreSolicitante: "",
@@ -1727,6 +1733,7 @@ export default function ExpedientesListado() {
 
 
         await exportarExcelExpedientes({
+          numeroExpediente: filtrosAplicados.numeroExpediente || undefined,
           oficina: filtrosAplicados.oficina || undefined,
           fechaInicio: filtrosAplicados.fechaInicio || undefined,
           fechaFin: filtrosAplicados.fechaFin || undefined,
@@ -2727,6 +2734,7 @@ export default function ExpedientesListado() {
             </div>
 
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <FiltroInput label="N.º expediente" value={filtroNumeroExpediente} onChange={setFiltroNumeroExpediente} placeholder="Número completo o parte del expediente" />
               <FiltroInput label="Oficina" value={filtroOficina} onChange={setFiltroOficina} placeholder="Código o nombre de oficina" />
               <FiltroInput label="Fecha de alta desde" type="date" value={filtroFechaInicio} onChange={setFiltroFechaInicio} />
               <FiltroInput label="Fecha de alta hasta" type="date" value={filtroFechaFin} onChange={setFiltroFechaFin} />
