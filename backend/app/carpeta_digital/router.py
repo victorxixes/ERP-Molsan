@@ -13,6 +13,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
+from backend.app.storage import CARPETA_DIGITAL_DIR
 
 # Toda la API de la carpeta digital exige una sesión JWT válida.
 # El frontend de esta funcionalidad usa el cliente axios común, que añade el token.
@@ -50,7 +51,7 @@ CATEGORIAS = {
     # Documentación general
     "Mails de la Oficina",
     "Otra documentación",
-    # Compatibilidad con categorías anteriores ya usadas en expedientes históricos.
+    # Compatibilidad con categorías anteriores
     "Mails de la oficina",
     "Borradores de escrituras",
     "Factura impuestos",
@@ -60,9 +61,9 @@ CATEGORIAS = {
 }
 
 MAX_BYTES = int(os.getenv("CARPETA_DIGITAL_MAX_BYTES", str(100 * 1024 * 1024)))
-# En Render, configura CARPETA_DIGITAL_DIR con la ruta de un disco persistente,
-# por ejemplo /var/data/carpeta_digital. La ruta por defecto no garantiza persistencia.
-ROOT = Path(os.getenv("CARPETA_DIGITAL_DIR", "./data/carpeta_digital")).resolve()
+# Carpeta compartida de almacenamiento. En Render debe quedar bajo el disco
+# persistente configurado en MOLSAN_STORAGE_ROOT.
+ROOT = CARPETA_DIGITAL_DIR.resolve()
 ROOT.mkdir(parents=True, exist_ok=True)
 
 
@@ -140,12 +141,14 @@ async def subir_documento(
             raise HTTPException(status_code=400, detail="El archivo está vacío")
 
         # Nombre aleatorio y extensión saneada; no se usa el nombre aportado como ruta.
-        extension = Path(nombre_original).suffix[:20]
+        extension = Path(nombre_original).suffix[:20].lower()
         nombre_guardado = f"{uuid.uuid4().hex}{extension}"
         ruta = _ruta_segura(nombre_guardado)
+        temporal = _ruta_segura(f".{nombre_guardado}.part")
 
         try:
-            ruta.write_bytes(contenido)
+            temporal.write_bytes(contenido)
+            temporal.replace(ruta)
             registro = DocumentoCarpetaDigital(
                 expediente_id=str(expediente_id),
                 categoria=categoria,
@@ -162,6 +165,7 @@ async def subir_documento(
         except Exception:
             db.rollback()
             ruta.unlink(missing_ok=True)
+            temporal.unlink(missing_ok=True)
             raise
     finally:
         await archivo.close()
