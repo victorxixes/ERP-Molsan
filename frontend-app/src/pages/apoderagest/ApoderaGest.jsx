@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 
-import "../../ApoderaGest.css";
+import "../../css/ApoderaGest.css";
 
 const PESTANAS = [
   "Dashboard",
