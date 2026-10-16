@@ -21,7 +21,7 @@ class LoginNotario(BaseModel):
 
 class CambioPassword(BaseModel):
     password_actual: constr(min_length=1, max_length=128)
-    password_nueva: constr(min_length=10, max_length=128)
+    password_nueva: constr(min_length=1, max_length=128)
 
 def normalizar_nif(valor):
     return ''.join((valor or '').upper().split()).replace('-', '')
@@ -64,24 +64,27 @@ def login(data: LoginNotario, db: Session=Depends(get_db)):
     nif = normalizar_nif(data.usuario)
     n = db.query(Notaria).filter(text("upper(replace(replace(nif, ' ', ''), '-', '')) = :nif")).params(nif=nif).first()
     if not n or not n.notargest_habilitado: raise HTTPException(status_code=401, detail='Acceso no habilitado. Contacta con Molsan.')
-    if n.notargest_password_hash:
+    # El acceso de NotarGest se realiza con el DNI/NIF completo como usuario
+    # y como contraseña. Si la cuenta está en estado de primer acceso, la
+    # contraseña inicial es ese mismo DNI/NIF; no se exige una contraseña de
+    # 10 caracteres ni se fuerza un cambio al entrar.
+    password_nif = hmac.compare_digest(normalizar_nif(data.password), nif)
+    if n.notargest_cambiar_password and password_nif:
+        n.notargest_password_hash = hash_password(nif)
+        n.notargest_cambiar_password = False
+        db.commit()
+        valido = True
+    elif n.notargest_password_hash:
         valido = verificar_password(data.password, n.notargest_password_hash)
-        # Durante el primer cambio de contraseña, aceptar el NIF normalizado.
-        if not valido and n.notargest_cambiar_password:
-            valido = hmac.compare_digest(normalizar_nif(data.password), nif)
     else:
-        # Primer acceso: el usuario y la contraseña inicial son el CIF/NIF completo,
-        # incluida la letra. Se normalizan espacios, guiones y mayúsculas/minúsculas.
-        valido = hmac.compare_digest(normalizar_nif(data.password), nif)
+        valido = password_nif
         if valido:
-            # Guardar la versión canónica evita que el primer acceso con letra
-            # minúscula provoque que el siguiente acceso con mayúscula falle.
             n.notargest_password_hash = hash_password(nif)
-            n.notargest_cambiar_password = True
+            n.notargest_cambiar_password = False
             db.commit()
     if not valido: raise HTTPException(status_code=401, detail='Credenciales incorrectas')
     token = jwt.encode({'tipo':'notargest','notaria_id':n.id,'exp':datetime.utcnow()+timedelta(hours=8)}, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
-    return {'token':token,'requiere_cambio_password':bool(n.notargest_cambiar_password),'notario':{'id':n.id,'nombre':' '.join(x for x in [n.nombre,n.apellidos] if x),'nif':n.nif}}
+    return {'token':token,'requiere_cambio_password':False,'notario':{'id':n.id,'nombre':' '.join(x for x in [n.nombre,n.apellidos] if x),'nif':n.nif}}
 
 @router.get('/me')
 def me(n=Depends(get_notario)):
