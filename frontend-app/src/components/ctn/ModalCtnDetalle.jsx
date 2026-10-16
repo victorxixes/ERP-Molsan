@@ -1,7 +1,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  listarNotarias,
   obtenerNotaria,
   obtenerHistoricoFirmasNotaria,
   listarNotariasAsociadas,
@@ -9,6 +8,7 @@ import {
   desasociarNotarios,
 } from "../../api/ctn";
 import "../../css/CtnListadoPage.css";
+import AutocompleteNotario from "../agenda/AutocompleteNotario";
 
 const valor = (v) =>
   v === null || v === undefined || v === "" ? "—" : String(v);
@@ -75,9 +75,6 @@ export default function ModalCtnDetalle({
 
   const [ficha, setFicha] = useState(notaria || null);
   const [asociadas, setAsociadas] = useState([]);
-
-  const [busqueda, setBusqueda] = useState("");
-  const [resultados, setResultados] = useState([]);
 
   const [guardandoAsociacion, setGuardandoAsociacion] =
     useState(false);
@@ -199,53 +196,6 @@ export default function ModalCtnDetalle({
     cargarFirmas(undefined, "");
   }, [open, id, cargarFicha, cargarFirmas]);
 
-  useEffect(() => {
-    const q = busqueda.trim();
-
-    if (!open || !id || q.length < 2) {
-      setResultados([]);
-      return undefined;
-    }
-
-    let activo = true;
-
-    listarNotarias({
-      q,
-      page: 1,
-      page_size: 30,
-    })
-      .then((respuesta) => {
-        if (!activo) return;
-
-        const lista = listaDe(respuesta, [
-          "items",
-          "notarias",
-          "results",
-        ]);
-
-        const idsAsociados = new Set(
-          asociadas.map((a) =>
-            Number(a.id ?? a.asociada_id ?? a.notaria_id)
-          )
-        );
-
-        setResultados(
-          lista.filter(
-            (n) =>
-              Number(n.id) !== Number(id) &&
-              !idsAsociados.has(Number(n.id))
-          )
-        );
-      })
-      .catch(() => {
-        if (activo) setResultados([]);
-      });
-
-    return () => {
-      activo = false;
-    };
-  }, [busqueda, asociadas, id, open]);
-
   const agregarAsociacion = async (asociadaId) => {
     if (!id || !asociadaId || guardandoAsociacion) return;
 
@@ -254,9 +204,6 @@ export default function ModalCtnDetalle({
 
     try {
       await asociarNotarios(id, asociadaId);
-
-      setBusqueda("");
-      setResultados([]);
 
       await cargarFicha();
     } catch (e) {
@@ -651,50 +598,38 @@ export default function ModalCtnDetalle({
           aquí actualiza la relación en ambos sentidos.
         </p>
 
-        <label className="ctn-modal-label-busqueda">
-          Buscar notario para asociar
+        <div className="ctn-modal-label-busqueda">
+          <span>Buscar notario para asociar</span>
+          <AutocompleteNotario
+            value={null}
+            disabled={guardandoAsociacion}
+            onSelect={(notarioEncontrado) => {
+              const asociadoId = notarioEncontrado?.id;
+              if (!asociadoId) return;
 
-          <input
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            placeholder="Nombre, apellidos o NIF (mínimo 2 caracteres)"
+              const yaAsociado = asociadas.some(
+                (a) =>
+                  Number(a.id ?? a.asociada_id ?? a.notaria_id) ===
+                  Number(asociadoId)
+              );
+
+              if (Number(asociadoId) === Number(id)) {
+                setError("No puedes asociar una notaría consigo misma.");
+                return;
+              }
+
+              if (yaAsociado) {
+                setError("Este notario ya está asociado a la ficha actual.");
+                return;
+              }
+
+              agregarAsociacion(asociadoId);
+            }}
           />
-        </label>
-
-        {resultados.length > 0 && (
-          <div className="ctn-modal-resultados">
-            {resultados.map((n) => (
-              <div key={n.id}>
-                <span>
-                  <strong>{nombreNotario(n)}</strong>
-                  <small>
-                    NIF: {valor(n.nif)}
-                    {" · "}
-                    {valor(n.municipio)}
-                  </small>
-                </span>
-
-                <button
-                  type="button"
-                  className="ctn-btn ctn-btn-primary ctn-btn-small"
-                  disabled={guardandoAsociacion}
-                  onClick={() => agregarAsociacion(n.id)}
-                >
-                  {guardandoAsociacion
-                    ? "Guardando…"
-                    : "Asociar"}
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {busqueda.trim().length >= 2 &&
-          resultados.length === 0 && (
-            <p className="ctn-modal-ayuda">
-              No hay nuevos notarios que coincidan con la búsqueda.
-            </p>
-          )}
+          <p className="ctn-modal-ayuda">
+            Busca por nombre, apellidos, municipio o provincia y selecciona el notario para crear la asociación recíproca.
+          </p>
+        </div>
 
         {asociadas.length === 0 ? (
           <p className="ctn-modal-vacio">
