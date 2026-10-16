@@ -95,6 +95,14 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
         "formato_escritura": _texto(getattr(expediente, "formato_escritura", None)),
         "idioma_documento": _texto(getattr(expediente, "idioma_documento", None)),
         "cuantia_documento": getattr(expediente, "importe", None),
+        "documentos_escritura": [
+            {
+                "id": getattr(documento, "id", None),
+                "tipo_documento": _texto(getattr(documento, "tipo_documento", None)),
+                "cuantia": getattr(documento, "cuantia", None),
+            }
+            for documento in (getattr(expediente, "documentos_escritura", None) or [])
+        ],
         "facturacion": {
             "nombre": _texto(getattr(expediente, "facturacion_nombre", None)),
             "apellidos": _texto(getattr(expediente, "facturacion_apellidos", None)),
