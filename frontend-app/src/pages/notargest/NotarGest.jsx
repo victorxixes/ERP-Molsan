@@ -17,8 +17,6 @@ export default function NotarGest() {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordNueva, setPasswordNueva] = useState("");
-  const [requiereCambio, setRequiereCambio] = useState(false);
   const [expedientes, setExpedientes] = useState([]);
   const [notario, setNotario] = useState(null);
   const [vista, setVista] = useState("inicio");
@@ -41,7 +39,7 @@ export default function NotarGest() {
     setCargando(true); setError("");
     try {
       const [perfil, lista] = await Promise.all([peticion("/notargest/me"), peticion("/notargest/expedientes")]);
-      setNotario(perfil); setRequiereCambio(Boolean(perfil.requiere_cambio_password)); setExpedientes(lista.items || []);
+      setNotario(perfil); setExpedientes(lista.items || []);
     } catch (e) {
       setError(e.message);
       if (/sesión|acceso notargest deshabilitado/i.test(e.message)) { localStorage.removeItem(TOKEN_KEY); setToken(""); }
@@ -56,19 +54,11 @@ export default function NotarGest() {
       const response = await fetch(`${API_BASE}/notargest/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usuario, password }) });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.detail || "Credenciales incorrectas.");
-      localStorage.setItem(TOKEN_KEY, data.token); setToken(data.token); setNotario(data.notario); setRequiereCambio(Boolean(data.requiere_cambio_password)); if (!data.requiere_cambio_password) setPassword("");
+      localStorage.setItem(TOKEN_KEY, data.token); setToken(data.token); setNotario(data.notario); setPassword("");
     } catch (e2) { setError(e2.message); } finally { setCargando(false); }
   }
 
-  async function guardarPassword(e) {
-    e.preventDefault(); setError(""); setMensaje(""); setCargando(true);
-    try {
-      await peticion("/notargest/cambiar-password", { method: "POST", body: JSON.stringify({ password_actual: password, password_nueva: passwordNueva }) });
-      setPassword(""); setPasswordNueva(""); setRequiereCambio(false); setMensaje("Contraseña actualizada correctamente.");
-    } catch (e) { setError(e.message); } finally { setCargando(false); }
-  }
-
-  function salir() { localStorage.removeItem(TOKEN_KEY); setToken(""); setNotario(null); setExpedientes([]); setPassword(""); setPasswordNueva(""); }
+  function salir() { localStorage.removeItem(TOKEN_KEY); setToken(""); setNotario(null); setExpedientes([]); setPassword(""); }
 
   if (!token) return <main className="apoderagest notargest ng-login-shell"><form className="ng-login" onSubmit={entrar}>
     <span className="ng-sobrelinea">PORTAL PROFESIONAL</span><h1>NotarGest</h1><p>Acceso para notarías autorizadas por Molsan.</p>
@@ -76,13 +66,6 @@ export default function NotarGest() {
     <label>Contraseña<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required /></label>
     {error && <div className="ng-error">{error}</div>}<button className="ng-login-submit" disabled={cargando}>{cargando ? "Accediendo…" : "Entrar en NotarGest"}</button>
     <small>Usuario y contraseña: DNI/NIF completo del notario, incluida la letra.</small>
-  </form></main>;
-
-  if (requiereCambio) return <main className="apoderagest notargest ng-login-shell"><form className="ng-login" onSubmit={guardarPassword}>
-    <span className="ng-sobrelinea">SEGURIDAD DE LA CUENTA</span><h1>Crea tu contraseña</h1><p>Introduce la contraseña provisional, que es el DNI/NIF completo del notario, incluida la letra.</p>
-    <label>Contraseña provisional<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required /></label>
-    <label>Nueva contraseña<input type="password" autoComplete="new-password" value={passwordNueva} onChange={e => setPasswordNueva(e.target.value)} required /></label>
-    {error && <div className="ng-error">{error}</div>}<button className="ng-login-submit" disabled={cargando}>{cargando ? "Guardando…" : "Guardar contraseña"}</button>
   </form></main>;
 
   const cuenta = (f) => expedientes.filter(f).length;
