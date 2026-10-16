@@ -1067,3 +1067,42 @@
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Encargos desplegables: ficha completa del apoderado */
+.ag-encargos-detalle-lista{display:grid;gap:12px;padding:14px}
+.ag-encargo-detalle{overflow:hidden;border:1px solid #dce5f0;border-radius:14px;background:#fff}
+.ag-encargo-detalle-cabecera{display:flex;width:100%;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;text-align:left;background:#f7f9fc;border:0;cursor:pointer}
+.ag-encargo-detalle-cabecera>span:first-child{display:grid;gap:4px;min-width:0}
+.ag-encargo-detalle-cabecera strong{color:#172b4d;font-size:14px}
+.ag-encargo-detalle-cabecera small{color:#64748b;font-size:12px}
+.ag-encargo-detalle-cabecera>span:last-child{color:#3658a5;font-size:12px;font-weight:800;white-space:nowrap}
+.ag-encargo-resumen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px 14px;border-top:1px solid #e8edf4}
+.ag-encargo-paneles{display:grid;gap:12px;padding:0 14px 14px}
+.ag-encargo-subpanel{min-width:0;padding:14px;border:1px solid #e4eaf2;border-radius:12px;background:#fbfcfe}
+.ag-encargo-subpanel h4{margin:0 0 12px;color:#1e355b;font-size:13px;font-weight:850}
+.ag-encargo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ag-detalle-campo{display:flex;min-width:0;flex-direction:column;gap:4px;padding:9px 10px;border:1px solid #e8edf4;border-radius:9px;background:#fff}
+.ag-detalle-campo>span{color:#718096;font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.035em}
+.ag-detalle-campo>strong{overflow-wrap:anywhere;color:#26364d;font-size:12px;font-weight:650;white-space:pre-wrap}
+.ag-finca-registro{margin-top:10px;padding:12px;border:1px solid #dbe5f2;border-radius:10px;background:#fff}
+.ag-finca-registro:first-of-type{margin-top:0}
+.ag-encargo-vacio{margin:0;color:#77849a;font-size:12px}
+.ag-documentos-apoderado,.ag-observaciones-apoderado{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.ag-documentos-apoderado li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px;border:1px solid #e4eaf2;border-radius:9px;background:#fff}
+.ag-documentos-apoderado li>span{display:grid;min-width:0;gap:4px}
+.ag-documentos-apoderado strong{color:#26364d;font-size:12px}
+.ag-documentos-apoderado small,.ag-observaciones-apoderado small{color:#77849a;font-size:11px}
+.ag-documentos-apoderado button{flex-shrink:0;padding:7px 10px;border:1px solid #cbd8ed;border-radius:8px;background:#edf3ff;color:#2d4e91;font-size:11px;font-weight:800;cursor:pointer}
+.ag-observaciones-apoderado li{padding:12px;border-left:3px solid #6886c5;border-radius:7px;background:#fff}
+.ag-observaciones-apoderado p{margin:0 0 6px;color:#334155;font-size:12px;white-space:pre-wrap}
+.ag-firmar-panel>p{margin:-4px 0 12px;color:#64748b;font-size:12px}
+.ag-firmar-controles{display:grid;grid-template-columns:minmax(180px,.65fr) minmax(220px,1fr) auto;align-items:end;gap:12px}
+.ag-firmar-controles label{display:grid;gap:6px;color:#5c6b82;font-size:11px;font-weight:800}
+.ag-firmar-controles input{width:100%;min-height:38px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#1e293b;font-size:13px}
+.ag-firmar-controles button{min-height:38px;padding:9px 18px;border:1px solid #176b4a;border-radius:9px;background:#16805a;color:#fff;font-size:12px;font-weight:850;cursor:pointer}
+.ag-firmar-controles button:disabled{opacity:.6;cursor:wait}
+.ag-firma-error{margin:10px 0 0;color:#b42318;font-size:12px;font-weight:700}
+.ag-firma-ok{margin:10px 0 0;color:#13734f;font-size:12px;font-weight:700}
+@media(max-width:900px){.ag-encargo-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}.ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ag-firmar-controles{grid-template-columns:1fr}.ag-encargo-detalle-cabecera{align-items:flex-start;flex-direction:column}}
+@media(max-width:560px){.ag-encargo-resumen,.ag-encargo-grid{grid-template-columns:1fr}.ag-documentos-apoderado li{align-items:flex-start;flex-direction:column}}
