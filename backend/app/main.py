@@ -8,6 +8,7 @@ from sqlalchemy import text
 
 import os
 import inspect
+import time
 
 
 # ============================================================
@@ -116,6 +117,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 
 FOTOS_ROOT = Path(FOTOS_DIR).resolve()
+
 EXTENSIONES_FOTO_PERMITIDAS = {
     ".jpg",
     ".jpeg",
@@ -446,18 +448,14 @@ app.include_router(expediente_observaciones_router, prefix="/api")
 # ============================================================
 
 def migrar_esquema_expedientes_inicio():
-    """Migra columnas pendientes sin ejecutar ALTER TABLE innecesarios.
+    """Añade únicamente las columnas e índices que falten.
 
-    En versiones anteriores se lanzaba ALTER TABLE ... IF NOT EXISTS para todas
-    las columnas en cada arranque, incluso si ya existían. PostgreSQL necesita
-    bloquear la tabla para procesar ALTER TABLE aunque la columna exista; eso
-    ocasionaba LockNotAvailable y dejaba el backend fuera de servicio.
-
-    Esta versión consulta primero el catálogo, solo altera columnas ausentes,
-    confirma cada columna por separado y reintenta bloqueos temporales. Un
-    advisory lock de sesión serializa los arranques que usan esta versión.
+    Compatible con SQLAlchemy 1.4 en modo legacy:
+    - No utiliza Connection.commit() ni Connection.rollback().
+    - Cada operación transaccional utiliza conexion.begin().
+    - Conserva el bloqueo advisory de sesión de PostgreSQL.
+    - Reintenta los bloqueos temporales de la tabla.
     """
-    import time
 
     print(
         "[MIGRACION STARTUP] Revisando columnas pendientes de expedientes...",
@@ -485,6 +483,7 @@ def migrar_esquema_expedientes_inicio():
         ("sol", "VARCHAR(100)"),
         ("cs", "VARCHAR(100)"),
         ("ns", "VARCHAR(100)"),
+
         # Clientes, envío a notario y facturación
         ("cliente_id", "INTEGER"),
         ("fecha_envio_notario", "DATE"),
@@ -502,30 +501,85 @@ def migrar_esquema_expedientes_inicio():
         ("facturacion_email", "VARCHAR(200)"),
     ]
 
-    # La clave es fija para que todas las instancias de esta aplicación
-    # serialicen el proceso de migración sin depender de la tabla expedientes.
     clave_bloqueo_migracion = 731208640224
     conexion = None
     bloqueo_adquirido = False
 
-    try:
-        conexion = engine.connect()
-        conexion.execute(
-            text("SELECT pg_advisory_lock(:clave)"),
-            {"clave": clave_bloqueo_migracion},
-        )
-        conexion.commit()
-        bloqueo_adquirido = True
-
-        resultado = conexion.execute(
-            text(
-                "SELECT column_name "
-                "FROM information_schema.columns "
-                "WHERE table_schema = 'public' AND table_name = 'expedientes'"
+    def es_bloqueo_temporal(error):
+        mensaje = str(error).lower()
+        return any(
+            termino in mensaje
+            for termino in (
+                "locknotavailable",
+                "lock timeout",
+                "canceling statement due to lock timeout",
+                "could not obtain lock",
+                "deadlock detected",
             )
         )
-        columnas_existentes = {fila[0] for fila in resultado.fetchall()}
-        conexion.commit()
+
+    def ejecutar_con_reintentos(nombre, operacion):
+        """Repite una operación únicamente ante bloqueos transitorios."""
+        ultimo_error = None
+
+        for intento in range(1, 7):
+            try:
+                operacion()
+                return
+            except Exception as error:
+                ultimo_error = error
+
+                if not es_bloqueo_temporal(error) or intento == 6:
+                    raise
+
+                espera = min(2 * intento, 10)
+
+                print(
+                    f"[MIGRACION STARTUP] Bloqueo temporal en {nombre}; "
+                    f"reintento {intento}/6 en {espera}s: {error!r}",
+                    flush=True,
+                )
+
+                time.sleep(espera)
+
+        raise RuntimeError(
+            f"No se pudo completar {nombre}: {ultimo_error!r}"
+        )
+
+    try:
+        conexion = engine.connect()
+
+        # ----------------------------------------------------
+        # BLOQUEO DE SESIÓN
+        # ----------------------------------------------------
+
+        # La transacción se confirma al salir del bloque.
+        # El advisory lock de sesión continúa activo tras el commit.
+        with conexion.begin():
+            conexion.execute(
+                text("SELECT pg_advisory_lock(:clave)"),
+                {"clave": clave_bloqueo_migracion},
+            )
+
+        bloqueo_adquirido = True
+
+        # ----------------------------------------------------
+        # LEER COLUMNAS EXISTENTES
+        # ----------------------------------------------------
+
+        with conexion.begin():
+            resultado = conexion.execute(
+                text(
+                    "SELECT column_name "
+                    "FROM information_schema.columns "
+                    "WHERE table_schema = 'public' "
+                    "AND table_name = 'expedientes'"
+                )
+            )
+
+            columnas_existentes = {
+                fila[0] for fila in resultado.fetchall()
+            }
 
         if not columnas_existentes:
             raise RuntimeError(
@@ -538,141 +592,131 @@ def migrar_esquema_expedientes_inicio():
             for nombre, tipo_sql in columnas
             if nombre not in columnas_existentes
         ]
+
         ya_existentes = len(columnas) - len(pendientes)
+
         print(
             f"[MIGRACION STARTUP] {ya_existentes} columnas ya existen; "
             f"{len(pendientes)} pendientes.",
             flush=True,
         )
 
-        for indice, (nombre, tipo_sql) in enumerate(pendientes, start=1):
-            creado = False
-            ultimo_error = None
-            for intento in range(1, 7):
-                try:
-                    with conexion.begin():
-                        conexion.execute(text("SET LOCAL lock_timeout = '8s'"))
-                        conexion.execute(text("SET LOCAL statement_timeout = '40s'"))
-                        conexion.execute(
-                            text(
-                                'ALTER TABLE public.expedientes '
-                                f'ADD COLUMN "{nombre}" {tipo_sql}'
-                            )
-                        )
-                    creado = True
-                    columnas_existentes.add(nombre)
-                    print(
-                        f"[MIGRACION STARTUP] Columna {nombre} añadida "
-                        f"({indice}/{len(pendientes)}).",
-                        flush=True,
+        # ----------------------------------------------------
+        # AÑADIR COLUMNAS PENDIENTES
+        # ----------------------------------------------------
+
+        for indice, (nombre, tipo_sql) in enumerate(
+            pendientes,
+            start=1,
+        ):
+            def agregar_columna(nombre=nombre, tipo_sql=tipo_sql):
+                with conexion.begin():
+                    conexion.execute(
+                        text("SET LOCAL lock_timeout = '8s'")
                     )
-                    break
-                except Exception as error:
-                    ultimo_error = error
-                    mensaje = str(error).lower()
-                    es_bloqueo_temporal = any(
-                        termino in mensaje
-                        for termino in (
-                            "locknotavailable",
-                            "lock timeout",
-                            "canceling statement due to lock timeout",
-                            "could not obtain lock",
+                    conexion.execute(
+                        text("SET LOCAL statement_timeout = '40s'")
+                    )
+                    conexion.execute(
+                        text(
+                            "ALTER TABLE public.expedientes "
+                            f'ADD COLUMN "{nombre}" {tipo_sql}'
                         )
                     )
-                    if not es_bloqueo_temporal or intento == 6:
-                        raise
-                    espera = min(2 * intento, 10)
-                    print(
-                        f"[MIGRACION STARTUP] Bloqueo temporal al añadir "
-                        f"{nombre}; reintento {intento}/6 en {espera}s: "
-                        f"{error!r}",
-                        flush=True,
-                    )
-                    time.sleep(espera)
 
-            if not creado:
-                raise RuntimeError(
-                    f"No se pudo añadir la columna {nombre}: {ultimo_error!r}"
-                )
-
-        indice = conexion.execute(
-            text(
-                "SELECT 1 FROM pg_indexes "
-                "WHERE schemaname = 'public' "
-                "AND indexname = 'ix_expedientes_cliente_id'"
+            ejecutar_con_reintentos(
+                f"añadir columna {nombre}",
+                agregar_columna,
             )
-        ).first()
-        conexion.commit()
-        if not indice:
-            creado_indice = False
-            for intento in range(1, 7):
-                try:
-                    with conexion.begin():
-                        conexion.execute(text("SET LOCAL lock_timeout = '8s'"))
-                        conexion.execute(text("SET LOCAL statement_timeout = '40s'"))
-                        conexion.execute(
-                            text(
-                                "CREATE INDEX IF NOT EXISTS ix_expedientes_cliente_id "
-                                "ON public.expedientes (cliente_id)"
-                            )
-                        )
-                    creado_indice = True
-                    break
-                except Exception as error:
-                    mensaje = str(error).lower()
-                    es_bloqueo_temporal = any(
-                        termino in mensaje
-                        for termino in (
-                            "locknotavailable",
-                            "lock timeout",
-                            "canceling statement due to lock timeout",
-                            "could not obtain lock",
-                        )
-                    )
-                    if not es_bloqueo_temporal or intento == 6:
-                        raise
-                    espera = min(2 * intento, 10)
-                    print(
-                        "[MIGRACION STARTUP] Bloqueo temporal al crear índice; "
-                        f"reintento {intento}/6 en {espera}s: {error!r}",
-                        flush=True,
-                    )
-                    time.sleep(espera)
-            if not creado_indice:
-                raise RuntimeError(
-                    "No se pudo crear el índice ix_expedientes_cliente_id."
+
+            columnas_existentes.add(nombre)
+
+            print(
+                f"[MIGRACION STARTUP] Columna {nombre} añadida "
+                f"({indice}/{len(pendientes)}).",
+                flush=True,
+            )
+
+        # ----------------------------------------------------
+        # COMPROBAR ÍNDICE
+        # ----------------------------------------------------
+
+        with conexion.begin():
+            indice = conexion.execute(
+                text(
+                    "SELECT 1 FROM pg_indexes "
+                    "WHERE schemaname = 'public' "
+                    "AND indexname = 'ix_expedientes_cliente_id'"
                 )
+            ).first()
+
+        if not indice:
+            def crear_indice():
+                with conexion.begin():
+                    conexion.execute(
+                        text("SET LOCAL lock_timeout = '8s'")
+                    )
+                    conexion.execute(
+                        text("SET LOCAL statement_timeout = '40s'")
+                    )
+                    conexion.execute(
+                        text(
+                            "CREATE INDEX IF NOT EXISTS "
+                            "ix_expedientes_cliente_id "
+                            "ON public.expedientes (cliente_id)"
+                        )
+                    )
+
+            ejecutar_con_reintentos(
+                "crear índice ix_expedientes_cliente_id",
+                crear_indice,
+            )
+
+            print(
+                "[MIGRACION STARTUP] Índice "
+                "ix_expedientes_cliente_id comprobado/creado.",
+                flush=True,
+            )
 
         print(
             "[MIGRACION STARTUP] Migración de expedientes completada.",
             flush=True,
         )
+
     except Exception as error:
-        if conexion is not None:
-            try:
-                conexion.rollback()
-            except Exception:
-                pass
+        # Los bloques conexion.begin() gestionan automáticamente
+        # el rollback si una operación transaccional falla.
         print(
             f"[MIGRACION STARTUP] ERROR: {error!r}",
             flush=True,
         )
         raise
+
     finally:
         if conexion is not None:
             if bloqueo_adquirido:
                 try:
-                    conexion.execute(
-                        text("SELECT pg_advisory_unlock(:clave)"),
-                        {"clave": clave_bloqueo_migracion},
-                    )
-                    conexion.commit()
-                except Exception as error:
+                    # Liberar el bloqueo antes de cerrar la conexión.
+                    with conexion.begin():
+                        conexion.execute(
+                            text("SELECT pg_advisory_unlock(:clave)"),
+                            {"clave": clave_bloqueo_migracion},
+                        )
+
                     print(
-                        f"[MIGRACION STARTUP] No se pudo liberar advisory lock: "
-                        f"{error!r}",
+                        "[MIGRACION STARTUP] Bloqueo advisory liberado.",
                         flush=True,
                     )
+
+                except Exception as error:
+                    print(
+                        "[MIGRACION STARTUP] No se pudo liberar "
+                        f"el advisory lock explícitamente: {error!r}. "
+                        "Se cerrará la conexión para liberar el "
+                        "bloqueo de sesión.",
+                        flush=True,
+                    )
+
             conexion.close()
 
 
@@ -692,6 +736,7 @@ def inicializar_tablas_auxiliares():
             bind=engine,
             checkfirst=True,
         )
+
         print(
             "[EXPEDIENTE ACCIONES] Tabla disponible.",
             flush=True,
@@ -701,6 +746,7 @@ def inicializar_tablas_auxiliares():
             bind=engine,
             checkfirst=True,
         )
+
         print(
             "[CARPETA DIGITAL] Tabla disponible.",
             flush=True,
@@ -746,65 +792,89 @@ def instrumentar_inicio_aplicacion():
 
         if inspect.iscoroutinefunction(manejador):
 
-            async def manejador_async(
-                funcion=manejador,
-                nombre_funcion=nombre,
-                numero=indice,
+            def crear_manejador_async(
+                funcion,
+                nombre_funcion,
+                numero,
             ):
-                print(
-                    f"[STARTUP DIAG] INICIO {numero}: {nombre_funcion}",
-                    flush=True,
+                async def manejador_async():
+                    print(
+                        f"[STARTUP DIAG] INICIO {numero}: "
+                        f"{nombre_funcion}",
+                        flush=True,
+                    )
+
+                    try:
+                        resultado = await funcion()
+
+                        print(
+                            f"[STARTUP DIAG] FIN {numero}: "
+                            f"{nombre_funcion}",
+                            flush=True,
+                        )
+
+                        return resultado
+
+                    except Exception as error:
+                        print(
+                            f"[STARTUP DIAG] ERROR {numero}: "
+                            f"{nombre_funcion}: {error!r}",
+                            flush=True,
+                        )
+                        raise
+
+                return manejador_async
+
+            manejadores_instrumentados.append(
+                crear_manejador_async(
+                    manejador,
+                    nombre,
+                    indice,
                 )
-
-                try:
-                    resultado = await funcion()
-
-                    print(
-                        f"[STARTUP DIAG] FIN {numero}: {nombre_funcion}",
-                        flush=True,
-                    )
-                    return resultado
-
-                except Exception as error:
-                    print(
-                        f"[STARTUP DIAG] ERROR {numero}: "
-                        f"{nombre_funcion}: {error!r}",
-                        flush=True,
-                    )
-                    raise
-
-            manejadores_instrumentados.append(manejador_async)
+            )
 
         else:
 
-            def manejador_sync(
-                funcion=manejador,
-                nombre_funcion=nombre,
-                numero=indice,
+            def crear_manejador_sync(
+                funcion,
+                nombre_funcion,
+                numero,
             ):
-                print(
-                    f"[STARTUP DIAG] INICIO {numero}: {nombre_funcion}",
-                    flush=True,
+                def manejador_sync():
+                    print(
+                        f"[STARTUP DIAG] INICIO {numero}: "
+                        f"{nombre_funcion}",
+                        flush=True,
+                    )
+
+                    try:
+                        resultado = funcion()
+
+                        print(
+                            f"[STARTUP DIAG] FIN {numero}: "
+                            f"{nombre_funcion}",
+                            flush=True,
+                        )
+
+                        return resultado
+
+                    except Exception as error:
+                        print(
+                            f"[STARTUP DIAG] ERROR {numero}: "
+                            f"{nombre_funcion}: {error!r}",
+                            flush=True,
+                        )
+                        raise
+
+                return manejador_sync
+
+            manejadores_instrumentados.append(
+                crear_manejador_sync(
+                    manejador,
+                    nombre,
+                    indice,
                 )
-
-                try:
-                    resultado = funcion()
-
-                    print(
-                        f"[STARTUP DIAG] FIN {numero}: {nombre_funcion}",
-                        flush=True,
-                    )
-                    return resultado
-
-                except Exception as error:
-                    print(
-                        f"[STARTUP DIAG] ERROR {numero}: "
-                        f"{nombre_funcion}: {error!r}",
-                        flush=True,
-                    )
-                    raise
-
-            manejadores_instrumentados.append(manejador_sync)
+            )
 
     app.router.on_startup[:] = manejadores_instrumentados
 
@@ -819,7 +889,7 @@ def instrumentar_inicio_aplicacion():
 # ORDEN DE ARRANQUE
 # ============================================================
 
-# La migración se ejecuta antes de crear o comprobar las tablas auxiliares.
+# La migración se ejecuta antes de comprobar las tablas auxiliares.
 app.router.on_startup.insert(
     0,
     migrar_esquema_expedientes_inicio,
