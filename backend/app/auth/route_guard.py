@@ -16,7 +16,7 @@ from typing import Any, Optional, Tuple
 
 from fastapi import Depends, HTTPException, Request
 from fastapi.dependencies.utils import get_dependant
-from fastapi.routing import APIRoute
+from fastapi.routing import APIRoute, request_response
 from starlette.routing import Mount
 
 from backend.app.auth.dependencies import get_current_user
@@ -52,6 +52,9 @@ PREFIJOS_MODULO = (
     ("/api/carpeta-digital", "expedientes"),
     ("/api/agenda", "agenda"),
     ("/api/empleados", "empleados"),
+    # La fotografía protegida se registra directamente desde main.py y no
+    # cuelga del prefijo /api/empleados; debe usar los permisos de Empleados.
+    ("/api/fotos", "empleados"),
     ("/api/ctn", "ctn"),
     ("/api/notarios", "notarios"),
     ("/api/mensajes", "mensajes"),
@@ -110,6 +113,7 @@ ACCIONES_DE_EDICION_POST = (
     "/desactivar",
     "/import",
     "/generar",
+    "/foto",
 )
 
 
@@ -179,20 +183,36 @@ def _ya_tiene_autenticacion(dependant: Any) -> bool:
 
 
 def _ya_tiene_permiso_explicito(dependant: Any) -> bool:
-    """Reconoce dependencias granulares definidas directamente en routers."""
+    """Reconoce permisos explícitos tanto en Depends como dentro del handler.
+
+    Algunos routers aplican require_perm_modulo() en el cuerpo de su función
+    (y otros desde una dependencia local llamada ``comprobar``). Si se añade
+    además una acción genérica basada solo en el verbo HTTP, se podrían exigir
+    permisos incompatibles para la misma operación. Reconocemos esos casos y
+    conservamos su regla granular, sin dejar de exigir identidad autenticada.
+    """
     call = getattr(dependant, "call", None)
     if call is not None:
         nombre = str(getattr(call, "__name__", "")).lower()
         modulo = str(getattr(call, "__module__", "")).lower()
+        codigo = getattr(call, "__code__", None)
+        nombres_codigo = set(getattr(codigo, "co_names", ()) or ())
+        permiso_en_codigo = bool(
+            {"require_perm_modulo", "require_permission"} & nombres_codigo
+        )
         if (
             nombre.startswith("permiso_")
             or "comprobar_permiso" in nombre
             or "require_perm_modulo" in nombre
             or "require_permission" in nombre
             or modulo.endswith(".auth.permissions")
+            or permiso_en_codigo
         ):
             return True
-    return any(_ya_tiene_permiso_explicito(child) for child in (getattr(dependant, "dependencies", []) or []))
+    return any(
+        _ya_tiene_permiso_explicito(child)
+        for child in (getattr(dependant, "dependencies", []) or [])
+    )
 
 
 def proteger_rutas_api(app: Any) -> dict[str, int]:
@@ -224,15 +244,30 @@ def proteger_rutas_api(app: Any) -> dict[str, int]:
 
         # Los routers que ya declaran permiso de módulo mantienen su regla
         # específica; los demás reciben el guard común de módulo/acción.
+        dependencia_anadida = False
         if not _ya_tiene_permiso_explicito(route.dependant):
             dependency = get_dependant(path=route.path_format, call=verificar_permiso_api)
             route.dependant.dependencies.append(dependency)
+            dependencia_anadida = True
         elif not _ya_tiene_autenticacion(route.dependant):
             dependency = get_dependant(path=route.path_format, call=get_current_user)
             route.dependant.dependencies.append(dependency)
+            dependencia_anadida = True
+
+        # APIRoute construye route.app en __init__ con un handler que captura
+        # la versión anterior de la lista de dependencias. Mutar solamente
+        # route.dependant NO garantiza aplicar el guard en las peticiones reales.
+        # Reconstruimos el handler una vez añadida la dependencia para que
+        # autenticar/autorizar no sea solo un cambio aparente en el objeto Route.
+        if dependencia_anadida:
+            route.app = request_response(route.get_route_handler())
 
         setattr(route, "_molsan_rbac_guarded", True)
         protegidas += 1
+
+    # Si OpenAPI ya se hubiera construido antes del arranque, invalidar su caché.
+    if getattr(app, "openapi_schema", None) is not None:
+        app.openapi_schema = None
 
     resultado = {"procesadas": protegidas, "omitidas": omitidas}
     print(
