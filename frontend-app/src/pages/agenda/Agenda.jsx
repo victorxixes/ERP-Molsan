@@ -277,40 +277,7 @@ export default function Agenda() {
   return (
     <div className="space-y-5 p-6 text-[var(--erp-text)] animate-fade-in">
 
-      {/* ======================================================
-          CABECERA
-          ====================================================== */}
-
-      <div className="erp-card p-5 shadow-sm">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-3">
-            <div
-              className="
-                w-10 h-10 rounded-xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex items-center justify-center
-                font-bold
-              "
-            >
-              <svg className="w-5 h-5">
-                <use href="/icons/icons.svg#calendar" />
-              </svg>
-            </div>
-
-            <div>
-              <h1 className="text-2xl font-bold text-[var(--erp-text)]">
-                Agenda corporativa
-              </h1>
-
-              <p className="text-sm text-[var(--erp-text-soft)]">
-                Calendario de citas SJ-2026.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
+   
       {/* ======================================================
           NAVEGACIÓN
           ====================================================== */}
