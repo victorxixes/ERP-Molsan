@@ -55,7 +55,7 @@ export default function NotarGest() {
       const response = await fetch(`${API_BASE}/notargest/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usuario, password }) });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.detail || "Credenciales incorrectas.");
-      localStorage.setItem(TOKEN_KEY, data.token); setToken(data.token); setNotario(data.notario); setRequiereCambio(Boolean(data.requiere_cambio_password)); setPassword("");
+      localStorage.setItem(TOKEN_KEY, data.token); setToken(data.token); setNotario(data.notario); setRequiereCambio(Boolean(data.requiere_cambio_password)); if (!data.requiere_cambio_password) setPassword("");
     } catch (e2) { setError(e2.message); } finally { setCargando(false); }
   }
 
