@@ -1,4 +1,3 @@
-```jsx
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
@@ -641,4 +640,4 @@ export default function ApoderaGest() {
     </main>
   );
 }
-```
+
