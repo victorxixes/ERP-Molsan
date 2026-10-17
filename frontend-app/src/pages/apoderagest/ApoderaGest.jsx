@@ -219,29 +219,29 @@ function TablaEncargos({ encargos, onFirmado }) {
               <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "expediente pendiente" : "expedientes pendientes"}</span>
             </button>
             {abierto ? (
-              <div className="ag-encargos-detalle-lista">
+              <div className="ag-encargos-detalle-lista ag-ficha-premium">
                 {grupo.expedientes.map((encargo, indice) => {
                   const id = String(encargo.id_expediente || encargo.id || indice);
                   const detalleAbierto = Boolean(abiertos[`exp-${id}`]);
                   const firma = firmas[id] || {};
                   const facturacion = encargo.facturacion || {};
                   return (
-                    <article className="ag-encargo-detalle" key={id}>
+                    <article className="ag-encargo-detalle ag-ficha-encargo" key={id}>
                       <button type="button" className="ag-encargo-detalle-cabecera" aria-expanded={detalleAbierto} onClick={() => setAbiertos(actual => ({ ...actual, [`exp-${id}`]: !actual[`exp-${id}`] }))}>
                         <span><strong>Expediente {texto(encargo.id_expediente || encargo.id)}</strong><small>{texto(encargo.titular)} · {texto(encargo.notario || encargo.nombre_notario)}</small></span>
                         <span>{detalleAbierto ? "Ocultar detalles ⌃" : "Ver todos los datos ⌄"}</span>
                       </button>
                       {encargo.bloqueado && <div className="ag-alerta-bloqueo" role="alert"><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><span>{texto(encargo.motivo_bloqueo_efectivo || encargo.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</span></div>}
-                      <div className="ag-encargo-resumen">
+                      <div className="ag-encargo-resumen ag-ficha-resumen">
                         <CampoDetalle etiqueta="Fecha prevista" valor={fechaLegible(encargo.fecha_prevista_firma)} />
                         <CampoDetalle etiqueta="Fecha de envío" valor={fechaLegible(encargo.fecha_envio_notario)} />
                         <CampoDetalle etiqueta="Cuantía del documento / importe" valor={encargo.cuantia_documento ?? encargo.importe} />
                         <CampoDetalle etiqueta="Protocolo actual" valor={encargo.protocolo} />
                       </div>
                       {detalleAbierto && (
-                        <div className="ag-encargo-paneles">
+                        <div className="ag-encargo-paneles ag-ficha-paneles">
                           <section className="ag-encargo-subpanel">
-                            <h4>Datos del expediente y documento</h4>
+                            <div className="ag-ficha-bloque-heading"><span>01 · EXPEDIENTE</span><h4>Datos del expediente y documento</h4></div>
                             <div className="ag-encargo-grid">
                               <CampoDetalle etiqueta="Titular" valor={encargo.titular} />
                               <CampoDetalle etiqueta="NIF titular" valor={encargo.nif_titular} />
@@ -273,7 +273,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                             )}
                           </section>
                           <section className="ag-encargo-subpanel">
-                            <h4>Datos de facturación</h4>
+                            <div className="ag-ficha-bloque-heading"><span>02 · FACTURACIÓN</span><h4>Datos de facturación</h4></div>
                             <div className="ag-encargo-grid">
                               <CampoDetalle etiqueta="Nombre / razón social" valor={[facturacion.nombre, facturacion.apellidos].filter(Boolean).join(" ")} />
                               <CampoDetalle etiqueta="DNI / NIF" valor={facturacion.dni_nif} />
@@ -288,7 +288,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                             </div>
                           </section>
                           <section className="ag-encargo-subpanel">
-                            <h4>Fincas y registros de la propiedad</h4>
+                            <div className="ag-ficha-bloque-heading"><span>03 · INFORMACIÓN REGISTRAL</span><h4>Fincas y registros de la propiedad</h4></div>
                             {encargo.fincas?.length ? encargo.fincas.map((finca, i) => (
                               <div className="ag-finca-registro" key={`${id}-finca-${i}`}>
                                 <div className="ag-encargo-grid">
@@ -309,7 +309,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                             )) : <p className="ag-encargo-vacio">No constan fincas registradas en el expediente.</p>}
                           </section>
                           <section className="ag-encargo-subpanel">
-                            <h4>Documentación de la carpeta digital</h4>
+                            <div className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><p>Documentación disponible para consultar desde el expediente.</p></div>
                             {encargo.documentos?.length ? (
                               <ul className="ag-documentos-apoderado">
                                 {encargo.documentos.map((doc) => (
@@ -322,7 +322,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                             ) : <p className="ag-encargo-vacio">Todavía no hay documentos disponibles en las categorías de apoderado.</p>}
                           </section>
                           <section className="ag-encargo-subpanel">
-                            <h4>Observaciones visibles para el apoderado</h4>
+                            <div className="ag-ficha-bloque-heading"><span>05 · COMUNICACIONES</span><h4>Observaciones visibles para el apoderado</h4></div>
                             {encargo.observaciones_apoderado?.length ? (
                               <ul className="ag-observaciones-apoderado">
                                 {encargo.observaciones_apoderado.map((obs) => <li key={obs.id}><p>{obs.comentario}</p><small>{obs.fecha ? new Date(obs.fecha).toLocaleString("es-ES") : "Fecha no disponible"}</small></li>)}
@@ -330,7 +330,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                             ) : <p className="ag-encargo-vacio">No hay observaciones marcadas como «Visible apoderado».</p>}
                           </section>
                           <section className="ag-encargo-subpanel ag-firmar-panel">
-                            <h4>Confirmar firma</h4>
+                            <div className="ag-ficha-bloque-heading"><span>06 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></div>
                             <p>Al pulsar «Firmar», la fecha y el protocolo se guardan en los campos oficiales de FichaExpediente.</p>
                             <div className="ag-firmar-controles">
                               <label>Fecha de firma<input type="date" value={firma.fecha_firma ?? encargo.fecha_firma ?? ""} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
