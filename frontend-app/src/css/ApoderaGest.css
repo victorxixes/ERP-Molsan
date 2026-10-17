@@ -1657,3 +1657,81 @@
     position:static;
   }
 }
+
+
+/* CTN · Distribución aprobada: categorías, visor y datos registrales en tres columnas.
+   Los controles de plegado siguen el estilo de FichaExpediente (PPAD / Información crediticia). */
+@media(min-width:901px){
+  .ag-encargo-paneles.ag-ficha-paneles{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)!important;
+    align-items:stretch;
+  }
+  .ag-ficha-paneles .ag-ficha-archivo{
+    grid-column:1!important;
+    grid-row:2;
+  }
+  .ag-ficha-paneles .ag-ficha-visor{
+    grid-column:2!important;
+    grid-row:2;
+  }
+  .ag-ficha-paneles .ag-ficha-registral{
+    grid-column:3!important;
+    grid-row:2;
+  }
+  .ag-ficha-paneles .ag-ficha-visor .ag-visor-inline{
+    position:sticky;
+    top:12px;
+  }
+  .ag-ficha-paneles .ag-ficha-visor .ag-visor-inline-contenido{
+    height:min(62vh,620px);
+    min-height:390px;
+    max-height:620px;
+  }
+  .ag-ficha-paneles .ag-ficha-visor .ag-visor-inline-contenido .ag-visor-pdf{
+    min-height:390px;
+  }
+  .ag-ficha-paneles .ag-ficha-visor .ag-visor-inline-vacio{
+    min-height:390px;
+  }
+}
+@media(max-width:900px){
+  .ag-ficha-paneles .ag-ficha-archivo,
+  .ag-ficha-paneles .ag-ficha-visor,
+  .ag-ficha-paneles .ag-ficha-registral{
+    grid-column:1/-1!important;
+    grid-row:auto!important;
+  }
+  .ag-ficha-paneles .ag-ficha-visor .ag-visor-inline{
+    position:static;
+  }
+}
+
+/* Botón de plegar/desplegar con la misma forma, borde y flechas que FichaExpediente. */
+.ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading{
+  align-items:center;
+}
+.ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading::after{
+  content:"⌃";
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 32px;
+  width:32px;
+  height:32px;
+  margin-left:auto;
+  border:1px solid #e2e8f0;
+  border-radius:8px;
+  background:#fff;
+  color:#64748b;
+  font-size:12px;
+  font-weight:700;
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+  transition:background .15s ease,color .15s ease;
+}
+.ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading:hover::after{
+  background:#f8fafc;
+  color:#2563eb;
+}
+.ag-ficha-paneles details.ag-encargo-subpanel:not([open])>.ag-ficha-bloque-heading::after{
+  content:"⌄";
+}
