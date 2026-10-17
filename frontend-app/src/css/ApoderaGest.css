@@ -1178,3 +1178,19 @@
 @media(max-width:1050px){.ag-ficha-paneles .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.ag-encargo-paneles.ag-ficha-paneles{grid-template-columns:minmax(0,1fr);padding:10px}.ag-ficha-paneles .ag-encargo-subpanel:first-child{grid-column:auto}.ag-ficha-resumen{grid-template-columns:repeat(2,minmax(0,1fr));padding:10px}.ag-ficha-paneles .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ag-ficha-paneles .ag-encargo-subpanel{padding:13px}}
 @media(max-width:480px){.ag-ficha-resumen,.ag-ficha-paneles .ag-encargo-grid{grid-template-columns:minmax(0,1fr)}.ag-encargo-detalle-cabecera{align-items:flex-start;flex-direction:column}.ag-encargo-detalle-cabecera>span:last-child{align-self:flex-start}}
+
+
+/* Distribución de ficha solicitada: envío/facturación, archivo/registro, firma y observaciones */
+.ag-encargo-paneles.ag-ficha-paneles{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);align-items:stretch}
+.ag-ficha-paneles .ag-encargo-subpanel.ag-ficha-envio:first-child{grid-column:auto!important}
+.ag-ficha-paneles .ag-ficha-envio,.ag-ficha-paneles .ag-ficha-facturacion,.ag-ficha-paneles .ag-ficha-archivo,.ag-ficha-paneles .ag-ficha-registral{grid-column:auto!important}
+.ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid{grid-template-columns:minmax(0,1fr);gap:10px}
+.ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.ag-ficha-paneles .ag-ficha-archivo,.ag-ficha-paneles .ag-ficha-registral{align-self:stretch}
+.ag-ficha-paneles .ag-ficha-registral .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.ag-ficha-paneles .ag-ficha-firma,.ag-ficha-paneles .ag-ficha-observaciones{grid-column:1/-1!important}
+.ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:end;gap:12px}
+.ag-ficha-paneles .ag-ficha-observaciones .ag-observaciones-apoderado{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ag-ficha-paneles .ag-ficha-observaciones .ag-encargo-vacio{margin:0;padding:14px;background:#f8faff;border:1px dashed #dbe4f0;border-radius:10px}
+@media(max-width:900px){.ag-encargo-paneles.ag-ficha-paneles{grid-template-columns:minmax(0,1fr)}.ag-ficha-paneles .ag-ficha-envio,.ag-ficha-paneles .ag-ficha-facturacion,.ag-ficha-paneles .ag-ficha-archivo,.ag-ficha-paneles .ag-ficha-registral,.ag-ficha-paneles .ag-ficha-firma,.ag-ficha-paneles .ag-ficha-observaciones{grid-column:1/-1!important}.ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid,.ag-ficha-paneles .ag-ficha-registral .ag-encargo-grid,.ag-ficha-paneles .ag-ficha-observaciones .ag-observaciones-apoderado{grid-template-columns:minmax(0,1fr)}.ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid{grid-template-columns:minmax(0,1fr)}.ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{grid-template-columns:minmax(0,1fr)}}
