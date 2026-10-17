@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import "../../css/ApoderaGest.css";
@@ -230,27 +229,18 @@ export default function NotarGest() {
   const fechaActual = new Intl.DateTimeFormat("es-ES", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   }).format(new Date());
-  const navegarModulo = (label) => {
-    if (label === "Dashboard") { setVista("inicio"); return; }
-    const rutas = { Expedientes: "/expedientes", Agenda: "/agenda", Mensajes: "/mensajes", CTN: "/ctn", Intranet: "/intranet", Informes: "/informes" };
-    if (rutas[label]) navigate(rutas[label]);
-  };
   return <>
-    {accesoERP && <Sidebar
-      brandName="NotarGest"
-      navigationItems={[
-        { key: "dashboard", label: "Dashboard", icon: "home" },
-        { key: "expedientes", label: "Expedientes", icon: "folder" },
-        { key: "agenda", label: "Agenda", icon: "calendar" },
-        { key: "mensajes", label: "Mensajes", icon: "chat" },
-        { key: "ctn", label: "CTN", icon: "globe" },
-        { key: "intranet", label: "Intranet", icon: "folder" },
-        { key: "informes", label: "Informes", icon: "chart" },
-      ]}
-      activeNavigationItem={vista === "inicio" ? "Dashboard" : ""}
-      onNavigationItemClick={navegarModulo}
-    />}
     <main className="apoderagest notargest">
+    <aside className="ng-bandejas-sidebar" aria-label="Bandejas de trabajo">
+      <div className="ng-bandejas-heading"><span className="ng-kicker">NOTARGEST</span><strong>Bandejas de trabajo</strong></div>
+      {bandejas.map((b,i)=><button key={b.id} className={`ng-bandeja-link ${vista===b.id?"activa":""} ${cuenta(b.id)?"con-pendientes":""}`} onClick={()=>{setBusqueda("");setVista(b.id);}}>
+        <span className="ng-bandeja-icono">{["↗","✍","€","▤","◷","▣","!","▧","✓"][i]}</span>
+        <span className="ng-bandeja-texto"><strong>{b.titulo}</strong><small>Ver expedientes y abrir ficha</small></span>
+        <span className="ng-bandeja-numero">{cargando?"…":cuenta(b.id)}</span><span className="ng-bandeja-flecha">›</span>
+      </button>)}
+      <button className={`ng-bandeja-link ${vista==="avisos_comentarios"?"activa":""} ${avisos.comentarios.length?"con-pendientes":""}`} onClick={()=>setVista("avisos_comentarios")}><span className="ng-bandeja-icono">💬</span><span className="ng-bandeja-texto"><strong>Observaciones del gestor</strong><small>Comentarios visibles para la notaría</small></span><span className="ng-bandeja-numero">{cargando?"…":avisos.comentarios.length}</span><span className="ng-bandeja-flecha">›</span></button>
+      <button className={`ng-bandeja-link ${vista==="avisos_documentos"?"activa":""} ${avisos.documentos.length?"con-pendientes":""}`} onClick={()=>setVista("avisos_documentos")}><span className="ng-bandeja-icono">📎</span><span className="ng-bandeja-texto"><strong>Nueva documentación</strong><small>Documentos añadidos tras el envío y antes de la firma</small></span><span className="ng-bandeja-numero">{cargando?"…":avisos.documentos.length}</span><span className="ng-bandeja-flecha">›</span></button>
+    </aside>
     <header className="ng-cabecera ng-hero-premium">
       <div className="ng-hero-identidad">
         <div className="ng-hero-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
@@ -264,16 +254,6 @@ export default function NotarGest() {
       </div>
     </header>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
-    <aside className="ng-bandejas-sidebar" aria-label="Bandejas de trabajo">
-      <div className="ng-bandejas-heading"><span className="ng-kicker">NOTARGEST</span><strong>Bandejas de trabajo</strong></div>
-      {bandejas.map((b,i)=><button key={b.id} className={`ng-bandeja-link ${vista===b.id?"activa":""} ${cuenta(b.id)?"con-pendientes":""}`} onClick={()=>{setBusqueda("");setVista(b.id);}}>
-        <span className="ng-bandeja-icono">{["↗","✍","€","▤","◷","▣","!","▧","✓"][i]}</span>
-        <span className="ng-bandeja-texto"><strong>{b.titulo}</strong><small>Ver expedientes y abrir ficha</small></span>
-        <span className="ng-bandeja-numero">{cargando?"…":cuenta(b.id)}</span><span className="ng-bandeja-flecha">›</span>
-      </button>)}
-      <button className={`ng-bandeja-link ${vista==="avisos_comentarios"?"activa":""} ${avisos.comentarios.length?"con-pendientes":""}`} onClick={()=>setVista("avisos_comentarios")}><span className="ng-bandeja-icono">💬</span><span className="ng-bandeja-texto"><strong>Observaciones del gestor</strong><small>Comentarios visibles para la notaría</small></span><span className="ng-bandeja-numero">{cargando?"…":avisos.comentarios.length}</span><span className="ng-bandeja-flecha">›</span></button>
-      <button className={`ng-bandeja-link ${vista==="avisos_documentos"?"activa":""} ${avisos.documentos.length?"con-pendientes":""}`} onClick={()=>setVista("avisos_documentos")}><span className="ng-bandeja-icono">📎</span><span className="ng-bandeja-texto"><strong>Nueva documentación</strong><small>Documentos añadidos tras el envío y antes de la firma</small></span><span className="ng-bandeja-numero">{cargando?"…":avisos.documentos.length}</span><span className="ng-bandeja-flecha">›</span></button>
-    </aside>
     {vista === "inicio" && <section className="ng-dashboard-analitica">
       <div className="ng-dashboard-kpis">
         <article><span>Firmas realizadas</span><strong>{expedientes.filter(x => x.fecha_firma && x.protocolo).length}</strong><small>Firmas reales con fecha y protocolo</small></article>
