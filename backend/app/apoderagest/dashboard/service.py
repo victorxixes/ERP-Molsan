@@ -154,14 +154,31 @@ def obtener_dashboard(db, usuario):
         if not _fecha(encargo.get("fecha_firma")) or not str(encargo.get("protocolo") or "").strip()
     )
 
-    # Media exacta solicitada: fecha prevista de firma -> fecha real de firma.
+    # La fecha real registrada junto al número de protocolo es fecha_firma.
+    # La media se calcula desde la fecha prevista hasta esa fecha de protocolo,
+    # incluyendo adelantos (negativos) y retrasos (positivos).
     duraciones = []
     for encargo in firmados:
         prevista = _fecha(encargo.get("fecha_prevista_firma"))
-        real = _fecha(encargo.get("fecha_firma"))
-        if prevista and real:
-            duraciones.append((real - prevista).days)
+        fecha_protocolo = _fecha(encargo.get("fecha_firma"))
+        if prevista and fecha_protocolo:
+            duraciones.append((fecha_protocolo - prevista).days)
     media_dias = round(sum(duraciones) / len(duraciones), 1) if duraciones else None
+
+    # Volumen mensual de firmas reales del apoderado en el año natural actual.
+    anio_actual = date.today().year
+    volumen_mensual = [
+        {"mes": etiqueta, "mes_numero": numero, "total": 0}
+        for numero, etiqueta in enumerate(
+            ("Ene", "Feb", "Mar", "Abr", "May", "Jun",
+             "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"),
+            start=1,
+        )
+    ]
+    for encargo in firmados:
+        fecha_protocolo = _fecha(encargo.get("fecha_firma"))
+        if fecha_protocolo and fecha_protocolo.year == anio_actual:
+            volumen_mensual[fecha_protocolo.month - 1]["total"] += 1
 
     firmas_presenciales = 0
     firmas_videoconferencia = 0
@@ -194,6 +211,8 @@ def obtener_dashboard(db, usuario):
         "firmados": len(firmados),
         "pendientes": pendientes,
         "media_dias_hasta_firma": media_dias,
+        "anio_estadistica_firmas": anio_actual,
+        "volumen_mensual_firmas": volumen_mensual,
         "firmas_presenciales": firmas_presenciales,
         "firmas_videoconferencia": firmas_videoconferencia,
         "kilometros_presenciales": round(kilometros_presenciales, 2) if firmas_con_distancia else None,
