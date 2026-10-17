@@ -241,16 +241,22 @@ export default function NotarGest() {
       <button className={`ng-bandeja-link ${vista==="avisos_comentarios"?"activa":""} ${avisos.comentarios.length?"con-pendientes":""}`} onClick={()=>setVista("avisos_comentarios")}><span className="ng-bandeja-icono">💬</span><span className="ng-bandeja-texto"><strong>Observaciones del gestor</strong><small>Comentarios visibles para la notaría</small></span><span className="ng-bandeja-numero">{cargando?"…":avisos.comentarios.length}</span><span className="ng-bandeja-flecha">›</span></button>
       <button className={`ng-bandeja-link ${vista==="avisos_documentos"?"activa":""} ${avisos.documentos.length?"con-pendientes":""}`} onClick={()=>setVista("avisos_documentos")}><span className="ng-bandeja-icono">📎</span><span className="ng-bandeja-texto"><strong>Nueva documentación</strong><small>Documentos añadidos tras el envío y antes de la firma</small></span><span className="ng-bandeja-numero">{cargando?"…":avisos.documentos.length}</span><span className="ng-bandeja-flecha">›</span></button>
     </aside>
-    <header className="ng-cabecera ng-hero-premium">
-      <div className="ng-hero-identidad">
-        <div className="ng-hero-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
-        <div><span className="ng-sobrelinea">MOLSAN ERP · PREMIUM 2027</span><h1>NotarGest</h1><p>Centro de gestión notarial, firmas y seguimiento registral. · {accesoERP ? (empleadoERP?.nombre || empleadoERP?.usuario || "Gestión interna ERP") : (notario?.nombre || "Portal de la notaría")}</p></div>
+    <header className="ag-hero ng-hero-apoderagest">
+      <div className="ag-hero-identidad">
+        <div className="ag-marca ng-marca-notargest"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
+        <div>
+          <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+          <h1>NotarGest</h1>
+          <p>Centro de gestión notarial, firmas y seguimiento registral.</p>
+        </div>
       </div>
-      <div className="ng-cabecera-acciones">
-        <span className="ng-fecha-premium">{fechaActual}</span>
-        {accesoERP && <button className="ng-boton-secundario" onClick={() => navigate("/modulos")}>▦ Ir a módulos</button>}
-        <button className="ng-boton-secundario" onClick={cargar} disabled={cargando}>{cargando ? "Actualizando…" : "↻ Actualizar datos"}</button>
-        <button className="ng-boton-secundario" onClick={salir}>{accesoERP ? "Volver a módulos" : "Cerrar sesión"}</button>
+      <div className="ag-hero-acciones">
+        <div className="ag-fecha-actual">
+          <span className="ag-punto-vivo" />
+          <span>{fechaActual}</span>
+        </div>
+        {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"><span aria-hidden="true">▦</span> Ir a módulos</button>}
+        <button type="button" className="ag-boton-actualizar" onClick={cargar} disabled={cargando}><span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>{cargando ? "Actualizando…" : "Actualizar datos"}</button>
       </div>
     </header>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
