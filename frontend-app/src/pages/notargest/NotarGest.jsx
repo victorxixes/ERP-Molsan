@@ -409,7 +409,7 @@ export default function NotarGest() {
           </div>
           <p className="ng-descripcion">Solicitudes de pago efectuadas por Molsan al notario desde la Ficha de expediente.</p>
           <div className="ng-pagos-resumen">
-            <div><span>Pagos efectuados</span><strong>{expedientes.filter(x => x.estado_pago && ["pagado","pagada","abonado","abonada","efectuado","efectuada"].includes(String(x.estado_pago).toLowerCase())).length}</strong></div>
+            <p>Consulta los pagos efectuados al notario, sus importes y los documentos PDF vinculados.</p>
             <button type="button" className="ng-login-submit" onClick={abrirPagos}>Solicitudes de Pago efectuadas por Molsan</button>
           </div>
         </section>
