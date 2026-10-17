@@ -4604,7 +4604,8 @@ const cuantiaFincasParaEnvio =
                   </p>
                 )}
                 {(expediente.fecha_envio_notario || expediente.fecha_envio) && <>
-                <div>
+                <div className="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-2">
+                <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Fecha de envío" valor={expediente.fecha_envio_notario || expediente.fecha_envio} tipo="fecha" />
@@ -4621,7 +4622,7 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
                   </div>
                 </div>
-                <div className="border-t border-slate-100 pt-3">
+                <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de facturación</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Nombre" valor={expediente.facturacion_nombre ?? expediente.nombre_facturacion ?? expediente.nombre_cliente_facturacion} />
@@ -4635,7 +4636,8 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Email" valor={expediente.facturacion_email ?? expediente.email_facturacion ?? expediente.correo_facturacion} />
                   </div>
                 </div>
-                  <div className="border-t border-slate-100 pt-3">
+                </div>
+                <div className="border-t border-slate-100 pt-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Tipo de documento y cuantía</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
