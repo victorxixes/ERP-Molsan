@@ -172,13 +172,37 @@ export default function NotarGest() {
     } catch (e) { setError(e.message); } finally { setCargando(false); }
   }
 
+  const [documentoSeleccionado, setDocumentoSeleccionado] = useState(null);
+  const [documentoSeleccionadoUrl, setDocumentoSeleccionadoUrl] = useState("");
+  const [visorAmpliado, setVisorAmpliado] = useState(false);
+
   async function abrirDocumento(doc) {
     try {
       const id = encodeURIComponent(detalle.id_expediente);
       const response = await fetch(`${API_BASE}/notargest/expedientes/${id}/documentos/${doc.id}/descargar`, { headers: { Authorization: `Bearer ${token}` } });
       if (!response.ok) { const data = await response.json().catch(() => ({})); throw new Error(data.detail || "No se ha podido abrir el documento."); }
-      const blob = await response.blob(); const url = URL.createObjectURL(blob); window.open(url, "_blank", "noopener,noreferrer"); setTimeout(() => URL.revokeObjectURL(url), 60000);
+      const blob = await response.blob();
+      if (documentoSeleccionadoUrl) URL.revokeObjectURL(documentoSeleccionadoUrl);
+      setDocumentoSeleccionadoUrl(URL.createObjectURL(blob));
+      setDocumentoSeleccionado(doc);
+      setError("");
     } catch (e) { setError(e.message); }
+  }
+
+  async function subirDocumentoCarpeta(categoria, archivo) {
+    if (!detalle || !archivo) return;
+    if (archivo.type !== "application/pdf" && !archivo.name.toLowerCase().endsWith(".pdf")) {
+      setError("Solo puedes adjuntar documentos PDF.");
+      return;
+    }
+    setCargando(true); setError(""); setMensaje("");
+    try {
+      const body = new FormData(); body.append("categoria", categoria); body.append("archivo", archivo);
+      await peticion(`/notargest/expedientes/${encodeURIComponent(detalle.id_expediente)}/documentos`, { method: "POST", body });
+      const data = await peticion(`/notargest/expedientes/${encodeURIComponent(detalle.id_expediente)}`);
+      setDetalle(data); setMensaje(`Documento añadido a «${categoria}».`); await cargar();
+    } catch (e) { setError(e.message); }
+    finally { setCargando(false); }
   }
 
   const cuenta = (id) => expedientes.filter(x => x[bandejas.find(b => b.id === id)?.campo]).length;
@@ -227,14 +251,13 @@ export default function NotarGest() {
       <div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div>
       <div className="ng-filtros"><label>Buscar<input value={busqueda} onChange={e => setBusqueda(e.target.value)} placeholder="Expediente, oficina, solicitante, protocolo…" /></label><span>{filas.length} registros</span></div>
       <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr>{tablaFactura ? <><th>Provisión</th><th>Ofic.</th><th>F. alta</th><th>F. firma</th><th>Protocolo</th><th>Solicitante</th><th>PDF factura notaría</th><th>Adjuntar</th></> : <><th>Expediente</th><th>Oficina</th><th>F. envío</th><th>F. firma prevista</th>{!["firma", "recepcion"].includes(vista) && <><th>F. firma</th><th>Protocolo</th></>}<th>Solicitante</th><th>Titular</th><th>Actividad / estado</th><th>Acceso</th></>}</tr></thead><tbody>
-      {filas.map(x => <tr key={x.id}><td><button className="ng-abrir" onClick={() => abrirExpediente(x)}>{tablaFactura ? texto(x.id_provision || x.id_expediente) : x.id_expediente}</button></td>{tablaFactura ? <><td>{texto(x.oficina)}</td><td>{esFecha(x.fecha_alta)}</td><td>{esFecha(x.fecha_firma)}</td><td>{texto(x.protocolo)}</td><td>{texto(x.solicitante)}</td><td>{x.factura_notarial ? <button className="ng-abrir" onClick={() => abrirExpediente(x)}>{x.factura_notarial.nombre}</button> : "Pendiente"}</td><td><label className="ng-adjuntar">Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => {adjuntarFactura(x, e.target.files?.[0]);e.target.value="";}} /></label></td></> : <><td>{texto(x.oficina)}</td><td>{esFecha(x.fecha_envio_notario || x.fecha_envio)}</td><td>{esFecha(x.fecha_prevista_firma)}</td>{!["firma", "recepcion"].includes(vista) && <><td>{esFecha(x.fecha_firma)}</td><td>{texto(x.protocolo)}</td></>}<td>{texto(x.solicitante)}</td><td>{texto(x.titular)}</td><td>{texto(x.actividad_actual || x.estado_actividad || x.estado)}</td><td><button className="ng-abrir" onClick={() => abrirExpediente(x)}>Abrir ficha →</button></td></>}</tr>)}
-      </tbody></table>{filas.length === 0 && <p className="ng-mensaje">{cargando ? "Cargando expedientes…" : "No hay expedientes pendientes en este estado."}</p>}</div>
-    </section>}
-    {esDetalle && <section className="ng-panel ng-ficha"><div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista(vistaOrigenFicha.current || "inicio")}>← Volver al listado</button></div>
-      <div className="ng-ficha-cuerpo">
-        <section className="ng-detalle-bloque ng-workflow"><h3>Gestión del estado</h3>
+      {filas.map(x => <tr key={x.id}><td><button className="ng-abrir" onClick={() => abrirExpediente(x)}>{tablaFactura ? texto(x.id_provision || x.id_expediente) : x.id_expediente}</button></td>{tablaFactura ? <><td>{texto(x.oficina)}</td><td>{esFecha(x.fecha_alta{esDetalle && <section className="ng-panel ng-ficha">
+      <div className="ng-panel-titulo ng-ficha-cabecera"><div><h2>{titulo}</h2><small>Ficha operativa del expediente · NotarGest</small></div><button className="ng-volver" onClick={() => setVista(vistaOrigenFicha.current || "inicio")}>← Volver al listado</button></div>
+      <div className="ng-ficha-cuerpo ng-ficha-premium">
+        <section className="ng-detalle-bloque ng-workflow ng-bloque-estado">
+          <div className="ng-bloque-heading"><div><span className="ng-kicker">FLUJO DE TRABAJO</span><h3>Gestión del estado</h3></div><span className={`ng-estado-pill ng-estado-${detalle.notargest_estado || "pendiente"}`}>{texto(bandejas.find(x => x.id === detalle.notargest_estado)?.titulo || detalle.notargest_estado)}</span></div>
           {detalle.notargest_estado === "recepcion" && <button className="ng-login-submit" disabled={cargando} onClick={() => cambiarEstado("firma")}>Recepción encargo · Pasar a pendientes de firma</button>}
-          {detalle.notargest_estado === "firma" && <div className="ng-workflow-form"><label>Fecha de firma<input type="date" value={firmaFecha} onChange={e => setFirmaFecha(e.target.value)} /></label><label>Protocolo<input value={protocolo} onChange={e => setProtocolo(e.target.value)} placeholder="Número de protocolo" /></label><button className="ng-login-submit" disabled={cargando || !firmaFecha || !protocolo.trim()} onClick={() => cambiarEstado("factura")}>Guardar firma y pasar a pendientes de factura notaría</button></div>}
+          {detalle.notargest_estado === "firma" && <div className="ng-workflow-form ng-firma-form"><label>Fecha de firma<input type="date" value={firmaFecha} onChange={e => setFirmaFecha(e.target.value)} /></label><label>Protocolo<input value={protocolo} onChange={e => setProtocolo(e.target.value)} placeholder="Número de protocolo" /></label><button className="ng-login-submit" disabled={cargando || !firmaFecha || !protocolo.trim()} onClick={() => cambiarEstado("factura")}>Guardar firma y pasar a pendientes de factura notaría</button><p className="ng-ayuda-campo">Esta acción solo está disponible mientras el expediente está en <strong>Pendientes de firma</strong>.</p></div>}
           {detalle.notargest_estado === "factura" && <p>Adjunta la factura notarial desde su bandeja. Al subirla, el expediente pasará a presentación en Registro.</p>}
           {detalle.notargest_estado === "registro" && <label className="ng-adjuntar">Subir justificante de presentación en Registro<input type="file" disabled={cargando} onChange={e => { subirDocumentoWorkflow("presentacion", e.target.files?.[0]); e.target.value = ""; }} /></label>}
           {detalle.notargest_estado === "ajd" && <label className="ng-adjuntar">Subir justificante AJD / ITP<input type="file" disabled={cargando} onChange={e => { subirDocumentoWorkflow("ajd", e.target.files?.[0]); e.target.value = ""; }} /></label>}
@@ -242,45 +265,80 @@ export default function NotarGest() {
           {detalle.notargest_estado === "copia" && <label className="ng-adjuntar">Subir copia simple (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("copia", e.target.files?.[0]); e.target.value = ""; }} /></label>}
           {detalle.notargest_estado === "cerrada" && <div className="ng-workflow-form"><label>Fecha de cierre<input type="date" value={fechaCierre} onChange={e => setFechaCierre(e.target.value)} /></label><label>Fecha de envío a gestoría<input type="date" value={fechaEnvioGestoria} onChange={e => setFechaEnvioGestoria(e.target.value)} /></label><button className="ng-login-submit" disabled={cargando || !fechaCierre} onClick={guardarCierre}>Guardar cierre y envío a gestoría</button></div>}
         </section>
+
         <section className="ng-detalle-bloque">
-          <h3>1 · Datos de envío y firma prevista</h3>
-          <div className="ng-datos-grid">{[
+          <div className="ng-bloque-heading"><div><span className="ng-kicker">01 · OPERACIÓN</span><h3>Datos de envío y firma prevista</h3></div></div>
+          <div className="ng-datos-grid ng-datos-operacion">{[
             ["Expediente", detalle.id_expediente], ["Fecha de envío", esFecha(detalle.fecha_envio_notario || detalle.fecha_envio)],
-            ["Idioma del documento", detalle.idioma_documento], ["Fecha solicitud PNC", esFecha(detalle.fecha_solicitud_pnc)],
-            ["Número solicitud PNC", detalle.numero_solicitud_pnc], ["Notario", detalle.nombre_notario || detalle.notario],
-            ["NIF notario", detalle.nif_notario], ["Población notario", detalle.poblacion], ["Provincia notario", detalle.provincia],
-            ["Apoderado", detalle.apoderado], ["Tipo de firma", detalle.tipo_firma],
-            ["Fecha prevista de firma", esFecha(detalle.fecha_prevista_firma)], ["Hora prevista de firma", detalle.hora_prevista_firma]
+            ["Fecha solicitud PNC", esFecha(detalle.fecha_solicitud_pnc)], ["Número solicitud PNC", detalle.numero_solicitud_pnc],
+            ["Fecha prevista de firma", esFecha(detalle.fecha_prevista_firma)], ["Hora prevista de firma", detalle.hora_prevista_firma],
+            ["Contrato", detalle.contrato], ["Capital", euros(detalle.capital)], ["Tipo de operación", detalle.tipo_operacion],
+            ["Subtipo de operación", detalle.subtipo_operacion], ["Importe", euros(detalle.importe)],
+            ["Notario", detalle.nombre_notario || detalle.notario], ["Formato de escritura", detalle.formato_escritura],
+            ["Tipo de trámite", detalle.tipo_tramite], ["Tipo de documento", detalle.tipo_documento], ["Idioma", detalle.idioma_documento || "Catalán"]
           ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
         </section>
+
         <section className="ng-detalle-bloque">
-          <h3>2 · Datos de facturación</h3>
-          <div className="ng-datos-grid">{[
-            ["Nombre", detalle.facturacion_nombre], ["Apellidos", detalle.facturacion_apellidos], ["DNI/NIF", detalle.facturacion_dni_nif],
-            ["Dirección", detalle.facturacion_direccion], ["Código postal", detalle.facturacion_codigo_postal],
-            ["Población", detalle.facturacion_poblacion], ["Provincia", detalle.facturacion_provincia],
-            ["Teléfono", detalle.facturacion_telefono], ["Correo electrónico", detalle.facturacion_email]
+          <div className="ng-bloque-heading"><div><span className="ng-kicker">02 · FACTURACIÓN</span><h3>Resumen de facturación</h3></div><span className="ng-etiqueta-suave">Datos del envío a notario</span></div>
+          <div className="ng-datos-grid ng-datos-facturacion">{[
+            ["Nombre", [detalle.facturacion_nombre, detalle.facturacion_apellidos].filter(Boolean).join(" ")],
+            ["DNI / NIF", detalle.facturacion_dni_nif], ["Dirección", detalle.facturacion_direccion],
+            ["Código postal y población", [detalle.facturacion_codigo_postal, detalle.facturacion_poblacion].filter(Boolean).join(" ")],
+            ["Provincia", detalle.facturacion_provincia], ["Teléfono", detalle.facturacion_telefono],
+            ["Email", detalle.facturacion_email], ["Idioma", detalle.idioma_documento || "Catalán"]
           ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
         </section>
+
         <section className="ng-detalle-bloque">
-          <h3>3 · Escritura, tipo de documento, cuantía, fincas y registros</h3>
-          <div className="ng-datos-grid">{[
-            ["Formato de escritura", detalle.formato_escritura], ["Tipo de trámite", detalle.tipo_tramite],
-            ["Escritura firmada", detalle.escritura_firmada === true ? "Sí" : detalle.escritura_firmada === false ? "No" : detalle.escritura_firmada],
-            ["Fecha de firma", esFecha(detalle.fecha_firma)], ["Protocolo", detalle.protocolo]
-          ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
-          <h4 className="ng-subtitulo-detalle">Tipo de documento y cuantía</h4>
-          {detalle.documentos_escritura?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Tipo del documento formalizado</th><th>Cuantía del documento</th></tr></thead><tbody>{detalle.documentos_escritura.map((d,i) => <tr key={d.id || i}><td>{texto(d.tipo_documento)}</td><td>{euros(d.cuantia)}</td></tr>)}</tbody></table></div> : <div className="ng-datos-grid"><div className="ng-dato"><small>Tipo del documento formalizado</small><strong>{texto(detalle.tipo_documento)}</strong></div><div className="ng-dato"><small>Cuantía del documento</small><strong>{euros(detalle.cuantia)}</strong></div></div>}
+          <div className="ng-bloque-heading"><div><span className="ng-kicker">03 · DOCUMENTACIÓN</span><h3>Tipo de documento y cuantía</h3></div></div>
+          {detalle.documentos_escritura?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Tipo de documento</th><th>Cuantía</th></tr></thead><tbody>{detalle.documentos_escritura.map((d,i) => <tr key={d.id || i}><td>{texto(d.tipo_documento)}</td><td>{euros(d.cuantia)}</td></tr>)}</tbody></table></div> : <div className="ng-datos-grid"><div className="ng-dato"><small>Tipo de documento</small><strong>{texto(detalle.tipo_documento)}</strong></div><div className="ng-dato"><small>Cuantía</small><strong>{euros(detalle.cuantia)}</strong></div></div>}
           <h4 className="ng-subtitulo-detalle">Fincas y registros</h4>
-          {detalle.fincas?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Finca</th><th>CRU / IDUFIR</th><th>Registro</th><th>Provincia</th><th>Población</th><th>Sección</th><th>Inscripción</th><th>Cuantía</th></tr></thead><tbody>{detalle.fincas.map(f => <tr key={f.id}><td>{texto(f.finca)}</td><td>{texto(f.cru_idufir)}</td><td>{texto(f.registro)}</td><td>{texto(f.provincia)}</td><td>{texto(f.poblacion)}</td><td>{texto(f.seccion)}</td><td>{texto(f.inscripcion)}</td><td>{euros(f.cuantia)}</td></tr>)}</tbody></table></div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}
+          {detalle.fincas?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Finca</th><th>Datos registrales</th><th>CRU / IDUFIR</th><th>Inscripción</th><th>Contrato</th><th>Cuantía</th></tr></thead><tbody>{detalle.fincas.map(f => <tr key={f.id}><td>{texto(f.finca)}</td><td>{[f.poblacion,f.registro,f.provincia].filter(Boolean).join(" · ") || "—"}</td><td>{texto(f.cru_idufir)}</td><td>{texto(f.inscripcion)}</td><td>{texto(f.contrato || detalle.contrato)}</td><td>{euros(f.cuantia)}</td></tr>)}</tbody></table></div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}
         </section>
-        <section className="ng-detalle-bloque"><h3>Carpeta Digital · Documentación previa</h3><p className="ng-descripcion">Archivos disponibles del expediente, agrupados por categoría.</p>{detalle.documentos?.length ? <div className="ng-documentos">{detalle.documentos.map(d => <div className="ng-documento" key={d.id}><div><strong>{d.nombre}</strong><small>{d.categoria} · {esFecha(d.fecha_subida)}</small></div><button className="ng-boton-secundario" onClick={() => abrirDocumento(d)}>Abrir PDF / archivo</button></div>)}</div> : <p className="ng-mensaje">Todavía no hay documentos en la Carpeta Digital.</p>}</section>
+
+        <section className="ng-detalle-bloque ng-carpeta-premium">
+          <div className="ng-bloque-heading"><div><span className="ng-kicker">04 · ARCHIVO</span><h3>Carpeta Digital</h3><p className="ng-descripcion">Documentación del expediente, organizada por categoría, con visor PDF integrado.</p></div></div>
+          <div className="ng-carpeta-layout">
+            <div className="ng-carpeta-categorias">
+              {[
+                ["Hoja de encargo firmada", ["hoja de encargo firmada","hoja de encargo"]],
+                ["Justificante de cancelación", ["justificante de cancelación","cancelación"]],
+                ["Nota simple registral", ["nota simple"]],
+                ["Borradores de escritura", ["borrador","borradores de escritura"]],
+                ["Otros documentos", []]
+              ].map(([categoria, palabras]) => {
+                const docs = (detalle.documentos || []).filter(d => {
+                  const cat = String(d.categoria || "").toLocaleLowerCase("es");
+                  const nom = String(d.nombre || "").toLocaleLowerCase("es");
+                  return categoria === "Otros documentos" ? !["hoja de encargo firmada","hoja de encargo","justificante de cancelación","cancelación","nota simple","borrador","borradores de escritura"].some(p => cat.includes(p) || nom.includes(p)) : palabras.some(p => cat.includes(p) || nom.includes(p));
+                });
+                return <div className="ng-categoria-documental" key={categoria}>
+                  <div className="ng-categoria-heading"><div><strong>{categoria}</strong><small>{docs.length} archivo(s)</small></div><label className="ng-adjuntar-pdf">＋ Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoCarpeta(categoria, e.target.files?.[0]); e.target.value = ""; }} /></label></div>
+                  {docs.length ? docs.map(d => <div className="ng-archivo-row" key={d.id}><span className="ng-pdf-icon">PDF</span><div className="ng-archivo-info"><strong>{d.nombre}</strong><small>{esFecha(d.fecha_subida)}</small></div><button type="button" className="ng-boton-secundario" onClick={() => abrirDocumento(d)}>Ver a la derecha</button></div>) : <p className="ng-vacio-categoria">Todavía no hay archivos. Usa «Adjuntar PDF» para incorporarlo aquí.</p>}
+                </div>;
+              })}
+            </div>
+            <aside className="ng-visor-documentos"><div className="ng-visor-cabecera"><div><span className="ng-kicker">VISOR INTEGRADO</span><strong>Visor de documentos</strong><small>{documentoSeleccionado ? documentoSeleccionado.nombre : "Selecciona «Ver a la derecha» en un archivo"}</small></div><button className="ng-boton-secundario" type="button" onClick={() => setVisorAmpliado(v => !v)}>{visorAmpliado ? "⤢ Reducir" : "⛶ Ampliar"}</button></div>
+              {documentoSeleccionadoUrl ? <iframe className={`ng-pdf-frame ${visorAmpliado ? "ng-pdf-ampliado" : ""}`} title="Vista previa del documento" src={documentoSeleccionadoUrl} /> : <div className="ng-visor-vacio"><span>▤</span><strong>Vista previa</strong><p>Adjunta un PDF o pulsa «Ver a la derecha» en uno de los documentos para consultarlo aquí sin salir de la actividad.</p></div>}
+            </aside>
+          </div>
+        </section>
+
         <section className="ng-detalle-bloque ng-comentarios-gestor">
-          <h3>Observaciones y comentarios</h3>
-          <p className="ng-descripcion">Envía un comentario directamente al gestor responsable del expediente.</p>
+          <div className="ng-bloque-heading"><div><span className="ng-kicker">05 · COMUNICACIÓN</span><h3>Observaciones y comentarios</h3><p className="ng-descripcion">Envía un comentario directamente al gestor responsable del expediente.</p></div></div>
           <div className="ng-comentario-form">
             <label>Comentario<textarea rows={3} value={comentarioGestor} onChange={e => setComentarioGestor(e.target.value)} placeholder="Escribe aquí el comentario para el gestor…" maxLength={2000} /></label>
-            <label>Dirigido a<select value={gestorDestinatario} onChange={e => setGestorDestinatario(e.target.value)} required>
+            <label>Dirigido a<select value={gestorDestinatario} onChange={e => setGestorDestinatario(e.target.value)} required><option value="">Selecciona un gestor…</option>{gestores.map(g => <option key={g.id} value={g.id}>{g.nombre}</option>)}</select></label>
+            <button className="ng-login-submit" type="button" disabled={cargando || !comentarioGestor.trim() || !gestorDestinatario} onClick={guardarComentarioGestor}>Enviar comentario al gestor</button>
+          </div>
+          <div className="ng-comentarios-historico"><h4>Histórico de observaciones</h4>
+            {detalle.observaciones_notaria?.length ? detalle.observaciones_notaria.map(o => <article className="ng-observacion" key={o.id}><p>{o.comentario}</p><small>{o.visibilidad === "Gestor" ? `Dirigido a: ${o.empleado_destinatario || "Gestor"}` : o.visibilidad} · {texto(o.fecha)}</small></article>) : <p className="ng-mensaje">No hay comentarios registrados para mostrar.</p>}
+            {detalle.observaciones && <article className="ng-observacion"><p>{detalle.observaciones}</p><small>Observaciones generales del expediente</small></article>}
+          </div>
+        </section>
+      </div>
+    </section>}et.value)} required>
               <option value="">Selecciona un gestor…</option>
               {gestores.map(g => <option key={g.id} value={g.id}>{g.nombre}</option>)}
             </select></label>
