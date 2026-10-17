@@ -408,7 +408,7 @@ const TopNavItem = ({
  * ============================================================
  */
 
-export default function Sidebar() {
+export default function Sidebar({ brandName = "CancelaGest" } = {}) {
 
   const empleado = useAuthStore(
     (s) => s.empleado
@@ -770,7 +770,7 @@ export default function Sidebar() {
 
               <img
                 src="/img/logo.jpg"
-                alt="CancelaGest"
+                alt={brandName}
                 className="
                   w-full
                   h-full
@@ -791,7 +791,7 @@ export default function Sidebar() {
                   leading-tight
                 "
               >
-                CancelaGest
+                {brandName}
               </div>
 
               <div
