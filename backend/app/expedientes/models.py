@@ -101,6 +101,7 @@ class Expediente(Base):
     numero_solicitud_pnc = Column(String(200), nullable=True)
     escritura_firmada = Column(Boolean, nullable=True)
     hora_prevista_firma = Column(Time, nullable=True)
+    hora_fin_prevista_firma = Column(Time, nullable=True)
 
     nombre_titular = Column(String(300), nullable=True)
     nif_titular = Column(String(50), nullable=True)
