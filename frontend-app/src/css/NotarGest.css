@@ -77,3 +77,19 @@
 @media(max-width:700px){.apoderagest.notargest{padding:14px;border-radius:18px}.notargest .ng-cabecera{align-items:flex-start;padding:4px 1px 20px}.notargest .ng-contadores{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.notargest .ng-contador{padding:14px;border-radius:14px}.notargest .ng-panel-titulo{padding:14px}.notargest .ng-lista-tareas{padding:0 14px}.notargest .ng-filtros{align-items:stretch;flex-direction:column;padding:12px}.notargest .ng-filtros label{align-items:stretch;flex-direction:column}.notargest .ng-ficha-cuerpo{padding:12px}.notargest .ng-detalle-bloque{padding:13px}}
 @media(max-width:520px){.notargest .ng-contadores{grid-template-columns:1fr}.notargest .ng-datos-grid{grid-template-columns:1fr}.notargest .ng-documento{align-items:flex-start;flex-direction:column}.notargest .ng-cabecera-acciones{width:100%;justify-content:flex-start}}
 @media(prefers-reduced-motion:reduce){.notargest *,.notargest *:before,.notargest *:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Inicio: tarjetas de estados, reemplazan los contadores y la lista duplicada */
+.notargest .ng-estados-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 20px}
+.notargest .ng-estado-card{position:relative;display:flex;align-items:center;gap:13px;min-width:0;min-height:112px;padding:19px;text-align:left;color:#263650;background:rgba(255,255,255,.88);border:1px solid rgba(224,231,241,.95);border-radius:17px;box-shadow:0 7px 20px rgba(31,48,79,.035),inset 0 1px 0 rgba(255,255,255,.95);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.notargest .ng-estado-card:hover{transform:translateY(-3px);border-color:#c4d2ff;box-shadow:0 14px 28px rgba(31,48,79,.08)}
+.notargest .ng-estado-card:focus-visible{outline:3px solid rgba(61,103,231,.35);outline-offset:3px}
+.notargest .ng-estado-icono{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;color:#3558c4;background:linear-gradient(145deg,#edf2ff,#e6edff);border:1px solid #dfe7ff;border-radius:13px;font-size:20px;font-weight:850}
+.notargest .ng-estado-texto{display:flex;flex:1;flex-direction:column;gap:6px;min-width:0}
+.notargest .ng-estado-texto strong{color:#25344e;font-size:12px;font-weight:800;line-height:1.45}
+.notargest .ng-estado-texto small{color:#8995a8;font-size:10px;line-height:1.4}
+.notargest .ng-estado-cantidad{display:grid;place-items:center;flex:0 0 auto;min-width:34px;height:34px;padding:0 8px;color:#64718a;background:#f2f5fa;border:1px solid #e8edf5;border-radius:11px;font-size:14px;font-weight:850}
+.notargest .ng-estado-con-pendientes .ng-estado-cantidad{color:#3154c5;background:#edf2ff;border-color:#dce5ff}
+.notargest .ng-estado-flecha{color:#9aa6b8;font-size:24px;line-height:1;transition:transform .18s ease,color .18s ease}
+.notargest .ng-estado-card:hover .ng-estado-flecha{color:#3154c5;transform:translateX(3px)}
+@media(max-width:1050px){.notargest .ng-estados-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.notargest .ng-estado-card{padding:16px;min-height:100px}}
+@media(max-width:620px){.notargest .ng-estados-grid{grid-template-columns:1fr}.notargest .ng-estado-card{min-height:86px;padding:14px}.notargest .ng-estado-icono{flex-basis:39px;width:39px;height:39px}}
