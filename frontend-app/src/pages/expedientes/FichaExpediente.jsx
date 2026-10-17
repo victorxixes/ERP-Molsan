@@ -1650,6 +1650,90 @@ export default function FichaExpediente() {
   const [fincaEditandoId, setFincaEditandoId] = useState(null);
   const [guardandoFinca, setGuardandoFinca] = useState(false);
 
+  const [mostrarFusion, setMostrarFusion] = useState(false);
+  const [fincaFusion, setFincaFusion] = useState(null);
+  const [guardandoFusion, setGuardandoFusion] = useState(false);
+  const [errorFusion, setErrorFusion] = useState("");
+  const [mensajeFusion, setMensajeFusion] = useState("");
+  const [fusionForm, setFusionForm] = useState({
+    numero_entrada: "",
+    serie_numero_factura: "",
+    fecha_factura: "",
+    nif_registrador: "",
+    importe: "",
+    entidad_origen: "",
+    cambio_denominacion: "NO",
+    recurrible: "SI",
+    tipo_factura: "Factura (con número y fecha)",
+    comentarios_observaciones: "",
+  });
+
+  function abrirSolicitudFusion(finca) {
+    setFincaFusion(finca);
+    setFusionForm({
+      numero_entrada: "",
+      serie_numero_factura: "",
+      fecha_factura: "",
+      nif_registrador: "",
+      importe: "",
+      entidad_origen: finca?.entidad_original || expediente?.entidad_origen || "",
+      cambio_denominacion: "NO",
+      recurrible: "SI",
+      tipo_factura: "Factura (con número y fecha)",
+      comentarios_observaciones: "",
+    });
+    setErrorFusion("");
+    setMensajeFusion("");
+    setMostrarFusion(true);
+  }
+
+  async function guardarSolicitudFusion() {
+    const numero = expediente?.id_expediente || id;
+    if (!numero) {
+      setErrorFusion("No se ha podido identificar el expediente.");
+      return;
+    }
+    if (!fincaFusion?.id || !String(fincaFusion?.registro || "").trim()) {
+      setErrorFusion("La finca seleccionada debe tener un registro informado.");
+      return;
+    }
+    if (fusionForm.tipo_factura === "Factura (con número y fecha)" &&
+        (!fusionForm.serie_numero_factura.trim() || !fusionForm.fecha_factura)) {
+      setErrorFusion("Para una factura completa, indica la serie/número y la fecha.");
+      return;
+    }
+    setGuardandoFusion(true);
+    setErrorFusion("");
+    try {
+      const payload = {
+        finca_id: fincaFusion.id,
+        numero_entrada: fusionForm.numero_entrada.trim() || null,
+        serie_numero_factura: fusionForm.serie_numero_factura.trim() || null,
+        fecha_factura: fusionForm.fecha_factura || null,
+        nif_registrador: fusionForm.nif_registrador.trim() || null,
+        importe: fusionForm.importe === "" ? null : Number(String(fusionForm.importe).replace(",", ".")),
+        entidad_origen: fusionForm.entidad_origen.trim() || fincaFusion.entidad_original || null,
+        cambio_denominacion: fusionForm.cambio_denominacion,
+        recurrible: fusionForm.recurrible,
+        tipo_factura: fusionForm.tipo_factura,
+        comentarios_observaciones: fusionForm.comentarios_observaciones.trim() || null,
+      };
+      const respuesta = await axios.post(
+        `/fusiones/solicitudes?id_expediente=${encodeURIComponent(numero)}`,
+        payload
+      );
+      if (!respuesta?.data?.ok) throw new Error("El servidor no confirmó el registro de la solicitud.");
+      setMensajeFusion(`Solicitud de fusión #${respuesta.data.item?.id || ""} guardada y enviada al módulo Fusiones.`);
+      setMostrarFusion(false);
+      window.alert(`Solicitud de fusión #${respuesta.data.item?.id || ""} guardada correctamente. Ya está disponible en el módulo Fusiones.`);
+    } catch (error) {
+      const detail = error?.response?.data?.detail;
+      setErrorFusion(typeof detail === "string" ? detail : (error?.message || "No se pudo guardar la solicitud de fusión."));
+    } finally {
+      setGuardandoFusion(false);
+    }
+  }
+
   const [
     fincaRegistrada,
     setFincaRegistrada,
@@ -5501,6 +5585,17 @@ const cuantiaFincasParaEnvio =
                       {fincasExpediente.map((finca, i) => (
                         <article key={finca.id || `${finca.finca}-${i}`} className="rounded-xl border border-slate-200 p-3">
                           <p className="text-xs font-bold text-slate-800">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                          <div className="mt-2 flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => abrirSolicitudFusion(finca)}
+                              disabled={!finca.registro}
+                              title={!finca.registro ? "Completa el registro de la finca para solicitar una fusión" : "Crear solicitud de fusión para este registro"}
+                              className="inline-flex items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-bold text-violet-700 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              <span aria-hidden="true">⇄</span> Fusión
+                            </button>
+                          </div>
                           <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
                             <div><span className="block text-slate-400">Registro</span><strong>{finca.registro || "—"}</strong></div>
                             <div><span className="block text-slate-400">Sección</span><strong>{finca.seccion || "—"}</strong></div>
@@ -6106,6 +6201,67 @@ const cuantiaFincasParaEnvio =
 
       </Modal>
 
+
+      {/* =====================================================
+          MODAL SOLICITUD DE FUSIÓN
+      ====================================================== */}
+      <Modal
+        open={mostrarFusion}
+        onClose={() => { if (!guardandoFusion) setMostrarFusion(false); }}
+        titulo="⇄ Solicitud de fusión"
+        subtitulo={`Expediente ${expediente?.id_expediente || id} · Registro ${fincaFusion?.registro || "—"}`}
+        ancho="max-w-4xl"
+        footer={
+          <>
+            <Boton onClick={() => setMostrarFusion(false)} disabled={guardandoFusion}>Cancelar</Boton>
+            <Boton tipo="primary" onClick={guardarSolicitudFusion} disabled={guardandoFusion || !fincaFusion?.registro}>
+              {guardandoFusion ? "Enviando…" : "Enviar a Fusiones"}
+            </Boton>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          {errorFusion && <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{errorFusion}</div>}
+          <div className="rounded-xl border border-violet-100 bg-violet-50/60 p-3">
+            <p className="text-xs font-bold uppercase tracking-wide text-violet-700">Datos vinculados automáticamente</p>
+            <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3 text-sm">
+              <div><span className="block text-[11px] text-slate-500">Expediente *</span><strong>{expediente?.id_expediente || id || "—"}</strong></div>
+              <div><span className="block text-[11px] text-slate-500">Registro *</span><strong>{fincaFusion?.registro || "—"}</strong></div>
+              <div><span className="block text-[11px] text-slate-500">Finca</span><strong>{fincaFusion?.finca || "—"}</strong></div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <CampoFormulario label="Número entrada" value={fusionForm.numero_entrada} onChange={v => setFusionForm(a => ({...a, numero_entrada:v}))} placeholder="Número /" />
+            <CampoFormulario label="Serie y número factura" value={fusionForm.serie_numero_factura} onChange={v => setFusionForm(a => ({...a, serie_numero_factura:v}))} />
+            <CampoFormulario label="Fecha factura" tipo="date" value={fusionForm.fecha_factura} onChange={v => setFusionForm(a => ({...a, fecha_factura:v}))} />
+            <CampoFormulario label="NIF registrador" value={fusionForm.nif_registrador} onChange={v => setFusionForm(a => ({...a, nif_registrador:v}))} />
+            <CampoFormulario label="Importe" tipo="number" value={fusionForm.importe} onChange={v => setFusionForm(a => ({...a, importe:v}))} />
+            <CampoFormulario label="Entidad origen" value={fusionForm.entidad_origen} onChange={v => setFusionForm(a => ({...a, entidad_origen:v}))} />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <p className="mb-2 text-xs font-bold text-slate-600">Cambio denominación *</p>
+              <div className="flex gap-4">
+                {["NO","SI"].map(v => <label key={v} className="flex items-center gap-2 text-sm"><input type="radio" name="fusion-cambio-denominacion" checked={fusionForm.cambio_denominacion===v} onChange={() => setFusionForm(a => ({...a,cambio_denominacion:v}))}/>{v}</label>)}
+              </div>
+            </div>
+            <div>
+              <p className="mb-2 text-xs font-bold text-slate-600">Recurrible *</p>
+              <div className="flex gap-4">
+                {["SI","NO"].map(v => <label key={v} className="flex items-center gap-2 text-sm"><input type="radio" name="fusion-recurrible" checked={fusionForm.recurrible===v} onChange={() => setFusionForm(a => ({...a,recurrible:v}))}/>{v}</label>)}
+              </div>
+            </div>
+          </div>
+          <div>
+            <p className="mb-2 text-xs font-bold text-slate-600">Indicar tipo factura *</p>
+            <div className="space-y-2">
+              {["Factura (con número y fecha)","Pre-Factura (falta número)"].map(v => <label key={v} className="flex items-center gap-2 text-sm"><input type="radio" name="fusion-tipo-factura" checked={fusionForm.tipo_factura===v} onChange={() => setFusionForm(a => ({...a,tipo_factura:v}))}/>{v}</label>)}
+            </div>
+          </div>
+          <CampoFormulario label="Comentarios / Observaciones" value={fusionForm.comentarios_observaciones} textarea onChange={v => setFusionForm(a => ({...a,comentarios_observaciones:v}))} placeholder="Comentarios para el equipo de Fusiones" />
+          <p className="text-[11px] text-slate-500">La solicitud se guardará vinculada a este expediente y a la finca/registro seleccionado. En Factura (con número y fecha), ambos datos son obligatorios.</p>
+        </div>
+      </Modal>
 
       {/* =====================================================
     MODAL ACCIONES
