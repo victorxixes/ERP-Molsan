@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 import AutocompleteNotario from "../../components/agenda/AutocompleteNotario";
@@ -567,7 +568,9 @@ function normalizarRespuesta(respuesta) {
 
 export default function ApoderaGest() {
   const [pestana, setPestana] = useState("Dashboard");
+  const navigate = useNavigate();
   const empleado = useAuthStore((state) => state.empleado);
+  const logout = useAuthStore((state) => state.logout);
   const usuarioId = empleado?.empleado_id ?? empleado?.id ?? null;
 
   const [dashboard, setDashboard] = useState(null);
@@ -689,7 +692,42 @@ export default function ApoderaGest() {
   return (
     <main className="apoderagest">
       <div className="ag-fondo-decorativo" aria-hidden="true" />
-
+      <div className="ag-layout-sidebar">
+        <aside className="ag-sidebar" aria-label="Navegación ApoderaGest">
+          <div className="ag-sidebar-brand">
+            <div className="ag-marca">AG</div>
+            <div><strong>ApoderaGest</strong><small>MOLSAN ERP · PREMIUM</small></div>
+          </div>
+          <div className="ag-sidebar-caption">ESPACIO DE TRABAJO</div>
+          <nav className="ag-sidebar-nav" aria-label="Secciones de ApoderaGest">
+            {PESTANAS.map((item) => (
+              <button
+                type="button"
+                key={item.nombre}
+                className={`ag-sidebar-item ${pestana === item.nombre ? "ag-sidebar-item-activo" : ""}`}
+                onClick={() => setPestana(item.nombre)}
+                aria-current={pestana === item.nombre ? "page" : undefined}
+              >
+                <span className="ag-sidebar-icono" aria-hidden="true">{item.icono}</span>
+                <span>{item.nombre}</span>
+                {pestana === item.nombre ? <span className="ag-sidebar-seleccionado" /> : null}
+              </button>
+            ))}
+          </nav>
+          <div className="ag-sidebar-usuario">
+            <span className="ag-avatar-usuario" aria-hidden="true">{String(empleado?.nombre || empleado?.nombre_completo || "A").trim().charAt(0).toUpperCase()}</span>
+            <span><strong>{empleado?.nombre_completo || [empleado?.nombre, empleado?.apellidos].filter(Boolean).join(" ") || "Apoderado"}</strong><small>Sesión activa</small></span>
+          </div>
+          <div className="ag-sidebar-acciones">
+            <button type="button" className="ag-sidebar-modulos" onClick={() => navigate("/modulos")}>
+              <span aria-hidden="true">▦</span> Ir a módulos
+            </button>
+            <button type="button" className="ag-sidebar-logout" onClick={() => { logout(); navigate("/login", { replace: true }); }}>
+              <span aria-hidden="true">↪</span> Cerrar sesión
+            </button>
+          </div>
+        </aside>
+        <div className="ag-main-content">
       <header className="ag-hero">
         <div className="ag-hero-identidad">
           <div className="ag-marca">AG</div>
@@ -710,21 +748,6 @@ export default function ApoderaGest() {
           </button>
         </div>
       </header>
-
-      <nav className="ag-navegacion" aria-label="Secciones de ApoderaGest">
-        {PESTANAS.map((item) => (
-          <button
-            type="button"
-            key={item.nombre}
-            className={`ag-nav-item ${pestana === item.nombre ? "ag-nav-activo" : ""}`}
-            onClick={() => setPestana(item.nombre)}
-            aria-current={pestana === item.nombre ? "page" : undefined}
-          >
-            <span className="ag-nav-icono" aria-hidden="true">{item.icono}</span>
-            <span>{item.nombre}</span>
-          </button>
-        ))}
-      </nav>
 
       {error ? (
         <div className="ag-alerta-error" role="alert">
@@ -748,12 +771,12 @@ export default function ApoderaGest() {
             <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="▤" variante="ag-kpi-azul" />
             <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="✓" variante="ag-kpi-verde" />
             <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="◷" variante="ag-kpi-ambar" />
-            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${dashboard.media_dias_hasta_firma} días`} detalle="Tiempo medio de gestión" icono="↗" variante="ag-kpi-violeta" />
+            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${dashboard.media_dias_hasta_firma} días`} detalle="Desde fecha prevista hasta fecha real" icono="↗" variante="ag-kpi-violeta" />
           </div>
           <div className="ag-grid-secundario">
             <TarjetaIndicador titulo="Firmas presenciales" valor={numeroLegible(dashboard?.firmas_presenciales)} detalle="Actividad presencial" icono="⌖" />
             <TarjetaIndicador titulo="Firmas por videoconferencia" valor={numeroLegible(dashboard?.firmas_videoconferencia)} detalle="Actividad remota" icono="▣" />
-            <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle="Desplazamientos registrados" icono="⌁" />
+            <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle={`Suma estimada desde CP ${dashboard?.origen_kilometros || "08016"} · línea recta`} icono="⌁" />
           </div>
           <section className="ag-panel ag-panel-proximas">
             <div className="ag-panel-cabecera"><div><span className="ag-kicker">PLANIFICACIÓN</span><h3>Próximas citas</h3></div><button type="button" className="ag-enlace-accion" onClick={() => setPestana("Agenda")}>Ver agenda <span>→</span></button></div>
@@ -868,6 +891,8 @@ export default function ApoderaGest() {
       {pestana === "Intranet" ? <Intranet /> : null}
 
       <footer className="ag-footer"><span><strong>MOLSAN ERP</strong> · ApoderaGest</span><span>Premium 2027</span></footer>
+        </div>
+      </div>
     </main>
   );
 }
