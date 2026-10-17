@@ -51,6 +51,9 @@ export default function NotarGest() {
   const [avisos, setAvisos] = useState({ comentarios: [], documentos: [] });
   const [notificacionesAbiertas, setNotificacionesAbiertas] = useState(false);
   const [perfilNotarioAbierto, setPerfilNotarioAbierto] = useState(false);
+  const [pagosAbiertos, setPagosAbiertos] = useState(false);
+  const [pagosNotario, setPagosNotario] = useState([]);
+  const [cargandoPagos, setCargandoPagos] = useState(false);
   const [avisosLeidos, setAvisosLeidos] = useState([]);
 
   const peticion = useCallback(async (path, options = {}) => {
@@ -81,6 +84,56 @@ export default function NotarGest() {
     } finally { setCargando(false); }
   }, [token, peticion]);
   useEffect(() => { cargar(); }, [cargar]);
+
+
+  async function abrirPagos() {
+    setPagosAbiertos(true);
+    setCargandoPagos(true);
+    setError("");
+    try {
+      const data = await peticion("/notargest/pagos");
+      setPagosNotario(data.items || []);
+    } catch (e) {
+      setError(e.message || "No se han podido cargar los pagos.");
+      setPagosNotario([]);
+    } finally {
+      setCargandoPagos(false);
+    }
+  }
+
+  async function abrirPdfPago(item, tipo) {
+    const documentoId = tipo === "factura" ? item.factura_notarial_id : item.justificante_documento_id;
+    if (!documentoId && tipo === "justificante" && item.justificante_url) {
+      window.open(item.justificante_url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (!documentoId) {
+      setError(tipo === "factura" ? "Este expediente todavía no tiene factura notarial en PDF." : "Este pago no tiene justificante PDF vinculado.");
+      return;
+    }
+    const ventana = window.open("about:blank", "_blank");
+    try {
+      const id = encodeURIComponent(item.id_expediente);
+      const response = await fetch(`${API_BASE}/notargest/expedientes/${id}/documentos/${documentoId}/descargar`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.detail || "No se ha podido abrir el PDF.");
+      }
+      const url = URL.createObjectURL(await response.blob());
+      if (ventana) ventana.location.href = url;
+      else {
+        const enlace = document.createElement("a");
+        enlace.href = url; enlace.target = "_blank"; enlace.rel = "noopener";
+        enlace.click();
+      }
+      window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (e) {
+      if (ventana) ventana.close();
+      setError(e.message || "No se ha podido abrir el PDF.");
+    }
+  }
 
   async function entrar(e) {
     e.preventDefault(); setCargando(true); setError("");
@@ -290,6 +343,23 @@ export default function NotarGest() {
         onProfileClick={() => setPerfilNotarioAbierto(true)}
       />
       {notificacionesAbiertas && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setNotificacionesAbiertas(false); }}><section className="ng-modal ng-modal-avisos" role="dialog" aria-modal="true" aria-labelledby="ng-avisos-titulo"><header><div><span className="ng-kicker">NOTARGEST · AVISOS</span><h2 id="ng-avisos-titulo">Notificaciones pendientes</h2><p>Documentos nuevos y observaciones del gestor vinculados a tus expedientes.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setNotificacionesAbiertas(false)}>Cerrar ✕</button></header><div className="ng-modal-lista">{totalAvisosPendientes === 0 ? <div className="ng-modal-vacio"><strong>Todo al día</strong><p>No tienes notificaciones pendientes de leer.</p></div> : <>{avisosPendientes.documentos.map(item => <article className="ng-aviso-item" key={`documento:${item.id}`}><span className="ng-aviso-icono">PDF</span><div className="ng-aviso-contenido"><strong>Nuevo documento en expediente {item.id_expediente}</strong><p>{texto(item.nombre)} · {texto(item.categoria)}</p><small>{texto(item.oficina)} · {texto(item.fecha_subida)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("documento", item.id)}>Marcar como leída</button></div></div></article>)}{avisosPendientes.comentarios.map(item => <article className="ng-aviso-item" key={`comentario:${item.id}`}><span className="ng-aviso-icono ng-aviso-icono-observacion">!</span><div className="ng-aviso-contenido"><strong>Nueva observación · expediente {item.id_expediente}</strong><p>{texto(item.comentario)}</p><small>{texto(item.oficina)} · {texto(item.fecha)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("comentario", item.id)}>Marcar como leída</button></div></div></article>)}</>}</div></section></div>}
+      {pagosAbiertos && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPagosAbiertos(false); }}>
+        <section className="ng-modal ng-modal-pagos" role="dialog" aria-modal="true" aria-labelledby="ng-pagos-titulo">
+          <header><div><span className="ng-kicker">NOTARGEST · GESTIÓN ECONÓMICA</span><h2 id="ng-pagos-titulo">Solicitudes de Pago efectuadas por Molsan</h2><p>Pagos registrados desde la Ficha de expediente y vinculados a la notaría.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPagosAbiertos(false)}>Cerrar ✕</button></header>
+          <div className="ng-pagos-tabla-wrap">
+            <table className="ng-tabla ng-tabla-pagos"><thead><tr><th>N.º expediente</th><th>Fecha de pago</th><th>Nombre</th><th>DNI</th><th>Importe</th><th>Protocolo</th><th>Fecha de firma</th><th>Factura notarial</th><th>Justificante</th></tr></thead>
+              <tbody>{pagosNotario.map(item => <tr key={item.id}>
+                <td><button type="button" className="ng-abrir" onClick={() => { setPagosAbiertos(false); abrirExpediente({id_expediente:item.id_expediente}); }}>{texto(item.id_expediente)}</button></td>
+                <td>{esFecha(item.fecha_pago)}</td><td>{texto(item.nombre)}</td><td>{texto(item.dni)}</td><td>{euros(item.importe)}</td><td>{texto(item.protocolo)}</td><td>{esFecha(item.fecha_firma)}</td>
+                <td>{item.factura_notarial_id ? <button type="button" className="ng-pdf-link" title="Abrir factura notarial PDF" onClick={() => abrirPdfPago(item,"factura")}><span>PDF</span></button> : "—"}</td>
+                <td>{item.justificante_documento_id || item.justificante_url ? <button type="button" className="ng-pdf-link" title="Abrir justificante PDF" onClick={() => abrirPdfPago(item,"justificante")}><span>PDF</span></button> : "—"}</td>
+              </tr>)}</tbody>
+            </table>
+            {!cargandoPagos && pagosNotario.length === 0 && <div className="ng-modal-vacio"><strong>No hay pagos efectuados</strong><p>Los pagos marcados como «Pagado» en Ficha de expediente aparecerán aquí cuando estén vinculados a esta notaría.</p></div>}
+            {cargandoPagos && <p className="ng-mensaje">Cargando pagos…</p>}
+          </div>
+        </section>
+      </div>}
       {perfilNotarioAbierto && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPerfilNotarioAbierto(false)}>Cerrar ✕</button></header><div className="ng-perfil-identidad"><div className="ng-perfil-avatar">NG</div><div><strong>{texto(notario?.nombre)}</strong><span>{texto(notario?.nif)}</span></div></div><div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Teléfono",notario?.telefono],["Dirección",notario?.direccion],["Código postal",notario?.cp],["Municipio",notario?.municipio],["Provincia",notario?.provincia],["Código CTN",notario?.codigo],["Videoconferencia",notario?.vc],["Apoderado asociado",notario?.apoderado],["Departamento cancelaciones",notario?.departamento_cancelaciones],["Departamento copias",notario?.departamento_copias],["Otros departamentos",notario?.otros_departamentos]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div>{notario?.observacion && <div className="ng-perfil-observacion"><small>Observaciones CTN</small><p>{notario.observacion}</p></div>}</section></div>}
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
@@ -332,25 +402,16 @@ export default function NotarGest() {
             return <div className="ng-barras-meses">{meses.map(m=><div className="ng-barra-mes" key={m.key}><strong>{m.valor}</strong><div className="ng-barra-pista"><span style={{height:`${Math.max(m.valor?6:0,m.valor/max*100)}%`}} /></div><small>{m.label}</small></div>)}</div>;
           })()}
         </section>
-        <section className="ng-dashboard-grafico"><div className="ng-bloque-heading"><div><span className="ng-kicker">TIEMPOS MEDIOS</span><h3>Días entre envío y firma</h3></div></div>
-          {(() => {
-            const normalizar=v=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
-            const grupos=[
-              {key:"provision",label:"Cancelaciones con provisión",dias:[]},
-              {key:"sin",label:"Cancelaciones sin provisión",dias:[]},
-              {key:"otras",label:"Cancelaciones otras entidades",dias:[]},
-            ];
-            const diasEntre=(a,b)=>{if(!a||!b)return null;const x=new Date(String(a).slice(0,10)+"T00:00:00");const y=new Date(String(b).slice(0,10)+"T00:00:00");const n=Math.round((y-x)/86400000);return Number.isFinite(n)&&n>=0?n:null;};
-            expedientes.forEach(x=>{
-              const envio=x.fecha_envio_notario||x.fecha_envio;const dias=diasEntre(envio,x.fecha_firma);if(dias===null||!x.fecha_firma||!x.protocolo)return;
-              const textoTipo=normalizar([x.tipo_operacion,x.subtipo_operacion,x.tipo_provision,x.provision,x.producto].filter(Boolean).join(" "));
-              const tieneProvision=Boolean(x.id_provision||x.provision_id||x.tipo_provision||x.provision);
-              const grupo=textoTipo.includes("otra entidad")||textoTipo.includes("otras entidades")||String(x.origen_bankia||"").toLowerCase()==="true"||String(x.producto_gtg||"").toLowerCase()==="true" ? grupos[2] : (!tieneProvision||textoTipo.includes("sin provision")||textoTipo.includes("no aplica")) ? grupos[1] : grupos[0];
-              grupo.dias.push(dias);
-            });
-            const max=Math.max(1,...grupos.map(g=>g.dias.length?g.dias.reduce((a,b)=>a+b,0)/g.dias.length:0));
-            return <div className="ng-barras-medias">{grupos.map(g=>{const media=g.dias.length?g.dias.reduce((a,b)=>a+b,0)/g.dias.length:null;return <div className="ng-media-row" key={g.key}><div><strong>{g.label}</strong><small>{media===null?"Sin datos suficientes":`${media.toFixed(1)} días de media · ${g.dias.length} expedientes`}</small></div><div className="ng-media-pista"><span style={{width:`${media===null?0:media/max*100}%`}} /></div></div>;})}</div>;
-          })()}
+        <section className="ng-dashboard-grafico ng-dashboard-pagos">
+          <div className="ng-bloque-heading">
+            <div><span className="ng-kicker">GESTIÓN ECONÓMICA</span><h3>Pagos</h3></div>
+            <button type="button" className="ng-abrir" onClick={abrirPagos}>Ver pagos →</button>
+          </div>
+          <p className="ng-descripcion">Solicitudes de pago efectuadas por Molsan al notario desde la Ficha de expediente.</p>
+          <div className="ng-pagos-resumen">
+            <div><span>Pagos efectuados</span><strong>{expedientes.filter(x => x.estado_pago && ["pagado","pagada","abonado","abonada","efectuado","efectuada"].includes(String(x.estado_pago).toLowerCase())).length}</strong></div>
+            <button type="button" className="ng-login-submit" onClick={abrirPagos}>Solicitudes de Pago efectuadas por Molsan</button>
+          </div>
         </section>
         <section className="ng-dashboard-grafico ng-dashboard-etapas"><div className="ng-bloque-heading"><div><span className="ng-kicker">SEGUIMIENTO DE HITOS</span><h3>Ciclo registral</h3></div></div>
           {(() => {
