@@ -1239,3 +1239,24 @@
 .ag-encargo-detalle-cabecera>span:first-child small{font-size:11px;font-weight:600;color:#52627a}
 @media(max-width:1000px){.ag-aceptar-resumen{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:650px){.ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
+
+
+/* Ajuste final: los seis datos de aceptación en una única fila horizontal */
+.ag-aceptar-resumen{
+  display:grid;
+  grid-template-columns:minmax(105px,.75fr) minmax(135px,1fr) minmax(135px,1fr) minmax(155px,1.15fr) minmax(90px,.6fr) minmax(90px,.6fr) auto;
+  align-items:end;
+  gap:8px;
+}
+.ag-aceptar-resumen>.ag-detalle-campo{min-width:0}
+.ag-aceptar-resumen .ag-aceptar-campo{min-width:0}
+.ag-aceptar-resumen .ag-aceptar-campo input{width:100%;min-width:0}
+@media(max-width:1150px){
+  .ag-aceptar-resumen{grid-template-columns:minmax(100px,.7fr) minmax(115px,.9fr) minmax(115px,.9fr) minmax(135px,1fr) minmax(78px,.55fr) minmax(78px,.55fr) auto;gap:6px}
+}
+@media(max-width:850px){
+  .ag-aceptar-resumen{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  .ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
