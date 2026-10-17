@@ -390,7 +390,10 @@ export default function Fusiones() {
       }
     };
     cargarSolicitudes();
-    const contarEstado = (valor) => fusiones.filter((f) => {
+    return () => { activo = false; };
+  }, []);
+
+  const contarEstado = (valor) => fusiones.filter((f) => {
     const e = String(f.estado || "Pendiente").toLowerCase();
     if (valor === "Pendiente") return e === "pendiente" || e === "nueva";
     if (valor === "En curso") return e === "en curso" || e === "en_curso" || e === "presentada";
