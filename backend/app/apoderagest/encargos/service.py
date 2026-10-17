@@ -90,6 +90,7 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
         "saldo_disponible": getattr(expediente, "saldo_disponible", None),
         "contrato": _texto(getattr(expediente, "contrato", None)),
         "tipo_operacion": _texto(getattr(expediente, "tipo_operacion", None)),
+        "subtipo_operacion": _texto(getattr(expediente, "subtipo_operacion", None)),
         "tipo_documento": _texto(getattr(expediente, "tipo_documento", None)),
         "tipo_tramite": _texto(getattr(expediente, "tipo_tramite", None)),
         "formato_escritura": _texto(getattr(expediente, "formato_escritura", None)),
