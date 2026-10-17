@@ -160,6 +160,10 @@ function TablaEncargos({ encargos, onFirmado }) {
   const [mensajeFirma, setMensajeFirma] = useState({});
   const [documentoVisor, setDocumentoVisor] = useState(null);
   const [catalogoCtn, setCatalogoCtn] = useState([]);
+  const [datosAceptacion, setDatosAceptacion] = useState({});
+  const [guardandoAceptacion, setGuardandoAceptacion] = useState({});
+  const [erroresAceptacion, setErroresAceptacion] = useState({});
+  const [mensajesAceptacion, setMensajesAceptacion] = useState({});
 
   useEffect(() => {
     let activo = true;
@@ -180,6 +184,60 @@ function TablaEncargos({ encargos, onFirmado }) {
     return () => { activo = false; };
   }, [encargos]);
   const grupos = useMemo(() => agruparEncargosPorNotario(encargos), [encargos]);
+
+  function cambiarDatoAceptacion(encargo, campo, valor) {
+    const id = String(encargo.id_expediente || encargo.id);
+    setDatosAceptacion((actual) => ({
+      ...actual,
+      [id]: {
+        numero_solicitud_pnc: actual[id]?.numero_solicitud_pnc ?? encargo.numero_solicitud_pnc ?? "",
+        fecha_solicitud_pnc: actual[id]?.fecha_solicitud_pnc ?? encargo.fecha_solicitud_pnc ?? "",
+        fecha_prevista_firma: actual[id]?.fecha_prevista_firma ?? encargo.fecha_prevista_firma ?? "",
+        hora_inicio: actual[id]?.hora_inicio ?? encargo.hora_prevista_firma ?? "09:00",
+        hora_fin: actual[id]?.hora_fin ?? encargo.hora_fin_prevista_firma ?? "10:00",
+        [campo]: valor,
+      },
+    }));
+    setErroresAceptacion((actual) => ({ ...actual, [id]: "" }));
+    setMensajesAceptacion((actual) => ({ ...actual, [id]: "" }));
+  }
+
+  async function aceptarEncargo(encargo) {
+    const id = String(encargo.id_expediente || encargo.id);
+    const valores = datosAceptacion[id] || {
+      numero_solicitud_pnc: encargo.numero_solicitud_pnc || "",
+      fecha_solicitud_pnc: encargo.fecha_solicitud_pnc || "",
+      fecha_prevista_firma: encargo.fecha_prevista_firma || "",
+      hora_inicio: horaLegible(encargo.hora_prevista_firma) === "—" ? "09:00" : horaLegible(encargo.hora_prevista_firma),
+      hora_fin: horaLegible(encargo.hora_fin_prevista_firma) === "—" ? "10:00" : horaLegible(encargo.hora_fin_prevista_firma),
+    };
+    if (!valores.numero_solicitud_pnc?.trim() || !valores.fecha_solicitud_pnc || !valores.fecha_prevista_firma || !valores.hora_inicio || !valores.hora_fin) {
+      setErroresAceptacion((actual) => ({ ...actual, [id]: "Completa el número de solicitud, las fechas y el horario." }));
+      return;
+    }
+    if (valores.hora_fin <= valores.hora_inicio) {
+      setErroresAceptacion((actual) => ({ ...actual, [id]: "La hora de fin debe ser posterior a la hora de inicio." }));
+      return;
+    }
+    setGuardandoAceptacion((actual) => ({ ...actual, [id]: true }));
+    setErroresAceptacion((actual) => ({ ...actual, [id]: "" }));
+    setMensajesAceptacion((actual) => ({ ...actual, [id]: "" }));
+    try {
+      const { data } = await axios.post(`/apoderagest/encargos/${encodeURIComponent(id)}/aceptar`, {
+        numero_solicitud_pnc: valores.numero_solicitud_pnc.trim(),
+        fecha_solicitud_pnc: valores.fecha_solicitud_pnc,
+        fecha_prevista_firma: valores.fecha_prevista_firma,
+        hora_inicio: valores.hora_inicio,
+        hora_fin: valores.hora_fin,
+      });
+      setMensajesAceptacion((actual) => ({ ...actual, [id]: data?.mensaje || "Encargo aceptado y cita de firma guardada en Agenda." }));
+      onFirmado?.();
+    } catch (error) {
+      setErroresAceptacion((actual) => ({ ...actual, [id]: error?.response?.data?.detail || "No se pudo aceptar el encargo." }));
+    } finally {
+      setGuardandoAceptacion((actual) => ({ ...actual, [id]: false }));
+    }
+  }
 
   function cambiarFirma(id, campo, valor) {
     setFirmas((actual) => ({
@@ -279,15 +337,23 @@ function TablaEncargos({ encargos, onFirmado }) {
                   return (
                     <article className="ag-encargo-detalle ag-ficha-encargo" key={id}>
                       <button type="button" className="ag-encargo-detalle-cabecera" aria-expanded={detalleAbierto} onClick={() => setAbiertos(actual => ({ ...actual, [`exp-${id}`]: !actual[`exp-${id}`] }))}>
-                        <span><strong>Expediente {texto(encargo.id_expediente || encargo.id)}</strong><small>{texto(encargo.titular)} · {texto(encargo.notario || encargo.nombre_notario)}</small></span>
+                        <span><strong>Expediente {texto(encargo.id_expediente || encargo.id)}</strong><small>{texto(encargo.titular)}</small></span>
                         <span>{detalleAbierto ? "Ocultar detalles ⌃" : "Ver todos los datos ⌄"}</span>
                       </button>
                       {encargo.bloqueado && <div className="ag-alerta-bloqueo" role="alert"><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><span>{texto(encargo.motivo_bloqueo_efectivo || encargo.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</span></div>}
-                      <div className="ag-encargo-resumen ag-ficha-resumen">
-                        <CampoDetalle etiqueta="Fecha prevista" valor={fechaLegible(encargo.fecha_prevista_firma)} />
-                        <CampoDetalle etiqueta="Fecha de envío" valor={fechaLegible(encargo.fecha_envio_notario)} />
-                        <CampoDetalle etiqueta="Cuantía del documento / importe" valor={encargo.cuantia_documento ?? encargo.importe} />
-                        <CampoDetalle etiqueta="Protocolo actual" valor={encargo.protocolo} />
+                      <div className="ag-encargo-resumen ag-ficha-resumen ag-aceptar-resumen">
+                        <CampoDetalle etiqueta="Expediente bloqueado" valor={encargo.bloqueado ? "Sí" : "No"} />
+                        <CampoDetalle etiqueta="Solicitante" valor={encargo.nombre_solicitante || encargo.solicitante} />
+                        <CampoDetalle etiqueta="NIF solicitante" valor={encargo.nif_solicitante} />
+                        <CampoDetalle etiqueta="Capital" valor={encargo.capital === null || encargo.capital === undefined ? "—" : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(encargo.capital))} />
+                        <label className="ag-aceptar-campo"><span>N.º solicitud PN</span><input type="text" value={(datosAceptacion[id]?.numero_solicitud_pnc ?? encargo.numero_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "numero_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} /></label>
+                        <label className="ag-aceptar-campo"><span>Fecha solicitud PNC</span><input type="date" value={(datosAceptacion[id]?.fecha_solicitud_pnc ?? encargo.fecha_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} /></label>
+                        <label className="ag-aceptar-campo"><span>Fecha prevista de firma</span><input type="date" value={(datosAceptacion[id]?.fecha_prevista_firma ?? encargo.fecha_prevista_firma ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_prevista_firma", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} /></label>
+                        <label className="ag-aceptar-campo"><span>Hora de inicio</span><input type="time" value={(datosAceptacion[id]?.hora_inicio ?? (encargo.hora_prevista_firma || "09:00").slice(0,5))} onChange={(e) => cambiarDatoAceptacion(encargo, "hora_inicio", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} /></label>
+                        <label className="ag-aceptar-campo"><span>Hora de fin</span><input type="time" value={(datosAceptacion[id]?.hora_fin ?? (encargo.hora_fin_prevista_firma || "10:00").slice(0,5))} onChange={(e) => cambiarDatoAceptacion(encargo, "hora_fin", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} /></label>
+                        <div className="ag-aceptar-accion"><button type="button" disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} onClick={() => aceptarEncargo(encargo)}>{guardandoAceptacion[id] ? "Guardando…" : "Aceptar"}</button></div>
+                        {erroresAceptacion[id] && <p className="ag-firma-error">{erroresAceptacion[id]}</p>}
+                        {mensajesAceptacion[id] && <p className="ag-firma-ok">{mensajesAceptacion[id]}</p>}
                       </div>
                       {detalleAbierto && (
                         <div className="ag-encargo-paneles ag-ficha-paneles">
