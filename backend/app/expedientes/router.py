@@ -1098,6 +1098,7 @@ def exportar_excel_expedientes(
     estadoActividad: Optional[str] = None,
     estadoExpediente: Optional[str] = None,
     actividadActual: Optional[str] = Query(None, description="Filtra por el valor almacenado en actividad_actual"),
+    alerta: Optional[str] = Query(None, description="Filtra por una alerta de control"),
     db: Session = Depends(get_db),
 ):
     q = aplicar_filtros(
@@ -1126,6 +1127,7 @@ def exportar_excel_expedientes(
         estadoExpediente=estadoExpediente,
         actividadActual=actividadActual,
     )
+    q = aplicar_filtro_alerta_control(q, alerta, db)
 
     expedientes = (
         q.order_by(
