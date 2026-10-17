@@ -22,6 +22,7 @@ const FORM_INICIAL = {
 
   fecha_prevista_firma: "",
   hora_prevista_firma: "09:00",
+  hora_fin_prevista_firma: "10:00",
 
   notario: null,
   tipo_documento: "",
@@ -116,6 +117,7 @@ function crearFormularioDesdeExpediente(expediente) {
   );
   const partesNombre = nombreNotario.split(/\s+/).filter(Boolean);
   const horaGuardada = obtenerValor(expediente, "hora_prevista_firma");
+  const horaFinGuardada = obtenerValor(expediente, "hora_fin_prevista_firma");
   const firmaValor = expediente?.escritura_firmada;
   const escrituraFirmada =
     firmaValor === true ||
@@ -134,6 +136,7 @@ function crearFormularioDesdeExpediente(expediente) {
     protocolo: obtenerValor(expediente, "protocolo"),
     fecha_prevista_firma: obtenerValor(expediente, "fecha_prevista_firma"),
     hora_prevista_firma: horaGuardada ? horaGuardada.slice(0, 5) : FORM_INICIAL.hora_prevista_firma,
+    hora_fin_prevista_firma: horaFinGuardada ? horaFinGuardada.slice(0, 5) : (horaGuardada ? sumarUnaHora(horaGuardada.slice(0, 5)) : FORM_INICIAL.hora_fin_prevista_firma),
     notario: nombreNotario
       ? {
           id: expediente?.notario_id ?? null,
@@ -505,10 +508,13 @@ export default function EnviarANotarioModal({
       return;
     }
 
-    if (!sumarUnaHora(form.hora_prevista_firma)) {
-      setError(
-        "La hora prevista de firma no puede ser posterior a las 23:00 porque la cita tendrá una duración inicial de una hora."
-      );
+    if (!form.hora_fin_prevista_firma) {
+      setError("Indica la Hora de fin de la firma.");
+      return;
+    }
+
+    if (form.hora_fin_prevista_firma <= form.hora_prevista_firma) {
+      setError("La Hora de fin debe ser posterior a la Hora de inicio.");
       return;
     }
 
@@ -573,6 +579,7 @@ export default function EnviarANotarioModal({
 
       fecha_prevista_firma: form.fecha_prevista_firma,
       hora_prevista_firma: form.hora_prevista_firma,
+      hora_fin_prevista_firma: form.hora_fin_prevista_firma,
 
       notario_id: form.notario.id,
       nombre_notario: nombreNotario,
@@ -833,6 +840,17 @@ export default function EnviarANotarioModal({
                     disabled={loading}
                     onChange={(v) =>
                       cambiarCampo("hora_prevista_firma", v)
+                    }
+                  />
+
+                  <CampoTexto
+                    label="Hora de fin de firma"
+                    type="time"
+                    required
+                    value={form.hora_fin_prevista_firma}
+                    disabled={loading}
+                    onChange={(v) =>
+                      cambiarCampo("hora_fin_prevista_firma", v)
                     }
                   />
 
@@ -1379,10 +1397,8 @@ export default function EnviarANotarioModal({
               />
 
               <Resumen
-                label="Fin previsto"
-                valor={
-                  sumarUnaHora(form.hora_prevista_firma) || "—"
-                }
+                label="Hora de fin"
+                valor={form.hora_fin_prevista_firma || "—"}
               />
 
               <Resumen
