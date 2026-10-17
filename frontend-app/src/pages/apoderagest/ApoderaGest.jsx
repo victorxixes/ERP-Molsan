@@ -607,7 +607,6 @@ function TablaEncargos({ encargos, onFirmado }) {
                               {erroresComentarioGestor[id] && <p className="ag-firma-error">{erroresComentarioGestor[id]}</p>}
                               {mensajesComentarioGestor[id] && <p className="ag-firma-ok">{mensajesComentarioGestor[id]}</p>}
                             </div>
-                            {encargo.observaciones_gestor?.length > 0 && <div className="ag-historico-gestor"><h5 className="ag-comunicaciones-subtitulo">Histórico de observaciones dirigidas a gestores</h5><ul className="ag-observaciones-apoderado">{encargo.observaciones_gestor.map((obs) => <li key={obs.id}><p>{obs.comentario}</p><small>Dirigido a: {obs.empleado_destinatario || "Gestor"} · {obs.fecha ? new Date(obs.fecha).toLocaleString("es-ES") : "Fecha no disponible"}</small></li>)}</ul></div>}
                           </section>
                         </div>
                       )}
