@@ -307,10 +307,40 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
     return {"token": token, "requiere_cambio_password": False, "notario": {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.nif}}
 
 @router.get("/me")
-def me(n=Depends(get_notario)):
+def me(n=Depends(get_notario), db: Session = Depends(get_db)):
     if _es_usuario_erp(n):
-        return {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.dni, "tipo_acceso": "erp", "requiere_cambio_password": False}
-    return {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.nif, "codigo": getattr(n, "codigo", None), "telefono": getattr(n, "telefono", None), "direccion": getattr(n, "direccion", None), "cp": getattr(n, "cp", None), "municipio": getattr(n, "municipio", None), "provincia": getattr(n, "provincia", None), "vc": getattr(n, "vc", None), "apoderado": getattr(n, "apoderado", None), "departamento_cancelaciones": getattr(n, "departamento_cancelaciones", None), "departamento_copias": getattr(n, "departamento_copias", None), "otros_departamentos": getattr(n, "otros_departamentos", None), "observacion": getattr(n, "observacion", None), "tipo_acceso": "notario", "requiere_cambio_password": False}
+        nif_erp = normalizar_nif(getattr(n, "dni", None) or "")
+        notaria_ctn = None
+        if nif_erp:
+            notaria_ctn = db.query(Notaria).filter(
+                text("upper(replace(replace(nif, ' ', ''), '-', '')) = :nif")
+            ).params(nif=nif_erp).first()
+        if notaria_ctn:
+            n = notaria_ctn
+            tipo_acceso = "erp_ctn"
+        else:
+            return {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.dni, "tipo_acceso": "erp", "requiere_cambio_password": False}
+    else:
+        tipo_acceso = "notario"
+    return {
+        "id": n.id,
+        "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x),
+        "nif": getattr(n, "nif", None) or getattr(n, "dni", None),
+        "codigo": getattr(n, "codigo", None),
+        "telefono": getattr(n, "telefono", None),
+        "direccion": getattr(n, "direccion", None),
+        "cp": getattr(n, "cp", None),
+        "municipio": getattr(n, "municipio", None),
+        "provincia": getattr(n, "provincia", None),
+        "vc": getattr(n, "vc", None),
+        "apoderado": getattr(n, "apoderado", None),
+        "departamento_cancelaciones": getattr(n, "departamento_cancelaciones", None),
+        "departamento_copias": getattr(n, "departamento_copias", None),
+        "otros_departamentos": getattr(n, "otros_departamentos", None),
+        "observacion": getattr(n, "observacion", None),
+        "tipo_acceso": tipo_acceso,
+        "requiere_cambio_password": False,
+    }
 
 @router.post("/cambiar-password")
 def cambiar_password(data: CambioPassword, n=Depends(get_notario), db: Session = Depends(get_db)):
