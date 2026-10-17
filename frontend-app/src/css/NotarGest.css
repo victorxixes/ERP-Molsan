@@ -468,3 +468,12 @@
 .notargest .ng-acordeon-ficha>.ng-carpeta-layout{margin-bottom:16px}
 .notargest .ng-acordeon-ficha>.ng-subtitulo-detalle{margin-top:16px}
 @media(prefers-reduced-motion:reduce){.notargest .ng-acordeon-ficha>.ng-bloque-heading .ng-acordeon-flecha{transition:none}}
+
+
+/* NotarGest · tres bloques de datos en una fila; observaciones junto a carpeta digital. */
+@media(min-width:1051px){
+  .notargest .ng-datos-superiores{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .notargest .ng-documentacion-layout{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);}
+  .notargest .ng-documentacion-layout>.ng-comentarios-gestor{grid-column:1;grid-row:1;}
+  .notargest .ng-documentacion-layout>.ng-carpeta-premium{grid-column:2;grid-row:1;}
+}
