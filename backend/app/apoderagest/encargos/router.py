@@ -15,6 +15,7 @@ from backend.app.expedientes.models import Expediente
 from backend.app.agenda.models import Cita
 from backend.app.ctn.models import Notaria
 from backend.app.empleados.models import Empleado
+from backend.app.expediente_observaciones.models import ExpedienteObservacion
 
 router = APIRouter(
     prefix="/apoderagest/encargos",
@@ -30,6 +31,58 @@ def obtener_encargos(
 ):
     return listar_encargos(db, usuario, solo_pendientes=pendientes)
 
+
+
+class ComentarioGestorApoderagest(BaseModel):
+    comentario: str = Field(..., min_length=1, max_length=2000)
+    empleado_destinatario_id: int
+
+
+@router.get("/gestores", summary="Listar gestores disponibles para comunicaciones de ApoderaGest")
+def listar_gestores_apoderagest(
+    db: Session = Depends(get_db),
+    usuario=Depends(obtener_usuario_actual),
+):
+    empleados = db.query(Empleado).filter(Empleado.activo.is_(True)).order_by(Empleado.apellidos.asc(), Empleado.nombre.asc()).all()
+    return [{"id": empleado.id, "nombre": " ".join(filter(None, [empleado.nombre, empleado.apellidos]))} for empleado in empleados]
+
+
+@router.post("/{id_expediente}/comentarios", summary="Enviar una observación al gestor desde ApoderaGest")
+def crear_comentario_gestor_apoderagest(
+    id_expediente: str,
+    datos: ComentarioGestorApoderagest,
+    db: Session = Depends(get_db),
+    usuario=Depends(obtener_usuario_actual),
+):
+    asignados = listar_encargos(db, usuario, solo_pendientes=False)
+    encargo = next((item for item in asignados if str(item.get("id_expediente") or "") == str(id_expediente)), None)
+    if not encargo:
+        raise HTTPException(status_code=403, detail="Este expediente no está asignado al apoderado autenticado.")
+    expediente = db.query(Expediente).filter(Expediente.id_expediente == str(id_expediente)).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    destinatario = db.query(Empleado).filter(Empleado.id == datos.empleado_destinatario_id, Empleado.activo.is_(True)).first()
+    if not destinatario:
+        raise HTTPException(status_code=404, detail="El gestor seleccionado no existe o está inactivo.")
+    comentario = datos.comentario.strip()
+    if not comentario:
+        raise HTTPException(status_code=422, detail="Escribe la observación antes de enviarla.")
+    observacion = ExpedienteObservacion(
+        expediente_id=expediente.id,
+        comentario=comentario,
+        visibilidad="Gestor",
+        empleado_destinatario_id=destinatario.id,
+        autor_empleado_id=None,
+        activo=True,
+    )
+    try:
+        db.add(observacion)
+        db.commit()
+        db.refresh(observacion)
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="No se pudo guardar la observación dirigida al gestor.")
+    return {"ok": True, "id": observacion.id, "comentario": observacion.comentario, "empleado_destinatario_id": destinatario.id}
 
 
 class FirmaEncargo(BaseModel):
