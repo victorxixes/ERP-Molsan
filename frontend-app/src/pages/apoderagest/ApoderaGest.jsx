@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import axios from "../../api/axios";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
-import { listarNotarias } from "../../api/ctn";
+import { listarNotarios as listarCatalogoNotarios } from "../../api/notarios";
 import AutocompleteNotario from "../../components/agenda/AutocompleteNotario";
 import Agenda from "../agenda/Agenda";
 import Intranet from "../intranet/Intranet";
@@ -776,10 +776,9 @@ export default function ApoderaGest() {
     setErrorCTN("");
 
     try {
-      // Usar el cliente de catálogo compartido con CTN: recorre todas las
-      // páginas disponibles y devuelve respuesta.data como array normalizado.
-      const respuesta = await listarNotarias({ page: 1, page_size: 200 });
-
+      // Cargar el catálogo completo: el endpoint CTN pagina los resultados,
+      // por lo que una sola llamada a /ctn/notarias solo devuelve una página.
+      const respuesta = await listarCatalogoNotarios();
       const listado = normalizarRespuesta(respuesta)
         .filter((item) => item && item.id !== null && item.id !== undefined)
         .sort((a, b) =>
