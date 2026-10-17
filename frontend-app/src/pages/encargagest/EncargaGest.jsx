@@ -129,13 +129,15 @@ export default function EncargaGest() {
     const filas = Array.isArray(data) ? data : data.items || [];
     setItems(filas);
     setTotal(Number(data.total ?? filas.length));
-    if (filas.length && !filas.some((x) => x.id === seleccionadoId)) {
-      setSeleccionadoId(filas[0].id);
-    } else if (!filas.length) {
+    if (filas.length) {
+      setSeleccionadoId((actual) =>
+        actual && filas.some((x) => x.id === actual) ? actual : filas[0].id
+      );
+    } else {
       setSeleccionadoId(null);
       setDetalle(null);
     }
-  }, [pagina, busqueda, filtroEstado, seleccionadoId]);
+  }, [pagina, busqueda, filtroEstado]);
 
   const cargarTodo = useCallback(async () => {
     setCargando(true);
@@ -177,8 +179,12 @@ export default function EncargaGest() {
   useEffect(() => {
     if (modo !== "interno" && modo !== "externo") return;
     configurarSesionEncargaGest(modo);
+    // La carga inicial se ejecuta solo al cambiar el tipo de sesión. La función
+    // cargarTodo también depende de los filtros para el botón Actualizar; incluirla
+    // aquí provocaría peticiones repetidas al cambiar la selección o escribir filtros.
     cargarTodo();
-  }, [modo, cargarTodo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modo]);
 
   useEffect(() => {
     if (!seleccionadoId) {
