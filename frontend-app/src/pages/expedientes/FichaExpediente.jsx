@@ -7,6 +7,7 @@ import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario 
 
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
+import { useAuthStore } from "../../store/authStore";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
@@ -1385,6 +1386,7 @@ function Boton({
 
 export default function FichaExpediente() {
   const { id } = useParams();
+  const empleadoSesion = useAuthStore((state) => state.empleado);
 
   const [
     expediente,
@@ -1568,6 +1570,13 @@ export default function FichaExpediente() {
     mostrarCarpetaDigital,
     setMostrarCarpetaDigital,
   ] = useState(false);
+  const [mostrarReclamarOficina, setMostrarReclamarOficina] = useState(false);
+  const [emailReclamacion, setEmailReclamacion] = useState({ destinatario: "", asunto: "", cuerpo: "" });
+  const [historicoReclamaciones, setHistoricoReclamaciones] = useState([]);
+  const [cargandoHistoricoReclamaciones, setCargandoHistoricoReclamaciones] = useState(false);
+  const [enviandoReclamacion, setEnviandoReclamacion] = useState(false);
+  const [errorReclamacion, setErrorReclamacion] = useState("");
+  const [mensajeReclamacion, setMensajeReclamacion] = useState("");
   const [
     mostrarAcciones,
     setMostrarAcciones,
@@ -4019,6 +4028,23 @@ const cuantiaFincasParaEnvio =
               📁 Carpeta digital
             </Boton>
 
+            <button
+              type="button"
+              onClick={abrirReclamacionOficina}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs font-bold text-amber-800 shadow-sm transition hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-300"
+            >
+              ✉️ Reclamar a oficina
+            </button>
+            <button
+              type="button"
+              onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-100"
+              title="Pendiente de enlazar con el área de clientes"
+            >
+              🔗 Área de clientes
+            </button>
+            <p className="text-[10px] leading-4 text-amber-700">Aviso: el enlace al área de clientes está pendiente de configurar.</p>
+
             {tieneDefecto && (
               <button
                 type="button"
@@ -4818,6 +4844,51 @@ const cuantiaFincasParaEnvio =
           onClose={() => setMostrarCarpetaDigital(false)}
         />
       )}
+
+      <Modal
+        open={mostrarReclamarOficina}
+        onClose={() => !enviandoReclamacion && setMostrarReclamarOficina(false)}
+        titulo="✉️ Reclamar a oficina"
+        subtitulo={`Expediente ${valorVisible(expediente?.id_expediente || id)} · Histórico de correos enviados`}
+        ancho="max-w-5xl"
+        footer={
+          <div className="flex flex-wrap justify-end gap-2">
+            <Boton onClick={() => setMostrarReclamarOficina(false)} disabled={enviandoReclamacion}>Cerrar</Boton>
+            <Boton tipo="primary" onClick={enviarReclamacionOficina} disabled={enviandoReclamacion || !emailReclamacion.destinatario.trim() || !emailReclamacion.asunto.trim() || !emailReclamacion.cuerpo.trim()}>
+              {enviandoReclamacion ? "Enviando…" : "✉️ Enviar email"}
+            </Boton>
+          </div>
+        }
+      >
+        <div className="space-y-5">
+          {errorReclamacion && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorReclamacion}</p>}
+          {mensajeReclamacion && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensajeReclamacion}</p>}
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <CampoFormulario label="De · Email del gestor conectado" value={empleadoSesion?.email_empresa || empleadoSesion?.email_personal || ""} onChange={() => {}} />
+            <CampoFormulario label="Para · Email de la oficina" value={emailReclamacion.destinatario} onChange={(v) => setEmailReclamacion((p) => ({ ...p, destinatario: v }))} placeholder="Introduce el email de la oficina" />
+          </div>
+          <CampoFormulario label="Asunto" value={emailReclamacion.asunto} onChange={(v) => setEmailReclamacion((p) => ({ ...p, asunto: v }))} />
+          <CampoFormulario label="Mensaje (editable antes de enviar)" value={emailReclamacion.cuerpo} onChange={(v) => setEmailReclamacion((p) => ({ ...p, cuerpo: v }))} textarea />
+          <section className="overflow-hidden rounded-xl border border-slate-200">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3">
+              <div>
+                <h3 className="text-sm font-bold text-slate-800">Histórico de emails</h3>
+                <p className="text-xs text-slate-500">Registro guardado en el sistema para este expediente.</p>
+              </div>
+              <Boton onClick={cargarHistoricoReclamaciones} disabled={cargandoHistoricoReclamaciones}>{cargandoHistoricoReclamaciones ? "Actualizando…" : "↻ Actualizar"}</Boton>
+            </div>
+            {cargandoHistoricoReclamaciones ? <p className="p-4 text-sm text-slate-500">Cargando histórico…</p> : historicoReclamaciones.length === 0 ? <p className="p-4 text-sm text-slate-500">Todavía no hay correos registrados.</p> : (
+              <div className="max-h-64 overflow-auto">
+                <table className="w-full min-w-[700px] text-left text-xs">
+                  <thead className="sticky top-0 bg-white text-slate-500"><tr><th className="px-3 py-2">Fecha</th><th className="px-3 py-2">Para</th><th className="px-3 py-2">Asunto</th><th className="px-3 py-2">Estado</th><th className="px-3 py-2">Gestor</th></tr></thead>
+                  <tbody>{historicoReclamaciones.map((item) => <tr key={item.id} className="border-t border-slate-100 align-top"><td className="whitespace-nowrap px-3 py-2">{item.creado_en ? new Date(item.creado_en).toLocaleString("es-ES") : "—"}</td><td className="px-3 py-2">{item.destinatario}</td><td className="max-w-xs px-3 py-2">{item.asunto}</td><td className="px-3 py-2"><span className={item.estado === "enviado" ? "font-bold text-emerald-700" : "font-bold text-red-700"}>{item.estado === "enviado" ? "Enviado" : "Error"}</span>{item.detalle && <p className="mt-1 max-w-xs text-[10px] text-slate-500">{item.detalle}</p>}</td><td className="px-3 py-2">{item.enviado_por || "—"}</td></tr>)}</tbody>
+                </table>
+              </div>
+            )}
+          </section>
+          <p className="text-[11px] text-amber-700">El envío requiere que el servidor tenga configuradas las variables SMTP. El historial registra tanto los envíos correctos como los intentos fallidos.</p>
+        </div>
+      </Modal>
 
 
       {/* CONTROL DE BLOQUEO */}
