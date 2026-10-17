@@ -315,3 +315,17 @@
 .notargest .ng-hero-apoderagest .ag-boton-actualizar{display:inline-flex;align-items:center;gap:7px;min-height:41px;padding:0 13px;border:1px solid #3158d8;border-radius:10px;background:#365fe5;color:#fff;font-size:11px;font-weight:800;box-shadow:0 5px 12px rgba(54,95,229,.18)}
 .notargest .ng-hero-apoderagest .ag-boton-actualizar:disabled{opacity:.65;cursor:wait}
 @media(max-width:700px){.notargest .ng-hero-apoderagest{align-items:flex-start;flex-direction:column;padding:8px 0 18px}.notargest .ng-hero-apoderagest .ag-hero-acciones{justify-content:flex-start;width:100%}}
+
+
+/* Dashboard NotarGest: accesos rápidos en la misma cuadrícula visual de ApoderaGest */
+.notargest .ng-tareas-sidebar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:0 0 18px;padding:0;background:transparent;border:0}
+.notargest .ng-tareas-sidebar button{display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:10px;min-height:68px;padding:12px 13px;text-align:left;background:#fff;border:1px solid var(--erp-border,#dce4f0);border-radius:14px;box-shadow:0 3px 10px rgba(25,45,80,.025);color:var(--erp-text,#172b4d);transition:border-color .15s,background .15s,transform .15s}
+.notargest .ng-tareas-sidebar button:hover{border-color:#b9caff;background:#fbfcff;transform:translateY(-1px)}
+.notargest .ng-tareas-sidebar button>span{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#edf2ff;border:1px solid #dce5ff;color:#365fe5;font-size:17px;font-weight:800}
+.notargest .ng-tareas-sidebar button>strong{font-size:11px;font-weight:750;line-height:1.35}
+.notargest .ng-tareas-sidebar button>b{display:grid;place-items:center;min-width:23px;height:23px;padding:0 6px;border-radius:8px;background:#f0f3f9;border:1px solid #e2e8f2;color:#52617a;font-size:11px}
+.notargest .ng-tareas-sidebar button.ng-tarea-activa{border-color:#cbd8ff;background:#f7f9ff}
+.notargest .ng-tareas-sidebar button.ng-tarea-activa>span{background:#365fe5;color:#fff;border-color:#365fe5}
+@media(max-width:1200px){.notargest .ng-tareas-sidebar{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.notargest .ng-tareas-sidebar{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.notargest .ng-tareas-sidebar button{grid-template-columns:30px minmax(0,1fr) auto;padding:9px;gap:7px}.notargest .ng-tareas-sidebar button>span{width:29px;height:29px}}
+@media(max-width:430px){.notargest .ng-tareas-sidebar{grid-template-columns:1fr}}
