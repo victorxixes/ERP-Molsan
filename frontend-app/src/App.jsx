@@ -198,6 +198,11 @@ export default function App() {
         />
         
         <Route
+          path="encargagest"
+          element={<ModuloPendiente nombre="EncargaGest" />}
+        />
+        
+        <Route
           path="notargest"
           element={<RequireAuth><NotarGest /></RequireAuth>}
         />
