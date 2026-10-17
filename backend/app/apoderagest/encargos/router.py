@@ -30,6 +30,7 @@ def obtener_encargos(
 class FirmaEncargo(BaseModel):
     fecha_firma: date
     protocolo: str = Field(..., min_length=1, max_length=200)
+    notario_otorgante: str = Field(..., min_length=1, max_length=300)
 
 
 @router.post("/{id_expediente}/firmar", summary="Registrar firma real desde ApoderaGest")
@@ -69,6 +70,7 @@ def firmar_encargo(
 
     expediente.fecha_firma = datos.fecha_firma
     expediente.protocolo = protocolo
+    expediente.notario_otorgante = datos.notario_otorgante.strip()
     try:
         db.commit()
         db.refresh(expediente)
@@ -84,5 +86,6 @@ def firmar_encargo(
         "id_expediente": expediente.id_expediente,
         "fecha_firma": expediente.fecha_firma.isoformat() if expediente.fecha_firma else None,
         "protocolo": expediente.protocolo,
+        "notario_otorgante": expediente.notario_otorgante,
         "mensaje": "Firma registrada en FichaExpediente.",
     }
