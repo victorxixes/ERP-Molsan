@@ -231,11 +231,16 @@ export default function NotarGest() {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   }).format(new Date());
   const navegarModulo = (label) => {
-    if (label === "Dashboard") { setVista("inicio"); return; }
-    const rutas = {
-      Expedientes: "/expedientes", Agenda: "/agenda", Mensajes: "/mensajes",
-      CTN: "/ctn", Intranet: "/intranet", Informes: "/informes",
+    const vistas = {
+      Dashboard: "inicio", Recepción: "recepcion", "Pendientes firma": "firma",
+      "Factura notarial": "factura", "Presentación Registro": "registro",
+      "Liquidación AJD / ITP": "ajd", Inscripciones: "inscripcion",
+      "Expedientes con defectos": "defectos", "Copias simples": "copia",
+      "Escrituras cerradas": "cerrada", "Observaciones del gestor": "avisos_comentarios",
+      "Nueva documentación": "avisos_documentos",
     };
+    if (vistas[label]) { setBusqueda(""); setVista(vistas[label]); return; }
+    const rutas = { Expedientes: "/expedientes", Agenda: "/agenda", Mensajes: "/mensajes", CTN: "/ctn", Intranet: "/intranet", Informes: "/informes" };
     if (rutas[label]) navigate(rutas[label]);
   };
   return <>
@@ -243,12 +248,17 @@ export default function NotarGest() {
       brandName="NotarGest"
       navigationItems={[
         { key: "dashboard", label: "Dashboard", icon: "home" },
-        { key: "expedientes", label: "Expedientes", icon: "folder" },
-        { key: "agenda", label: "Agenda", icon: "calendar" },
-        { key: "mensajes", label: "Mensajes", icon: "chat" },
-        { key: "ctn", label: "CTN", icon: "globe" },
-        { key: "intranet", label: "Intranet", icon: "folder" },
-        { key: "informes", label: "Informes", icon: "chart" },
+        { key: "recepcion", label: "Recepción", icon: "activity" },
+        { key: "firma", label: "Pendientes firma", icon: "clipboard" },
+        { key: "factura", label: "Factura notarial", icon: "chart" },
+        { key: "registro", label: "Presentación Registro", icon: "folder" },
+        { key: "ajd", label: "Liquidación AJD / ITP", icon: "database" },
+        { key: "inscripcion", label: "Inscripciones", icon: "shield" },
+        { key: "defectos", label: "Expedientes con defectos", icon: "activity" },
+        { key: "copia", label: "Copias simples", icon: "clipboard" },
+        { key: "cerrada", label: "Escrituras cerradas", icon: "folder" },
+        { key: "avisos_comentarios", label: "Observaciones del gestor", icon: "chat" },
+        { key: "avisos_documentos", label: "Nueva documentación", icon: "folder" },
       ]}
       activeNavigationItem={vista === "inicio" ? "Dashboard" : ""}
       onNavigationItemClick={navegarModulo}
@@ -267,19 +277,60 @@ export default function NotarGest() {
       </div>
     </header>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
-    {vista === "inicio" && <section className="ng-estados-grid" aria-label="Estados de trabajo">
-      {bandejas.map((b, i) => <button key={b.id} className={`ng-estado-card ${cuenta(b.id) ? "ng-estado-con-pendientes" : ""}`} onClick={() => {setBusqueda("");setVista(b.id);}} aria-label={`${b.titulo}: ${cuenta(b.id)} expedientes. Abrir listado`}>
-        <span className="ng-estado-icono" aria-hidden="true">{["↗","✍","€","▤","◷","▣","!","▧","✓"][i]}</span>
-        <span className="ng-estado-texto"><strong>{b.titulo}</strong><small>Ver expedientes y abrir ficha</small></span>
-        <span className="ng-estado-cantidad">{cargando ? "…" : cuenta(b.id)}</span>
-        <span className="ng-estado-flecha" aria-hidden="true">›</span>
-      </button>)}
-      <button className={`ng-estado-card ${avisos.comentarios.length ? "ng-estado-con-pendientes" : ""}`} onClick={() => setVista("avisos_comentarios")}>
-        <span className="ng-estado-icono" aria-hidden="true">💬</span><span className="ng-estado-texto"><strong>Observaciones del gestor</strong><small>Comentarios visibles para la notaría</small></span><span className="ng-estado-cantidad">{cargando ? "…" : avisos.comentarios.length}</span><span className="ng-estado-flecha" aria-hidden="true">›</span>
-      </button>
-      <button className={`ng-estado-card ${avisos.documentos.length ? "ng-estado-con-pendientes" : ""}`} onClick={() => setVista("avisos_documentos")}>
-        <span className="ng-estado-icono" aria-hidden="true">📎</span><span className="ng-estado-texto"><strong>Nueva documentación</strong><small>Documentos añadidos tras el envío y antes de la firma</small></span><span className="ng-estado-cantidad">{cargando ? "…" : avisos.documentos.length}</span><span className="ng-estado-flecha" aria-hidden="true">›</span>
-      </button>
+    {vista === "inicio" && <section className="ng-dashboard-analitica">
+      <div className="ng-dashboard-kpis">
+        <article><span>Firmas realizadas</span><strong>{expedientes.filter(x => x.fecha_firma && x.protocolo).length}</strong><small>Firmas reales con fecha y protocolo</small></article>
+        <article><span>Pendientes de firma</span><strong>{cuenta("firma")}</strong><small>Expedientes en la bandeja de firma</small></article>
+        <article><span>Facturas notariales pendientes</span><strong>{cuenta("factura")}</strong><small>Expedientes pendientes de factura</small></article>
+        <article><span>Expedientes con defectos</span><strong>{cuenta("defectos")}</strong><small>Defectos registrales abiertos o en trámite</small></article>
+      </div>
+      <div className="ng-dashboard-graficos">
+        <section className="ng-dashboard-grafico"><div className="ng-bloque-heading"><div><span className="ng-kicker">ACTIVIDAD</span><h3>Firmas realizadas por mes</h3></div></div>
+          {(() => {
+            const meses = [];
+            const ahora = new Date();
+            for (let i=5;i>=0;i--) { const d=new Date(ahora.getFullYear(),ahora.getMonth()-i,1); meses.push({key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`,label:d.toLocaleDateString("es-ES",{month:"short",year:"2-digit"}),valor:0}); }
+            expedientes.filter(x=>x.fecha_firma && x.protocolo).forEach(x=>{const key=String(x.fecha_firma).slice(0,7);const m=meses.find(z=>z.key===key);if(m)m.valor++;});
+            const max=Math.max(1,...meses.map(m=>m.valor));
+            return <div className="ng-barras-meses">{meses.map(m=><div className="ng-barra-mes" key={m.key}><strong>{m.valor}</strong><div className="ng-barra-pista"><span style={{height:`${Math.max(m.valor?6:0,m.valor/max*100)}%`}} /></div><small>{m.label}</small></div>)}</div>;
+          })()}
+        </section>
+        <section className="ng-dashboard-grafico"><div className="ng-bloque-heading"><div><span className="ng-kicker">TIEMPOS MEDIOS</span><h3>Días entre envío y firma</h3></div></div>
+          {(() => {
+            const normalizar=v=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+            const grupos=[
+              {key:"provision",label:"Cancelaciones con provisión",dias:[]},
+              {key:"sin",label:"Cancelaciones sin provisión",dias:[]},
+              {key:"otras",label:"Cancelaciones otras entidades",dias:[]},
+            ];
+            const diasEntre=(a,b)=>{if(!a||!b)return null;const x=new Date(String(a).slice(0,10)+"T00:00:00");const y=new Date(String(b).slice(0,10)+"T00:00:00");const n=Math.round((y-x)/86400000);return Number.isFinite(n)&&n>=0?n:null;};
+            expedientes.forEach(x=>{
+              const envio=x.fecha_envio_notario||x.fecha_envio;const dias=diasEntre(envio,x.fecha_firma);if(dias===null||!x.fecha_firma||!x.protocolo)return;
+              const textoTipo=normalizar([x.tipo_operacion,x.subtipo_operacion,x.tipo_provision,x.provision,x.producto].filter(Boolean).join(" "));
+              const tieneProvision=Boolean(x.id_provision||x.provision_id||x.tipo_provision||x.provision);
+              const grupo=textoTipo.includes("otra entidad")||textoTipo.includes("otras entidades")||String(x.origen_bankia||"").toLowerCase()==="true"||String(x.producto_gtg||"").toLowerCase()==="true" ? grupos[2] : (!tieneProvision||textoTipo.includes("sin provision")||textoTipo.includes("no aplica")) ? grupos[1] : grupos[0];
+              grupo.dias.push(dias);
+            });
+            const max=Math.max(1,...grupos.map(g=>g.dias.length?g.dias.reduce((a,b)=>a+b,0)/g.dias.length:0));
+            return <div className="ng-barras-medias">{grupos.map(g=>{const media=g.dias.length?g.dias.reduce((a,b)=>a+b,0)/g.dias.length:null;return <div className="ng-media-row" key={g.key}><div><strong>{g.label}</strong><small>{media===null?"Sin datos suficientes":`${media.toFixed(1)} días de media · ${g.dias.length} expedientes`}</small></div><div className="ng-media-pista"><span style={{width:`${media===null?0:media/max*100}%`}} /></div></div>;})}</div>;
+          })()}
+        </section>
+        <section className="ng-dashboard-grafico ng-dashboard-etapas"><div className="ng-bloque-heading"><div><span className="ng-kicker">CICLO REGISTRAL</span><h3>Media de días entre hitos</h3></div></div>
+          {(() => {
+            const etapas=[
+              {label:"Firma → presentación tributaria",desde:["fecha_firma"],hasta:["fecha_presentacion_tributaria","fecha_presentacion_impuestos","fecha_liquidacion"]},
+              {label:"Presentación tributaria → Registro",desde:["fecha_presentacion_tributaria","fecha_presentacion_impuestos","fecha_liquidacion"],hasta:["fecha_presentacion_registro","fecha_presentacion_registral"]},
+              {label:"Presentación Registro → inscripción",desde:["fecha_presentacion_registro","fecha_presentacion_registral"],hasta:["fecha_inscripcion","fecha_inscripcion_registro"]},
+              {label:"Inscripción → cierre",desde:["fecha_inscripcion","fecha_inscripcion_registro"],hasta:["notargest_fecha_cierre","fecha_cierre"]},
+            ];
+            const valorFecha=(x,keys)=>{for(const k of keys){if(x[k])return x[k];}return null;};
+            const diferencia=(a,b)=>{if(!a||!b)return null;const n=Math.round((new Date(String(b).slice(0,10)+"T00:00:00")-new Date(String(a).slice(0,10)+"T00:00:00"))/86400000);return Number.isFinite(n)&&n>=0?n:null;};
+            const medias=etapas.map(e=>{const ds=expedientes.map(x=>diferencia(valorFecha(x,e.desde),valorFecha(x,e.hasta))).filter(n=>n!==null);return {...e,media:ds.length?ds.reduce((a,b)=>a+b,0)/ds.length: null,n:ds.length};});
+            const max=Math.max(1,...medias.map(x=>x.media||0));
+            return <div className="ng-barras-medias">{medias.map(e=><div className="ng-media-row" key={e.label}><div><strong>{e.label}</strong><small>{e.media===null?"Sin datos suficientes":`${e.media.toFixed(1)} días de media · ${e.n} expedientes`}</small></div><div className="ng-media-pista"><span style={{width:`${e.media===null?0:e.media/max*100}%`}} /></div></div>)}</div>;
+          })()}
+        </section>
+      </div>
     </section>}
     {(vista === "avisos_comentarios" || vista === "avisos_documentos") && <section className="ng-panel">
       <div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div>
