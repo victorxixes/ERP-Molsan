@@ -540,12 +540,50 @@ def historico_firmas_notario(
 # ACCESO INDIVIDUAL A NOTARGEST
 @router.on_event("startup")
 def migrar_columna_acceso_notargest():
-    """Añade el indicador de acceso sin modificar los datos CTN existentes."""
+    """Añade el indicador de acceso evitando esperas indefinidas por bloqueos.
+
+    Primero consulta el catálogo para no ejecutar ALTER TABLE si la columna ya
+    existe. Si hace falta crearla, usa un lock_timeout corto para que un bloqueo
+    de PostgreSQL no deje a FastAPI sin completar el arranque indefinidamente.
+    """
     with engine.begin() as conexion:
-        conexion.execute(text(
-            "ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS "
-            "notargest_habilitado BOOLEAN NOT NULL DEFAULT FALSE"
-        ))
+        existe = conexion.execute(
+            text(
+                "SELECT 1 FROM information_schema.columns "
+                "WHERE table_schema = 'public' "
+                "AND table_name = 'ctn_notarios' "
+                "AND column_name = 'notargest_habilitado'"
+            )
+        ).first()
+
+        if existe:
+            print(
+                "[NOTARGEST MIGRACION] La columna notargest_habilitado ya existe.",
+                flush=True,
+            )
+            return
+
+        try:
+            conexion.execute(text("SET LOCAL lock_timeout = '5s'"))
+            conexion.execute(text("SET LOCAL statement_timeout = '15s'"))
+            conexion.execute(
+                text(
+                    "ALTER TABLE public.ctn_notarios "
+                    "ADD COLUMN notargest_habilitado "
+                    "BOOLEAN NOT NULL DEFAULT FALSE"
+                )
+            )
+            print(
+                "[NOTARGEST MIGRACION] Columna notargest_habilitado creada.",
+                flush=True,
+            )
+        except Exception as error:
+            print(
+                "[NOTARGEST MIGRACION] No se pudo crear la columna por un "
+                f"bloqueo/error de PostgreSQL: {error!r}",
+                flush=True,
+            )
+            raise
 
 
 @router.put("/notarias/{notaria_id}/notargest")
