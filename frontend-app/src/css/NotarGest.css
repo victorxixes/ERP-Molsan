@@ -105,3 +105,7 @@
 .notargest .ng-comentarios-historico h4{color:#34445e;font-size:12px;font-weight:800;margin:0 0 2px}
 .notargest .ng-comentarios-historico .ng-observacion{padding:12px 14px;margin:0;background:#f6f8ff;border-left:3px solid #8ea8ef}
 @media(max-width:650px){.notargest .ng-comentario-form{grid-template-columns:1fr;padding:12px}.notargest .ng-comentario-form button{grid-column:1}}
+
+/* Subapartados de la ficha reorganizada */
+.notargest .ng-subtitulo-detalle{margin:20px 0 10px;color:#34445e;font-size:12px;font-weight:850;letter-spacing:.01em}
+.notargest .ng-detalle-bloque h3{line-height:1.5}
