@@ -36,6 +36,7 @@ class FirmaEncargo(BaseModel):
     fecha_firma: date
     protocolo: str = Field(..., min_length=1, max_length=200)
     notario_otorgante: str = Field(..., min_length=1, max_length=300)
+    tipo_firma: str = Field(..., min_length=1, max_length=30)
 
 
 @router.post("/{id_expediente}/firmar", summary="Registrar firma real desde ApoderaGest")
@@ -75,6 +76,9 @@ def firmar_encargo(
     notario_otorgante = datos.notario_otorgante.strip()
     if not notario_otorgante:
         raise HTTPException(status_code=422, detail="Indica el notario otorgante.")
+    tipo_firma = datos.tipo_firma.strip()
+    if tipo_firma not in {"Videoconferencia", "Presencial"}:
+        raise HTTPException(status_code=422, detail="El tipo de firma debe ser Videoconferencia o Presencial.")
 
     if datos.fecha_firma > datetime.now(ZoneInfo("Europe/Madrid")).date():
         raise HTTPException(status_code=422, detail="La fecha real de firma no puede ser futura.")
@@ -103,6 +107,7 @@ def firmar_encargo(
         expediente.fecha_firma = datos.fecha_firma
         expediente.protocolo = protocolo
         expediente.notario_otorgante = notario_otorgante
+        expediente.tipo_firma = tipo_firma
 
         # La cita pasa a la fecha en que la firma ocurrió realmente y queda
         # marcada como realizada. La fecha prevista original se conserva en
@@ -140,7 +145,7 @@ def firmar_encargo(
                 hora_fin=time(10, 0),
                 tipo_cita="Firma notarial",
                 notario_id=getattr(notario, "id", None),
-                tipo_firma=getattr(expediente, "tipo_firma", None) or getattr(notario, "vc", None),
+                tipo_firma=tipo_firma,
                 apoderado=apoderado_nombre or None,
                 apoderado_id=apoderado_id,
                 observaciones=marca_realizada,
@@ -148,6 +153,7 @@ def firmar_encargo(
             db.add(cita)
         else:
             cita.fecha = datos.fecha_firma
+            cita.tipo_firma = tipo_firma
             observaciones_previas = str(cita.observaciones or "").strip()
             if "FIRMA REALIZADA" not in observaciones_previas.upper():
                 cita.observaciones = " | ".join(
@@ -175,6 +181,7 @@ def firmar_encargo(
         "fecha_firma": expediente.fecha_firma.isoformat() if expediente.fecha_firma else None,
         "protocolo": expediente.protocolo,
         "notario_otorgante": expediente.notario_otorgante,
+        "tipo_firma": expediente.tipo_firma,
         "cita_id": cita.id,
         "cita_realizada": True,
         "mensaje": "Firma real registrada y cita de Agenda marcada como realizada.",
