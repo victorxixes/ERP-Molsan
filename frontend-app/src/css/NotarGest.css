@@ -368,3 +368,23 @@
 }
 .notargest .ag-hero .ag-marca.ng-marca-notargest::before,.notargest .ag-hero .ag-marca.ng-marca-notargest::after{content:none!important;display:none!important}
 @media(min-width:1200px){.notargest .ng-hero-apoderagest{width:100%;max-width:none}}
+
+
+/* Dashboard NotarGest: Ciclo registral y Pagos en paralelo */
+.notargest .ng-dashboard-graficos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:16px}
+.notargest .ng-dashboard-graficos>.ng-dashboard-grafico{min-width:0;height:100%}
+.notargest .ng-dashboard-graficos>.ng-dashboard-etapas{grid-column:1;grid-row:1}
+.notargest .ng-dashboard-graficos>.ng-dashboard-pagos{grid-column:2;grid-row:1}
+.notargest .ng-dashboard-pagos .ng-bloque-heading{align-items:center;gap:12px}
+.notargest .ng-pagos-resumen{display:grid;gap:16px;margin-top:22px;padding:16px;border:1px solid #e6ecf5;border-radius:13px;background:#f9fbff}
+.notargest .ng-pagos-resumen>div{display:grid;gap:5px}
+.notargest .ng-pagos-resumen>div span{color:#738199;font-size:11px;font-weight:700}
+.notargest .ng-pagos-resumen>div strong{color:#1e2f4a;font-size:28px;font-weight:850}
+.notargest .ng-pagos-resumen .ng-login-submit{white-space:normal;line-height:1.4}
+.notargest .ng-modal-pagos{width:min(100%,1500px)}
+.notargest .ng-pagos-tabla-wrap{overflow:auto;padding:16px;max-height:calc(86vh - 100px)}
+.notargest .ng-tabla-pagos{min-width:1120px}
+.notargest .ng-tabla-pagos th,.notargest .ng-tabla-pagos td{white-space:nowrap}
+.notargest .ng-pdf-link{display:inline-grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid #f0caca;border-radius:9px;background:#fff5f5;color:#b4232e;cursor:pointer}
+.notargest .ng-pdf-link span{font-size:9px;font-weight:900;letter-spacing:.02em}
+@media(max-width:1000px){.notargest .ng-dashboard-graficos{grid-template-columns:1fr}.notargest .ng-dashboard-graficos>.ng-dashboard-etapas,.notargest .ng-dashboard-graficos>.ng-dashboard-pagos{grid-column:1;grid-row:auto}}
