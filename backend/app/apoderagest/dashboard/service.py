@@ -9,6 +9,7 @@ import requests
 
 from backend.app.apoderagest.encargos.service import listar_encargos
 from backend.app.ctn.models import Notaria
+from backend.app.ctn.geocode import geocode_notaria
 from backend.app.utils.distancia import distancia_km
 
 
@@ -74,26 +75,70 @@ def _coordenadas_origen_08016():
 
 
 def _mapa_notarias(db):
-    """Indexa las coordenadas CTN ya geocodificadas por NIF y nombre."""
+    """Indexa las notarías CTN, incluidas las que todavía no tienen coordenadas."""
     por_nif = {}
     por_nombre = {}
+    objetos_nif = {}
+    objetos_nombre = {}
     for notaria in db.query(Notaria).all():
-        try:
-            lat, lng = float(notaria.lat), float(notaria.lng)
-        except (TypeError, ValueError):
-            continue
-        if not (-90 <= lat <= 90 and -180 <= lng <= 180):
-            continue
         nif = _normalizar(getattr(notaria, "nif", None))
         nombre = _normalizar(" ".join(filter(None, [
             getattr(notaria, "nombre", None),
             getattr(notaria, "apellidos", None),
         ])))
         if nif:
+            objetos_nif[nif] = notaria
+        if nombre:
+            objetos_nombre[nombre] = notaria
+        try:
+            lat, lng = float(notaria.lat), float(notaria.lng)
+        except (TypeError, ValueError):
+            continue
+        if not (-90 <= lat <= 90 and -180 <= lng <= 180):
+            continue
+        if nif:
             por_nif[nif] = (lat, lng)
         if nombre:
             por_nombre[nombre] = (lat, lng)
-    return por_nif, por_nombre
+    return por_nif, por_nombre, objetos_nif, objetos_nombre
+
+
+def _coordenadas_de_encargo(encargo, por_nif, por_nombre, objetos_nif, objetos_nombre, geocodificadas):
+    """Usa coordenadas CTN existentes y geocodifica la notaría si aún no las tiene."""
+    nif = _normalizar(encargo.get("nif_notario"))
+    nombre = _normalizar(encargo.get("nombre_notario") or encargo.get("notario"))
+    coordenadas = por_nif.get(nif) if nif else None
+    if coordenadas is None and nombre:
+        coordenadas = por_nombre.get(nombre)
+    if coordenadas:
+        return coordenadas
+
+    notaria = objetos_nif.get(nif) if nif else None
+    if notaria is None and nombre:
+        notaria = objetos_nombre.get(nombre)
+    if notaria is None:
+        return None
+
+    clave = f"id:{notaria.id}"
+    if clave not in geocodificadas:
+        geocodificadas.add(clave)
+        if os.getenv("GOOGLE_MAPS_API_KEY"):
+            try:
+                geocode_notaria(db, notaria)
+            except Exception:
+                # La falta de coordenadas no debe bloquear el dashboard.
+                pass
+    try:
+        lat, lng = float(notaria.lat), float(notaria.lng)
+    except (TypeError, ValueError):
+        return None
+    if not (-90 <= lat <= 90 and -180 <= lng <= 180):
+        return None
+    if nif:
+        por_nif[nif] = (lat, lng)
+    if nombre:
+        por_nombre[nombre] = (lat, lng)
+    return lat, lng
 
 
 def obtener_dashboard(db, usuario):
@@ -121,7 +166,8 @@ def obtener_dashboard(db, usuario):
     firmas_presenciales = 0
     firmas_videoconferencia = 0
     origen_lat, origen_lng = _coordenadas_origen_08016()
-    por_nif, por_nombre = _mapa_notarias(db)
+    por_nif, por_nombre, objetos_nif, objetos_nombre = _mapa_notarias(db)
+    geocodificadas = set()
     kilometros_presenciales = 0.0
     firmas_con_distancia = 0
 
@@ -134,11 +180,9 @@ def obtener_dashboard(db, usuario):
             continue
 
         firmas_presenciales += 1
-        nif = _normalizar(encargo.get("nif_notario"))
-        nombre = _normalizar(encargo.get("nombre_notario") or encargo.get("notario"))
-        coordenadas = por_nif.get(nif) if nif else None
-        if coordenadas is None and nombre:
-            coordenadas = por_nombre.get(nombre)
+        coordenadas = _coordenadas_de_encargo(
+            encargo, por_nif, por_nombre, objetos_nif, objetos_nombre, geocodificadas
+        )
         if coordenadas:
             kilometros_presenciales += distancia_km(
                 origen_lat, origen_lng, coordenadas[0], coordenadas[1]
