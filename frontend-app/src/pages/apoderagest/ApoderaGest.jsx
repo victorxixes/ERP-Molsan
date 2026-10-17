@@ -101,6 +101,14 @@ function numeroLegible(valor) {
     : String(valor);
 }
 
+function euros(valor) {
+  if (valor === null || valor === undefined || valor === "") return "—";
+  const numero = Number(valor);
+  return Number.isFinite(numero)
+    ? new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(numero)
+    : String(valor);
+}
+
 function EstadoPill({ valor }) {
   const estado = texto(valor, "Pendiente");
   const normalizado = estado.toLowerCase();
