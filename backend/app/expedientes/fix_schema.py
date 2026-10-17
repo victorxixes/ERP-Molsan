@@ -104,6 +104,7 @@ def fix_expedientes_schema():
         # ----------------------------------------------------
 
         "nombre_notario": "VARCHAR(300)",
+        "notario_otorgante": "VARCHAR(300)",
         "nif_notario": "VARCHAR(50)",
         "notario": "VARCHAR(300)",
 
