@@ -159,3 +159,19 @@
 .notargest .ng-visor-vacio p{max-width:300px;margin:0;font-size:11px;line-height:1.6}
 @media(max-width:1050px){.notargest .ng-datos-operacion,.notargest .ng-datos-facturacion{grid-template-columns:repeat(2,minmax(0,1fr))}.notargest .ng-carpeta-layout{grid-template-columns:1fr}.notargest .ng-visor-documentos{min-height:420px}}
 @media(max-width:650px){.notargest .ng-ficha-premium{padding:10px}.notargest .ng-ficha-premium>.ng-detalle-bloque{padding:13px}.notargest .ng-datos-operacion,.notargest .ng-datos-facturacion{grid-template-columns:1fr}.notargest .ng-firma-form{grid-template-columns:1fr}.notargest .ng-categoria-heading{align-items:flex-start;flex-direction:column}.notargest .ng-archivo-row{align-items:flex-start;flex-wrap:wrap}.notargest .ng-archivo-row .ng-boton-secundario{margin-left:44px}}
+
+/* Ficha NotarGest: distribución compacta solicitada */
+.ng-datos-superiores{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.ng-datos-superiores>.ng-detalle-bloque{min-width:0}
+.ng-documentacion-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:16px;align-items:start}
+.ng-documentacion-layout>.ng-detalle-bloque{min-width:0}
+.ng-datos-envio .ng-datos-grid,.ng-datos-facturacion-bloque .ng-datos-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ng-fincas-lista{display:grid;gap:10px}
+.ng-finca-card{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px;border:1px solid #dce5f0;border-radius:12px;background:#fbfcfe}
+.ng-finca-card>strong,.ng-finca-card>span{grid-column:1/-1}
+.ng-finca-card>span{font-size:12px;color:#64748b}
+.ng-finca-card>div{display:grid;gap:3px;min-width:0}
+.ng-finca-card small{font-size:10px;color:#64748b}
+.ng-finca-card b{font-size:12px;overflow-wrap:anywhere}
+@media(max-width:1050px){.ng-datos-superiores,.ng-documentacion-layout{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:560px){.ng-datos-envio .ng-datos-grid,.ng-datos-facturacion-bloque .ng-datos-grid,.ng-finca-card{grid-template-columns:minmax(0,1fr)}}
