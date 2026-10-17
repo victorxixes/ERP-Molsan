@@ -117,6 +117,7 @@ class Expediente(Base):
     provincia = Column(String(200), nullable=True)
 
     nombre_notario = Column(String(300), nullable=True)
+    notario_otorgante = Column(String(300), nullable=True)
     nif_notario = Column(String(50), nullable=True)
     notario = Column(String(300), nullable=True)
 
