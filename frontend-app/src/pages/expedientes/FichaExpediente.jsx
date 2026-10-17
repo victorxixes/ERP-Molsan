@@ -4691,6 +4691,17 @@ const cuantiaFincasParaEnvio =
         : null
   }
 />
+                    <Dato
+                      campo="Firma urgente"
+                      valor={
+                        expediente.firma_urgente === true ||
+                        ["true", "1", "si", "sí"].includes(
+                          String(expediente.firma_urgente ?? "").trim().toLowerCase()
+                        )
+                          ? "SÍ · URGENTE"
+                          : "No"
+                      }
+                    />
                     </div>
 
                     {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
