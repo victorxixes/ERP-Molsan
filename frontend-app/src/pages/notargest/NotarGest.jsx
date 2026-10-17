@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
@@ -33,6 +33,8 @@ export default function NotarGest() {
   const [expedientes, setExpedientes] = useState([]);
   const [notario, setNotario] = useState(null);
   const [vista, setVista] = useState("inicio");
+  // Conserva la bandeja desde la que se abrió la ficha para que Volver regrese al mismo sitio.
+  const vistaOrigenFicha = useRef("inicio");
   const [detalle, setDetalle] = useState(null);
   const [busqueda, setBusqueda] = useState("");
   const [cargando, setCargando] = useState(false);
@@ -97,6 +99,7 @@ export default function NotarGest() {
   }
 
   async function abrirExpediente(item) {
+    vistaOrigenFicha.current = vista;
     setCargando(true); setError(""); setMensaje("");
     try {
       const id = encodeURIComponent(item.id_expediente || item.numero_expediente);
@@ -227,7 +230,7 @@ export default function NotarGest() {
       {filas.map(x => <tr key={x.id}><td><button className="ng-abrir" onClick={() => abrirExpediente(x)}>{tablaFactura ? texto(x.id_provision || x.id_expediente) : x.id_expediente}</button></td>{tablaFactura ? <><td>{texto(x.oficina)}</td><td>{esFecha(x.fecha_alta)}</td><td>{esFecha(x.fecha_firma)}</td><td>{texto(x.protocolo)}</td><td>{texto(x.solicitante)}</td><td>{x.factura_notarial ? <button className="ng-abrir" onClick={() => abrirExpediente(x)}>{x.factura_notarial.nombre}</button> : "Pendiente"}</td><td><label className="ng-adjuntar">Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => {adjuntarFactura(x, e.target.files?.[0]);e.target.value="";}} /></label></td></> : <><td>{texto(x.oficina)}</td><td>{esFecha(x.fecha_envio_notario || x.fecha_envio)}</td><td>{esFecha(x.fecha_prevista_firma)}</td><td>{esFecha(x.fecha_firma)}</td><td>{texto(x.protocolo)}</td><td>{texto(x.solicitante)}</td><td>{texto(x.titular)}</td><td>{texto(x.actividad_actual || x.estado_actividad || x.estado)}</td><td><button className="ng-abrir" onClick={() => abrirExpediente(x)}>Abrir ficha →</button></td></>}</tr>)}
       </tbody></table>{filas.length === 0 && <p className="ng-mensaje">{cargando ? "Cargando expedientes…" : "No hay expedientes pendientes en este estado."}</p>}</div>
     </section>}
-    {esDetalle && <section className="ng-panel ng-ficha"><div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("recepcion")}>← Volver al listado</button></div>
+    {esDetalle && <section className="ng-panel ng-ficha"><div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista(vistaOrigenFicha.current || "inicio")}>← Volver al listado</button></div>
       <div className="ng-ficha-cuerpo">
         <section className="ng-detalle-bloque ng-workflow"><h3>Gestión del estado</h3>
           {detalle.notargest_estado === "recepcion" && <button className="ng-login-submit" disabled={cargando} onClick={() => cambiarEstado("firma")}>Marcar como recibido · Pasar a pendientes de firma</button>}
