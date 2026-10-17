@@ -167,6 +167,7 @@ from backend.app.expedientes.fincasyregistros.router import (
     router as expedientes_fincas_router,
 )
 from backend.app.fusiones.router import router as fusiones_router
+from backend.app.reclamaciones_oficina.router import router as reclamaciones_oficina_router, EmailReclamacion
 
 from backend.app.seguridad.roles.roles_router import router as roles_router
 from backend.app.seguridad.roles.asignar_rol_router import (
@@ -343,6 +344,7 @@ app.include_router(seguridad_logs_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
 app.include_router(expedientes_fincas_router, prefix="/api")
 app.include_router(fusiones_router, prefix="/api")
+app.include_router(reclamaciones_oficina_router, prefix="/api")
 app.include_router(gastos_router, prefix="/api")
 
 # AGENDA
@@ -731,6 +733,12 @@ def inicializar_tablas_auxiliares():
             bind=engine,
             checkfirst=True,
         )
+
+        EmailReclamacion.__table__.create(
+            bind=engine,
+            checkfirst=True,
+        )
+        print("[RECLAMACIONES OFICINA] Tabla de histórico disponible.", flush=True)
         print("[FUSIONES] Tabla de solicitudes disponible.", flush=True)
         print(
             "[EXPEDIENTE ACCIONES] Tabla disponible.",
