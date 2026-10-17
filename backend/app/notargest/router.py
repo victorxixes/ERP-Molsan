@@ -61,37 +61,69 @@ def verificar_password(password, stored):
 
 @router.on_event("startup")
 def migrar_notargest():
-    """Migra columnas de acceso NotarGest con diagnóstico y espera limitada de bloqueos."""
+    """Comprueba primero el esquema y evita ALTER TABLE si las columnas ya existen.
+
+    PostgreSQL puede necesitar un bloqueo exclusivo para ALTER TABLE incluso con
+    ADD COLUMN IF NOT EXISTS. Por eso no ejecutamos ALTER sobre columnas existentes.
+    """
     import time as _time
 
     cambios = [
-        ("notargest_habilitado", "ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS notargest_habilitado BOOLEAN NOT NULL DEFAULT FALSE"),
-        ("notargest_password_hash", "ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS notargest_password_hash VARCHAR(255)"),
-        ("notargest_cambiar_password", "ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS notargest_cambiar_password BOOLEAN NOT NULL DEFAULT TRUE"),
+        ("notargest_habilitado", "BOOLEAN NOT NULL DEFAULT FALSE"),
+        ("notargest_password_hash", "VARCHAR(255)"),
+        ("notargest_cambiar_password", "BOOLEAN NOT NULL DEFAULT TRUE"),
     ]
+    tabla = "ctn_notarios"
     print("[NOTARGEST MIGRACION] Inicio de migración de columnas de acceso.", flush=True)
+
     with engine.connect() as conn:
-        for nombre, sql in cambios:
-            completado = False
-            for intento in range(1, 4):
-                try:
-                    print(f"[NOTARGEST MIGRACION] Aplicando {nombre} (intento {intento}/3)...", flush=True)
-                    with conn.begin():
-                        conn.execute(text("SET LOCAL lock_timeout = '5s'"))
-                        conn.execute(text("SET LOCAL statement_timeout = '15s'"))
-                        conn.execute(text(sql))
-                    print(f"[NOTARGEST MIGRACION] Columna {nombre}: OK.", flush=True)
-                    completado = True
-                    break
-                except Exception as exc:
-                    print(f"[NOTARGEST MIGRACION] Error en {nombre}, intento {intento}/3: {exc!r}", flush=True)
-                    if intento < 3:
-                        _time.sleep(2)
-                    else:
-                        raise RuntimeError(f"No se pudo migrar NotarGest ({nombre}) tras 3 intentos") from exc
-            if not completado:
-                raise RuntimeError(f"Migración NotarGest incompleta: {nombre}")
-    print("[NOTARGEST MIGRACION] Migración de acceso completada.", flush=True)
+        resultado = conn.execute(
+            text(
+                "SELECT column_name FROM information_schema.columns "
+                "WHERE table_schema = current_schema() AND table_name = :tabla"
+            ),
+            {"tabla": tabla},
+        )
+        existentes = {fila[0] for fila in resultado.fetchall()}
+        print(
+            f"[NOTARGEST MIGRACION] Columnas encontradas en {tabla}: "
+            f"{', '.join(sorted(existentes)) or '(ninguna)'}.",
+            flush=True,
+        )
+
+    for nombre, tipo_sql in cambios:
+        if nombre in existentes:
+            print(f"[NOTARGEST MIGRACION] {nombre} ya existe; se omite ALTER TABLE.", flush=True)
+            continue
+
+        sql = f"ALTER TABLE {tabla} ADD COLUMN {nombre} {tipo_sql}"
+        completado = False
+        for intento in range(1, 4):
+            try:
+                print(f"[NOTARGEST MIGRACION] Añadiendo {nombre} (intento {intento}/3)...", flush=True)
+                with engine.begin() as conn:
+                    conn.execute(text("SET LOCAL lock_timeout = '5s'"))
+                    conn.execute(text("SET LOCAL statement_timeout = '15s'"))
+                    conn.execute(text(sql))
+                print(f"[NOTARGEST MIGRACION] Columna {nombre}: OK.", flush=True)
+                completado = True
+                break
+            except Exception as exc:
+                print(f"[NOTARGEST MIGRACION] Error en {nombre}, intento {intento}/3: {exc!r}", flush=True)
+                if intento < 3:
+                    _time.sleep(2)
+                else:
+                    # No bloquear el arranque completo del ERP por una migración
+                    # auxiliar de acceso NotarGest. Se deja constancia para resolverla.
+                    print(
+                        f"[NOTARGEST MIGRACION] AVISO: no se pudo añadir {nombre}; "
+                        "el arranque continuará y habrá que reintentar la migración.",
+                        flush=True,
+                    )
+        if not completado:
+            continue
+
+    print("[NOTARGEST MIGRACION] Migración de acceso revisada.", flush=True)
 
 def get_notario(token=Depends(obtener_token_bearer), db: Session = Depends(get_db)):
     """Acepta JWT de notario o JWT ERP autorizado para el módulo NotarGest."""
