@@ -503,9 +503,9 @@ export default function Fusiones() {
           <section className="overflow-hidden rounded-sm border border-slate-300">
             <header className="fusiones-panel-title fusiones-panel-title--dark">Búsqueda por recursos</header>
             <form className="space-y-2 p-3" onSubmit={(event) => { event.preventDefault(); setEstado("Todos"); }}>
-              <label className="fusiones-filter-row"><span className="font-semibold">Expediente</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º de expediente" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
-              <label className="grid grid-cols-[120px_1fr] items-center gap-2"><span className="font-semibold">Registro</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Registro de la propiedad" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
-              <label className="grid grid-cols-[120px_1fr] items-center gap-2"><span className="font-semibold">Núm. entrada</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Número de entrada" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
+              <label className="fusiones-filter-row"><span className="font-semibold">Expediente</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º de expediente" className="input-sj fusiones-input" /></label>
+              <label className="grid grid-cols-[120px_1fr] items-center gap-2"><span className="font-semibold">Registro</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Registro de la propiedad" className="input-sj fusiones-input" /></label>
+              <label className="grid grid-cols-[120px_1fr] items-center gap-2"><span className="font-semibold">Núm. entrada</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Número de entrada" className="input-sj fusiones-input" /></label>
               <div className="border-t border-dotted border-slate-300 pt-2"><button type="submit" className="rounded-sm bg-[#087cf0] px-3 py-1.5 text-[11px] text-white hover:bg-blue-700"><Icon type="search" size={12} /> Buscar</button></div>
             </form>
           </section>
