@@ -471,6 +471,8 @@ function TablaEncargos({ encargos, onFirmado }) {
                             <div className="ag-ficha-bloque-heading"><span>01 · DATOS DEL ENVÍO</span><h4>Datos del envío</h4></div>
                             <div className="ag-encargo-grid">
                               <CampoDetalle etiqueta="Fecha de envío" valor={fechaLegible(encargo.fecha_envio_notario || encargo.fecha_envio)} />
+                              <CampoDetalle etiqueta="Oficina" valor={encargo.oficina} />
+                              <CampoDetalle etiqueta="Fecha alta" valor={fechaLegible(encargo.fecha_alta)} />
                               <CampoDetalle etiqueta="Idioma del documento" valor={encargo.idioma_documento || encargo.idioma} />
                               <CampoDetalle etiqueta="Fecha solicitud PNC" valor={fechaLegible(encargo.fecha_solicitud_pnc)} />
                               <CampoDetalle etiqueta="Número solicitud PNC" valor={encargo.numero_solicitud_pnc} />
@@ -478,6 +480,20 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <CampoDetalle etiqueta="Tipo de firma" valor={encargo.tipo_firma} />
                               <CampoDetalle etiqueta="Fecha prevista de firma" valor={fechaLegible(encargo.fecha_prevista_firma)} />
                               <CampoDetalle etiqueta="Hora prevista de firma" valor={horaLegible(encargo.hora_prevista_firma)} />
+                            </div>
+                          </section>
+                          <section className="ag-encargo-subpanel ag-ficha-encargo-notarial">
+                            <div className="ag-ficha-bloque-heading"><span>03 · ENCARGO NOTARIAL</span><h4>Encargo notarial</h4></div>
+                            <div className="ag-encargo-grid">
+                              <CampoDetalle etiqueta="Tipo de operación" valor={encargo.tipo_operacion} />
+                              <CampoDetalle etiqueta="Subtipo de operación" valor={encargo.subtipo_operacion} />
+                              <CampoDetalle etiqueta="Importe" valor={encargo.importe != null ? euros(encargo.importe) : null} />
+                              <CampoDetalle etiqueta="Saldo disponible" valor={encargo.saldo_disponible != null ? euros(encargo.saldo_disponible) : null} />
+                              <CampoDetalle etiqueta="Tipo del documento formalizado" valor={(encargo.documentos_escritura || []).map((doc) => doc.tipo_documento).filter(Boolean).join(", ") || encargo.tipo_documento || encargo.formato_escritura || encargo.tipo_tramite} />
+                              <CampoDetalle etiqueta="Cuantía del documento" valor={(encargo.documentos_escritura || []).some((doc) => doc.cuantia != null) ? euros((encargo.documentos_escritura || []).reduce((total, doc) => total + (Number(doc.cuantia) || 0), 0)) : (encargo.cuantia_documento != null ? euros(encargo.cuantia_documento) : null)} />
+                              <CampoDetalle etiqueta="Datos del envío" valor={fechaLegible(encargo.fecha_envio_notario || encargo.fecha_envio)} />
+                              <CampoDetalle etiqueta="Oficina" valor={encargo.oficina} />
+                              <CampoDetalle etiqueta="Fecha alta" valor={fechaLegible(encargo.fecha_alta)} />
                             </div>
                           </section>
                           <section className="ag-encargo-subpanel ag-ficha-facturacion">
