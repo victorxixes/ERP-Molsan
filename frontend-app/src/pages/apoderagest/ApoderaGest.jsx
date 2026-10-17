@@ -447,9 +447,15 @@ function TablaEncargos({ encargos, onFirmado }) {
                             <div className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><p>Documentación disponible para consultar desde el expediente.</p></div>
                             {(() => {
                               const documentos = encargo.documentos || [];
+                              const normalizar = (valor) => normalizarCategoriaDocumento(valor);
+                              const esCategoria = (doc, opciones) => opciones.some((opcion) => normalizar(doc?.categoria).includes(normalizar(opcion)) || normalizar(doc?.nombre_original).includes(normalizar(opcion)));
                               const borradores = documentos.filter(esBorradorEscritura);
-                              const otros = documentos.filter((doc) => !esBorradorEscritura(doc) && esDocumentoOtros(doc));
-                              const restantes = documentos.filter((doc) => !esBorradorEscritura(doc) && !esDocumentoOtros(doc));
+                              const hojaEncargo = documentos.filter((doc) => !esBorradorEscritura(doc) && esCategoria(doc, ["hoja de encargo firmada", "hoja de encargo"]));
+                              const justificantes = documentos.filter((doc) => !esBorradorEscritura(doc) && esCategoria(doc, ["justificante de cancelación"]));
+                              const notasSimples = documentos.filter((doc) => !esBorradorEscritura(doc) && esCategoria(doc, ["nota simple registral", "nota simple"]));
+                              const clasificados = new Set([...borradores, ...hojaEncargo, ...justificantes, ...notasSimples]);
+                              const otros = documentos.filter((doc) => !clasificados.has(doc) && esDocumentoOtros(doc));
+                              const restantes = documentos.filter((doc) => !clasificados.has(doc) && !esDocumentoOtros(doc));
                               const renderCarpeta = (titulo, icono, lista, vacio) => (
                                 <div className="ag-carpeta-apoderado" key={titulo}>
                                   <div className="ag-carpeta-apoderado-cabecera">
@@ -471,6 +477,9 @@ function TablaEncargos({ encargos, onFirmado }) {
                               return (
                                 <div className="ag-carpetas-apoderado">
                                   {renderCarpeta("Borradores de escritura", "▤", borradores, "No hay borradores de escritura disponibles.")}
+                                  {renderCarpeta("Hoja de encargo firmada", "▣", hojaEncargo, "No hay hojas de encargo firmadas disponibles.")}
+                                  {renderCarpeta("Justificante de cancelación", "▣", justificantes, "No hay justificantes de cancelación disponibles.")}
+                                  {renderCarpeta("Nota simple registral", "▧", notasSimples, "No hay notas simples registrales disponibles.")}
                                   {renderCarpeta("Otros", "▣", otros, "No hay documentos clasificados en Otros.")}
                                   {restantes.length > 0 && renderCarpeta("Resto de documentación", "▧", restantes, "")}
                                 </div>
