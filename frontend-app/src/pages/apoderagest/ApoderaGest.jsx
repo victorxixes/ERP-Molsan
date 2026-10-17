@@ -785,20 +785,22 @@ export default function ApoderaGest() {
           nombreNotaria(a).localeCompare(nombreNotaria(b), "es")
         );
 
-      if (!listado.length) {
-        console.warn("CTN ha respondido sin notarías. Respuesta recibida:", respuesta?.data);
-      }
-
       setNotarias(listado);
       setNotariasCargadas(true);
 
-      // No abrir automáticamente la ficha del primer notario al entrar en CTN.
-      // Conservamos una selección previa válida; si no existe, el usuario elige.
-      setNotariaSeleccionada((actual) =>
-        actual && listado.some((item) => String(item.id) === actual)
-          ? actual
-          : ""
-      );
+      // CTN comparte el mismo catálogo que CancelGest. Al entrar en la pestaña,
+      // abrimos la primera ficha disponible si todavía no hay una selección válida.
+      // Así la sección muestra contenido real y no se queda en el estado vacío.
+      setNotariaSeleccionada((actual) => {
+        if (actual && listado.some((item) => String(item.id) === actual)) {
+          return actual;
+        }
+        return listado.length ? String(listado[0].id) : "";
+      });
+
+      if (!listado.length) {
+        setErrorCTN("El catálogo CTN no ha devuelto notarías. Comprueba el endpoint compartido con CancelGest y pulsa «Actualizar notarías» para volver a intentarlo.");
+      }
 
     } catch (err) {
       console.error("Error cargando notarías CTN:", err);
