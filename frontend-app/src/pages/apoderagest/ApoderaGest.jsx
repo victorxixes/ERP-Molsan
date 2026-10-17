@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import axios from "../../api/axios";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
+import { listarNotarias } from "../../api/ctn";
 import AutocompleteNotario from "../../components/agenda/AutocompleteNotario";
 import Agenda from "../agenda/Agenda";
 import Intranet from "../intranet/Intranet";
@@ -686,13 +687,19 @@ export default function ApoderaGest() {
     setErrorCTN("");
 
     try {
-      const respuesta = await axios.get("/ctn/notarias", {
-        params: { page: 1, page_size: 200 },
-      });
+      // Usar el cliente de catálogo compartido con CTN: recorre todas las
+      // páginas disponibles y devuelve respuesta.data como array normalizado.
+      const respuesta = await listarNotarias({ page: 1, page_size: 200 });
 
-      const listado = normalizarRespuesta(respuesta).sort((a, b) =>
-        nombreNotaria(a).localeCompare(nombreNotaria(b), "es")
-      );
+      const listado = normalizarRespuesta(respuesta)
+        .filter((item) => item && item.id !== null && item.id !== undefined)
+        .sort((a, b) =>
+          nombreNotaria(a).localeCompare(nombreNotaria(b), "es")
+        );
+
+      if (!listado.length) {
+        console.warn("CTN ha respondido sin notarías. Respuesta recibida:", respuesta?.data);
+      }
 
       setNotarias(listado);
       setNotariasCargadas(true);
@@ -707,8 +714,12 @@ export default function ApoderaGest() {
 
     } catch (err) {
       console.error("Error cargando notarías CTN:", err);
+      setNotarias([]);
+      setNotariasCargadas(false);
+      const detalle = err?.response?.data?.detail;
       setErrorCTN(
-        err?.response?.data?.detail ||
+        (typeof detalle === "string" && detalle) ||
+          err?.message ||
           "No se ha podido cargar el listado de notarías de CTN."
       );
     } finally {
