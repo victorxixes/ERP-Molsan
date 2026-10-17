@@ -1556,10 +1556,16 @@
 @media(min-width:901px){.ag-archivo-layout{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)}}
 @media(max-width:900px){.ag-ficha-paneles .ag-ficha-archivo,.ag-ficha-paneles .ag-ficha-registral{grid-column:1/-1!important}.ag-archivo-layout{grid-template-columns:minmax(0,1fr)}.ag-visor-inline-contenido{height:340px}}
 
-/* Mantener Carpeta digital y Fincas/Registros en columnas contiguas en escritorio */
+/* Mantener los tres bloques iniciales en paralelo; Carpeta digital y Registro quedan debajo */
 @media(min-width:901px){
-  .ag-ficha-paneles .ag-ficha-encargo-notarial{grid-column:1/-1!important}
-  .ag-ficha-paneles .ag-ficha-encargo-notarial .ag-encargo-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ag-encargo-paneles.ag-ficha-paneles{
+    grid-template-columns:minmax(0,1fr) minmax(0,1.08fr) minmax(0,1fr);
+    align-items:start;
+  }
+  .ag-ficha-paneles .ag-ficha-envio,
+  .ag-ficha-paneles .ag-ficha-facturacion,
+  .ag-ficha-paneles .ag-ficha-encargo-notarial{grid-column:auto!important}
+  .ag-ficha-paneles .ag-ficha-encargo-notarial .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ag-ficha-paneles .ag-ficha-archivo{grid-column:1!important}
   .ag-ficha-paneles .ag-ficha-registral{grid-column:2!important}
 }
