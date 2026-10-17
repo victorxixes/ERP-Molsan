@@ -976,7 +976,8 @@
   .ctn-btn {
     transition: none;
   }
-  
+}
+
 /* =========================================================
    CTN — ADAPTACIÓN VISUAL AL MÓDULO EXPEDIENTES
    Añadir al FINAL de src/css/CtnListadoPage.css
@@ -1315,4 +1316,4 @@
     padding: 12px;
   }
 }
-}
+
