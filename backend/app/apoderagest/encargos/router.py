@@ -165,17 +165,14 @@ def aceptar_encargo(
     apoderado_nombre = str(getattr(expediente, "apoderado", "") or "").strip()
     apoderado_id = getattr(notario, "apoderado_id", None)
     if apoderado_id is None and apoderado_nombre:
-        apoderado_id = (
-            db.query(Empleado.id)
-            .filter(
-                func.translate(
-                    func.lower(func.trim(func.concat(func.coalesce(Empleado.nombre, ""), " ", func.coalesce(Empleado.apellidos, ""))),
-                    "áéíóúüñ",
-                    "aeiouun",
-                ) == func.translate(apoderado_nombre.lower(), "áéíóúüñ", "aeiouun")
-            )
-            .scalar()
-        )
+        for empleado in db.query(Empleado).all():
+            nombre_empleado = _normalizar_nombre(" ".join(filter(None, [
+                getattr(empleado, "nombre", None),
+                getattr(empleado, "apellidos", None),
+            ])))
+            if nombre_empleado == _normalizar_nombre(apoderado_nombre):
+                apoderado_id = empleado.id
+                break
 
     try:
         expediente.numero_solicitud_pnc = datos.numero_solicitud_pnc.strip()
