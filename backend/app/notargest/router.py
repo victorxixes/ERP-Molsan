@@ -21,6 +21,7 @@ from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.expediente_observaciones.models import ExpedienteObservacion
 from backend.app.empleados.models import Empleado
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.storage import CARPETA_DIGITAL_DIR
 
 router = APIRouter(prefix="/notargest", tags=["NotarGest"])
@@ -66,22 +67,49 @@ def migrar_notargest():
         conn.execute(text("ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS notargest_cambiar_password BOOLEAN NOT NULL DEFAULT TRUE"))
 
 def get_notario(token=Depends(obtener_token_bearer), db: Session = Depends(get_db)):
+    """Acepta JWT de notario o JWT ERP autorizado para el módulo NotarGest."""
     try:
         payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM])
-        if payload.get("tipo") != "notargest" or not payload.get("notaria_id"):
+        if payload.get("tipo") == "notargest" and payload.get("notaria_id"):
+            n = db.query(Notaria).filter(Notaria.id == int(payload["notaria_id"])).first()
+            if not n or not n.notargest_habilitado:
+                raise HTTPException(status_code=403, detail="Acceso NotarGest deshabilitado")
+            return n
+        empleado_id = payload.get("id")
+        if not empleado_id:
             raise HTTPException(status_code=401, detail="Sesión NotarGest inválida")
-        n = db.query(Notaria).filter(Notaria.id == int(payload["notaria_id"])).first()
-        if not n or not n.notargest_habilitado:
-            raise HTTPException(status_code=403, detail="Acceso NotarGest deshabilitado")
-        return n
+        empleado = db.query(Empleado).filter(Empleado.id == int(empleado_id)).first()
+        if not empleado or getattr(empleado, "activo", True) is False:
+            raise HTTPException(status_code=401, detail="Usuario ERP inválido o inactivo")
+        modulos = getattr(empleado, "modulos_visibles_list", None) or []
+        if not any(str(m).strip().casefold() == "notargest" for m in modulos):
+            raise HTTPException(status_code=403, detail="NotarGest no está habilitado para este usuario ERP")
+        require_perm_modulo(empleado, "notargest", "ver")
+        return empleado
     except HTTPException:
         raise
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="La sesión ha caducado")
-    except Exception:
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Sesión NotarGest inválida")
+    except Exception as exc:
+        print(f"ERROR AUTENTICACIÓN NOTARGEST: {exc}", flush=True)
         raise HTTPException(status_code=401, detail="Sesión NotarGest inválida")
 
+def _es_usuario_erp(actor):
+    return isinstance(actor, Empleado)
+
+
 def _expedientes_de_notario(n, db):
+    if _es_usuario_erp(n):
+        filtros = []
+        if hasattr(Expediente, "fecha_envio_notario"):
+            filtros.append(Expediente.fecha_envio_notario.isnot(None))
+        if hasattr(Expediente, "notargest_estado"):
+            filtros.append(Expediente.notargest_estado.isnot(None))
+        if filtros:
+            return db.query(Expediente).filter(or_(*filtros)).order_by(Expediente.id.desc()).limit(1000).all()
+        return []
     nombre = " ".join(x for x in [n.nombre, n.apellidos] if x).strip()
     filtros = []
     if nombre:
@@ -191,7 +219,9 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
 
 @router.get("/me")
 def me(n=Depends(get_notario)):
-    return {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.nif, "requiere_cambio_password": False}
+    if _es_usuario_erp(n):
+        return {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.dni, "tipo_acceso": "erp", "requiere_cambio_password": False}
+    return {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.nif, "tipo_acceso": "notario", "requiere_cambio_password": False}
 
 @router.post("/cambiar-password")
 def cambiar_password(data: CambioPassword, n=Depends(get_notario), db: Session = Depends(get_db)):
@@ -360,6 +390,10 @@ def _expediente_autorizado(expediente_id, n, db):
     e = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id)).first()
     if not e:
         raise HTTPException(status_code=404, detail="Expediente no encontrado")
+    if _es_usuario_erp(n):
+        if not (getattr(e, "fecha_envio_notario", None) or getattr(e, "notargest_estado", None)):
+            raise HTTPException(status_code=403, detail="Este expediente no forma parte del circuito NotarGest")
+        return e
     nombre = " ".join(x for x in [n.nombre, n.apellidos] if x).strip().casefold()
     nif_notario = normalizar_nif(getattr(e, "nif_notario", "") or "")
     if not ((nombre and (getattr(e, "nombre_notario", "") or "").strip().casefold() == nombre) or (n.nif and nif_notario == normalizar_nif(n.nif))):
