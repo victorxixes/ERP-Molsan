@@ -1,7 +1,8 @@
 
 """Endpoints de encargos de ApoderaGest."""
 
-from datetime import date, time
+from datetime import date, datetime, time
+from zoneinfo import ZoneInfo
 from pydantic import BaseModel, Field
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import func
@@ -72,7 +73,7 @@ def firmar_encargo(
     if not protocolo:
         raise HTTPException(status_code=422, detail="Indica el número de protocolo.")
 
-    if datos.fecha_firma > date.today():
+    if datos.fecha_firma > datetime.now(ZoneInfo("Europe/Madrid")).date():
         raise HTTPException(status_code=422, detail="La fecha real de firma no puede ser futura.")
 
     notario = None
