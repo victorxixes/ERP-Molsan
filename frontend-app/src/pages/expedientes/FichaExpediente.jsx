@@ -420,17 +420,6 @@ const CAMPOS_ACTIVIDADES = {
     },
 
     {
-      key: "ultima_accion",
-      label: "Última acción",
-    },
-
-    {
-      key: "fecha_ultima_accion",
-      label: "Fecha última acción",
-      tipo: "fecha",
-    },
-
-    {
       key: "sol",
       label: "SOL",
     },
@@ -487,17 +476,6 @@ const CAMPOS_ACTIVIDADES = {
     {
       key: "fecha_firma",
       label: "Fecha firma",
-      tipo: "fecha",
-    },
-
-    {
-      key: "ultima_accion",
-      label: "Última acción",
-    },
-
-    {
-      key: "fecha_ultima_accion",
-      label: "Fecha última acción",
       tipo: "fecha",
     },
 
@@ -583,21 +561,6 @@ const CAMPOS_ACTIVIDADES = {
       tipo: "fecha",
     },
 
-    {
-      key: "copia_simple_escritura",
-      label: "Copia simple escritura",
-    },
-
-    {
-      key: "ultima_accion",
-      label: "Última acción",
-    },
-
-    {
-      key: "fecha_ultima_accion",
-      label: "Fecha última acción",
-      tipo: "fecha",
-    },
   ],
 
   "liquidacion-impuestos": [
@@ -655,20 +618,7 @@ const CAMPOS_ACTIVIDADES = {
       label: "Fecha inscripción",
       tipo: "fecha",
     },
-    {
-      key: "escritura_simple_cancelacion",
-      label: "Hoja de inscripción",
-    },
-    {
-      key: "registral_estado",
-      label: "Estado registral",
-      estado: true,
-    },
-    {
-      key: "registral_fecha",
-      label: "Fecha registral",
-      tipo: "fecha",
-    },
+
   ],
 
   "defectos-registrales": [
@@ -700,17 +650,6 @@ const CAMPOS_ACTIVIDADES = {
       tipo: "fecha",
     },
 
-    {
-      key: "registral_estado",
-      label: "Estado registral",
-      estado: true,
-    },
-
-    {
-      key: "registral_fecha",
-      label: "Fecha registral",
-      tipo: "fecha",
-    },
   ],
 
   "facturacion-cierre": [
