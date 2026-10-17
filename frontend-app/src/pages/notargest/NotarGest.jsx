@@ -334,7 +334,7 @@ export default function NotarGest() {
           { key: "defectos", label: "Expedientes con defectos", icon: "globe", badge: cuenta("defectos") },
           { key: "inscripcion", label: "Inscripciones registrales", icon: "folder", badge: cuenta("inscripcion") },
           { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "clipboard", badge: cuenta("cerrada") },
-          { key: "firmas_urgentes", label: "Firmas urgentes", icon: "alarm-clock", badge: expedientes.filter(x => x.firma_urgente).length },
+          { key: "firmas_urgentes", label: "Firmas urgentes", icon: "activity", badge: expedientes.filter(x => x.firma_urgente).length, attention: expedientes.some(x => x.firma_urgente) },
         ]}
         activeNavigationItem={sidebarVista}
         onNavigationItemClick={navegarSidebar}
