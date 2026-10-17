@@ -14,6 +14,7 @@ function normalizarCita(c) {
     tipo_cita: c.tipo_cita,
     tipo_firma: c.tipo_firma,
     observaciones: c.observaciones ?? "",
+    firma_realizada: Boolean(c.firma_realizada),
 
     notario_id: c.notario_id,
     notario_nombre: c.notario_nombre ?? "",
