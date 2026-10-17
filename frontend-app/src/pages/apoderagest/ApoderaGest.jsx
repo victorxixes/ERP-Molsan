@@ -396,7 +396,8 @@ function TablaEncargos({ encargos, onFirmado }) {
       const blob = new Blob([res.data], { type: mime });
       const url = URL.createObjectURL(blob);
       const previsualizable = mime === "application/pdf" || mime.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "gif"].includes(extension);
-      setDocumentoVisor({ ...documento, nombre, url, mime, previsualizable });
+      if (documentoVisor?.url) URL.revokeObjectURL(documentoVisor.url);
+      setDocumentoVisor({ ...documento, expedienteId: String(encargo.id_expediente || encargo.id), nombre, url, mime, previsualizable });
     } catch (error) {
       window.alert(error?.response?.data?.detail || "No se ha podido abrir el documento en el visor.");
     }
@@ -464,6 +465,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                       {encargo.bloqueado && <div className="ag-alerta-bloqueo" role="alert"><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><span>{texto(encargo.motivo_bloqueo_efectivo || encargo.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</span></div>}
                       <div className="ag-encargo-resumen ag-ficha-resumen ag-aceptar-resumen">
                         <CampoDetalle etiqueta="Expediente bloqueado" valor={encargo.bloqueado ? "Sí" : "No"} />
+                        <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} />
                         <label className="ag-aceptar-campo"><span>N.º solicitud PN</span><input type="text" value={(datosAceptacion[id]?.numero_solicitud_pnc ?? encargo.numero_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "numero_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
                         <label className="ag-aceptar-campo"><span>Fecha solicitud PNC</span><input type="date" value={(datosAceptacion[id]?.fecha_solicitud_pnc ?? encargo.fecha_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
                         <label className="ag-aceptar-campo"><span>Fecha prevista de firma</span><input type="date" value={(datosAceptacion[id]?.fecha_prevista_firma ?? encargo.fecha_prevista_firma ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_prevista_firma", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
@@ -475,8 +477,8 @@ function TablaEncargos({ encargos, onFirmado }) {
                       </div>
                       {detalleAbierto && (
                         <div className="ag-encargo-paneles ag-ficha-paneles">
-                          <section className="ag-encargo-subpanel ag-ficha-envio">
-                            <div className="ag-ficha-bloque-heading"><span>01 · DATOS DEL ENVÍO</span><h4>Datos del envío</h4></div>
+                          <details open className="ag-encargo-subpanel ag-ficha-envio">
+                            <summary className="ag-ficha-bloque-heading"><span>01 · DATOS DEL ENVÍO</span><h4>Datos del envío</h4></summary>
                             <div className="ag-encargo-grid">
                               <CampoDetalle etiqueta="Fecha de envío" valor={fechaLegible(encargo.fecha_envio_notario || encargo.fecha_envio)} />
                               <CampoDetalle etiqueta="Oficina" valor={encargo.oficina} />
@@ -489,9 +491,9 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <CampoDetalle etiqueta="Fecha prevista de firma" valor={fechaLegible(encargo.fecha_prevista_firma)} />
                               <CampoDetalle etiqueta="Hora prevista de firma" valor={horaLegible(encargo.hora_prevista_firma)} />
                             </div>
-                          </section>
-                          <section className="ag-encargo-subpanel ag-ficha-facturacion">
-                            <div className="ag-ficha-bloque-heading"><span>02 · DATOS DE FACTURACIÓN</span><h4>Datos de facturación</h4></div>
+                          </details>
+                          <details open className="ag-encargo-subpanel ag-ficha-facturacion">
+                            <summary className="ag-ficha-bloque-heading"><span>02 · DATOS DE FACTURACIÓN</span><h4>Datos de facturación</h4></summary>
                             <div className="ag-encargo-grid">
                               <CampoDetalle etiqueta="Nombre" valor={facturacion.nombre} />
                               <CampoDetalle etiqueta="Apellidos" valor={facturacion.apellidos} />
@@ -503,9 +505,9 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <CampoDetalle etiqueta="Teléfono" valor={facturacion.telefono} />
                               <CampoDetalle etiqueta="Email" valor={facturacion.email} />
                             </div>
-                          </section>
-                          <section className="ag-encargo-subpanel ag-ficha-encargo-notarial">
-                            <div className="ag-ficha-bloque-heading"><span>03 · ENCARGO NOTARIAL</span><h4>Encargo notarial</h4></div>
+                          </details>
+                          <details open className="ag-encargo-subpanel ag-ficha-encargo-notarial">
+                            <summary className="ag-ficha-bloque-heading"><span>03 · ENCARGO NOTARIAL</span><h4>Encargo notarial</h4></summary>
                             <div className="ag-encargo-grid">
                               <CampoDetalle etiqueta="Tipo de operación" valor={encargo.tipo_operacion} />
                               <CampoDetalle etiqueta="Subtipo de operación" valor={encargo.subtipo_operacion} />
@@ -513,13 +515,26 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <CampoDetalle etiqueta="Saldo disponible" valor={encargo.saldo_disponible != null ? euros(encargo.saldo_disponible) : null} />
                               <CampoDetalle etiqueta="Tipo del documento formalizado" valor={(encargo.documentos_escritura || []).map((doc) => doc.tipo_documento).filter(Boolean).join(", ") || encargo.tipo_documento || encargo.formato_escritura || encargo.tipo_tramite} />
                               <CampoDetalle etiqueta="Cuantía del documento" valor={(encargo.documentos_escritura || []).some((doc) => doc.cuantia != null) ? euros((encargo.documentos_escritura || []).reduce((total, doc) => total + (Number(doc.cuantia) || 0), 0)) : (encargo.cuantia_documento != null ? euros(encargo.cuantia_documento) : null)} />
+                              <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} />
                               <CampoDetalle etiqueta="Datos del envío" valor={fechaLegible(encargo.fecha_envio_notario || encargo.fecha_envio)} />
                               <CampoDetalle etiqueta="Oficina" valor={encargo.oficina} />
                               <CampoDetalle etiqueta="Fecha alta" valor={fechaLegible(encargo.fecha_alta)} />
                             </div>
-                          </section>
-                          <section className="ag-encargo-subpanel ag-ficha-archivo">
-                            <div className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><p>Documentación disponible para consultar desde el expediente.</p></div>
+                          </details>
+                          <details open className="ag-encargo-subpanel ag-ficha-archivo">
+                            <summary className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><p>Documentación disponible para consultar desde el expediente.</p></summary>
+                            <div className="ag-archivo-layout">
+                              <div className="ag-visor-inline">
+                                {documentoVisor && documentoVisor.expedienteId === String(encargo.id_expediente || encargo.id) ? (
+                                  <>
+                                    <div className="ag-visor-inline-cabecera"><strong>{documentoVisor.nombre}</strong><div><button type="button" onClick={descargarDocumentoVisor}>Descargar</button><button type="button" onClick={cerrarVisor}>Cerrar</button></div></div>
+                                    <div className="ag-visor-inline-contenido">
+                                      {documentoVisor.previsualizable ? (documentoVisor.mime.startsWith("image/") || ["png","jpg","jpeg","webp","gif"].includes(documentoVisor.nombre.split(".").pop()?.toLowerCase()) ? <img src={documentoVisor.url} alt={documentoVisor.nombre} className="ag-visor-imagen" /> : <iframe title={documentoVisor.nombre} src={documentoVisor.url} className="ag-visor-pdf" />) : <div className="ag-visor-estado"><strong>Vista previa no disponible para este formato.</strong><span>Descarga el archivo para abrirlo con la aplicación correspondiente.</span><button type="button" onClick={descargarDocumentoVisor}>Descargar documento</button></div>}
+                                    </div>
+                                  </>
+                                ) : <div className="ag-visor-inline-vacio"><span aria-hidden="true">▤</span><strong>Visor de documentos PDF</strong><p>Selecciona «Ver en visor» en una carpeta para consultar el documento aquí.</p></div>}
+                              </div>
+                              <div className="ag-archivo-carpetas">
                             {(() => {
                               const documentos = encargo.documentos || [];
                               const normalizar = (valor) => normalizarCategoriaDocumento(valor);
@@ -532,11 +547,11 @@ function TablaEncargos({ encargos, onFirmado }) {
                               const otros = documentos.filter((doc) => !clasificados.has(doc) && esDocumentoOtros(doc));
                               const restantes = documentos.filter((doc) => !clasificados.has(doc) && !esDocumentoOtros(doc));
                               const renderCarpeta = (titulo, icono, lista, vacio) => (
-                                <div className="ag-carpeta-apoderado" key={titulo}>
-                                  <div className="ag-carpeta-apoderado-cabecera">
+                                <details className="ag-carpeta-apoderado" key={titulo} open>
+                                  <summary className="ag-carpeta-apoderado-cabecera">
                                     <span className="ag-carpeta-apoderado-icono" aria-hidden="true">{icono}</span>
                                     <div><strong>{titulo}</strong><small>{lista.length} documento{lista.length === 1 ? "" : "s"}</small></div>
-                                  </div>
+                                  </summary>
                                   {lista.length ? (
                                     <ul className="ag-documentos-apoderado">
                                       {lista.map((doc) => (
@@ -547,7 +562,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                                       ))}
                                     </ul>
                                   ) : <p className="ag-encargo-vacio">{vacio}</p>}
-                                </div>
+                                </details>
                               );
                               return (
                                 <div className="ag-carpetas-apoderado">
@@ -560,9 +575,11 @@ function TablaEncargos({ encargos, onFirmado }) {
                                 </div>
                               );
                             })()}
-                          </section>
-                          <section className="ag-encargo-subpanel ag-ficha-registral">
-                            <div className="ag-ficha-bloque-heading"><span>03 · INFORMACIÓN REGISTRAL</span><h4>Fincas y registros de la propiedad</h4></div>
+                              </div>
+                            </div>
+                          </details>
+                          <details open className="ag-encargo-subpanel ag-ficha-registral">
+                            <summary className="ag-ficha-bloque-heading"><span>03 · INFORMACIÓN REGISTRAL</span><h4>Fincas y registros de la propiedad</h4></summary>
                             {encargo.fincas?.length ? encargo.fincas.map((finca, i) => (
                               <div className="ag-finca-registro" key={`${id}-finca-${i}`}>
                                 <div className="ag-encargo-grid">
@@ -581,9 +598,9 @@ function TablaEncargos({ encargos, onFirmado }) {
                                 </div>
                               </div>
                             )) : <p className="ag-encargo-vacio">No constan fincas registradas en el expediente.</p>}
-                          </section>
-                          <section className="ag-encargo-subpanel ag-firmar-panel ag-ficha-firma">
-                            <div className="ag-ficha-bloque-heading"><span>05 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></div>
+                          </details>
+                          <details open className="ag-encargo-subpanel ag-firmar-panel ag-ficha-firma">
+                            <summary className="ag-ficha-bloque-heading"><span>05 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></summary>
                             <p>Al pulsar «Firmar», la fecha y el protocolo se guardan en los campos oficiales de FichaExpediente.</p>
                             <div className="ag-firmar-controles">
                               <label className="ag-firma-fecha">Fecha de firma<input type="date" value={firma.fecha_firma || encargo.fecha_firma || fechaHoyLocal()} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
@@ -603,9 +620,9 @@ function TablaEncargos({ encargos, onFirmado }) {
                             </div>
                             {erroresFirma[id] && <p className="ag-firma-error">{erroresFirma[id]}</p>}
                             {mensajeFirma[id] && <p className="ag-firma-ok">{mensajeFirma[id]}</p>}
-                          </section>
-                          <section className="ag-encargo-subpanel ag-ficha-observaciones">
-                            <div className="ag-ficha-bloque-heading"><span>06 · COMUNICACIONES</span><h4>Observaciones y mensajes al gestor</h4></div>
+                          </details>
+                          <details open className="ag-encargo-subpanel ag-ficha-observaciones">
+                            <summary className="ag-ficha-bloque-heading"><span>06 · COMUNICACIONES</span><h4>Observaciones y mensajes al gestor</h4></summary>
                             <h5 className="ag-comunicaciones-subtitulo">Observaciones visibles para el apoderado</h5>
                             {encargo.observaciones_apoderado?.length ? (
                               <ul className="ag-observaciones-apoderado">
@@ -627,7 +644,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                               {erroresComentarioGestor[id] && <p className="ag-firma-error">{erroresComentarioGestor[id]}</p>}
                               {mensajesComentarioGestor[id] && <p className="ag-firma-ok">{mensajesComentarioGestor[id]}</p>}
                             </div>
-                          </section>
+                          </details>
                         </div>
                       )}
                     </article>
@@ -638,23 +655,6 @@ function TablaEncargos({ encargos, onFirmado }) {
           </section>
         );
       })}
-      {documentoVisor ? (
-        <div className="ag-visor-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) cerrarVisor(); }}>
-          <section className="ag-visor-modal" role="dialog" aria-modal="true" aria-label="Visor de documentos">
-            <header className="ag-visor-cabecera">
-              <div className="ag-visor-titulo"><span className="ag-visor-icono">▤</span><div><strong>{documentoVisor.categoria || "Documento de carpeta digital"}</strong><small>{documentoVisor.nombre}</small></div></div>
-              <div className="ag-visor-acciones"><button type="button" onClick={descargarDocumentoVisor}>Descargar</button><button type="button" className="ag-visor-cerrar" onClick={cerrarVisor} aria-label="Cerrar visor">×</button></div>
-            </header>
-            <div className="ag-visor-contenido">
-              {documentoVisor.previsualizable ? (
-                documentoVisor.mime.startsWith("image/") || ["png","jpg","jpeg","webp","gif"].includes(documentoVisor.nombre.split(".").pop()?.toLowerCase())
-                  ? <div className="ag-visor-imagen-contenedor"><img src={documentoVisor.url} alt={documentoVisor.nombre} className="ag-visor-imagen" /></div>
-                  : <iframe title={documentoVisor.nombre} src={documentoVisor.url} className="ag-visor-pdf" />
-              ) : <div className="ag-visor-estado"><strong>Vista previa no disponible para este formato.</strong><span>Descarga el archivo para abrirlo con la aplicación correspondiente.</span><button type="button" onClick={descargarDocumentoVisor}>Descargar documento</button></div>}
-            </div>
-          </section>
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -844,7 +844,7 @@ export default function ApoderaGest() {
           { key: "intranet", label: "Intranet", icon: "folder" },
         ]}
         activeNavigationItem={pestana}
-        onNavigationItemClick={setPestana}
+        onNavigationItemClick={(key) => setPestana(({ dashboard: "Dashboard", agenda: "Agenda", encargos: "Encargos", ctn: "CTN", mensajes: "Mensajes", intranet: "Intranet" }[String(key).toLowerCase()] || key))}
       />
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
