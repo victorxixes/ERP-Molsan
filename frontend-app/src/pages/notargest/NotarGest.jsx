@@ -17,6 +17,7 @@ const bandejas = [
 ];
 const esFecha = (v) => v ? String(v).slice(0, 10).split("-").reverse().join("-") : "—";
 const texto = (v) => v === null || v === undefined || v === "" ? "—" : String(v);
+const euros = (v) => v === null || v === undefined || v === "" ? "—" : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v));
 
 export default function NotarGest() {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
@@ -204,8 +205,38 @@ export default function NotarGest() {
           {detalle.notargest_estado === "copia" && <label className="ng-adjuntar">Subir copia simple (PDF)<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoWorkflow("copia", e.target.files?.[0]); e.target.value = ""; }} /></label>}
           {detalle.notargest_estado === "cerrada" && <div className="ng-workflow-form"><label>Fecha de cierre<input type="date" value={fechaCierre} onChange={e => setFechaCierre(e.target.value)} /></label><label>Fecha de envío a gestoría<input type="date" value={fechaEnvioGestoria} onChange={e => setFechaEnvioGestoria(e.target.value)} /></label><button className="ng-login-submit" disabled={cargando || !fechaCierre} onClick={guardarCierre}>Guardar cierre y envío a gestoría</button></div>}
         </section>
-        <section className="ng-detalle-bloque"><h3>Datos del encargo y envío</h3><div className="ng-datos-grid">{[["Expediente",detalle.id_expediente],["Estado",detalle.estado],["Actividad",detalle.actividad_actual],["Oficina",detalle.oficina],["Fecha de alta",esFecha(detalle.fecha_alta)],["Fecha de envío",esFecha(detalle.fecha_envio_notario || detalle.fecha_envio)],["Solicitud PNC",detalle.numero_solicitud_pnc],["Fecha solicitud PNC",esFecha(detalle.fecha_solicitud_pnc)],["Fecha prevista de firma",esFecha(detalle.fecha_prevista_firma)],["Hora prevista",detalle.hora_prevista_firma],["Fecha de firma",esFecha(detalle.fecha_firma)],["Protocolo",detalle.protocolo],["Tipo de documento",detalle.tipo_documento],["Idioma",detalle.idioma_documento],["Formato",detalle.formato_escritura],["Trámite",detalle.tipo_tramite],["Tipo de firma",detalle.tipo_firma],["Solicitante",detalle.solicitante],["Titular",detalle.titular]].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div></section>
-        <section className="ng-detalle-bloque"><h3>Fincas y registros</h3>{detalle.fincas?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Finca</th><th>CRU / IDUFIR</th><th>Registro</th><th>Provincia</th><th>Población</th><th>Sección</th><th>Inscripción</th><th>Cuantía</th></tr></thead><tbody>{detalle.fincas.map(f => <tr key={f.id}><td>{texto(f.finca)}</td><td>{texto(f.cru_idufir)}</td><td>{texto(f.registro)}</td><td>{texto(f.provincia)}</td><td>{texto(f.poblacion)}</td><td>{texto(f.seccion)}</td><td>{texto(f.inscripcion)}</td><td>{texto(f.cuantia)}</td></tr>)}</tbody></table></div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}</section>
+        <section className="ng-detalle-bloque">
+          <h3>1 · Datos de envío y firma prevista</h3>
+          <div className="ng-datos-grid">{[
+            ["Expediente", detalle.id_expediente], ["Fecha de envío", esFecha(detalle.fecha_envio_notario || detalle.fecha_envio)],
+            ["Idioma del documento", detalle.idioma_documento], ["Fecha solicitud PNC", esFecha(detalle.fecha_solicitud_pnc)],
+            ["Número solicitud PNC", detalle.numero_solicitud_pnc], ["Notario", detalle.nombre_notario || detalle.notario],
+            ["NIF notario", detalle.nif_notario], ["Población notario", detalle.poblacion], ["Provincia notario", detalle.provincia],
+            ["Apoderado", detalle.apoderado], ["Tipo de firma", detalle.tipo_firma],
+            ["Fecha prevista de firma", esFecha(detalle.fecha_prevista_firma)], ["Hora prevista de firma", detalle.hora_prevista_firma]
+          ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
+        </section>
+        <section className="ng-detalle-bloque">
+          <h3>2 · Datos de facturación</h3>
+          <div className="ng-datos-grid">{[
+            ["Nombre", detalle.facturacion_nombre], ["Apellidos", detalle.facturacion_apellidos], ["DNI/NIF", detalle.facturacion_dni_nif],
+            ["Dirección", detalle.facturacion_direccion], ["Código postal", detalle.facturacion_codigo_postal],
+            ["Población", detalle.facturacion_poblacion], ["Provincia", detalle.facturacion_provincia],
+            ["Teléfono", detalle.facturacion_telefono], ["Correo electrónico", detalle.facturacion_email]
+          ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
+        </section>
+        <section className="ng-detalle-bloque">
+          <h3>3 · Escritura, tipo de documento, cuantía, fincas y registros</h3>
+          <div className="ng-datos-grid">{[
+            ["Formato de escritura", detalle.formato_escritura], ["Tipo de trámite", detalle.tipo_tramite],
+            ["Escritura firmada", detalle.escritura_firmada === true ? "Sí" : detalle.escritura_firmada === false ? "No" : detalle.escritura_firmada],
+            ["Fecha de firma", esFecha(detalle.fecha_firma)], ["Protocolo", detalle.protocolo]
+          ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
+          <h4 className="ng-subtitulo-detalle">Tipo de documento y cuantía</h4>
+          {detalle.documentos_escritura?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Tipo del documento formalizado</th><th>Cuantía del documento</th></tr></thead><tbody>{detalle.documentos_escritura.map((d,i) => <tr key={d.id || i}><td>{texto(d.tipo_documento)}</td><td>{euros(d.cuantia)}</td></tr>)}</tbody></table></div> : <div className="ng-datos-grid"><div className="ng-dato"><small>Tipo del documento formalizado</small><strong>{texto(detalle.tipo_documento)}</strong></div><div className="ng-dato"><small>Cuantía del documento</small><strong>{euros(detalle.cuantia)}</strong></div></div>}
+          <h4 className="ng-subtitulo-detalle">Fincas y registros</h4>
+          {detalle.fincas?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Finca</th><th>CRU / IDUFIR</th><th>Registro</th><th>Provincia</th><th>Población</th><th>Sección</th><th>Inscripción</th><th>Cuantía</th></tr></thead><tbody>{detalle.fincas.map(f => <tr key={f.id}><td>{texto(f.finca)}</td><td>{texto(f.cru_idufir)}</td><td>{texto(f.registro)}</td><td>{texto(f.provincia)}</td><td>{texto(f.poblacion)}</td><td>{texto(f.seccion)}</td><td>{texto(f.inscripcion)}</td><td>{euros(f.cuantia)}</td></tr>)}</tbody></table></div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}
+        </section>
         <section className="ng-detalle-bloque"><h3>Carpeta Digital · Documentación previa</h3><p className="ng-descripcion">Archivos disponibles del expediente, agrupados por categoría.</p>{detalle.documentos?.length ? <div className="ng-documentos">{detalle.documentos.map(d => <div className="ng-documento" key={d.id}><div><strong>{d.nombre}</strong><small>{d.categoria} · {esFecha(d.fecha_subida)}</small></div><button className="ng-boton-secundario" onClick={() => abrirDocumento(d)}>Abrir PDF / archivo</button></div>)}</div> : <p className="ng-mensaje">Todavía no hay documentos en la Carpeta Digital.</p>}</section>
         <section className="ng-detalle-bloque ng-comentarios-gestor">
           <h3>Observaciones y comentarios</h3>
@@ -223,7 +254,6 @@ export default function NotarGest() {
             {detalle.observaciones && <article className="ng-observacion"><p>{detalle.observaciones}</p><small>Observaciones generales del expediente</small></article>}
           </div>
         </section>
-        <section className="ng-detalle-bloque"><h3>Información económica y contractual</h3><div className="ng-datos-grid">{[["Capital",detalle.capital],["Importe",detalle.importe],["Saldo real",detalle.saldo_real],["Saldo disponible",detalle.saldo_disponible],["Contrato",detalle.contrato],["Tipo de operación",detalle.tipo_operacion]].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div></section>
       </div>
     </section>}
     <footer className="ng-pie">MOLSAN ERP · NotarGest</footer>
