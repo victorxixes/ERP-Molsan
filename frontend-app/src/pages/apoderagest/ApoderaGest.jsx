@@ -692,7 +692,19 @@ export default function ApoderaGest() {
 
   return (
     <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
-      <Sidebar brandName="ApoderaGest" />
+      <Sidebar
+        brandName="ApoderaGest"
+        navigationItems={[
+          { key: "dashboard", label: "Dashboard", icon: "home" },
+          { key: "agenda", label: "Agenda", icon: "calendar" },
+          { key: "encargos", label: "Encargos", icon: "clipboard" },
+          { key: "ctn", label: "CTN", icon: "globe" },
+          { key: "mensajes", label: "Mensajes", icon: "chat" },
+          { key: "intranet", label: "Intranet", icon: "folder" },
+        ]}
+        activeNavigationItem={pestana}
+        onNavigationItemClick={setPestana}
+      />
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest">
