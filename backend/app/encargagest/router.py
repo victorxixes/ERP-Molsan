@@ -541,7 +541,7 @@ def crear_actividad(encargo_id: int, datos: CrearActividad, db: Session = Depend
     mensaje = datos.mensaje.strip()
     if not mensaje:
         raise HTTPException(status_code=422, detail="Escribe un mensaje antes de guardarlo.")
-    if tipo == "INCIDENCIA":
+    if tipo == "INCIDENCIA" and not _es_externo(usuario):
         item = _obtener_encargo(db, encargo_id, usuario)
         item.estado = "INCIDENCIA"
         item.actualizado_en = datetime.utcnow()
@@ -580,7 +580,7 @@ async def subir_documento(
             nombre_guardado=nombre_guardado,
             tipo_mime=archivo.content_type,
             tamano_bytes=len(contenido),
-            subido_por_id=usuario.id,
+            subido_por_id=(usuario.get("usuario_id") if _es_externo(usuario) else usuario.id),
             subido_por_nombre=_nombre_usuario(usuario),
         )
         db.add(documento)
