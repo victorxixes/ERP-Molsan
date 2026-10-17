@@ -1208,3 +1208,19 @@
 .ag-carpeta-apoderado .ag-documentos-apoderado{margin-top:8px}
 .ag-carpetas-apoderado .ag-carpeta-apoderado:last-child:nth-child(3){grid-column:1/-1}
 @media(max-width:700px){.ag-carpetas-apoderado{grid-template-columns:minmax(0,1fr)}.ag-carpetas-apoderado .ag-carpeta-apoderado:last-child:nth-child(3){grid-column:auto}}
+
+
+/* Fila compacta de aceptación de encargos CTN */
+.ag-aceptar-resumen{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px;align-items:end}
+.ag-aceptar-campo{display:flex;min-width:0;flex-direction:column;gap:6px}
+.ag-aceptar-campo>span{color:#738199;font-size:10px;font-weight:850;letter-spacing:.055em;text-transform:uppercase}
+.ag-aceptar-campo input{box-sizing:border-box;width:100%;min-width:0;min-height:39px;border:1px solid #d7e0ef;border-radius:10px;background:#fbfcff;padding:8px 10px;color:#25334b;font:inherit;font-size:12px;font-weight:650;outline:none}
+.ag-aceptar-campo input:focus{border-color:#6b8af5;background:#fff;box-shadow:0 0 0 3px rgba(65,109,240,.12)}
+.ag-aceptar-campo input:disabled{cursor:not-allowed;background:#edf0f5;color:#8a94a6}
+.ag-aceptar-accion{display:flex;align-items:end;min-height:39px}
+.ag-aceptar-accion button{min-height:39px;border:0;border-radius:10px;background:linear-gradient(135deg,#2458cf,#4279ef);padding:9px 20px;color:#fff;font-size:12px;font-weight:850;box-shadow:0 5px 14px rgba(37,87,205,.18);cursor:pointer}
+.ag-aceptar-accion button:disabled{cursor:not-allowed;background:#aab4c5;box-shadow:none}
+.ag-aceptar-resumen .ag-firma-error,.ag-aceptar-resumen .ag-firma-ok{grid-column:1/-1;margin:0}
+@media(max-width:1100px){.ag-aceptar-resumen{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:460px){.ag-aceptar-resumen{grid-template-columns:minmax(0,1fr)}}
