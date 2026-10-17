@@ -114,7 +114,7 @@ def obtener_dashboard(db, usuario):
     for encargo in firmados:
         prevista = _fecha(encargo.get("fecha_prevista_firma"))
         real = _fecha(encargo.get("fecha_firma"))
-        if prevista and real and real >= prevista:
+        if prevista and real:
             duraciones.append((real - prevista).days)
     media_dias = round(sum(duraciones) / len(duraciones), 1) if duraciones else None
 
