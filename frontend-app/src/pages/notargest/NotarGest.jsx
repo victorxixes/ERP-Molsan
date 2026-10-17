@@ -72,6 +72,13 @@ export default function NotarGest() {
       const [perfil, lista] = await Promise.all([peticion("/notargest/me"), peticion("/notargest/expedientes")]);
       setNotario(perfil); setExpedientes(lista.items || []);
       try {
+        const pagosData = await peticion("/notargest/pagos");
+        setPagosNotario(pagosData.items || []);
+      } catch (errorPagos) {
+        console.warn("No se pudieron cargar los pagos de NotarGest:", errorPagos);
+        setPagosNotario([]);
+      }
+      try {
         const avisosData = await peticion("/notargest/avisos");
         setAvisos({ comentarios: avisosData.comentarios || [], documentos: avisosData.documentos || [] });
       } catch (errorAvisos) {
@@ -88,17 +95,7 @@ export default function NotarGest() {
 
   async function abrirPagos() {
     setPagosAbiertos(true);
-    setCargandoPagos(true);
-    setError("");
-    try {
-      const data = await peticion("/notargest/pagos");
-      setPagosNotario(data.items || []);
-    } catch (e) {
-      setError(e.message || "No se han podido cargar los pagos.");
-      setPagosNotario([]);
-    } finally {
-      setCargandoPagos(false);
-    }
+    setCargandoPagos(false);
   }
 
   async function abrirPdfPago(item, tipo) {
@@ -300,6 +297,7 @@ export default function NotarGest() {
     defectos: "Expedientes con defectos",
     inscripcion: "Inscripciones registrales",
     cerrada: "Escrituras cerradas inscritas",
+    firmas_urgentes: "Firmas urgentes",
     avisos_comentarios: "",
     avisos_documentos: "",
   }[vista] || "");
@@ -315,6 +313,7 @@ export default function NotarGest() {
       "Expedientes con defectos": "defectos",
       "Inscripciones registrales": "inscripcion",
       "Escrituras cerradas inscritas": "cerrada",
+      "Firmas urgentes": "firmas_urgentes",
     };
     setBusqueda("");
     setVista(destinos[label] || "inicio");
@@ -335,6 +334,7 @@ export default function NotarGest() {
           { key: "defectos", label: "Expedientes con defectos", icon: "globe", badge: cuenta("defectos") },
           { key: "inscripcion", label: "Inscripciones registrales", icon: "folder", badge: cuenta("inscripcion") },
           { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "clipboard", badge: cuenta("cerrada") },
+          { key: "firmas_urgentes", label: "Firmas urgentes", icon: "alarm-clock", badge: expedientes.filter(x => x.firma_urgente).length },
         ]}
         activeNavigationItem={sidebarVista}
         onNavigationItemClick={navegarSidebar}
@@ -344,7 +344,7 @@ export default function NotarGest() {
       />
       {notificacionesAbiertas && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setNotificacionesAbiertas(false); }}><section className="ng-modal ng-modal-avisos" role="dialog" aria-modal="true" aria-labelledby="ng-avisos-titulo"><header><div><span className="ng-kicker">NOTARGEST · AVISOS</span><h2 id="ng-avisos-titulo">Notificaciones pendientes</h2><p>Documentos nuevos y observaciones del gestor vinculados a tus expedientes.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setNotificacionesAbiertas(false)}>Cerrar ✕</button></header><div className="ng-modal-lista">{totalAvisosPendientes === 0 ? <div className="ng-modal-vacio"><strong>Todo al día</strong><p>No tienes notificaciones pendientes de leer.</p></div> : <>{avisosPendientes.documentos.map(item => <article className="ng-aviso-item" key={`documento:${item.id}`}><span className="ng-aviso-icono">PDF</span><div className="ng-aviso-contenido"><strong>Nuevo documento en expediente {item.id_expediente}</strong><p>{texto(item.nombre)} · {texto(item.categoria)}</p><small>{texto(item.oficina)} · {texto(item.fecha_subida)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("documento", item.id)}>Marcar como leída</button></div></div></article>)}{avisosPendientes.comentarios.map(item => <article className="ng-aviso-item" key={`comentario:${item.id}`}><span className="ng-aviso-icono ng-aviso-icono-observacion">!</span><div className="ng-aviso-contenido"><strong>Nueva observación · expediente {item.id_expediente}</strong><p>{texto(item.comentario)}</p><small>{texto(item.oficina)} · {texto(item.fecha)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("comentario", item.id)}>Marcar como leída</button></div></div></article>)}</>}</div></section></div>}
       {pagosAbiertos && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPagosAbiertos(false); }}>
-        <section className="ng-modal ng-modal-pagos" role="dialog" aria-modal="true" aria-labelledby="ng-pagos-titulo">
+        <section className="ng-modal ng-modal-pagos ng-modal-pagos-amplio" role="dialog" aria-modal="true" aria-labelledby="ng-pagos-titulo">
           <header><div><span className="ng-kicker">NOTARGEST · GESTIÓN ECONÓMICA</span><h2 id="ng-pagos-titulo">Solicitudes de Pago efectuadas por Molsan</h2><p>Pagos registrados desde la Ficha de expediente y vinculados a la notaría.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPagosAbiertos(false)}>Cerrar ✕</button></header>
           <div className="ng-pagos-tabla-wrap">
             <table className="ng-tabla ng-tabla-pagos"><thead><tr><th>N.º expediente</th><th>Fecha de pago</th><th>Nombre</th><th>DNI</th><th>Importe</th><th>Protocolo</th><th>Fecha de firma</th><th>Factura notarial</th><th>Justificante</th></tr></thead>
@@ -385,12 +385,6 @@ export default function NotarGest() {
     </header>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
     {vista === "inicio" && <section className="ng-dashboard-analitica">
-      <div className="ng-dashboard-kpis">
-        <article><span>Firmas realizadas</span><strong>{expedientes.filter(x => x.fecha_firma && x.protocolo).length}</strong><small>Firmas reales con fecha y protocolo</small></article>
-        <article><span>Pendientes de firma</span><strong>{cuenta("firma")}</strong><small>Expedientes en la bandeja de firma</small></article>
-        <article><span>Facturas notariales pendientes</span><strong>{cuenta("factura")}</strong><small>Expedientes pendientes de factura</small></article>
-        <article><span>Expedientes con defectos</span><strong>{cuenta("defectos")}</strong><small>Defectos registrales abiertos o en trámite</small></article>
-      </div>
       <div className="ng-dashboard-graficos">
         <section className="ng-dashboard-grafico"><div className="ng-bloque-heading"><div><span className="ng-kicker">ACTIVIDAD</span><h3>Firmas realizadas por mes</h3></div></div>
           {(() => {
@@ -412,6 +406,25 @@ export default function NotarGest() {
             <p>Consulta los pagos efectuados al notario, sus importes y los documentos PDF vinculados.</p>
             <button type="button" className="ng-login-submit" onClick={abrirPagos}>Solicitudes de Pago efectuadas por Molsan</button>
           </div>
+          {(() => {
+            const meses = [];
+            const ahora = new Date();
+            for (let i = 5; i >= 0; i--) {
+              const d = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1);
+              meses.push({ key: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`, label: d.toLocaleDateString("es-ES",{month:"short",year:"2-digit"}), valor: 0 });
+            }
+            pagosNotario.forEach(p => {
+              const key = String(p.fecha_pago || "").slice(0,7);
+              const mes = meses.find(x => x.key === key);
+              const importe = Number(p.importe || 0);
+              if (mes && Number.isFinite(importe)) mes.valor += importe;
+            });
+            const max = Math.max(1, ...meses.map(x => x.valor));
+            return <div className="ng-pagos-grafico">
+              <div className="ng-pagos-grafico-titulo"><strong>Cuantías pagadas por mes</strong><span>Últimos 6 meses</span></div>
+              <div className="ng-barras-meses ng-barras-pagos">{meses.map(x => <div className="ng-barra-mes" key={x.key}><strong>{euros(x.valor)}</strong><div className="ng-barra-pista"><span style={{height:`${x.valor ? Math.max(5,x.valor/max*100) : 0}%`}} /></div><small>{x.label}</small></div>)}</div>
+            </div>;
+          })()}
         </section>
         <section className="ng-dashboard-grafico ng-dashboard-etapas"><div className="ng-bloque-heading"><div><span className="ng-kicker">SEGUIMIENTO DE HITOS</span><h3>Ciclo registral</h3></div></div>
           {(() => {
@@ -434,6 +447,12 @@ export default function NotarGest() {
     {(vista === "avisos_comentarios" || vista === "avisos_documentos") && <section className="ng-panel">
       <div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div>
       {vista === "avisos_comentarios" ? (avisos.comentarios.length ? <div className="ng-documentos">{avisos.comentarios.map(o => <article className="ng-documento" key={o.id}><div><strong>Expediente {o.id_expediente} · {texto(o.solicitante)}</strong><p>{o.comentario}</p><small>{texto(o.oficina)} · {texto(o.fecha)} · {o.visibilidad}</small></div><button className="ng-boton-secundario" onClick={() => abrirExpediente({id_expediente:o.id_expediente})}>Abrir expediente →</button></article>)}</div> : <p className="ng-mensaje">No hay observaciones visibles para la notaría.</p>) : (avisos.documentos.length ? <div className="ng-documentos">{avisos.documentos.map(d => <article className="ng-documento" key={d.id}><div><strong>Expediente {d.id_expediente} · {texto(d.solicitante)}</strong><p>{d.nombre}</p><small>{texto(d.oficina)} · {texto(d.categoria)} · Añadido: {texto(d.fecha_subida)}</small></div><button className="ng-boton-secundario" onClick={() => abrirExpediente({id_expediente:d.id_expediente})}>Abrir expediente →</button></article>)}</div> : <p className="ng-mensaje">No hay documentos nuevos pendientes de revisar antes de la firma.</p>)}
+    </section>}
+    {vista === "firmas_urgentes" && <section className="ng-panel">
+      <div className="ng-panel-titulo"><div><h2>Firmas urgentes</h2><p>Expedientes marcados como urgentes desde la planificación de la firma.</p></div><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div>
+      <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>N.º expediente</th><th>Nombre</th><th>DNI</th><th>Fecha prevista</th><th>Hora</th><th>Notario</th><th>Acción</th></tr></thead><tbody>
+      {expedientes.filter(x => x.firma_urgente).map(x => <tr key={x.id}><td>{texto(x.id_expediente)}</td><td>{texto([x.nombre,x.apellidos].filter(Boolean).join(" ") || x.titular)}</td><td>{texto(x.dni || x.nif_titular)}</td><td>{esFecha(x.fecha_prevista_firma)}</td><td>{texto(x.hora_prevista_firma)}</td><td>{texto(x.nombre_notario)}</td><td><button type="button" className="ng-login-submit" onClick={() => abrirExpediente(x)}>Abrir ficha →</button></td></tr>)}
+      </tbody></table>{expedientes.filter(x => x.firma_urgente).length === 0 && <div className="ng-modal-vacio"><strong>No hay firmas urgentes</strong><p>Marca «Sí» en Firma urgente dentro de la planificación de la firma del envío a notario.</p></div>}</div>
     </section>}
     {bandejas.some(b => b.id === vista) && <section className="ng-panel">
       <div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div>
