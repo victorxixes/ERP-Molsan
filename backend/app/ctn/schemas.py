@@ -29,6 +29,8 @@ class NotariaBase(BaseModel):
     provincia: Optional[str] = None
     municipio: Optional[str] = None
     direccion: Optional[str] = None
+    lat: Optional[str] = None
+    lng: Optional[str] = None
 
     vc: Optional[str] = None
 
