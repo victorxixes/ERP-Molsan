@@ -1948,8 +1948,8 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     if(controlExpediente.cambio_gestoria&&!controlExpediente.fecha_cambio_gestoria)return setErrorControlExpediente("Indica la fecha del cambio de gestoría.");
     if(controlExpediente.bloqueo_manual&&!String(controlExpediente.motivo_bloqueo||"").trim())return setErrorControlExpediente("Indica el motivo del bloqueo manual.");
     setGuardandoControlExpediente(true);setErrorControlExpediente("");
-    try { const res=await axios.put(`/expedientes/${encodeURIComponent(numero)}/control-bloqueo`,controlExpediente);setExpediente((v)=>({...v,...(res?.data||controlExpediente)}));setMostrarControlExpediente(false); }
-    catch(e){setErrorControlExpediente(e?.response?.data?.detail||"No se pudo guardar el control del expediente.");}
+    try { const res=await axios.put(`/expedientes/${encodeURIComponent(numero)}/control-bloqueo`,{...controlExpediente,fecha_liquidacion_sin_tramitar:controlExpediente.fecha_liquidacion_sin_tramitar||null,fecha_cambio_gestoria:controlExpediente.fecha_cambio_gestoria||null,fecha_bloqueo:controlExpediente.fecha_bloqueo||null});setExpediente((v)=>({...v,...(res?.data||controlExpediente)}));setMostrarControlExpediente(false); }
+    catch(e){const detail=e?.response?.data?.detail;const mensaje=typeof detail==="string"?detail:Array.isArray(detail)?detail.map((item)=>item?.msg||"Error de validación").join(" · "):detail?.mensaje||"No se pudo guardar el control del expediente.";setErrorControlExpediente(mensaje);}
     finally{setGuardandoControlExpediente(false);}
   }
 
