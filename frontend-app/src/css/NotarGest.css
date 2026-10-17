@@ -408,3 +408,8 @@
 .notargest .ng-boton-firmas-urgentes.ng-urgencias-activas{animation:ng-alerta-firma-urgente 1s ease-in-out infinite}
 .notargest .ng-modal-pagos-amplio>header{flex-shrink:0}
 @media(max-width:760px){.notargest .ng-modal-pagos-amplio{width:calc(100vw - 16px);height:94vh}.notargest .ng-pagos-grafico{padding:10px 6px}.notargest .ng-barras-pagos .ng-barra-mes>strong{font-size:8px}}
+
+/* Botón de navegación de firmas urgentes: también se aplica al Sidebar compartido */
+.ng-boton-firmas-urgentes{border-color:#fecaca!important;background:#fff1f2!important;color:#b91c1c!important;font-weight:850!important}
+@keyframes ng-alerta-firma-urgente{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.15);filter:brightness(1)}50%{box-shadow:0 0 0 5px rgba(220,38,38,.15);filter:brightness(.93)}}
+.ng-boton-firmas-urgentes.ng-urgencias-activas{animation:ng-alerta-firma-urgente 1s ease-in-out infinite}
