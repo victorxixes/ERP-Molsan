@@ -129,6 +129,7 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
         "nombre_notario": _texto(
             getattr(expediente, "nombre_notario", None)
         ),
+        "notario_otorgante": _texto(getattr(expediente, "notario_otorgante", None)),
         "nif_notario": _texto(
             getattr(expediente, "nif_notario", None)
         ),
