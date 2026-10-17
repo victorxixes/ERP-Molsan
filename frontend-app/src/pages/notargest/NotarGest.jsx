@@ -34,6 +34,9 @@ export default function NotarGest() {
   const [protocolo, setProtocolo] = useState("");
   const [fechaCierre, setFechaCierre] = useState("");
   const [fechaEnvioGestoria, setFechaEnvioGestoria] = useState("");
+  const [gestores, setGestores] = useState([]);
+  const [comentarioGestor, setComentarioGestor] = useState("");
+  const [gestorDestinatario, setGestorDestinatario] = useState("");
 
   const peticion = useCallback(async (path, options = {}) => {
     const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(options.headers || {}) };
@@ -72,8 +75,13 @@ export default function NotarGest() {
     setCargando(true); setError(""); setMensaje("");
     try {
       const id = encodeURIComponent(item.id_expediente || item.numero_expediente);
-      const data = await peticion(`/notargest/expedientes/${id}`);
-      setDetalle(data); setFirmaFecha(data.fecha_firma || ""); setProtocolo(data.protocolo || ""); setFechaCierre(data.notargest_fecha_cierre || ""); setFechaEnvioGestoria(data.notargest_fecha_envio_gestoria || ""); setVista("detalle");
+      const [data, listaGestores] = await Promise.all([
+        peticion(`/notargest/expedientes/${id}`),
+        peticion("/notargest/gestores"),
+      ]);
+      setDetalle(data); setGestores(Array.isArray(listaGestores) ? listaGestores : []);
+      setComentarioGestor(""); setGestorDestinatario("");
+      setFirmaFecha(data.fecha_firma || ""); setProtocolo(data.protocolo || ""); setFechaCierre(data.notargest_fecha_cierre || ""); setFechaEnvioGestoria(data.notargest_fecha_envio_gestoria || ""); setVista("detalle");
     } catch (e) { setError(e.message); }
     finally { setCargando(false); }
   }
@@ -108,6 +116,23 @@ export default function NotarGest() {
       setDetalle(data); setMensaje("Documento guardado en Carpeta Digital y estado actualizado."); await cargar();
     } catch (e) { setError(e.message); } finally { setCargando(false); }
   }
+  async function guardarComentarioGestor() {
+    if (!detalle) return;
+    if (!comentarioGestor.trim()) { setError("Escribe el comentario que quieres enviar al gestor."); return; }
+    if (!gestorDestinatario) { setError("Selecciona el gestor destinatario."); return; }
+    setCargando(true); setError(""); setMensaje("");
+    try {
+      await peticion(`/notargest/expedientes/${encodeURIComponent(detalle.id_expediente)}/comentarios`, {
+        method: "POST",
+        body: JSON.stringify({ comentario: comentarioGestor.trim(), empleado_destinatario_id: Number(gestorDestinatario) }),
+      });
+      const data = await peticion(`/notargest/expedientes/${encodeURIComponent(detalle.id_expediente)}`);
+      setDetalle(data); setComentarioGestor(""); setGestorDestinatario("");
+      setMensaje("Comentario enviado al gestor seleccionado.");
+    } catch (e) { setError(e.message); }
+    finally { setCargando(false); }
+  }
+
   async function guardarCierre() {
     if (!detalle) return;
     setCargando(true); setError(""); setMensaje("");
@@ -182,7 +207,22 @@ export default function NotarGest() {
         <section className="ng-detalle-bloque"><h3>Datos del encargo y envío</h3><div className="ng-datos-grid">{[["Expediente",detalle.id_expediente],["Estado",detalle.estado],["Actividad",detalle.actividad_actual],["Oficina",detalle.oficina],["Fecha de alta",esFecha(detalle.fecha_alta)],["Fecha de envío",esFecha(detalle.fecha_envio_notario || detalle.fecha_envio)],["Solicitud PNC",detalle.numero_solicitud_pnc],["Fecha solicitud PNC",esFecha(detalle.fecha_solicitud_pnc)],["Fecha prevista de firma",esFecha(detalle.fecha_prevista_firma)],["Hora prevista",detalle.hora_prevista_firma],["Fecha de firma",esFecha(detalle.fecha_firma)],["Protocolo",detalle.protocolo],["Tipo de documento",detalle.tipo_documento],["Idioma",detalle.idioma_documento],["Formato",detalle.formato_escritura],["Trámite",detalle.tipo_tramite],["Tipo de firma",detalle.tipo_firma],["Solicitante",detalle.solicitante],["Titular",detalle.titular]].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div></section>
         <section className="ng-detalle-bloque"><h3>Fincas y registros</h3>{detalle.fincas?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Finca</th><th>CRU / IDUFIR</th><th>Registro</th><th>Provincia</th><th>Población</th><th>Sección</th><th>Inscripción</th><th>Cuantía</th></tr></thead><tbody>{detalle.fincas.map(f => <tr key={f.id}><td>{texto(f.finca)}</td><td>{texto(f.cru_idufir)}</td><td>{texto(f.registro)}</td><td>{texto(f.provincia)}</td><td>{texto(f.poblacion)}</td><td>{texto(f.seccion)}</td><td>{texto(f.inscripcion)}</td><td>{texto(f.cuantia)}</td></tr>)}</tbody></table></div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}</section>
         <section className="ng-detalle-bloque"><h3>Carpeta Digital · Documentación previa</h3><p className="ng-descripcion">Archivos disponibles del expediente, agrupados por categoría.</p>{detalle.documentos?.length ? <div className="ng-documentos">{detalle.documentos.map(d => <div className="ng-documento" key={d.id}><div><strong>{d.nombre}</strong><small>{d.categoria} · {esFecha(d.fecha_subida)}</small></div><button className="ng-boton-secundario" onClick={() => abrirDocumento(d)}>Abrir PDF / archivo</button></div>)}</div> : <p className="ng-mensaje">Todavía no hay documentos en la Carpeta Digital.</p>}</section>
-        <section className="ng-detalle-bloque"><h3>Observaciones para la notaría</h3>{detalle.observaciones_notaria?.length ? detalle.observaciones_notaria.map(o => <article className="ng-observacion" key={o.id}><p>{o.comentario}</p><small>{o.visibilidad} · {texto(o.fecha)}</small></article>) : <p className="ng-mensaje">No hay observaciones compartidas con la notaría.</p>}{detalle.observaciones && <article className="ng-observacion"><p>{detalle.observaciones}</p><small>Observaciones del expediente</small></article>}</section>
+        <section className="ng-detalle-bloque ng-comentarios-gestor">
+          <h3>Observaciones y comentarios</h3>
+          <p className="ng-descripcion">Envía un comentario directamente al gestor responsable del expediente.</p>
+          <div className="ng-comentario-form">
+            <label>Comentario<textarea rows={3} value={comentarioGestor} onChange={e => setComentarioGestor(e.target.value)} placeholder="Escribe aquí el comentario para el gestor…" maxLength={2000} /></label>
+            <label>Dirigido a<select value={gestorDestinatario} onChange={e => setGestorDestinatario(e.target.value)} required>
+              <option value="">Selecciona un gestor…</option>
+              {gestores.map(g => <option key={g.id} value={g.id}>{g.nombre}</option>)}
+            </select></label>
+            <button className="ng-login-submit" type="button" disabled={cargando || !comentarioGestor.trim() || !gestorDestinatario} onClick={guardarComentarioGestor}>Enviar comentario al gestor</button>
+          </div>
+          <div className="ng-comentarios-historico"><h4>Histórico de observaciones</h4>
+            {detalle.observaciones_notaria?.length ? detalle.observaciones_notaria.map(o => <article className="ng-observacion" key={o.id}><p>{o.comentario}</p><small>{o.visibilidad === "Gestor" ? `Dirigido a: ${o.empleado_destinatario || "Gestor"}` : o.visibilidad} · {texto(o.fecha)}</small></article>) : <p className="ng-mensaje">No hay comentarios registrados para mostrar.</p>}
+            {detalle.observaciones && <article className="ng-observacion"><p>{detalle.observaciones}</p><small>Observaciones generales del expediente</small></article>}
+          </div>
+        </section>
         <section className="ng-detalle-bloque"><h3>Información económica y contractual</h3><div className="ng-datos-grid">{[["Capital",detalle.capital],["Importe",detalle.importe],["Saldo real",detalle.saldo_real],["Saldo disponible",detalle.saldo_disponible],["Contrato",detalle.contrato],["Tipo de operación",detalle.tipo_operacion]].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div></section>
       </div>
     </section>}
