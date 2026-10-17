@@ -246,3 +246,129 @@ def obtener_dashboard_expedientes(
         expedientes_por_actividad=expedientes_por_actividad,
         media_firma_por_tipo_operacion=media_firma_por_tipo_operacion,
     )
+
+
+
+def obtener_dashboard_cancelagest(db: Session) -> dict:
+    """Indicadores del circuito de cancelaciones y tiempos entre hitos."""
+    from collections import defaultdict
+    from datetime import date
+
+    filas = (
+        db.query(
+            Expediente.id_expediente,
+            Expediente.tipo_operacion,
+            Expediente.subtipo_operacion,
+            Expediente.tipo_provision,
+            Expediente.id_provision,
+            Expediente.fecha_envio_notario,
+            Expediente.fecha_envio,
+            Expediente.fecha_inicio_actividad,
+            Expediente.fecha_firma,
+            Expediente.fecha_presentacion_tributaria,
+            Expediente.fecha_presentacion,
+            Expediente.fecha_inscripcion,
+            Expediente.notargest_fecha_cierre,
+            Expediente.escritura_simple_cancelacion,
+            Expediente.tipo_acta,
+        )
+        .all()
+    )
+
+    def norm(value):
+        value = str(value or "").strip().lower()
+        for old, new in (("á", "a"), ("é", "e"), ("í", "i"), ("ó", "o"), ("ú", "u"), ("ü", "u")):
+            value = value.replace(old, new)
+        return " ".join(value.split())
+
+    def es_cancelacion(row):
+        texto = " ".join(filter(None, [
+            row.tipo_operacion, row.subtipo_operacion,
+            row.escritura_simple_cancelacion, row.tipo_acta,
+        ]))
+        return "cancel" in norm(texto) or bool(row.escritura_simple_cancelacion)
+
+    def categoria(row):
+        operacion = norm(" ".join(filter(None, [row.tipo_operacion, row.subtipo_operacion, row.tipo_acta])))
+        if any(term in operacion for term in ("otra entidad", "otras entidades", "entidad externa", "entidades externas")):
+            return "otras_entidades"
+        if row.id_provision or str(row.tipo_provision or "").strip():
+            return "con_provision"
+        return "sin_provision"
+
+    nombres = {
+        "con_provision": "Cancelaciones con provisión",
+        "sin_provision": "Cancelaciones sin provisión",
+        "otras_entidades": "Cancelaciones de otras entidades",
+    }
+    categoria_stats = {key: {"total": 0, "firmadas": 0, "dias": 0, "casos": 0} for key in nombres}
+    firmas_por_mes = defaultdict(int)
+    intervalos = {
+        "firma_presentacion_tributaria": {"nombre": "Firma → presentación tributaria", "dias": 0, "total": 0},
+        "presentacion_tributaria_registro": {"nombre": "Presentación tributaria → presentación en Registro", "dias": 0, "total": 0},
+        "registro_inscripcion": {"nombre": "Presentación en Registro → inscripción", "dias": 0, "total": 0},
+        "inscripcion_cierre": {"nombre": "Inscripción → cierre", "dias": 0, "total": 0},
+    }
+
+    def acumular_intervalo(key, inicio, fin):
+        if not inicio or not fin:
+            return
+        dias = (fin - inicio).days
+        if dias < 0:
+            return
+        intervalos[key]["dias"] += dias
+        intervalos[key]["total"] += 1
+
+    total_cancelaciones = 0
+    for row in filas:
+        if not es_cancelacion(row):
+            continue
+        total_cancelaciones += 1
+        key = categoria(row)
+        stat = categoria_stats[key]
+        stat["total"] += 1
+        envio = row.fecha_envio_notario or row.fecha_envio or row.fecha_inicio_actividad
+        firma = row.fecha_firma
+        if firma:
+            stat["firmadas"] += 1
+            firmas_por_mes[firma.strftime("%Y-%m")] += 1
+        if envio and firma:
+            dias = (firma - envio).days
+            if dias >= 0:
+                stat["dias"] += dias
+                stat["casos"] += 1
+        acumular_intervalo("firma_presentacion_tributaria", firma, row.fecha_presentacion_tributaria)
+        acumular_intervalo("presentacion_tributaria_registro", row.fecha_presentacion_tributaria, row.fecha_presentacion)
+        acumular_intervalo("registro_inscripcion", row.fecha_presentacion, row.fecha_inscripcion)
+        acumular_intervalo("inscripcion_cierre", row.fecha_inscripcion, row.notargest_fecha_cierre)
+
+    categorias = []
+    for key, nombre in nombres.items():
+        stat = categoria_stats[key]
+        categorias.append({
+            "key": key,
+            "nombre": nombre,
+            "total": stat["total"],
+            "firmadas": stat["firmadas"],
+            "media_dias_envio_firma": round(stat["dias"] / stat["casos"], 1) if stat["casos"] else None,
+            "casos_media": stat["casos"],
+        })
+
+    return {
+        "total_cancelaciones": total_cancelaciones,
+        "total_firmadas": sum(item["firmadas"] for item in categorias),
+        "firmas_mensuales": [
+            {"mes": mes, "total": total}
+            for mes, total in sorted(firmas_por_mes.items())
+        ],
+        "categorias_firma": categorias,
+        "tiempos_circuito": [
+            {
+                "key": key,
+                "nombre": data["nombre"],
+                "total_casos": data["total"],
+                "media_dias": round(data["dias"] / data["total"], 1) if data["total"] else None,
+            }
+            for key, data in intervalos.items()
+        ],
+    }
