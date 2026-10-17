@@ -728,7 +728,7 @@ export default function EnviarANotarioModal({
 
             {/* COLUMNA DERECHA — DATOS DEL ENVÍO Y FACTURACIÓN */}
             <div className="min-w-0">
-              <div className="grid grid-cols-1 items-start gap-5 2xl:grid-cols-2 2xl:gap-6">
+              <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 xl:gap-4 2xl:gap-6">
             {/* COLUMNA IZQUIERDA — ENVÍO AL NOTARIO */}
 
             <div className="min-w-0 space-y-6">
