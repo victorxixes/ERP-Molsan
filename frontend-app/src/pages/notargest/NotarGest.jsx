@@ -38,6 +38,7 @@ export default function NotarGest() {
   const [gestores, setGestores] = useState([]);
   const [comentarioGestor, setComentarioGestor] = useState("");
   const [gestorDestinatario, setGestorDestinatario] = useState("");
+  const [avisos, setAvisos] = useState({ comentarios: [], documentos: [] });
 
   const peticion = useCallback(async (path, options = {}) => {
     const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(options.headers || {}) };
@@ -52,8 +53,8 @@ export default function NotarGest() {
     if (!token) return;
     setCargando(true); setError("");
     try {
-      const [perfil, lista] = await Promise.all([peticion("/notargest/me"), peticion("/notargest/expedientes")]);
-      setNotario(perfil); setExpedientes(lista.items || []);
+      const [perfil, lista, avisosData] = await Promise.all([peticion("/notargest/me"), peticion("/notargest/expedientes"), peticion("/notargest/avisos")]);
+      setNotario(perfil); setExpedientes(lista.items || []); setAvisos({ comentarios: avisosData.comentarios || [], documentos: avisosData.documentos || [] });
     } catch (e) {
       setError(e.message);
       if (/sesión|acceso notargest deshabilitado|caducado/i.test(e.message)) { localStorage.removeItem(TOKEN_KEY); setToken(""); }
@@ -173,7 +174,7 @@ export default function NotarGest() {
   </form></main>;
 
   const esDetalle = vista === "detalle" && detalle;
-  const titulo = esDetalle ? `Expediente ${detalle.id_expediente}` : (bandejas.find(b => b.id === vista)?.titulo || (vista === "inicio" ? "Mis tareas pendientes" : vista === "documentacion" ? "Carpeta Digital" : "NotarGest"));
+  const titulo = esDetalle ? `Expediente ${detalle.id_expediente}` : (bandejas.find(b => b.id === vista)?.titulo || ({ avisos_comentarios: "Observaciones del gestor", avisos_documentos: "Nueva documentación añadida" }[vista]) || (vista === "inicio" ? "Mis tareas pendientes" : vista === "documentacion" ? "Carpeta Digital" : "NotarGest"));
   const tablaFactura = vista === "factura";
   return <main className="apoderagest notargest">
     <header className="ng-cabecera"><div><span className="ng-sobrelinea">PORTAL PROFESIONAL · MOLSAN</span><h1>NotarGest</h1><p>{notario?.nombre || "Portal de la notaría"}</p></div><div className="ng-cabecera-acciones"><button className="ng-boton-secundario" onClick={cargar} disabled={cargando}>↻ Actualizar</button><button className="ng-boton-secundario" onClick={salir}>Cerrar sesión</button></div></header>
@@ -185,6 +186,16 @@ export default function NotarGest() {
         <span className="ng-estado-cantidad">{cargando ? "…" : cuenta(b.id)}</span>
         <span className="ng-estado-flecha" aria-hidden="true">›</span>
       </button>)}
+      <button className={`ng-estado-card ${avisos.comentarios.length ? "ng-estado-con-pendientes" : ""}`} onClick={() => setVista("avisos_comentarios")}>
+        <span className="ng-estado-icono" aria-hidden="true">💬</span><span className="ng-estado-texto"><strong>Observaciones del gestor</strong><small>Comentarios visibles para la notaría</small></span><span className="ng-estado-cantidad">{cargando ? "…" : avisos.comentarios.length}</span><span className="ng-estado-flecha" aria-hidden="true">›</span>
+      </button>
+      <button className={`ng-estado-card ${avisos.documentos.length ? "ng-estado-con-pendientes" : ""}`} onClick={() => setVista("avisos_documentos")}>
+        <span className="ng-estado-icono" aria-hidden="true">📎</span><span className="ng-estado-texto"><strong>Nueva documentación</strong><small>Documentos añadidos tras el envío y antes de la firma</small></span><span className="ng-estado-cantidad">{cargando ? "…" : avisos.documentos.length}</span><span className="ng-estado-flecha" aria-hidden="true">›</span>
+      </button>
+    </section>}
+    {(vista === "avisos_comentarios" || vista === "avisos_documentos") && <section className="ng-panel">
+      <div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div>
+      {vista === "avisos_comentarios" ? (avisos.comentarios.length ? <div className="ng-documentos">{avisos.comentarios.map(o => <article className="ng-documento" key={o.id}><div><strong>Expediente {o.id_expediente} · {texto(o.solicitante)}</strong><p>{o.comentario}</p><small>{texto(o.oficina)} · {texto(o.fecha)} · {o.visibilidad}</small></div><button className="ng-boton-secundario" onClick={() => abrirExpediente({id_expediente:o.id_expediente})}>Abrir expediente →</button></article>)}</div> : <p className="ng-mensaje">No hay observaciones visibles para la notaría.</p>) : (avisos.documentos.length ? <div className="ng-documentos">{avisos.documentos.map(d => <article className="ng-documento" key={d.id}><div><strong>Expediente {d.id_expediente} · {texto(d.solicitante)}</strong><p>{d.nombre}</p><small>{texto(d.oficina)} · {texto(d.categoria)} · Añadido: {texto(d.fecha_subida)}</small></div><button className="ng-boton-secundario" onClick={() => abrirExpediente({id_expediente:d.id_expediente})}>Abrir expediente →</button></article>)}</div> : <p className="ng-mensaje">No hay documentos nuevos pendientes de revisar antes de la firma.</p>)}
     </section>}
     {bandejas.some(b => b.id === vista) && <section className="ng-panel">
       <div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div>
