@@ -102,6 +102,7 @@ class Expediente(Base):
     escritura_firmada = Column(Boolean, nullable=True)
     hora_prevista_firma = Column(Time, nullable=True)
     hora_fin_prevista_firma = Column(Time, nullable=True)
+    firma_urgente = Column(Boolean, nullable=False, default=False, index=True)
 
     nombre_titular = Column(String(300), nullable=True)
     nif_titular = Column(String(50), nullable=True)
