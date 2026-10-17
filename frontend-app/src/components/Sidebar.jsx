@@ -16,6 +16,7 @@ import {
 } from "../store/notificacionesStore";
 
 import Notificaciones from "../pages/notificaciones/Notificaciones.jsx";
+import SidebarPerfilModal from "./SidebarPerfilModal";
 
 
 /**
@@ -414,6 +415,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     (s) => s.empleado
   );
 
+  const perfilModal = useAuthStore((s) => s.perfilModal);
+  const setPerfilModal = useAuthStore((s) => s.setPerfilModal);
+
   const logout = useAuthStore(
     (s) => s.logout
   );
@@ -729,14 +733,15 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
         <div
           className="
-            max-w-[1800px]
+            w-full
+            max-w-none
             mx-auto
-            px-4
-            lg:px-6
+            px-3
+            lg:px-4
             py-2
             flex
             items-center
-            gap-4
+            gap-3
             min-w-0
           "
         >
@@ -820,7 +825,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               gap-1.5
               flex-1
               min-w-0
-              ${navigationItems ? "flex-wrap overflow-visible" : "overflow-x-auto overflow-y-visible"}
+              ${navigationItems ? "flex-nowrap overflow-x-auto overflow-y-visible" : "overflow-x-auto overflow-y-visible"}
               pb-0.5
             `}
           >
@@ -837,7 +842,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                     onClick={() => onNavigationItemClick?.(item.label)}
                     aria-current={activeNavigationItem === item.label ? "page" : undefined}
                     className={`
-                      flex items-center gap-2 px-3 py-2 rounded-xl whitespace-nowrap text-sm
+                      flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg whitespace-nowrap text-[12px]
                       font-medium transition-all duration-200 border flex-shrink-0
                       ${activeNavigationItem === item.label
                         ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm"
@@ -1164,7 +1169,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               type="button"
               onClick={() => {
                 if (onProfileClick) onProfileClick();
-                else useAuthStore.getState().setPerfilModal(safeUser.id);
+                else setPerfilModal(safeUser.id);
               }}
               title="Mi perfil"
               className="
@@ -1231,6 +1236,13 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       {/* ========================================================
           MODAL NOTIFICACIONES
       ======================================================== */}
+
+      {perfilModal && !onProfileClick && (
+        <SidebarPerfilModal
+          id={perfilModal}
+          onClose={() => setPerfilModal(null)}
+        />
+      )}
 
       {notificacionesAbiertas && !onNotificationsClick && (
 
