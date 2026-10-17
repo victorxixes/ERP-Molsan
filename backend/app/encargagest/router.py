@@ -207,7 +207,7 @@ def _registrar_actividad(db, encargo_id, usuario, tipo, mensaje, visible_notaria
         tipo=tipo,
         mensaje=mensaje,
         visible_notaria=visible_notaria,
-        autor_id=getattr(usuario, "id", None),
+        autor_id=(usuario.get("usuario_id") if _es_externo(usuario) else getattr(usuario, "id", None)),
         autor_nombre=_nombre_usuario(usuario),
     )
     db.add(registro)
@@ -407,7 +407,13 @@ def listar_encargos(
         consulta = consulta.filter(EncargoExterno.estado == estado)
     total = consulta.count()
     items = consulta.order_by(EncargoExterno.actualizado_en.desc(), EncargoExterno.id.desc()).offset((pagina - 1) * por_pagina).limit(por_pagina).all()
-    return {"items": [_serializar(item) for item in items], "total": total, "pagina": pagina, "por_pagina": por_pagina}
+    filas = []
+    for item in items:
+        fila = _serializar(item)
+        if _es_externo(usuario):
+            fila.pop("observaciones_internas", None)
+        filas.append(fila)
+    return {"items": filas, "total": total, "pagina": pagina, "por_pagina": por_pagina}
 
 
 @router.post("/encargos", status_code=201)
