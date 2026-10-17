@@ -536,6 +536,7 @@ def migrar_esquema_expedientes_inicio():
         ("notargest_fecha_envio_gestoria", "DATE"),
         ("escritura_firmada", "BOOLEAN"),
         ("hora_prevista_firma", "TIME"),
+        ("hora_fin_prevista_firma", "TIME"),
         ("idioma_documento", "VARCHAR(100)"),
         ("formato_escritura", "VARCHAR(200)"),
         ("tipo_tramite", "VARCHAR(200)"),
