@@ -256,6 +256,13 @@ def _resumen(e, db):
         "numero_entrada": e.numero_entrada,
         "asiento_presentacion_libro_diario": e.asiento_presentacion_libro_diario,
         "fecha_presentacion": _fecha(e.fecha_presentacion),
+        "fecha_presentacion_registro": _fecha(e.fecha_presentacion),
+        "fecha_presentacion_tributaria": _fecha(getattr(e, "fecha_presentacion_tributaria", None)),
+        "fecha_liquidacion_tributaria": _fecha(getattr(e, "fecha_liquidacion_tributaria", None)),
+        "fecha_inscripcion": _fecha(getattr(e, "fecha_inscripcion", None)),
+        "tipo_provision": getattr(e, "tipo_provision", None),
+        "origen_bankia": getattr(e, "origen_bankia", None),
+        "producto_gtg": getattr(e, "producto_gtg", None),
         "pendiente_presentacion_registro": pendiente_presentacion and not e.fecha_presentacion,
         "factura_notarial": ({
             "id": factura.id, "nombre": factura.nombre_original,
