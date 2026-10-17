@@ -52,6 +52,7 @@ from backend.app.database import Base, engine
 
 from backend.app.expedientes.models import Cliente, Expediente
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
+from backend.app.fusiones.router import SolicitudFusion
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 from backend.app.expedientes.defectos.models import (
     ExpedienteDefecto,
@@ -165,6 +166,7 @@ from backend.app.expedientes.defectos.migracion_router import (
 from backend.app.expedientes.fincasyregistros.router import (
     router as expedientes_fincas_router,
 )
+from backend.app.fusiones.router import router as fusiones_router
 
 from backend.app.seguridad.roles.roles_router import router as roles_router
 from backend.app.seguridad.roles.asignar_rol_router import (
@@ -340,6 +342,7 @@ app.include_router(seguridad_auditoria_router, prefix="/api")
 app.include_router(seguridad_logs_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
 app.include_router(expedientes_fincas_router, prefix="/api")
+app.include_router(fusiones_router, prefix="/api")
 app.include_router(gastos_router, prefix="/api")
 
 # AGENDA
@@ -723,6 +726,12 @@ def inicializar_tablas_auxiliares():
             bind=engine,
             checkfirst=True,
         )
+
+        SolicitudFusion.__table__.create(
+            bind=engine,
+            checkfirst=True,
+        )
+        print("[FUSIONES] Tabla de solicitudes disponible.", flush=True)
         print(
             "[EXPEDIENTE ACCIONES] Tabla disponible.",
             flush=True,
