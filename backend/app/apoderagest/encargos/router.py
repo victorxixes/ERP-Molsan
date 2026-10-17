@@ -104,9 +104,9 @@ def firmar_encargo(
         expediente.protocolo = protocolo
         expediente.notario_otorgante = notario_otorgante
 
-        # La firma real también se refleja en la cita de agenda. Se conserva
-        # la fecha prevista de la cita y se marca como realizada en observaciones;
-        # la fecha real y el protocolo oficiales permanecen en Expediente.
+        # La cita pasa a la fecha en que la firma ocurrió realmente y queda
+        # marcada como realizada. La fecha prevista original se conserva en
+        # Expediente.fecha_prevista_firma para calcular la media hasta firma.
         cita = (
             db.query(Cita)
             .filter(
@@ -147,6 +147,7 @@ def firmar_encargo(
             )
             db.add(cita)
         else:
+            cita.fecha = datos.fecha_firma
             observaciones_previas = str(cita.observaciones or "").strip()
             if "FIRMA REALIZADA" not in observaciones_previas.upper():
                 cita.observaciones = " | ".join(
