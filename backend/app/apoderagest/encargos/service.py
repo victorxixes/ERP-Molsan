@@ -133,6 +133,12 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
             getattr(expediente, "nif_notario", None)
         ),
         "titular": _nombre_titular(expediente),
+        "nombre": _texto(getattr(expediente, "nombre", None)) or _texto(getattr(expediente, "nombre_titular", None)),
+        "apellidos": _texto(getattr(expediente, "apellidos", None)) or _texto(getattr(expediente, "facturacion_apellidos", None)),
+        "dni": _texto(getattr(expediente, "dni", None)) or _texto(getattr(expediente, "nif_titular", None)),
+        "finca": _texto(getattr(expediente, "finca", None)),
+        "bloqueado": bool(getattr(expediente, "bloqueo_manual", False) or str(getattr(expediente, "estado_expediente", "") or "").strip().upper().startswith(("LST", "RST")) or getattr(expediente, "liquidado_sin_tramitar", False) or getattr(expediente, "cambio_gestoria", False)),
+        "motivo_bloqueo_efectivo": (_texto(getattr(expediente, "motivo_bloqueo", None)) or ("LIQUIDADO SIN TRAMITAR" if str(getattr(expediente, "estado_expediente", "") or "").strip().upper().startswith("LST") or getattr(expediente, "liquidado_sin_tramitar", False) else "RETENCIÓN SIN TRAMITAR" if str(getattr(expediente, "estado_expediente", "") or "").strip().upper().startswith("RST") else "CAMBIO DE GESTORÍA" if getattr(expediente, "cambio_gestoria", False) else "BLOQUEO MANUAL" if getattr(expediente, "bloqueo_manual", False) else None)),
         "nif_titular": _texto(
             getattr(expediente, "nif_titular", None)
         ),
