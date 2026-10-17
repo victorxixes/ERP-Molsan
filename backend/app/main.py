@@ -327,7 +327,7 @@ from backend.app.apoderagest.router import (
 )
 
 # ENCARGAGEST
-from backend.app.encargagest.router import router as encargagest_router
+# EncargaGest temporalmente aislado mientras se diagnostica el arranque del backend.
 
 
 # ============================================================
@@ -464,7 +464,7 @@ app.include_router(provisiones_router, prefix="/api/expedientes")
 
 #
 app.include_router(apoderagest_router, prefix="/api")
-app.include_router(encargagest_router, prefix="/api")
+# EncargaGest temporalmente aislado mientras se diagnostica el arranque del backend.
 
 # ============================================================
 # MIGRACIÓN DE ESQUEMA DE EXPEDIENTES
