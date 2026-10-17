@@ -270,65 +270,70 @@ export default function NotarGest() {
           {detalle.notargest_estado === "cerrada" && <div className="ng-workflow-form"><label>Fecha de cierre<input type="date" value={fechaCierre} onChange={e => setFechaCierre(e.target.value)} /></label><label>Fecha de envío a gestoría<input type="date" value={fechaEnvioGestoria} onChange={e => setFechaEnvioGestoria(e.target.value)} /></label><button className="ng-login-submit" disabled={cargando || !fechaCierre} onClick={guardarCierre}>Guardar cierre y envío a gestoría</button></div>}
         </section>
 
-        <section className="ng-detalle-bloque">
-          <div className="ng-bloque-heading"><div><span className="ng-kicker">01 · OPERACIÓN</span><h3>Datos de envío y firma prevista</h3></div></div>
-          <div className="ng-datos-grid ng-datos-operacion">{[
-            ["Expediente", detalle.id_expediente], ["Fecha de envío", esFecha(detalle.fecha_envio_notario || detalle.fecha_envio)],
-            ["Fecha solicitud PNC", esFecha(detalle.fecha_solicitud_pnc)], ["Número solicitud PNC", detalle.numero_solicitud_pnc],
-            ["Fecha prevista de firma", esFecha(detalle.fecha_prevista_firma)], ["Hora prevista de firma", detalle.hora_prevista_firma],
-            ["Contrato", detalle.contrato], ["Capital", euros(detalle.capital)], ["Tipo de operación", detalle.tipo_operacion],
-            ["Subtipo de operación", detalle.subtipo_operacion], ["Importe", euros(detalle.importe)],
-            ["Notario", detalle.nombre_notario || detalle.notario], ["Formato de escritura", detalle.formato_escritura],
-            ["Tipo de trámite", detalle.tipo_tramite], ["Tipo de documento", detalle.tipo_documento], ["Idioma", detalle.idioma_documento || "Catalán"]
-          ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
-        </section>
-
-        <section className="ng-detalle-bloque">
-          <div className="ng-bloque-heading"><div><span className="ng-kicker">02 · FACTURACIÓN</span><h3>Resumen de facturación</h3></div><span className="ng-etiqueta-suave">Datos del envío a notario</span></div>
-          <div className="ng-datos-grid ng-datos-facturacion">{[
-            ["Nombre", [detalle.facturacion_nombre, detalle.facturacion_apellidos].filter(Boolean).join(" ")],
-            ["DNI / NIF", detalle.facturacion_dni_nif], ["Dirección", detalle.facturacion_direccion],
-            ["Código postal y población", [detalle.facturacion_codigo_postal, detalle.facturacion_poblacion].filter(Boolean).join(" ")],
-            ["Provincia", detalle.facturacion_provincia], ["Teléfono", detalle.facturacion_telefono],
-            ["Email", detalle.facturacion_email], ["Idioma", detalle.idioma_documento || "Catalán"]
-          ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
-        </section>
-
-        <section className="ng-detalle-bloque">
-          <div className="ng-bloque-heading"><div><span className="ng-kicker">03 · DOCUMENTACIÓN</span><h3>Tipo de documento y cuantía</h3></div></div>
-          {detalle.documentos_escritura?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Tipo de documento</th><th>Cuantía</th></tr></thead><tbody>{detalle.documentos_escritura.map((d,i) => <tr key={d.id || i}><td>{texto(d.tipo_documento)}</td><td>{euros(d.cuantia)}</td></tr>)}</tbody></table></div> : <div className="ng-datos-grid"><div className="ng-dato"><small>Tipo de documento</small><strong>{texto(detalle.tipo_documento)}</strong></div><div className="ng-dato"><small>Cuantía</small><strong>{euros(detalle.cuantia)}</strong></div></div>}
-          <h4 className="ng-subtitulo-detalle">Fincas y registros</h4>
-          {detalle.fincas?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Finca</th><th>Datos registrales</th><th>CRU / IDUFIR</th><th>Inscripción</th><th>Contrato</th><th>Cuantía</th></tr></thead><tbody>{detalle.fincas.map(f => <tr key={f.id}><td>{texto(f.finca)}</td><td>{[f.poblacion,f.registro,f.provincia].filter(Boolean).join(" · ") || "—"}</td><td>{texto(f.cru_idufir)}</td><td>{texto(f.inscripcion)}</td><td>{texto(f.contrato || detalle.contrato)}</td><td>{euros(f.cuantia)}</td></tr>)}</tbody></table></div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}
-        </section>
-
-        <section className="ng-detalle-bloque ng-carpeta-premium">
-          <div className="ng-bloque-heading"><div><span className="ng-kicker">04 · ARCHIVO</span><h3>Carpeta Digital</h3><p className="ng-descripcion">Documentación del expediente, organizada por categoría, con visor PDF integrado.</p></div></div>
-          <div className="ng-carpeta-layout">
-            <div className="ng-carpeta-categorias">
-              {[
-                ["Hoja de encargo firmada", ["hoja de encargo firmada","hoja de encargo"]],
-                ["Justificante de cancelación", ["justificante de cancelación","cancelación"]],
-                ["Nota simple registral", ["nota simple"]],
-                ["Borradores de escritura", ["borrador","borradores de escritura"]],
-                ["Otros documentos", []]
-              ].map(([categoria, palabras]) => {
-                const docs = (detalle.documentos || []).filter(d => {
-                  const cat = String(d.categoria || "").toLocaleLowerCase("es");
-                  const nom = String(d.nombre || "").toLocaleLowerCase("es");
-                  return categoria === "Otros documentos" ? !["hoja de encargo firmada","hoja de encargo","justificante de cancelación","cancelación","nota simple","borrador","borradores de escritura"].some(p => cat.includes(p) || nom.includes(p)) : palabras.some(p => cat.includes(p) || nom.includes(p));
-                });
-                return <div className="ng-categoria-documental" key={categoria}>
-                  <div className="ng-categoria-heading"><div><strong>{categoria}</strong><small>{docs.length} archivo(s)</small></div><label className="ng-adjuntar-pdf">＋ Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoCarpeta(categoria, e.target.files?.[0]); e.target.value = ""; }} /></label></div>
-                  {docs.length ? docs.map(d => <div className="ng-archivo-row" key={d.id}><span className="ng-pdf-icon">PDF</span><div className="ng-archivo-info"><strong>{d.nombre}</strong><small>{esFecha(d.fecha_subida)}</small></div><button type="button" className="ng-boton-secundario" onClick={() => abrirDocumento(d)}>Ver a la derecha</button></div>) : <p className="ng-vacio-categoria">Todavía no hay archivos. Usa «Adjuntar PDF» para incorporarlo aquí.</p>}
-                </div>;
-              })}
+        <div className="ng-datos-superiores">
+          <section className="ng-detalle-bloque ng-datos-envio">
+            <div className="ng-bloque-heading"><div><span className="ng-kicker">01 · ENVÍO</span><h3>Datos de envío y firma prevista</h3></div></div>
+            <div className="ng-datos-grid ng-datos-operacion">{[
+              ["Fecha de envío", esFecha(detalle.fecha_envio_notario || detalle.fecha_envio)], ["Fecha solicitud PNC", esFecha(detalle.fecha_solicitud_pnc)],
+              ["Número solicitud PNC", detalle.numero_solicitud_pnc], ["Fecha prevista de firma", esFecha(detalle.fecha_prevista_firma)],
+              ["Hora prevista de firma", detalle.hora_prevista_firma], ["Contrato", detalle.contrato], ["Capital", euros(detalle.capital)],
+              ["Tipo de operación", detalle.tipo_operacion], ["Subtipo de operación", detalle.subtipo_operacion], ["Importe", euros(detalle.importe)]
+            ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
+          </section>
+          <section className="ng-detalle-bloque ng-datos-facturacion-bloque">
+            <div className="ng-bloque-heading"><div><span className="ng-kicker">02 · FACTURACIÓN</span><h3>Datos de facturación</h3></div></div>
+            <div className="ng-datos-grid ng-datos-facturacion">{[
+              ["Nombre", detalle.facturacion_nombre], ["Apellidos", detalle.facturacion_apellidos], ["DNI / NIF", detalle.facturacion_dni_nif],
+              ["Dirección", detalle.facturacion_direccion], ["Código postal", detalle.facturacion_codigo_postal], ["Población", detalle.facturacion_poblacion],
+              ["Provincia", detalle.facturacion_provincia], ["Teléfono", detalle.facturacion_telefono], ["Correo electrónico", detalle.facturacion_email]
+            ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
+          </section>
+        </div>
+        <div className="ng-documentacion-layout">
+          <section className="ng-detalle-bloque ng-carpeta-premium">
+            <div className="ng-bloque-heading"><div><span className="ng-kicker">03 · ARCHIVO</span><h3>Carpeta digital</h3><p className="ng-descripcion">Documentación del expediente, organizada por categoría, con visor PDF integrado.</p></div></div>
+            <div className="ng-carpeta-layout">
+              <div className="ng-carpeta-categorias">
+                {[
+                  ["Documentación previa · Documentos ABSIS", ["documentos absis","absis"]],
+                  ["Hoja de encargo firmada", ["hoja de encargo firmada","hoja de encargo"]],
+                  ["Justificante de cancelación", ["justificante de cancelación","cancelación"]],
+                  ["Nota simple registral", ["nota simple"]],
+                  ["Borradores de escritura", ["borrador","borradores de escritura"]],
+                  ["Otros documentos", []]
+                ].map(([categoria, palabras]) => {
+                  const docs = (detalle.documentos || []).filter(d => {
+                    const cat = String(d.categoria || "").toLocaleLowerCase("es");
+                    const nom = String(d.nombre || "").toLocaleLowerCase("es");
+                    const previas = ["documentos absis","absis"].some(p => cat.includes(p) || nom.includes(p));
+                    if (categoria.startsWith("Documentación previa")) return previas;
+                    if (categoria === "Otros documentos") return !["documentos absis","absis","hoja de encargo firmada","hoja de encargo","justificante de cancelación","cancelación","nota simple","borrador","borradores de escritura"].some(p => cat.includes(p) || nom.includes(p));
+                    return palabras.some(p => cat.includes(p) || nom.includes(p));
+                  });
+                  return <div className="ng-categoria-documental" key={categoria}>
+                    <div className="ng-categoria-heading"><div><strong>{categoria}</strong><small>{docs.length} archivo(s)</small></div><label className="ng-adjuntar-pdf">＋ Adjuntar PDF<input type="file" accept="application/pdf,.pdf" disabled={cargando} onChange={e => { subirDocumentoCarpeta(categoria, e.target.files?.[0]); e.target.value = ""; }} /></label></div>
+                    {docs.length ? docs.map(d => <div className="ng-archivo-row" key={d.id}><span className="ng-pdf-icon">PDF</span><div className="ng-archivo-info"><strong>{d.nombre}</strong><small>{esFecha(d.fecha_subida)}</small></div><button type="button" className="ng-boton-secundario" onClick={() => abrirDocumento(d)}>Ver a la derecha</button></div>) : <p className="ng-vacio-categoria">Todavía no hay archivos. Usa «Adjuntar PDF» para incorporarlo aquí.</p>}
+                  </div>;
+                })}
+              </div>
+              <aside className="ng-visor-documentos"><div className="ng-visor-cabecera"><div><span className="ng-kicker">VISOR INTEGRADO</span><strong>Visor de documentos</strong><small>{documentoSeleccionado ? documentoSeleccionado.nombre : "Selecciona «Ver a la derecha» en un archivo"}</small></div><button className="ng-boton-secundario" type="button" onClick={() => setVisorAmpliado(v => !v)}>{visorAmpliado ? "⤢ Reducir" : "⛶ Ampliar"}</button></div>
+                {documentoSeleccionadoUrl ? <iframe className={`ng-pdf-frame ${visorAmpliado ? "ng-pdf-ampliado" : ""}`} title="Vista previa del documento" src={documentoSeleccionadoUrl} /> : <div className="ng-visor-vacio"><span>▤</span><strong>Vista previa</strong><p>Adjunta un PDF o pulsa «Ver a la derecha» en uno de los documentos para consultarlo aquí sin salir de la actividad.</p></div>}
+              </aside>
             </div>
-            <aside className="ng-visor-documentos"><div className="ng-visor-cabecera"><div><span className="ng-kicker">VISOR INTEGRADO</span><strong>Visor de documentos</strong><small>{documentoSeleccionado ? documentoSeleccionado.nombre : "Selecciona «Ver a la derecha» en un archivo"}</small></div><button className="ng-boton-secundario" type="button" onClick={() => setVisorAmpliado(v => !v)}>{visorAmpliado ? "⤢ Reducir" : "⛶ Ampliar"}</button></div>
-              {documentoSeleccionadoUrl ? <iframe className={`ng-pdf-frame ${visorAmpliado ? "ng-pdf-ampliado" : ""}`} title="Vista previa del documento" src={documentoSeleccionadoUrl} /> : <div className="ng-visor-vacio"><span>▤</span><strong>Vista previa</strong><p>Adjunta un PDF o pulsa «Ver a la derecha» en uno de los documentos para consultarlo aquí sin salir de la actividad.</p></div>}
-            </aside>
-          </div>
-        </section>
-
+          </section>
+          <section className="ng-detalle-bloque ng-tipo-documento-bloque">
+            <div className="ng-bloque-heading"><div><span className="ng-kicker">04 · DOCUMENTO</span><h3>Tipo de documento</h3><p className="ng-descripcion">Datos del documento remitidos desde el modal Enviar a notario.</p></div></div>
+            <div className="ng-datos-grid">{[
+              ["Contrato", detalle.contrato], ["Capital", euros(detalle.capital)], ["Tipo de operación", detalle.tipo_operacion],
+              ["Subtipo de operación", detalle.subtipo_operacion], ["Importe", euros(detalle.importe)], ["Formato de escritura", detalle.formato_escritura],
+              ["Tipo de trámite", detalle.tipo_tramite]
+            ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
+            <h4 className="ng-subtitulo-detalle">Documentos y cuantías</h4>
+            {detalle.documentos_escritura?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Tipo de documento</th><th>Cuantía</th></tr></thead><tbody>{detalle.documentos_escritura.map((d,i) => <tr key={d.id || i}><td>{texto(d.tipo_documento)}</td><td>{euros(d.cuantia)}</td></tr>)}</tbody></table></div> : <div className="ng-datos-grid"><div className="ng-dato"><small>Tipo de documento</small><strong>{texto(detalle.tipo_documento)}</strong></div><div className="ng-dato"><small>Cuantía</small><strong>{euros(detalle.cuantia)}</strong></div></div>}
+            <h4 className="ng-subtitulo-detalle">Fincas y registros</h4><p className="ng-descripcion">Datos registrales del expediente</p>
+            {detalle.fincas?.length ? <div className="ng-fincas-lista">{detalle.fincas.map((f,i) => <article className="ng-finca-card" key={f.id || i}><strong>Finca {texto(f.finca)}</strong><span>{[f.poblacion,f.registro,f.provincia].filter(Boolean).join(" · ") || "—"}</span><div><small>CRU/IDUFIR</small><b>{texto(f.cru_idufir)}</b></div><div><small>Cuantía</small><b>{euros(f.cuantia)}</b></div><div><small>Inscripción</small><b>{texto(f.inscripcion)}</b></div><div><small>Contrato</small><b>{texto(f.contrato || detalle.contrato)}</b></div></article>)}</div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}
+          </section>
+        </div>
         <section className="ng-detalle-bloque ng-comentarios-gestor">
           <div className="ng-bloque-heading"><div><span className="ng-kicker">05 · COMUNICACIÓN</span><h3>Observaciones y comentarios</h3><p className="ng-descripcion">Envía un comentario directamente al gestor responsable del expediente.</p></div></div>
           <div className="ng-comentario-form">
