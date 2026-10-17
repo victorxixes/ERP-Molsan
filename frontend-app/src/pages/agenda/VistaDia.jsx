@@ -196,6 +196,11 @@ export default function VistaDia({
                 {cita.hora_inicio} -{" "}
                 {cita.hora_fin}
               </div>
+              {cita.tipo_cita === "Firma notarial" ? (
+                <div className={`ag-firma-indicador ${String(cita.observaciones || "").toUpperCase().includes("FIRMA REALIZADA") ? "realizada" : ""}`}>
+                  {String(cita.observaciones || "").toUpperCase().includes("FIRMA REALIZADA") ? "✓ Firma realizada" : "◷ Pendiente de firma"}
+                </div>
+              ) : null}
 
               <div className="truncate text-[var(--erp-text-soft)] pl-1">
                 Notario:{" "}
