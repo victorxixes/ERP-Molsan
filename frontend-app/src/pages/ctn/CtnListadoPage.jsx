@@ -310,15 +310,15 @@ export default function CtnListadoPage() {
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("nif")}>NIF {indicadorOrden("nif")}</button></th>
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("municipio")}>Municipio {indicadorOrden("municipio")}</button></th>
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("provincia")}>Provincia {indicadorOrden("provincia")}</button></th>
-              <th>VC</th><th>Apoderado</th><th>Acceso NotarGest</th>
+              <th>VC</th><th>Apoderado</th>
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("notario_asociado")}>Notario asociado {indicadorOrden("notario_asociado")}</button></th>
-              <th>Distancia</th><th>Acciones</th>
+              <th>Acceso NotarGest</th><th>Distancia</th><th>Acciones</th>
             </tr></thead>
             <tbody>
               {cargando && items.length === 0 ? (
                 <tr><td colSpan={11} className="ctn-tabla-vacio">Cargando notarios…</td></tr>
               ) : filasOrdenadas.length === 0 ? (
-                <tr><td colSpan={10} className="ctn-tabla-vacio">No hay notarios que coincidan con los filtros.</td></tr>
+                <tr><td colSpan={11} className="ctn-tabla-vacio">No hay notarios que coincidan con los filtros.</td></tr>
               ) : filasOrdenadas.map((item) => {
                 const vc = etiquetaVc(item.vc);
                 return (
