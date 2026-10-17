@@ -87,9 +87,12 @@ class GastoResponse(GastoBase):
 
 
 def _obtener_expediente(db: Session, expediente_id: int):
+    # Acepta tanto la PK interna como el número visible del expediente.
     expediente = db.query(Expediente).filter(Expediente.id == expediente_id).first()
     if expediente is None:
-        raise HTTPException(status_code=404, detail="No existe el expediente con ese identificador interno.")
+        expediente = db.query(Expediente).filter(Expediente.id_expediente == str(expediente_id)).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="No existe el expediente con ese identificador.")
     return expediente
 
 
@@ -138,13 +141,13 @@ def _validar_calculo(datos: dict):
 
 @router.get("/{expediente_id}/gastos", response_model=list[GastoResponse])
 def listar_gastos(expediente_id: int, db: Session = Depends(get_db)):
-    _obtener_expediente(db, expediente_id)
-    return db.query(ExpedienteGasto).filter(ExpedienteGasto.expediente_id == expediente_id).order_by(ExpedienteGasto.fecha.desc(), ExpedienteGasto.id.desc()).all()
+    expediente = _obtener_expediente(db, expediente_id)
+    return db.query(ExpedienteGasto).filter(ExpedienteGasto.expediente_id == expediente.id).order_by(ExpedienteGasto.fecha.desc(), ExpedienteGasto.id.desc()).all()
 
 
 @router.post("/{expediente_id}/gastos", response_model=GastoResponse, status_code=status.HTTP_201_CREATED)
 def crear_gasto(expediente_id: int, payload: GastoCreate, db: Session = Depends(get_db)):
-    _obtener_expediente(db, expediente_id)
+    expediente = _obtener_expediente(db, expediente_id)
     datos = payload.dict(exclude_unset=True)
     if not datos.get("tipo"):
         raise HTTPException(status_code=422, detail="El concepto del gasto es obligatorio.")
@@ -160,7 +163,7 @@ def crear_gasto(expediente_id: int, payload: GastoCreate, db: Session = Depends(
     if datos.get("importe") is None and datos.get("importe_resultante") is not None:
         datos["importe"] = datos["importe_resultante"]
     _validar_calculo(datos)
-    gasto = ExpedienteGasto(expediente_id=expediente_id, **datos)
+    gasto = ExpedienteGasto(expediente_id=expediente.id, **datos)
     db.add(gasto)
     try:
         db.commit(); db.refresh(gasto)
@@ -172,8 +175,8 @@ def crear_gasto(expediente_id: int, payload: GastoCreate, db: Session = Depends(
 
 @router.put("/{expediente_id}/gastos/{gasto_id}", response_model=GastoResponse)
 def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db: Session = Depends(get_db)):
-    _obtener_expediente(db, expediente_id)
-    gasto = db.query(ExpedienteGasto).filter(ExpedienteGasto.id == gasto_id, ExpedienteGasto.expediente_id == expediente_id).first()
+    expediente = _obtener_expediente(db, expediente_id)
+    gasto = db.query(ExpedienteGasto).filter(ExpedienteGasto.id == gasto_id, ExpedienteGasto.expediente_id == expediente.id).first()
     if gasto is None:
         raise HTTPException(status_code=404, detail="No se encontró el gasto.")
     datos = payload.dict(exclude_unset=True)
@@ -196,8 +199,8 @@ def actualizar_gasto(expediente_id: int, gasto_id: int, payload: GastoUpdate, db
 
 @router.delete("/{expediente_id}/gastos/{gasto_id}", status_code=status.HTTP_204_NO_CONTENT)
 def eliminar_gasto(expediente_id: int, gasto_id: int, db: Session = Depends(get_db)):
-    _obtener_expediente(db, expediente_id)
-    gasto = db.query(ExpedienteGasto).filter(ExpedienteGasto.id == gasto_id, ExpedienteGasto.expediente_id == expediente_id).first()
+    expediente = _obtener_expediente(db, expediente_id)
+    gasto = db.query(ExpedienteGasto).filter(ExpedienteGasto.id == gasto_id, ExpedienteGasto.expediente_id == expediente.id).first()
     if gasto is None:
         raise HTTPException(status_code=404, detail="No se encontró el gasto.")
     db.delete(gasto)
