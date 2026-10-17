@@ -1568,3 +1568,38 @@
 .ag-detalle-campo.ag-firma-urgente-activa>span{color:#b42318}
 .ag-detalle-campo.ag-firma-urgente-activa>strong{color:#b42318;font-weight:900}
 .ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading>small{flex-basis:100%;color:#77859a;font-size:10px;font-weight:500}
+
+
+/* CTN · Ficha compacta: expediente, bloqueo, urgencia, fechas y acciones en una sola fila */
+@media(min-width:1101px){
+  .ag-encargo-detalle-cabecera{gap:10px;padding:9px 12px}
+  .ag-encargo-detalle-cabecera strong{font-size:12px;line-height:1.25}
+  .ag-encargo-detalle-cabecera small{font-size:10px;line-height:1.25}
+  .ag-encargo-detalle-cabecera>span:last-child{font-size:10px}
+  .ag-aceptar-resumen{
+    grid-template-columns:minmax(105px,.78fr) minmax(105px,.78fr) minmax(100px,.72fr) minmax(112px,.88fr) minmax(112px,.88fr) minmax(112px,.88fr) minmax(84px,.62fr) minmax(84px,.62fr) auto!important;
+    gap:7px;
+    padding:7px 10px;
+    align-items:end;
+  }
+  .ag-aceptar-resumen .ag-detalle-campo{padding:6px 8px;min-height:0}
+  .ag-aceptar-resumen .ag-detalle-campo>span{font-size:8px;line-height:1.2;letter-spacing:0;white-space:normal}
+  .ag-aceptar-resumen .ag-detalle-campo>strong{font-size:10px;line-height:1.2}
+  .ag-aceptar-campo{gap:3px}
+  .ag-aceptar-campo>span{font-size:8px;line-height:1.2;letter-spacing:0;white-space:normal}
+  .ag-aceptar-campo input{height:30px;min-height:30px;padding:4px 6px;border-radius:7px;font-size:10px}
+  .ag-aceptar-accion{min-height:30px}
+  .ag-aceptar-accion button{min-height:30px;padding:5px 10px;font-size:10px;border-radius:7px}
+}
+@media(max-width:1100px){
+  .ag-aceptar-resumen{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .ag-aceptar-campo>span{white-space:normal}
+}
+@media(max-width:700px){
+  .ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:460px){
+  .ag-aceptar-resumen{grid-template-columns:minmax(0,1fr)}
+  .ag-encargo-detalle-cabecera{gap:8px;padding:10px}
+  .ag-encargo-detalle-cabecera>span:last-child{font-size:10px}
+}
