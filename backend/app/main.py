@@ -573,21 +573,26 @@ def migrar_esquema_expedientes_inicio():
 
     def ejecutar_ddl_con_reintentos(etiqueta: str, sql: str) -> None:
         ultimo_error = None
-        for intento in range(1, 7):
+        # En Render puede coincidir el arranque de una instancia con consultas
+        # activas de la anterior. No mantener cada intento bloqueado demasiado
+        # tiempo, pero conceder una ventana de reintentos suficiente para que
+        # PostgreSQL libere el bloqueo de tabla.
+        max_intentos = 20
+        for intento in range(1, max_intentos + 1):
             try:
                 with conexion.begin():
-                    conexion.execute(text("SET LOCAL lock_timeout = '8s'"))
+                    conexion.execute(text("SET LOCAL lock_timeout = '3s'"))
                     conexion.execute(text("SET LOCAL statement_timeout = '40s'"))
                     conexion.execute(text(sql))
                 return
             except Exception as error:
                 ultimo_error = error
-                if not es_bloqueo_temporal(error) or intento == 6:
+                if not es_bloqueo_temporal(error) or intento == max_intentos:
                     raise
-                espera = min(2 * intento, 10)
+                espera = min(2 * intento, 5)
                 print(
                     f"[MIGRACION STARTUP] Bloqueo temporal en {etiqueta}; "
-                    f"reintento {intento}/6 en {espera}s: {error!r}",
+                    f"reintento {intento}/{max_intentos} en {espera}s: {error!r}",
                     flush=True,
                 )
                 time.sleep(espera)
