@@ -96,6 +96,7 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
         "formato_escritura": _texto(getattr(expediente, "formato_escritura", None)),
         "idioma_documento": _texto(getattr(expediente, "idioma_documento", None)),
         "cuantia_documento": getattr(expediente, "importe", None),
+        "firma_urgente": bool(getattr(expediente, "firma_urgente", False)),
         "documentos_escritura": [
             {
                 "id": getattr(documento, "id", None),
