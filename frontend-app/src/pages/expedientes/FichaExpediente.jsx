@@ -4949,7 +4949,7 @@ const cuantiaFincasParaEnvio =
           {errorReclamacion && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorReclamacion}</p>}
           {mensajeReclamacion && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensajeReclamacion}</p>}
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <CampoFormulario label="De · Email del gestor conectado" value={empleadoSesion?.email_empresa || empleadoSesion?.email_personal || ""} onChange={() => {}} />
+            <CampoFormulario label="De · Email del gestor (responder a)" value={empleadoSesion?.email_empresa || empleadoSesion?.email_personal || ""} onChange={() => {}} />
             <CampoFormulario label="Para · Email de la oficina" value={emailReclamacion.destinatario} onChange={(v) => setEmailReclamacion((p) => ({ ...p, destinatario: v }))} placeholder="Introduce el email de la oficina" />
           </div>
           <CampoFormulario label="Asunto" value={emailReclamacion.asunto} onChange={(v) => setEmailReclamacion((p) => ({ ...p, asunto: v }))} />
