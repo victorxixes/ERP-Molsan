@@ -44,7 +44,7 @@ function texto(valor, alternativa = "—") {
 function normalizarCategoriaDocumento(valor) {
   return String(valor || "")
     .normalize("NFD")
-    .replace(/[\\u0300-\\u036f]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLocaleLowerCase("es")
     .trim();
 }
