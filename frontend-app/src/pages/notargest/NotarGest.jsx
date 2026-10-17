@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import "../../css/ApoderaGest.css";
@@ -229,10 +230,60 @@ export default function NotarGest() {
   const fechaActual = new Intl.DateTimeFormat("es-ES", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   }).format(new Date());
-  return <>
-    <main className="relative min-h-[calc(100vh-70px)]">
-      <div className="w-full px-4 py-6 lg:px-6">
-        <div className="w-full apoderagest notargest">
+  const sidebarVista = vista === "inicio" ? "Dashboard" : ({
+    recepcion: "Nuevos encargos",
+    firma: "Pendientes de firma",
+    copia: "Pendientes copias simples",
+    factura: "Pendientes de factura notarial",
+    ajd: "Pendientes de AJD / ITP",
+    registro: "Pendientes de presentación registral",
+    defectos: "Expedientes con defectos",
+    inscripcion: "Inscripciones registrales",
+    cerrada: "Escrituras cerradas inscritas",
+    avisos: "Notificaciones",
+  }[vista] || "");
+  const navegarSidebar = (label) => {
+    const destinos = {
+      "Dashboard": "inicio",
+      "Nuevos encargos": "recepcion",
+      "Pendientes de firma": "firma",
+      "Pendientes copias simples": "copia",
+      "Pendientes de factura notarial": "factura",
+      "Pendientes de AJD / ITP": "ajd",
+      "Pendientes de presentación registral": "registro",
+      "Expedientes con defectos": "defectos",
+      "Inscripciones registrales": "inscripcion",
+      "Escrituras cerradas inscritas": "cerrada",
+      "Notificaciones": "avisos",
+    };
+    setBusqueda("");
+    setVista(destinos[label] || "inicio");
+  };
+
+  return (
+    <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
+      <Sidebar
+        brandName="NotarGest"
+        navigationItems={[
+          { key: "dashboard", label: "Dashboard", icon: "home" },
+          { key: "recepcion", label: "Nuevos encargos", icon: "clipboard", badge: cuenta("recepcion") },
+          { key: "firma", label: "Pendientes de firma", icon: "calendar", badge: cuenta("firma") },
+          { key: "copia", label: "Pendientes copias simples", icon: "folder", badge: cuenta("copia") },
+          { key: "factura", label: "Pendientes de factura notarial", icon: "clipboard", badge: cuenta("factura") },
+          { key: "ajd", label: "Pendientes de AJD / ITP", icon: "calendar", badge: cuenta("ajd") },
+          { key: "registro", label: "Pendientes de presentación registral", icon: "folder", badge: cuenta("registro") },
+          { key: "defectos", label: "Expedientes con defectos", icon: "globe", badge: cuenta("defectos") },
+          { key: "inscripcion", label: "Inscripciones registrales", icon: "folder", badge: cuenta("inscripcion") },
+          { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "clipboard", badge: cuenta("cerrada") },
+          { key: "avisos", label: "Notificaciones", icon: "chat", badge: avisos.comentarios.length + avisos.documentos.length },
+        ]}
+        activeNavigationItem={sidebarVista}
+        onNavigationItemClick={navegarSidebar}
+      />
+      <main className="relative min-h-[calc(100vh-70px)]">
+        <div className="w-full px-4 py-6 lg:px-6">
+          <div className="w-full apoderagest">
+            <div className="notargest ng-content">
     <header className="ag-hero ng-hero-apoderagest">
       <div className="ag-hero-identidad">
         <div className="ag-marca ng-marca-notargest"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
@@ -252,19 +303,6 @@ export default function NotarGest() {
       </div>
     </header>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
-    {vista === "inicio" && <section className="ng-tareas-sidebar" aria-label="Accesos rápidos NotarGest">
-      <button className={vista==="inicio"?"ng-tarea-activa":""} onClick={()=>{setBusqueda("");setVista("inicio");}}><span>◫</span><strong>Dashboard</strong></button>
-      <button onClick={()=>{setBusqueda("");setVista("recepcion");}}><span>↗</span><strong>Nuevos encargos</strong><b>{cuenta("recepcion")}</b></button>
-      <button onClick={()=>{setBusqueda("");setVista("firma");}}><span>✍</span><strong>Pendientes de firma</strong><b>{cuenta("firma")}</b></button>
-      <button onClick={()=>{setBusqueda("");setVista("copia");}}><span>▧</span><strong>Pendientes copias simples</strong><b>{cuenta("copia")}</b></button>
-      <button onClick={()=>{setBusqueda("");setVista("factura");}}><span>€</span><strong>Pendientes de factura notarial</strong><b>{cuenta("factura")}</b></button>
-      <button onClick={()=>{setBusqueda("");setVista("ajd");}}><span>◷</span><strong>Pendientes de AJD / ITP</strong><b>{cuenta("ajd")}</b></button>
-      <button onClick={()=>{setBusqueda("");setVista("registro");}}><span>▤</span><strong>Pendientes de presentación registral</strong><b>{cuenta("registro")}</b></button>
-      <button onClick={()=>{setBusqueda("");setVista("defectos");}}><span>!</span><strong>Expedientes con defectos</strong><b>{cuenta("defectos")}</b></button>
-      <button onClick={()=>{setBusqueda("");setVista("inscripcion");}}><span>▣</span><strong>Inscripciones registrales</strong><b>{cuenta("inscripcion")}</b></button>
-      <button onClick={()=>{setBusqueda("");setVista("cerrada");}}><span>✓</span><strong>Escrituras cerradas inscritas</strong><b>{cuenta("cerrada")}</b></button>
-      <button onClick={()=>setVista("avisos")}><span>♧</span><strong>Notificaciones</strong><b>{avisos.comentarios.length+avisos.documentos.length}</b></button>
-    </section>}
     {vista === "inicio" && <section className="ng-dashboard-analitica">
       <div className="ng-dashboard-kpis">
         <article><span>Firmas realizadas</span><strong>{expedientes.filter(x => x.fecha_firma && x.protocolo).length}</strong><small>Firmas reales con fecha y protocolo</small></article>
@@ -424,8 +462,10 @@ export default function NotarGest() {
       </div>
     </section>}
     <footer className="ng-pie">MOLSAN ERP · PREMIUM 2027 · NotarGest</footer>
+            </div>
+          </div>
         </div>
-      </div>
-    </main>
-  </>;
+      </main>
+    </div>
+  );
 }
