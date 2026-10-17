@@ -259,6 +259,11 @@ def listar_encargos(db, usuario, solo_pendientes=False):
             "Nota simple registral",
             "Escrituras/borradores",
             "Borradores de escrituras",
+            "Borradores de escritura",
+            "Otros documentos",
+            "Otra documentación",
+            "Mails de la Oficina",
+            "Mails de la oficina",
         }
         documentos_apoderado = [
             {
