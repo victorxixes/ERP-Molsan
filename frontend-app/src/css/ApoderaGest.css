@@ -1260,3 +1260,65 @@
 @media(max-width:560px){
   .ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* ApoderaGest · datos de contacto del notario enlazados al catálogo CTN */
+.ag-notario-grupo-trigger {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+}
+.ag-notario-grupo-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+}
+.ag-notario-contacto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  margin-top: 5px;
+  color: #52627c;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.ag-notario-contacto > span {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ag-notario-contacto b {
+  flex: 0 0 auto;
+  color: #4167d5;
+  font-size: 12px;
+  line-height: 1.25;
+}
+.ag-notario-contacto .ag-notario-sin-ficha {
+  color: #8793a6;
+  font-size: 10px;
+  font-style: italic;
+  font-weight: 500;
+}
+@media (max-width: 760px) {
+  .ag-notario-grupo-trigger {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    padding: 13px;
+  }
+  .ag-notario-grupo-trigger > .ag-contador {
+    grid-column: 2;
+    justify-self: start;
+  }
+  .ag-notario-contacto {
+    gap: 5px 10px;
+  }
+}
