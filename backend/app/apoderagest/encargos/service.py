@@ -219,12 +219,15 @@ def listar_encargos(db, usuario, solo_pendientes=False):
 
         fecha_envio = getattr(expediente, "fecha_envio_notario", None) or getattr(expediente, "fecha_envio", None)
         if solo_pendientes:
-            # Debe existir envío guardado y no constar firma real ni protocolo.
+            # Solo se considera completada la firma cuando constan ambos datos
+            # oficiales: fecha real y número de protocolo.
             if not fecha_envio:
                 continue
-            if getattr(expediente, "fecha_firma", None):
-                continue
-            if _texto(getattr(expediente, "protocolo", None)):
+            firma_completa = bool(
+                getattr(expediente, "fecha_firma", None)
+                and _texto(getattr(expediente, "protocolo", None))
+            )
+            if firma_completa:
                 continue
 
         filas_fincas = (
