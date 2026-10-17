@@ -765,37 +765,66 @@ export default function ApoderaGest() {
             <TarjetaIndicador titulo="Firmas por videoconferencia" valor={numeroLegible(dashboard?.firmas_videoconferencia)} detalle="Actividad remota" icono="▣" />
             <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle={`Desde CP ${dashboard?.origen_kilometros || "08016"} · ${dashboard?.firmas_presenciales_con_distancia ?? 0}/${dashboard?.firmas_presenciales ?? 0} distancias calculadas en línea recta`} icono="⌁" />
           </div>
-          <section className="ag-panel ag-panel-proximas">
-            <div className="ag-panel-cabecera"><div><span className="ag-kicker">PLANIFICACIÓN</span><h3>Próximas citas</h3></div><button type="button" className="ag-enlace-accion" onClick={() => setPestana("Agenda")}>Ver agenda <span>→</span></button></div>
-            {!agenda.length ? <EstadoVacio icono="▦" titulo="No hay citas disponibles" detalle="Cuando existan citas asignadas, podrás consultarlas desde aquí." /> : (
-              <div className="ag-proximas-lista">{agenda.slice(0, 5).map((cita, i) => (
-                <article className="ag-cita-item" key={cita.id ?? `${cita.fecha}-${i}`}>
-                  <div className="ag-cita-fecha">
-                    <strong>{fechaLegible(cita.fecha).split("/")[0]}</strong>
-                    <span>{fechaLegible(cita.fecha).split("/").slice(1).join("/")}</span>
-                  </div>
-                  <div className="ag-cita-info">
-                    <div className="ag-cita-titulo-fila">
-                      <strong>{texto(cita.tipo_cita, "Cita")}</strong>
-                      {cita.tipo_firma ? <span className="ag-cita-modalidad">{texto(cita.tipo_firma)}</span> : null}
-                      {cita.tipo_cita === "Firma notarial" ? (
-                        <span className={`ag-firma-indicador ${String(cita.observaciones || "").toUpperCase().includes("FIRMA REALIZADA") ? "realizada" : ""}`}>
-                          {String(cita.observaciones || "").toUpperCase().includes("FIRMA REALIZADA") ? "✓ Firma realizada" : "◷ Pendiente de firma"}
-                        </span>
-                      ) : null}
+          <div className="ag-dashboard-inferior-grid">
+            <section className="ag-panel ag-panel-proximas">
+              <div className="ag-panel-cabecera">
+                <div><span className="ag-kicker">PLANIFICACIÓN</span><h3>Próximas citas</h3></div>
+                <button type="button" className="ag-enlace-accion" onClick={() => setPestana("Agenda")}>Ver agenda <span>→</span></button>
+              </div>
+              {!agenda.length ? <EstadoVacio icono="▦" titulo="No hay citas disponibles" detalle="Cuando existan citas asignadas, podrás consultarlas desde aquí." /> : (
+                <div className="ag-proximas-lista">
+                  {agenda.slice(0, 5).map((cita, i) => {
+                    const firmaRealizada = String(cita.observaciones || "").toUpperCase().includes("FIRMA REALIZADA");
+                    return (
+                      <article className="ag-cita-item ag-cita-item-compacta" key={cita.id ?? `${cita.fecha}-${i}`}>
+                        <div className="ag-cita-fecha">
+                          <strong>{fechaLegible(cita.fecha).split("/")[0]}</strong>
+                          <span>{fechaLegible(cita.fecha).split("/").slice(1).join("/")}</span>
+                        </div>
+                        <div className="ag-cita-info">
+                          <div className="ag-cita-titulo-fila">
+                            <strong>{texto(cita.tipo_cita, "Cita")}</strong>
+                            {cita.tipo_firma ? <span className="ag-cita-modalidad">{texto(cita.tipo_firma)}</span> : null}
+                            {cita.tipo_cita === "Firma notarial" ? <span className={`ag-firma-indicador ${firmaRealizada ? "realizada" : ""}`}>{firmaRealizada ? "✓ Firma realizada" : "◷ Pendiente de firma"}</span> : null}
+                          </div>
+                          <div className="ag-cita-datos">
+                            <span className="ag-cita-horario"><b>Horario</b>{texto(cita.hora_inicio, "—").slice(0, 5)} – {texto(cita.hora_fin, "—").slice(0, 5)}</span>
+                            <span><b>Notaría</b>{texto(cita.nombre_notario, "Sin notaría asignada")}</span>
+                            <span><b>Apoderado</b>{texto(cita.apoderado, "Sin apoderado asignado")}</span>
+                            {cita.id_expediente ? <span><b>Expediente</b>{texto(cita.id_expediente)}</span> : null}
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+            <section className="ag-panel ag-panel-estadistica-firma">
+              <div className="ag-panel-cabecera">
+                <div><span className="ag-kicker">ACTIVIDAD ANUAL</span><h3>Estadística de firma</h3></div>
+                <span className="ag-estadistica-anio">{dashboard?.anio_estadistica_firmas || new Date().getFullYear()}</span>
+              </div>
+              <div className="ag-estadistica-resumen">
+                <strong>{numeroLegible((dashboard?.volumen_mensual_firmas || []).reduce((suma, mes) => suma + Number(mes.total || 0), 0))}</strong>
+                <span>firmas con protocolo registrado este año</span>
+              </div>
+              <div className="ag-grafico-firmas" role="img" aria-label={`Volumen mensual de firmas en ${dashboard?.anio_estadistica_firmas || new Date().getFullYear()}`}>
+                {(() => {
+                  const meses = dashboard?.volumen_mensual_firmas || [];
+                  const maximo = Math.max(1, ...meses.map((mes) => Number(mes.total || 0)));
+                  return meses.map((mes) => (
+                    <div className="ag-grafico-mes" key={mes.mes_numero || mes.mes}>
+                      <span className="ag-grafico-valor">{mes.total || 0}</span>
+                      <div className="ag-grafico-columna"><span style={{ height: `${Math.max(mes.total ? 8 : 2, (Number(mes.total || 0) / maximo) * 100)}%` }} /></div>
+                      <span className="ag-grafico-etiqueta">{mes.mes}</span>
                     </div>
-                    <div className="ag-cita-datos">
-                      <span className="ag-cita-horario"><b>Horario</b>{texto(cita.hora_inicio, "—").slice(0, 5)} – {texto(cita.hora_fin, "—").slice(0, 5)}</span>
-                      <span><b>Notaría</b>{texto(cita.nombre_notario, "Sin notaría asignada")}</span>
-                      <span><b>Apoderado</b>{texto(cita.apoderado, "Sin apoderado asignado")}</span>
-                      {cita.id_expediente ? <span><b>Expediente</b>{texto(cita.id_expediente)}</span> : null}
-                    </div>
-                  </div>
-                  <span className="ag-cita-flecha" aria-hidden="true">›</span>
-                </article>
-              ))}</div>
-            )}
-          </section>
+                  ));
+                })()}
+              </div>
+              <p className="ag-estadistica-nota">Cuenta las firmas reales del apoderado por la fecha registrada con el protocolo, no las citas planificadas.</p>
+            </section>
+          </div>
         </section>
       ) : null}
 
