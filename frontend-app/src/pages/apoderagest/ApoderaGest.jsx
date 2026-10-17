@@ -60,7 +60,7 @@ function esDocumentoOtros(documento) {
   const categoria = normalizarCategoriaDocumento(documento?.categoria);
   const nombre = normalizarCategoriaDocumento(documento?.nombre_original);
   return categoria === "otros documentos" || categoria === "otra documentacion" ||
-    categoria === "mails de la oficina" || categoria === "mails de la oficina" ||
+    categoria === "mails de la oficina" ||
     nombre.includes("otros documentos") || nombre.includes("otra documentacion");
 }
 
