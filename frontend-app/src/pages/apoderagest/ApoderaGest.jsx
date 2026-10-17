@@ -337,15 +337,12 @@ function TablaEncargos({ encargos, onFirmado }) {
                   return (
                     <article className="ag-encargo-detalle ag-ficha-encargo" key={id}>
                       <button type="button" className="ag-encargo-detalle-cabecera" aria-expanded={detalleAbierto} onClick={() => setAbiertos(actual => ({ ...actual, [`exp-${id}`]: !actual[`exp-${id}`] }))}>
-                        <span><strong>Expediente {texto(encargo.id_expediente || encargo.id)}</strong><small>{texto(encargo.titular)}</small></span>
+                        <span><strong>Expediente {texto(encargo.id_expediente || encargo.id)}</strong><small>{texto(encargo.nombre_solicitante || encargo.solicitante)}{(encargo.nif_solicitante || encargo.dni_solicitante) ? ` · ${texto(encargo.nif_solicitante || encargo.dni_solicitante)}` : ""}</small></span>
                         <span>{detalleAbierto ? "Ocultar detalles ⌃" : "Ver todos los datos ⌄"}</span>
                       </button>
                       {encargo.bloqueado && <div className="ag-alerta-bloqueo" role="alert"><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><span>{texto(encargo.motivo_bloqueo_efectivo || encargo.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</span></div>}
                       <div className="ag-encargo-resumen ag-ficha-resumen ag-aceptar-resumen">
                         <CampoDetalle etiqueta="Expediente bloqueado" valor={encargo.bloqueado ? "Sí" : "No"} />
-                        <CampoDetalle etiqueta="Solicitante" valor={encargo.nombre_solicitante || encargo.solicitante} />
-                        <CampoDetalle etiqueta="NIF solicitante" valor={encargo.nif_solicitante} />
-                        <CampoDetalle etiqueta="Capital" valor={encargo.capital === null || encargo.capital === undefined ? "—" : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(encargo.capital))} />
                         <label className="ag-aceptar-campo"><span>N.º solicitud PN</span><input type="text" value={(datosAceptacion[id]?.numero_solicitud_pnc ?? encargo.numero_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "numero_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} /></label>
                         <label className="ag-aceptar-campo"><span>Fecha solicitud PNC</span><input type="date" value={(datosAceptacion[id]?.fecha_solicitud_pnc ?? encargo.fecha_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} /></label>
                         <label className="ag-aceptar-campo"><span>Fecha prevista de firma</span><input type="date" value={(datosAceptacion[id]?.fecha_prevista_firma ?? encargo.fecha_prevista_firma ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_prevista_firma", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id]} /></label>
