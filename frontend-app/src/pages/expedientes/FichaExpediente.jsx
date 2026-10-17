@@ -3889,6 +3889,7 @@ const cuantiaFincasParaEnvio =
               icono="titular"
               className="h-full"
               compacto
+              colapsable
             >
               <div className="grid grid-cols-2 gap-2">
                 <Dato
@@ -3909,6 +3910,7 @@ const cuantiaFincasParaEnvio =
               icono="solicitante"
               className="h-full"
               compacto
+              colapsable
             >
               <div className="grid grid-cols-2 gap-2">
                 <Dato
@@ -3929,6 +3931,7 @@ const cuantiaFincasParaEnvio =
               icono="titular"
               className="h-full"
               compacto
+              colapsable
             >
               <p className="text-xs leading-5 text-slate-500">
                 El sistema buscará otros expedientes cuyo titular tenga el mismo NIF.
