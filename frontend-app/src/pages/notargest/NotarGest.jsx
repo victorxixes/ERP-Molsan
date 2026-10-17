@@ -240,7 +240,8 @@ export default function NotarGest() {
     defectos: "Expedientes con defectos",
     inscripcion: "Inscripciones registrales",
     cerrada: "Escrituras cerradas inscritas",
-    avisos: "Notificaciones",
+    avisos_comentarios: "Notificaciones",
+    avisos_documentos: "Notificaciones",
   }[vista] || "");
   const navegarSidebar = (label) => {
     const destinos = {
@@ -254,7 +255,7 @@ export default function NotarGest() {
       "Expedientes con defectos": "defectos",
       "Inscripciones registrales": "inscripcion",
       "Escrituras cerradas inscritas": "cerrada",
-      "Notificaciones": "avisos",
+      "Notificaciones": "avisos_comentarios",
     };
     setBusqueda("");
     setVista(destinos[label] || "inicio");
