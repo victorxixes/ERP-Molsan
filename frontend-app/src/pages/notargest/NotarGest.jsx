@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import "../../css/ApoderaGest.css";
@@ -226,8 +227,45 @@ export default function NotarGest() {
   const esDetalle = vista === "detalle" && detalle;
   const titulo = esDetalle ? `Expediente ${detalle.id_expediente}` : (bandejas.find(b => b.id === vista)?.titulo || ({ avisos_comentarios: "Observaciones del gestor", avisos_documentos: "Nueva documentación añadida" }[vista]) || (vista === "inicio" ? "Mis tareas pendientes" : vista === "documentacion" ? "Carpeta Digital" : "NotarGest"));
   const tablaFactura = vista === "factura";
-  return <main className="apoderagest notargest">
-    <header className="ng-cabecera"><div><span className="ng-sobrelinea">PORTAL PROFESIONAL · MOLSAN</span><h1>NotarGest</h1><p>{accesoERP ? (empleadoERP?.nombre || empleadoERP?.usuario || "Gestión interna ERP") : (notario?.nombre || "Portal de la notaría")}</p></div><div className="ng-cabecera-acciones"><button className="ng-boton-secundario" onClick={cargar} disabled={cargando}>↻ Actualizar</button><button className="ng-boton-secundario" onClick={salir}>{accesoERP ? "Volver a módulos" : "Cerrar sesión"}</button></div></header>
+  const fechaActual = new Intl.DateTimeFormat("es-ES", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+  }).format(new Date());
+  const navegarModulo = (label) => {
+    if (label === "Dashboard") { setVista("inicio"); return; }
+    const rutas = {
+      Expedientes: "/expedientes", Agenda: "/agenda", Mensajes: "/mensajes",
+      CTN: "/ctn", Intranet: "/intranet", Informes: "/informes",
+    };
+    if (rutas[label]) navigate(rutas[label]);
+  };
+  return <>
+    {accesoERP && <Sidebar
+      brandName="NotarGest"
+      navigationItems={[
+        { key: "dashboard", label: "Dashboard", icon: "home" },
+        { key: "expedientes", label: "Expedientes", icon: "folder" },
+        { key: "agenda", label: "Agenda", icon: "calendar" },
+        { key: "mensajes", label: "Mensajes", icon: "chat" },
+        { key: "ctn", label: "CTN", icon: "globe" },
+        { key: "intranet", label: "Intranet", icon: "folder" },
+        { key: "informes", label: "Informes", icon: "chart" },
+      ]}
+      activeNavigationItem={vista === "inicio" ? "Dashboard" : ""}
+      onNavigationItemClick={navegarModulo}
+    />}
+    <main className="apoderagest notargest">
+    <header className="ng-cabecera ng-hero-premium">
+      <div className="ng-hero-identidad">
+        <div className="ng-hero-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
+        <div><span className="ng-sobrelinea">MOLSAN ERP · PREMIUM 2027</span><h1>NotarGest</h1><p>Centro de gestión notarial, firmas y seguimiento registral. · {accesoERP ? (empleadoERP?.nombre || empleadoERP?.usuario || "Gestión interna ERP") : (notario?.nombre || "Portal de la notaría")}</p></div>
+      </div>
+      <div className="ng-cabecera-acciones">
+        <span className="ng-fecha-premium">{fechaActual}</span>
+        {accesoERP && <button className="ng-boton-secundario" onClick={() => navigate("/modulos")}>▦ Ir a módulos</button>}
+        <button className="ng-boton-secundario" onClick={cargar} disabled={cargando}>{cargando ? "Actualizando…" : "↻ Actualizar datos"}</button>
+        <button className="ng-boton-secundario" onClick={salir}>{accesoERP ? "Volver a módulos" : "Cerrar sesión"}</button>
+      </div>
+    </header>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
     {vista === "inicio" && <section className="ng-estados-grid" aria-label="Estados de trabajo">
       {bandejas.map((b, i) => <button key={b.id} className={`ng-estado-card ${cuenta(b.id) ? "ng-estado-con-pendientes" : ""}`} onClick={() => {setBusqueda("");setVista(b.id);}} aria-label={`${b.titulo}: ${cuenta(b.id)} expedientes. Abrir listado`}>
@@ -346,6 +384,7 @@ export default function NotarGest() {
         </section>
       </div>
     </section>}
-    <footer className="ng-pie">MOLSAN ERP · NotarGest</footer>
-  </main>;
+    <footer className="ng-pie">MOLSAN ERP · PREMIUM 2027 · NotarGest</footer>
+    </main>
+  </>;
 }
