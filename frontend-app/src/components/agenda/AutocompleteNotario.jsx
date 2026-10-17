@@ -280,12 +280,18 @@ export default function AutocompleteNotario({
 
           .then((res) => {
 
-            const lista =
-              Array.isArray(
-                res?.data?.items
-              )
-                ? res.data.items
-                : [];
+            // El endpoint CTN puede responder como array directo o como
+            // objeto paginado, según la versión del backend.
+            const payload = res?.data ?? res;
+            const lista = Array.isArray(payload)
+              ? payload
+              : Array.isArray(payload?.items)
+                ? payload.items
+                : Array.isArray(payload?.resultados)
+                  ? payload.resultados
+                  : Array.isArray(payload?.notarias)
+                    ? payload.notarias
+                    : [];
 
             setNotarios(lista);
             setOpen(true);
