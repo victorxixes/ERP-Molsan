@@ -530,6 +530,10 @@ def migrar_esquema_expedientes_inicio():
         ("fecha_solicitud_pnc", "DATE"),
         ("numero_solicitud_pnc", "VARCHAR(200)"),
         ("notario_otorgante", "VARCHAR(300)"),
+        # Columnas del workflow NotarGest, centralizadas para evitar DDL concurrente
+        ("notargest_estado", "VARCHAR(80)"),
+        ("notargest_fecha_cierre", "DATE"),
+        ("notargest_fecha_envio_gestoria", "DATE"),
         ("escritura_firmada", "BOOLEAN"),
         ("hora_prevista_firma", "TIME"),
         ("idioma_documento", "VARCHAR(100)"),
