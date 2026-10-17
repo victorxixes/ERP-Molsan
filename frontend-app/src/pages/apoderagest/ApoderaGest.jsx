@@ -180,9 +180,9 @@ function agruparEncargosPorNotario(encargos) {
   return [...grupos.values()].sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
 }
 
-function CampoDetalle({ etiqueta, valor }) {
+function CampoDetalle({ etiqueta, valor, clase = "" }) {
   return (
-    <div className="ag-detalle-campo">
+    <div className={`ag-detalle-campo ${clase}`}>
       <span>{etiqueta}</span>
       <strong>{texto(valor)}</strong>
     </div>
@@ -465,7 +465,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                       {encargo.bloqueado && <div className="ag-alerta-bloqueo" role="alert"><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><span>{texto(encargo.motivo_bloqueo_efectivo || encargo.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</span></div>}
                       <div className="ag-encargo-resumen ag-ficha-resumen ag-aceptar-resumen">
                         <CampoDetalle etiqueta="Expediente bloqueado" valor={encargo.bloqueado ? "Sí" : "No"} />
-                        <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} />
+                        <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} clase={encargo.firma_urgente ? "ag-firma-urgente-activa" : ""} />
                         <label className="ag-aceptar-campo"><span>N.º solicitud PN</span><input type="text" value={(datosAceptacion[id]?.numero_solicitud_pnc ?? encargo.numero_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "numero_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
                         <label className="ag-aceptar-campo"><span>Fecha solicitud PNC</span><input type="date" value={(datosAceptacion[id]?.fecha_solicitud_pnc ?? encargo.fecha_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
                         <label className="ag-aceptar-campo"><span>Fecha prevista de firma</span><input type="date" value={(datosAceptacion[id]?.fecha_prevista_firma ?? encargo.fecha_prevista_firma ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_prevista_firma", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
@@ -515,14 +515,14 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <CampoDetalle etiqueta="Saldo disponible" valor={encargo.saldo_disponible != null ? euros(encargo.saldo_disponible) : null} />
                               <CampoDetalle etiqueta="Tipo del documento formalizado" valor={(encargo.documentos_escritura || []).map((doc) => doc.tipo_documento).filter(Boolean).join(", ") || encargo.tipo_documento || encargo.formato_escritura || encargo.tipo_tramite} />
                               <CampoDetalle etiqueta="Cuantía del documento" valor={(encargo.documentos_escritura || []).some((doc) => doc.cuantia != null) ? euros((encargo.documentos_escritura || []).reduce((total, doc) => total + (Number(doc.cuantia) || 0), 0)) : (encargo.cuantia_documento != null ? euros(encargo.cuantia_documento) : null)} />
-                              <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} />
+                              <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} clase={encargo.firma_urgente ? "ag-firma-urgente-activa" : ""} />
                               <CampoDetalle etiqueta="Datos del envío" valor={fechaLegible(encargo.fecha_envio_notario || encargo.fecha_envio)} />
                               <CampoDetalle etiqueta="Oficina" valor={encargo.oficina} />
                               <CampoDetalle etiqueta="Fecha alta" valor={fechaLegible(encargo.fecha_alta)} />
                             </div>
                           </details>
                           <details open className="ag-encargo-subpanel ag-ficha-archivo">
-                            <summary className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><p>Documentación disponible para consultar desde el expediente.</p></summary>
+                            <summary className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><small>Documentación disponible para consultar desde el expediente.</small></summary>
                             <div className="ag-archivo-layout">
                               <div className="ag-visor-inline">
                                 {documentoVisor && documentoVisor.expedienteId === String(encargo.id_expediente || encargo.id) ? (
