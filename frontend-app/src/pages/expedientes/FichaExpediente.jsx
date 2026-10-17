@@ -4056,8 +4056,6 @@ const cuantiaFincasParaEnvio =
             >
               🔗 Área de clientes
             </button>
-            <p className="basis-full text-[10px] leading-3 text-amber-700">Aviso: el enlace al área de clientes está pendiente de configurar.</p>
-
             {tieneDefecto && (
               <button
                 type="button"
@@ -4067,6 +4065,8 @@ const cuantiaFincasParaEnvio =
                 ⚠️ DEFECTO REGISTRAL
               </button>
             )}
+
+            <p className="basis-full text-[10px] leading-3 text-amber-700">Aviso: el enlace al área de clientes está pendiente de configurar.</p>
 
           </div>
         </div>
