@@ -311,33 +311,57 @@ ESTADOS_NOTARGEST = {
 
 @router.on_event("startup")
 def migrar_workflow_notargest():
-    """Migra columnas del workflow NotarGest con diagnóstico y espera limitada."""
+    """Comprueba columnas del workflow y no bloquea el arranque por migraciones auxiliares."""
     import time as _time
 
+    tabla = "expedientes"
     cambios = [
-        ("notargest_estado", "ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_estado VARCHAR(80)"),
-        ("notargest_fecha_cierre", "ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_fecha_cierre DATE"),
-        ("notargest_fecha_envio_gestoria", "ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_fecha_envio_gestoria DATE"),
+        ("notargest_estado", "VARCHAR(80)"),
+        ("notargest_fecha_cierre", "DATE"),
+        ("notargest_fecha_envio_gestoria", "DATE"),
     ]
     print("[NOTARGEST WORKFLOW] Inicio de migración.", flush=True)
+
     with engine.connect() as conn:
-        for nombre, sql in cambios:
-            for intento in range(1, 4):
-                try:
-                    print(f"[NOTARGEST WORKFLOW] Aplicando {nombre} (intento {intento}/3)...", flush=True)
-                    with conn.begin():
-                        conn.execute(text("SET LOCAL lock_timeout = '5s'"))
-                        conn.execute(text("SET LOCAL statement_timeout = '15s'"))
-                        conn.execute(text(sql))
-                    print(f"[NOTARGEST WORKFLOW] Columna {nombre}: OK.", flush=True)
-                    break
-                except Exception as exc:
-                    print(f"[NOTARGEST WORKFLOW] Error en {nombre}, intento {intento}/3: {exc!r}", flush=True)
-                    if intento < 3:
-                        _time.sleep(2)
-                    else:
-                        raise RuntimeError(f"No se pudo migrar workflow NotarGest ({nombre}) tras 3 intentos") from exc
-    print("[NOTARGEST WORKFLOW] Migración completada.", flush=True)
+        resultado = conn.execute(
+            text(
+                "SELECT column_name FROM information_schema.columns "
+                "WHERE table_schema = current_schema() AND table_name = :tabla"
+            ),
+            {"tabla": tabla},
+        )
+        existentes = {fila[0] for fila in resultado.fetchall()}
+
+    for nombre, tipo_sql in cambios:
+        if nombre in existentes:
+            print(f"[NOTARGEST WORKFLOW] {nombre} ya existe; se omite ALTER TABLE.", flush=True)
+            continue
+
+        completado = False
+        for intento in range(1, 4):
+            try:
+                print(f"[NOTARGEST WORKFLOW] Añadiendo {nombre} (intento {intento}/3)...", flush=True)
+                with engine.begin() as conn:
+                    conn.execute(text("SET LOCAL lock_timeout = '5s'"))
+                    conn.execute(text("SET LOCAL statement_timeout = '15s'"))
+                    conn.execute(text(f"ALTER TABLE {tabla} ADD COLUMN {nombre} {tipo_sql}"))
+                print(f"[NOTARGEST WORKFLOW] Columna {nombre}: OK.", flush=True)
+                completado = True
+                break
+            except Exception as exc:
+                print(f"[NOTARGEST WORKFLOW] Error en {nombre}, intento {intento}/3: {exc!r}", flush=True)
+                if intento < 3:
+                    _time.sleep(2)
+
+        if not completado:
+            print(
+                f"[NOTARGEST WORKFLOW] AVISO: no se pudo añadir {nombre}; "
+                "el arranque continuará y habrá que reintentar la migración.",
+                flush=True,
+            )
+
+    print("[NOTARGEST WORKFLOW] Migración revisada.", flush=True)
+
 
 def _estado_workflow(e):
     estado = getattr(e, "notargest_estado", None)
