@@ -550,9 +550,9 @@ export default function NotarGest() {
             {detalle.observaciones_notaria?.length ? detalle.observaciones_notaria.map(o => <article className="ng-observacion" key={o.id}><p>{o.comentario}</p><small>{o.visibilidad === "Gestor" ? `Dirigido a: ${o.empleado_destinatario || "Gestor"}` : o.visibilidad} · {texto(o.fecha)}</small></article>) : <p className="ng-mensaje">No hay comentarios registrados para mostrar.</p>}
             {detalle.observaciones && <article className="ng-observacion"><p>{detalle.observaciones}</p><small>Observaciones generales del expediente</small></article>}
           </div>
-        </section>
+        </details>
       </div>
-    </details>}
+    </section>}
     <footer className="ng-pie">MOLSAN ERP · PREMIUM 2027 · NotarGest</footer>
             </div>
           </div>
