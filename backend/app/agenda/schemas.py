@@ -128,6 +128,8 @@ class CitaResponse(BaseModel):
 
     observaciones: Optional[str] = None
 
+    firma_realizada: bool = False
+
     notario_id: Optional[int] = None
 
     notario_nombre: Optional[str] = None
