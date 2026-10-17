@@ -317,7 +317,7 @@ ESTADOS_NOTARGEST = {
     "cerrada": "Escrituras cerradas inscritas",
 }
 
-@router.on_event("startup")
+# La migración de estas columnas se centraliza en main.py para evitar DDL concurrente.
 def migrar_workflow_notargest():
     """Comprueba columnas del workflow y no bloquea el arranque por migraciones auxiliares."""
     import time as _time
