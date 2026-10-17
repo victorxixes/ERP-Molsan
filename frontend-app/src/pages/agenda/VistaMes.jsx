@@ -290,6 +290,11 @@ export default function VistaMes({
                           {c.tipo_cita} — {c.hora_inicio} →{" "}
                           {c.hora_fin}
                         </div>
+                        {c.tipo_cita === "Firma notarial" ? (
+                          <div className={`ag-firma-indicador ${String(c.observaciones || "").toUpperCase().includes("FIRMA REALIZADA") ? "realizada" : ""}`}>
+                            {String(c.observaciones || "").toUpperCase().includes("FIRMA REALIZADA") ? "✓ Firma realizada" : "◷ Pendiente de firma"}
+                          </div>
+                        ) : null}
 
                         <div className="truncate text-[var(--erp-text-soft)] pl-1">
                           Notario: {c.notario_nombre || "—"}
