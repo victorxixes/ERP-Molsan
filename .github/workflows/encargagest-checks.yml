@@ -1,0 +1,42 @@
+name: EncargaGest checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, feature/encargagest-mvp]
+
+permissions:
+  contents: read
+
+jobs:
+  frontend-build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build
+        run: npm run build
+
+  backend-syntax:
+    name: Backend Python syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile backend modules
+        run: python -m compileall -q backend
