@@ -1609,3 +1609,51 @@
   .ag-encargo-detalle-cabecera{gap:8px;padding:10px}
   .ag-encargo-detalle-cabecera>span:last-child{font-size:10px}
 }
+
+
+/* ApoderaGest CTN · Carpeta digital amplia, con visor a la izquierda y categorías a la derecha */
+@media(min-width:901px){
+  .ag-encargo-paneles.ag-ficha-paneles{
+    grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr) minmax(0,1fr);
+  }
+  .ag-ficha-paneles .ag-ficha-registral{
+    grid-column:1!important;
+    grid-row:2;
+  }
+  .ag-ficha-paneles .ag-ficha-archivo{
+    grid-column:2/4!important;
+    grid-row:2;
+  }
+  .ag-ficha-paneles .ag-ficha-archivo .ag-archivo-layout{
+    grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+    gap:14px;
+  }
+  .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline{
+    position:sticky;
+    top:12px;
+  }
+  .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline-contenido{
+    height:min(62vh,620px);
+    min-height:390px;
+    max-height:620px;
+  }
+  .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline-contenido .ag-visor-pdf{
+    min-height:390px;
+  }
+  .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline-vacio{
+    min-height:390px;
+  }
+}
+@media(max-width:900px){
+  .ag-ficha-paneles .ag-ficha-archivo,
+  .ag-ficha-paneles .ag-ficha-registral{
+    grid-column:1/-1!important;
+    grid-row:auto!important;
+  }
+  .ag-ficha-paneles .ag-ficha-archivo .ag-archivo-layout{
+    grid-template-columns:minmax(0,1fr);
+  }
+  .ag-ficha-paneles .ag-ficha-archivo .ag-visor-inline{
+    position:static;
+  }
+}
