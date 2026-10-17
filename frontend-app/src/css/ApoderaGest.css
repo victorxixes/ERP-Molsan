@@ -1451,3 +1451,22 @@
 .ag-estadistica-nota{margin:10px 0 0;color:var(--erp-text-soft);font-size:10px;line-height:1.45}
 @media(max-width:1050px){.ag-dashboard-inferior-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:560px){.ag-panel-proximas,.ag-panel-estadistica-firma{padding:12px}.ag-cita-item-compacta{align-items:flex-start;gap:8px}.ag-cita-item-compacta .ag-cita-fecha{flex-basis:36px;width:36px;min-width:36px}.ag-cita-item-compacta .ag-cita-datos{gap:4px 9px}.ag-grafico-firmas{gap:3px}.ag-grafico-etiqueta{font-size:8px}}
+
+
+/* ApoderaGest · Confirmación de firma compacta y comunicaciones con el gestor */
+.ag-ficha-paneles .ag-firmar-controles{grid-template-columns:minmax(170px,.7fr) minmax(95px,.38fr) minmax(150px,.62fr);gap:10px}
+.ag-ficha-paneles .ag-firmar-controles>label:nth-child(2){min-width:0}
+.ag-ficha-paneles .ag-firmar-controles>label:nth-child(2) input{min-width:0}
+.ag-firmar-notario-accion{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:10px}
+.ag-firmar-notario-accion label{display:grid;min-width:0;gap:6px;color:#5c6b82;font-size:11px;font-weight:800}
+.ag-firmar-notario-accion select,.ag-comentario-gestor select,.ag-comentario-gestor textarea{width:100%;min-height:40px;padding:9px 11px;border:1px solid #dce4f0;border-radius:10px;background:#fff;color:#24334b;font:inherit;font-size:12px}
+.ag-firmar-notario-accion button,.ag-comentario-gestor button{min-height:40px;padding:0 18px;border:1px solid #2e51ca;border-radius:10px;background:#3158d8;color:#fff;font-size:11px;font-weight:850;cursor:pointer}
+.ag-comunicaciones-subtitulo{margin:14px 0 8px;color:#40516b;font-size:11px;font-weight:850}
+.ag-comentario-gestor{display:grid;gap:10px;margin-top:15px;padding:14px;border:1px solid #e0e7f2;border-radius:12px;background:#f8faff}
+.ag-comentario-gestor label{display:grid;gap:6px;color:#5c6b82;font-size:11px;font-weight:800}
+.ag-comentario-gestor textarea{resize:vertical;min-height:82px}
+.ag-comentario-gestor button{justify-self:start}
+.ag-comentario-gestor button:disabled{opacity:.55;cursor:not-allowed}
+.ag-historico-gestor{margin-top:14px}
+@media(max-width:900px){.ag-ficha-paneles .ag-firmar-controles{grid-template-columns:1fr 1fr}.ag-firmar-notario-accion{grid-column:1/-1}}
+@media(max-width:560px){.ag-ficha-paneles .ag-firmar-controles{grid-template-columns:1fr}.ag-firmar-notario-accion{grid-template-columns:1fr}.ag-firmar-notario-accion button{width:100%}}
