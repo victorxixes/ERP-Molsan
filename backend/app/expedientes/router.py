@@ -170,6 +170,13 @@ class EnvioANotarioRequest(BaseModel):
     documentos: Optional[List[DocumentoEscrituraRequest]] = None
     cuantia: Optional[float] = None
 
+    # Datos de operación que se muestran en el envío a notario.
+    contrato: Optional[str] = None
+    capital: Optional[float] = None
+    tipo_operacion: Optional[str] = None
+    subtipo_operacion: Optional[str] = None
+    importe: Optional[float] = None
+
     idioma_documento: Optional[str] = None
     formato_escritura: Optional[str] = None
     tipo_tramite: Optional[str] = None
@@ -1392,6 +1399,17 @@ def enviar_a_notario(
             if datos.apoderado and datos.apoderado.strip()
             else None
         )
+
+        # DATOS DE OPERACIÓN: conservar los valores enviados desde el modal.
+        for campo in ("contrato", "tipo_operacion", "subtipo_operacion"):
+            valor = getattr(datos, campo, None)
+            if valor is not None:
+                valor = valor.strip() or None
+            setattr(expediente, campo, valor)
+        if datos.capital is not None:
+            expediente.capital = datos.capital
+        if datos.importe is not None:
+            expediente.importe = datos.importe
 
         # DATOS DEL DOCUMENTO
         expediente.tipo_firma = datos.tipo_firma.strip()
