@@ -1015,7 +1015,9 @@ export default function ApoderaGest() {
               <div className="ag-ctn-buscador-notario">
                 <AutocompleteNotario
                   value={notariaActual || null}
-                  disabled={cargandoNotarias}
+                  // El buscador consulta el endpoint paginado de CTN por separado.
+                  // No debe quedar bloqueado mientras se descarga el catálogo completo.
+                  disabled={false}
                   onSelect={(notario) => {
                     if (!notario?.id) return;
                     setNotarias((actuales) => {
