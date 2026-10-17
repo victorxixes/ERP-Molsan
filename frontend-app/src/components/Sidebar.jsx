@@ -408,7 +408,7 @@ const TopNavItem = ({
  * ============================================================
  */
 
-export default function Sidebar({ brandName = "CancelaGest", navigationItems = null, activeNavigationItem = "", onNavigationItemClick = null } = {}) {
+export default function Sidebar({ brandName = "CancelaGest", navigationItems = null, activeNavigationItem = "", onNavigationItemClick = null, onNotificationsClick = null, notificationBadge = null, onProfileClick = null } = {}) {
 
   const empleado = useAuthStore(
     (s) => s.empleado
@@ -820,8 +820,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               gap-1.5
               flex-1
               min-w-0
-              overflow-x-auto
-              overflow-y-visible
+              ${navigationItems ? "flex-wrap overflow-visible" : "overflow-x-auto overflow-y-visible"}
               pb-0.5
             "
           >
@@ -1101,11 +1100,10 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               aria-expanded={
                 notificacionesAbiertas
               }
-              onClick={() =>
-                setNotificacionesAbiertas(
-                  true
-                )
-              }
+              onClick={() => {
+                if (onNotificationsClick) onNotificationsClick();
+                else setNotificacionesAbiertas(true);
+              }}
               className="
                 relative
                 w-9
@@ -1128,7 +1126,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
               <BellIcon />
 
-              {unreadCount > 0 && (
+              {(notificationBadge ?? unreadCount) > 0 && (
 
                 <span
                   className="
@@ -1150,7 +1148,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                     border-[var(--erp-surface)]
                   "
                 >
-                  {unreadCount}
+                  {notificationBadge ?? unreadCount}
                 </span>
 
               )}
@@ -1164,13 +1162,10 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
             <button
               type="button"
-              onClick={() =>
-                useAuthStore
-                  .getState()
-                  .setPerfilModal(
-                    safeUser.id
-                  )
-              }
+              onClick={() => {
+                if (onProfileClick) onProfileClick();
+                else useAuthStore.getState().setPerfilModal(safeUser.id);
+              }}
               title="Mi perfil"
               className="
                 w-9
@@ -1237,7 +1232,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
           MODAL NOTIFICACIONES
       ======================================================== */}
 
-      {notificacionesAbiertas && (
+      {notificacionesAbiertas && !onNotificationsClick && (
 
         <div
           className="
