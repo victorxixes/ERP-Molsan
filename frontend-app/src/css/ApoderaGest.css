@@ -1153,3 +1153,28 @@
 
 .ag-alerta-bloqueo{display:flex;flex-direction:column;gap:5px;margin:0 14px 12px;padding:12px 14px;border:1px solid #f2c6c6;border-left:4px solid #b4232b;border-radius:10px;background:#fff3f3;color:#9f2028;font-size:12px}.ag-alerta-bloqueo strong{font-size:11px;letter-spacing:.04em}.ag-alerta-bloqueo span{color:#7f2730;line-height:1.5}
 .notargest .ng-tabla{min-width:1450px}.notargest .ng-bloqueo-expediente{margin:0 18px 14px}
+
+
+/* ApoderaGest · ficha de encargo con la misma estructura visual premium de NotarGest */
+.ag-encargos-agrupados{display:grid;gap:14px}
+.ag-grupo-notario{overflow:hidden;border:1px solid rgba(224,231,241,.95);border-radius:17px;background:rgba(255,255,255,.88);box-shadow:0 8px 24px rgba(31,48,79,.035)}
+.ag-notario-grupo-trigger{min-height:70px;padding:15px 18px;background:linear-gradient(135deg,rgba(248,250,255,.98),rgba(241,246,255,.92));border-bottom:1px solid #e9edf4}
+.ag-notario-grupo-info strong{color:#24334d;font-size:13px;font-weight:850}.ag-notario-grupo-info small{color:#8290a6;font-size:10px}
+.ag-encargos-detalle-lista.ag-ficha-premium{display:grid;gap:14px;padding:14px}
+.ag-encargo-detalle.ag-ficha-encargo{overflow:hidden;border:1px solid #e1e8f2;border-radius:15px;background:#fff;box-shadow:0 3px 12px rgba(26,43,74,.025)}
+.ag-encargo-detalle-cabecera{min-height:68px;padding:15px 18px;background:linear-gradient(120deg,#fff,#f8faff);border-bottom:1px solid #e9edf4}
+.ag-encargo-detalle-cabecera strong{color:#1e3352;font-size:15px;font-weight:850;letter-spacing:-.2px}.ag-encargo-detalle-cabecera small{color:#7e8ba0;font-size:11px}
+.ag-encargo-detalle-cabecera>span:last-child{padding:8px 10px;color:#3154c5;background:#edf2ff;border:1px solid #dce5ff;border-radius:9px;font-size:10px}
+.ag-ficha-resumen{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;padding:14px 16px;background:#fbfcff;border-top:0;border-bottom:1px solid #edf1f6}
+.ag-ficha-resumen .ag-detalle-campo{min-height:64px;padding:11px 12px;background:#f8faff;border:1px solid #edf1f8;border-radius:10px}.ag-ficha-resumen .ag-detalle-campo small{font-size:9px;color:#7c8aa2;font-weight:750}.ag-ficha-resumen .ag-detalle-campo strong{font-size:12px;color:#273853}
+.ag-encargo-paneles.ag-ficha-paneles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:16px;background:#fbfcff}
+.ag-ficha-paneles .ag-encargo-subpanel{min-width:0;padding:17px;background:rgba(255,255,255,.92);border:1px solid #e4eaf2;border-radius:14px;box-shadow:0 3px 12px rgba(26,43,74,.025)}.ag-ficha-paneles .ag-encargo-subpanel:first-child{grid-column:1/-1}
+.ag-ficha-bloque-heading{display:flex;flex-direction:column;gap:4px;margin:0 0 14px;padding-bottom:11px;border-bottom:1px solid #edf1f6}.ag-ficha-bloque-heading>span{color:#7183a3;font-size:9px;font-weight:850;letter-spacing:.12em}.ag-ficha-bloque-heading h4{margin:0;color:#1e3352;font-size:14px;font-weight:850;letter-spacing:-.2px}.ag-ficha-bloque-heading p{margin:3px 0 0;color:#7d8ba1;font-size:10px;line-height:1.5}
+.ag-ficha-paneles .ag-encargo-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.ag-ficha-paneles .ag-detalle-campo{padding:10px 11px;background:#f8faff;border:1px solid #edf1f8;border-radius:10px}.ag-ficha-paneles .ag-detalle-campo small{font-size:9px;color:#7c8aa2;font-weight:750}.ag-ficha-paneles .ag-detalle-campo strong{font-size:11px;line-height:1.45;color:#273853;overflow-wrap:anywhere}
+.ag-ficha-paneles .ag-cuantias-documentos{margin-top:15px;padding-top:13px;border-top:1px solid #edf1f6}.ag-ficha-paneles .ag-cuantias-documentos h5{color:#34445e;font-size:11px;font-weight:850}
+.ag-ficha-paneles .ag-documentos-apoderado li{border-color:#edf1f6;background:#fff;border-radius:10px;margin-top:8px;padding:11px}.ag-ficha-paneles .ag-documentos-apoderado li>span strong{color:#2c3c58;font-size:11px}.ag-ficha-paneles .ag-documentos-apoderado li>span small{color:#8491a5;font-size:10px}.ag-ficha-paneles .ag-documentos-apoderado button{padding:8px 10px;color:#3154c5;background:#edf2ff;border:1px solid #dce5ff;border-radius:9px;font-size:10px;font-weight:800}
+.ag-ficha-paneles .ag-observaciones-apoderado li{padding:12px 14px;background:#f6f8ff;border-left:3px solid #8ea8ef;border-radius:0 10px 10px 0}.ag-ficha-paneles .ag-observaciones-apoderado p{font-size:11px;color:#344256}
+.ag-ficha-paneles .ag-firmar-panel{background:linear-gradient(145deg,#fff,#f7f9ff);border-color:#dbe4f7}.ag-ficha-paneles .ag-firmar-controles input{min-height:40px;border:1px solid #e0e7f1;border-radius:10px;background:#f8faff}.ag-ficha-paneles .ag-firmar-controles button{min-height:40px;padding:0 16px;color:#fff;background:linear-gradient(135deg,#416df0,#2e51ca);border:1px solid rgba(255,255,255,.4);border-radius:11px;box-shadow:0 6px 16px rgba(49,94,232,.14);font-size:11px;font-weight:800}.ag-ficha-paneles .ag-firmar-controles button:hover:not(:disabled){filter:brightness(1.04);transform:translateY(-1px)}
+@media(max-width:1050px){.ag-ficha-paneles .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.ag-encargo-paneles.ag-ficha-paneles{grid-template-columns:minmax(0,1fr);padding:10px}.ag-ficha-paneles .ag-encargo-subpanel:first-child{grid-column:auto}.ag-ficha-resumen{grid-template-columns:repeat(2,minmax(0,1fr));padding:10px}.ag-ficha-paneles .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ag-ficha-paneles .ag-encargo-subpanel{padding:13px}}
+@media(max-width:480px){.ag-ficha-resumen,.ag-ficha-paneles .ag-encargo-grid{grid-template-columns:minmax(0,1fr)}.ag-encargo-detalle-cabecera{align-items:flex-start;flex-direction:column}.ag-encargo-detalle-cabecera>span:last-child{align-self:flex-start}}
