@@ -72,17 +72,84 @@ def firmar_encargo(
     if not protocolo:
         raise HTTPException(status_code=422, detail="Indica el número de protocolo.")
 
-    expediente.fecha_firma = datos.fecha_firma
-    expediente.protocolo = protocolo
-    expediente.notario_otorgante = datos.notario_otorgante.strip()
+    if datos.fecha_firma > date.today():
+        raise HTTPException(status_code=422, detail="La fecha real de firma no puede ser futura.")
+
+    notario = None
+    nif_notario = str(getattr(expediente, "nif_notario", "") or "").strip()
+    if nif_notario:
+        notario = db.query(Notaria).filter(
+            func.lower(func.trim(Notaria.nif)) == nif_notario.lower()
+        ).first()
+    if notario is None:
+        nombre_objetivo = _normalizar_nombre(
+            getattr(expediente, "nombre_notario", None) or getattr(expediente, "notario", None)
+        )
+        if nombre_objetivo:
+            for candidato in db.query(Notaria).all():
+                nombre_candidato = _normalizar_nombre(" ".join(filter(None, [
+                    getattr(candidato, "nombre", None),
+                    getattr(candidato, "apellidos", None),
+                ])))
+                if nombre_candidato == nombre_objetivo:
+                    notario = candidato
+                    break
+
     try:
+        expediente.fecha_firma = datos.fecha_firma
+        expediente.protocolo = protocolo
+        expediente.notario_otorgante = datos.notario_otorgante.strip()
+
+        # La firma real también se refleja en la cita de agenda. Se conserva
+        # la fecha prevista de la cita y se marca como realizada en observaciones;
+        # la fecha real y el protocolo oficiales permanecen en Expediente.
+        cita = (
+            db.query(Cita)
+            .filter(
+                Cita.expediente_id == expediente.id,
+                func.lower(func.trim(func.coalesce(Cita.tipo_cita, ""))) == "firma notarial",
+            )
+            .order_by(Cita.id.desc())
+            .first()
+        )
+        marca_realizada = (
+            f"FIRMA REALIZADA | Fecha real: {datos.fecha_firma.isoformat()} "
+            f"| Protocolo: {protocolo}"
+        )
+        if cita is None:
+            cita = Cita(
+                expediente_id=expediente.id,
+                fecha=datos.fecha_firma,
+                hora_inicio=time(9, 0),
+                hora_fin=time(10, 0),
+                tipo_cita="Firma notarial",
+                notario_id=getattr(notario, "id", None),
+                tipo_firma=getattr(expediente, "tipo_firma", None) or getattr(notario, "vc", None),
+                apoderado=str(getattr(expediente, "apoderado", "") or "").strip() or None,
+                apoderado_id=getattr(notario, "apoderado_id", None),
+                observaciones=marca_realizada,
+            )
+            db.add(cita)
+        else:
+            observaciones_previas = str(cita.observaciones or "").strip()
+            if "FIRMA REALIZADA" not in observaciones_previas.upper():
+                cita.observaciones = " | ".join(
+                    parte for parte in (observaciones_previas, marca_realizada) if parte
+                )
+            else:
+                cita.observaciones = marca_realizada
+
         db.commit()
         db.refresh(expediente)
+        db.refresh(cita)
+    except HTTPException:
+        db.rollback()
+        raise
     except Exception as exc:
         db.rollback()
         raise HTTPException(
             status_code=500,
-            detail=f"No se pudo registrar la firma: {str(exc)[:250]}",
+            detail=f"No se pudo registrar la firma real y actualizar Agenda: {str(exc)[:250]}",
         )
 
     return {
@@ -91,7 +158,9 @@ def firmar_encargo(
         "fecha_firma": expediente.fecha_firma.isoformat() if expediente.fecha_firma else None,
         "protocolo": expediente.protocolo,
         "notario_otorgante": expediente.notario_otorgante,
-        "mensaje": "Firma registrada en FichaExpediente.",
+        "cita_id": cita.id,
+        "cita_realizada": True,
+        "mensaje": "Firma real registrada y cita de Agenda marcada como realizada.",
     }
 
 
