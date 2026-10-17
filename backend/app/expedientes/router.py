@@ -186,6 +186,7 @@ class EnvioANotarioRequest(BaseModel):
 
     fecha_prevista_firma: Optional[date] = None
     hora_prevista_firma: Optional[time] = time(9, 0)
+    hora_fin_prevista_firma: Optional[time] = None
 
     # DATOS DE FACTURACIÓN DEL EXPEDIENTE
     facturacion_nombre: Optional[str] = None
@@ -1213,18 +1214,13 @@ def crear_o_actualizar_cita_agenda(
         return None
 
     hora_inicio = datos.hora_prevista_firma or time(9, 0)
-
-    minutos_inicio = (
-        hora_inicio.hour * 60
-        + hora_inicio.minute
-    )
-
-    minutos_fin = min(minutos_inicio + 60, 23 * 60 + 59)
-
-    hora_fin = time(
-        minutos_fin // 60,
-        minutos_fin % 60,
-    )
+    hora_fin = datos.hora_fin_prevista_firma
+    if hora_fin is None:
+        minutos_inicio = hora_inicio.hour * 60 + hora_inicio.minute
+        minutos_fin = min(minutos_inicio + 60, 23 * 60 + 59)
+        hora_fin = time(minutos_fin // 60, minutos_fin % 60)
+    if hora_fin <= hora_inicio:
+        raise HTTPException(status_code=400, detail="La hora de fin debe ser posterior a la hora de inicio.")
 
     cita = (
         db.query(Cita)
@@ -1463,6 +1459,10 @@ def enviar_a_notario(
         expediente.escritura_firmada = datos.escritura_firmada
         expediente.hora_prevista_firma = (
             datos.hora_prevista_firma or time(9, 0)
+        )
+        expediente.hora_fin_prevista_firma = datos.hora_fin_prevista_firma or time(
+            min((expediente.hora_prevista_firma.hour * 60 + expediente.hora_prevista_firma.minute + 60) // 60, 23),
+            (expediente.hora_prevista_firma.hour * 60 + expediente.hora_prevista_firma.minute + 60) % 60,
         )
         expediente.fecha_inicio_actividad = datos.fecha_envio
 
