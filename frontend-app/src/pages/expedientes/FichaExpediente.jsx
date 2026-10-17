@@ -4169,7 +4169,10 @@ const cuantiaFincasParaEnvio =
                       <p className="text-sm font-bold text-slate-800">Finca {finca.finca || "—"}</p>
                       <p className="mt-1 text-xs text-slate-500">{[finca.registro, finca.seccion, finca.poblacion, finca.provincia].filter(Boolean).join(" · ") || "Sin datos registrales"}</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
+                      <button type="button" onClick={() => abrirSolicitudFusion(finca)} disabled={!finca.registro} title={!finca.registro ? "Completa el registro de la finca para solicitar una fusión" : "Crear solicitud de fusión para este registro"} className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-[11px] font-bold text-violet-700 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50">
+                        <span aria-hidden="true">⇄</span> Fusión
+                      </button>
                       <button type="button" onClick={() => abrirFincas(finca)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700">Editar</button>
                       <button type="button" onClick={() => eliminarFinca(finca.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700">Eliminar</button>
                     </div>
@@ -5585,17 +5588,6 @@ const cuantiaFincasParaEnvio =
                       {fincasExpediente.map((finca, i) => (
                         <article key={finca.id || `${finca.finca}-${i}`} className="rounded-xl border border-slate-200 p-3">
                           <p className="text-xs font-bold text-slate-800">Finca {finca.finca || finca.numero_finca || "—"}</p>
-                          <div className="mt-2 flex justify-end">
-                            <button
-                              type="button"
-                              onClick={() => abrirSolicitudFusion(finca)}
-                              disabled={!finca.registro}
-                              title={!finca.registro ? "Completa el registro de la finca para solicitar una fusión" : "Crear solicitud de fusión para este registro"}
-                              className="inline-flex items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-bold text-violet-700 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              <span aria-hidden="true">⇄</span> Fusión
-                            </button>
-                          </div>
                           <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
                             <div><span className="block text-slate-400">Registro</span><strong>{finca.registro || "—"}</strong></div>
                             <div><span className="block text-slate-400">Sección</span><strong>{finca.seccion || "—"}</strong></div>
