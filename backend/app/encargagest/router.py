@@ -1,8 +1,13 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 from decimal import Decimal
+import hashlib
+import hmac
+import secrets
 import os
+
+import jwt
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
@@ -10,12 +15,15 @@ from pydantic import BaseModel, Field, condecimal, constr
 from sqlalchemy import or_, func
 from sqlalchemy.orm import Session
 
-from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.dependencies import obtener_token_bearer
 from backend.app.auth.permissions import require_perm_modulo
+from backend.app.config import settings
+from backend.app.empleados.models import Empleado
 from backend.app.ctn.models import Notaria
 from backend.app.database import Base, engine, get_db
 from backend.app.encargagest.models import (
     EncargoExterno, EncargoExternoActividad, EncargoExternoDocumento,
+    EncargoExternoUsuario,
 )
 from backend.app.storage import CARPETA_DIGITAL_DIR
 
@@ -41,17 +49,94 @@ def crear_tablas_encargagest():
             EncargoExterno.__table__,
             EncargoExternoDocumento.__table__,
             EncargoExternoActividad.__table__,
+            EncargoExternoUsuario.__table__,
         ],
         checkfirst=True,
     )
 
 
+def _es_externo(actor):
+    return isinstance(actor, dict) and actor.get("tipo") == "externo"
+
+
 def _autorizar(usuario, accion="ver"):
+    if _es_externo(usuario):
+        if accion in {"ver", "crear", "editar"}:
+            return usuario
+        raise HTTPException(status_code=403, detail="Esta acción requiere una cuenta interna de MOLSAN.")
     require_perm_modulo(usuario, "encargagest", accion)
     return usuario
 
 
+def _exigir_interno(usuario, accion="editar"):
+    if _es_externo(usuario):
+        raise HTTPException(status_code=403, detail="Esta operación solo está disponible para el equipo interno de MOLSAN.")
+    return _autorizar(usuario, accion)
+
+
+def _normalizar_usuario(valor):
+    return "".join(str(valor or "").upper().split()).replace("-", "").replace(".", "")
+
+
+def _hash_password(password, salt=None):
+    salt = salt or secrets.token_hex(16)
+    rounds = 310000
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), bytes.fromhex(salt), rounds).hex()
+    return f"pbkdf2_sha256${rounds}${salt}${digest}"
+
+
+def _verificar_password(password, almacenado):
+    try:
+        algoritmo, rondas, salt, esperado = almacenado.split("$", 3)
+        if algoritmo != "pbkdf2_sha256":
+            return False
+        actual = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), bytes.fromhex(salt), int(rondas)).hex()
+        return hmac.compare_digest(actual, esperado)
+    except (ValueError, TypeError, AttributeError):
+        return False
+
+
+def get_encargagest_actor(token=Depends(obtener_token_bearer), db: Session = Depends(get_db)):
+    try:
+        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM])
+        if payload.get("tipo") == "encargagest":
+            acceso = db.query(EncargoExternoUsuario).filter(
+                EncargoExternoUsuario.id == int(payload.get("usuario_id") or 0),
+                EncargoExternoUsuario.notaria_id == int(payload.get("notaria_id") or 0),
+                EncargoExternoUsuario.habilitado.is_(True),
+            ).first()
+            if not acceso:
+                raise HTTPException(status_code=401, detail="El acceso EncargaGest está deshabilitado.")
+            notaria = db.query(Notaria).filter(Notaria.id == acceso.notaria_id).first()
+            if not notaria:
+                raise HTTPException(status_code=401, detail="La notaría asociada al acceso ya no existe.")
+            nombre = " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or f"Notaría {notaria.id}"
+            return {
+                "tipo": "externo", "id": acceso.id, "usuario_id": acceso.id,
+                "notaria_id": notaria.id, "nombre": nombre, "usuario": acceso.usuario,
+            }
+
+        empleado_id = payload.get("id")
+        if not empleado_id:
+            raise HTTPException(status_code=401, detail="Sesión EncargaGest no válida.")
+        empleado = db.query(Empleado).filter(Empleado.id == int(empleado_id)).first()
+        if not empleado or getattr(empleado, "activo", True) is False:
+            raise HTTPException(status_code=401, detail="Usuario ERP inválido o inactivo.")
+        return empleado
+    except HTTPException:
+        raise
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="La sesión EncargaGest ha caducado.")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Sesión EncargaGest no válida.")
+    except Exception as exc:
+        print(f"ERROR AUTENTICACIÓN ENCARGAGEST: {exc}", flush=True)
+        raise HTTPException(status_code=401, detail="No se pudo validar la sesión EncargaGest.")
+
+
 def _nombre_usuario(usuario):
+    if _es_externo(usuario):
+        return usuario.get("nombre") or usuario.get("usuario") or "Notaría externa"
     return " ".join(filter(None, [
         str(getattr(usuario, "nombre", "") or "").strip(),
         str(getattr(usuario, "apellidos", "") or "").strip(),
@@ -107,9 +192,11 @@ def _serializar_documento(item):
     }
 
 
-def _obtener_encargo(db, encargo_id):
+def _obtener_encargo(db, encargo_id, actor=None):
     item = db.query(EncargoExterno).filter(EncargoExterno.id == encargo_id).first()
     if not item:
+        raise HTTPException(status_code=404, detail="Encargo no encontrado.")
+    if _es_externo(actor) and item.notaria_id != actor.get("notaria_id"):
         raise HTTPException(status_code=404, detail="Encargo no encontrado.")
     return item
 
@@ -127,7 +214,7 @@ def _registrar_actividad(db, encargo_id, usuario, tipo, mensaje, visible_notaria
 
 
 class EncargoCrear(BaseModel):
-    notaria_id: int
+    notaria_id: int | None = None
     contacto_nombre: constr(max_length=200) | None = None
     contacto_email: constr(max_length=320) | None = None
     contacto_telefono: constr(max_length=60) | None = None
@@ -168,11 +255,106 @@ class CrearActividad(BaseModel):
     tipo: str = "COMENTARIO"
 
 
-@router.get("/resumen")
-def resumen(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+class LoginEncargaGest(BaseModel):
+    usuario: constr(min_length=2, max_length=100)
+    password: constr(min_length=1, max_length=128)
+
+
+class AccesoEncargaGest(BaseModel):
+    notaria_id: int
+    password: constr(min_length=10, max_length=128) | None = None
+    habilitado: bool = True
+
+
+@router.post("/login")
+def login_encargagest(datos: LoginEncargaGest, db: Session = Depends(get_db)):
+    usuario_norm = _normalizar_usuario(datos.usuario)
+    acceso = db.query(EncargoExternoUsuario).filter(
+        func.upper(EncargoExternoUsuario.usuario) == usuario_norm,
+        EncargoExternoUsuario.habilitado.is_(True),
+    ).first()
+    if not acceso or not _verificar_password(datos.password, acceso.password_hash):
+        raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
+    notaria = db.query(Notaria).filter(Notaria.id == acceso.notaria_id).first()
+    if not notaria:
+        raise HTTPException(status_code=401, detail="La notaría asociada al acceso no está disponible.")
+    token = jwt.encode({
+        "tipo": "encargagest",
+        "usuario_id": acceso.id,
+        "notaria_id": notaria.id,
+        "exp": datetime.utcnow() + timedelta(hours=8),
+    }, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
+    nombre = " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or f"Notaría {notaria.id}"
+    return {"token": token, "tipo": "encargagest", "notaria": {"id": notaria.id, "nombre": nombre, "nif": notaria.nif}, "usuario": acceso.usuario}
+
+
+@router.get("/me")
+def mi_sesion_encargagest(usuario=Depends(get_encargagest_actor)):
+    if _es_externo(usuario):
+        return {"modo": "externo", "notaria_id": usuario["notaria_id"], "notaria_nombre": usuario["nombre"], "usuario": usuario["usuario"]}
     _autorizar(usuario, "ver")
-    total = db.query(func.count(EncargoExterno.id)).scalar() or 0
-    filas = db.query(EncargoExterno.estado, func.count(EncargoExterno.id)).group_by(EncargoExterno.estado).all()
+    return {"modo": "interno", "nombre": _nombre_usuario(usuario), "empleado_id": usuario.id}
+
+
+@router.get("/accesos")
+def listar_accesos_encargagest(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _exigir_interno(usuario, "ver")
+    notarías = db.query(Notaria).order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
+    accesos = {item.notaria_id: item for item in db.query(EncargoExternoUsuario).all()}
+    return [{
+        "notaria_id": n.id,
+        "nombre": " ".join(filter(None, [n.nombre, n.apellidos])).strip() or f"Notaría {n.id}",
+        "nif": n.nif,
+        "usuario": accesos[n.id].usuario if n.id in accesos else _normalizar_usuario(n.nif),
+        "habilitado": bool(accesos[n.id].habilitado) if n.id in accesos else False,
+        "tiene_acceso": n.id in accesos,
+    } for n in notarías]
+
+
+@router.post("/accesos")
+def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _exigir_interno(usuario, "editar")
+    notaria = db.query(Notaria).filter(Notaria.id == datos.notaria_id).first()
+    if not notaria:
+        raise HTTPException(status_code=404, detail="Notaría CTN no encontrada.")
+    usuario_login = _normalizar_usuario(notaria.nif)
+    if not usuario_login:
+        raise HTTPException(status_code=422, detail="La notaría no tiene NIF registrado en CTN; completa ese dato antes de crear el acceso.")
+    acceso = db.query(EncargoExternoUsuario).filter(EncargoExternoUsuario.notaria_id == notaria.id).first()
+    if acceso is None and not datos.password:
+        raise HTTPException(status_code=422, detail="Indica una contraseña inicial de al menos 10 caracteres.")
+    existente = db.query(EncargoExternoUsuario).filter(
+        func.upper(EncargoExternoUsuario.usuario) == usuario_login,
+        EncargoExternoUsuario.notaria_id != notaria.id,
+    ).first()
+    if existente:
+        raise HTTPException(status_code=409, detail="Ya existe otro acceso con ese usuario; revisa el NIF de CTN.")
+    if acceso is None:
+        acceso = EncargoExternoUsuario(
+            notaria_id=notaria.id, usuario=usuario_login,
+            password_hash=_hash_password(datos.password or secrets.token_urlsafe(24)),
+            habilitado=datos.habilitado,
+        )
+        db.add(acceso)
+    else:
+        acceso.usuario = usuario_login
+        acceso.habilitado = datos.habilitado
+        if datos.password:
+            acceso.password_hash = _hash_password(datos.password)
+        acceso.actualizado_en = datetime.utcnow()
+    db.commit()
+    db.refresh(acceso)
+    return {"ok": True, "notaria_id": notaria.id, "usuario": acceso.usuario, "habilitado": bool(acceso.habilitado), "password_actualizada": bool(datos.password)}
+
+
+@router.get("/resumen")
+def resumen(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _autorizar(usuario, "ver")
+    consulta_base = db.query(EncargoExterno)
+    if _es_externo(usuario):
+        consulta_base = consulta_base.filter(EncargoExterno.notaria_id == usuario["notaria_id"])
+    total = consulta_base.count()
+    filas = consulta_base.with_entities(EncargoExterno.estado, func.count(EncargoExterno.id)).group_by(EncargoExterno.estado).all()
     estados = {estado: cantidad for estado, cantidad in filas}
     return {
         "total": total,
@@ -182,9 +364,12 @@ def resumen(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
 
 
 @router.get("/notarias")
-def listar_notarias(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def listar_notarias(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "ver")
-    registros = db.query(Notaria).order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
+    consulta = db.query(Notaria)
+    if _es_externo(usuario):
+        consulta = consulta.filter(Notaria.id == usuario["notaria_id"])
+    registros = consulta.order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
     return [{
         "id": n.id,
         "nombre": " ".join(filter(None, [n.nombre, n.apellidos])).strip() or f"Notaría {n.id}",
@@ -203,10 +388,12 @@ def listar_encargos(
     pagina: int = Query(1, ge=1),
     por_pagina: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
-    usuario=Depends(get_current_user),
+    usuario=Depends(get_encargagest_actor),
 ):
     _autorizar(usuario, "ver")
     consulta = db.query(EncargoExterno)
+    if _es_externo(usuario):
+        consulta = consulta.filter(EncargoExterno.notaria_id == usuario["notaria_id"])
     if q and q.strip():
         termino = f"%{q.strip()}%"
         consulta = consulta.filter(or_(
@@ -224,9 +411,12 @@ def listar_encargos(
 
 
 @router.post("/encargos", status_code=201)
-def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "crear")
-    notaria = db.query(Notaria).filter(Notaria.id == datos.notaria_id).first()
+    notaria_id = usuario["notaria_id"] if _es_externo(usuario) else datos.notaria_id
+    if notaria_id is None:
+        raise HTTPException(status_code=422, detail="Selecciona una notaría del catálogo CTN.")
+    notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=404, detail="La notaría seleccionada no existe en CTN.")
     if datos.prioridad not in PRIORIDADES:
@@ -249,7 +439,7 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
         contacto_email=(datos.contacto_email or "").strip() or None,
         contacto_telefono=(datos.contacto_telefono or "").strip() or None,
         observaciones=(datos.observaciones or "").strip() or None,
-        creado_por_id=usuario.id,
+        creado_por_id=(usuario.get('usuario_id') if _es_externo(usuario) else usuario.id),
         creado_por_nombre=_nombre_usuario(usuario),
     )
     try:
@@ -267,21 +457,26 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
 
 
 @router.get("/encargos/{encargo_id}")
-def detalle_encargo(encargo_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def detalle_encargo(encargo_id: int, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "ver")
-    item = _obtener_encargo(db, encargo_id)
+    item = _obtener_encargo(db, encargo_id, usuario)
     documentos = db.query(EncargoExternoDocumento).filter(EncargoExternoDocumento.encargo_id == encargo_id).order_by(EncargoExternoDocumento.fecha_subida.desc()).all()
-    actividad = db.query(EncargoExternoActividad).filter(EncargoExternoActividad.encargo_id == encargo_id).order_by(EncargoExternoActividad.creado_en.desc()).all()
+    consulta_actividad = db.query(EncargoExternoActividad).filter(EncargoExternoActividad.encargo_id == encargo_id)
+    if _es_externo(usuario):
+        consulta_actividad = consulta_actividad.filter(EncargoExternoActividad.visible_notaria.is_(True))
+    actividad = consulta_actividad.order_by(EncargoExternoActividad.creado_en.desc()).all()
     data = _serializar(item)
+    if _es_externo(usuario):
+        data.pop("observaciones_internas", None)
     data["documentos"] = [_serializar_documento(doc) for doc in documentos]
     data["actividad"] = [_serializar_actividad(entry) for entry in actividad]
     return data
 
 
 @router.put("/encargos/{encargo_id}")
-def actualizar_encargo(encargo_id: int, datos: EncargoActualizar, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
-    _autorizar(usuario, "editar")
-    item = _obtener_encargo(db, encargo_id)
+def actualizar_encargo(encargo_id: int, datos: EncargoActualizar, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _exigir_interno(usuario, "editar")
+    item = _obtener_encargo(db, encargo_id, usuario)
     cambios = datos.dict(exclude_unset=True)
     if "prioridad" in cambios and cambios["prioridad"] is not None and cambios["prioridad"] not in PRIORIDADES:
         raise HTTPException(status_code=422, detail="Prioridad no válida.")
@@ -297,9 +492,9 @@ def actualizar_encargo(encargo_id: int, datos: EncargoActualizar, db: Session = 
 
 
 @router.post("/encargos/{encargo_id}/estado")
-def cambiar_estado(encargo_id: int, datos: CambioEstado, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
-    _autorizar(usuario, "editar")
-    item = _obtener_encargo(db, encargo_id)
+def cambiar_estado(encargo_id: int, datos: CambioEstado, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _exigir_interno(usuario, "editar")
+    item = _obtener_encargo(db, encargo_id, usuario)
     estado = str(datos.estado or "").strip().upper()
     if estado not in ESTADOS:
         raise HTTPException(status_code=422, detail="Estado no válido.")
@@ -316,25 +511,32 @@ def cambiar_estado(encargo_id: int, datos: CambioEstado, db: Session = Depends(g
 
 
 @router.get("/encargos/{encargo_id}/actividad")
-def listar_actividad(encargo_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def listar_actividad(encargo_id: int, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "ver")
-    _obtener_encargo(db, encargo_id)
-    registros = db.query(EncargoExternoActividad).filter(EncargoExternoActividad.encargo_id == encargo_id).order_by(EncargoExternoActividad.creado_en.desc()).all()
+    _obtener_encargo(db, encargo_id, usuario)
+    consulta = db.query(EncargoExternoActividad).filter(EncargoExternoActividad.encargo_id == encargo_id)
+    if _es_externo(usuario):
+        consulta = consulta.filter(EncargoExternoActividad.visible_notaria.is_(True))
+    registros = consulta.order_by(EncargoExternoActividad.creado_en.desc()).all()
     return [_serializar_actividad(item) for item in registros]
 
 
 @router.post("/encargos/{encargo_id}/actividad", status_code=201)
-def crear_actividad(encargo_id: int, datos: CrearActividad, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def crear_actividad(encargo_id: int, datos: CrearActividad, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "editar")
-    _obtener_encargo(db, encargo_id)
+    _obtener_encargo(db, encargo_id, usuario)
     tipo = datos.tipo.upper()
     if tipo not in {"COMENTARIO", "INCIDENCIA", "SISTEMA"}:
         raise HTTPException(status_code=422, detail="Tipo de actividad no válido.")
+    if _es_externo(usuario):
+        if tipo not in {"COMENTARIO", "INCIDENCIA"}:
+            raise HTTPException(status_code=403, detail="La notaría no puede registrar este tipo de actividad.")
+        datos.visible_notaria = True
     mensaje = datos.mensaje.strip()
     if not mensaje:
         raise HTTPException(status_code=422, detail="Escribe un mensaje antes de guardarlo.")
     if tipo == "INCIDENCIA":
-        item = _obtener_encargo(db, encargo_id)
+        item = _obtener_encargo(db, encargo_id, usuario)
         item.estado = "INCIDENCIA"
         item.actualizado_en = datetime.utcnow()
     _registrar_actividad(db, encargo_id, usuario, tipo, mensaje, datos.visible_notaria)
@@ -347,10 +549,10 @@ async def subir_documento(
     encargo_id: int,
     archivo: UploadFile = File(...),
     db: Session = Depends(get_db),
-    usuario=Depends(get_current_user),
+    usuario=Depends(get_encargagest_actor),
 ):
     _autorizar(usuario, "editar")
-    item = _obtener_encargo(db, encargo_id)
+    item = _obtener_encargo(db, encargo_id, usuario)
     nombre_original = Path(archivo.filename or "documento").name
     extension = Path(nombre_original).suffix.lower()
     if not nombre_original or nombre_original in {".", ".."} or extension not in EXTENSIONES_PERMITIDAS:
@@ -390,9 +592,9 @@ async def subir_documento(
 
 
 @router.get("/encargos/{encargo_id}/documentos/{documento_id}/descargar")
-def descargar_documento(encargo_id: int, documento_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def descargar_documento(encargo_id: int, documento_id: int, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "ver")
-    _obtener_encargo(db, encargo_id)
+    _obtener_encargo(db, encargo_id, usuario)
     documento = db.query(EncargoExternoDocumento).filter(
         EncargoExternoDocumento.id == documento_id,
         EncargoExternoDocumento.encargo_id == encargo_id,
@@ -406,9 +608,9 @@ def descargar_documento(encargo_id: int, documento_id: int, db: Session = Depend
 
 
 @router.delete("/encargos/{encargo_id}/documentos/{documento_id}")
-def eliminar_documento(encargo_id: int, documento_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
-    _autorizar(usuario, "editar")
-    _obtener_encargo(db, encargo_id)
+def eliminar_documento(encargo_id: int, documento_id: int, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _exigir_interno(usuario, "eliminar")
+    _obtener_encargo(db, encargo_id, usuario)
     documento = db.query(EncargoExternoDocumento).filter(
         EncargoExternoDocumento.id == documento_id,
         EncargoExternoDocumento.encargo_id == encargo_id,
