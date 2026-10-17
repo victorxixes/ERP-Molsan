@@ -1566,6 +1566,91 @@ export default function FichaExpediente() {
   ] = useState(false);
 
   // Modal de carpeta digital del expediente.
+  const crearPlantillaReclamacionOficina = useCallback(() => {
+    const solicitante = expediente?.nombre_solicitante || "";
+    const dniSolicitante = expediente?.nif_solicitante || "";
+    const titular = expediente?.nombre_titular || "";
+    const dniTitular = expediente?.nif_titular || "";
+    const numeroExpediente = expediente?.id_expediente || id || "";
+    const fechaAlta = expediente?.fecha_alta ? formatearFecha(expediente.fecha_alta) : "—";
+    const importe = expediente?.importe == null ? "—" : `${formatearNumero(expediente.importe)} €`;
+    const contrato = expediente?.contrato || "—";
+    const finca = expediente?.finca || "—";
+    const capital = expediente?.capital == null ? "—" : `${formatearNumero(expediente.capital)} €`;
+    return {
+      destinatario: "",
+      asunto: `CANCELACIÓN REGISTRAL, CONTRATO: ${contrato} solicitante ${solicitante} ${dniSolicitante} EXPEDIENTE: ${numeroExpediente}`,
+      cuerpo: `EXPEDIENTE CON PROVISIÓN cancelación CaixaBank:
+En relación al cliente de referencia ${solicitante} ${dniSolicitante} y cuyo titular es ${titular} ${dniTitular} le informamos que el día ${fechaAlta}, realizó una provisión de fondos de ${importe} para cancelar ante notario y para tramitar en el registro de la propiedad la cancelación total de su contrato nº ${contrato}.
+
+Esta hipoteca se constituyó en la finca registral nº ${finca} por un capital principal de ${capital}.
+
+A fecha de hoy estamos a la espera de recibir la documentación necesaria para autorizar la firma, personarnos ante notario y una vez firmada gestionar la cancelación total, con la provisión realizada por el cliente.
+
+Rogamos atienda nuestro correo y nos facilite la siguiente documentación, porque esta provisión debe ser gestionada a petición del cliente en el menor tiempo posible.
+
+DOCUMENTACIÓN:
+
+* Solicitud de cancelación notarial
+* Certificado de cancelación administrativa
+* Nota del Registro de la Propiedad
+
+Muchas gracias por su colaboración y quedamos a la espera de respuesta
+
+Atentamente.
+
+MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.
+Centro Cancelador del Grupo "la Caixa"
+Tel: 93.349.74.65.
+e/mail: cancelaciones@molsan.es
+www.molsan.es
+
+Este e-mail incorpora información confidencial. El contenido de la misma se encuentra protegido por Ley. Cualquier persona distinta a su destinatario tiene prohibida su reproducción, uso, divulgación e impresión total o parcial. Si ha recibido este mensaje por error notifíquelo de inmediato al remitente y borre el mensaje original junto con sus ficheros anexos
+
+APODERADOS EN: ALICANTE · BALEARES · CANARIAS · CASTELLON · CATALUÑA · GALICIA · HUESCA · LA RIOJA · MURCIA · NAVARRA · VALENCIA · ZARAGOZA`,
+    };
+  }, [expediente, id]);
+
+  const cargarHistoricoReclamaciones = useCallback(async () => {
+    const numero = expediente?.id_expediente || id;
+    if (!numero) return;
+    setCargandoHistoricoReclamaciones(true);
+    try {
+      const respuesta = await axios.get(`/expedientes/${encodeURIComponent(numero)}/reclamaciones-oficina/historico`);
+      setHistoricoReclamaciones(Array.isArray(respuesta.data) ? respuesta.data : []);
+    } catch (error) {
+      setErrorReclamacion(error?.response?.data?.detail || "No se pudo cargar el histórico de emails.");
+    } finally {
+      setCargandoHistoricoReclamaciones(false);
+    }
+  }, [expediente?.id_expediente, id]);
+
+  const abrirReclamacionOficina = useCallback(() => {
+    setErrorReclamacion("");
+    setMensajeReclamacion("");
+    setEmailReclamacion(crearPlantillaReclamacionOficina());
+    setMostrarReclamarOficina(true);
+    cargarHistoricoReclamaciones();
+  }, [crearPlantillaReclamacionOficina, cargarHistoricoReclamaciones]);
+
+  const enviarReclamacionOficina = useCallback(async () => {
+    const numero = expediente?.id_expediente || id;
+    if (!numero) return setErrorReclamacion("No se identifica el expediente actual.");
+    setEnviandoReclamacion(true);
+    setErrorReclamacion("");
+    setMensajeReclamacion("");
+    try {
+      const respuesta = await axios.post(`/expedientes/${encodeURIComponent(numero)}/reclamaciones-oficina/enviar`, emailReclamacion);
+      setMensajeReclamacion(respuesta.data?.mensaje || "Email enviado correctamente.");
+      await cargarHistoricoReclamaciones();
+    } catch (error) {
+      setErrorReclamacion(error?.response?.data?.detail || "No se pudo enviar el email. Revisa la configuración SMTP y el histórico.");
+      await cargarHistoricoReclamaciones();
+    } finally {
+      setEnviandoReclamacion(false);
+    }
+  }, [expediente?.id_expediente, id, emailReclamacion, cargarHistoricoReclamaciones]);
+
   const [
     mostrarCarpetaDigital,
     setMostrarCarpetaDigital,
