@@ -478,6 +478,17 @@ export default function NotarGest() {
         </details>
 
         <div className="ng-datos-superiores">
+          <details open className="ng-detalle-bloque ng-tipo-documento-bloque ng-acordeon-ficha">
+            <summary className="ng-bloque-heading"><div><span className="ng-kicker">04 · DOCUMENTO</span><h3>Tipo de documento</h3><p className="ng-descripcion">Datos del documento remitidos desde el modal Enviar a notario.</p></div><span className="ng-acordeon-flecha" aria-hidden="true">⌄</span></summary>
+            <div className="ng-datos-grid">{[
+             ["Formato de escritura", detalle.formato_escritura], ["Tipo de trámite", detalle.tipo_tramite]
+            ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
+            <h4 className="ng-subtitulo-detalle">Documentos y cuantías</h4>
+            {detalle.documentos_escritura?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Tipo de documento</th><th>Cuantía</th></tr></thead><tbody>{detalle.documentos_escritura.map((d,i) => <tr key={d.id || i}><td>{texto(d.tipo_documento)}</td><td>{euros(d.cuantia)}</td></tr>)}</tbody></table></div> : <div className="ng-datos-grid"><div className="ng-dato"><small>Tipo de documento</small><strong>{texto(detalle.tipo_documento)}</strong></div><div className="ng-dato"><small>Cuantía</small><strong>{euros(detalle.cuantia)}</strong></div></div>}
+            <h4 className="ng-subtitulo-detalle">Fincas y registros</h4><p className="ng-descripcion">Datos registrales del expediente</p>
+            {detalle.fincas?.length ? <div className="ng-fincas-lista">{detalle.fincas.map((f,i) => <article className="ng-finca-card" key={f.id || i}><strong>Finca {texto(f.finca)}</strong><span>{[f.poblacion,f.registro,f.provincia].filter(Boolean).join(" · ") || "—"}</span><div><small>CRU/IDUFIR</small><b>{texto(f.cru_idufir)}</b></div><div><small>Cuantía</small><b>{euros(f.cuantia)}</b></div><div><small>Inscripción</small><b>{texto(f.inscripcion)}</b></div><div><small>Contrato</small><b>{texto(f.contrato || detalle.contrato)}</b></div></article>)}</div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}
+          </details>
+
           <details open className="ng-detalle-bloque ng-datos-envio ng-acordeon-ficha">
             <summary className="ng-bloque-heading"><div><span className="ng-kicker">01 · ENVÍO</span><h3>Datos de envío y firma prevista</h3></div><span className="ng-acordeon-flecha" aria-hidden="true">⌄</span></summary>
             <div className="ng-datos-grid ng-datos-operacion">{[
@@ -497,6 +508,19 @@ export default function NotarGest() {
           </details>
         </div>
         <div className="ng-documentacion-layout">
+        <details open className="ng-detalle-bloque ng-comentarios-gestor ng-acordeon-ficha">
+          <summary className="ng-bloque-heading"><div><span className="ng-kicker">05 · COMUNICACIÓN</span><h3>Observaciones y comentarios</h3><p className="ng-descripcion">Envía un comentario directamente al gestor responsable del expediente.</p></div><span className="ng-acordeon-flecha" aria-hidden="true">⌄</span></summary>
+          <div className="ng-comentario-form">
+            <label>Comentario<textarea rows={3} value={comentarioGestor} onChange={e => setComentarioGestor(e.target.value)} placeholder="Escribe aquí el comentario para el gestor…" maxLength={2000} /></label>
+            <label>Dirigido a<select value={gestorDestinatario} onChange={e => setGestorDestinatario(e.target.value)} required><option value="">Selecciona un gestor…</option>{gestores.map(g => <option key={g.id} value={g.id}>{g.nombre}</option>)}</select></label>
+            <button className="ng-login-submit" type="button" disabled={cargando || !comentarioGestor.trim() || !gestorDestinatario} onClick={guardarComentarioGestor}>Enviar comentario al gestor</button>
+          </div>
+          <div className="ng-comentarios-historico"><h4>Histórico de observaciones</h4>
+            {detalle.observaciones_notaria?.length ? detalle.observaciones_notaria.map(o => <article className="ng-observacion" key={o.id}><p>{o.comentario}</p><small>{o.visibilidad === "Gestor" ? `Dirigido a: ${o.empleado_destinatario || "Gestor"}` : o.visibilidad} · {texto(o.fecha)}</small></article>) : <p className="ng-mensaje">No hay comentarios registrados para mostrar.</p>}
+            {detalle.observaciones && <article className="ng-observacion"><p>{detalle.observaciones}</p><small>Observaciones generales del expediente</small></article>}
+          </div>
+        </details>
+
           <details open className="ng-detalle-bloque ng-carpeta-premium ng-acordeon-ficha">
             <summary className="ng-bloque-heading"><div><span className="ng-kicker">03 · ARCHIVO</span><h3>Carpeta digital</h3><p className="ng-descripcion">Documentación del expediente, organizada por categoría, con visor PDF integrado.</p></div><span className="ng-acordeon-flecha" aria-hidden="true">⌄</span></summary>
             <div className="ng-carpeta-layout">
@@ -528,29 +552,7 @@ export default function NotarGest() {
               </aside>
             </div>
           </details>
-          <details open className="ng-detalle-bloque ng-tipo-documento-bloque ng-acordeon-ficha">
-            <summary className="ng-bloque-heading"><div><span className="ng-kicker">04 · DOCUMENTO</span><h3>Tipo de documento</h3><p className="ng-descripcion">Datos del documento remitidos desde el modal Enviar a notario.</p></div><span className="ng-acordeon-flecha" aria-hidden="true">⌄</span></summary>
-            <div className="ng-datos-grid">{[
-             ["Formato de escritura", detalle.formato_escritura], ["Tipo de trámite", detalle.tipo_tramite]
-            ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
-            <h4 className="ng-subtitulo-detalle">Documentos y cuantías</h4>
-            {detalle.documentos_escritura?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Tipo de documento</th><th>Cuantía</th></tr></thead><tbody>{detalle.documentos_escritura.map((d,i) => <tr key={d.id || i}><td>{texto(d.tipo_documento)}</td><td>{euros(d.cuantia)}</td></tr>)}</tbody></table></div> : <div className="ng-datos-grid"><div className="ng-dato"><small>Tipo de documento</small><strong>{texto(detalle.tipo_documento)}</strong></div><div className="ng-dato"><small>Cuantía</small><strong>{euros(detalle.cuantia)}</strong></div></div>}
-            <h4 className="ng-subtitulo-detalle">Fincas y registros</h4><p className="ng-descripcion">Datos registrales del expediente</p>
-            {detalle.fincas?.length ? <div className="ng-fincas-lista">{detalle.fincas.map((f,i) => <article className="ng-finca-card" key={f.id || i}><strong>Finca {texto(f.finca)}</strong><span>{[f.poblacion,f.registro,f.provincia].filter(Boolean).join(" · ") || "—"}</span><div><small>CRU/IDUFIR</small><b>{texto(f.cru_idufir)}</b></div><div><small>Cuantía</small><b>{euros(f.cuantia)}</b></div><div><small>Inscripción</small><b>{texto(f.inscripcion)}</b></div><div><small>Contrato</small><b>{texto(f.contrato || detalle.contrato)}</b></div></article>)}</div> : <p className="ng-mensaje">No hay fincas registradas en este expediente.</p>}
-          </details>
         </div>
-        <details open className="ng-detalle-bloque ng-comentarios-gestor ng-acordeon-ficha">
-          <summary className="ng-bloque-heading"><div><span className="ng-kicker">05 · COMUNICACIÓN</span><h3>Observaciones y comentarios</h3><p className="ng-descripcion">Envía un comentario directamente al gestor responsable del expediente.</p></div><span className="ng-acordeon-flecha" aria-hidden="true">⌄</span></summary>
-          <div className="ng-comentario-form">
-            <label>Comentario<textarea rows={3} value={comentarioGestor} onChange={e => setComentarioGestor(e.target.value)} placeholder="Escribe aquí el comentario para el gestor…" maxLength={2000} /></label>
-            <label>Dirigido a<select value={gestorDestinatario} onChange={e => setGestorDestinatario(e.target.value)} required><option value="">Selecciona un gestor…</option>{gestores.map(g => <option key={g.id} value={g.id}>{g.nombre}</option>)}</select></label>
-            <button className="ng-login-submit" type="button" disabled={cargando || !comentarioGestor.trim() || !gestorDestinatario} onClick={guardarComentarioGestor}>Enviar comentario al gestor</button>
-          </div>
-          <div className="ng-comentarios-historico"><h4>Histórico de observaciones</h4>
-            {detalle.observaciones_notaria?.length ? detalle.observaciones_notaria.map(o => <article className="ng-observacion" key={o.id}><p>{o.comentario}</p><small>{o.visibilidad === "Gestor" ? `Dirigido a: ${o.empleado_destinatario || "Gestor"}` : o.visibilidad} · {texto(o.fecha)}</small></article>) : <p className="ng-mensaje">No hay comentarios registrados para mostrar.</p>}
-            {detalle.observaciones && <article className="ng-observacion"><p>{detalle.observaciones}</p><small>Observaciones generales del expediente</small></article>}
-          </div>
-        </details>
       </div>
     </section>}
     <footer className="ng-pie">MOLSAN ERP · PREMIUM 2027 · NotarGest</footer>
