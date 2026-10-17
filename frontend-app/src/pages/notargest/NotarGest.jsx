@@ -230,7 +230,9 @@ export default function NotarGest() {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   }).format(new Date());
   return <>
-    <main className="apoderagest notargest">
+    <main className="relative min-h-[calc(100vh-70px)]">
+      <div className="w-full px-4 py-6 lg:px-6">
+        <div className="w-full apoderagest notargest">
     <aside className="ng-bandejas-sidebar" aria-label="Bandejas de trabajo">
       <div className="ng-bandejas-heading"><span className="ng-kicker">NOTARGEST</span><strong>Bandejas de trabajo</strong></div>
       {bandejas.map((b,i)=><button key={b.id} className={`ng-bandeja-link ${vista===b.id?"activa":""} ${cuenta(b.id)?"con-pendientes":""}`} onClick={()=>{setBusqueda("");setVista(b.id);}}>
@@ -419,6 +421,8 @@ export default function NotarGest() {
       </div>
     </section>}
     <footer className="ng-pie">MOLSAN ERP · PREMIUM 2027 · NotarGest</footer>
+        </div>
+      </div>
     </main>
   </>;
 }
