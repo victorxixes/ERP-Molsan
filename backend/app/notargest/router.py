@@ -17,6 +17,7 @@ from backend.app.config import settings
 from backend.app.ctn.models import Notaria
 from backend.app.database import engine, get_db
 from backend.app.expedientes.models import Expediente
+from backend.app.expedientes.gastos.models import ExpedienteGasto
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.expediente_observaciones.models import ExpedienteObservacion
@@ -564,6 +565,63 @@ def _expediente_autorizado(expediente_id, n, db):
     if not ((nombre and (getattr(e, "nombre_notario", "") or "").strip().casefold() == nombre) or (n.nif and nif_notario == normalizar_nif(n.nif))):
         raise HTTPException(status_code=403, detail="Este expediente no está asignado a tu notaría")
     return e
+
+
+@router.get("/pagos")
+def pagos_notario(n=Depends(get_notario), db: Session = Depends(get_db)):
+    """Solicitudes de pago ya efectuadas desde la ficha del expediente al notario."""
+    consulta = (
+        db.query(ExpedienteGasto, Expediente)
+        .join(Expediente, Expediente.id == ExpedienteGasto.expediente_id)
+        .filter(
+            ExpedienteGasto.estado_pago.isnot(None),
+            text("lower(trim(coalesce(expediente_gastos.estado_pago, ''))) IN ('pagado', 'pagada', 'abonado', 'abonada', 'efectuado', 'efectuada')")
+        )
+        .order_by(ExpedienteGasto.fecha.desc().nullslast(), ExpedienteGasto.id.desc())
+        .limit(2000)
+        .all()
+    )
+    nombre_notario = " ".join(x for x in [getattr(n, "nombre", None), getattr(n, "apellidos", None)] if x).strip()
+    nif_notario = normalizar_nif(getattr(n, "nif", None) or "")
+    resultados = []
+    for gasto, expediente in consulta:
+        nif_gasto = normalizar_nif(getattr(gasto, "nif_notario", None) or "")
+        nombre_gasto = " ".join((getattr(gasto, "nombre_notario", None) or "").split()).casefold()
+        nif_expediente = normalizar_nif(getattr(expediente, "nif_notario", None) or "")
+        nombre_expediente = " ".join((getattr(expediente, "nombre_notario", None) or "").split()).casefold()
+        if _es_usuario_erp(n):
+            # Para el usuario ERP, solo pagos dirigidos al notario registrado en el expediente.
+            identidad_valida = bool(nif_gasto or nombre_gasto) and (
+                (nif_gasto and nif_expediente and nif_gasto == nif_expediente)
+                or (nombre_gasto and nombre_expediente and nombre_gasto == nombre_expediente)
+            )
+        else:
+            identidad_valida = bool(
+                (nif_notario and (nif_gasto == nif_notario or nif_expediente == nif_notario))
+                or (nombre_notario and (nombre_gasto == nombre_notario.casefold() or nombre_expediente == nombre_notario.casefold())
+            )
+        if not identidad_valida:
+            continue
+
+        documentos = db.query(DocumentoCarpetaDigital).filter(
+            DocumentoCarpetaDigital.expediente_id == str(expediente.id_expediente)
+        ).all()
+        factura = next((d for d in documentos if (d.categoria or "").strip().casefold() == "factura notarial"), None)
+        justificante = next((d for d in documentos if "justificante" in (d.categoria or "").casefold() and "pago" in (d.categoria or "").casefold()), None)
+        resultados.append({
+            "id": gasto.id,
+            "id_expediente": expediente.id_expediente,
+            "fecha_pago": _fecha(gasto.fecha),
+            "nombre": " ".join(x for x in [getattr(expediente, "nombre_titular", None), getattr(expediente, "apellidos", None)] if x).strip() or getattr(expediente, "nombre_solicitante", None),
+            "dni": getattr(expediente, "nif_titular", None) or getattr(expediente, "dni", None),
+            "importe": _fecha(gasto.importe_resultante if gasto.importe_resultante is not None else gasto.importe),
+            "protocolo": getattr(expediente, "protocolo", None),
+            "fecha_firma": _fecha(getattr(expediente, "fecha_firma", None)),
+            "factura_notarial_id": getattr(factura, "id", None),
+            "justificante_documento_id": getattr(justificante, "id", None) or getattr(gasto, "documento_carpeta_id", None),
+            "justificante_url": getattr(gasto, "documento_url", None),
+        })
+    return {"items": resultados, "total": len(resultados)}
 
 @router.get("/expedientes/{expediente_id}")
 def detalle_expediente(expediente_id: str, n=Depends(get_notario), db: Session = Depends(get_db)):
