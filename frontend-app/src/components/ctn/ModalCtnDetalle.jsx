@@ -258,6 +258,28 @@ export default function ModalCtnDetalle({
   if (!open || !notaria || !id) return null;
 
   const datos = ficha || notaria;
+  const consultaMapa = [
+    datos.lat && datos.lng ? `${datos.lat}, ${datos.lng}` : "",
+    datos.direccion,
+    datos.cp || datos.codigo_postal,
+    datos.municipio,
+    datos.provincia,
+    "España",
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const mapaDisponible = Boolean(
+    (datos.lat && datos.lng) ||
+    datos.direccion ||
+    datos.municipio ||
+    datos.provincia
+  );
+  const urlMapa = mapaDisponible
+    ? `https://maps.google.com/maps?q=${encodeURIComponent(consultaMapa)}&output=embed`
+    : "";
+  const urlAbrirMapa = mapaDisponible
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(consultaMapa)}`
+    : "";
 
   return (
     <div
@@ -434,6 +456,44 @@ export default function ModalCtnDetalle({
             ancho
           />
         </div>
+      </section>
+
+      {/* UBICACIÓN DE LA NOTARÍA */}
+
+      <section className="ctn-modal-seccion">
+        <div className="ctn-modal-seccion-titulo">
+          <h3>Ubicación de la notaría</h3>
+          <span>{datos.lat && datos.lng ? "Coordenadas registradas" : "Ubicación por dirección"}</span>
+        </div>
+
+        {mapaDisponible ? (
+          <>
+            <div className="ctn-modal-mapa-marco">
+              <iframe
+                title={`Mapa de ubicación de ${nombreNotario(datos)}`}
+                src={urlMapa}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            </div>
+            <div className="ctn-modal-mapa-pie">
+              <p>{[datos.direccion, datos.cp || datos.codigo_postal, datos.municipio, datos.provincia].filter(Boolean).join(", ") || "Ubicación según las coordenadas registradas"}</p>
+              <a
+                className="ctn-btn ctn-btn-secondary"
+                href={urlAbrirMapa}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Abrir en Google Maps ↗
+              </a>
+            </div>
+          </>
+        ) : (
+          <p className="ctn-modal-vacio">
+            No hay dirección ni coordenadas suficientes para mostrar el mapa de esta notaría.
+          </p>
+        )}
       </section>
 
       {/* HISTÓRICO DE FIRMAS REALES */}
