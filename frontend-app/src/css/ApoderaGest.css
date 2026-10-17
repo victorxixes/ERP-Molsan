@@ -1735,3 +1735,23 @@
 .ag-ficha-paneles details.ag-encargo-subpanel:not([open])>.ag-ficha-bloque-heading::after{
   content:"⌄";
 }
+
+
+/* CTN · Confirmar firma y Observaciones en paralelo en la ficha de escritorio. */
+@media(min-width:901px){
+  .ag-ficha-paneles .ag-ficha-firma{
+    grid-column:1/2!important;
+    grid-row:3;
+  }
+  .ag-ficha-paneles .ag-ficha-observaciones{
+    grid-column:2/4!important;
+    grid-row:3;
+  }
+}
+@media(max-width:900px){
+  .ag-ficha-paneles .ag-ficha-firma,
+  .ag-ficha-paneles .ag-ficha-observaciones{
+    grid-column:1/-1!important;
+    grid-row:auto!important;
+  }
+}
