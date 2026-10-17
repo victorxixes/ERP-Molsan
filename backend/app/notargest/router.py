@@ -272,16 +272,19 @@ async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...
         "factura": ("Factura notarial", "application/pdf", "registro"),
         "presentacion": ("Presentación Registro", None, "ajd"),
         "ajd": ("AJD/ITP", None, "inscripcion"),
-        "defecto": ("Defecto registral", None, None),
-        "inscripcion": ("Hoja de Inscripción", None, "copia"),
-        "copia": ("Copia simple", None, "cerrada"),
+        "defecto": ("Defecto registral", "application/pdf", None),
+        "subsanacion": ("Subsanación del defecto", "application/pdf", None),
+        "inscripcion": ("Hoja de Inscripción", "application/pdf", "copia"),
+        "copia": ("Copia simple", "application/pdf", "cerrada"),
     }
     if categoria not in categorias:
         raise HTTPException(status_code=400, detail="Tipo de documento no válido")
     categoria_carpeta, mime_fijo, siguiente = categorias[categoria]
     nombre = Path(archivo.filename or "documento").name
-    if categoria in ("factura", "defecto", "inscripcion", "copia") and not nombre.lower().endswith(".pdf"):
+    if categoria in ("factura", "defecto", "subsanacion", "inscripcion", "copia") and not nombre.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Este documento debe adjuntarse en PDF")
+    if categoria == "copia" and str(getattr(e, "tiene_defectos_abiertos", "") or "").strip().casefold() in {"si", "sí", "true", "1", "abierto"}:
+        raise HTTPException(status_code=400, detail="No se puede cerrar el expediente mientras haya defectos registrales abiertos. Adjunta primero la subsanación del defecto.")
     contenido = await archivo.read(25 * 1024 * 1024 + 1)
     if not contenido or len(contenido) > 25 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="El archivo está vacío o supera 25 MB")
@@ -292,13 +295,13 @@ async def subir_documento_workflow(expediente_id: str, categoria: str = Form(...
     try:
         doc = DocumentoCarpetaDigital(expediente_id=str(e.id_expediente), categoria=categoria_carpeta, nombre_original=nombre, nombre_guardado=nombre_guardado, tipo_mime=mime_fijo or archivo.content_type or "application/octet-stream", tamano_bytes=len(contenido), fecha_subida=datetime.utcnow())
         db.add(doc)
+        if categoria == "defecto":
+            e.tiene_defectos_abiertos = "SI"
+        elif categoria == "subsanacion":
+            e.tiene_defectos_abiertos = "NO"
         if siguiente:
             e.notargest_estado = siguiente
             e.actividad_actual = ESTADOS_NOTARGEST[siguiente]
-        elif categoria == "defecto":
-            e.notargest_estado = "inscripcion"
-            e.actividad_actual = ESTADOS_NOTARGEST["inscripcion"]
-            e.tiene_defectos_abiertos = "SI"
         db.commit(); db.refresh(doc)
     except Exception:
         db.rollback(); ruta.unlink(missing_ok=True); raise
@@ -324,7 +327,7 @@ def mis_expedientes(n=Depends(get_notario), db: Session = Depends(get_db)):
         item["pendiente_inscripcion"] = estado == "inscripcion"
         item["pendiente_copia_simple"] = estado == "copia"
         item["escrituras_cerradas_inscritas"] = estado == "cerrada"
-        item["con_defectos"] = "defecto" in actividad or bool(getattr(e, "tiene_defectos_abiertos", None))
+        item["con_defectos"] = ("defecto" in actividad) or str(getattr(e, "tiene_defectos_abiertos", "") or "").strip().casefold() in {"si", "sí", "true", "1", "abierto"}
         items.append(item)
     return {"items": items, "total": len(items)}
 
