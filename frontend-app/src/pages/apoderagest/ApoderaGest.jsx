@@ -193,8 +193,8 @@ function TablaEncargos({ encargos, onFirmado }) {
         numero_solicitud_pnc: actual[id]?.numero_solicitud_pnc ?? encargo.numero_solicitud_pnc ?? "",
         fecha_solicitud_pnc: actual[id]?.fecha_solicitud_pnc ?? encargo.fecha_solicitud_pnc ?? "",
         fecha_prevista_firma: actual[id]?.fecha_prevista_firma ?? encargo.fecha_prevista_firma ?? "",
-        hora_inicio: actual[id]?.hora_inicio ?? encargo.hora_prevista_firma ?? "09:00",
-        hora_fin: actual[id]?.hora_fin ?? encargo.hora_fin_prevista_firma ?? "10:00",
+        hora_inicio: actual[id]?.hora_inicio ?? (encargo.hora_prevista_firma || "09:00").slice(0, 5),
+        hora_fin: actual[id]?.hora_fin ?? (encargo.hora_fin_prevista_firma || "10:00").slice(0, 5),
         [campo]: valor,
       },
     }));
