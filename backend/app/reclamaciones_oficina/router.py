@@ -4,7 +4,7 @@ from email.message import EmailMessage
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from sqlalchemy import Column, DateTime, Integer, String, Text, ForeignKey
 from sqlalchemy.orm import Session
 
@@ -122,6 +122,8 @@ def enviar_reclamacion(
     mensaje = EmailMessage()
     mensaje["Subject"] = asunto
     mensaje["From"] = from_email
+    if remitente and remitente.lower() != from_email.lower():
+        mensaje["Reply-To"] = remitente
     mensaje["To"] = destinatario
     mensaje.set_content(cuerpo)
 
