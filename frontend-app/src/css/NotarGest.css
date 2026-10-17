@@ -248,3 +248,54 @@
 .notargest .ng-bandeja-texto small{font-size:9px}
 @media(max-width:1000px){.notargest .ng-bandejas-sidebar{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:600px){.notargest .ng-bandejas-sidebar{grid-template-columns:1fr!important}.notargest .ng-bandejas-heading{align-items:flex-start;flex-direction:column}}
+
+
+/* NotarGest · sidebar operativo con el estilo de navegación de ApoderaGest */
+.notargest .ng-bandejas-sidebar{
+  position:relative!important;inset:auto!important;z-index:2;width:100%!important;
+  max-height:none!important;overflow-x:auto!important;overflow-y:hidden!important;
+  display:flex!important;flex-direction:row!important;align-items:center!important;
+  gap:5px!important;margin:0 0 27px!important;padding:7px!important;
+  background:rgba(255,255,255,.66)!important;border:1px solid rgba(222,230,241,.92)!important;
+  border-radius:16px!important;box-shadow:0 4px 14px rgba(31,48,79,.025)!important;
+  backdrop-filter:none!important;scrollbar-width:thin;
+}
+.notargest .ng-bandejas-heading{
+  display:none!important;
+}
+.notargest .ng-bandeja-link{
+  position:relative;display:inline-flex!important;align-items:center;justify-content:flex-start;
+  flex:0 0 auto!important;gap:8px!important;width:auto!important;min-width:0;
+  min-height:41px!important;padding:0 12px!important;color:#738097!important;
+  background:transparent!important;border:1px solid transparent!important;border-radius:11px!important;
+  box-shadow:none!important;transform:none!important;white-space:nowrap;
+}
+.notargest .ng-bandeja-link:hover{
+  color:#294dbb!important;background:rgba(237,242,255,.8)!important;border-color:transparent!important;
+}
+.notargest .ng-bandeja-link.activa{
+  color:#2d51c4!important;background:#edf2ff!important;border-color:#dce5ff!important;
+  box-shadow:inset 0 1px 0 #fff!important;
+}
+.notargest .ng-bandeja-icono{
+  display:inline-grid!important;place-items:center;flex:0 0 19px!important;
+  width:19px!important;height:19px!important;color:inherit!important;background:transparent!important;
+  border:0!important;border-radius:0!important;font-size:16px!important;
+}
+.notargest .ng-bandeja-texto{display:flex;flex:0 0 auto!important;flex-direction:column;gap:2px!important;min-width:0}
+.notargest .ng-bandeja-texto strong{color:inherit!important;font-size:11px!important;font-weight:750!important;line-height:1.2!important}
+.notargest .ng-bandeja-texto small{display:none!important}
+.notargest .ng-bandeja-numero{
+  display:inline-grid!important;place-items:center;flex:0 0 auto!important;min-width:20px!important;
+  height:20px!important;padding:0 5px!important;color:#63718a!important;background:rgba(255,255,255,.72)!important;
+  border:1px solid #e0e7f1!important;border-radius:999px!important;font-size:10px!important;font-weight:750!important;
+}
+.notargest .ng-bandeja-link.con-pendientes .ng-bandeja-numero{
+  color:#2d51c4!important;background:#edf2ff!important;border-color:#dce5ff!important;
+}
+.notargest .ng-bandeja-flecha{display:none!important}
+@media(max-width:700px){
+  .notargest .ng-bandejas-sidebar{margin-bottom:18px!important}
+  .notargest .ng-bandeja-link{padding:0 10px!important}
+  .notargest .ng-bandeja-texto strong{font-size:10px!important}
+}
