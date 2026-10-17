@@ -194,6 +194,12 @@ function TablaEncargos({ encargos, onFirmado }) {
   const [erroresAceptacion, setErroresAceptacion] = useState({});
   const [mensajesAceptacion, setMensajesAceptacion] = useState({});
   const [edicionAceptacion, setEdicionAceptacion] = useState({});
+  const [gestoresDisponibles, setGestoresDisponibles] = useState([]);
+  const [comentariosGestor, setComentariosGestor] = useState({});
+  const [destinatariosGestor, setDestinatariosGestor] = useState({});
+  const [guardandoComentarioGestor, setGuardandoComentarioGestor] = useState({});
+  const [erroresComentarioGestor, setErroresComentarioGestor] = useState({});
+  const [mensajesComentarioGestor, setMensajesComentarioGestor] = useState({});
 
   useEffect(() => {
     let activo = true;
@@ -213,6 +219,17 @@ function TablaEncargos({ encargos, onFirmado }) {
     });
     return () => { activo = false; };
   }, [encargos]);
+  useEffect(() => {
+    let activo = true;
+    axios.get("/apoderagest/encargos/gestores")
+      .then(({ data }) => { if (activo) setGestoresDisponibles(Array.isArray(data) ? data : []); })
+      .catch((error) => {
+        console.error("No se pudo cargar el catálogo de gestores para ApoderaGest.", error);
+        if (activo) setGestoresDisponibles([]);
+      });
+    return () => { activo = false; };
+  }, []);
+
   const grupos = useMemo(() => agruparEncargosPorNotario(encargos), [encargos]);
 
   function cambiarDatoAceptacion(encargo, campo, valor) {
@@ -318,6 +335,39 @@ function TablaEncargos({ encargos, onFirmado }) {
       }));
     } finally {
       setGuardandoFirma((actual) => ({ ...actual, [id]: false }));
+    }
+  }
+
+  async function enviarComentarioAlGestor(encargo) {
+    const id = String(encargo.id_expediente || encargo.id);
+    const comentario = String(comentariosGestor[id] || "").trim();
+    const destinatario = destinatariosGestor[id];
+    if (!comentario) {
+      setErroresComentarioGestor((actual) => ({ ...actual, [id]: "Escribe la observación que quieres enviar al gestor." }));
+      return;
+    }
+    if (!destinatario) {
+      setErroresComentarioGestor((actual) => ({ ...actual, [id]: "Selecciona el gestor destinatario." }));
+      return;
+    }
+    setGuardandoComentarioGestor((actual) => ({ ...actual, [id]: true }));
+    setErroresComentarioGestor((actual) => ({ ...actual, [id]: "" }));
+    setMensajesComentarioGestor((actual) => ({ ...actual, [id]: "" }));
+    try {
+      await axios.post(`/apoderagest/encargos/${encodeURIComponent(id)}/comentarios`, {
+        comentario,
+        empleado_destinatario_id: Number(destinatario),
+      });
+      setComentariosGestor((actual) => ({ ...actual, [id]: "" }));
+      setMensajesComentarioGestor((actual) => ({ ...actual, [id]: "Observación enviada al gestor seleccionado." }));
+      onFirmado?.();
+    } catch (error) {
+      setErroresComentarioGestor((actual) => ({
+        ...actual,
+        [id]: error?.response?.data?.detail || "No se pudo enviar la observación al gestor.",
+      }));
+    } finally {
+      setGuardandoComentarioGestor((actual) => ({ ...actual, [id]: false }));
     }
   }
 
@@ -515,30 +565,49 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <label>Fecha de firma<input type="date" value={firma.fecha_firma || encargo.fecha_firma || fechaHoyLocal()} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
                               <label>Número de protocolo<input type="text" maxLength={200} value={firma.protocolo || encargo.protocolo || ""} onChange={(e) => cambiarFirma(id, "protocolo", e.target.value)} placeholder="Introduce el protocolo" /></label>
                               <label>Tipo de firma<select value={firma.tipo_firma || encargo.tipo_firma || "Presencial"} onChange={(e) => cambiarFirma(id, "tipo_firma", e.target.value)}><option value="Videoconferencia">Videoconferencia</option><option value="Presencial">Presencial</option></select></label>
-                              <label>Notario otorgante
-                                <select value={firma.notario_otorgante || encargo.notario_otorgante || encargo.nombre_notario || encargo.notario || ""} onChange={(e) => cambiarFirma(id, "notario_otorgante", e.target.value)}>
-                                  <option value={encargo.nombre_notario || encargo.notario || ""}>{encargo.nombre_notario || encargo.notario || "Notario del encargo"}</option>
-                                  {(() => {
-                                    const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es");
-                                    const nombreAsignado = normalizar(encargo.nombre_notario || encargo.notario);
-                                    const notarioCtn = catalogoCtn.find((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) === nombreAsignado);
-                                    const asociados = (notarioCtn?.notarios_asociados || []).filter((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) !== nombreAsignado);
-                                    return asociados.map((n) => { const nombre = n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" "); return <option key={n.id} value={nombre}>{nombre}</option>; });
-                                  })()}
-                                </select>
-                              </label>
-                              <button type="button" disabled={!!guardandoFirma[id]} onClick={() => firmar(encargo)}>{guardandoFirma[id] ? "Guardando…" : "Firmar"}</button>
+                              <div className="ag-firmar-notario-accion">
+                                <label>Notario otorgante
+                                  <select value={firma.notario_otorgante || encargo.notario_otorgante || encargo.nombre_notario || encargo.notario || ""} onChange={(e) => cambiarFirma(id, "notario_otorgante", e.target.value)}>
+                                    <option value={encargo.nombre_notario || encargo.notario || ""}>{encargo.nombre_notario || encargo.notario || "Notario del encargo"}</option>
+                                    {(() => {
+                                      const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es");
+                                      const nombreAsignado = normalizar(encargo.nombre_notario || encargo.notario);
+                                      const notarioCtn = catalogoCtn.find((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) === nombreAsignado);
+                                      const asociados = (notarioCtn?.notarios_asociados || []).filter((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) !== nombreAsignado);
+                                      return asociados.map((n) => { const nombre = n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" "); return <option key={n.id} value={nombre}>{nombre}</option>; });
+                                    })()}
+                                  </select>
+                                </label>
+                                <button type="button" disabled={!!guardandoFirma[id]} onClick={() => firmar(encargo)}>{guardandoFirma[id] ? "Guardando…" : "Firmar"}</button>
+                              </div>
                             </div>
                             {erroresFirma[id] && <p className="ag-firma-error">{erroresFirma[id]}</p>}
                             {mensajeFirma[id] && <p className="ag-firma-ok">{mensajeFirma[id]}</p>}
                           </section>
                           <section className="ag-encargo-subpanel ag-ficha-observaciones">
-                            <div className="ag-ficha-bloque-heading"><span>06 · COMUNICACIONES</span><h4>Observaciones visibles para el apoderado</h4></div>
+                            <div className="ag-ficha-bloque-heading"><span>06 · COMUNICACIONES</span><h4>Observaciones y mensajes al gestor</h4></div>
+                            <h5 className="ag-comunicaciones-subtitulo">Observaciones visibles para el apoderado</h5>
                             {encargo.observaciones_apoderado?.length ? (
                               <ul className="ag-observaciones-apoderado">
                                 {encargo.observaciones_apoderado.map((obs) => <li key={obs.id}><p>{obs.comentario}</p><small>{obs.fecha ? new Date(obs.fecha).toLocaleString("es-ES") : "Fecha no disponible"}</small></li>)}
                               </ul>
                             ) : <p className="ag-encargo-vacio">No hay observaciones marcadas como «Visible apoderado».</p>}
+                            <div className="ag-comentario-gestor">
+                              <h5 className="ag-comunicaciones-subtitulo">Enviar una observación al gestor</h5>
+                              <label>Observación
+                                <textarea rows={3} maxLength={2000} value={comentariosGestor[id] || ""} onChange={(e) => setComentariosGestor((actual) => ({ ...actual, [id]: e.target.value }))} placeholder="Escribe aquí el comentario para el gestor responsable…" />
+                              </label>
+                              <label>Dirigido a
+                                <select value={destinatariosGestor[id] || ""} onChange={(e) => setDestinatariosGestor((actual) => ({ ...actual, [id]: e.target.value }))}>
+                                  <option value="">Selecciona un gestor…</option>
+                                  {gestoresDisponibles.map((gestor) => <option key={gestor.id} value={gestor.id}>{gestor.nombre}</option>)}
+                                </select>
+                              </label>
+                              <button type="button" disabled={!!guardandoComentarioGestor[id] || !gestoresDisponibles.length} onClick={() => enviarComentarioAlGestor(encargo)}>{guardandoComentarioGestor[id] ? "Enviando…" : "Enviar al gestor"}</button>
+                              {erroresComentarioGestor[id] && <p className="ag-firma-error">{erroresComentarioGestor[id]}</p>}
+                              {mensajesComentarioGestor[id] && <p className="ag-firma-ok">{mensajesComentarioGestor[id]}</p>}
+                            </div>
+                            {encargo.observaciones_gestor?.length > 0 && <div className="ag-historico-gestor"><h5 className="ag-comunicaciones-subtitulo">Histórico de observaciones dirigidas a gestores</h5><ul className="ag-observaciones-apoderado">{encargo.observaciones_gestor.map((obs) => <li key={obs.id}><p>{obs.comentario}</p><small>Dirigido a: {obs.empleado_destinatario || "Gestor"} · {obs.fecha ? new Date(obs.fecha).toLocaleString("es-ES") : "Fecha no disponible"}</small></li>)}</ul></div>}
                           </section>
                         </div>
                       )}
