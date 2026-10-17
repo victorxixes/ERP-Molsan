@@ -537,6 +537,7 @@ def migrar_esquema_expedientes_inicio():
         ("escritura_firmada", "BOOLEAN"),
         ("hora_prevista_firma", "TIME"),
         ("hora_fin_prevista_firma", "TIME"),
+        ("firma_urgente", "BOOLEAN NOT NULL DEFAULT FALSE"),
         ("idioma_documento", "VARCHAR(100)"),
         ("formato_escritura", "VARCHAR(200)"),
         ("tipo_tramite", "VARCHAR(200)"),
