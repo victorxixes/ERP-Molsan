@@ -12,7 +12,6 @@ from sqlalchemy import func
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.expediente_observaciones.models import ExpedienteObservacion
-from backend.app.empleados.models import Empleado
 
 from backend.app.expedientes.models import Expediente
 from backend.app.apoderagest.permissions import obtener_nombre_apoderado
@@ -71,7 +70,7 @@ def _nombre_notario(expediente):
     return _texto(getattr(expediente, "notario", None))
 
 
-def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_apoderado=None, observaciones_gestor=None):
+def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_apoderado=None):
     """Convierte un expediente en el formato consumido por ApoderaGest."""
     return {
         "id": getattr(expediente, "id", None),
@@ -164,7 +163,6 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
         "fincas": fincas or [],
         "documentos": documentos or [],
         "observaciones_apoderado": observaciones_apoderado or [],
-        "observaciones_gestor": observaciones_gestor or [],
         "registros": list(dict.fromkeys(
             finca.get("registro") for finca in (fincas or []) if finca.get("registro")
         )),
@@ -318,26 +316,6 @@ def listar_encargos(db, usuario, solo_pendientes=False):
             }
             for item in observaciones
         ]
-        observaciones_dirigidas_gestor = (
-            db.query(ExpedienteObservacion)
-            .filter(
-                ExpedienteObservacion.expediente_id == expediente.id,
-                ExpedienteObservacion.activo.is_(True),
-                ExpedienteObservacion.visibilidad == "Gestor",
-                ExpedienteObservacion.empleado_destinatario_id.is_not(None),
-            )
-            .order_by(ExpedienteObservacion.fecha.desc(), ExpedienteObservacion.id.desc())
-            .all()
-        )
-        observaciones_gestor = []
-        for observacion in observaciones_dirigidas_gestor:
-            destinatario = db.query(Empleado).filter(Empleado.id == observacion.empleado_destinatario_id).first()
-            observaciones_gestor.append({
-                "id": observacion.id,
-                "comentario": observacion.comentario,
-                "fecha": _fecha_texto(observacion.fecha),
-                "empleado_destinatario": " ".join(filter(None, [getattr(destinatario, "nombre", None), getattr(destinatario, "apellidos", None)])) if destinatario else None,
-            })
-        resultados.append(_expediente_a_dict(expediente, fincas, documentos_apoderado, observaciones_apoderado, observaciones_gestor))
+        resultados.append(_expediente_a_dict(expediente, fincas, documentos_apoderado, observaciones_apoderado))
 
     return resultados
