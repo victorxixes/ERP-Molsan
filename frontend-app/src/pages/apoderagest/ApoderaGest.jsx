@@ -692,7 +692,7 @@ export default function ApoderaGest() {
 
   return (
     <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
-      <Sidebar />
+      <Sidebar brandName="ApoderaGest" />
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest">
