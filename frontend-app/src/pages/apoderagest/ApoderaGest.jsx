@@ -699,16 +699,78 @@ export default function ApoderaGest() {
   const [ultimaActualizacion, setUltimaActualizacion] = useState(null);
 
 
+  const cargarDatos = useCallback(async () => {
+    setCargando(true);
+    setError("");
+
+    try {
+      const [resDashboard, resAgenda, resEncargos] = await Promise.all([
+        axios.get("/apoderagest/dashboard"),
+        axios.get("/apoderagest/agenda"),
+        axios.get("/apoderagest/encargos"),
+      ]);
+
+      setDashboard(resDashboard.data || {});
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const citasFuturas = (Array.isArray(resAgenda.data) ? resAgenda.data : [])
+        .filter((cita) => {
+          if (!cita?.fecha) return false;
+          const fecha = new Date(`${String(cita.fecha).slice(0, 10)}T00:00:00`);
+          return !Number.isNaN(fecha.getTime()) && fecha >= hoy;
+        })
+        .sort((a, b) => {
+          const fechaA = String(a.fecha || "").slice(0, 10);
+          const fechaB = String(b.fecha || "").slice(0, 10);
+          return fechaA.localeCompare(fechaB) ||
+            String(a.hora_inicio || "").localeCompare(String(b.hora_inicio || ""));
+        });
+      setAgenda(citasFuturas);
+      setEncargos(Array.isArray(resEncargos.data) ? resEncargos.data : []);
+      setUltimaActualizacion(new Date());
+    } catch (err) {
+      console.error("Error cargando ApoderaGest:", err);
+      setError(
+        err?.response?.data?.detail ||
+          "No se han podido cargar los datos. Comprueba tu conexión o vuelve a intentarlo."
+      );
+    } finally {
+      setCargando(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    cargarDatos();
+  }, [cargarDatos]);
+
+  const encargosFiltrados = useMemo(() => {
+    const termino = busquedaEncargos.trim().toLowerCase();
+    if (!termino) return encargos;
+
+    return encargos.filter((encargo) =>
+      [
+        encargo.id_expediente,
+        encargo.id,
+        encargo.titular,
+        encargo.estado,
+        encargo.notario,
+        encargo.nombre_notario,
+        encargo.nif_notario,
+        encargo.fecha_envio_notario,
+        encargo.fecha_prevista_firma,
+        encargo.observaciones,
+        ...(encargo.fincas || []).flatMap((f) => [f.finca, f.registro, f.cru_idufir]),
+      ].some((valor) => String(valor ?? "").toLowerCase().includes(termino))
+    );
+  }, [encargos, busquedaEncargos]);
+
+
   const fechaActual = new Intl.DateTimeFormat("es-ES", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
   }).format(new Date());
-
-  const notariaActual = notarias.find(
-    (item) => String(item.id) === notariaSeleccionada
-  );
 
   return (
     <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
