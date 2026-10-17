@@ -390,1052 +390,127 @@ export default function Fusiones() {
       }
     };
     cargarSolicitudes();
-    return () => { activo = false; };
-  }, []);
+    const contarEstado = (valor) => fusiones.filter((f) => {
+    const e = String(f.estado || "Pendiente").toLowerCase();
+    if (valor === "Pendiente") return e === "pendiente" || e === "nueva";
+    if (valor === "En curso") return e === "en curso" || e === "en_curso" || e === "presentada";
+    if (valor === "Aceptada") return e === "aceptada" || e === "completada";
+    if (valor === "Desestimada") return e === "desestimada" || e === "incidencia";
+    if (valor === "Facturadas") return e === "facturada" || e === "facturadas";
+    return false;
+  }).length;
 
-
-  /**
-   * ==========================================================
-   * FILTRADO
-   * ==========================================================
-   */
-
-  const fusionesFiltradas = useMemo(() => {
-
-    const texto = busqueda
-      .trim()
-      .toLowerCase();
-
-    return fusiones.filter((fusion) => {
-
-      const coincideTexto =
-        !texto ||
-        fusion.expedienteOrigen
-          .toLowerCase()
-          .includes(texto) ||
-        fusion.expedienteDestino
-          .toLowerCase()
-          .includes(texto) ||
-        fusion.usuario
-          .toLowerCase()
-          .includes(texto);
-
-      const coincideEstado =
-        estado === "Todos" ||
-        fusion.estado === estado;
-
-      return (
-        coincideTexto &&
-        coincideEstado
-      );
-
-    });
-
-  }, [
-    fusiones,
-    busqueda,
-    estado,
-  ]);
-
-
-  /**
-   * ==========================================================
-   * ESTADÍSTICAS
-   * ==========================================================
-   */
-
-  const total = fusiones.length;
-
-  const pendientes = fusiones.filter(
-    (f) => f.estado === "Pendiente"
-  ).length;
-
-  const completadas = fusiones.filter(
-    (f) => f.estado === "Completada"
-  ).length;
-
-  const incidencias = fusiones.filter(
-    (f) => f.estado === "Incidencia"
-  ).length;
-
-
-  /**
-   * ==========================================================
-   * CREAR FUSIÓN
-   * ==========================================================
-   */
-
-  const crearFusion = (event) => {
-
-    event.preventDefault();
-
-    if (
-      !expedienteOrigen.trim() ||
-      !expedienteDestino.trim()
-    ) {
-      return;
-    }
-
-    /*
-     * Aquí conectaremos posteriormente
-     * con el endpoint real de fusiones.
-     */
-
-    setMostrarFormulario(false);
-    setExpedienteOrigen("");
-    setExpedienteDestino("");
-
+  const aplicarFiltroEstado = (valor) => {
+    setEstado(valor);
+    setBusqueda("");
   };
 
-
-  /**
-   * ==========================================================
-   * RENDER
-   * ==========================================================
-   */
+  const cargarDeNuevo = async () => {
+    setCargandoSolicitudes(true);
+    setErrorSolicitudes("");
+    try {
+      const respuesta = await axios.get("/fusiones/solicitudes");
+      const items = Array.isArray(respuesta?.data?.items) ? respuesta.data.items : [];
+      setFusiones(items.map((item) => ({
+        id: item.id,
+        expedienteOrigen: item.numero_expediente || "—",
+        expedienteDestino: item.registro || "—",
+        registro: item.registro || "",
+        numeroEntrada: item.numero_entrada || "",
+        fecha: item.creado_en ? new Date(item.creado_en).toLocaleDateString("es-ES") : "—",
+        usuario: "Solicitud desde CancelaGest",
+        estado: item.estado || "Pendiente",
+        tipoFactura: item.tipo_factura,
+        importe: item.importe,
+      })));
+    } catch (error) {
+      setErrorSolicitudes(typeof error?.response?.data?.detail === "string" ? error.response.data.detail : "No se han podido cargar las solicitudes de fusión.");
+    } finally {
+      setCargandoSolicitudes(false);
+    }
+  };
 
   return (
-
-    <div
-      className="
-        w-full
-        px-4
-        lg:px-6
-        py-6
-      "
-    >
-
-      {/* ======================================================
-          CABECERA
-          ====================================================== */}
-
-      <div
-        className="
-          flex
-          flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-4
-          mb-6
-        "
-      >
-
-        <div>
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-
-            <div
-              className="
-                w-11
-                h-11
-                rounded-2xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-              "
-            >
-              <Icon
-                type="merge"
-                size={23}
-              />
-            </div>
-
-            <div>
-
-              <h1
-                className="
-                  text-2xl
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Fusiones - En Construcción
-              </h1>
-
-              <p
-                className="
-                  mt-0.5
-                  text-sm
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Gestión y seguimiento de fusiones de expedientes
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <button
-          type="button"
-          onClick={() =>
-            setMostrarFormulario(
-              (valor) => !valor
-            )
-          }
-          className="
-            inline-flex
-            items-center
-            justify-center
-            gap-2
-            px-4
-            py-2.5
-            rounded-xl
-            bg-[var(--erp-primary)]
-            text-white
-            text-sm
-            font-semibold
-            shadow-sm
-            hover:opacity-90
-            transition
-            active:scale-[0.98]
-          "
-        >
-
-          <Icon
-            type="merge"
-            size={17}
-          />
-
-          Nueva fusión
-
-        </button>
-
+    <div className="w-full bg-white px-3 py-3 text-[12px] text-slate-700">
+      <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-2 text-[11px] text-blue-800">
+        <div>Inicio&nbsp; / &nbsp;Gestión&nbsp; / &nbsp;Fusiones</div>
+        <strong className="text-blue-600 italic">Fusión</strong>
       </div>
 
+      {errorSolicitudes && <div className="mb-3 rounded border border-red-200 bg-red-50 p-2 text-red-700">{errorSolicitudes}</div>}
 
-      {/* ======================================================
-          KPIs
-          ====================================================== */}
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-8">
+        <div className="space-y-5">
+          <section className="overflow-hidden rounded-sm border border-slate-300">
+            <header className="bg-[#087cf0] px-3 py-2.5 text-[12px] font-medium text-white">Solicitudes de fusión</header>
+            {[
+              ["Pendiente", "Pendientes de revisar", "#087cf0"],
+              ["En curso", "En tramitación", "#17a2b8"],
+              ["Aceptada", "Aceptadas / completadas", "#28a745"],
+              ["Desestimada", "Desestimadas / con incidencia", "#dc3545"],
+            ].map(([valor, etiqueta, color]) => (
+              <button key={valor} type="button" onClick={() => aplicarFiltroEstado(estado === valor ? "Todos" : valor)} className={`flex w-full items-center justify-between border-t border-slate-200 px-3 py-2 text-left text-[11px] hover:bg-slate-50 ${estado === valor ? "bg-blue-50 font-bold" : "bg-white"}`}>
+                <span>{etiqueta}</span><span className="min-w-[20px] rounded-full px-1.5 py-0.5 text-center text-[10px] font-bold text-white" style={{backgroundColor:color}}>{contarEstado(valor)}</span>
+              </button>
+            ))}
+          </section>
 
-      <div
-        className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          xl:grid-cols-4
-          gap-4
-          mb-6
-        "
-      >
+          <section className="overflow-hidden rounded-sm border border-slate-300">
+            <header className="bg-[#6c757d] px-3 py-2.5 text-[12px] font-medium text-white">Búsqueda de solicitudes</header>
+            <form className="space-y-2 p-3" onSubmit={(event) => { event.preventDefault(); setEstado("Todos"); }}>
+              <label className="grid grid-cols-[100px_1fr] items-center gap-2"><span className="font-semibold">ID</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="ID, expediente o registro" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
+              <label className="grid grid-cols-[100px_1fr] items-center gap-2"><span className="font-semibold">Estado</span><select value={estado} onChange={(e) => setEstado(e.target.value)} className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 bg-white px-2 text-[11px]"><option value="Todos">Todos los estados</option><option value="Pendiente">Pendiente</option><option value="En curso">En curso</option><option value="Aceptada">Aceptada</option><option value="Desestimada">Desestimada</option><option value="Facturadas">Facturadas</option></select></label>
+              <div className="border-t border-dotted border-slate-300 pt-2"><button type="submit" className="rounded-sm bg-[#087cf0] px-3 py-1.5 text-[11px] text-white hover:bg-blue-700"><Icon type="search" size={12} /> Buscar</button></div>
+            </form>
+          </section>
+        </div>
 
-        <KpiCard
-          title="Total fusiones"
-          value={total}
-          subtitle="Registradas"
-          icon="merge"
-          variant="blue"
-        />
+        <div className="space-y-5">
+          <section className="overflow-hidden rounded-sm border border-slate-300">
+            <header className="bg-[#343a40] px-3 py-2.5 text-[12px] font-medium text-white">Búsqueda por recursos</header>
+            <form className="space-y-2 p-3" onSubmit={(event) => { event.preventDefault(); setEstado("Todos"); }}>
+              <label className="grid grid-cols-[120px_1fr] items-center gap-2"><span className="font-semibold">Expediente</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º de expediente" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
+              <label className="grid grid-cols-[120px_1fr] items-center gap-2"><span className="font-semibold">Registro</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Registro de la propiedad" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
+              <label className="grid grid-cols-[120px_1fr] items-center gap-2"><span className="font-semibold">Núm. entrada</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Número de entrada" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
+              <div className="border-t border-dotted border-slate-300 pt-2"><button type="submit" className="rounded-sm bg-[#087cf0] px-3 py-1.5 text-[11px] text-white hover:bg-blue-700"><Icon type="search" size={12} /> Buscar</button></div>
+            </form>
+          </section>
 
-        <KpiCard
-          title="Pendientes"
-          value={pendientes}
-          subtitle="Pendientes de procesar"
-          icon="clock"
-          variant="amber"
-        />
-
-        <KpiCard
-          title="Completadas"
-          value={completadas}
-          subtitle="Procesadas correctamente"
-          icon="check"
-          variant="green"
-        />
-
-        <KpiCard
-          title="Incidencias"
-          value={incidencias}
-          subtitle="Requieren revisión"
-          icon="warning"
-          variant="red"
-        />
-
+          <section className="overflow-hidden rounded-sm border border-slate-300">
+            <header className="bg-[#17a2b8] px-3 py-2.5 text-[12px] font-medium text-white">Solicitudes recibidas</header>
+            {[
+              ["Todos", "Todas las solicitudes", "#17a2b8"],
+              ["Pendiente", "Nuevas solicitudes", "#087cf0"],
+              ["Facturadas", "Facturas / pre-facturas", "#28a745"],
+            ].map(([valor, etiqueta, color]) => (
+              <button key={valor} type="button" onClick={() => aplicarFiltroEstado(valor)} className="flex w-full items-center justify-between border-t border-slate-200 bg-white px-3 py-2 text-left text-[11px] hover:bg-slate-50">
+                <span>{etiqueta}</span><span className="min-w-[20px] rounded-full px-1.5 py-0.5 text-center text-[10px] font-bold text-white" style={{backgroundColor:color}}>{valor === "Todos" ? fusiones.length : valor === "Facturadas" ? fusiones.filter((f) => /factura/i.test(f.tipoFactura || "")).length : contarEstado(valor)}</span>
+              </button>
+            ))}
+          </section>
+        </div>
       </div>
 
-
-      {/* ======================================================
-          NUEVA FUSIÓN
-          ====================================================== */}
-
-      {mostrarFormulario && (
-
-        <div
-          className="
-            bg-white
-            border
-            border-[var(--erp-border)]
-            rounded-2xl
-            shadow-sm
-            p-5
-            mb-6
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-              mb-5
-            "
-          >
-
-            <div
-              className="
-                w-9
-                h-9
-                rounded-xl
-                bg-[var(--erp-primary-soft)]
-                text-[var(--erp-primary)]
-                flex
-                items-center
-                justify-center
-              "
-            >
-              <Icon
-                type="merge"
-                size={18}
-              />
-            </div>
-
-            <div>
-
-              <h2
-                className="
-                  text-base
-                  font-bold
-                  text-[var(--erp-text)]
-                "
-              >
-                Nueva fusión
-              </h2>
-
-              <p
-                className="
-                  text-xs
-                  text-[var(--erp-text-soft)]
-                "
-              >
-                Selecciona el expediente origen y el expediente destino
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <form
-            onSubmit={crearFusion}
-            className="
-              grid
-              grid-cols-1
-              lg:grid-cols-[1fr_auto_1fr_auto]
-              gap-4
-              items-end
-            "
-          >
-
-            <div>
-
-              <label
-                className="
-                  block
-                  mb-1.5
-                  text-xs
-                  font-semibold
-                  text-[var(--erp-text)]
-                "
-              >
-                Expediente origen
-              </label>
-
-              <input
-                type="text"
-                value={expedienteOrigen}
-                onChange={(event) =>
-                  setExpedienteOrigen(
-                    event.target.value
-                  )
-                }
-                placeholder="Nº de expediente"
-                className="
-                  w-full
-                  h-10
-                  px-3
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-white
-                  text-sm
-                  outline-none
-                  focus:border-[var(--erp-primary)]
-                  focus:ring-2
-                  focus:ring-[var(--erp-primary-soft)]
-                "
-              />
-
-            </div>
-
-
-            <div
-              className="
-                hidden
-                lg:flex
-                items-center
-                justify-center
-                h-10
-                text-[var(--erp-primary)]
-              "
-            >
-              <Icon
-                type="arrow"
-                size={20}
-              />
-            </div>
-
-
-            <div>
-
-              <label
-                className="
-                  block
-                  mb-1.5
-                  text-xs
-                  font-semibold
-                  text-[var(--erp-text)]
-                "
-              >
-                Expediente destino
-              </label>
-
-              <input
-                type="text"
-                value={expedienteDestino}
-                onChange={(event) =>
-                  setExpedienteDestino(
-                    event.target.value
-                  )
-                }
-                placeholder="Nº de expediente"
-                className="
-                  w-full
-                  h-10
-                  px-3
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-white
-                  text-sm
-                  outline-none
-                  focus:border-[var(--erp-primary)]
-                  focus:ring-2
-                  focus:ring-[var(--erp-primary-soft)]
-                "
-              />
-
-            </div>
-
-
-            <button
-              type="submit"
-              className="
-                h-10
-                px-5
-                rounded-xl
-                bg-[var(--erp-primary)]
-                text-white
-                text-sm
-                font-semibold
-                hover:opacity-90
-                transition
-              "
-            >
-              Crear fusión
-            </button>
-
-          </form>
-
-        </div>
-
-      )}
-
-
-      {/* ======================================================
-          PANEL PRINCIPAL
-          ====================================================== */}
-
-      <div
-        className="
-          bg-white
-          border
-          border-[var(--erp-border)]
-          rounded-2xl
-          shadow-sm
-          overflow-hidden
-        "
-      >
-
-        {/* ====================================================
-            CABECERA PANEL
-            ==================================================== */}
-
-        <div
-          className="
-            px-5
-            py-4
-            border-b
-            border-[var(--erp-border)]
-            flex
-            flex-col
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-            gap-4
-          "
-        >
-
-          <div>
-
-            <h2
-              className="
-                text-base
-                font-bold
-                text-[var(--erp-text)]
-              "
-            >
-              Histórico de fusiones
-            </h2>
-
-            <p
-              className="
-                text-xs
-                mt-0.5
-                text-[var(--erp-text-soft)]
-              "
-            >
-              Consulta las operaciones realizadas en el sistema
-            </p>
-
-          </div>
-
-
-          <div
-            className="
-              flex
-              flex-col
-              sm:flex-row
-              gap-2
-            "
-          >
-
-            {/* BUSCADOR */}
-
-            <div className="relative">
-
-              <Icon
-                type="search"
-                size={16}
-              />
-
-              <input
-                type="text"
-                value={busqueda}
-                onChange={(event) =>
-                  setBusqueda(
-                    event.target.value
-                  )
-                }
-                placeholder="Buscar expediente..."
-                className="
-                  w-full
-                  sm:w-[230px]
-                  h-9
-                  pl-9
-                  pr-3
-                  rounded-xl
-                  border
-                  border-[var(--erp-border)]
-                  bg-white
-                  text-xs
-                  outline-none
-                  focus:border-[var(--erp-primary)]
-                "
-              />
-
-            </div>
-
-
-            {/* ESTADO */}
-
-            <select
-              value={estado}
-              onChange={(event) =>
-                setEstado(event.target.value)
-              }
-              className="
-                h-9
-                px-3
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-white
-                text-xs
-                text-[var(--erp-text)]
-                outline-none
-                focus:border-[var(--erp-primary)]
-              "
-            >
-
-              <option value="Todos">
-                Todos los estados
-              </option>
-
-              <option value="Pendiente">
-                Pendientes
-              </option>
-
-              <option value="Completada">
-                Completadas
-              </option>
-
-              <option value="Incidencia">
-                Incidencias
-              </option>
-
-            </select>
-
-
-            <button
-              type="button"
-              title="Actualizar"
-              className="
-                w-9
-                h-9
-                rounded-xl
-                border
-                border-[var(--erp-border)]
-                bg-white
-                text-[var(--erp-text)]
-                flex
-                items-center
-                justify-center
-                hover:bg-[var(--erp-primary-soft)]
-                hover:text-[var(--erp-primary)]
-                transition
-              "
-            >
-
-              <Icon
-                type="refresh"
-                size={16}
-              />
-
-            </button>
-
-          </div>
-
-        </div>
-
-
-        {/* ====================================================
-            TABLA
-            ==================================================== */}
-
+      <section className="mt-5 overflow-hidden rounded-sm border border-slate-300">
+        <header className="flex flex-wrap items-center justify-between gap-2 bg-[#6c757d] px-3 py-2.5 text-[12px] font-medium text-white">
+          <span>Listado de solicitudes de fusión</span>
+          <button type="button" onClick={cargarDeNuevo} disabled={cargandoSolicitudes} className="rounded-sm border border-white/50 px-2 py-1 text-[11px] hover:bg-white/10 disabled:opacity-50"><Icon type="refresh" size={12} /> Actualizar</button>
+        </header>
         <div className="overflow-x-auto">
-
-          <table
-            className="
-              w-full
-              min-w-[850px]
-              text-sm
-            "
-          >
-
-            <thead>
-
-              <tr
-                className="
-                  bg-slate-50
-                  border-b
-                  border-[var(--erp-border)]
-                "
-              >
-
-                <th
-                  className="
-                    px-5
-                    py-3
-                    text-left
-                    text-[11px]
-                    font-bold
-                    uppercase
-                    tracking-wide
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  Expediente origen
-                </th>
-
-                <th
-                  className="
-                    px-5
-                    py-3
-                    text-left
-                    text-[11px]
-                    font-bold
-                    uppercase
-                    tracking-wide
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  Expediente destino
-                </th>
-
-                <th
-                  className="
-                    px-5
-                    py-3
-                    text-left
-                    text-[11px]
-                    font-bold
-                    uppercase
-                    tracking-wide
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  Fecha
-                </th>
-
-                <th
-                  className="
-                    px-5
-                    py-3
-                    text-left
-                    text-[11px]
-                    font-bold
-                    uppercase
-                    tracking-wide
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  Usuario
-                </th>
-
-                <th
-                  className="
-                    px-5
-                    py-3
-                    text-center
-                    text-[11px]
-                    font-bold
-                    uppercase
-                    tracking-wide
-                    text-[var(--erp-text-soft)]
-                  "
-                >
-                  Estado
-                </th>
-
-              </tr>
-
-            </thead>
-
-
+          <table className="w-full border-collapse text-left text-[11px]">
+            <thead className="bg-slate-100 text-slate-700"><tr>
+              {["ID", "Expediente", "Registro", "Núm. entrada", "Factura", "Fecha", "Estado"].map((titulo) => <th key={titulo} className="border-b border-slate-300 px-3 py-2 font-semibold">{titulo}</th>)}
+            </tr></thead>
             <tbody>
-
-              {fusionesFiltradas.map(
-                (fusion) => (
-
-                  <tr
-                    key={fusion.id}
-                    className="
-                      border-b
-                      border-[var(--erp-border)]
-                      last:border-b-0
-                      hover:bg-slate-50
-                      transition
-                    "
-                  >
-
-                    <td className="px-5 py-4">
-
-                      <div
-                        className="
-                          flex
-                          items-center
-                          gap-2.5
-                        "
-                      >
-
-                        <div
-                          className="
-                            w-8
-                            h-8
-                            rounded-lg
-                            bg-blue-50
-                            text-blue-600
-                            flex
-                            items-center
-                            justify-center
-                          "
-                        >
-                          <Icon
-                            type="file"
-                            size={15}
-                          />
-                        </div>
-
-                        <span
-                          className="
-                            font-semibold
-                            text-[var(--erp-text)]
-                          "
-                        >
-                          {fusion.expedienteOrigen}
-                        </span>
-
-                      </div>
-
-                    </td>
-
-
-                    <td className="px-5 py-4">
-
-                      <div
-                        className="
-                          flex
-                          items-center
-                          gap-2.5
-                        "
-                      >
-
-                        <div
-                          className="
-                            w-8
-                            h-8
-                            rounded-lg
-                            bg-emerald-50
-                            text-emerald-600
-                            flex
-                            items-center
-                            justify-center
-                          "
-                        >
-                          <Icon
-                            type="file"
-                            size={15}
-                          />
-                        </div>
-
-                        <span
-                          className="
-                            font-semibold
-                            text-[var(--erp-text)]
-                          "
-                        >
-                          {fusion.expedienteDestino}
-                        </span>
-
-                      </div>
-
-                    </td>
-
-
-                    <td
-                      className="
-                        px-5
-                        py-4
-                        text-[var(--erp-text-soft)]
-                      "
-                    >
-                      {fusion.fecha}
-                    </td>
-
-
-                    <td
-                      className="
-                        px-5
-                        py-4
-                        text-[var(--erp-text)]
-                      "
-                    >
-                      {fusion.usuario}
-                    </td>
-
-
-                    <td
-                      className="
-                        px-5
-                        py-4
-                        text-center
-                      "
-                    >
-
-                      {fusion.estado ===
-                        "Completada" && (
-                        <Badge variant="green">
-                          Completada
-                        </Badge>
-                      )}
-
-                      {fusion.estado ===
-                        "Pendiente" && (
-                        <Badge variant="amber">
-                          Pendiente
-                        </Badge>
-                      )}
-
-                      {fusion.estado ===
-                        "Incidencia" && (
-                        <Badge variant="red">
-                          Incidencia
-                        </Badge>
-                      )}
-
-                    </td>
-
-                  </tr>
-
-                )
-              )}
-
-
-              {fusionesFiltradas.length ===
-                0 && (
-
-                <tr>
-
-                  <td
-                    colSpan="5"
-                    className="
-                      px-5
-                      py-12
-                      text-center
-                    "
-                  >
-
-                    <div
-                      className="
-                        flex
-                        flex-col
-                        items-center
-                        justify-center
-                        text-[var(--erp-text-soft)]
-                      "
-                    >
-
-                      <div
-                        className="
-                          w-12
-                          h-12
-                          rounded-2xl
-                          bg-slate-100
-                          flex
-                          items-center
-                          justify-center
-                          mb-3
-                        "
-                      >
-                        <Icon
-                          type="search"
-                          size={22}
-                        />
-                      </div>
-
-                      <div
-                        className="
-                          text-sm
-                          font-semibold
-                          text-[var(--erp-text)]
-                        "
-                      >
-                        No se encontraron fusiones
-                      </div>
-
-                      <div
-                        className="
-                          text-xs
-                          mt-1
-                        "
-                      >
-                        Prueba con otros criterios de búsqueda.
-                      </div>
-
-                    </div>
-
-                  </td>
-
-                </tr>
-
-              )}
-
+              {fusionesFiltradas.map((fusion) => <tr key={fusion.id} className="border-b border-slate-200 hover:bg-blue-50/40">
+                <td className="px-3 py-2">{fusion.id}</td><td className="px-3 py-2 font-semibold">{fusion.expedienteOrigen}</td><td className="px-3 py-2">{fusion.registro || fusion.expedienteDestino || "—"}</td><td className="px-3 py-2">{fusion.numeroEntrada || "—"}</td><td className="px-3 py-2">{fusion.tipoFactura || "—"}</td><td className="px-3 py-2">{fusion.fecha}</td><td className="px-3 py-2"><Badge variant={/aceptada|completada/i.test(fusion.estado) ? "green" : /incidencia|desestimada/i.test(fusion.estado) ? "red" : "amber"}>{fusion.estado || "Pendiente"}</Badge></td>
+              </tr>)}
+              {!fusionesFiltradas.length && <tr><td colSpan={7} className="px-3 py-8 text-center text-slate-500">{cargandoSolicitudes ? "Cargando solicitudes…" : "No hay solicitudes que coincidan con la búsqueda."}</td></tr>}
             </tbody>
-
           </table>
-
         </div>
-
-
-        {errorSolicitudes && (
-          <div className="mx-5 mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{errorSolicitudes}</div>
-        )}
-        {cargandoSolicitudes && (
-          <div className="px-5 py-4 text-sm text-[var(--erp-text-soft)]">Cargando solicitudes recibidas desde CancelaGest…</div>
-        )}
-
-        {/* ====================================================
-            PIE
-            ==================================================== */}
-
-        <div
-          className="
-            px-5
-            py-3
-            bg-slate-50
-            border-t
-            border-[var(--erp-border)]
-            flex
-            items-center
-            justify-between
-            text-xs
-            text-[var(--erp-text-soft)]
-          "
-        >
-
-          <span>
-            Mostrando{" "}
-            <strong className="text-[var(--erp-text)]">
-              {fusionesFiltradas.length}
-            </strong>{" "}
-            de{" "}
-            <strong className="text-[var(--erp-text)]">
-              {fusiones.length}
-            </strong>{" "}
-            fusiones
-          </span>
-
-          <span>
-            Molsan ERP
-          </span>
-
-        </div>
-
-      </div>
-
+        <footer className="flex justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600"><span>Mostrando {fusionesFiltradas.length} de {fusiones.length} solicitudes</span><span>Molsan ERP · Fusiones</span></footer>
+      </section>
     </div>
-
   );
 }
