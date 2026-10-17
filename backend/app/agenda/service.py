@@ -214,6 +214,13 @@ def cita_con_relaciones(
         cita,
     )
 
+    observaciones_firma = str(getattr(cita, "observaciones", "") or "").upper()
+    firma_realizada = "FIRMA REALIZADA" in observaciones_firma or bool(
+        expediente
+        and getattr(expediente, "fecha_firma", None)
+        and str(getattr(expediente, "protocolo", "") or "").strip()
+    )
+
     notario_nombre = ""
 
     if notario:
@@ -264,6 +271,9 @@ def cita_con_relaciones(
         "observaciones":
             cita.observaciones
             or "",
+
+        "firma_realizada":
+            firma_realizada,
 
         "notario_id":
             cita.notario_id,
