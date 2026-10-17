@@ -523,17 +523,6 @@ function TablaEncargos({ encargos, onFirmado }) {
                           </details>
                           <details open className="ag-encargo-subpanel ag-ficha-archivo">
                             <summary className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><small>Documentación disponible para consultar desde el expediente.</small></summary>
-                            <div className="ag-archivo-layout">
-                              <div className="ag-visor-inline">
-                                {documentoVisor && documentoVisor.expedienteId === String(encargo.id_expediente || encargo.id) ? (
-                                  <>
-                                    <div className="ag-visor-inline-cabecera"><strong>{documentoVisor.nombre}</strong><div><button type="button" onClick={descargarDocumentoVisor}>Descargar</button><button type="button" onClick={cerrarVisor}>Cerrar</button></div></div>
-                                    <div className="ag-visor-inline-contenido">
-                                      {documentoVisor.previsualizable ? (documentoVisor.mime.startsWith("image/") || ["png","jpg","jpeg","webp","gif"].includes(documentoVisor.nombre.split(".").pop()?.toLowerCase()) ? <img src={documentoVisor.url} alt={documentoVisor.nombre} className="ag-visor-imagen" /> : <iframe title={documentoVisor.nombre} src={documentoVisor.url} className="ag-visor-pdf" />) : <div className="ag-visor-estado"><strong>Vista previa no disponible para este formato.</strong><span>Descarga el archivo para abrirlo con la aplicación correspondiente.</span><button type="button" onClick={descargarDocumentoVisor}>Descargar documento</button></div>}
-                                    </div>
-                                  </>
-                                ) : <div className="ag-visor-inline-vacio"><span aria-hidden="true">▤</span><strong>Visor de documentos PDF</strong><p>Selecciona «Ver en visor» en una carpeta para consultar el documento aquí.</p></div>}
-                              </div>
                               <div className="ag-archivo-carpetas">
                             {(() => {
                               const documentos = encargo.documentos || [];
@@ -576,7 +565,19 @@ function TablaEncargos({ encargos, onFirmado }) {
                               );
                             })()}
                               </div>
-                            </div>
+                          </details>
+                          <details open className="ag-encargo-subpanel ag-ficha-visor">
+                            <summary className="ag-ficha-bloque-heading"><span>VISUALIZACIÓN</span><h4>Visor de documentos</h4><small>Vista previa del fichero seleccionado.</small></summary>
+                              <div className="ag-visor-inline">
+                                {documentoVisor && documentoVisor.expedienteId === String(encargo.id_expediente || encargo.id) ? (
+                                  <>
+                                    <div className="ag-visor-inline-cabecera"><strong>{documentoVisor.nombre}</strong><div><button type="button" onClick={descargarDocumentoVisor}>Descargar</button><button type="button" onClick={cerrarVisor}>Cerrar</button></div></div>
+                                    <div className="ag-visor-inline-contenido">
+                                      {documentoVisor.previsualizable ? (documentoVisor.mime.startsWith("image/") || ["png","jpg","jpeg","webp","gif"].includes(documentoVisor.nombre.split(".").pop()?.toLowerCase()) ? <img src={documentoVisor.url} alt={documentoVisor.nombre} className="ag-visor-imagen" /> : <iframe title={documentoVisor.nombre} src={documentoVisor.url} className="ag-visor-pdf" />) : <div className="ag-visor-estado"><strong>Vista previa no disponible para este formato.</strong><span>Descarga el archivo para abrirlo con la aplicación correspondiente.</span><button type="button" onClick={descargarDocumentoVisor}>Descargar documento</button></div>}
+                                    </div>
+                                  </>
+                                ) : <div className="ag-visor-inline-vacio"><span aria-hidden="true">▤</span><strong>Visor de documentos PDF</strong><p>Selecciona «Ver en visor» en una carpeta para consultar el documento aquí.</p></div>}
+                              </div>
                           </details>
                           <details open className="ag-encargo-subpanel ag-ficha-registral">
                             <summary className="ag-ficha-bloque-heading"><span>03 · INFORMACIÓN REGISTRAL</span><h4>Fincas y registros de la propiedad</h4></summary>
