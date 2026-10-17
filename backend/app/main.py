@@ -575,6 +575,48 @@ def migrar_esquema_expedientes_inicio():
             )
         )
 
+    def registrar_bloqueos_expedientes(etiqueta: str) -> None:
+        """Registra sesiones con locks sobre expedientes sin cancelar ni modificar sesiones."""
+        try:
+            with conexion.begin():
+                filas = conexion.execute(
+                    text(
+                        """
+                        SELECT
+                            a.pid,
+                            a.usename,
+                            a.application_name,
+                            a.client_addr::text,
+                            a.state,
+                            a.wait_event_type,
+                            a.wait_event,
+                            a.xact_start,
+                            now() - a.xact_start AS antiguedad_transaccion,
+                            a.query_start,
+                            now() - a.query_start AS antiguedad_consulta,
+                            l.mode,
+                            l.granted,
+                            left(regexp_replace(a.query, '[[:space:]]+', ' ', 'g'), 500) AS consulta
+                        FROM pg_stat_activity a
+                        JOIN pg_locks l ON l.pid = a.pid
+                        WHERE l.relation = 'public.expedientes'::regclass
+                          AND a.pid <> pg_backend_pid()
+                        ORDER BY l.granted DESC, a.xact_start NULLS LAST
+                        """
+                    )
+                ).mappings().all()
+            print(
+                f"[MIGRACION STARTUP] Diagnóstico de locks para {etiqueta}: "
+                f"{[dict(fila) for fila in filas]!r}",
+                flush=True,
+            )
+        except Exception as error_diagnostico:
+            print(
+                f"[MIGRACION STARTUP] No se pudo consultar el diagnóstico de locks "
+                f"para {etiqueta}: {error_diagnostico!r}",
+                flush=True,
+            )
+
     def ejecutar_ddl_con_reintentos(etiqueta: str, sql: str) -> None:
         ultimo_error = None
         # En Render puede coincidir el arranque de una instancia con consultas
@@ -591,7 +633,10 @@ def migrar_esquema_expedientes_inicio():
                 return
             except Exception as error:
                 ultimo_error = error
-                if not es_bloqueo_temporal(error) or intento == max_intentos:
+                if not es_bloqueo_temporal(error):
+                    raise
+                if intento == max_intentos:
+                    registrar_bloqueos_expedientes(etiqueta)
                     raise
                 espera = min(2 * intento, 5)
                 print(
