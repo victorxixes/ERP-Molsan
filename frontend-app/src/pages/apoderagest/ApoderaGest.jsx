@@ -41,6 +41,32 @@ function texto(valor, alternativa = "—") {
     : String(valor);
 }
 
+function normalizarNombreNotario(valor) {
+  return String(valor || "")
+    .normalize("NFD")
+    .replace(/[\\u0300-\\u036f]/g, "")
+    .trim()
+    .replace(/\\s+/g, " ")
+    .toLocaleLowerCase("es");
+}
+
+function encontrarNotarioCtn(grupo, catalogo) {
+  const nif = normalizarNombreNotario(grupo?.nif);
+  if (nif) {
+    const porNif = catalogo.find((notario) =>
+      normalizarNombreNotario(notario.nif) === nif
+    );
+    if (porNif) return porNif;
+  }
+
+  const nombre = normalizarNombreNotario(grupo?.nombre);
+  return catalogo.find((notario) =>
+    normalizarNombreNotario(
+      notario.nombre_completo || [notario.nombre, notario.apellidos].filter(Boolean).join(" ")
+    ) === nombre
+  ) || null;
+}
+
 function normalizarCategoriaDocumento(valor) {
   return String(valor || "")
     .normalize("NFD")
@@ -320,11 +346,23 @@ function TablaEncargos({ encargos, onFirmado }) {
     <div className="ag-encargos-agrupados">
       {grupos.map((grupo) => {
         const abierto = Boolean(abiertos[grupo.clave]);
+        const notarioCtn = encontrarNotarioCtn(grupo, catalogoCtn);
+        const ubicacionNotario = [notarioCtn?.municipio, notarioCtn?.provincia].filter(Boolean).join(" · ");
+        const direccionNotario = [notarioCtn?.direccion, notarioCtn?.cp].filter(Boolean).join(" · ");
         return (
           <section className="ag-panel ag-grupo-notario" key={grupo.clave}>
             <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
               <span className="ag-notario-grupo-icono" aria-hidden="true">{abierto ? "⌄" : "›"}</span>
-              <span className="ag-notario-grupo-info"><strong>{grupo.nombre}</strong><small>{grupo.nif || "NIF no disponible"}</small></span>
+              <span className="ag-notario-grupo-info">
+                <strong>{grupo.nombre}</strong>
+                <small>{grupo.nif || "NIF no disponible"}</small>
+                <span className="ag-notario-contacto">
+                  {ubicacionNotario && <span><b>⌖</b>{ubicacionNotario}</span>}
+                  {direccionNotario && <span><b>⌂</b>{direccionNotario}</span>}
+                  {notarioCtn?.telefono && <span><b>☎</b>{notarioCtn.telefono}</span>}
+                  {!notarioCtn && <span className="ag-notario-sin-ficha">Datos de contacto no disponibles en el catálogo CTN</span>}
+                </span>
+              </span>
               <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "expediente pendiente" : "expedientes pendientes"}</span>
             </button>
             {abierto ? (
