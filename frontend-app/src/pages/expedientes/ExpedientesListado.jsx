@@ -11,6 +11,7 @@ import {
   obtenerListadoExpedientes,
   exportarExcelExpedientes,
   obtenerResumenExpedientes,
+  obtenerAlertasControlExpedientes,
 } from "../../api/expedientes";
 
 
@@ -859,6 +860,10 @@ export default function ExpedientesListado() {
     setRecargaRealtime,
   ] = useState(0);
 
+  const [alertasControl, setAlertasControl] = useState([]);
+  const [loadingAlertasControl, setLoadingAlertasControl] = useState(true);
+  const [alertaSeleccionada, setAlertaSeleccionada] = useState("");
+
   // ==========================================================
   // INTERFAZ
   // ==========================================================
@@ -1096,6 +1101,7 @@ export default function ExpedientesListado() {
             observaciones: filtrosAplicados.observaciones || undefined,
             estadoActividad: filtrosAplicados.estadoActividad || undefined,
             actividadActual: filtrosAplicados.actividad || undefined,
+            alerta: alertaSeleccionada || undefined,
             estadoExpediente: filtrosAplicados.estadoExpediente || undefined,
 
             ordenMultiple:
@@ -1194,8 +1200,35 @@ export default function ExpedientesListado() {
     filtrosAplicados,
     ordenMultiple,
     recargaRealtime,
+    alertaSeleccionada,
   ]);
 
+
+  // ==========================================================
+  // CARGAR CONTROLES DE GESTIÓN (RECUENTOS GLOBALES)
+  // ==========================================================
+
+  useEffect(() => {
+    let activo = true;
+
+    async function cargarAlertasControl() {
+      setLoadingAlertasControl(true);
+      try {
+        const res = await obtenerAlertasControlExpedientes();
+        if (activo) {
+          setAlertasControl(Array.isArray(res?.alertas) ? res.alertas : []);
+        }
+      } catch (err) {
+        console.error("Error cargando controles de expedientes:", err);
+        if (activo) setAlertasControl([]);
+      } finally {
+        if (activo) setLoadingAlertasControl(false);
+      }
+    }
+
+    cargarAlertasControl();
+    return () => { activo = false; };
+  }, [recargaRealtime]);
 
   // ==========================================================
   // CARGAR RESUMEN DE ACTIVIDADES
@@ -1980,6 +2013,7 @@ export default function ExpedientesListado() {
               type="button"
               onClick={() => {
                 setActividadSeleccionada("");
+                setAlertaSeleccionada("");
                 setColumnasVisibles(COLUMNAS_POR_DEFECTO);
                 setFiltroActividad("");
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: "" }));
@@ -2024,6 +2058,7 @@ export default function ExpedientesListado() {
                     const valorBackend = encontrado?.actividad || actividad.label;
 
                     setActividadSeleccionada(actividad.key);
+                    setAlertaSeleccionada("");
                     setColumnasVisibles(obtenerColumnasActividad(actividad.key));
                     setFiltroActividad(valorBackend);
                     setFiltrosAplicados((actual) => ({ ...actual, actividad: valorBackend }));
@@ -2126,6 +2161,76 @@ export default function ExpedientesListado() {
               
             </div>
           </div>
+
+      {/* ======================================================
+          CONTROLES DE GESTIÓN — ALERTAS ACCIONABLES
+      ====================================================== */}
+      <section className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+          <div>
+            <h3 className="text-base font-bold text-[var(--erp-text)]">Controles de gestión</h3>
+            <p className="text-sm text-[var(--erp-text-soft)]">Recuentos globales actualizados desde los datos guardados. Pulsa una tarjeta para filtrar la tabla.</p>
+          </div>
+          {alertaSeleccionada && (
+            <button
+              type="button"
+              onClick={() => { setAlertaSeleccionada(""); setPagina(1); }}
+              className="self-start sm:self-auto rounded-lg border px-3 py-2 text-sm font-semibold"
+              style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)", background: "var(--erp-surface)" }}
+            >
+              Quitar filtro de control
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-3">
+          {[
+            { key: "defectos_vencidos", accent: "#b91c1c" },
+            { key: "sede_notarial", accent: "#9a3412" },
+            { key: "liquidacion_pendiente", accent: "#a16207" },
+            { key: "facturacion_cierre", accent: "#047857" },
+            { key: "inscripcion_30_dias", accent: "#1d4ed8" },
+          ].map((config) => {
+            const alerta = alertasControl.find((item) => item.key === config.key);
+            const activa = alertaSeleccionada === config.key;
+            return (
+              <button
+                key={config.key}
+                type="button"
+                onClick={() => { setAlertaSeleccionada(activa ? "" : config.key); setPagina(1); }}
+                aria-pressed={activa}
+                className="text-left rounded-2xl border p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+                style={{
+                  background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)",
+                  borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)",
+                  boxShadow: activa ? "0 0 0 1px var(--erp-primary)" : undefined,
+                }}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-2xl" aria-hidden="true">{alerta?.icono || "📌"}</span>
+                  <span className="text-2xl font-extrabold tabular-nums" style={{ color: config.accent }}>
+                    {loadingAlertasControl ? "…" : formatearNumero(alerta?.total || 0)}
+                  </span>
+                </div>
+                <div className="mt-3 font-bold text-sm leading-snug text-[var(--erp-text)]">
+                  {alerta?.label || ({
+                    defectos_vencidos: "Defectos registrales vencidos",
+                    sede_notarial: "Sede notarial +10 días",
+                    liquidacion_pendiente: "Liquidación de impuestos",
+                    facturacion_cierre: "Facturación y cierre",
+                    inscripcion_30_dias: "Tramitación inscripción +30 días",
+                  }[config.key])}
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--erp-text-soft)]">
+                  {alerta?.descripcion || ""}
+                </p>
+                <div className="mt-3 text-xs font-semibold" style={{ color: activa ? "var(--erp-primary-dark)" : "var(--erp-text-soft)" }}>
+                  {activa ? "Filtro aplicado · pulsa para quitar" : "Ver expedientes →"}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       {/* ======================================================
           TABLA
