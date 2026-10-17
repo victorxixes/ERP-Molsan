@@ -401,6 +401,40 @@ def detalle_expediente(expediente_id: str, n=Depends(get_notario), db: Session =
     return datos
 
 
+@router.get("/avisos")
+def avisos_notargest(n=Depends(get_notario), db: Session = Depends(get_db)):
+    """Avisos de observaciones visibles y documentos añadidos tras el envío y antes de la firma."""
+    expedientes = _expedientes_de_notario(n, db)
+    if not expedientes:
+        return {"comentarios": [], "documentos": []}
+    expediente_por_id = {e.id: e for e in expedientes}
+    ids_documentales = {str(e.id_expediente): e for e in expedientes}
+    observaciones = db.query(ExpedienteObservacion).filter(
+        ExpedienteObservacion.expediente_id.in_(list(expediente_por_id.keys())),
+        ExpedienteObservacion.activo.is_(True),
+        ExpedienteObservacion.visibilidad.in_(["Notario", "Visible notario", "Ambos", "Todos"]),
+    ).order_by(ExpedienteObservacion.fecha.desc()).limit(300).all()
+    comentarios = []
+    for o in observaciones:
+        e = expediente_por_id.get(o.expediente_id)
+        if e:
+            comentarios.append({"id": o.id, "id_expediente": e.id_expediente, "oficina": e.oficina or e.oficina_alta, "solicitante": e.nombre_solicitante, "comentario": o.comentario, "visibilidad": o.visibilidad, "fecha": _fecha(o.fecha)})
+    documentos = []
+    docs = db.query(DocumentoCarpetaDigital).filter(DocumentoCarpetaDigital.expediente_id.in_(list(ids_documentales.keys()))).order_by(DocumentoCarpetaDigital.fecha_subida.desc()).limit(1000).all()
+    for d in docs:
+        e = ids_documentales.get(str(d.expediente_id))
+        if not e or e.fecha_firma or (e.protocolo or "").strip():
+            continue
+        envio = getattr(e, "fecha_envio_notario", None) or getattr(e, "fecha_envio", None)
+        subida = d.fecha_subida
+        if not envio or not subida:
+            continue
+        limite = envio.replace(tzinfo=None) if isinstance(envio, datetime) else datetime.combine(envio, time.min)
+        if subida.replace(tzinfo=None) <= limite:
+            continue
+        documentos.append({"id": d.id, "id_expediente": e.id_expediente, "oficina": e.oficina or e.oficina_alta, "solicitante": e.nombre_solicitante, "nombre": d.nombre_original, "categoria": d.categoria, "fecha_subida": _fecha(d.fecha_subida)})
+    return {"comentarios": comentarios, "documentos": documentos}
+
 @router.get("/gestores")
 def listar_gestores_notargest(n=Depends(get_notario), db: Session = Depends(get_db)):
     empleados = db.query(Empleado).filter(Empleado.activo.is_(True)).order_by(Empleado.apellidos.asc(), Empleado.nombre.asc()).all()
