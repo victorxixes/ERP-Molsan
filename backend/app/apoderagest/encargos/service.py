@@ -137,6 +137,8 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
         "nombre": _texto(getattr(expediente, "nombre", None)) or _texto(getattr(expediente, "nombre_titular", None)),
         "apellidos": _texto(getattr(expediente, "apellidos", None)) or _texto(getattr(expediente, "facturacion_apellidos", None)),
         "dni": _texto(getattr(expediente, "dni", None)) or _texto(getattr(expediente, "nif_titular", None)),
+        "nombre_solicitante": _texto(getattr(expediente, "nombre_solicitante", None)),
+        "nif_solicitante": _texto(getattr(expediente, "nif_solicitante", None)),
         "finca": _texto(getattr(expediente, "finca", None)),
         "bloqueado": bool(getattr(expediente, "bloqueo_manual", False) or str(getattr(expediente, "estado_expediente", "") or "").strip().upper().startswith(("LST", "RST")) or getattr(expediente, "liquidado_sin_tramitar", False) or getattr(expediente, "cambio_gestoria", False)),
         "motivo_bloqueo_efectivo": (_texto(getattr(expediente, "motivo_bloqueo", None)) or ("LIQUIDADO SIN TRAMITAR" if str(getattr(expediente, "estado_expediente", "") or "").strip().upper().startswith("LST") or getattr(expediente, "liquidado_sin_tramitar", False) else "RETENCIÓN SIN TRAMITAR" if str(getattr(expediente, "estado_expediente", "") or "").strip().upper().startswith("RST") else "CAMBIO DE GESTORÍA" if getattr(expediente, "cambio_gestoria", False) else "BLOQUEO MANUAL" if getattr(expediente, "bloqueo_manual", False) else None)),
@@ -149,6 +151,7 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
         "fecha_solicitud_pnc": _fecha_texto(getattr(expediente, "fecha_solicitud_pnc", None)),
         "numero_solicitud_pnc": _texto(getattr(expediente, "numero_solicitud_pnc", None)),
         "hora_prevista_firma": _fecha_texto(getattr(expediente, "hora_prevista_firma", None)),
+        "hora_fin_prevista_firma": _fecha_texto(getattr(expediente, "hora_fin_prevista_firma", None)),
         "fecha_envio_notario": _fecha_texto(
             getattr(expediente, "fecha_envio_notario", None)
             or getattr(expediente, "fecha_envio", None)
