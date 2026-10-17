@@ -109,6 +109,7 @@ def _resumen(e, db):
         "notargest_estado": _estado_workflow(e),
         "notargest_fecha_cierre": _fecha(getattr(e, "notargest_fecha_cierre", None)),
         "notargest_fecha_envio_gestoria": _fecha(getattr(e, "notargest_fecha_envio_gestoria", None)),
+        "tiene_defectos_abiertos": getattr(e, "tiene_defectos_abiertos", None),
         "estado_actividad": e.estado_actividad,
         "actividad_actual": actividad,
         "oficina": e.oficina or e.oficina_alta,
