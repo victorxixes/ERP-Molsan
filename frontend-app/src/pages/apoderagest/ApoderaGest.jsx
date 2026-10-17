@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
 import axios from "../../api/axios";
 import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
 import AutocompleteNotario from "../../components/agenda/AutocompleteNotario";
@@ -571,7 +572,6 @@ export default function ApoderaGest() {
   const [pestana, setPestana] = useState("Dashboard");
   const navigate = useNavigate();
   const empleado = useAuthStore((state) => state.empleado);
-  const logout = useAuthStore((state) => state.logout);
   const usuarioId = empleado?.empleado_id ?? empleado?.id ?? null;
 
   const [dashboard, setDashboard] = useState(null);
@@ -691,44 +691,11 @@ export default function ApoderaGest() {
   );
 
   return (
-    <main className="apoderagest">
-      <div className="ag-fondo-decorativo" aria-hidden="true" />
-      <div className="ag-layout-sidebar">
-        <aside className="ag-sidebar" aria-label="Navegación ApoderaGest">
-          <div className="ag-sidebar-brand">
-            <div className="ag-marca">AG</div>
-            <div><strong>ApoderaGest</strong><small>MOLSAN ERP · PREMIUM</small></div>
-          </div>
-          <div className="ag-sidebar-caption">ESPACIO DE TRABAJO</div>
-          <nav className="ag-sidebar-nav" aria-label="Secciones de ApoderaGest">
-            {PESTANAS.map((item) => (
-              <button
-                type="button"
-                key={item.nombre}
-                className={`ag-sidebar-item ${pestana === item.nombre ? "ag-sidebar-item-activo" : ""}`}
-                onClick={() => setPestana(item.nombre)}
-                aria-current={pestana === item.nombre ? "page" : undefined}
-              >
-                <span className="ag-sidebar-icono" aria-hidden="true">{item.icono}</span>
-                <span>{item.nombre}</span>
-                {pestana === item.nombre ? <span className="ag-sidebar-seleccionado" /> : null}
-              </button>
-            ))}
-          </nav>
-          <div className="ag-sidebar-usuario">
-            <span className="ag-avatar-usuario" aria-hidden="true">{String(empleado?.nombre || empleado?.nombre_completo || "A").trim().charAt(0).toUpperCase()}</span>
-            <span><strong>{empleado?.nombre_completo || [empleado?.nombre, empleado?.apellidos].filter(Boolean).join(" ") || "Apoderado"}</strong><small>Sesión activa</small></span>
-          </div>
-          <div className="ag-sidebar-acciones">
-            <button type="button" className="ag-sidebar-modulos" onClick={() => navigate("/modulos")}>
-              <span aria-hidden="true">▦</span> Ir a módulos
-            </button>
-            <button type="button" className="ag-sidebar-logout" onClick={() => { logout(); navigate("/login", { replace: true }); }}>
-              <span aria-hidden="true">↪</span> Cerrar sesión
-            </button>
-          </div>
-        </aside>
-        <div className="ag-main-content">
+    <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
+      <Sidebar />
+      <main className="relative min-h-[calc(100vh-70px)]">
+        <div className="w-full px-4 py-6 lg:px-6">
+          <div className="w-full apoderagest">
       <header className="ag-hero">
         <div className="ag-hero-identidad">
           <div className="ag-marca">AG</div>
@@ -743,6 +710,13 @@ export default function ApoderaGest() {
             <span className="ag-punto-vivo" />
             <span>{fechaActual}</span>
           </div>
+          <button
+            type="button"
+            onClick={() => navigate("/modulos")}
+            className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
+          >
+            <span aria-hidden="true">▦</span> Ir a módulos
+          </button>
           <button type="button" className="ag-boton-actualizar" onClick={cargarDatos} disabled={cargando}>
             <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
             {cargando ? "Actualizando…" : "Actualizar datos"}
@@ -897,9 +871,10 @@ export default function ApoderaGest() {
       {pestana === "Intranet" ? <Intranet /> : null}
 
       <footer className="ag-footer"><span><strong>MOLSAN ERP</strong> · ApoderaGest</span><span>Premium 2027</span></footer>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
 
