@@ -415,6 +415,7 @@ CAMPOS_EXPEDIENTE = [
     "escritura_firmada",
     "hora_prevista_firma",
     "hora_fin_prevista_firma",
+    "firma_urgente",
     "asiento_presentacion_libro_diario",
     "fecha_presentacion",
     "numero_entrada",
