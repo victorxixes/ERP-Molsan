@@ -49,6 +49,9 @@ export default function NotarGest() {
   const [comentarioGestor, setComentarioGestor] = useState("");
   const [gestorDestinatario, setGestorDestinatario] = useState("");
   const [avisos, setAvisos] = useState({ comentarios: [], documentos: [] });
+  const [notificacionesAbiertas, setNotificacionesAbiertas] = useState(false);
+  const [perfilNotarioAbierto, setPerfilNotarioAbierto] = useState(false);
+  const [avisosLeidos, setAvisosLeidos] = useState(() => { try { return JSON.parse(localStorage.getItem("notargest_avisos_leidos") || "[]"); } catch { return []; } });
 
   const peticion = useCallback(async (path, options = {}) => {
     const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(options.headers || {}) };
@@ -207,6 +210,10 @@ export default function NotarGest() {
   }
 
   const cuenta = (id) => expedientes.filter(x => x[bandejas.find(b => b.id === id)?.campo]).length;
+  const avisosPendientes = { comentarios: avisos.comentarios.filter(x => !avisosLeidos.includes(`comentario:${x.id}`)), documentos: avisos.documentos.filter(x => !avisosLeidos.includes(`documento:${x.id}`)) };
+  const totalAvisosPendientes = avisosPendientes.comentarios.length + avisosPendientes.documentos.length;
+  function marcarAvisoLeido(tipo, id) { const clave = `${tipo}:${id}`; setAvisosLeidos(actual => { const siguiente = actual.includes(clave) ? actual : [...actual, clave]; try { localStorage.setItem("notargest_avisos_leidos", JSON.stringify(siguiente)); } catch {} return siguiente; }); }
+  function abrirAvisoExpediente(item) { setNotificacionesAbiertas(false); abrirExpediente({ id_expediente: item.id_expediente, numero_expediente: item.id_expediente }); }
   const filas = useMemo(() => {
     const filtradas = expedientes.filter(x => {
       const q = busqueda.trim().toLocaleLowerCase("es");
@@ -240,8 +247,8 @@ export default function NotarGest() {
     defectos: "Expedientes con defectos",
     inscripcion: "Inscripciones registrales",
     cerrada: "Escrituras cerradas inscritas",
-    avisos_comentarios: "Notificaciones",
-    avisos_documentos: "Notificaciones",
+    avisos_comentarios: "",
+    avisos_documentos: "",
   }[vista] || "");
   const navegarSidebar = (label) => {
     const destinos = {
@@ -255,7 +262,6 @@ export default function NotarGest() {
       "Expedientes con defectos": "defectos",
       "Inscripciones registrales": "inscripcion",
       "Escrituras cerradas inscritas": "cerrada",
-      "Notificaciones": "avisos_comentarios",
     };
     setBusqueda("");
     setVista(destinos[label] || "inicio");
@@ -276,18 +282,22 @@ export default function NotarGest() {
           { key: "defectos", label: "Expedientes con defectos", icon: "globe", badge: cuenta("defectos") },
           { key: "inscripcion", label: "Inscripciones registrales", icon: "folder", badge: cuenta("inscripcion") },
           { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "clipboard", badge: cuenta("cerrada") },
-          { key: "avisos", label: "Notificaciones", icon: "chat", badge: avisos.comentarios.length + avisos.documentos.length },
         ]}
         activeNavigationItem={sidebarVista}
         onNavigationItemClick={navegarSidebar}
+        onNotificationsClick={() => setNotificacionesAbiertas(true)}
+        notificationBadge={totalAvisosPendientes}
+        onProfileClick={() => setPerfilNotarioAbierto(true)}
       />
+      {notificacionesAbiertas && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setNotificacionesAbiertas(false); }}><section className="ng-modal ng-modal-avisos" role="dialog" aria-modal="true" aria-labelledby="ng-avisos-titulo"><header><div><span className="ng-kicker">NOTARGEST · AVISOS</span><h2 id="ng-avisos-titulo">Notificaciones pendientes</h2><p>Documentos nuevos y observaciones del gestor vinculados a tus expedientes.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setNotificacionesAbiertas(false)}>Cerrar ✕</button></header><div className="ng-modal-lista">{totalAvisosPendientes === 0 ? <div className="ng-modal-vacio"><strong>Todo al día</strong><p>No tienes notificaciones pendientes de leer.</p></div> : <>{avisosPendientes.documentos.map(item => <article className="ng-aviso-item" key={`documento:${item.id}`}><span className="ng-aviso-icono">PDF</span><div className="ng-aviso-contenido"><strong>Nuevo documento en expediente {item.id_expediente}</strong><p>{texto(item.nombre)} · {texto(item.categoria)}</p><small>{texto(item.oficina)} · {texto(item.fecha_subida)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("documento", item.id)}>Marcar como leída</button></div></div></article>)}{avisosPendientes.comentarios.map(item => <article className="ng-aviso-item" key={`comentario:${item.id}`}><span className="ng-aviso-icono ng-aviso-icono-observacion">!</span><div className="ng-aviso-contenido"><strong>Nueva observación · expediente {item.id_expediente}</strong><p>{texto(item.comentario)}</p><small>{texto(item.oficina)} · {texto(item.fecha)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("comentario", item.id)}>Marcar como leída</button></div></div></article>)}</>}</div></section></div>}
+      {perfilNotarioAbierto && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPerfilNotarioAbierto(false)}>Cerrar ✕</button></header><div className="ng-perfil-identidad"><div className="ng-perfil-avatar">NG</div><div><strong>{texto(notario?.nombre)}</strong><span>{texto(notario?.nif)}</span></div></div><div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Tipo de acceso",notario?.tipo_acceso === "erp" ? "Acceso ERP" : "NotarGest"]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div><p className="ng-perfil-nota">La ficha muestra los datos que devuelve actualmente el perfil CTN disponible para NotarGest.</p></section></div>}
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest">
             <div className="notargest ng-content">
     <header className="ag-hero ng-hero-apoderagest">
       <div className="ag-hero-identidad">
-        <div className="ag-marca ng-marca-notargest"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
+        <div className="ag-marca ng-marca-notargest" aria-label="NotarGest">NG</div>
         <div>
           <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
           <h1>NotarGest</h1>
@@ -345,7 +355,8 @@ export default function NotarGest() {
         <section className="ng-dashboard-grafico ng-dashboard-etapas"><div className="ng-bloque-heading"><div><span className="ng-kicker">CICLO REGISTRAL</span><h3>Media de días entre hitos</h3></div></div>
           {(() => {
             const etapas=[
-              {label:"Firma → presentación tributaria",desde:["fecha_firma"],hasta:["fecha_presentacion_tributaria","fecha_presentacion_impuestos","fecha_liquidacion"]},
+              {label:"Fecha envío → fecha firma",desde:["fecha_envio_notario","fecha_envio"],hasta:["fecha_firma"]},
+              {label:"Firma → presentación tributaria",desde:["fecha_firma"],hasta:["fecha_presentacion_tributaria","fecha_presentacion_impuestos","fecha_liquidacion_tributaria","fecha_liquidacion"]},
               {label:"Presentación tributaria → Registro",desde:["fecha_presentacion_tributaria","fecha_presentacion_impuestos","fecha_liquidacion"],hasta:["fecha_presentacion_registro","fecha_presentacion_registral"]},
               {label:"Presentación Registro → inscripción",desde:["fecha_presentacion_registro","fecha_presentacion_registral"],hasta:["fecha_inscripcion","fecha_inscripcion_registro"]},
               {label:"Inscripción → cierre",desde:["fecha_inscripcion","fecha_inscripcion_registro"],hasta:["notargest_fecha_cierre","fecha_cierre"]},
