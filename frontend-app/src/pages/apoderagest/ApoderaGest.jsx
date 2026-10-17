@@ -136,20 +136,29 @@ function TablaEncargos({ encargos, onFirmado }) {
   const [erroresFirma, setErroresFirma] = useState({});
   const [mensajeFirma, setMensajeFirma] = useState({});
   const [documentoVisor, setDocumentoVisor] = useState(null);
+  const [catalogoCtn, setCatalogoCtn] = useState([]);
+
+  useEffect(() => {
+    let activo = true;
+    axios.get("/ctn/notarias", { params: { page_size: 200 } })
+      .then(({ data }) => { if (activo) setCatalogoCtn(Array.isArray(data?.items) ? data.items : []); })
+      .catch(() => { if (activo) setCatalogoCtn([]); });
+    return () => { activo = false; };
+  }, []);
   const grupos = useMemo(() => agruparEncargosPorNotario(encargos), [encargos]);
 
   function cambiarFirma(id, campo, valor) {
     setFirmas((actual) => ({
       ...actual,
-      [id]: { fecha_firma: actual[id]?.fecha_firma ?? "", protocolo: actual[id]?.protocolo ?? "", [campo]: valor },
+      [id]: { fecha_firma: actual[id]?.fecha_firma ?? "", protocolo: actual[id]?.protocolo ?? "", notario_otorgante: actual[id]?.notario_otorgante ?? "", [campo]: valor },
     }));
   }
 
   async function firmar(encargo) {
     const id = String(encargo.id_expediente || encargo.id);
     const valores = firmas[id] || {};
-    if (!valores.fecha_firma || !String(valores.protocolo || "").trim()) {
-      setErroresFirma((actual) => ({ ...actual, [id]: "Indica la fecha de firma y el número de protocolo." }));
+    if (!valores.fecha_firma || !String(valores.protocolo || "").trim() || !String(valores.notario_otorgante || encargo.nombre_notario || encargo.notario || "").trim()) {
+      setErroresFirma((actual) => ({ ...actual, [id]: "Indica la fecha, el número de protocolo y el notario otorgante." }));
       return;
     }
     setGuardandoFirma((actual) => ({ ...actual, [id]: true }));
@@ -159,6 +168,7 @@ function TablaEncargos({ encargos, onFirmado }) {
       await axios.post(`/apoderagest/encargos/${encodeURIComponent(encargo.id_expediente || encargo.id)}/firmar`, {
         fecha_firma: valores.fecha_firma,
         protocolo: String(valores.protocolo).trim(),
+        notario_otorgante: String(valores.notario_otorgante || encargo.nombre_notario || encargo.notario || "").trim(),
       });
       setMensajeFirma((actual) => ({ ...actual, [id]: "Firma registrada en la ficha del expediente." }));
       onFirmado?.();
@@ -253,6 +263,11 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <CampoDetalle etiqueta="Fecha de envío" valor={fechaLegible(encargo.fecha_envio_notario || encargo.fecha_envio)} />
                               <CampoDetalle etiqueta="Idioma del documento" valor={encargo.idioma_documento || encargo.idioma} />
                               <CampoDetalle etiqueta="Fecha solicitud PNC" valor={fechaLegible(encargo.fecha_solicitud_pnc)} />
+                              <CampoDetalle etiqueta="Número solicitud PNC" valor={encargo.numero_solicitud_pnc} />
+                              <CampoDetalle etiqueta="Apoderado" valor={encargo.apoderado} />
+                              <CampoDetalle etiqueta="Tipo de firma" valor={encargo.tipo_firma} />
+                              <CampoDetalle etiqueta="Fecha prevista de firma" valor={fechaLegible(encargo.fecha_prevista_firma)} />
+                              <CampoDetalle etiqueta="Hora prevista de firma" valor={horaLegible(encargo.hora_prevista_firma)} />
                             </div>
                           </section>
                           <section className="ag-encargo-subpanel ag-ficha-facturacion">
@@ -267,11 +282,6 @@ function TablaEncargos({ encargos, onFirmado }) {
                               <CampoDetalle etiqueta="Provincia" valor={facturacion.provincia} />
                               <CampoDetalle etiqueta="Teléfono" valor={facturacion.telefono} />
                               <CampoDetalle etiqueta="Email" valor={facturacion.email} />
-                              <CampoDetalle etiqueta="Número solicitud PNC" valor={encargo.numero_solicitud_pnc} />
-                              <CampoDetalle etiqueta="Apoderado" valor={encargo.apoderado} />
-                              <CampoDetalle etiqueta="Tipo de firma" valor={encargo.tipo_firma} />
-                              <CampoDetalle etiqueta="Fecha prevista de firma" valor={fechaLegible(encargo.fecha_prevista_firma)} />
-                              <CampoDetalle etiqueta="Hora prevista de firma" valor={horaLegible(encargo.hora_prevista_firma)} />
                             </div>
                           </section>
                           <section className="ag-encargo-subpanel ag-ficha-archivo">
@@ -314,6 +324,18 @@ function TablaEncargos({ encargos, onFirmado }) {
                             <div className="ag-firmar-controles">
                               <label>Fecha de firma<input type="date" value={firma.fecha_firma ?? encargo.fecha_firma ?? ""} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
                               <label>Número de protocolo<input type="text" maxLength={200} value={firma.protocolo ?? encargo.protocolo ?? ""} onChange={(e) => cambiarFirma(id, "protocolo", e.target.value)} placeholder="Introduce el protocolo" /></label>
+                              <label>Notario otorgante
+                                <select value={firma.notario_otorgante ?? encargo.notario_otorgante ?? encargo.nombre_notario ?? encargo.notario ?? ""} onChange={(e) => cambiarFirma(id, "notario_otorgante", e.target.value)}>
+                                  <option value={encargo.nombre_notario || encargo.notario || ""}>{encargo.nombre_notario || encargo.notario || "Notario del encargo"}</option>
+                                  {(() => {
+                                    const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es");
+                                    const nombreAsignado = normalizar(encargo.nombre_notario || encargo.notario);
+                                    const notarioCtn = catalogoCtn.find((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) === nombreAsignado);
+                                    const asociados = (notarioCtn?.notarios_asociados || []).filter((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) !== nombreAsignado);
+                                    return asociados.map((n) => { const nombre = n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" "); return <option key={n.id} value={nombre}>{nombre}</option>; });
+                                  })()}
+                                </select>
+                              </label>
                               <button type="button" disabled={!!guardandoFirma[id]} onClick={() => firmar(encargo)}>{guardandoFirma[id] ? "Guardando…" : "Firmar"}</button>
                             </div>
                             {erroresFirma[id] && <p className="ag-firma-error">{erroresFirma[id]}</p>}
