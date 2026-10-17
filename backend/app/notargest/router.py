@@ -356,7 +356,10 @@ def detalle_expediente(expediente_id: str, n=Depends(get_notario), db: Session =
     obs = db.query(ExpedienteObservacion).filter(
         ExpedienteObservacion.expediente_id == e.id,
         ExpedienteObservacion.activo.is_(True),
-        ExpedienteObservacion.visibilidad.in_(["Notario", "Visible notario", "Ambos", "Todos"])
+        or_(
+            ExpedienteObservacion.visibilidad.in_(["Notario", "Visible notario", "Ambos", "Todos"]),
+            (ExpedienteObservacion.visibilidad == "Gestor") & ExpedienteObservacion.autor_empleado_id.is_(None),
+        )
     ).order_by(ExpedienteObservacion.fecha.desc()).all()
     datos = _resumen(e, db)
     datos["fincas"] = [{
@@ -373,6 +376,8 @@ def detalle_expediente(expediente_id: str, n=Depends(get_notario), db: Session =
     } for d in docs]
     datos["observaciones_notaria"] = [{
         "id": o.id, "comentario": o.comentario, "visibilidad": o.visibilidad,
+        "empleado_destinatario_id": o.empleado_destinatario_id,
+        "empleado_destinatario": (lambda empleado: " ".join(filter(None, [empleado.nombre, empleado.apellidos])) if empleado else None)(db.query(Empleado).filter(Empleado.id == o.empleado_destinatario_id).first()) if o.empleado_destinatario_id else None,
         "fecha": _fecha(o.fecha)
     } for o in obs]
     return datos
