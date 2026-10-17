@@ -109,3 +109,53 @@
 /* Subapartados de la ficha reorganizada */
 .notargest .ng-subtitulo-detalle{margin:20px 0 10px;color:#34445e;font-size:12px;font-weight:850;letter-spacing:.01em}
 .notargest .ng-detalle-bloque h3{line-height:1.5}
+
+
+/* Ficha NotarGest reorganizada: datos compactos, carpeta con visor y estados claros */
+.notargest .ng-ficha-cabecera{justify-content:space-between}
+.notargest .ng-ficha-cabecera>div{display:flex;flex-direction:column;gap:5px}
+.notargest .ng-ficha-cabecera small{color:#8492a6;font-size:11px}
+.notargest .ng-ficha-premium{display:flex;flex-direction:column;gap:16px;padding:20px}
+.notargest .ng-ficha-premium>.ng-detalle-bloque{margin:0;padding:20px;border:1px solid #e7ebf2;border-radius:15px;background:#fff;box-shadow:0 3px 12px rgba(26,43,74,.025)}
+.notargest .ng-bloque-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.notargest .ng-bloque-heading h3{margin:3px 0 0;font-size:16px;color:#1e3352}
+.notargest .ng-bloque-heading .ng-descripcion{margin:5px 0 0}
+.notargest .ng-kicker{font-size:9px;letter-spacing:.12em;font-weight:850;color:#7183a3}
+.notargest .ng-datos-operacion{grid-template-columns:repeat(4,minmax(0,1fr))}
+.notargest .ng-datos-facturacion{grid-template-columns:repeat(4,minmax(0,1fr))}
+.notargest .ng-dato{min-width:0;padding:12px 13px;background:#f8faff;border:1px solid #edf1f8;border-radius:10px}
+.notargest .ng-dato small{display:block;margin-bottom:6px;font-size:10px;color:#7c8aa2;font-weight:700}
+.notargest .ng-dato strong{display:block;overflow-wrap:anywhere;font-size:12px;line-height:1.45;color:#273853}
+.notargest .ng-estado-pill{display:inline-flex;align-items:center;padding:7px 11px;border-radius:999px;background:#edf2ff;color:#3455a4;font-size:11px;font-weight:800;white-space:nowrap}
+.notargest .ng-firma-form{grid-template-columns:minmax(180px,.7fr) minmax(200px,1fr) auto;align-items:end}
+.notargest .ng-firma-form .ng-ayuda-campo{grid-column:1/-1;margin:0;color:#77849a;font-size:11px}
+.notargest .ng-etiqueta-suave{font-size:10px;color:#71809a;background:#f5f7fb;padding:7px 10px;border-radius:8px}
+.notargest .ng-carpeta-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(330px,.9fr);gap:16px;align-items:stretch}
+.notargest .ng-carpeta-categorias{display:flex;flex-direction:column;gap:10px;min-width:0}
+.notargest .ng-categoria-documental{border:1px solid #e6ebf3;border-radius:12px;overflow:hidden;background:#fff}
+.notargest .ng-categoria-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;background:#f8faff;border-bottom:1px solid #edf1f6}
+.notargest .ng-categoria-heading>div{display:flex;flex-direction:column;gap:4px}
+.notargest .ng-categoria-heading strong{font-size:12px;color:#2c3c58}
+.notargest .ng-categoria-heading small{font-size:10px;color:#8591a5}
+.notargest .ng-adjuntar-pdf{position:relative;display:inline-flex;align-items:center;white-space:nowrap;padding:8px 10px;background:#fff;border:1px solid #dce4f0;border-radius:8px;color:#3555a5;font-size:10px;font-weight:800;cursor:pointer}
+.notargest .ng-adjuntar-pdf input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.notargest .ng-vacio-categoria{margin:0;padding:15px;color:#8a95a7;font-size:11px;line-height:1.5}
+.notargest .ng-archivo-row{display:flex;align-items:center;gap:10px;padding:11px 13px;border-top:1px solid #f0f3f8}
+.notargest .ng-archivo-row:first-of-type{border-top:0}
+.notargest .ng-pdf-icon{display:grid;place-items:center;flex:0 0 34px;height:36px;background:#fff0f0;color:#b83b45;border-radius:8px;font-size:9px;font-weight:900}
+.notargest .ng-archivo-info{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
+.notargest .ng-archivo-info strong{overflow-wrap:anywhere;color:#35435d;font-size:11px}
+.notargest .ng-archivo-info small{color:#8995a8;font-size:10px}
+.notargest .ng-visor-documentos{display:flex;flex-direction:column;min-width:0;min-height:520px;border:1px solid #dfe6f0;border-radius:12px;overflow:hidden;background:#f8faff}
+.notargest .ng-visor-cabecera{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;background:#fff;border-bottom:1px solid #e6ebf3}
+.notargest .ng-visor-cabecera>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.notargest .ng-visor-cabecera strong{font-size:12px;color:#263852}
+.notargest .ng-visor-cabecera small{overflow-wrap:anywhere;color:#7e8ba0;font-size:10px}
+.notargest .ng-pdf-frame{display:block;flex:1;width:100%;min-height:460px;border:0;background:#fff}
+.notargest .ng-pdf-ampliado{position:fixed;z-index:9999;inset:3vh 3vw;width:94vw;height:94vh;min-height:94vh;background:#fff;box-shadow:0 0 0 100vmax rgba(15,23,42,.6);border-radius:12px}
+.notargest .ng-visor-vacio{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:30px;text-align:center;color:#8793a7}
+.notargest .ng-visor-vacio>span{font-size:35px;color:#9aa8bf}
+.notargest .ng-visor-vacio strong{font-size:13px;color:#51617b}
+.notargest .ng-visor-vacio p{max-width:300px;margin:0;font-size:11px;line-height:1.6}
+@media(max-width:1050px){.notargest .ng-datos-operacion,.notargest .ng-datos-facturacion{grid-template-columns:repeat(2,minmax(0,1fr))}.notargest .ng-carpeta-layout{grid-template-columns:1fr}.notargest .ng-visor-documentos{min-height:420px}}
+@media(max-width:650px){.notargest .ng-ficha-premium{padding:10px}.notargest .ng-ficha-premium>.ng-detalle-bloque{padding:13px}.notargest .ng-datos-operacion,.notargest .ng-datos-facturacion{grid-template-columns:1fr}.notargest .ng-firma-form{grid-template-columns:1fr}.notargest .ng-categoria-heading{align-items:flex-start;flex-direction:column}.notargest .ng-archivo-row{align-items:flex-start;flex-wrap:wrap}.notargest .ng-archivo-row .ng-boton-secundario{margin-left:44px}}
