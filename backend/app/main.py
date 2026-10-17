@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
+from backend.app.expedientes.fix_schema import fix_expedientes_schema
+
 import os
 import inspect
 
@@ -718,6 +720,8 @@ def migrar_esquema_expedientes_inicio():
 
 @app.on_event("startup")
 def inicializar_tablas_auxiliares():
+    # Añade columnas nuevas de Expediente sin borrar ni alterar datos existentes.
+    fix_expedientes_schema()
     print(
         "[INICIALIZACION] Comprobando tablas auxiliares...",
         flush=True,
