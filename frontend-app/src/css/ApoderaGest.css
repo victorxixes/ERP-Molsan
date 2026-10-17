@@ -1224,3 +1224,18 @@
 @media(max-width:1100px){.ag-aceptar-resumen{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){.ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:460px){.ag-aceptar-resumen{grid-template-columns:minmax(0,1fr)}}
+
+
+/* Encargos CTN: una sola fila compacta en escritorio */
+.ag-aceptar-resumen{grid-template-columns:minmax(105px,.75fr) minmax(125px,.95fr) minmax(125px,.95fr) minmax(125px,.95fr) minmax(125px,.95fr) minmax(95px,.7fr) auto;gap:8px;padding:8px 10px;align-items:end}
+.ag-aceptar-campo{gap:4px}
+.ag-aceptar-campo>span{font-size:9px;letter-spacing:.025em;white-space:nowrap}
+.ag-aceptar-campo input{min-height:32px;height:32px;padding:5px 7px;border-radius:7px;font-size:11px}
+.ag-aceptar-accion{min-height:32px}
+.ag-aceptar-accion button{min-height:32px;padding:6px 13px;border-radius:7px;font-size:11px;white-space:nowrap}
+.ag-aceptar-resumen .ag-detalle-campo{min-width:0;padding:4px 6px}
+.ag-aceptar-resumen .ag-detalle-campo>span{font-size:9px;white-space:nowrap}
+.ag-aceptar-resumen .ag-detalle-campo>strong{font-size:11px;overflow-wrap:anywhere}
+.ag-encargo-detalle-cabecera>span:first-child small{font-size:11px;font-weight:600;color:#52627a}
+@media(max-width:1000px){.ag-aceptar-resumen{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:650px){.ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
