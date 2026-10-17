@@ -230,9 +230,9 @@ def _aplicar_filtros_notarias(
             .join(Notaria, Notaria.id == notarios_asociados_table.c.asociado_id)
             .filter(
                 or_(
-                    _sin_acentos_sql(Notaria.nombre).ilike(func.unaccent(termino_asociado)),
-                    _sin_acentos_sql(Notaria.apellidos).ilike(func.unaccent(termino_asociado)),
-                    _sin_acentos_sql(Notaria.nif).ilike(func.unaccent(termino_asociado)),
+                    _sin_acentos_sql(Notaria.nombre).ilike(_sin_acentos_sql(termino_asociado)),
+                    _sin_acentos_sql(Notaria.apellidos).ilike(_sin_acentos_sql(termino_asociado)),
+                    _sin_acentos_sql(Notaria.nif).ilike(_sin_acentos_sql(termino_asociado)),
                 )
             )
             .distinct()
