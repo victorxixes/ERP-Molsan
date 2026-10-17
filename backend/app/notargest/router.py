@@ -28,6 +28,21 @@ router = APIRouter(prefix="/notargest", tags=["NotarGest"])
 ROOT = CARPETA_DIGITAL_DIR.resolve()
 ROOT.mkdir(parents=True, exist_ok=True)
 
+@router.on_event("startup")
+def crear_tabla_avisos_leidos_notargest():
+    """Guarda las notificaciones leídas por notario, sin alterar las observaciones originales."""
+    with engine.begin() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS notargest_avisos_leidos (
+                id SERIAL PRIMARY KEY,
+                notaria_id INTEGER NOT NULL,
+                tipo VARCHAR(20) NOT NULL,
+                aviso_id INTEGER NOT NULL,
+                leido_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT uq_notargest_aviso_leido UNIQUE (notaria_id, tipo, aviso_id)
+            )
+        """))
+
 class LoginNotario(BaseModel):
     usuario: constr(min_length=3, max_length=50)
     password: constr(min_length=1, max_length=128)
@@ -573,11 +588,19 @@ def avisos_notargest(n=Depends(get_notario), db: Session = Depends(get_db)):
         e = expediente_por_id.get(o.expediente_id)
         if e:
             comentarios.append({"id": o.id, "id_expediente": e.id_expediente, "oficina": e.oficina or e.oficina_alta, "solicitante": e.nombre_solicitante, "comentario": o.comentario, "visibilidad": o.visibilidad, "fecha": _fecha(o.fecha)})
+    leidos = db.execute(text(
+        "SELECT tipo, aviso_id FROM notargest_avisos_leidos WHERE notaria_id = :notaria_id"
+    ), {"notaria_id": n.id}).fetchall()
+    leidos_por_tipo = {tipo: set() for tipo in ("comentario", "documento")}
+    for tipo, aviso_id in leidos:
+        leidos_por_tipo.setdefault(tipo, set()).add(int(aviso_id))
+    comentarios = [item for item in comentarios if item["id"] not in leidos_por_tipo.get("comentario", set())]
+
     documentos = []
     docs = db.query(DocumentoCarpetaDigital).filter(DocumentoCarpetaDigital.expediente_id.in_(list(ids_documentales.keys()))).order_by(DocumentoCarpetaDigital.fecha_subida.desc()).limit(1000).all()
     for d in docs:
         e = ids_documentales.get(str(d.expediente_id))
-        if not e or e.fecha_firma or (e.protocolo or "").strip():
+        if not e or e.fecha_firma or (e.protocolo or "").strip() or d.id in leidos_por_tipo.get("documento", set()):
             continue
         envio = getattr(e, "fecha_envio_notario", None) or getattr(e, "fecha_envio", None)
         subida = d.fecha_subida
@@ -588,6 +611,37 @@ def avisos_notargest(n=Depends(get_notario), db: Session = Depends(get_db)):
             continue
         documentos.append({"id": d.id, "id_expediente": e.id_expediente, "oficina": e.oficina or e.oficina_alta, "solicitante": e.nombre_solicitante, "nombre": d.nombre_original, "categoria": d.categoria, "fecha_subida": _fecha(d.fecha_subida)})
     return {"comentarios": comentarios, "documentos": documentos}
+
+
+@router.post("/avisos/{tipo}/{aviso_id}/leido")
+def marcar_aviso_leido_notargest(tipo: str, aviso_id: int, n=Depends(get_notario), db: Session = Depends(get_db)):
+    """Marca como leída una notificación solo para la sesión/notaría autenticada."""
+    if tipo not in ("comentario", "documento"):
+        raise HTTPException(status_code=400, detail="Tipo de notificación no válido.")
+    expedientes = _expedientes_de_notario(n, db)
+    ids_expediente = {e.id for e in expedientes}
+    if tipo == "comentario":
+        aviso = db.query(ExpedienteObservacion).filter(
+            ExpedienteObservacion.id == aviso_id,
+            ExpedienteObservacion.expediente_id.in_(list(ids_expediente) or [-1]),
+            ExpedienteObservacion.activo.is_(True),
+            ExpedienteObservacion.visibilidad.in_(["Notario", "Visible notario", "Ambos", "Todos"]),
+        ).first()
+    else:
+        ids_documentales = {str(e.id_expediente) for e in expedientes}
+        aviso = db.query(DocumentoCarpetaDigital).filter(
+            DocumentoCarpetaDigital.id == aviso_id,
+            DocumentoCarpetaDigital.expediente_id.in_(list(ids_documentales) or ["__none__"]),
+        ).first()
+    if not aviso:
+        raise HTTPException(status_code=404, detail="La notificación no existe o no está autorizada.")
+    db.execute(text("""
+        INSERT INTO notargest_avisos_leidos (notaria_id, tipo, aviso_id)
+        VALUES (:notaria_id, :tipo, :aviso_id)
+        ON CONFLICT (notaria_id, tipo, aviso_id) DO NOTHING
+    """), {"notaria_id": n.id, "tipo": tipo, "aviso_id": aviso_id})
+    db.commit()
+    return {"ok": True, "tipo": tipo, "aviso_id": aviso_id, "leida": True}
 
 @router.get("/gestores")
 def listar_gestores_notargest(n=Depends(get_notario), db: Session = Depends(get_db)):
