@@ -1,4 +1,3 @@
-
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
@@ -27,6 +26,14 @@ const MODULOS = {
     siglas: "NG",
     categoria: "ENTORNO NOTARIAL",
     estilo: "ng",
+  },
+  encargagest: {
+    nombre: "EncargaGest",
+    descripcion: "Portal para que notarías externas envíen y consulten encargos a MOLSAN.",
+    ruta: "/encargagest",
+    siglas: "EG",
+    categoria: "PORTAL DE ENCARGOS EXTERNOS",
+    estilo: "eg",
   },
 };
 
@@ -86,7 +93,7 @@ export default function ModulosSelector() {
     let candidatos;
 
     if (rol.includes("director")) {
-      candidatos = ["apoderagest", "cancelagest", "notargest"];
+      candidatos = ["apoderagest", "cancelagest", "notargest", "encargagest"];
     } else if (rol.includes("apoderado")) {
       candidatos = ["apoderagest", "cancelagest"];
     } else {
@@ -174,7 +181,9 @@ export default function ModulosSelector() {
                       ? "bg-gradient-to-r from-blue-600 to-indigo-400"
                       : modulo.estilo === "cg"
                         ? "bg-gradient-to-r from-emerald-600 to-teal-400"
-                        : "bg-gradient-to-r from-violet-600 to-fuchsia-400"
+                        : modulo.estilo === "eg"
+                          ? "bg-gradient-to-r from-amber-500 to-yellow-300"
+                          : "bg-gradient-to-r from-violet-600 to-fuchsia-400"
                   }`}
                 />
 
@@ -185,7 +194,9 @@ export default function ModulosSelector() {
                         ? "border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-800"
                         : modulo.estilo === "cg"
                           ? "border-emerald-100 bg-gradient-to-br from-emerald-50 to-teal-100 text-emerald-800"
-                          : "border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-100 text-violet-800"
+                          : modulo.estilo === "eg"
+                            ? "border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-100 text-amber-800"
+                            : "border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-100 text-violet-800"
                     }`}
                   >
                     {modulo.siglas}
