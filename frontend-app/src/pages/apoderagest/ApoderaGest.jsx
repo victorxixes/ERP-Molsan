@@ -231,6 +231,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                         <span><strong>Expediente {texto(encargo.id_expediente || encargo.id)}</strong><small>{texto(encargo.titular)} · {texto(encargo.notario || encargo.nombre_notario)}</small></span>
                         <span>{detalleAbierto ? "Ocultar detalles ⌃" : "Ver todos los datos ⌄"}</span>
                       </button>
+                      {encargo.bloqueado && <div className="ag-alerta-bloqueo" role="alert"><strong>EXPEDIENTE BLOQUEADO EN CANCELAGEST</strong><span>{texto(encargo.motivo_bloqueo_efectivo || encargo.motivo_bloqueo || "Este expediente está bloqueado. Consulta con gestión antes de continuar.")}</span></div>}
                       <div className="ag-encargo-resumen">
                         <CampoDetalle etiqueta="Fecha prevista" valor={fechaLegible(encargo.fecha_prevista_firma)} />
                         <CampoDetalle etiqueta="Fecha de envío" valor={fechaLegible(encargo.fecha_envio_notario)} />
