@@ -26,6 +26,13 @@ const FORM_INICIAL = {
   notario: null,
   tipo_documento: "",
 
+  // Datos de operación enlazados al expediente
+  contrato: "",
+  capital: "",
+  tipo_operacion: "",
+  subtipo_operacion: "",
+  importe: "",
+
   // NUEVOS CAMPOS
   formato_escritura: "Papel",
   tipo_tramite: "Telemático",
@@ -140,6 +147,11 @@ function crearFormularioDesdeExpediente(expediente) {
         }
       : null,
     tipo_documento: obtenerValor(expediente, "tipo_documento"),
+    contrato: obtenerValor(expediente, "contrato"),
+    capital: obtenerValor(expediente, "capital"),
+    tipo_operacion: obtenerValor(expediente, "tipo_operacion"),
+    subtipo_operacion: obtenerValor(expediente, "subtipo_operacion"),
+    importe: obtenerValor(expediente, "importe"),
     formato_escritura:
       obtenerValor(expediente, "formato_escritura") || FORM_INICIAL.formato_escritura,
     tipo_tramite:
@@ -569,6 +581,11 @@ export default function EnviarANotarioModal({
       apoderado: form.notario.apoderado || "",
       tipo_firma: form.notario.tipo_firma || "",
       tipo_documento: documentosEscritura[0]?.tipo_documento || form.tipo_documento,
+      contrato: form.contrato.trim(),
+      capital: form.capital === "" ? null : Number(form.capital),
+      tipo_operacion: form.tipo_operacion.trim(),
+      subtipo_operacion: form.subtipo_operacion.trim(),
+      importe: form.importe === "" ? null : Number(form.importe),
       cuantia: documentosEscritura[0]?.cuantia ?? (cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
         ? cuantiaFincas
         : (expediente?.cuantia ?? expediente?.finca_cuantia ?? "")),
@@ -929,6 +946,14 @@ export default function EnviarANotarioModal({
                   titulo="4. Tipo de documento"
                   descripcion="Selecciona el documento, el formato de escritura y la modalidad de tramitación."
                 />
+
+                <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  <CampoTexto label="Contrato" value={form.contrato} disabled={loading} onChange={(v) => cambiarCampo("contrato", v)} placeholder="N.º de contrato" />
+                  <CampoTexto label="Capital (€)" value={form.capital} disabled={loading} type="number" onChange={(v) => cambiarCampo("capital", v)} placeholder="0,00" />
+                  <CampoTexto label="Tipo de operación" value={form.tipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("tipo_operacion", v)} placeholder="Ej. Cancelación sin provisión" />
+                  <CampoTexto label="Subtipo de operación" value={form.subtipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("subtipo_operacion", v)} placeholder="Ej. Crédito abierto" />
+                  <CampoTexto label="Importe (€)" value={form.importe} disabled={loading} type="number" onChange={(v) => cambiarCampo("importe", v)} placeholder="0,00" />
+                </div>
 
                 <div className="space-y-4">
                   {documentosEscritura.map((documento, indice) => (
