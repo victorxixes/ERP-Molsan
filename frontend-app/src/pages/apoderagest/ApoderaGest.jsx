@@ -28,6 +28,13 @@ function fechaLegible(valor) {
   });
 }
 
+function horaLegible(valor) {
+  if (!valor) return "—";
+  const textoHora = String(valor);
+  const coincidencia = textoHora.match(/(?:T|^)(\\d{2}:\\d{2})/);
+  return coincidencia ? coincidencia[1] : textoHora.slice(0, 5);
+}
+
 function texto(valor, alternativa = "—") {
   return valor === null || valor === undefined || valor === ""
     ? alternativa
@@ -240,54 +247,47 @@ function TablaEncargos({ encargos, onFirmado }) {
                       </div>
                       {detalleAbierto && (
                         <div className="ag-encargo-paneles ag-ficha-paneles">
-                          <section className="ag-encargo-subpanel">
-                            <div className="ag-ficha-bloque-heading"><span>01 · EXPEDIENTE</span><h4>Datos del expediente y documento</h4></div>
+                          <section className="ag-encargo-subpanel ag-ficha-envio">
+                            <div className="ag-ficha-bloque-heading"><span>01 · DATOS DEL ENVÍO</span><h4>Datos del envío</h4></div>
                             <div className="ag-encargo-grid">
-                              <CampoDetalle etiqueta="Titular" valor={encargo.titular} />
-                              <CampoDetalle etiqueta="NIF titular" valor={encargo.nif_titular} />
-                              <CampoDetalle etiqueta="Notario" valor={encargo.nombre_notario || encargo.notario} />
-                              <CampoDetalle etiqueta="NIF notario" valor={encargo.nif_notario} />
-                              <CampoDetalle etiqueta="Oficina" valor={encargo.oficina} />
-                              <CampoDetalle etiqueta="Tipo de documento" valor={encargo.tipo_documento} />
-                              <CampoDetalle etiqueta="Tipo de trámite" valor={encargo.tipo_tramite} />
-                              <CampoDetalle etiqueta="Formato de escritura" valor={encargo.formato_escritura} />
-                              <CampoDetalle etiqueta="Idioma" valor={encargo.idioma_documento} />
-                              <CampoDetalle etiqueta="Contrato" valor={encargo.contrato} />
-                              <CampoDetalle etiqueta="Tipo de operación" valor={encargo.tipo_operacion} />
-                              <CampoDetalle etiqueta="Capital" valor={numeroLegible(encargo.capital)} />
-                              <CampoDetalle etiqueta="Importe" valor={numeroLegible(encargo.importe)} />
-                              <CampoDetalle etiqueta="Saldo real" valor={numeroLegible(encargo.saldo_real)} />
-                              <CampoDetalle etiqueta="Saldo disponible" valor={numeroLegible(encargo.saldo_disponible)} />
-                              <CampoDetalle etiqueta="Observaciones generales" valor={encargo.observaciones} />
+                              <CampoDetalle etiqueta="Fecha de envío" valor={fechaLegible(encargo.fecha_envio_notario || encargo.fecha_envio)} />
+                              <CampoDetalle etiqueta="Idioma del documento" valor={encargo.idioma_documento || encargo.idioma} />
+                              <CampoDetalle etiqueta="Fecha solicitud PNC" valor={fechaLegible(encargo.fecha_solicitud_pnc)} />
                             </div>
-                            {encargo.documentos_escritura?.length > 0 && (
-                              <div className="ag-cuantias-documentos">
-                                <h5>Documentos de escritura y cuantías</h5>
-                                {encargo.documentos_escritura.map((documento) => (
-                                  <div key={documento.id} className="ag-cuantia-documento">
-                                    <span>{texto(documento.tipo_documento, "Documento")}</span>
-                                    <strong>{documento.cuantia == null ? "Cuantía pendiente" : numeroLegible(documento.cuantia)}</strong>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
                           </section>
-                          <section className="ag-encargo-subpanel">
-                            <div className="ag-ficha-bloque-heading"><span>02 · FACTURACIÓN</span><h4>Datos de facturación</h4></div>
+                          <section className="ag-encargo-subpanel ag-ficha-facturacion">
+                            <div className="ag-ficha-bloque-heading"><span>02 · DATOS DE FACTURACIÓN</span><h4>Datos de facturación</h4></div>
                             <div className="ag-encargo-grid">
-                              <CampoDetalle etiqueta="Nombre / razón social" valor={[facturacion.nombre, facturacion.apellidos].filter(Boolean).join(" ")} />
-                              <CampoDetalle etiqueta="DNI / NIF" valor={facturacion.dni_nif} />
+                              <CampoDetalle etiqueta="Nombre" valor={facturacion.nombre} />
+                              <CampoDetalle etiqueta="Apellidos" valor={facturacion.apellidos} />
+                              <CampoDetalle etiqueta="DNI / NIF de facturación" valor={facturacion.dni_nif} />
                               <CampoDetalle etiqueta="Dirección" valor={facturacion.direccion} />
                               <CampoDetalle etiqueta="Código postal" valor={facturacion.codigo_postal} />
                               <CampoDetalle etiqueta="Población" valor={facturacion.poblacion} />
                               <CampoDetalle etiqueta="Provincia" valor={facturacion.provincia} />
                               <CampoDetalle etiqueta="Teléfono" valor={facturacion.telefono} />
                               <CampoDetalle etiqueta="Email" valor={facturacion.email} />
-                              <CampoDetalle etiqueta="Estado de facturación" valor={facturacion.estado} />
-                              <CampoDetalle etiqueta="Fecha de facturación" valor={fechaLegible(facturacion.fecha)} />
+                              <CampoDetalle etiqueta="Número solicitud PNC" valor={encargo.numero_solicitud_pnc} />
+                              <CampoDetalle etiqueta="Apoderado" valor={encargo.apoderado} />
+                              <CampoDetalle etiqueta="Tipo de firma" valor={encargo.tipo_firma} />
+                              <CampoDetalle etiqueta="Fecha prevista de firma" valor={fechaLegible(encargo.fecha_prevista_firma)} />
+                              <CampoDetalle etiqueta="Hora prevista de firma" valor={horaLegible(encargo.hora_prevista_firma)} />
                             </div>
                           </section>
-                          <section className="ag-encargo-subpanel">
+                          <section className="ag-encargo-subpanel ag-ficha-archivo">
+                            <div className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><p>Documentación disponible para consultar desde el expediente.</p></div>
+                            {encargo.documentos?.length ? (
+                              <ul className="ag-documentos-apoderado">
+                                {encargo.documentos.map((doc) => (
+                                  <li key={doc.id}>
+                                    <span><strong>{doc.categoria}</strong><small>{doc.nombre_original} · {fechaLegible(doc.fecha_subida)}</small></span>
+                                    <button type="button" onClick={() => abrirDocumento(encargo, doc)}>Ver en visor</button>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : <p className="ag-encargo-vacio">Todavía no hay documentos disponibles en las categorías de apoderado.</p>}
+                          </section>
+                          <section className="ag-encargo-subpanel ag-ficha-registral">
                             <div className="ag-ficha-bloque-heading"><span>03 · INFORMACIÓN REGISTRAL</span><h4>Fincas y registros de la propiedad</h4></div>
                             {encargo.fincas?.length ? encargo.fincas.map((finca, i) => (
                               <div className="ag-finca-registro" key={`${id}-finca-${i}`}>
@@ -308,29 +308,8 @@ function TablaEncargos({ encargos, onFirmado }) {
                               </div>
                             )) : <p className="ag-encargo-vacio">No constan fincas registradas en el expediente.</p>}
                           </section>
-                          <section className="ag-encargo-subpanel">
-                            <div className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><p>Documentación disponible para consultar desde el expediente.</p></div>
-                            {encargo.documentos?.length ? (
-                              <ul className="ag-documentos-apoderado">
-                                {encargo.documentos.map((doc) => (
-                                  <li key={doc.id}>
-                                    <span><strong>{doc.categoria}</strong><small>{doc.nombre_original} · {fechaLegible(doc.fecha_subida)}</small></span>
-                                    <button type="button" onClick={() => abrirDocumento(encargo, doc)}>Ver en visor</button>
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : <p className="ag-encargo-vacio">Todavía no hay documentos disponibles en las categorías de apoderado.</p>}
-                          </section>
-                          <section className="ag-encargo-subpanel">
-                            <div className="ag-ficha-bloque-heading"><span>05 · COMUNICACIONES</span><h4>Observaciones visibles para el apoderado</h4></div>
-                            {encargo.observaciones_apoderado?.length ? (
-                              <ul className="ag-observaciones-apoderado">
-                                {encargo.observaciones_apoderado.map((obs) => <li key={obs.id}><p>{obs.comentario}</p><small>{obs.fecha ? new Date(obs.fecha).toLocaleString("es-ES") : "Fecha no disponible"}</small></li>)}
-                              </ul>
-                            ) : <p className="ag-encargo-vacio">No hay observaciones marcadas como «Visible apoderado».</p>}
-                          </section>
-                          <section className="ag-encargo-subpanel ag-firmar-panel">
-                            <div className="ag-ficha-bloque-heading"><span>06 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></div>
+                          <section className="ag-encargo-subpanel ag-firmar-panel ag-ficha-firma">
+                            <div className="ag-ficha-bloque-heading"><span>05 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></div>
                             <p>Al pulsar «Firmar», la fecha y el protocolo se guardan en los campos oficiales de FichaExpediente.</p>
                             <div className="ag-firmar-controles">
                               <label>Fecha de firma<input type="date" value={firma.fecha_firma ?? encargo.fecha_firma ?? ""} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
@@ -339,6 +318,14 @@ function TablaEncargos({ encargos, onFirmado }) {
                             </div>
                             {erroresFirma[id] && <p className="ag-firma-error">{erroresFirma[id]}</p>}
                             {mensajeFirma[id] && <p className="ag-firma-ok">{mensajeFirma[id]}</p>}
+                          </section>
+                          <section className="ag-encargo-subpanel ag-ficha-observaciones">
+                            <div className="ag-ficha-bloque-heading"><span>06 · COMUNICACIONES</span><h4>Observaciones visibles para el apoderado</h4></div>
+                            {encargo.observaciones_apoderado?.length ? (
+                              <ul className="ag-observaciones-apoderado">
+                                {encargo.observaciones_apoderado.map((obs) => <li key={obs.id}><p>{obs.comentario}</p><small>{obs.fecha ? new Date(obs.fecha).toLocaleString("es-ES") : "Fecha no disponible"}</small></li>)}
+                              </ul>
+                            ) : <p className="ag-encargo-vacio">No hay observaciones marcadas como «Visible apoderado».</p>}
                           </section>
                         </div>
                       )}
