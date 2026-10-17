@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../../api/axios";
+import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
+import { useAuthStore } from "../../store/authStore";
 
 const ESTADOS = [
   { valor: "", texto: "Todos los estados" },
@@ -81,6 +82,22 @@ const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2
 
 export default function EncargaGest() {
   const navigate = useNavigate();
+  const empleado = useAuthStore((state) => state.empleado);
+  const tokenERP = useAuthStore((state) => state.token);
+  const [modo, setModo] = useState(() => (
+    empleado && tokenERP ? "interno" : (localStorage.getItem("encargagest_token") ? "externo" : "login")
+  ));
+  const [sesion, setSesion] = useState(null);
+  const [loginUsuario, setLoginUsuario] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginCargando, setLoginCargando] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [modalAccesos, setModalAccesos] = useState(false);
+  const [accesos, setAccesos] = useState([]);
+  const [accesoNotariaId, setAccesoNotariaId] = useState("");
+  const [accesoPassword, setAccesoPassword] = useState("");
+  const [accesoHabilitado, setAccesoHabilitado] = useState(true);
+  const [guardandoAcceso, setGuardandoAcceso] = useState(false);
   const [resumen, setResumen] = useState({ total: 0, por_estado: {}, requieren_atencion: 0 });
   const [items, setItems] = useState([]);
   const [notarias, setNotarias] = useState([]);
@@ -124,23 +141,44 @@ export default function EncargaGest() {
     setCargando(true);
     setError("");
     try {
-      const [res, nts] = await Promise.all([
+      const [res, nts, me] = await Promise.all([
         axios.get("/encargagest/resumen"),
         axios.get("/encargagest/notarias"),
+        axios.get("/encargagest/me"),
       ]);
       setResumen(res.data || { total: 0, por_estado: {}, requieren_atencion: 0 });
       setNotarias(Array.isArray(nts.data) ? nts.data : []);
+      setSesion(me.data || null);
+      if (me.data?.modo === "externo") {
+        setForm((actual) => ({ ...actual, notaria_id: String(me.data.notaria_id || "") }));
+      }
       await cargarListado(pagina, busqueda, filtroEstado);
     } catch (e) {
       setError(e?.response?.data?.detail || "No se han podido cargar los datos de EncargaGest. Comprueba los permisos del módulo y vuelve a intentarlo.");
     } finally {
       setCargando(false);
     }
-  }, [cargarListado, pagina, busqueda, filtroEstado]);
+  }, [cargarListado, pagina, busqueda, filtroEstado, modo]);
 
   useEffect(() => {
+    if (empleado && tokenERP) {
+      configurarSesionEncargaGest("interno");
+      setModo("interno");
+      return;
+    }
+    if (localStorage.getItem("encargagest_token")) {
+      configurarSesionEncargaGest("externo");
+      setModo("externo");
+    } else {
+      setModo("login");
+    }
+  }, [empleado, tokenERP]);
+
+  useEffect(() => {
+    if (modo !== "interno" && modo !== "externo") return;
+    configurarSesionEncargaGest(modo);
     cargarTodo();
-  }, [cargarTodo]);
+  }, [modo, cargarTodo]);
 
   useEffect(() => {
     if (!seleccionadoId) {
@@ -298,6 +336,106 @@ export default function EncargaGest() {
     }
   }
 
+  async function iniciarSesion(event) {
+    event.preventDefault();
+    setLoginCargando(true);
+    setLoginError("");
+    try {
+      const respuesta = await axios.post("/encargagest/login", { usuario: loginUsuario, password: loginPassword });
+      configurarSesionEncargaGest("externo", respuesta.data.token);
+      setSesion({
+        modo: "externo",
+        notaria_id: respuesta.data.notaria?.id,
+        notaria_nombre: respuesta.data.notaria?.nombre,
+        usuario: respuesta.data.usuario,
+      });
+      setLoginPassword("");
+      setModo("externo");
+    } catch (e) {
+      setLoginError(e?.response?.data?.detail || "No se ha podido iniciar sesión. Comprueba el usuario y la contraseña.");
+    } finally {
+      setLoginCargando(false);
+    }
+  }
+
+  function salirEncargaGest() {
+    if (modo === "externo") {
+      limpiarSesionEncargaGest();
+      setSesion(null);
+      setDetalle(null);
+      setItems([]);
+      setResumen({ total: 0, por_estado: {}, requieren_atencion: 0 });
+      setModo("login");
+    } else {
+      navigate("/modulos");
+    }
+  }
+
+  async function abrirAccesos() {
+    setErrorAccion("");
+    try {
+      const respuesta = await axios.get("/encargagest/accesos");
+      const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
+      setAccesos(lista);
+      setAccesoNotariaId((actual) => actual || String(lista[0]?.notaria_id || ""));
+      setModalAccesos(true);
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se han podido consultar los accesos externos. Revisa el permiso de edición de EncargaGest.");
+    }
+  }
+
+  const accesoSeleccionado = accesos.find((item) => String(item.notaria_id) === String(accesoNotariaId));
+
+  async function guardarAcceso(event) {
+    event.preventDefault();
+    if (!accesoNotariaId) return;
+    if (!accesoSeleccionado?.tiene_acceso && accesoPassword.length < 10) {
+      setErrorAccion("La contraseña inicial debe tener al menos 10 caracteres.");
+      return;
+    }
+    setGuardandoAcceso(true);
+    setErrorAccion("");
+    try {
+      await axios.post("/encargagest/accesos", {
+        notaria_id: Number(accesoNotariaId),
+        password: accesoPassword || null,
+        habilitado: accesoHabilitado,
+      });
+      const respuesta = await axios.get("/encargagest/accesos");
+      const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
+      setAccesos(lista);
+      setAccesoPassword("");
+      setMensaje("Acceso EncargaGest actualizado. El usuario de acceso es el NIF de la notaría registrado en CTN.");
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se ha podido guardar el acceso externo.");
+    } finally {
+      setGuardandoAcceso(false);
+    }
+  }
+
+  if (modo === "login") {
+    return (
+      <div className="grid min-h-screen place-items-center bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-4 py-10">
+        <form onSubmit={iniciarSesion} className="w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-white shadow-2xl">
+          <div className="h-2 bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-500" />
+          <div className="p-7 sm:p-9">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-300 text-sm font-black text-amber-950">EG</div>
+            <p className="mt-6 text-[10px] font-extrabold tracking-[0.2em] text-amber-700">PORTAL EXTERNO · MOLSAN ERP</p>
+            <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-900">EncargaGest</h1>
+            <p className="mt-3 text-sm leading-6 text-slate-500">Acceso independiente para notarías colaboradoras. Envía encargos, aporta documentación y consulta su seguimiento.</p>
+            {loginError && <div role="alert" className="mt-5 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs leading-5 text-rose-800">{loginError}</div>}
+            <div className="mt-6 space-y-4">
+              <Campo etiqueta="Usuario · NIF de la notaría"><input required autoComplete="username" value={loginUsuario} onChange={(e) => setLoginUsuario(e.target.value)} className={inputClass} placeholder="NIF registrado en CTN" /></Campo>
+              <Campo etiqueta="Contraseña"><input required type="password" autoComplete="current-password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} className={inputClass} placeholder="Tu contraseña de EncargaGest" /></Campo>
+            </div>
+            <button type="submit" disabled={loginCargando} className="mt-6 w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-slate-700 disabled:opacity-50">{loginCargando ? "Validando acceso…" : "Entrar en EncargaGest"}</button>
+            <p className="mt-5 text-center text-[10px] leading-5 text-slate-400">¿Necesitas acceso? Solicítalo a MOLSAN. Las credenciales de EncargaGest son independientes de NotarGest.</p>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
@@ -311,9 +449,10 @@ export default function EncargaGest() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="hidden rounded-xl border border-amber-100 bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-900 md:inline-flex">Conectado al catálogo CTN</span>
-            <button type="button" onClick={() => navigate("/modulos")} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50">← Módulos</button>
+            <span className="hidden max-w-[280px] truncate rounded-xl border border-amber-100 bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-900 md:inline-flex">{modo === "externo" ? "Portal de notaría · " + (sesion?.notaria_nombre || "Sesión externa") : "Gestión interna · catálogo CTN"}</span>
+            <button type="button" onClick={salirEncargaGest} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50">{modo === "externo" ? "Cerrar sesión" : "← Módulos"}</button>
             <button type="button" onClick={cargarTodo} disabled={cargando} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-700 hover:border-amber-300 disabled:opacity-60">{cargando ? "Actualizando…" : "↻ Actualizar"}</button>
+            {modo === "interno" && <button type="button" onClick={abrirAccesos} className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs font-extrabold text-amber-900 hover:bg-amber-100">Accesos externos</button>}
             <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm hover:bg-slate-700">＋ Nuevo encargo</button>
           </div>
         </div>
@@ -377,7 +516,7 @@ export default function EncargaGest() {
                 <div className="border-b border-slate-100 p-5 sm:p-6">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0"><p className="text-[10px] font-black tracking-[0.18em] text-amber-700">{detalle.referencia || ("EG-" + detalle.id)} · FICHA DE ENCARGO</p><h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">{detalle.titular}</h2><p className="mt-1 text-sm text-slate-500">{detalle.notaria_nombre}</p></div>
-                    <div className="min-w-[190px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span><select aria-label="Cambiar estado del encargo" value={detalle.estado} onChange={(e) => cambiarEstado(e.target.value)} className={inputClass}>{ESTADOS.filter((x) => x.valor).map((x) => <option key={x.valor} value={x.valor}>{x.texto}</option>)}</select></div>
+                    <div className="min-w-[190px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span>{modo === "interno" ? <select aria-label="Cambiar estado del encargo" value={detalle.estado} onChange={(e) => cambiarEstado(e.target.value)} className={inputClass}>{ESTADOS.filter((x) => x.valor).map((x) => <option key={x.valor} value={x.valor}>{x.texto}</option>)}</select> : <div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>}</div>
                   </div>
                   <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
                     <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Tipo de encargo</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.tipo_encargo}</p></div>
@@ -397,7 +536,7 @@ export default function EncargaGest() {
                       <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Persona de contacto</dt><dd className="text-right font-semibold text-slate-800">{detalle.contacto_nombre || "—"}</dd></div>
                       <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Email / teléfono</dt><dd className="break-all text-right font-semibold text-slate-800">{[detalle.contacto_email, detalle.contacto_telefono].filter(Boolean).join(" · ") || "—"}</dd></div>
                       <div className="border-b border-slate-100 pb-3"><dt className="mb-1 text-slate-500">Observaciones de la notaría</dt><dd className="whitespace-pre-wrap leading-5 text-slate-700">{detalle.observaciones || "Sin observaciones."}</dd></div>
-                      {detalle.observaciones_internas ? <div className="rounded-xl border border-amber-100 bg-amber-50/60 p-3"><dt className="mb-1 font-bold text-amber-900">Nota interna MOLSAN</dt><dd className="whitespace-pre-wrap leading-5 text-amber-900">{detalle.observaciones_internas}</dd></div> : null}
+                      {modo === "interno" && detalle.observaciones_internas ? <div className="rounded-xl border border-amber-100 bg-amber-50/60 p-3"><dt className="mb-1 font-bold text-amber-900">Nota interna MOLSAN</dt><dd className="whitespace-pre-wrap leading-5 text-amber-900">{detalle.observaciones_internas}</dd></div> : null}
                     </dl>
                   </section>
 
@@ -411,7 +550,7 @@ export default function EncargaGest() {
                       {!detalle.documentos?.length ? <p className="rounded-xl bg-slate-50 p-4 text-xs text-slate-500">Todavía no se ha adjuntado documentación.</p> : detalle.documentos.map((doc) => (
                         <div key={doc.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-3">
                           <div className="min-w-0"><p className="break-words text-xs font-bold text-slate-800">{doc.nombre_original}</p><p className="mt-1 text-[10px] text-slate-400">{nombreArchivoTamano(doc.tamano_bytes)} · {fechaHora(doc.fecha_subida)}</p></div>
-                          <div className="flex shrink-0 gap-1"><button type="button" onClick={() => descargarDocumento(doc)} className="rounded-lg border border-slate-200 px-2 py-1.5 text-[10px] font-bold hover:bg-slate-50">Descargar</button><button type="button" onClick={() => eliminarDocumento(doc)} className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-700 hover:bg-rose-50">×</button></div>
+                          <div className="flex shrink-0 gap-1"><button type="button" onClick={() => descargarDocumento(doc)} className="rounded-lg border border-slate-200 px-2 py-1.5 text-[10px] font-bold hover:bg-slate-50">Descargar</button>{modo === "interno" && <button type="button" onClick={() => eliminarDocumento(doc)} className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-700 hover:bg-rose-50">×</button>}</div>
                         </div>
                       ))}
                     </div>
@@ -448,7 +587,7 @@ export default function EncargaGest() {
           <form onSubmit={crearEncargo} className="my-auto max-h-[95vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
             <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-100 bg-white/95 px-5 py-4 backdrop-blur sm:px-7"><div><p className="text-[9px] font-extrabold tracking-[0.18em] text-amber-700">ENCARGAGEST · NUEVA SOLICITUD</p><h2 className="mt-1 text-xl font-black text-slate-900">Registrar encargo externo</h2><p className="mt-1 text-xs text-slate-500">La notaría se selecciona desde el catálogo CTN existente.</p></div><button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50">×</button></div>
             <div className="grid grid-cols-1 gap-4 px-5 py-5 sm:grid-cols-2 sm:px-7">
-              <Campo etiqueta="Notaría CTN *" className="sm:col-span-2"><select required value={form.notaria_id} onChange={(e) => cambiarFiltro("notaria_id", e.target.value)} className={inputClass}><option value="">Selecciona una notaría…</option>{notarias.map((n) => <option key={n.id} value={n.id}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}</select>{!notarias.length && <span className="mt-1 block text-[10px] text-rose-600">No hay notarías CTN disponibles o no se han podido cargar.</span>}</Campo>
+              {modo === "interno" ? <Campo etiqueta="Notaría CTN *" className="sm:col-span-2"><select required value={form.notaria_id} onChange={(e) => cambiarFiltro("notaria_id", e.target.value)} className={inputClass}><option value="">Selecciona una notaría…</option>{notarias.map((n) => <option key={n.id} value={n.id}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}</select>{!notarias.length && <span className="mt-1 block text-[10px] text-rose-600">No hay notarías CTN disponibles o no se han podido cargar.</span>}</Campo> : <div className="sm:col-span-2 rounded-xl border border-amber-100 bg-amber-50/70 p-3 text-xs text-amber-900">El encargo se registrará a nombre de <strong>{sesion?.notaria_nombre || "tu notaría"}</strong>, vinculada a CTN.</div>}
               <Campo etiqueta="Tipo de encargo *"><select required value={form.tipo_encargo} onChange={(e) => cambiarFiltro("tipo_encargo", e.target.value)} className={inputClass}><option>Cancelación hipotecaria</option><option>Solicitud de documentación</option><option>Gestión registral</option><option>Subsanación de incidencia</option><option>Otro encargo</option></select></Campo>
               <Campo etiqueta="Prioridad"><select value={form.prioridad} onChange={(e) => cambiarFiltro("prioridad", e.target.value)} className={inputClass}><option>Normal</option><option>Alta</option><option>Urgente</option><option>Baja</option></select></Campo>
               <Campo etiqueta="Nombre del titular *"><input required minLength={2} maxLength={300} value={form.titular} onChange={(e) => cambiarFiltro("titular", e.target.value)} placeholder="Nombre y apellidos / razón social" className={inputClass} /></Campo>
@@ -464,6 +603,25 @@ export default function EncargaGest() {
             </div>
             {errorAccion && <p className="mx-5 mb-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800 sm:mx-7">{errorAccion}</p>}
             <div className="sticky bottom-0 flex flex-wrap justify-end gap-2 border-t border-slate-100 bg-white/95 px-5 py-4 backdrop-blur sm:px-7"><button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardando || !notarias.length} className="rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-extrabold text-amber-950 disabled:opacity-50">{guardando ? "Guardando encargo…" : "Guardar encargo"}</button></div>
+          </form>
+        </div>
+      )}
+
+      {modalAccesos && (
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-950/50 p-3 backdrop-blur-sm sm:p-6">
+          <form onSubmit={guardarAcceso} className="my-auto w-full max-w-2xl overflow-hidden rounded-3xl border border-white/70 bg-white shadow-2xl">
+            <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4 sm:px-7">
+              <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-amber-700">ENCARGAGEST · CONTROL DE ACCESO</p><h2 className="mt-1 text-xl font-black text-slate-900">Accesos de notarías externas</h2><p className="mt-1 text-xs leading-5 text-slate-500">Las cuentas son independientes de NotarGest. El usuario de entrada se obtiene del NIF de CTN.</p></div>
+              <button type="button" onClick={() => setModalAccesos(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500">×</button>
+            </div>
+            <div className="space-y-4 p-5 sm:p-7">
+              <Campo etiqueta="Notaría del catálogo CTN *"><select required value={accesoNotariaId} onChange={(e) => { setAccesoNotariaId(e.target.value); setAccesoPassword(""); const seleccionado = accesos.find((x) => String(x.notaria_id) === e.target.value); setAccesoHabilitado(seleccionado?.habilitado ?? true); }} className={inputClass}><option value="">Selecciona una notaría…</option>{accesos.map((x) => <option key={x.notaria_id} value={x.notaria_id}>{x.nombre}{x.nif ? " · " + x.nif : ""}{x.tiene_acceso ? (x.habilitado ? " · acceso activo" : " · acceso deshabilitado") : " · sin acceso"}</option>)}</select></Campo>
+              {accesoSeleccionado && <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs"><p className="text-slate-500">Usuario de acceso</p><p className="mt-1 font-black tracking-wide text-slate-900">{accesoSeleccionado.usuario || "Completa el NIF de CTN"}</p><p className="mt-1 leading-5 text-slate-500">No se muestra ni se almacena la contraseña en texto plano. Si ya existe la cuenta, déjala vacía para conservarla.</p></div>}
+              <Campo etiqueta={accesoSeleccionado?.tiene_acceso ? "Nueva contraseña (opcional)" : "Contraseña inicial *"}><input type="password" autoComplete="new-password" minLength={10} required={!accesoSeleccionado?.tiene_acceso} value={accesoPassword} onChange={(e) => setAccesoPassword(e.target.value)} className={inputClass} placeholder="Mínimo 10 caracteres" /></Campo>
+              <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-3 text-xs text-slate-700"><input type="checkbox" checked={accesoHabilitado} onChange={(e) => setAccesoHabilitado(e.target.checked)} />Permitir acceso al portal EncargaGest</label>
+              <p className="rounded-xl border border-blue-100 bg-blue-50/70 p-3 text-xs leading-5 text-blue-900">Las notarías solo verán encargos asociados a su propio registro CTN. La información interna y los estados de gestión quedan reservados a MOLSAN.</p>
+            </div>
+            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 px-5 py-4 sm:px-7"><button type="button" onClick={() => setModalAccesos(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cerrar</button><button type="submit" disabled={guardandoAcceso || !accesoNotariaId} className="rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-extrabold text-amber-950 disabled:opacity-50">{guardandoAcceso ? "Guardando acceso…" : "Guardar acceso"}</button></div>
           </form>
         </div>
       )}
