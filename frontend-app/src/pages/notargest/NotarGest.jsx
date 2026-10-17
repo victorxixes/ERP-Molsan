@@ -341,18 +341,6 @@ export default function NotarGest() {
           </div>
         </section>
       </div>
-    </section>}et.value)} required>
-              <option value="">Selecciona un gestor…</option>
-              {gestores.map(g => <option key={g.id} value={g.id}>{g.nombre}</option>)}
-            </select></label>
-            <button className="ng-login-submit" type="button" disabled={cargando || !comentarioGestor.trim() || !gestorDestinatario} onClick={guardarComentarioGestor}>Enviar comentario al gestor</button>
-          </div>
-          <div className="ng-comentarios-historico"><h4>Histórico de observaciones</h4>
-            {detalle.observaciones_notaria?.length ? detalle.observaciones_notaria.map(o => <article className="ng-observacion" key={o.id}><p>{o.comentario}</p><small>{o.visibilidad === "Gestor" ? `Dirigido a: ${o.empleado_destinatario || "Gestor"}` : o.visibilidad} · {texto(o.fecha)}</small></article>) : <p className="ng-mensaje">No hay comentarios registrados para mostrar.</p>}
-            {detalle.observaciones && <article className="ng-observacion"><p>{detalle.observaciones}</p><small>Observaciones generales del expediente</small></article>}
-          </div>
-        </section>
-      </div>
     </section>}
     <footer className="ng-pie">MOLSAN ERP · NotarGest</footer>
   </main>;
