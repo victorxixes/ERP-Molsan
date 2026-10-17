@@ -82,6 +82,14 @@ export default function Agenda({ soloApoderado = false } = {}) {
     cargarMes(year, month);
   }, [year, month, cargarMes]);
 
+  // ApoderaGest puede confirmar una firma real fuera del modal de Agenda.
+  // Recargar el mes visible para actualizar el indicador pendiente/realizada.
+  useEffect(() => {
+    const refrescarTrasFirma = () => cargarMes(year, month);
+    window.addEventListener("apoderagest:firma-registrada", refrescarTrasFirma);
+    return () => window.removeEventListener("apoderagest:firma-registrada", refrescarTrasFirma);
+  }, [year, month, cargarMes]);
+
   // ============================================================
   // CREAR CITA
   // ============================================================
