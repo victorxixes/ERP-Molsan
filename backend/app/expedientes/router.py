@@ -820,6 +820,89 @@ def aplicar_filtros(
 
 
 # ============================================================
+# CONTROLES DE GESTIÓN — ALERTAS DEL LISTADO
+# ============================================================
+
+ALERTAS_CONTROL_EXPEDIENTES = [
+    {"key": "defectos_vencidos", "label": "Defectos registrales vencidos", "descripcion": "Presentación vencida y pendiente de subsanar", "icono": "⚠️"},
+    {"key": "sede_notarial", "label": "Sede notarial +10 días", "descripcion": "Enviado hace más de 10 días sin firma registrada", "icono": "🖋️"},
+    {"key": "liquidacion_pendiente", "label": "Liquidación de impuestos", "descripcion": "Pendiente de fecha de presentación tributaria", "icono": "🧾"},
+    {"key": "facturacion_cierre", "label": "Facturación y cierre", "descripcion": "Inscrito y listo para cerrar", "icono": "💶"},
+    {"key": "inscripcion_30_dias", "label": "Tramitación inscripción +30 días", "descripcion": "Más de 30 días desde la presentación", "icono": "📑"},
+]
+
+
+def aplicar_filtro_alerta_control(q, clave_alerta: Optional[str], db: Session):
+    if not clave_alerta:
+        return q
+
+    hoy = date.today()
+    if clave_alerta == "defectos_vencidos":
+        expedientes_con_defecto_vencido = (
+            db.query(ExpedienteDefecto.expediente_id)
+            .filter(
+                ExpedienteDefecto.fecha_vencimiento_presentacion.isnot(None),
+                ExpedienteDefecto.fecha_vencimiento_presentacion < hoy,
+                ExpedienteDefecto.fecha_entrada_subsanacion.is_(None),
+                ExpedienteDefecto.fecha_cierre_defecto.is_(None),
+                or_(
+                    ExpedienteDefecto.tiene_defectos_abiertos.is_(None),
+                    func.upper(func.trim(ExpedienteDefecto.tiene_defectos_abiertos)).notin_(
+                        ["NO", "N", "FALSE", "CERRADO", "CERRADA", "0"]
+                    ),
+                ),
+            )
+        )
+        return q.filter(Expediente.id.in_(expedientes_con_defecto_vencido))
+
+    if clave_alerta == "sede_notarial":
+        return q.filter(
+            condicion_actividad("sede-notarial"),
+            Expediente.fecha_envio.isnot(None),
+            Expediente.fecha_envio < hoy - timedelta(days=10),
+        )
+
+    if clave_alerta == "liquidacion_pendiente":
+        return q.filter(
+            condicion_actividad("liquidacion-impuestos"),
+            Expediente.fecha_presentacion_tributaria.is_(None),
+        )
+
+    if clave_alerta == "facturacion_cierre":
+        return q.filter(
+            condicion_actividad("facturacion-cierre"),
+            Expediente.fecha_inscripcion.isnot(None),
+        )
+
+    if clave_alerta == "inscripcion_30_dias":
+        return q.filter(
+            condicion_actividad("tramitacion-inscripcion"),
+            Expediente.fecha_presentacion.isnot(None),
+            Expediente.fecha_presentacion < hoy - timedelta(days=30),
+        )
+
+    raise HTTPException(status_code=400, detail=f"Alerta de control no válida: {clave_alerta}")
+
+
+@router.get("/control-alertas")
+def obtener_alertas_control_expedientes(db: Session = Depends(get_db)):
+    """Devuelve recuentos globales, calculados sobre todos los expedientes."""
+    resultado = []
+    for alerta in ALERTAS_CONTROL_EXPEDIENTES:
+        total = (
+            aplicar_filtro_alerta_control(
+                db.query(func.count(Expediente.id)),
+                alerta["key"],
+                db,
+            ).scalar()
+            or 0
+        )
+        resultado.append({**alerta, "total": int(total)})
+
+    return {"fecha_calculo": date.today().isoformat(), "alertas": resultado}
+
+
+# ============================================================
 # LISTADO DE EXPEDIENTES
 # ============================================================
 
@@ -851,6 +934,7 @@ def listado_expedientes(
     estadoExpediente: Optional[str] = None,
     actividadActual: Optional[str] = Query(None, description="Filtra por el valor almacenado en actividad_actual"),
     ordenMultiple: Optional[str] = Query(None),
+    alerta: Optional[str] = Query(None, description="Filtra por una alerta de control"),
     db: Session = Depends(get_db),
 ):
     q = aplicar_filtros(
@@ -879,6 +963,7 @@ def listado_expedientes(
         estadoExpediente=estadoExpediente,
         actividadActual=actividadActual,
     )
+    q = aplicar_filtro_alerta_control(q, alerta, db)
 
     orden_aplicado = False
 
