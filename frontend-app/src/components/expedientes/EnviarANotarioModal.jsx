@@ -1327,6 +1327,11 @@ export default function EnviarANotarioModal({
               />
 
               <Resumen
+                label="Notario otorgante (firma real)"
+                valor={obtenerValor(expediente, "notario_otorgante") || "Pendiente de confirmar firma"}
+              />
+
+              <Resumen
                 label="Tipo de documento"
                 valor={form.tipo_documento}
               />
