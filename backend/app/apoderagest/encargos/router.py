@@ -72,6 +72,9 @@ def firmar_encargo(
     protocolo = datos.protocolo.strip()
     if not protocolo:
         raise HTTPException(status_code=422, detail="Indica el número de protocolo.")
+    notario_otorgante = datos.notario_otorgante.strip()
+    if not notario_otorgante:
+        raise HTTPException(status_code=422, detail="Indica el notario otorgante.")
 
     if datos.fecha_firma > datetime.now(ZoneInfo("Europe/Madrid")).date():
         raise HTTPException(status_code=422, detail="La fecha real de firma no puede ser futura.")
@@ -99,7 +102,7 @@ def firmar_encargo(
     try:
         expediente.fecha_firma = datos.fecha_firma
         expediente.protocolo = protocolo
-        expediente.notario_otorgante = datos.notario_otorgante.strip()
+        expediente.notario_otorgante = notario_otorgante
 
         # La firma real también se refleja en la cita de agenda. Se conserva
         # la fecha prevista de la cita y se marca como realizada en observaciones;
