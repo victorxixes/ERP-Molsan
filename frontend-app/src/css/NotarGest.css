@@ -442,3 +442,29 @@
   }
   .ng-modal-overlay:has(.ng-modal-pagos-amplio){padding:3vh 8px!important}
 }
+
+
+/* NotarGest · acordeones de ficha con el control visual de FichaExpediente (PPAD / Fincas). */
+.notargest .ng-acordeon-ficha{padding:0;overflow:hidden}
+.notargest .ng-acordeon-ficha>.ng-bloque-heading{display:flex;align-items:center;gap:12px;list-style:none;padding:15px 18px;margin:0;border-bottom:1px solid transparent;cursor:pointer;user-select:none}
+.notargest .ng-acordeon-ficha>.ng-bloque-heading::-webkit-details-marker{display:none}
+.notargest .ng-acordeon-ficha[open]>.ng-bloque-heading{border-bottom-color:#e9eef5;margin-bottom:14px}
+.notargest .ng-acordeon-ficha>.ng-bloque-heading>div{min-width:0;flex:1}
+.notargest .ng-acordeon-ficha>.ng-bloque-heading h3{margin:3px 0 0}
+.notargest .ng-acordeon-ficha>.ng-bloque-heading .ng-descripcion{margin:5px 0 0}
+.notargest .ng-acordeon-ficha>.ng-bloque-heading .ng-acordeon-flecha{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border:1px solid #dce5f0;border-radius:9px;background:#f8faff;color:#475569;font-size:20px;font-weight:800;line-height:1;transition:transform .18s ease,background .18s ease}
+.notargest .ng-acordeon-ficha[open]>.ng-bloque-heading .ng-acordeon-flecha{transform:rotate(180deg);background:#eef2ff;color:#4f46e5;border-color:#c7d2fe}
+.notargest .ng-acordeon-ficha>.ng-bloque-heading:hover .ng-acordeon-flecha{border-color:#a5b4fc}
+.notargest .ng-datos-superiores>.ng-acordeon-ficha{min-width:0}
+.notargest .ng-datos-superiores>.ng-acordeon-ficha>.ng-datos-grid{padding:0 16px 16px}
+.notargest .ng-acordeon-ficha>.ng-carpeta-layout,
+.notargest .ng-acordeon-ficha>.ng-datos-grid,
+.notargest .ng-acordeon-ficha>.ng-tabla-contenedor,
+.notargest .ng-acordeon-ficha>.ng-subtitulo-detalle,
+.notargest .ng-acordeon-ficha>.ng-fincas-lista,
+.notargest .ng-acordeon-ficha>p,
+.notargest .ng-acordeon-ficha>.ng-comentario-form,
+.notargest .ng-acordeon-ficha>.ng-comentarios-historico{margin-left:16px;margin-right:16px}
+.notargest .ng-acordeon-ficha>.ng-carpeta-layout{margin-bottom:16px}
+.notargest .ng-acordeon-ficha>.ng-subtitulo-detalle{margin-top:16px}
+@media(prefers-reduced-motion:reduce){.notargest .ng-acordeon-ficha>.ng-bloque-heading .ng-acordeon-flecha{transition:none}}
