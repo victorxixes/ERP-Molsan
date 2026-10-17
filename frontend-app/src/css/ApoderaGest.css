@@ -1150,3 +1150,6 @@
 .ag-panel-proximas .ag-cita-datos .ag-cita-horario b{color:#6e8c82}
 .ag-panel-proximas .ag-cita-flecha{align-self:center;color:#9aabc3;font-size:22px}
 @media(max-width:680px){.ag-panel-proximas .ag-cita-item{grid-template-columns:52px minmax(0,1fr);gap:10px;padding:11px}.ag-panel-proximas .ag-cita-flecha{display:none}.ag-panel-proximas .ag-cita-datos{grid-template-columns:1fr}.ag-panel-proximas .ag-cita-fecha{min-height:50px}.ag-panel-proximas .ag-cita-fecha strong{font-size:17px}}
+
+.ag-alerta-bloqueo{display:flex;flex-direction:column;gap:5px;margin:0 14px 12px;padding:12px 14px;border:1px solid #f2c6c6;border-left:4px solid #b4232b;border-radius:10px;background:#fff3f3;color:#9f2028;font-size:12px}.ag-alerta-bloqueo strong{font-size:11px;letter-spacing:.04em}.ag-alerta-bloqueo span{color:#7f2730;line-height:1.5}
+.notargest .ng-tabla{min-width:1450px}.notargest .ng-bloqueo-expediente{margin:0 18px 14px}
