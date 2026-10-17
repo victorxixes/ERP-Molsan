@@ -639,6 +639,42 @@
 }
 
 /* =========================================================
+   MAPA DE UBICACIÓN DE LA NOTARÍA
+   ========================================================= */
+
+.ctn-modal-mapa-marco {
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  background: #edf2f8;
+  border: 1px solid #d9e3f0;
+  border-radius: 9px;
+}
+
+.ctn-modal-mapa-marco iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.ctn-modal-mapa-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.ctn-modal-mapa-pie p {
+  margin: 0;
+  color: #71839e;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* =========================================================
    INDICADORES DE FIRMAS
    ========================================================= */
 
@@ -922,6 +958,15 @@
 
   .ctn-modal-datos-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ctn-modal-mapa-marco {
+    height: 250px;
+  }
+
+  .ctn-modal-mapa-pie {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .ctn-modal-resumen-firmas {
