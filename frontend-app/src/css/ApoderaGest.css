@@ -1420,3 +1420,34 @@
 @media (max-width: 760px) {
   .apoderagest .ag-hero { gap: 14px; }
 }
+
+
+/* Dashboard ApoderaGest: citas en fila compacta y estadística mensual al lado */
+.ag-dashboard-inferior-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-items:stretch;gap:16px;margin-top:16px}
+.ag-dashboard-inferior-grid>.ag-panel{min-width:0;margin:0}
+.ag-panel-proximas,.ag-panel-estadistica-firma{padding:15px 16px}
+.ag-panel-proximas .ag-panel-cabecera,.ag-panel-estadistica-firma .ag-panel-cabecera{margin-bottom:10px}
+.ag-cita-item-compacta{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--erp-border)}
+.ag-cita-item-compacta:last-child{border-bottom:0}
+.ag-cita-item-compacta .ag-cita-fecha{flex:0 0 42px;width:42px;min-width:42px}
+.ag-cita-item-compacta .ag-cita-info{flex:1;min-width:0}
+.ag-cita-item-compacta .ag-cita-titulo-fila{display:flex;align-items:center;flex-wrap:wrap;gap:5px 8px}
+.ag-cita-item-compacta .ag-cita-titulo-fila>strong{font-size:12px}
+.ag-cita-item-compacta .ag-cita-modalidad{font-size:10px}
+.ag-cita-item-compacta .ag-firma-indicador{margin:0;font-size:9px}
+.ag-cita-item-compacta .ag-cita-datos{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px;margin-top:5px;font-size:10px}
+.ag-cita-item-compacta .ag-cita-datos>span{display:inline-flex;align-items:baseline;gap:4px;min-width:0}
+.ag-cita-item-compacta .ag-cita-datos b{color:var(--erp-text-soft);font-size:9px;font-weight:800}
+.ag-estadistica-anio{padding:4px 8px;border:1px solid var(--erp-border);border-radius:8px;color:var(--erp-text-soft);font-size:11px;font-weight:800}
+.ag-estadistica-resumen{display:flex;align-items:baseline;gap:8px;margin:0 0 12px}
+.ag-estadistica-resumen strong{color:var(--erp-primary);font-size:25px;font-weight:850;line-height:1}
+.ag-estadistica-resumen span{color:var(--erp-text-soft);font-size:10px}
+.ag-grafico-firmas{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));align-items:end;gap:5px;min-height:142px;padding-top:7px}
+.ag-grafico-mes{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;min-width:0;height:136px}
+.ag-grafico-valor{color:var(--erp-text-soft);font-size:9px;font-weight:750;line-height:1.2}
+.ag-grafico-columna{display:flex;align-items:flex-end;justify-content:center;width:100%;height:92px;border-radius:5px 5px 2px 2px;background:var(--erp-primary-soft);overflow:hidden}
+.ag-grafico-columna>span{display:block;width:100%;min-height:2px;border-radius:5px 5px 0 0;background:var(--erp-primary);transition:height .2s ease}
+.ag-grafico-etiqueta{color:var(--erp-text-soft);font-size:9px;font-weight:750}
+.ag-estadistica-nota{margin:10px 0 0;color:var(--erp-text-soft);font-size:10px;line-height:1.45}
+@media(max-width:1050px){.ag-dashboard-inferior-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:560px){.ag-panel-proximas,.ag-panel-estadistica-firma{padding:12px}.ag-cita-item-compacta{align-items:flex-start;gap:8px}.ag-cita-item-compacta .ag-cita-fecha{flex-basis:36px;width:36px;min-width:36px}.ag-cita-item-compacta .ag-cita-datos{gap:4px 9px}.ag-grafico-firmas{gap:3px}.ag-grafico-etiqueta{font-size:8px}}
