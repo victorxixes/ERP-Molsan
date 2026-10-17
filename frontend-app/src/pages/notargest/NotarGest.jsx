@@ -324,8 +324,7 @@ export default function NotarGest() {
           <section className="ng-detalle-bloque ng-tipo-documento-bloque">
             <div className="ng-bloque-heading"><div><span className="ng-kicker">04 · DOCUMENTO</span><h3>Tipo de documento</h3><p className="ng-descripcion">Datos del documento remitidos desde el modal Enviar a notario.</p></div></div>
             <div className="ng-datos-grid">{[
-             ["Formato de escritura", detalle.formato_escritura],
-              ["Tipo de trámite", detalle.tipo_tramite]
+             ["Formato de escritura", detalle.formato_escritura], ["Tipo de trámite", detalle.tipo_tramite]
             ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
             <h4 className="ng-subtitulo-detalle">Documentos y cuantías</h4>
             {detalle.documentos_escritura?.length ? <div className="ng-tabla-contenedor"><table className="ng-tabla"><thead><tr><th>Tipo de documento</th><th>Cuantía</th></tr></thead><tbody>{detalle.documentos_escritura.map((d,i) => <tr key={d.id || i}><td>{texto(d.tipo_documento)}</td><td>{euros(d.cuantia)}</td></tr>)}</tbody></table></div> : <div className="ng-datos-grid"><div className="ng-dato"><small>Tipo de documento</small><strong>{texto(detalle.tipo_documento)}</strong></div><div className="ng-dato"><small>Cuantía</small><strong>{euros(detalle.cuantia)}</strong></div></div>}
