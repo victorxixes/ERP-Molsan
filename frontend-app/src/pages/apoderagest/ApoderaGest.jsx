@@ -628,7 +628,21 @@ export default function ApoderaGest() {
       ]);
 
       setDashboard(resDashboard.data || {});
-      setAgenda(Array.isArray(resAgenda.data) ? resAgenda.data : []);
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const citasFuturas = (Array.isArray(resAgenda.data) ? resAgenda.data : [])
+        .filter((cita) => {
+          if (!cita?.fecha) return false;
+          const fecha = new Date(`${String(cita.fecha).slice(0, 10)}T00:00:00`);
+          return !Number.isNaN(fecha.getTime()) && fecha >= hoy;
+        })
+        .sort((a, b) => {
+          const fechaA = String(a.fecha || "").slice(0, 10);
+          const fechaB = String(b.fecha || "").slice(0, 10);
+          return fechaA.localeCompare(fechaB) ||
+            String(a.hora_inicio || "").localeCompare(String(b.hora_inicio || ""));
+        });
+      setAgenda(citasFuturas);
       setEncargos(Array.isArray(resEncargos.data) ? resEncargos.data : []);
       setUltimaActualizacion(new Date());
     } catch (err) {
@@ -683,12 +697,13 @@ export default function ApoderaGest() {
       setNotarias(listado);
       setNotariasCargadas(true);
 
-      setNotariaSeleccionada((actual) => {
-        if (actual && listado.some((item) => String(item.id) === actual)) {
-          return actual;
-        }
-        return listado.length ? String(listado[0].id) : "";
-      });
+      // No abrir automáticamente la ficha del primer notario al entrar en CTN.
+      // Conservamos una selección previa válida; si no existe, el usuario elige.
+      setNotariaSeleccionada((actual) =>
+        actual && listado.some((item) => String(item.id) === actual)
+          ? actual
+          : ""
+      );
 
     } catch (err) {
       console.error("Error cargando notarías CTN:", err);
