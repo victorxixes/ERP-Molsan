@@ -360,6 +360,36 @@ export default function Fusiones() {
   const [cargandoSolicitudes, setCargandoSolicitudes] = useState(true);
   const [errorSolicitudes, setErrorSolicitudes] = useState("");
 
+  const fusionesFiltradas = useMemo(() => {
+    const texto = String(busqueda || "").trim().toLowerCase();
+    const normalizarEstado = (valor) => {
+      const e = String(valor || "Pendiente").trim().toLowerCase();
+      if (["pendiente", "nueva", "nuevo"].includes(e)) return "Pendiente";
+      if (["en curso", "en_curso", "presentada", "en tramitación", "en tramitacion"].includes(e)) return "En curso";
+      if (["aceptada", "completada", "completado"].includes(e)) return "Aceptada";
+      if (["desestimada", "incidencia", "rechazada"].includes(e)) return "Desestimada";
+      if (["facturada", "facturadas"].includes(e)) return "Facturadas";
+      return valor || "Pendiente";
+    };
+
+    return fusiones.filter((fusion) => {
+      const coincideTexto = !texto || [
+        fusion.id,
+        fusion.expedienteOrigen,
+        fusion.expedienteDestino,
+        fusion.registro,
+        fusion.numeroEntrada,
+        fusion.tipoFactura,
+        fusion.estado,
+      ].some((valor) => String(valor ?? "").toLowerCase().includes(texto));
+      const coincideEstado = estado === "Todos" ||
+        (estado === "Facturadas"
+          ? /factura/i.test(String(fusion.tipoFactura || "")) || normalizarEstado(fusion.estado) === "Facturadas"
+          : normalizarEstado(fusion.estado) === estado);
+      return coincideTexto && coincideEstado;
+    });
+  }, [fusiones, busqueda, estado]);
+
   useEffect(() => {
     let activo = true;
     const cargarSolicitudes = async () => {
