@@ -212,7 +212,7 @@ export default function NotarGest() {
   const cuenta = (id) => expedientes.filter(x => x[bandejas.find(b => b.id === id)?.campo]).length;
   const avisosPendientes = { comentarios: avisos.comentarios.filter(x => !avisosLeidos.includes(`comentario:${x.id}`)), documentos: avisos.documentos.filter(x => !avisosLeidos.includes(`documento:${x.id}`)) };
   const totalAvisosPendientes = avisosPendientes.comentarios.length + avisosPendientes.documentos.length;
-  function marcarAvisoLeido(tipo, id) { const clave = `${tipo}:${id}`; setAvisosLeidos(actual => { const siguiente = actual.includes(clave) ? actual : [...actual, clave]; try { localStorage.setItem("notargest_avisos_leidos", JSON.stringify(siguiente)); } catch {} return siguiente; }); }
+  async function marcarAvisoLeido(tipo, id) { const clave = `${tipo}:${id}`; try { await peticion(`/notargest/avisos/${tipo}/${encodeURIComponent(id)}/leido`, { method: "POST" }); setAvisosLeidos(actual => { const siguiente = actual.includes(clave) ? actual : [...actual, clave]; try { localStorage.setItem("notargest_avisos_leidos", JSON.stringify(siguiente)); } catch {} return siguiente; }); setError(""); } catch (e) { setError(e.message || "No se pudo marcar la notificación como leída."); } }
   function abrirAvisoExpediente(item) { setNotificacionesAbiertas(false); abrirExpediente({ id_expediente: item.id_expediente, numero_expediente: item.id_expediente }); }
   const filas = useMemo(() => {
     const filtradas = expedientes.filter(x => {
