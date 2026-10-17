@@ -289,7 +289,8 @@ function TablaEncargos({ encargos, onFirmado }) {
         protocolo: String(valores.protocolo).trim(),
         notario_otorgante: String(valores.notario_otorgante || encargo.nombre_notario || encargo.notario || "").trim(),
       });
-      setMensajeFirma((actual) => ({ ...actual, [id]: "Firma registrada en la ficha del expediente." }));
+      setMensajeFirma((actual) => ({ ...actual, [id]: "Firma real registrada. La cita de Agenda queda marcada como realizada." }));
+      window.dispatchEvent(new Event("apoderagest:firma-registrada"));
       onFirmado?.();
     } catch (error) {
       setErroresFirma((actual) => ({
@@ -791,6 +792,11 @@ export default function ApoderaGest() {
                     <div className="ag-cita-titulo-fila">
                       <strong>{texto(cita.tipo_cita, "Cita")}</strong>
                       {cita.tipo_firma ? <span className="ag-cita-modalidad">{texto(cita.tipo_firma)}</span> : null}
+                      {cita.tipo_cita === "Firma notarial" ? (
+                        <span className={`ag-firma-indicador ${String(cita.observaciones || "").toUpperCase().includes("FIRMA REALIZADA") ? "realizada" : ""}`}>
+                          {String(cita.observaciones || "").toUpperCase().includes("FIRMA REALIZADA") ? "✓ Firma realizada" : "◷ Pendiente de firma"}
+                        </span>
+                      ) : null}
                     </div>
                     <div className="ag-cita-datos">
                       <span className="ag-cita-horario"><b>Horario</b>{texto(cita.hora_inicio, "—").slice(0, 5)} – {texto(cita.hora_fin, "—").slice(0, 5)}</span>
