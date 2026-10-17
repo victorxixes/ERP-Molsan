@@ -121,6 +121,18 @@ def firmar_encargo(
             f"| Protocolo: {protocolo}"
         )
         if cita is None:
+            apoderado_nombre = str(getattr(expediente, "apoderado", "") or "").strip()
+            apoderado_id = getattr(notario, "apoderado_id", None)
+            if apoderado_id is None and apoderado_nombre:
+                nombre_apoderado_normalizado = _normalizar_nombre(apoderado_nombre)
+                for empleado in db.query(Empleado).all():
+                    nombre_empleado = _normalizar_nombre(" ".join(filter(None, [
+                        getattr(empleado, "nombre", None),
+                        getattr(empleado, "apellidos", None),
+                    ])))
+                    if nombre_empleado == nombre_apoderado_normalizado:
+                        apoderado_id = empleado.id
+                        break
             cita = Cita(
                 expediente_id=expediente.id,
                 fecha=datos.fecha_firma,
@@ -129,8 +141,8 @@ def firmar_encargo(
                 tipo_cita="Firma notarial",
                 notario_id=getattr(notario, "id", None),
                 tipo_firma=getattr(expediente, "tipo_firma", None) or getattr(notario, "vc", None),
-                apoderado=str(getattr(expediente, "apoderado", "") or "").strip() or None,
-                apoderado_id=getattr(notario, "apoderado_id", None),
+                apoderado=apoderado_nombre or None,
+                apoderado_id=apoderado_id,
                 observaciones=marca_realizada,
             )
             db.add(cita)
