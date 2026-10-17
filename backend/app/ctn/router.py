@@ -132,6 +132,15 @@ def _es_filtro_vc_negativo(valor: str) -> bool:
     return compacto in {"no", "n", "false", "0", "presencial"}
 
 
+def _sin_acentos_sql(expresion):
+    """Normaliza texto en PostgreSQL sin depender de la extensión unaccent."""
+    return func.translate(
+        func.lower(func.coalesce(expresion, "")),
+        "áàäâãéèëêíìïîóòöôõúùüûñç",
+        "aaaaaeeeeiiiiooooouuuunc",
+    )
+
+
 def _aplicar_filtros_notarias(
     db: Session,
     provincia=None,
@@ -145,15 +154,15 @@ def _aplicar_filtros_notarias(
 
     if provincia and provincia.strip():
         query = query.filter(
-            func.unaccent(func.coalesce(Notaria.provincia, "")).ilike(
-                func.unaccent(f"%{provincia.strip()}%")
+            _sin_acentos_sql(Notaria.provincia).ilike(
+                _sin_acentos_sql(f"%{provincia.strip()}%")
             )
         )
 
     if municipio and municipio.strip():
         query = query.filter(
-            func.unaccent(func.coalesce(Notaria.municipio, "")).ilike(
-                func.unaccent(f"%{municipio.strip()}%")
+            _sin_acentos_sql(Notaria.municipio).ilike(
+                _sin_acentos_sql(f"%{municipio.strip()}%")
             )
         )
 
@@ -172,8 +181,8 @@ def _aplicar_filtros_notarias(
     if apoderado and apoderado.strip():
         termino_apoderado = f"%{apoderado.strip()}%"
         query = query.filter(
-            func.unaccent(func.coalesce(Notaria.apoderado, "")).ilike(
-                func.unaccent(termino_apoderado)
+            _sin_acentos_sql(Notaria.apoderado).ilike(
+                _sin_acentos_sql(termino_apoderado)
             )
         )
 
@@ -190,13 +199,13 @@ def _aplicar_filtros_notarias(
             if palabra not in {"notario", "notaria", "de", "del"}
         ]
         campos_busqueda = (
-            func.unaccent(func.coalesce(Notaria.nombre, "")),
-            func.unaccent(func.coalesce(Notaria.apellidos, "")),
-            func.unaccent(func.coalesce(Notaria.nif, "")),
-            func.unaccent(func.coalesce(Notaria.codigo, "")),
-            func.unaccent(func.coalesce(Notaria.municipio, "")),
-            func.unaccent(func.coalesce(Notaria.provincia, "")),
-            func.unaccent(
+            _sin_acentos_sql(Notaria.nombre),
+            _sin_acentos_sql(Notaria.apellidos),
+            _sin_acentos_sql(Notaria.nif),
+            _sin_acentos_sql(Notaria.codigo),
+            _sin_acentos_sql(Notaria.municipio),
+            _sin_acentos_sql(Notaria.provincia),
+            _sin_acentos_sql(
                 func.concat(
                     func.coalesce(Notaria.nombre, ""),
                     " ",
@@ -209,7 +218,7 @@ def _aplicar_filtros_notarias(
             termino = f"%{palabra}%"
             query = query.filter(
                 or_(*[
-                    campo.ilike(func.unaccent(termino))
+                    campo.ilike(_sin_acentos_sql(termino))
                     for campo in campos_busqueda
                 ])
             )
@@ -221,9 +230,9 @@ def _aplicar_filtros_notarias(
             .join(Notaria, Notaria.id == notarios_asociados_table.c.asociado_id)
             .filter(
                 or_(
-                    func.unaccent(func.coalesce(Notaria.nombre, "")).ilike(func.unaccent(termino_asociado)),
-                    func.unaccent(func.coalesce(Notaria.apellidos, "")).ilike(func.unaccent(termino_asociado)),
-                    func.unaccent(func.coalesce(Notaria.nif, "")).ilike(func.unaccent(termino_asociado)),
+                    _sin_acentos_sql(Notaria.nombre).ilike(func.unaccent(termino_asociado)),
+                    _sin_acentos_sql(Notaria.apellidos).ilike(func.unaccent(termino_asociado)),
+                    _sin_acentos_sql(Notaria.nif).ilike(func.unaccent(termino_asociado)),
                 )
             )
             .distinct()
