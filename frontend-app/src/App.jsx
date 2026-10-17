@@ -123,7 +123,6 @@ import TiposConceptoGastos
 import ApoderaGest 
   from "./pages/apoderagest/ApoderaGest.jsx";
 import NotarGest from "./pages/notargest/NotarGest.jsx";
-import Cancelagest from "./pages/cancelagest/Cancelagest.jsx";
 
 
 /**
@@ -195,7 +194,7 @@ export default function App() {
 
                 <Route
           path="cancelagest"
-          element={<RequireAuth><Cancelagest /></RequireAuth>}
+          element={<RequireAuth><Navigate to="/dashboard" replace /></RequireAuth>}
         />
         
         <Route
