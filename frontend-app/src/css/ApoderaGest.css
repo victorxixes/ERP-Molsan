@@ -1563,3 +1563,8 @@
   .ag-ficha-paneles .ag-ficha-archivo{grid-column:1!important}
   .ag-ficha-paneles .ag-ficha-registral{grid-column:2!important}
 }
+
+.ag-detalle-campo.ag-firma-urgente-activa{padding:8px 10px;border:1px solid #fecaca;border-radius:10px;background:#fff1f2}
+.ag-detalle-campo.ag-firma-urgente-activa>span{color:#b42318}
+.ag-detalle-campo.ag-firma-urgente-activa>strong{color:#b42318;font-weight:900}
+.ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading>small{flex-basis:100%;color:#77859a;font-size:10px;font-weight:500}
