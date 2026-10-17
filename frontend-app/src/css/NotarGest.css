@@ -329,3 +329,15 @@
 @media(max-width:1200px){.notargest .ng-tareas-sidebar{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.notargest .ng-tareas-sidebar{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.notargest .ng-tareas-sidebar button{grid-template-columns:30px minmax(0,1fr) auto;padding:9px;gap:7px}.notargest .ng-tareas-sidebar button>span{width:29px;height:29px}}
 @media(max-width:430px){.notargest .ng-tareas-sidebar{grid-template-columns:1fr}}
+
+
+/* El shell de NotarGest comparte la misma estructura de página que ApoderaGest.
+   Elimina el panel exterior heredado: el fondo pertenece al shell, no al módulo. */
+.notargest.ng-content{width:100%;max-width:none;margin:0;padding:0;overflow:visible;background:transparent;border:0;border-radius:0;box-shadow:none;isolation:auto}
+.notargest.ng-content .ng-hero-apoderagest{margin-top:0}
+.notargest.ng-content .ng-dashboard-analitica{margin-top:0}
+.notargest.ng-content .ng-tareas-sidebar{display:none!important}
+.notargest.ng-content .ng-dashboard-kpis article,
+.notargest.ng-content .ng-dashboard-grafico,
+.notargest.ng-content .ng-dashboard-ciclo{border-radius:14px}
+@media(max-width:700px){.notargest.ng-content{padding:0}.notargest.ng-content .ng-hero-apoderagest{padding:8px 0 18px}}
