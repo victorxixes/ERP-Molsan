@@ -175,3 +175,16 @@
 .ng-finca-card b{font-size:12px;overflow-wrap:anywhere}
 @media(max-width:1050px){.ng-datos-superiores,.ng-documentacion-layout{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:560px){.ng-datos-envio .ng-datos-grid,.ng-datos-facturacion-bloque .ng-datos-grid,.ng-finca-card{grid-template-columns:minmax(0,1fr)}}
+
+
+/* NotarGest · cabecera corporativa MOLSAN ERP Premium 2027 */
+.notargest .ng-hero-premium{align-items:center;padding:8px 4px 25px;margin-bottom:8px}
+.notargest .ng-hero-identidad{display:flex;align-items:center;gap:16px;min-width:0}
+.notargest .ng-hero-logo{display:grid;place-items:center;flex:0 0 64px;width:64px;height:64px;padding:5px;overflow:hidden;background:#fff;border:1px solid #e4eaf2;border-radius:17px;box-shadow:0 7px 20px rgba(31,48,79,.07)}
+.notargest .ng-hero-logo img{width:100%;height:100%;object-fit:contain}
+.notargest .ng-hero-identidad>div:last-child{min-width:0}
+.notargest .ng-fecha-premium{width:100%;color:#748198;font-size:11px;font-weight:750;text-align:right;text-transform:capitalize}
+.notargest .ng-hero-premium .ng-cabecera-acciones{justify-content:flex-end;align-items:center;gap:10px}
+.notargest .ng-hero-premium .ng-sobrelinea{color:#63769b;font-size:10px;font-weight:850;letter-spacing:1.65px}
+.notargest .ng-hero-premium .ng-cabecera-acciones .ng-boton-secundario{min-height:41px}
+@media(max-width:700px){.notargest .ng-hero-premium{align-items:flex-start}.notargest .ng-hero-identidad{align-items:flex-start;gap:11px}.notargest .ng-hero-logo{flex-basis:48px;width:48px;height:48px;border-radius:13px}.notargest .ng-hero-premium .ng-cabecera-acciones{justify-content:flex-start;width:100%}.notargest .ng-fecha-premium{text-align:left}}
