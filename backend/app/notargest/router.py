@@ -20,6 +20,7 @@ from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.expediente_observaciones.models import ExpedienteObservacion
+from backend.app.empleados.models import Empleado
 from backend.app.storage import CARPETA_DIGITAL_DIR
 
 router = APIRouter(prefix="/notargest", tags=["NotarGest"])
@@ -33,6 +34,10 @@ class LoginNotario(BaseModel):
 class CambioPassword(BaseModel):
     password_actual: constr(min_length=1, max_length=128)
     password_nueva: constr(min_length=1, max_length=128)
+
+class ComentarioGestorNotarGest(BaseModel):
+    comentario: constr(min_length=1, max_length=2000)
+    empleado_destinatario_id: int
 
 def normalizar_nif(valor):
     return "".join((valor or "").upper().split()).replace("-", "")
@@ -371,6 +376,40 @@ def detalle_expediente(expediente_id: str, n=Depends(get_notario), db: Session =
         "fecha": _fecha(o.fecha)
     } for o in obs]
     return datos
+
+
+@router.get("/gestores")
+def listar_gestores_notargest(n=Depends(get_notario), db: Session = Depends(get_db)):
+    empleados = db.query(Empleado).filter(Empleado.activo.is_(True)).order_by(Empleado.apellidos.asc(), Empleado.nombre.asc()).all()
+    return [{"id": e.id, "nombre": " ".join(filter(None, [e.nombre, e.apellidos]))} for e in empleados]
+
+
+@router.post("/expedientes/{expediente_id}/comentarios")
+def crear_comentario_gestor_notargest(expediente_id: str, datos: ComentarioGestorNotarGest, n=Depends(get_notario), db: Session = Depends(get_db)):
+    expediente = _expediente_autorizado(expediente_id, n, db)
+    destinatario = db.query(Empleado).filter(Empleado.id == datos.empleado_destinatario_id, Empleado.activo.is_(True)).first()
+    if not destinatario:
+        raise HTTPException(status_code=404, detail="El gestor seleccionado no existe o está inactivo.")
+    comentario = datos.comentario.strip()
+    if not comentario:
+        raise HTTPException(status_code=400, detail="Escribe un comentario antes de guardarlo.")
+    observacion = ExpedienteObservacion(
+        expediente_id=expediente.id,
+        comentario=comentario,
+        visibilidad="Gestor",
+        empleado_destinatario_id=destinatario.id,
+        autor_empleado_id=None,
+        activo=True,
+    )
+    try:
+        db.add(observacion)
+        db.commit()
+        db.refresh(observacion)
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="No se pudo guardar el comentario dirigido al gestor.")
+    return {"ok": True, "id": observacion.id, "comentario": observacion.comentario, "empleado_destinatario_id": destinatario.id, "empleado_destinatario": " ".join(filter(None, [destinatario.nombre, destinatario.apellidos])), "fecha": _fecha(observacion.fecha)}
+
 
 @router.get("/expedientes/{expediente_id}/documentos/{documento_id}/descargar")
 def descargar_documento(expediente_id: str, documento_id: int, n=Depends(get_notario), db: Session = Depends(get_db)):
