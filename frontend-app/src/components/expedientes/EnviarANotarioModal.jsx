@@ -23,6 +23,7 @@ const FORM_INICIAL = {
   fecha_prevista_firma: "",
   hora_prevista_firma: "09:00",
   hora_fin_prevista_firma: "10:00",
+  firma_urgente: false,
 
   notario: null,
   tipo_documento: "",
@@ -137,6 +138,7 @@ function crearFormularioDesdeExpediente(expediente) {
     fecha_prevista_firma: obtenerValor(expediente, "fecha_prevista_firma"),
     hora_prevista_firma: horaGuardada ? horaGuardada.slice(0, 5) : FORM_INICIAL.hora_prevista_firma,
     hora_fin_prevista_firma: horaFinGuardada ? horaFinGuardada.slice(0, 5) : (horaGuardada ? sumarUnaHora(horaGuardada.slice(0, 5)) : FORM_INICIAL.hora_fin_prevista_firma),
+    firma_urgente: ["true","1","si","sí"].includes(String(obtenerValor(expediente, "firma_urgente")).trim().toLowerCase()),
     notario: nombreNotario
       ? {
           id: expediente?.notario_id ?? null,
@@ -580,6 +582,7 @@ export default function EnviarANotarioModal({
       fecha_prevista_firma: form.fecha_prevista_firma,
       hora_prevista_firma: form.hora_prevista_firma,
       hora_fin_prevista_firma: form.hora_fin_prevista_firma,
+      firma_urgente: Boolean(form.firma_urgente),
 
       notario_id: form.notario.id,
       nombre_notario: nombreNotario,
@@ -853,6 +856,14 @@ export default function EnviarANotarioModal({
                       cambiarCampo("hora_fin_prevista_firma", v)
                     }
                   />
+
+                  <div className="flex flex-col justify-end">
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">Firma urgente</label>
+                    <div className="flex min-h-[42px] items-center gap-4 rounded-xl border border-slate-200 bg-white px-3 py-2">
+                      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700"><input type="radio" name="firma_urgente" value="no" checked={!form.firma_urgente} disabled={loading} onChange={() => cambiarCampo("firma_urgente", false)} />No</label>
+                      <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-red-700"><input type="radio" name="firma_urgente" value="si" checked={Boolean(form.firma_urgente)} disabled={loading} onChange={() => cambiarCampo("firma_urgente", true)} />Sí</label>
+                    </div>
+                  </div>
 
                   {form.escritura_firmada === "Sí" && (
                     <>
