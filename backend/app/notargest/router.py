@@ -244,6 +244,7 @@ def _resumen(e, db):
         "saldo_disponible": e.saldo_disponible,
         "contrato": e.contrato,
         "tipo_operacion": e.tipo_operacion,
+        "subtipo_operacion": getattr(e, "subtipo_operacion", None),
         "observaciones": e.observaciones,
         "numero_entrada": e.numero_entrada,
         "asiento_presentacion_libro_diario": e.asiento_presentacion_libro_diario,
@@ -605,6 +606,56 @@ def crear_comentario_gestor_notargest(expediente_id: str, datos: ComentarioGesto
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo guardar el comentario dirigido al gestor.")
     return {"ok": True, "id": observacion.id, "comentario": observacion.comentario, "empleado_destinatario_id": destinatario.id, "empleado_destinatario": " ".join(filter(None, [destinatario.nombre, destinatario.apellidos])), "fecha": _fecha(observacion.fecha)}
+
+
+@router.post("/expedientes/{expediente_id}/documentos")
+async def subir_documento_carpeta_notargest(
+    expediente_id: str,
+    categoria: str = Form(...),
+    archivo: UploadFile = File(...),
+    n=Depends(get_notario),
+    db: Session = Depends(get_db),
+):
+    """Sube PDFs a categorías de Carpeta Digital visibles desde la ficha NotarGest."""
+    e = _expediente_autorizado(expediente_id, n, db)
+    categorias_permitidas = {
+        "Hoja de encargo firmada",
+        "Justificante de cancelación",
+        "Nota simple registral",
+        "Borradores de escritura",
+        "Otros documentos",
+    }
+    if categoria not in categorias_permitidas:
+        raise HTTPException(status_code=400, detail="Categoría documental no válida")
+    nombre = Path(archivo.filename or "documento.pdf").name
+    if not nombre.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Solo se admiten archivos PDF")
+    contenido = await archivo.read(25 * 1024 * 1024 + 1)
+    if not contenido or len(contenido) > 25 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="El archivo está vacío o supera 25 MB")
+    nombre_guardado = f"{uuid.uuid4().hex}{Path(nombre).suffix[:20].lower()}"
+    ruta = (ROOT / nombre_guardado).resolve()
+    if ruta.parent != ROOT:
+        raise HTTPException(status_code=400, detail="Nombre de archivo no válido")
+    ruta.write_bytes(contenido)
+    try:
+        doc = DocumentoCarpetaDigital(
+            expediente_id=str(e.id_expediente),
+            categoria=categoria,
+            nombre_original=nombre,
+            nombre_guardado=nombre_guardado,
+            tipo_mime="application/pdf",
+            tamano_bytes=len(contenido),
+            fecha_subida=datetime.utcnow(),
+        )
+        db.add(doc)
+        db.commit()
+        db.refresh(doc)
+    except Exception:
+        db.rollback()
+        ruta.unlink(missing_ok=True)
+        raise
+    return {"ok": True, "id": doc.id, "categoria": doc.categoria, "nombre": doc.nombre_original}
 
 
 @router.get("/expedientes/{expediente_id}/documentos/{documento_id}/descargar")
