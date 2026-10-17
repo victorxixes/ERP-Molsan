@@ -324,8 +324,7 @@ export default function NotarGest() {
           <section className="ng-detalle-bloque ng-tipo-documento-bloque">
             <div className="ng-bloque-heading"><div><span className="ng-kicker">04 · DOCUMENTO</span><h3>Tipo de documento</h3><p className="ng-descripcion">Datos del documento remitidos desde el modal Enviar a notario.</p></div></div>
             <div className="ng-datos-grid">{[
-              ["Contrato", detalle.contrato], ["Capital", euros(detalle.capital)], ["Tipo de operación", detalle.tipo_operacion],
-              ["Subtipo de operación", detalle.subtipo_operacion], ["Importe", euros(detalle.importe)], ["Formato de escritura", detalle.formato_escritura],
+             ["Formato de escritura", detalle.formato_escritura],
               ["Tipo de trámite", detalle.tipo_tramite]
             ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
             <h4 className="ng-subtitulo-detalle">Documentos y cuantías</h4>
