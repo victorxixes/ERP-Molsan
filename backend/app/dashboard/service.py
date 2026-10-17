@@ -252,7 +252,6 @@ def obtener_dashboard_expedientes(
 def obtener_dashboard_cancelagest(db: Session) -> dict:
     """Indicadores del circuito de cancelaciones y tiempos entre hitos."""
     from collections import defaultdict
-    from datetime import date
 
     filas = (
         db.query(
@@ -271,6 +270,8 @@ def obtener_dashboard_cancelagest(db: Session) -> dict:
             Expediente.notargest_fecha_cierre,
             Expediente.escritura_simple_cancelacion,
             Expediente.tipo_acta,
+            Expediente.origen_bankia,
+            Expediente.producto_gtg,
         )
         .all()
     )
@@ -289,10 +290,15 @@ def obtener_dashboard_cancelagest(db: Session) -> dict:
         return "cancel" in norm(texto) or bool(row.escritura_simple_cancelacion)
 
     def categoria(row):
-        operacion = norm(" ".join(filter(None, [row.tipo_operacion, row.subtipo_operacion, row.tipo_acta])))
+        operacion = norm(" ".join(filter(None, [
+            row.tipo_operacion, row.subtipo_operacion, row.tipo_acta,
+            row.origen_bankia, row.producto_gtg,
+        ])))
         if any(term in operacion for term in ("otra entidad", "otras entidades", "entidad externa", "entidades externas")):
             return "otras_entidades"
-        if row.id_provision or str(row.tipo_provision or "").strip():
+        tipo_provision = norm(row.tipo_provision)
+        provision_explicita_no = any(term in tipo_provision for term in ("sin provision", "no hay provision", "sin provisiones", "no aplica"))
+        if row.id_provision or (tipo_provision and not provision_explicita_no and tipo_provision not in {"no", "ninguna", "ninguno", "sin", "n/a"}):
             return "con_provision"
         return "sin_provision"
 
