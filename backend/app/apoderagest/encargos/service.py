@@ -145,6 +145,9 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
         "observaciones": _texto(
             getattr(expediente, "observaciones", None)
         ),
+        "fecha_solicitud_pnc": _fecha_texto(getattr(expediente, "fecha_solicitud_pnc", None)),
+        "numero_solicitud_pnc": _texto(getattr(expediente, "numero_solicitud_pnc", None)),
+        "hora_prevista_firma": _fecha_texto(getattr(expediente, "hora_prevista_firma", None)),
         "fecha_envio_notario": _fecha_texto(
             getattr(expediente, "fecha_envio_notario", None)
             or getattr(expediente, "fecha_envio", None)
