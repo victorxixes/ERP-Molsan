@@ -352,7 +352,7 @@ export default function NotarGest() {
             return <div className="ng-barras-medias">{grupos.map(g=>{const media=g.dias.length?g.dias.reduce((a,b)=>a+b,0)/g.dias.length:null;return <div className="ng-media-row" key={g.key}><div><strong>{g.label}</strong><small>{media===null?"Sin datos suficientes":`${media.toFixed(1)} días de media · ${g.dias.length} expedientes`}</small></div><div className="ng-media-pista"><span style={{width:`${media===null?0:media/max*100}%`}} /></div></div>;})}</div>;
           })()}
         </section>
-        <section className="ng-dashboard-grafico ng-dashboard-etapas"><div className="ng-bloque-heading"><div><span className="ng-kicker">CICLO REGISTRAL</span><h3>Media de días entre hitos</h3></div></div>
+        <section className="ng-dashboard-grafico ng-dashboard-etapas"><div className="ng-bloque-heading"><div><span className="ng-kicker">SEGUIMIENTO DE HITOS</span><h3>Ciclo registral</h3></div></div>
           {(() => {
             const etapas=[
               {label:"Fecha envío → fecha firma",desde:["fecha_envio_notario","fecha_envio"],hasta:["fecha_firma"]},
