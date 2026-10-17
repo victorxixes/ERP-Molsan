@@ -1566,7 +1566,7 @@ export default function FichaExpediente() {
   ] = useState(false);
 
   // Modal de carpeta digital del expediente.
-  const crearPlantillaReclamacionOficina = useCallback(() => {
+  function crearPlantillaReclamacionOficina() {
     const solicitante = expediente?.nombre_solicitante || "";
     const dniSolicitante = expediente?.nif_solicitante || "";
     const titular = expediente?.nombre_titular || "";
@@ -1609,7 +1609,7 @@ Este e-mail incorpora información confidencial. El contenido de la misma se enc
 
 APODERADOS EN: ALICANTE · BALEARES · CANARIAS · CASTELLON · CATALUÑA · GALICIA · HUESCA · LA RIOJA · MURCIA · NAVARRA · VALENCIA · ZARAGOZA`,
     };
-  }, [expediente, id]);
+  }
 
   const cargarHistoricoReclamaciones = useCallback(async () => {
     const numero = expediente?.id_expediente || id;
