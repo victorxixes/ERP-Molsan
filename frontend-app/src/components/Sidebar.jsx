@@ -846,9 +846,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                   >
                     <NavIcon name={item.icon} />
                     <span>{item.label}</span>
-                    {item.label === "Mensajes" && mensajesNoLeidos > 0 ? (
-                      <span className="min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">
-                        {mensajesNoLeidos}
+                    {(item.badge > 0 || (item.label === "Mensajes" && mensajesNoLeidos > 0)) ? (
+                      <span className={item.label === "Mensajes" ? "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold" : "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] text-[10px] font-bold"}>
+                        {item.label === "Mensajes" ? mensajesNoLeidos : item.badge}
                       </span>
                     ) : null}
                   </button>
