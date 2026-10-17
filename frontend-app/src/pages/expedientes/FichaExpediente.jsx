@@ -1565,6 +1565,18 @@ export default function FichaExpediente() {
     setMostrarFincas,
   ] = useState(false);
 
+  const [
+    mostrarCarpetaDigital,
+    setMostrarCarpetaDigital,
+  ] = useState(false);
+  const [mostrarReclamarOficina, setMostrarReclamarOficina] = useState(false);
+  const [emailReclamacion, setEmailReclamacion] = useState({ destinatario: "", asunto: "", cuerpo: "" });
+  const [historicoReclamaciones, setHistoricoReclamaciones] = useState([]);
+  const [cargandoHistoricoReclamaciones, setCargandoHistoricoReclamaciones] = useState(false);
+  const [enviandoReclamacion, setEnviandoReclamacion] = useState(false);
+  const [errorReclamacion, setErrorReclamacion] = useState("");
+  const [mensajeReclamacion, setMensajeReclamacion] = useState("");
+
   // Modal de carpeta digital del expediente.
   function crearPlantillaReclamacionOficina() {
     const solicitante = expediente?.nombre_solicitante || "";
@@ -1651,17 +1663,6 @@ APODERADOS EN: ALICANTE · BALEARES · CANARIAS · CASTELLON · CATALUÑA · GAL
     }
   }, [expediente?.id_expediente, id, emailReclamacion, cargarHistoricoReclamaciones]);
 
-  const [
-    mostrarCarpetaDigital,
-    setMostrarCarpetaDigital,
-  ] = useState(false);
-  const [mostrarReclamarOficina, setMostrarReclamarOficina] = useState(false);
-  const [emailReclamacion, setEmailReclamacion] = useState({ destinatario: "", asunto: "", cuerpo: "" });
-  const [historicoReclamaciones, setHistoricoReclamaciones] = useState([]);
-  const [cargandoHistoricoReclamaciones, setCargandoHistoricoReclamaciones] = useState(false);
-  const [enviandoReclamacion, setEnviandoReclamacion] = useState(false);
-  const [errorReclamacion, setErrorReclamacion] = useState("");
-  const [mensajeReclamacion, setMensajeReclamacion] = useState("");
   const [
     mostrarAcciones,
     setMostrarAcciones,
