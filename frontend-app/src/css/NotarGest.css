@@ -299,3 +299,19 @@
   .notargest .ng-bandeja-link{padding:0 10px!important}
   .notargest .ng-bandeja-texto strong{font-size:10px!important}
 }
+
+
+/* Cabecera NotarGest idéntica en estructura y proporciones a ApoderaGest */
+.notargest .ng-hero-apoderagest{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;min-height:90px;margin:0 0 8px;padding:8px 4px 25px;border:0;border-radius:0;background:transparent;box-shadow:none}
+.notargest .ng-hero-apoderagest .ag-hero-identidad{display:flex;align-items:center;gap:14px;min-width:0}
+.notargest .ng-hero-apoderagest .ag-marca{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;padding:3px;overflow:hidden;border-radius:13px;background:#fff;border:1px solid #e4eaf2;box-shadow:0 5px 14px rgba(31,48,79,.08)}
+.notargest .ng-hero-apoderagest .ng-marca-notargest img{display:block;width:100%;height:100%;object-fit:contain}
+.notargest .ng-hero-apoderagest .ag-eyebrow{color:#63769b;font-size:10px;font-weight:850;letter-spacing:1.65px}
+.notargest .ng-hero-apoderagest h1{margin:2px 0 4px;color:#14233b;font-size:clamp(23px,2vw,28px);font-weight:850;letter-spacing:-.8px;line-height:1.12}
+.notargest .ng-hero-apoderagest p{margin:0;color:#75839a;font-size:11px;line-height:1.5}
+.notargest .ng-hero-apoderagest .ag-hero-acciones{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:9px}
+.notargest .ng-hero-apoderagest .ag-fecha-actual{display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid var(--erp-border,#dce4f0);border-radius:10px;background:#fff;color:#53627a;font-size:10px;white-space:nowrap}
+.notargest .ng-hero-apoderagest .ag-punto-vivo{width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.1)}
+.notargest .ng-hero-apoderagest .ag-boton-actualizar{display:inline-flex;align-items:center;gap:7px;min-height:41px;padding:0 13px;border:1px solid #3158d8;border-radius:10px;background:#365fe5;color:#fff;font-size:11px;font-weight:800;box-shadow:0 5px 12px rgba(54,95,229,.18)}
+.notargest .ng-hero-apoderagest .ag-boton-actualizar:disabled{opacity:.65;cursor:wait}
+@media(max-width:700px){.notargest .ng-hero-apoderagest{align-items:flex-start;flex-direction:column;padding:8px 0 18px}.notargest .ng-hero-apoderagest .ag-hero-acciones{justify-content:flex-start;width:100%}}
