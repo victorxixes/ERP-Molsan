@@ -333,7 +333,7 @@ def obtener_dashboard_cancelagest(db: Session) -> dict:
         key = categoria(row)
         stat = categoria_stats[key]
         stat["total"] += 1
-        envio = row.fecha_envio_notario or row.fecha_envio or row.fecha_inicio_actividad
+        envio = row.fecha_envio_notario or row.fecha_envio
         firma = row.fecha_firma
         if firma:
             stat["firmadas"] += 1
