@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from .schemas import DashboardExpedientesResponse
-from .service import obtener_dashboard_expedientes
+from .service import obtener_dashboard_expedientes, obtener_dashboard_cancelagest
 
 router = APIRouter(
     prefix="/dashboard/expedientes",
@@ -28,3 +28,14 @@ def dashboard_expedientes(
     Expediente.fecha_inicio_actividad.
     """
     return obtener_dashboard_expedientes(db)
+
+
+
+@router.get(
+    "/cancelagest",
+    summary="Indicadores de firmas y tiempos del circuito de CancelaGest",
+)
+def dashboard_cancelagest(
+    db: Session = Depends(get_db),
+):
+    return obtener_dashboard_cancelagest(db)
