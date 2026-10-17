@@ -399,6 +399,21 @@ export default function ModalCtnDetalle({
           />
 
           <Dato
+            titulo="Departamento de cancelaciones"
+            valor={datos.departamento_cancelaciones}
+          />
+
+          <Dato
+            titulo="Departamento de copias"
+            valor={datos.departamento_copias}
+          />
+
+          <Dato
+            titulo="Otros departamentos"
+            valor={datos.otros_departamentos}
+          />
+
+          <Dato
             titulo="Videoconferencia"
             valor={datos.vc}
           />
@@ -406,6 +421,11 @@ export default function ModalCtnDetalle({
           <Dato
             titulo="Apoderado"
             valor={datos.apoderado}
+          />
+
+          <Dato
+            titulo="Apoderado S"
+            valor={datos.apoderado_s}
           />
 
           <Dato
