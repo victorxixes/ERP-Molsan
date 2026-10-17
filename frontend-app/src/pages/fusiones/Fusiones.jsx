@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import axios from "../../api/axios";
 
 /**
  * ============================================================
@@ -355,8 +356,42 @@ export default function Fusiones() {
   const [expedienteDestino, setExpedienteDestino] =
     useState("");
 
-  const [fusiones] =
-    useState(fusionesIniciales);
+  const [fusiones, setFusiones] = useState([]);
+  const [cargandoSolicitudes, setCargandoSolicitudes] = useState(true);
+  const [errorSolicitudes, setErrorSolicitudes] = useState("");
+
+  useEffect(() => {
+    let activo = true;
+    const cargarSolicitudes = async () => {
+      setCargandoSolicitudes(true);
+      setErrorSolicitudes("");
+      try {
+        const respuesta = await axios.get("/fusiones/solicitudes");
+        const items = Array.isArray(respuesta?.data?.items) ? respuesta.data.items : [];
+        if (!activo) return;
+        setFusiones(items.map((item) => ({
+          id: item.id,
+          expedienteOrigen: item.numero_expediente || "—",
+          expedienteDestino: item.registro || "—",
+          fecha: item.creado_en ? new Date(item.creado_en).toLocaleDateString("es-ES") : "—",
+          usuario: "Solicitud desde CancelaGest",
+          estado: item.estado || "Pendiente",
+          tipoFactura: item.tipo_factura,
+          importe: item.importe,
+        })));
+      } catch (error) {
+        if (activo) setErrorSolicitudes(
+          typeof error?.response?.data?.detail === "string"
+            ? error.response.data.detail
+            : "No se han podido cargar las solicitudes de fusión."
+        );
+      } finally {
+        if (activo) setCargandoSolicitudes(false);
+      }
+    };
+    cargarSolicitudes();
+    return () => { activo = false; };
+  }, []);
 
 
   /**
@@ -1353,6 +1388,13 @@ export default function Fusiones() {
 
         </div>
 
+
+        {errorSolicitudes && (
+          <div className="mx-5 mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{errorSolicitudes}</div>
+        )}
+        {cargandoSolicitudes && (
+          <div className="px-5 py-4 text-sm text-[var(--erp-text-soft)]">Cargando solicitudes recibidas desde CancelaGest…</div>
+        )}
 
         {/* ====================================================
             PIE
