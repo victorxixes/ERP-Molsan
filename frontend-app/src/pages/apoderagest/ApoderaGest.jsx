@@ -347,23 +347,27 @@ function TablaEncargos({ encargos, onFirmado }) {
       {grupos.map((grupo) => {
         const abierto = Boolean(abiertos[grupo.clave]);
         const notarioCtn = encontrarNotarioCtn(grupo, catalogoCtn);
-        const ubicacionNotario = [notarioCtn?.municipio, notarioCtn?.provincia].filter(Boolean).join(" · ");
+        const expedientesBloqueados = grupo.expedientes.filter((encargo) => Boolean(encargo.bloqueado)).length;
         const direccionNotario = [notarioCtn?.direccion, notarioCtn?.cp].filter(Boolean).join(" · ");
+        const ubicacionNotario = [notarioCtn?.municipio, notarioCtn?.provincia].filter(Boolean).join(" · ");
         return (
           <section className="ag-panel ag-grupo-notario" key={grupo.clave}>
             <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
               <span className="ag-notario-grupo-icono" aria-hidden="true">{abierto ? "⌄" : "›"}</span>
               <span className="ag-notario-grupo-info">
-                <strong>{grupo.nombre}</strong>
-                <small>{grupo.nif || "NIF no disponible"}</small>
-                <span className="ag-notario-contacto">
-                  {ubicacionNotario && <span><b>⌖</b>{ubicacionNotario}</span>}
-                  {direccionNotario && <span><b>⌂</b>{direccionNotario}</span>}
-                  {notarioCtn?.telefono && <span><b>☎</b>{notarioCtn.telefono}</span>}
-                  {!notarioCtn && <span className="ag-notario-sin-ficha">Datos de contacto no disponibles en el catálogo CTN</span>}
+                <span className="ag-notario-linea-unica">
+                  <strong>{grupo.nombre}</strong>
+                  <span className="ag-notario-dato-inline"><b>NIF</b>{grupo.nif || notarioCtn?.nif || "—"}</span>
+                  {direccionNotario && <span className="ag-notario-dato-inline"><b>Dirección</b>{direccionNotario}</span>}
+                  {ubicacionNotario && <span className="ag-notario-dato-inline"><b>Localidad</b>{ubicacionNotario}</span>}
+                  {notarioCtn?.telefono && <span className="ag-notario-dato-inline"><b>Tel.</b>{notarioCtn.telefono}</span>}
+                  {!notarioCtn && <span className="ag-notario-sin-ficha">Sin ficha de contacto CTN</span>}
                 </span>
               </span>
-              <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "expediente pendiente" : "expedientes pendientes"}</span>
+              <span className="ag-notario-contadores">
+                <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "expediente pendiente" : "expedientes pendientes"}</span>
+                <span className={`ag-contador-bloqueados${expedientesBloqueados > 0 ? " tiene-bloqueados" : ""}`}>{expedientesBloqueados} {expedientesBloqueados === 1 ? "bloqueado" : "bloqueados"}</span>
+              </span>
             </button>
             {abierto ? (
               <div className="ag-encargos-detalle-lista ag-ficha-premium">
