@@ -486,7 +486,7 @@ export default function NotarGest() {
               ["Hora prevista de firma", detalle.hora_prevista_firma], ["Contrato", detalle.contrato], ["Capital", euros(detalle.capital)],
               ["Tipo de operación", detalle.tipo_operacion], ["Subtipo de operación", detalle.subtipo_operacion], ["Importe", euros(detalle.importe)]
             ].map(([k,v]) => <div className="ng-dato" key={k}><small>{k}</small><strong>{texto(v)}</strong></div>)}</div>
-          </section>
+          </details>
           <details open className="ng-detalle-bloque ng-datos-facturacion-bloque ng-acordeon-ficha">
             <summary className="ng-bloque-heading"><div><span className="ng-kicker">02 · FACTURACIÓN</span><h3>Datos de facturación</h3></div><span className="ng-acordeon-flecha" aria-hidden="true">⌄</span></summary>
             <div className="ng-datos-grid ng-datos-facturacion">{[
@@ -527,7 +527,7 @@ export default function NotarGest() {
                 {documentoSeleccionadoUrl ? <iframe className={`ng-pdf-frame ${visorAmpliado ? "ng-pdf-ampliado" : ""}`} title="Vista previa del documento" src={documentoSeleccionadoUrl} /> : <div className="ng-visor-vacio"><span>▤</span><strong>Vista previa</strong><p>Adjunta un PDF o pulsa «Ver a la derecha» en uno de los documentos para consultarlo aquí sin salir de la actividad.</p></div>}
               </aside>
             </div>
-          </section>
+          </details>
           <details open className="ng-detalle-bloque ng-tipo-documento-bloque ng-acordeon-ficha">
             <summary className="ng-bloque-heading"><div><span className="ng-kicker">04 · DOCUMENTO</span><h3>Tipo de documento</h3><p className="ng-descripcion">Datos del documento remitidos desde el modal Enviar a notario.</p></div><span className="ng-acordeon-flecha" aria-hidden="true">⌄</span></summary>
             <div className="ng-datos-grid">{[
