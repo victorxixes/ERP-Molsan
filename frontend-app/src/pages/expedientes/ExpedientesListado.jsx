@@ -1785,6 +1785,7 @@ export default function ExpedientesListado() {
           estadoActividad: filtrosAplicados.estadoActividad || undefined,
           actividadActual: filtrosAplicados.actividad || undefined,
           estadoExpediente: filtrosAplicados.estadoExpediente || undefined,
+          alerta: alertaSeleccionada || undefined,
         });
 
       } catch (
@@ -2021,10 +2022,10 @@ export default function ExpedientesListado() {
               }}
               className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left transition-all"
               style={{
-                background: !actividadSeleccionada
+                background: !actividadSeleccionada && !alertaSeleccionada
                   ? "var(--erp-primary)"
                   : "transparent",
-                color: !actividadSeleccionada
+                color: !actividadSeleccionada && !alertaSeleccionada
                   ? "#fff"
                   : "var(--erp-text)",
               }}
@@ -2033,7 +2034,7 @@ export default function ExpedientesListado() {
                 <span>📋</span>
                 <span className="font-semibold text-sm truncate">Todos los expedientes</span>
               </span>
-              <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg" style={{ background: !actividadSeleccionada ? "rgba(255,255,255,.18)" : "var(--erp-surface-soft)" }}>
+              <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg" style={{ background: !actividadSeleccionada && !alertaSeleccionada ? "rgba(255,255,255,.18)" : "var(--erp-surface-soft)" }}>
                 {formatearNumero(totalActividades)}
               </span>
             </button>
@@ -2147,12 +2148,14 @@ export default function ExpedientesListado() {
                   </span>
                   <div className="min-w-0">
                     <h2 className="text-xl font-bold text-[var(--erp-text)] truncate">
-                      {ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Todos los expedientes"}
+                      {alertaSeleccionada ? (alertasControl.find((item) => item.key === alertaSeleccionada)?.label || "Control de gestión") : (ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Todos los expedientes")}
                     </h2>
                     <p className="text-sm text-[var(--erp-text-soft)] mt-1">
-                      {actividadSeleccionada
-                        ? "Área de trabajo de la actividad seleccionada"
-                        : "Consulta general de todos los expedientes"}
+                      {alertaSeleccionada
+                        ? "Expedientes que cumplen el control seleccionado, combinados con los filtros actuales"
+                        : actividadSeleccionada
+                          ? "Área de trabajo de la actividad seleccionada"
+                          : "Consulta general de todos los expedientes"}
                     </p>
                   </div>
                 </div>
