@@ -101,6 +101,7 @@ def _resumen(e, db):
         "id": e.id,
         "id_expediente": e.id_expediente,
         "numero_expediente": e.id_expediente,
+        "id_provision": e.id_provision,
         "titular": e.nombre_titular,
         "nif_titular": e.nif_titular,
         "solicitante": e.nombre_solicitante,
