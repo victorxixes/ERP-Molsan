@@ -260,22 +260,21 @@ export default function ModalCtnDetalle({
   const datos = ficha || notaria;
 
   return (
-    <section
-      className="ctn-ficha-inline"
-      aria-labelledby="ctn-ficha-titulo"
-      style={{
-        width: "100%",
-        minWidth: 0,
-        boxSizing: "border-box",
-        marginTop: 20,
-        padding: 20,
-        border: "1px solid var(--border-color, #dce3eb)",
-        borderRadius: 16,
-        background: "var(--card-background, #ffffff)",
-        color: "var(--text-color, #172033)",
-        boxShadow: "0 4px 18px rgba(15, 23, 42, 0.05)",
+    <div
+      className="ctn-modal-overlay"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          (onClose || onCerrar)?.();
+        }
       }}
     >
+      <section
+        className="ctn-modal-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ctn-ficha-titulo"
+      >
       {/* CABECERA DE LA FICHA */}
 
       <header
@@ -332,8 +331,18 @@ export default function ModalCtnDetalle({
         >
           Ficha de notaría
         </span>
+
+        <button
+          type="button"
+          className="ctn-modal-cerrar"
+          aria-label="Cerrar ficha"
+          onClick={() => (onClose || onCerrar)?.()}
+        >
+          ×
+        </button>
       </header>
 
+      <div className="ctn-modal-contenido">
       {error && (
         <div
           className="ctn-modal-alerta"
@@ -679,20 +688,9 @@ export default function ModalCtnDetalle({
         )}
       </section>
 
-      <footer
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 12,
-          flexWrap: "wrap",
-          marginTop: 22,
-          paddingTop: 14,
-          borderTop: "1px solid #e5eaf0",
-          color: "#64748b",
-          fontSize: 12,
-        }}
-      >
+      </div>
+
+      <footer className="ctn-modal-footer">
         <span>
           Ficha CTN · Datos conectados al backend
         </span>
@@ -703,7 +701,8 @@ export default function ModalCtnDetalle({
             : "Información consultada"}
         </span>
       </footer>
-    </section>
+      </section>
+    </div>
   );
 }
 
