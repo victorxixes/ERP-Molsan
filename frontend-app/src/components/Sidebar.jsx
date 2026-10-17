@@ -847,6 +847,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                       ${activeNavigationItem === item.label
                         ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm"
                         : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"}
+                      ${item.attention ? " ng-boton-firmas-urgentes ng-urgencias-activas" : ""}
                     `}
                   >
                     <NavIcon name={item.icon} />
