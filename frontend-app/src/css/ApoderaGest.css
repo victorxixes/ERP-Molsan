@@ -1755,3 +1755,16 @@
     grid-row:auto!important;
   }
 }
+
+
+/* CTN · Aviso visual para firmas urgentes: parpadea solo cuando el valor es «Sí». */
+@keyframes ag-firma-urgente-parpadeo{
+  0%, 100% { background:#fff1f2; border-color:#fecaca; box-shadow:0 0 0 0 rgba(220,38,38,0); }
+  50% { background:#fee2e2; border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,.16); }
+}
+.ag-detalle-campo.ag-firma-urgente-activa{
+  animation:ag-firma-urgente-parpadeo 1.15s ease-in-out infinite;
+}
+@media(prefers-reduced-motion:reduce){
+  .ag-detalle-campo.ag-firma-urgente-activa{animation:none; background:#fee2e2; border-color:#dc2626;}
+}
