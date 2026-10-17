@@ -2,12 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import axios from "../../api/axios";
-import ModalCtnDetalle from "../../components/ctn/ModalCtnDetalle";
-import { listarNotarios as listarCatalogoNotarios } from "../../api/notarios";
 import AutocompleteNotario from "../../components/agenda/AutocompleteNotario";
 import Agenda from "../agenda/Agenda";
 import Intranet from "../intranet/Intranet";
 import Mensajes from "../mensajes/Mensajes";
+import CtnListadoPage from "../ctn/CtnListadoPage";
 import { useAuthStore } from "../../store/authStore";
 import "../../css/ApoderaGest.css";
 
@@ -699,128 +698,6 @@ export default function ApoderaGest() {
   const [busquedaEncargos, setBusquedaEncargos] = useState("");
   const [ultimaActualizacion, setUltimaActualizacion] = useState(null);
 
-  // CTN: histórico real de firmas y ficha completa del notario integrada.
-  const [notarias, setNotarias] = useState([]);
-  const [notariaSeleccionada, setNotariaSeleccionada] = useState("");
-  const [cargandoNotarias, setCargandoNotarias] = useState(false);
-  const [errorCTN, setErrorCTN] = useState("");
-  const [notariasCargadas, setNotariasCargadas] = useState(false);
-
-  const cargarDatos = useCallback(async () => {
-    setCargando(true);
-    setError("");
-
-    try {
-      const [resDashboard, resAgenda, resEncargos] = await Promise.all([
-        axios.get("/apoderagest/dashboard"),
-        axios.get("/apoderagest/agenda"),
-        axios.get("/apoderagest/encargos"),
-      ]);
-
-      setDashboard(resDashboard.data || {});
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-      const citasFuturas = (Array.isArray(resAgenda.data) ? resAgenda.data : [])
-        .filter((cita) => {
-          if (!cita?.fecha) return false;
-          const fecha = new Date(`${String(cita.fecha).slice(0, 10)}T00:00:00`);
-          return !Number.isNaN(fecha.getTime()) && fecha >= hoy;
-        })
-        .sort((a, b) => {
-          const fechaA = String(a.fecha || "").slice(0, 10);
-          const fechaB = String(b.fecha || "").slice(0, 10);
-          return fechaA.localeCompare(fechaB) ||
-            String(a.hora_inicio || "").localeCompare(String(b.hora_inicio || ""));
-        });
-      setAgenda(citasFuturas);
-      setEncargos(Array.isArray(resEncargos.data) ? resEncargos.data : []);
-      setUltimaActualizacion(new Date());
-    } catch (err) {
-      console.error("Error cargando ApoderaGest:", err);
-      setError(
-        err?.response?.data?.detail ||
-          "No se han podido cargar los datos. Comprueba tu conexión o vuelve a intentarlo."
-      );
-    } finally {
-      setCargando(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    cargarDatos();
-  }, [cargarDatos]);
-
-  const encargosFiltrados = useMemo(() => {
-    const termino = busquedaEncargos.trim().toLowerCase();
-    if (!termino) return encargos;
-
-    return encargos.filter((encargo) =>
-      [
-        encargo.id_expediente,
-        encargo.id,
-        encargo.titular,
-        encargo.estado,
-        encargo.notario,
-        encargo.nombre_notario,
-        encargo.nif_notario,
-        encargo.fecha_envio_notario,
-        encargo.fecha_prevista_firma,
-        encargo.observaciones,
-        ...(encargo.fincas || []).flatMap((f) => [f.finca, f.registro, f.cru_idufir]),
-      ].some((valor) => String(valor ?? "").toLowerCase().includes(termino))
-    );
-  }, [encargos, busquedaEncargos]);
-
-  const cargarNotariasCTN = useCallback(async () => {
-    setCargandoNotarias(true);
-    setErrorCTN("");
-
-    try {
-      // Cargar el catálogo completo: el endpoint CTN pagina los resultados,
-      // por lo que una sola llamada a /ctn/notarias solo devuelve una página.
-      const respuesta = await listarCatalogoNotarios();
-      const listado = normalizarRespuesta(respuesta)
-        .filter((item) => item && item.id !== null && item.id !== undefined)
-        .sort((a, b) =>
-          nombreNotaria(a).localeCompare(nombreNotaria(b), "es")
-        );
-
-      setNotarias(listado);
-      setNotariasCargadas(true);
-
-      // CTN comparte el mismo catálogo que CancelGest. Al entrar en la pestaña,
-      // abrimos la primera ficha disponible si todavía no hay una selección válida.
-      // Así la sección muestra contenido real y no se queda en el estado vacío.
-      setNotariaSeleccionada((actual) => {
-        if (actual && listado.some((item) => String(item.id) === actual)) {
-          return actual;
-        }
-        return listado.length ? String(listado[0].id) : "";
-      });
-
-      if (!listado.length) {
-        setErrorCTN("El catálogo CTN no ha devuelto notarías. Comprueba el endpoint compartido con CancelGest y pulsa «Actualizar notarías» para volver a intentarlo.");
-      }
-
-    } catch (err) {
-      console.error("Error cargando notarías CTN:", err);
-      setNotarias([]);
-      setNotariasCargadas(false);
-      const detalle = err?.response?.data?.detail;
-      setErrorCTN(
-        (typeof detalle === "string" && detalle) ||
-          err?.message ||
-          "No se ha podido cargar el listado de notarías de CTN."
-      );
-    } finally {
-      setCargandoNotarias(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (pestana !== "CTN" || notariasCargadas) return;
-    cargarNotariasCTN();
-  }, [pestana, notariasCargadas, cargarNotariasCTN]);
 
   const fechaActual = new Intl.DateTimeFormat("es-ES", {
     weekday: "long",
@@ -1004,46 +881,13 @@ export default function ApoderaGest() {
       {pestana === "CTN" ? (
         <section className="ag-contenido ag-ctn-integrado">
           <div className="ag-titulo-seccion">
-            <div><span className="ag-kicker">COORDINACIÓN NOTARIAL</span><h2>CTN · Ficha e histórico de firmas</h2><p>Datos completos de la notaría, relaciones con otros notarios e histórico de firmas, sin ventanas emergentes.</p></div>
-            <button type="button" className="ag-boton-actualizar" onClick={cargarNotariasCTN} disabled={cargandoNotarias}>{cargandoNotarias ? "Actualizando…" : "Actualizar notarías"}</button>
-          </div>
-
-          {errorCTN ? (
-            <div className="ag-alerta-error" role="alert"><span className="ag-alerta-icono">!</span><div><strong>Error en la integración CTN</strong><p>{errorCTN}</p></div><button type="button" onClick={cargarNotariasCTN} disabled={cargandoNotarias}>Reintentar</button></div>
-          ) : null}
-
-          <div className="ag-panel ag-ctn-selector">
-            <div className="ag-toolbar">
-              <div className="ag-ctn-buscador-notario">
-                <AutocompleteNotario
-                  value={notariaActual || null}
-                  // El buscador consulta el endpoint paginado de CTN por separado.
-                  // No debe quedar bloqueado mientras se descarga el catálogo completo.
-                  disabled={false}
-                  onSelect={(notario) => {
-                    if (!notario?.id) return;
-                    setNotarias((actuales) => {
-                      const existe = actuales.some((item) => String(item.id) === String(notario.id));
-                      return existe
-                        ? actuales.map((item) => String(item.id) === String(notario.id) ? { ...item, ...notario } : item)
-                        : [notario, ...actuales];
-                    });
-                    setNotariaSeleccionada(String(notario.id));
-                    setErrorCTN("");
-                  }}
-                />
-              </div>
-              <span className="ag-resultados">
-                {notarias.length} {notarias.length === 1 ? "notaría cargada" : "notarías cargadas"} · busca en el catálogo CTN
-              </span>
+            <div>
+              <span className="ag-kicker">COORDINACIÓN NOTARIAL</span>
+              <h2>CTN · Catálogo de notarías</h2>
+              <p>Listado completo con filtros, asociaciones y acceso a la ficha de cada notaría, compartiendo la misma pantalla CTN del ERP.</p>
             </div>
           </div>
-
-          {notariaActual ? (
-            <ModalCtnDetalle open inline notaria={notariaActual} />
-          ) : (
-            <div className="ag-panel"><EstadoVacio icono="◇" titulo={cargandoNotarias ? "Cargando notarías…" : "Selecciona una notaría"} detalle="La ficha completa y las asociaciones aparecerán en esta sección." /></div>
-          )}
+          <CtnListadoPage />
         </section>
       ) : null}
 
