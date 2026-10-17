@@ -130,6 +130,9 @@ export default function AutocompleteNotario({
   const [loading, setLoading] =
     useState(false);
 
+  const [searchError, setSearchError] =
+    useState("");
+
   const containerRef =
     useRef(null);
 
@@ -263,11 +266,13 @@ export default function AutocompleteNotario({
 
       setNotarios([]);
       setLoading(false);
+      setSearchError("");
 
       return;
     }
 
     setLoading(true);
+    setSearchError("");
 
     const timer =
       setTimeout(() => {
@@ -294,6 +299,7 @@ export default function AutocompleteNotario({
                     : [];
 
             setNotarios(lista);
+            setSearchError("");
             setOpen(true);
 
           })
@@ -306,6 +312,13 @@ export default function AutocompleteNotario({
             );
 
             setNotarios([]);
+            const status = err?.response?.status;
+            const detalle = err?.response?.data?.detail;
+            setSearchError(
+              (typeof detalle === "string" && detalle) ||
+              (status ? `Error HTTP ${status} al buscar notarías.` : "No se ha podido conectar con el catálogo de notarías.")
+            );
+            setOpen(true);
 
           })
 
@@ -641,7 +654,9 @@ export default function AutocompleteNotario({
                 text-slate-400
               "
             >
-              No hay resultados
+              {searchError || (query.trim().length < 2
+                ? "Escribe al menos dos caracteres para buscar."
+                : "No hay resultados para esta búsqueda.")}
             </div>
 
           ) : (
