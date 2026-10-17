@@ -41,6 +41,29 @@ function texto(valor, alternativa = "—") {
     : String(valor);
 }
 
+function normalizarCategoriaDocumento(valor) {
+  return String(valor || "")
+    .normalize("NFD")
+    .replace(/[\\u0300-\\u036f]/g, "")
+    .toLocaleLowerCase("es")
+    .trim();
+}
+
+function esBorradorEscritura(documento) {
+  const categoria = normalizarCategoriaDocumento(documento?.categoria);
+  const nombre = normalizarCategoriaDocumento(documento?.nombre_original);
+  return categoria.includes("borrador") || categoria.includes("escrituras/borradores") ||
+    nombre.includes("borrador de escritura") || nombre.includes("borradores de escritura");
+}
+
+function esDocumentoOtros(documento) {
+  const categoria = normalizarCategoriaDocumento(documento?.categoria);
+  const nombre = normalizarCategoriaDocumento(documento?.nombre_original);
+  return categoria === "otros documentos" || categoria === "otra documentacion" ||
+    categoria === "mails de la oficina" || categoria === "mails de la oficina" ||
+    nombre.includes("otros documentos") || nombre.includes("otra documentacion");
+}
+
 function numeroLegible(valor) {
   if (valor === null || valor === undefined || valor === "") return "Pendiente";
   const numero = Number(valor);
@@ -297,16 +320,37 @@ function TablaEncargos({ encargos, onFirmado }) {
                           </section>
                           <section className="ag-encargo-subpanel ag-ficha-archivo">
                             <div className="ag-ficha-bloque-heading"><span>04 · ARCHIVO</span><h4>Carpeta digital</h4><p>Documentación disponible para consultar desde el expediente.</p></div>
-                            {encargo.documentos?.length ? (
-                              <ul className="ag-documentos-apoderado">
-                                {encargo.documentos.map((doc) => (
-                                  <li key={doc.id}>
-                                    <span><strong>{doc.categoria}</strong><small>{doc.nombre_original} · {fechaLegible(doc.fecha_subida)}</small></span>
-                                    <button type="button" onClick={() => abrirDocumento(encargo, doc)}>Ver en visor</button>
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : <p className="ag-encargo-vacio">Todavía no hay documentos disponibles en las categorías de apoderado.</p>}
+                            {(() => {
+                              const documentos = encargo.documentos || [];
+                              const borradores = documentos.filter(esBorradorEscritura);
+                              const otros = documentos.filter((doc) => !esBorradorEscritura(doc) && esDocumentoOtros(doc));
+                              const restantes = documentos.filter((doc) => !esBorradorEscritura(doc) && !esDocumentoOtros(doc));
+                              const renderCarpeta = (titulo, icono, lista, vacio) => (
+                                <div className="ag-carpeta-apoderado" key={titulo}>
+                                  <div className="ag-carpeta-apoderado-cabecera">
+                                    <span className="ag-carpeta-apoderado-icono" aria-hidden="true">{icono}</span>
+                                    <div><strong>{titulo}</strong><small>{lista.length} documento{lista.length === 1 ? "" : "s"}</small></div>
+                                  </div>
+                                  {lista.length ? (
+                                    <ul className="ag-documentos-apoderado">
+                                      {lista.map((doc) => (
+                                        <li key={doc.id}>
+                                          <span><strong>{doc.categoria}</strong><small>{doc.nombre_original} · {fechaLegible(doc.fecha_subida)}</small></span>
+                                          <button type="button" onClick={() => abrirDocumento(encargo, doc)}>Ver en visor</button>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  ) : <p className="ag-encargo-vacio">{vacio}</p>}
+                                </div>
+                              );
+                              return (
+                                <div className="ag-carpetas-apoderado">
+                                  {renderCarpeta("Borradores de escritura", "▤", borradores, "No hay borradores de escritura disponibles.")}
+                                  {renderCarpeta("Otros", "▣", otros, "No hay documentos clasificados en Otros.")}
+                                  {restantes.length > 0 && renderCarpeta("Resto de documentación", "▧", restantes, "")}
+                                </div>
+                              );
+                            })()}
                           </section>
                           <section className="ag-encargo-subpanel ag-ficha-registral">
                             <div className="ag-ficha-bloque-heading"><span>03 · INFORMACIÓN REGISTRAL</span><h4>Fincas y registros de la propiedad</h4></div>
