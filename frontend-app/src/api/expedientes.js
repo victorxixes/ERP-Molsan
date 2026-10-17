@@ -83,3 +83,12 @@ export async function enviarExpedienteANotario(
 
   return response.data;
 }
+
+
+/**
+ * Recuentos globales de los cinco controles de gestión del listado.
+ */
+export async function obtenerAlertasControlExpedientes() {
+  const res = await axios.get("/expedientes/control-alertas");
+  return res.data;
+}
