@@ -540,50 +540,56 @@ def historico_firmas_notario(
 # ACCESO INDIVIDUAL A NOTARGEST
 @router.on_event("startup")
 def migrar_columna_acceso_notargest():
-    """Añade el indicador de acceso evitando esperas indefinidas por bloqueos.
+    """Añade el indicador de acceso sin dejar que un bloqueo auxiliar tumbe la API."""
+    import time as _time
 
-    Primero consulta el catálogo para no ejecutar ALTER TABLE si la columna ya
-    existe. Si hace falta crearla, usa un lock_timeout corto para que un bloqueo
-    de PostgreSQL no deje a FastAPI sin completar el arranque indefinidamente.
-    """
-    with engine.begin() as conexion:
-        existe = conexion.execute(
-            text(
-                "SELECT 1 FROM information_schema.columns "
-                "WHERE table_schema = 'public' "
-                "AND table_name = 'ctn_notarios' "
-                "AND column_name = 'notargest_habilitado'"
-            )
-        ).first()
+    try:
+        with engine.connect() as conexion:
+            existe = conexion.execute(
+                text(
+                    "SELECT 1 FROM information_schema.columns "
+                    "WHERE table_schema = 'public' "
+                    "AND table_name = 'ctn_notarios' "
+                    "AND column_name = 'notargest_habilitado'"
+                )
+            ).first()
 
         if existe:
-            print(
-                "[NOTARGEST MIGRACION] La columna notargest_habilitado ya existe.",
-                flush=True,
-            )
+            print("[NOTARGEST MIGRACION] notargest_habilitado ya existe; se omite ALTER.", flush=True)
             return
 
-        try:
-            conexion.execute(text("SET LOCAL lock_timeout = '5s'"))
-            conexion.execute(text("SET LOCAL statement_timeout = '15s'"))
-            conexion.execute(
-                text(
-                    "ALTER TABLE public.ctn_notarios "
-                    "ADD COLUMN notargest_habilitado "
-                    "BOOLEAN NOT NULL DEFAULT FALSE"
+        for intento in range(1, 4):
+            try:
+                with engine.begin() as conexion:
+                    conexion.execute(text("SET LOCAL lock_timeout = '5s'"))
+                    conexion.execute(text("SET LOCAL statement_timeout = '15s'"))
+                    conexion.execute(
+                        text(
+                            "ALTER TABLE public.ctn_notarios "
+                            "ADD COLUMN notargest_habilitado BOOLEAN NOT NULL DEFAULT FALSE"
+                        )
+                    )
+                print("[NOTARGEST MIGRACION] Columna notargest_habilitado creada.", flush=True)
+                return
+            except Exception as error:
+                print(
+                    f"[NOTARGEST MIGRACION] Intento {intento}/3 fallido: {error!r}",
+                    flush=True,
                 )
-            )
-            print(
-                "[NOTARGEST MIGRACION] Columna notargest_habilitado creada.",
-                flush=True,
-            )
-        except Exception as error:
-            print(
-                "[NOTARGEST MIGRACION] No se pudo crear la columna por un "
-                f"bloqueo/error de PostgreSQL: {error!r}",
-                flush=True,
-            )
-            raise
+                if intento < 3:
+                    _time.sleep(2)
+
+        print(
+            "[NOTARGEST MIGRACION] AVISO: no se pudo añadir notargest_habilitado; "
+            "el arranque continuará. Reintentar la migración cuando desaparezca el bloqueo.",
+            flush=True,
+        )
+    except Exception as error:
+        print(
+            f"[NOTARGEST MIGRACION] AVISO: no se pudo comprobar la columna; "
+            f"el arranque continuará y habrá que revisar la migración: {error!r}",
+            flush=True,
+        )
 
 
 @router.put("/notarias/{notaria_id}/notargest")
