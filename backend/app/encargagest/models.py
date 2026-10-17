@@ -63,3 +63,15 @@ class EncargoExternoActividad(Base):
 
 Index("ix_encargagest_estado_fecha", EncargoExterno.estado, EncargoExterno.creado_en)
 Index("ix_encargagest_notaria_fecha", EncargoExterno.notaria_id, EncargoExterno.creado_en)
+
+
+class EncargoExternoUsuario(Base):
+    __tablename__ = "encargagest_usuarios"
+
+    id = Column(Integer, primary_key=True, index=True)
+    notaria_id = Column(Integer, ForeignKey("ctn_notarios.id"), nullable=False, unique=True, index=True)
+    usuario = Column(String(100), nullable=False, unique=True, index=True)
+    password_hash = Column(String(255), nullable=False)
+    habilitado = Column(Boolean, nullable=False, default=True)
+    creado_en = Column(DateTime, nullable=False, default=datetime.utcnow)
+    actualizado_en = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
