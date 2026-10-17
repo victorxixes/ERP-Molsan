@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
 import "../../css/ApoderaGest.css";
 import "../../css/NotarGest.css";
@@ -20,7 +22,12 @@ const texto = (v) => v === null || v === undefined || v === "" ? "—" : String(
 const euros = (v) => v === null || v === undefined || v === "" ? "—" : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v));
 
 export default function NotarGest() {
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
+  const navigate = useNavigate();
+  const tokenERP = useAuthStore((s) => s.token);
+  const empleadoERP = useAuthStore((s) => s.empleado);
+  const accesoERP = Boolean(tokenERP && empleadoERP);
+  const [tokenNotario, setTokenNotario] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
+  const token = accesoERP ? tokenERP : tokenNotario;
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [expedientes, setExpedientes] = useState([]);
@@ -53,11 +60,18 @@ export default function NotarGest() {
     if (!token) return;
     setCargando(true); setError("");
     try {
-      const [perfil, lista, avisosData] = await Promise.all([peticion("/notargest/me"), peticion("/notargest/expedientes"), peticion("/notargest/avisos")]);
-      setNotario(perfil); setExpedientes(lista.items || []); setAvisos({ comentarios: avisosData.comentarios || [], documentos: avisosData.documentos || [] });
+      const [perfil, lista] = await Promise.all([peticion("/notargest/me"), peticion("/notargest/expedientes")]);
+      setNotario(perfil); setExpedientes(lista.items || []);
+      try {
+        const avisosData = await peticion("/notargest/avisos");
+        setAvisos({ comentarios: avisosData.comentarios || [], documentos: avisosData.documentos || [] });
+      } catch (errorAvisos) {
+        console.warn("No se pudieron cargar los avisos de NotarGest:", errorAvisos);
+        setAvisos({ comentarios: [], documentos: [] });
+      }
     } catch (e) {
       setError(e.message);
-      if (/sesión|acceso notargest deshabilitado|caducado/i.test(e.message)) { localStorage.removeItem(TOKEN_KEY); setToken(""); }
+      if (!accesoERP && /sesión|acceso notargest deshabilitado|caducado/i.test(e.message)) { localStorage.removeItem(TOKEN_KEY); setTokenNotario(""); }
     } finally { setCargando(false); }
   }, [token, peticion]);
   useEffect(() => { cargar(); }, [cargar]);
@@ -68,10 +82,19 @@ export default function NotarGest() {
       const response = await fetch(`${API_BASE}/notargest/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usuario: usuario.trim().toUpperCase(), password: password.trim().toUpperCase() }) });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.detail || "Credenciales incorrectas.");
-      localStorage.setItem(TOKEN_KEY, data.token); setToken(data.token); setNotario(data.notario); setPassword("");
+      localStorage.setItem(TOKEN_KEY, data.token); setTokenNotario(data.token); setNotario(data.notario); setPassword("");
     } catch (e2) { setError(e2.message); } finally { setCargando(false); }
   }
-  function salir() { localStorage.removeItem(TOKEN_KEY); setToken(""); setNotario(null); setExpedientes([]); setDetalle(null); setPassword(""); setVista("inicio"); }
+  function salir() {
+    if (accesoERP) { navigate("/modulos"); return; }
+    localStorage.removeItem(TOKEN_KEY);
+    setTokenNotario("");
+    setNotario(null);
+    setExpedientes([]);
+    setDetalle(null);
+    setPassword("");
+    setVista("inicio");
+  }
 
   async function abrirExpediente(item) {
     setCargando(true); setError(""); setMensaje("");
@@ -177,7 +200,7 @@ export default function NotarGest() {
   const titulo = esDetalle ? `Expediente ${detalle.id_expediente}` : (bandejas.find(b => b.id === vista)?.titulo || ({ avisos_comentarios: "Observaciones del gestor", avisos_documentos: "Nueva documentación añadida" }[vista]) || (vista === "inicio" ? "Mis tareas pendientes" : vista === "documentacion" ? "Carpeta Digital" : "NotarGest"));
   const tablaFactura = vista === "factura";
   return <main className="apoderagest notargest">
-    <header className="ng-cabecera"><div><span className="ng-sobrelinea">PORTAL PROFESIONAL · MOLSAN</span><h1>NotarGest</h1><p>{notario?.nombre || "Portal de la notaría"}</p></div><div className="ng-cabecera-acciones"><button className="ng-boton-secundario" onClick={cargar} disabled={cargando}>↻ Actualizar</button><button className="ng-boton-secundario" onClick={salir}>Cerrar sesión</button></div></header>
+    <header className="ng-cabecera"><div><span className="ng-sobrelinea">PORTAL PROFESIONAL · MOLSAN</span><h1>NotarGest</h1><p>{accesoERP ? (empleadoERP?.nombre || empleadoERP?.usuario || "Gestión interna ERP") : (notario?.nombre || "Portal de la notaría")}</p></div><div className="ng-cabecera-acciones"><button className="ng-boton-secundario" onClick={cargar} disabled={cargando}>↻ Actualizar</button><button className="ng-boton-secundario" onClick={salir}>{accesoERP ? "Volver a módulos" : "Cerrar sesión"}</button></div></header>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
     {vista === "inicio" && <section className="ng-estados-grid" aria-label="Estados de trabajo">
       {bandejas.map((b, i) => <button key={b.id} className={`ng-estado-card ${cuenta(b.id) ? "ng-estado-con-pendientes" : ""}`} onClick={() => {setBusqueda("");setVista(b.id);}} aria-label={`${b.titulo}: ${cuenta(b.id)} expedientes. Abrir listado`}>
