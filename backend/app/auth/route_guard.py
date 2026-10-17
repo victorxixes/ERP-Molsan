@@ -215,7 +215,10 @@ def proteger_rutas_api(app: Any) -> dict[str, int]:
         if not path.startswith("/api/"):
             continue
 
-        if path in RUTAS_PUBLICAS_EXACTAS or path.startswith("/api/notargest/"):
+        if path in RUTAS_PUBLICAS_EXACTAS or path.startswith("/api/notargest/") or path.startswith("/api/encargagest/"):
+            # EncargaGest autentica internamente las sesiones ERP y las cuentas externas.
+            # El login externo queda público; el resto valida el JWT en get_encargagest_actor.
+
             # NotarGest valida su propio JWT con ámbito de notaría.
             continue
 

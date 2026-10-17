@@ -123,6 +123,7 @@ import TiposConceptoGastos
 import ApoderaGest 
   from "./pages/apoderagest/ApoderaGest.jsx";
 import NotarGest from "./pages/notargest/NotarGest.jsx";
+import EncargaGest from "./pages/encargagest/EncargaGest.jsx";
 
 
 /**
@@ -198,8 +199,14 @@ export default function App() {
         />
         
         <Route
+
+        
           path="encargagest"
-          element={<ModuloPendiente nombre="EncargaGest" />}
+
+        
+          element={<EncargaGest />}
+
+        
         />
         
         <Route

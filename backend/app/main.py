@@ -326,6 +326,9 @@ from backend.app.apoderagest.router import (
     router as apoderagest_router,
 )
 
+# ENCARGAGEST
+from backend.app.encargagest.router import router as encargagest_router
+
 
 # ============================================================
 # INCLUIR ROUTERS
@@ -461,6 +464,7 @@ app.include_router(provisiones_router, prefix="/api/expedientes")
 
 #
 app.include_router(apoderagest_router, prefix="/api")
+app.include_router(encargagest_router, prefix="/api")
 
 # ============================================================
 # MIGRACIÓN DE ESQUEMA DE EXPEDIENTES

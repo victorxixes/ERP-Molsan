@@ -1,0 +1,636 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
+import { useAuthStore } from "../../store/authStore";
+
+const ESTADOS = [
+  { valor: "", texto: "Todos los estados" },
+  { valor: "RECIBIDO", texto: "Recibido" },
+  { valor: "EN_REVISION", texto: "En revisión" },
+  { valor: "DOCUMENTACION_PENDIENTE", texto: "Documentación pendiente" },
+  { valor: "EN_GESTION", texto: "En gestión" },
+  { valor: "INCIDENCIA", texto: "Incidencia" },
+  { valor: "RESUELTO", texto: "Resuelto" },
+  { valor: "CERRADO", texto: "Cerrado" },
+];
+
+const ESTILO_ESTADO = {
+  RECIBIDO: "border-sky-200 bg-sky-50 text-sky-700",
+  EN_REVISION: "border-violet-200 bg-violet-50 text-violet-700",
+  DOCUMENTACION_PENDIENTE: "border-amber-200 bg-amber-50 text-amber-800",
+  EN_GESTION: "border-blue-200 bg-blue-50 text-blue-700",
+  INCIDENCIA: "border-rose-200 bg-rose-50 text-rose-700",
+  RESUELTO: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  CERRADO: "border-slate-200 bg-slate-100 text-slate-600",
+};
+
+const TEXTO_ESTADO = Object.fromEntries(ESTADOS.filter((x) => x.valor).map((x) => [x.valor, x.texto]));
+
+const NUEVO_ENCARGO = {
+  notaria_id: "",
+  contacto_nombre: "",
+  contacto_email: "",
+  contacto_telefono: "",
+  tipo_encargo: "Cancelación hipotecaria",
+  titular: "",
+  nif_titular: "",
+  entidad_bancaria: "",
+  numero_prestamo: "",
+  importe: "",
+  fecha_objetivo: "",
+  prioridad: "Normal",
+  observaciones: "",
+};
+
+function fechaHora(valor) {
+  if (!valor) return "—";
+  const fecha = new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return String(valor);
+  return fecha.toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" });
+}
+
+function euros(valor) {
+  if (valor === null || valor === undefined || valor === "") return "—";
+  return Number(valor).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+}
+
+function nombreArchivoTamano(bytes) {
+  const n = Number(bytes || 0);
+  if (n < 1024) return n + " B";
+  if (n < 1024 * 1024) return (n / 1024).toLocaleString("es-ES", { maximumFractionDigits: 1 }) + " KB";
+  return (n / (1024 * 1024)).toLocaleString("es-ES", { maximumFractionDigits: 1 }) + " MB";
+}
+
+function EtiquetaEstado({ estado }) {
+  return (
+    <span className={"inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-extrabold tracking-wide " + (ESTILO_ESTADO[estado] || ESTILO_ESTADO.CERRADO)}>
+      {TEXTO_ESTADO[estado] || estado || "Sin estado"}
+    </span>
+  );
+}
+
+function Campo({ etiqueta, children, className = "" }) {
+  return (
+    <label className={"block min-w-0 " + className}>
+      <span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">{etiqueta}</span>
+      {children}
+    </label>
+  );
+}
+
+const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-amber-400 focus:ring-4 focus:ring-amber-100";
+
+export default function EncargaGest() {
+  const navigate = useNavigate();
+  const empleado = useAuthStore((state) => state.empleado);
+  const tokenERP = useAuthStore((state) => state.token);
+  const [modo, setModo] = useState(() => (
+    empleado && tokenERP ? "interno" : (localStorage.getItem("encargagest_token") ? "externo" : "login")
+  ));
+  const [sesion, setSesion] = useState(null);
+  const [loginUsuario, setLoginUsuario] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginCargando, setLoginCargando] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [modalAccesos, setModalAccesos] = useState(false);
+  const [accesos, setAccesos] = useState([]);
+  const [accesoNotariaId, setAccesoNotariaId] = useState("");
+  const [accesoPassword, setAccesoPassword] = useState("");
+  const [accesoHabilitado, setAccesoHabilitado] = useState(true);
+  const [guardandoAcceso, setGuardandoAcceso] = useState(false);
+  const [resumen, setResumen] = useState({ total: 0, por_estado: {}, requieren_atencion: 0 });
+  const [items, setItems] = useState([]);
+  const [notarias, setNotarias] = useState([]);
+  const [pagina, setPagina] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [busqueda, setBusqueda] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("");
+  const [seleccionadoId, setSeleccionadoId] = useState(null);
+  const [detalle, setDetalle] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [cargandoDetalle, setCargandoDetalle] = useState(false);
+  const [error, setError] = useState("");
+  const [modalNuevo, setModalNuevo] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+  const [form, setForm] = useState({ ...NUEVO_ENCARGO });
+  const [actividad, setActividad] = useState("");
+  const [visibleNotaria, setVisibleNotaria] = useState(true);
+  const [guardandoActividad, setGuardandoActividad] = useState(false);
+  const [subiendo, setSubiendo] = useState(false);
+  const [archivo, setArchivo] = useState(null);
+  const [mensaje, setMensaje] = useState("");
+  const [errorAccion, setErrorAccion] = useState("");
+
+  const cargarListado = useCallback(async (paginaSolicitada = pagina, q = busqueda, estado = filtroEstado) => {
+    const respuesta = await axios.get("/encargagest/encargos", {
+      params: { pagina: paginaSolicitada, por_pagina: 20, q: q.trim() || undefined, estado: estado || undefined },
+    });
+    const data = respuesta.data || {};
+    const filas = Array.isArray(data) ? data : data.items || [];
+    setItems(filas);
+    setTotal(Number(data.total ?? filas.length));
+    if (filas.length) {
+      setSeleccionadoId((actual) =>
+        actual && filas.some((x) => x.id === actual) ? actual : filas[0].id
+      );
+    } else {
+      setSeleccionadoId(null);
+      setDetalle(null);
+    }
+  }, [pagina, busqueda, filtroEstado]);
+
+  const cargarTodo = useCallback(async () => {
+    setCargando(true);
+    setError("");
+    try {
+      const [res, nts, me] = await Promise.all([
+        axios.get("/encargagest/resumen"),
+        axios.get("/encargagest/notarias"),
+        axios.get("/encargagest/me"),
+      ]);
+      setResumen(res.data || { total: 0, por_estado: {}, requieren_atencion: 0 });
+      setNotarias(Array.isArray(nts.data) ? nts.data : []);
+      setSesion(me.data || null);
+      if (me.data?.modo === "externo") {
+        setForm((actual) => ({ ...actual, notaria_id: String(me.data.notaria_id || "") }));
+      }
+      await cargarListado(pagina, busqueda, filtroEstado);
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se han podido cargar los datos de EncargaGest. Comprueba los permisos del módulo y vuelve a intentarlo.");
+    } finally {
+      setCargando(false);
+    }
+  }, [cargarListado, pagina, busqueda, filtroEstado, modo]);
+
+  useEffect(() => {
+    if (empleado && tokenERP) {
+      configurarSesionEncargaGest("interno");
+      setModo("interno");
+      return;
+    }
+    if (localStorage.getItem("encargagest_token")) {
+      configurarSesionEncargaGest("externo");
+      setModo("externo");
+    } else {
+      setModo("login");
+    }
+  }, [empleado, tokenERP]);
+
+  useEffect(() => {
+    if (modo !== "interno" && modo !== "externo") return;
+    configurarSesionEncargaGest(modo);
+    // La carga inicial se ejecuta solo al cambiar el tipo de sesión. La función
+    // cargarTodo también depende de los filtros para el botón Actualizar; incluirla
+    // aquí provocaría peticiones repetidas al cambiar la selección o escribir filtros.
+    cargarTodo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modo]);
+
+  useEffect(() => {
+    if (!seleccionadoId) {
+      setDetalle(null);
+      return;
+    }
+    let vigente = true;
+    setCargandoDetalle(true);
+    axios.get("/encargagest/encargos/" + seleccionadoId)
+      .then((r) => { if (vigente) setDetalle(r.data); })
+      .catch((e) => {
+        if (vigente) setErrorAccion(e?.response?.data?.detail || "No se ha podido abrir la ficha del encargo.");
+      })
+      .finally(() => { if (vigente) setCargandoDetalle(false); });
+    return () => { vigente = false; };
+  }, [seleccionadoId]);
+
+  const filas = useMemo(() => items, [items]);
+  const totalPaginas = Math.max(1, Math.ceil(total / 20));
+
+  const cambiarFiltro = (campo, valor) => setForm((actual) => ({ ...actual, [campo]: valor }));
+
+  async function aplicarFiltros(event) {
+    event?.preventDefault();
+    setPagina(1);
+    setCargando(true);
+    try {
+      await cargarListado(1, busqueda, filtroEstado);
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se ha podido filtrar el listado.");
+    } finally {
+      setCargando(false);
+    }
+  }
+
+  async function crearEncargo(event) {
+    event.preventDefault();
+    setGuardando(true);
+    setErrorAccion("");
+    setMensaje("");
+    try {
+      const payload = {
+        ...form,
+        notaria_id: Number(form.notaria_id),
+        importe: form.importe === "" ? null : Number(form.importe),
+        fecha_objetivo: form.fecha_objetivo || null,
+      };
+      const respuesta = await axios.post("/encargagest/encargos", payload);
+      const creado = respuesta.data;
+      setModalNuevo(false);
+      setForm({ ...NUEVO_ENCARGO });
+      setPagina(1);
+      setMensaje("Encargo " + (creado.referencia || "") + " registrado correctamente.");
+      await cargarTodo();
+      setSeleccionadoId(creado.id);
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se ha podido registrar el encargo.");
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  async function cambiarEstado(nuevoEstado) {
+    if (!detalle || !nuevoEstado || nuevoEstado === detalle.estado) return;
+    setErrorAccion("");
+    setMensaje("");
+    try {
+      await axios.post("/encargagest/encargos/" + detalle.id + "/estado", { estado: nuevoEstado });
+      await cargarTodo();
+      const actualizado = await axios.get("/encargagest/encargos/" + detalle.id);
+      setDetalle(actualizado.data);
+      setMensaje("Estado actualizado.");
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se ha podido cambiar el estado.");
+    }
+  }
+
+  async function guardarActividad(event) {
+    event.preventDefault();
+    if (!detalle || !actividad.trim()) return;
+    setGuardandoActividad(true);
+    setErrorAccion("");
+    setMensaje("");
+    try {
+      await axios.post("/encargagest/encargos/" + detalle.id + "/actividad", {
+        mensaje: actividad.trim(),
+        visible_notaria: visibleNotaria,
+        tipo: "COMENTARIO",
+      });
+      setActividad("");
+      const actualizado = await axios.get("/encargagest/encargos/" + detalle.id);
+      setDetalle(actualizado.data);
+      setMensaje("Nota añadida a la actividad del encargo.");
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se ha podido guardar la nota.");
+    } finally {
+      setGuardandoActividad(false);
+    }
+  }
+
+  async function subirDocumento(event) {
+    event.preventDefault();
+    if (!detalle || !archivo) return;
+    setSubiendo(true);
+    setErrorAccion("");
+    setMensaje("");
+    const body = new FormData();
+    body.append("archivo", archivo);
+    try {
+      await axios.post("/encargagest/encargos/" + detalle.id + "/documentos", body);
+      setArchivo(null);
+      const selector = document.getElementById("encargagest-archivo");
+      if (selector) selector.value = "";
+      const actualizado = await axios.get("/encargagest/encargos/" + detalle.id);
+      setDetalle(actualizado.data);
+      setMensaje("Documento subido y guardado.");
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se ha podido subir el documento.");
+    } finally {
+      setSubiendo(false);
+    }
+  }
+
+  async function descargarDocumento(doc) {
+    if (!detalle) return;
+    setErrorAccion("");
+    try {
+      const respuesta = await axios.get(
+        "/encargagest/encargos/" + detalle.id + "/documentos/" + doc.id + "/descargar",
+        { responseType: "blob" }
+      );
+      const url = URL.createObjectURL(respuesta.data);
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = doc.nombre_original || "documento";
+      document.body.appendChild(enlace);
+      enlace.click();
+      enlace.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se ha podido descargar el documento.");
+    }
+  }
+
+  async function eliminarDocumento(doc) {
+    if (!detalle || !window.confirm("¿Eliminar el documento «" + doc.nombre_original + "»?")) return;
+    setErrorAccion("");
+    try {
+      await axios.delete("/encargagest/encargos/" + detalle.id + "/documentos/" + doc.id);
+      const actualizado = await axios.get("/encargagest/encargos/" + detalle.id);
+      setDetalle(actualizado.data);
+      setMensaje("Documento eliminado.");
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se ha podido eliminar el documento.");
+    }
+  }
+
+  async function iniciarSesion(event) {
+    event.preventDefault();
+    setLoginCargando(true);
+    setLoginError("");
+    try {
+      const respuesta = await axios.post("/encargagest/login", { usuario: loginUsuario, password: loginPassword });
+      configurarSesionEncargaGest("externo", respuesta.data.token);
+      setSesion({
+        modo: "externo",
+        notaria_id: respuesta.data.notaria?.id,
+        notaria_nombre: respuesta.data.notaria?.nombre,
+        usuario: respuesta.data.usuario,
+      });
+      setLoginPassword("");
+      setModo("externo");
+    } catch (e) {
+      setLoginError(e?.response?.data?.detail || "No se ha podido iniciar sesión. Comprueba el usuario y la contraseña.");
+    } finally {
+      setLoginCargando(false);
+    }
+  }
+
+  function salirEncargaGest() {
+    if (modo === "externo") {
+      limpiarSesionEncargaGest();
+      setSesion(null);
+      setDetalle(null);
+      setItems([]);
+      setResumen({ total: 0, por_estado: {}, requieren_atencion: 0 });
+      setModo("login");
+    } else {
+      navigate("/modulos");
+    }
+  }
+
+  async function abrirAccesos() {
+    setErrorAccion("");
+    try {
+      const respuesta = await axios.get("/encargagest/accesos");
+      const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
+      setAccesos(lista);
+      setAccesoNotariaId((actual) => actual || String(lista[0]?.notaria_id || ""));
+      setModalAccesos(true);
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se han podido consultar los accesos externos. Revisa el permiso de edición de EncargaGest.");
+    }
+  }
+
+  const accesoSeleccionado = accesos.find((item) => String(item.notaria_id) === String(accesoNotariaId));
+
+  async function guardarAcceso(event) {
+    event.preventDefault();
+    if (!accesoNotariaId) return;
+    if (!accesoSeleccionado?.tiene_acceso && accesoPassword.length < 10) {
+      setErrorAccion("La contraseña inicial debe tener al menos 10 caracteres.");
+      return;
+    }
+    setGuardandoAcceso(true);
+    setErrorAccion("");
+    try {
+      await axios.post("/encargagest/accesos", {
+        notaria_id: Number(accesoNotariaId),
+        password: accesoPassword || null,
+        habilitado: accesoHabilitado,
+      });
+      const respuesta = await axios.get("/encargagest/accesos");
+      const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
+      setAccesos(lista);
+      setAccesoPassword("");
+      setMensaje("Acceso EncargaGest actualizado. El usuario de acceso es el NIF de la notaría registrado en CTN.");
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se ha podido guardar el acceso externo.");
+    } finally {
+      setGuardandoAcceso(false);
+    }
+  }
+
+  if (modo === "login") {
+    return (
+      <div className="grid min-h-screen place-items-center bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-4 py-10">
+        <form onSubmit={iniciarSesion} className="w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-white shadow-2xl">
+          <div className="h-2 bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-500" />
+          <div className="p-7 sm:p-9">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-300 text-sm font-black text-amber-950">EG</div>
+            <p className="mt-6 text-[10px] font-extrabold tracking-[0.2em] text-amber-700">PORTAL EXTERNO · MOLSAN ERP</p>
+            <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-900">EncargaGest</h1>
+            <p className="mt-3 text-sm leading-6 text-slate-500">Acceso independiente para notarías colaboradoras. Envía encargos, aporta documentación y consulta su seguimiento.</p>
+            {loginError && <div role="alert" className="mt-5 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs leading-5 text-rose-800">{loginError}</div>}
+            <div className="mt-6 space-y-4">
+              <Campo etiqueta="Usuario · NIF de la notaría"><input required autoComplete="username" value={loginUsuario} onChange={(e) => setLoginUsuario(e.target.value)} className={inputClass} placeholder="NIF registrado en CTN" /></Campo>
+              <Campo etiqueta="Contraseña"><input required type="password" autoComplete="current-password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} className={inputClass} placeholder="Tu contraseña de EncargaGest" /></Campo>
+            </div>
+            <button type="submit" disabled={loginCargando} className="mt-6 w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-slate-700 disabled:opacity-50">{loginCargando ? "Validando acceso…" : "Entrar en EncargaGest"}</button>
+            <p className="mt-5 text-center text-[10px] leading-5 text-slate-400">¿Necesitas acceso? Solicítalo a MOLSAN. Las credenciales de EncargaGest son independientes de NotarGest.</p>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
+        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-300 text-sm font-black text-amber-950 shadow-sm">EG</div>
+            <div>
+              <p className="text-[9px] font-extrabold tracking-[0.2em] text-amber-700">MOLSAN ERP · PREMIUM 2027</p>
+              <h1 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">EncargaGest</h1>
+              <p className="hidden text-xs text-slate-500 sm:block">Recepción y seguimiento de encargos notariales externos</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="hidden max-w-[280px] truncate rounded-xl border border-amber-100 bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-900 md:inline-flex">{modo === "externo" ? "Portal de notaría · " + (sesion?.notaria_nombre || "Sesión externa") : "Gestión interna · catálogo CTN"}</span>
+            <button type="button" onClick={salirEncargaGest} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50">{modo === "externo" ? "Cerrar sesión" : "← Módulos"}</button>
+            <button type="button" onClick={cargarTodo} disabled={cargando} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-700 hover:border-amber-300 disabled:opacity-60">{cargando ? "Actualizando…" : "↻ Actualizar"}</button>
+            {modo === "interno" && <button type="button" onClick={abrirAccesos} className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs font-extrabold text-amber-900 hover:bg-amber-100">Accesos externos</button>}
+            <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm hover:bg-slate-700">＋ Nuevo encargo</button>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
+        {error && (
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800" role="alert">
+            <span>{error}</span>
+            <button type="button" className="font-bold underline" onClick={cargarTodo}>Reintentar</button>
+          </div>
+        )}
+        {mensaje && <div className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">{mensaje}</div>}
+        {errorAccion && <div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">{errorAccion}</div>}
+
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-amber-500">▤</span></div><p className="mt-1 text-xs text-slate-500">Solicitudes registradas</p></div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{resumen.por_estado?.RECIBIDO || 0}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Nuevas entradas</p></div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">En gestión</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-blue-700">{(resumen.por_estado?.EN_GESTION || 0) + (resumen.por_estado?.EN_REVISION || 0)}</strong><span className="text-xl text-blue-500">◷</span></div><p className="mt-1 text-xs text-slate-500">Revisión y tramitación</p></div>
+          <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 shadow-sm"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-amber-700">Requieren atención</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-amber-900">{resumen.requieren_atencion || 0}</strong><span className="text-xl text-amber-600">!</span></div><p className="mt-1 text-xs text-amber-800">Incidencias o documentación pendiente</p></div>
+        </section>
+
+        <section className="mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]">
+          <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="border-b border-slate-100 p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span></div>
+              <form className="mt-4 space-y-2" onSubmit={aplicarFiltros}>
+                <input className={inputClass} type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar referencia, notaría, titular o banco…" />
+                <div className="flex gap-2">
+                  <select className={inputClass} value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
+                    {ESTADOS.map((estado) => <option key={estado.valor || "todos"} value={estado.valor}>{estado.texto}</option>)}
+                  </select>
+                  <button type="submit" className="shrink-0 rounded-xl bg-amber-500 px-4 text-xs font-extrabold text-amber-950 hover:bg-amber-400">Filtrar</button>
+                </div>
+              </form>
+            </div>
+            {cargando ? <div className="p-10 text-center text-sm text-slate-500">Cargando encargos…</div> : !filas.length ? (
+              <div className="p-10 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-xl text-slate-400">▤</div><h3 className="mt-3 text-sm font-bold text-slate-800">Todavía no hay encargos</h3><p className="mt-1 text-xs leading-5 text-slate-500">Crea el primer encargo y empieza a gestionar las solicitudes recibidas.</p><button type="button" onClick={() => setModalNuevo(true)} className="mt-4 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white">＋ Registrar encargo</button></div>
+            ) : (
+              <div className="divide-y divide-slate-100">
+                {filas.map((item) => (
+                  <button type="button" key={item.id} onClick={() => { setSeleccionadoId(item.id); setErrorAccion(""); }} className={"block w-full border-l-4 p-4 text-left transition hover:bg-amber-50/50 " + (seleccionadoId === item.id ? "border-amber-500 bg-amber-50/70" : "border-transparent")}>
+                    <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-[10px] font-black tracking-wide text-amber-700">{item.referencia || ("EG-" + item.id)}</p><h3 className="mt-1 truncate text-sm font-extrabold text-slate-900">{item.titular}</h3><p className="mt-1 truncate text-xs text-slate-500">{item.notaria_nombre}</p></div><EtiquetaEstado estado={item.estado} /></div>
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-500"><span>{item.entidad_bancaria || "Entidad no indicada"}</span><span>{fechaHora(item.actualizado_en)}</span></div>
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3">
+              <button type="button" disabled={pagina <= 1 || cargando} onClick={() => { const p = pagina - 1; setPagina(p); cargarListado(p).catch((e) => setError(e?.response?.data?.detail || "Error al cargar la página.")); }} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold disabled:opacity-40">← Anterior</button>
+              <span className="text-[10px] text-slate-400">20 por página</span>
+              <button type="button" disabled={pagina >= totalPaginas || cargando} onClick={() => { const p = pagina + 1; setPagina(p); cargarListado(p).catch((e) => setError(e?.response?.data?.detail || "Error al cargar la página.")); }} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold disabled:opacity-40">Siguiente →</button>
+            </div>
+          </div>
+
+          <div className="min-w-0 rounded-2xl border border-slate-200 bg-white shadow-sm">
+            {!detalle ? (
+              <div className="grid min-h-[500px] place-items-center p-8 text-center"><div><div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-amber-50 text-2xl text-amber-600">EG</div><h2 className="mt-4 font-extrabold text-slate-900">Ficha del encargo</h2><p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">Selecciona un encargo de la bandeja o registra una nueva solicitud.</p></div></div>
+            ) : (
+              <>
+                <div className="border-b border-slate-100 p-5 sm:p-6">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="min-w-0"><p className="text-[10px] font-black tracking-[0.18em] text-amber-700">{detalle.referencia || ("EG-" + detalle.id)} · FICHA DE ENCARGO</p><h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">{detalle.titular}</h2><p className="mt-1 text-sm text-slate-500">{detalle.notaria_nombre}</p></div>
+                    <div className="min-w-[190px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span>{modo === "interno" ? <select aria-label="Cambiar estado del encargo" value={detalle.estado} onChange={(e) => cambiarEstado(e.target.value)} className={inputClass}>{ESTADOS.filter((x) => x.valor).map((x) => <option key={x.valor} value={x.valor}>{x.texto}</option>)}</select> : <div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>}</div>
+                  </div>
+                  <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Tipo de encargo</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.tipo_encargo}</p></div>
+                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Importe</span><p className="mt-1 text-xs font-bold text-slate-800">{euros(detalle.importe)}</p></div>
+                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Prioridad</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.prioridad}</p></div>
+                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Fecha objetivo</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.fecha_objetivo || "Sin fecha"}</p></div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 p-5 sm:p-6 xl:grid-cols-2">
+                  <section>
+                    <div className="flex items-center justify-between"><h3 className="text-sm font-extrabold text-slate-900">Datos de la solicitud</h3><span className="text-[10px] text-slate-400">CTN · ID {detalle.notaria_id}</span></div>
+                    <dl className="mt-3 space-y-3 text-xs">
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">NIF titular</dt><dd className="text-right font-semibold text-slate-800">{detalle.nif_titular || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Entidad bancaria</dt><dd className="text-right font-semibold text-slate-800">{detalle.entidad_bancaria || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">N.º préstamo</dt><dd className="text-right font-semibold text-slate-800">{detalle.numero_prestamo || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Persona de contacto</dt><dd className="text-right font-semibold text-slate-800">{detalle.contacto_nombre || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Email / teléfono</dt><dd className="break-all text-right font-semibold text-slate-800">{[detalle.contacto_email, detalle.contacto_telefono].filter(Boolean).join(" · ") || "—"}</dd></div>
+                      <div className="border-b border-slate-100 pb-3"><dt className="mb-1 text-slate-500">Observaciones de la notaría</dt><dd className="whitespace-pre-wrap leading-5 text-slate-700">{detalle.observaciones || "Sin observaciones."}</dd></div>
+                      {modo === "interno" && detalle.observaciones_internas ? <div className="rounded-xl border border-amber-100 bg-amber-50/60 p-3"><dt className="mb-1 font-bold text-amber-900">Nota interna MOLSAN</dt><dd className="whitespace-pre-wrap leading-5 text-amber-900">{detalle.observaciones_internas}</dd></div> : null}
+                    </dl>
+                  </section>
+
+                  <section>
+                    <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-900">Documentación</h3><span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">{detalle.documentos?.length || 0} archivos</span></div>
+                    <form className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3" onSubmit={subirDocumento}>
+                      <input id="encargagest-archivo" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.eml,.msg,.txt" onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="block w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:text-xs file:font-bold file:text-slate-700" />
+                      <div className="mt-2 flex items-center justify-between gap-2"><span className="text-[10px] text-slate-400">PDF, Office, imagen o correo · máx. 25 MB</span><button type="submit" disabled={!archivo || subiendo} className="rounded-lg bg-slate-900 px-3 py-2 text-[10px] font-extrabold text-white disabled:opacity-40">{subiendo ? "Subiendo…" : "Subir archivo"}</button></div>
+                    </form>
+                    <div className="mt-3 space-y-2">
+                      {!detalle.documentos?.length ? <p className="rounded-xl bg-slate-50 p-4 text-xs text-slate-500">Todavía no se ha adjuntado documentación.</p> : detalle.documentos.map((doc) => (
+                        <div key={doc.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-3">
+                          <div className="min-w-0"><p className="break-words text-xs font-bold text-slate-800">{doc.nombre_original}</p><p className="mt-1 text-[10px] text-slate-400">{nombreArchivoTamano(doc.tamano_bytes)} · {fechaHora(doc.fecha_subida)}</p></div>
+                          <div className="flex shrink-0 gap-1"><button type="button" onClick={() => descargarDocumento(doc)} className="rounded-lg border border-slate-200 px-2 py-1.5 text-[10px] font-bold hover:bg-slate-50">Descargar</button>{modo === "interno" && <button type="button" onClick={() => eliminarDocumento(doc)} className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-700 hover:bg-rose-50">×</button>}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section className="xl:col-span-2">
+                    <div className="flex items-center justify-between"><h3 className="text-sm font-extrabold text-slate-900">Seguimiento e incidencias</h3><span className="text-[10px] text-slate-400">Historial cronológico</span></div>
+                    <form onSubmit={guardarActividad} className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                      <textarea rows={3} maxLength={5000} value={actividad} onChange={(e) => setActividad(e.target.value)} placeholder="Añade una nota, solicita documentación o registra una incidencia…" className={inputClass + " resize-y"} />
+                      <div className="mt-2 flex flex-wrap items-center justify-between gap-3"><label className="flex items-center gap-2 text-xs text-slate-600"><input type="checkbox" checked={visibleNotaria} onChange={(e) => setVisibleNotaria(e.target.checked)} /> Visible para la notaría</label><button disabled={!actividad.trim() || guardandoActividad} type="submit" className="rounded-lg bg-amber-500 px-4 py-2 text-xs font-extrabold text-amber-950 disabled:opacity-40">{guardandoActividad ? "Guardando…" : "Añadir al seguimiento"}</button></div>
+                    </form>
+                    <div className="mt-4 space-y-3">
+                      {!detalle.actividad?.length ? <p className="py-3 text-xs text-slate-500">El historial aparecerá aquí conforme avance la gestión.</p> : detalle.actividad.map((entrada) => (
+                        <article key={entrada.id} className="relative border-l-2 border-amber-200 pl-4">
+                          <span className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-amber-500" />
+                          <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-extrabold text-slate-800">{entrada.autor_nombre} <span className="ml-1 font-medium text-slate-400">· {entrada.tipo}</span></p><time className="text-[10px] text-slate-400">{fechaHora(entrada.creado_en)}</time></div>
+                          <p className="mt-1 whitespace-pre-wrap text-xs leading-5 text-slate-600">{entrada.mensaje}</p>
+                          {!entrada.visible_notaria && <span className="mt-1 inline-flex rounded bg-slate-100 px-2 py-0.5 text-[9px] font-bold text-slate-500">Solo interno MOLSAN</span>}
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                  {cargandoDetalle && <div className="xl:col-span-2 text-xs text-slate-400">Actualizando la ficha…</div>}
+                </div>
+              </>
+            )}
+          </div>
+        </section>
+        <p className="mt-6 text-center text-[10px] font-medium tracking-wide text-slate-400">MOLSAN ERP · EncargaGest · Portal independiente conectado al catálogo CTN</p>
+      </main>
+
+      {modalNuevo && (
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-950/50 p-3 backdrop-blur-sm sm:p-6" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModalNuevo(false); }}>
+          <form onSubmit={crearEncargo} className="my-auto max-h-[95vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
+            <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-100 bg-white/95 px-5 py-4 backdrop-blur sm:px-7"><div><p className="text-[9px] font-extrabold tracking-[0.18em] text-amber-700">ENCARGAGEST · NUEVA SOLICITUD</p><h2 className="mt-1 text-xl font-black text-slate-900">Registrar encargo externo</h2><p className="mt-1 text-xs text-slate-500">La notaría se selecciona desde el catálogo CTN existente.</p></div><button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50">×</button></div>
+            <div className="grid grid-cols-1 gap-4 px-5 py-5 sm:grid-cols-2 sm:px-7">
+              {modo === "interno" ? <Campo etiqueta="Notaría CTN *" className="sm:col-span-2"><select required value={form.notaria_id} onChange={(e) => cambiarFiltro("notaria_id", e.target.value)} className={inputClass}><option value="">Selecciona una notaría…</option>{notarias.map((n) => <option key={n.id} value={n.id}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}</select>{!notarias.length && <span className="mt-1 block text-[10px] text-rose-600">No hay notarías CTN disponibles o no se han podido cargar.</span>}</Campo> : <div className="sm:col-span-2 rounded-xl border border-amber-100 bg-amber-50/70 p-3 text-xs text-amber-900">El encargo se registrará a nombre de <strong>{sesion?.notaria_nombre || "tu notaría"}</strong>, vinculada a CTN.</div>}
+              <Campo etiqueta="Tipo de encargo *"><select required value={form.tipo_encargo} onChange={(e) => cambiarFiltro("tipo_encargo", e.target.value)} className={inputClass}><option>Cancelación hipotecaria</option><option>Solicitud de documentación</option><option>Gestión registral</option><option>Subsanación de incidencia</option><option>Otro encargo</option></select></Campo>
+              <Campo etiqueta="Prioridad"><select value={form.prioridad} onChange={(e) => cambiarFiltro("prioridad", e.target.value)} className={inputClass}><option>Normal</option><option>Alta</option><option>Urgente</option><option>Baja</option></select></Campo>
+              <Campo etiqueta="Nombre del titular *"><input required minLength={2} maxLength={300} value={form.titular} onChange={(e) => cambiarFiltro("titular", e.target.value)} placeholder="Nombre y apellidos / razón social" className={inputClass} /></Campo>
+              <Campo etiqueta="NIF / CIF titular"><input maxLength={50} value={form.nif_titular} onChange={(e) => cambiarFiltro("nif_titular", e.target.value)} placeholder="Documento identificativo" className={inputClass} /></Campo>
+              <Campo etiqueta="Entidad bancaria"><input maxLength={200} value={form.entidad_bancaria} onChange={(e) => cambiarFiltro("entidad_bancaria", e.target.value)} placeholder="Banco o entidad acreedora" className={inputClass} /></Campo>
+              <Campo etiqueta="Número de préstamo"><input maxLength={150} value={form.numero_prestamo} onChange={(e) => cambiarFiltro("numero_prestamo", e.target.value)} placeholder="Referencia de préstamo" className={inputClass} /></Campo>
+              <Campo etiqueta="Importe (€)"><input type="number" min="0" step="0.01" value={form.importe} onChange={(e) => cambiarFiltro("importe", e.target.value)} placeholder="0,00" className={inputClass} /></Campo>
+              <Campo etiqueta="Fecha objetivo"><input type="date" value={form.fecha_objetivo} onChange={(e) => cambiarFiltro("fecha_objetivo", e.target.value)} className={inputClass} /></Campo>
+              <Campo etiqueta="Contacto en la notaría"><input maxLength={200} value={form.contacto_nombre} onChange={(e) => cambiarFiltro("contacto_nombre", e.target.value)} placeholder="Persona de contacto" className={inputClass} /></Campo>
+              <Campo etiqueta="Email de contacto"><input type="email" maxLength={320} value={form.contacto_email} onChange={(e) => cambiarFiltro("contacto_email", e.target.value)} placeholder="nombre@notaria.es" className={inputClass} /></Campo>
+              <Campo etiqueta="Teléfono de contacto"><input maxLength={60} value={form.contacto_telefono} onChange={(e) => cambiarFiltro("contacto_telefono", e.target.value)} placeholder="Teléfono directo" className={inputClass} /></Campo>
+              <Campo etiqueta="Observaciones de la solicitud" className="sm:col-span-2"><textarea rows={4} maxLength={10000} value={form.observaciones} onChange={(e) => cambiarFiltro("observaciones", e.target.value)} placeholder="Instrucciones, documentación recibida, particularidades del encargo…" className={inputClass + " resize-y"} /></Campo>
+            </div>
+            {errorAccion && <p className="mx-5 mb-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800 sm:mx-7">{errorAccion}</p>}
+            <div className="sticky bottom-0 flex flex-wrap justify-end gap-2 border-t border-slate-100 bg-white/95 px-5 py-4 backdrop-blur sm:px-7"><button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardando || !notarias.length} className="rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-extrabold text-amber-950 disabled:opacity-50">{guardando ? "Guardando encargo…" : "Guardar encargo"}</button></div>
+          </form>
+        </div>
+      )}
+
+      {modalAccesos && (
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-950/50 p-3 backdrop-blur-sm sm:p-6">
+          <form onSubmit={guardarAcceso} className="my-auto w-full max-w-2xl overflow-hidden rounded-3xl border border-white/70 bg-white shadow-2xl">
+            <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4 sm:px-7">
+              <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-amber-700">ENCARGAGEST · CONTROL DE ACCESO</p><h2 className="mt-1 text-xl font-black text-slate-900">Accesos de notarías externas</h2><p className="mt-1 text-xs leading-5 text-slate-500">Las cuentas son independientes de NotarGest. El usuario de entrada se obtiene del NIF de CTN.</p></div>
+              <button type="button" onClick={() => setModalAccesos(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500">×</button>
+            </div>
+            <div className="space-y-4 p-5 sm:p-7">
+              <Campo etiqueta="Notaría del catálogo CTN *"><select required value={accesoNotariaId} onChange={(e) => { setAccesoNotariaId(e.target.value); setAccesoPassword(""); const seleccionado = accesos.find((x) => String(x.notaria_id) === e.target.value); setAccesoHabilitado(seleccionado?.habilitado ?? true); }} className={inputClass}><option value="">Selecciona una notaría…</option>{accesos.map((x) => <option key={x.notaria_id} value={x.notaria_id}>{x.nombre}{x.nif ? " · " + x.nif : ""}{x.tiene_acceso ? (x.habilitado ? " · acceso activo" : " · acceso deshabilitado") : " · sin acceso"}</option>)}</select></Campo>
+              {accesoSeleccionado && <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs"><p className="text-slate-500">Usuario de acceso</p><p className="mt-1 font-black tracking-wide text-slate-900">{accesoSeleccionado.usuario || "Completa el NIF de CTN"}</p><p className="mt-1 leading-5 text-slate-500">No se muestra ni se almacena la contraseña en texto plano. Si ya existe la cuenta, déjala vacía para conservarla.</p></div>}
+              <Campo etiqueta={accesoSeleccionado?.tiene_acceso ? "Nueva contraseña (opcional)" : "Contraseña inicial *"}><input type="password" autoComplete="new-password" minLength={10} required={!accesoSeleccionado?.tiene_acceso} value={accesoPassword} onChange={(e) => setAccesoPassword(e.target.value)} className={inputClass} placeholder="Mínimo 10 caracteres" /></Campo>
+              <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-3 text-xs text-slate-700"><input type="checkbox" checked={accesoHabilitado} onChange={(e) => setAccesoHabilitado(e.target.checked)} />Permitir acceso al portal EncargaGest</label>
+              <p className="rounded-xl border border-blue-100 bg-blue-50/70 p-3 text-xs leading-5 text-blue-900">Las notarías solo verán encargos asociados a su propio registro CTN. La información interna y los estados de gestión quedan reservados a MOLSAN.</p>
+            </div>
+            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 px-5 py-4 sm:px-7"><button type="button" onClick={() => setModalAccesos(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cerrar</button><button type="submit" disabled={guardandoAcceso || !accesoNotariaId} className="rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-extrabold text-amber-950 disabled:opacity-50">{guardandoAcceso ? "Guardando acceso…" : "Guardar acceso"}</button></div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
