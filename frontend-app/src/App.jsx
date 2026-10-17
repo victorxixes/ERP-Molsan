@@ -199,8 +199,14 @@ export default function App() {
         />
         
         <Route
+
+        
           path="encargagest"
-          element={<RequireAuth><EncargaGest /></RequireAuth>}
+
+        
+          element={<EncargaGest />}
+
+        
         />
         
         <Route
