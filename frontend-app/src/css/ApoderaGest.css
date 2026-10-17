@@ -1524,3 +1524,34 @@
   .ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid,
   .ag-ficha-paneles .ag-ficha-encargo-notarial .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* Ajustes finales ApoderaGest: bloques plegables, visor PDF junto a la carpeta y firma urgente */
+.ag-ficha-paneles details.ag-encargo-subpanel{min-width:0;align-self:stretch}
+.ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;cursor:pointer;list-style:none}
+.ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading::-webkit-details-marker{display:none}
+.ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading::after{content:"＋";flex:0 0 auto;color:#6378a5;font-size:17px;font-weight:800}
+.ag-ficha-paneles details.ag-encargo-subpanel[open]>.ag-ficha-bloque-heading::after{content:"−"}
+.ag-ficha-paneles details.ag-encargo-subpanel>.ag-ficha-bloque-heading h4{flex:1}
+.ag-ficha-paneles .ag-ficha-archivo{grid-column:1!important}
+.ag-ficha-paneles .ag-ficha-registral{grid-column:2!important}
+.ag-archivo-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}
+.ag-visor-inline{min-width:0;min-height:190px;border:1px solid #dbe4f0;border-radius:12px;background:#f8faff;overflow:hidden}
+.ag-visor-inline-cabecera{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border-bottom:1px solid #e1e8f4;background:#fff}
+.ag-visor-inline-cabecera>strong{min-width:0;overflow-wrap:anywhere;color:#34445f;font-size:11px}
+.ag-visor-inline-cabecera>div{display:flex;gap:6px;flex:0 0 auto}
+.ag-visor-inline-cabecera button{padding:6px 9px;border:1px solid #d7e0ef;border-radius:8px;background:#fff;color:#33435e;font-size:11px;font-weight:750}
+.ag-visor-inline-contenido{height:390px;max-height:55vh;display:grid;place-items:stretch;background:#e9eef7}
+.ag-visor-inline-contenido .ag-visor-pdf{display:block;width:100%;height:100%;min-height:300px;border:0;background:#fff}
+.ag-visor-inline-contenido .ag-visor-imagen{display:block;max-width:100%;max-height:100%;margin:auto;object-fit:contain}
+.ag-visor-inline-vacio{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px;text-align:center;color:#71809a}
+.ag-visor-inline-vacio>span{font-size:28px;color:#5474c8}
+.ag-visor-inline-vacio strong{font-size:12px;color:#34445f}
+.ag-visor-inline-vacio p{max-width:320px;margin:0;font-size:11px;line-height:1.5}
+.ag-archivo-carpetas{min-width:0}
+.ag-carpeta-apoderado>summary{list-style:none;cursor:pointer}
+.ag-carpeta-apoderado>summary::-webkit-details-marker{display:none}
+.ag-carpeta-apoderado>summary::after{content:"＋";margin-left:auto;color:#6378a5;font-weight:800}
+.ag-carpeta-apoderado[open]>summary::after{content:"−"}
+@media(min-width:901px){.ag-archivo-layout{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)}}
+@media(max-width:900px){.ag-ficha-paneles .ag-ficha-archivo,.ag-ficha-paneles .ag-ficha-registral{grid-column:1/-1!important}.ag-archivo-layout{grid-template-columns:minmax(0,1fr)}.ag-visor-inline-contenido{height:340px}}
