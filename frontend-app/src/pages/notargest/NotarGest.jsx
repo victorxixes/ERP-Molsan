@@ -233,16 +233,6 @@ export default function NotarGest() {
     <main className="relative min-h-[calc(100vh-70px)]">
       <div className="w-full px-4 py-6 lg:px-6">
         <div className="w-full apoderagest notargest">
-    <aside className="ng-bandejas-sidebar" aria-label="Bandejas de trabajo">
-      <div className="ng-bandejas-heading"><span className="ng-kicker">NOTARGEST</span><strong>Bandejas de trabajo</strong></div>
-      {bandejas.map((b,i)=><button key={b.id} className={`ng-bandeja-link ${vista===b.id?"activa":""} ${cuenta(b.id)?"con-pendientes":""}`} onClick={()=>{setBusqueda("");setVista(b.id);}}>
-        <span className="ng-bandeja-icono">{["↗","✍","€","▤","◷","▣","!","▧","✓"][i]}</span>
-        <span className="ng-bandeja-texto"><strong>{b.titulo}</strong><small>Ver expedientes y abrir ficha</small></span>
-        <span className="ng-bandeja-numero">{cargando?"…":cuenta(b.id)}</span><span className="ng-bandeja-flecha">›</span>
-      </button>)}
-      <button className={`ng-bandeja-link ${vista==="avisos_comentarios"?"activa":""} ${avisos.comentarios.length?"con-pendientes":""}`} onClick={()=>setVista("avisos_comentarios")}><span className="ng-bandeja-icono">💬</span><span className="ng-bandeja-texto"><strong>Observaciones del gestor</strong><small>Comentarios visibles para la notaría</small></span><span className="ng-bandeja-numero">{cargando?"…":avisos.comentarios.length}</span><span className="ng-bandeja-flecha">›</span></button>
-      <button className={`ng-bandeja-link ${vista==="avisos_documentos"?"activa":""} ${avisos.documentos.length?"con-pendientes":""}`} onClick={()=>setVista("avisos_documentos")}><span className="ng-bandeja-icono">📎</span><span className="ng-bandeja-texto"><strong>Nueva documentación</strong><small>Documentos añadidos tras el envío y antes de la firma</small></span><span className="ng-bandeja-numero">{cargando?"…":avisos.documentos.length}</span><span className="ng-bandeja-flecha">›</span></button>
-    </aside>
     <header className="ag-hero ng-hero-apoderagest">
       <div className="ag-hero-identidad">
         <div className="ag-marca ng-marca-notargest"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
@@ -262,6 +252,19 @@ export default function NotarGest() {
       </div>
     </header>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
+    {vista === "inicio" && <section className="ng-tareas-sidebar" aria-label="Accesos rápidos NotarGest">
+      <button className={vista==="inicio"?"ng-tarea-activa":""} onClick={()=>{setBusqueda("");setVista("inicio");}}><span>◫</span><strong>Dashboard</strong></button>
+      <button onClick={()=>{setBusqueda("");setVista("recepcion");}}><span>↗</span><strong>Nuevos encargos</strong><b>{cuenta("recepcion")}</b></button>
+      <button onClick={()=>{setBusqueda("");setVista("firma");}}><span>✍</span><strong>Pendientes de firma</strong><b>{cuenta("firma")}</b></button>
+      <button onClick={()=>{setBusqueda("");setVista("copia");}}><span>▧</span><strong>Pendientes copias simples</strong><b>{cuenta("copia")}</b></button>
+      <button onClick={()=>{setBusqueda("");setVista("factura");}}><span>€</span><strong>Pendientes de factura notarial</strong><b>{cuenta("factura")}</b></button>
+      <button onClick={()=>{setBusqueda("");setVista("ajd");}}><span>◷</span><strong>Pendientes de AJD / ITP</strong><b>{cuenta("ajd")}</b></button>
+      <button onClick={()=>{setBusqueda("");setVista("registro");}}><span>▤</span><strong>Pendientes de presentación registral</strong><b>{cuenta("registro")}</b></button>
+      <button onClick={()=>{setBusqueda("");setVista("defectos");}}><span>!</span><strong>Expedientes con defectos</strong><b>{cuenta("defectos")}</b></button>
+      <button onClick={()=>{setBusqueda("");setVista("inscripcion");}}><span>▣</span><strong>Inscripciones registrales</strong><b>{cuenta("inscripcion")}</b></button>
+      <button onClick={()=>{setBusqueda("");setVista("cerrada");}}><span>✓</span><strong>Escrituras cerradas inscritas</strong><b>{cuenta("cerrada")}</b></button>
+      <button onClick={()=>setVista("avisos")}><span>♧</span><strong>Notificaciones</strong><b>{avisos.comentarios.length+avisos.documentos.length}</b></button>
+    </section>}
     {vista === "inicio" && <section className="ng-dashboard-analitica">
       <div className="ng-dashboard-kpis">
         <article><span>Firmas realizadas</span><strong>{expedientes.filter(x => x.fecha_firma && x.protocolo).length}</strong><small>Firmas reales con fecha y protocolo</small></article>
