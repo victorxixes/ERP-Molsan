@@ -562,24 +562,20 @@ function TablaEncargos({ encargos, onFirmado }) {
                             <div className="ag-ficha-bloque-heading"><span>05 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></div>
                             <p>Al pulsar «Firmar», la fecha y el protocolo se guardan en los campos oficiales de FichaExpediente.</p>
                             <div className="ag-firmar-controles">
-                              <label>Fecha de firma<input type="date" value={firma.fecha_firma || encargo.fecha_firma || fechaHoyLocal()} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
-                              <label>Número de protocolo<input type="text" maxLength={200} value={firma.protocolo || encargo.protocolo || ""} onChange={(e) => cambiarFirma(id, "protocolo", e.target.value)} placeholder="Introduce el protocolo" /></label>
-                              <label>Tipo de firma<select value={firma.tipo_firma || encargo.tipo_firma || "Presencial"} onChange={(e) => cambiarFirma(id, "tipo_firma", e.target.value)}><option value="Videoconferencia">Videoconferencia</option><option value="Presencial">Presencial</option></select></label>
-                              <div className="ag-firmar-notario-accion">
-                                <label>Notario otorgante
-                                  <select value={firma.notario_otorgante || encargo.notario_otorgante || encargo.nombre_notario || encargo.notario || ""} onChange={(e) => cambiarFirma(id, "notario_otorgante", e.target.value)}>
-                                    <option value={encargo.nombre_notario || encargo.notario || ""}>{encargo.nombre_notario || encargo.notario || "Notario del encargo"}</option>
-                                    {(() => {
-                                      const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es");
-                                      const nombreAsignado = normalizar(encargo.nombre_notario || encargo.notario);
-                                      const notarioCtn = catalogoCtn.find((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) === nombreAsignado);
-                                      const asociados = (notarioCtn?.notarios_asociados || []).filter((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) !== nombreAsignado);
-                                      return asociados.map((n) => { const nombre = n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" "); return <option key={n.id} value={nombre}>{nombre}</option>; });
-                                    })()}
-                                  </select>
-                                </label>
-                                <button type="button" disabled={!!guardandoFirma[id]} onClick={() => firmar(encargo)}>{guardandoFirma[id] ? "Guardando…" : "Firmar"}</button>
-                              </div>
+                              <label className="ag-firma-fecha">Fecha de firma<input type="date" value={firma.fecha_firma || encargo.fecha_firma || fechaHoyLocal()} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
+                              <label className="ag-firma-protocolo">Número de protocolo<input type="text" maxLength={200} value={firma.protocolo || encargo.protocolo || ""} onChange={(e) => cambiarFirma(id, "protocolo", e.target.value)} placeholder="N.º protocolo" /></label>
+                              <label className="ag-firma-tipo">Tipo de firma<select value={firma.tipo_firma || encargo.tipo_firma || "Presencial"} onChange={(e) => cambiarFirma(id, "tipo_firma", e.target.value)}><option value="Videoconferencia">Videoconferencia</option><option value="Presencial">Presencial</option></select></label>
+                              <label className="ag-firma-notario">Notario otorgante<select value={firma.notario_otorgante || encargo.notario_otorgante || encargo.nombre_notario || encargo.notario || ""} onChange={(e) => cambiarFirma(id, "notario_otorgante", e.target.value)}>
+                                <option value={encargo.nombre_notario || encargo.notario || ""}>{encargo.nombre_notario || encargo.notario || "Notario del encargo"}</option>
+                                {(() => {
+                                  const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es");
+                                  const nombreAsignado = normalizar(encargo.nombre_notario || encargo.notario);
+                                  const notarioCtn = catalogoCtn.find((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) === nombreAsignado);
+                                  const asociados = (notarioCtn?.notarios_asociados || []).filter((n) => normalizar(n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" ")) !== nombreAsignado);
+                                  return asociados.map((n) => { const nombre = n.nombre_completo || [n.nombre, n.apellidos].filter(Boolean).join(" "); return <option key={n.id} value={nombre}>{nombre}</option>; });
+                                })()}
+                              </select></label>
+                              <button className="ag-firma-boton" type="button" disabled={!!guardandoFirma[id]} onClick={() => firmar(encargo)}>{guardandoFirma[id] ? "Guardando…" : "Firmar"}</button>
                             </div>
                             {erroresFirma[id] && <p className="ag-firma-error">{erroresFirma[id]}</p>}
                             {mensajeFirma[id] && <p className="ag-firma-ok">{mensajeFirma[id]}</p>}
