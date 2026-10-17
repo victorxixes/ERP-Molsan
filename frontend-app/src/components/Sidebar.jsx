@@ -820,7 +820,8 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               gap-1.5
               flex-1
               min-w-0
-              ${navigationItems ? "flex-wrap overflow-visible" : "overflow-x-auto overflow-y-visible"}
+              flex-wrap
+              overflow-visible
               pb-0.5
             "
           >
