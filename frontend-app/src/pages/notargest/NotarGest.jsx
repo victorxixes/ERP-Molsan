@@ -152,10 +152,14 @@ export default function NotarGest() {
   return <main className="apoderagest notargest">
     <header className="ng-cabecera"><div><span className="ng-sobrelinea">PORTAL PROFESIONAL · MOLSAN</span><h1>NotarGest</h1><p>{notario?.nombre || "Portal de la notaría"}</p></div><div className="ng-cabecera-acciones"><button className="ng-boton-secundario" onClick={cargar} disabled={cargando}>↻ Actualizar</button><button className="ng-boton-secundario" onClick={salir}>Cerrar sesión</button></div></header>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
-    {vista === "inicio" && <>
-      <section className="ng-contadores">{bandejas.slice(0,4).map(b => <button key={b.id} className="ng-contador" onClick={() => {setBusqueda("");setVista(b.id);}}><span>{b.titulo}</span><strong>{cargando ? "…" : cuenta(b.id)}</strong></button>)}</section>
-      <section className="ng-panel"><div className="ng-panel-titulo"><h2>Estados de trabajo</h2></div><div className="ng-lista-tareas">{bandejas.map(b => <button className="ng-tarea" key={b.id} onClick={() => {setBusqueda("");setVista(b.id);}}><span>{b.titulo}</span><strong>{cuenta(b.id)}</strong><span className="ng-flecha">›</span></button>)}</div></section>
-    </>}
+    {vista === "inicio" && <section className="ng-estados-grid" aria-label="Estados de trabajo">
+      {bandejas.map((b, i) => <button key={b.id} className={`ng-estado-card ${cuenta(b.id) ? "ng-estado-con-pendientes" : ""}`} onClick={() => {setBusqueda("");setVista(b.id);}} aria-label={`${b.titulo}: ${cuenta(b.id)} expedientes. Abrir listado`}>
+        <span className="ng-estado-icono" aria-hidden="true">{["↗","✍","€","▤","◷","▣","!","▧","✓"][i]}</span>
+        <span className="ng-estado-texto"><strong>{b.titulo}</strong><small>Ver expedientes y abrir ficha</small></span>
+        <span className="ng-estado-cantidad">{cargando ? "…" : cuenta(b.id)}</span>
+        <span className="ng-estado-flecha" aria-hidden="true">›</span>
+      </button>)}
+    </section>}
     {bandejas.some(b => b.id === vista) && <section className="ng-panel">
       <div className="ng-panel-titulo"><h2>{titulo}</h2><button className="ng-volver" onClick={() => setVista("inicio")}>← Volver</button></div>
       <div className="ng-filtros"><label>Buscar<input value={busqueda} onChange={e => setBusqueda(e.target.value)} placeholder="Expediente, oficina, solicitante, protocolo…" /></label><span>{filas.length} registros</span></div>
