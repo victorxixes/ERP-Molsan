@@ -188,3 +188,32 @@
 .notargest .ng-hero-premium .ng-sobrelinea{color:#63769b;font-size:10px;font-weight:850;letter-spacing:1.65px}
 .notargest .ng-hero-premium .ng-cabecera-acciones .ng-boton-secundario{min-height:41px}
 @media(max-width:700px){.notargest .ng-hero-premium{align-items:flex-start}.notargest .ng-hero-identidad{align-items:flex-start;gap:11px}.notargest .ng-hero-logo{flex-basis:48px;width:48px;height:48px;border-radius:13px}.notargest .ng-hero-premium .ng-cabecera-acciones{justify-content:flex-start;width:100%}.notargest .ng-fecha-premium{text-align:left}}
+
+
+/* Dashboard analítico NotarGest: firmas reales y medias por etapa */
+.notargest .ng-dashboard-analitica{display:flex;flex-direction:column;gap:17px;margin:0 0 22px}
+.notargest .ng-dashboard-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.notargest .ng-dashboard-kpis article{display:flex;flex-direction:column;gap:9px;min-width:0;padding:17px;background:rgba(255,255,255,.9);border:1px solid #e2e8f2;border-radius:16px;box-shadow:0 7px 20px rgba(31,48,79,.035)}
+.notargest .ng-dashboard-kpis span{color:#748198;font-size:11px;font-weight:750}
+.notargest .ng-dashboard-kpis strong{color:#1c2b45;font-size:29px;line-height:1.1;font-weight:850}
+.notargest .ng-dashboard-kpis small{color:#8995a8;font-size:10px;line-height:1.45}
+.notargest .ng-dashboard-graficos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;align-items:stretch}
+.notargest .ng-dashboard-grafico{min-width:0;padding:18px;background:rgba(255,255,255,.9);border:1px solid #e2e8f2;border-radius:17px;box-shadow:0 7px 20px rgba(31,48,79,.035)}
+.notargest .ng-dashboard-grafico .ng-bloque-heading{margin-bottom:20px}
+.notargest .ng-dashboard-grafico .ng-bloque-heading h3{font-size:15px}
+.notargest .ng-barras-meses{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;min-height:185px;align-items:end}
+.notargest .ng-barra-mes{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;min-width:0;height:180px}
+.notargest .ng-barra-mes strong{color:#34445e;font-size:11px}
+.notargest .ng-barra-pista{display:flex;align-items:flex-end;justify-content:center;width:100%;height:125px;background:#f2f5fb;border-radius:8px 8px 3px 3px;overflow:hidden}
+.notargest .ng-barra-pista span{display:block;width:72%;min-height:0;background:linear-gradient(180deg,#7090f5,#365bd4);border-radius:7px 7px 2px 2px}
+.notargest .ng-barra-mes small{color:#8591a5;font-size:10px;text-align:center}
+.notargest .ng-barras-medias{display:flex;flex-direction:column;gap:18px}
+.notargest .ng-media-row{display:flex;flex-direction:column;gap:8px;min-width:0}
+.notargest .ng-media-row>div:first-child{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.notargest .ng-media-row strong{color:#34445e;font-size:11px;line-height:1.5}
+.notargest .ng-media-row small{color:#8591a5;font-size:10px;text-align:right}
+.notargest .ng-media-pista{height:8px;overflow:hidden;background:#f0f3f9;border-radius:999px}
+.notargest .ng-media-pista span{display:block;height:100%;background:linear-gradient(90deg,#8da7ff,#3558c4);border-radius:999px}
+.notargest .ng-dashboard-etapas{grid-column:1/-1}
+@media(max-width:1000px){.notargest .ng-dashboard-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.notargest .ng-dashboard-graficos{grid-template-columns:1fr}}
+@media(max-width:560px){.notargest .ng-dashboard-kpis{grid-template-columns:1fr}.notargest .ng-dashboard-grafico{padding:13px}.notargest .ng-media-row>div:first-child{align-items:flex-start;flex-direction:column;gap:3px}.notargest .ng-media-row small{text-align:left}}
