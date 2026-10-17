@@ -140,11 +140,22 @@ function TablaEncargos({ encargos, onFirmado }) {
 
   useEffect(() => {
     let activo = true;
-    axios.get("/ctn/notarias", { params: { page_size: 200 } })
-      .then(({ data }) => { if (activo) setCatalogoCtn(Array.isArray(data?.items) ? data.items : []); })
-      .catch(() => { if (activo) setCatalogoCtn([]); });
+    const nombres = [...new Set(encargos
+      .map((encargo) => String(encargo.nombre_notario || encargo.notario || "").trim())
+      .filter(Boolean))];
+    Promise.all(nombres.map((nombre) =>
+      axios.get("/ctn/notarias", { params: { q: nombre, page_size: 200 } })
+        .then(({ data }) => Array.isArray(data?.items) ? data.items : [])
+        .catch(() => [])
+    )).then((listas) => {
+      if (activo) {
+        const unicos = new Map();
+        listas.flat().forEach((notario) => unicos.set(notario.id, notario));
+        setCatalogoCtn([...unicos.values()]);
+      }
+    });
     return () => { activo = false; };
-  }, []);
+  }, [encargos]);
   const grupos = useMemo(() => agruparEncargosPorNotario(encargos), [encargos]);
 
   function cambiarFirma(id, campo, valor) {
