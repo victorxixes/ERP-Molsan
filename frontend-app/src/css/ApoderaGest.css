@@ -1470,3 +1470,16 @@
 .ag-historico-gestor{margin-top:14px}
 @media(max-width:900px){.ag-ficha-paneles .ag-firmar-controles{grid-template-columns:1fr 1fr}.ag-firmar-notario-accion{grid-column:1/-1}}
 @media(max-width:560px){.ag-ficha-paneles .ag-firmar-controles{grid-template-columns:1fr}.ag-firmar-notario-accion{grid-template-columns:1fr}.ag-firmar-notario-accion button{width:100%}}
+
+
+/* Confirmar firma: una única línea compacta en escritorio */
+.ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{display:grid;grid-template-columns:minmax(130px,.78fr) minmax(90px,.48fr) minmax(135px,.72fr) minmax(210px,1.25fr) auto;align-items:end;gap:8px}
+.ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles>label{min-width:0;gap:5px;font-size:10px;white-space:nowrap}
+.ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles input,.ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles select{width:100%;min-width:0;min-height:36px;padding:7px 8px;font-size:11px}
+.ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles .ag-firma-protocolo input{padding-right:5px}
+.ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles .ag-firma-boton{align-self:end;min-height:36px;padding:0 13px;white-space:nowrap}
+.ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ag-ficha-paneles .ag-ficha-envio .ag-detalle-campo,.ag-ficha-paneles .ag-ficha-facturacion .ag-detalle-campo{min-width:0;padding:9px 10px}
+@media(max-width:1100px){.ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{grid-template-columns:repeat(3,minmax(0,1fr))}.ag-ficha-paneles .ag-ficha-firma .ag-firma-notario{grid-column:span 2}.ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.ag-ficha-paneles .ag-ficha-firma .ag-firmar-controles{grid-template-columns:repeat(2,minmax(0,1fr))}.ag-ficha-paneles .ag-ficha-firma .ag-firma-notario{grid-column:1/-1}.ag-ficha-paneles .ag-ficha-firma .ag-firma-boton{width:100%}.ag-ficha-paneles .ag-ficha-envio .ag-encargo-grid,.ag-ficha-paneles .ag-ficha-facturacion .ag-encargo-grid{grid-template-columns:1fr}}
