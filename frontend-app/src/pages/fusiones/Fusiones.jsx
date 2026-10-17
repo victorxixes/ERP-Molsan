@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import "../../css/Fusiones.css";
 
 /**
  * ============================================================
@@ -464,18 +465,18 @@ export default function Fusiones() {
   };
 
   return (
-    <div className="w-full bg-white px-3 py-3 text-[12px] text-slate-700">
-      <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-2 text-[11px] text-blue-800">
+    <div className="fusiones-page erp-page min-h-full space-y-6 p-4 text-[var(--erp-text)] sm:p-6 lg:p-8 animate-fade-in">
+      <div className="mb-2 flex items-center justify-between border-b pb-3 text-sm" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}>
         <div>Inicio&nbsp; / &nbsp;Gestión&nbsp; / &nbsp;Fusiones</div>
-        <strong className="text-blue-600 italic">Fusión</strong>
+        <strong className="font-semibold not-italic" style={{ color: "var(--erp-primary)" }}>Fusión</strong>
       </div>
 
       {errorSolicitudes && <div className="mb-3 rounded border border-red-200 bg-red-50 p-2 text-red-700">{errorSolicitudes}</div>}
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-8">
         <div className="space-y-5">
-          <section className="overflow-hidden rounded-sm border border-slate-300">
-            <header className="bg-[#087cf0] px-3 py-2.5 text-[12px] font-medium text-white">Solicitudes de fusión</header>
+          <section className="fusiones-panel erp-card overflow-hidden">
+            <header className="fusiones-panel-title">Solicitudes de fusión</header>
             {[
               ["Pendiente", "Pendientes de revisar", "#087cf0"],
               ["En curso", "En tramitación", "#17a2b8"],
@@ -483,26 +484,26 @@ export default function Fusiones() {
               ["Desestimada", "Desestimadas / con incidencia", "#dc3545"],
             ].map(([valor, etiqueta, color]) => (
               <button key={valor} type="button" onClick={() => aplicarFiltroEstado(estado === valor ? "Todos" : valor)} className={`flex w-full items-center justify-between border-t border-slate-200 px-3 py-2 text-left text-[11px] hover:bg-slate-50 ${estado === valor ? "bg-blue-50 font-bold" : "bg-white"}`}>
-                <span>{etiqueta}</span><span className="min-w-[20px] rounded-full px-1.5 py-0.5 text-center text-[10px] font-bold text-white" style={{backgroundColor:color}}>{contarEstado(valor)}</span>
+                <span>{etiqueta}</span><span className="fusiones-count" style={{"--count-color": color}}>{contarEstado(valor)}</span>
               </button>
             ))}
           </section>
 
           <section className="overflow-hidden rounded-sm border border-slate-300">
-            <header className="bg-[#6c757d] px-3 py-2.5 text-[12px] font-medium text-white">Búsqueda de solicitudes</header>
-            <form className="space-y-2 p-3" onSubmit={(event) => { event.preventDefault(); setEstado("Todos"); }}>
-              <label className="grid grid-cols-[100px_1fr] items-center gap-2"><span className="font-semibold">ID</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="ID, expediente o registro" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
-              <label className="grid grid-cols-[100px_1fr] items-center gap-2"><span className="font-semibold">Estado</span><select value={estado} onChange={(e) => setEstado(e.target.value)} className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 bg-white px-2 text-[11px]"><option value="Todos">Todos los estados</option><option value="Pendiente">Pendiente</option><option value="En curso">En curso</option><option value="Aceptada">Aceptada</option><option value="Desestimada">Desestimada</option><option value="Facturadas">Facturadas</option></select></label>
-              <div className="border-t border-dotted border-slate-300 pt-2"><button type="submit" className="rounded-sm bg-[#087cf0] px-3 py-1.5 text-[11px] text-white hover:bg-blue-700"><Icon type="search" size={12} /> Buscar</button></div>
+            <header className="fusiones-panel-title">Búsqueda de solicitudes</header>
+            <form className="fusiones-form space-y-3 p-4" onSubmit={(event) => { event.preventDefault(); setEstado("Todos"); }}>
+              <label className="fusiones-filter-row"><span className="font-semibold">ID</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="ID, expediente o registro" className="input-sj fusiones-input" /></label>
+              <label className="grid grid-cols-[100px_1fr] items-center gap-2"><span className="font-semibold">Estado</span><select value={estado} onChange={(e) => setEstado(e.target.value)} className="input-sj fusiones-input"><option value="Todos">Todos los estados</option><option value="Pendiente">Pendiente</option><option value="En curso">En curso</option><option value="Aceptada">Aceptada</option><option value="Desestimada">Desestimada</option><option value="Facturadas">Facturadas</option></select></label>
+              <div className="fusiones-form-actions pt-3"><button type="submit" className="btn-sj fusiones-search-button"><Icon type="search" size={12} /> Buscar</button></div>
             </form>
           </section>
         </div>
 
         <div className="space-y-5">
           <section className="overflow-hidden rounded-sm border border-slate-300">
-            <header className="bg-[#343a40] px-3 py-2.5 text-[12px] font-medium text-white">Búsqueda por recursos</header>
+            <header className="fusiones-panel-title fusiones-panel-title--dark">Búsqueda por recursos</header>
             <form className="space-y-2 p-3" onSubmit={(event) => { event.preventDefault(); setEstado("Todos"); }}>
-              <label className="grid grid-cols-[120px_1fr] items-center gap-2"><span className="font-semibold">Expediente</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º de expediente" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
+              <label className="fusiones-filter-row"><span className="font-semibold">Expediente</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º de expediente" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
               <label className="grid grid-cols-[120px_1fr] items-center gap-2"><span className="font-semibold">Registro</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Registro de la propiedad" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
               <label className="grid grid-cols-[120px_1fr] items-center gap-2"><span className="font-semibold">Núm. entrada</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Número de entrada" className="h-7 w-full max-w-[260px] rounded-sm border border-slate-300 px-2 text-[11px] outline-none focus:border-blue-500" /></label>
               <div className="border-t border-dotted border-slate-300 pt-2"><button type="submit" className="rounded-sm bg-[#087cf0] px-3 py-1.5 text-[11px] text-white hover:bg-blue-700"><Icon type="search" size={12} /> Buscar</button></div>
@@ -510,13 +511,13 @@ export default function Fusiones() {
           </section>
 
           <section className="overflow-hidden rounded-sm border border-slate-300">
-            <header className="bg-[#17a2b8] px-3 py-2.5 text-[12px] font-medium text-white">Solicitudes recibidas</header>
+            <header className="fusiones-panel-title fusiones-panel-title--secondary">Solicitudes recibidas</header>
             {[
               ["Todos", "Todas las solicitudes", "#17a2b8"],
               ["Pendiente", "Nuevas solicitudes", "#087cf0"],
               ["Facturadas", "Facturas / pre-facturas", "#28a745"],
             ].map(([valor, etiqueta, color]) => (
-              <button key={valor} type="button" onClick={() => aplicarFiltroEstado(valor)} className="flex w-full items-center justify-between border-t border-slate-200 bg-white px-3 py-2 text-left text-[11px] hover:bg-slate-50">
+              <button key={valor} type="button" onClick={() => aplicarFiltroEstado(valor)} className="fusiones-status-row">
                 <span>{etiqueta}</span><span className="min-w-[20px] rounded-full px-1.5 py-0.5 text-center text-[10px] font-bold text-white" style={{backgroundColor:color}}>{valor === "Todos" ? fusiones.length : valor === "Facturadas" ? fusiones.filter((f) => /factura/i.test(f.tipoFactura || "")).length : contarEstado(valor)}</span>
               </button>
             ))}
@@ -524,25 +525,25 @@ export default function Fusiones() {
         </div>
       </div>
 
-      <section className="mt-5 overflow-hidden rounded-sm border border-slate-300">
-        <header className="flex flex-wrap items-center justify-between gap-2 bg-[#6c757d] px-3 py-2.5 text-[12px] font-medium text-white">
+      <section className="fusiones-panel erp-card overflow-hidden">
+        <header className="fusiones-panel-title flex flex-wrap items-center justify-between gap-2">
           <span>Listado de solicitudes de fusión</span>
-          <button type="button" onClick={cargarDeNuevo} disabled={cargandoSolicitudes} className="rounded-sm border border-white/50 px-2 py-1 text-[11px] hover:bg-white/10 disabled:opacity-50"><Icon type="refresh" size={12} /> Actualizar</button>
+          <button type="button" onClick={cargarDeNuevo} disabled={cargandoSolicitudes} className="btn-sj btn-sj-outline fusiones-refresh-button"><Icon type="refresh" size={12} /> Actualizar</button>
         </header>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left text-[11px]">
-            <thead className="bg-slate-100 text-slate-700"><tr>
-              {["ID", "Expediente", "Registro", "Núm. entrada", "Factura", "Fecha", "Estado"].map((titulo) => <th key={titulo} className="border-b border-slate-300 px-3 py-2 font-semibold">{titulo}</th>)}
+        <div className="fusiones-table-wrap overflow-x-auto">
+          <table className="table-sj striped fusiones-table text-left text-xs">
+            <thead className="fusiones-table-head"><tr>
+              {["ID", "Expediente", "Registro", "Núm. entrada", "Factura", "Fecha", "Estado"].map((titulo) => <th key={titulo} className="whitespace-nowrap">{titulo}</th>)}
             </tr></thead>
             <tbody>
-              {fusionesFiltradas.map((fusion) => <tr key={fusion.id} className="border-b border-slate-200 hover:bg-blue-50/40">
-                <td className="px-3 py-2">{fusion.id}</td><td className="px-3 py-2 font-semibold">{fusion.expedienteOrigen}</td><td className="px-3 py-2">{fusion.registro || fusion.expedienteDestino || "—"}</td><td className="px-3 py-2">{fusion.numeroEntrada || "—"}</td><td className="px-3 py-2">{fusion.tipoFactura || "—"}</td><td className="px-3 py-2">{fusion.fecha}</td><td className="px-3 py-2"><Badge variant={/aceptada|completada/i.test(fusion.estado) ? "green" : /incidencia|desestimada/i.test(fusion.estado) ? "red" : "amber"}>{fusion.estado || "Pendiente"}</Badge></td>
+              {fusionesFiltradas.map((fusion) => <tr key={fusion.id} className="fusiones-table-row">
+                <td className="whitespace-nowrap">{fusion.id}</td><td className="whitespace-nowrap font-semibold">{fusion.expedienteOrigen}</td><td className="px-3 py-2">{fusion.registro || fusion.expedienteDestino || "—"}</td><td className="px-3 py-2">{fusion.numeroEntrada || "—"}</td><td className="px-3 py-2">{fusion.tipoFactura || "—"}</td><td className="px-3 py-2">{fusion.fecha}</td><td className="px-3 py-2"><Badge variant={/aceptada|completada/i.test(fusion.estado) ? "green" : /incidencia|desestimada/i.test(fusion.estado) ? "red" : "amber"}>{fusion.estado || "Pendiente"}</Badge></td>
               </tr>)}
-              {!fusionesFiltradas.length && <tr><td colSpan={7} className="px-3 py-8 text-center text-slate-500">{cargandoSolicitudes ? "Cargando solicitudes…" : "No hay solicitudes que coincidan con la búsqueda."}</td></tr>}
+              {!fusionesFiltradas.length && <tr><td colSpan={7} className="fusiones-empty py-8 text-center">{cargandoSolicitudes ? "Cargando solicitudes…" : "No hay solicitudes que coincidan con la búsqueda."}</td></tr>}
             </tbody>
           </table>
         </div>
-        <footer className="flex justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600"><span>Mostrando {fusionesFiltradas.length} de {fusiones.length} solicitudes</span><span>Molsan ERP · Fusiones</span></footer>
+        <footer className="fusiones-footer flex justify-between gap-3 px-4 py-3 text-xs"><span>Mostrando {fusionesFiltradas.length} de {fusiones.length} solicitudes</span><span>Molsan ERP · Fusiones</span></footer>
       </section>
     </div>
   );
