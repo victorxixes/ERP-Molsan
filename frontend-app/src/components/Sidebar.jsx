@@ -814,16 +814,15 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               ==================================================== */}
 
           <nav
-            className="
+            className={`
               flex
               items-center
               gap-1.5
               flex-1
               min-w-0
-              flex-wrap
-              overflow-visible
+              ${navigationItems ? "flex-wrap overflow-visible" : "overflow-x-auto overflow-y-visible"}
               pb-0.5
-            "
+            `}
           >
 
             {/* ==================================================
