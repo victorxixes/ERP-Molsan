@@ -295,7 +295,7 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
 def me(n=Depends(get_notario)):
     if _es_usuario_erp(n):
         return {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.dni, "tipo_acceso": "erp", "requiere_cambio_password": False}
-    return {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.nif, "tipo_acceso": "notario", "requiere_cambio_password": False}
+    return {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.nif, "codigo": getattr(n, "codigo", None), "telefono": getattr(n, "telefono", None), "direccion": getattr(n, "direccion", None), "cp": getattr(n, "cp", None), "municipio": getattr(n, "municipio", None), "provincia": getattr(n, "provincia", None), "vc": getattr(n, "vc", None), "apoderado": getattr(n, "apoderado", None), "departamento_cancelaciones": getattr(n, "departamento_cancelaciones", None), "departamento_copias": getattr(n, "departamento_copias", None), "otros_departamentos": getattr(n, "otros_departamentos", None), "observacion": getattr(n, "observacion", None), "tipo_acceso": "notario", "requiere_cambio_password": False}
 
 @router.post("/cambiar-password")
 def cambiar_password(data: CambioPassword, n=Depends(get_notario), db: Session = Depends(get_db)):
