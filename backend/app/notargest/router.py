@@ -61,10 +61,37 @@ def verificar_password(password, stored):
 
 @router.on_event("startup")
 def migrar_notargest():
-    with engine.begin() as conn:
-        conn.execute(text("ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS notargest_habilitado BOOLEAN NOT NULL DEFAULT FALSE"))
-        conn.execute(text("ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS notargest_password_hash VARCHAR(255)"))
-        conn.execute(text("ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS notargest_cambiar_password BOOLEAN NOT NULL DEFAULT TRUE"))
+    """Migra columnas de acceso NotarGest con diagnóstico y espera limitada de bloqueos."""
+    import time as _time
+
+    cambios = [
+        ("notargest_habilitado", "ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS notargest_habilitado BOOLEAN NOT NULL DEFAULT FALSE"),
+        ("notargest_password_hash", "ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS notargest_password_hash VARCHAR(255)"),
+        ("notargest_cambiar_password", "ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS notargest_cambiar_password BOOLEAN NOT NULL DEFAULT TRUE"),
+    ]
+    print("[NOTARGEST MIGRACION] Inicio de migración de columnas de acceso.", flush=True)
+    with engine.connect() as conn:
+        for nombre, sql in cambios:
+            completado = False
+            for intento in range(1, 4):
+                try:
+                    print(f"[NOTARGEST MIGRACION] Aplicando {nombre} (intento {intento}/3)...", flush=True)
+                    with conn.begin():
+                        conn.execute(text("SET LOCAL lock_timeout = '5s'"))
+                        conn.execute(text("SET LOCAL statement_timeout = '15s'"))
+                        conn.execute(text(sql))
+                    print(f"[NOTARGEST MIGRACION] Columna {nombre}: OK.", flush=True)
+                    completado = True
+                    break
+                except Exception as exc:
+                    print(f"[NOTARGEST MIGRACION] Error en {nombre}, intento {intento}/3: {exc!r}", flush=True)
+                    if intento < 3:
+                        _time.sleep(2)
+                    else:
+                        raise RuntimeError(f"No se pudo migrar NotarGest ({nombre}) tras 3 intentos") from exc
+            if not completado:
+                raise RuntimeError(f"Migración NotarGest incompleta: {nombre}")
+    print("[NOTARGEST MIGRACION] Migración de acceso completada.", flush=True)
 
 def get_notario(token=Depends(obtener_token_bearer), db: Session = Depends(get_db)):
     """Acepta JWT de notario o JWT ERP autorizado para el módulo NotarGest."""
@@ -252,11 +279,33 @@ ESTADOS_NOTARGEST = {
 
 @router.on_event("startup")
 def migrar_workflow_notargest():
-    with engine.begin() as conn:
-        conn.execute(text("ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_estado VARCHAR(80)"))
-        conn.execute(text("ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_fecha_cierre DATE"))
-        conn.execute(text("ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_fecha_envio_gestoria DATE"))
+    """Migra columnas del workflow NotarGest con diagnóstico y espera limitada."""
+    import time as _time
 
+    cambios = [
+        ("notargest_estado", "ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_estado VARCHAR(80)"),
+        ("notargest_fecha_cierre", "ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_fecha_cierre DATE"),
+        ("notargest_fecha_envio_gestoria", "ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS notargest_fecha_envio_gestoria DATE"),
+    ]
+    print("[NOTARGEST WORKFLOW] Inicio de migración.", flush=True)
+    with engine.connect() as conn:
+        for nombre, sql in cambios:
+            for intento in range(1, 4):
+                try:
+                    print(f"[NOTARGEST WORKFLOW] Aplicando {nombre} (intento {intento}/3)...", flush=True)
+                    with conn.begin():
+                        conn.execute(text("SET LOCAL lock_timeout = '5s'"))
+                        conn.execute(text("SET LOCAL statement_timeout = '15s'"))
+                        conn.execute(text(sql))
+                    print(f"[NOTARGEST WORKFLOW] Columna {nombre}: OK.", flush=True)
+                    break
+                except Exception as exc:
+                    print(f"[NOTARGEST WORKFLOW] Error en {nombre}, intento {intento}/3: {exc!r}", flush=True)
+                    if intento < 3:
+                        _time.sleep(2)
+                    else:
+                        raise RuntimeError(f"No se pudo migrar workflow NotarGest ({nombre}) tras 3 intentos") from exc
+    print("[NOTARGEST WORKFLOW] Migración completada.", flush=True)
 
 def _estado_workflow(e):
     estado = getattr(e, "notargest_estado", None)
