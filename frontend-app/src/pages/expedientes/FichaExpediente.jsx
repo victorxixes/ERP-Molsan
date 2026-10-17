@@ -4017,38 +4017,28 @@ const cuantiaFincasParaEnvio =
         </div>
 
 
-          <div
-            className="flex flex-col items-stretch gap-2"
-          >
+          <div className="flex flex-wrap items-center gap-1.5">
 
             <button
               type="button"
               onClick={abrirDefecto}
-              className="
-                inline-flex items-center justify-center gap-2
-                rounded-xl border border-blue-200 bg-blue-50
-                px-4 py-2.5 text-xs font-bold text-blue-700
-                shadow-sm transition hover:bg-blue-100
-                focus:outline-none focus:ring-2 focus:ring-blue-300
-              "
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-300"
               title="Registrar un defecto registral"
             >
               ➕ Alta defecto
             </button>
 
-            <Boton
-              onClick={abrirActividades}
-            >
+            <Boton onClick={abrirActividades} className="!rounded-lg !px-2.5 !py-1.5 !text-[11px] !leading-tight">
               ⚙️ Ver actividades
             </Boton>
-            <Boton onClick={abrirControlExpediente} className="w-full">
+            <Boton onClick={abrirControlExpediente} className="!rounded-lg !px-2.5 !py-1.5 !text-[11px] !leading-tight">
               {expedienteBloqueado ? "🔒 Control / desbloqueo" : "🔐 Control y bloqueo"}
             </Boton>
 
             <Boton
               tipo="primary"
               onClick={() => setMostrarCarpetaDigital(true)}
-              className="w-full"
+              className="!rounded-lg !px-2.5 !py-1.5 !text-[11px] !leading-tight"
             >
               📁 Carpeta digital
             </Boton>
@@ -4056,47 +4046,29 @@ const cuantiaFincasParaEnvio =
             <button
               type="button"
               onClick={abrirReclamacionOficina}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs font-bold text-amber-800 shadow-sm transition hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-300"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-1.5 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-300"
             >
               ✉️ Reclamar a oficina
             </button>
             <button
               type="button"
               onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-100"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100"
               title="Pendiente de enlazar con el área de clientes"
             >
               🔗 Área de clientes
             </button>
-            <p className="text-[10px] leading-4 text-amber-700">Aviso: el enlace al área de clientes está pendiente de configurar.</p>
+            <p className="basis-full text-[10px] leading-3 text-amber-700">Aviso: el enlace al área de clientes está pendiente de configurar.</p>
 
             {tieneDefecto && (
               <button
                 type="button"
-                onClick={
-                  abrirDefecto
-                }
-                className="
-                  animate-pulse
-                  inline-flex
-                  items-center
-                  gap-2
-                  rounded-xl
-                  border
-                  border-red-300
-                  bg-red-50
-                  px-4
-                  py-2.5
-                  text-xs
-                  font-bold
-                  text-red-700
-                  shadow-sm
-                "
+                onClick={abrirDefecto}
+                className="animate-pulse inline-flex items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-1.5 text-[11px] font-bold leading-tight text-red-700 shadow-sm"
               >
                 ⚠️ DEFECTO REGISTRAL
               </button>
             )}
-
 
           </div>
         </div>
