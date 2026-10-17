@@ -187,6 +187,7 @@ class EnvioANotarioRequest(BaseModel):
     fecha_prevista_firma: Optional[date] = None
     hora_prevista_firma: Optional[time] = time(9, 0)
     hora_fin_prevista_firma: Optional[time] = None
+    firma_urgente: bool = False
 
     # DATOS DE FACTURACIÓN DEL EXPEDIENTE
     facturacion_nombre: Optional[str] = None
@@ -1465,6 +1466,7 @@ def enviar_a_notario(
             min((expediente.hora_prevista_firma.hour * 60 + expediente.hora_prevista_firma.minute + 60) // 60, 23),
             (expediente.hora_prevista_firma.hour * 60 + expediente.hora_prevista_firma.minute + 60) % 60,
         )
+        expediente.firma_urgente = bool(datos.firma_urgente)
         expediente.fecha_inicio_actividad = datos.fecha_envio
 
         # DATOS DEL NOTARIO
