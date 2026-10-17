@@ -413,6 +413,7 @@ CAMPOS_EXPEDIENTE = [
     "numero_solicitud_pnc",
     "escritura_firmada",
     "hora_prevista_firma",
+    "hora_fin_prevista_firma",
     "asiento_presentacion_libro_diario",
     "fecha_presentacion",
     "numero_entrada",
