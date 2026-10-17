@@ -31,7 +31,7 @@ function fechaLegible(valor) {
 function horaLegible(valor) {
   if (!valor) return "—";
   const textoHora = String(valor);
-  const coincidencia = textoHora.match(/(?:T|^)(\\d{2}:\\d{2})/);
+  const coincidencia = textoHora.match(/(?:T|^)(\d{2}:\d{2})/);
   return coincidencia ? coincidencia[1] : textoHora.slice(0, 5);
 }
 
