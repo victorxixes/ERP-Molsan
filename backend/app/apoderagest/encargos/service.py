@@ -271,6 +271,7 @@ def listar_encargos(db, usuario, solo_pendientes=False):
             "Mails de la Oficina",
             "Mails de la oficina",
         }
+        categorias_apoderado_normalizadas = {str(categoria).strip().casefold() for categoria in categorias_apoderado}
         documentos_apoderado = [
             {
                 "id": documento.id,
@@ -280,7 +281,21 @@ def listar_encargos(db, usuario, solo_pendientes=False):
                 "url_descarga": f"/expedientes/{getattr(expediente, 'id_expediente', '')}/carpeta-digital/{documento.id}/descargar",
             }
             for documento in documentos
-            if documento.categoria in categorias_apoderado
+            if str(documento.categoria or "").strip().casefold() in categorias_apoderado_normalizadas
+            or any(
+                clave in str(documento.categoria or "").strip().casefold()
+                for clave in (
+                    "hoja de encargo",
+                    "justificante de cancelación",
+                    "nota simple",
+                    "escrituras/borradores",
+                    "borrador de escritura",
+                    "borradores de escritura",
+                    "otros documentos",
+                    "otra documentación",
+                    "mails de la oficina",
+                )
+            )
         ]
 
         observaciones = (
