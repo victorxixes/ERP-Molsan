@@ -408,7 +408,7 @@ const TopNavItem = ({
  * ============================================================
  */
 
-export default function Sidebar({ brandName = "CancelaGest" } = {}) {
+export default function Sidebar({ brandName = "CancelaGest", navigationItems = null, activeNavigationItem = "", onNavigationItemClick = null } = {}) {
 
   const empleado = useAuthStore(
     (s) => s.empleado
@@ -829,28 +829,46 @@ export default function Sidebar({ brandName = "CancelaGest" } = {}) {
                 MÓDULOS PRINCIPALES
                 ================================================== */}
 
-            {visiblesPrincipales.map(
-              (modulo) => (
-
-                <TopNavItem
-                  key={modulo.key}
-                  to={modulo.to}
-                  label={modulo.label}
-                  icon={modulo.icon}
-                  badge={
-                    modulo.badge || 0
-                  }
-                />
-
-              )
-            )}
+            {navigationItems
+              ? navigationItems.map((item) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => onNavigationItemClick?.(item.label)}
+                    aria-current={activeNavigationItem === item.label ? "page" : undefined}
+                    className={`
+                      flex items-center gap-2 px-3 py-2 rounded-xl whitespace-nowrap text-sm
+                      font-medium transition-all duration-200 border flex-shrink-0
+                      ${activeNavigationItem === item.label
+                        ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm"
+                        : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"}
+                    `}
+                  >
+                    <NavIcon name={item.icon} />
+                    <span>{item.label}</span>
+                    {item.label === "Mensajes" && mensajesNoLeidos > 0 ? (
+                      <span className="min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">
+                        {mensajesNoLeidos}
+                      </span>
+                    ) : null}
+                  </button>
+                ))
+              : visiblesPrincipales.map((modulo) => (
+                  <TopNavItem
+                    key={modulo.key}
+                    to={modulo.to}
+                    label={modulo.label}
+                    icon={modulo.icon}
+                    badge={modulo.badge || 0}
+                  />
+                ))}
 
 
             {/* ==================================================
                 MÁS
                 ================================================== */}
 
-            {visiblesSecundarios.length >
+            {!navigationItems && visiblesSecundarios.length >
               0 && (
 
               <div
