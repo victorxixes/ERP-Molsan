@@ -598,7 +598,7 @@ def pagos_notario(n=Depends(get_notario), db: Session = Depends(get_db)):
         else:
             identidad_valida = bool(
                 (nif_notario and (nif_gasto == nif_notario or nif_expediente == nif_notario))
-                or (nombre_notario and (nombre_gasto == nombre_notario.casefold() or nombre_expediente == nombre_notario.casefold())
+                or (nombre_notario and (nombre_gasto == nombre_notario.casefold() or nombre_expediente == nombre_notario.casefold()))
             )
         if not identidad_valida:
             continue
