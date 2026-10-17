@@ -123,7 +123,7 @@ import TiposConceptoGastos
 import ApoderaGest 
   from "./pages/apoderagest/ApoderaGest.jsx";
 import NotarGest from "./pages/notargest/NotarGest.jsx";
-import EncargaGest from "./pages/encargagest/EncargaGest.jsx";
+// EncargaGest permanece temporalmente desactivado mientras se recupera el ERP.
 
 
 /**
@@ -204,7 +204,7 @@ export default function App() {
           path="encargagest"
 
         
-          element={<EncargaGest />}
+          element={<ModuloPendiente nombre="EncargaGest" />}
 
         
         />
