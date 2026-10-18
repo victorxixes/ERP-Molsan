@@ -210,18 +210,9 @@ def firmar_encargo(
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
     protocolo = datos.protocolo.strip()
-    firma_previa = bool(
-        expediente.fecha_firma
-        or str(getattr(expediente, "protocolo", "") or "").strip()
-    )
-    if firma_previa and (
-        expediente.fecha_firma != datos.fecha_firma
-        or str(getattr(expediente, "protocolo", "") or "").strip() != protocolo
-    ):
-        raise HTTPException(
-            status_code=409,
-            detail="Este expediente ya tiene una firma registrada con otra fecha o protocolo. No se puede sustituir desde ApoderaGest.",
-        )
+    # La firma puede corregirse desde ApoderaGest por el apoderado asignado.
+    # Se actualizan los campos oficiales del expediente y la marca de Agenda
+    # sin mover la cita de su fecha planificada.
 
     if not protocolo:
         raise HTTPException(status_code=422, detail="Indica el número de protocolo.")
