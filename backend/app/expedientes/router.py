@@ -150,8 +150,8 @@ class EnvioANotarioRequest(BaseModel):
     escritura_firmada: bool = False
 
     fecha_envio: date
-    fecha_solicitud_pnc: date
-    numero_solicitud_pnc: str
+    fecha_solicitud_pnc: Optional[date] = None
+    numero_solicitud_pnc: Optional[str] = None
 
     fecha_firma: Optional[date] = None
     protocolo: Optional[str] = None
@@ -1389,7 +1389,7 @@ def enviar_a_notario(
             detail="Debes indicar al menos un Tipo de documento.",
         )
 
-    if datos.fecha_solicitud_pnc > datos.fecha_envio:
+    if datos.fecha_solicitud_pnc and datos.fecha_solicitud_pnc > datos.fecha_envio:
         raise HTTPException(
             status_code=400,
             detail=(
@@ -1398,10 +1398,10 @@ def enviar_a_notario(
             ),
         )
 
-    if not datos.numero_solicitud_pnc.strip():
+    if datos.numero_solicitud_pnc is not None and not datos.numero_solicitud_pnc.strip():
         raise HTTPException(
             status_code=400,
-            detail="El número de solicitud PNC es obligatorio.",
+            detail="El número de solicitud PNC no puede estar vacío.",
         )
 
     if (
@@ -1475,18 +1475,22 @@ def enviar_a_notario(
         expediente.fecha_envio_notario = datos.fecha_envio
         # Compatibilidad con listados e informes históricos que consumen fecha_envio.
         expediente.fecha_envio = datos.fecha_envio
-        expediente.fecha_solicitud_pnc = datos.fecha_solicitud_pnc
-        expediente.numero_solicitud_pnc = (
-            datos.numero_solicitud_pnc.strip()
-        )
+        # PNC se puede completar posteriormente desde ApoderaGest. Si el modal
+        # de envío no trae estos valores, conservamos los ya guardados.
+        if datos.fecha_solicitud_pnc is not None:
+            expediente.fecha_solicitud_pnc = datos.fecha_solicitud_pnc
+        if datos.numero_solicitud_pnc is not None:
+            expediente.numero_solicitud_pnc = datos.numero_solicitud_pnc.strip()
+
         expediente.escritura_firmada = bool(firma_preexistente or datos.escritura_firmada)
-        expediente.hora_prevista_firma = (
-            datos.hora_prevista_firma or time(9, 0)
-        )
-        expediente.hora_fin_prevista_firma = datos.hora_fin_prevista_firma or time(
-            min((expediente.hora_prevista_firma.hour * 60 + expediente.hora_prevista_firma.minute + 60) // 60, 23),
-            (expediente.hora_prevista_firma.hour * 60 + expediente.hora_prevista_firma.minute + 60) % 60,
-        )
+        # La planificación y la cita se crean/actualizan desde ApoderaGest.
+        # No alterar el horario si este envío no incluye fecha de firma prevista.
+        if datos.fecha_prevista_firma is not None:
+            expediente.hora_prevista_firma = datos.hora_prevista_firma or time(9, 0)
+            expediente.hora_fin_prevista_firma = datos.hora_fin_prevista_firma or time(
+                min((expediente.hora_prevista_firma.hour * 60 + expediente.hora_prevista_firma.minute + 60) // 60, 23),
+                (expediente.hora_prevista_firma.hour * 60 + expediente.hora_prevista_firma.minute + 60) % 60,
+            )
         expediente.firma_urgente = bool(datos.firma_urgente)
         expediente.fecha_inicio_actividad = datos.fecha_envio
 
