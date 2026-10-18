@@ -317,10 +317,10 @@ export default function Dashboard() {
       </section>
 
       {/* ======================================================
-          TIEMPO MEDIO HASTA FIRMA + DISTRIBUCIÓN DEL CIRCUITO
-          En escritorio se muestran lado a lado; en móvil se apilan.
+          TIEMPO MEDIO HASTA FIRMA
+          La distribución de firmas aparece debajo de la tabla.
       ====================================================== */}
-      <div className="mb-6 grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
+      <div className="mb-6">
         {/* MEDIA DE FIRMA POR TIPO DE OPERACIÓN */}
         <section className="min-w-0">
           <div className="mb-4">
@@ -384,6 +384,23 @@ export default function Dashboard() {
           </div>
         </section>
 
+      </div>
+
+      {/* FIRMAS REALIZADAS */}
+      <section className="mb-6">
+        <div className="mb-4 flex flex-col gap-1">
+          <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2>
+          <p className="text-sm" style={{ color: "var(--erp-text-soft)" }}>
+            Distribución de las firmas realizadas según la modalidad seleccionada en el encargo al notario.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <KpiCard icono="✍️" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
+          <FirmaCard icono="🏛️" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
+          <FirmaCard icono="💻" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
+        </div>
+      </section>
+
         {/* DISTRIBUCIÓN VISUAL DEL CIRCUITO */}
         <section className="min-w-0">
           <div className="mb-4">
@@ -431,22 +448,6 @@ export default function Dashboard() {
             </div>
           </div>
         </section>
-      </div>
-
-      {/* FIRMAS REALIZADAS */}
-      <section className="mb-6">
-        <div className="mb-4 flex flex-col gap-1">
-          <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2>
-          <p className="text-sm" style={{ color: "var(--erp-text-soft)" }}>
-            Distribución de las firmas realizadas según la modalidad seleccionada en el encargo al notario.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <KpiCard icono="✍️" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
-          <FirmaCard icono="🏛️" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
-          <FirmaCard icono="💻" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
-        </div>
-      </section>
 
       {/* NOTA TÉCNICA */}
       {!firmasRealizadas && (

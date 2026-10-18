@@ -200,13 +200,28 @@ def obtener_dashboard_expedientes(
             "dias": 0.0,
         }
     )
+    # La categoría se incluye siempre para que el dashboard tenga una fila
+    # estable aunque todavía no existan firmas registradas de otras entidades.
+    acumulado["Cancelación Otra entidad"]
 
     for tipo_operacion, fecha_envio, fecha_firma in filas_firma:
-        tipo = (
-            str(tipo_operacion).strip()
+        tipo_original = (
+            " ".join(str(tipo_operacion).strip().split())
             if tipo_operacion
             else "Sin tipo de operación"
         )
+        tipo_normalizado = _normalizar_actividad(tipo_original)
+
+        # Unificamos variaciones de acentos, mayúsculas y espacios para no
+        # dividir la misma operación en varias filas del dashboard.
+        if "otra entidad" in tipo_normalizado:
+            tipo = "Cancelación Otra entidad"
+        elif "cancelacion con provision" in tipo_normalizado:
+            tipo = "Cancelación con provisión"
+        elif "cancelacion sin provision" in tipo_normalizado:
+            tipo = "Cancelación sin provisión"
+        else:
+            tipo = tipo_original
 
         diferencia = (
             fecha_firma - fecha_envio
