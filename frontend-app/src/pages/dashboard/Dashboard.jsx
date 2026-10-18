@@ -351,8 +351,10 @@ export default function Dashboard() {
         <KpiCard icono="⏱️" titulo="Media hasta firma" valor={mediaGeneral == null ? "—" : `${decimal(mediaGeneral, 1)} días`} descripcion="Desde envío hasta firma" />
       </div>
 
+      {/* ACTIVIDADES + TIEMPO MEDIO HASTA FIRMA */}
+      <div className="mb-6 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
       {/* ACTIVIDADES */}
-      <section className="mb-6">
+      <section className="min-w-0">
         <div className="mb-4">
           <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Expedientes por actividad</h2>
           <p className="mt-1 text-sm" style={{ color: "var(--erp-text-soft)" }}>
@@ -366,11 +368,12 @@ export default function Dashboard() {
         </div>
       </section>
 
+
       {/* ======================================================
           TIEMPO MEDIO HASTA FIRMA
           La distribución de firmas aparece debajo de la tabla.
       ====================================================== */}
-      <div className="mb-6">
+      <div className="min-w-0">
         {/* MEDIA DE FIRMA POR TIPO DE OPERACIÓN */}
         <section className="min-w-0">
           <div className="mb-4">
@@ -433,6 +436,8 @@ export default function Dashboard() {
             )}
           </div>
         </section>
+
+      </div>
 
       </div>
 
