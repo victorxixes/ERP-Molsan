@@ -464,9 +464,16 @@ export default function ModalEmpleado({
     usuarioSesion?.role?.id ??
     rolCatalogoSesion?.id
   );
+  // El backend crea la cuenta técnica "admin" con rol_id=0.
+  // No asumir que rol_id=1 es administrador: puede ser Empleado estándar.
+  // Si no hay nombre de rol disponible, solo damos acceso por la cuenta
+  // técnica conocida o por el ID técnico 0; ante cualquier duda, bloqueamos.
+  const usuarioSesionNormalizado = String(usuarioSesion?.usuario || "")
+    .trim()
+    .toLowerCase();
   const esAdministrador =
     /(^|[^a-z])admin(istrador)?([^a-z]|$)/.test(nombreRolSesion) ||
-    (!nombreRolSesion && rolIdSesion === 1);
+    (!nombreRolSesion && (usuarioSesionNormalizado === "admin" || rolIdSesion === 0));
 
 
   /* ==========================================================
