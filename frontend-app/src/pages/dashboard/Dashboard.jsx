@@ -441,8 +441,10 @@ export default function Dashboard() {
 
       </div>
 
+      {/* FIRMAS REALIZADAS + DISTRIBUCIÓN DEL CIRCUITO */}
+      <div className="mb-6 grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
       {/* FIRMAS REALIZADAS */}
-      <section className="mb-6">
+      <section className="min-w-0">
         <div className="mb-4 flex flex-col gap-1">
           <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2>
           <p className="text-sm" style={{ color: "var(--erp-text-soft)" }}>
@@ -503,6 +505,8 @@ export default function Dashboard() {
             </div>
           </div>
         </section>
+
+      </div>
 
       {/* NOTA TÉCNICA */}
       {!firmasRealizadas && (
