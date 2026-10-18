@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import (
     Boolean, Column, Date, DateTime, ForeignKey, Integer, Numeric, String, Text,
-    BigInteger, Index,
+    BigInteger, Index, JSON,
 )
 from backend.app.database import Base
 
@@ -32,6 +32,7 @@ class EncargoExterno(Base):
     prioridad = Column(String(20), nullable=False, default="Normal")
     estado = Column(String(40), nullable=False, default="RECIBIDO", index=True)
     observaciones = Column(Text, nullable=True)
+    contratos_json = Column(JSON, nullable=True)
     observaciones_internas = Column(Text, nullable=True)
     creado_por_id = Column(Integer, nullable=True)
     creado_por_nombre = Column(String(300), nullable=True)
@@ -47,6 +48,7 @@ class EncargoExternoDocumento(Base):
     nombre_original = Column(String(500), nullable=False)
     nombre_guardado = Column(String(200), nullable=False, unique=True)
     categoria = Column(String(120), nullable=False, default="Otros")
+    contrato_index = Column(Integer, nullable=False, default=0, index=True)
     tipo_mime = Column(String(255), nullable=True)
     tamano_bytes = Column(BigInteger, nullable=False, default=0)
     subido_por_id = Column(Integer, nullable=True)
