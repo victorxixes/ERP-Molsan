@@ -1,0 +1,97 @@
+/* EncargaGest · MOLSAN ERP Premium 2027 / Glass Luxe */
+.encargagest {
+  --ag-muted: #748198;
+  --ag-line: #e4eaf2;
+  --ag-panel: rgba(255, 255, 255, .88);
+  --ag-blue: #315ee8;
+  --ag-blue-dark: #2448bd;
+  min-height: 100vh;
+  overflow: visible;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(91, 140, 255, .10), transparent 34%),
+    radial-gradient(ellipse at 100% 10%, rgba(129, 140, 248, .09), transparent 30%),
+    linear-gradient(145deg, #f7f9fd 0%, #f1f5fb 55%, #f8faff 100%);
+}
+.encargagest .eg-hero { padding-top: 8px; }
+.encargagest .eg-marca {
+  background: linear-gradient(145deg, #4677f5, #2948bb);
+  box-shadow: 0 10px 25px rgba(49, 94, 232, .24), inset 0 1px 0 rgba(255,255,255,.3);
+}
+.encargagest .eg-main { padding-top: 4px; }
+.encargagest .eg-kpi {
+  min-width: 0;
+  padding: 18px 19px 17px;
+  overflow: hidden;
+  background: rgba(255,255,255,.9);
+  border: 1px solid rgba(224,231,241,.95);
+  border-radius: 17px;
+  box-shadow: 0 7px 20px rgba(31,48,79,.035), inset 0 1px 0 rgba(255,255,255,.95);
+}
+.encargagest .eg-panel {
+  min-width: 0;
+  overflow: hidden;
+  background: rgba(255,255,255,.9);
+  border: 1px solid rgba(224,231,241,.95);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(31,48,79,.035), inset 0 1px 0 rgba(255,255,255,.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.encargagest .eg-panel-head {
+  padding: 17px 19px;
+  border-bottom: 1px solid #e9edf4;
+}
+.encargagest .eg-panel-head h2,
+.encargagest .eg-panel-head h3 { color: #24334d; font-weight: 800; }
+.encargagest .eg-panel-head p { color: #7a879b; }
+.encargagest .eg-secondary {
+  display: inline-flex;
+  min-height: 41px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #dfe6f0;
+  border-radius: 12px;
+  background: rgba(255,255,255,.82);
+  padding: 0 13px;
+  color: #5f6e86;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 750;
+  transition: border-color .16s ease, background .16s ease, transform .16s ease;
+}
+.encargagest .eg-secondary:hover { border-color: #c7d5fa; background: #fff; transform: translateY(-1px); }
+.encargagest .eg-button-primary {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(255,255,255,.4);
+  border-radius: 11px;
+  background: linear-gradient(135deg, #416df0, #2e51ca);
+  padding: 0 14px;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(49,94,232,.18);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.encargagest .eg-button-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 9px 20px rgba(49,94,232,.25); }
+.encargagest .eg-button-primary:disabled { cursor: wait; opacity: .6; }
+.encargagest .eg-main input:focus-visible,
+.encargagest .eg-main select:focus-visible,
+.encargagest .eg-main textarea:focus-visible,
+.encargagest button:focus-visible { outline: 3px solid rgba(61,103,231,.28); outline-offset: 2px; }
+.encargagest .eg-main .bg-amber-50\/70 { background: #fff6df; }
+.encargagest .eg-main .text-amber-900 { color: #7c5414; }
+.encargagest .eg-main .border-amber-100 { border-color: #f2e2b8; }
+.encargagest .eg-main .ag-estado { white-space: nowrap; }
+@media (max-width: 700px) {
+  .encargagest .ag-hero { align-items: flex-start; }
+  .encargagest .ag-hero-identidad { align-items: flex-start; gap: 12px; }
+  .encargagest .ag-hero-acciones { width: 100%; justify-content: flex-start; }
+  .encargagest .ag-fecha-actual { flex: 1; min-width: 0; }
+  .encargagest .eg-kpi { padding: 14px; border-radius: 14px; }
+}
