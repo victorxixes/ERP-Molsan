@@ -9,7 +9,8 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
-from backend.app.auth.dependencies import obtener_usuario_actual
+from backend.app.auth.dependencies import obtener_usuario_actual, get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.apoderagest.encargos.service import listar_encargos
 from backend.app.expedientes.models import Expediente
 from backend.app.agenda.models import Cita
@@ -21,6 +22,90 @@ router = APIRouter(
     prefix="/apoderagest/encargos",
     tags=["ApoderaGest - Encargos"],
 )
+
+
+class ReasignarEncargoAdmin(BaseModel):
+    """Cambio explícito de asignación; requiere permisos administrativos."""
+    id_expediente: str = Field(..., min_length=1, max_length=100)
+    apoderado_empleado_id: int = Field(..., gt=0)
+
+
+@router.post("/reparar-asignacion", summary="Corregir una asignación histórica de apoderado")
+def reparar_asignacion_encargo(
+    datos: ReasignarEncargoAdmin,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Actualiza únicamente el apoderado y su FK, sin volver a guardar el envío.
+
+    Requiere permiso de edición de Expedientes o de Seguridad. Se utiliza para
+    reparar asignaciones históricas y no altera fechas, documentos ni agenda.
+    """
+    autorizado = False
+    for modulo in ("expedientes", "seguridad"):
+        try:
+            require_perm_modulo(usuario, modulo, "editar")
+            autorizado = True
+            break
+        except HTTPException as exc:
+            if exc.status_code != 403:
+                raise
+    if not autorizado:
+        raise HTTPException(
+            status_code=403,
+            detail="Necesitas permiso de edición de Expedientes o Seguridad para reasignar encargos.",
+        )
+
+    id_expediente = datos.id_expediente.strip()
+    expediente = (
+        db.query(Expediente)
+        .filter(Expediente.id_expediente == id_expediente)
+        .with_for_update()
+        .first()
+    )
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    empleado = (
+        db.query(Empleado)
+        .filter(Empleado.id == datos.apoderado_empleado_id)
+        .first()
+    )
+    if empleado is None or getattr(empleado, "activo", True) is False:
+        raise HTTPException(status_code=422, detail="El empleado seleccionado no existe o está inactivo.")
+
+    nombre_anterior = getattr(expediente, "apoderado", None)
+    empleado_anterior_id = getattr(expediente, "apoderado_empleado_id", None)
+    nombre_nuevo = " ".join(
+        parte for parte in (
+            str(getattr(empleado, "nombre", "") or "").strip(),
+            str(getattr(empleado, "apellidos", "") or "").strip(),
+        ) if parte
+    )
+    if not nombre_nuevo:
+        raise HTTPException(status_code=422, detail="El empleado seleccionado no tiene nombre y apellidos.")
+
+    try:
+        expediente.apoderado = nombre_nuevo
+        expediente.apoderado_empleado_id = empleado.id
+        db.commit()
+        db.refresh(expediente)
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"No se pudo corregir la asignación del expediente: {str(exc)[:200]}",
+        )
+
+    return {
+        "ok": True,
+        "id_expediente": expediente.id_expediente,
+        "apoderado_anterior": nombre_anterior,
+        "apoderado_empleado_id_anterior": empleado_anterior_id,
+        "apoderado": expediente.apoderado,
+        "apoderado_empleado_id": expediente.apoderado_empleado_id,
+        "mensaje": "Asignación corregida. No se han modificado documentos, fechas ni citas de Agenda.",
+    }
 
 
 @router.get("")
