@@ -73,6 +73,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
   const [modalModo, setModalModo] = useState("crear");
   const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
   const [citaSeleccionada, setCitaSeleccionada] = useState(null);
+  const [citasApoderado, setCitasApoderado] = useState([]);
 
   // ============================================================
   // CARGAR AGENDA COMPARTIDA
@@ -81,6 +82,37 @@ export default function Agenda({ soloApoderado = false } = {}) {
   useEffect(() => {
     cargarMes(year, month);
   }, [year, month, cargarMes]);
+
+  // En ApoderaGest, obtener las citas desde el endpoint autenticado del apoderado.
+  // Evita depender del filtrado local de la agenda compartida, que puede ocultar
+  // citas históricas asignadas por nombre o con identificadores incompletos.
+  useEffect(() => {
+    if (!soloApoderado) {
+      setCitasApoderado([]);
+      return undefined;
+    }
+
+    let cancelado = false;
+    const cargarCitasApoderado = async () => {
+      try {
+        const respuesta = await axios.get("/apoderagest/agenda");
+        if (cancelado) return;
+        const lista = Array.isArray(respuesta?.data) ? respuesta.data : [];
+        setCitasApoderado(lista.map((cita) => ({
+          ...cita,
+          apoderado_nombre: cita.apoderado_nombre || cita.apoderado || "",
+          notario_nombre: cita.nombre_notario || cita.notario_nombre || "",
+        })));
+      } catch (error) {
+        if (cancelado) return;
+        setCitasApoderado([]);
+        notify(error?.response?.data?.detail || "No se ha podido cargar la agenda del apoderado.");
+      }
+    };
+
+    cargarCitasApoderado();
+    return () => { cancelado = true; };
+  }, [soloApoderado, year, month, notify]);
 
   // ApoderaGest puede confirmar una firma real fuera del modal de Agenda.
   // Recargar el mes visible para actualizar el indicador pendiente/realizada.
@@ -296,48 +328,18 @@ export default function Agenda({ soloApoderado = false } = {}) {
     setMonth((actual) => actual + 1);
   }, [month]);
 
-  // Las vistas utilizan las citas del mismo almacén compartido.
+  // En modo ApoderaGest se usa la lista filtrada por el backend para el usuario
+  // autenticado. La Agenda interna sigue utilizando el almacén compartido.
   const citasSeguras = useMemo(() => {
-    const lista = Array.isArray(citas) ? citas : [];
-    if (!soloApoderado) return lista;
+    if (!soloApoderado) {
+      return Array.isArray(citas) ? citas : [];
+    }
 
-    const empleado = useAuthStore.getState().empleado;
-    const empleadoId = empleado?.empleado_id ?? empleado?.id;
-    const normalizar = (valor) =>
-      String(valor ?? "")
-        .normalize("NFKD")
-        .replace(/[\\u0300-\\u036f]/g, "")
-        .trim()
-        .replace(/\\s+/g, " ")
-        .toLocaleLowerCase("es");
-
-    const nombreEmpleado = normalizar(
-      [empleado?.nombre, empleado?.apellidos].filter(Boolean).join(" ") ||
-      empleado?.nombre_completo ||
-      empleado?.nombreCompleto
+    const prefijoMes = `${year}-${String(month).padStart(2, "0")}`;
+    return (Array.isArray(citasApoderado) ? citasApoderado : []).filter((cita) =>
+      String(cita.fecha ?? "").slice(0, 7) === prefijoMes
     );
-
-    return lista.filter((cita) => {
-      const idAsignado = cita.apoderado_id ?? cita.apoderado?.id ?? cita.apoderado?.empleado_id;
-      const nombreAsignado = normalizar(
-        cita.apoderado_nombre ||
-        (typeof cita.apoderado === "string" ? cita.apoderado : "") ||
-        cita.apoderado?.nombre_completo ||
-        [cita.apoderado?.nombre, cita.apoderado?.apellidos].filter(Boolean).join(" ")
-      );
-
-      const coincideId =
-        empleadoId != null &&
-        idAsignado != null &&
-        String(empleadoId) === String(idAsignado);
-      const coincideNombre =
-        nombreEmpleado &&
-        nombreAsignado &&
-        nombreEmpleado === nombreAsignado;
-
-      return Boolean(coincideId || coincideNombre);
-    });
-  }, [citas, soloApoderado]);
+  }, [citas, citasApoderado, soloApoderado, year, month]);
 
   // ============================================================
   // FECHA ACTUAL
