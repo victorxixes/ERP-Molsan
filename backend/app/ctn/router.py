@@ -775,10 +775,17 @@ def reset_password_portal_notaria(
     clave_permiso = {"notargest": "notargestweb", "encargagest": "encargagestweb"}.get(portal)
     if not clave_permiso:
         raise HTTPException(status_code=400, detail="Portal no válido")
-    _exigir_permiso_portal(usuario, clave_permiso, "editar")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=404, detail="Notaría no encontrada")
+    if portal == "notargest":
+        accion_permiso = "editar" if getattr(notaria, "notargest_password_hash", None) else "crear"
+    else:
+        acceso_existente = db.query(EncargoExternoUsuario).filter(
+            EncargoExternoUsuario.notaria_id == notaria_id
+        ).first()
+        accion_permiso = "editar" if acceso_existente else "crear"
+    _exigir_permiso_portal(usuario, clave_permiso, accion_permiso)
     password_nueva = secrets.token_urlsafe(12)
     usuario_login = _normalizar_usuario_portal(notaria.nif)
     if not usuario_login:
