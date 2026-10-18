@@ -12,6 +12,7 @@ from backend.app.database import get_db
 from backend.app.auth.dependencies import obtener_usuario_actual, get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.apoderagest.encargos.service import listar_encargos
+from backend.app.apoderagest.permissions import obtener_id_empleado
 from backend.app.expedientes.models import Expediente
 from backend.app.agenda.models import Cita
 from backend.app.ctn.models import Notaria
@@ -208,13 +209,20 @@ def firmar_encargo(
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
-    if expediente.fecha_firma or str(getattr(expediente, "protocolo", "") or "").strip():
+    protocolo = datos.protocolo.strip()
+    firma_previa = bool(
+        expediente.fecha_firma
+        or str(getattr(expediente, "protocolo", "") or "").strip()
+    )
+    if firma_previa and (
+        expediente.fecha_firma != datos.fecha_firma
+        or str(getattr(expediente, "protocolo", "") or "").strip() != protocolo
+    ):
         raise HTTPException(
             status_code=409,
-            detail="Este expediente ya tiene una firma registrada. No se puede sustituir desde ApoderaGest.",
+            detail="Este expediente ya tiene una firma registrada con otra fecha o protocolo. No se puede sustituir desde ApoderaGest.",
         )
 
-    protocolo = datos.protocolo.strip()
     if not protocolo:
         raise HTTPException(status_code=422, detail="Indica el número de protocolo.")
     notario_otorgante = datos.notario_otorgante.strip()
@@ -269,24 +277,30 @@ def firmar_encargo(
             f"FIRMA REALIZADA | Fecha real: {datos.fecha_firma.isoformat()} "
             f"| Protocolo: {protocolo}"
         )
+        # La cita pertenece al empleado apoderado asignado al expediente,
+        # no al apoderado asociado al registro CTN del notario.
+        apoderado_id = (
+            getattr(expediente, "apoderado_empleado_id", None)
+            or obtener_id_empleado(usuario)
+        )
+        empleado_apoderado = (
+            db.query(Empleado).filter(Empleado.id == apoderado_id).first()
+            if apoderado_id is not None else None
+        )
+        apoderado_nombre = " ".join(filter(None, [
+            str(getattr(empleado_apoderado, "nombre", "") or "").strip(),
+            str(getattr(empleado_apoderado, "apellidos", "") or "").strip(),
+        ])).strip() or str(getattr(expediente, "apoderado", "") or "").strip()
+
         if cita is None:
-            apoderado_nombre = str(getattr(expediente, "apoderado", "") or "").strip()
-            apoderado_id = getattr(notario, "apoderado_id", None)
-            if apoderado_id is None and apoderado_nombre:
-                nombre_apoderado_normalizado = _normalizar_nombre(apoderado_nombre)
-                for empleado in db.query(Empleado).all():
-                    nombre_empleado = _normalizar_nombre(" ".join(filter(None, [
-                        getattr(empleado, "nombre", None),
-                        getattr(empleado, "apellidos", None),
-                    ])))
-                    if nombre_empleado == nombre_apoderado_normalizado:
-                        apoderado_id = empleado.id
-                        break
+            # Si faltaba la cita, reconstruirla en la fecha prevista siempre
+            # que exista. La fecha real se registra en el expediente y en la
+            # observación; no desplazamos la cita del día que estaba planificada.
             cita = Cita(
                 expediente_id=expediente.id,
-                fecha=datos.fecha_firma,
-                hora_inicio=time(9, 0),
-                hora_fin=time(10, 0),
+                fecha=getattr(expediente, "fecha_prevista_firma", None) or datos.fecha_firma,
+                hora_inicio=getattr(expediente, "hora_prevista_firma", None) or time(9, 0),
+                hora_fin=getattr(expediente, "hora_fin_prevista_firma", None) or time(10, 0),
                 tipo_cita="Firma notarial",
                 notario_id=getattr(notario, "id", None),
                 tipo_firma=tipo_firma,
@@ -296,8 +310,14 @@ def firmar_encargo(
             )
             db.add(cita)
         else:
-            cita.fecha = datos.fecha_firma
+            # Conservamos/restauramos la fecha planificada para que la cita
+            # siga visible en el día reservado, incluso al reparar una firma
+            # que antes desplazó la cita a la fecha real.
+            cita.fecha = getattr(expediente, "fecha_prevista_firma", None) or cita.fecha
             cita.tipo_firma = tipo_firma
+            cita.notario_id = getattr(notario, "id", None) or cita.notario_id
+            cita.apoderado_id = apoderado_id or cita.apoderado_id
+            cita.apoderado = apoderado_nombre or cita.apoderado
             observaciones_previas = str(cita.observaciones or "").strip()
             if "FIRMA REALIZADA" not in observaciones_previas.upper():
                 cita.observaciones = " | ".join(
@@ -399,17 +419,21 @@ def aceptar_encargo(
             detail="No se ha podido identificar el notario en el catálogo CTN por NIF o nombre. Revisa los datos del envío a notario.",
         )
 
-    apoderado_nombre = str(getattr(expediente, "apoderado", "") or "").strip()
-    apoderado_id = getattr(notario, "apoderado_id", None)
-    if apoderado_id is None and apoderado_nombre:
-        for empleado in db.query(Empleado).all():
-            nombre_empleado = _normalizar_nombre(" ".join(filter(None, [
-                getattr(empleado, "nombre", None),
-                getattr(empleado, "apellidos", None),
-            ])))
-            if nombre_empleado == _normalizar_nombre(apoderado_nombre):
-                apoderado_id = empleado.id
-                break
+    # La asignación de Agenda debe apuntar al apoderado del expediente
+    # (o al usuario autenticado, ya validado contra sus encargos), no al
+    # apoderado genérico que pueda tener asociado el registro CTN.
+    apoderado_id = (
+        getattr(expediente, "apoderado_empleado_id", None)
+        or obtener_id_empleado(usuario)
+    )
+    empleado_apoderado = (
+        db.query(Empleado).filter(Empleado.id == apoderado_id).first()
+        if apoderado_id is not None else None
+    )
+    apoderado_nombre = " ".join(filter(None, [
+        str(getattr(empleado_apoderado, "nombre", "") or "").strip(),
+        str(getattr(empleado_apoderado, "apellidos", "") or "").strip(),
+    ])).strip() or str(getattr(expediente, "apoderado", "") or "").strip()
 
     try:
         expediente.numero_solicitud_pnc = datos.numero_solicitud_pnc.strip()
