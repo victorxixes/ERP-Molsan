@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
 
-const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie"];
+const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
 const colorPorTipo = (tipo) => {
   switch (tipo) {
@@ -61,7 +61,7 @@ function generarMatriz(fechaBase) {
   for (let i = 0; i < cells.length; i += 7) {
     const semanaCompleta = cells.slice(i, i + 7);
 
-    weeks.push(semanaCompleta.slice(0, 5));
+    weeks.push(semanaCompleta.slice(0, 6));
   }
 
   return weeks;
@@ -112,7 +112,7 @@ export default function VistaMes({
 
       <div
         className="
-          grid grid-cols-5
+          grid grid-cols-6
           mb-2
           rounded-xl
           overflow-hidden
