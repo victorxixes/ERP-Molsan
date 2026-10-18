@@ -267,6 +267,21 @@ export default function CtnListadoPage() {
     }
   };
 
+  const cerrarFichaNotaria = async () => {
+    setNotariaSeleccionada(null);
+    await cargarListado(pagina, filtrosAplicados);
+    try {
+      const response = await fetch(`${API_BASE}/encargagest/accesos`, {
+        headers: cabecerasConToken({ Accept: "application/json" }),
+        credentials: "include",
+      });
+      const data = await response.json().catch(() => []);
+      if (response.ok) setAccesosEncargaGest(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.warn("No se pudo refrescar el estado de accesos EncargaGest:", err);
+    }
+  };
+
   const exportarExcel = async () => {
     setExportando(true);
     setError("");
@@ -457,7 +472,7 @@ export default function CtnListadoPage() {
       )}
 
       {notariaSeleccionada && (
-        <ModalCtnDetalle open={Boolean(notariaSeleccionada)} notaria={notariaSeleccionada} onClose={() => setNotariaSeleccionada(null)} />
+        <ModalCtnDetalle open={Boolean(notariaSeleccionada)} notaria={notariaSeleccionada} onClose={cerrarFichaNotaria} />
       )}
     </main>
   );
