@@ -167,6 +167,12 @@ const MODULOS_ERP = [
     route: "/notargest",
     icon: "landmark",
   },
+  {
+    key: "encargagest",
+    label: "EncargaGest",
+    route: "/encargagest",
+    icon: "clipboard-list",
+  },
 ];
 
 export default MODULOS_ERP;
