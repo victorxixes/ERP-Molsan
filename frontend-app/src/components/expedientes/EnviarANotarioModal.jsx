@@ -122,7 +122,8 @@ function crearFormularioDesdeExpediente(expediente) {
   const firmaValor = expediente?.escritura_firmada;
   const escrituraFirmada =
     firmaValor === true ||
-    ["sí", "si", "true", "1"].includes(String(firmaValor ?? "").trim().toLowerCase());
+    ["sí", "si", "true", "1"].includes(String(firmaValor ?? "").trim().toLowerCase()) ||
+    Boolean(expediente?.fecha_firma || String(expediente?.protocolo ?? "").trim());
 
   return {
     ...FORM_INICIAL,
@@ -265,7 +266,13 @@ export default function EnviarANotarioModal({
   onGuardar,
 }) {
   const [form, setForm] = useState(() =>
-    crearFormularioDesdeExpediente(expediente)
+    crearFormularioDesdeExpediente({
+      ...expediente,
+      capital:
+        cuantiaFincas !== null && cuantiaFincas !== undefined && cuantiaFincas !== ""
+          ? cuantiaFincas
+          : expediente?.capital,
+    })
   );
 
   // Lista de documentos de escritura. El primero conserva la cuantía
@@ -373,6 +380,14 @@ export default function EnviarANotarioModal({
   }, []);
 
   const cambiarEscrituraFirmada = useCallback((valor) => {
+    const firmaYaRegistrada = Boolean(
+      expediente?.fecha_firma || String(expediente?.protocolo ?? "").trim()
+    );
+    if (firmaYaRegistrada && valor === "No") {
+      setError("La firma ya está registrada. No se puede borrar desde el envío ordinario.");
+      return;
+    }
+
     setForm((actual) => ({
       ...actual,
       escritura_firmada: valor,
@@ -385,7 +400,7 @@ export default function EnviarANotarioModal({
     }));
 
     setError("");
-  }, []);
+  }, [expediente?.fecha_firma, expediente?.protocolo]);
 
   const seleccionarNotario = useCallback((notarioSeleccionado) => {
     if (!notarioSeleccionado) {

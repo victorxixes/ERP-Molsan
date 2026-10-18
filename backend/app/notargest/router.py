@@ -9,7 +9,7 @@ from datetime import date, datetime, time, timedelta
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, File, Form, UploadFile
 from pydantic import BaseModel, constr
-from sqlalchemy import text, or_
+from sqlalchemy import and_, text, or_
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import obtener_token_bearer
@@ -186,14 +186,25 @@ def _expedientes_de_notario(n, db):
             return db.query(Expediente).filter(or_(*filtros)).order_by(Expediente.id.desc()).limit(1000).all()
         return []
     nombre = " ".join(x for x in [n.nombre, n.apellidos] if x).strip()
-    filtros = []
+    filtros_legacy = []
     if nombre:
-        filtros.append(Expediente.nombre_notario.ilike(nombre))
+        filtros_legacy.append(Expediente.nombre_notario.ilike(nombre))
     if n.nif:
-        filtros.append(text("upper(replace(replace(coalesce(nif_notario, ''), ' ', ''), '-', '')) = :nif").bindparams(nif=normalizar_nif(n.nif)))
-    if not filtros:
+        filtros_legacy.append(text("upper(replace(replace(coalesce(nif_notario, ''), ' ', ''), '-', '')) = :nif").bindparams(nif=normalizar_nif(n.nif)))
+    notario_id = getattr(n, "id", None)
+    if notario_id is not None:
+        filtro_id = Expediente.notario_id == int(notario_id)
+        if filtros_legacy:
+            filtro = or_(
+                filtro_id,
+                and_(Expediente.notario_id.is_(None), or_(*filtros_legacy)),
+            )
+        else:
+            filtro = filtro_id
+        return db.query(Expediente).filter(filtro).order_by(Expediente.id.desc()).limit(500).all()
+    if not filtros_legacy:
         return []
-    return db.query(Expediente).filter(or_(*filtros)).order_by(Expediente.id.desc()).limit(500).all()
+    return db.query(Expediente).filter(or_(*filtros_legacy)).order_by(Expediente.id.desc()).limit(500).all()
 
 def _fecha(valor):
     return valor.isoformat() if isinstance(valor, (date, datetime, time)) else valor
@@ -208,14 +219,25 @@ def _resumen(e, db):
     return {
         "id": e.id,
         "id_expediente": e.id_expediente,
+        "notario_id": getattr(e, "notario_id", None),
+        "apoderado_empleado_id": getattr(e, "apoderado_empleado_id", None),
         "numero_expediente": e.id_expediente,
         "id_provision": e.id_provision,
         "titular": e.nombre_titular,
-        "nombre": getattr(e, "nombre", None) or getattr(e, "nombre_titular", None),
-        "apellidos": getattr(e, "apellidos", None) or getattr(e, "facturacion_apellidos", None),
-        "dni": getattr(e, "dni", None) or getattr(e, "nif_titular", None),
+        "nombre": getattr(e, "nombre_titular", None),
+        "apellidos": getattr(e, "apellidos", None),
+        "dni": getattr(e, "nif_titular", None),
+        "nombre_solicitante": getattr(e, "nombre_solicitante", None),
+        "nif_solicitante": getattr(e, "nif_solicitante", None),
         "finca": getattr(e, "finca", None),
-        "cuantia_documento": getattr(e, "cuantia", None) if getattr(e, "cuantia", None) is not None else getattr(e, "importe", None),
+        "cuantia_documento": next(
+            (
+                getattr(documento, "cuantia", None)
+                for documento in (getattr(e, "documentos_escritura", None) or [])
+                if getattr(documento, "cuantia", None) is not None
+            ),
+            None,
+        ),
         "bloqueado": bool(getattr(e, "bloqueo_manual", False) or str(getattr(e, "estado_expediente", "") or "").strip().upper().startswith(("LST", "RST")) or getattr(e, "liquidado_sin_tramitar", False) or getattr(e, "cambio_gestoria", False)),
         "motivo_bloqueo_efectivo": (getattr(e, "motivo_bloqueo", None) or ("LIQUIDADO SIN TRAMITAR" if str(getattr(e, "estado_expediente", "") or "").strip().upper().startswith("LST") or getattr(e, "liquidado_sin_tramitar", False) else "RETENCIÓN SIN TRAMITAR" if str(getattr(e, "estado_expediente", "") or "").strip().upper().startswith("RST") else "CAMBIO DE GESTORÍA" if getattr(e, "cambio_gestoria", False) else "BLOQUEO MANUAL" if getattr(e, "bloqueo_manual", False) else None)),
         "nif_titular": e.nif_titular,
@@ -239,7 +261,7 @@ def _resumen(e, db):
         "provincia": e.provincia,
         "apoderado": e.apoderado,
         "escritura_firmada": e.escritura_firmada,
-        "cuantia": e.importe,
+        "cuantia": next((getattr(documento, "cuantia", None) for documento in (getattr(e, "documentos_escritura", None) or []) if getattr(documento, "cuantia", None) is not None), None),
         "documentos_escritura": [{"id": d.id, "tipo_documento": d.tipo_documento, "cuantia": d.cuantia} for d in (getattr(e, "documentos_escritura", None) or [])],
         "facturacion_nombre": e.facturacion_nombre,
         "facturacion_apellidos": e.facturacion_apellidos,
@@ -464,12 +486,29 @@ def actualizar_datos_firma(expediente_id: str, data: dict, n=Depends(get_notario
     e = _expediente_autorizado(expediente_id, n, db)
     fecha = data.get("fecha_firma")
     protocolo = str(data.get("protocolo") or "").strip()
-    if fecha:
-        try: e.fecha_firma = date.fromisoformat(str(fecha)[:10])
-        except ValueError: raise HTTPException(status_code=400, detail="La fecha de firma no es válida")
-    else:
-        e.fecha_firma = None
-    e.protocolo = protocolo or None
+
+    if e.fecha_firma or (getattr(e, "protocolo", None) or "").strip():
+        fecha_entrante = None
+        if fecha:
+            try:
+                fecha_entrante = date.fromisoformat(str(fecha)[:10])
+            except ValueError:
+                raise HTTPException(status_code=400, detail="La fecha de firma no es válida")
+        if fecha_entrante == e.fecha_firma and protocolo == (e.protocolo or "").strip():
+            return {"ok": True, "fecha_firma": _fecha(e.fecha_firma), "protocolo": e.protocolo, "sin_cambios": True}
+        raise HTTPException(
+            status_code=409,
+            detail="La firma ya está registrada y no puede borrarse ni sustituirse desde NotarGest.",
+        )
+
+    if not fecha or not protocolo:
+        raise HTTPException(status_code=400, detail="Para registrar una firma debes indicar fecha y protocolo.")
+    try:
+        e.fecha_firma = date.fromisoformat(str(fecha)[:10])
+    except ValueError:
+        raise HTTPException(status_code=400, detail="La fecha de firma no es válida")
+    e.protocolo = protocolo
+    e.escritura_firmada = True
     db.commit()
     return {"ok": True, "fecha_firma": _fecha(e.fecha_firma), "protocolo": e.protocolo}
 
@@ -560,6 +599,11 @@ def _expediente_autorizado(expediente_id, n, db):
     if _es_usuario_erp(n):
         if not (getattr(e, "fecha_envio_notario", None) or getattr(e, "notargest_estado", None)):
             raise HTTPException(status_code=403, detail="Este expediente no forma parte del circuito NotarGest")
+        return e
+    notario_id_expediente = getattr(e, "notario_id", None)
+    if notario_id_expediente is not None:
+        if int(notario_id_expediente) != int(getattr(n, "id", -1)):
+            raise HTTPException(status_code=403, detail="Este expediente no está asignado a tu notaría")
         return e
     nombre = " ".join(x for x in [n.nombre, n.apellidos] if x).strip().casefold()
     nif_notario = normalizar_nif(getattr(e, "nif_notario", "") or "")

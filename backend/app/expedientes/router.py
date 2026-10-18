@@ -24,6 +24,7 @@ from backend.app.expedientes.models import (
     Expediente,
     ExpedienteDocumentoEscritura,
 )
+from backend.app.ctn.models import Notaria
 from backend.app.expediente_ppad.models import ExpedientePPAD
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.expedientes.defectos.models import ExpedienteDefecto
@@ -386,6 +387,7 @@ CAMPOS_EXPEDIENTE = [
     "cliente_id",
     "id_expediente",
     "notario_id",
+    "apoderado_empleado_id",
     "estado_expediente",
     "estado_expediente_ancert",
     "liquidado_sin_tramitar",
@@ -1412,6 +1414,17 @@ def enviar_a_notario(
             ),
         )
 
+    firma_preexistente = bool(
+        expediente.fecha_firma or (expediente.protocolo or "").strip()
+    )
+    if firma_preexistente and datos.escritura_firmada:
+        protocolo_entrante = (datos.protocolo or "").strip()
+        if datos.fecha_firma != expediente.fecha_firma or protocolo_entrante != (expediente.protocolo or "").strip():
+            raise HTTPException(
+                status_code=409,
+                detail="La firma ya está registrada y no puede sustituirse desde el envío ordinario.",
+            )
+
     if datos.escritura_firmada:
         if not datos.fecha_firma:
             raise HTTPException(
@@ -1444,12 +1457,17 @@ def enviar_a_notario(
         # Guardar los datos de firma, pero no cambiar la actividad.
         # La transición se realiza por separado tras validar
         # los documentos obligatorios.
-        if datos.escritura_firmada:
+        if firma_preexistente:
+            # El envío puede actualizar otros datos, pero nunca borrar una firma real.
+            expediente.escritura_firmada = True
+        elif datos.escritura_firmada:
             expediente.fecha_firma = datos.fecha_firma
             expediente.protocolo = datos.protocolo.strip()
+            expediente.escritura_firmada = True
         else:
             expediente.fecha_firma = None
             expediente.protocolo = None
+            expediente.escritura_firmada = False
 
         # DATOS DEL ENVÍO
         expediente.fecha_envio_notario = datos.fecha_envio
@@ -1459,7 +1477,7 @@ def enviar_a_notario(
         expediente.numero_solicitud_pnc = (
             datos.numero_solicitud_pnc.strip()
         )
-        expediente.escritura_firmada = datos.escritura_firmada
+        expediente.escritura_firmada = bool(firma_preexistente or datos.escritura_firmada)
         expediente.hora_prevista_firma = (
             datos.hora_prevista_firma or time(9, 0)
         )
@@ -1470,14 +1488,54 @@ def enviar_a_notario(
         expediente.firma_urgente = bool(datos.firma_urgente)
         expediente.fecha_inicio_actividad = datos.fecha_envio
 
-        # DATOS DEL NOTARIO
+        # DATOS DEL NOTARIO: persistir el identificador CTN, no solo el nombre.
         expediente.nombre_notario = datos.nombre_notario.strip()
-
-        expediente.nif_notario = (
-            datos.nif_notario.strip()
-            if datos.nif_notario and datos.nif_notario.strip()
-            else None
+        nif_entrante = (
+            "".join(c for c in unicodedata.normalize("NFKD", str(datos.nif_notario or "").upper()) if not unicodedata.combining(c))
+            .replace("-", "")
+            .replace(" ", "")
         )
+        notaria_ctn = None
+        if datos.notario_id is not None and datos.notario_id > 0:
+            notaria_ctn = db.query(Notaria).filter(Notaria.id == datos.notario_id).first()
+            if notaria_ctn is None:
+                raise HTTPException(status_code=400, detail="El notario seleccionado no existe en el catálogo CTN.")
+        if notaria_ctn is None and nif_entrante:
+            for candidata in db.query(Notaria).all():
+                nif_candidato = (
+                    "".join(c for c in unicodedata.normalize("NFKD", str(candidata.nif or "").upper()) if not unicodedata.combining(c))
+                    .replace("-", "")
+                    .replace(" ", "")
+                )
+                if nif_candidato == nif_entrante:
+                    notaria_ctn = candidata
+                    break
+        expediente.notario_id = notaria_ctn.id if notaria_ctn else None
+        expediente.nif_notario = (
+            str(notaria_ctn.nif).strip()
+            if notaria_ctn and getattr(notaria_ctn, "nif", None)
+            else (datos.nif_notario.strip() if datos.nif_notario and datos.nif_notario.strip() else None)
+        )
+
+        # Relación de apoderado por ID. El nombre se conserva para mostrarlo
+        # y como compatibilidad con expedientes históricos.
+        apoderado_id = getattr(notaria_ctn, "apoderado_id", None) if notaria_ctn else None
+        if apoderado_id is None and datos.apoderado and datos.apoderado.strip():
+            def normalizar_nombre_apoderado(valor):
+                return "".join(
+                    caracter for caracter in unicodedata.normalize("NFKD", str(valor or "").casefold())
+                    if not unicodedata.combining(caracter)
+                ).strip()
+            nombre_objetivo = normalizar_nombre_apoderado(datos.apoderado)
+            for empleado in db.query(Empleado).all():
+                nombre_empleado = normalizar_nombre_apoderado(" ".join(filter(None, [
+                    getattr(empleado, "nombre", None),
+                    getattr(empleado, "apellidos", None),
+                ])))
+                if nombre_objetivo and nombre_empleado == nombre_objetivo:
+                    apoderado_id = empleado.id
+                    break
+        expediente.apoderado_empleado_id = apoderado_id
 
         expediente.notario = (
             datos.notario.strip()

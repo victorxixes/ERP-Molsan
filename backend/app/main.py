@@ -530,6 +530,8 @@ def migrar_esquema_expedientes_inicio():
         ("registral_fecha", "DATE"),
         # Envío a notario y documentos de escritura
         ("cliente_id", "INTEGER"),
+        ("notario_id", "INTEGER"),
+        ("apoderado_empleado_id", "INTEGER"),
         ("fecha_envio_notario", "DATE"),
         ("fecha_solicitud_pnc", "DATE"),
         ("numero_solicitud_pnc", "VARCHAR(200)"),
