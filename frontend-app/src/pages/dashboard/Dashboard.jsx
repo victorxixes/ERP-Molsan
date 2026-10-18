@@ -301,21 +301,6 @@ export default function Dashboard() {
         <KpiCard icono="⏱️" titulo="Media hasta firma" valor={mediaGeneral == null ? "—" : `${decimal(mediaGeneral, 1)} días`} descripcion="Desde envío hasta firma" />
       </div>
 
-      {/* FIRMAS REALIZADAS */}
-      <section className="mb-6">
-        <div className="mb-4 flex flex-col gap-1">
-          <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2>
-          <p className="text-sm" style={{ color: "var(--erp-text-soft)" }}>
-            Distribución de las firmas realizadas según la modalidad seleccionada en el encargo al notario.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <KpiCard icono="✍️" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
-          <FirmaCard icono="🏛️" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
-          <FirmaCard icono="💻" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
-        </div>
-      </section>
-
       {/* ACTIVIDADES */}
       <section className="mb-6">
         <div className="mb-4">
@@ -447,6 +432,21 @@ export default function Dashboard() {
           </div>
         </section>
       </div>
+
+      {/* FIRMAS REALIZADAS */}
+      <section className="mb-6">
+        <div className="mb-4 flex flex-col gap-1">
+          <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>Firmas realizadas</h2>
+          <p className="text-sm" style={{ color: "var(--erp-text-soft)" }}>
+            Distribución de las firmas realizadas según la modalidad seleccionada en el encargo al notario.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <KpiCard icono="✍️" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
+          <FirmaCard icono="🏛️" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
+          <FirmaCard icono="💻" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
+        </div>
+      </section>
 
       {/* NOTA TÉCNICA */}
       {!firmasRealizadas && (
