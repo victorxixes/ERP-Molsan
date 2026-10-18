@@ -40,6 +40,7 @@ class Notaria(Base):
     # Acceso al portal externo NotarGest
     notargest_habilitado = Column(Boolean, nullable=False, default=False, server_default="false")
     notargest_password_hash = Column(String(255), nullable=True)
+    notargest_password_enc = Column(Text, nullable=True)
     notargest_cambiar_password = Column(Boolean, nullable=False, default=True, server_default="true")
 
     # Observaciones
