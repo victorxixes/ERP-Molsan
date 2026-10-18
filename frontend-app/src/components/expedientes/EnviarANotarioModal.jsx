@@ -154,7 +154,7 @@ function crearFormularioDesdeExpediente(expediente) {
       : null,
     tipo_documento: obtenerValor(expediente, "tipo_documento"),
     contrato: obtenerValor(expediente, "contrato"),
-    capital: obtenerValor(expediente, "capital"),
+    capital: obtenerValor(expediente, "capital_documento_notarial", "capital"),
     tipo_operacion: obtenerValor(expediente, "tipo_operacion"),
     subtipo_operacion: obtenerValor(expediente, "subtipo_operacion"),
     importe: obtenerValor(expediente, "importe"),
@@ -271,7 +271,7 @@ export default function EnviarANotarioModal({
       capital:
         cuantiaFincas !== null && cuantiaFincas !== undefined && cuantiaFincas !== ""
           ? cuantiaFincas
-          : expediente?.capital,
+          : (expediente?.capital_documento_notarial ?? expediente?.capital),
     })
   );
 
@@ -607,7 +607,7 @@ export default function EnviarANotarioModal({
       tipo_firma: form.notario.tipo_firma || "",
       tipo_documento: documentosEscritura[0]?.tipo_documento || form.tipo_documento,
       contrato: form.contrato.trim(),
-      capital: form.capital === "" ? null : Number(form.capital),
+      capital_documento_notarial: form.capital === "" ? null : Number(form.capital),
       tipo_operacion: form.tipo_operacion.trim(),
       subtipo_operacion: form.subtipo_operacion.trim(),
       importe: form.importe === "" ? null : Number(form.importe),
