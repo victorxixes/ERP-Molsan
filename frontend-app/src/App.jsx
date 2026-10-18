@@ -211,7 +211,7 @@ export default function App() {
         
         <Route
           path="notargest"
-          element={<RequireAuth><NotarGest /></RequireAuth>}
+          element={<NotarGest />}
         />
         
         {/* ====================================================
