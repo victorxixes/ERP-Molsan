@@ -432,12 +432,28 @@ export default function ModalEmpleado({
   } = useSeguridadStore();
 
   const usuarioSesion = useAuthStore((s) => s.empleado);
-  const nombreRolSesion = String(
+  const actualizarEmpleadoSesion = useAuthStore((s) => s.actualizarEmpleadoSesion);
+
+  // El rol puede llegar como texto plano, objeto anidado o solo como rol_id.
+  // Si el catálogo está cargado, el nombre del rol tiene prioridad sobre el ID.
+  const rolCatalogoSesion = Array.isArray(roles)
+    ? roles.find((item) => Number(item?.id) === Number(usuarioSesion?.rol_id))
+    : null;
+  const valorRolSesion =
     usuarioSesion?.rol_nombre ||
     usuarioSesion?.rol?.nombre ||
-    (Number(usuarioSesion?.rol_id) === 1 ? "admin" : "")
-  ).normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
-  const esAdministrador = ["admin", "administrador", "administrator"].includes(nombreRolSesion);
+    (typeof usuarioSesion?.rol === "string" ? usuarioSesion.rol : "") ||
+    usuarioSesion?.role?.name ||
+    rolCatalogoSesion?.nombre ||
+    "";
+  const nombreRolSesion = String(valorRolSesion)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+  const esAdministrador =
+    /(^|[^a-z])admin(istrador)?([^a-z]|$)/.test(nombreRolSesion) ||
+    (!nombreRolSesion && Number(usuarioSesion?.rol_id) === 1);
 
 
   /* ==========================================================
@@ -1031,6 +1047,23 @@ export default function ModalEmpleado({
       setError(null);
       setMensaje(null);
       await asignarRol(empleadoId, rolId);
+
+      // Si se cambia el rol de la cuenta actualmente conectada,
+      // sincronizamos la sesión para aplicar el bloqueo inmediatamente.
+      const idSesion = usuarioSesion?.empleado_id ?? usuarioSesion?.id;
+      if (Number(idSesion) === Number(empleadoId)) {
+        const rolSeleccionado = Array.isArray(roles)
+          ? roles.find((item) => Number(item?.id) === rolId)
+          : null;
+        actualizarEmpleadoSesion?.({
+          rol_id: rolId,
+          rol_nombre: rolSeleccionado?.nombre || "",
+          rol: rolSeleccionado
+            ? { id: rolSeleccionado.id, nombre: rolSeleccionado.nombre }
+            : undefined,
+        });
+      }
+
       await cargarFicha(empleadoId);
       setMensaje("Rol del empleado actualizado correctamente.");
     } catch (err) {
