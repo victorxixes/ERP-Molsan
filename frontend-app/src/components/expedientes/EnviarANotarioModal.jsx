@@ -21,8 +21,8 @@ const FORM_INICIAL = {
   protocolo: "",
 
   fecha_prevista_firma: "",
-  hora_prevista_firma: "09:00",
-  hora_fin_prevista_firma: "10:00",
+  hora_prevista_firma: "",
+  hora_fin_prevista_firma: "",
   firma_urgente: false,
 
   notario: null,
@@ -485,16 +485,6 @@ export default function EnviarANotarioModal({
       return;
     }
 
-    if (!form.fecha_solicitud_pnc) {
-      setError("La Fecha Solicitud PNC es obligatoria.");
-      return;
-    }
-
-    if (!form.numero_solicitud_pnc.trim()) {
-      setError("El Nº de Solicitud es obligatorio.");
-      return;
-    }
-
     if (!form.notario?.id || !Number.isFinite(Number(form.notario.id)) || Number(form.notario.id) <= 0) {
       setError("Busca y selecciona un notario válido del catálogo. No introduzcas un ID manual ni uses 0.");
       return;
@@ -512,40 +502,6 @@ export default function EnviarANotarioModal({
 
     if (!form.tipo_tramite) {
       setError("Selecciona el tipo de trámite.");
-      return;
-    }
-
-    if (!form.fecha_prevista_firma) {
-      setError("Indica la Fecha prevista de firma.");
-      return;
-    }
-
-    if (!form.hora_prevista_firma) {
-      setError("Indica la Hora prevista de firma.");
-      return;
-    }
-
-    if (!form.hora_fin_prevista_firma) {
-      setError("Indica la Hora de fin de la firma.");
-      return;
-    }
-
-    if (form.hora_fin_prevista_firma <= form.hora_prevista_firma) {
-      setError("La Hora de fin debe ser posterior a la Hora de inicio.");
-      return;
-    }
-
-    if (form.fecha_prevista_firma < form.fecha_envio) {
-      setError(
-        "La Fecha prevista de firma no puede ser anterior a la Fecha de envío."
-      );
-      return;
-    }
-
-    if (form.fecha_solicitud_pnc > form.fecha_envio) {
-      setError(
-        "La Fecha Solicitud PNC no puede ser posterior a la Fecha de envío."
-      );
       return;
     }
 
@@ -581,8 +537,8 @@ export default function EnviarANotarioModal({
       fecha_envio: form.fecha_envio,
       idioma_documento: form.idioma,
 
-      fecha_solicitud_pnc: form.fecha_solicitud_pnc,
-      numero_solicitud_pnc: form.numero_solicitud_pnc.trim(),
+      fecha_solicitud_pnc: form.fecha_solicitud_pnc || null,
+      numero_solicitud_pnc: form.numero_solicitud_pnc.trim() || null,
 
       fecha_firma:
         form.escritura_firmada === "Sí"
@@ -594,9 +550,6 @@ export default function EnviarANotarioModal({
           ? form.protocolo.trim()
           : null,
 
-      fecha_prevista_firma: form.fecha_prevista_firma,
-      hora_prevista_firma: form.hora_prevista_firma,
-      hora_fin_prevista_firma: form.hora_fin_prevista_firma,
       firma_urgente: Boolean(form.firma_urgente),
 
       notario_id: form.notario.id,
@@ -804,28 +757,12 @@ export default function EnviarANotarioModal({
                     onChange={(v) => cambiarCampo("fecha_envio", v)}
                   />
 
-                  <CampoTexto
-                    label="Fecha Solicitud PNC"
-                    type="date"
-                    required
-                    value={form.fecha_solicitud_pnc}
-                    disabled={loading}
-                    onChange={(v) =>
-                      cambiarCampo("fecha_solicitud_pnc", v)
-                    }
-                  />
-
-                  <div className="sm:col-span-2">
-                    <CampoTexto
-                      label="N.º de Solicitud"
-                      required
-                      value={form.numero_solicitud_pnc}
-                      disabled={loading}
-                      placeholder="Número de solicitud PNC"
-                      onChange={(v) =>
-                        cambiarCampo("numero_solicitud_pnc", v)
-                      }
-                    />
+                  <div className="flex flex-col justify-end">
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">Firma urgente</label>
+                    <div className="flex min-h-[42px] items-center gap-4 rounded-xl border border-slate-200 bg-white px-3 py-2">
+                      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700"><input type="radio" name="firma_urgente" value="no" checked={!form.firma_urgente} disabled={loading} onChange={() => cambiarCampo("firma_urgente", false)} />No</label>
+                      <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-red-700"><input type="radio" name="firma_urgente" value="si" checked={Boolean(form.firma_urgente)} disabled={loading} onChange={() => cambiarCampo("firma_urgente", true)} />Sí</label>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -835,50 +772,30 @@ export default function EnviarANotarioModal({
               <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                 <TituloSeccion
                   titulo="2. Planificación de la firma"
-                  descripcion="El envío guardará la planificación y el backend creará o actualizará la cita de Agenda."
+                  descripcion="Estos datos los completa el apoderado desde ApoderaGest. Aquí solo se consultan; al guardarlos desde ApoderaGest se actualiza la Agenda compartida."
                 />
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <CampoTexto
+                  <CampoAutomatico
+                    label="Fecha Solicitud PNC"
+                    valor={formatearFecha(form.fecha_solicitud_pnc)}
+                  />
+                  <CampoAutomatico
+                    label="N.º de Solicitud PNC"
+                    valor={form.numero_solicitud_pnc}
+                  />
+                  <CampoAutomatico
                     label="Fecha prevista de firma"
-                    type="date"
-                    required
-                    value={form.fecha_prevista_firma}
-                    disabled={loading}
-                    onChange={(v) =>
-                      cambiarCampo("fecha_prevista_firma", v)
-                    }
+                    valor={formatearFecha(form.fecha_prevista_firma)}
                   />
-
-                  <CampoTexto
-                    label="Hora prevista de firma"
-                    type="time"
-                    required
-                    value={form.hora_prevista_firma}
-                    disabled={loading}
-                    onChange={(v) =>
-                      cambiarCampo("hora_prevista_firma", v)
-                    }
+                  <CampoAutomatico
+                    label="Hora de inicio"
+                    valor={form.hora_prevista_firma}
                   />
-
-                  <CampoTexto
-                    label="Hora de fin de firma"
-                    type="time"
-                    required
-                    value={form.hora_fin_prevista_firma}
-                    disabled={loading}
-                    onChange={(v) =>
-                      cambiarCampo("hora_fin_prevista_firma", v)
-                    }
+                  <CampoAutomatico
+                    label="Hora de fin"
+                    valor={form.hora_fin_prevista_firma}
                   />
-
-                  <div className="flex flex-col justify-end">
-                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">Firma urgente</label>
-                    <div className="flex min-h-[42px] items-center gap-4 rounded-xl border border-slate-200 bg-white px-3 py-2">
-                      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700"><input type="radio" name="firma_urgente" value="no" checked={!form.firma_urgente} disabled={loading} onChange={() => cambiarCampo("firma_urgente", false)} />No</label>
-                      <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-red-700"><input type="radio" name="firma_urgente" value="si" checked={Boolean(form.firma_urgente)} disabled={loading} onChange={() => cambiarCampo("firma_urgente", true)} />Sí</label>
-                    </div>
-                  </div>
 
                   {form.escritura_firmada === "Sí" && (
                     <>
@@ -908,9 +825,7 @@ export default function EnviarANotarioModal({
                 </div>
 
                 <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-3 py-3 text-xs leading-relaxed text-blue-800">
-                  <strong>Agenda:</strong> la cita tendrá una
-                  duración inicial de una hora. Se comprobará si
-                  ya existe una cita para este expediente y fecha.
+                  <strong>Agenda compartida:</strong> este modal no crea ni modifica la cita. El apoderado guarda la planificación desde ApoderaGest y esa operación sincroniza la cita del ERP.
                 </div>
               </section>
 
