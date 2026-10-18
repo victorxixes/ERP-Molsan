@@ -234,6 +234,23 @@ export default function EncargaGest() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modo]);
 
+  // El portal consulta periódicamente los cambios para que la notaría vea el
+  // estado y los comentarios del gestor sin tener que cerrar sesión.
+  useEffect(() => {
+    if (modo !== "interno" && modo !== "externo") return undefined;
+    const intervalo = window.setInterval(() => {
+      cargarTodo();
+      if (seleccionadoId) {
+        axios.get("/encargagest/encargos/" + seleccionadoId)
+          .then((respuesta) => {
+            setDetalle((actual) => actual?.id === seleccionadoId ? respuesta.data : actual);
+          })
+          .catch(() => {});
+      }
+    }, 30000);
+    return () => window.clearInterval(intervalo);
+  }, [modo, cargarTodo, seleccionadoId]);
+
   useEffect(() => {
     if (!seleccionadoId) {
       setDetalle(null);
