@@ -31,19 +31,44 @@ const TEXTO_ESTADO = Object.fromEntries(ESTADOS.filter((x) => x.valor).map((x) =
 
 const NUEVO_ENCARGO = {
   notaria_id: "",
-  contacto_nombre: "",
-  contacto_email: "",
-  contacto_telefono: "",
   tipo_encargo: "Cancelación hipotecaria",
+  prioridad: "Normal",
   titular: "",
   nif_titular: "",
   entidad_bancaria: "",
   numero_prestamo: "",
-  importe: "",
-  fecha_objetivo: "",
-  prioridad: "Normal",
+  capital_inscrito: "",
+  fecha_constitucion: "",
+  numero_finca: "",
+  municipio_registro: "",
+  registro_propiedad: "",
   observaciones: "",
 };
+
+const CATEGORIAS_DOCUMENTO = [
+  {
+    nombre: "Hoja de solicitud",
+    descripcion: "Formulario de solicitud firmado",
+    icono: "01",
+  },
+  {
+    nombre: "Certificado de saldo cero / deuda",
+    descripcion: "Certificado emitido por la entidad bancaria",
+    icono: "02",
+  },
+  {
+    nombre: "Nota simple registral (vigencia de 3 meses)",
+    descripcion: "Nota simple actualizada del Registro de la Propiedad",
+    icono: "03",
+  },
+  {
+    nombre: "Otros",
+    descripcion: "Documentos complementarios del expediente",
+    icono: "04",
+  },
+];
+
+const EXTENSIONES_DOCUMENTO = ".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.eml,.msg,.txt";
 
 function fechaHora(valor) {
   if (!valor) return "—";
@@ -116,6 +141,8 @@ export default function EncargaGest() {
   const [modalNuevo, setModalNuevo] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [form, setForm] = useState({ ...NUEVO_ENCARGO });
+  const [archivosSolicitud, setArchivosSolicitud] = useState({});
+  const [categoriaDocumento, setCategoriaDocumento] = useState("Otros");
   const [actividad, setActividad] = useState("");
   const [visibleNotaria, setVisibleNotaria] = useState(true);
   const [guardandoActividad, setGuardandoActividad] = useState(false);
@@ -231,16 +258,35 @@ export default function EncargaGest() {
     try {
       const payload = {
         ...form,
-        notaria_id: Number(form.notaria_id),
-        importe: form.importe === "" ? null : Number(form.importe),
-        fecha_objetivo: form.fecha_objetivo || null,
+        notaria_id: modo === "interno" ? Number(form.notaria_id) : undefined,
+        capital_inscrito: form.capital_inscrito === "" ? null : Number(form.capital_inscrito),
+        fecha_constitucion: form.fecha_constitucion || null,
       };
       const respuesta = await axios.post("/encargagest/encargos", payload);
       const creado = respuesta.data;
+      const fallosDocumento = [];
+      for (const categoria of CATEGORIAS_DOCUMENTO) {
+        const seleccionados = archivosSolicitud[categoria.nombre] || [];
+        for (const archivoSeleccionado of seleccionados) {
+          const body = new FormData();
+          body.append("archivo", archivoSeleccionado);
+          body.append("categoria", categoria.nombre);
+          try {
+            await axios.post("/encargagest/encargos/" + creado.id + "/documentos", body);
+          } catch (errorDocumento) {
+            fallosDocumento.push(archivoSeleccionado.name);
+          }
+        }
+      }
       setModalNuevo(false);
       setForm({ ...NUEVO_ENCARGO });
+      setArchivosSolicitud({});
       setPagina(1);
-      setMensaje("Encargo " + (creado.referencia || "") + " registrado correctamente.");
+      setMensaje(
+        fallosDocumento.length
+          ? "Encargo " + (creado.referencia || "") + " registrado. No se pudieron adjuntar estos documentos: " + fallosDocumento.join(", ") + ". Puedes subirlos desde la ficha."
+          : "Encargo " + (creado.referencia || "") + " registrado con su documentación."
+      );
       await cargarTodo();
       setSeleccionadoId(creado.id);
     } catch (e) {
@@ -296,9 +342,11 @@ export default function EncargaGest() {
     setMensaje("");
     const body = new FormData();
     body.append("archivo", archivo);
+    body.append("categoria", categoriaDocumento);
     try {
       await axios.post("/encargagest/encargos/" + detalle.id + "/documentos", body);
       setArchivo(null);
+      setCategoriaDocumento("Otros");
       const selector = document.getElementById("encargagest-archivo");
       if (selector) selector.value = "";
       const actualizado = await axios.get("/encargagest/encargos/" + detalle.id);
@@ -565,13 +613,16 @@ export default function EncargaGest() {
                   <section>
                     <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-900">Documentación</h3><span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">{detalle.documentos?.length || 0} archivos</span></div>
                     <form className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3" onSubmit={subirDocumento}>
-                      <input id="encargagest-archivo" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.eml,.msg,.txt" onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="block w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:text-xs file:font-bold file:text-slate-700" />
+                      <select aria-label="Categoría del documento" value={categoriaDocumento} onChange={(e) => setCategoriaDocumento(e.target.value)} className={inputClass + " mb-3"}>
+                        {CATEGORIAS_DOCUMENTO.map((categoria) => <option key={categoria.nombre} value={categoria.nombre}>{categoria.nombre}</option>)}
+                      </select>
+                      <input id="encargagest-archivo" type="file" accept={EXTENSIONES_DOCUMENTO} onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="block w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:text-xs file:font-bold file:text-slate-700" />
                       <div className="mt-2 flex items-center justify-between gap-2"><span className="text-[10px] text-slate-400">PDF, Office, imagen o correo · máx. 25 MB</span><button type="submit" disabled={!archivo || subiendo} className="rounded-lg bg-slate-900 px-3 py-2 text-[10px] font-extrabold text-white disabled:opacity-40">{subiendo ? "Subiendo…" : "Subir archivo"}</button></div>
                     </form>
                     <div className="mt-3 space-y-2">
                       {!detalle.documentos?.length ? <p className="rounded-xl bg-slate-50 p-4 text-xs text-slate-500">Todavía no se ha adjuntado documentación.</p> : detalle.documentos.map((doc) => (
                         <div key={doc.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-3">
-                          <div className="min-w-0"><p className="break-words text-xs font-bold text-slate-800">{doc.nombre_original}</p><p className="mt-1 text-[10px] text-slate-400">{nombreArchivoTamano(doc.tamano_bytes)} · {fechaHora(doc.fecha_subida)}</p></div>
+                          <div className="min-w-0"><p className="break-words text-xs font-bold text-slate-800">{doc.nombre_original}</p><p className="mt-1 text-[10px] text-slate-400">{doc.categoria || "Otros"} · {nombreArchivoTamano(doc.tamano_bytes)} · {fechaHora(doc.fecha_subida)}</p></div>
                           <div className="flex shrink-0 gap-1"><button type="button" onClick={() => descargarDocumento(doc)} className="rounded-lg border border-slate-200 px-2 py-1.5 text-[10px] font-bold hover:bg-slate-50">Descargar</button>{modo === "interno" && <button type="button" onClick={() => eliminarDocumento(doc)} className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-700 hover:bg-rose-50">×</button>}</div>
                         </div>
                       ))}
@@ -605,26 +656,146 @@ export default function EncargaGest() {
       </main>
 
       {modalNuevo && (
-        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-950/50 p-3 backdrop-blur-sm sm:p-6" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModalNuevo(false); }}>
-          <form onSubmit={crearEncargo} className="my-auto max-h-[95vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
-            <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-100 bg-white/95 px-5 py-4 backdrop-blur sm:px-7"><div><p className="text-[9px] font-extrabold tracking-[0.18em] text-amber-700">ENCARGAGEST · NUEVA SOLICITUD</p><h2 className="mt-1 text-xl font-black text-slate-900">Registrar encargo externo</h2><p className="mt-1 text-xs text-slate-500">La notaría se selecciona desde el catálogo CTN existente.</p></div><button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50">×</button></div>
-            <div className="grid grid-cols-1 gap-4 px-5 py-5 sm:grid-cols-2 sm:px-7">
-              {modo === "interno" ? <Campo etiqueta="Notaría CTN *" className="sm:col-span-2"><select required value={form.notaria_id} onChange={(e) => cambiarFiltro("notaria_id", e.target.value)} className={inputClass}><option value="">Selecciona una notaría…</option>{notarias.map((n) => <option key={n.id} value={n.id}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}</select>{!notarias.length && <span className="mt-1 block text-[10px] text-rose-600">No hay notarías CTN disponibles o no se han podido cargar.</span>}</Campo> : <div className="sm:col-span-2 rounded-xl border border-amber-100 bg-amber-50/70 p-3 text-xs text-amber-900">El encargo se registrará a nombre de <strong>{sesion?.notaria_nombre || "tu notaría"}</strong>, vinculada a CTN.</div>}
-              <Campo etiqueta="Tipo de encargo *"><select required value={form.tipo_encargo} onChange={(e) => cambiarFiltro("tipo_encargo", e.target.value)} className={inputClass}><option>Cancelación hipotecaria</option><option>Solicitud de documentación</option><option>Gestión registral</option><option>Subsanación de incidencia</option><option>Otro encargo</option></select></Campo>
-              <Campo etiqueta="Prioridad"><select value={form.prioridad} onChange={(e) => cambiarFiltro("prioridad", e.target.value)} className={inputClass}><option>Normal</option><option>Alta</option><option>Urgente</option><option>Baja</option></select></Campo>
-              <Campo etiqueta="Nombre del titular *"><input required minLength={2} maxLength={300} value={form.titular} onChange={(e) => cambiarFiltro("titular", e.target.value)} placeholder="Nombre y apellidos / razón social" className={inputClass} /></Campo>
-              <Campo etiqueta="NIF / CIF titular"><input maxLength={50} value={form.nif_titular} onChange={(e) => cambiarFiltro("nif_titular", e.target.value)} placeholder="Documento identificativo" className={inputClass} /></Campo>
-              <Campo etiqueta="Entidad bancaria"><input maxLength={200} value={form.entidad_bancaria} onChange={(e) => cambiarFiltro("entidad_bancaria", e.target.value)} placeholder="Banco o entidad acreedora" className={inputClass} /></Campo>
-              <Campo etiqueta="Número de préstamo"><input maxLength={150} value={form.numero_prestamo} onChange={(e) => cambiarFiltro("numero_prestamo", e.target.value)} placeholder="Referencia de préstamo" className={inputClass} /></Campo>
-              <Campo etiqueta="Importe (€)"><input type="number" min="0" step="0.01" value={form.importe} onChange={(e) => cambiarFiltro("importe", e.target.value)} placeholder="0,00" className={inputClass} /></Campo>
-              <Campo etiqueta="Fecha objetivo"><input type="date" value={form.fecha_objetivo} onChange={(e) => cambiarFiltro("fecha_objetivo", e.target.value)} className={inputClass} /></Campo>
-              <Campo etiqueta="Contacto en la notaría"><input maxLength={200} value={form.contacto_nombre} onChange={(e) => cambiarFiltro("contacto_nombre", e.target.value)} placeholder="Persona de contacto" className={inputClass} /></Campo>
-              <Campo etiqueta="Email de contacto"><input type="email" maxLength={320} value={form.contacto_email} onChange={(e) => cambiarFiltro("contacto_email", e.target.value)} placeholder="nombre@notaria.es" className={inputClass} /></Campo>
-              <Campo etiqueta="Teléfono de contacto"><input maxLength={60} value={form.contacto_telefono} onChange={(e) => cambiarFiltro("contacto_telefono", e.target.value)} placeholder="Teléfono directo" className={inputClass} /></Campo>
-              <Campo etiqueta="Observaciones de la solicitud" className="sm:col-span-2"><textarea rows={4} maxLength={10000} value={form.observaciones} onChange={(e) => cambiarFiltro("observaciones", e.target.value)} placeholder="Instrucciones, documentación recibida, particularidades del encargo…" className={inputClass + " resize-y"} /></Campo>
+        <div
+          className="eg-modal-overlay"
+          role="presentation"
+          onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModalNuevo(false); }}
+        >
+          <form onSubmit={crearEncargo} className="eg-modal-form">
+            <header className="eg-modal-header">
+              <div className="eg-modal-brand">EG</div>
+              <div className="eg-modal-heading">
+                <span className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</span>
+                <h2>Registrar nuevo encargo</h2>
+                <p>Completa los datos de la solicitud y adjunta la documentación en su categoría.</p>
+              </div>
+              <button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="eg-modal-close" aria-label="Cerrar modal">×</button>
+            </header>
+
+            {modo === "interno" ? (
+              <div className="eg-modal-contexto">
+                <Campo etiqueta="Notaría vinculada · catálogo CTN *">
+                  <select required value={form.notaria_id} onChange={(e) => cambiarFiltro("notaria_id", e.target.value)} className={inputClass}>
+                    <option value="">Selecciona una notaría…</option>
+                    {notarias.map((n) => <option key={n.id} value={n.id}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}
+                  </select>
+                  {!notarias.length && <span className="mt-1 block text-[10px] text-rose-600">No hay notarías CTN disponibles o no se han podido cargar.</span>}
+                </Campo>
+              </div>
+            ) : (
+              <div className="eg-modal-contexto">
+                <div className="eg-modal-notaria">
+                  <span className="eg-modal-contexto-punto" aria-hidden="true" />
+                  El encargo se vinculará a <strong>{sesion?.notaria_nombre || "tu notaría"}</strong>, registrada en el catálogo CTN.
+                </div>
+              </div>
+            )}
+
+            <div className="eg-modal-layout">
+              <section className="eg-modal-section eg-modal-datos">
+                <div className="eg-modal-section-heading">
+                  <span className="eg-modal-section-icono">01</span>
+                  <div><span>DATOS PRINCIPALES</span><h3>Datos del encargo</h3></div>
+                </div>
+
+                <div className="eg-modal-field-grid">
+                  <Campo etiqueta="Nombre del solicitante *" className="eg-span-2">
+                    <input required minLength={2} maxLength={300} value={form.titular} onChange={(e) => cambiarFiltro("titular", e.target.value)} placeholder="Nombre y apellidos / razón social" className={inputClass} />
+                  </Campo>
+                  <Campo etiqueta="NIF / CIF del solicitante">
+                    <input maxLength={50} value={form.nif_titular} onChange={(e) => cambiarFiltro("nif_titular", e.target.value)} placeholder="Documento identificativo" className={inputClass} />
+                  </Campo>
+                  <Campo etiqueta="Tipo de encargo *">
+                    <select required value={form.tipo_encargo} onChange={(e) => cambiarFiltro("tipo_encargo", e.target.value)} className={inputClass}>
+                      <option>Cancelación hipotecaria</option><option>Solicitud de documentación</option><option>Gestión registral</option><option>Subsanación de incidencia</option><option>Otro encargo</option>
+                    </select>
+                  </Campo>
+                  <Campo etiqueta="Prioridad">
+                    <select value={form.prioridad} onChange={(e) => cambiarFiltro("prioridad", e.target.value)} className={inputClass}>
+                      <option>Normal</option><option>Alta</option><option>Urgente</option><option>Baja</option>
+                    </select>
+                  </Campo>
+                  <Campo etiqueta="Entidad bancaria">
+                    <input maxLength={200} value={form.entidad_bancaria} onChange={(e) => cambiarFiltro("entidad_bancaria", e.target.value)} placeholder="Banco o entidad acreedora" className={inputClass} />
+                  </Campo>
+                  <Campo etiqueta="Número de préstamo">
+                    <input maxLength={150} value={form.numero_prestamo} onChange={(e) => cambiarFiltro("numero_prestamo", e.target.value)} placeholder="Referencia del préstamo" className={inputClass} />
+                  </Campo>
+                  <Campo etiqueta="Capital inscrito en el registro (€)">
+                    <input type="number" min="0" step="0.01" value={form.capital_inscrito} onChange={(e) => cambiarFiltro("capital_inscrito", e.target.value)} placeholder="0,00" className={inputClass} />
+                  </Campo>
+                  <Campo etiqueta="Fecha de constitución">
+                    <input type="date" value={form.fecha_constitucion} onChange={(e) => cambiarFiltro("fecha_constitucion", e.target.value)} className={inputClass} />
+                  </Campo>
+                  <Campo etiqueta="Número de finca">
+                    <input maxLength={150} value={form.numero_finca} onChange={(e) => cambiarFiltro("numero_finca", e.target.value)} placeholder="N.º de finca registral" className={inputClass} />
+                  </Campo>
+                  <Campo etiqueta="Municipio del registro">
+                    <input maxLength={200} value={form.municipio_registro} onChange={(e) => cambiarFiltro("municipio_registro", e.target.value)} placeholder="Municipio" className={inputClass} />
+                  </Campo>
+                  <Campo etiqueta="Registro de la propiedad" className="eg-span-2">
+                    <input maxLength={200} value={form.registro_propiedad} onChange={(e) => cambiarFiltro("registro_propiedad", e.target.value)} placeholder="N.º o denominación del Registro de la Propiedad" className={inputClass} />
+                  </Campo>
+                  <Campo etiqueta="Observaciones de la solicitud" className="eg-span-2">
+                    <textarea rows={4} maxLength={10000} value={form.observaciones} onChange={(e) => cambiarFiltro("observaciones", e.target.value)} placeholder="Indicaciones y particularidades del encargo…" className={inputClass + " resize-y"} />
+                  </Campo>
+                </div>
+              </section>
+
+              <section className="eg-modal-section eg-modal-carpeta">
+                <div className="eg-modal-section-heading">
+                  <span className="eg-modal-section-icono eg-modal-section-icono-carpeta">02</span>
+                  <div><span>DOCUMENTACIÓN DEL EXPEDIENTE</span><h3>Carpeta digital</h3></div>
+                </div>
+                <p className="eg-modal-ayuda">Adjunta los archivos directamente al encargo. Puedes seleccionar varios ficheros por categoría.</p>
+
+                <div className="eg-categorias-documentales">
+                  {CATEGORIAS_DOCUMENTO.map((categoria) => {
+                    const seleccionados = archivosSolicitud[categoria.nombre] || [];
+                    return (
+                      <article className="eg-document-category" key={categoria.nombre}>
+                        <div className="eg-document-category-heading">
+                          <span className="eg-document-icono">{categoria.icono}</span>
+                          <div><strong>{categoria.nombre}</strong><small>{categoria.descripcion}</small></div>
+                          <span className="eg-document-count">{seleccionados.length}</span>
+                        </div>
+                        <label className="eg-file-picker">
+                          <span aria-hidden="true">＋</span>{seleccionados.length ? "Añadir / cambiar archivos" : "Seleccionar archivo"}
+                          <input
+                            type="file"
+                            multiple
+                            accept={EXTENSIONES_DOCUMENTO}
+                            disabled={guardando}
+                            onChange={(e) => setArchivosSolicitud((actual) => ({ ...actual, [categoria.nombre]: Array.from(e.target.files || []) }))}
+                          />
+                        </label>
+                        {seleccionados.length > 0 ? (
+                          <ul className="eg-selected-files">
+                            {seleccionados.map((item, index) => (
+                              <li key={item.name + "-" + item.lastModified + "-" + index}>
+                                <span aria-hidden="true">PDF</span><span title={item.name}>{item.name}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : <p className="eg-document-empty">Todavía no hay documentos en esta categoría.</p>}
+                      </article>
+                    );
+                  })}
+                </div>
+                <p className="eg-modal-ayuda eg-modal-ayuda-final">Formatos admitidos: PDF, Office, imagen o correo. Tamaño máximo por archivo: 25 MB.</p>
+              </section>
             </div>
-            {errorAccion && <p className="mx-5 mb-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800 sm:mx-7">{errorAccion}</p>}
-            <div className="sticky bottom-0 flex flex-wrap justify-end gap-2 border-t border-slate-100 bg-white/95 px-5 py-4 backdrop-blur sm:px-7"><button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardando || !notarias.length} className="rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-extrabold text-amber-950 disabled:opacity-50">{guardando ? "Guardando encargo…" : "Guardar encargo"}</button></div>
+
+            {errorAccion && <p className="eg-modal-error" role="alert">{errorAccion}</p>}
+            <footer className="eg-modal-footer">
+              <span>{Object.values(archivosSolicitud).reduce((total, archivos) => total + archivos.length, 0)} archivo(s) seleccionado(s)</span>
+              <div>
+                <button type="button" disabled={guardando} onClick={() => setModalNuevo(false)} className="eg-secondary">Cancelar</button>
+                <button type="submit" disabled={guardando || (modo === "interno" && !notarias.length)} className="eg-button-primary">
+                  {guardando ? "Guardando encargo y documentos…" : "Guardar encargo"}
+                </button>
+              </div>
+            </footer>
           </form>
         </div>
       )}
