@@ -134,22 +134,20 @@ function KpiCard({ icono, titulo, valor, descripcion }) {
 
 function ActividadCard({ actividad, total }) {
   return (
-    <div className="erp-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)" }}>
-          {actividad.icono}
+    <div className="flex items-center gap-3 border-b px-4 py-3.5 last:border-b-0 transition-colors duration-150 hover:bg-[var(--erp-surface-soft)]" style={{ borderColor: "var(--erp-border)" }}>
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)" }}>
+        {actividad.icono}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
+          {actividad.nombre}
         </div>
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
-            {actividad.nombre}
-          </div>
-          <div className="mt-0.5 truncate text-xs" style={{ color: "var(--erp-text-soft)" }}>
-            {actividad.descripcion}
-          </div>
+        <div className="mt-0.5 text-xs leading-relaxed" style={{ color: "var(--erp-text-soft)" }}>
+          {actividad.descripcion}
         </div>
-        <div className="text-xl font-bold" style={{ color: "var(--erp-primary)" }}>
-          {numero(total)}
-        </div>
+      </div>
+      <div className="min-w-12 rounded-lg px-3 py-1 text-right text-lg font-bold tabular-nums" style={{ color: "var(--erp-primary)", background: "var(--erp-primary-soft)" }}>
+        {numero(total)}
       </div>
     </div>
   );
@@ -361,7 +359,7 @@ export default function Dashboard() {
             Situación actual de los expedientes dentro del circuito de trabajo.
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="erp-card min-w-0 overflow-hidden p-0">
           {actividades.map((actividad) => (
             <ActividadCard key={actividad.key} actividad={actividad} total={actividad.total} />
           ))}
