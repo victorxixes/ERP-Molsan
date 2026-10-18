@@ -111,14 +111,7 @@ export default function VistaMes({
       {/* CABECERA DÍAS */}
 
       <div
-        className="
-          grid grid-cols-6
-          mb-2
-          rounded-xl
-          overflow-hidden
-          border border-[var(--erp-border)]
-          bg-[var(--erp-surface-soft)]
-        "
+        className="grid grid-cols-6 gap-2 mb-2"
       >
         {DIAS_SEMANA.map((d) => (
           <div
@@ -130,8 +123,9 @@ export default function VistaMes({
               text-[var(--erp-text-soft)]
               uppercase
               tracking-wide
-              border-r last:border-r-0
-              border-[var(--erp-border)]
+              rounded-xl
+              border border-[var(--erp-border)]
+              bg-[var(--erp-surface-soft)]
             "
           >
             {d}
@@ -141,7 +135,7 @@ export default function VistaMes({
 
       {/* CALENDARIO */}
 
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-6 gap-2">
 
         {matrix.map((week, wi) =>
           week.map((day, di) => {
