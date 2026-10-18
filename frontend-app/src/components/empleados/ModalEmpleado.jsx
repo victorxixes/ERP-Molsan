@@ -20,6 +20,7 @@ import {
 
 import MODULOS_ERP from "../../config/modulos";
 import AuthenticatedPhoto from "../AuthenticatedPhoto";
+import { useAuthStore } from "../../store/authStore";
 
 // ============================================================
 // PERMISOS ESTÁNDAR DEL ERP
@@ -422,10 +423,21 @@ export default function ModalEmpleado({
   const {
     ficha,
     permisos: permisosGlobales,
+    roles,
+    cargarRoles,
     cargarFicha,
+    asignarRol,
     asignarModulos,
     asignarPermisos,
   } = useSeguridadStore();
+
+  const usuarioSesion = useAuthStore((s) => s.empleado);
+  const nombreRolSesion = String(
+    usuarioSesion?.rol_nombre ||
+    usuarioSesion?.rol?.nombre ||
+    (Number(usuarioSesion?.rol_id) === 1 ? "admin" : "")
+  ).normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+  const esAdministrador = ["admin", "administrador", "administrator"].includes(nombreRolSesion);
 
 
   /* ==========================================================
@@ -614,6 +626,7 @@ export default function ModalEmpleado({
           getMaestros("departamentos"),
           getMaestros("secciones"),
           getMaestros("cargos"),
+          cargarRoles(),
         ]);
 
         if (!activo) {
@@ -671,6 +684,7 @@ export default function ModalEmpleado({
 
   }, [
     open,
+    cargarRoles,
   ]);
 
 
@@ -1009,6 +1023,23 @@ export default function ModalEmpleado({
     ficha?.rol_nombre ||
     "Empleado";
 
+  const cambiarRolEmpleado = async (valor) => {
+    const rolId = Number(valor);
+    if (!esAdministrador || !empleadoId || !Number.isFinite(rolId)) return;
+    try {
+      setGuardando(true);
+      setError(null);
+      setMensaje(null);
+      await asignarRol(empleadoId, rolId);
+      await cargarFicha(empleadoId);
+      setMensaje("Rol del empleado actualizado correctamente.");
+    } catch (err) {
+      setError(obtenerMensajeError(err, "No se ha podido cambiar el rol del empleado."));
+    } finally {
+      setGuardando(false);
+    }
+  };
+
 
   /* ==========================================================
      PERMISOS DISPONIBLES
@@ -1339,6 +1370,11 @@ const permisosDisponibles =
   const guardarDatosEmpleado =
     async () => {
 
+      if (!esAdministrador || !empleadoId) {
+        if (!esAdministrador) setError("Solo un administrador puede modificar estos datos.");
+        return;
+      }
+
       if (
         !empleadoId
       ) {
@@ -1598,6 +1634,11 @@ const permisosDisponibles =
 
   const guardarConfiguracion =
     async () => {
+
+      if (!esAdministrador || !empleadoId) {
+        if (!esAdministrador) setError("Solo un administrador puede modificar estos datos.");
+        return;
+      }
 
       if (
         !empleadoId
@@ -2942,6 +2983,7 @@ const permisosDisponibles =
                 {pestana ===
                   "laborales" && (
 
+                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 opacity-60 [&_input]:cursor-not-allowed [&_select]:cursor-not-allowed [&_button]:cursor-not-allowed" : "space-y-5"}>
                   <div className="space-y-5">
 
                     <section
@@ -3210,6 +3252,7 @@ const permisosDisponibles =
                     />
 
                   </div>
+                  </fieldset>
 
                 )}
 
@@ -3221,7 +3264,31 @@ const permisosDisponibles =
                 {pestana ===
                   "accesos" && (
 
+                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 opacity-60 [&_input]:cursor-not-allowed [&_select]:cursor-not-allowed [&_button]:cursor-not-allowed" : "space-y-5"}>
                   <div className="space-y-5">
+
+                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-center">
+                        <div>
+                          <h3 className="text-base font-bold text-slate-900">Rol del empleado</h3>
+                          <p className="mt-1 text-sm text-slate-500">Define el nivel de acceso general al ERP.</p>
+                        </div>
+                        <select
+                          value={empleadoFormulario.rol_id ?? empleadoFormulario.rol?.id ?? ""}
+                          onChange={(event) => cambiarRolEmpleado(event.target.value)}
+                          disabled={!esAdministrador || guardando || !Array.isArray(roles) || roles.length === 0}
+                          className={!esAdministrador ? "w-full rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5 text-sm text-slate-500 cursor-not-allowed" : "w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800"}
+                        >
+                          <option value="">Seleccionar rol…</option>
+                          {(Array.isArray(roles) ? roles : []).map((item) => (
+                            <option key={item.id} value={item.id}>{item.nombre}{item.descripcion ? " — " + item.descripcion : ""}</option>
+                          ))}
+                        </select>
+                      </div>
+                      {!esAdministrador && <p className="mt-3 text-xs font-medium text-slate-500">Solo un administrador puede modificar el rol y la configuración de accesos.</p>}
+                    </section>
+
+
 
 
                     {/* MÓDULOS */}
@@ -3678,6 +3745,7 @@ const permisosDisponibles =
                     />
 
                   </div>
+                  </fieldset>
 
                 )}
 
