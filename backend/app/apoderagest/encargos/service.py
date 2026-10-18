@@ -7,7 +7,7 @@ los datos necesarios para el listado, el Dashboard y el histórico de firmas.
 
 import unicodedata
 
-from sqlalchemy import func
+from sqlalchemy import and_, func, or_
 
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
@@ -95,7 +95,14 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
         "tipo_tramite": _texto(getattr(expediente, "tipo_tramite", None)),
         "formato_escritura": _texto(getattr(expediente, "formato_escritura", None)),
         "idioma_documento": _texto(getattr(expediente, "idioma_documento", None)),
-        "cuantia_documento": getattr(expediente, "importe", None),
+        "cuantia_documento": next(
+            (
+                getattr(documento, "cuantia", None)
+                for documento in (getattr(expediente, "documentos_escritura", None) or [])
+                if getattr(documento, "cuantia", None) is not None
+            ),
+            None,
+        ),
         "firma_urgente": bool(getattr(expediente, "firma_urgente", False)),
         "documentos_escritura": [
             {
@@ -136,9 +143,9 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
             getattr(expediente, "nif_notario", None)
         ),
         "titular": _nombre_titular(expediente),
-        "nombre": _texto(getattr(expediente, "nombre", None)) or _texto(getattr(expediente, "nombre_titular", None)),
-        "apellidos": _texto(getattr(expediente, "apellidos", None)) or _texto(getattr(expediente, "facturacion_apellidos", None)),
-        "dni": _texto(getattr(expediente, "dni", None)) or _texto(getattr(expediente, "nif_titular", None)),
+        "nombre": _texto(getattr(expediente, "nombre_solicitante", None)),
+        "apellidos": _texto(getattr(expediente, "apellidos_solicitante", None)),
+        "dni": _texto(getattr(expediente, "nif_solicitante", None)),
         "nombre_solicitante": _texto(getattr(expediente, "nombre_solicitante", None)),
         "nif_solicitante": _texto(getattr(expediente, "nif_solicitante", None)),
         "finca": _texto(getattr(expediente, "finca", None)),
@@ -179,9 +186,11 @@ def listar_encargos(db, usuario, solo_pendientes=False):
     identificar al apoderado.
     """
     nombre = _texto(obtener_nombre_apoderado(usuario))
+    usuario_id = getattr(usuario, "id", None)
     campo_apoderado = getattr(Expediente, "apoderado", None)
+    campo_apoderado_id = getattr(Expediente, "apoderado_empleado_id", None)
 
-    if not nombre or campo_apoderado is None:
+    if (not nombre and not usuario_id) or campo_apoderado is None:
         return []
 
     # Normalización SQL compatible con PostgreSQL: elimina tildes frecuentes
@@ -190,19 +199,26 @@ def listar_encargos(db, usuario, solo_pendientes=False):
     alfabeto_con_tildes = "áéíóúüñ"
     alfabeto_normal = "aeiouun"
     nombre_sql = nombre.strip().lower()
+    filtro_nombre = func.translate(
+        func.lower(func.trim(campo_apoderado)),
+        alfabeto_con_tildes,
+        alfabeto_normal,
+    ) == func.translate(
+        nombre_sql,
+        alfabeto_con_tildes,
+        alfabeto_normal,
+    )
+    if usuario_id is not None and campo_apoderado_id is not None:
+        filtro_asignacion = or_(
+            campo_apoderado_id == int(usuario_id),
+            and_(campo_apoderado_id.is_(None), filtro_nombre),
+        )
+    else:
+        filtro_asignacion = filtro_nombre
+
     candidatos = (
         db.query(Expediente)
-        .filter(
-            func.translate(
-                func.lower(func.trim(campo_apoderado)),
-                alfabeto_con_tildes,
-                alfabeto_normal,
-            ) == func.translate(
-                nombre_sql,
-                alfabeto_con_tildes,
-                alfabeto_normal,
-            )
-        )
+        .filter(filtro_asignacion)
         .order_by(
             Expediente.fecha_prevista_firma.asc().nullslast(),
             Expediente.fecha_alta.desc().nullslast(),
@@ -214,10 +230,15 @@ def listar_encargos(db, usuario, solo_pendientes=False):
     resultados = []
     nombre_normalizado = _normalizar(nombre)
     for expediente in candidatos:
-        apoderado = _texto(getattr(expediente, "apoderado", None))
-        # La comparación final normalizada es importante para los nombres con tildes.
-        if _normalizar(apoderado) != nombre_normalizado:
-            continue
+        apoderado_id_asignado = getattr(expediente, "apoderado_empleado_id", None)
+        if apoderado_id_asignado is not None:
+            if usuario_id is None or int(apoderado_id_asignado) != int(usuario_id):
+                continue
+        else:
+            apoderado = _texto(getattr(expediente, "apoderado", None))
+            # Compatibilidad temporal solo con expedientes históricos sin ID.
+            if not nombre or _normalizar(apoderado) != nombre_normalizado:
+                continue
 
         fecha_envio = getattr(expediente, "fecha_envio_notario", None) or getattr(expediente, "fecha_envio", None)
         if solo_pendientes:

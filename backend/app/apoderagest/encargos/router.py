@@ -123,6 +123,12 @@ def firmar_encargo(
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
+    if expediente.fecha_firma or str(getattr(expediente, "protocolo", "") or "").strip():
+        raise HTTPException(
+            status_code=409,
+            detail="Este expediente ya tiene una firma registrada. No se puede sustituir desde ApoderaGest.",
+        )
+
     protocolo = datos.protocolo.strip()
     if not protocolo:
         raise HTTPException(status_code=422, detail="Indica el número de protocolo.")
