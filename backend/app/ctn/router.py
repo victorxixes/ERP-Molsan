@@ -714,26 +714,40 @@ def obtener_accesos_portales_notaria(
     """), {"notaria_id": notaria_id}).mappings().all()
     return {
         "notaria_id": notaria_id,
-        "notargest": {"usuario": _normalizar_usuario_portal(notaria.nif),
+        "notargest": ({"usuario": _normalizar_usuario_portal(notaria.nif),
             "habilitado": bool(getattr(notaria, "notargest_habilitado", False)),
             "configurado": bool(getattr(notaria, "notargest_password_hash", None)),
-            "cambiar_password": bool(getattr(notaria, "notargest_cambiar_password", True))},
-        "encargagest": {"usuario": acceso_eg.usuario if acceso_eg else _normalizar_usuario_portal(notaria.nif),
+            "cambiar_password": bool(getattr(notaria, "notargest_cambiar_password", True))}
+            if puede_notargest else None),
+        "encargagest": ({"usuario": acceso_eg.usuario if acceso_eg else _normalizar_usuario_portal(notaria.nif),
             "habilitado": bool(acceso_eg.habilitado) if acceso_eg else False,
-            "configurado": acceso_eg is not None},
+            "configurado": acceso_eg is not None}
+            if puede_encargagest else None),
+        "permisos": {"notargestweb": {"ver": puede_notargest}, "encargagestweb": {"ver": puede_encargagest}},
         "historial": [{"portal": row["portal"], "evento": row["evento"],
             "resultado": row["resultado"], "usuario": row["usuario"], "detalle": row["detalle"],
-            "fecha": row["fecha"].isoformat() if row["fecha"] else None} for row in historial],
+            "fecha": row["fecha"].isoformat() if row["fecha"] else None} for row in historial
+            if (row["portal"] == "notargest" and puede_notargest) or (row["portal"] == "encargagest" and puede_encargagest)],
     }
 
 
 @router.post("/notarias/{notaria_id}/accesos-portales/{portal}/habilitado")
-def cambiar_habilitado_portal_notaria(notaria_id: int, portal: str, datos: dict, db: Session = Depends(get_db)):
+def cambiar_habilitado_portal_notaria(
+    notaria_id: int,
+    portal: str,
+    datos: dict,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    portal = portal.strip().lower()
+    clave_permiso = {"notargest": "notargestweb", "encargagest": "encargagestweb"}.get(portal)
+    if not clave_permiso:
+        raise HTTPException(status_code=400, detail="Portal no válido")
+    _exigir_permiso_portal(usuario, clave_permiso, "editar")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=404, detail="Notaría no encontrada")
     habilitado = bool(datos.get("habilitado"))
-    portal = portal.strip().lower()
     if portal == "notargest":
         notaria.notargest_habilitado = habilitado
     elif portal == "encargagest":
