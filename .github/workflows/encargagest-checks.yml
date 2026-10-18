@@ -48,4 +48,4 @@ jobs:
           DATABASE_URL: sqlite:////tmp/molsan-encargagest-ci.db
           JWT_SECRET: ci-smoke-test-secret-key-0123456789abcdef
           MOLSAN_STORAGE_ROOT: /tmp/molsan-encargagest-ci-storage
-        run: python -c "import backend.app.main; print('FastAPI application import OK')"
+        run: python -c "import backend.app.main; from backend.app.encargagest.router import crear_tablas_encargagest; crear_tablas_encargagest(); print('FastAPI import and EncargaGest table creation OK')"
