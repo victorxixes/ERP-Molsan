@@ -16,10 +16,13 @@ export default function PortalAccessTabs({ notariaId }) {
   ).normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim().toLowerCase();
   const esAdministrador = /(^|\\s)(admin|administrador)(\\s|$)/.test(nombreRol);
   const permisosEmpleado = empleadoSesion?.permisos_modulo_dict || empleadoSesion?.permisos_modulo || {};
+  const modulosVisibles = Array.isArray(empleadoSesion?.modulos_visibles_list)
+    ? empleadoSesion.modulos_visibles_list
+    : Array.isArray(empleadoSesion?.modulos_visibles) ? empleadoSesion.modulos_visibles : [];
   const permisosNotarGest = Array.isArray(permisosEmpleado.notargestweb) ? permisosEmpleado.notargestweb : [];
   const permisosEncargaGest = Array.isArray(permisosEmpleado.encargagestweb) ? permisosEmpleado.encargagestweb : [];
-  const puedeVerNotarGest = esAdministrador || permisosNotarGest.includes("ver");
-  const puedeVerEncargaGest = esAdministrador || permisosEncargaGest.includes("ver");
+  const puedeVerNotarGest = esAdministrador || (modulosVisibles.includes("notargestweb") && permisosNotarGest.includes("ver"));
+  const puedeVerEncargaGest = esAdministrador || (modulosVisibles.includes("encargagestweb") && permisosEncargaGest.includes("ver"));
   const [portal, setPortal] = useState(puedeVerNotarGest ? "notargest" : "encargagest");
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(false);
