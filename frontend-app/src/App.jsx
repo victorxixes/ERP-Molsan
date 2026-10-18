@@ -217,6 +217,18 @@ export default function App() {
           path="notargest"
           element={<NotarGest />}
         />
+
+        {/* Puerta web externa para notarías: acceso directo y diferenciado. */}
+        <Route
+          path="notargestweb"
+          element={<NotarGest />}
+        />
+
+        {/* Puerta web externa para encargos de cancelación hipotecaria. */}
+        <Route
+          path="encargagestweb"
+          element={<EncargaGest />}
+        />
         
         {/* ====================================================
             RUTAS PRIVADAS
