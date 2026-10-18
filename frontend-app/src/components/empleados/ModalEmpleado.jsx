@@ -441,9 +441,16 @@ export default function ModalEmpleado({
     : null;
   const valorRolSesion =
     usuarioSesion?.rol_nombre ||
+    usuarioSesion?.nombre_rol ||
+    usuarioSesion?.role_name ||
+    usuarioSesion?.roleName ||
     usuarioSesion?.rol?.nombre ||
+    usuarioSesion?.rol?.name ||
     (typeof usuarioSesion?.rol === "string" ? usuarioSesion.rol : "") ||
     usuarioSesion?.role?.name ||
+    usuarioSesion?.role?.nombre ||
+    (typeof usuarioSesion?.role === "string" ? usuarioSesion.role : "") ||
+    usuarioSesion?.perfil?.nombre ||
     rolCatalogoSesion?.nombre ||
     "";
   const nombreRolSesion = String(valorRolSesion)
@@ -451,9 +458,15 @@ export default function ModalEmpleado({
     .replace(/[\u0300-\u036f]/g, "")
     .trim()
     .toLowerCase();
+  const rolIdSesion = Number(
+    usuarioSesion?.rol_id ??
+    usuarioSesion?.rol?.id ??
+    usuarioSesion?.role?.id ??
+    rolCatalogoSesion?.id
+  );
   const esAdministrador =
     /(^|[^a-z])admin(istrador)?([^a-z]|$)/.test(nombreRolSesion) ||
-    (!nombreRolSesion && Number(usuarioSesion?.rol_id) === 1);
+    (!nombreRolSesion && rolIdSesion === 1);
 
 
   /* ==========================================================
@@ -3016,7 +3029,7 @@ const permisosDisponibles =
                 {pestana ===
                   "laborales" && (
 
-                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 opacity-60 [&_input]:cursor-not-allowed [&_select]:cursor-not-allowed [&_button]:cursor-not-allowed" : "space-y-5"}>
+                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 opacity-40 grayscale pointer-events-none select-none [&_input]:cursor-not-allowed [&_select]:cursor-not-allowed [&_button]:cursor-not-allowed [&_textarea]:cursor-not-allowed" : "space-y-5"}>
                   <div className="space-y-5">
 
                     <section
@@ -3297,7 +3310,7 @@ const permisosDisponibles =
                 {pestana ===
                   "accesos" && (
 
-                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 opacity-60 [&_input]:cursor-not-allowed [&_select]:cursor-not-allowed [&_button]:cursor-not-allowed" : "space-y-5"}>
+                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 opacity-40 grayscale pointer-events-none select-none [&_input]:cursor-not-allowed [&_select]:cursor-not-allowed [&_button]:cursor-not-allowed [&_textarea]:cursor-not-allowed" : "space-y-5"}>
                   <div className="space-y-5">
 
                     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
