@@ -80,6 +80,7 @@ class EncargoExternoUsuario(Base):
     notaria_id = Column(Integer, ForeignKey("ctn_notarios.id"), nullable=False, unique=True, index=True)
     usuario = Column(String(100), nullable=False, unique=True, index=True)
     password_hash = Column(String(255), nullable=False)
+    password_enc = Column(Text, nullable=True)
     habilitado = Column(Boolean, nullable=False, default=True)
     creado_en = Column(DateTime, nullable=False, default=datetime.utcnow)
     actualizado_en = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)

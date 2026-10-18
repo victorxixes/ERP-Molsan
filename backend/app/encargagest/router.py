@@ -6,8 +6,10 @@ import hashlib
 import hmac
 import secrets
 import os
+import base64
 
 import jwt
+from cryptography.fernet import Fernet
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
@@ -61,6 +63,9 @@ def crear_tablas_encargagest():
         checkfirst=True,
     )
     migraciones = {
+        "encargagest_usuarios": {
+            "password_enc": "TEXT",
+        },
         "encargagest_encargos": {
             "capital_inscrito": "NUMERIC(14, 2)",
             "fecha_constitucion": "DATE",
@@ -109,6 +114,14 @@ def _exigir_interno(usuario, accion="editar"):
 
 def _normalizar_usuario(valor):
     return "".join(str(valor or "").upper().split()).replace("-", "").replace(".", "")
+
+
+def _cifrar_password(password):
+    secreto = str(getattr(settings, "JWT_SECRET", "") or os.getenv("JWT_SECRET", "")).strip()
+    if not secreto:
+        raise HTTPException(status_code=500, detail="No está configurada la clave de cifrado de contraseñas.")
+    clave = base64.urlsafe_b64encode(hashlib.sha256(("ERP-Molsan-portales-v1:" + secreto).encode("utf-8")).digest())
+    return Fernet(clave).encrypt(password.encode("utf-8")).decode("ascii")
 
 
 def _hash_password(password, salt=None):
@@ -408,7 +421,8 @@ def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(g
     if acceso is None:
         acceso = EncargoExternoUsuario(
             notaria_id=notaria.id, usuario=usuario_login,
-            password_hash=_hash_password(datos.password or secrets.token_urlsafe(24)),
+            password_hash=_hash_password(datos.password),
+            password_enc=_cifrar_password(datos.password),
             habilitado=datos.habilitado,
         )
         db.add(acceso)
@@ -417,6 +431,7 @@ def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(g
         acceso.habilitado = datos.habilitado
         if datos.password:
             acceso.password_hash = _hash_password(datos.password)
+            acceso.password_enc = _cifrar_password(datos.password)
         acceso.actualizado_en = datetime.utcnow()
     db.commit()
     db.refresh(acceso)
