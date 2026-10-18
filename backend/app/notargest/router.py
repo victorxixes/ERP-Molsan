@@ -2,11 +2,13 @@ import hashlib
 import hmac
 import secrets
 import os
+import base64
 import uuid
 from pathlib import Path
 from datetime import date, datetime, time, timedelta
 
 import jwt
+from cryptography.fernet import Fernet
 from fastapi import APIRouter, Depends, HTTPException, File, Form, UploadFile
 from pydantic import BaseModel, constr
 from sqlalchemy import and_, text, or_
@@ -58,6 +60,14 @@ class ComentarioGestorNotarGest(BaseModel):
 
 def normalizar_nif(valor):
     return "".join((valor or "").upper().split()).replace("-", "")
+
+def cifrar_password_portal(password):
+    secreto = str(getattr(settings, "JWT_SECRET", "") or os.getenv("JWT_SECRET", "")).strip()
+    if not secreto:
+        raise HTTPException(status_code=500, detail="No está configurada la clave de cifrado de contraseñas.")
+    clave = base64.urlsafe_b64encode(hashlib.sha256(("ERP-Molsan-portales-v1:" + secreto).encode("utf-8")).digest())
+    return Fernet(clave).encrypt(password.encode("utf-8")).decode("ascii")
+
 
 def hash_password(password, salt=None):
     salt = salt or secrets.token_hex(16)
@@ -329,6 +339,7 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
     password_nif = hmac.compare_digest(normalizar_nif(data.password), nif)
     if not n.notargest_password_hash and password_nif:
         n.notargest_password_hash = hash_password(nif)
+        n.notargest_password_enc = cifrar_password_portal(nif)
         n.notargest_cambiar_password = False
         valido = True
     elif n.notargest_password_hash:
@@ -396,6 +407,7 @@ def cambiar_password(data: CambioPassword, n=Depends(get_notario), db: Session =
     if normalizar_nif(data.password_nueva) == normalizar_nif(n.nif or ""):
         raise HTTPException(status_code=400, detail="La nueva contraseña no puede ser el DNI/NIF")
     n.notargest_password_hash = hash_password(data.password_nueva)
+    n.notargest_password_enc = cifrar_password_portal(data.password_nueva)
     n.notargest_cambiar_password = False
     db.commit()
     return {"ok": True, "mensaje": "Contraseña actualizada"}
