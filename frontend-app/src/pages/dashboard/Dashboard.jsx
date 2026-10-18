@@ -256,7 +256,7 @@ export default function Dashboard() {
   return (
     <div className="erp-page w-full">
       {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
-      <header className="ag-hero">
+      <header className="ag-hero" style={{ "--ag-muted": "#748198", "--ag-ink": "#17243a" }}>
         <div className="ag-hero-identidad">
           <div className="ag-marca cg-marca-cancelagest" aria-label="CancelaGest">CG</div>
           <div>
