@@ -9,7 +9,7 @@ from datetime import date, datetime, time, timedelta
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, File, Form, UploadFile
 from pydantic import BaseModel, constr
-from sqlalchemy import text, or_
+from sqlalchemy import and_, text, or_
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import obtener_token_bearer
@@ -186,14 +186,25 @@ def _expedientes_de_notario(n, db):
             return db.query(Expediente).filter(or_(*filtros)).order_by(Expediente.id.desc()).limit(1000).all()
         return []
     nombre = " ".join(x for x in [n.nombre, n.apellidos] if x).strip()
-    filtros = []
+    filtros_legacy = []
     if nombre:
-        filtros.append(Expediente.nombre_notario.ilike(nombre))
+        filtros_legacy.append(Expediente.nombre_notario.ilike(nombre))
     if n.nif:
-        filtros.append(text("upper(replace(replace(coalesce(nif_notario, ''), ' ', ''), '-', '')) = :nif").bindparams(nif=normalizar_nif(n.nif)))
-    if not filtros:
+        filtros_legacy.append(text("upper(replace(replace(coalesce(nif_notario, ''), ' ', ''), '-', '')) = :nif").bindparams(nif=normalizar_nif(n.nif)))
+    notario_id = getattr(n, "id", None)
+    if notario_id is not None:
+        filtro_id = Expediente.notario_id == int(notario_id)
+        if filtros_legacy:
+            filtro = or_(
+                filtro_id,
+                and_(Expediente.notario_id.is_(None), or_(*filtros_legacy)),
+            )
+        else:
+            filtro = filtro_id
+        return db.query(Expediente).filter(filtro).order_by(Expediente.id.desc()).limit(500).all()
+    if not filtros_legacy:
         return []
-    return db.query(Expediente).filter(or_(*filtros)).order_by(Expediente.id.desc()).limit(500).all()
+    return db.query(Expediente).filter(or_(*filtros_legacy)).order_by(Expediente.id.desc()).limit(500).all()
 
 def _fecha(valor):
     return valor.isoformat() if isinstance(valor, (date, datetime, time)) else valor
@@ -250,7 +261,7 @@ def _resumen(e, db):
         "provincia": e.provincia,
         "apoderado": e.apoderado,
         "escritura_firmada": e.escritura_firmada,
-        "cuantia": e.importe,
+        "cuantia": next((getattr(documento, "cuantia", None) for documento in (getattr(e, "documentos_escritura", None) or []) if getattr(documento, "cuantia", None) is not None), None),
         "documentos_escritura": [{"id": d.id, "tipo_documento": d.tipo_documento, "cuantia": d.cuantia} for d in (getattr(e, "documentos_escritura", None) or [])],
         "facturacion_nombre": e.facturacion_nombre,
         "facturacion_apellidos": e.facturacion_apellidos,
@@ -588,6 +599,11 @@ def _expediente_autorizado(expediente_id, n, db):
     if _es_usuario_erp(n):
         if not (getattr(e, "fecha_envio_notario", None) or getattr(e, "notargest_estado", None)):
             raise HTTPException(status_code=403, detail="Este expediente no forma parte del circuito NotarGest")
+        return e
+    notario_id_expediente = getattr(e, "notario_id", None)
+    if notario_id_expediente is not None:
+        if int(notario_id_expediente) != int(getattr(n, "id", -1)):
+            raise HTTPException(status_code=403, detail="Este expediente no está asignado a tu notaría")
         return e
     nombre = " ".join(x for x in [n.nombre, n.apellidos] if x).strip().casefold()
     nif_notario = normalizar_nif(getattr(e, "nif_notario", "") or "")
