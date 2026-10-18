@@ -214,12 +214,14 @@ def listar_encargos(db, usuario, solo_pendientes=False):
         alfabeto_normal,
     )
     if usuario_id is not None and campo_apoderado_id is not None:
-        # El ID puede haber quedado asociado al apoderado por defecto del notario,
-        # aunque el nombre guardado en el envío identifique al apoderado elegido.
-        # Admitimos ambos criterios y validamos de nuevo en Python.
+        # El identificador de empleado es la asignación autoritativa cuando
+        # existe. Solo usamos el nombre como compatibilidad para expedientes
+        # históricos que aún no tienen apoderado_empleado_id. Esto evita que
+        # un expediente aparezca en las cuentas de dos apoderados si el nombre
+        # y la clave foránea no coinciden.
         filtro_asignacion = or_(
             campo_apoderado_id == int(usuario_id),
-            filtro_nombre,
+            and_(campo_apoderado_id.is_(None), filtro_nombre),
         )
     else:
         filtro_asignacion = filtro_nombre
@@ -240,17 +242,18 @@ def listar_encargos(db, usuario, solo_pendientes=False):
     for expediente in candidatos:
         apoderado_id_asignado = getattr(expediente, "apoderado_empleado_id", None)
         apoderado = _texto(getattr(expediente, "apoderado", None))
-        coincide_por_nombre = bool(
-            nombre and _normalizar(apoderado) == nombre_normalizado
-        )
         coincide_por_id = bool(
             usuario_id is not None
             and apoderado_id_asignado is not None
             and int(apoderado_id_asignado) == int(usuario_id)
         )
-        # El ID tiene prioridad, pero el nombre explícito del envío permite
-        # recuperar expedientes cuyo ID quedó obsoleto o apuntaba al apoderado
-        # predeterminado de la notaría.
+        # Fallback de nombre únicamente para registros antiguos sin FK.
+        # Si ya existe un ID, nunca lo anulamos por una coincidencia de texto.
+        coincide_por_nombre = bool(
+            apoderado_id_asignado is None
+            and nombre
+            and _normalizar(apoderado) == nombre_normalizado
+        )
         if not (coincide_por_id or coincide_por_nombre):
             continue
 
