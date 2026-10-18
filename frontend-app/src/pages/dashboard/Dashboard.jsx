@@ -317,8 +317,8 @@ export default function Dashboard() {
       </section>
 
       {/* ======================================================
-          TIEMPO MEDIO HASTA FIRMA + DISTRIBUCIÓN DEL CIRCUITO
-          En escritorio se muestran lado a lado; en móvil se apilan.
+          TIEMPO MEDIO HASTA FIRMA
+          La distribución de firmas aparece debajo de la tabla.
       ====================================================== */}
       <div className="mb-6">
         {/* MEDIA DE FIRMA POR TIPO DE OPERACIÓN */}
