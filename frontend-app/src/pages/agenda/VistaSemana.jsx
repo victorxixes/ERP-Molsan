@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
 
-const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie"];
+const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 const HORAS = Array.from(
   { length: 12 },
   (_, i) => `${9 + i}:00`
@@ -72,9 +72,9 @@ export default function VistaSemana({
         fechaCita.getDay();
 
       const idxDia =
-        diaSemana - 1;
+        diaSemana === 0 ? 6 : diaSemana - 1;
 
-      if (idxDia < 0 || idxDia > 4) {
+      if (idxDia < 0 || idxDia > 5) {
         return;
       }
 
@@ -97,7 +97,7 @@ export default function VistaSemana({
   return (
     <div
       className="
-        grid grid-cols-[70px,repeat(5,minmax(0,1fr))]
+        grid grid-cols-[70px,repeat(6,minmax(0,1fr))]
         gap-1
         text-xs
         bg-[var(--erp-surface)]
