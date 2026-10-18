@@ -21,8 +21,38 @@ import "./css/index.css";
 
 function Root() {
   useEffect(() => {
-    // Hidratar auth al arrancar.
-    useAuthStore.getState().init();
+    let activo = true;
+
+    const inicializarSesion = async () => {
+      try {
+        await useAuthStore.getState().init();
+      } catch (error) {
+        // Última protección: si init falla fuera de su control interno,
+        // mostrar el login en lugar de dejar el ERP en carga indefinida.
+        console.error("Fallo inesperado al inicializar la sesión.", error);
+
+        try {
+          localStorage.removeItem("token");
+          localStorage.removeItem("empleado");
+        } catch (storageError) {
+          console.warn("No se pudo limpiar la sesión local.", storageError);
+        }
+
+        if (activo) {
+          useAuthStore.setState({
+            token: null,
+            empleado: null,
+            loading: false,
+            authReady: true,
+          });
+        }
+      }
+    };
+
+    void inicializarSesion();
+    return () => {
+      activo = false;
+    };
   }, []);
 
   return (
