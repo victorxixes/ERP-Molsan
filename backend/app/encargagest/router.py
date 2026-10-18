@@ -409,6 +409,12 @@ def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(g
         acceso.actualizado_en = datetime.utcnow()
     db.commit()
     db.refresh(acceso)
+    db.execute(text("""
+        INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
+        VALUES (:id, 'encargagest', 'CONFIGURACION_ACCESO', 'correcto', :usuario, :detalle)
+    """), {"id": notaria.id, "usuario": acceso.usuario,
+        "detalle": "Acceso habilitado" if acceso.habilitado else "Acceso deshabilitado"})
+    db.commit()
     return {"ok": True, "notaria_id": notaria.id, "usuario": acceso.usuario, "habilitado": bool(acceso.habilitado), "password_actualizada": bool(datos.password)}
 
 
