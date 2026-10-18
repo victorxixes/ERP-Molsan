@@ -1521,22 +1521,28 @@ def enviar_a_notario(
 
         # Relación de apoderado por ID. El nombre se conserva para mostrarlo
         # y como compatibilidad con expedientes históricos.
-        apoderado_id = getattr(notaria_ctn, "apoderado_id", None) if notaria_ctn else None
-        if apoderado_id is None and datos.apoderado and datos.apoderado.strip():
-            def normalizar_nombre_apoderado(valor):
-                return "".join(
-                    caracter for caracter in unicodedata.normalize("NFKD", str(valor or "").casefold())
-                    if not unicodedata.combining(caracter)
-                ).strip()
-            nombre_objetivo = normalizar_nombre_apoderado(datos.apoderado)
+        def normalizar_nombre_apoderado(valor):
+            texto_normalizado = "".join(
+                caracter for caracter in unicodedata.normalize("NFKD", str(valor or "").casefold())
+                if not unicodedata.combining(caracter)
+            )
+            return " ".join(texto_normalizado.split())
+
+        # Priorizar el apoderado elegido explícitamente en el modal Enviar a notario.
+        # El apoderado asociado por defecto al registro CTN solo se usa como respaldo.
+        apoderado_id = None
+        nombre_objetivo = normalizar_nombre_apoderado(datos.apoderado)
+        if nombre_objetivo:
             for empleado in db.query(Empleado).all():
                 nombre_empleado = normalizar_nombre_apoderado(" ".join(filter(None, [
                     getattr(empleado, "nombre", None),
                     getattr(empleado, "apellidos", None),
                 ])))
-                if nombre_objetivo and nombre_empleado == nombre_objetivo:
+                if nombre_empleado and nombre_empleado == nombre_objetivo:
                     apoderado_id = empleado.id
                     break
+        if apoderado_id is None and notaria_ctn:
+            apoderado_id = getattr(notaria_ctn, "apoderado_id", None)
         expediente.apoderado_empleado_id = apoderado_id
 
         expediente.notario = (
