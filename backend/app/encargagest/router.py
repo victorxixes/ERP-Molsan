@@ -67,9 +67,11 @@ def crear_tablas_encargagest():
             "numero_finca": "VARCHAR(150)",
             "municipio_registro": "VARCHAR(200)",
             "registro_propiedad": "VARCHAR(200)",
+            "contratos_json": "JSONB",
         },
         "encargagest_documentos": {
             "categoria": "VARCHAR(120) NOT NULL DEFAULT 'Otros'",
+            "contrato_index": "INTEGER NOT NULL DEFAULT 0",
         },
     }
     inspector = sa_inspect(engine)
@@ -194,6 +196,13 @@ def _serializar(encargo):
         "numero_finca": encargo.numero_finca,
         "municipio_registro": encargo.municipio_registro,
         "registro_propiedad": encargo.registro_propiedad,
+        "contratos": encargo.contratos_json or [{
+            "entidad_bancaria": encargo.entidad_bancaria,
+            "numero_prestamo": encargo.numero_prestamo,
+            "capital_inscrito": float(encargo.capital_inscrito) if encargo.capital_inscrito is not None else None,
+            "fecha_constitucion": encargo.fecha_constitucion.isoformat() if encargo.fecha_constitucion else None,
+            "fincas": [{"numero_finca": encargo.numero_finca, "municipio_registro": encargo.municipio_registro, "registro_propiedad": encargo.registro_propiedad}] if any([encargo.numero_finca, encargo.municipio_registro, encargo.registro_propiedad]) else [],
+        }],
         "importe": float(encargo.importe) if encargo.importe is not None else None,
         "fecha_objetivo": encargo.fecha_objetivo.isoformat() if encargo.fecha_objetivo else None,
         "prioridad": encargo.prioridad,
@@ -222,6 +231,7 @@ def _serializar_documento(item):
         "id": item.id,
         "nombre_original": item.nombre_original,
         "categoria": item.categoria or "Otros",
+        "contrato_index": int(item.contrato_index or 0),
         "tipo_mime": item.tipo_mime,
         "tamano_bytes": item.tamano_bytes,
         "subido_por_nombre": item.subido_por_nombre or "Usuario ERP",
@@ -265,6 +275,7 @@ class EncargoCrear(BaseModel):
     numero_finca: constr(max_length=150) | None = None
     municipio_registro: constr(max_length=200) | None = None
     registro_propiedad: constr(max_length=200) | None = None
+    contratos: list[dict] = Field(default_factory=list)
     importe: condecimal(max_digits=14, decimal_places=2, ge=0) | None = None
     fecha_objetivo: date | None = None
     prioridad: str = "Normal"
@@ -513,6 +524,7 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
         numero_finca=(datos.numero_finca or "").strip() or None,
         municipio_registro=(datos.municipio_registro or "").strip() or None,
         registro_propiedad=(datos.registro_propiedad or "").strip() or None,
+        contratos_json=datos.contratos or None,
         importe=Decimal(datos.importe) if datos.importe is not None else None,
         fecha_objetivo=datos.fecha_objetivo,
         prioridad=datos.prioridad,
@@ -631,6 +643,7 @@ async def subir_documento(
     encargo_id: int,
     archivo: UploadFile = File(...),
     categoria: str = Form("Otros"),
+    contrato_index: int = Form(0),
     db: Session = Depends(get_db),
     usuario=Depends(get_encargagest_actor),
 ):
@@ -659,6 +672,7 @@ async def subir_documento(
             nombre_original=nombre_original,
             nombre_guardado=nombre_guardado,
             categoria=categoria,
+            contrato_index=max(0, contrato_index),
             tipo_mime=archivo.content_type,
             tamano_bytes=len(contenido),
             subido_por_id=(usuario.get("usuario_id") if _es_externo(usuario) else usuario.id),
