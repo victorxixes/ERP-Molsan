@@ -17,6 +17,10 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+
+  /* Mantiene visible el carril vertical en toda la aplicación. */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
 }
 
 
@@ -46,17 +50,32 @@ body {
    SCROLL CORPORATIVO SJ-2026
    ============================================================ */
 
-::-webkit-scrollbar {
-  width: 8px;
+/* Barra de desplazamiento global: visible y fácil de localizar. */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 12px;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--sj-gris-azulado);
-  border-radius: 4px;
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border: 2px solid #eef1f5;
+  border-radius: 8px;
 }
 
-::-webkit-scrollbar-track {
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
   background: #eef1f5;
+}
+
+html {
+  scrollbar-width: auto;
+  scrollbar-color: #94a3b8 #eef1f5;
 }
 
 
