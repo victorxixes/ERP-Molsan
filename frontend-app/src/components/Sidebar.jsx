@@ -1,5 +1,5 @@
 import MODULOS_ERP from "../config/modulos";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import {
   useMemo,
@@ -410,7 +410,9 @@ const TopNavItem = ({
  * ============================================================
  */
 
-export default function Sidebar({ brandName = "CancelaGest", navigationItems = null, activeNavigationItem = "", onNavigationItemClick = null, onNotificationsClick = null, notificationBadge = null, onProfileClick = null } = {}) {
+export default function Sidebar({ brandName = "CancelaGest", navigationItems = null, activeNavigationItem = "", onNavigationItemClick = null, onNotificationsClick = null, notificationBadge = null, onProfileClick = null, onLogoutClick = null } = {}) {
+
+  const navigate = useNavigate();
 
   const empleado = useAuthStore(
     (s) => s.empleado
@@ -422,6 +424,16 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   const logout = useAuthStore(
     (s) => s.logout
   );
+
+  const manejarCerrarSesion = () => {
+    if (typeof onLogoutClick === "function") {
+      onLogoutClick();
+      return;
+    }
+
+    logout();
+    navigate("/login", { replace: true });
+  };
 
   const mensajesNoLeidos = useMensajesStore(
     (s) => s.noLeidosTotal || 0
@@ -1173,7 +1185,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
             <button
               type="button"
-              onClick={logout}
+              onClick={manejarCerrarSesion}
               title="Cerrar sesión"
               className="
                 w-9
