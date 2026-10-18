@@ -44,6 +44,7 @@ MODULOS_BASE = [
     "panel-tecnico",
     "expedientes",
     "notificaciones",
+    "notargest",
     "encargagest",
 ]
 

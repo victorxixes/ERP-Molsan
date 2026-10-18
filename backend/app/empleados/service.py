@@ -257,6 +257,7 @@ def crear_admin_por_defecto(
         "notarios",
         "documentos",
         "expedientes",
+        "notargest",
         "encargagest"
     ]
 
