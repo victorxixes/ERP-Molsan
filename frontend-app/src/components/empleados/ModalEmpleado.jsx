@@ -1380,18 +1380,18 @@ const permisosDisponibles =
       return "";
     }
 
-    return String(
-      valor
-    )
-      .replace(
-        /_/g,
-        " "
-      )
-      .replace(
-        /\b\w/g,
-        (letra) =>
-          letra.toUpperCase()
-      );
+    const etiquetas = {
+      notargestweb: "NotarGestWeb",
+      encargagestweb: "EncargaGestWeb",
+      notargest: "NotarGest",
+      encargagest: "EncargaGest",
+    };
+    const clave = String(valor).trim().toLowerCase();
+    if (etiquetas[clave]) return etiquetas[clave];
+
+    return String(valor)
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (letra) => letra.toUpperCase());
   };
 
 

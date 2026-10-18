@@ -13,6 +13,7 @@ from openpyxl import Workbook
 
 from backend.app.database import Base, get_db, engine
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.ctn.models import Notaria
 from backend.app.ctn.service import obtener_notaria
 from backend.app.ctn.schemas import NotariaResponse
@@ -29,6 +30,31 @@ router = APIRouter(
     # Todas las operaciones CTN requieren una sesión JWT válida.
     dependencies=[Depends(get_current_user)],
 )
+
+
+def _es_administrador_portales(usuario):
+    rol = getattr(usuario, "rol", None)
+    nombre = str(getattr(rol, "nombre", "") or "").strip().casefold()
+    return nombre in {"administrador", "admin", "administrador del sistema"}
+
+
+def _tiene_permiso_portal(usuario, portal, accion="ver"):
+    # El administrador conserva la administración integral de los portales.
+    if _es_administrador_portales(usuario):
+        return True
+    try:
+        require_perm_modulo(usuario, portal, accion)
+        return True
+    except HTTPException:
+        return False
+
+
+def _exigir_permiso_portal(usuario, portal, accion="ver"):
+    if not _tiene_permiso_portal(usuario, portal, accion):
+        raise HTTPException(
+            status_code=403,
+            detail=f"No tienes permiso para '{accion}' en el portal '{portal}'. Configúralo en la ficha del empleado.",
+        )
 
 
 # ============================================================
@@ -668,7 +694,15 @@ def _normalizar_usuario_portal(valor):
 
 
 @router.get("/notarias/{notaria_id}/accesos-portales")
-def obtener_accesos_portales_notaria(notaria_id: int, db: Session = Depends(get_db)):
+def obtener_accesos_portales_notaria(
+    notaria_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    puede_notargest = _tiene_permiso_portal(usuario, "notargestweb", "ver")
+    puede_encargagest = _tiene_permiso_portal(usuario, "encargagestweb", "ver")
+    if not (puede_notargest or puede_encargagest):
+        raise HTTPException(status_code=403, detail="No tienes permiso para consultar los accesos a NotarGestWeb o EncargaGestWeb.")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=404, detail="Notaría no encontrada")
@@ -680,26 +714,40 @@ def obtener_accesos_portales_notaria(notaria_id: int, db: Session = Depends(get_
     """), {"notaria_id": notaria_id}).mappings().all()
     return {
         "notaria_id": notaria_id,
-        "notargest": {"usuario": _normalizar_usuario_portal(notaria.nif),
+        "notargest": ({"usuario": _normalizar_usuario_portal(notaria.nif),
             "habilitado": bool(getattr(notaria, "notargest_habilitado", False)),
             "configurado": bool(getattr(notaria, "notargest_password_hash", None)),
-            "cambiar_password": bool(getattr(notaria, "notargest_cambiar_password", True))},
-        "encargagest": {"usuario": acceso_eg.usuario if acceso_eg else _normalizar_usuario_portal(notaria.nif),
+            "cambiar_password": bool(getattr(notaria, "notargest_cambiar_password", True))}
+            if puede_notargest else None),
+        "encargagest": ({"usuario": acceso_eg.usuario if acceso_eg else _normalizar_usuario_portal(notaria.nif),
             "habilitado": bool(acceso_eg.habilitado) if acceso_eg else False,
-            "configurado": acceso_eg is not None},
+            "configurado": acceso_eg is not None}
+            if puede_encargagest else None),
+        "permisos": {"notargestweb": {"ver": puede_notargest}, "encargagestweb": {"ver": puede_encargagest}},
         "historial": [{"portal": row["portal"], "evento": row["evento"],
             "resultado": row["resultado"], "usuario": row["usuario"], "detalle": row["detalle"],
-            "fecha": row["fecha"].isoformat() if row["fecha"] else None} for row in historial],
+            "fecha": row["fecha"].isoformat() if row["fecha"] else None} for row in historial
+            if (row["portal"] == "notargest" and puede_notargest) or (row["portal"] == "encargagest" and puede_encargagest)],
     }
 
 
 @router.post("/notarias/{notaria_id}/accesos-portales/{portal}/habilitado")
-def cambiar_habilitado_portal_notaria(notaria_id: int, portal: str, datos: dict, db: Session = Depends(get_db)):
+def cambiar_habilitado_portal_notaria(
+    notaria_id: int,
+    portal: str,
+    datos: dict,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    portal = portal.strip().lower()
+    clave_permiso = {"notargest": "notargestweb", "encargagest": "encargagestweb"}.get(portal)
+    if not clave_permiso:
+        raise HTTPException(status_code=400, detail="Portal no válido")
+    _exigir_permiso_portal(usuario, clave_permiso, "editar")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=404, detail="Notaría no encontrada")
     habilitado = bool(datos.get("habilitado"))
-    portal = portal.strip().lower()
     if portal == "notargest":
         notaria.notargest_habilitado = habilitado
     elif portal == "encargagest":
@@ -717,11 +765,27 @@ def cambiar_habilitado_portal_notaria(notaria_id: int, portal: str, datos: dict,
 
 
 @router.post("/notarias/{notaria_id}/accesos-portales/{portal}/reset-password")
-def reset_password_portal_notaria(notaria_id: int, portal: str, db: Session = Depends(get_db)):
+def reset_password_portal_notaria(
+    notaria_id: int,
+    portal: str,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    portal = portal.strip().lower()
+    clave_permiso = {"notargest": "notargestweb", "encargagest": "encargagestweb"}.get(portal)
+    if not clave_permiso:
+        raise HTTPException(status_code=400, detail="Portal no válido")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=404, detail="Notaría no encontrada")
-    portal = portal.strip().lower()
+    if portal == "notargest":
+        accion_permiso = "editar" if getattr(notaria, "notargest_password_hash", None) else "crear"
+    else:
+        acceso_existente = db.query(EncargoExternoUsuario).filter(
+            EncargoExternoUsuario.notaria_id == notaria_id
+        ).first()
+        accion_permiso = "editar" if acceso_existente else "crear"
+    _exigir_permiso_portal(usuario, clave_permiso, accion_permiso)
     password_nueva = secrets.token_urlsafe(12)
     usuario_login = _normalizar_usuario_portal(notaria.nif)
     if not usuario_login:

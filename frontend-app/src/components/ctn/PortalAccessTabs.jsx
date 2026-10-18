@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
+import { useAuthStore } from "../../store/authStore";
 
 const button = {
   border: "1px solid #dbe3ee", borderRadius: 10, padding: "9px 13px",
@@ -9,7 +10,20 @@ const label = { display: "block", color: "#64748b", fontSize: 12, marginBottom: 
 const panel = { border: "1px solid #e2e8f0", borderRadius: 14, padding: 16, background: "#fff" };
 
 export default function PortalAccessTabs({ notariaId }) {
-  const [portal, setPortal] = useState("notargest");
+  const empleadoSesion = useAuthStore((state) => state.empleado);
+  const nombreRol = String(
+    empleadoSesion?.rol_nombre || empleadoSesion?.rol?.nombre || empleadoSesion?.role?.name || ""
+  ).normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim().toLowerCase();
+  const esAdministrador = /(^|\\s)(admin|administrador)(\\s|$)/.test(nombreRol);
+  const permisosEmpleado = empleadoSesion?.permisos_modulo_dict || empleadoSesion?.permisos_modulo || {};
+  const modulosVisibles = Array.isArray(empleadoSesion?.modulos_visibles_list)
+    ? empleadoSesion.modulos_visibles_list
+    : Array.isArray(empleadoSesion?.modulos_visibles) ? empleadoSesion.modulos_visibles : [];
+  const permisosNotarGest = Array.isArray(permisosEmpleado.notargestweb) ? permisosEmpleado.notargestweb : [];
+  const permisosEncargaGest = Array.isArray(permisosEmpleado.encargagestweb) ? permisosEmpleado.encargagestweb : [];
+  const puedeVerNotarGest = esAdministrador || (modulosVisibles.includes("notargestweb") && permisosNotarGest.includes("ver"));
+  const puedeVerEncargaGest = esAdministrador || (modulosVisibles.includes("encargagestweb") && permisosEncargaGest.includes("ver"));
+  const [portal, setPortal] = useState(puedeVerNotarGest ? "notargest" : "encargagest");
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(false);
   const [procesando, setProcesando] = useState(false);
@@ -18,7 +32,7 @@ export default function PortalAccessTabs({ notariaId }) {
   const [passwordNueva, setPasswordNueva] = useState("");
 
   const cargar = useCallback(async () => {
-    if (!notariaId) return;
+    if (!notariaId || (!puedeVerNotarGest && !puedeVerEncargaGest)) return;
     setCargando(true);
     setError("");
     try {
@@ -29,11 +43,20 @@ export default function PortalAccessTabs({ notariaId }) {
     } finally {
       setCargando(false);
     }
-  }, [notariaId]);
+  }, [notariaId, puedeVerNotarGest, puedeVerEncargaGest]);
+
+  useEffect(() => {
+    if (!puedeVerNotarGest && puedeVerEncargaGest) setPortal("encargagest");
+    else if (puedeVerNotarGest && !puedeVerEncargaGest) setPortal("notargest");
+  }, [puedeVerNotarGest, puedeVerEncargaGest]);
 
   useEffect(() => { cargar(); }, [cargar]);
 
   const acceso = datos?.[portal] || {};
+  const clavePermisoPortal = portal === "notargest" ? "notargestweb" : "encargagestweb";
+  const permisosPortalActual = Array.isArray(permisosEmpleado[clavePermisoPortal]) ? permisosEmpleado[clavePermisoPortal] : [];
+  const puedeGestionar = esAdministrador || permisosPortalActual.includes("editar") ||
+    (!acceso.configurado && permisosPortalActual.includes("crear"));
   const ejecutar = async (accion) => {
     setProcesando(true);
     setError("");
@@ -61,6 +84,17 @@ export default function PortalAccessTabs({ notariaId }) {
 
   const historial = (datos?.historial || []).filter((item) => item.portal === portal);
 
+  if (!puedeVerNotarGest && !puedeVerEncargaGest) {
+    return (
+      <section className="ctn-modal-seccion" style={{ marginTop: 18 }}>
+        <div className="ctn-modal-seccion-titulo"><h3>Accesos a portales externos</h3></div>
+        <p role="alert" style={{ padding: 12, borderRadius: 10, background: "#fff7ed", color: "#9a3412" }}>
+          Tu usuario no tiene permiso para consultar NotarGestWeb ni EncargaGestWeb. Solicita al administrador que lo habilite en la ficha del empleado.
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section className="ctn-modal-seccion" style={{ marginTop: 18 }}>
       <div className="ctn-modal-seccion-titulo">
@@ -69,8 +103,8 @@ export default function PortalAccessTabs({ notariaId }) {
       </div>
       <div role="tablist" aria-label="Portales externos" style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "12px 0 16px" }}>
         {[
-          ["notargest", "Acceso a NotarGest"],
-          ["encargagest", "Acceso a EncargaGest"],
+          ...(puedeVerNotarGest ? [["notargest", "Acceso a NotarGest"]] : []),
+          ...(puedeVerEncargaGest ? [["encargagest", "Acceso a EncargaGest"]] : []),
         ].map(([key, titulo]) => (
           <button key={key} type="button" role="tab" aria-selected={portal === key}
             onClick={() => { setPortal(key); setPasswordNueva(""); setMensaje(""); setError(""); }}
@@ -90,10 +124,10 @@ export default function PortalAccessTabs({ notariaId }) {
               <strong style={{ color: acceso.habilitado ? "#047857" : "#b91c1c" }}>{acceso.habilitado ? "HABILITADO" : "DESHABILITADO"}</strong>
               <div style={{ color: "#64748b", fontSize: 12, marginTop: 4 }}>{acceso.configurado ? "Credenciales configuradas" : "Todavía no se han generado credenciales"}</div>
             </div>
-            <button type="button" style={button} disabled={procesando || (portal === "encargagest" && !acceso.configurado)}
+            {puedeGestionar && <button type="button" style={button} disabled={procesando || (portal === "encargagest" && !acceso.configurado)}
               onClick={() => ejecutar("toggle")}>
               {acceso.habilitado ? "Deshabilitar acceso" : "Habilitar acceso"}
-            </button>
+            </button>}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
             <div style={{ border: "1px solid #e2e8f0", borderRadius: 10, padding: 12 }}>
@@ -107,12 +141,12 @@ export default function PortalAccessTabs({ notariaId }) {
             </div>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 14 }}>
-            <button type="button" style={{ ...button, background: "#eff6ff", borderColor: "#bfdbfe" }} disabled={procesando}
+            {puedeGestionar && <button type="button" style={{ ...button, background: "#eff6ff", borderColor: "#bfdbfe" }} disabled={procesando}
               onClick={() => {
                 if (window.confirm("Se generará una contraseña nueva y la anterior dejará de funcionar. ¿Continuar?")) ejecutar("reset");
               }}>
               {acceso.configurado ? "Restablecer contraseña" : "Crear acceso y generar contraseña"}
-            </button>
+            </button>}
             <button type="button" style={button} disabled={procesando || cargando} onClick={cargar}>Actualizar datos</button>
           </div>
           {passwordNueva && <p style={{ color: "#92400e", fontSize: 12, marginTop: 10 }}>Guarda la contraseña antes de cerrar esta ficha. Por seguridad no se conserva en el historial.</p>}
