@@ -1,5 +1,6 @@
 import MODULOS_ERP from "../config/modulos";
 import { NavLink } from "react-router-dom";
+import { createPortal } from "react-dom";
 import {
   useMemo,
   useState,
@@ -437,6 +438,8 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     useState(false);
 
   const masRef = useRef(null);
+  const masMenuRef = useRef(null);
+  const [masPosicion, setMasPosicion] = useState(null);
 
 
   /**
@@ -466,12 +469,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
     const handleClickOutside = (event) => {
 
-      if (
-        masRef.current &&
-        !masRef.current.contains(
-          event.target
-        )
-      ) {
+      const clicEnAncla = masRef.current?.contains(event.target);
+      const clicEnMenu = masMenuRef.current?.contains(event.target);
+      if (!clicEnAncla && !clicEnMenu) {
         setMasAbierto(false);
       }
 
@@ -492,6 +492,43 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     };
 
   }, []);
+
+
+  /**
+   * El menú "Más" se pinta en el body para que no quede recortado
+   * por el scroll horizontal del navegador superior.
+   */
+  useEffect(() => {
+    if (!masAbierto) return undefined;
+
+    const actualizarPosicion = () => {
+      const boton = masRef.current?.querySelector("button");
+      if (!boton) return;
+
+      const rect = boton.getBoundingClientRect();
+      const ancho = Math.min(270, window.innerWidth - 24);
+      const altoEstimado = Math.min(430, window.innerHeight - 24);
+      const left = Math.max(12, Math.min(rect.right - ancho, window.innerWidth - ancho - 12));
+      const top = Math.max(12, Math.min(rect.bottom + 8, window.innerHeight - altoEstimado - 12));
+
+      setMasPosicion({ top, left, ancho });
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") setMasAbierto(false);
+    };
+
+    actualizarPosicion();
+    window.addEventListener("resize", actualizarPosicion);
+    window.addEventListener("scroll", actualizarPosicion, true);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("resize", actualizarPosicion);
+      window.removeEventListener("scroll", actualizarPosicion, true);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [masAbierto]);
 
 
   /**
@@ -671,6 +708,34 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       icon: "settings",
     },
 
+    {
+      key: "apoderagest",
+      to: "/apoderagest",
+      label: "ApoderaGest",
+      icon: "activity",
+    },
+
+    {
+      key: "cancelagest",
+      to: "/cancelagest",
+      label: "CancelaGest",
+      icon: "folder",
+    },
+
+    {
+      key: "notargest",
+      to: "/notargest",
+      label: "NotarGest",
+      icon: "globe",
+    },
+
+    {
+      key: "encargagest",
+      to: "/encargagest",
+      label: "EncargaGest",
+      icon: "clipboard",
+    },
+
   ];
 
 
@@ -707,6 +772,20 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       empleado,
     ]
   );
+
+  // Cuando un módulo usa navegación personalizada, no repetimos en "Más"
+  // los accesos que ya aparecen en su barra principal.
+  const modulosMas = useMemo(() => {
+    const elementosEnBarra = Array.isArray(navigationItems) ? navigationItems : [];
+    const normalizar = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
+
+    return visiblesSecundarios.filter((modulo) => {
+      if (normalizar(modulo.label) === normalizar(brandName)) return false;
+      return !elementosEnBarra.some((item) =>
+        item?.key === modulo.key || normalizar(item?.label) === normalizar(modulo.label)
+      );
+    });
+  }, [visiblesSecundarios, navigationItems, brandName]);
 
 
   /**
@@ -874,8 +953,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                 MÁS
                 ================================================== */}
 
-            {!navigationItems && visiblesSecundarios.length >
-              0 && (
+            {modulosMas.length > 0 && (
 
               <div
                 ref={masRef}
@@ -929,147 +1007,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                 </button>
 
 
-                {/* ==================================================
-                    DROPDOWN
-                    ================================================== */}
 
-                {masAbierto && (
-
-                  <div
-                    role="menu"
-                    className="
-                      absolute
-                      top-[calc(100%+8px)]
-                      right-0
-                      w-[250px]
-                      p-2
-                      rounded-2xl
-                      bg-white
-                      border
-                      border-[var(--erp-border)]
-                      shadow-xl
-                      z-[100]
-                    "
-                  >
-
-                    <div
-                      className="
-                        px-3
-                        pt-2
-                        pb-2
-                        text-[10px]
-                        font-bold
-                        uppercase
-                        tracking-[0.14em]
-                        text-[var(--erp-text-soft)]
-                      "
-                    >
-                      Más módulos
-                    </div>
-
-
-                    <div
-                      className="
-                        grid
-                        gap-1
-                      "
-                    >
-
-                      {visiblesSecundarios.map(
-                        (modulo) => (
-
-                          <NavLink
-                            key={modulo.key}
-                            to={modulo.to}
-                            role="menuitem"
-                            onClick={() =>
-                              setMasAbierto(
-                                false
-                              )
-                            }
-                            className={({
-                              isActive,
-                            }) =>
-                              `
-                              flex
-                              items-center
-                              gap-3
-                              px-3
-                              py-2.5
-                              rounded-xl
-                              text-sm
-                              font-medium
-                              transition-all
-                              duration-150
-
-                              ${
-                                isActive
-                                  ? `
-                                    bg-[var(--erp-primary)]
-                                    text-white
-                                  `
-                                  : `
-                                    text-[var(--erp-text)]
-                                    hover:bg-[var(--erp-primary-soft)]
-                                    hover:text-[var(--erp-primary)]
-                                  `
-                              }
-                              `
-                            }
-                          >
-
-                            <NavIcon
-                              name={
-                                modulo.icon
-                              }
-                            />
-
-                            <span
-                              className="
-                                flex-1
-                              "
-                            >
-                              {
-                                modulo.label
-                              }
-                            </span>
-
-
-                            {modulo.badge >
-                              0 && (
-
-                              <span
-                                className="
-                                  min-w-[19px]
-                                  h-[19px]
-                                  px-1
-                                  rounded-full
-                                  bg-red-500
-                                  text-white
-                                  text-[10px]
-                                  font-bold
-                                  flex
-                                  items-center
-                                  justify-center
-                                "
-                              >
-                                {
-                                  modulo.badge
-                                }
-                              </span>
-
-                            )}
-
-                          </NavLink>
-
-                        )
-                      )}
-
-                    </div>
-
-                  </div>
-
-                )}
 
               </div>
 
@@ -1232,6 +1170,50 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
         </div>
 
       </header>
+
+      {masAbierto && masPosicion && typeof document !== "undefined" && createPortal(
+        <div
+          ref={masMenuRef}
+          role="menu"
+          aria-label="Más módulos"
+          style={{
+            position: "fixed",
+            top: masPosicion.top,
+            left: masPosicion.left,
+            width: masPosicion.ancho,
+            maxHeight: "calc(100vh - 24px)",
+            overflowY: "auto",
+            zIndex: 2000,
+          }}
+          className="rounded-2xl border border-[var(--erp-border)] bg-white p-2 shadow-2xl"
+        >
+          <div className="px-3 pb-2 pt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--erp-text-soft)]">
+            Más módulos
+          </div>
+          <div className="grid gap-1">
+            {modulosMas.map((modulo) => (
+              <NavLink
+                key={modulo.key}
+                to={modulo.to}
+                role="menuitem"
+                onClick={() => setMasAbierto(false)}
+                className={({ isActive }) => isActive
+                  ? "flex items-center gap-3 rounded-xl bg-[var(--erp-primary)] px-3 py-2.5 text-sm font-medium text-white transition-all duration-150"
+                  : "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--erp-text)] transition-all duration-150 hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}
+              >
+                <NavIcon name={modulo.icon} />
+                <span className="flex-1">{modulo.label}</span>
+                {modulo.badge > 0 && (
+                  <span className="flex h-[19px] min-w-[19px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                    {modulo.badge}
+                  </span>
+                )}
+              </NavLink>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
 
 
       {/* ========================================================
