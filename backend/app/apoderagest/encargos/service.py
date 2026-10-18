@@ -198,7 +198,7 @@ def listar_encargos(db, usuario, solo_pendientes=False):
     # La comparación final en Python cubre además espacios y variantes Unicode.
     alfabeto_con_tildes = "áéíóúüñ"
     alfabeto_normal = "aeiouun"
-    nombre_sql = nombre.strip().lower()
+    nombre_sql = (nombre or "").strip().lower()
     filtro_nombre = func.translate(
         func.lower(func.trim(campo_apoderado)),
         alfabeto_con_tildes,
