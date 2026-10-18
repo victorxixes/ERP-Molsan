@@ -14,7 +14,7 @@ from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.expediente_observaciones.models import ExpedienteObservacion
 
 from backend.app.expedientes.models import Expediente
-from backend.app.apoderagest.permissions import obtener_nombre_apoderado
+from backend.app.apoderagest.permissions import obtener_nombre_apoderado, obtener_id_empleado
 
 
 def _normalizar(valor):
@@ -190,7 +190,8 @@ def listar_encargos(db, usuario, solo_pendientes=False):
     identificar al apoderado.
     """
     nombre = _texto(obtener_nombre_apoderado(usuario))
-    usuario_id = getattr(usuario, "id", None)
+    # obtener_usuario_actual devuelve un dict: obtener_id_empleado admite dict y objeto.
+    usuario_id = obtener_id_empleado(usuario)
     campo_apoderado = getattr(Expediente, "apoderado", None)
     campo_apoderado_id = getattr(Expediente, "apoderado_empleado_id", None)
 
