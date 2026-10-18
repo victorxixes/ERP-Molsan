@@ -480,7 +480,7 @@ export default function EncargaGest() {
         </div>
       </header>
 
-      <main className="eg-main mx-auto w-full max-w-[1600px] px-1 pb-4">
+      <main className="eg-main w-full max-w-none px-1 pb-4">
         {error && (
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800" role="alert">
             <span>{error}</span>
