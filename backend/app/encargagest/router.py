@@ -318,10 +318,28 @@ def login_encargagest(datos: LoginEncargaGest, db: Session = Depends(get_db)):
     usuario_norm = _normalizar_usuario(datos.usuario)
     acceso = db.query(EncargoExternoUsuario).filter(
         func.upper(EncargoExternoUsuario.usuario) == usuario_norm,
-        EncargoExternoUsuario.habilitado.is_(True),
     ).first()
-    if not acceso or not _verificar_password(datos.password, acceso.password_hash):
+    if not acceso:
         raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
+    if not acceso.habilitado:
+        db.execute(text("""
+            INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
+            VALUES (:id, 'encargagest', 'LOGIN', 'fallido', :usuario, 'Acceso deshabilitado')
+        """), {"id": acceso.notaria_id, "usuario": usuario_norm})
+        db.commit()
+        raise HTTPException(status_code=401, detail="El acceso EncargaGest está deshabilitado.")
+    if not _verificar_password(datos.password, acceso.password_hash):
+        db.execute(text("""
+            INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
+            VALUES (:id, 'encargagest', 'LOGIN', 'fallido', :usuario, 'Credenciales incorrectas')
+        """), {"id": acceso.notaria_id, "usuario": usuario_norm})
+        db.commit()
+        raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
+    db.execute(text("""
+        INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
+        VALUES (:id, 'encargagest', 'LOGIN', 'correcto', :usuario, 'Inicio de sesión correcto')
+    """), {"id": acceso.notaria_id, "usuario": usuario_norm})
+    db.commit()
     notaria = db.query(Notaria).filter(Notaria.id == acceso.notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=401, detail="La notaría asociada al acceso no está disponible.")
@@ -391,6 +409,12 @@ def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(g
         acceso.actualizado_en = datetime.utcnow()
     db.commit()
     db.refresh(acceso)
+    db.execute(text("""
+        INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
+        VALUES (:id, 'encargagest', 'CONFIGURACION_ACCESO', 'correcto', :usuario, :detalle)
+    """), {"id": notaria.id, "usuario": acceso.usuario,
+        "detalle": "Acceso habilitado" if acceso.habilitado else "Acceso deshabilitado"})
+    db.commit()
     return {"ok": True, "notaria_id": notaria.id, "usuario": acceso.usuario, "habilitado": bool(acceso.habilitado), "password_actualizada": bool(datos.password)}
 
 

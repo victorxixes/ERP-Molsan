@@ -1,5 +1,9 @@
 import io
 import unicodedata
+import hashlib
+import secrets
+from datetime import datetime
+
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
@@ -17,6 +21,7 @@ from backend.app.expedientes.models import Expediente
 from backend.app.utils.distancia import distancia_km, MOLSAN_LAT, MOLSAN_LNG
 from backend.app.ctn.geocode import geocode_todas_notarias
 from backend.app.ctn.migracion import agregar_coordenadas
+from backend.app.encargagest.models import EncargoExternoUsuario
 
 router = APIRouter(
     prefix="/ctn",
@@ -612,6 +617,8 @@ def cambiar_acceso_notargest(
     if not notaria:
         raise HTTPException(status_code=404, detail="Notaría no encontrada")
     notaria.notargest_habilitado = bool(habilitado)
+    _registrar_evento_portal(db, notaria_id, "notargest", "CAMBIO_ACCESO",
+        detalle="Acceso habilitado" if habilitado else "Acceso deshabilitado")
     db.commit()
     db.refresh(notaria)
     return {
@@ -620,3 +627,130 @@ def cambiar_acceso_notargest(
         "habilitado": bool(notaria.notargest_habilitado),
         "mensaje": "Acceso a NotarGest habilitado" if habilitado else "Acceso a NotarGest deshabilitado",
     }
+
+
+@router.on_event("startup")
+def crear_tabla_historial_accesos_portales():
+    """Historial de inicios de sesión y cambios de acceso de los portales externos."""
+    with engine.begin() as conexion:
+        conexion.execute(text("""
+            CREATE TABLE IF NOT EXISTS ctn_portal_accesos_historial (
+                id SERIAL PRIMARY KEY, notaria_id INTEGER NOT NULL,
+                portal VARCHAR(30) NOT NULL, evento VARCHAR(40) NOT NULL,
+                resultado VARCHAR(20) NOT NULL DEFAULT 'ok', usuario VARCHAR(150),
+                detalle VARCHAR(500), fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        conexion.execute(text("""
+            CREATE INDEX IF NOT EXISTS ix_ctn_portal_historial_notaria_fecha
+            ON ctn_portal_accesos_historial (notaria_id, fecha DESC)
+        """))
+
+
+def _registrar_evento_portal(db, notaria_id, portal, evento, resultado="ok", usuario=None, detalle=None):
+    db.execute(text("""
+        INSERT INTO ctn_portal_accesos_historial
+            (notaria_id, portal, evento, resultado, usuario, detalle, fecha)
+        VALUES (:notaria_id, :portal, :evento, :resultado, :usuario, :detalle, CURRENT_TIMESTAMP)
+    """), {"notaria_id": notaria_id, "portal": portal, "evento": evento,
+           "resultado": resultado, "usuario": usuario, "detalle": detalle})
+
+
+def _hash_password_portal(password):
+    salt = secrets.token_hex(16)
+    rounds = 310000
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), bytes.fromhex(salt), rounds).hex()
+    return "pbkdf2_sha256$%s$%s$%s" % (rounds, salt, digest)
+
+
+def _normalizar_usuario_portal(valor):
+    return "".join(str(valor or "").upper().split()).replace("-", "").replace(".", "")
+
+
+@router.get("/notarias/{notaria_id}/accesos-portales")
+def obtener_accesos_portales_notaria(notaria_id: int, db: Session = Depends(get_db)):
+    notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
+    if not notaria:
+        raise HTTPException(status_code=404, detail="Notaría no encontrada")
+    acceso_eg = db.query(EncargoExternoUsuario).filter(EncargoExternoUsuario.notaria_id == notaria_id).first()
+    historial = db.execute(text("""
+        SELECT portal, evento, resultado, usuario, detalle, fecha
+        FROM ctn_portal_accesos_historial WHERE notaria_id = :notaria_id
+        ORDER BY fecha DESC, id DESC LIMIT 100
+    """), {"notaria_id": notaria_id}).mappings().all()
+    return {
+        "notaria_id": notaria_id,
+        "notargest": {"usuario": _normalizar_usuario_portal(notaria.nif),
+            "habilitado": bool(getattr(notaria, "notargest_habilitado", False)),
+            "configurado": bool(getattr(notaria, "notargest_password_hash", None)),
+            "cambiar_password": bool(getattr(notaria, "notargest_cambiar_password", True))},
+        "encargagest": {"usuario": acceso_eg.usuario if acceso_eg else _normalizar_usuario_portal(notaria.nif),
+            "habilitado": bool(acceso_eg.habilitado) if acceso_eg else False,
+            "configurado": acceso_eg is not None},
+        "historial": [{"portal": row["portal"], "evento": row["evento"],
+            "resultado": row["resultado"], "usuario": row["usuario"], "detalle": row["detalle"],
+            "fecha": row["fecha"].isoformat() if row["fecha"] else None} for row in historial],
+    }
+
+
+@router.post("/notarias/{notaria_id}/accesos-portales/{portal}/habilitado")
+def cambiar_habilitado_portal_notaria(notaria_id: int, portal: str, datos: dict, db: Session = Depends(get_db)):
+    notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
+    if not notaria:
+        raise HTTPException(status_code=404, detail="Notaría no encontrada")
+    habilitado = bool(datos.get("habilitado"))
+    portal = portal.strip().lower()
+    if portal == "notargest":
+        notaria.notargest_habilitado = habilitado
+    elif portal == "encargagest":
+        acceso = db.query(EncargoExternoUsuario).filter(EncargoExternoUsuario.notaria_id == notaria_id).first()
+        if not acceso:
+            raise HTTPException(status_code=409, detail="Primero genera las credenciales de EncargaGest.")
+        acceso.habilitado = habilitado
+        acceso.actualizado_en = datetime.utcnow()
+    else:
+        raise HTTPException(status_code=400, detail="Portal no válido")
+    _registrar_evento_portal(db, notaria_id, portal, "CAMBIO_ACCESO",
+        detalle="Acceso habilitado" if habilitado else "Acceso deshabilitado")
+    db.commit()
+    return {"ok": True, "portal": portal, "habilitado": habilitado}
+
+
+@router.post("/notarias/{notaria_id}/accesos-portales/{portal}/reset-password")
+def reset_password_portal_notaria(notaria_id: int, portal: str, db: Session = Depends(get_db)):
+    notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
+    if not notaria:
+        raise HTTPException(status_code=404, detail="Notaría no encontrada")
+    portal = portal.strip().lower()
+    password_nueva = secrets.token_urlsafe(12)
+    usuario_login = _normalizar_usuario_portal(notaria.nif)
+    if not usuario_login:
+        raise HTTPException(status_code=422, detail="La notaría debe tener NIF registrado en CTN.")
+    if portal == "notargest":
+        notaria.notargest_password_hash = _hash_password_portal(password_nueva)
+        notaria.notargest_habilitado = True
+        notaria.notargest_cambiar_password = True
+    elif portal == "encargagest":
+        acceso = db.query(EncargoExternoUsuario).filter(EncargoExternoUsuario.notaria_id == notaria_id).first()
+        duplicado = db.query(EncargoExternoUsuario).filter(
+            func.upper(EncargoExternoUsuario.usuario) == usuario_login,
+            EncargoExternoUsuario.notaria_id != notaria_id).first()
+        if duplicado:
+            raise HTTPException(status_code=409, detail="El usuario basado en el NIF ya está asignado a otra notaría.")
+        if acceso is None:
+            acceso = EncargoExternoUsuario(notaria_id=notaria_id, usuario=usuario_login,
+                password_hash=_hash_password_portal(password_nueva), habilitado=True)
+            db.add(acceso)
+        else:
+            acceso.usuario = usuario_login
+            acceso.password_hash = _hash_password_portal(password_nueva)
+            acceso.habilitado = True
+            acceso.actualizado_en = datetime.utcnow()
+    else:
+        raise HTTPException(status_code=400, detail="Portal no válido")
+    _registrar_evento_portal(db, notaria_id, portal, "RESET_PASSWORD",
+        detalle="Contraseña restablecida; el valor nuevo solo se muestra en esta respuesta")
+    db.commit()
+    return {"ok": True, "portal": portal, "usuario": usuario_login,
+        "password_nueva": password_nueva, "habilitado": True,
+        "mensaje": "Guarda esta contraseña ahora: no volverá a mostrarse."}

@@ -9,6 +9,7 @@ import {
 } from "../../api/ctn";
 import "../../css/CtnListadoPage.css";
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
+import PortalAccessTabs from "./PortalAccessTabs";
 
 const valor = (v) =>
   v === null || v === undefined || v === "" ? "—" : String(v);
@@ -495,6 +496,8 @@ export default function ModalCtnDetalle({
           </p>
         )}
       </section>
+
+      <PortalAccessTabs notariaId={id} />
 
       {/* HISTÓRICO DE FIRMAS REALES */}
 
