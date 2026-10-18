@@ -209,13 +209,20 @@ def firmar_encargo(
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
 
-    if expediente.fecha_firma or str(getattr(expediente, "protocolo", "") or "").strip():
+    protocolo = datos.protocolo.strip()
+    firma_previa = bool(
+        expediente.fecha_firma
+        or str(getattr(expediente, "protocolo", "") or "").strip()
+    )
+    if firma_previa and (
+        expediente.fecha_firma != datos.fecha_firma
+        or str(getattr(expediente, "protocolo", "") or "").strip() != protocolo
+    ):
         raise HTTPException(
             status_code=409,
-            detail="Este expediente ya tiene una firma registrada. No se puede sustituir desde ApoderaGest.",
+            detail="Este expediente ya tiene una firma registrada con otra fecha o protocolo. No se puede sustituir desde ApoderaGest.",
         )
 
-    protocolo = datos.protocolo.strip()
     if not protocolo:
         raise HTTPException(status_code=422, detail="Indica el número de protocolo.")
     notario_otorgante = datos.notario_otorgante.strip()
@@ -303,8 +310,10 @@ def firmar_encargo(
             )
             db.add(cita)
         else:
-            # Conservamos la fecha planificada para que la cita no desaparezca
-            # del día original; la fecha real sigue guardada en Expediente.
+            # Conservamos/restauramos la fecha planificada para que la cita
+            # siga visible en el día reservado, incluso al reparar una firma
+            # que antes desplazó la cita a la fecha real.
+            cita.fecha = getattr(expediente, "fecha_prevista_firma", None) or cita.fecha
             cita.tipo_firma = tipo_firma
             cita.notario_id = getattr(notario, "id", None) or cita.notario_id
             cita.apoderado_id = apoderado_id or cita.apoderado_id
