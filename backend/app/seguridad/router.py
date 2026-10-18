@@ -146,6 +146,18 @@ PLANTILLA_PERMISOS = {
         "editar",
         "eliminar",
     ],
+    "notargestweb": [
+        "ver",
+        "crear",
+        "editar",
+        "eliminar",
+    ],
+    "encargagestweb": [
+        "ver",
+        "crear",
+        "editar",
+        "eliminar",
+    ],
 }
 
 
