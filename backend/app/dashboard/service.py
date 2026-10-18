@@ -184,6 +184,7 @@ def obtener_dashboard_expedientes(
     filas_firma = (
         db.query(
             Expediente.tipo_operacion,
+            Expediente.subtipo_operacion,
             Expediente.fecha_inicio_actividad,
             Expediente.fecha_firma,
         )
@@ -200,25 +201,49 @@ def obtener_dashboard_expedientes(
             "dias": 0.0,
         }
     )
-    # La categoría se incluye siempre para que el dashboard tenga una fila
-    # estable aunque todavía no existan firmas registradas de otras entidades.
+    # Las dos modalidades de entidad aparecen como filas estables aunque
+    # todavía no existan firmas registradas; no se inventan medias.
     acumulado["Cancelación Otra entidad"]
+    acumulado["Cancelación propia entidad"]
 
-    for tipo_operacion, fecha_envio, fecha_firma in filas_firma:
+    for tipo_operacion, subtipo_operacion, fecha_envio, fecha_firma in filas_firma:
         tipo_original = (
             " ".join(str(tipo_operacion).strip().split())
             if tipo_operacion
-            else "Sin tipo de operación"
+            else " ".join(str(subtipo_operacion or "").strip().split()) or "Sin tipo de operación"
         )
-        tipo_normalizado = _normalizar_actividad(tipo_original)
+        texto_clasificacion = " ".join(
+            str(valor).strip()
+            for valor in (tipo_operacion, subtipo_operacion)
+            if valor and str(valor).strip()
+        )
+        tipo_normalizado = _normalizar_actividad(texto_clasificacion)
+        tipo_base_normalizado = _normalizar_actividad(tipo_original)
 
-        # Unificamos variaciones de acentos, mayúsculas y espacios para no
-        # dividir la misma operación en varias filas del dashboard.
-        if "otra entidad" in tipo_normalizado:
+        # La modalidad de entidad tiene prioridad para agruparla en una fila
+        # propia, incluso cuando el subtipo es el que aporta esa información.
+        if any(
+            termino in tipo_normalizado
+            for termino in (
+                "otra entidad",
+                "otras entidades",
+                "entidad externa",
+                "entidades externas",
+            )
+        ):
             tipo = "Cancelación Otra entidad"
-        elif "cancelacion con provision" in tipo_normalizado:
+        elif any(
+            termino in tipo_normalizado
+            for termino in (
+                "propia entidad",
+                "entidad propia",
+                "misma entidad",
+            )
+        ):
+            tipo = "Cancelación propia entidad"
+        elif "cancelacion con provision" in tipo_base_normalizado:
             tipo = "Cancelación con provisión"
-        elif "cancelacion sin provision" in tipo_normalizado:
+        elif "cancelacion sin provision" in tipo_base_normalizado:
             tipo = "Cancelación sin provisión"
         else:
             tipo = tipo_original
