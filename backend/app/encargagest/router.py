@@ -597,7 +597,7 @@ def cambiar_estado(encargo_id: int, datos: CambioEstado, db: Session = Depends(g
     if estado not in ESTADOS:
         raise HTTPException(status_code=422, detail="Estado no válido.")
     anterior = item.estado
-    if estado == "PENDIENTE_RECEPCION":
+    if estado in {"PENDIENTE_RECEPCION", "RECIBIDO"}:
         raise HTTPException(status_code=422, detail="La recepción se realiza con la acción «Aceptar encargo».")
     if anterior in {"PENDIENTE_RECEPCION", "RECIBIDO"}:
         raise HTTPException(status_code=409, detail="Primero debes usar la acción «Aceptar encargo» para recepcionar esta solicitud.")
