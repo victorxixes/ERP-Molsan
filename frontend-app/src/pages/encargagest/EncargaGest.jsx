@@ -8,21 +8,27 @@ import { useAuthStore } from "../../store/authStore";
 
 const ESTADOS = [
   { valor: "", texto: "Todos los estados" },
+  { valor: "PENDIENTE_RECEPCION", texto: "Pendiente de recepción" },
+  { valor: "RECEPCIONADO", texto: "Recepcionado / aceptado" },
   { valor: "RECIBIDO", texto: "Recibido" },
   { valor: "EN_REVISION", texto: "En revisión" },
   { valor: "DOCUMENTACION_PENDIENTE", texto: "Documentación pendiente" },
   { valor: "EN_GESTION", texto: "En gestión" },
   { valor: "INCIDENCIA", texto: "Incidencia" },
+  { valor: "AUTORIZADO", texto: "Autorizado" },
   { valor: "RESUELTO", texto: "Resuelto" },
   { valor: "CERRADO", texto: "Cerrado" },
 ];
 
 const ESTILO_ESTADO = {
+  PENDIENTE_RECEPCION: "border-amber-200 bg-amber-50 text-amber-800",
+  RECEPCIONADO: "border-sky-200 bg-sky-50 text-sky-700",
   RECIBIDO: "border-sky-200 bg-sky-50 text-sky-700",
   EN_REVISION: "border-violet-200 bg-violet-50 text-violet-700",
   DOCUMENTACION_PENDIENTE: "border-amber-200 bg-amber-50 text-amber-800",
   EN_GESTION: "border-blue-200 bg-blue-50 text-blue-700",
   INCIDENCIA: "border-rose-200 bg-rose-50 text-rose-700",
+  AUTORIZADO: "border-emerald-200 bg-emerald-50 text-emerald-700",
   RESUELTO: "border-emerald-200 bg-emerald-50 text-emerald-700",
   CERRADO: "border-slate-200 bg-slate-100 text-slate-600",
 };
@@ -228,6 +234,23 @@ export default function EncargaGest() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modo]);
 
+  // El portal consulta periódicamente los cambios para que la notaría vea el
+  // estado y los comentarios del gestor sin tener que cerrar sesión.
+  useEffect(() => {
+    if (modo !== "interno" && modo !== "externo") return undefined;
+    const intervalo = window.setInterval(() => {
+      cargarTodo();
+      if (seleccionadoId) {
+        axios.get("/encargagest/encargos/" + seleccionadoId)
+          .then((respuesta) => {
+            setDetalle((actual) => actual?.id === seleccionadoId ? respuesta.data : actual);
+          })
+          .catch(() => {});
+      }
+    }, 30000);
+    return () => window.clearInterval(intervalo);
+  }, [modo, cargarTodo, seleccionadoId]);
+
   useEffect(() => {
     if (!seleccionadoId) {
       setDetalle(null);
@@ -306,6 +329,22 @@ export default function EncargaGest() {
       setErrorAccion(e?.response?.data?.detail || "No se ha podido registrar el encargo.");
     } finally {
       setGuardando(false);
+    }
+  }
+
+  async function aceptarEncargo() {
+    if (!detalle || !["PENDIENTE_RECEPCION", "RECIBIDO"].includes(detalle.estado)) return;
+    setErrorAccion("");
+    setMensaje("");
+    try {
+      await axios.post("/encargagest/encargos/" + detalle.id + "/aceptar");
+      const actualizado = await axios.get("/encargagest/encargos/" + detalle.id);
+      setDetalle(actualizado.data);
+      await cargarTodo();
+      setSeleccionadoId(detalle.id);
+      setMensaje("Encargo recepcionado y aceptado. La notaría ya puede ver la actualización.");
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se ha podido aceptar el encargo.");
     }
   }
 
@@ -537,7 +576,7 @@ export default function EncargaGest() {
             {cargando ? "Actualizando…" : "Actualizar datos"}
           </button>
           {modo === "interno" && <button type="button" onClick={abrirAccesos} className="eg-secondary">Accesos externos</button>}
-          <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary">＋ Nuevo encargo</button>
+          {modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary">＋ Nuevo encargo</button>}
         </div>
       </header>
 
@@ -553,7 +592,7 @@ export default function EncargaGest() {
 
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-amber-500">▤</span></div><p className="mt-1 text-xs text-slate-500">Solicitudes registradas</p></div>
-          <div className="ag-kpi ag-kpi-verde eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{resumen.por_estado?.RECIBIDO || 0}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Nuevas entradas</p></div>
+          <div className="ag-kpi ag-kpi-verde eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Pendientes de recepción</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-amber-700">{(resumen.por_estado?.PENDIENTE_RECEPCION || 0) + (resumen.por_estado?.RECIBIDO || 0)}</strong><span className="text-xl text-amber-500">↓</span></div><p className="mt-1 text-xs text-slate-500">{modo === "interno" ? "Requieren aceptación del gestor" : "Pendientes de revisión por MOLSAN"}</p></div>
           <div className="ag-kpi ag-kpi-violeta eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">En gestión</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-blue-700">{(resumen.por_estado?.EN_GESTION || 0) + (resumen.por_estado?.EN_REVISION || 0)}</strong><span className="text-xl text-blue-500">◷</span></div><p className="mt-1 text-xs text-slate-500">Revisión y tramitación</p></div>
           <div className="ag-kpi ag-kpi-ambar eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-amber-700">Requieren atención</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-amber-900">{resumen.requieren_atencion || 0}</strong><span className="text-xl text-amber-600">!</span></div><p className="mt-1 text-xs text-amber-800">Incidencias o documentación pendiente</p></div>
         </section>
@@ -573,7 +612,7 @@ export default function EncargaGest() {
               </form>
             </div>
             {cargando ? <div className="p-10 text-center text-sm text-slate-500">Cargando encargos…</div> : !filas.length ? (
-              <div className="p-10 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-xl text-slate-400">▤</div><h3 className="mt-3 text-sm font-bold text-slate-800">Todavía no hay encargos</h3><p className="mt-1 text-xs leading-5 text-slate-500">Crea el primer encargo y empieza a gestionar las solicitudes recibidas.</p><button type="button" onClick={() => setModalNuevo(true)} className="mt-4 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white">＋ Registrar encargo</button></div>
+              <div className="p-10 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-xl text-slate-400">▤</div><h3 className="mt-3 text-sm font-bold text-slate-800">Todavía no hay encargos</h3><p className="mt-1 text-xs leading-5 text-slate-500">Crea el primer encargo y empieza a gestionar las solicitudes recibidas.</p>{modo === "externo" && <button type="button" onClick={() => setModalNuevo(true)} className="mt-4 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white">＋ Registrar encargo</button>}</div>
             ) : (
               <div className="divide-y divide-slate-100">
                 {filas.map((item) => (
@@ -599,7 +638,7 @@ export default function EncargaGest() {
                 <div className="eg-panel-head p-5 sm:p-6">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0"><p className="text-[10px] font-black tracking-[0.18em] text-amber-700">{detalle.referencia || ("EG-" + detalle.id)} · FICHA DE ENCARGO</p><h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">{detalle.titular}</h2><p className="mt-1 text-sm text-slate-500">{detalle.notaria_nombre}</p></div>
-                    <div className="min-w-[190px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span>{modo === "interno" ? <select aria-label="Cambiar estado del encargo" value={detalle.estado} onChange={(e) => cambiarEstado(e.target.value)} className={inputClass}>{ESTADOS.filter((x) => x.valor).map((x) => <option key={x.valor} value={x.valor}>{x.texto}</option>)}</select> : <div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>}</div>
+                    <div className="min-w-[190px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span>{modo === "interno" ? (["PENDIENTE_RECEPCION", "RECIBIDO"].includes(detalle.estado) ? <div className="space-y-2"><EtiquetaEstado estado={detalle.estado} /><button type="button" onClick={aceptarEncargo} className="w-full rounded-xl bg-emerald-600 px-3 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:bg-emerald-700">✓ Aceptar encargo</button></div> : <select aria-label="Cambiar estado del encargo" value={detalle.estado} onChange={(e) => cambiarEstado(e.target.value)} className={inputClass}>{ESTADOS.filter((x) => x.valor && x.valor !== "PENDIENTE_RECEPCION" && x.valor !== "RECIBIDO").map((x) => <option key={x.valor} value={x.valor}>{x.texto}</option>)}</select>) : <div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>}</div>
                   </div>
                   <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
                     <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Tipo de encargo</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.tipo_encargo}</p></div>

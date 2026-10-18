@@ -40,8 +40,22 @@ CATEGORIAS_DOCUMENTO = {
     "Otros",
 }
 ESTADOS = {
-    "RECIBIDO", "EN_REVISION", "DOCUMENTACION_PENDIENTE",
-    "EN_GESTION", "INCIDENCIA", "RESUELTO", "CERRADO",
+    "PENDIENTE_RECEPCION", "RECEPCIONADO", "RECIBIDO",
+    "EN_REVISION", "DOCUMENTACION_PENDIENTE", "EN_GESTION",
+    "INCIDENCIA", "AUTORIZADO", "RESUELTO", "CERRADO",
+}
+
+ETIQUETAS_ESTADO = {
+    "PENDIENTE_RECEPCION": "Pendiente de recepción",
+    "RECEPCIONADO": "Recepcionado / aceptado",
+    "RECIBIDO": "Recibido",
+    "EN_REVISION": "En revisión",
+    "DOCUMENTACION_PENDIENTE": "Documentación pendiente",
+    "EN_GESTION": "En gestión",
+    "INCIDENCIA": "Incidencia",
+    "AUTORIZADO": "Autorizado",
+    "RESUELTO": "Resuelto",
+    "CERRADO": "Cerrado",
 }
 PRIORIDADES = {"Baja", "Normal", "Alta", "Urgente"}
 
@@ -492,7 +506,7 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
         importe=Decimal(datos.importe) if datos.importe is not None else None,
         fecha_objetivo=datos.fecha_objetivo,
         prioridad=datos.prioridad,
-        estado="RECIBIDO",
+        estado=("PENDIENTE_RECEPCION" if _es_externo(usuario) else "RECEPCIONADO"),
         contacto_nombre=(datos.contacto_nombre or "").strip() or None,
         contacto_email=(datos.contacto_email or "").strip() or None,
         contacto_telefono=(datos.contacto_telefono or "").strip() or None,
@@ -505,7 +519,12 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
         db.flush()
         item.referencia = f"EG-{datetime.now().year}-{item.id:06d}"
         db.add(item)
-        _registrar_actividad(db, item.id, usuario, "SISTEMA", "Encargo registrado en EncargaGest.")
+        mensaje_inicial = (
+            "La notaría ha enviado el encargo. Está pendiente de recepción por MOLSAN."
+            if _es_externo(usuario)
+            else "Encargo registrado directamente por el equipo MOLSAN."
+        )
+        _registrar_actividad(db, item.id, usuario, "SISTEMA", mensaje_inicial, visible_notaria=True)
         db.commit()
         db.refresh(item)
         return _serializar(item)
@@ -549,6 +568,27 @@ def actualizar_encargo(encargo_id: int, datos: EncargoActualizar, db: Session = 
     return _serializar(item)
 
 
+@router.post("/encargos/{encargo_id}/aceptar")
+def aceptar_encargo(encargo_id: int, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _exigir_interno(usuario, "editar")
+    item = _obtener_encargo(db, encargo_id, usuario)
+    if item.estado not in {"PENDIENTE_RECEPCION", "RECIBIDO"}:
+        raise HTTPException(status_code=409, detail="Este encargo ya ha sido recepcionado o ya está en tramitación.")
+    item.estado = "RECEPCIONADO"
+    item.actualizado_en = datetime.utcnow()
+    _registrar_actividad(
+        db,
+        item.id,
+        usuario,
+        "RECEPCION",
+        "MOLSAN ha recepcionado y aceptado el encargo. Comienza su tramitación.",
+        visible_notaria=True,
+    )
+    db.commit()
+    db.refresh(item)
+    return _serializar(item)
+
+
 @router.post("/encargos/{encargo_id}/estado")
 def cambiar_estado(encargo_id: int, datos: CambioEstado, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _exigir_interno(usuario, "editar")
@@ -557,12 +597,16 @@ def cambiar_estado(encargo_id: int, datos: CambioEstado, db: Session = Depends(g
     if estado not in ESTADOS:
         raise HTTPException(status_code=422, detail="Estado no válido.")
     anterior = item.estado
+    if estado in {"PENDIENTE_RECEPCION", "RECIBIDO"}:
+        raise HTTPException(status_code=422, detail="La recepción se realiza con la acción «Aceptar encargo».")
+    if anterior in {"PENDIENTE_RECEPCION", "RECIBIDO"}:
+        raise HTTPException(status_code=409, detail="Primero debes usar la acción «Aceptar encargo» para recepcionar esta solicitud.")
     item.estado = estado
     item.actualizado_en = datetime.utcnow()
-    mensaje = f"Estado cambiado de {anterior} a {estado}."
+    mensaje = f"Estado actualizado: {ETIQUETAS_ESTADO.get(estado, estado)}."
     if datos.comentario and datos.comentario.strip():
         mensaje += f" {datos.comentario.strip()}"
-    _registrar_actividad(db, item.id, usuario, "CAMBIO_ESTADO", mensaje)
+    _registrar_actividad(db, item.id, usuario, "CAMBIO_ESTADO", mensaje, visible_notaria=True)
     db.commit()
     db.refresh(item)
     return _serializar(item)
