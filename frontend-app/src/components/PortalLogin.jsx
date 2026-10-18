@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 
 /**
- * Acceso profesional de los portales notariales.
- * Mantiene el lenguaje visual del login principal de MOLSAN ERP y adapta
- * marca y color de acento según el portal, sin acoplar la autenticación.
+ * Login de los portales profesionales.
+ * Replica el formato visual del login principal de MOLSAN ERP,
+ * manteniendo independientes las credenciales y la autenticación de cada portal.
  */
 export default function PortalLogin({
   variant = "notargest",
@@ -22,60 +22,37 @@ export default function PortalLogin({
   error,
   submitLabel = "Iniciar sesión",
 }) {
-  const esEncarga = variant === "encargagest";
-  const acento = esEncarga
-    ? {
-        texto: "text-amber-700",
-        brillo: "via-amber-500/40",
-        foco: "focus:border-amber-400 focus:ring-amber-400/15",
-        boton: "from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300",
-        halo: "bg-amber-400/[0.045]",
-        rejilla: "from-white via-slate-50/60 to-amber-50/70",
-      }
-    : {
-        texto: "text-blue-700",
-        brillo: "via-blue-500/40",
-        foco: "focus:border-blue-400 focus:ring-blue-400/15",
-        boton: "from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400",
-        halo: "bg-blue-400/[0.045]",
-        rejilla: "from-white via-slate-50/60 to-blue-50/70",
-      };
-
-  const inputBase =
-    "w-full rounded-xl border border-slate-200/90 bg-white/90 py-3 pl-11 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:ring-4 disabled:cursor-wait disabled:opacity-60 " +
-    acento.foco;
+  const [mostrarPass, setMostrarPass] = useState(false);
+  const idUsuario = variant + "-usuario";
+  const idPassword = variant + "-password";
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 px-4 py-8 animate-fadeIn">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -left-56 -top-56 h-[620px] w-[620px] rounded-full bg-blue-400/10 blur-3xl" />
-        <div className={"absolute -bottom-56 -right-56 h-[620px] w-[620px] rounded-full " + (esEncarga ? "bg-amber-300/15" : "bg-cyan-300/15") + " blur-3xl"} />
-        <div className="absolute left-1/2 top-1/2 h-[760px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/80 blur-3xl" />
-        <div className={"absolute inset-0 bg-gradient-to-br " + acento.rejilla} />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,1)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,1)_1px,transparent_1px)] bg-[size:32px_32px] opacity-[0.025]" />
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden px-4 py-8 bg-slate-50 animate-fadeIn">
+      {/* Fondo Premium: misma composición que el login de CancelaGest */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div className="absolute -top-56 -left-56 w-[620px] h-[620px] rounded-full bg-blue-400/10 blur-3xl" />
+        <div className="absolute -bottom-56 -right-56 w-[620px] h-[620px] rounded-full bg-cyan-300/10 blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 w-[760px] h-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/80 blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50/60 to-blue-50/70" />
+        <div className="absolute inset-0 opacity-[0.025] bg-[linear-gradient(rgba(15,23,42,1)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,1)_1px,transparent_1px)] bg-[size:32px_32px]" />
       </div>
 
-      <section className="relative z-10 w-full max-w-[450px] animate-slideUp">
-        <div className="relative overflow-hidden rounded-[30px] border border-white/90 bg-white/80 p-7 shadow-[0_30px_100px_rgba(15,23,42,0.12)] backdrop-blur-2xl sm:p-9">
-          <div className={"absolute left-0 right-0 top-0 h-[2px] bg-gradient-to-r from-transparent " + acento.brillo + " to-transparent"} />
-          <div className={"pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-3xl " + acento.halo} />
+      <div className="relative z-10 w-full max-w-[430px] animate-slideUp">
+        <div className="relative overflow-hidden rounded-[30px] border border-white/90 bg-white/80 backdrop-blur-2xl shadow-[0_30px_100px_rgba(15,23,42,0.12)] p-7 sm:p-9">
+          {/* Brillo superior */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
+          <div className="absolute -top-24 left-1/2 w-64 h-64 -translate-x-1/2 rounded-full bg-blue-400/[0.035] blur-3xl pointer-events-none" />
 
-          <header className="relative mb-8 text-center">
-            <div className="mb-6 flex justify-center">
-              <div className="relative rounded-[22px] border border-slate-200/80 bg-white p-2 shadow-[0_14px_35px_rgba(15,23,42,0.10)]">
-                <div className="pointer-events-none absolute inset-0 rounded-[22px] ring-1 ring-blue-500/5" />
-                <img src="/img/logo.jpg" alt="Molsan" className="relative h-20 w-auto rounded-[16px] object-contain sm:h-24" />
+          <div className="relative text-center mb-8">
+            <div className="flex justify-center mb-6">
+              <div className="relative p-2 rounded-[22px] bg-white border border-slate-200/80 shadow-[0_14px_35px_rgba(15,23,42,0.10)]">
+                <div className="absolute inset-0 rounded-[22px] ring-1 ring-blue-500/5 pointer-events-none" />
+                <img src="/img/logo.jpg" alt="Molsan" className="relative h-20 sm:h-24 w-auto rounded-[16px] object-contain" />
               </div>
             </div>
-            <div className="mb-3 flex justify-center">
-              <span className={"inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/75 px-3 py-1.5 text-[9px] font-extrabold tracking-[0.18em] " + acento.texto}>
-                <span className={"h-1.5 w-1.5 rounded-full " + (esEncarga ? "bg-amber-500" : "bg-blue-500")} />
-                ENTORNO PROFESIONAL · MOLSAN ERP
-              </span>
-            </div>
-            <h1 className="text-3xl font-bold tracking-[-0.03em] text-slate-800 sm:text-[34px]">{title}</h1>
-            <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-[15px]">{subtitle}</p>
-          </header>
+            <h1 className="text-3xl sm:text-[34px] font-bold tracking-[-0.03em] text-slate-800">{title}</h1>
+            <p className="mt-2 text-sm sm:text-[15px] text-slate-500">{subtitle}</p>
+          </div>
 
           {error ? (
             <div role="alert" className="mb-5 rounded-2xl border border-red-200/80 bg-red-50/80 px-4 py-3 text-center shadow-sm animate-fadeIn">
@@ -85,11 +62,11 @@ export default function PortalLogin({
 
           <form onSubmit={onSubmit} className="space-y-5">
             <div>
-              <label htmlFor={variant + "-usuario"} className="mb-2 block text-sm font-semibold text-slate-700">{usernameLabel}</label>
+              <label htmlFor={idUsuario} className="block mb-2 text-sm font-semibold text-slate-700">{usernameLabel}</label>
               <div className="relative">
-                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true">♙</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-colors" aria-hidden="true">👤</span>
                 <input
-                  id={variant + "-usuario"}
+                  id={idUsuario}
                   type="text"
                   value={username}
                   onChange={(event) => setUsername(event.target.value)}
@@ -98,45 +75,61 @@ export default function PortalLogin({
                   disabled={loading}
                   placeholder={usernamePlaceholder}
                   required
-                  className={inputBase}
+                  className="w-full rounded-2xl border border-slate-200 bg-white/75 px-4 py-3.5 pl-11 text-[15px] text-slate-800 placeholder:text-slate-400 outline-none transition-all duration-200 shadow-[0_4px_15px_rgba(15,23,42,0.03)] hover:border-slate-300 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor={variant + "-password"} className="mb-2 block text-sm font-semibold text-slate-700">Contraseña</label>
+              <label htmlFor={idPassword} className="block mb-2 text-sm font-semibold text-slate-700">Contraseña</label>
               <div className="relative">
-                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true">●</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" aria-hidden="true">🔒</span>
                 <input
-                  id={variant + "-password"}
-                  type="password"
+                  id={idPassword}
+                  type={mostrarPass ? "text" : "password"}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   autoComplete="current-password"
                   disabled={loading}
                   placeholder={passwordPlaceholder}
                   required
-                  className={inputBase}
+                  className="w-full rounded-2xl border border-slate-200 bg-white/75 px-4 py-3.5 pl-11 pr-12 text-[15px] text-slate-800 placeholder:text-slate-400 outline-none transition-all duration-200 shadow-[0_4px_15px_rgba(15,23,42,0.03)] hover:border-slate-300 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
+                <button
+                  type="button"
+                  onClick={() => setMostrarPass((valor) => !valor)}
+                  disabled={loading}
+                  aria-label={mostrarPass ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all disabled:opacity-30"
+                >
+                  {mostrarPass ? "🙈" : "👁️"}
+                </button>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className={"mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r px-4 py-3.5 text-sm font-extrabold text-white shadow-[0_12px_24px_rgba(15,23,42,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(15,23,42,0.17)] disabled:translate-y-0 disabled:cursor-wait disabled:opacity-60 " + acento.boton}
+              className="relative w-full overflow-hidden rounded-2xl border border-blue-500/20 bg-gradient-to-r from-blue-600 to-cyan-500 py-3.5 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(37,99,235,0.20)] transition-all duration-200 hover:from-blue-500 hover:to-cyan-400 hover:shadow-[0_16px_40px_rgba(37,99,235,0.28)] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
             >
-              {loading ? "Validando acceso…" : submitLabel}
-              {!loading ? <span aria-hidden="true">→</span> : null}
+              <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 hover:opacity-100 transition-opacity" />
+              <span className="relative flex items-center justify-center gap-2">
+                {loading ? (
+                  <>
+                    <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                    Accediendo...
+                  </>
+                ) : submitLabel}
+              </span>
             </button>
           </form>
 
-          <footer className="mt-7 border-t border-slate-100 pt-5 text-center">
-            <p className="text-[11px] leading-5 text-slate-500">{footnote}</p>
-            <p className="mt-3 text-[9px] font-semibold tracking-[0.12em] text-slate-400">MOLSAN ERP · PREMIUM 2027</p>
-          </footer>
+          <div className="mt-8 pt-5 border-t border-slate-200/80 text-center">
+            <p className="text-xs font-medium text-slate-400">{footnote}</p>
+            <p className="mt-1 text-[10px] uppercase tracking-[0.22em] text-slate-300">Premium 2027</p>
+          </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }
