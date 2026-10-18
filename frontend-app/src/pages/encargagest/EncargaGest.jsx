@@ -648,6 +648,9 @@ export default function EncargaGest() {
                   <section>
                     <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-900">Documentación</h3><span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">{detalle.documentos?.length || 0} archivos</span></div>
                     <form className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3" onSubmit={subirDocumento}>
+                      <select aria-label="Contrato al que pertenece el documento" value={detalleContratoIndex} onChange={(e) => setDetalleContratoIndex(Number(e.target.value))} className={inputClass + " mb-3"}>
+                        {(detalle.contratos || [{}]).map((contrato, index) => <option key={index} value={index}>Contrato {index + 1} · {contrato.numero_prestamo || "sin número de préstamo"}</option>)}
+                      </select>
                       <select aria-label="Categoría del documento" value={categoriaDocumento} onChange={(e) => setCategoriaDocumento(e.target.value)} className={inputClass + " mb-3"}>
                         {CATEGORIAS_DOCUMENTO.map((categoria) => <option key={categoria.nombre} value={categoria.nombre}>{categoria.nombre}</option>)}
                       </select>
@@ -655,12 +658,15 @@ export default function EncargaGest() {
                       <div className="mt-2 flex items-center justify-between gap-2"><span className="text-[10px] text-slate-400">PDF, Office, imagen o correo · máx. 25 MB</span><button type="submit" disabled={!archivo || subiendo} className="rounded-lg bg-slate-900 px-3 py-2 text-[10px] font-extrabold text-white disabled:opacity-40">{subiendo ? "Subiendo…" : "Subir archivo"}</button></div>
                     </form>
                     <div className="mt-3 space-y-2">
-                      {!detalle.documentos?.length ? <p className="rounded-xl bg-slate-50 p-4 text-xs text-slate-500">Todavía no se ha adjuntado documentación.</p> : detalle.documentos.map((doc) => (
+                      {!detalle.documentos?.length ? <p className="rounded-xl bg-slate-50 p-4 text-xs text-slate-500">Todavía no se ha adjuntado documentación.</p> : (detalle.contratos || [{}]).map((contrato, contratoIndex) => {
+                        const docsContrato = detalle.documentos.filter((doc) => Number(doc.contrato_index || 0) === contratoIndex);
+                        return <div key={"contrato-docs-" + contratoIndex} className="space-y-2 rounded-xl border border-amber-100 p-3"><h4 className="text-xs font-extrabold text-amber-800">Contrato {contratoIndex + 1} · {contrato.numero_prestamo || "sin número de préstamo"} <span className="font-medium text-slate-400">({docsContrato.length} archivos)</span></h4>{docsContrato.map((doc) => (
                         <div key={doc.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-3">
                           <div className="min-w-0"><p className="break-words text-xs font-bold text-slate-800">{doc.nombre_original}</p><p className="mt-1 text-[10px] text-slate-400">{doc.categoria || "Otros"} · {nombreArchivoTamano(doc.tamano_bytes)} · {fechaHora(doc.fecha_subida)}</p></div>
                           <div className="flex shrink-0 gap-1"><button type="button" onClick={() => descargarDocumento(doc)} className="rounded-lg border border-slate-200 px-2 py-1.5 text-[10px] font-bold hover:bg-slate-50">Descargar</button>{modo === "interno" && <button type="button" onClick={() => eliminarDocumento(doc)} className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-700 hover:bg-rose-50">×</button>}</div>
                         </div>
-                      ))}
+                      ))}</div>;
+                      })}
                     </div>
                   </section>
 
