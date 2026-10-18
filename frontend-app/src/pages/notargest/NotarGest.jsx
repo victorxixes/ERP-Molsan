@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PortalLogin from "../../components/PortalLogin";
 import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
@@ -273,13 +274,25 @@ export default function NotarGest() {
     return bandeja ? filtradas.filter(x => x[bandeja.campo]) : filtradas;
   }, [expedientes, busqueda, vista]);
 
-  if (!token) return <main className="apoderagest notargest ng-login-shell"><form className="ng-login" onSubmit={entrar}>
-    <span className="ng-sobrelinea">PORTAL PROFESIONAL</span><h1>NotarGest</h1><p>Acceso para notarías autorizadas por Molsan.</p>
-    <label>DNI / NIF del notario<input autoComplete="username" value={usuario} onChange={e => setUsuario(e.target.value.toUpperCase())} required /></label>
-    <label>Contraseña<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value.toUpperCase())} required /></label>
-    {error && <div className="ng-error">{error}</div>}<button className="ng-login-submit" disabled={cargando}>{cargando ? "Accediendo…" : "Entrar en NotarGest"}</button>
-    <small>Usuario y contraseña: DNI/NIF completo del notario, incluida la letra.</small>
-  </form></main>;
+  if (!token) return (
+    <PortalLogin
+      variant="notargest"
+      title="NotarGest EP"
+      subtitle="Acceso profesional para notarías autorizadas por MOLSAN. Consulta encargos, firmas y seguimiento registral."
+      usernameLabel="DNI / NIF del notario"
+      usernamePlaceholder="DNI/NIF completo, incluida la letra"
+      passwordPlaceholder="Introduce tu contraseña"
+      footnote="Utiliza las credenciales facilitadas por MOLSAN. Si se te indicó el acceso inicial mediante DNI/NIF, introdúcelo completo, incluida la letra."
+      submitLabel="Entrar en NotarGest EP"
+      username={usuario}
+      setUsername={(valor) => setUsuario(valor.toUpperCase())}
+      password={password}
+      setPassword={(valor) => setPassword(valor.toUpperCase())}
+      onSubmit={entrar}
+      loading={cargando}
+      error={error}
+    />
+  );
 
   const esDetalle = vista === "detalle" && detalle;
   const titulo = esDetalle ? `Expediente ${detalle.id_expediente}` : (bandejas.find(b => b.id === vista)?.titulo || ({ avisos_comentarios: "Observaciones del gestor", avisos_documentos: "Nueva documentación añadida" }[vista]) || (vista === "inicio" ? "Mis tareas pendientes" : vista === "documentacion" ? "Carpeta Digital" : "NotarGest"));

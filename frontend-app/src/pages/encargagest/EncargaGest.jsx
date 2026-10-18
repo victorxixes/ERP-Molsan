@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PortalLogin from "../../components/PortalLogin";
+import "../../css/ApoderaGest.css";
+import "../../css/EncargaGest.css";
 import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
 import { useAuthStore } from "../../store/authStore";
 
@@ -421,50 +424,63 @@ export default function EncargaGest() {
 
   if (modo === "login") {
     return (
-      <div className="grid min-h-screen place-items-center bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 px-4 py-10">
-        <form onSubmit={iniciarSesion} className="w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-white shadow-2xl">
-          <div className="h-2 bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-500" />
-          <div className="p-7 sm:p-9">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-300 text-sm font-black text-amber-950">EG</div>
-            <p className="mt-6 text-[10px] font-extrabold tracking-[0.2em] text-amber-700">PORTAL EXTERNO · MOLSAN ERP</p>
-            <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-900">EncargaGest</h1>
-            <p className="mt-3 text-sm leading-6 text-slate-500">Acceso independiente para notarías colaboradoras. Envía encargos, aporta documentación y consulta su seguimiento.</p>
-            {loginError && <div role="alert" className="mt-5 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs leading-5 text-rose-800">{loginError}</div>}
-            <div className="mt-6 space-y-4">
-              <Campo etiqueta="Usuario · NIF de la notaría"><input required autoComplete="username" value={loginUsuario} onChange={(e) => setLoginUsuario(e.target.value)} className={inputClass} placeholder="NIF registrado en CTN" /></Campo>
-              <Campo etiqueta="Contraseña"><input required type="password" autoComplete="current-password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} className={inputClass} placeholder="Tu contraseña de EncargaGest" /></Campo>
-            </div>
-            <button type="submit" disabled={loginCargando} className="mt-6 w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-slate-700 disabled:opacity-50">{loginCargando ? "Validando acceso…" : "Entrar en EncargaGest"}</button>
-            <p className="mt-5 text-center text-[10px] leading-5 text-slate-400">¿Necesitas acceso? Solicítalo a MOLSAN. Las credenciales de EncargaGest son independientes de NotarGest.</p>
-          </div>
-        </form>
-      </div>
+      <PortalLogin
+        variant="encargagest"
+        title="EncargaGest EP"
+        subtitle="Portal profesional para que las notarías colaboradoras envíen encargos, aporten documentación y consulten su seguimiento."
+        usernameLabel="Usuario · NIF de la notaría"
+        usernamePlaceholder="NIF registrado en CTN"
+        passwordPlaceholder="Tu contraseña de EncargaGest"
+        footnote="Solicita tus credenciales a MOLSAN. El acceso de EncargaGest es independiente de NotarGest."
+        submitLabel="Entrar en EncargaGest EP"
+        username={loginUsuario}
+        setUsername={setLoginUsuario}
+        password={loginPassword}
+        setPassword={setLoginPassword}
+        onSubmit={iniciarSesion}
+        loading={loginCargando}
+        error={loginError}
+      />
     );
   }
 
+  const fechaActual = new Intl.DateTimeFormat("es-ES", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
-        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-300 text-sm font-black text-amber-950 shadow-sm">EG</div>
-            <div>
-              <p className="text-[9px] font-extrabold tracking-[0.2em] text-amber-700">MOLSAN ERP · PREMIUM 2027</p>
-              <h1 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">EncargaGest</h1>
-              <p className="hidden text-xs text-slate-500 sm:block">Recepción y seguimiento de encargos notariales externos</p>
-            </div>
+    <div className="apoderagest encargagest">
+      <div className="ag-fondo-decorativo" aria-hidden="true" />
+      <header className="ag-hero eg-hero">
+        <div className="ag-hero-identidad">
+          <div className="ag-marca eg-marca" aria-label="EncargaGest">EG</div>
+          <div>
+            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+            <h1>EncargaGest</h1>
+            <p>{modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="hidden max-w-[280px] truncate rounded-xl border border-amber-100 bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-900 md:inline-flex">{modo === "externo" ? "Portal de notaría · " + (sesion?.notaria_nombre || "Sesión externa") : "Gestión interna · catálogo CTN"}</span>
-            <button type="button" onClick={salirEncargaGest} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50">{modo === "externo" ? "Cerrar sesión" : "← Módulos"}</button>
-            <button type="button" onClick={cargarTodo} disabled={cargando} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-700 hover:border-amber-300 disabled:opacity-60">{cargando ? "Actualizando…" : "↻ Actualizar"}</button>
-            {modo === "interno" && <button type="button" onClick={abrirAccesos} className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs font-extrabold text-amber-900 hover:bg-amber-100">Accesos externos</button>}
-            <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm hover:bg-slate-700">＋ Nuevo encargo</button>
+        </div>
+        <div className="ag-hero-acciones">
+          <div className="ag-fecha-actual">
+            <span className="ag-punto-vivo" aria-hidden="true" />
+            <span>{fechaActual}</span>
           </div>
+          <button type="button" onClick={salirEncargaGest} className="eg-secondary">
+            {modo === "externo" ? "Cerrar sesión" : <><span aria-hidden="true">▦</span> Ir a módulos</>}
+          </button>
+          <button type="button" onClick={cargarTodo} disabled={cargando} className="ag-boton-actualizar">
+            <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
+            {cargando ? "Actualizando…" : "Actualizar datos"}
+          </button>
+          {modo === "interno" && <button type="button" onClick={abrirAccesos} className="eg-secondary">Accesos externos</button>}
+          <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary">＋ Nuevo encargo</button>
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
+      <main className="eg-main mx-auto w-full max-w-[1600px] px-1 pb-4">
         {error && (
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800" role="alert">
             <span>{error}</span>
@@ -475,15 +491,15 @@ export default function EncargaGest() {
         {errorAccion && <div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">{errorAccion}</div>}
 
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-amber-500">▤</span></div><p className="mt-1 text-xs text-slate-500">Solicitudes registradas</p></div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{resumen.por_estado?.RECIBIDO || 0}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Nuevas entradas</p></div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">En gestión</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-blue-700">{(resumen.por_estado?.EN_GESTION || 0) + (resumen.por_estado?.EN_REVISION || 0)}</strong><span className="text-xl text-blue-500">◷</span></div><p className="mt-1 text-xs text-slate-500">Revisión y tramitación</p></div>
-          <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 shadow-sm"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-amber-700">Requieren atención</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-amber-900">{resumen.requieren_atencion || 0}</strong><span className="text-xl text-amber-600">!</span></div><p className="mt-1 text-xs text-amber-800">Incidencias o documentación pendiente</p></div>
+          <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-amber-500">▤</span></div><p className="mt-1 text-xs text-slate-500">Solicitudes registradas</p></div>
+          <div className="ag-kpi ag-kpi-verde eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{resumen.por_estado?.RECIBIDO || 0}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Nuevas entradas</p></div>
+          <div className="ag-kpi ag-kpi-violeta eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">En gestión</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-blue-700">{(resumen.por_estado?.EN_GESTION || 0) + (resumen.por_estado?.EN_REVISION || 0)}</strong><span className="text-xl text-blue-500">◷</span></div><p className="mt-1 text-xs text-slate-500">Revisión y tramitación</p></div>
+          <div className="ag-kpi ag-kpi-ambar eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-amber-700">Requieren atención</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-amber-900">{resumen.requieren_atencion || 0}</strong><span className="text-xl text-amber-600">!</span></div><p className="mt-1 text-xs text-amber-800">Incidencias o documentación pendiente</p></div>
         </section>
 
         <section className="mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]">
-          <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-100 p-4 sm:p-5">
+          <div className="eg-panel min-w-0">
+            <div className="eg-panel-head">
               <div className="flex items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span></div>
               <form className="mt-4 space-y-2" onSubmit={aplicarFiltros}>
                 <input className={inputClass} type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar referencia, notaría, titular o banco…" />
@@ -514,12 +530,12 @@ export default function EncargaGest() {
             </div>
           </div>
 
-          <div className="min-w-0 rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="eg-panel min-w-0">
             {!detalle ? (
               <div className="grid min-h-[500px] place-items-center p-8 text-center"><div><div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-amber-50 text-2xl text-amber-600">EG</div><h2 className="mt-4 font-extrabold text-slate-900">Ficha del encargo</h2><p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">Selecciona un encargo de la bandeja o registra una nueva solicitud.</p></div></div>
             ) : (
               <>
-                <div className="border-b border-slate-100 p-5 sm:p-6">
+                <div className="eg-panel-head p-5 sm:p-6">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0"><p className="text-[10px] font-black tracking-[0.18em] text-amber-700">{detalle.referencia || ("EG-" + detalle.id)} · FICHA DE ENCARGO</p><h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">{detalle.titular}</h2><p className="mt-1 text-sm text-slate-500">{detalle.notaria_nombre}</p></div>
                     <div className="min-w-[190px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span>{modo === "interno" ? <select aria-label="Cambiar estado del encargo" value={detalle.estado} onChange={(e) => cambiarEstado(e.target.value)} className={inputClass}>{ESTADOS.filter((x) => x.valor).map((x) => <option key={x.valor} value={x.valor}>{x.texto}</option>)}</select> : <div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>}</div>
