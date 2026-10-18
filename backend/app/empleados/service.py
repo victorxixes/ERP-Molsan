@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 import hashlib
+import json
 
 from backend.app.empleados.models import Empleado
 from backend.app.empleados.schemas import (
@@ -28,6 +29,57 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(
         password.encode("utf-8")
     ).hexdigest()
+
+
+# =========================================================
+# ASEGURAR ENCARGAGEST PARA CUENTAS ADMINISTRADORAS
+# =========================================================
+def _asegurar_encargagest_administrador(db: Session, empleado: Empleado) -> None:
+    """
+    Añade EncargaGest a la configuración de la cuenta administradora
+    de forma aditiva. No reemplaza ni modifica permisos de otros módulos.
+    """
+    usuario = str(getattr(empleado, "usuario", "") or "").strip().casefold()
+    rol = str(getattr(getattr(empleado, "rol", None), "nombre", "") or "").strip().casefold()
+
+    if usuario != "admin" and rol not in {"admin", "administrador", "administradora", "superadmin"}:
+        return
+
+    modulos = empleado.modulos_visibles_list
+    if isinstance(modulos, str):
+        try:
+            modulos = json.loads(modulos)
+        except (TypeError, ValueError):
+            modulos = []
+    if not isinstance(modulos, list):
+        modulos = []
+
+    nuevos_modulos = list(modulos)
+    if not any(str(item).strip().casefold() == "encargagest" for item in nuevos_modulos):
+        nuevos_modulos.append("encargagest")
+
+    permisos = empleado.permisos_modulo_dict
+    if isinstance(permisos, str):
+        try:
+            permisos = json.loads(permisos)
+        except (TypeError, ValueError):
+            permisos = {}
+    if not isinstance(permisos, dict):
+        permisos = {}
+
+    nuevos_permisos = dict(permisos)
+    actuales = nuevos_permisos.get("encargagest")
+    acciones = list(actuales) if isinstance(actuales, list) else []
+    for accion in ("ver", "crear", "editar", "eliminar"):
+        if accion not in acciones:
+            acciones.append(accion)
+    nuevos_permisos["encargagest"] = acciones
+
+    if nuevos_modulos != modulos or nuevos_permisos != permisos:
+        empleado.modulos_visibles_list = nuevos_modulos
+        empleado.permisos_modulo_dict = nuevos_permisos
+        db.commit()
+        db.refresh(empleado)
 
 
 # =========================================================
@@ -66,6 +118,10 @@ def login_empleado(
 
     if empleado.password != hash_password(password):
         return None
+
+    # Solo la cuenta administradora recibe este acceso automático;
+    # la configuración del resto de empleados permanece intacta.
+    _asegurar_encargagest_administrador(db, empleado)
 
     # -----------------------------------------------------
     # TOKEN
