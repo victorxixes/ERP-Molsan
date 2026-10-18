@@ -174,6 +174,7 @@ class EnvioANotarioRequest(BaseModel):
     # Datos de operación que se muestran en el envío a notario.
     contrato: Optional[str] = None
     capital: Optional[float] = None
+    capital_documento_notarial: Optional[float] = None
     tipo_operacion: Optional[str] = None
     subtipo_operacion: Optional[str] = None
     importe: Optional[float] = None
@@ -455,6 +456,7 @@ CAMPOS_EXPEDIENTE = [
     "oficina_alta",
 
     "capital",
+    "capital_documento_notarial",
     "importe",
     "saldo_real",
     "saldo_disponible",
@@ -1555,8 +1557,8 @@ def enviar_a_notario(
             if valor is not None:
                 valor = valor.strip() or None
             setattr(expediente, campo, valor)
-        if datos.capital is not None:
-            expediente.capital = datos.capital
+        if datos.capital_documento_notarial is not None:
+            expediente.capital_documento_notarial = datos.capital_documento_notarial
         if datos.importe is not None:
             expediente.importe = datos.importe
 

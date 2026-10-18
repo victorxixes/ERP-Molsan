@@ -84,7 +84,11 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
         "fecha_alta": _fecha_texto(getattr(expediente, "fecha_alta", None)),
         "fecha_inscripcion": _fecha_texto(getattr(expediente, "fecha_inscripcion", None)),
         "oficina": _texto(getattr(expediente, "oficina", None)),
-        "capital": getattr(expediente, "capital", None),
+        "capital": (
+            getattr(expediente, "capital_documento_notarial", None)
+            if getattr(expediente, "capital_documento_notarial", None) is not None
+            else getattr(expediente, "capital", None)
+        ),
         "importe": getattr(expediente, "importe", None),
         "saldo_real": getattr(expediente, "saldo_real", None),
         "saldo_disponible": getattr(expediente, "saldo_disponible", None),

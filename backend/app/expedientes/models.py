@@ -131,6 +131,7 @@ class Expediente(Base):
     oficina_alta = Column(String(200), nullable=True)
 
     capital = Column(Float, nullable=True)
+    capital_documento_notarial = Column(Float, nullable=True)
     importe = Column(Float, nullable=True)
     saldo_real = Column(Float, nullable=True)
     saldo_disponible = Column(Float, nullable=True)

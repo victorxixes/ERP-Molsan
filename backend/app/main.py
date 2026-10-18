@@ -532,6 +532,7 @@ def migrar_esquema_expedientes_inicio():
         ("cliente_id", "INTEGER"),
         ("notario_id", "INTEGER"),
         ("apoderado_empleado_id", "INTEGER"),
+        ("capital_documento_notarial", "DOUBLE PRECISION"),
         ("fecha_envio_notario", "DATE"),
         ("fecha_solicitud_pnc", "DATE"),
         ("numero_solicitud_pnc", "VARCHAR(200)"),
