@@ -20,6 +20,7 @@ export default function PortalLogin({
   onSubmit,
   loading,
   error,
+  submitLabel = "Iniciar sesión",
 }) {
   const esEncarga = variant === "encargagest";
   const acento = esEncarga
@@ -125,7 +126,7 @@ export default function PortalLogin({
               disabled={loading}
               className={"mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r px-4 py-3.5 text-sm font-extrabold text-white shadow-[0_12px_24px_rgba(15,23,42,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(15,23,42,0.17)] disabled:translate-y-0 disabled:cursor-wait disabled:opacity-60 " + acento.boton}
             >
-              {loading ? "Validando acceso…" : "Entrar"}
+              {loading ? "Validando acceso…" : submitLabel}
               {!loading ? <span aria-hidden="true">→</span> : null}
             </button>
           </form>
