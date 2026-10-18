@@ -455,3 +455,38 @@
   .eg-modal-footer > div > button { padding: 0 10px; }
   .eg-modal-error { margin: 0 12px 10px; }
 }
+
+
+/* Visor integrado del modal: visor a la izquierda y categorías a la derecha */
+.eg-modal-carpeta-layout { display:grid; grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr); gap:12px; align-items:stretch; }
+.eg-modal-visor { display:flex; flex-direction:column; min-width:0; min-height:470px; overflow:hidden; background:#f8faff; border:1px solid #dfe6f0; border-radius:13px; }
+.eg-modal-visor-heading { display:flex; flex-direction:column; gap:6px; padding:12px; background:#fff; border-bottom:1px solid #e5ebf4; }
+.eg-modal-visor-heading>span { color:#8090a8; font-size:8px; font-weight:900; letter-spacing:1.25px; }
+.eg-modal-visor-heading>strong { display:block; overflow:hidden; color:#2c3d58; font-size:10px; line-height:1.5; overflow-wrap:anywhere; }
+.eg-modal-visor-heading>button { align-self:flex-start; padding:5px 8px; color:#63738d; background:#f6f8fc; border:1px solid #e0e7f1; border-radius:7px; cursor:pointer; font-size:9px; font-weight:800; }
+.eg-modal-visor-contenido { position:relative; display:flex; flex:1; min-height:0; align-items:stretch; justify-content:stretch; background:#f0f4fb; }
+.eg-modal-pdf-frame { width:100%; min-height:420px; flex:1; border:0; background:#fff; }
+.eg-modal-image-frame { display:block; width:100%; min-height:260px; max-height:580px; padding:10px; object-fit:contain; background:#fff; }
+.eg-modal-visor-placeholder { display:flex; flex:1; min-height:320px; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:22px 14px; text-align:center; background:rgba(255,255,255,.72); }
+.eg-modal-visor-placeholder>span { display:grid; width:43px; height:48px; place-items:center; color:#bb4a55; background:#fff0f1; border:1px solid #f7dfe2; border-radius:11px; font-size:10px; font-weight:900; }
+.eg-modal-visor-placeholder>strong { color:#52627c; font-size:10px; line-height:1.5; }
+.eg-modal-visor-placeholder>p { max-width:220px; margin:0; color:#94a0b2; font-size:9px; line-height:1.65; }
+.eg-modal-visor-footer { display:flex; align-items:center; justify-content:space-between; gap:7px; padding:9px 11px; background:#fff; border-top:1px solid #e5ebf4; color:#8995a8; font-size:8px; }
+.eg-modal-visor-footer span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.eg-modal-visor-footer strong { flex:0 0 auto; color:#63738d; font-size:8px; }
+.eg-modal-carpeta-layout .eg-categorias-documentales { min-width:0; }
+.eg-modal-carpeta-layout .eg-document-category { padding:10px; }
+.eg-modal-carpeta-layout .eg-document-category-heading { align-items:flex-start; gap:7px; }
+.eg-modal-carpeta-layout .eg-document-icono { flex-basis:28px; width:28px; height:30px; }
+.eg-modal-carpeta-layout .eg-document-category-heading strong { font-size:10px; }
+.eg-modal-carpeta-layout .eg-document-category-heading small { font-size:8px; }
+.eg-modal-carpeta-layout .eg-selected-files { gap:4px; }
+.eg-file-preview-link { display:flex; width:100%; min-width:0; align-items:center; gap:7px; padding:0; text-align:left; color:#596981; background:transparent; border:0; cursor:pointer; font:inherit; }
+.eg-file-preview-link>span:first-child { display:grid; flex:0 0 25px; width:25px; height:24px; place-items:center; color:#b5414d; background:#fff0f1; border-radius:5px; font-size:7px; font-weight:900; }
+.eg-file-preview-link>span:last-child { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.eg-file-preview-link:hover>span:last-child { color:#3155c5; text-decoration:underline; }
+.eg-file-preview-link.is-active>span:last-child { color:#3155c5; font-weight:850; }
+.eg-file-preview-link.is-active>span:first-child { color:#fff; background:#4268df; }
+@media (max-width:1250px) { .eg-modal-carpeta-layout { grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); } .eg-modal-visor { min-height:390px; } .eg-modal-pdf-frame { min-height:350px; } }
+@media (max-width:1100px) { .eg-modal-carpeta-layout { grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); } }
+@media (max-width:650px) { .eg-modal-carpeta-layout { grid-template-columns:minmax(0,1fr); } .eg-modal-visor { min-height:340px; } .eg-modal-pdf-frame { min-height:320px; } .eg-modal-visor-placeholder { min-height:270px; } }
