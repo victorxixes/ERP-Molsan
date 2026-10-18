@@ -269,11 +269,9 @@ export default function EnviarANotarioModal({
     crearFormularioDesdeExpediente({
       ...expediente,
       capital:
-        expediente?.capital !== null &&
-        expediente?.capital !== undefined &&
-        expediente?.capital !== ""
-          ? expediente.capital
-          : cuantiaFincas,
+        cuantiaFincas !== null && cuantiaFincas !== undefined && cuantiaFincas !== ""
+          ? cuantiaFincas
+          : expediente?.capital,
     })
   );
 
