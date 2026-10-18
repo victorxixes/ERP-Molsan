@@ -678,7 +678,6 @@ def crear_tabla_historial_accesos_portales():
         # Añadir columnas reversibles sin sobrescribir hashes existentes.
         columnas = {
             "ctn_notarios": {"notargest_password_enc": "TEXT"},
-            "encargagest_usuarios": {"password_enc": "TEXT"},
         }
         for tabla, pendientes in columnas.items():
             existen = {fila[0] for fila in conexion.execute(text(
