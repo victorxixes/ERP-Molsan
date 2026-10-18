@@ -4,6 +4,8 @@
 // ============================================================
 
 import { useDashboard } from "../../hooks/useDashboard";
+import { useNavigate } from "react-router-dom";
+import "../../css/Cancelagest.css";
 
 // ============================================================
 // ACTIVIDADES
@@ -193,6 +195,14 @@ function FirmaCard({ icono, titulo, total, porcentajeValor }) {
 // ============================================================
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const fechaActual = new Intl.DateTimeFormat("es-ES", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
+
   const {
     totalExpedientes,
     expedientesPorActividad,
@@ -263,7 +273,49 @@ export default function Dashboard() {
 
   return (
     <div className="erp-page w-full">
-      {/* CABECERA */}
+      {/* CABECERA DEL MÓDULO CANCELAGEST */}
+      <header
+        className="cg-hero"
+        style={{
+          padding: "18px 22px",
+          marginBottom: "24px",
+          background: "rgba(255,255,255,.96)",
+          border: "1px solid #dce5f1",
+          borderRadius: "18px",
+          boxShadow: "0 7px 20px rgba(31,48,79,.06)",
+        }}
+      >
+        <div className="cg-hero-identidad">
+          <div className="cg-logo">
+            <img src="/img/logo.jpg" alt="MOLSAN" />
+          </div>
+          <div>
+            <div className="cg-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+            <h1>CancelaGest</h1>
+            <p>Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p>
+          </div>
+        </div>
+        <div className="cg-hero-acciones">
+          <div className="cg-fecha">{fechaActual}</div>
+          <button
+            type="button"
+            className="cg-button-secondary"
+            onClick={() => navigate("/modulos")}
+          >
+            ▦ Ir a módulos
+          </button>
+          <button
+            type="button"
+            className="cg-button-primary"
+            onClick={cargarDashboard}
+            disabled={loading}
+          >
+            {loading ? "Actualizando…" : "↻ Actualizar datos"}
+          </button>
+        </div>
+      </header>
+
+      {/* CABECERA DEL DASHBOARD */}
       <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
           <div className="text-2xl font-bold tracking-tight" style={{ color: "var(--erp-text)" }}>
