@@ -256,7 +256,8 @@ def crear_admin_por_defecto(
         "realtime",
         "notarios",
         "documentos",
-        "expedientes"
+        "expedientes",
+        "encargagest"
     ]
 
     # =====================================================
