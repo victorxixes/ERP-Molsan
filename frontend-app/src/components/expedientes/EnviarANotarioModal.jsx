@@ -21,8 +21,8 @@ const FORM_INICIAL = {
   protocolo: "",
 
   fecha_prevista_firma: "",
-  hora_prevista_firma: "09:00",
-  hora_fin_prevista_firma: "10:00",
+  hora_prevista_firma: "",
+  hora_fin_prevista_firma: "",
   firma_urgente: false,
 
   notario: null,
@@ -825,9 +825,7 @@ export default function EnviarANotarioModal({
                 </div>
 
                 <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-3 py-3 text-xs leading-relaxed text-blue-800">
-                  <strong>Agenda:</strong> la cita tendrá una
-                  duración inicial de una hora. Se comprobará si
-                  ya existe una cita para este expediente y fecha.
+                  <strong>Agenda compartida:</strong> este modal no crea ni modifica la cita. El apoderado guarda la planificación desde ApoderaGest y esa operación sincroniza la cita del ERP.
                 </div>
               </section>
 
