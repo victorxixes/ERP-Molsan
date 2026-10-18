@@ -134,6 +134,12 @@ PLANTILLA_PERMISOS = {
         "editar",
         "eliminar",
     ],
+    "encargagest": [
+        "ver",
+        "crear",
+        "editar",
+        "eliminar",
+    ],
 }
 
 
