@@ -44,6 +44,7 @@ MODULOS_BASE = [
     "panel-tecnico",
     "expedientes",
     "notificaciones",
+    "encargagest",
 ]
 
 
@@ -108,48 +109,42 @@ def obtener_permisos(
     )
 
     # --------------------------------------------------------
-    # Si existen permisos en BD
-    # --------------------------------------------------------
-
-    if permisos:
-
-        return [
-            {
-                "id": permiso.id,
-                "modulo": permiso.modulo,
-                "permiso": permiso.permiso,
-            }
-            for permiso in permisos
-            if (
-                permiso
-                and isinstance(
-                    permiso.modulo,
-                    str
-                )
-                and isinstance(
-                    permiso.permiso,
-                    str
-                )
-            )
-        ]
-
-    # --------------------------------------------------------
-    # Si todavía no existen permisos
-    # --------------------------------------------------------
-    #
-    # Devolvemos el catálogo base.
-    #
-    # id = None porque todavía no existe registro físico.
-    # --------------------------------------------------------
-
-    return [
+    # Combina los permisos almacenados con el catálogo base. Así los nuevos
+    # módulos aparecen en Seguridad aunque todavía no se hayan sembrado sus
+    # filas en la tabla permisos. Los elementos no persistidos llevan id=None;
+    # la asignación al empleado guarda claves módulo/acción, no este id.
+    resultado = [
         {
-            "id": None,
-            "modulo": item["modulo"],
-            "permiso": item["permiso"],
+            "id": permiso.id,
+            "modulo": permiso.modulo,
+            "permiso": permiso.permiso,
         }
-        for item in _catalogo_base()
+        for permiso in permisos
+        if (
+            permiso
+            and isinstance(permiso.modulo, str)
+            and isinstance(permiso.permiso, str)
+            and permiso.modulo.strip()
+            and permiso.permiso.strip()
+        )
     ]
+
+    existentes = {
+        (item["modulo"].strip(), item["permiso"].strip())
+        for item in resultado
+    }
+    for item in _catalogo_base():
+        clave = (item["modulo"], item["permiso"])
+        if clave not in existentes:
+            resultado.append({
+                "id": None,
+                "modulo": item["modulo"],
+                "permiso": item["permiso"],
+            })
+            existentes.add(clave)
+
+    resultado.sort(key=lambda item: (item["modulo"], item["permiso"]))
+    return resultado
 
 
 # ============================================================
