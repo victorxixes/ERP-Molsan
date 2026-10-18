@@ -214,9 +214,12 @@ def listar_encargos(db, usuario, solo_pendientes=False):
         alfabeto_normal,
     )
     if usuario_id is not None and campo_apoderado_id is not None:
+        # El ID puede haber quedado asociado al apoderado por defecto del notario,
+        # aunque el nombre guardado en el envío identifique al apoderado elegido.
+        # Admitimos ambos criterios y validamos de nuevo en Python.
         filtro_asignacion = or_(
             campo_apoderado_id == int(usuario_id),
-            and_(campo_apoderado_id.is_(None), filtro_nombre),
+            filtro_nombre,
         )
     else:
         filtro_asignacion = filtro_nombre
@@ -236,14 +239,20 @@ def listar_encargos(db, usuario, solo_pendientes=False):
     nombre_normalizado = _normalizar(nombre)
     for expediente in candidatos:
         apoderado_id_asignado = getattr(expediente, "apoderado_empleado_id", None)
-        if apoderado_id_asignado is not None:
-            if usuario_id is None or int(apoderado_id_asignado) != int(usuario_id):
-                continue
-        else:
-            apoderado = _texto(getattr(expediente, "apoderado", None))
-            # Compatibilidad temporal solo con expedientes históricos sin ID.
-            if not nombre or _normalizar(apoderado) != nombre_normalizado:
-                continue
+        apoderado = _texto(getattr(expediente, "apoderado", None))
+        coincide_por_nombre = bool(
+            nombre and _normalizar(apoderado) == nombre_normalizado
+        )
+        coincide_por_id = bool(
+            usuario_id is not None
+            and apoderado_id_asignado is not None
+            and int(apoderado_id_asignado) == int(usuario_id)
+        )
+        # El ID tiene prioridad, pero el nombre explícito del envío permite
+        # recuperar expedientes cuyo ID quedó obsoleto o apuntaba al apoderado
+        # predeterminado de la notaría.
+        if not (coincide_por_id or coincide_por_nombre):
+            continue
 
         fecha_envio = getattr(expediente, "fecha_envio_notario", None) or getattr(expediente, "fecha_envio", None)
         if solo_pendientes:
