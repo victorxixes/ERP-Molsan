@@ -316,7 +316,7 @@ function TablaEncargos({ encargos, onFirmado }) {
   async function firmar(encargo) {
     const id = String(encargo.id_expediente || encargo.id);
     const valores = firmas[id] || {};
-    const fechaFirma = valores.fecha_firma || encargo.fecha_firma || encargo.fecha_prevista_firma || fechaHoyLocal();
+    const fechaFirma = valores.fecha_firma || encargo.fecha_prevista_firma || encargo.fecha_firma || fechaHoyLocal();
     const tipoFirma = valores.tipo_firma || encargo.tipo_firma || "Presencial";
     if (!fechaFirma || !String(valores.protocolo || encargo.protocolo || "").trim() || !String(valores.notario_otorgante || encargo.notario_otorgante || encargo.nombre_notario || encargo.notario || "").trim() || !["Videoconferencia", "Presencial"].includes(tipoFirma)) {
       setErroresFirma((actual) => ({ ...actual, [id]: "Indica la fecha, el número de protocolo, el notario otorgante y el tipo de firma." }));
@@ -603,7 +603,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                             <summary className="ag-ficha-bloque-heading"><span>05 · CIERRE DE FIRMA</span><h4>Confirmar firma</h4></summary>
                             <p>Al pulsar «Firmar», la fecha y el protocolo se guardan en los campos oficiales de FichaExpediente.</p>
                             <div className="ag-firmar-controles">
-                              <label className="ag-firma-fecha">Fecha de firma<input type="date" value={firma.fecha_firma || encargo.fecha_firma || encargo.fecha_prevista_firma || fechaHoyLocal()} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
+                              <label className="ag-firma-fecha">Fecha de firma<input type="date" value={firma.fecha_firma || encargo.fecha_prevista_firma || encargo.fecha_firma || fechaHoyLocal()} onChange={(e) => cambiarFirma(id, "fecha_firma", e.target.value)} /></label>
                               <label className="ag-firma-protocolo">Número de protocolo<input type="text" maxLength={200} value={firma.protocolo || encargo.protocolo || ""} onChange={(e) => cambiarFirma(id, "protocolo", e.target.value)} placeholder="N.º protocolo" /></label>
                               <label className="ag-firma-tipo">Tipo de firma<select value={firma.tipo_firma || encargo.tipo_firma || "Presencial"} onChange={(e) => cambiarFirma(id, "tipo_firma", e.target.value)}><option value="Videoconferencia">Videoconferencia</option><option value="Presencial">Presencial</option></select></label>
                               <label className="ag-firma-notario">Notario otorgante<select value={firma.notario_otorgante || encargo.notario_otorgante || encargo.nombre_notario || encargo.notario || ""} onChange={(e) => cambiarFirma(id, "notario_otorgante", e.target.value)}>
