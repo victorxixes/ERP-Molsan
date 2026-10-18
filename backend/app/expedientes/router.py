@@ -1477,7 +1477,7 @@ def enviar_a_notario(
         expediente.numero_solicitud_pnc = (
             datos.numero_solicitud_pnc.strip()
         )
-        expediente.escritura_firmada = datos.escritura_firmada
+        expediente.escritura_firmada = bool(firma_preexistente or datos.escritura_firmada)
         expediente.hora_prevista_firma = (
             datos.hora_prevista_firma or time(9, 0)
         )
