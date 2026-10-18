@@ -297,6 +297,26 @@ export const useAuthStore = create(
     },
 
 
+    // Sincroniza los cambios del empleado conectado con Zustand y localStorage.
+    // Se utiliza, entre otros casos, cuando un administrador cambia su propio rol.
+    actualizarEmpleadoSesion: (cambios) => {
+      set((state) => {
+        const empleado = {
+          ...(state.empleado || {}),
+          ...(cambios || {}),
+        };
+
+        try {
+          localStorage.setItem("empleado", JSON.stringify(empleado));
+        } catch (error) {
+          console.warn("No se pudo sincronizar el empleado de la sesión.", error);
+        }
+
+        return { empleado };
+      });
+    },
+
+
     /*
      * =====================================================
      * HIDRATACIÓN INICIAL
