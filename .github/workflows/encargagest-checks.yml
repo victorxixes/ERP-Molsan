@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main, feature/encargagest-mvp]
+    branches: [main, feature/encargagest-mvp, feature/encargagest-safe-workspace]
 
 permissions:
   contents: read
@@ -40,3 +40,12 @@ jobs:
           python-version: "3.11"
       - name: Compile backend modules
         run: python -m compileall -q backend
+
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
+      - name: Import full FastAPI application
+        env:
+          DATABASE_URL: sqlite:////tmp/molsan-encargagest-ci.db
+          JWT_SECRET: ci-smoke-test-secret-key-0123456789abcdef
+          MOLSAN_STORAGE_ROOT: /tmp/molsan-encargagest-ci-storage
+        run: python -c "import backend.app.main; from backend.app.encargagest.router import crear_tablas_encargagest; crear_tablas_encargagest(); print('FastAPI import and EncargaGest table creation OK')"
