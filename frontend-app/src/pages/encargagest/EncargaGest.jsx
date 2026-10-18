@@ -143,6 +143,8 @@ export default function EncargaGest() {
   const [form, setForm] = useState({ ...NUEVO_ENCARGO });
   const [archivosSolicitud, setArchivosSolicitud] = useState({});
   const [categoriaDocumento, setCategoriaDocumento] = useState("Otros");
+  const [archivoPrevisualizado, setArchivoPrevisualizado] = useState(null);
+  const [urlPrevisualizacion, setUrlPrevisualizacion] = useState("");
   const [actividad, setActividad] = useState("");
   const [visibleNotaria, setVisibleNotaria] = useState(true);
   const [guardandoActividad, setGuardandoActividad] = useState(false);
@@ -150,6 +152,16 @@ export default function EncargaGest() {
   const [archivo, setArchivo] = useState(null);
   const [mensaje, setMensaje] = useState("");
   const [errorAccion, setErrorAccion] = useState("");
+
+  useEffect(() => {
+    if (!archivoPrevisualizado) {
+      setUrlPrevisualizacion("");
+      return undefined;
+    }
+    const url = URL.createObjectURL(archivoPrevisualizado);
+    setUrlPrevisualizacion(url);
+    return () => URL.revokeObjectURL(url);
+  }, [archivoPrevisualizado]);
 
   const cargarListado = useCallback(async (paginaSolicitada = pagina, q = busqueda, estado = filtroEstado) => {
     const respuesta = await axios.get("/encargagest/encargos", {
@@ -281,6 +293,7 @@ export default function EncargaGest() {
       setModalNuevo(false);
       setForm({ ...NUEVO_ENCARGO });
       setArchivosSolicitud({});
+      setArchivoPrevisualizado(null);
       setPagina(1);
       setMensaje(
         fallosDocumento.length
@@ -750,7 +763,40 @@ export default function EncargaGest() {
                 </div>
                 <p className="eg-modal-ayuda">Adjunta los archivos directamente al encargo. Puedes seleccionar varios ficheros por categoría.</p>
 
-                <div className="eg-categorias-documentales">
+                <div className="eg-modal-carpeta-layout">
+                  <section className="eg-modal-visor" aria-label="Visor de documentos seleccionados">
+                    <div className="eg-modal-visor-heading">
+                      <span>VISOR INTEGRADO</span>
+                      <strong>{archivoPrevisualizado ? archivoPrevisualizado.name : "Vista previa del documento"}</strong>
+                      {archivoPrevisualizado && <button type="button" onClick={() => setArchivoPrevisualizado(null)} aria-label="Cerrar vista previa">Cerrar ×</button>}
+                    </div>
+                    <div className="eg-modal-visor-contenido">
+                      {archivoPrevisualizado && urlPrevisualizacion && (
+                        archivoPrevisualizado.type === "application/pdf" || /\.pdf$/i.test(archivoPrevisualizado.name) ? (
+                          <iframe className="eg-modal-pdf-frame" title={"Vista previa de " + archivoPrevisualizado.name} src={urlPrevisualizacion} />
+                        ) : (
+                          archivoPrevisualizado.type.startsWith("image/") || /\.(png|jpe?g|webp|gif)$/i.test(archivoPrevisualizado.name) ? (
+                            <img className="eg-modal-image-frame" src={urlPrevisualizacion} alt={"Vista previa de " + archivoPrevisualizado.name} />
+                          ) : (
+                            <div className="eg-modal-visor-placeholder">
+                              <span>DOC</span>
+                              <strong>Vista previa no disponible</strong>
+                              <p>El formato seleccionado no se puede mostrar aquí. Se adjuntará al guardar el encargo.</p>
+                            </div>
+                          )
+                        )
+                      )}
+                      {(!archivoPrevisualizado || !urlPrevisualizacion) && (
+                        <div className="eg-modal-visor-placeholder">
+                          <span>PDF</span>
+                          <strong>Tu documentación aparecerá aquí</strong>
+                          <p>Selecciona un archivo en una categoría. Los PDF y las imágenes se mostrarán en este visor.</p>
+                        </div>
+                      )}
+                    </div>
+                    {archivoPrevisualizado && <div className="eg-modal-visor-footer"><span>{archivoPrevisualizado.type || "Archivo adjunto"}</span><strong>{nombreArchivoTamano(archivoPrevisualizado.size)}</strong></div>}
+                  </section>
+                  <div className="eg-categorias-documentales">
                   {CATEGORIAS_DOCUMENTO.map((categoria) => {
                     const seleccionados = archivosSolicitud[categoria.nombre] || [];
                     return (
@@ -767,14 +813,16 @@ export default function EncargaGest() {
                             multiple
                             accept={EXTENSIONES_DOCUMENTO}
                             disabled={guardando}
-                            onChange={(e) => { const nuevos = Array.from(e.target.files || []); setArchivosSolicitud((actual) => { const existentes = actual[categoria.nombre] || []; const claves = new Set(existentes.map((archivo) => archivo.name + "|" + archivo.lastModified)); return { ...actual, [categoria.nombre]: [...existentes, ...nuevos.filter((archivo) => !claves.has(archivo.name + "|" + archivo.lastModified))] }; }); e.target.value = ""; }}
+                            onChange={(e) => { const nuevos = Array.from(e.target.files || []); if (nuevos[0]) setArchivoPrevisualizado(nuevos[0]); setArchivosSolicitud((actual) => { const existentes = actual[categoria.nombre] || []; const claves = new Set(existentes.map((archivo) => archivo.name + "|" + archivo.lastModified)); return { ...actual, [categoria.nombre]: [...existentes, ...nuevos.filter((archivo) => !claves.has(archivo.name + "|" + archivo.lastModified))] }; }); e.target.value = ""; }}
                           />
                         </label>
                         {seleccionados.length > 0 ? (
                           <ul className="eg-selected-files">
                             {seleccionados.map((item, index) => (
                               <li key={item.name + "-" + item.lastModified + "-" + index}>
-                                <span aria-hidden="true">PDF</span><span title={item.name}>{item.name}</span>
+                                <button type="button" className={"eg-file-preview-link" + (archivoPrevisualizado === item ? " is-active" : "")} onClick={() => setArchivoPrevisualizado(item)} title={"Ver " + item.name}>
+                                  <span aria-hidden="true">{/\.pdf$/i.test(item.name) ? "PDF" : /\.(png|jpe?g|webp|gif)$/i.test(item.name) ? "IMG" : "DOC"}</span><span>{item.name}</span>
+                                </button>
                               </li>
                             ))}
                           </ul>
@@ -782,6 +830,7 @@ export default function EncargaGest() {
                       </article>
                     );
                   })}
+                  </div>
                 </div>
                 <p className="eg-modal-ayuda eg-modal-ayuda-final">Formatos admitidos: PDF, Office, imagen o correo. Tamaño máximo por archivo: 25 MB.</p>
               </section>
