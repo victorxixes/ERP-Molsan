@@ -590,9 +590,9 @@ export default function EncargaGest() {
                   </div>
                   <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
                     <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Tipo de encargo</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.tipo_encargo}</p></div>
-                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Importe</span><p className="mt-1 text-xs font-bold text-slate-800">{euros(detalle.importe)}</p></div>
+                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Capital inscrito</span><p className="mt-1 text-xs font-bold text-slate-800">{euros(detalle.capital_inscrito)}</p></div>
                     <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Prioridad</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.prioridad}</p></div>
-                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Fecha objetivo</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.fecha_objetivo || "Sin fecha"}</p></div>
+                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Fecha de constitución</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.fecha_constitucion ? new Date(detalle.fecha_constitucion + "T00:00:00").toLocaleDateString("es-ES") : "—"}</p></div>
                   </div>
                 </div>
 
@@ -600,12 +600,13 @@ export default function EncargaGest() {
                   <section>
                     <div className="flex items-center justify-between"><h3 className="text-sm font-extrabold text-slate-900">Datos de la solicitud</h3><span className="text-[10px] text-slate-400">CTN · ID {detalle.notaria_id}</span></div>
                     <dl className="mt-3 space-y-3 text-xs">
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">NIF titular</dt><dd className="text-right font-semibold text-slate-800">{detalle.nif_titular || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">NIF / CIF del solicitante</dt><dd className="text-right font-semibold text-slate-800">{detalle.nif_titular || "—"}</dd></div>
                       <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Entidad bancaria</dt><dd className="text-right font-semibold text-slate-800">{detalle.entidad_bancaria || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">N.º préstamo</dt><dd className="text-right font-semibold text-slate-800">{detalle.numero_prestamo || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Persona de contacto</dt><dd className="text-right font-semibold text-slate-800">{detalle.contacto_nombre || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Email / teléfono</dt><dd className="break-all text-right font-semibold text-slate-800">{[detalle.contacto_email, detalle.contacto_telefono].filter(Boolean).join(" · ") || "—"}</dd></div>
-                      <div className="border-b border-slate-100 pb-3"><dt className="mb-1 text-slate-500">Observaciones de la notaría</dt><dd className="whitespace-pre-wrap leading-5 text-slate-700">{detalle.observaciones || "Sin observaciones."}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Número de préstamo</dt><dd className="text-right font-semibold text-slate-800">{detalle.numero_prestamo || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Número de finca</dt><dd className="text-right font-semibold text-slate-800">{detalle.numero_finca || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Municipio del registro</dt><dd className="text-right font-semibold text-slate-800">{detalle.municipio_registro || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Registro de la propiedad</dt><dd className="text-right font-semibold text-slate-800">{detalle.registro_propiedad || "—"}</dd></div>
+                      <div className="border-b border-slate-100 pb-3"><dt className="mb-1 text-slate-500">Observaciones de la solicitud</dt><dd className="whitespace-pre-wrap leading-5 text-slate-700">{detalle.observaciones || "Sin observaciones."}</dd></div>
                       {modo === "interno" && detalle.observaciones_internas ? <div className="rounded-xl border border-amber-100 bg-amber-50/60 p-3"><dt className="mb-1 font-bold text-amber-900">Nota interna MOLSAN</dt><dd className="whitespace-pre-wrap leading-5 text-amber-900">{detalle.observaciones_internas}</dd></div> : null}
                     </dl>
                   </section>
@@ -766,7 +767,7 @@ export default function EncargaGest() {
                             multiple
                             accept={EXTENSIONES_DOCUMENTO}
                             disabled={guardando}
-                            onChange={(e) => setArchivosSolicitud((actual) => ({ ...actual, [categoria.nombre]: Array.from(e.target.files || []) }))}
+                            onChange={(e) => { const nuevos = Array.from(e.target.files || []); setArchivosSolicitud((actual) => { const existentes = actual[categoria.nombre] || []; const claves = new Set(existentes.map((archivo) => archivo.name + "|" + archivo.lastModified)); return { ...actual, [categoria.nombre]: [...existentes, ...nuevos.filter((archivo) => !claves.has(archivo.name + "|" + archivo.lastModified))] }; }); e.target.value = ""; }}
                           />
                         </label>
                         {seleccionados.length > 0 ? (
