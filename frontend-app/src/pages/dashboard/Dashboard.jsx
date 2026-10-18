@@ -6,6 +6,7 @@
 import { useDashboard } from "../../hooks/useDashboard";
 import { useNavigate } from "react-router-dom";
 import "../../css/Cancelagest.css";
+import "../../css/ApoderaGest.css";
 
 // ============================================================
 // ACTIVIDADES
@@ -89,23 +90,6 @@ function porcentaje(valor) {
 // ============================================================
 // COMPONENTES VISUALES
 // ============================================================
-
-function IconoRefresh({ spinning = false }) {
-  return (
-    <svg
-      className={`w-4 h-4 ${spinning ? "animate-spin" : ""}`}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h5" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M20 20v-5h-5" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5.5 15a7 7 0 0011.9 1.9L20 14" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M18.5 9a7 7 0 00-11.9-1.9L4 10" />
-    </svg>
-  );
-}
 
 function KpiCard({ icono, titulo, valor, descripcion }) {
   return (
@@ -271,69 +255,39 @@ export default function Dashboard() {
 
   return (
     <div className="erp-page w-full">
-      {/* CABECERA DEL MÓDULO CANCELAGEST */}
-      <header
-        className="cg-hero"
-        style={{
-          padding: "18px 22px",
-          marginBottom: "24px",
-          background: "rgba(255,255,255,.96)",
-          border: "1px solid #dce5f1",
-          borderRadius: "18px",
-          boxShadow: "0 7px 20px rgba(31,48,79,.06)",
-        }}
-      >
-        <div className="cg-hero-identidad">
-          <div className="cg-logo">
-            <img src="/img/logo.jpg" alt="MOLSAN" />
-          </div>
+      {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
+      <header className="ag-hero">
+        <div className="ag-hero-identidad">
+          <div className="ag-marca cg-marca-cancelagest" aria-label="CancelaGest">CG</div>
           <div>
-            <div className="cg-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
+            <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
             <h1>CancelaGest</h1>
             <p>Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p>
           </div>
         </div>
-        <div className="cg-hero-acciones">
-          <div className="cg-fecha">{fechaActual}</div>
+        <div className="ag-hero-acciones">
+          <div className="ag-fecha-actual">
+            <span className="ag-punto-vivo" aria-hidden="true" />
+            <span>{fechaActual}</span>
+          </div>
           <button
             type="button"
-            className="cg-button-secondary"
             onClick={() => navigate("/modulos")}
+            className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"
           >
-            ▦ Ir a módulos
+            <span aria-hidden="true">▦</span> Ir a módulos
           </button>
           <button
             type="button"
-            className="cg-button-primary"
+            className="ag-boton-actualizar"
             onClick={cargarDashboard}
             disabled={loading}
           >
-            {loading ? "Actualizando…" : "↻ Actualizar datos"}
+            <span aria-hidden="true" className={loading ? "ag-icono-girando" : ""}>↻</span>
+            {loading ? "Actualizando…" : "Actualizar datos"}
           </button>
         </div>
       </header>
-
-      {/* CABECERA DEL DASHBOARD */}
-      <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-        <div>
-          <div className="text-2xl font-bold tracking-tight" style={{ color: "var(--erp-text)" }}>
-            Dashboard de Expedientes
-          </div>
-          <div className="mt-1 text-sm" style={{ color: "var(--erp-text-soft)" }}>
-            Visión general del circuito de expedientes
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={cargarDashboard}
-          disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
-          style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-text)" }}
-        >
-          <IconoRefresh spinning={loading} />
-          {loading ? "Actualizando..." : "Actualizar"}
-        </button>
-      </div>
 
       {/* ERROR */}
       {error && (
