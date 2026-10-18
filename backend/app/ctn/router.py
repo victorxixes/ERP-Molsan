@@ -617,6 +617,8 @@ def cambiar_acceso_notargest(
     if not notaria:
         raise HTTPException(status_code=404, detail="Notaría no encontrada")
     notaria.notargest_habilitado = bool(habilitado)
+    _registrar_evento_portal(db, notaria_id, "notargest", "CAMBIO_ACCESO",
+        detalle="Acceso habilitado" if habilitado else "Acceso deshabilitado")
     db.commit()
     db.refresh(notaria)
     return {
