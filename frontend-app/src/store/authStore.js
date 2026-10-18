@@ -304,6 +304,7 @@ export const useAuthStore = create(
      */
 
     init: async () => {
+      try {
 
       const token =
         localStorage.getItem(
@@ -458,6 +459,18 @@ export const useAuthStore = create(
 
       }
 
+      } catch (error) {
+        console.error("No se pudo inicializar la sesión del ERP.", error);
+        try {
+          limpiarSesionLocal();
+        } catch (storageError) {
+          console.warn("No se pudo limpiar el almacenamiento local.", storageError);
+        }
+        set({ token: null, empleado: null });
+      } finally {
+        // Ningún error de almacenamiento debe dejar bloqueada la pantalla de acceso.
+        set({ loading: false, authReady: true });
+      }
     },
 
 
