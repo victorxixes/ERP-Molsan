@@ -317,20 +317,36 @@ def _resumen(e, db):
 def login(data: LoginNotario, db: Session = Depends(get_db)):
     nif = normalizar_nif(data.usuario)
     n = db.query(Notaria).filter(text("upper(replace(replace(nif, ' ', ''), '-', '')) = :nif")).params(nif=nif).first()
-    if not n or not n.notargest_habilitado:
+    if not n:
+        raise HTTPException(status_code=401, detail="Acceso no habilitado. Contacta con Molsan.")
+    if not n.notargest_habilitado:
+        db.execute(text("""
+            INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
+            VALUES (:id, 'notargest', 'LOGIN', 'fallido', :usuario, 'Acceso deshabilitado')
+        """), {"id": n.id, "usuario": nif})
+        db.commit()
         raise HTTPException(status_code=401, detail="Acceso no habilitado. Contacta con Molsan.")
     password_nif = hmac.compare_digest(normalizar_nif(data.password), nif)
-    if password_nif:
+    if not n.notargest_password_hash and password_nif:
         n.notargest_password_hash = hash_password(nif)
         n.notargest_cambiar_password = False
-        db.commit()
         valido = True
     elif n.notargest_password_hash:
         valido = verificar_password(data.password, n.notargest_password_hash)
     else:
         valido = False
     if not valido:
+        db.execute(text("""
+            INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
+            VALUES (:id, 'notargest', 'LOGIN', 'fallido', :usuario, 'Credenciales incorrectas')
+        """), {"id": n.id, "usuario": nif})
+        db.commit()
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+    db.execute(text("""
+        INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
+        VALUES (:id, 'notargest', 'LOGIN', 'correcto', :usuario, 'Inicio de sesión correcto')
+    """), {"id": n.id, "usuario": nif})
+    db.commit()
     token = jwt.encode({"tipo": "notargest", "notaria_id": n.id, "exp": datetime.utcnow() + timedelta(hours=8)}, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
     return {"token": token, "requiere_cambio_password": False, "notario": {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.nif}}
 
