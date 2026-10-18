@@ -284,7 +284,11 @@ def _resumen(e, db):
         "formato_escritura": e.formato_escritura,
         "tipo_tramite": e.tipo_tramite,
         "tipo_firma": e.tipo_firma,
-        "capital": e.capital,
+        "capital": (
+            getattr(e, "capital_documento_notarial", None)
+            if getattr(e, "capital_documento_notarial", None) is not None
+            else e.capital
+        ),
         "importe": e.importe,
         "saldo_real": e.saldo_real,
         "saldo_disponible": e.saldo_disponible,
