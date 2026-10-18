@@ -30,6 +30,8 @@ export default function PortalAccessTabs({ notariaId }) {
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [passwordNueva, setPasswordNueva] = useState("");
+  const [passwordRevelada, setPasswordRevelada] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
 
   const cargar = useCallback(async () => {
     if (!notariaId || (!puedeVerNotarGest && !puedeVerEncargaGest)) return;
@@ -61,13 +63,31 @@ export default function PortalAccessTabs({ notariaId }) {
     setProcesando(true);
     setError("");
     setMensaje("");
-    setPasswordNueva("");
+    if (accion !== "revelar") {
+      setPasswordNueva("");
+      setPasswordRevelada("");
+      setMostrarPassword(false);
+    }
     try {
-      if (accion === "reset") {
+      if (accion === "revelar") {
+        if (mostrarPassword) {
+          setMostrarPassword(false);
+          return;
+        }
+        if (!passwordRevelada) {
+          const respuesta = await axios.get(`/ctn/notarias/${notariaId}/accesos-portales/${portal}/password`);
+          const resultado = respuesta?.data ?? respuesta;
+          setPasswordRevelada(resultado.password || "");
+        }
+        setMostrarPassword(true);
+        setMensaje("");
+      } else if (accion === "reset") {
         const respuesta = await axios.post(`/ctn/notarias/${notariaId}/accesos-portales/${portal}/reset-password`);
         const resultado = respuesta?.data ?? respuesta;
         setPasswordNueva(resultado.password_nueva || "");
-        setMensaje("Contraseña restablecida. Cópiala ahora: no volverá a mostrarse.");
+        setPasswordRevelada(resultado.password_nueva || "");
+        setMostrarPassword(true);
+        setMensaje("Contraseña restablecida. También puedes ocultarla con el ojo.");
       } else {
         await axios.post(`/ctn/notarias/${notariaId}/accesos-portales/${portal}/habilitado`, {
           habilitado: !acceso.habilitado,
@@ -107,7 +127,7 @@ export default function PortalAccessTabs({ notariaId }) {
           ...(puedeVerEncargaGest ? [["encargagest", "Acceso a EncargaGest"]] : []),
         ].map(([key, titulo]) => (
           <button key={key} type="button" role="tab" aria-selected={portal === key}
-            onClick={() => { setPortal(key); setPasswordNueva(""); setMensaje(""); setError(""); }}
+            onClick={() => { setPortal(key); setPasswordNueva(""); setPasswordRevelada(""); setMostrarPassword(false); setMensaje(""); setError(""); }}
             style={{ ...button, background: portal === key ? "#172554" : "#fff", color: portal === key ? "#fff" : "#334155", borderColor: portal === key ? "#172554" : "#dbe3ee" }}>
             {titulo}
           </button>
@@ -136,8 +156,25 @@ export default function PortalAccessTabs({ notariaId }) {
             </div>
             <div style={{ border: "1px solid #e2e8f0", borderRadius: 10, padding: 12 }}>
               <div style={label}>Contraseña</div>
-              <strong>{passwordNueva || "No se muestra por seguridad"}</strong>
-              {passwordNueva && <button type="button" style={{ ...button, marginTop: 8 }} onClick={() => navigator.clipboard?.writeText(passwordNueva)}>Copiar contraseña</button>}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+                <input
+                  type={mostrarPassword ? "text" : "password"}
+                  value={mostrarPassword ? (passwordNueva || passwordRevelada) : "••••••••••••"}
+                  readOnly
+                  aria-label={mostrarPassword ? "Contraseña visible" : "Contraseña oculta"}
+                  style={{ minWidth: 0, flex: 1, border: "1px solid #cbd5e1", borderRadius: 8, padding: "9px 10px", background: "#f8fafc", color: "#0f172a" }}
+                />
+                {esAdministrador && acceso.configurado && <button
+                  type="button"
+                  style={{ ...button, minWidth: 44, padding: "8px 10px" }}
+                  disabled={procesando || cargando}
+                  title={mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  aria-label={mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  onClick={() => ejecutar("revelar")}
+                >{mostrarPassword ? "🙈" : "👁"}</button>}
+              </div>
+              {mostrarPassword && (passwordNueva || passwordRevelada) && <button type="button" style={{ ...button, marginTop: 8 }} onClick={() => navigator.clipboard?.writeText(passwordNueva || passwordRevelada)}>Copiar contraseña</button>}
+              {!esAdministrador && <div style={{ color: "#64748b", fontSize: 12, marginTop: 6 }}>Solo un administrador puede mostrar la contraseña.</div>}
             </div>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 14 }}>
