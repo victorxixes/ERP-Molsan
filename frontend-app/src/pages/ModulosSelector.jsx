@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 
 const MODULOS = {
@@ -70,6 +70,8 @@ function tienePermisoVer(permisos, clave) {
 export default function ModulosSelector() {
   const navigate = useNavigate();
   const empleado = useAuthStore((state) => state.empleado);
+  const authReady = useAuthStore((state) => state.authReady);
+  const loading = useAuthStore((state) => state.loading);
 
   const modulosDisponibles = useMemo(() => {
     if (!empleado) return [];
@@ -106,12 +108,16 @@ export default function ModulosSelector() {
       .map((clave) => ({ clave, ...MODULOS[clave] }));
   }, [empleado]);
 
-  if (!empleado) {
+  if (!authReady || loading) {
     return (
-      <div className="mx-auto max-w-6xl p-8 text-sm text-slate-500">
+      <div className="mx-auto max-w-6xl p-8 text-sm text-slate-500" role="status">
         Cargando sesión…
       </div>
     );
+  }
+
+  if (!empleado) {
+    return <Navigate to="/login" replace />;
   }
 
   return (

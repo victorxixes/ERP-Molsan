@@ -185,7 +185,11 @@ export default function App() {
 
                   <Route
             path="modulos"
-            element={<ModulosSelector />}
+            element={
+              <RequireAuth>
+                <ModulosSelector />
+              </RequireAuth>
+            }
           />
           
           <Route
