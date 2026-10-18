@@ -43,6 +43,7 @@ const NUEVO_ENCARGO = {
   municipio_registro: "",
   registro_propiedad: "",
   observaciones: "",
+  contratos: [{ entidad_bancaria: "", numero_prestamo: "", capital_inscrito: "", fecha_constitucion: "", fincas: [{ numero_finca: "", municipio_registro: "", registro_propiedad: "" }] }],
 };
 
 const CATEGORIAS_DOCUMENTO = [
@@ -143,6 +144,7 @@ export default function EncargaGest() {
   const [form, setForm] = useState({ ...NUEVO_ENCARGO });
   const [archivosSolicitud, setArchivosSolicitud] = useState({});
   const [categoriaDocumento, setCategoriaDocumento] = useState("Otros");
+  const [detalleContratoIndex, setDetalleContratoIndex] = useState(0);
   const [archivoPrevisualizado, setArchivoPrevisualizado] = useState(null);
   const [urlPrevisualizacion, setUrlPrevisualizacion] = useState("");
   const [actividad, setActividad] = useState("");
@@ -248,6 +250,12 @@ export default function EncargaGest() {
   const totalPaginas = Math.max(1, Math.ceil(total / 20));
 
   const cambiarFiltro = (campo, valor) => setForm((actual) => ({ ...actual, [campo]: valor }));
+  const cambiarContrato = (indice, campo, valor) => setForm((actual) => ({ ...actual, contratos: actual.contratos.map((contrato, i) => i === indice ? { ...contrato, [campo]: valor } : contrato) }));
+  const cambiarFinca = (indiceContrato, indiceFinca, campo, valor) => setForm((actual) => ({ ...actual, contratos: actual.contratos.map((contrato, i) => i !== indiceContrato ? contrato : { ...contrato, fincas: contrato.fincas.map((finca, j) => j === indiceFinca ? { ...finca, [campo]: valor } : finca) }) }));
+  const anadirContrato = () => setForm((actual) => ({ ...actual, contratos: [...actual.contratos, { entidad_bancaria: "", numero_prestamo: "", capital_inscrito: "", fecha_constitucion: "", fincas: [{ numero_finca: "", municipio_registro: "", registro_propiedad: "" }] }] }));
+  const quitarContrato = (indice) => setForm((actual) => ({ ...actual, contratos: actual.contratos.filter((_, i) => i !== indice) }));
+  const anadirFinca = (indice) => setForm((actual) => ({ ...actual, contratos: actual.contratos.map((contrato, i) => i === indice ? { ...contrato, fincas: [...contrato.fincas, { numero_finca: "", municipio_registro: "", registro_propiedad: "" }] } : contrato) }));
+  const quitarFinca = (indiceContrato, indiceFinca) => setForm((actual) => ({ ...actual, contratos: actual.contratos.map((contrato, i) => i === indiceContrato ? { ...contrato, fincas: contrato.fincas.filter((_, j) => j !== indiceFinca) } : contrato) }));
 
   async function aplicarFiltros(event) {
     event?.preventDefault();
@@ -268,21 +276,32 @@ export default function EncargaGest() {
     setErrorAccion("");
     setMensaje("");
     try {
+      const contratosNormalizados = form.contratos.map((contrato) => ({ ...contrato, capital_inscrito: contrato.capital_inscrito === "" ? null : Number(contrato.capital_inscrito), fecha_constitucion: contrato.fecha_constitucion || null }));
+      const primerContrato = contratosNormalizados[0] || {};
+      const primeraFinca = primerContrato.fincas?.[0] || {};
       const payload = {
         ...form,
         notaria_id: modo === "interno" ? Number(form.notaria_id) : undefined,
-        capital_inscrito: form.capital_inscrito === "" ? null : Number(form.capital_inscrito),
-        fecha_constitucion: form.fecha_constitucion || null,
+        contratos: contratosNormalizados,
+        entidad_bancaria: primerContrato.entidad_bancaria || "",
+        numero_prestamo: primerContrato.numero_prestamo || "",
+        capital_inscrito: primerContrato.capital_inscrito ?? null,
+        fecha_constitucion: primerContrato.fecha_constitucion || null,
+        numero_finca: primeraFinca.numero_finca || "",
+        municipio_registro: primeraFinca.municipio_registro || "",
+        registro_propiedad: primeraFinca.registro_propiedad || "",
       };
       const respuesta = await axios.post("/encargagest/encargos", payload);
       const creado = respuesta.data;
       const fallosDocumento = [];
+      for (let contratoIndex = 0; contratoIndex < form.contratos.length; contratoIndex += 1) {
       for (const categoria of CATEGORIAS_DOCUMENTO) {
-        const seleccionados = archivosSolicitud[categoria.nombre] || [];
+        const seleccionados = archivosSolicitud[contratoIndex + "|" + categoria.nombre] || [];
         for (const archivoSeleccionado of seleccionados) {
           const body = new FormData();
           body.append("archivo", archivoSeleccionado);
           body.append("categoria", categoria.nombre);
+          body.append("contrato_index", String(contratoIndex));
           try {
             await axios.post("/encargagest/encargos/" + creado.id + "/documentos", body);
           } catch (errorDocumento) {
@@ -290,8 +309,9 @@ export default function EncargaGest() {
           }
         }
       }
+      }
       setModalNuevo(false);
-      setForm({ ...NUEVO_ENCARGO });
+      setForm({ ...NUEVO_ENCARGO, contratos: [{ entidad_bancaria: "", numero_prestamo: "", capital_inscrito: "", fecha_constitucion: "", fincas: [{ numero_finca: "", municipio_registro: "", registro_propiedad: "" }] }] });
       setArchivosSolicitud({});
       setArchivoPrevisualizado(null);
       setPagina(1);
@@ -356,6 +376,7 @@ export default function EncargaGest() {
     const body = new FormData();
     body.append("archivo", archivo);
     body.append("categoria", categoriaDocumento);
+    body.append("contrato_index", String(detalleContratoIndex || 0));
     try {
       await axios.post("/encargagest/encargos/" + detalle.id + "/documentos", body);
       setArchivo(null);
@@ -729,111 +750,51 @@ export default function EncargaGest() {
                       <option>Normal</option><option>Alta</option><option>Urgente</option><option>Baja</option>
                     </select>
                   </Campo>
-                  <Campo etiqueta="Entidad bancaria">
-                    <input maxLength={200} value={form.entidad_bancaria} onChange={(e) => cambiarFiltro("entidad_bancaria", e.target.value)} placeholder="Banco o entidad acreedora" className={inputClass} />
-                  </Campo>
-                  <Campo etiqueta="Número de préstamo">
-                    <input maxLength={150} value={form.numero_prestamo} onChange={(e) => cambiarFiltro("numero_prestamo", e.target.value)} placeholder="Referencia del préstamo" className={inputClass} />
-                  </Campo>
-                  <Campo etiqueta="Capital inscrito en el registro (€)">
-                    <input type="number" min="0" step="0.01" value={form.capital_inscrito} onChange={(e) => cambiarFiltro("capital_inscrito", e.target.value)} placeholder="0,00" className={inputClass} />
-                  </Campo>
-                  <Campo etiqueta="Fecha de constitución">
-                    <input type="date" value={form.fecha_constitucion} onChange={(e) => cambiarFiltro("fecha_constitucion", e.target.value)} className={inputClass} />
-                  </Campo>
-                  <Campo etiqueta="Número de finca">
-                    <input maxLength={150} value={form.numero_finca} onChange={(e) => cambiarFiltro("numero_finca", e.target.value)} placeholder="N.º de finca registral" className={inputClass} />
-                  </Campo>
-                  <Campo etiqueta="Municipio del registro">
-                    <input maxLength={200} value={form.municipio_registro} onChange={(e) => cambiarFiltro("municipio_registro", e.target.value)} placeholder="Municipio" className={inputClass} />
-                  </Campo>
-                  <Campo etiqueta="Registro de la propiedad" className="eg-span-2">
-                    <input maxLength={200} value={form.registro_propiedad} onChange={(e) => cambiarFiltro("registro_propiedad", e.target.value)} placeholder="N.º o denominación del Registro de la Propiedad" className={inputClass} />
-                  </Campo>
-                  <Campo etiqueta="Observaciones de la solicitud" className="eg-span-2">
+                  <div className="eg-span-2 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
+                    <div><p className="text-xs font-black uppercase tracking-wider text-amber-700">Contratos y fincas</p><p className="mt-1 text-xs text-slate-500">Cada contrato conserva su carpeta digital. Una misma finca puede estar asociada a contratos diferentes.</p></div>
+                    <button type="button" onClick={anadirContrato} className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-extrabold text-white">＋ Añadir otro contrato</button>
+                  </div>
+                  {form.contratos.map((contrato, indiceContrato) => (
+                    <div key={indiceContrato} className="eg-span-2 rounded-2xl border border-amber-200 bg-amber-50/40 p-4">
+                      <div className="mb-3 flex items-center justify-between gap-3"><h4 className="text-sm font-black text-slate-900">Contrato {indiceContrato + 1}</h4>{form.contratos.length > 1 && <button type="button" onClick={() => quitarContrato(indiceContrato)} className="text-xs font-bold text-rose-700">Eliminar contrato</button>}</div>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <Campo etiqueta="Entidad bancaria"><input maxLength={200} value={contrato.entidad_bancaria} onChange={(e) => cambiarContrato(indiceContrato, "entidad_bancaria", e.target.value)} placeholder="Banco o entidad acreedora" className={inputClass} /></Campo>
+                        <Campo etiqueta="Número de préstamo"><input maxLength={150} value={contrato.numero_prestamo} onChange={(e) => cambiarContrato(indiceContrato, "numero_prestamo", e.target.value)} placeholder="Referencia del préstamo" className={inputClass} /></Campo>
+                        <Campo etiqueta="Capital inscrito en el registro (€)"><input type="number" min="0" step="0.01" value={contrato.capital_inscrito} onChange={(e) => cambiarContrato(indiceContrato, "capital_inscrito", e.target.value)} placeholder="0,00" className={inputClass} /></Campo>
+                        <Campo etiqueta="Fecha de constitución"><input type="date" value={contrato.fecha_constitucion} onChange={(e) => cambiarContrato(indiceContrato, "fecha_constitucion", e.target.value)} className={inputClass} /></Campo>
+                      </div>
+                      <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><h5 className="text-xs font-black uppercase tracking-wider text-slate-700">Fincas del contrato ({contrato.fincas.length})</h5><button type="button" onClick={() => anadirFinca(indiceContrato)} className="rounded-lg border border-amber-300 bg-white px-3 py-2 text-[11px] font-extrabold text-amber-800">＋ Añadir finca</button></div>
+                      <div className="mt-3 space-y-3">
+                        {contrato.fincas.map((finca, indiceFinca) => (
+                          <div key={indiceFinca} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-3">
+                            <Campo etiqueta="Número de finca"><input maxLength={150} value={finca.numero_finca} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "numero_finca", e.target.value)} placeholder="N.º finca registral" className={inputClass} /></Campo>
+                            <Campo etiqueta="Municipio del registro"><input maxLength={200} value={finca.municipio_registro} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "municipio_registro", e.target.value)} placeholder="Municipio" className={inputClass} /></Campo>
+                            <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "registro_propiedad", e.target.value)} placeholder="Registro de la Propiedad" className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => quitarFinca(indiceContrato, indiceFinca)} className="mb-0.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">×</button>}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-4 border-t border-amber-200 pt-3">
+                        <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-amber-800">Carpeta digital · Contrato {indiceContrato + 1}</p>
+                        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                          {CATEGORIAS_DOCUMENTO.map((categoria) => {
+                            const clave = indiceContrato + "|" + categoria.nombre;
+                            const seleccionados = archivosSolicitud[clave] || [];
+                            return <div key={clave} className="rounded-xl border border-slate-200 bg-white p-3">
+                              <div className="mb-2 flex items-center gap-2"><span className="grid h-7 w-7 place-items-center rounded-lg bg-amber-100 text-[10px] font-black text-amber-800">{categoria.icono}</span><div className="min-w-0"><p className="text-xs font-bold text-slate-800">{categoria.nombre}</p><p className="text-[10px] text-slate-400">{seleccionados.length} archivo(s)</p></div></div>
+                              <input type="file" multiple accept={EXTENSIONES_DOCUMENTO} disabled={guardando} className="block w-full text-xs" onChange={(e) => { const nuevos = Array.from(e.target.files || []); if (nuevos[0]) setArchivoPrevisualizado(nuevos[0]); setArchivosSolicitud((actual) => ({ ...actual, [clave]: [...(actual[clave] || []), ...nuevos] })); e.target.value = ""; }} />
+                              {seleccionados.length > 0 && <ul className="mt-2 space-y-1">{seleccionados.map((f, idx) => <li key={f.name + idx} className="truncate text-[10px] text-slate-600">{f.name}</li>)}</ul>}
+                            </div>;
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                                    <Campo etiqueta="Observaciones de la solicitud" className="eg-span-2">
                     <textarea rows={4} maxLength={10000} value={form.observaciones} onChange={(e) => cambiarFiltro("observaciones", e.target.value)} placeholder="Indicaciones y particularidades del encargo…" className={inputClass + " resize-y"} />
                   </Campo>
                 </div>
               </section>
 
-              <section className="eg-modal-section eg-modal-carpeta">
-                <div className="eg-modal-section-heading">
-                  <span className="eg-modal-section-icono eg-modal-section-icono-carpeta">02</span>
-                  <div><span>DOCUMENTACIÓN DEL EXPEDIENTE</span><h3>Carpeta digital</h3></div>
-                </div>
-                <p className="eg-modal-ayuda">Adjunta los archivos directamente al encargo. Puedes seleccionar varios ficheros por categoría.</p>
-
-                <div className="eg-modal-carpeta-layout">
-                  <section className="eg-modal-visor" aria-label="Visor de documentos seleccionados">
-                    <div className="eg-modal-visor-heading">
-                      <span>VISOR INTEGRADO</span>
-                      <strong>{archivoPrevisualizado ? archivoPrevisualizado.name : "Vista previa del documento"}</strong>
-                      {archivoPrevisualizado && <button type="button" onClick={() => setArchivoPrevisualizado(null)} aria-label="Cerrar vista previa">Cerrar ×</button>}
-                    </div>
-                    <div className="eg-modal-visor-contenido">
-                      {archivoPrevisualizado && urlPrevisualizacion && (
-                        archivoPrevisualizado.type === "application/pdf" || /\.pdf$/i.test(archivoPrevisualizado.name) ? (
-                          <iframe className="eg-modal-pdf-frame" title={"Vista previa de " + archivoPrevisualizado.name} src={urlPrevisualizacion} />
-                        ) : (
-                          archivoPrevisualizado.type.startsWith("image/") || /\.(png|jpe?g|webp|gif)$/i.test(archivoPrevisualizado.name) ? (
-                            <img className="eg-modal-image-frame" src={urlPrevisualizacion} alt={"Vista previa de " + archivoPrevisualizado.name} />
-                          ) : (
-                            <div className="eg-modal-visor-placeholder">
-                              <span>DOC</span>
-                              <strong>Vista previa no disponible</strong>
-                              <p>El formato seleccionado no se puede mostrar aquí. Se adjuntará al guardar el encargo.</p>
-                            </div>
-                          )
-                        )
-                      )}
-                      {(!archivoPrevisualizado || !urlPrevisualizacion) && (
-                        <div className="eg-modal-visor-placeholder">
-                          <span>PDF</span>
-                          <strong>Tu documentación aparecerá aquí</strong>
-                          <p>Selecciona un archivo en una categoría. Los PDF y las imágenes se mostrarán en este visor.</p>
-                        </div>
-                      )}
-                    </div>
-                    {archivoPrevisualizado && <div className="eg-modal-visor-footer"><span>{archivoPrevisualizado.type || "Archivo adjunto"}</span><strong>{nombreArchivoTamano(archivoPrevisualizado.size)}</strong></div>}
-                  </section>
-                  <div className="eg-categorias-documentales">
-                  {CATEGORIAS_DOCUMENTO.map((categoria) => {
-                    const seleccionados = archivosSolicitud[categoria.nombre] || [];
-                    return (
-                      <article className="eg-document-category" key={categoria.nombre}>
-                        <div className="eg-document-category-heading">
-                          <span className="eg-document-icono">{categoria.icono}</span>
-                          <div><strong>{categoria.nombre}</strong><small>{categoria.descripcion}</small></div>
-                          <span className="eg-document-count">{seleccionados.length}</span>
-                        </div>
-                        <label className="eg-file-picker">
-                          <span aria-hidden="true">＋</span>{seleccionados.length ? "Añadir / cambiar archivos" : "Seleccionar archivo"}
-                          <input
-                            type="file"
-                            multiple
-                            accept={EXTENSIONES_DOCUMENTO}
-                            disabled={guardando}
-                            onChange={(e) => { const nuevos = Array.from(e.target.files || []); if (nuevos[0]) setArchivoPrevisualizado(nuevos[0]); setArchivosSolicitud((actual) => { const existentes = actual[categoria.nombre] || []; const claves = new Set(existentes.map((archivo) => archivo.name + "|" + archivo.lastModified)); return { ...actual, [categoria.nombre]: [...existentes, ...nuevos.filter((archivo) => !claves.has(archivo.name + "|" + archivo.lastModified))] }; }); e.target.value = ""; }}
-                          />
-                        </label>
-                        {seleccionados.length > 0 ? (
-                          <ul className="eg-selected-files">
-                            {seleccionados.map((item, index) => (
-                              <li key={item.name + "-" + item.lastModified + "-" + index}>
-                                <button type="button" className={"eg-file-preview-link" + (archivoPrevisualizado === item ? " is-active" : "")} onClick={() => setArchivoPrevisualizado(item)} title={"Ver " + item.name}>
-                                  <span aria-hidden="true">{/\.pdf$/i.test(item.name) ? "PDF" : /\.(png|jpe?g|webp|gif)$/i.test(item.name) ? "IMG" : "DOC"}</span><span>{item.name}</span>
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : <p className="eg-document-empty">Todavía no hay documentos en esta categoría.</p>}
-                      </article>
-                    );
-                  })}
-                  </div>
-                </div>
-                <p className="eg-modal-ayuda eg-modal-ayuda-final">Formatos admitidos: PDF, Office, imagen o correo. Tamaño máximo por archivo: 25 MB.</p>
-              </section>
             </div>
 
             {errorAccion && <p className="eg-modal-error" role="alert">{errorAccion}</p>}
