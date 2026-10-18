@@ -12,7 +12,7 @@ import jwt
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, condecimal, constr
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, inspect as sa_inspect, text
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import obtener_token_bearer
@@ -33,6 +33,12 @@ ROOT.mkdir(parents=True, exist_ok=True)
 
 MAX_BYTES = int(os.getenv("ENCARGAGEST_MAX_DOCUMENT_BYTES", str(25 * 1024 * 1024)))
 EXTENSIONES_PERMITIDAS = {".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".jpeg", ".png", ".eml", ".msg", ".txt"}
+CATEGORIAS_DOCUMENTO = {
+    "Hoja de solicitud",
+    "Certificado de saldo cero / deuda",
+    "Nota simple registral (vigencia de 3 meses)",
+    "Otros",
+}
 ESTADOS = {
     "RECIBIDO", "EN_REVISION", "DOCUMENTACION_PENDIENTE",
     "EN_GESTION", "INCIDENCIA", "RESUELTO", "CERRADO",
@@ -42,7 +48,8 @@ PRIORIDADES = {"Baja", "Normal", "Alta", "Urgente"}
 
 @router.on_event("startup")
 def crear_tablas_encargagest():
-    # Solo crea las tablas nuevas del módulo. No altera las tablas existentes.
+    # Crea las tablas del módulo y añade de forma idempotente las columnas
+    # incorporadas posteriormente, sin modificar los datos existentes.
     Base.metadata.create_all(
         bind=engine,
         tables=[
@@ -53,6 +60,30 @@ def crear_tablas_encargagest():
         ],
         checkfirst=True,
     )
+    migraciones = {
+        "encargagest_encargos": {
+            "capital_inscrito": "NUMERIC(14, 2)",
+            "fecha_constitucion": "DATE",
+            "numero_finca": "VARCHAR(150)",
+            "municipio_registro": "VARCHAR(200)",
+            "registro_propiedad": "VARCHAR(200)",
+        },
+        "encargagest_documentos": {
+            "categoria": "VARCHAR(120) NOT NULL DEFAULT 'Otros'",
+        },
+    }
+    inspector = sa_inspect(engine)
+    tablas = set(inspector.get_table_names())
+    for tabla, columnas in migraciones.items():
+        if tabla not in tablas:
+            continue
+        existentes = {columna["name"] for columna in inspector.get_columns(tabla)}
+        faltantes = [(nombre, tipo) for nombre, tipo in columnas.items() if nombre not in existentes]
+        if not faltantes:
+            continue
+        with engine.begin() as conexion:
+            for nombre, tipo in faltantes:
+                conexion.execute(text(f'ALTER TABLE "{tabla}" ADD COLUMN "{nombre}" {tipo}'))
 
 
 def _es_externo(actor):
@@ -158,6 +189,11 @@ def _serializar(encargo):
         "nif_titular": encargo.nif_titular,
         "entidad_bancaria": encargo.entidad_bancaria,
         "numero_prestamo": encargo.numero_prestamo,
+        "capital_inscrito": float(encargo.capital_inscrito) if encargo.capital_inscrito is not None else None,
+        "fecha_constitucion": encargo.fecha_constitucion.isoformat() if encargo.fecha_constitucion else None,
+        "numero_finca": encargo.numero_finca,
+        "municipio_registro": encargo.municipio_registro,
+        "registro_propiedad": encargo.registro_propiedad,
         "importe": float(encargo.importe) if encargo.importe is not None else None,
         "fecha_objetivo": encargo.fecha_objetivo.isoformat() if encargo.fecha_objetivo else None,
         "prioridad": encargo.prioridad,
@@ -185,6 +221,7 @@ def _serializar_documento(item):
     return {
         "id": item.id,
         "nombre_original": item.nombre_original,
+        "categoria": item.categoria or "Otros",
         "tipo_mime": item.tipo_mime,
         "tamano_bytes": item.tamano_bytes,
         "subido_por_nombre": item.subido_por_nombre or "Usuario ERP",
@@ -223,6 +260,11 @@ class EncargoCrear(BaseModel):
     nif_titular: constr(max_length=50) | None = None
     entidad_bancaria: constr(max_length=200) | None = None
     numero_prestamo: constr(max_length=150) | None = None
+    capital_inscrito: condecimal(max_digits=14, decimal_places=2, ge=0) | None = None
+    fecha_constitucion: date | None = None
+    numero_finca: constr(max_length=150) | None = None
+    municipio_registro: constr(max_length=200) | None = None
+    registro_propiedad: constr(max_length=200) | None = None
     importe: condecimal(max_digits=14, decimal_places=2, ge=0) | None = None
     fecha_objetivo: date | None = None
     prioridad: str = "Normal"
@@ -237,6 +279,11 @@ class EncargoActualizar(BaseModel):
     nif_titular: constr(max_length=50) | None = None
     entidad_bancaria: constr(max_length=200) | None = None
     numero_prestamo: constr(max_length=150) | None = None
+    capital_inscrito: condecimal(max_digits=14, decimal_places=2, ge=0) | None = None
+    fecha_constitucion: date | None = None
+    numero_finca: constr(max_length=150) | None = None
+    municipio_registro: constr(max_length=200) | None = None
+    registro_propiedad: constr(max_length=200) | None = None
     importe: condecimal(max_digits=14, decimal_places=2, ge=0) | None = None
     fecha_objetivo: date | None = None
     prioridad: str | None = None
@@ -437,6 +484,11 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
         nif_titular=(datos.nif_titular or "").strip() or None,
         entidad_bancaria=(datos.entidad_bancaria or "").strip() or None,
         numero_prestamo=(datos.numero_prestamo or "").strip() or None,
+        capital_inscrito=Decimal(datos.capital_inscrito) if datos.capital_inscrito is not None else None,
+        fecha_constitucion=datos.fecha_constitucion,
+        numero_finca=(datos.numero_finca or "").strip() or None,
+        municipio_registro=(datos.municipio_registro or "").strip() or None,
+        registro_propiedad=(datos.registro_propiedad or "").strip() or None,
         importe=Decimal(datos.importe) if datos.importe is not None else None,
         fecha_objetivo=datos.fecha_objetivo,
         prioridad=datos.prioridad,
@@ -487,7 +539,7 @@ def actualizar_encargo(encargo_id: int, datos: EncargoActualizar, db: Session = 
     if "prioridad" in cambios and cambios["prioridad"] is not None and cambios["prioridad"] not in PRIORIDADES:
         raise HTTPException(status_code=422, detail="Prioridad no válida.")
     for campo, valor in cambios.items():
-        if campo in {"titular", "contacto_nombre", "contacto_email", "contacto_telefono", "nif_titular", "entidad_bancaria", "numero_prestamo", "observaciones", "observaciones_internas"} and isinstance(valor, str):
+        if campo in {"titular", "contacto_nombre", "contacto_email", "contacto_telefono", "nif_titular", "entidad_bancaria", "numero_prestamo", "numero_finca", "municipio_registro", "registro_propiedad", "observaciones", "observaciones_internas"} and isinstance(valor, str):
             valor = valor.strip() or None
         setattr(item, campo, valor)
     item.actualizado_en = datetime.utcnow()
@@ -554,11 +606,15 @@ def crear_actividad(encargo_id: int, datos: CrearActividad, db: Session = Depend
 async def subir_documento(
     encargo_id: int,
     archivo: UploadFile = File(...),
+    categoria: str = Form("Otros"),
     db: Session = Depends(get_db),
     usuario=Depends(get_encargagest_actor),
 ):
     _autorizar(usuario, "editar")
     item = _obtener_encargo(db, encargo_id, usuario)
+    categoria = str(categoria or "Otros").strip()
+    if categoria not in CATEGORIAS_DOCUMENTO:
+        raise HTTPException(status_code=422, detail="Categoría documental no válida.")
     nombre_original = Path(archivo.filename or "documento").name
     extension = Path(nombre_original).suffix.lower()
     if not nombre_original or nombre_original in {".", ".."} or extension not in EXTENSIONES_PERMITIDAS:
@@ -578,6 +634,7 @@ async def subir_documento(
             encargo_id=item.id,
             nombre_original=nombre_original,
             nombre_guardado=nombre_guardado,
+            categoria=categoria,
             tipo_mime=archivo.content_type,
             tamano_bytes=len(contenido),
             subido_por_id=(usuario.get("usuario_id") if _es_externo(usuario) else usuario.id),
@@ -585,7 +642,7 @@ async def subir_documento(
         )
         db.add(documento)
         item.actualizado_en = datetime.utcnow()
-        _registrar_actividad(db, item.id, usuario, "DOCUMENTO", f"Documento añadido: {nombre_original}.")
+        _registrar_actividad(db, item.id, usuario, "DOCUMENTO", f"Documento añadido en {categoria}: {nombre_original}.")
         db.commit()
         db.refresh(documento)
         return _serializar_documento(documento) | {"ok": True}
