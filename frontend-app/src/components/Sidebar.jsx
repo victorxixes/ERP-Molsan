@@ -775,18 +775,17 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   const normalizarModulo = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
 
-  // En CancelaGest, estos accesos quedan siempre a la vista en la barra,
-  // fuera del desplegable «Más», respetando los permisos del usuario.
+  // Accesos directos que deben permanecer visibles en cada módulo.
+  // El filtrado de visiblesSecundarios conserva los permisos del empleado.
   const modulosFijados = useMemo(() => {
-    if (normalizarModulo(brandName) !== "cancelagest") return [];
+    const accesosPorMarca = {
+      cancelagest: ["utilidades", "notargest", "apoderagest", "encargagest"],
+      apoderagest: ["cancelagest"],
+    };
+    const claves = accesosPorMarca[normalizarModulo(brandName)] || [];
+    if (!claves.length) return [];
 
-    const clavesFijadas = new Set([
-      "utilidades",
-      "notargest",
-      "apoderagest",
-      "encargagest",
-    ]);
-
+    const clavesFijadas = new Set(claves);
     return visiblesSecundarios.filter((modulo) => clavesFijadas.has(modulo.key));
   }, [visiblesSecundarios, brandName]);
 
