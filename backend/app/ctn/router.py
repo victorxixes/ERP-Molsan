@@ -1,4 +1,6 @@
 import io
+import os
+import base64
 import unicodedata
 import hashlib
 import secrets
@@ -7,11 +9,13 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
+from cryptography.fernet import Fernet, InvalidToken
 from sqlalchemy import Column, ForeignKey, Integer, Table, and_, func, or_, text
 from sqlalchemy.orm import Session
 from openpyxl import Workbook
 
 from backend.app.database import Base, get_db, engine
+from backend.app.config import settings
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.ctn.models import Notaria
@@ -671,6 +675,19 @@ def crear_tabla_historial_accesos_portales():
             CREATE INDEX IF NOT EXISTS ix_ctn_portal_historial_notaria_fecha
             ON ctn_portal_accesos_historial (notaria_id, fecha DESC)
         """))
+        # Añadir columnas reversibles sin sobrescribir hashes existentes.
+        columnas = {
+            "ctn_notarios": {"notargest_password_enc": "TEXT"},
+            "encargagest_usuarios": {"password_enc": "TEXT"},
+        }
+        for tabla, pendientes in columnas.items():
+            existen = {fila[0] for fila in conexion.execute(text(
+                "SELECT column_name FROM information_schema.columns "
+                "WHERE table_schema = current_schema() AND table_name = :tabla"
+            ), {"tabla": tabla}).fetchall()}
+            for columna, tipo in pendientes.items():
+                if columna not in existen:
+                    conexion.execute(text(f'ALTER TABLE "{tabla}" ADD COLUMN "{columna}" {tipo}'))
 
 
 def _registrar_evento_portal(db, notaria_id, portal, evento, resultado="ok", usuario=None, detalle=None):
@@ -681,6 +698,25 @@ def _registrar_evento_portal(db, notaria_id, portal, evento, resultado="ok", usu
     """), {"notaria_id": notaria_id, "portal": portal, "evento": evento,
            "resultado": resultado, "usuario": usuario, "detalle": detalle})
 
+
+
+def _fernet_passwords():
+    secreto = str(getattr(settings, "JWT_SECRET", "") or os.getenv("JWT_SECRET", "")).strip()
+    if not secreto:
+        raise HTTPException(status_code=500, detail="No está configurada la clave de cifrado de contraseñas.")
+    clave = base64.urlsafe_b64encode(hashlib.sha256(("ERP-Molsan-portales-v1:" + secreto).encode("utf-8")).digest())
+    return Fernet(clave)
+
+
+def _cifrar_password_portal(password):
+    return _fernet_passwords().encrypt(password.encode("utf-8")).decode("ascii")
+
+
+def _descifrar_password_portal(password_cifrada):
+    try:
+        return _fernet_passwords().decrypt(password_cifrada.encode("ascii")).decode("utf-8")
+    except (InvalidToken, ValueError, TypeError, UnicodeDecodeError):
+        raise HTTPException(status_code=500, detail="No se ha podido descifrar la contraseña almacenada. Comprueba la clave JWT_SECRET.")
 
 def _hash_password_portal(password):
     salt = secrets.token_hex(16)
@@ -729,6 +765,40 @@ def obtener_accesos_portales_notaria(
             "fecha": row["fecha"].isoformat() if row["fecha"] else None} for row in historial
             if (row["portal"] == "notargest" and puede_notargest) or (row["portal"] == "encargagest" and puede_encargagest)],
     }
+
+
+
+@router.get("/notarias/{notaria_id}/accesos-portales/{portal}/password")
+def revelar_password_portal_notaria(
+    notaria_id: int,
+    portal: str,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    portal = portal.strip().lower()
+    if not _es_administrador_portales(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede revelar las contraseñas de los portales.")
+    clave_permiso = {"notargest": "notargestweb", "encargagest": "encargagestweb"}.get(portal)
+    if not clave_permiso:
+        raise HTTPException(status_code=400, detail="Portal no válido")
+    _exigir_permiso_portal(usuario, clave_permiso, "ver")
+    notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
+    if not notaria:
+        raise HTTPException(status_code=404, detail="Notaría no encontrada")
+    if portal == "notargest":
+        password_cifrada = getattr(notaria, "notargest_password_enc", None)
+        usuario_login = _normalizar_usuario_portal(notaria.nif)
+    else:
+        acceso = db.query(EncargoExternoUsuario).filter(EncargoExternoUsuario.notaria_id == notaria_id).first()
+        password_cifrada = getattr(acceso, "password_enc", None) if acceso else None
+        usuario_login = acceso.usuario if acceso else _normalizar_usuario_portal(notaria.nif)
+    if not password_cifrada:
+        raise HTTPException(status_code=409, detail="Esta contraseña es anterior al almacenamiento cifrado y no se puede recuperar. Restablécela una vez para poder mostrarla con el ojo.")
+    password = _descifrar_password_portal(password_cifrada)
+    _registrar_evento_portal(db, notaria_id, portal, "REVELAR_PASSWORD",
+        detalle="Un administrador reveló la contraseña")
+    db.commit()
+    return {"ok": True, "portal": portal, "usuario": usuario_login, "password": password}
 
 
 @router.post("/notarias/{notaria_id}/accesos-portales/{portal}/habilitado")
@@ -792,6 +862,7 @@ def reset_password_portal_notaria(
         raise HTTPException(status_code=422, detail="La notaría debe tener NIF registrado en CTN.")
     if portal == "notargest":
         notaria.notargest_password_hash = _hash_password_portal(password_nueva)
+        notaria.notargest_password_enc = _cifrar_password_portal(password_nueva)
         notaria.notargest_habilitado = True
         notaria.notargest_cambiar_password = True
     elif portal == "encargagest":
@@ -803,11 +874,13 @@ def reset_password_portal_notaria(
             raise HTTPException(status_code=409, detail="El usuario basado en el NIF ya está asignado a otra notaría.")
         if acceso is None:
             acceso = EncargoExternoUsuario(notaria_id=notaria_id, usuario=usuario_login,
-                password_hash=_hash_password_portal(password_nueva), habilitado=True)
+                password_hash=_hash_password_portal(password_nueva),
+                password_enc=_cifrar_password_portal(password_nueva), habilitado=True)
             db.add(acceso)
         else:
             acceso.usuario = usuario_login
             acceso.password_hash = _hash_password_portal(password_nueva)
+            acceso.password_enc = _cifrar_password_portal(password_nueva)
             acceso.habilitado = True
             acceso.actualizado_en = datetime.utcnow()
     else:
