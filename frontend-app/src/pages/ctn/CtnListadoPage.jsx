@@ -397,7 +397,8 @@ export default function CtnListadoPage() {
                     <td>{texto(item.nif)}</td><td>{texto(item.municipio)}</td><td>{texto(item.provincia)}</td>
                     <td><span className={`ctn-etiqueta ${vc.clase}`}>{vc.texto}</span></td>
                     <td>{texto(item.apoderado)}</td><td>{texto(listaAsociados(item))}</td>
-                    <td><button type="button" className={`ctn-btn ctn-btn-small ${item.notargest_habilitado ? "ctn-btn-primary" : "ctn-btn-secondary"}`} onClick={() => cambiarAccesoNotarGest(item)} disabled={cambiandoAcceso === item.id || !String(item.nif || "").trim()} title={!item.nif ? "Esta notaría no tiene NIF/DNI registrado" : ""}>{cambiandoAcceso === item.id ? "Guardando…" : item.notargest_habilitado ? "✓ Habilitado" : "Habilitar"}</button></td>\n                    <td>{(() => { const acceso = accesosEncargaGest.find((x) => Number(x.notaria_id) === Number(item.id)); return <button type="button" className={`ctn-btn ctn-btn-small ${(acceso?.tiene_acceso && acceso?.habilitado) ? "ctn-btn-primary" : "ctn-btn-secondary"}`} onClick={() => abrirAccesoEncargaGest(item)} disabled={!String(item.nif || "").trim()} title={!item.nif ? "Esta notaría no tiene NIF/DNI registrado" : "Configurar usuario, contraseña y habilitación de EncargaGest"}>{(acceso?.tiene_acceso && acceso?.habilitado) ? "✓ Habilitado" : acceso?.tiene_acceso ? "Deshabilitado" : "Configurar acceso"}</button>; })()}</td>
+                    <td><button type="button" className={`ctn-btn ctn-btn-small ${item.notargest_habilitado ? "ctn-btn-primary" : "ctn-btn-secondary"}`} onClick={() => cambiarAccesoNotarGest(item)} disabled={cambiandoAcceso === item.id || !String(item.nif || "").trim()} title={!item.nif ? "Esta notaría no tiene NIF/DNI registrado" : ""}>{cambiandoAcceso === item.id ? "Guardando…" : item.notargest_habilitado ? "✓ Habilitado" : "Habilitar"}</button></td>
+                    <td>{(() => { const acceso = accesosEncargaGest.find((x) => Number(x.notaria_id) === Number(item.id)); return <button type="button" className={`ctn-btn ctn-btn-small ${(acceso?.tiene_acceso && acceso?.habilitado) ? "ctn-btn-primary" : "ctn-btn-secondary"}`} onClick={() => abrirAccesoEncargaGest(item)} disabled={!String(item.nif || "").trim()} title={!item.nif ? "Esta notaría no tiene NIF/DNI registrado" : "Configurar usuario, contraseña y habilitación de EncargaGest"}>{(acceso?.tiene_acceso && acceso?.habilitado) ? "✓ Habilitado" : acceso?.tiene_acceso ? "Deshabilitado" : "Configurar acceso"}</button>; })()}</td>
                     <td>{item.distancia_km == null ? "—" : `${Number(item.distancia_km).toLocaleString("es-ES", { maximumFractionDigits: 1 })} km`}</td>
                     <td><button type="button" className="ctn-btn ctn-btn-primary ctn-btn-small" onClick={() => setNotariaSeleccionada(item)}>Ver ficha</button></td>
                   </tr>
@@ -454,7 +455,8 @@ export default function CtnListadoPage() {
           </form>
         </div>
       )}
-\n      {notariaSeleccionada && (
+
+      {notariaSeleccionada && (
         <ModalCtnDetalle open={Boolean(notariaSeleccionada)} notaria={notariaSeleccionada} onClose={() => setNotariaSeleccionada(null)} />
       )}
     </main>
