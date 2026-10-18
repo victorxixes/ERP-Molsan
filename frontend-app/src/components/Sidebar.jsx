@@ -773,19 +773,38 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     ]
   );
 
-  // Cuando un módulo usa navegación personalizada, no repetimos en "Más"
-  // los accesos que ya aparecen en su barra principal.
+  const normalizarModulo = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
+
+  // En CancelaGest, estos accesos quedan siempre a la vista en la barra,
+  // fuera del desplegable «Más», respetando los permisos del usuario.
+  const modulosFijados = useMemo(() => {
+    if (normalizarModulo(brandName) !== "cancelagest") return [];
+
+    const clavesFijadas = new Set([
+      "utilidades",
+      "notargest",
+      "apoderagest",
+      "encargagest",
+    ]);
+
+    return visiblesSecundarios.filter((modulo) => clavesFijadas.has(modulo.key));
+  }, [visiblesSecundarios, brandName]);
+
+  // No repetir en «Más» accesos que ya estén en la barra ni los fijados.
   const modulosMas = useMemo(() => {
     const elementosEnBarra = Array.isArray(navigationItems) ? navigationItems : [];
-    const normalizar = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
+    const clavesFijadas = new Set(modulosFijados.map((modulo) => modulo.key));
 
     return visiblesSecundarios.filter((modulo) => {
-      if (normalizar(modulo.label) === normalizar(brandName)) return false;
+      if (normalizarModulo(modulo.label) === normalizarModulo(brandName)) return false;
+      if (clavesFijadas.has(modulo.key)) return false;
+
       return !elementosEnBarra.some((item) =>
-        item?.key === modulo.key || normalizar(item?.label) === normalizar(modulo.label)
+        item?.key === modulo.key ||
+        normalizarModulo(item?.label) === normalizarModulo(modulo.label)
       );
     });
-  }, [visiblesSecundarios, navigationItems, brandName]);
+  }, [visiblesSecundarios, navigationItems, brandName, modulosFijados]);
 
 
   /**
@@ -948,6 +967,15 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                   />
                 ))}
 
+            {modulosFijados.map((modulo) => (
+              <TopNavItem
+                key={modulo.key}
+                to={modulo.to}
+                label={modulo.label}
+                icon={modulo.icon}
+                badge={modulo.badge || 0}
+              />
+            ))}
 
             {/* ==================================================
                 MÁS
