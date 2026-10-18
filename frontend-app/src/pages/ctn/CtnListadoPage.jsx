@@ -245,7 +245,7 @@ export default function CtnListadoPage() {
         credentials: "include",
         body: JSON.stringify({
           notaria_id: Number(notariaAccesoEncargaGest.id),
-          password: passwordEncargaGest,
+          password: passwordEncargaGest.trim() ? passwordEncargaGest : null,
           habilitado: habilitadoEncargaGest,
         }),
       });
