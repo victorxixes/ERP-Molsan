@@ -3899,19 +3899,34 @@ const permisosDisponibles =
                       {!esAdministrador && <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">Solo un administrador puede modificar las notarías asignadas.</p>}
                       {errorNotariasEncargaGest && <p role="alert" className="mb-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorNotariasEncargaGest}</p>}
                       {mensajeNotariasEncargaGest && <p role="status" className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{mensajeNotariasEncargaGest}</p>}
+                      <input type="search" value={busquedaNotariaEncargaGest} onChange={(e) => setBusquedaNotariaEncargaGest(e.target.value)} placeholder="Buscar notario, NIF, municipio o provincia…" className="mb-3 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm" />
                       {cargandoNotariasEncargaGest ? (
                         <p className="py-8 text-center text-sm text-slate-500">Cargando catálogo CTN…</p>
                       ) : (
                         <div className="max-h-[440px] space-y-2 overflow-y-auto pr-1">
-                          {notariasEncargaGest.map((notaria) => {
+                          {notariasEncargaGest.filter((n) => [n.nombre, n.nif, n.municipio, n.provincia].some((v) => String(v || "").toLowerCase().includes(busquedaNotariaEncargaGest.trim().toLowerCase()))).map((notaria) => {
                             const id = Number(notaria.id);
-                            const checked = notariasEncargaGestSeleccionadas.includes(id);
                             return (
-                              <label key={id} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition ${checked ? "border-blue-200 bg-blue-50/70" : "border-slate-200 bg-white hover:bg-slate-50"}`}>
-                                <input type="checkbox" checked={checked} disabled={!esAdministrador || guardandoNotariasEncargaGest} onChange={(event) => setNotariasEncargaGestSeleccionadas((actual) => event.target.checked ? [...new Set([...actual, id])] : actual.filter((value) => value !== id))} className="h-4 w-4 accent-blue-600" />
-                                <span className="min-w-0 flex-1"><strong className="block text-sm text-slate-800">{notaria.nombre}</strong><small className="block text-xs text-slate-500">{[notaria.nif, notaria.municipio, notaria.provincia].filter(Boolean).join(" · ") || "Sin datos adicionales"}</small></span>
-                                {checked && <span className="rounded-full bg-blue-100 px-2 py-1 text-[10px] font-bold text-blue-700">Asignada</span>}
-                              </label>
+                              <div key={id} className="grid gap-3 rounded-xl border border-slate-200 bg-white p-3 md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-center">
+                                <span className="min-w-0"><strong className="block text-sm text-slate-800">{notaria.nombre}</strong><small className="block text-xs text-slate-500">{[notaria.nif, notaria.municipio, notaria.provincia].filter(Boolean).join(" · ") || "Sin datos adicionales"}</small></span>
+                                <select value={notaria.gestor_id || ""} disabled={!esAdministrador || guardandoNotariasEncargaGest} onChange={(e) => setNotariasEncargaGest((actual) => actual.map((n) => Number(n.id) === id ? { ...n, gestor_id: e.target.value ? Number(e.target.value) : null } : n))} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                                  <option value="">Seleccionar gestor…</option>
+                                  {empleadosReparto.map((empleado) => <option key={empleado.id} value={empleado.id}>{[empleado.nombre, empleado.apellidos].filter(Boolean).join(" ") || empleado.usuario || ("Empleado " + empleado.id)}</option>)}
+                                </select>
+                                <div className="flex items-center gap-3">
+                                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700"><input type="checkbox" checked={Boolean(notaria._habilitadaDraft ?? notaria.habilitada)} disabled={!esAdministrador || guardandoNotariasEncargaGest} onChange={(e) => setNotariasEncargaGest((actual) => actual.map((n) => Number(n.id) === id ? { ...n, _habilitadaDraft: e.target.checked } : n))} className="h-4 w-4 accent-emerald-600" />Habilitar</label>
+                                  <button type="button" disabled={!esAdministrador || guardandoNotariasEncargaGest || Boolean((notaria._habilitadaDraft ?? notaria.habilitada) && !notaria.gestor_id)} onClick={async () => {
+                                    setGuardandoNotariasEncargaGest(true); setErrorNotariasEncargaGest(""); setMensajeNotariasEncargaGest("");
+                                    try {
+                                      const habilitada = Boolean(notaria._habilitadaDraft ?? notaria.habilitada);
+                                      const res = await guardarResponsableNotariaEncargaGest(id, { habilitada, gestor_id: habilitada ? notaria.gestor_id : null });
+                                      setNotariasEncargaGest((actual) => actual.map((n) => Number(n.id) === id ? { ...n, habilitada: res.data?.habilitada ?? habilitada, gestor_id: res.data?.gestor_id ?? null, gestor_nombre: res.data?.gestor_nombre || "", _habilitadaDraft: undefined } : n));
+                                      setMensajeNotariasEncargaGest("Configuración guardada para " + notaria.nombre + ".");
+                                    } catch (e) { setErrorNotariasEncargaGest(e?.response?.data?.detail || "No se pudo guardar la configuración."); }
+                                    finally { setGuardandoNotariasEncargaGest(false); }
+                                  }} className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-50">Guardar</button>
+                                </div>
+                              </div>
                             );
                           })}
                           {notariasEncargaGest.length === 0 && <p className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">No hay notarías en el catálogo CTN.</p>}
