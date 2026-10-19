@@ -271,6 +271,11 @@ def _obtener_encargo(db, encargo_id, actor=None):
     return item
 
 
+def _exigir_encargo_abierto(item):
+    if _estado_publico(item.estado) == "FIRMADO":
+        raise HTTPException(status_code=409, detail="El encargo está firmado y cerrado; no admite más modificaciones.")
+
+
 def _registrar_actividad(db, encargo_id, usuario, tipo, mensaje, visible_notaria=True):
     registro = EncargoExternoActividad(
         encargo_id=encargo_id,
@@ -608,6 +613,7 @@ def detalle_encargo(encargo_id: int, db: Session = Depends(get_db), usuario=Depe
 def actualizar_encargo(encargo_id: int, datos: EncargoActualizar, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _exigir_interno(usuario, "editar")
     item = _obtener_encargo(db, encargo_id, usuario)
+    _exigir_encargo_abierto(item)
     cambios = datos.dict(exclude_unset=True)
     if "prioridad" in cambios and cambios["prioridad"] is not None and cambios["prioridad"] not in PRIORIDADES:
         raise HTTPException(status_code=422, detail="Prioridad no válida.")
@@ -661,7 +667,8 @@ def listar_actividad(encargo_id: int, db: Session = Depends(get_db), usuario=Dep
 @router.post("/encargos/{encargo_id}/actividad", status_code=201)
 def crear_actividad(encargo_id: int, datos: CrearActividad, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "editar")
-    _obtener_encargo(db, encargo_id, usuario)
+    item = _obtener_encargo(db, encargo_id, usuario)
+    _exigir_encargo_abierto(item)
     tipo = datos.tipo.upper()
     if tipo not in {"COMENTARIO", "INCIDENCIA", "SISTEMA"}:
         raise HTTPException(status_code=422, detail="Tipo de actividad no válido.")
@@ -672,8 +679,7 @@ def crear_actividad(encargo_id: int, datos: CrearActividad, db: Session = Depend
     mensaje = datos.mensaje.strip()
     if not mensaje:
         raise HTTPException(status_code=422, detail="Escribe un mensaje antes de guardarlo.")
-    if tipo == "INCIDENCIA" and not _es_externo(usuario):
-        item = _obtener_encargo(db, encargo_id, usuario)
+    if tipo == "INCIDENCIA":
         item.estado = "INCIDENCIA"
         item.actualizado_en = datetime.utcnow()
     _registrar_actividad(db, encargo_id, usuario, tipo, mensaje, datos.visible_notaria)
@@ -692,6 +698,7 @@ async def subir_documento(
 ):
     _autorizar(usuario, "editar")
     item = _obtener_encargo(db, encargo_id, usuario)
+    _exigir_encargo_abierto(item)
     categoria = str(categoria or "Otros").strip()
     if categoria not in CATEGORIAS_DOCUMENTO:
         raise HTTPException(status_code=422, detail="Categoría documental no válida.")
@@ -754,7 +761,8 @@ def descargar_documento(encargo_id: int, documento_id: int, db: Session = Depend
 @router.delete("/encargos/{encargo_id}/documentos/{documento_id}")
 def eliminar_documento(encargo_id: int, documento_id: int, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _exigir_interno(usuario, "eliminar")
-    _obtener_encargo(db, encargo_id, usuario)
+    encargo = _obtener_encargo(db, encargo_id, usuario)
+    _exigir_encargo_abierto(encargo)
     documento = db.query(EncargoExternoDocumento).filter(
         EncargoExternoDocumento.id == documento_id,
         EncargoExternoDocumento.encargo_id == encargo_id,
