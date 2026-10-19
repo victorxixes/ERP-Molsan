@@ -709,14 +709,7 @@ export default function EncargaGest() {
                   </div>
 {modo === "externo" ? (
                   <div className="mt-5" />
-                  ) : (
-                  <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Tipo de encargo</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.tipo_encargo}</p></div>
-                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Capital inscrito</span><p className="mt-1 text-xs font-bold text-slate-800">{euros(detalle.capital_inscrito)}</p></div>
-                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Prioridad</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.prioridad}</p></div>
-                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Fecha de constitución</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.fecha_constitucion ? new Date(detalle.fecha_constitucion + "T00:00:00").toLocaleDateString("es-ES") : "—"}</p></div>
-                  </div>
-                  )}
+                  ) : null}
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 p-5 sm:p-6 xl:grid-cols-2">
