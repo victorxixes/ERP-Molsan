@@ -376,19 +376,7 @@ export default function NotarGest() {
     <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
       <Sidebar
         brandName="NotarGest"
-        navigationItems={[
-          { key: "dashboard", label: "Dashboard", icon: "home" },
-          { key: "recepcion", label: "Nuevos encargos", icon: "clipboard", badge: cuenta("recepcion") },
-          { key: "firma", label: "Pendientes de firma", icon: "calendar", badge: cuenta("firma") },
-          { key: "copia", label: "Pendientes copias simples", icon: "folder", badge: cuenta("copia") },
-          { key: "factura", label: "Pendientes de factura notarial", icon: "clipboard", badge: cuenta("factura") },
-          { key: "ajd", label: "Pendientes de AJD / ITP", icon: "calendar", badge: cuenta("ajd") },
-          { key: "registro", label: "Pendientes de presentación registral", icon: "folder", badge: cuenta("registro") },
-          { key: "defectos", label: "Expedientes con defectos", icon: "globe", badge: cuenta("defectos") },
-          { key: "inscripcion", label: "Inscripciones registrales", icon: "folder", badge: cuenta("inscripcion") },
-          { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "clipboard", badge: cuenta("cerrada") },
-          { key: "firmas_urgentes", label: "Firmas urgentes", icon: "activity", badge: expedientes.filter(x => x.firma_urgente).length, attention: expedientes.some(x => x.firma_urgente) },
-        ]}
+        navigationItems={[]}
         activeNavigationItem={sidebarVista}
         onNavigationItemClick={navegarSidebar}
         onNotificationsClick={() => setNotificacionesAbiertas(true)}
@@ -453,6 +441,33 @@ export default function NotarGest() {
         <button type="button" className="ag-boton-actualizar" onClick={cargar} disabled={cargando}><span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>{cargando ? "Actualizando…" : "Actualizar datos"}</button>
       </div>
     </header>
+    <nav className="ng-modulos-grid" aria-label="Secciones de NotarGest">
+      {[
+        { key: "inicio", label: "Dashboard", icon: "⌂", count: null },
+        { key: "recepcion", label: "Nuevos encargos", icon: "▤", count: cuenta("recepcion") },
+        { key: "firma", label: "Pendientes de firma", icon: "◷", count: cuenta("firma") },
+        { key: "copia", label: "Pendientes copias simples", icon: "▧", count: cuenta("copia") },
+        { key: "factura", label: "Pendientes de factura notarial", icon: "€", count: cuenta("factura") },
+        { key: "ajd", label: "Pendientes de AJD / ITP", icon: "§", count: cuenta("ajd") },
+        { key: "registro", label: "Pendientes de presentación registral", icon: "⌕", count: cuenta("registro") },
+        { key: "defectos", label: "Expedientes con defectos", icon: "!", count: cuenta("defectos") },
+        { key: "inscripcion", label: "Inscripciones registrales", icon: "▣", count: cuenta("inscripcion") },
+        { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "✓", count: cuenta("cerrada") },
+        { key: "firmas_urgentes", label: "Firmas urgentes", icon: "⚡", count: expedientes.filter(x => x.firma_urgente).length, urgent: expedientes.some(x => x.firma_urgente) },
+      ].map(item => (
+        <button
+          key={item.key}
+          type="button"
+          className={`ng-modulo-card ${vista === item.key ? "activa" : ""} ${item.urgent ? "urgente" : ""}`}
+          onClick={() => { setBusqueda(""); setVista(item.key); }}
+          aria-current={vista === item.key ? "page" : undefined}
+        >
+          <span className="ng-modulo-icono" aria-hidden="true">{item.icon}</span>
+          <span className="ng-modulo-label">{item.label}</span>
+          {item.count !== null && <span className="ng-modulo-count">{item.count}</span>}
+        </button>
+      ))}
+    </nav>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
     {vista === "inicio" && <section className="ng-dashboard-analitica">
       <div className="ng-dashboard-graficos ng-dashboard-graficos-tres-columnas">
