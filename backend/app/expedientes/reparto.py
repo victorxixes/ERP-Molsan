@@ -36,12 +36,12 @@ def normalizar(valor):
     )
 
 
-def resolver_key_actividad(valor):
+def resolver_key_actividad(valor, fecha_firma=None):
     texto = normalizar(valor)
     for clave, etiqueta in ACTIVIDADES.items():
         if texto == normalizar(etiqueta) or texto == normalizar(clave):
             return clave
-    if "sede notarial" in texto and ("protocolo" in texto or "firma" in texto):
+    if "sede notarial" in texto and (fecha_firma or "protocolo" in texto or "firma" in texto):
         return "sede-notarial-protocolo"
     if "sede notarial" in texto:
         return "sede-notarial"
