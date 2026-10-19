@@ -602,6 +602,20 @@ def detalle_encargo(encargo_id: int, db: Session = Depends(get_db), usuario=Depe
         consulta_actividad = consulta_actividad.filter(EncargoExternoActividad.visible_notaria.is_(True))
     actividad = consulta_actividad.order_by(EncargoExternoActividad.creado_en.desc()).all()
     data = _serializar(item)
+    notaria_ctn = db.query(Notaria).filter(Notaria.id == item.notaria_id).first()
+    if notaria_ctn:
+        data["notaria_contacto"] = {
+            "nombre": " ".join(filter(None, [notaria_ctn.nombre, notaria_ctn.apellidos])).strip(),
+            "nif": notaria_ctn.nif,
+            "direccion": notaria_ctn.direccion,
+            "cp": notaria_ctn.cp,
+            "municipio": notaria_ctn.municipio,
+            "provincia": notaria_ctn.provincia,
+            "telefono": notaria_ctn.telefono,
+            "departamento_cancelaciones": notaria_ctn.departamento_cancelaciones,
+        }
+    else:
+        data["notaria_contacto"] = None
     if _es_externo(usuario):
         data.pop("observaciones_internas", None)
     data["documentos"] = [_serializar_documento(doc) for doc in documentos]
