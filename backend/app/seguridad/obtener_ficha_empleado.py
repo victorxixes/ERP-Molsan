@@ -365,9 +365,11 @@ def obtener_ficha_completa(
 
     try:
 
+        # La función espera el ID numérico del empleado,
+        # no el nombre de usuario.
         auditoria = obtener_auditoria_empleado(
             db,
-            empleado.usuario
+            empleado.id
         )
 
     except Exception:
