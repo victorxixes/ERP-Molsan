@@ -956,8 +956,8 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                     onClick={() => onNavigationItemClick?.(item.label)}
                     aria-current={activeNavigationItem === item.label ? "page" : undefined}
                     className={`
-                      flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg whitespace-nowrap text-[12px]
-                      font-medium transition-all duration-200 border flex-shrink-0
+                      flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0
+                      ${brandName === "NotarGest" ? "px-3 py-2 rounded-full text-[12px]" : "px-2.5 py-1.5 rounded-lg text-[12px]"}
                       ${activeNavigationItem === item.label
                         ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm"
                         : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"}
