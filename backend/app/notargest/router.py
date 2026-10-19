@@ -98,6 +98,7 @@ def migrar_notargest():
         ("notargest_habilitado", "BOOLEAN NOT NULL DEFAULT FALSE"),
         ("notargest_password_hash", "VARCHAR(255)"),
         ("notargest_cambiar_password", "BOOLEAN NOT NULL DEFAULT TRUE"),
+        ("notargest_password_provisional", "BOOLEAN NOT NULL DEFAULT TRUE"),
     ]
     tabla = "ctn_notarios"
     print("[NOTARGEST MIGRACION] Inicio de migración de columnas de acceso.", flush=True)
@@ -337,13 +338,16 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
         db.commit()
         raise HTTPException(status_code=401, detail="Acceso no habilitado. Contacta con Molsan.")
     password_nif = hmac.compare_digest(normalizar_nif(data.password), nif)
-    if password_nif and (not n.notargest_password_hash or n.notargest_cambiar_password):
+    if password_nif and (not n.notargest_password_hash or getattr(n, "notargest_password_provisional", True)):
         n.notargest_password_hash = hash_password(nif)
         n.notargest_password_enc = cifrar_password_portal(nif)
         n.notargest_cambiar_password = True
+        n.notargest_password_provisional = True
         valido = True
     elif n.notargest_password_hash:
         valido = verificar_password(data.password, n.notargest_password_hash)
+        if valido and not password_nif:
+            n.notargest_password_provisional = False
     else:
         valido = False
     if not valido:
@@ -409,6 +413,7 @@ def cambiar_password(data: CambioPassword, n=Depends(get_notario), db: Session =
     n.notargest_password_hash = hash_password(data.password_nueva)
     n.notargest_password_enc = cifrar_password_portal(data.password_nueva)
     n.notargest_cambiar_password = False
+    n.notargest_password_provisional = False
     db.execute(text("""
         INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
         VALUES (:id, 'notargest', 'CAMBIO_PASSWORD', 'correcto', :usuario, 'La notaría cambió su contraseña desde su perfil')
