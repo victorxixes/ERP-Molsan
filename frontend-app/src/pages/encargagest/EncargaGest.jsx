@@ -870,7 +870,7 @@ export default function EncargaGest() {
                     <button type="button" onClick={anadirContrato} className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-extrabold text-white">＋ Añadir otro contrato</button>
                   </div>
                   {form.contratos.map((contrato, indiceContrato) => (
-                    <div key={indiceContrato} className="eg-span-2 rounded-2xl border border-amber-200 bg-amber-50/40 p-4">
+                    <div key={indiceContrato} className="eg-span-2 eg-contrato-layout rounded-2xl border border-amber-200 bg-amber-50/40 p-4">
                       <div className="mb-3 flex items-center justify-between gap-3"><h4 className="text-sm font-black text-slate-900">Contrato {indiceContrato + 1}</h4>{form.contratos.length > 1 && <button type="button" onClick={() => quitarContrato(indiceContrato)} className="text-xs font-bold text-rose-700">Eliminar contrato</button>}</div>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <Campo etiqueta="Entidad bancaria"><select value={contrato.entidad_bancaria} onChange={(e) => cambiarContrato(indiceContrato, "entidad_bancaria", e.target.value)} className={inputClass}><option value="">Selecciona una entidad…</option><option value="BBVA">BBVA</option><option value="CaixaBank">CaixaBank</option></select></Campo>
