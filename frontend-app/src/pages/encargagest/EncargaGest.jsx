@@ -281,7 +281,7 @@ export default function EncargaGest() {
       } catch {
         // La siguiente actualización automática volverá a intentarlo sin interrumpir el trabajo.
       }
-    }, 10000);
+    }, 5000);
     return () => window.clearInterval(intervalo);
   }, [modo, pagina, busqueda, filtroEstado, seleccionadoId]);
 
