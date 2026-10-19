@@ -218,6 +218,7 @@ export default function App() {
         <Route path="encargagest/ctn" element={<EncargaGestWorkspace page="ctn" />} />
         <Route path="encargagest/agenda" element={<EncargaGestWorkspace page="agenda" />} />
         <Route path="encargagest/mensajes" element={<EncargaGestWorkspace page="mensajes" />} />
+        <Route path="encargagest/intranet" element={<EncargaGestWorkspace page="intranet" />} />
 
         <Route
           path="notargest"
