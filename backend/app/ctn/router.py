@@ -874,7 +874,7 @@ def reset_password_portal_notaria(
         ).first()
         accion_permiso = "editar" if acceso_existente else "crear"
     _exigir_permiso_portal(usuario, clave_permiso, accion_permiso)
-    password_nueva = secrets.token_urlsafe(12)
+    password_nueva = _normalizar_usuario_portal(notaria.nif)
     usuario_login = _normalizar_usuario_portal(notaria.nif)
     if not usuario_login:
         raise HTTPException(status_code=422, detail="La notaría debe tener NIF registrado en CTN.")
@@ -893,12 +893,13 @@ def reset_password_portal_notaria(
         if acceso is None:
             acceso = EncargoExternoUsuario(notaria_id=notaria_id, usuario=usuario_login,
                 password_hash=_hash_password_portal(password_nueva),
-                password_enc=_cifrar_password_portal(password_nueva), habilitado=True)
+                password_enc=_cifrar_password_portal(password_nueva), password_provisional=True, habilitado=True)
             db.add(acceso)
         else:
             acceso.usuario = usuario_login
             acceso.password_hash = _hash_password_portal(password_nueva)
             acceso.password_enc = _cifrar_password_portal(password_nueva)
+            acceso.password_provisional = True
             acceso.habilitado = True
             acceso.actualizado_en = datetime.utcnow()
     else:
