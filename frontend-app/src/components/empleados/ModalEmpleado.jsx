@@ -3932,21 +3932,64 @@ const permisosDisponibles =
                           {notariasEncargaGest.length === 0 && <p className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">No hay notarías en el catálogo CTN.</p>}
                         </div>
                       )}
+                      <p className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-500">Cada notaría se guarda individualmente para evitar cambios accidentales en otras asignaciones.</p>
+                    </section>
+                  </div>
+                )}
+
+                {/* =================================================
+                    ASIGNACIONES · REPARTO AUTOMÁTICO POR ACTIVIDAD
+                ================================================= */}
+                {pestana === "asignaciones" && (
+                  <div className="space-y-5">
+                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <h3 className="text-base font-bold text-slate-900">Reglas de reparto de expedientes</h3>
+                          <p className="mt-1 max-w-3xl text-sm text-slate-500">Configura para este gestor el departamento, las actividades que puede tramitar, el ámbito territorial y su porcentaje. Al cambiar de actividad, el sistema equilibrará la carga pendiente entre los gestores elegibles.</p>
+                        </div>
+                        <button type="button" disabled={!esAdministrador || cargandoReparto} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now(), actividad: "documentacion-previa", departamento: "", zona_territorial: false, comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">+ Añadir regla</button>
+                      </div>
+                      <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50/60 p-3 text-sm text-blue-900">
+                        <strong>Gestor:</strong> {nombreEmpleado}. Puedes crear varias reglas para la misma persona, por ejemplo una para Documentación previa en Cataluña y otra para Liquidación de impuestos en toda España.
+                      </div>
+                      {errorReparto && <p role="alert" className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorReparto}</p>}
+                      {mensajeReparto && <p role="status" className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{mensajeReparto}</p>}
+                      {cargandoReparto ? <p className="py-8 text-center text-sm text-slate-500">Cargando reglas de reparto…</p> : (
+                        <div className="mt-4 space-y-4">
+                          {reglasReparto.map((regla, indice) => (
+                            <article key={regla._key || indice} className="rounded-xl border border-slate-200 p-4">
+                              <div className="mb-3 flex items-center justify-between gap-3">
+                                <strong className="text-sm text-slate-800">Regla {indice + 1}</strong>
+                                <div className="flex items-center gap-3">
+                                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-600"><input type="checkbox" checked={regla.activa !== false} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, activa: e.target.checked } : r))} className="h-4 w-4 accent-blue-600" />Activa</label>
+                                  <button type="button" onClick={() => setReglasReparto((actual) => actual.filter((_, i) => i !== indice))} className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-bold text-red-700 hover:bg-red-50">Eliminar</button>
+                                </div>
+                              </div>
+                              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                                <label className="block text-xs font-bold text-slate-600">Departamento<input value={regla.departamento || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, departamento: e.target.value } : r))} placeholder="Ej. Prefirma / Posfirma" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-normal" /></label>
+                                <label className="block text-xs font-bold text-slate-600">Actividad<select value={regla.actividad || "documentacion-previa"} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, actividad: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal">{actividadesReparto.map((a) => <option key={a.key} value={a.key}>{a.label}</option>)}</select></label>
+                                <label className="block text-xs font-bold text-slate-600">Porcentaje de reparto (%)<input type="number" min="0" max="100" step="1" value={regla.porcentaje ?? 0} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, porcentaje: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-normal" /></label>
+                                <label className="flex items-center gap-2 self-end rounded-lg bg-slate-50 px-3 py-3 text-sm font-semibold text-slate-700"><input type="checkbox" checked={Boolean(regla.zona_territorial)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, zona_territorial: e.target.checked, comunidad: e.target.checked ? (r.comunidad || "Cataluña") : "" } : r))} className="h-4 w-4 accent-blue-600" />Limitar por zona territorial</label>
+                                {regla.zona_territorial && <label className="block text-xs font-bold text-slate-600">Comunidad autónoma<select value={regla.comunidad || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, comunidad: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Seleccionar comunidad…</option>{comunidadesReparto.map((comunidad) => <option key={comunidad} value={comunidad}>{comunidad}</option>)}</select></label>}
+                                <label className="block text-xs font-bold text-slate-600">Apoderado relacionado (opcional)<select value={regla.apoderado_id || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, apoderado_id: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Sin apoderado específico</option>{apoderadosReparto.map((a) => <option key={a.id} value={a.id}>{[a.nombre, a.apellidos].filter(Boolean).join(" ") || a.usuario || ("Empleado " + a.id)}</option>)}</select></label>
+                              </div>
+                            </article>
+                          ))}
+                          {reglasReparto.length === 0 && <p className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">Todavía no hay reglas. Pulsa «Añadir regla» para configurar las actividades que puede realizar este gestor.</p>}
+                        </div>
+                      )}
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
-                        <p className="text-xs text-slate-500">{notariasEncargaGestSeleccionadas.length} notaría(s) asignada(s)</p>
-                        <button type="button" disabled={!esAdministrador || guardandoNotariasEncargaGest || cargandoNotariasEncargaGest} onClick={async () => {
-                          setGuardandoNotariasEncargaGest(true);
-                          setErrorNotariasEncargaGest("");
-                          setMensajeNotariasEncargaGest("");
+                        <p className="text-xs text-slate-500">{reglasReparto.filter((r) => r.activa !== false).length} regla(s) activa(s)</p>
+                        <button type="button" disabled={!esAdministrador || guardandoReparto || cargandoReparto} onClick={async () => {
+                          setGuardandoReparto(true); setErrorReparto(""); setMensajeReparto("");
                           try {
-                            await guardarAsignacionNotariasEncargaGest(empleadoId, notariasEncargaGestSeleccionadas);
-                            setMensajeNotariasEncargaGest("Asignaciones de EncargaGest guardadas correctamente.");
-                          } catch (e) {
-                            setErrorNotariasEncargaGest(e?.response?.data?.detail || "No se han podido guardar las asignaciones.");
-                          } finally {
-                            setGuardandoNotariasEncargaGest(false);
-                          }
-                        }} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">{guardandoNotariasEncargaGest ? "Guardando…" : "Guardar asignaciones"}</button>
+                            const payload = reglasReparto.map(({ _key, ...r }) => ({ ...r, porcentaje: Number(r.porcentaje || 0), apoderado_id: r.apoderado_id || null }));
+                            await guardarReglasRepartoGestor(empleadoId, payload);
+                            setMensajeReparto("Reglas de reparto guardadas correctamente.");
+                          } catch (e) { setErrorReparto(e?.response?.data?.detail || "No se pudieron guardar las reglas de reparto."); }
+                          finally { setGuardandoReparto(false); }
+                        }} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">{guardandoReparto ? "Guardando…" : "Guardar reglas de reparto"}</button>
                       </div>
                     </section>
                   </div>
