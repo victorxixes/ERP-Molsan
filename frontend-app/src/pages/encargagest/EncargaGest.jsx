@@ -19,7 +19,6 @@ const ESTADOS = [
 
 const FILTROS_BANDEJA = [
   { valor: "", texto: "Total de encargos" },
-  { valor: "GRUPO_EN_GESTION", texto: "En gestión" },
   { valor: "GRUPO_EN_PROCESO", texto: "En proceso" },
   { valor: "GRUPO_REQUIEREN_ATENCION", texto: "Requieren atención" },
   { valor: "GRUPO_FIRMADOS", texto: "Firmados" },
@@ -606,7 +605,6 @@ export default function EncargaGest() {
 
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-amber-500">▤</span></div><p className="mt-1 text-xs text-slate-500">Solicitudes registradas</p></div>
-          <div className="ag-kpi ag-kpi-violeta eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">En gestión</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-blue-700">{(resumen.por_estado?.EN_GESTION || 0) + (resumen.por_estado?.EN_REVISION || 0)}</strong><span className="text-xl text-blue-500">◷</span></div><p className="mt-1 text-xs text-slate-500">Revisión y tramitación</p></div>
           <div className="ag-kpi ag-kpi-verde eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">En proceso</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{resumen.por_estado?.RECIBIDO || 0}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Encargos recibidos pendientes de gestión</p></div>
           <div className="ag-kpi ag-kpi-ambar eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-amber-700">Requieren atención</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-amber-900">{resumen.requieren_atencion || 0}</strong><span className="text-xl text-amber-600">!</span></div><p className="mt-1 text-xs text-amber-800">Incidencias o documentación pendiente</p></div>
           <div className="ag-kpi ag-kpi-verde eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-emerald-700">Firmados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-emerald-800">{(resumen.por_estado?.RESUELTO || 0) + (resumen.por_estado?.CERRADO || 0)}</strong><span className="text-xl text-emerald-600">✓</span></div><p className="mt-1 text-xs text-slate-500">Encargos resueltos o cerrados</p></div>
