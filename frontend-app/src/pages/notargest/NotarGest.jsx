@@ -322,7 +322,7 @@ export default function NotarGest() {
       usernameLabel="DNI / NIF del notario"
       usernamePlaceholder="DNI/NIF completo, incluida la letra"
       passwordPlaceholder="Introduce tu contraseña"
-      footnote="Utiliza las credenciales facilitadas por MOLSAN. Si se te indicó el acceso inicial mediante DNI/NIF, introdúcelo completo, incluida la letra."
+      footnote="Usuario y contraseña inicial: NIF completo con letra, sin espacios ni guiones. Después podrás cambiarla desde tu perfil."
       submitLabel="Entrar en NotarGest EP"
       username={usuario}
       setUsername={(valor) => setUsuario(valor.toUpperCase())}
