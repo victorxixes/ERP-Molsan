@@ -36,7 +36,7 @@ export default function EncargaGestWorkspace({ page }) {
       />
       <main className="relative min-h-screen px-4 py-6 lg:px-6">
         {page === "encargos" && <EncargaGest />}
-        {page === "ctn" && <Ctn />
+        {page === "ctn" && <Ctn />}
         {page === "agenda" && <Agenda />}
         {page === "mensajes" && (
           empleado?.id
