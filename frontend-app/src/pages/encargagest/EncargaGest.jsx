@@ -603,7 +603,7 @@ export default function EncargaGest() {
               </form>
             </div>
             {cargando ? <div className="p-10 text-center text-sm text-slate-500">Cargando encargos…</div> : !filas.length ? (
-              <div className="p-10 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-xl text-slate-400">▤</div><h3 className="mt-3 text-sm font-bold text-slate-800">Todavía no hay encargos</h3><p className="mt-1 text-xs leading-5 text-slate-500">Crea el primer encargo y empieza a gestionar las solicitudes recibidas.</p><button type="button" onClick={() => setModalNuevo(true)} className="mt-4 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white">＋ Registrar encargo</button></div>
+              <div className="p-10 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-xl text-slate-400">▤</div><h3 className="mt-3 text-sm font-bold text-slate-800">Todavía no hay encargos</h3><p className="mt-1 text-xs leading-5 text-slate-500">Crea el primer encargo desde el botón Registrar encargo de la parte superior.</p></div>
             ) : (
               <div className="divide-y divide-slate-100">
                 {filas.map((item) => (
