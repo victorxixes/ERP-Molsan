@@ -302,7 +302,7 @@ export default function EncargaGest() {
       }
     }, 5000);
     return () => window.clearInterval(intervalo);
-  }, [modo, pagina, busqueda, filtroEstado, seleccionadoId]);
+  }, [modo, pagina, busqueda, filtroEstado, filtroNotariaId, seleccionadoId]);
 
   const filas = useMemo(() => items, [items]);
   const totalPaginas = Math.max(1, Math.ceil(total / 20));
@@ -874,7 +874,7 @@ export default function EncargaGest() {
               <div className="eg-directorio-grid">
                 {directorioItems.map((notaria) => (
                   <article className="eg-directorio-card" key={notaria.id}>
-                    <div className="eg-directorio-card-top"><span className="eg-directorio-avatar">{String(notaria.nombre || "N").split(/\\s+/).map((parte) => parte[0]).join("").slice(0,2).toUpperCase()}</span><span className={notaria.habilitada ? "eg-directorio-estado is-enabled" : "eg-directorio-estado"}>{notaria.habilitada ? "Habilitada" : notaria.tiene_acceso ? "Deshabilitada" : "Sin acceso"}</span></div>
+                    <div className="eg-directorio-card-top"><span className="eg-directorio-avatar">{String(notaria.nombre || "N").split(/\s+/).map((parte) => parte[0]).join("").slice(0,2).toUpperCase()}</span><span className={notaria.habilitada ? "eg-directorio-estado is-enabled" : "eg-directorio-estado"}>{notaria.habilitada ? "Habilitada" : notaria.tiene_acceso ? "Deshabilitada" : "Sin acceso"}</span></div>
                     <h3>{notaria.nombre}</h3>
                     <p className="eg-directorio-localidad">{[notaria.municipio, notaria.provincia].filter(Boolean).join(" · ") || "Localidad no indicada"}</p>
                     <p className="eg-directorio-nif">NIF: {notaria.nif || "No registrado en CTN"}</p>
@@ -898,7 +898,7 @@ export default function EncargaGest() {
         {mensaje && <div className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">{mensaje}</div>}
         {errorAccion && <div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">{errorAccion}</div>}
 
-        <section className={modo === "interno" && esAdminEncargaGest && !filtroNotariaId ? "grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6" : "grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6"}>
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
           <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-blue-600">▤</span></div><p className="mt-1 text-xs text-slate-500">Todas las solicitudes</p></div>
           <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_RECIBIDOS")} className="ag-kpi ag-kpi-verde eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{(resumen.por_estado?.EN_PROCESO || 0) + (resumen.por_estado?.RECIBIDO || 0) + (resumen.por_estado?.EN_REVISION || 0) + (resumen.por_estado?.DOCUMENTACION_PENDIENTE || 0) + (resumen.por_estado?.EN_GESTION || 0)}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Pendientes de revisión y autorización</p></button>
           <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_AUTORIZADOS")} className="ag-kpi eg-kpi border border-indigo-100 bg-indigo-50/60 text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-indigo-700">Autorizados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-indigo-800">{resumen.por_estado?.AUTORIZADO || 0}</strong><span className="text-xl text-indigo-600">✓</span></div><p className="mt-1 text-xs text-indigo-800">Validados para continuar</p></button>
@@ -906,7 +906,7 @@ export default function EncargaGest() {
           <div className="ag-kpi ag-kpi-verde eg-kpi border border-slate-200 bg-slate-50" aria-label="Firmados pendiente de integración con ApoderaGest"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500">Firmados · próximamente</p><div className="mt-2 flex items-end justify-between"><strong className="text-lg font-black text-slate-600">EN ESPERA</strong><span className="text-xl text-slate-400">◷</span></div><p className="mt-1 text-xs leading-4 text-slate-500">Pendiente de integración con las firmas reales de ApoderaGest.</p></div>
         </section>
 
-        <section className={modo === "interno" && esAdminEncargaGest && !filtroNotariaId ? "mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]" : "mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]"}>
+        <section className="mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]">
           <div className="eg-panel min-w-0">
             <div className="eg-panel-head">
               <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span>{modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary whitespace-nowrap">＋ Nuevo encargo</button>}</div></div>
