@@ -624,20 +624,8 @@ export default function EncargaGest() {
             { key: "ctn", label: "CTN", icon: "building" },
             { key: "agenda", label: "Agenda", icon: "calendar" },
             { key: "mensajes", label: "Mensajes", icon: "message" },
-            { key: "encargos", label: "Encargos", icon: "clipboard" },
-            { key: "accesos", label: "Accesos notarías", icon: "globe" },
           ]}
-          activeNavigationItem={modalAccesos ? "Accesos notarías" : "Encargos"}
           onNavigationItemClick={(label) => {
-            if (label === "Accesos notarías") {
-              abrirAccesos();
-              return;
-            }
-            if (label === "Encargos") {
-              setModalAccesos(false);
-              window.scrollTo({ top: 0, behavior: "smooth" });
-              return;
-            }
             const rutas = { CTN: "/ctn", Agenda: "/agenda", Mensajes: "/mensajes" };
             if (rutas[label]) navigate(rutas[label]);
           }}
