@@ -68,6 +68,7 @@ def crear_tablas_encargagest():
     migraciones = {
         "encargagest_usuarios": {
             "password_enc": "TEXT",
+            "password_provisional": "BOOLEAN NOT NULL DEFAULT TRUE",
         },
         "encargagest_encargos": {
             "capital_inscrito": "NUMERIC(14, 2)",
@@ -371,7 +372,17 @@ def login_encargagest(datos: LoginEncargaGest, db: Session = Depends(get_db)):
         """), {"id": acceso.notaria_id, "usuario": usuario_norm})
         db.commit()
         raise HTTPException(status_code=401, detail="El acceso EncargaGest está deshabilitado.")
-    if not _verificar_password(datos.password, acceso.password_hash):
+    notaria = db.query(Notaria).filter(Notaria.id == acceso.notaria_id).first()
+    password_nif = bool(notaria and notaria.nif and hmac.compare_digest(_normalizar_usuario(datos.password), _normalizar_usuario(notaria.nif)))
+    valido = _verificar_password(datos.password, acceso.password_hash)
+    if not valido and acceso.password_provisional and password_nif:
+        acceso.password_hash = _hash_password(_normalizar_usuario(notaria.nif))
+        acceso.password_enc = _cifrar_password(_normalizar_usuario(notaria.nif))
+        acceso.usuario = _normalizar_usuario(notaria.nif)
+        acceso.habilitado = True
+        acceso.actualizado_en = datetime.utcnow()
+        valido = True
+    if not valido:
         db.execute(text("""
             INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
             VALUES (:id, 'encargagest', 'LOGIN', 'fallido', :usuario, 'Credenciales incorrectas')
@@ -383,7 +394,6 @@ def login_encargagest(datos: LoginEncargaGest, db: Session = Depends(get_db)):
         VALUES (:id, 'encargagest', 'LOGIN', 'correcto', :usuario, 'Inicio de sesión correcto')
     """), {"id": acceso.notaria_id, "usuario": usuario_norm})
     db.commit()
-    notaria = db.query(Notaria).filter(Notaria.id == acceso.notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=401, detail="La notaría asociada al acceso no está disponible.")
     token = jwt.encode({
@@ -397,11 +407,71 @@ def login_encargagest(datos: LoginEncargaGest, db: Session = Depends(get_db)):
 
 
 @router.get("/me")
-def mi_sesion_encargagest(usuario=Depends(get_encargagest_actor)):
+def mi_sesion_encargagest(usuario=Depends(get_encargagest_actor), db: Session = Depends(get_db)):
     if _es_externo(usuario):
-        return {"modo": "externo", "notaria_id": usuario["notaria_id"], "notaria_nombre": usuario["nombre"], "usuario": usuario["usuario"]}
+        notaria = db.query(Notaria).filter(Notaria.id == usuario["notaria_id"]).first()
+        if not notaria:
+            raise HTTPException(status_code=404, detail="No se encuentra la ficha CTN asociada.")
+        return {
+            "modo": "externo",
+            "notaria_id": notaria.id,
+            "notaria_nombre": usuario["nombre"],
+            "usuario": usuario["usuario"],
+            "nombre": usuario["nombre"],
+            "nif": notaria.nif,
+            "codigo": getattr(notaria, "codigo", None),
+            "telefono": getattr(notaria, "telefono", None),
+            "direccion": getattr(notaria, "direccion", None),
+            "cp": getattr(notaria, "cp", None),
+            "municipio": getattr(notaria, "municipio", None),
+            "provincia": getattr(notaria, "provincia", None),
+            "vc": getattr(notaria, "vc", None),
+            "apoderado": getattr(notaria, "apoderado", None),
+            "departamento_cancelaciones": getattr(notaria, "departamento_cancelaciones", None),
+            "departamento_copias": getattr(notaria, "departamento_copias", None),
+            "otros_departamentos": getattr(notaria, "otros_departamentos", None),
+            "observacion": getattr(notaria, "observacion", None),
+        }
     _autorizar(usuario, "ver")
     return {"modo": "interno", "nombre": _nombre_usuario(usuario), "empleado_id": usuario.id}
+
+
+class CambioPasswordEncargaGest(BaseModel):
+    password_actual: constr(min_length=1, max_length=128)
+    password_nueva: constr(min_length=8, max_length=128)
+
+
+@router.post("/cambiar-password")
+def cambiar_password_encargagest(datos: CambioPasswordEncargaGest, usuario=Depends(get_encargagest_actor), db: Session = Depends(get_db)):
+    if not _es_externo(usuario):
+        raise HTTPException(status_code=403, detail="El cambio de contraseña desde el perfil es para las cuentas externas de notaría.")
+    acceso = db.query(EncargoExternoUsuario).filter(
+        EncargoExternoUsuario.id == usuario["usuario_id"],
+        EncargoExternoUsuario.notaria_id == usuario["notaria_id"],
+        EncargoExternoUsuario.habilitado.is_(True),
+    ).first()
+    notaria = db.query(Notaria).filter(Notaria.id == usuario["notaria_id"]).first()
+    if not acceso or not notaria:
+        raise HTTPException(status_code=401, detail="La cuenta externa no está disponible.")
+    actual_valida = _verificar_password(datos.password_actual, acceso.password_hash)
+    if not actual_valida and acceso.password_provisional and notaria.nif:
+        actual_valida = hmac.compare_digest(_normalizar_usuario(datos.password_actual), _normalizar_usuario(notaria.nif))
+    if not actual_valida:
+        raise HTTPException(status_code=400, detail="La contraseña actual no es correcta.")
+    nueva = datos.password_nueva.strip()
+    if not nueva or _normalizar_usuario(nueva) == _normalizar_usuario(notaria.nif):
+        raise HTTPException(status_code=400, detail="La nueva contraseña debe ser distinta del NIF.")
+    acceso.password_hash = _hash_password(nueva)
+    acceso.password_enc = _cifrar_password(nueva)
+    acceso.password_provisional = False
+    acceso.actualizado_en = datetime.utcnow()
+    acceso.usuario = _normalizar_usuario(notaria.nif)
+    db.execute(text("""
+        INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
+        VALUES (:id, 'encargagest', 'CAMBIO_PASSWORD', 'correcto', :usuario, 'La notaría cambió su contraseña desde su perfil')
+    """), {"id": notaria.id, "usuario": acceso.usuario})
+    db.commit()
+    return {"ok": True, "mensaje": "Contraseña actualizada correctamente."}
 
 
 @router.get("/accesos")
