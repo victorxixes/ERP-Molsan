@@ -849,10 +849,10 @@ export default function EncargaGest() {
       </header>
 
       <main className="eg-main w-full max-w-none px-1 pb-4">
-        {modo === "interno" && (
+        {modo === "interno" && !esAdminEncargaGest && (
           <section className="mb-5 flex flex-col gap-3 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">{esAdminEncargaGest ? "Administración de notarías" : "Notarías asignadas"}</p><p className="mt-1 text-xs text-slate-500">{esAdminEncargaGest ? "Selecciona una notaría habilitada para consultar y resolver sus encargos." : "Solo aparecen las notarías asignadas a tu usuario."}</p></div>
-            <label className="w-full sm:max-w-xl"><span className="mb-1 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Notaría activa</span><select value={filtroNotariaId} onChange={(e) => { const id = e.target.value; setFiltroNotariaId(id); setPagina(1); cargarTodo(id); }} className={inputClass}><option value="">{esAdminEncargaGest ? "Selecciona una notaría habilitada…" : "Todas mis notarías asignadas"}</option>{notarias.map((n) => <option key={n.id} value={String(n.id)}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}</select></label>
+            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">Notarías asignadas</p><p className="mt-1 text-xs text-slate-500">Solo aparecen las notarías asignadas a tu usuario.</p></div>
+            <label className="w-full sm:max-w-xl"><span className="mb-1 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Notaría activa</span><select value={filtroNotariaId} onChange={(e) => { const id = e.target.value; setFiltroNotariaId(id); setPagina(1); cargarTodo(id); }} className={inputClass}><option value="">Todas mis notarías asignadas</option>{notarias.map((n) => <option key={n.id} value={String(n.id)}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}</select></label>
           </section>
         )}
         {modo === "interno" && esAdminEncargaGest && (
