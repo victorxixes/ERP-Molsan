@@ -337,10 +337,10 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
         db.commit()
         raise HTTPException(status_code=401, detail="Acceso no habilitado. Contacta con Molsan.")
     password_nif = hmac.compare_digest(normalizar_nif(data.password), nif)
-    if not n.notargest_password_hash and password_nif:
+    if password_nif and (not n.notargest_password_hash or n.notargest_cambiar_password):
         n.notargest_password_hash = hash_password(nif)
         n.notargest_password_enc = cifrar_password_portal(nif)
-        n.notargest_cambiar_password = False
+        n.notargest_cambiar_password = True
         valido = True
     elif n.notargest_password_hash:
         valido = verificar_password(data.password, n.notargest_password_hash)
@@ -409,6 +409,10 @@ def cambiar_password(data: CambioPassword, n=Depends(get_notario), db: Session =
     n.notargest_password_hash = hash_password(data.password_nueva)
     n.notargest_password_enc = cifrar_password_portal(data.password_nueva)
     n.notargest_cambiar_password = False
+    db.execute(text("""
+        INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
+        VALUES (:id, 'notargest', 'CAMBIO_PASSWORD', 'correcto', :usuario, 'La notaría cambió su contraseña desde su perfil')
+    """), {"id": n.id, "usuario": normalizar_nif(n.nif)})
     db.commit()
     return {"ok": True, "mensaje": "Contraseña actualizada"}
 
