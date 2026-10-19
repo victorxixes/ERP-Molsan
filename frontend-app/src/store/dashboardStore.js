@@ -10,6 +10,10 @@ const ESTADO_INICIAL = {
 
   mediaFirmaPorTipoOperacion: [],
 
+  firmasRealizadas: null,
+
+  errorFirmas: null,
+
   loading: false,
 
   error: null,
@@ -31,12 +35,38 @@ export const useDashboardStore = create(
 
       try {
 
-        const response = await axios.get(
-          "/dashboard/expedientes"
-        );
+        const [dashboardResult, firmasResult] = await Promise.allSettled([
+          axios.get("/dashboard/expedientes"),
+          axios.get("/informes/firmas"),
+        ]);
 
-        const datos =
-          response?.data || {};
+        if (dashboardResult.status === "rejected") {
+          throw dashboardResult.reason;
+        }
+
+        const response = dashboardResult.value;
+        const datos = response?.data || {};
+
+        const firmasPayload =
+          firmasResult.status === "fulfilled"
+            ? firmasResult.value?.data
+            : null;
+
+        const resumenFirmas = firmasPayload?.resumen;
+        const firmasRealizadas = resumenFirmas
+          ? {
+              total: Number(resumenFirmas.total_firmas ?? 0) || 0,
+              presencial: Number(resumenFirmas.presencial ?? 0) || 0,
+              videoconferencia: Number(resumenFirmas.videoconferencia ?? 0) || 0,
+              sin_clasificar: Number(resumenFirmas.sin_clasificar ?? 0) || 0,
+            }
+          : null;
+
+        const errorFirmas =
+          firmasResult.status === "rejected"
+            ? (firmasResult.reason?.response?.data?.detail ||
+              "No se han podido cargar las firmas reales desde el informe de firmas.")
+            : null;
 
 
         const totalExpedientes =
@@ -101,6 +131,10 @@ export const useDashboardStore = create(
 
           mediaFirmaPorTipoOperacion,
 
+          firmasRealizadas,
+
+          errorFirmas,
+
           loading: false,
 
           error: null,
@@ -115,6 +149,8 @@ export const useDashboardStore = create(
           expedientesPorActividad,
 
           mediaFirmaPorTipoOperacion,
+
+          firmasRealizadas,
 
         };
 
