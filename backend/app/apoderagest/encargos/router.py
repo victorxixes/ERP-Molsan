@@ -344,6 +344,7 @@ def firmar_encargo(
 
 
 class AceptarEncargo(BaseModel):
+    fecha_envio: date
     numero_solicitud_pnc: str = Field(..., min_length=1, max_length=200)
     fecha_solicitud_pnc: date
     fecha_prevista_firma: date
@@ -427,6 +428,10 @@ def aceptar_encargo(
     ])).strip() or str(getattr(expediente, "apoderado", "") or "").strip()
 
     try:
+        if hasattr(expediente, "fecha_envio_notario"):
+            expediente.fecha_envio_notario = datos.fecha_envio
+        elif hasattr(expediente, "fecha_envio"):
+            expediente.fecha_envio = datos.fecha_envio
         expediente.numero_solicitud_pnc = datos.numero_solicitud_pnc.strip()
         expediente.fecha_solicitud_pnc = datos.fecha_solicitud_pnc
         expediente.fecha_prevista_firma = datos.fecha_prevista_firma
