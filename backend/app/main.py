@@ -1028,7 +1028,6 @@ def migrar_columnas_credenciales_portales_inicio():
                 f"No se pudo preparar {etiqueta}; se cancela el arranque para evitar errores en las consultas."
             )
 
-
 # ============================================================
 # ORDEN DE ARRANQUE
 # ============================================================
