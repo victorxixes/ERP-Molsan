@@ -383,7 +383,7 @@ export default function EncargaGest() {
     ...actual,
     contratos: actual.contratos.map((contrato, i) => i === indice ? {
       ...contrato,
-      fincas: [...contrato.fincas, { numero_finca: "", capital_inscrito: "", numero_inscripcion: "", municipio_registro: "", registro_propiedad: "" }],
+      fincas: [...contrato.fincas, { numero_finca: "", capital_inscrito: "", numero_inscripcion: "", seccion: "", municipio_registro: "", registro_propiedad: "" }],
     } : contrato),
   }));
 
@@ -883,7 +883,7 @@ export default function EncargaGest() {
                         </div>
                         <div className="mt-3 space-y-3">
                           {(contrato.fincas?.length ? contrato.fincas : [{}]).map((finca, fincaIndex) => (
-                            <div key={"detalle-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-2 gap-3 rounded-lg bg-slate-50 p-3 md:grid-cols-5">
+                            <div key={"detalle-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-2 gap-3 rounded-lg bg-slate-50 p-3 md:grid-cols-3 2xl:grid-cols-6">
                               <div><p className="text-[10px] text-slate-500">Número de finca</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.numero_finca || "—"}</p></div>
                               <div><p className="text-[10px] text-slate-500">Inscripción</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.numero_inscripcion || "—"}</p></div>
                               <div><p className="text-[10px] text-slate-500">Sección</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.seccion || "—"}</p></div>
@@ -1025,7 +1025,7 @@ export default function EncargaGest() {
                       <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><h5 className="text-xs font-black uppercase tracking-wider text-slate-700">Fincas del contrato ({contrato.fincas.length})</h5><button type="button" onClick={() => anadirFinca(indiceContrato)} className="rounded-lg border border-blue-300 bg-white px-3 py-2 text-[11px] font-extrabold text-blue-800">＋ Añadir finca</button></div>
                       <div className="mt-3 space-y-3">
                         {contrato.fincas.map((finca, indiceFinca) => (
-                          <div key={indiceFinca} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-2 xl:grid-cols-5">
+                          <div key={indiceFinca} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
                             <Campo etiqueta="Número de finca"><input maxLength={150} value={finca.numero_finca} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "numero_finca", e.target.value)} placeholder="N.º finca registral" className={inputClass} /></Campo>
                             <Campo etiqueta="Inscripción"><input maxLength={100} value={finca.numero_inscripcion ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "numero_inscripcion", e.target.value)} placeholder="Inscripción registral" className={inputClass} /></Campo>
                             <Campo etiqueta="Sección"><input maxLength={100} value={finca.seccion ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "seccion", e.target.value)} placeholder="Sección registral" className={inputClass} /></Campo>
@@ -1119,7 +1119,7 @@ export default function EncargaGest() {
                   <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><h5 className="text-xs font-black uppercase tracking-wider text-slate-700">Fincas ({contrato.fincas.length})</h5><button type="button" onClick={() => anadirFincaEdicion(contratoIndex)} className="rounded-lg border border-blue-300 bg-white px-3 py-2 text-[11px] font-extrabold text-blue-800">＋ Añadir finca</button></div>
                   <div className="mt-3 space-y-3">
                     {contrato.fincas.map((finca, fincaIndex) => (
-                      <div key={"editar-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3 md:grid-cols-2 xl:grid-cols-5">
+                      <div key={"editar-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
                         <Campo etiqueta="Número de finca"><input maxLength={150} value={finca.numero_finca} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "numero_finca", e.target.value)} className={inputClass} /></Campo>
                         <Campo etiqueta="Inscripción"><input maxLength={100} value={finca.numero_inscripcion} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "numero_inscripcion", e.target.value)} placeholder="Inscripción registral" className={inputClass} /></Campo>
                         <Campo etiqueta="Sección"><input maxLength={100} value={finca.seccion ?? ""} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "seccion", e.target.value)} placeholder="Sección registral" className={inputClass} /></Campo>
