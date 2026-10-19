@@ -8,7 +8,7 @@ import { useAuthStore } from "../../store/authStore";
 
 const ESTADOS = [
   { valor: "", texto: "Todos los estados" },
-  { valor: "EN_PROCESO", texto: "En proceso" },
+  { valor: "EN_PROCESO", texto: "Recibido · pendiente de autorizar" },
   { valor: "RECIBIDO", texto: "Recibido" },
   { valor: "AUTORIZADO", texto: "Autorizado" },
   { valor: "INCIDENCIA", texto: "Incidencia" },
