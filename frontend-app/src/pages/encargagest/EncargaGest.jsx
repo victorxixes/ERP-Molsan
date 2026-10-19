@@ -684,10 +684,7 @@ export default function EncargaGest() {
                     <div className="min-w-[190px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span>{modo === "interno" && detalle.estado === "EN_PROCESO" ? <button type="button" onClick={() => cambiarEstado("RECIBIDO")} className="w-full rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-sky-700">Recepcionar encargo</button> : modo === "interno" && detalle.estado !== "FIRMADO" ? <select aria-label="Cambiar estado del encargo" value={detalle.estado} onChange={(e) => cambiarEstado(e.target.value)} className={inputClass}>{ESTADOS.filter((x) => x.valor).map((x) => <option key={x.valor} value={x.valor}>{x.texto}</option>)}</select> : <div className="pt-1"><EtiquetaEstado estado={detalle.estado} />{detalle.estado === "FIRMADO" && <p className="mt-1 text-[10px] font-semibold text-emerald-700">Encargo cerrado definitivamente</p>}</div>}</div>
                   </div>
 {modo === "externo" ? (
-                  <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Capital inscrito</span><p className="mt-1 text-xs font-bold text-slate-800">{euros(detalle.capital_inscrito)}</p></div>
-                    <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Fecha de constitución</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.fecha_constitucion ? new Date(detalle.fecha_constitucion + "T00:00:00").toLocaleDateString("es-ES") : "—"}</p></div>
-                  </div>
+                  <div className="mt-5" />
                   ) : (
                   <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
                     <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Tipo de encargo</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.tipo_encargo}</p></div>
@@ -710,13 +707,15 @@ export default function EncargaGest() {
                       <div className="border-b border-indigo-100 pb-2"><dt className="mb-1 text-slate-500">Nombre del solicitante</dt><dd className="break-words font-semibold text-slate-800">{detalle.titular || "—"}</dd></div>
                       <div className="flex items-start justify-between gap-3 border-b border-indigo-100 pb-2"><dt className="text-slate-500">NIF / CIF del solicitante</dt><dd className="break-all text-right font-semibold text-slate-800">{detalle.nif_titular || "—"}</dd></div>
                       <div className="flex items-start justify-between gap-3 border-b border-indigo-100 pb-2"><dt className="text-slate-500">Tipo de encargo</dt><dd className="text-right font-semibold text-slate-800">{detalle.tipo_encargo || "—"}</dd></div>
-                      <div className="flex items-start justify-between gap-3"><dt className="text-slate-500">Prioridad</dt><dd className="text-right font-semibold text-slate-800">{detalle.prioridad || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-indigo-100 pb-2"><dt className="text-slate-500">Prioridad</dt><dd className="text-right font-semibold text-slate-800">{detalle.prioridad || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3"><dt className="text-slate-500">Entidad bancaria</dt><dd className="text-right font-semibold text-slate-800">{detalle.entidad_bancaria || "—"}</dd></div>
                     </dl>
                   </section>
                   <section className="min-w-0">
                     <div className="flex items-center justify-between gap-3"><h3 className="text-sm font-extrabold text-slate-900">Datos de la solicitud</h3><span className="shrink-0 text-[10px] text-slate-400">CTN · ID {detalle.notaria_id}</span></div>
                     <dl className="mt-3 space-y-3 text-xs">
-                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Entidad bancaria</dt><dd className="text-right font-semibold text-slate-800">{detalle.entidad_bancaria || "—"}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Capital inscrito</dt><dd className="text-right font-semibold text-slate-800">{euros(detalle.capital_inscrito)}</dd></div>
+                      <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Fecha de constitución</dt><dd className="text-right font-semibold text-slate-800">{detalle.fecha_constitucion ? new Date(detalle.fecha_constitucion + "T00:00:00").toLocaleDateString("es-ES") : "—"}</dd></div>
                       <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Número de préstamo</dt><dd className="text-right font-semibold text-slate-800">{detalle.numero_prestamo || "—"}</dd></div>
                       <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Número de finca</dt><dd className="text-right font-semibold text-slate-800">{detalle.numero_finca || "—"}</dd></div>
                       <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"><dt className="text-slate-500">Municipio del registro</dt><dd className="text-right font-semibold text-slate-800">{detalle.municipio_registro || "—"}</dd></div>
