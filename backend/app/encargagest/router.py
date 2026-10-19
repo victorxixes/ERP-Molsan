@@ -608,6 +608,131 @@ def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(g
     return {"ok": True, "notaria_id": notaria.id, "usuario": acceso.usuario, "habilitado": bool(acceso.habilitado), "password_actualizada": bool(datos.password)}
 
 
+ACTIVIDADES_REPARTO = [
+    {"key": "documentacion-previa", "label": "Documentación previa"},
+    {"key": "sede-notarial", "label": "Sede notarial"},
+    {"key": "sede-notarial-protocolo", "label": "Sede notarial con protocolo"},
+    {"key": "liquidacion-impuestos", "label": "Liquidación de impuestos"},
+    {"key": "tramitacion-inscripcion", "label": "Tramitación inscripción"},
+    {"key": "defectos-registrales", "label": "Defectos registrales"},
+    {"key": "facturacion-cierre", "label": "Facturación y cierre"},
+]
+COMUNIDADES_REPARTO = [
+    "Andalucía", "Aragón", "Asturias", "Illes Balears", "Canarias", "Cantabria",
+    "Castilla-La Mancha", "Castilla y León", "Cataluña", "Comunitat Valenciana",
+    "Extremadura", "Galicia", "Comunidad de Madrid", "Región de Murcia",
+    "Comunidad Foral de Navarra", "País Vasco", "La Rioja", "Ceuta", "Melilla",
+]
+
+
+class ConfiguracionNotariaGestor(BaseModel):
+    habilitada: bool = False
+    gestor_id: int | None = None
+
+
+class ReglasRepartoGestor(BaseModel):
+    reglas: list[dict] = Field(default_factory=list)
+
+
+@router.get("/gestion/empleados/{empleado_id}/reparto")
+def obtener_reglas_reparto_gestor(empleado_id: int, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _autorizar(usuario, "ver")
+    if not _es_administrador_encargagest(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede consultar las reglas de reparto.")
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    if not empleado:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado.")
+    return {"empleado_id": empleado.id, "reglas": getattr(empleado, "reparto_actividades_json", None) or [], "actividades": ACTIVIDADES_REPARTO, "comunidades": COMUNIDADES_REPARTO}
+
+
+@router.put("/gestion/empleados/{empleado_id}/reparto")
+def guardar_reglas_reparto_gestor(empleado_id: int, datos: ReglasRepartoGestor, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _autorizar(usuario, "editar")
+    if not _es_administrador_encargagest(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede modificar las reglas de reparto.")
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    if not empleado:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado.")
+    claves_actividad = {x["key"] for x in ACTIVIDADES_REPARTO}
+    comunidades_normalizadas = {x.casefold(): x for x in COMUNIDADES_REPARTO}
+    reglas_limpias = []
+    for indice, regla in enumerate(datos.reglas):
+        actividad = str(regla.get("actividad") or "").strip()
+        if actividad not in claves_actividad:
+            raise HTTPException(status_code=422, detail=f"Actividad no válida en la regla {indice + 1}.")
+        try:
+            porcentaje = float(regla.get("porcentaje", 0))
+        except (TypeError, ValueError):
+            raise HTTPException(status_code=422, detail=f"Porcentaje no válido en la regla {indice + 1}.")
+        if porcentaje < 0 or porcentaje > 100:
+            raise HTTPException(status_code=422, detail="El porcentaje debe estar entre 0 y 100.")
+        territorial = bool(regla.get("zona_territorial", False))
+        comunidad = str(regla.get("comunidad") or "").strip()
+        if territorial:
+            if comunidad.casefold() not in comunidades_normalizadas:
+                raise HTTPException(status_code=422, detail=f"Selecciona una comunidad autónoma válida en la regla {indice + 1}.")
+            comunidad = comunidades_normalizadas[comunidad.casefold()]
+        else:
+            comunidad = ""
+        apoderado_id = regla.get("apoderado_id")
+        if apoderado_id in ("", None):
+            apoderado_id = None
+        else:
+            try:
+                apoderado_id = int(apoderado_id)
+            except (TypeError, ValueError):
+                raise HTTPException(status_code=422, detail="El apoderado seleccionado no es válido.")
+            if not db.query(Empleado.id).filter(Empleado.id == apoderado_id).first():
+                raise HTTPException(status_code=422, detail="El apoderado seleccionado ya no existe.")
+        reglas_limpias.append({
+            "actividad": actividad,
+            "departamento": str(regla.get("departamento") or "").strip()[:120],
+            "zona_territorial": territorial,
+            "comunidad": comunidad,
+            "porcentaje": porcentaje,
+            "apoderado_id": apoderado_id,
+            "activa": bool(regla.get("activa", True)),
+        })
+    empleado.reparto_actividades_json = reglas_limpias
+    db.commit()
+    return {"ok": True, "empleado_id": empleado.id, "reglas": reglas_limpias}
+
+
+@router.put("/gestion/notarias/{notaria_id}/responsable")
+def guardar_responsable_notaria(notaria_id: int, datos: ConfiguracionNotariaGestor, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _autorizar(usuario, "editar")
+    if not _es_administrador_encargagest(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede habilitar notarías y asignar responsables.")
+    notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
+    if not notaria:
+        raise HTTPException(status_code=404, detail="Notaría no encontrada en CTN.")
+    gestor = None
+    if datos.habilitada:
+        if not datos.gestor_id:
+            raise HTTPException(status_code=422, detail="Selecciona un gestor responsable para habilitar la notaría.")
+        gestor = db.query(Empleado).filter(Empleado.id == datos.gestor_id, Empleado.activo.is_(True)).first()
+        if not gestor:
+            raise HTTPException(status_code=422, detail="El gestor seleccionado no existe o está inactivo.")
+    try:
+        db.execute(text("""
+            INSERT INTO encargagest_notaria_gestor (notaria_id, gestor_id, habilitada, actualizado_en)
+            VALUES (:notaria_id, :gestor_id, :habilitada, CURRENT_TIMESTAMP)
+            ON CONFLICT (notaria_id) DO UPDATE SET gestor_id = EXCLUDED.gestor_id, habilitada = EXCLUDED.habilitada, actualizado_en = CURRENT_TIMESTAMP
+        """), {"notaria_id": notaria_id, "gestor_id": gestor.id if gestor else None, "habilitada": bool(datos.habilitada)})
+        for empleado in db.query(Empleado).all():
+            ids = set(_ids_notarias_asignadas(empleado))
+            if gestor and empleado.id == gestor.id:
+                ids.add(notaria_id)
+            else:
+                ids.discard(notaria_id)
+            empleado.notarias_encargagest_ids = sorted(ids)
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudo guardar el responsable de la notaría: {str(exc)[:250]}")
+    return {"ok": True, "notaria_id": notaria_id, "habilitada": bool(datos.habilitada), "gestor_id": gestor.id if gestor else None, "gestor_nombre": " ".join(filter(None, [gestor.nombre, gestor.apellidos])) if gestor else None}
+
+
 @router.get("/gestion/notarias")
 def listar_notarias_para_asignacion(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "ver")
