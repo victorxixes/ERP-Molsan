@@ -75,6 +75,7 @@ export default function ModalCtnDetalle({
   const id = notaria?.id;
 
   const [ficha, setFicha] = useState(notaria || null);
+  const [pestanaActiva, setPestanaActiva] = useState("ficha");
   const [asociadas, setAsociadas] = useState([]);
 
   const [guardandoAsociacion, setGuardandoAsociacion] =
@@ -366,6 +367,24 @@ export default function ModalCtnDetalle({
       </header>
 
       <div className="ctn-modal-contenido">
+      <nav className="ctn-ficha-pestanas" role="tablist" aria-label="Secciones de la ficha del notario">
+        {[
+          ["ficha", "Ficha del notario"],
+          ["portales", "Acceso a portales"],
+          ["firmas", "Histórico de firmas reales"],
+        ].map(([key, titulo]) => (
+          <button
+            key={key}
+            type="button"
+            role="tab"
+            aria-selected={pestanaActiva === key}
+            className={pestanaActiva === key ? "ctn-ficha-pestana activa" : "ctn-ficha-pestana"}
+            onClick={() => setPestanaActiva(key)}
+          >
+            {titulo}
+          </button>
+        ))}
+      </nav>
       {error && (
         <div
           className="ctn-modal-alerta"
@@ -382,6 +401,8 @@ export default function ModalCtnDetalle({
         </p>
       )}
 
+      {pestanaActiva === "ficha" && (
+        <>
       {/* DATOS GENERALES */}
 
       <section className="ctn-modal-seccion">
@@ -497,8 +518,13 @@ export default function ModalCtnDetalle({
         )}
       </section>
 
-      <PortalAccessTabs notariaId={id} />
+        </>
+      )}
 
+      {pestanaActiva === "portales" && <PortalAccessTabs notariaId={id} />}
+
+      {pestanaActiva === "firmas" && (
+        <>
       {/* HISTÓRICO DE FIRMAS REALES */}
 
       <section className="ctn-modal-seccion">
@@ -677,6 +703,11 @@ export default function ModalCtnDetalle({
         </p>
       </section>
 
+        </>
+      )}
+
+      {pestanaActiva === "ficha" && (
+        <>
       {/* NOTARIOS ASOCIADOS */}
 
       <section className="ctn-modal-seccion">
@@ -770,6 +801,9 @@ export default function ModalCtnDetalle({
           </div>
         )}
       </section>
+
+        </>
+      )}
 
       </div>
 
