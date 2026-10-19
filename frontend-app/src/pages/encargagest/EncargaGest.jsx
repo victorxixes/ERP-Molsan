@@ -143,6 +143,9 @@ export default function EncargaGest() {
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
   const [error, setError] = useState("");
   const [modalNuevo, setModalNuevo] = useState(false);
+  const [modalEditar, setModalEditar] = useState(false);
+  const [editForm, setEditForm] = useState(null);
+  const [guardandoEdicion, setGuardandoEdicion] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [form, setForm] = useState({ ...NUEVO_ENCARGO });
   const [archivosSolicitud, setArchivosSolicitud] = useState({});
@@ -309,6 +312,108 @@ export default function EncargaGest() {
       setError(e?.response?.data?.detail || "No se ha podido filtrar el listado.");
     } finally {
       setCargando(false);
+    }
+  }
+
+  function abrirEdicion() {
+    if (!detalle) return;
+    const contratosOrigen = Array.isArray(detalle.contratos) && detalle.contratos.length
+      ? detalle.contratos
+      : [{
+          entidad_bancaria: detalle.entidad_bancaria || "",
+          numero_prestamo: detalle.numero_prestamo || "",
+          fecha_constitucion: detalle.fecha_constitucion || "",
+          fincas: [{
+            numero_finca: detalle.numero_finca || "",
+            capital_inscrito: detalle.capital_inscrito ?? "",
+            numero_inscripcion: "",
+            municipio_registro: detalle.municipio_registro || "",
+            registro_propiedad: detalle.registro_propiedad || "",
+          }],
+        }];
+    setEditForm({
+      titular: detalle.titular || "",
+      nif_titular: detalle.nif_titular || "",
+      tipo_encargo: detalle.tipo_encargo || "Cancelación hipotecaria",
+      prioridad: detalle.prioridad || "Normal",
+      observaciones: detalle.observaciones || "",
+      observaciones_internas: detalle.observaciones_internas || "",
+      contratos: contratosOrigen.map((contrato) => ({
+        entidad_bancaria: contrato.entidad_bancaria || "",
+        numero_prestamo: contrato.numero_prestamo || "",
+        fecha_constitucion: contrato.fecha_constitucion || "",
+        fincas: (contrato.fincas?.length ? contrato.fincas : [{}]).map((finca) => ({
+          numero_finca: finca.numero_finca || "",
+          capital_inscrito: finca.capital_inscrito ?? contrato.capital_inscrito ?? "",
+          numero_inscripcion: finca.numero_inscripcion || "",
+          municipio_registro: finca.municipio_registro || "",
+          registro_propiedad: finca.registro_propiedad || "",
+        })),
+      })),
+    });
+    setErrorAccion("");
+    setMensaje("");
+    setModalEditar(true);
+  }
+
+  const cambiarDatoEdicion = (campo, valor) => setEditForm((actual) => ({ ...actual, [campo]: valor }));
+  const cambiarContratoEdicion = (indice, campo, valor) => setEditForm((actual) => ({
+    ...actual,
+    contratos: actual.contratos.map((contrato, i) => i === indice ? { ...contrato, [campo]: valor } : contrato),
+  }));
+  const cambiarFincaEdicion = (indiceContrato, indiceFinca, campo, valor) => setEditForm((actual) => ({
+    ...actual,
+    contratos: actual.contratos.map((contrato, i) => i !== indiceContrato ? contrato : {
+      ...contrato,
+      fincas: contrato.fincas.map((finca, j) => j === indiceFinca ? { ...finca, [campo]: valor } : finca),
+    }),
+  }));
+  const anadirContratoEdicion = () => setEditForm((actual) => ({
+    ...actual,
+    contratos: [...actual.contratos, { entidad_bancaria: "", numero_prestamo: "", fecha_constitucion: "", fincas: [{ numero_finca: "", capital_inscrito: "", numero_inscripcion: "", municipio_registro: "", registro_propiedad: "" }] }],
+  }));
+  const anadirFincaEdicion = (indice) => setEditForm((actual) => ({
+    ...actual,
+    contratos: actual.contratos.map((contrato, i) => i === indice ? {
+      ...contrato,
+      fincas: [...contrato.fincas, { numero_finca: "", capital_inscrito: "", numero_inscripcion: "", municipio_registro: "", registro_propiedad: "" }],
+    } : contrato),
+  }));
+
+  async function guardarEdicion(event) {
+    event.preventDefault();
+    if (!detalle || !editForm) return;
+    setGuardandoEdicion(true);
+    setErrorAccion("");
+    setMensaje("");
+    try {
+      const contratos = editForm.contratos.map((contrato) => ({
+        ...contrato,
+        fecha_constitucion: contrato.fecha_constitucion || null,
+        fincas: contrato.fincas.map((finca) => ({
+          ...finca,
+          capital_inscrito: finca.capital_inscrito === "" || finca.capital_inscrito == null ? null : Number(finca.capital_inscrito),
+        })),
+      }));
+      await axios.put("/encargagest/encargos/" + detalle.id, {
+        titular: editForm.titular.trim(),
+        nif_titular: editForm.nif_titular,
+        tipo_encargo: editForm.tipo_encargo,
+        prioridad: editForm.prioridad,
+        observaciones: editForm.observaciones,
+        observaciones_internas: editForm.observaciones_internas,
+        contratos,
+      });
+      const actualizado = await axios.get("/encargagest/encargos/" + detalle.id);
+      setDetalle(actualizado.data);
+      await cargarTodo();
+      setModalEditar(false);
+      setEditForm(null);
+      setMensaje("Datos del encargo, contratos y fincas guardados correctamente y disponibles en ambos portales.");
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se han podido guardar los cambios del encargo.");
+    } finally {
+      setGuardandoEdicion(false);
     }
   }
 
@@ -715,7 +820,7 @@ export default function EncargaGest() {
                 <div className="eg-panel-head p-5 sm:p-6">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0"><p className="text-[10px] font-black tracking-[0.18em] text-amber-700">{detalle.referencia || ("EG-" + detalle.id)} · FICHA DE ENCARGO</p><h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">{detalle.titular}</h2><p className="mt-1 text-sm font-bold text-slate-600">{detalle.notaria_nombre}</p>{detalle.notaria_contacto && <div className="mt-2 flex max-w-3xl flex-wrap gap-x-4 gap-y-1 text-[11px] leading-5 text-slate-500"><span><strong className="font-bold text-slate-600">NIF:</strong> {detalle.notaria_contacto.nif || "—"}</span><span><strong className="font-bold text-slate-600">Dirección:</strong> {[detalle.notaria_contacto.direccion, detalle.notaria_contacto.cp].filter(Boolean).join(" · ") || "—"}</span><span><strong className="font-bold text-slate-600">Municipio · Provincia:</strong> {[detalle.notaria_contacto.municipio, detalle.notaria_contacto.provincia].filter(Boolean).join(" · ") || "—"}</span><span><strong className="font-bold text-slate-600">Teléfono:</strong> {detalle.notaria_contacto.telefono || "—"}</span>{detalle.notaria_contacto.departamento_cancelaciones && <span><strong className="font-bold text-slate-600">Departamento de cancelaciones:</strong> {detalle.notaria_contacto.departamento_cancelaciones}</span>}</div>}</div>
-                    <div className="min-w-[220px] max-w-[300px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span><div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>{modo === "interno" && detalle.estado !== "FIRMADO" && <div className="mt-3 space-y-2">{["EN_PROCESO","RECIBIDO","EN_REVISION","DOCUMENTACION_PENDIENTE","EN_GESTION"].includes(detalle.estado) && <button type="button" onClick={() => cambiarEstado("AUTORIZADO").catch(() => {})} className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-indigo-700">✓ Validar documentación y autorizar</button>}{detalle.estado === "INCIDENCIA" && <button type="button" onClick={() => cambiarEstado("AUTORIZADO").catch(() => {})} className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-indigo-700">✓ Incidencia resuelta · volver a autorizados</button>}{["EN_PROCESO","RECIBIDO"].includes(detalle.estado) && <button type="button" onClick={() => { setMotivoIncidencia(""); setModalIncidencia(true); setErrorAccion(""); }} className="w-full rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-extrabold text-rose-700 hover:bg-rose-100">! Registrar incidencia</button>}</div>}{detalle.estado === "FIRMADO" && <p className="mt-1 text-[10px] font-semibold text-slate-500">El cierre por firma se integrará desde ApoderaGest.</p>}{detalle.estado === "INCIDENCIA" && <p className="mt-2 text-[10px] leading-4 text-rose-700">La notaría puede consultar el motivo en la actividad del encargo.</p>}</div>
+                    <div className="min-w-[220px] max-w-[300px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span>{modo === "interno" && detalle.estado !== "FIRMADO" && <button type="button" onClick={abrirEdicion} className="mb-3 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-slate-700 hover:border-amber-300 hover:bg-amber-50">Editar datos, contratos y fincas</button>}<div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>{modo === "interno" && detalle.estado !== "FIRMADO" && <div className="mt-3 space-y-2">{["EN_PROCESO","RECIBIDO","EN_REVISION","DOCUMENTACION_PENDIENTE","EN_GESTION"].includes(detalle.estado) && <button type="button" onClick={() => cambiarEstado("AUTORIZADO").catch(() => {})} className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-indigo-700">✓ Validar documentación y autorizar</button>}{detalle.estado === "INCIDENCIA" && <button type="button" onClick={() => cambiarEstado("AUTORIZADO").catch(() => {})} className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-indigo-700">✓ Incidencia resuelta · volver a autorizados</button>}{["EN_PROCESO","RECIBIDO"].includes(detalle.estado) && <button type="button" onClick={() => { setMotivoIncidencia(""); setModalIncidencia(true); setErrorAccion(""); }} className="w-full rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-extrabold text-rose-700 hover:bg-rose-100">! Registrar incidencia</button>}</div>}{detalle.estado === "FIRMADO" && <p className="mt-1 text-[10px] font-semibold text-slate-500">El cierre por firma se integrará desde ApoderaGest.</p>}{detalle.estado === "INCIDENCIA" && <p className="mt-2 text-[10px] leading-4 text-rose-700">La notaría puede consultar el motivo en la actividad del encargo.</p>}</div>
                   </div>
 {modo === "externo" ? (
                   <div className="mt-5" />
@@ -752,6 +857,31 @@ export default function EncargaGest() {
                   </section>
                   </>
 
+                  <section className="xl:col-span-2 rounded-2xl border border-amber-200 bg-amber-50/40 p-4">
+                    <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                      <div><h3 className="text-sm font-black text-slate-900">Todos los contratos y fincas</h3><p className="mt-1 text-xs text-slate-500">Detalle completo compartido entre EncargaGest MOLSAN y EncargaGest Notaría.</p></div>
+                      <span className="rounded-full bg-white px-3 py-1 text-[10px] font-extrabold text-amber-800">{(detalle.contratos || []).length || 1} contrato(s)</span>
+                    </div>
+                    {(detalle.contratos?.length ? detalle.contratos : [{ entidad_bancaria: detalle.entidad_bancaria, numero_prestamo: detalle.numero_prestamo, fecha_constitucion: detalle.fecha_constitucion, fincas: [{ numero_finca: detalle.numero_finca, capital_inscrito: detalle.capital_inscrito, municipio_registro: detalle.municipio_registro, registro_propiedad: detalle.registro_propiedad }] }]).map((contrato, contratoIndex) => (
+                      <div key={"detalle-contrato-" + contratoIndex} className="mb-3 last:mb-0 rounded-xl border border-slate-200 bg-white p-4">
+                        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-3">
+                          <div><p className="text-[10px] font-black uppercase tracking-wider text-amber-700">Contrato {contratoIndex + 1}</p><h4 className="mt-1 text-sm font-extrabold text-slate-900">{contrato.entidad_bancaria || "Entidad no indicada"} · {contrato.numero_prestamo || "Sin número de préstamo"}</h4></div>
+                          <p className="text-xs text-slate-500">Constitución: {contrato.fecha_constitucion ? new Date(contrato.fecha_constitucion + "T00:00:00").toLocaleDateString("es-ES") : "—"}</p>
+                        </div>
+                        <div className="mt-3 space-y-3">
+                          {(contrato.fincas?.length ? contrato.fincas : [{}]).map((finca, fincaIndex) => (
+                            <div key={"detalle-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-2 gap-3 rounded-lg bg-slate-50 p-3 md:grid-cols-5">
+                              <div><p className="text-[10px] text-slate-500">Finca</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.numero_finca || "—"}</p></div>
+                              <div><p className="text-[10px] text-slate-500">Capital inscrito</p><p className="mt-1 text-xs font-bold text-slate-800">{euros(finca.capital_inscrito ?? contrato.capital_inscrito)}</p></div>
+                              <div><p className="text-[10px] text-slate-500">Nº inscripción</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.numero_inscripcion || "—"}</p></div>
+                              <div><p className="text-[10px] text-slate-500">Municipio del registro</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.municipio_registro || "—"}</p></div>
+                              <div><p className="text-[10px] text-slate-500">Registro de la Propiedad</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.registro_propiedad || "—"}</p></div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </section>
                   <section className="xl:col-span-2">
                     <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                       <div className="min-w-0 space-y-4">
@@ -937,6 +1067,52 @@ export default function EncargaGest() {
                 </button>
               </div>
             </footer>
+          </form>
+        </div>
+      )}
+
+      {modalEditar && detalle && editForm && (
+        <div className="fixed inset-0 z-[70] grid place-items-center overflow-y-auto bg-slate-950/65 p-3 backdrop-blur-sm sm:p-6">
+          <form onSubmit={guardarEdicion} className="my-auto max-h-[94vh] w-full max-w-6xl overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
+            <header className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-7">
+              <div><p className="text-[9px] font-black tracking-[0.18em] text-amber-700">ENCARGAGEST · EDICIÓN COMPARTIDA</p><h2 className="mt-1 text-xl font-black text-slate-900">Editar encargo {detalle.referencia}</h2><p className="mt-1 text-xs text-slate-500">Los cambios se guardan en el registro común y se mostrarán también en el portal de la notaría.</p></div>
+              <button type="button" disabled={guardandoEdicion} onClick={() => setModalEditar(false)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-500">×</button>
+            </header>
+            <div className="space-y-5 p-5 sm:p-7">
+              <section className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                <Campo etiqueta="Nombre del solicitante *"><input required minLength={2} maxLength={300} value={editForm.titular} onChange={(e) => cambiarDatoEdicion("titular", e.target.value)} className={inputClass} /></Campo>
+                <Campo etiqueta="NIF / CIF"><input maxLength={50} value={editForm.nif_titular} onChange={(e) => cambiarDatoEdicion("nif_titular", e.target.value)} className={inputClass} /></Campo>
+                <Campo etiqueta="Tipo de encargo"><select value={editForm.tipo_encargo} onChange={(e) => cambiarDatoEdicion("tipo_encargo", e.target.value)} className={inputClass}><option>Cancelación hipotecaria</option><option>Crédito hipotecario</option><option>Otros</option></select></Campo>
+                <Campo etiqueta="Prioridad"><select value={editForm.prioridad} onChange={(e) => cambiarDatoEdicion("prioridad", e.target.value)} className={inputClass}><option>Baja</option><option>Normal</option><option>Alta</option><option>Urgente</option></select></Campo>
+                <Campo etiqueta="Observaciones de la solicitud" className="md:col-span-2"><textarea rows={2} maxLength={10000} value={editForm.observaciones} onChange={(e) => cambiarDatoEdicion("observaciones", e.target.value)} className={inputClass} /></Campo>
+                <Campo etiqueta="Nota interna MOLSAN" className="md:col-span-2 xl:col-span-3"><textarea rows={2} maxLength={10000} value={editForm.observaciones_internas} onChange={(e) => cambiarDatoEdicion("observaciones_internas", e.target.value)} className={inputClass} /></Campo>
+              </section>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3"><div><h3 className="text-sm font-black text-slate-900">Contratos y fincas</h3><p className="mt-1 text-xs text-slate-500">Puedes añadir o modificar varios contratos y todas sus fincas.</p></div><button type="button" onClick={anadirContratoEdicion} className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white">＋ Añadir contrato</button></div>
+              {editForm.contratos.map((contrato, contratoIndex) => (
+                <section key={"editar-contrato-" + contratoIndex} className="rounded-2xl border border-amber-200 bg-amber-50/40 p-4">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><h4 className="text-sm font-black text-slate-900">Contrato {contratoIndex + 1}</h4>{editForm.contratos.length > 1 && <button type="button" onClick={() => setEditForm((actual) => ({ ...actual, contratos: actual.contratos.filter((_, i) => i !== contratoIndex) }))} className="text-xs font-bold text-rose-700">Eliminar contrato</button>}</div>
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <Campo etiqueta="Entidad bancaria"><input maxLength={200} value={contrato.entidad_bancaria} onChange={(e) => cambiarContratoEdicion(contratoIndex, "entidad_bancaria", e.target.value)} className={inputClass} /></Campo>
+                    <Campo etiqueta="Número de préstamo"><input maxLength={150} value={contrato.numero_prestamo} onChange={(e) => cambiarContratoEdicion(contratoIndex, "numero_prestamo", e.target.value)} className={inputClass} /></Campo>
+                    <Campo etiqueta="Fecha de constitución"><input type="date" value={(contrato.fecha_constitucion || "").slice(0,10)} onChange={(e) => cambiarContratoEdicion(contratoIndex, "fecha_constitucion", e.target.value)} className={inputClass} /></Campo>
+                  </div>
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><h5 className="text-xs font-black uppercase tracking-wider text-slate-700">Fincas ({contrato.fincas.length})</h5><button type="button" onClick={() => anadirFincaEdicion(contratoIndex)} className="rounded-lg border border-amber-300 bg-white px-3 py-2 text-[11px] font-extrabold text-amber-800">＋ Añadir finca</button></div>
+                  <div className="mt-3 space-y-3">
+                    {contrato.fincas.map((finca, fincaIndex) => (
+                      <div key={"editar-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3 md:grid-cols-2 xl:grid-cols-5">
+                        <Campo etiqueta="Número de finca"><input maxLength={150} value={finca.numero_finca} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "numero_finca", e.target.value)} className={inputClass} /></Campo>
+                        <Campo etiqueta="Capital inscrito (€)"><input type="number" min="0" step="0.01" value={finca.capital_inscrito ?? ""} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "capital_inscrito", e.target.value)} className={inputClass} /></Campo>
+                        <Campo etiqueta="Nº inscripción"><input maxLength={100} value={finca.numero_inscripcion} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "numero_inscripcion", e.target.value)} className={inputClass} /></Campo>
+                        <Campo etiqueta="Municipio del registro"><input maxLength={200} value={finca.municipio_registro} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "municipio_registro", e.target.value)} className={inputClass} /></Campo>
+                        <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "registro_propiedad", e.target.value)} className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => setEditForm((actual) => ({ ...actual, contratos: actual.contratos.map((c, i) => i !== contratoIndex ? c : { ...c, fincas: c.fincas.filter((_, j) => j !== fincaIndex) }) }))} className="mb-0.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">×</button>}</div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+            {errorAccion && <p className="mx-5 mb-3 rounded-xl bg-rose-50 p-3 text-xs text-rose-700 sm:mx-7">{errorAccion}</p>}
+            <footer className="sticky bottom-0 flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-7"><button type="button" disabled={guardandoEdicion} onClick={() => setModalEditar(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoEdicion || !editForm.titular.trim()} className="rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-extrabold text-amber-950 disabled:opacity-50">{guardandoEdicion ? "Guardando cambios…" : "Guardar todos los cambios"}</button></footer>
           </form>
         </div>
       )}
