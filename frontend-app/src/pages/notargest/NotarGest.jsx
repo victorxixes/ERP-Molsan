@@ -483,9 +483,22 @@ export default function NotarGest() {
       {accesoERP && esAdminNotarGest && (
         <section className="ng-admin-notarias">
           {!tokenAdminNotaria ? <>
-            <header className="ng-admin-notarias-cabecera">
-              <div><span className="ng-kicker">MOLSAN ERP · VISTA GLOBAL</span><h2>Control de notarías</h2><p>Revisa el trabajo pendiente de cada notaría y entra directamente en la que necesites gestionar.</p></div>
-              <button type="button" className="ng-boton-secundario" onClick={() => fetch(`${API_BASE}/notargest/seleccion/notarias`, {headers:{Authorization:`Bearer ${tokenERP}`}}).then(r=>r.json()).then(d=>setNotariasSeleccionables(Array.isArray(d)?d:[])).catch(e=>setError(e.message))} disabled={cargandoSelectorNotaria}>↻ Actualizar resumen</button>
+            <header className="ng-control-hero">
+              <div className="ng-control-identidad">
+                <div className="ng-control-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
+                <div className="ng-control-titulos">
+                  <span className="ng-control-eyebrow">MOLSAN ERP · PREMIUM 2027</span>
+                  <h2>NotarGest</h2>
+                  <p>Centro de control notarial · pendientes, firmas e incidencias por notaría.</p>
+                </div>
+              </div>
+              <div className="ng-control-acciones">
+                <div className="ng-control-fecha"><span className="ng-control-punto" />{fechaActual}</div>
+                <div className="ng-control-botones">
+                  <button type="button" className="ng-control-secundario" onClick={() => navigate("/modulos")}>▦ Ir a módulos</button>
+                  <button type="button" className="ng-control-primario" onClick={() => fetch(`${API_BASE}/notargest/seleccion/notarias`, {headers:{Authorization:`Bearer ${tokenERP}`}}).then(async r=>{if(!r.ok) throw new Error("No se ha podido actualizar el resumen de notarías");return r.json()}).then(d=>setNotariasSeleccionables(Array.isArray(d)?d:[])).catch(e=>setError(e.message))} disabled={cargandoSelectorNotaria}>{cargandoSelectorNotaria ? "Actualizando…" : "↻ Actualizar datos"}</button>
+                </div>
+              </div>
             </header>
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
             {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
