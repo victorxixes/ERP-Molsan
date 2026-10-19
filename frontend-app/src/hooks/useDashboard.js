@@ -34,6 +34,14 @@ export function useDashboard() {
     (state) => state.mediaFirmaPorTipoOperacion
   );
 
+  const firmasRealizadas = useDashboardStore(
+    (state) => state.firmasRealizadas
+  );
+
+  const errorFirmas = useDashboardStore(
+    (state) => state.errorFirmas
+  );
+
   const loading = useDashboardStore(
     (state) => state.loading
   );
@@ -62,6 +70,8 @@ export function useDashboard() {
     totalExpedientes,
     expedientesPorActividad,
     mediaFirmaPorTipoOperacion,
+    firmasRealizadas,
+    errorFirmas,
     loading,
     error,
     cargarDashboard,
