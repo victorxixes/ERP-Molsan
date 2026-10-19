@@ -481,12 +481,39 @@ export default function NotarGest() {
           </div>
         </section></div>}
       {accesoERP && esAdminNotarGest && (
-        <section className="mx-4 mt-4 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm lg:mx-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">Selección de notaría · NotarGest</p><p className="mt-1 text-xs text-slate-500">Como administrador puedes abrir una notaría habilitada para revisar sus expedientes y resolver incidencias.</p></div>
-            <label className="w-full sm:max-w-xl"><span className="mb-1 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Notaría activa</span><select value={notariaAdminSeleccionada} disabled={cargandoSelectorNotaria || cargando} onChange={(e) => seleccionarNotariaAdmin(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800"><option value="">{cargandoSelectorNotaria ? "Cargando notarías…" : "Selecciona una notaría habilitada…"}</option>{notariasSeleccionables.map((item) => <option key={item.id} value={String(item.id)}>{item.nombre}{item.nif ? " · " + item.nif : ""}{item.provincia ? " · " + item.provincia : ""}</option>)}</select></label>
-          </div>
-          {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <p className="mt-3 text-xs text-amber-700">No hay notarías con acceso NotarGest habilitado.</p>}
+        <section className="ng-admin-notarias">
+          {!tokenAdminNotaria ? <>
+            <header className="ng-admin-notarias-cabecera">
+              <div><span className="ng-kicker">MOLSAN ERP · VISTA GLOBAL</span><h2>Control de notarías</h2><p>Revisa el trabajo pendiente de cada notaría y entra directamente en la que necesites gestionar.</p></div>
+              <button type="button" className="ng-boton-secundario" onClick={() => fetch(`${API_BASE}/notargest/seleccion/notarias`, {headers:{Authorization:`Bearer ${tokenERP}`}}).then(r=>r.json()).then(d=>setNotariasSeleccionables(Array.isArray(d)?d:[])).catch(e=>setError(e.message))} disabled={cargandoSelectorNotaria}>↻ Actualizar resumen</button>
+            </header>
+            {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
+            {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
+            <div className="ng-admin-kpis">
+              <article><span>Notarías habilitadas</span><strong>{notariasSeleccionables.length}</strong></article>
+              <article><span>Expedientes pendientes</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.total_pendiente||0),0)}</strong></article>
+              <article><span>Firmas urgentes</span><strong className={notariasSeleccionables.some(n=>Number(n.firmas_urgentes)>0)?"ng-cifra-urgente":""}>{notariasSeleccionables.reduce((s,n)=>s+Number(n.firmas_urgentes||0),0)}</strong></article>
+              <article><span>Expedientes con defectos</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.con_defectos||0),0)}</strong></article>
+            </div>
+            <div className="ng-admin-notarias-grid">
+              {notariasSeleccionables.map(item => <article className={`ng-admin-notaria-card ${Number(item.firmas_urgentes)>0 ? "tiene-urgentes" : ""}`} key={item.id}>
+                <div className="ng-admin-notaria-titulo"><span className="ng-admin-notaria-icono">NG</span><div><h3>{item.nombre}</h3><p>{[item.municipio,item.provincia].filter(Boolean).join(" · ") || "Ubicación no indicada"}</p><small>{item.nif || "NIF no indicado"} · {Number(item.total_expedientes||0)} expedientes en circuito</small></div></div>
+                <div className="ng-admin-notaria-cifras">
+                  <div className="principal"><span>Pendientes</span><strong>{Number(item.total_pendiente||0)}</strong></div>
+                  <div><span>Firmas</span><strong>{Number(item.pendientes_firma||0)}</strong></div>
+                  <div><span>Recepción</span><strong>{Number(item.pendientes_recepcion||0)}</strong></div>
+                  <div><span>Facturas</span><strong>{Number(item.pendientes_factura||0)}</strong></div>
+                  <div><span>Registro</span><strong>{Number(item.pendientes_registro||0)}</strong></div>
+                  <div><span>AJD / ITP</span><strong>{Number(item.pendientes_ajd_itp||0)}</strong></div>
+                  <div><span>Inscripciones</span><strong>{Number(item.pendientes_inscripcion||0)}</strong></div>
+                  <div><span>Copias</span><strong>{Number(item.pendientes_copias||0)}</strong></div>
+                  <div><span>Defectos</span><strong>{Number(item.con_defectos||0)}</strong></div>
+                  <div><span>Urgentes</span><strong className={Number(item.firmas_urgentes)>0?"ng-cifra-urgente":""}>{Number(item.firmas_urgentes||0)}</strong></div>
+                </div>
+                <button type="button" className="ng-admin-entrar" disabled={cargando} onClick={()=>seleccionarNotariaAdmin(String(item.id))}>Entrar en esta notaría <span>→</span></button>
+              </article>)}
+            </div>
+          </> : <div className="ng-admin-notaria-activa"><div><span className="ng-kicker">NOTARÍA SELECCIONADA</span><h2>{notariasSeleccionables.find(x=>String(x.id)===String(notariaAdminSeleccionada))?.nombre || notario?.nombre || "Notaría"}</h2><p>Estás gestionando esta notaría como administrador.</p></div><button type="button" className="ng-boton-secundario" onClick={()=>seleccionarNotariaAdmin("")}>← Volver al control de notarías</button></div>}
         </section>
       )}
       {(!accesoERP || !esAdminNotarGest || Boolean(tokenAdminNotaria)) && <main className="relative min-h-[calc(100vh-70px)]">
