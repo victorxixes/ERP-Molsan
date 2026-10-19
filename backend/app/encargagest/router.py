@@ -414,12 +414,14 @@ def mi_sesion_encargagest(usuario=Depends(get_encargagest_actor), db: Session = 
         notaria = db.query(Notaria).filter(Notaria.id == usuario["notaria_id"]).first()
         if not notaria:
             raise HTTPException(status_code=404, detail="No se encuentra la ficha CTN asociada.")
+        nombre_ctn = " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or usuario["nombre"]
         return {
             "modo": "externo",
             "notaria_id": notaria.id,
-            "notaria_nombre": usuario["nombre"],
+            "notaria_nombre": nombre_ctn,
             "usuario": usuario["usuario"],
-            "nombre": usuario["nombre"],
+            "usuario_nombre": usuario["nombre"],
+            "nombre": nombre_ctn,
             "nif": notaria.nif,
             "codigo": getattr(notaria, "codigo", None),
             "telefono": getattr(notaria, "telefono", None),
