@@ -708,7 +708,16 @@ def obtener_reglas_reparto_gestor(empleado_id: int, db: Session = Depends(get_db
     empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
     if not empleado:
         raise HTTPException(status_code=404, detail="Empleado no encontrado.")
-    return {"empleado_id": empleado.id, "reglas": getattr(empleado, "reparto_actividades_json", None) or [], "actividades": ACTIVIDADES_REPARTO, "comunidades": COMUNIDADES_REPARTO}
+    reglas = getattr(empleado, "reparto_actividades_json", None) or []
+    reglas_compatibles = []
+    for regla in reglas:
+        if not isinstance(regla, dict):
+            continue
+        copia = dict(regla)
+        if not isinstance(copia.get("comunidades"), list):
+            copia["comunidades"] = [copia["comunidad"]] if copia.get("comunidad") else []
+        reglas_compatibles.append(copia)
+    return {"empleado_id": empleado.id, "reglas": reglas_compatibles, "actividades": ACTIVIDADES_REPARTO, "comunidades": COMUNIDADES_REPARTO}
 
 
 @router.put("/gestion/empleados/{empleado_id}/reparto")
@@ -733,13 +742,23 @@ def guardar_reglas_reparto_gestor(empleado_id: int, datos: ReglasRepartoGestor, 
         if porcentaje < 0 or porcentaje > 100:
             raise HTTPException(status_code=422, detail="El porcentaje debe estar entre 0 y 100.")
         territorial = bool(regla.get("zona_territorial", False))
-        comunidad = str(regla.get("comunidad") or "").strip()
+        comunidades_recibidas = regla.get("comunidades")
+        if not isinstance(comunidades_recibidas, list):
+            comunidades_recibidas = [regla.get("comunidad")] if regla.get("comunidad") else []
+        comunidades_limpias = []
         if territorial:
-            if comunidad.casefold() not in comunidades_normalizadas:
-                raise HTTPException(status_code=422, detail=f"Selecciona una comunidad autónoma válida en la regla {indice + 1}.")
-            comunidad = comunidades_normalizadas[comunidad.casefold()]
-        else:
-            comunidad = ""
+            for comunidad_recibida in comunidades_recibidas:
+                comunidad_texto = str(comunidad_recibida or "").strip()
+                if not comunidad_texto:
+                    continue
+                comunidad_canonica = comunidades_normalizadas.get(comunidad_texto.casefold())
+                if not comunidad_canonica:
+                    raise HTTPException(status_code=422, detail=f"Comunidad autónoma no válida en la regla {indice + 1}: {comunidad_texto}.")
+                if comunidad_canonica not in comunidades_limpias:
+                    comunidades_limpias.append(comunidad_canonica)
+            if not comunidades_limpias:
+                raise HTTPException(status_code=422, detail=f"Selecciona al menos una zona territorial en la regla {indice + 1}.")
+        comunidad = comunidades_limpias[0] if comunidades_limpias else ""
         apoderado_id = regla.get("apoderado_id")
         if apoderado_id in ("", None):
             apoderado_id = None
@@ -754,6 +773,7 @@ def guardar_reglas_reparto_gestor(empleado_id: int, datos: ReglasRepartoGestor, 
             "actividad": actividad,
             "departamento": str(regla.get("departamento") or "").strip()[:120],
             "zona_territorial": territorial,
+            "comunidades": comunidades_limpias,
             "comunidad": comunidad,
             "porcentaje": porcentaje,
             "apoderado_id": apoderado_id,
