@@ -73,12 +73,7 @@ export default function CtnListadoPage() {
   const [exportando, setExportando] = useState(false);
   const [error, setError] = useState("");
   const [notariaSeleccionada, setNotariaSeleccionada] = useState(null);
-  const [cambiandoAcceso, setCambiandoAcceso] = useState(null);
   const [accesosEncargaGest, setAccesosEncargaGest] = useState([]);
-  const [notariaAccesoEncargaGest, setNotariaAccesoEncargaGest] = useState(null);
-  const [passwordEncargaGest, setPasswordEncargaGest] = useState("");
-  const [habilitadoEncargaGest, setHabilitadoEncargaGest] = useState(false);
-  const [guardandoEncargaGest, setGuardandoEncargaGest] = useState(false);
   const [errorEncargaGest, setErrorEncargaGest] = useState("");
 
   const [orden, setOrden] = useState({ campo: "apellidos", direccion: "asc" });
@@ -201,70 +196,6 @@ export default function CtnListadoPage() {
   const indicadorOrden = (campo) => {
     if (orden.campo !== campo) return "↕";
     return orden.direccion === "asc" ? "↑" : "↓";
-  };
-
-  const cambiarAccesoNotarGest = async (notaria) => {
-    const nuevoEstado = !Boolean(notaria.notargest_habilitado);
-    if (!window.confirm(`¿Quieres ${nuevoEstado ? "habilitar" : "deshabilitar"} NotarGest para ${nombreNotario(notaria)}?`)) return;
-    setCambiandoAcceso(notaria.id);
-    setError("");
-    try {
-      const response = await fetch(`${API_BASE}/ctn/notarias/${notaria.id}/notargest?habilitado=${nuevoEstado}`, {
-        method: "PUT", headers: cabecerasConToken({ Accept: "application/json" }), credentials: "include",
-      });
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(body?.detail || `Error HTTP ${response.status}`);
-      setItems((actuales) => actuales.map((item) => item.id === notaria.id ? { ...item, notargest_habilitado: nuevoEstado } : item));
-    } catch (err) {
-      setError(leerDetalleError(err, "No se ha podido actualizar el acceso a NotarGest."));
-    } finally { setCambiandoAcceso(null); }
-  };
-
-  const abrirAccesoEncargaGest = (notaria) => {
-    const existente = accesosEncargaGest.find((acceso) => Number(acceso.notaria_id) === Number(notaria.id));
-    setNotariaAccesoEncargaGest(notaria);
-    setPasswordEncargaGest("");
-    setHabilitadoEncargaGest(Boolean(existente?.habilitado));
-    setErrorEncargaGest("");
-  };
-
-  const guardarAccesoEncargaGest = async (event) => {
-    event.preventDefault();
-    if (!notariaAccesoEncargaGest) return;
-    const existente = accesosEncargaGest.find((acceso) => Number(acceso.notaria_id) === Number(notariaAccesoEncargaGest.id));
-    if (!existente?.tiene_acceso && passwordEncargaGest.length < 10) {
-      setErrorEncargaGest("Para crear el acceso inicial, introduce una contraseña de al menos 10 caracteres.");
-      return;
-    }
-    setGuardandoEncargaGest(true);
-    setErrorEncargaGest("");
-    try {
-      const response = await fetch(`${API_BASE}/encargagest/accesos`, {
-        method: "POST",
-        headers: cabecerasConToken({ "Content-Type": "application/json", Accept: "application/json" }),
-        credentials: "include",
-        body: JSON.stringify({
-          notaria_id: Number(notariaAccesoEncargaGest.id),
-          password: passwordEncargaGest.trim() ? passwordEncargaGest : null,
-          habilitado: habilitadoEncargaGest,
-        }),
-      });
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(body?.detail || `Error HTTP ${response.status}`);
-      const responseAccesos = await fetch(`${API_BASE}/encargagest/accesos`, {
-        headers: cabecerasConToken({ Accept: "application/json" }),
-        credentials: "include",
-      });
-      const data = await responseAccesos.json().catch(() => []);
-      if (!responseAccesos.ok) throw new Error(data?.detail || `Error HTTP ${responseAccesos.status}`);
-      setAccesosEncargaGest(Array.isArray(data) ? data : []);
-      setNotariaAccesoEncargaGest(null);
-      setPasswordEncargaGest("");
-    } catch (err) {
-      setErrorEncargaGest(leerDetalleError(err, "No se ha podido guardar el acceso a EncargaGest."));
-    } finally {
-      setGuardandoEncargaGest(false);
-    }
   };
 
   const cerrarFichaNotaria = async () => {
@@ -412,8 +343,8 @@ export default function CtnListadoPage() {
                     <td>{texto(item.nif)}</td><td>{texto(item.municipio)}</td><td>{texto(item.provincia)}</td>
                     <td><span className={`ctn-etiqueta ${vc.clase}`}>{vc.texto}</span></td>
                     <td>{texto(item.apoderado)}</td><td>{texto(listaAsociados(item))}</td>
-                    <td><button type="button" className={`ctn-btn ctn-btn-small ${item.notargest_habilitado ? "ctn-btn-primary" : "ctn-btn-secondary"}`} onClick={() => cambiarAccesoNotarGest(item)} disabled={cambiandoAcceso === item.id || !String(item.nif || "").trim()} title={!item.nif ? "Esta notaría no tiene NIF/DNI registrado" : ""}>{cambiandoAcceso === item.id ? "Guardando…" : item.notargest_habilitado ? "✓ Habilitado" : "Habilitar"}</button></td>
-                    <td>{(() => { const acceso = accesosEncargaGest.find((x) => Number(x.notaria_id) === Number(item.id)); return <button type="button" className={`ctn-btn ctn-btn-small ${(acceso?.tiene_acceso && acceso?.habilitado) ? "ctn-btn-primary" : "ctn-btn-secondary"}`} onClick={() => abrirAccesoEncargaGest(item)} disabled={!String(item.nif || "").trim()} title={!item.nif ? "Esta notaría no tiene NIF/DNI registrado" : "Configurar usuario, contraseña y habilitación de EncargaGest"}>{(acceso?.tiene_acceso && acceso?.habilitado) ? "✓ Habilitado" : acceso?.tiene_acceso ? "Deshabilitado" : "Configurar acceso"}</button>; })()}</td>
+                    <td><span className={`ctn-etiqueta ${item.notargest_habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{item.notargest_habilitado ? "✓ Habilitado" : "Deshabilitado"}</span></td>
+                    <td>{(() => { const acceso = accesosEncargaGest.find((x) => Number(x.notaria_id) === Number(item.id)); const habilitado = Boolean(acceso?.tiene_acceso && acceso?.habilitado); const configurado = Boolean(acceso?.tiene_acceso); return <span className={`ctn-etiqueta ${habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{habilitado ? "✓ Habilitado" : configurado ? "Deshabilitado" : "Sin configurar"}</span>; })()}</td>
                     <td>{item.distancia_km == null ? "—" : `${Number(item.distancia_km).toLocaleString("es-ES", { maximumFractionDigits: 1 })} km`}</td>
                     <td><button type="button" className="ctn-btn ctn-btn-primary ctn-btn-small" onClick={() => setNotariaSeleccionada(item)}>Ver ficha</button></td>
                   </tr>
@@ -433,43 +364,6 @@ export default function CtnListadoPage() {
           </div>
         </footer>
       </section>
-
-      {notariaAccesoEncargaGest && (
-        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-950/50 p-3 backdrop-blur-sm sm:p-6">
-          <form onSubmit={guardarAccesoEncargaGest} className="my-auto w-full max-w-xl overflow-hidden rounded-3xl border border-white/70 bg-white shadow-2xl">
-            <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4 sm:px-7">
-              <div>
-                <p className="text-[9px] font-extrabold tracking-[0.18em] text-amber-700">CTN · ENCARGAGEST</p>
-                <h2 className="mt-1 text-xl font-black text-slate-900">Acceso de la notaría</h2>
-                <p className="mt-1 text-xs leading-5 text-slate-500">Configura las credenciales externas para que esta notaría pueda entrar en EncargaGest.</p>
-              </div>
-              <button type="button" onClick={() => setNotariaAccesoEncargaGest(null)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500" aria-label="Cerrar">×</button>
-            </div>
-            <div className="space-y-4 p-5 sm:p-7">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Notaría CTN</p>
-                <p className="mt-1 font-black text-slate-900">{nombreNotario(notariaAccesoEncargaGest)}</p>
-                <p className="mt-1 text-xs text-slate-600">NIF: {notariaAccesoEncargaGest.nif || "No registrado"}</p>
-                <p className="mt-2 text-xs text-slate-500">El usuario de acceso se genera automáticamente a partir del NIF registrado en CTN.</p>
-              </div>
-              <label className="block">
-                <span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-500">{accesosEncargaGest.find((x) => Number(x.notaria_id) === Number(notariaAccesoEncargaGest.id))?.tiene_acceso ? "Cambiar contraseña (opcional)" : "Contraseña inicial *"}</span>
-                <input type="password" autoComplete="new-password" minLength={10} value={passwordEncargaGest} onChange={(event) => setPasswordEncargaGest(event.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Mínimo 10 caracteres" />
-              </label>
-              <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-3 text-xs text-slate-700">
-                <input type="checkbox" checked={habilitadoEncargaGest} onChange={(event) => setHabilitadoEncargaGest(event.target.checked)} />
-                Permitir a esta notaría acceder al portal EncargaGest
-              </label>
-              {errorEncargaGest && <p className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs leading-5 text-rose-800" role="alert">{errorEncargaGest}</p>}
-              <p className="rounded-xl border border-blue-100 bg-blue-50/70 p-3 text-xs leading-5 text-blue-900">La notaría solo podrá consultar sus propios encargos. Si ya existe una cuenta, deja la contraseña vacía para conservarla.</p>
-            </div>
-            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 px-5 py-4 sm:px-7">
-              <button type="button" onClick={() => setNotariaAccesoEncargaGest(null)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cancelar</button>
-              <button type="submit" disabled={guardandoEncargaGest || !String(notariaAccesoEncargaGest.nif || "").trim()} className="rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-extrabold text-amber-950 disabled:opacity-50">{guardandoEncargaGest ? "Guardando acceso…" : "Guardar acceso"}</button>
-            </div>
-          </form>
-        </div>
-      )}
 
       {notariaSeleccionada && (
         <ModalCtnDetalle open={Boolean(notariaSeleccionada)} notaria={notariaSeleccionada} onClose={cerrarFichaNotaria} />
