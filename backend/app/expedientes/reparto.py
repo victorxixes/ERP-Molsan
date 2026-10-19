@@ -1,4 +1,4 @@
-from sqlalchemy import text
+from sqlalchemy import text, or_
 from sqlalchemy.orm import Session
 
 from backend.app.empleados.models import Empleado
@@ -80,10 +80,18 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
             consulta = consulta.filter(Expediente.actividad_actual.ilike("%Sede notarial%"), Expediente.fecha_firma.isnot(None))
         else:
             consulta = consulta.filter(Expediente.actividad_actual.ilike(etiqueta))
-        pendientes = consulta.filter(Expediente.estado_actividad != "Cerrada").count()
+        pendientes = consulta.filter(or_(Expediente.estado_actividad.is_(None), Expediente.estado_actividad != "Cerrada")).count()
         candidatos.append((pendientes / porcentaje, pendientes, empleado.id))
 
     if not candidatos:
+        anterior_id = getattr(expediente, "gestor_asignado_id", None)
+        if anterior_id:
+            expediente.gestor_asignado_id = None
+            db.execute(text("""
+                INSERT INTO expediente_gestor_historial
+                    (expediente_id, actividad, gestor_id, gestor_anterior_id, motivo, fecha)
+                VALUES (:expediente_id, :actividad, NULL, :anterior_id, 'sin_regla_reparto', CURRENT_TIMESTAMP)
+            """), {"expediente_id": str(expediente.id_expediente), "actividad": actividad_key, "anterior_id": anterior_id})
         return None
 
     candidatos.sort(key=lambda item: (item[0], item[1], item[2]))
