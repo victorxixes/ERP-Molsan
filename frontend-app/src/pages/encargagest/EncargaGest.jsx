@@ -698,8 +698,8 @@ export default function EncargaGest() {
                   )}
                 </div>
 
-{modo === "externo" ? (
                 <div className="grid grid-cols-1 gap-6 p-5 sm:p-6 xl:grid-cols-2">
+                  {modo === "externo" ? (
                   <section className="min-w-0 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4">
                     <div className="mb-4 flex items-center gap-3 border-b border-indigo-100 pb-3">
                       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-indigo-100 bg-white text-xs font-black text-indigo-700">01</span>
@@ -725,7 +725,6 @@ export default function EncargaGest() {
                     </dl>
                   </section>
                 ) : (
-                <div className="grid grid-cols-1 gap-6 p-5 sm:p-6 xl:grid-cols-2">
                   <section>
                     <div className="flex items-center justify-between"><h3 className="text-sm font-extrabold text-slate-900">Datos de la solicitud</h3><span className="text-[10px] text-slate-400">CTN · ID {detalle.notaria_id}</span></div>
                     <dl className="mt-3 space-y-3 text-xs">
