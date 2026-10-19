@@ -163,6 +163,13 @@ export default function EncargaGest() {
   const [modalIncidencia, setModalIncidencia] = useState(false);
   const [motivoIncidencia, setMotivoIncidencia] = useState("");
   const [guardandoIncidencia, setGuardandoIncidencia] = useState(false);
+  const [perfilAbierto, setPerfilAbierto] = useState(false);
+  const [passwordActualPerfil, setPasswordActualPerfil] = useState("");
+  const [passwordNuevaPerfil, setPasswordNuevaPerfil] = useState("");
+  const [passwordConfirmarPerfil, setPasswordConfirmarPerfil] = useState("");
+  const [guardandoPasswordPerfil, setGuardandoPasswordPerfil] = useState(false);
+  const [mensajePasswordPerfil, setMensajePasswordPerfil] = useState("");
+  const [errorPasswordPerfil, setErrorPasswordPerfil] = useState("");
 
   useEffect(() => {
     if (!archivoPrevisualizado) {
@@ -648,6 +655,36 @@ export default function EncargaGest() {
     }
   }
 
+
+  async function cambiarPasswordPerfil(event) {
+    event.preventDefault();
+    setErrorPasswordPerfil("");
+    setMensajePasswordPerfil("");
+    if (passwordNuevaPerfil !== passwordConfirmarPerfil) {
+      setErrorPasswordPerfil("Las nuevas contraseñas no coinciden.");
+      return;
+    }
+    if (passwordNuevaPerfil.trim().length < 8) {
+      setErrorPasswordPerfil("La nueva contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
+    setGuardandoPasswordPerfil(true);
+    try {
+      const respuesta = await axios.post("/encargagest/cambiar-password", {
+        password_actual: passwordActualPerfil,
+        password_nueva: passwordNuevaPerfil,
+      });
+      setMensajePasswordPerfil(respuesta.data?.mensaje || "Contraseña actualizada correctamente.");
+      setPasswordActualPerfil("");
+      setPasswordNuevaPerfil("");
+      setPasswordConfirmarPerfil("");
+    } catch (e) {
+      setErrorPasswordPerfil(e?.response?.data?.detail || "No se ha podido actualizar la contraseña.");
+    } finally {
+      setGuardandoPasswordPerfil(false);
+    }
+  }
+
   function salirEncargaGest() {
     if (modo === "externo") {
       limpiarSesionEncargaGest();
@@ -766,6 +803,7 @@ export default function EncargaGest() {
             <span className="ag-punto-vivo" aria-hidden="true" />
             <span>{fechaActual}</span>
           </div>
+          {modo === "externo" && <button type="button" onClick={() => { setPerfilAbierto(true); setMensajePasswordPerfil(""); setErrorPasswordPerfil(""); }} className="eg-secondary">Mi perfil</button>}
           <button type="button" onClick={salirEncargaGest} className="eg-secondary">
             {modo === "externo" ? "Cerrar sesión" : <><span aria-hidden="true">▦</span> Ir a módulos</>}
           </button>
@@ -1160,6 +1198,47 @@ export default function EncargaGest() {
               <button type="submit" disabled={guardandoIncidencia || motivoIncidencia.trim().length < 5} className="rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-extrabold text-white disabled:opacity-50">{guardandoIncidencia ? "Registrando…" : "Registrar y comunicar incidencia"}</button>
             </div>
           </form>
+        </div>
+      )}
+
+
+      {perfilAbierto && modo === "externo" && (
+        <div className="fixed inset-0 z-[80] grid place-items-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setPerfilAbierto(false); }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="my-auto w-full max-w-3xl overflow-hidden rounded-3xl border border-white/70 bg-white shadow-2xl">
+            <header className="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-7">
+              <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-blue-700">ENCARGAGEST · FICHA CTN</p><h2 id="eg-perfil-titulo" className="mt-1 text-xl font-black text-slate-900">Mi perfil profesional</h2><p className="mt-1 text-xs text-slate-500">Datos de la notaría registrados en CTN.</p></div>
+              <button type="button" onClick={() => setPerfilAbierto(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500">×</button>
+            </header>
+            <div className="grid grid-cols-1 gap-5 p-5 sm:p-7 lg:grid-cols-2">
+              <div>
+                <div className="mb-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4"><p className="text-xs font-bold text-blue-800">{sesion?.nombre || sesion?.notaria_nombre || "Notaría"}</p><p className="mt-1 text-[11px] text-slate-500">Usuario de acceso</p><p className="mt-1 break-all font-black tracking-wide text-slate-900">{sesion?.usuario || sesion?.nif || "—"}</p><p className="mt-2 text-[11px] leading-5 text-slate-500">La contraseña no se muestra aquí. Si no se ha cambiado, la contraseña inicial es el NIF completo.</p></div>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">NIF</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.nif || "—"}</strong></div>
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Código CTN</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.codigo || "—"}</strong></div>
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Teléfono</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.telefono || "—"}</strong></div>
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Dirección</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.direccion || "—"}</strong></div>
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Código postal</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.cp || "—"}</strong></div>
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Municipio</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.municipio || "—"}</strong></div>
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Provincia</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.provincia || "—"}</strong></div>
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Videoconferencia</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.vc || "—"}</strong></div>
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Apoderado asociado</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.apoderado || "—"}</strong></div>
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Departamento cancelaciones</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.departamento_cancelaciones || "—"}</strong></div>
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Departamento copias</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.departamento_copias || "—"}</strong></div>
+                  <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Otros departamentos</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.otros_departamentos || "—"}</strong></div>
+                </div>
+                {sesion?.observacion && <div className="mt-3 rounded-xl bg-slate-50 p-3 text-xs"><small className="font-bold text-slate-500">Observaciones CTN</small><p className="mt-1 whitespace-pre-wrap text-slate-700">{sesion.observacion}</p></div>}
+              </div>
+              <form onSubmit={cambiarPasswordPerfil} className="h-fit space-y-3 rounded-2xl border border-slate-200 p-4">
+                <h3 className="text-sm font-extrabold text-slate-900">Cambiar contraseña</h3>
+                {mensajePasswordPerfil && <p role="status" className="rounded-lg bg-emerald-50 p-2 text-xs text-emerald-800">{mensajePasswordPerfil}</p>}
+                {errorPasswordPerfil && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-xs text-rose-700">{errorPasswordPerfil}</p>}
+                <label className="block text-xs font-semibold text-slate-600">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className={inputClass + " mt-1"} /></label>
+                <label className="block text-xs font-semibold text-slate-600">Nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordNuevaPerfil} onChange={e=>setPasswordNuevaPerfil(e.target.value)} className={inputClass + " mt-1"} /></label>
+                <label className="block text-xs font-semibold text-slate-600">Repetir nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordConfirmarPerfil} onChange={e=>setPasswordConfirmarPerfil(e.target.value)} className={inputClass + " mt-1"} /></label>
+                <button type="submit" disabled={guardandoPasswordPerfil} className="w-full rounded-xl bg-blue-600 px-4 py-3 text-xs font-extrabold text-white disabled:opacity-60">{guardandoPasswordPerfil ? "Guardando…" : "Guardar nueva contraseña"}</button>
+              </form>
+            </div>
+          </section>
         </div>
       )}
 
