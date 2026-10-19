@@ -214,12 +214,24 @@ export default function ModalNuevaCita({
         if (soloLectura)
           return;
 
-        setForm(
-          (actual) => ({
+        if (campo === "tipo_cita" && valor !== "Firma notarial") {
+          // Las citas no notariales no deben conservar datos de firma.
+          setNotarioSeleccionado(null);
+          setForm((actual) => ({
             ...actual,
-            [campo]: valor,
-          })
-        );
+            tipo_cita: valor,
+            notario_id: null,
+            tipo_firma: "",
+            apoderado_visible: "",
+          }));
+        } else {
+          setForm(
+            (actual) => ({
+              ...actual,
+              [campo]: valor,
+            })
+          );
+        }
 
         setError("");
 
@@ -1002,40 +1014,42 @@ export default function ModalNuevaCita({
             </div>
 
 
-            {/* NOTARIO */}
+            {/* NOTARIO: solo para firmas notariales */}
 
-            <div
-              className="
-                sm:col-span-2
-              "
-            >
-
-              <label
+            {form.tipo_cita === "Firma notarial" && (
+              <div
                 className="
-                  block
-                  mb-1.5
-                  text-sm
-                  font-medium
-                  text-slate-700
+                  sm:col-span-2
                 "
               >
-                Notario
-              </label>
 
-              <AutocompleteNotario
-                disabled={
-                  soloLectura ||
-                  loading
-                }
-                value={
-                  notarioSeleccionado
-                }
-                onSelect={
-                  seleccionarNotario
-                }
-              />
+                <label
+                  className="
+                    block
+                    mb-1.5
+                    text-sm
+                    font-medium
+                    text-slate-700
+                  "
+                >
+                  Notario
+                </label>
 
-            </div>
+                <AutocompleteNotario
+                  disabled={
+                    soloLectura ||
+                    loading
+                  }
+                  value={
+                    notarioSeleccionado
+                  }
+                  onSelect={
+                    seleccionarNotario
+                  }
+                />
+
+              </div>
+            )}
 
           </div>
 
@@ -1044,7 +1058,7 @@ export default function ModalNuevaCita({
               TARJETA NOTARIO
              ================================================== */}
 
-          {notarioSeleccionado && (
+          {form.tipo_cita === "Firma notarial" && notarioSeleccionado && (
 
             <div
               className="
@@ -1317,27 +1331,28 @@ export default function ModalNuevaCita({
               TIPO FIRMA / APODERADO
              ================================================== */}
 
-          <div
-            className="
-              grid
-              grid-cols-1
-              sm:grid-cols-2
-              gap-4
-            "
-          >
+          {form.tipo_cita === "Firma notarial" && (
+            <div
+              className="
+                grid
+                grid-cols-1
+                sm:grid-cols-2
+                gap-4
+              "
+            >
 
-            <div>
+              <div>
 
-              <label
-                className="
-                  block
-                  mb-1.5
-                  text-sm
-                  font-medium
-                  text-slate-700
-                "
-              >
-                Tipo de firma
+                <label
+                  className="
+                    block
+                    mb-1.5
+                    text-sm
+                    font-medium
+                    text-slate-700
+                  "
+                >
+                  Tipo de firma
               </label>
 
               <input
@@ -1391,9 +1406,10 @@ export default function ModalNuevaCita({
                 }
               />
 
-            </div>
+              </div>
 
-          </div>
+            </div>
+          )}
 
 
           {/* ==================================================
