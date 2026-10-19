@@ -8,6 +8,7 @@ import secrets
 import os
 import base64
 import threading
+import asyncio
 
 import jwt
 from cryptography.fernet import Fernet
@@ -166,20 +167,38 @@ def _migrar_tablas_encargagest_en_hilo():
 
 
 @router.on_event("startup")
-def crear_tablas_encargagest():
-    # No ejecutar DDL síncrono dentro del ciclo de inicio de FastAPI:
-    # Render debe poder abrir el puerto aunque PostgreSQL tenga bloqueos.
-    hilo = threading.Thread(
-        target=_migrar_tablas_encargagest_en_hilo,
-        name="encargagest-schema-migration",
-        daemon=True,
-    )
-    hilo.start()
+async def crear_tablas_encargagest():
+    # No crear ni iniciar hilos mientras Starlette está ejecutando la secuencia
+    # de arranque. Solo se agenda el lanzamiento para después de liberar el
+    # ciclo de startup; así un problema de recursos no puede atascar el puerto.
     print(
-        "[ENCARGAGEST MIGRACION] Tarea de migración lanzada en segundo plano; "
-        "el arranque web continúa.",
+        "[ENCARGAGEST MIGRACION] Arranque web liberado; "
+        "migración programada para segundo plano.",
         flush=True,
     )
+
+    loop = asyncio.get_running_loop()
+
+    def lanzar_migracion():
+        try:
+            hilo = threading.Thread(
+                target=_migrar_tablas_encargagest_en_hilo,
+                name="encargagest-schema-migration",
+                daemon=True,
+            )
+            hilo.start()
+            print(
+                "[ENCARGAGEST MIGRACION] Hilo de migración lanzado.",
+                flush=True,
+            )
+        except Exception as exc:
+            print(
+                f"[ENCARGAGEST MIGRACION] No se pudo lanzar el hilo; "
+                f"la API seguirá activa y se reintentará en otro arranque. Error: {exc!r}",
+                flush=True,
+            )
+
+    loop.call_later(2.0, lanzar_migracion)
 
 def _es_externo(actor):
     return isinstance(actor, dict) and actor.get("tipo") == "externo"
