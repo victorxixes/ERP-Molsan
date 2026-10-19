@@ -52,7 +52,7 @@ class LoginNotario(BaseModel):
 
 class CambioPassword(BaseModel):
     password_actual: constr(min_length=1, max_length=128)
-    password_nueva: constr(min_length=1, max_length=128)
+    password_nueva: constr(min_length=8, max_length=128)
 
 class ComentarioGestorNotarGest(BaseModel):
     comentario: constr(min_length=1, max_length=2000)
@@ -404,7 +404,7 @@ def me(n=Depends(get_notario), db: Session = Depends(get_db)):
 @router.post("/cambiar-password")
 def cambiar_password(data: CambioPassword, n=Depends(get_notario), db: Session = Depends(get_db)):
     valida = bool(n.notargest_password_hash and verificar_password(data.password_actual, n.notargest_password_hash))
-    if not valida and n.notargest_cambiar_password:
+    if not valida and getattr(n, "notargest_password_provisional", True):
         valida = hmac.compare_digest(normalizar_nif(data.password_actual), normalizar_nif(n.nif or ""))
     if not valida:
         raise HTTPException(status_code=400, detail="La contraseña provisional no es correcta.")
