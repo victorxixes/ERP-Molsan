@@ -3876,6 +3876,10 @@ const cuantiaFincasParaEnvio =
                 >
                   Ficha completa del expediente
                 </p>
+                <div className="mt-2 inline-flex max-w-full items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs">
+                  <span className="font-bold text-blue-700">Gestor asignado:</span>
+                  <span className="truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
+                </div>
                 {expedienteBloqueado && <span className="mt-2 inline-flex rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-[11px] font-extrabold text-red-800">🔒 EXPEDIENTE BLOQUEADO · {motivoBloqueoExpediente}</span>}
 
               </div>
