@@ -124,6 +124,7 @@ import ApoderaGest
   from "./pages/apoderagest/ApoderaGest.jsx";
 import NotarGest from "./pages/notargest/NotarGest.jsx";
 import EncargaGest from "./pages/encargagest/EncargaGest.jsx";
+import EncargaGestWorkspace from "./pages/encargagest/EncargaGestWorkspace.jsx";
 
 
 /**
@@ -213,6 +214,11 @@ export default function App() {
         
         />
         
+        {/* Espacio interno EncargaGest: módulos compartidos sin entrar en CancelaGest. */}
+        <Route path="encargagest/ctn" element={<EncargaGestWorkspace page="ctn" />} />
+        <Route path="encargagest/agenda" element={<EncargaGestWorkspace page="agenda" />} />
+        <Route path="encargagest/mensajes" element={<EncargaGestWorkspace page="mensajes" />} />
+
         <Route
           path="notargest"
           element={<NotarGest />}
