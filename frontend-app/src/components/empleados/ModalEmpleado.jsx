@@ -8,6 +8,9 @@ import {
   editarEmpleado,
   subirFotoEmpleado,
   resetPasswordEmpleado,
+  obtenerNotariasEncargaGest,
+  obtenerAsignacionNotariasEncargaGest,
+  guardarAsignacionNotariasEncargaGest,
 } from "../../api/empleados";
 
 import {
@@ -520,6 +523,13 @@ export default function ModalEmpleado({
     setConfirmReset,
   ] = useState(false);
 
+  const [notariasEncargaGest, setNotariasEncargaGest] = useState([]);
+  const [notariasEncargaGestSeleccionadas, setNotariasEncargaGestSeleccionadas] = useState([]);
+  const [cargandoNotariasEncargaGest, setCargandoNotariasEncargaGest] = useState(false);
+  const [guardandoNotariasEncargaGest, setGuardandoNotariasEncargaGest] = useState(false);
+  const [errorNotariasEncargaGest, setErrorNotariasEncargaGest] = useState("");
+  const [mensajeNotariasEncargaGest, setMensajeNotariasEncargaGest] = useState("");
+
   const [
     empleadoEdit,
     setEmpleadoEdit,
@@ -837,6 +847,28 @@ export default function ModalEmpleado({
   }, [
     ficha,
   ]);
+
+  useEffect(() => {
+    if (!open || pestana !== "encargagest" || !empleadoId || !esAdministrador) return;
+    let vigente = true;
+    setCargandoNotariasEncargaGest(true);
+    setErrorNotariasEncargaGest("");
+    setMensajeNotariasEncargaGest("");
+    Promise.all([
+      obtenerNotariasEncargaGest(),
+      obtenerAsignacionNotariasEncargaGest(empleadoId),
+    ]).then(([lista, asignacion]) => {
+      if (!vigente) return;
+      setNotariasEncargaGest(lista.data || []);
+      setNotariasEncargaGestSeleccionadas((asignacion.data?.notaria_ids || []).map(Number));
+    }).catch((e) => {
+      if (!vigente) return;
+      setErrorNotariasEncargaGest(e?.response?.data?.detail || "No se han podido cargar las notarías de CTN.");
+    }).finally(() => {
+      if (vigente) setCargandoNotariasEncargaGest(false);
+    });
+    return () => { vigente = false; };
+  }, [open, pestana, empleadoId, esAdministrador]);
 
 
   /* ==========================================================
@@ -2294,6 +2326,11 @@ const permisosDisponibles =
               id: "accesos",
               label: "Accesos",
               icon: "🔐",
+            },
+            {
+              id: "encargagest",
+              label: "EncargaGest",
+              icon: "🏛️",
             },
             {
               id: "seguridad",
@@ -3802,6 +3839,57 @@ const permisosDisponibles =
 
                 )}
 
+
+                {/* =================================================
+                    ENCARGAGEST · ASIGNACIÓN DE NOTARÍAS
+                ================================================= */}
+                {pestana === "encargagest" && (
+                  <div className="space-y-5">
+                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="mb-5">
+                        <h3 className="text-base font-bold text-slate-900">Notarías que puede gestionar</h3>
+                        <p className="mt-1 text-sm text-slate-500">Selecciona las notarías CTN cuyos encargos podrá consultar y gestionar este empleado dentro de EncargaGest.</p>
+                      </div>
+                      {!esAdministrador && <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">Solo un administrador puede modificar las notarías asignadas.</p>}
+                      {errorNotariasEncargaGest && <p role="alert" className="mb-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorNotariasEncargaGest}</p>}
+                      {mensajeNotariasEncargaGest && <p role="status" className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{mensajeNotariasEncargaGest}</p>}
+                      {cargandoNotariasEncargaGest ? (
+                        <p className="py-8 text-center text-sm text-slate-500">Cargando catálogo CTN…</p>
+                      ) : (
+                        <div className="max-h-[440px] space-y-2 overflow-y-auto pr-1">
+                          {notariasEncargaGest.map((notaria) => {
+                            const id = Number(notaria.id);
+                            const checked = notariasEncargaGestSeleccionadas.includes(id);
+                            return (
+                              <label key={id} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition ${checked ? "border-blue-200 bg-blue-50/70" : "border-slate-200 bg-white hover:bg-slate-50"}`}>
+                                <input type="checkbox" checked={checked} disabled={!esAdministrador || guardandoNotariasEncargaGest} onChange={(event) => setNotariasEncargaGestSeleccionadas((actual) => event.target.checked ? [...new Set([...actual, id])] : actual.filter((value) => value !== id))} className="h-4 w-4 accent-blue-600" />
+                                <span className="min-w-0 flex-1"><strong className="block text-sm text-slate-800">{notaria.nombre}</strong><small className="block text-xs text-slate-500">{[notaria.nif, notaria.municipio, notaria.provincia].filter(Boolean).join(" · ") || "Sin datos adicionales"}</small></span>
+                                {checked && <span className="rounded-full bg-blue-100 px-2 py-1 text-[10px] font-bold text-blue-700">Asignada</span>}
+                              </label>
+                            );
+                          })}
+                          {notariasEncargaGest.length === 0 && <p className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">No hay notarías en el catálogo CTN.</p>}
+                        </div>
+                      )}
+                      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
+                        <p className="text-xs text-slate-500">{notariasEncargaGestSeleccionadas.length} notaría(s) asignada(s)</p>
+                        <button type="button" disabled={!esAdministrador || guardandoNotariasEncargaGest || cargandoNotariasEncargaGest} onClick={async () => {
+                          setGuardandoNotariasEncargaGest(true);
+                          setErrorNotariasEncargaGest("");
+                          setMensajeNotariasEncargaGest("");
+                          try {
+                            await guardarAsignacionNotariasEncargaGest(empleadoId, notariasEncargaGestSeleccionadas);
+                            setMensajeNotariasEncargaGest("Asignaciones de EncargaGest guardadas correctamente.");
+                          } catch (e) {
+                            setErrorNotariasEncargaGest(e?.response?.data?.detail || "No se han podido guardar las asignaciones.");
+                          } finally {
+                            setGuardandoNotariasEncargaGest(false);
+                          }
+                        }} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">{guardandoNotariasEncargaGest ? "Guardando…" : "Guardar asignaciones"}</button>
+                      </div>
+                    </section>
+                  </div>
+                )}
 
                 {/* =================================================
                     SEGURIDAD
