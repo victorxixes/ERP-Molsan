@@ -225,13 +225,21 @@ export default function App() {
           element={<NotarGest />}
         />
 
-        {/* Puerta web externa para notarías: acceso directo y diferenciado. */}
+        {/* Portales externos para notarías: rutas explícitas y separadas. */}
         <Route
-          path="notargestweb"
+          path="notargest-notario"
+          element={<NotarGest />}
+        />
+        <Route
+          path="encargagest-notario"
           element={<EncargaGest />}
         />
 
-        {/* Puerta web externa para encargos de cancelación hipotecaria. */}
+        {/* Compatibilidad con enlaces antiguos: cada ruta conserva su portal correcto. */}
+        <Route
+          path="notargestweb"
+          element={<NotarGest />}
+        />
         <Route
           path="encargagestweb"
           element={<EncargaGest />}
