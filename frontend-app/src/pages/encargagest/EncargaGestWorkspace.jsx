@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
+import EncargaGest from "./EncargaGest";
 import Ctn from "../ctn/Ctn";
 import Agenda from "../agenda/Agenda";
 import Mensajes from "../mensajes/Mensajes";
@@ -14,11 +15,13 @@ export default function EncargaGestWorkspace({ page }) {
     { key: "ctn", label: "CTN", icon: "building" },
     { key: "agenda", label: "Agenda", icon: "calendar" },
     { key: "mensajes", label: "Mensajes", icon: "chat" },
+    { key: "encargos", label: "Encargos", icon: "clipboard" },
   ];
   const rutas = {
     CTN: "/encargagest/ctn",
     Agenda: "/encargagest/agenda",
     Mensajes: "/encargagest/mensajes",
+    Encargos: "/encargagest",
   };
 
   return (
@@ -26,13 +29,14 @@ export default function EncargaGestWorkspace({ page }) {
       <Sidebar
         brandName="EncargaGest"
         navigationItems={items}
-        activeNavigationItem={items.find((item) => item.key === page)?.label || "CTN"}
+        activeNavigationItem={items.find((item) => item.key === page)?.label || (page === "encargos" ? "Encargos" : "CTN")}
         onNavigationItemClick={(label) => {
           if (rutas[label]) navigate(rutas[label]);
         }}
       />
       <main className="relative min-h-screen px-4 py-6 lg:px-6">
-        {page === "ctn" && <Ctn />}
+        {page === "encargos" && <EncargaGest />}
+        {page === "ctn" && <Ctn />
         {page === "agenda" && <Agenda />}
         {page === "mensajes" && (
           empleado?.id
