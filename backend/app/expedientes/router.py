@@ -389,6 +389,7 @@ CAMPOS_EXPEDIENTE = [
     "id_expediente",
     "notario_id",
     "apoderado_empleado_id",
+    "gestor_asignado_id",
     "estado_expediente",
     "estado_expediente_ancert",
     "liquidado_sin_tramitar",
