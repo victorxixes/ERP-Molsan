@@ -1113,7 +1113,7 @@ def importar_excel_expedientes(
 
             # Reparto inicial de expedientes nuevos o todavía sin responsable.
             if not getattr(exp, "gestor_asignado_id", None):
-                actividad_reparto = resolver_key_actividad(exp.actividad_actual)
+                actividad_reparto = resolver_key_actividad(exp.actividad_actual, exp.fecha_firma)
                 if actividad_reparto:
                     asignar_gestor_automaticamente(db, exp, actividad_reparto, "alta_importacion")
 
