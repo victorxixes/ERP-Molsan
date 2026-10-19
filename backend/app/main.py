@@ -999,7 +999,7 @@ def migrar_columnas_credenciales_portales_inicio():
         ),
         (
             "encargagest_usuarios.password_enc",
-            "ALTER TABLE encargagest_usuarios ADD COLUMN IF NOT EXISTS password_enc TEXT",
+            "ALTER TABLE IF EXISTS encargagest_usuarios ADD COLUMN IF NOT EXISTS password_enc TEXT",
         ),
     ]
     for etiqueta, sql in migraciones:
