@@ -429,6 +429,7 @@ export default function NotarGest() {
             <label className="block text-xs font-semibold text-slate-600">Repetir nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordConfirmarPerfil} onChange={e=>setPasswordConfirmarPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
             <button type="submit" disabled={guardandoPasswordPerfil} className="ng-login-submit w-full">{guardandoPasswordPerfil ? "Guardando contraseña…" : "Cambiar contraseña"}</button>
           </form>
+          </div>
         </section></div>}
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
@@ -454,8 +455,8 @@ export default function NotarGest() {
     </header>
     {error && <div className="ng-error" role="alert">{error}</div>}{mensaje && <div className="ng-success">{mensaje}</div>}
     {vista === "inicio" && <section className="ng-dashboard-analitica">
-      <div className="ng-dashboard-graficos">
-        <section className="ng-dashboard-grafico"><div className="ng-bloque-heading"><div><span className="ng-kicker">ACTIVIDAD</span><h3>Firmas realizadas por mes</h3></div></div>
+      <div className="ng-dashboard-graficos ng-dashboard-graficos-tres-columnas">
+        <section className="ng-dashboard-grafico ng-dashboard-actividad"><div className="ng-bloque-heading"><div><span className="ng-kicker">ACTIVIDAD</span><h3>Firmas realizadas por mes</h3></div></div>
           {(() => {
             const meses = [];
             const ahora = new Date();
@@ -465,7 +466,7 @@ export default function NotarGest() {
             return <div className="ng-barras-meses">{meses.map(m=><div className="ng-barra-mes" key={m.key}><strong>{m.valor}</strong><div className="ng-barra-pista"><span style={{height:`${Math.max(m.valor?6:0,m.valor/max*100)}%`}} /></div><small>{m.label}</small></div>)}</div>;
           })()}
         </section>
-        <section className="ng-dashboard-grafico ng-dashboard-pagos">
+        <section className="ng-dashboard-grafico ng-dashboard-pagos ng-dashboard-economica">
           <div className="ng-bloque-heading">
             <div><span className="ng-kicker">GESTIÓN ECONÓMICA</span><h3>Pagos</h3></div>
             <button type="button" className="ng-abrir" onClick={abrirPagos}>Ver pagos →</button>
@@ -495,7 +496,7 @@ export default function NotarGest() {
             </div>;
           })()}
         </section>
-        <section className="ng-dashboard-grafico ng-dashboard-etapas"><div className="ng-bloque-heading"><div><span className="ng-kicker">SEGUIMIENTO DE HITOS</span><h3>Ciclo registral</h3></div></div>
+        <section className="ng-dashboard-grafico ng-dashboard-etapas ng-dashboard-hitos"><div className="ng-bloque-heading"><div><span className="ng-kicker">SEGUIMIENTO DE HITOS</span><h3>Ciclo registral</h3></div></div>
           {(() => {
             const etapas=[
               {label:"Fecha envío → fecha firma",desde:["fecha_envio_notario","fecha_envio"],hasta:["fecha_firma"]},
