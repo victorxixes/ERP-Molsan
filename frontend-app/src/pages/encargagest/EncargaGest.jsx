@@ -728,8 +728,14 @@ export default function EncargaGest() {
       setResumen({ total: 0, por_estado: {}, requieren_atencion: 0 });
       setModo("login");
     } else {
-      navigate("/modulos");
+      limpiarSesionEncargaGest();
+      useAuthStore.getState().logout();
+      navigate("/login", { replace: true });
     }
+  }
+
+  function irAModulos() {
+    navigate("/modulos");
   }
 
   async function abrirAccesos() {
@@ -838,8 +844,9 @@ export default function EncargaGest() {
             <span>{fechaActual}</span>
           </div>
           {modo === "externo" && <button type="button" onClick={() => { setPerfilAbierto(true); setMensajePasswordPerfil(""); setErrorPasswordPerfil(""); }} className="eg-secondary">Mi perfil</button>}
+          {modo === "interno" && <button type="button" onClick={irAModulos} className="eg-secondary"><span aria-hidden="true">▦</span> Ir a módulos</button>}
           <button type="button" onClick={salirEncargaGest} className="eg-secondary">
-            {modo === "externo" ? "Cerrar sesión" : <><span aria-hidden="true">▦</span> Ir a módulos</>}
+            Cerrar sesión
           </button>
           <button type="button" onClick={cargarTodo} disabled={cargando} className="ag-boton-actualizar">
             <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
