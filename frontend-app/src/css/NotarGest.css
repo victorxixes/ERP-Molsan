@@ -825,3 +825,69 @@
   .ng-admin-notarias .ng-admin-resumen-principal{grid-column:1/-1}
   .ng-admin-notarias .ng-admin-circuitos{grid-template-columns:1fr}
 }
+
+
+/* ============================================================
+   NOTARGEST · RESUMEN GLOBAL DE 10 BANDEJAS · GLASS LUXE
+   Consolidado de todas las notarías y detalle por notaría
+   ============================================================ */
+.ng-admin-notarias .ng-admin-global-resumen{
+  margin:0 0 28px;padding:20px;
+  border:1px solid rgba(255,255,255,.96);border-radius:22px;
+  background:rgba(255,255,255,.38);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 28px rgba(31,48,79,.035);
+}
+.ng-admin-notarias .ng-admin-global-titulo{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin:0 0 16px;padding:0 2px;
+}
+.ng-admin-notarias .ng-admin-global-titulo h3,
+.ng-admin-notarias .ng-admin-individual-titulo h3{
+  margin:4px 0;color:#172b4d;font-size:19px;font-weight:850;letter-spacing:-.45px;
+}
+.ng-admin-notarias .ng-admin-global-titulo p,
+.ng-admin-notarias .ng-admin-individual-titulo p{
+  margin:4px 0 0;color:#77849a;font-size:11px;line-height:1.55;
+}
+.ng-admin-notarias .ng-admin-global-eyebrow{
+  display:block;color:#6478b5;font-size:9px;font-weight:900;letter-spacing:1.4px;
+}
+.ng-admin-notarias .ng-admin-global-total{
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  min-height:34px;padding:0 12px;border:1px solid #dce5ff;border-radius:999px;
+  background:rgba(238,243,255,.9);color:#3558c8;font-size:10px;font-weight:850;
+}
+.ng-admin-notarias .ng-admin-kpis-global{
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:11px!important;margin:0!important;
+}
+.ng-admin-notarias .ng-admin-kpis-global article{
+  min-height:105px;padding:15px 14px!important;border-radius:15px!important;
+  background:rgba(255,255,255,.83)!important;
+  box-shadow:0 6px 18px rgba(31,48,79,.04),inset 0 1px 0 rgba(255,255,255,.95)!important;
+}
+.ng-admin-notarias .ng-admin-kpis-global article::before{width:3px;border-radius:15px 0 0 15px}
+.ng-admin-notarias .ng-admin-kpis-global article span{font-size:10px;line-height:1.45}
+.ng-admin-notarias .ng-admin-kpis-global article strong{font-size:clamp(24px,2vw,31px);margin-top:5px}
+.ng-admin-notarias .ng-admin-kpis-global article:nth-child(5n+2)::before{background:linear-gradient(180deg,#10b981,#8be4c5)}
+.ng-admin-notarias .ng-admin-kpis-global article:nth-child(5n+3)::before{background:linear-gradient(180deg,#6488f4,#a4b7ff)}
+.ng-admin-notarias .ng-admin-kpis-global article:nth-child(5n+4)::before{background:linear-gradient(180deg,#e8a23b,#f7d49b)}
+.ng-admin-notarias .ng-admin-kpis-global article:nth-child(5n+5)::before{background:linear-gradient(180deg,#8b72e8,#c3b5ff)}
+.ng-admin-notarias .ng-admin-individual-titulo{margin:0 2px 15px}
+.ng-admin-notarias .ng-admin-individual-titulo h3{font-size:20px}
+.ng-admin-notarias .ng-admin-metricas{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:1350px){
+  .ng-admin-notarias .ng-admin-kpis-global{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+@media(max-width:1050px){
+  .ng-admin-notarias .ng-admin-kpis-global{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:760px){
+  .ng-admin-notarias .ng-admin-global-resumen{padding:13px;border-radius:17px}
+  .ng-admin-notarias .ng-admin-kpis-global{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .ng-admin-notarias .ng-admin-kpis-global article{min-height:94px;padding:12px!important}
+  .ng-admin-notarias .ng-admin-kpis-global article span{font-size:9px}
+  .ng-admin-notarias .ng-admin-kpis-global article strong{font-size:25px}
+  .ng-admin-notarias .ng-admin-global-titulo{align-items:flex-start}
+  .ng-admin-notarias .ng-admin-global-total{font-size:9px;padding:0 9px}
+}
