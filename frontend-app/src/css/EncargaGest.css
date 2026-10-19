@@ -490,3 +490,21 @@
 @media (max-width:1250px) { .eg-modal-carpeta-layout { grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); } .eg-modal-visor { min-height:390px; } .eg-modal-pdf-frame { min-height:350px; } }
 @media (max-width:1100px) { .eg-modal-carpeta-layout { grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); } }
 @media (max-width:650px) { .eg-modal-carpeta-layout { grid-template-columns:minmax(0,1fr); } .eg-modal-visor { min-height:340px; } .eg-modal-pdf-frame { min-height:320px; } .eg-modal-visor-placeholder { min-height:270px; } }
+
+
+/* Alta de encargo: carpeta digital a la izquierda y datos del contrato a la derecha */
+.eg-contrato-layout { display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr); gap:14px; align-items:start; }
+.eg-contrato-layout > .mb-3 { grid-column:1 / -1; }
+.eg-contrato-layout > .grid.grid-cols-1.gap-3.sm\\:grid-cols-2 { grid-column:2; grid-row:2; }
+.eg-contrato-layout > .mt-4.flex.flex-wrap.items-center.justify-between.gap-3 { grid-column:2; grid-row:3; margin-top:0; }
+.eg-contrato-layout > .mt-3.space-y-3 { grid-column:2; grid-row:4; }
+.eg-contrato-layout > .mt-4.border-t.border-amber-200.pt-3 { grid-column:1; grid-row:2 / span 3; min-width:0; margin-top:0; border-top:0; padding-top:0; }
+@media (max-width:900px) {
+  .eg-contrato-layout { grid-template-columns:minmax(0,1fr); }
+  .eg-contrato-layout > .mb-3,
+  .eg-contrato-layout > .grid.grid-cols-1.gap-3.sm\\:grid-cols-2,
+  .eg-contrato-layout > .mt-4.flex.flex-wrap.items-center.justify-between.gap-3,
+  .eg-contrato-layout > .mt-3.space-y-3,
+  .eg-contrato-layout > .mt-4.border-t.border-amber-200.pt-3 { grid-column:1; grid-row:auto; }
+  .eg-contrato-layout > .mt-4.border-t.border-amber-200.pt-3 { border-top:1px solid #f2d38b; padding-top:12px; }
+}
