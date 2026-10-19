@@ -353,7 +353,7 @@ class LoginEncargaGest(BaseModel):
 
 class AccesoEncargaGest(BaseModel):
     notaria_id: int
-    password: constr(min_length=10, max_length=128) | None = None
+    password: constr(min_length=8, max_length=128) | None = None
     habilitado: bool = True
 
 
@@ -382,6 +382,8 @@ def login_encargagest(datos: LoginEncargaGest, db: Session = Depends(get_db)):
         acceso.habilitado = True
         acceso.actualizado_en = datetime.utcnow()
         valido = True
+    if valido and acceso.password_provisional and not password_nif:
+        acceso.password_provisional = False
     if not valido:
         db.execute(text("""
             INSERT INTO ctn_portal_accesos_historial (notaria_id, portal, evento, resultado, usuario, detalle)
@@ -499,8 +501,6 @@ def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(g
     if not usuario_login:
         raise HTTPException(status_code=422, detail="La notaría no tiene NIF registrado en CTN; completa ese dato antes de crear el acceso.")
     acceso = db.query(EncargoExternoUsuario).filter(EncargoExternoUsuario.notaria_id == notaria.id).first()
-    if acceso is None and not datos.password:
-        raise HTTPException(status_code=422, detail="Indica una contraseña inicial de al menos 10 caracteres.")
     existente = db.query(EncargoExternoUsuario).filter(
         func.upper(EncargoExternoUsuario.usuario) == usuario_login,
         EncargoExternoUsuario.notaria_id != notaria.id,
@@ -508,10 +508,12 @@ def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(g
     if existente:
         raise HTTPException(status_code=409, detail="Ya existe otro acceso con ese usuario; revisa el NIF de CTN.")
     if acceso is None:
+        password_inicial = (datos.password or usuario_login).strip()
         acceso = EncargoExternoUsuario(
             notaria_id=notaria.id, usuario=usuario_login,
-            password_hash=_hash_password(datos.password),
-            password_enc=_cifrar_password(datos.password),
+            password_hash=_hash_password(password_inicial),
+            password_enc=_cifrar_password(password_inicial),
+            password_provisional=(_normalizar_usuario(password_inicial) == usuario_login),
             habilitado=datos.habilitado,
         )
         db.add(acceso)
@@ -521,6 +523,7 @@ def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(g
         if datos.password:
             acceso.password_hash = _hash_password(datos.password)
             acceso.password_enc = _cifrar_password(datos.password)
+            acceso.password_provisional = (_normalizar_usuario(datos.password) == usuario_login)
         acceso.actualizado_en = datetime.utcnow()
     db.commit()
     db.refresh(acceso)
