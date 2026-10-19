@@ -4763,25 +4763,25 @@ const cuantiaFincasParaEnvio =
                           ) : resumenEconomico.movimientos.length === 0 ? (
                             <p className="rounded-lg border border-dashed border-slate-200 px-3 py-4 text-center text-xs text-slate-500">Todavía no hay pagos confirmados para mostrar.</p>
                           ) : (
-                            <div className="overflow-x-auto rounded-lg border border-slate-200">
-                              <table className="w-full min-w-[760px] text-left text-xs">
-                                <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500">
+                            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+                              <table className="w-full min-w-[980px] table-auto text-left text-sm">
+                                <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-600">
                                   <tr>
-                                    <th className="px-3 py-2.5">N.º documento</th>
-                                    <th className="px-3 py-2.5">Fecha de pago</th>
-                                    <th className="px-3 py-2.5">Tipo concepto</th>
-                                    <th className="px-3 py-2.5 text-right">Importe</th>
-                                    <th className="px-3 py-2.5 text-right">Saldo real</th>
+                                    <th className="w-[190px] px-5 py-4 font-extrabold">N.º documento</th>
+                                    <th className="w-[170px] px-5 py-4 font-extrabold">Fecha de pago</th>
+                                    <th className="px-5 py-4 font-extrabold">Concepto</th>
+                                    <th className="w-[180px] px-5 py-4 text-right font-extrabold">Importe</th>
+                                    <th className="w-[190px] px-5 py-4 text-right font-extrabold">Saldo real</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {resumenEconomico.movimientos.map((movimiento) => (
-                                    <tr key={movimiento.id} className="border-t border-slate-100">
-                                      <td className="whitespace-nowrap px-3 py-2.5 font-bold text-indigo-700">{movimiento.numero_documento || `PAG-${String(movimiento.id).padStart(6, "0")}`}</td>
-                                      <td className="whitespace-nowrap px-3 py-2.5">{movimiento.fecha ? formatearFecha(movimiento.fecha) : "—"}</td>
-                                      <td className="px-3 py-2.5 font-semibold text-slate-700">{movimiento.descripcion || movimiento.tipo || "Gasto"}</td>
-                                      <td className="whitespace-nowrap px-3 py-2.5 text-right font-semibold text-red-700">{movimiento.importeMovimiento === 0 ? "0,00 €" : `−${Math.abs(movimiento.importeMovimiento).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</td>
-                                      <td className={`whitespace-nowrap px-3 py-2.5 text-right font-extrabold ${movimiento.saldoCalculado < 0 ? "text-red-700" : "text-slate-800"}`}>{movimiento.saldoCalculado.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
+                                  {resumenEconomico.movimientos.map((movimiento, indice) => (
+                                    <tr key={movimiento.id} className={`border-t border-slate-100 transition-colors hover:bg-indigo-50/40 ${indice % 2 === 1 ? "bg-slate-50/50" : "bg-white"}`}>
+                                      <td className="whitespace-nowrap px-5 py-4 font-extrabold text-indigo-700">{movimiento.numero_documento || `PAG-${String(movimiento.id).padStart(6, "0")}`}</td>
+                                      <td className="whitespace-nowrap px-5 py-4 text-slate-600">{movimiento.fecha ? formatearFecha(movimiento.fecha) : "—"}</td>
+                                      <td className="px-5 py-4 font-semibold text-slate-800">{movimiento.descripcion || movimiento.tipo || "Gasto"}</td>
+                                      <td className="whitespace-nowrap px-5 py-4 text-right font-bold text-red-700">{movimiento.importeMovimiento === 0 ? "0,00 €" : `−${Math.abs(movimiento.importeMovimiento).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</td>
+                                      <td className={`whitespace-nowrap px-5 py-4 text-right text-base font-extrabold ${movimiento.saldoCalculado < 0 ? "text-red-700" : "text-slate-900"}`}>{movimiento.saldoCalculado.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
                                     </tr>
                                   ))}
                                 </tbody>
@@ -4866,33 +4866,36 @@ const cuantiaFincasParaEnvio =
                           </div>
                         )}
 
-                        <div className="mt-4 border-t border-slate-100 pt-3">
-                          <h5 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-600">Facturas y gastos registrados</h5>
+                        <div className="mt-6 border-t border-slate-100 pt-5">
+                          <h5 className="mb-4 text-sm font-extrabold uppercase tracking-wide text-slate-700">Facturas y gastos registrados</h5>
                           {cargandoGastos ? (
-                            <p className="py-3 text-xs text-slate-500">Cargando gastos…</p>
+                            <p className="py-4 text-sm text-slate-500">Cargando gastos…</p>
                           ) : gastosExpediente.length === 0 ? (
-                            <p className="py-3 text-xs text-slate-500">Todavía no hay gastos registrados en este expediente.</p>
+                            <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-500">Todavía no hay gastos registrados en este expediente.</p>
                           ) : (
-                            <ul className="divide-y divide-slate-100">
+                            <ul className="space-y-3">
                               {gastosExpediente.map((gasto) => (
-                                <li key={gasto.id} className="flex flex-wrap items-center gap-3 py-3">
+                                <li key={gasto.id} className="flex flex-wrap items-center gap-4 rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
                                   <div className="min-w-0 flex-1">
-                                    <p className="text-xs font-bold text-slate-800">{gasto.descripcion || gasto.tipo || "Gasto"}</p>
-                                    <p className="mt-0.5 text-[11px] text-slate-500">
-                                      {[gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`, gasto.tipo, gasto.fecha ? formatearFecha(gasto.fecha) : null, gasto.estado_pago || "Pendiente"].filter(Boolean).join(" · ")}
-                                    </p>
+                                    <p className="text-sm font-extrabold text-slate-900">{gasto.descripcion || gasto.tipo || "Gasto"}</p>
+                                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-600">
+                                      <span className="font-bold text-indigo-700">{gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`}</span>
+                                      {gasto.tipo && <span>{gasto.tipo}</span>}
+                                      {gasto.fecha && <span>Fecha: {formatearFecha(gasto.fecha)}</span>}
+                                      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${String(gasto.estado_pago || "Pendiente").toLowerCase().includes("pag") || String(gasto.estado_pago || "").toLowerCase().includes("abon") ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{gasto.estado_pago || "Pendiente"}</span>
+                                    </div>
                                   </div>
-                                  <span className="text-sm font-extrabold text-slate-800">
+                                  <span className="whitespace-nowrap text-base font-extrabold text-slate-900">
                                     {gasto.importe_resultante == null && gasto.importe == null ? "—" : `${Number(gasto.importe_resultante ?? gasto.importe).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}
                                   </span>
-                                  <button type="button" onClick={() => eliminarGastoExpediente(gasto)} className="rounded-md px-2 py-1 text-xs font-bold text-red-600 hover:bg-red-50">
+                                  <button type="button" onClick={() => eliminarGastoExpediente(gasto)} className="rounded-lg border border-red-200 px-3 py-2 text-sm font-bold text-red-600 transition hover:bg-red-50">
                                     Eliminar
                                   </button>
                                 </li>
                               ))}
                             </ul>
                           )}
-                          {gastosPendientesResumen.length > 0 && <p className="mt-2 text-[10px] text-amber-700">Hay {gastosPendientesResumen.length} gasto(s) pendiente(s) de pago que todavía no descuentan del saldo real.</p>}
+                          {gastosPendientesResumen.length > 0 && <p className="mt-3 rounded-lg bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">Hay {gastosPendientesResumen.length} gasto(s) pendiente(s) de pago que todavía no descuentan del saldo real.</p>}
                         </div>
                       </section>
                     )}
