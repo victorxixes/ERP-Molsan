@@ -742,9 +742,11 @@ export default function EncargaGest() {
             { key: "agenda", label: "Agenda", icon: "calendar" },
             { key: "mensajes", label: "Mensajes", icon: "message" },
             { key: "intranet", label: "Intranet", icon: "file-text" },
+            { key: "encargos", label: "Encargos", icon: "clipboard" },
           ]}
+          activeNavigationItem="Encargos"
           onNavigationItemClick={(label) => {
-            const rutas = { CTN: "/encargagest/ctn", Agenda: "/encargagest/agenda", Mensajes: "/encargagest/mensajes", Intranet: "/encargagest/intranet" };
+            const rutas = { CTN: "/encargagest/ctn", Agenda: "/encargagest/agenda", Mensajes: "/encargagest/mensajes", Intranet: "/encargagest/intranet", Encargos: "/encargagest" };
             if (rutas[label]) navigate(rutas[label]);
           }}
         />
