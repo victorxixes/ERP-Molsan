@@ -528,3 +528,73 @@
 @media(max-width:950px){.notargest .ng-modulos-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:680px){.notargest .ng-modulos-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.notargest .ng-modulo-card{grid-template-columns:31px minmax(0,1fr) auto;min-height:60px;padding:9px;gap:7px}.notargest .ng-modulo-icono{width:30px;height:30px;font-size:15px}.notargest .ng-modulo-label{font-size:10px}}
 @media(max-width:390px){.notargest .ng-modulos-grid{grid-template-columns:1fr}}
+
+
+
+/* Ficha de perfil NotarGest: modal amplio para evitar que los datos queden comprimidos */
+.ng-modal.ng-modal-perfil{
+  width:min(1180px,calc(100vw - 48px))!important;
+  max-width:1180px!important;
+  min-width:0;
+}
+.ng-modal.ng-modal-perfil>header{
+  flex-direction:row;
+  align-items:center;
+  padding:22px 28px;
+}
+.ng-modal.ng-modal-perfil>div.grid{
+  grid-template-columns:minmax(0,1.35fr) minmax(320px,.85fr);
+  align-items:start;
+  gap:24px;
+  padding:24px 28px;
+}
+.ng-modal.ng-modal-perfil .ng-perfil-identidad{
+  padding:8px 0 18px;
+}
+.ng-modal.ng-modal-perfil .ng-perfil-datos{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  padding:18px 0;
+}
+.ng-modal.ng-modal-perfil .ng-dato{
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+.ng-modal.ng-modal-perfil .ng-dato strong{
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+.ng-modal.ng-modal-perfil form{
+  min-width:0;
+  padding:22px;
+}
+@media(max-width:900px){
+  .ng-modal.ng-modal-perfil{
+    width:min(100%,720px)!important;
+  }
+  .ng-modal.ng-modal-perfil>div.grid{
+    grid-template-columns:minmax(0,1fr);
+    gap:18px;
+    padding:18px;
+  }
+  .ng-modal.ng-modal-perfil .ng-perfil-datos{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media(max-width:600px){
+  .ng-modal.ng-modal-perfil>header{
+    align-items:flex-start;
+    flex-direction:column;
+    padding:16px;
+  }
+  .ng-modal.ng-modal-perfil>div.grid{
+    padding:14px;
+  }
+  .ng-modal.ng-modal-perfil .ng-perfil-datos{
+    grid-template-columns:minmax(0,1fr);
+    gap:8px;
+  }
+  .ng-modal.ng-modal-perfil form{
+    padding:16px;
+  }
+}
