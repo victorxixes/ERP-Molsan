@@ -199,9 +199,11 @@ def ficha(
             detail="Empleado no encontrado",
         )
 
+    # La función espera el ID numérico del empleado.
+    # Pasar el nombre de usuario provocaba una lista vacía.
     auditoria = obtener_auditoria_empleado(
         db,
-        empleado["usuario"],
+        empleado_id,
     )
 
     return {
