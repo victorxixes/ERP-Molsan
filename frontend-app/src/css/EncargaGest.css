@@ -698,3 +698,25 @@
     padding:16px;
   }
 }
+
+.encargagest .eg-perfil-identidad{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+}
+.encargagest .eg-perfil-avatar{
+  display:grid;
+  flex:0 0 48px;
+  width:48px;
+  height:48px;
+  place-items:center;
+  color:#fff;
+  background:linear-gradient(145deg,#4677f5,#2948bb);
+  border:1px solid rgba(255,255,255,.8);
+  border-radius:14px;
+  box-shadow:0 7px 17px rgba(49,94,232,.2);
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:.04em;
+}
+.encargagest .eg-perfil-identidad>div:last-child{min-width:0;flex:1;}
