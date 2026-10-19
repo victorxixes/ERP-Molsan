@@ -103,7 +103,7 @@ def crear_tablas_encargagest():
     with engine.begin() as conexion:
         conexion.execute(text("""
             CREATE TABLE IF NOT EXISTS encargagest_notaria_gestor (
-                notaria_id INTEGER PRIMARY KEY REFERENCES notarias(id) ON DELETE CASCADE,
+                notaria_id INTEGER PRIMARY KEY REFERENCES ctn_notarios(id) ON DELETE CASCADE,
                 gestor_id INTEGER NULL REFERENCES empleados(id) ON DELETE SET NULL,
                 habilitada BOOLEAN NOT NULL DEFAULT FALSE,
                 actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
