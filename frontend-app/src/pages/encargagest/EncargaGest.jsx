@@ -700,6 +700,7 @@ export default function EncargaGest() {
 
                 <div className="grid grid-cols-1 gap-6 p-5 sm:p-6 xl:grid-cols-2">
                   {modo === "externo" ? (
+                  <>
                   <section className="min-w-0 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4">
                     <div className="mb-4 flex items-center gap-3 border-b border-indigo-100 pb-3">
                       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-indigo-100 bg-white text-xs font-black text-indigo-700">01</span>
@@ -724,6 +725,7 @@ export default function EncargaGest() {
                       {modo === "interno" && detalle.observaciones_internas ? <div className="rounded-xl border border-amber-100 bg-amber-50/60 p-3"><dt className="mb-1 font-bold text-amber-900">Nota interna MOLSAN</dt><dd className="whitespace-pre-wrap leading-5 text-amber-900">{detalle.observaciones_internas}</dd></div> : null}
                     </dl>
                   </section>
+                  </>
                 ) : (
                   <section>
                     <div className="flex items-center justify-between"><h3 className="text-sm font-extrabold text-slate-900">Datos de la solicitud</h3><span className="text-[10px] text-slate-400">CTN · ID {detalle.notaria_id}</span></div>
