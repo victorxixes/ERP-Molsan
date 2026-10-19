@@ -244,6 +244,7 @@ function TablaEncargos({ encargos, onFirmado }) {
     setDatosAceptacion((actual) => ({
       ...actual,
       [id]: {
+        fecha_envio: actual[id]?.fecha_envio ?? encargo.fecha_envio_notario ?? encargo.fecha_envio ?? "",
         numero_solicitud_pnc: actual[id]?.numero_solicitud_pnc ?? encargo.numero_solicitud_pnc ?? "",
         fecha_solicitud_pnc: actual[id]?.fecha_solicitud_pnc ?? encargo.fecha_solicitud_pnc ?? "",
         fecha_prevista_firma: actual[id]?.fecha_prevista_firma ?? encargo.fecha_prevista_firma ?? "",
@@ -259,14 +260,15 @@ function TablaEncargos({ encargos, onFirmado }) {
   async function aceptarEncargo(encargo) {
     const id = String(encargo.id_expediente || encargo.id);
     const valores = datosAceptacion[id] || {
+      fecha_envio: encargo.fecha_envio_notario || encargo.fecha_envio || "",
       numero_solicitud_pnc: encargo.numero_solicitud_pnc || "",
       fecha_solicitud_pnc: encargo.fecha_solicitud_pnc || "",
       fecha_prevista_firma: encargo.fecha_prevista_firma || "",
       hora_inicio: horaLegible(encargo.hora_prevista_firma) === "—" ? "09:00" : horaLegible(encargo.hora_prevista_firma),
       hora_fin: horaLegible(encargo.hora_fin_prevista_firma) === "—" ? "10:00" : horaLegible(encargo.hora_fin_prevista_firma),
     };
-    if (!valores.numero_solicitud_pnc?.trim() || !valores.fecha_solicitud_pnc || !valores.fecha_prevista_firma || !valores.hora_inicio || !valores.hora_fin) {
-      setErroresAceptacion((actual) => ({ ...actual, [id]: "Completa el número de solicitud, las fechas y el horario." }));
+    if (!valores.fecha_envio || !valores.numero_solicitud_pnc?.trim() || !valores.fecha_solicitud_pnc || !valores.fecha_prevista_firma || !valores.hora_inicio || !valores.hora_fin) {
+      setErroresAceptacion((actual) => ({ ...actual, [id]: "Completa la fecha de envío, el número y fecha de solicitud PNC, la fecha prevista y el horario de firma." }));
       return;
     }
     if (valores.hora_fin <= valores.hora_inicio) {
@@ -278,6 +280,7 @@ function TablaEncargos({ encargos, onFirmado }) {
     setMensajesAceptacion((actual) => ({ ...actual, [id]: "" }));
     try {
       const { data } = await axios.post(`/apoderagest/encargos/${encodeURIComponent(id)}/aceptar`, {
+        fecha_envio: valores.fecha_envio,
         numero_solicitud_pnc: valores.numero_solicitud_pnc.trim(),
         fecha_solicitud_pnc: valores.fecha_solicitud_pnc,
         fecha_prevista_firma: valores.fecha_prevista_firma,
@@ -465,6 +468,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                       <div className="ag-encargo-resumen ag-ficha-resumen ag-aceptar-resumen">
                         <CampoDetalle etiqueta="Expediente bloqueado" valor={encargo.bloqueado ? "Sí" : "No"} />
                         <CampoDetalle etiqueta="Firma urgente" valor={encargo.firma_urgente ? "SÍ · URGENTE" : "No"} clase={encargo.firma_urgente ? "ag-firma-urgente-activa" : ""} />
+                        <label className="ag-aceptar-campo"><span>Fecha de envío</span><input type="date" value={(datosAceptacion[id]?.fecha_envio ?? encargo.fecha_envio_notario ?? encargo.fecha_envio ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_envio", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!(encargo.fecha_envio_notario || encargo.fecha_envio) && !!(encargo.fecha_envio_notario || encargo.fecha_envio) && !!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
                         <label className="ag-aceptar-campo"><span>N.º solicitud PN</span><input type="text" value={(datosAceptacion[id]?.numero_solicitud_pnc ?? encargo.numero_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "numero_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
                         <label className="ag-aceptar-campo"><span>Fecha solicitud PNC</span><input type="date" value={(datosAceptacion[id]?.fecha_solicitud_pnc ?? encargo.fecha_solicitud_pnc ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_solicitud_pnc", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
                         <label className="ag-aceptar-campo"><span>Fecha prevista de firma</span><input type="date" value={(datosAceptacion[id]?.fecha_prevista_firma ?? encargo.fecha_prevista_firma ?? "")} onChange={(e) => cambiarDatoAceptacion(encargo, "fecha_prevista_firma", e.target.value)} disabled={!!encargo.bloqueado || !!guardandoAceptacion[id] || (!!encargo.numero_solicitud_pnc && !!encargo.fecha_solicitud_pnc && !!encargo.fecha_prevista_firma && !edicionAceptacion[id])} /></label>
