@@ -548,3 +548,22 @@
 @media (max-width:650px) {
   .eg-modal-carpeta-lateral > .mt-4.border-t.border-amber-200.pt-3 > .grid { grid-template-columns:minmax(0,1fr); }
 }
+
+
+/* Carpeta digital en columna independiente, junto a la ficha Datos del encargo */
+.eg-modal-layout { grid-template-columns:minmax(300px,.82fr) minmax(0,1.18fr); align-items:start; }
+.eg-modal-datos { grid-column:2; grid-row:1; display:flex; flex-direction:column; min-width:0; }
+.eg-modal-datos > .eg-modal-field-grid { display:flex; flex-direction:column; min-width:0; }
+.eg-modal-datos .eg-contrato-layout { display:flex; flex-direction:column; width:100%; }
+.eg-modal-carpeta-lateral { grid-column:1; grid-row:1; display:flex; flex-direction:column; gap:14px; min-width:0; }
+.eg-modal-carpeta-contrato { min-width:0; padding:14px; background:rgba(255,255,255,.9); border:1px solid #dfe6f0; border-radius:16px; }
+.eg-modal-carpeta-panel { margin:0!important; border:0!important; padding:0!important; }
+.eg-modal-carpeta-panel > .grid { grid-template-columns:minmax(0,1fr)!important; }
+.eg-modal-carpeta-panel .eg-modal-visor { min-height:390px; }
+.eg-modal-carpeta-panel .eg-modal-pdf-frame { min-height:340px; }
+@media (max-width:1100px) {
+ .eg-modal-layout { grid-template-columns:minmax(0,1fr); }
+ .eg-modal-datos,.eg-modal-carpeta-lateral { grid-column:1; grid-row:auto; }
+ .eg-modal-carpeta-panel > .grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important; }
+}
+@media (max-width:650px) { .eg-modal-carpeta-panel > .grid { grid-template-columns:minmax(0,1fr)!important; } }
