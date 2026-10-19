@@ -923,53 +923,48 @@ export default function EnviarANotarioModal({
                   </button>
                 </div>
 
-                {/* FORMATO DE ESCRITURA */}
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* FORMATO DE ESCRITURA */}
+                  <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                      Formato de escritura
+                      <span className="text-red-500"> *</span>
+                    </label>
 
-                <div className="mt-4">
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">
-                    Formato de escritura
-                    <span className="text-red-500"> *</span>
-                  </label>
+                    <select
+                      value={form.formato_escritura}
+                      disabled={loading}
+                      onChange={(event) =>
+                        cambiarCampo("formato_escritura", event.target.value)
+                      }
+                      className={clasesInput()}
+                    >
+                      <option value="Papel">Papel</option>
+                      <option value="Digital">Digital</option>
+                    </select>
+                  </div>
 
-                  <select
-                    value={form.formato_escritura}
-                    disabled={loading}
-                    onChange={(event) =>
-                      cambiarCampo(
-                        "formato_escritura",
-                        event.target.value
-                      )
-                    }
-                    className={clasesInput()}
-                  >
-                    <option value="Papel">Papel</option>
-                    <option value="Digital">Digital</option>
-                  </select>
+                  {/* TIPO DE TRÁMITE */}
+                  <div>
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                      Tipo de trámite
+                      <span className="text-red-500"> *</span>
+                    </label>
+
+                    <select
+                      value={form.tipo_tramite}
+                      disabled={loading}
+                      onChange={(event) =>
+                        cambiarCampo("tipo_tramite", event.target.value)
+                      }
+                      className={clasesInput()}
+                    >
+                      <option value="Telemático">Telemático</option>
+                      <option value="Presencial">Presencial</option>
+                    </select>
+                  </div>
                 </div>
 
-                {/* TIPO DE TRÁMITE */}
-
-                <div className="mt-4">
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">
-                    Tipo de trámite
-                    <span className="text-red-500"> *</span>
-                  </label>
-
-                  <select
-                    value={form.tipo_tramite}
-                    disabled={loading}
-                    onChange={(event) =>
-                      cambiarCampo(
-                        "tipo_tramite",
-                        event.target.value
-                      )
-                    }
-                    className={clasesInput()}
-                  >
-                    <option value="Telemático">Telemático</option>
-                    <option value="Presencial">Presencial</option>
-                  </select>
-                </div>
               </section>
             </div>
 
