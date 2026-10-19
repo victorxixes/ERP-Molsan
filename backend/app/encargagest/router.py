@@ -66,6 +66,9 @@ def crear_tablas_encargagest():
         checkfirst=True,
     )
     migraciones = {
+        "empleados": {
+            "notarias_encargagest_ids": "JSONB NOT NULL DEFAULT '[]'::jsonb",
+        },
         "encargagest_usuarios": {
             "password_enc": "TEXT",
             "password_provisional": "BOOLEAN NOT NULL DEFAULT TRUE",
@@ -99,6 +102,39 @@ def crear_tablas_encargagest():
 
 def _es_externo(actor):
     return isinstance(actor, dict) and actor.get("tipo") == "externo"
+
+
+def _es_administrador_encargagest(usuario):
+    nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
+    rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().casefold()
+    return nombre_usuario == "admin" or rol in {"admin", "administrador", "administradora", "superadmin"}
+
+
+def _ids_notarias_asignadas(usuario):
+    valor = getattr(usuario, "notarias_encargagest_ids", None)
+    if isinstance(valor, str):
+        try:
+            import json
+            valor = json.loads(valor)
+        except (TypeError, ValueError):
+            valor = []
+    if not isinstance(valor, (list, tuple, set)):
+        return set()
+    resultado = set()
+    for item in valor:
+        try:
+            resultado.add(int(item))
+        except (TypeError, ValueError):
+            continue
+    return resultado
+
+
+def _notaria_permitida(usuario, notaria_id):
+    if _es_externo(usuario):
+        return int(usuario.get("notaria_id") or 0) == int(notaria_id or 0)
+    if _es_administrador_encargagest(usuario):
+        return True
+    return int(notaria_id or 0) in _ids_notarias_asignadas(usuario)
 
 
 def _autorizar(usuario, accion="ver"):
@@ -269,7 +305,7 @@ def _obtener_encargo(db, encargo_id, actor=None):
     item = db.query(EncargoExterno).filter(EncargoExterno.id == encargo_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Encargo no encontrado.")
-    if _es_externo(actor) and item.notaria_id != actor.get("notaria_id"):
+    if not _notaria_permitida(actor, item.notaria_id):
         raise HTTPException(status_code=404, detail="Encargo no encontrado.")
     return item
 
@@ -538,12 +574,63 @@ def guardar_acceso_encargagest(datos: AccesoEncargaGest, db: Session = Depends(g
     return {"ok": True, "notaria_id": notaria.id, "usuario": acceso.usuario, "habilitado": bool(acceso.habilitado), "password_actualizada": bool(datos.password)}
 
 
+@router.get("/gestion/notarias")
+def listar_notarias_para_asignacion(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _autorizar(usuario, "ver")
+    if not _es_administrador_encargagest(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede configurar las notarías asignadas.")
+    registros = db.query(Notaria).order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
+    return [{
+        "id": n.id,
+        "nombre": " ".join(filter(None, [n.nombre, n.apellidos])).strip() or f"Notaría {n.id}",
+        "nif": n.nif,
+        "municipio": n.municipio,
+        "provincia": n.provincia,
+    } for n in registros]
+
+
+@router.get("/gestion/empleados/{empleado_id}/notarias")
+def obtener_notarias_empleado(empleado_id: int, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _autorizar(usuario, "ver")
+    if not _es_administrador_encargagest(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede consultar estas asignaciones.")
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    if not empleado:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado.")
+    return {"empleado_id": empleado.id, "notaria_ids": sorted(_ids_notarias_asignadas(empleado))}
+
+
+class AsignacionNotariasEncargaGest(BaseModel):
+    notaria_ids: list[int] = Field(default_factory=list)
+
+
+@router.put("/gestion/empleados/{empleado_id}/notarias")
+def guardar_notarias_empleado(empleado_id: int, datos: AsignacionNotariasEncargaGest, db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _autorizar(usuario, "editar")
+    if not _es_administrador_encargagest(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede modificar estas asignaciones.")
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    if not empleado:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado.")
+    ids = sorted(set(int(value) for value in datos.notaria_ids if int(value) > 0))
+    existentes = {row[0] for row in db.query(Notaria.id).filter(Notaria.id.in_(ids)).all()} if ids else set()
+    if existentes != set(ids):
+        raise HTTPException(status_code=422, detail="Una o varias notarías seleccionadas ya no existen en CTN.")
+    empleado.notarias_encargagest_ids = ids
+    db.commit()
+    db.refresh(empleado)
+    return {"ok": True, "empleado_id": empleado.id, "notaria_ids": ids}
+
+
 @router.get("/resumen")
 def resumen(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "ver")
     consulta_base = db.query(EncargoExterno)
     if _es_externo(usuario):
         consulta_base = consulta_base.filter(EncargoExterno.notaria_id == usuario["notaria_id"])
+    elif not _es_administrador_encargagest(usuario):
+        ids = _ids_notarias_asignadas(usuario)
+        consulta_base = consulta_base.filter(EncargoExterno.notaria_id.in_(ids)) if ids else consulta_base.filter(EncargoExterno.id == -1)
     total = consulta_base.count()
     filas = consulta_base.with_entities(EncargoExterno.estado, func.count(EncargoExterno.id)).group_by(EncargoExterno.estado).all()
     estados = {}
@@ -559,6 +646,12 @@ def listar_notarias(db: Session = Depends(get_db), usuario=Depends(get_encargage
     consulta = db.query(Notaria)
     if _es_externo(usuario):
         consulta = consulta.filter(Notaria.id == usuario["notaria_id"])
+    elif _es_administrador_encargagest(usuario):
+        habilitadas = db.query(EncargoExternoUsuario.notaria_id).filter(EncargoExternoUsuario.habilitado.is_(True))
+        consulta = consulta.filter(Notaria.id.in_(habilitadas))
+    else:
+        ids = _ids_notarias_asignadas(usuario)
+        consulta = consulta.filter(Notaria.id.in_(ids)) if ids else consulta.filter(Notaria.id == -1)
     registros = consulta.order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
     return [{
         "id": n.id,
@@ -584,6 +677,9 @@ def listar_encargos(
     consulta = db.query(EncargoExterno)
     if _es_externo(usuario):
         consulta = consulta.filter(EncargoExterno.notaria_id == usuario["notaria_id"])
+    elif not _es_administrador_encargagest(usuario):
+        ids = _ids_notarias_asignadas(usuario)
+        consulta = consulta.filter(EncargoExterno.notaria_id.in_(ids)) if ids else consulta.filter(EncargoExterno.id == -1)
     if q and q.strip():
         termino = f"%{q.strip()}%"
         consulta = consulta.filter(or_(
@@ -626,6 +722,8 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=404, detail="La notaría seleccionada no existe en CTN.")
+    if not _notaria_permitida(usuario, notaria.id):
+        raise HTTPException(status_code=403, detail="No tienes asignada esta notaría en EncargaGest.")
     if datos.prioridad not in PRIORIDADES:
         raise HTTPException(status_code=422, detail="Prioridad no válida.")
     nombre_notaria = " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or f"Notaría {notaria.id}"
