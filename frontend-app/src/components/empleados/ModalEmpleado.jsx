@@ -884,6 +884,12 @@ export default function ModalEmpleado({
   }, [open, pestana, empleadoId, esAdministrador]);
 
   useEffect(() => {
+    if (open && empleadoId !== null && empleadoId !== undefined && empleadoId !== "") {
+      setGestorRepartoId(String(empleadoId));
+    }
+  }, [open, empleadoId]);
+
+  useEffect(() => {
     if (!open || pestana !== "asignaciones" || !empleadoId || !esAdministrador) return;
     let vigente = true;
     setErrorReparto("");
