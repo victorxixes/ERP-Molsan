@@ -707,58 +707,61 @@ export default function EnviarANotarioModal({
                   descripcion="Indica la fecha en que se envía el expediente al notario. Los datos de solicitud PNC y planificación de firma se gestionan desde ApoderaGest."
                 />
 
-                <div className="mb-5">
-                  <CampoTexto
-                    label="Fecha de envío"
-                    type="date"
-                    value={form.fecha_envio}
-                    disabled={loading}
-                    required
-                    onChange={(valor) => cambiarCampo("fecha_envio", valor)}
-                  />
-                </div>
-
-                <div className="mb-5">
-                  <label className="mb-2 block text-sm font-semibold text-slate-700">
-                    ¿La escritura está firmada?
-                  </label>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    {["No", "Sí"].map((opcion) => {
-                      const activa =
-                        form.escritura_firmada === opcion;
-
-                      return (
-                        <button
-                          key={opcion}
-                          type="button"
-                          disabled={loading}
-                          onClick={() =>
-                            cambiarEscrituraFirmada(opcion)
-                          }
-                          className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
-                            activa
-                              ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]"
-                              : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                          }`}
-                        >
-                          {opcion === "Sí" ? "✓ Sí" : "○ No"}
-                        </button>
-                      );
-                    })}
+                <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-3">
+                  <div className="min-w-0">
+                    <CampoTexto
+                      label="Fecha de envío"
+                      type="date"
+                      value={form.fecha_envio}
+                      disabled={loading}
+                      required
+                      onChange={(valor) => cambiarCampo("fecha_envio", valor)}
+                    />
                   </div>
-                </div>
 
-                  <div className="flex flex-col justify-end">
-                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">Firma urgente</label>
-                    <div className="flex min-h-[42px] items-center gap-4 rounded-xl border border-slate-200 bg-white px-3 py-2">
-                      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
-                        <input type="checkbox" checked={Boolean(form.firma_urgente)} disabled={loading} onChange={(event) => cambiarCampo("firma_urgente", event.target.checked)} />
-                        Marcar como urgente
-                      </label>
+                  <div className="min-w-0">
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                      ¿La escritura está firmada?
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {["No", "Sí"].map((opcion) => {
+                        const activa = form.escritura_firmada === opcion;
+                        return (
+                          <button
+                            key={opcion}
+                            type="button"
+                            disabled={loading}
+                            onClick={() => cambiarEscrituraFirmada(opcion)}
+                            className={`rounded-lg border px-2 py-2 text-sm font-semibold transition ${
+                              activa
+                                ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]"
+                                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                            }`}
+                          >
+                            {opcion === "Sí" ? "✓ Sí" : "○ No"}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
+                  <div className="min-w-0">
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                      Firma urgente
+                    </label>
+                    <div className="flex min-h-[42px] items-center rounded-xl border border-slate-200 bg-white px-3 py-2">
+                      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(form.firma_urgente)}
+                          disabled={loading}
+                          onChange={(event) => cambiarCampo("firma_urgente", event.target.checked)}
+                        />
+                        <span>Marcar como urgente</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
               </section>
 
               {/* NOTARIO */}
