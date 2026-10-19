@@ -120,8 +120,8 @@ function distanciaKm(
 // COORDENADAS MOLSAN
 // ============================================================
 
-const MOLSAN_LAT = 41.424960;
-const MOLSAN_LNG = 2.181740;
+const MOLSAN_LAT = 41.436194;
+const MOLSAN_LNG = 2.179865;
 
 
 // ============================================================
