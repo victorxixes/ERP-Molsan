@@ -73,14 +73,16 @@ def _es_videoconferencia(
         tipo_firma
     ).strip().lower()
 
-    if tipo_firma.startswith(
-        "video"
-    ):
-
+    if tipo_firma.startswith("video") or tipo_firma in {"vc", "videoconference"}:
         return True
 
+    # Si la cita especifica presencial, ese dato tiene prioridad
+    # sobre la configuración general de VC del catálogo CTN.
+    if tipo_firma.startswith("presencial") or tipo_firma in {"p", "fisica", "física"}:
+        return False
+
     # --------------------------------------------------------
-    # Si no está claro, usamos VC del notario
+    # Solo si la cita no indica modalidad, usamos VC del notario
     # --------------------------------------------------------
 
     if notario:
