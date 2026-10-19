@@ -17,11 +17,9 @@ const ESTADOS = [
 
 const FILTROS_BANDEJA = [
   { valor: "", texto: "Todos los encargos" },
-  { valor: "GRUPO_EN_PROCESO", texto: "En proceso" },
   { valor: "GRUPO_RECIBIDOS", texto: "Recibidos" },
   { valor: "GRUPO_AUTORIZADOS", texto: "Autorizados" },
   { valor: "GRUPO_INCIDENCIAS", texto: "Incidencias" },
-  { valor: "GRUPO_FIRMADOS", texto: "Firmados · cerrados" },
 ];
 
 const ESTILO_ESTADO = {
