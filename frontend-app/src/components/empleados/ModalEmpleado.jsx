@@ -11,6 +11,12 @@ import {
   obtenerNotariasEncargaGest,
   obtenerAsignacionNotariasEncargaGest,
   guardarAsignacionNotariasEncargaGest,
+  obtenerConfiguracionNotariasEncargaGest,
+  guardarResponsableNotariaEncargaGest,
+  obtenerReglasRepartoGestor,
+  guardarReglasRepartoGestor,
+  listarEmpleados,
+  listarApoderados,
 } from "../../api/empleados";
 
 import {
@@ -529,6 +535,16 @@ export default function ModalEmpleado({
   const [guardandoNotariasEncargaGest, setGuardandoNotariasEncargaGest] = useState(false);
   const [errorNotariasEncargaGest, setErrorNotariasEncargaGest] = useState("");
   const [mensajeNotariasEncargaGest, setMensajeNotariasEncargaGest] = useState("");
+  const [busquedaNotariaEncargaGest, setBusquedaNotariaEncargaGest] = useState("");
+  const [empleadosReparto, setEmpleadosReparto] = useState([]);
+  const [apoderadosReparto, setApoderadosReparto] = useState([]);
+  const [reglasReparto, setReglasReparto] = useState([]);
+  const [actividadesReparto, setActividadesReparto] = useState([]);
+  const [comunidadesReparto, setComunidadesReparto] = useState([]);
+  const [cargandoReparto, setCargandoReparto] = useState(false);
+  const [guardandoReparto, setGuardandoReparto] = useState(false);
+  const [errorReparto, setErrorReparto] = useState("");
+  const [mensajeReparto, setMensajeReparto] = useState("");
 
   const [
     empleadoEdit,
@@ -855,17 +871,42 @@ export default function ModalEmpleado({
     setErrorNotariasEncargaGest("");
     setMensajeNotariasEncargaGest("");
     Promise.all([
-      obtenerNotariasEncargaGest(),
-      obtenerAsignacionNotariasEncargaGest(empleadoId),
-    ]).then(([lista, asignacion]) => {
+      obtenerConfiguracionNotariasEncargaGest(),
+      listarEmpleados(),
+    ]).then(([lista, empleados]) => {
       if (!vigente) return;
       setNotariasEncargaGest(lista.data || []);
-      setNotariasEncargaGestSeleccionadas((asignacion.data?.notaria_ids || []).map(Number));
+      setEmpleadosReparto((empleados.data || []).filter((e) => e.activo !== false));
     }).catch((e) => {
       if (!vigente) return;
       setErrorNotariasEncargaGest(e?.response?.data?.detail || "No se han podido cargar las notarías de CTN.");
     }).finally(() => {
       if (vigente) setCargandoNotariasEncargaGest(false);
+    });
+    return () => { vigente = false; };
+  }, [open, pestana, empleadoId, esAdministrador]);
+
+  useEffect(() => {
+    if (!open || pestana !== "asignaciones" || !empleadoId || !esAdministrador) return;
+    let vigente = true;
+    setCargandoReparto(true);
+    setErrorReparto("");
+    Promise.all([
+      obtenerReglasRepartoGestor(empleadoId),
+      listarEmpleados(),
+      listarApoderados(),
+    ]).then(([config, empleados, apoderados]) => {
+      if (!vigente) return;
+      setReglasReparto((config.data?.reglas || []).map((r, i) => ({ ...r, _key: r._key || `regla-${i}-${r.actividad}` })));
+      setActividadesReparto(config.data?.actividades || []);
+      setComunidadesReparto(config.data?.comunidades || []);
+      setEmpleadosReparto((empleados.data || []).filter((e) => e.activo !== false));
+      setApoderadosReparto(apoderados.data || []);
+    }).catch((e) => {
+      if (!vigente) return;
+      setErrorReparto(e?.response?.data?.detail || "No se han podido cargar las reglas de reparto.");
+    }).finally(() => {
+      if (vigente) setCargandoReparto(false);
     });
     return () => { vigente = false; };
   }, [open, pestana, empleadoId, esAdministrador]);
@@ -2331,6 +2372,11 @@ const permisosDisponibles =
               id: "encargagest",
               label: "EncargaGest",
               icon: "🏛️",
+            },
+            {
+              id: "asignaciones",
+              label: "Asignaciones",
+              icon: "⚖️",
             },
             {
               id: "seguridad",
