@@ -883,6 +883,7 @@ def reset_password_portal_notaria(
         notaria.notargest_password_enc = _cifrar_password_portal(password_nueva)
         notaria.notargest_habilitado = True
         notaria.notargest_cambiar_password = True
+        notaria.notargest_password_provisional = True
     elif portal == "encargagest":
         acceso = db.query(EncargoExternoUsuario).filter(EncargoExternoUsuario.notaria_id == notaria_id).first()
         duplicado = db.query(EncargoExternoUsuario).filter(
