@@ -591,7 +591,6 @@ export default function EncargaGest() {
             {cargando ? "Actualizando…" : "Actualizar datos"}
           </button>
           {modo === "interno" && <button type="button" onClick={abrirAccesos} className="eg-secondary">Accesos externos</button>}
-          <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary">＋ Nuevo encargo</button>
         </div>
       </header>
 
@@ -616,7 +615,7 @@ export default function EncargaGest() {
         <section className="mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]">
           <div className="eg-panel min-w-0">
             <div className="eg-panel-head">
-              <div className="flex items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span></div>
+              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span><button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary whitespace-nowrap">＋ Nuevo encargo</button></div></div>
               <form className="mt-4 space-y-2" onSubmit={aplicarFiltros}>
                 <input className={inputClass} type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar referencia, notaría, titular o banco…" />
                 <div className="flex gap-2">
@@ -628,7 +627,7 @@ export default function EncargaGest() {
               </form>
             </div>
             {cargando ? <div className="p-10 text-center text-sm text-slate-500">Cargando encargos…</div> : !filas.length ? (
-              <div className="p-10 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-xl text-slate-400">▤</div><h3 className="mt-3 text-sm font-bold text-slate-800">Todavía no hay encargos</h3><p className="mt-1 text-xs leading-5 text-slate-500">Crea el primer encargo desde el botón Registrar encargo de la parte superior.</p></div>
+              <div className="p-10 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-xl text-slate-400">▤</div><h3 className="mt-3 text-sm font-bold text-slate-800">Todavía no hay encargos</h3><p className="mt-1 text-xs leading-5 text-slate-500">Crea el primer encargo con el botón Nuevo encargo del encabezado de esta bandeja.</p></div>
             ) : (
               <div className="divide-y divide-slate-100">
                 {filas.map((item) => (
@@ -682,11 +681,11 @@ export default function EncargaGest() {
                   <section className="xl:col-span-2">
                     <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-900">Carpeta digital y visor</h3><span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">{detalle.documentos?.length || 0} archivos</span></div>
                     <div className="mt-3 grid grid-cols-1 gap-4 xl:grid-cols-2">
-                      <div className="min-h-[420px] overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                      <div className="order-2 min-h-[420px] overflow-hidden rounded-xl border border-slate-200 bg-slate-100 xl:order-2">
                         <div className="flex items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-2"><p className="truncate text-xs font-bold text-slate-700">{documentoAbierto?.nombre || "Visor de documentos"}</p>{documentoAbierto && <a href={documentoAbierto.url} target="_blank" rel="noreferrer" className="shrink-0 text-[10px] font-bold text-amber-700 hover:underline">Abrir aparte ↗</a>}</div>
                         {documentoAbierto ? (/^application\/pdf$/i.test(documentoAbierto.tipo) || /\.pdf$/i.test(documentoAbierto.nombre) ? <iframe title={"Vista previa de " + documentoAbierto.nombre} src={documentoAbierto.url} className="h-[520px] w-full bg-white" /> : (/^image\//i.test(documentoAbierto.tipo) || /\.(png|jpe?g|gif|webp|bmp)$/i.test(documentoAbierto.nombre) ? <div className="flex h-[520px] items-center justify-center overflow-auto p-3"><img src={documentoAbierto.url} alt={documentoAbierto.nombre} className="max-h-full max-w-full object-contain" /></div> : <div className="flex h-[520px] flex-col items-center justify-center gap-2 p-6 text-center"><p className="text-sm font-bold text-slate-700">Vista previa no disponible para este formato</p><p className="break-all text-xs text-slate-500">{documentoAbierto.nombre}</p><a href={documentoAbierto.url} download={documentoAbierto.nombre} className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white">Descargar documento</a></div>)) : <div className="flex h-[520px] flex-col items-center justify-center gap-2 p-6 text-center text-slate-400"><span className="text-3xl">▤</span><p className="text-xs font-semibold">Selecciona «Ver» en un documento para visualizarlo aquí.</p></div>}
                       </div>
-                      <div className="min-w-0">
+                      <div className="order-1 min-w-0 xl:order-1">
                     <form className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3" onSubmit={subirDocumento}>
                       <select aria-label="Contrato al que pertenece el documento" value={detalleContratoIndex} onChange={(e) => setDetalleContratoIndex(Number(e.target.value))} className={inputClass + " mb-3"}>
                         {(detalle.contratos || [{}]).map((contrato, index) => <option key={index} value={index}>Contrato {index + 1} · {contrato.numero_prestamo || "sin número de préstamo"}</option>)}
