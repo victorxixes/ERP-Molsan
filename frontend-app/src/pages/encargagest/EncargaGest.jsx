@@ -676,46 +676,40 @@ export default function EncargaGest() {
                   </section>
 
                   <section className="xl:col-span-2">
-                    <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-900">Carpeta digital y visor</h3><span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">{detalle.documentos?.length || 0} archivos</span></div>
-                    <div className="mt-3 grid grid-cols-1 gap-4 xl:grid-cols-2">
-                      <div className="order-2 min-h-[420px] overflow-hidden rounded-xl border border-slate-200 bg-slate-100 xl:order-2">
-                        <div className="flex items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-2"><p className="truncate text-xs font-bold text-slate-700">{documentoAbierto?.nombre || "Visor de documentos"}</p>{documentoAbierto && <a href={documentoAbierto.url} target="_blank" rel="noreferrer" className="shrink-0 text-[10px] font-bold text-amber-700 hover:underline">Abrir aparte ↗</a>}</div>
-                        {documentoAbierto ? (/^application\/pdf$/i.test(documentoAbierto.tipo) || /\.pdf$/i.test(documentoAbierto.nombre) ? <iframe title={"Vista previa de " + documentoAbierto.nombre} src={documentoAbierto.url} className="h-[520px] w-full bg-white" /> : (/^image\//i.test(documentoAbierto.tipo) || /\.(png|jpe?g|gif|webp|bmp)$/i.test(documentoAbierto.nombre) ? <div className="flex h-[520px] items-center justify-center overflow-auto p-3"><img src={documentoAbierto.url} alt={documentoAbierto.nombre} className="max-h-full max-w-full object-contain" /></div> : <div className="flex h-[520px] flex-col items-center justify-center gap-2 p-6 text-center"><p className="text-sm font-bold text-slate-700">Vista previa no disponible para este formato</p><p className="break-all text-xs text-slate-500">{documentoAbierto.nombre}</p><a href={documentoAbierto.url} download={documentoAbierto.nombre} className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white">Descargar documento</a></div>)) : <div className="flex h-[520px] flex-col items-center justify-center gap-2 p-6 text-center text-slate-400"><span className="text-3xl">▤</span><p className="text-xs font-semibold">Selecciona «Ver» en un documento para visualizarlo aquí.</p></div>}
+                    <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-900">Documentación adjunta</h3><span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">{detalle.documentos?.length || 0} archivos</span></div>
+                    {modo === "interno" && <form className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3" onSubmit={subirDocumento}>
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+                        <select aria-label="Contrato al que pertenece el documento" value={detalleContratoIndex} onChange={(e) => setDetalleContratoIndex(Number(e.target.value))} className={inputClass}>
+                          {(detalle.contratos || [{}]).map((contrato, index) => <option key={index} value={index}>Contrato {index + 1} · {contrato.numero_prestamo || "sin número de préstamo"}</option>)}
+                        </select>
+                        <select aria-label="Categoría del documento" value={categoriaDocumento} onChange={(e) => setCategoriaDocumento(e.target.value)} className={inputClass}>
+                          {CATEGORIAS_DOCUMENTO.map((categoria) => <option key={categoria.nombre} value={categoria.nombre}>{categoria.nombre}</option>)}
+                        </select>
+                        <div className="flex items-center gap-2"><input id="encargagest-archivo" type="file" accept={EXTENSIONES_DOCUMENTO} onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="block min-w-0 w-full text-xs text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:text-xs file:font-bold file:text-slate-700" /><button type="submit" disabled={!archivo || subiendo} className="shrink-0 rounded-lg bg-slate-900 px-3 py-2 text-[10px] font-extrabold text-white disabled:opacity-40">{subiendo ? "Subiendo…" : "Subir archivo"}</button></div>
                       </div>
-                      <div className="order-1 min-w-0 xl:order-1">
-                    <form className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3" onSubmit={subirDocumento}>
-                      <select aria-label="Contrato al que pertenece el documento" value={detalleContratoIndex} onChange={(e) => setDetalleContratoIndex(Number(e.target.value))} className={inputClass + " mb-3"}>
-                        {(detalle.contratos || [{}]).map((contrato, index) => <option key={index} value={index}>Contrato {index + 1} · {contrato.numero_prestamo || "sin número de préstamo"}</option>)}
-                      </select>
-                      <select aria-label="Categoría del documento" value={categoriaDocumento} onChange={(e) => setCategoriaDocumento(e.target.value)} className={inputClass + " mb-3"}>
-                        {CATEGORIAS_DOCUMENTO.map((categoria) => <option key={categoria.nombre} value={categoria.nombre}>{categoria.nombre}</option>)}
-                      </select>
-                      <input id="encargagest-archivo" type="file" accept={EXTENSIONES_DOCUMENTO} onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="block w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:text-xs file:font-bold file:text-slate-700" />
-                      <div className="mt-2 flex items-center justify-between gap-2"><span className="text-[10px] text-slate-400">PDF, Office, imagen o correo · máx. 25 MB</span><button type="submit" disabled={!archivo || subiendo} className="rounded-lg bg-slate-900 px-3 py-2 text-[10px] font-extrabold text-white disabled:opacity-40">{subiendo ? "Subiendo…" : "Subir archivo"}</button></div>
-                    </form>
+                      <p className="mt-2 text-[10px] text-slate-400">PDF, Office, imagen o correo · máx. 25 MB</p>
+                    </form>}
                     <div className="mt-3 space-y-2">
                       {!detalle.documentos?.length ? <p className="rounded-xl bg-slate-50 p-4 text-xs text-slate-500">Todavía no se ha adjuntado documentación.</p> : (detalle.contratos || [{}]).map((contrato, contratoIndex) => {
                         const docsContrato = detalle.documentos.filter((doc) => Number(doc.contrato_index || 0) === contratoIndex);
-                        return <div key={"contrato-docs-" + contratoIndex} className="space-y-2 rounded-xl border border-amber-100 p-3"><h4 className="text-xs font-extrabold text-amber-800">Contrato {contratoIndex + 1} · {contrato.numero_prestamo || "sin número de préstamo"} <span className="font-medium text-slate-400">({docsContrato.length} archivos)</span></h4>{docsContrato.map((doc) => (
-                        <div key={doc.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-3">
-                          <div className="min-w-0"><p className="break-words text-xs font-bold text-slate-800">{doc.nombre_original}</p><p className="mt-1 text-[10px] text-slate-400">{doc.categoria || "Otros"} · {nombreArchivoTamano(doc.tamano_bytes)} · {fechaHora(doc.fecha_subida)}</p></div>
-                          <div className="flex shrink-0 gap-1"><button type="button" onClick={() => verDocumento(doc)} className="rounded-lg border border-amber-200 bg-amber-50 px-2 py-1.5 text-[10px] font-bold text-amber-800 hover:bg-amber-100">Ver</button><button type="button" onClick={() => descargarDocumento(doc)} className="rounded-lg border border-slate-200 px-2 py-1.5 text-[10px] font-bold hover:bg-slate-50">Descargar</button>{modo === "interno" && <button type="button" onClick={() => eliminarDocumento(doc)} className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-700 hover:bg-rose-50">×</button>}</div>
-                        </div>
-                      ))}</div>;
+                        return <div key={"contrato-docs-" + contratoIndex} className="space-y-2 rounded-xl border border-amber-100 p-3"><h4 className="text-xs font-extrabold text-amber-800">Contrato {contratoIndex + 1} · {contrato.numero_prestamo || "sin número de préstamo"} <span className="font-medium text-slate-400">({docsContrato.length} archivos)</span></h4>{docsContrato.length === 0 ? <p className="text-xs text-slate-400">Sin documentos en este contrato.</p> : docsContrato.map((doc) => (
+                          <div key={doc.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-3">
+                            <div className="min-w-0"><p className="break-words text-xs font-bold text-slate-800">{doc.nombre_original}</p><p className="mt-1 text-[10px] text-slate-400">{doc.categoria || "Otros"} · {nombreArchivoTamano(doc.tamano_bytes)} · {fechaHora(doc.fecha_subida)}</p></div>
+                            <div className="flex shrink-0 gap-1"><button type="button" onClick={() => verDocumento(doc)} className="rounded-lg border border-amber-200 bg-amber-50 px-2 py-1.5 text-[10px] font-bold text-amber-800 hover:bg-amber-100">Ver</button><button type="button" onClick={() => descargarDocumento(doc)} className="rounded-lg border border-slate-200 px-2 py-1.5 text-[10px] font-bold hover:bg-slate-50">Descargar</button>{modo === "interno" && <button type="button" onClick={() => eliminarDocumento(doc)} className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-700 hover:bg-rose-50">×</button>}</div>
+                          </div>
+                        ))}</div>;
                       })}
-                    </div>
-                      </div>
                     </div>
                   </section>
 
                   <section className="xl:col-span-2">
                     <div className="flex items-center justify-between"><h3 className="text-sm font-extrabold text-slate-900">Seguimiento e incidencias</h3><span className="text-[10px] text-slate-400">Historial cronológico</span></div>
-                    <form onSubmit={guardarActividad} className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                      <textarea rows={3} maxLength={5000} value={actividad} onChange={(e) => setActividad(e.target.value)} placeholder="Añade una nota, solicita documentación o registra una incidencia…" className={inputClass + " resize-y"} />
+                    {modo === "interno" && <form onSubmit={guardarActividad} className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                      <textarea rows={3} maxLength={5000} value={actividad} onChange={(e) => setActividad(e.target.value)} placeholder="Añade un comentario de gestión o registra una incidencia…" className={inputClass + " resize-y"} />
                       <div className="mt-2 flex flex-wrap items-center justify-between gap-3"><label className="flex items-center gap-2 text-xs text-slate-600"><input type="checkbox" checked={visibleNotaria} onChange={(e) => setVisibleNotaria(e.target.checked)} /> Visible para la notaría</label><button disabled={!actividad.trim() || guardandoActividad} type="submit" className="rounded-lg bg-amber-500 px-4 py-2 text-xs font-extrabold text-amber-950 disabled:opacity-40">{guardandoActividad ? "Guardando…" : "Añadir al seguimiento"}</button></div>
-                    </form>
+                    </form>}
                     <div className="mt-4 space-y-3">
-                      {!detalle.actividad?.length ? <p className="py-3 text-xs text-slate-500">El historial aparecerá aquí conforme avance la gestión.</p> : detalle.actividad.map((entrada) => (
+                      {!(modo === "interno" ? detalle.actividad : (detalle.actividad || []).filter((entrada) => entrada.visible_notaria)).length ? <p className="py-3 text-xs text-slate-500">El historial aparecerá aquí conforme avance la gestión.</p> : (modo === "interno" ? detalle.actividad : (detalle.actividad || []).filter((entrada) => entrada.visible_notaria)).map((entrada) => (
                         <article key={entrada.id} className="relative border-l-2 border-amber-200 pl-4">
                           <span className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-amber-500" />
                           <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-extrabold text-slate-800">{entrada.autor_nombre} <span className="ml-1 font-medium text-slate-400">· {entrada.tipo}</span></p><time className="text-[10px] text-slate-400">{fechaHora(entrada.creado_en)}</time></div>
