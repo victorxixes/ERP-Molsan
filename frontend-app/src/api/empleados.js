@@ -344,3 +344,24 @@ export const listarApoderados =
         lista,
     };
   };
+
+
+/* =========================================================
+   ASIGNACIÓN DE NOTARÍAS PARA ENCARGAGEST
+========================================================= */
+export const obtenerNotariasEncargaGest = async () => {
+  const res = await axios.get("/encargagest/gestion/notarias");
+  return { data: Array.isArray(res.data) ? res.data : [] };
+};
+
+export const obtenerAsignacionNotariasEncargaGest = async (empleadoId) => {
+  const res = await axios.get(`/encargagest/gestion/empleados/${empleadoId}/notarias`);
+  return { data: res.data || { notaria_ids: [] } };
+};
+
+export const guardarAsignacionNotariasEncargaGest = async (empleadoId, notariaIds) => {
+  const res = await axios.put(`/encargagest/gestion/empleados/${empleadoId}/notarias`, {
+    notaria_ids: Array.isArray(notariaIds) ? notariaIds : [],
+  });
+  return { data: res.data || null };
+};

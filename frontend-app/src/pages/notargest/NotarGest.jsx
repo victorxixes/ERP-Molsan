@@ -28,8 +28,14 @@ export default function NotarGest() {
   const tokenERP = useAuthStore((s) => s.token);
   const empleadoERP = useAuthStore((s) => s.empleado);
   const accesoERP = Boolean(tokenERP && empleadoERP);
+  const rolNotarGest = String(empleadoERP?.rol?.nombre || empleadoERP?.rol_nombre || empleadoERP?.nombre_rol || "").trim().toLowerCase();
+  const esAdminNotarGest = String(empleadoERP?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin)$/.test(rolNotarGest);
   const [tokenNotario, setTokenNotario] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
-  const token = accesoERP ? tokenERP : tokenNotario;
+  const [tokenAdminNotaria, setTokenAdminNotaria] = useState("");
+  const [notariasSeleccionables, setNotariasSeleccionables] = useState([]);
+  const [notariaAdminSeleccionada, setNotariaAdminSeleccionada] = useState("");
+  const [cargandoSelectorNotaria, setCargandoSelectorNotaria] = useState(false);
+  const token = accesoERP ? (tokenAdminNotaria || tokenERP) : tokenNotario;
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [expedientes, setExpedientes] = useState([]);
@@ -74,6 +80,7 @@ export default function NotarGest() {
 
   const cargar = useCallback(async () => {
     if (!token) return;
+    if (accesoERP && esAdminNotarGest && !tokenAdminNotaria) return;
     setCargando(true); setError("");
     try {
       const [perfil, lista] = await Promise.all([peticion("/notargest/me"), peticion("/notargest/expedientes")]);
@@ -96,8 +103,62 @@ export default function NotarGest() {
       setError(e.message);
       if (!accesoERP && /sesión|acceso notargest deshabilitado|caducado/i.test(e.message)) { localStorage.removeItem(TOKEN_KEY); setTokenNotario(""); }
     } finally { setCargando(false); }
-  }, [token, peticion]);
+  }, [token, peticion, accesoERP, esAdminNotarGest, tokenAdminNotaria]);
   useEffect(() => { cargar(); }, [cargar]);
+
+  useEffect(() => {
+    if (!accesoERP || !esAdminNotarGest || !tokenERP) {
+      setNotariasSeleccionables([]);
+      setTokenAdminNotaria("");
+      setNotariaAdminSeleccionada("");
+      return;
+    }
+    let vigente = true;
+    setCargandoSelectorNotaria(true);
+    fetch(`${API_BASE}/notargest/seleccion/notarias`, { headers: { Authorization: `Bearer ${tokenERP}` } })
+      .then(async (response) => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.detail || "No se ha podido cargar el catálogo de notarías habilitadas.");
+        return data;
+      })
+      .then((data) => { if (vigente) setNotariasSeleccionables(Array.isArray(data) ? data : []); })
+      .catch((e) => { if (vigente) setError(e.message); })
+      .finally(() => { if (vigente) setCargandoSelectorNotaria(false); });
+    return () => { vigente = false; };
+  }, [accesoERP, esAdminNotarGest, tokenERP]);
+
+  async function seleccionarNotariaAdmin(notariaId) {
+    if (!notariaId) {
+      setTokenAdminNotaria("");
+      setNotariaAdminSeleccionada("");
+      setExpedientes([]);
+      setDetalle(null);
+      setNotario(null);
+      setVista("inicio");
+      return;
+    }
+    setCargando(true);
+    setError("");
+    try {
+      const response = await fetch(`${API_BASE}/notargest/seleccion/notaria/${encodeURIComponent(notariaId)}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${tokenERP}`, "Content-Type": "application/json" },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.detail || "No se ha podido abrir la notaría seleccionada.");
+      setTokenAdminNotaria(data.token || "");
+      setNotariaAdminSeleccionada(String(data.notaria?.id || notariaId));
+      setNotario(data.notaria || null);
+      setExpedientes([]);
+      setDetalle(null);
+      setVista("inicio");
+      setBusqueda("");
+    } catch (e) {
+      setError(e.message || "No se ha podido seleccionar la notaría.");
+    } finally {
+      setCargando(false);
+    }
+  }
 
 
 
@@ -419,7 +480,16 @@ export default function NotarGest() {
           </form>
           </div>
         </section></div>}
-      <main className="relative min-h-[calc(100vh-70px)]">
+      {accesoERP && esAdminNotarGest && (
+        <section className="mx-4 mt-4 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm lg:mx-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">Selección de notaría · NotarGest</p><p className="mt-1 text-xs text-slate-500">Como administrador puedes abrir una notaría habilitada para revisar sus expedientes y resolver incidencias.</p></div>
+            <label className="w-full sm:max-w-xl"><span className="mb-1 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Notaría activa</span><select value={notariaAdminSeleccionada} disabled={cargandoSelectorNotaria || cargando} onChange={(e) => seleccionarNotariaAdmin(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800"><option value="">{cargandoSelectorNotaria ? "Cargando notarías…" : "Selecciona una notaría habilitada…"}</option>{notariasSeleccionables.map((item) => <option key={item.id} value={String(item.id)}>{item.nombre}{item.nif ? " · " + item.nif : ""}{item.provincia ? " · " + item.provincia : ""}</option>)}</select></label>
+          </div>
+          {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <p className="mt-3 text-xs text-amber-700">No hay notarías con acceso NotarGest habilitado.</p>}
+        </section>
+      )}
+      {(!accesoERP || !esAdminNotarGest || Boolean(tokenAdminNotaria)) && <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest">
             <div className="notargest ng-content">
@@ -644,7 +714,7 @@ export default function NotarGest() {
             </div>
           </div>
         </div>
-      </main>
+      </main>}
     </div>
   );
 }

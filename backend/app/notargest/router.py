@@ -365,6 +365,54 @@ def login(data: LoginNotario, db: Session = Depends(get_db)):
     token = jwt.encode({"tipo": "notargest", "notaria_id": n.id, "exp": datetime.utcnow() + timedelta(hours=8)}, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
     return {"token": token, "requiere_cambio_password": False, "notario": {"id": n.id, "nombre": " ".join(x for x in [n.nombre, n.apellidos] if x), "nif": n.nif}}
 
+
+
+def _es_administrador_notargest(usuario):
+    nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().casefold()
+    rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").strip().casefold()
+    return nombre_usuario == "admin" or rol in {"admin", "administrador", "administradora", "superadmin"}
+
+
+@router.get("/seleccion/notarias")
+def notarias_habilitadas_para_admin(n=Depends(get_notario), db: Session = Depends(get_db)):
+    if not _es_usuario_erp(n) or not _es_administrador_notargest(n):
+        raise HTTPException(status_code=403, detail="Solo un administrador ERP puede seleccionar una notaría en NotarGest.")
+    require_perm_modulo(n, "notargest", "ver")
+    notarías = db.query(Notaria).filter(Notaria.notargest_habilitado.is_(True)).order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
+    return [{
+        "id": item.id,
+        "nombre": " ".join(filter(None, [item.nombre, item.apellidos])).strip() or f"Notaría {item.id}",
+        "nif": item.nif,
+        "municipio": item.municipio,
+        "provincia": item.provincia,
+    } for item in notarías]
+
+
+@router.post("/seleccion/notaria/{notaria_id}")
+def seleccionar_notaria_admin(notaria_id: int, n=Depends(get_notario), db: Session = Depends(get_db)):
+    if not _es_usuario_erp(n) or not _es_administrador_notargest(n):
+        raise HTTPException(status_code=403, detail="Solo un administrador ERP puede seleccionar una notaría en NotarGest.")
+    require_perm_modulo(n, "notargest", "ver")
+    notaria = db.query(Notaria).filter(Notaria.id == notaria_id, Notaria.notargest_habilitado.is_(True)).first()
+    if not notaria:
+        raise HTTPException(status_code=404, detail="La notaría no existe o no tiene NotarGest habilitado.")
+    token = jwt.encode({
+        "tipo": "notargest",
+        "notaria_id": notaria.id,
+        "seleccion_admin": True,
+        "empleado_admin_id": n.id,
+        "exp": datetime.utcnow() + timedelta(hours=8),
+    }, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
+    return {
+        "token": token,
+        "notaria": {
+            "id": notaria.id,
+            "nombre": " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or f"Notaría {notaria.id}",
+            "nif": notaria.nif,
+        },
+    }
+
+
 @router.get("/me")
 def me(n=Depends(get_notario), db: Session = Depends(get_db)):
     if _es_usuario_erp(n):
