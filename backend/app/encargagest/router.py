@@ -330,6 +330,7 @@ class EncargoActualizar(BaseModel):
     prioridad: str | None = None
     observaciones: constr(max_length=10000) | None = None
     observaciones_internas: constr(max_length=10000) | None = None
+    contratos: list[dict] | None = None
 
 
 class CambioEstado(BaseModel):
@@ -631,7 +632,65 @@ def actualizar_encargo(encargo_id: int, datos: EncargoActualizar, db: Session = 
     cambios = datos.dict(exclude_unset=True)
     if "prioridad" in cambios and cambios["prioridad"] is not None and cambios["prioridad"] not in PRIORIDADES:
         raise HTTPException(status_code=422, detail="Prioridad no válida.")
+    if "contratos" in cambios:
+        contratos = cambios["contratos"] or []
+        if not isinstance(contratos, list):
+            raise HTTPException(status_code=422, detail="Los contratos deben enviarse como una lista.")
+        normalizados = []
+        for indice_contrato, contrato in enumerate(contratos):
+            if not isinstance(contrato, dict):
+                raise HTTPException(status_code=422, detail=f"El contrato {indice_contrato + 1} no tiene un formato válido.")
+            fincas = contrato.get("fincas") or []
+            if not isinstance(fincas, list):
+                raise HTTPException(status_code=422, detail=f"Las fincas del contrato {indice_contrato + 1} deben enviarse como una lista.")
+            fincas_limpias = []
+            for indice_finca, finca in enumerate(fincas):
+                if not isinstance(finca, dict):
+                    raise HTTPException(status_code=422, detail=f"La finca {indice_finca + 1} del contrato {indice_contrato + 1} no tiene un formato válido.")
+                capital = finca.get("capital_inscrito")
+                try:
+                    capital = Decimal(str(capital)) if capital not in (None, "") else None
+                    if capital is not None and (not capital.is_finite() or capital < 0 or len(capital.as_tuple().digits) > 14):
+                        raise ValueError()
+                except Exception:
+                    raise HTTPException(status_code=422, detail=f"Capital inscrito no válido en la finca {indice_finca + 1} del contrato {indice_contrato + 1}.")
+                fincas_limpias.append({
+                    "numero_finca": str(finca.get("numero_finca") or "").strip(),
+                    "capital_inscrito": float(capital) if capital is not None else None,
+                    "numero_inscripcion": str(finca.get("numero_inscripcion") or "").strip(),
+                    "municipio_registro": str(finca.get("municipio_registro") or "").strip(),
+                    "registro_propiedad": str(finca.get("registro_propiedad") or "").strip(),
+                })
+            fecha_constitucion = contrato.get("fecha_constitucion") or None
+            if fecha_constitucion:
+                try:
+                    date.fromisoformat(str(fecha_constitucion)[:10])
+                    fecha_constitucion = str(fecha_constitucion)[:10]
+                except ValueError:
+                    raise HTTPException(status_code=422, detail=f"Fecha de constitución no válida en el contrato {indice_contrato + 1}.")
+            normalizados.append({
+                "entidad_bancaria": str(contrato.get("entidad_bancaria") or "").strip(),
+                "numero_prestamo": str(contrato.get("numero_prestamo") or "").strip(),
+                "fecha_constitucion": fecha_constitucion,
+                "fincas": fincas_limpias,
+            })
+        cambios["contratos"] = normalizados
+        # Mantener los campos heredados sincronizados con el primer contrato y finca.
+        primer_contrato = normalizados[0] if normalizados else {}
+        primera_finca = (primer_contrato.get("fincas") or [{}])[0]
+        cambios.update({
+            "entidad_bancaria": primer_contrato.get("entidad_bancaria") or None,
+            "numero_prestamo": primer_contrato.get("numero_prestamo") or None,
+            "fecha_constitucion": date.fromisoformat(primer_contrato["fecha_constitucion"]) if primer_contrato.get("fecha_constitucion") else None,
+            "capital_inscrito": Decimal(str(primera_finca["capital_inscrito"])) if primera_finca.get("capital_inscrito") is not None else None,
+            "numero_finca": primera_finca.get("numero_finca") or None,
+            "municipio_registro": primera_finca.get("municipio_registro") or None,
+            "registro_propiedad": primera_finca.get("registro_propiedad") or None,
+        })
     for campo, valor in cambios.items():
+        if campo == "contratos":
+            item.contratos_json = valor or None
+            continue
         if campo in {"titular", "contacto_nombre", "contacto_email", "contacto_telefono", "nif_titular", "entidad_bancaria", "numero_prestamo", "numero_finca", "municipio_registro", "registro_propiedad", "observaciones", "observaciones_internas"} and isinstance(valor, str):
             valor = valor.strip() or None
         setattr(item, campo, valor)
