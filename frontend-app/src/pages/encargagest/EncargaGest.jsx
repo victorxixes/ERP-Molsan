@@ -160,6 +160,9 @@ export default function EncargaGest() {
   const [archivo, setArchivo] = useState(null);
   const [mensaje, setMensaje] = useState("");
   const [errorAccion, setErrorAccion] = useState("");
+  const [modalIncidencia, setModalIncidencia] = useState(false);
+  const [motivoIncidencia, setMotivoIncidencia] = useState("");
+  const [guardandoIncidencia, setGuardandoIncidencia] = useState(false);
 
   useEffect(() => {
     if (!archivoPrevisualizado) {
@@ -371,18 +374,40 @@ export default function EncargaGest() {
     }
   }
 
-  async function cambiarEstado(nuevoEstado) {
+  async function cambiarEstado(nuevoEstado, comentario = "") {
     if (!detalle || !nuevoEstado || nuevoEstado === detalle.estado) return;
     setErrorAccion("");
     setMensaje("");
     try {
-      await axios.post("/encargagest/encargos/" + detalle.id + "/estado", { estado: nuevoEstado });
+      await axios.post("/encargagest/encargos/" + detalle.id + "/estado", {
+        estado: nuevoEstado,
+        comentario: comentario.trim() || undefined,
+      });
       await cargarTodo();
       const actualizado = await axios.get("/encargagest/encargos/" + detalle.id);
       setDetalle(actualizado.data);
-      setMensaje("Estado actualizado.");
+      setMensaje(nuevoEstado === "INCIDENCIA" ? "Incidencia registrada y comunicada a la notaría." : "Fase de gestión validada correctamente.");
     } catch (e) {
-      setErrorAccion(e?.response?.data?.detail || "No se ha podido cambiar el estado.");
+      setErrorAccion(e?.response?.data?.detail || "No se ha podido validar la fase de gestión.");
+      throw e;
+    }
+  }
+
+  async function registrarIncidencia(event) {
+    event.preventDefault();
+    if (!detalle || !motivoIncidencia.trim()) {
+      setErrorAccion("Indica el motivo de la incidencia para que la notaría pueda verlo.");
+      return;
+    }
+    setGuardandoIncidencia(true);
+    try {
+      await cambiarEstado("INCIDENCIA", motivoIncidencia.trim());
+      setModalIncidencia(false);
+      setMotivoIncidencia("");
+    } catch {
+      // El mensaje de error ya se muestra en la ficha.
+    } finally {
+      setGuardandoIncidencia(false);
     }
   }
 
@@ -617,7 +642,6 @@ export default function EncargaGest() {
             <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
             {cargando ? "Actualizando…" : "Actualizar datos"}
           </button>
-          {modo === "interno" && <button type="button" onClick={abrirAccesos} className="eg-secondary">Accesos externos</button>}
         </div>
       </header>
 
@@ -643,7 +667,7 @@ export default function EncargaGest() {
         <section className="mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]">
           <div className="eg-panel min-w-0">
             <div className="eg-panel-head">
-              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span><button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary whitespace-nowrap">＋ Nuevo encargo</button></div></div>
+              <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span>{modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary whitespace-nowrap">＋ Nuevo encargo</button>}</div></div>
               <form className="mt-4 space-y-2" onSubmit={aplicarFiltros}>
                 <input className={inputClass} type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar referencia, notaría, titular o banco…" />
                 <div className="flex gap-2">
@@ -655,7 +679,7 @@ export default function EncargaGest() {
               </form>
             </div>
             {cargando ? <div className="p-10 text-center text-sm text-slate-500">Cargando encargos…</div> : !filas.length ? (
-              <div className="p-10 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-xl text-slate-400">▤</div><h3 className="mt-3 text-sm font-bold text-slate-800">Todavía no hay encargos</h3><p className="mt-1 text-xs leading-5 text-slate-500">Crea el primer encargo con el botón Nuevo encargo del encabezado de esta bandeja.</p></div>
+              <div className="p-10 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-xl text-slate-400">▤</div><h3 className="mt-3 text-sm font-bold text-slate-800">Todavía no hay encargos</h3><p className="mt-1 text-xs leading-5 text-slate-500">Cuando una notaría registre un encargo, aparecerá aquí automáticamente.</p></div>
             ) : (
               <div className="divide-y divide-slate-100">
                 {filas.map((item) => (
@@ -681,7 +705,7 @@ export default function EncargaGest() {
                 <div className="eg-panel-head p-5 sm:p-6">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0"><p className="text-[10px] font-black tracking-[0.18em] text-amber-700">{detalle.referencia || ("EG-" + detalle.id)} · FICHA DE ENCARGO</p><h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">{detalle.titular}</h2><p className="mt-1 text-sm text-slate-500">{detalle.notaria_nombre}</p></div>
-                    <div className="min-w-[190px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span>{modo === "interno" && detalle.estado === "EN_PROCESO" ? <button type="button" onClick={() => cambiarEstado("RECIBIDO")} className="w-full rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-sky-700">Recepcionar encargo</button> : modo === "interno" && detalle.estado !== "FIRMADO" ? <select aria-label="Cambiar estado del encargo" value={detalle.estado} onChange={(e) => cambiarEstado(e.target.value)} className={inputClass}>{ESTADOS.filter((x) => x.valor).map((x) => <option key={x.valor} value={x.valor}>{x.texto}</option>)}</select> : <div className="pt-1"><EtiquetaEstado estado={detalle.estado} />{detalle.estado === "FIRMADO" && <p className="mt-1 text-[10px] font-semibold text-emerald-700">Encargo cerrado definitivamente</p>}</div>}</div>
+                    <div className="min-w-[220px] max-w-[300px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span><div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>{modo === "interno" && detalle.estado !== "FIRMADO" && <div className="mt-3 space-y-2">{detalle.estado === "EN_PROCESO" && <button type="button" onClick={() => cambiarEstado("RECIBIDO").catch(() => {})} className="w-full rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-sky-700">✓ Confirmar recepción</button>}{detalle.estado === "RECIBIDO" && <button type="button" onClick={() => cambiarEstado("AUTORIZADO").catch(() => {})} className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-indigo-700">✓ Validar documentación y autorizar</button>}{detalle.estado === "AUTORIZADO" && <button type="button" onClick={() => { if (window.confirm("¿Confirmas que el encargo está firmado y puede cerrarse definitivamente?")) cambiarEstado("FIRMADO").catch(() => {}); }} className="w-full rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-emerald-700">✓ Confirmar firma y cerrar</button>}{detalle.estado === "INCIDENCIA" && <button type="button" onClick={() => cambiarEstado("RECIBIDO").catch(() => {})} className="w-full rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-sky-700">✓ Incidencia resuelta · volver a recibidos</button>}{["EN_PROCESO","RECIBIDO","AUTORIZADO"].includes(detalle.estado) && <button type="button" onClick={() => { setMotivoIncidencia(""); setModalIncidencia(true); setErrorAccion(""); }} className="w-full rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-extrabold text-rose-700 hover:bg-rose-100">! Registrar incidencia</button>}</div>}{detalle.estado === "FIRMADO" && <p className="mt-1 text-[10px] font-semibold text-emerald-700">Encargo cerrado definitivamente</p>}{detalle.estado === "INCIDENCIA" && <p className="mt-2 text-[10px] leading-4 text-rose-700">La notaría puede consultar el motivo en la actividad del encargo.</p>}</div>
                   </div>
 {modo === "externo" ? (
                   <div className="mt-5" />
@@ -936,6 +960,27 @@ export default function EncargaGest() {
                 </button>
               </div>
             </footer>
+          </form>
+        </div>
+      )}
+
+      {modalIncidencia && detalle && (
+        <div className="fixed inset-0 z-[60] grid place-items-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6">
+          <form onSubmit={registrarIncidencia} className="my-auto w-full max-w-xl overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-2xl">
+            <div className="border-b border-rose-100 bg-rose-50 px-5 py-4 sm:px-7">
+              <p className="text-[9px] font-extrabold tracking-[0.18em] text-rose-700">ENCARGAGEST · GESTIÓN DE INCIDENCIAS</p>
+              <h2 className="mt-1 text-xl font-black text-slate-900">Indicar motivo de la incidencia</h2>
+              <p className="mt-2 text-xs leading-5 text-slate-600">El motivo quedará registrado en el seguimiento y será visible para la notaría, para que pueda actuar y aportar lo que falte.</p>
+            </div>
+            <div className="space-y-3 p-5 sm:p-7">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs"><span className="text-slate-500">Encargo</span><p className="mt-1 font-extrabold text-slate-900">{detalle.referencia} · {detalle.titular}</p></div>
+              <Campo etiqueta="Motivo detallado de la incidencia *"><textarea required minLength={5} maxLength={2000} rows={5} value={motivoIncidencia} onChange={(e) => setMotivoIncidencia(e.target.value)} className={inputClass} placeholder="Explica qué documento falta, qué dato debe corregirse o qué actuación se necesita…" /></Campo>
+              <p className="text-[10px] text-slate-500">Este texto se comunicará a la notaría. No incluyas notas internas de Molsan.</p>
+            </div>
+            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 px-5 py-4 sm:px-7">
+              <button type="button" onClick={() => setModalIncidencia(false)} disabled={guardandoIncidencia} className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600">Cancelar</button>
+              <button type="submit" disabled={guardandoIncidencia || motivoIncidencia.trim().length < 5} className="rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-extrabold text-white disabled:opacity-50">{guardandoIncidencia ? "Registrando…" : "Registrar y comunicar incidencia"}</button>
+            </div>
           </form>
         </div>
       )}
