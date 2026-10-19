@@ -379,13 +379,46 @@ def notarias_habilitadas_para_admin(n=Depends(get_notario), db: Session = Depend
         raise HTTPException(status_code=403, detail="Solo un administrador ERP puede seleccionar una notaría en NotarGest.")
     require_perm_modulo(n, "notargest", "ver")
     notarías = db.query(Notaria).filter(Notaria.notargest_habilitado.is_(True)).order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
-    return [{
-        "id": item.id,
-        "nombre": " ".join(filter(None, [item.nombre, item.apellidos])).strip() or f"Notaría {item.id}",
-        "nif": item.nif,
-        "municipio": item.municipio,
-        "provincia": item.provincia,
-    } for item in notarías]
+    resultado = []
+    campos_pendientes = {
+        "pendientes_recepcion": "recepcion",
+        "pendientes_firma": "firma",
+        "pendientes_factura": "factura",
+        "pendientes_registro": "registro",
+        "pendientes_ajd_itp": "ajd",
+        "pendientes_inscripcion": "inscripcion",
+        "pendientes_copias": "copia",
+        "escrituras_cerradas": "cerrada",
+    }
+    for item in notarías:
+        expedientes = _expedientes_de_notario(item, db)
+        conteos = {clave: 0 for clave in campos_pendientes}
+        urgentes = 0
+        defectos = 0
+        for expediente in expedientes:
+            estado = _estado_workflow(expediente)
+            for clave, estado_objetivo in campos_pendientes.items():
+                if estado == estado_objetivo:
+                    conteos[clave] += 1
+            if bool(getattr(expediente, "firma_urgente", False)):
+                urgentes += 1
+            actividad = str(getattr(expediente, "actividad_actual", "") or "").casefold()
+            if ("defecto" in actividad) or str(getattr(expediente, "tiene_defectos_abiertos", "") or "").strip().casefold() in {"si", "sí", "true", "1", "abierto"}:
+                defectos += 1
+        total_pendiente = sum(valor for clave, valor in conteos.items() if clave != "escrituras_cerradas")
+        resultado.append({
+            "id": item.id,
+            "nombre": " ".join(filter(None, [item.nombre, item.apellidos])).strip() or f"Notaría {item.id}",
+            "nif": item.nif,
+            "municipio": item.municipio,
+            "provincia": item.provincia,
+            "total_expedientes": len(expedientes),
+            "total_pendiente": total_pendiente,
+            "firmas_urgentes": urgentes,
+            "con_defectos": defectos,
+            **conteos,
+        })
+    return resultado
 
 
 @router.post("/seleccion/notaria/{notaria_id}")
