@@ -1203,8 +1203,8 @@ export default function EncargaGest() {
 
 
       {perfilAbierto && modo === "externo" && (
-        <div className="fixed inset-0 z-[80] grid place-items-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setPerfilAbierto(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="my-auto w-full max-w-3xl overflow-hidden rounded-3xl border border-white/70 bg-white shadow-2xl">
+        <div className="fixed inset-0 z-[80] grid place-items-start overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setPerfilAbierto(false); }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="my-auto w-full max-w-3xl max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
             <header className="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-7">
               <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-blue-700">ENCARGAGEST · FICHA CTN</p><h2 id="eg-perfil-titulo" className="mt-1 text-xl font-black text-slate-900">Mi perfil profesional</h2><p className="mt-1 text-xs text-slate-500">Datos de la notaría registrados en CTN.</p></div>
               <button type="button" onClick={() => setPerfilAbierto(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500">×</button>
