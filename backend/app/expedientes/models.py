@@ -48,6 +48,8 @@ class Expediente(Base):
     # Relaciones estables con los catálogos CTN y Empleados.
     notario_id = Column(Integer, nullable=True, index=True)
     apoderado_empleado_id = Column(Integer, ForeignKey("empleados.id"), nullable=True, index=True)
+    # Gestor responsable de la actividad actual; independiente del apoderado/notario.
+    gestor_asignado_id = Column(Integer, ForeignKey("empleados.id"), nullable=True, index=True)
 
     estado_expediente = Column(String(200), nullable=True)
     estado_expediente_ancert = Column(String(200), nullable=True)
