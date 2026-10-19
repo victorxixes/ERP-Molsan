@@ -529,6 +529,7 @@ export default function EnviarANotarioModal({
       id_expediente: expediente.id_expediente,
 
       escritura_firmada: form.escritura_firmada === "Sí",
+      fecha_envio: form.fecha_envio || null,
       idioma_documento: form.idioma,
 
       fecha_firma:
@@ -703,8 +704,19 @@ export default function EnviarANotarioModal({
               <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                 <TituloSeccion
                   titulo="1. Envío al notario"
-                  descripcion="La información de envío y solicitud se gestiona desde la ficha del expediente en ApoderaGest."
+                  descripcion="Indica la fecha en que se envía el expediente al notario. Los datos de solicitud PNC y planificación de firma se gestionan desde ApoderaGest."
                 />
+
+                <div className="mb-5">
+                  <CampoTexto
+                    label="Fecha de envío"
+                    type="date"
+                    value={form.fecha_envio}
+                    disabled={loading}
+                    required
+                    onChange={(valor) => cambiarCampo("fecha_envio", valor)}
+                  />
+                </div>
 
                 <div className="mb-5">
                   <label className="mb-2 block text-sm font-semibold text-slate-700">
@@ -1238,31 +1250,6 @@ export default function EnviarANotarioModal({
               />
 
               <Resumen
-                label="Fecha Solicitud PNC"
-                valor={formatearFecha(form.fecha_solicitud_pnc)}
-              />
-
-              <Resumen
-                label="N.º de Solicitud"
-                valor={form.numero_solicitud_pnc}
-              />
-
-              <Resumen
-                label="Fecha prevista de firma"
-                valor={formatearFecha(form.fecha_prevista_firma)}
-              />
-
-              <Resumen
-                label="Hora prevista"
-                valor={form.hora_prevista_firma}
-              />
-
-              <Resumen
-                label="Hora de fin"
-                valor={form.hora_fin_prevista_firma || "—"}
-              />
-
-              <Resumen
                 label="Modalidad de firma"
                 valor={notario?.tipo_firma}
               />
@@ -1319,11 +1306,7 @@ export default function EnviarANotarioModal({
                 !form.formato_escritura ||
                 !form.tipo_tramite ||
                 !form.idioma ||
-                !form.fecha_envio ||
-                !form.fecha_solicitud_pnc ||
-                !form.numero_solicitud_pnc.trim() ||
-                !form.fecha_prevista_firma ||
-                !form.hora_prevista_firma
+                !form.fecha_envio
               }
               onClick={guardar}
               className="rounded-xl bg-[var(--erp-primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
