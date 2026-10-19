@@ -12,6 +12,7 @@ const ESTADOS = [
   { valor: "EN_REVISION", texto: "En revisión" },
   { valor: "DOCUMENTACION_PENDIENTE", texto: "Documentación pendiente" },
   { valor: "INCIDENCIA", texto: "Incidencia" },
+  { valor: "AUTORIZADO", texto: "Autorizado" },
   { valor: "RESUELTO", texto: "Resuelto" },
   { valor: "CERRADO", texto: "Cerrado" },
 ];
@@ -20,6 +21,7 @@ const FILTROS_BANDEJA = [
   { valor: "", texto: "Total de encargos" },
   { valor: "GRUPO_EN_PROCESO", texto: "En proceso" },
   { valor: "GRUPO_REQUIEREN_ATENCION", texto: "Requieren atención" },
+  { valor: "GRUPO_AUTORIZADOS", texto: "Autorizados" },
   { valor: "GRUPO_FIRMADOS", texto: "Firmados" },
 ];
 
@@ -29,11 +31,12 @@ const ESTILO_ESTADO = {
   DOCUMENTACION_PENDIENTE: "border-amber-200 bg-amber-50 text-amber-800",
   EN_GESTION: "border-blue-200 bg-blue-50 text-blue-700",
   INCIDENCIA: "border-rose-200 bg-rose-50 text-rose-700",
+  AUTORIZADO: "border-indigo-200 bg-indigo-50 text-indigo-700",
   RESUELTO: "border-emerald-200 bg-emerald-50 text-emerald-700",
   CERRADO: "border-slate-200 bg-slate-100 text-slate-600",
 };
 
-const TEXTO_ESTADO = { RECIBIDO: "Recibido", EN_REVISION: "En revisión", DOCUMENTACION_PENDIENTE: "Documentación pendiente", EN_GESTION: "En gestión", INCIDENCIA: "Incidencia", RESUELTO: "Resuelto", CERRADO: "Cerrado" };
+const TEXTO_ESTADO = { RECIBIDO: "Recibido", EN_REVISION: "En revisión", DOCUMENTACION_PENDIENTE: "Documentación pendiente", EN_GESTION: "En gestión", INCIDENCIA: "Incidencia", AUTORIZADO: "Autorizado", RESUELTO: "Resuelto", CERRADO: "Cerrado" };
 
 const NUEVO_ENCARGO = {
   notaria_id: "",
@@ -606,6 +609,7 @@ export default function EncargaGest() {
           <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-amber-500">▤</span></div><p className="mt-1 text-xs text-slate-500">Solicitudes registradas</p></div>
           <div className="ag-kpi ag-kpi-verde eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">En proceso</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{resumen.por_estado?.RECIBIDO || 0}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Encargos recibidos pendientes de gestión</p></div>
           <div className="ag-kpi ag-kpi-ambar eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-amber-700">Requieren atención</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-amber-900">{resumen.requieren_atencion || 0}</strong><span className="text-xl text-amber-600">!</span></div><p className="mt-1 text-xs text-amber-800">Incidencias o documentación pendiente</p></div>
+          <div className="ag-kpi eg-kpi border border-indigo-100 bg-indigo-50/60"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-indigo-700">Autorizados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-indigo-800">{resumen.por_estado?.AUTORIZADO || 0}</strong><span className="text-xl text-indigo-600">✓</span></div><p className="mt-1 text-xs text-indigo-800">Encargos autorizados para continuar</p></div>
           <div className="ag-kpi ag-kpi-verde eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-emerald-700">Firmados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-emerald-800">{(resumen.por_estado?.RESUELTO || 0) + (resumen.por_estado?.CERRADO || 0)}</strong><span className="text-xl text-emerald-600">✓</span></div><p className="mt-1 text-xs text-slate-500">Encargos resueltos o cerrados</p></div>
         </section>
 
