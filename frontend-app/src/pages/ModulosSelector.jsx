@@ -72,6 +72,7 @@ export default function ModulosSelector() {
   const empleado = useAuthStore((state) => state.empleado);
   const authReady = useAuthStore((state) => state.authReady);
   const loading = useAuthStore((state) => state.loading);
+  const logout = useAuthStore((state) => state.logout);
 
   const modulosDisponibles = useMemo(() => {
     if (!empleado) return [];
@@ -145,10 +146,23 @@ export default function ModulosSelector() {
           </div>
         </div>
 
-        <span className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-3 py-2 text-[11px] font-bold text-slate-600 shadow-sm">
-          <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          Sesión activa
-        </span>
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-3 py-2 text-[11px] font-bold text-slate-600 shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            Sesión activa
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              logout();
+              navigate("/login", { replace: true });
+            }}
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-extrabold text-rose-700 shadow-sm transition hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-100 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-rose-100"
+          >
+            <span aria-hidden="true">↪</span>
+            Cerrar sesión
+          </button>
+        </div>
       </header>
 
       <div className="mb-5">
@@ -172,13 +186,13 @@ export default function ModulosSelector() {
         </section>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {modulosDisponibles.map((modulo) => (
               <button
                 key={modulo.clave}
                 type="button"
                 onClick={() => navigate(modulo.ruta)}
-                className="group relative flex min-h-[235px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/90 p-6 text-left shadow-[0_8px_26px_rgba(31,48,79,0.045)] transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_18px_38px_rgba(31,48,79,0.11)] focus:outline-none focus:ring-4 focus:ring-blue-100"
+                className="group relative flex min-h-[220px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/90 p-6 text-left shadow-[0_8px_26px_rgba(31,48,79,0.045)] transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_18px_38px_rgba(31,48,79,0.11)] focus:outline-none focus:ring-4 focus:ring-blue-100"
               >
                 <div
                   aria-hidden="true"
