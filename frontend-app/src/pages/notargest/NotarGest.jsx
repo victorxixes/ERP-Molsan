@@ -602,8 +602,8 @@ export default function NotarGest() {
           <span className="ag-punto-vivo" />
           <span>{fechaActual}</span>
         </div>
-        {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"><span aria-hidden="true">▦</span> Ir a módulos</button>
-        <button type="button" onClick={salir} className="ng-workspace-salir" aria-label="Cerrar sesión"><span aria-hidden="true">↪</span> Cerrar sesión</button>}
+        {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"><span aria-hidden="true">▦</span> Ir a módulos</button>}
+        <button type="button" onClick={salir} className="ng-workspace-salir" aria-label="Cerrar sesión"><span aria-hidden="true">↪</span> Cerrar sesión</button>
         <button type="button" className="ag-boton-actualizar" onClick={cargar} disabled={cargando}><span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>{cargando ? "Actualizando…" : "Actualizar datos"}</button>
       </div>
     </header>
