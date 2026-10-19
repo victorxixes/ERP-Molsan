@@ -90,7 +90,7 @@
 .encargagest .eg-main select:focus-visible,
 .encargagest .eg-main textarea:focus-visible,
 .encargagest button:focus-visible { outline: 3px solid rgba(61,103,231,.28); outline-offset: 2px; }
-.encargagest .eg-main .bg-amber-50\/70 { background: #fff6df; }
+.encargagest .eg-main .bg-blue-50\\/70 { background: #eff6ff; }
 .encargagest .eg-main .text-blue-900 { color: #1e3a8a; }
 .encargagest .eg-main .border-blue-100 { border-color: #dbeafe; }
 .encargagest .eg-main .ag-estado { white-space: nowrap; }
