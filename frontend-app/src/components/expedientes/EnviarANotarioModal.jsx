@@ -475,23 +475,8 @@ export default function EnviarANotarioModal({
       return;
     }
 
-    if (!form.fecha_envio) {
-      setError("La Fecha de envío es obligatoria.");
-      return;
-    }
-
     if (!["Catalán", "Castellano"].includes(form.idioma)) {
       setError("Selecciona el idioma del documento.");
-      return;
-    }
-
-    if (!form.fecha_solicitud_pnc) {
-      setError("La Fecha Solicitud PNC es obligatoria.");
-      return;
-    }
-
-    if (!form.numero_solicitud_pnc.trim()) {
-      setError("El Nº de Solicitud es obligatorio.");
       return;
     }
 
@@ -512,40 +497,6 @@ export default function EnviarANotarioModal({
 
     if (!form.tipo_tramite) {
       setError("Selecciona el tipo de trámite.");
-      return;
-    }
-
-    if (!form.fecha_prevista_firma) {
-      setError("Indica la Fecha prevista de firma.");
-      return;
-    }
-
-    if (!form.hora_prevista_firma) {
-      setError("Indica la Hora prevista de firma.");
-      return;
-    }
-
-    if (!form.hora_fin_prevista_firma) {
-      setError("Indica la Hora de fin de la firma.");
-      return;
-    }
-
-    if (form.hora_fin_prevista_firma <= form.hora_prevista_firma) {
-      setError("La Hora de fin debe ser posterior a la Hora de inicio.");
-      return;
-    }
-
-    if (form.fecha_prevista_firma < form.fecha_envio) {
-      setError(
-        "La Fecha prevista de firma no puede ser anterior a la Fecha de envío."
-      );
-      return;
-    }
-
-    if (form.fecha_solicitud_pnc > form.fecha_envio) {
-      setError(
-        "La Fecha Solicitud PNC no puede ser posterior a la Fecha de envío."
-      );
       return;
     }
 
@@ -578,11 +529,7 @@ export default function EnviarANotarioModal({
       id_expediente: expediente.id_expediente,
 
       escritura_firmada: form.escritura_firmada === "Sí",
-      fecha_envio: form.fecha_envio,
       idioma_documento: form.idioma,
-
-      fecha_solicitud_pnc: form.fecha_solicitud_pnc,
-      numero_solicitud_pnc: form.numero_solicitud_pnc.trim(),
 
       fecha_firma:
         form.escritura_firmada === "Sí"
@@ -593,10 +540,6 @@ export default function EnviarANotarioModal({
         form.escritura_firmada === "Sí"
           ? form.protocolo.trim()
           : null,
-
-      fecha_prevista_firma: form.fecha_prevista_firma,
-      hora_prevista_firma: form.hora_prevista_firma,
-      hora_fin_prevista_firma: form.hora_fin_prevista_firma,
       firma_urgente: Boolean(form.firma_urgente),
 
       notario_id: form.notario.id,
@@ -760,7 +703,7 @@ export default function EnviarANotarioModal({
               <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                 <TituloSeccion
                   titulo="1. Envío al notario"
-                  descripcion="Los datos de envío y solicitud se completan en ApoderaGest y aquí se muestran sincronizados."
+                  descripcion="La información de envío y solicitud se gestiona desde la ficha del expediente en ApoderaGest."
                 />
 
                 <div className="mb-5">
@@ -794,10 +737,6 @@ export default function EnviarANotarioModal({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <CampoAutomatico label="Fecha de envío · ApoderaGest" valor={formatearFecha(form.fecha_envio)} />
-                  <CampoAutomatico label="Fecha solicitud PNC · ApoderaGest" valor={formatearFecha(form.fecha_solicitud_pnc)} />
-                  <CampoAutomatico label="N.º de solicitud · ApoderaGest" valor={form.numero_solicitud_pnc} />
                   <div className="flex flex-col justify-end">
                     <label className="mb-1.5 block text-sm font-semibold text-slate-700">Firma urgente</label>
                     <div className="flex min-h-[42px] items-center gap-4 rounded-xl border border-slate-200 bg-white px-3 py-2">
@@ -807,22 +746,7 @@ export default function EnviarANotarioModal({
                       </label>
                     </div>
                   </div>
-                </div>
-              </section>
 
-              {/* FECHAS Y HORA DE FIRMA */}
-
-              <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
-                <TituloSeccion
-                  titulo="2. Planificación de la firma"
-                  descripcion="La planificación la establece el apoderado en ApoderaGest y se muestra aquí en solo lectura."
-                />
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <CampoAutomatico label="Fecha prevista de firma · ApoderaGest" valor={formatearFecha(form.fecha_prevista_firma)} />
-                  <CampoAutomatico label="Hora prevista de firma · ApoderaGest" valor={form.hora_prevista_firma} />
-                  <CampoAutomatico label="Hora de fin de firma · ApoderaGest" valor={form.hora_fin_prevista_firma} />
-                </div>
               </section>
 
               {/* NOTARIO */}
