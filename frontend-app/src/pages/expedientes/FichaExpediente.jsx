@@ -1499,6 +1499,26 @@ export default function FichaExpediente() {
   const brutoCalculadoGasto = gastoForm.importe_total_bruto !== "" ? numeroDecimalGasto(gastoForm.importe_total_bruto) : Math.round((numeroDecimalGasto(gastoForm.base_exenta_impuestos) + baseImponibleGasto + impuestoCalculadoGasto) * 100) / 100;
   const resultadoCalculadoGasto = Math.round((brutoCalculadoGasto - retencionCalculadaGasto) * 100) / 100;
 
+  // Resumen económico: solo los gastos efectivamente pagados descuentan provisión.
+  const estadosPagoConfirmado = ["pagado", "pagada", "abonado", "abonada", "efectuado", "efectuada"];
+  const importeInicialProvision = Number(String(expediente?.importe ?? "").replace(",", "."));
+  const importeInicialDisponible = expediente?.importe !== null && expediente?.importe !== undefined && expediente?.importe !== "" && Number.isFinite(importeInicialProvision);
+  const movimientosEconomicosOrdenados = (Array.isArray(gastosExpediente) ? gastosExpediente : [])
+    .filter((gasto) => {
+      const estado = String(gasto.estado_pago || "").trim().toLowerCase();
+      return estadosPagoConfirmado.includes(estado);
+    })
+    .sort((a, b) => String(a.fecha || "").localeCompare(String(b.fecha || "")) || Number(a.id || 0) - Number(b.id || 0));
+  const resumenEconomico = movimientosEconomicosOrdenados.reduce((resultado, gasto) => {
+    const importe = Math.abs(Number(gasto.importe_resultante ?? gasto.importe ?? 0)) || 0;
+    const saldo = resultado.saldoActual - importe;
+    resultado.movimientos.push({ ...gasto, importeMovimiento: importe === 0 ? 0 : -importe, saldoCalculado: saldo });
+    resultado.saldoActual = saldo;
+    return resultado;
+  }, { saldoActual: importeInicialDisponible ? importeInicialProvision : 0, movimientos: [] });
+  const gastosPendientesResumen = (Array.isArray(gastosExpediente) ? gastosExpediente : [])
+    .filter((gasto) => !estadosPagoConfirmado.includes(String(gasto.estado_pago || "").trim().toLowerCase()) && !String(gasto.estado_pago || "").trim().toLowerCase().includes("anulad"));
+
   const [
     mostrarFincas,
     setMostrarFincas,
@@ -4701,9 +4721,9 @@ const cuantiaFincasParaEnvio =
                       <section className="mt-4 rounded-xl border border-indigo-100 bg-white p-4">
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div>
-                            <h4 className="text-sm font-extrabold text-slate-800">Gastos del expediente</h4>
+                            <h4 className="text-sm font-extrabold text-slate-800">Resumen Económico</h4>
                             <p className="mt-1 text-xs text-slate-500">
-                              Registra los gastos derivados de la escritura. El importe del gasto es independiente de la cuantía del documento formalizado.
+                              Importe inicial tomado de Información crediticia. El saldo solo descuenta los gastos cuyo pago está confirmado.
                             </p>
                           </div>
                           <button
@@ -4721,6 +4741,54 @@ const cuantiaFincasParaEnvio =
                           >
                             ＋ Registrar gasto
                           </button>
+                        </div>
+
+                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                          <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
+                            <p className="text-[11px] font-bold uppercase tracking-wide text-indigo-700">Importe inicial de la provisión</p>
+                            <p className="mt-1 text-2xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? `${importeInicialProvision.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                            <p className="mt-1 text-[10px] text-slate-500">Campo Importe · Excel de Absis</p>
+                          </div>
+                          <div className="rounded-xl border border-slate-200 bg-white p-4">
+                            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Saldo real actual</p>
+                            <p className={`mt-1 text-2xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "text-red-700" : "text-emerald-700"}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                            <p className="mt-1 text-[10px] text-slate-500">Importe inicial menos pagos confirmados</p>
+                          </div>
+                        </div>
+
+                        <div className="mt-4">
+                          <h5 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-600">Movimientos de la provisión</h5>
+                          {cargandoGastos ? (
+                            <p className="py-3 text-xs text-slate-500">Cargando movimientos económicos…</p>
+                          ) : resumenEconomico.movimientos.length === 0 ? (
+                            <p className="rounded-lg border border-dashed border-slate-200 px-3 py-4 text-center text-xs text-slate-500">Todavía no hay pagos confirmados para mostrar.</p>
+                          ) : (
+                            <div className="overflow-x-auto rounded-lg border border-slate-200">
+                              <table className="w-full min-w-[760px] text-left text-xs">
+                                <thead className="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500">
+                                  <tr>
+                                    <th className="px-3 py-2.5">N.º documento</th>
+                                    <th className="px-3 py-2.5">Fecha de pago</th>
+                                    <th className="px-3 py-2.5">Concepto</th>
+                                    <th className="px-3 py-2.5 text-right">Importe</th>
+                                    <th className="px-3 py-2.5 text-right">Saldo real</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {resumenEconomico.movimientos.map((movimiento) => (
+                                    <tr key={movimiento.id} className="border-t border-slate-100">
+                                      <td className="whitespace-nowrap px-3 py-2.5 font-bold text-indigo-700">{movimiento.numero_documento || `PAG-${String(movimiento.id).padStart(6, "0")}`}</td>
+                                      <td className="whitespace-nowrap px-3 py-2.5">{movimiento.fecha ? formatearFecha(movimiento.fecha) : "—"}</td>
+                                      <td className="px-3 py-2.5 font-semibold text-slate-700">{movimiento.descripcion || movimiento.tipo || "Gasto"}</td>
+                                      <td className="whitespace-nowrap px-3 py-2.5 text-right font-semibold text-red-700">{movimiento.importeMovimiento === 0 ? "0,00 €" : `−${Math.abs(movimiento.importeMovimiento).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</td>
+                                      <td className={`whitespace-nowrap px-3 py-2.5 text-right font-extrabold ${movimiento.saldoCalculado < 0 ? "text-red-700" : "text-slate-800"}`}>{movimiento.saldoCalculado.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                          {!importeInicialDisponible && <p className="mt-2 text-[11px] text-amber-700">El expediente no tiene un Importe inicial válido; revisa la importación de Absis para calcular el saldo.</p>}
                         </div>
 
                         {errorGastos && (
@@ -4755,8 +4823,9 @@ const cuantiaFincasParaEnvio =
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Pagador / razón social</span><input value={gastoForm.pagador} onChange={(e)=>setGastoForm(a=>({...a,pagador:e.target.value}))} placeholder="Nombre de facturación" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
                                   <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Número de factura</span><input value={gastoForm.numero_factura} onChange={(e)=>setGastoForm(a=>({...a,numero_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de factura *</span><input required type="date" value={gastoForm.fecha_factura} onChange={(e)=>setGastoForm(a=>({...a,fecha_factura:e.target.value,fecha:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de factura *</span><input required type="date" value={gastoForm.fecha_factura} onChange={(e)=>setGastoForm(a=>({...a,fecha_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                                 </div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de pago / movimiento *</span><input required type="date" value={gastoForm.fecha} onChange={(e)=>setGastoForm(a=>({...a,fecha:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Cuenta bancaria / IBAN</span><input value={gastoForm.cuenta_bancaria} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value.toUpperCase()}))} placeholder="ES… (editable; no se autocompleta)" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                                 <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Medio de pago</span><select value={gastoForm.medio_pago} onChange={(e)=>setGastoForm(a=>({...a,medio_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Estado</span><select value={gastoForm.estado_pago} onChange={(e)=>setGastoForm(a=>({...a,estado_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Pendiente</option><option>Pagado</option><option>Anulado</option></select></label></div>
                                 <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Documento / URL de factura</span><input type="url" value={gastoForm.documento_url} onChange={(e)=>setGastoForm(a=>({...a,documento_url:e.target.value}))} placeholder="https://…" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
@@ -4797,7 +4866,8 @@ const cuantiaFincasParaEnvio =
                           </div>
                         )}
 
-                        <div className="mt-3">
+                        <div className="mt-4 border-t border-slate-100 pt-3">
+                          <h5 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-600">Facturas y gastos registrados</h5>
                           {cargandoGastos ? (
                             <p className="py-3 text-xs text-slate-500">Cargando gastos…</p>
                           ) : gastosExpediente.length === 0 ? (
@@ -4809,11 +4879,11 @@ const cuantiaFincasParaEnvio =
                                   <div className="min-w-0 flex-1">
                                     <p className="text-xs font-bold text-slate-800">{gasto.descripcion || gasto.tipo || "Gasto"}</p>
                                     <p className="mt-0.5 text-[11px] text-slate-500">
-                                      {[gasto.tipo, gasto.fecha ? formatearFecha(gasto.fecha) : null].filter(Boolean).join(" · ")}
+                                      {[gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`, gasto.tipo, gasto.fecha ? formatearFecha(gasto.fecha) : null, gasto.estado_pago || "Pendiente"].filter(Boolean).join(" · ")}
                                     </p>
                                   </div>
                                   <span className="text-sm font-extrabold text-slate-800">
-                                    {gasto.importe == null ? "—" : `${Number(gasto.importe).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}
+                                    {gasto.importe_resultante == null && gasto.importe == null ? "—" : `${Number(gasto.importe_resultante ?? gasto.importe).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}
                                   </span>
                                   <button type="button" onClick={() => eliminarGastoExpediente(gasto)} className="rounded-md px-2 py-1 text-xs font-bold text-red-600 hover:bg-red-50">
                                     Eliminar
@@ -4822,6 +4892,7 @@ const cuantiaFincasParaEnvio =
                               ))}
                             </ul>
                           )}
+                          {gastosPendientesResumen.length > 0 && <p className="mt-2 text-[10px] text-amber-700">Hay {gastosPendientesResumen.length} gasto(s) pendiente(s) de pago que todavía no descuentan del saldo real.</p>}
                         </div>
                       </section>
                     )}
