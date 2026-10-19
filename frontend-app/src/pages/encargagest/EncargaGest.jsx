@@ -222,10 +222,14 @@ export default function EncargaGest() {
       if (me.data?.modo === "externo") {
         setForm((actual) => ({ ...actual, notaria_id: String(me.data.notaria_id || "") }));
       }
-      let notariaActiva = notariaIdSolicitada;
-      if (modo === "interno" && esAdminEncargaGest && !notariaActiva && listaNotarias.length) {
-        notariaActiva = String(listaNotarias[0].id);
-        setFiltroNotariaId(notariaActiva);
+      const notariaActiva = notariaIdSolicitada;
+      if (modo === "interno" && esAdminEncargaGest && !notariaActiva) {
+        setResumen({ total: 0, por_estado: {}, requieren_atencion: 0 });
+        setItems([]);
+        setTotal(0);
+        setSeleccionadoId(null);
+        setDetalle(null);
+        return;
       }
       const params = { notaria_id: modo === "interno" && notariaActiva ? Number(notariaActiva) : undefined };
       const res = await axios.get("/encargagest/resumen", { params });
@@ -828,7 +832,14 @@ export default function EncargaGest() {
         {modo === "interno" && (
           <section className="mb-5 flex flex-col gap-3 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
             <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">{esAdminEncargaGest ? "Administración de notarías" : "Notarías asignadas"}</p><p className="mt-1 text-xs text-slate-500">{esAdminEncargaGest ? "Selecciona una notaría habilitada para consultar y resolver sus encargos." : "Solo aparecen las notarías asignadas a tu usuario."}</p></div>
-            <label className="w-full sm:max-w-xl"><span className="mb-1 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Notaría activa</span><select value={filtroNotariaId} onChange={(e) => { const id = e.target.value; setFiltroNotariaId(id); setPagina(1); cargarTodo(id); }} className={inputClass}><option value="">{esAdminEncargaGest ? "Todas las notarías habilitadas" : "Todas mis notarías asignadas"}</option>{notarias.map((n) => <option key={n.id} value={String(n.id)}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}</select></label>
+            <label className="w-full sm:max-w-xl"><span className="mb-1 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Notaría activa</span><select value={filtroNotariaId} onChange={(e) => { const id = e.target.value; setFiltroNotariaId(id); setPagina(1); cargarTodo(id); }} className={inputClass}><option value="">{esAdminEncargaGest ? "Selecciona una notaría habilitada…" : "Todas mis notarías asignadas"}</option>{notarias.map((n) => <option key={n.id} value={String(n.id)}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}</select></label>
+          </section>
+        )}
+        {modo === "interno" && esAdminEncargaGest && !filtroNotariaId && !cargando && (
+          <section className="mb-5 rounded-2xl border border-dashed border-blue-200 bg-blue-50/60 p-8 text-center">
+            <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white text-blue-700 shadow-sm"><span className="text-2xl">♙</span></div>
+            <h2 className="mt-3 text-base font-extrabold text-slate-900">Selecciona una notaría para continuar</h2>
+            <p className="mx-auto mt-1 max-w-xl text-sm leading-6 text-slate-600">Elige una notaría habilitada en el selector superior. Entonces se cargarán únicamente sus encargos y su resumen de gestión.</p>
           </section>
         )}
         {error && (
@@ -840,7 +851,7 @@ export default function EncargaGest() {
         {mensaje && <div className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">{mensaje}</div>}
         {errorAccion && <div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">{errorAccion}</div>}
 
-        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+        <section className={modo === "interno" && esAdminEncargaGest && !filtroNotariaId ? "hidden" : "grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6"}>
           <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-blue-600">▤</span></div><p className="mt-1 text-xs text-slate-500">Todas las solicitudes</p></div>
           <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_RECIBIDOS")} className="ag-kpi ag-kpi-verde eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{(resumen.por_estado?.EN_PROCESO || 0) + (resumen.por_estado?.RECIBIDO || 0) + (resumen.por_estado?.EN_REVISION || 0) + (resumen.por_estado?.DOCUMENTACION_PENDIENTE || 0) + (resumen.por_estado?.EN_GESTION || 0)}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Pendientes de revisión y autorización</p></button>
           <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_AUTORIZADOS")} className="ag-kpi eg-kpi border border-indigo-100 bg-indigo-50/60 text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-indigo-700">Autorizados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-indigo-800">{resumen.por_estado?.AUTORIZADO || 0}</strong><span className="text-xl text-indigo-600">✓</span></div><p className="mt-1 text-xs text-indigo-800">Validados para continuar</p></button>
@@ -848,7 +859,7 @@ export default function EncargaGest() {
           <div className="ag-kpi ag-kpi-verde eg-kpi border border-slate-200 bg-slate-50" aria-label="Firmados pendiente de integración con ApoderaGest"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500">Firmados · próximamente</p><div className="mt-2 flex items-end justify-between"><strong className="text-lg font-black text-slate-600">EN ESPERA</strong><span className="text-xl text-slate-400">◷</span></div><p className="mt-1 text-xs leading-4 text-slate-500">Pendiente de integración con las firmas reales de ApoderaGest.</p></div>
         </section>
 
-        <section className="mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]">
+        <section className={modo === "interno" && esAdminEncargaGest && !filtroNotariaId ? "hidden" : "mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]"}>
           <div className="eg-panel min-w-0">
             <div className="eg-panel-head">
               <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-extrabold text-slate-900">Bandeja de encargos</h2><p className="mt-1 text-xs text-slate-500">{total} solicitudes encontradas</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">Página {pagina} / {totalPaginas}</span>{modo === "externo" && <button type="button" onClick={() => { setModalNuevo(true); setErrorAccion(""); }} className="eg-button-primary whitespace-nowrap">＋ Nuevo encargo</button>}</div></div>
