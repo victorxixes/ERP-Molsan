@@ -891,3 +891,23 @@
   .ng-admin-notarias .ng-admin-global-titulo{align-items:flex-start}
   .ng-admin-notarias .ng-admin-global-total{font-size:9px;padding:0 9px}
 }
+
+
+/* NOTARGEST · ACCIÓN DE CIERRE DE SESIÓN EN EL ESPACIO DE TRABAJO */
+.ng-workspace-salir{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:40px;padding:0 15px;border:1px solid rgba(220,91,105,.24);
+  border-radius:12px;background:rgba(255,247,248,.88);color:#a93c50;
+  font:700 12px/1.2 inherit;white-space:nowrap;cursor:pointer;
+  box-shadow:0 3px 10px rgba(141,49,67,.035);
+  transition:background .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease;
+}
+.ng-workspace-salir span{font-size:17px;line-height:1}
+.ng-workspace-salir:hover{
+  background:#fff0f2;border-color:rgba(220,91,105,.48);
+  box-shadow:0 5px 14px rgba(141,49,67,.09);transform:translateY(-1px);
+}
+.ng-workspace-salir:focus-visible{outline:3px solid rgba(220,91,105,.25);outline-offset:2px}
+@media(max-width:760px){
+  .ng-workspace-salir{min-height:38px;padding:0 11px;font-size:11px}
+}
