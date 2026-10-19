@@ -760,7 +760,7 @@ export default function EnviarANotarioModal({
               <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                 <TituloSeccion
                   titulo="1. Envío al notario"
-                  descripcion="Datos del envío, solicitud PNC y situación de la escritura."
+                  descripcion="Los datos de envío y solicitud se completan en ApoderaGest y aquí se muestran sincronizados."
                 />
 
                 <div className="mb-5">
@@ -795,37 +795,17 @@ export default function EnviarANotarioModal({
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <CampoTexto
-                    label="Fecha de envío"
-                    type="date"
-                    required
-                    value={form.fecha_envio}
-                    disabled={loading}
-                    onChange={(v) => cambiarCampo("fecha_envio", v)}
-                  />
-
-                  <CampoTexto
-                    label="Fecha Solicitud PNC"
-                    type="date"
-                    required
-                    value={form.fecha_solicitud_pnc}
-                    disabled={loading}
-                    onChange={(v) =>
-                      cambiarCampo("fecha_solicitud_pnc", v)
-                    }
-                  />
-
-                  <div className="sm:col-span-2">
-                    <CampoTexto
-                      label="N.º de Solicitud"
-                      required
-                      value={form.numero_solicitud_pnc}
-                      disabled={loading}
-                      placeholder="Número de solicitud PNC"
-                      onChange={(v) =>
-                        cambiarCampo("numero_solicitud_pnc", v)
-                      }
-                    />
+                  <CampoAutomatico label="Fecha de envío · ApoderaGest" valor={formatearFecha(form.fecha_envio)} />
+                  <CampoAutomatico label="Fecha solicitud PNC · ApoderaGest" valor={formatearFecha(form.fecha_solicitud_pnc)} />
+                  <CampoAutomatico label="N.º de solicitud · ApoderaGest" valor={form.numero_solicitud_pnc} />
+                  <div className="flex flex-col justify-end">
+                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">Firma urgente</label>
+                    <div className="flex min-h-[42px] items-center gap-4 rounded-xl border border-slate-200 bg-white px-3 py-2">
+                      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
+                        <input type="checkbox" checked={Boolean(form.firma_urgente)} disabled={loading} onChange={(event) => cambiarCampo("firma_urgente", event.target.checked)} />
+                        Marcar como urgente
+                      </label>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -835,82 +815,13 @@ export default function EnviarANotarioModal({
               <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                 <TituloSeccion
                   titulo="2. Planificación de la firma"
-                  descripcion="El envío guardará la planificación y el backend creará o actualizará la cita de Agenda."
+                  descripcion="La planificación la establece el apoderado en ApoderaGest y se muestra aquí en solo lectura."
                 />
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <CampoTexto
-                    label="Fecha prevista de firma"
-                    type="date"
-                    required
-                    value={form.fecha_prevista_firma}
-                    disabled={loading}
-                    onChange={(v) =>
-                      cambiarCampo("fecha_prevista_firma", v)
-                    }
-                  />
-
-                  <CampoTexto
-                    label="Hora prevista de firma"
-                    type="time"
-                    required
-                    value={form.hora_prevista_firma}
-                    disabled={loading}
-                    onChange={(v) =>
-                      cambiarCampo("hora_prevista_firma", v)
-                    }
-                  />
-
-                  <CampoTexto
-                    label="Hora de fin de firma"
-                    type="time"
-                    required
-                    value={form.hora_fin_prevista_firma}
-                    disabled={loading}
-                    onChange={(v) =>
-                      cambiarCampo("hora_fin_prevista_firma", v)
-                    }
-                  />
-
-                  <div className="flex flex-col justify-end">
-                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">Firma urgente</label>
-                    <div className="flex min-h-[42px] items-center gap-4 rounded-xl border border-slate-200 bg-white px-3 py-2">
-                      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700"><input type="radio" name="firma_urgente" value="no" checked={!form.firma_urgente} disabled={loading} onChange={() => cambiarCampo("firma_urgente", false)} />No</label>
-                      <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-red-700"><input type="radio" name="firma_urgente" value="si" checked={Boolean(form.firma_urgente)} disabled={loading} onChange={() => cambiarCampo("firma_urgente", true)} />Sí</label>
-                    </div>
-                  </div>
-
-                  {form.escritura_firmada === "Sí" && (
-                    <>
-                      <CampoTexto
-                        label="Fecha de firma"
-                        type="date"
-                        required
-                        value={form.fecha_firma}
-                        disabled={loading}
-                        onChange={(v) =>
-                          cambiarCampo("fecha_firma", v)
-                        }
-                      />
-
-                      <CampoTexto
-                        label="Protocolo"
-                        required
-                        value={form.protocolo}
-                        disabled={loading}
-                        placeholder="Número de protocolo"
-                        onChange={(v) =>
-                          cambiarCampo("protocolo", v)
-                        }
-                      />
-                    </>
-                  )}
-                </div>
-
-                <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-3 py-3 text-xs leading-relaxed text-blue-800">
-                  <strong>Agenda:</strong> la cita tendrá una
-                  duración inicial de una hora. Se comprobará si
-                  ya existe una cita para este expediente y fecha.
+                  <CampoAutomatico label="Fecha prevista de firma · ApoderaGest" valor={formatearFecha(form.fecha_prevista_firma)} />
+                  <CampoAutomatico label="Hora prevista de firma · ApoderaGest" valor={form.hora_prevista_firma} />
+                  <CampoAutomatico label="Hora de fin de firma · ApoderaGest" valor={form.hora_fin_prevista_firma} />
                 </div>
               </section>
 
