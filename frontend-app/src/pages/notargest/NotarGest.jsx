@@ -52,6 +52,12 @@ export default function NotarGest() {
   const [avisos, setAvisos] = useState({ comentarios: [], documentos: [] });
   const [notificacionesAbiertas, setNotificacionesAbiertas] = useState(false);
   const [perfilNotarioAbierto, setPerfilNotarioAbierto] = useState(false);
+  const [passwordActualPerfil, setPasswordActualPerfil] = useState("");
+  const [passwordNuevaPerfil, setPasswordNuevaPerfil] = useState("");
+  const [passwordConfirmarPerfil, setPasswordConfirmarPerfil] = useState("");
+  const [guardandoPasswordPerfil, setGuardandoPasswordPerfil] = useState(false);
+  const [mensajePasswordPerfil, setMensajePasswordPerfil] = useState("");
+  const [errorPasswordPerfil, setErrorPasswordPerfil] = useState("");
   const [pagosAbiertos, setPagosAbiertos] = useState(false);
   const [pagosNotario, setPagosNotario] = useState([]);
   const [cargandoPagos, setCargandoPagos] = useState(false);
@@ -93,6 +99,36 @@ export default function NotarGest() {
   }, [token, peticion]);
   useEffect(() => { cargar(); }, [cargar]);
 
+
+
+  async function cambiarPasswordPerfil(event) {
+    event.preventDefault();
+    setErrorPasswordPerfil("");
+    setMensajePasswordPerfil("");
+    if (passwordNuevaPerfil !== passwordConfirmarPerfil) {
+      setErrorPasswordPerfil("Las nuevas contraseñas no coinciden.");
+      return;
+    }
+    if (passwordNuevaPerfil.trim().length < 8) {
+      setErrorPasswordPerfil("La nueva contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
+    setGuardandoPasswordPerfil(true);
+    try {
+      const resultado = await peticion("/notargest/cambiar-password", {
+        method: "POST",
+        body: JSON.stringify({ password_actual: passwordActualPerfil, password_nueva: passwordNuevaPerfil }),
+      });
+      setMensajePasswordPerfil(resultado.mensaje || "Contraseña actualizada correctamente.");
+      setPasswordActualPerfil("");
+      setPasswordNuevaPerfil("");
+      setPasswordConfirmarPerfil("");
+    } catch (e) {
+      setErrorPasswordPerfil(e.message || "No se ha podido actualizar la contraseña.");
+    } finally {
+      setGuardandoPasswordPerfil(false);
+    }
+  }
 
   async function abrirPagos() {
     setPagosAbiertos(true);
@@ -378,7 +414,17 @@ export default function NotarGest() {
           </div>
         </section>
       </div>}
-      {perfilNotarioAbierto && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPerfilNotarioAbierto(false)}>Cerrar ✕</button></header><div className="ng-perfil-identidad"><div className="ng-perfil-avatar">NG</div><div><strong>{texto(notario?.nombre)}</strong><span>{texto(notario?.nif)}</span></div></div><div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Teléfono",notario?.telefono],["Dirección",notario?.direccion],["Código postal",notario?.cp],["Municipio",notario?.municipio],["Provincia",notario?.provincia],["Código CTN",notario?.codigo],["Videoconferencia",notario?.vc],["Apoderado asociado",notario?.apoderado],["Departamento cancelaciones",notario?.departamento_cancelaciones],["Departamento copias",notario?.departamento_copias],["Otros departamentos",notario?.otros_departamentos]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div>{notario?.observacion && <div className="ng-perfil-observacion"><small>Observaciones CTN</small><p>{notario.observacion}</p></div>}</section></div>}
+      {perfilNotarioAbierto && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPerfilNotarioAbierto(false); }}><section className="ng-modal ng-modal-perfil" role="dialog" aria-modal="true" aria-labelledby="ng-perfil-titulo"><header><div><span className="ng-kicker">FICHA CTN</span><h2 id="ng-perfil-titulo">Ficha del notario</h2><p>Datos de la notaría registrados en el catálogo CTN.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setPerfilNotarioAbierto(false)}>Cerrar ✕</button></header><div className="ng-perfil-identidad"><div className="ng-perfil-avatar">NG</div><div><strong>{texto(notario?.nombre)}</strong><span>{texto(notario?.nif)}</span></div></div><div className="ng-perfil-datos">{[["Nombre",notario?.nombre],["NIF",notario?.nif],["Usuario",notario?.nif],["Teléfono",notario?.telefono],["Dirección",notario?.direccion],["Código postal",notario?.cp],["Municipio",notario?.municipio],["Provincia",notario?.provincia],["Código CTN",notario?.codigo],["Videoconferencia",notario?.vc],["Apoderado asociado",notario?.apoderado],["Departamento cancelaciones",notario?.departamento_cancelaciones],["Departamento copias",notario?.departamento_copias],["Otros departamentos",notario?.otros_departamentos]].map(([label,value]) => <div className="ng-dato" key={label}><small>{label}</small><strong>{texto(value)}</strong></div>)}</div>{notario?.observacion && <div className="ng-perfil-observacion"><small>Observaciones CTN</small><p>{notario.observacion}</p></div>}
+          <form onSubmit={cambiarPasswordPerfil} className="mt-5 space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div><h3 className="text-sm font-extrabold text-slate-900">Seguridad de la cuenta</h3><p className="mt-1 text-xs leading-5 text-slate-500">Usuario: NIF completo registrado en CTN. Si aún no has cambiado la contraseña inicial, utiliza tu NIF como contraseña.</p></div>
+            {mensajePasswordPerfil && <p role="status" className="rounded-lg bg-emerald-50 p-2 text-xs text-emerald-800">{mensajePasswordPerfil}</p>}
+            {errorPasswordPerfil && <p role="alert" className="rounded-lg bg-rose-50 p-2 text-xs text-rose-700">{errorPasswordPerfil}</p>}
+            <label className="block text-xs font-semibold text-slate-600">Contraseña actual<input required type="password" autoComplete="current-password" value={passwordActualPerfil} onChange={e=>setPasswordActualPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
+            <label className="block text-xs font-semibold text-slate-600">Nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordNuevaPerfil} onChange={e=>setPasswordNuevaPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
+            <label className="block text-xs font-semibold text-slate-600">Repetir nueva contraseña<input required minLength={8} type="password" autoComplete="new-password" value={passwordConfirmarPerfil} onChange={e=>setPasswordConfirmarPerfil(e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" /></label>
+            <button type="submit" disabled={guardandoPasswordPerfil} className="ng-login-submit">{guardandoPasswordPerfil ? "Guardando contraseña…" : "Cambiar contraseña"}</button>
+          </form>
+        </section></div>}
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest">
