@@ -741,9 +741,10 @@ export default function EncargaGest() {
             { key: "ctn", label: "CTN", icon: "building" },
             { key: "agenda", label: "Agenda", icon: "calendar" },
             { key: "mensajes", label: "Mensajes", icon: "message" },
+            { key: "intranet", label: "Intranet", icon: "file-text" },
           ]}
           onNavigationItemClick={(label) => {
-            const rutas = { CTN: "/encargagest/ctn", Agenda: "/encargagest/agenda", Mensajes: "/encargagest/mensajes" };
+            const rutas = { CTN: "/encargagest/ctn", Agenda: "/encargagest/agenda", Mensajes: "/encargagest/mensajes", Intranet: "/encargagest/intranet" };
             if (rutas[label]) navigate(rutas[label]);
           }}
         />
