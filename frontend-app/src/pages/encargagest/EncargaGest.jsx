@@ -116,6 +116,8 @@ export default function EncargaGest() {
   const navigate = useNavigate();
   const empleado = useAuthStore((state) => state.empleado);
   const tokenERP = useAuthStore((state) => state.token);
+  const rolEncargaGest = String(empleado?.rol?.nombre || empleado?.rol_nombre || empleado?.nombre_rol || "").trim().toLowerCase();
+  const esAdminEncargaGest = String(empleado?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin)$/.test(rolEncargaGest);
   const [modo, setModo] = useState(() => (
     empleado && tokenERP ? "interno" : (localStorage.getItem("encargagest_token") ? "externo" : "login")
   ));
@@ -133,6 +135,7 @@ export default function EncargaGest() {
   const [resumen, setResumen] = useState({ total: 0, por_estado: {}, requieren_atencion: 0 });
   const [items, setItems] = useState([]);
   const [notarias, setNotarias] = useState([]);
+  const [filtroNotariaId, setFiltroNotariaId] = useState("");
   const [pagina, setPagina] = useState(1);
   const [total, setTotal] = useState(0);
   const [busqueda, setBusqueda] = useState("");
@@ -187,9 +190,9 @@ export default function EncargaGest() {
     };
   }, [documentoAbierto]);
 
-  const cargarListado = useCallback(async (paginaSolicitada = pagina, q = busqueda, estado = filtroEstado) => {
+  const cargarListado = useCallback(async (paginaSolicitada = pagina, q = busqueda, estado = filtroEstado, notariaId = filtroNotariaId) => {
     const respuesta = await axios.get("/encargagest/encargos", {
-      params: { pagina: paginaSolicitada, por_pagina: 20, q: q.trim() || undefined, estado: estado || undefined },
+      params: { pagina: paginaSolicitada, por_pagina: 20, q: q.trim() || undefined, estado: estado || undefined, notaria_id: modo === "interno" && notariaId ? Number(notariaId) : undefined },
     });
     const data = respuesta.data || {};
     const filas = Array.isArray(data) ? data : data.items || [];
@@ -203,30 +206,37 @@ export default function EncargaGest() {
       setSeleccionadoId(null);
       setDetalle(null);
     }
-  }, [pagina, busqueda, filtroEstado]);
+  }, [pagina, busqueda, filtroEstado, filtroNotariaId, modo]);
 
-  const cargarTodo = useCallback(async () => {
+  const cargarTodo = useCallback(async (notariaIdSolicitada = filtroNotariaId) => {
     setCargando(true);
     setError("");
     try {
-      const [res, nts, me] = await Promise.all([
-        axios.get("/encargagest/resumen"),
+      const [nts, me] = await Promise.all([
         axios.get("/encargagest/notarias"),
         axios.get("/encargagest/me"),
       ]);
-      setResumen(res.data || { total: 0, por_estado: {}, requieren_atencion: 0 });
-      setNotarias(Array.isArray(nts.data) ? nts.data : []);
+      const listaNotarias = Array.isArray(nts.data) ? nts.data : [];
+      setNotarias(listaNotarias);
       setSesion(me.data || null);
       if (me.data?.modo === "externo") {
         setForm((actual) => ({ ...actual, notaria_id: String(me.data.notaria_id || "") }));
       }
-      await cargarListado(pagina, busqueda, filtroEstado);
+      let notariaActiva = notariaIdSolicitada;
+      if (modo === "interno" && esAdminEncargaGest && !notariaActiva && listaNotarias.length) {
+        notariaActiva = String(listaNotarias[0].id);
+        setFiltroNotariaId(notariaActiva);
+      }
+      const params = { notaria_id: modo === "interno" && notariaActiva ? Number(notariaActiva) : undefined };
+      const res = await axios.get("/encargagest/resumen", { params });
+      setResumen(res.data || { total: 0, por_estado: {}, requieren_atencion: 0 });
+      await cargarListado(1, busqueda, filtroEstado, notariaActiva);
     } catch (e) {
       setError(e?.response?.data?.detail || "No se han podido cargar los datos de EncargaGest. Comprueba los permisos del módulo y vuelve a intentarlo.");
     } finally {
       setCargando(false);
     }
-  }, [cargarListado, pagina, busqueda, filtroEstado, modo]);
+  }, [cargarListado, pagina, busqueda, filtroEstado, filtroNotariaId, modo, esAdminEncargaGest]);
 
   useEffect(() => {
     if (empleado && tokenERP) {
@@ -815,6 +825,12 @@ export default function EncargaGest() {
       </header>
 
       <main className="eg-main w-full max-w-none px-1 pb-4">
+        {modo === "interno" && (
+          <section className="mb-5 flex flex-col gap-3 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">{esAdminEncargaGest ? "Administración de notarías" : "Notarías asignadas"}</p><p className="mt-1 text-xs text-slate-500">{esAdminEncargaGest ? "Selecciona una notaría habilitada para consultar y resolver sus encargos." : "Solo aparecen las notarías asignadas a tu usuario."}</p></div>
+            <label className="w-full sm:max-w-xl"><span className="mb-1 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Notaría activa</span><select value={filtroNotariaId} onChange={(e) => { const id = e.target.value; setFiltroNotariaId(id); setPagina(1); cargarTodo(id); }} className={inputClass}><option value="">{esAdminEncargaGest ? "Todas las notarías habilitadas" : "Todas mis notarías asignadas"}</option>{notarias.map((n) => <option key={n.id} value={String(n.id)}>{n.nombre}{n.nif ? " · " + n.nif : ""}{n.provincia ? " · " + n.provincia : ""}</option>)}</select></label>
+          </section>
+        )}
         {error && (
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800" role="alert">
             <span>{error}</span>
