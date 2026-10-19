@@ -648,15 +648,14 @@ export default function ModalCtnDetalle({
             <table className="ctn-modal-tabla">
               <thead>
                 <tr>
-                  <th>Fecha firma</th>
                   <th>Expediente</th>
-                  <th>Titular</th>
-                  <th>NIF titular</th>
-                  <th>Solicitante</th>
+                  <th>Fecha alta</th>
+                  <th>Nombre solicitante</th>
+                  <th>NIF solicitante</th>
+                  <th>Tipo operación</th>
+                  <th>Contrato</th>
+                  <th>Fecha firma</th>
                   <th>Protocolo</th>
-                  <th>Oficina</th>
-                  <th>Importe</th>
-                  <th>Modalidad</th>
                 </tr>
               </thead>
 
@@ -665,32 +664,23 @@ export default function ModalCtnDetalle({
                   <tr
                     key={
                       f.id ??
-                      `${f.id_expediente ?? "firma"}-${i}`
+                      `${f.id_expediente ?? f.expediente ?? "firma"}-${i}`
                     }
                   >
-                    <td>{valor(f.fecha_firma)}</td>
-                    <td>{valor(f.id_expediente)}</td>
-                    <td>
-                      {valor(f.nombre_titular || f.titular)}
-                    </td>
-                    <td>{valor(f.nif_titular)}</td>
+                    <td>{valor(f.expediente ?? f.numero_expediente ?? f.id_expediente)}</td>
+                    <td>{valor(f.fecha_alta ?? f.fecha_creacion ?? f.fecha_apertura)}</td>
                     <td>
                       {valor(
-                        f.nombre_solicitante || f.solicitante
+                        f.nombre_solicitante ||
+                        f.solicitante ||
+                        [f.solicitante_nombre, f.solicitante_apellidos].filter(Boolean).join(" ")
                       )}
                     </td>
-                    <td>{valor(f.protocolo)}</td>
-                    <td>
-                      {valor(f.oficina || f.oficina_notarial)}
-                    </td>
-                    <td>{valor(f.importe ?? f.capital)}</td>
-                    <td>
-                      {normalizarModalidad(
-                        f.modalidad ||
-                        f.tipo_firma ||
-                        f.modalidad_firma
-                      )}
-                    </td>
+                    <td>{valor(f.nif_solicitante ?? f.cif_solicitante)}</td>
+                    <td>{valor(f.tipo_operacion ?? f.tipo_operación ?? f.operacion)}</td>
+                    <td>{valor(f.contrato ?? f.numero_contrato ?? f.referencia_contrato)}</td>
+                    <td>{valor(f.fecha_firma)}</td>
+                    <td>{valor(f.protocolo ?? f.numero_protocolo)}</td>
                   </tr>
                 ))}
               </tbody>
