@@ -36,6 +36,18 @@ def normalizar(valor):
     )
 
 
+def resolver_key_actividad(valor):
+    texto = normalizar(valor)
+    for clave, etiqueta in ACTIVIDADES.items():
+        if texto == normalizar(etiqueta) or texto == normalizar(clave):
+            return clave
+    if "sede notarial" in texto and ("protocolo" in texto or "firma" in texto):
+        return "sede-notarial-protocolo"
+    if "sede notarial" in texto:
+        return "sede-notarial"
+    return None
+
+
 def comunidad_expediente(expediente):
     provincia = normalizar(getattr(expediente, "provincia", None))
     return PROVINCIAS_CCAA.get(provincia, provincia)
