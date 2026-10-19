@@ -659,6 +659,7 @@ def actualizar_encargo(encargo_id: int, datos: EncargoActualizar, db: Session = 
                     "numero_finca": str(finca.get("numero_finca") or "").strip(),
                     "capital_inscrito": float(capital) if capital is not None else None,
                     "numero_inscripcion": str(finca.get("numero_inscripcion") or "").strip(),
+                    "seccion": str(finca.get("seccion") or "").strip(),
                     "municipio_registro": str(finca.get("municipio_registro") or "").strip(),
                     "registro_propiedad": str(finca.get("registro_propiedad") or "").strip(),
                 })
