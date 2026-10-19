@@ -623,14 +623,21 @@ def guardar_notarias_empleado(empleado_id: int, datos: AsignacionNotariasEncarga
 
 
 @router.get("/resumen")
-def resumen(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+def resumen(notaria_id: int | None = Query(None), db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "ver")
     consulta_base = db.query(EncargoExterno)
     if _es_externo(usuario):
         consulta_base = consulta_base.filter(EncargoExterno.notaria_id == usuario["notaria_id"])
+    elif notaria_id is not None:
+        if not _notaria_permitida(usuario, notaria_id):
+            raise HTTPException(status_code=403, detail="No tienes acceso a esta notaría en EncargaGest.")
+        consulta_base = consulta_base.filter(EncargoExterno.notaria_id == notaria_id)
     elif not _es_administrador_encargagest(usuario):
         ids = _ids_notarias_asignadas(usuario)
         consulta_base = consulta_base.filter(EncargoExterno.notaria_id.in_(ids)) if ids else consulta_base.filter(EncargoExterno.id == -1)
+    else:
+        habilitadas = db.query(EncargoExternoUsuario.notaria_id).filter(EncargoExternoUsuario.habilitado.is_(True))
+        consulta_base = consulta_base.filter(EncargoExterno.notaria_id.in_(habilitadas))
     total = consulta_base.count()
     filas = consulta_base.with_entities(EncargoExterno.estado, func.count(EncargoExterno.id)).group_by(EncargoExterno.estado).all()
     estados = {}
@@ -670,6 +677,7 @@ def listar_encargos(
     estado: str | None = None,
     pagina: int = Query(1, ge=1),
     por_pagina: int = Query(20, ge=1, le=100),
+    notaria_id: int | None = Query(None),
     db: Session = Depends(get_db),
     usuario=Depends(get_encargagest_actor),
 ):
@@ -677,9 +685,16 @@ def listar_encargos(
     consulta = db.query(EncargoExterno)
     if _es_externo(usuario):
         consulta = consulta.filter(EncargoExterno.notaria_id == usuario["notaria_id"])
+    elif notaria_id is not None:
+        if not _notaria_permitida(usuario, notaria_id):
+            raise HTTPException(status_code=403, detail="No tienes acceso a esta notaría en EncargaGest.")
+        consulta = consulta.filter(EncargoExterno.notaria_id == notaria_id)
     elif not _es_administrador_encargagest(usuario):
         ids = _ids_notarias_asignadas(usuario)
         consulta = consulta.filter(EncargoExterno.notaria_id.in_(ids)) if ids else consulta.filter(EncargoExterno.id == -1)
+    else:
+        habilitadas = db.query(EncargoExternoUsuario.notaria_id).filter(EncargoExternoUsuario.habilitado.is_(True))
+        consulta = consulta.filter(EncargoExterno.notaria_id.in_(habilitadas))
     if q and q.strip():
         termino = f"%{q.strip()}%"
         consulta = consulta.filter(or_(
