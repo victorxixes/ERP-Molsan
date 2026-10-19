@@ -32,7 +32,7 @@ const ESTILO_ESTADO = {
   FIRMADO: "border-emerald-200 bg-emerald-50 text-emerald-700",
 };
 
-const TEXTO_ESTADO = { EN_PROCESO: "En proceso", RECIBIDO: "Recibido", AUTORIZADO: "Autorizado", INCIDENCIA: "Incidencia", FIRMADO: "Firmado · cerrado", EN_REVISION: "Recibido", DOCUMENTACION_PENDIENTE: "Recibido", EN_GESTION: "Recibido", RESUELTO: "Firmado · cerrado", CERRADO: "Firmado · cerrado" };
+const TEXTO_ESTADO = { EN_PROCESO: "En proceso", RECIBIDO: "Recibido", AUTORIZADO: "Autorizado", INCIDENCIA: "Incidencia", FIRMADO: "Firmado · cerrado", EN_REVISION: "En proceso", DOCUMENTACION_PENDIENTE: "En proceso", EN_GESTION: "En proceso", RESUELTO: "Firmado · cerrado", CERRADO: "Firmado · cerrado" };
 
 const NUEVO_ENCARGO = {
   notaria_id: "",
@@ -278,7 +278,7 @@ export default function EncargaGest() {
       } catch {
         // La siguiente actualización automática volverá a intentarlo sin interrumpir el trabajo.
       }
-    }, 30000);
+    }, 10000);
     return () => window.clearInterval(intervalo);
   }, [modo, pagina, busqueda, filtroEstado, seleccionadoId]);
 
