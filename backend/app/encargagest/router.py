@@ -500,7 +500,15 @@ def listar_encargos(
             EncargoExterno.nif_titular.ilike(termino),
             EncargoExterno.entidad_bancaria.ilike(termino),
         ))
-    if estado and estado in ESTADOS:
+    grupos_estado = {
+        "GRUPO_EN_GESTION": ("EN_GESTION", "EN_REVISION"),
+        "GRUPO_EN_PROCESO": ("RECIBIDO",),
+        "GRUPO_REQUIEREN_ATENCION": ("DOCUMENTACION_PENDIENTE", "INCIDENCIA"),
+        "GRUPO_FIRMADOS": ("RESUELTO", "CERRADO"),
+    }
+    if estado in grupos_estado:
+        consulta = consulta.filter(EncargoExterno.estado.in_(grupos_estado[estado]))
+    elif estado and estado in ESTADOS:
         consulta = consulta.filter(EncargoExterno.estado == estado)
     total = consulta.count()
     items = consulta.order_by(EncargoExterno.actualizado_en.desc(), EncargoExterno.id.desc()).offset((pagina - 1) * por_pagina).limit(por_pagina).all()
