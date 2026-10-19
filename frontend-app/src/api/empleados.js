@@ -365,3 +365,29 @@ export const guardarAsignacionNotariasEncargaGest = async (empleadoId, notariaId
   });
   return { data: res.data || null };
 };
+
+
+// =========================================================
+// ENCARGAGEST · RESPONSABLES CTN Y REPARTO POR ACTIVIDAD
+// =========================================================
+export const obtenerConfiguracionNotariasEncargaGest = async () => {
+  const res = await axios.get("/encargagest/gestion/notarias/configuracion");
+  return { data: Array.isArray(res.data) ? res.data : [] };
+};
+
+export const guardarResponsableNotariaEncargaGest = async (notariaId, payload) => {
+  const res = await axios.put(`/encargagest/gestion/notarias/${notariaId}/responsable`, payload);
+  return { data: res.data || null };
+};
+
+export const obtenerReglasRepartoGestor = async (empleadoId) => {
+  const res = await axios.get(`/encargagest/gestion/empleados/${empleadoId}/reparto`);
+  return { data: res.data || { reglas: [], actividades: [], comunidades: [] } };
+};
+
+export const guardarReglasRepartoGestor = async (empleadoId, reglas) => {
+  const res = await axios.put(`/encargagest/gestion/empleados/${empleadoId}/reparto`, {
+    reglas: Array.isArray(reglas) ? reglas : [],
+  });
+  return { data: res.data || null };
+};
