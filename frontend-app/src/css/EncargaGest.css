@@ -777,3 +777,20 @@
  .encargagest .eg-directorio-grid { grid-template-columns:minmax(0,1fr); padding:12px; }
  .encargagest .eg-directorio-paginacion { padding:12px; }
 }
+
+
+/* Directorio CTN compacto en tabla tipo Excel */
+.encargagest .eg-directorio-tabla-wrap { width:100%; overflow-x:auto; }
+.encargagest .eg-directorio-tabla { width:100%; border-collapse:separate; border-spacing:0; font-size:11px; text-align:left; }
+.encargagest .eg-directorio-tabla thead th { padding:11px 14px; color:#62718a; background:#f5f8fd; border-bottom:1px solid #e2e9f4; font-size:9px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; }
+.encargagest .eg-directorio-tabla tbody td { padding:10px 14px; color:#4a5b75; border-bottom:1px solid #edf1f7; white-space:nowrap; }
+.encargagest .eg-directorio-tabla tbody tr:last-child td { border-bottom:0; }
+.encargagest .eg-directorio-tabla tbody tr:hover { background:#f7faff; }
+.encargagest .eg-directorio-tabla .eg-directorio-tabla-nombre { color:#263751; font-weight:850; }
+.encargagest .eg-directorio-tabla-acciones { display:flex; align-items:center; gap:6px; }
+.encargagest .eg-directorio-tabla-acciones .eg-directorio-gestionar,
+.encargagest .eg-directorio-tabla-acciones .eg-directorio-habilitar { padding:7px 9px; }
+@media(max-width:650px) {
+  .encargagest .eg-directorio-tabla thead th,
+  .encargagest .eg-directorio-tabla tbody td { padding:9px 10px; }
+}
