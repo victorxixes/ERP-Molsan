@@ -151,7 +151,6 @@ export default function EncargaGest() {
   const [urlPrevisualizacion, setUrlPrevisualizacion] = useState("");
   const [documentoAbierto, setDocumentoAbierto] = useState(null);
   const [actividad, setActividad] = useState("");
-  const [visibleNotaria, setVisibleNotaria] = useState(true);
   const [guardandoActividad, setGuardandoActividad] = useState(false);
   const [subiendo, setSubiendo] = useState(false);
   const [archivo, setArchivo] = useState(null);
@@ -417,7 +416,7 @@ export default function EncargaGest() {
     try {
       await axios.post("/encargagest/encargos/" + detalle.id + "/actividad", {
         mensaje: actividad.trim(),
-        visible_notaria: visibleNotaria,
+        visible_notaria: true,
         tipo: "COMENTARIO",
       });
       setActividad("");
@@ -770,7 +769,7 @@ export default function EncargaGest() {
                     <div className="flex items-center justify-between"><h3 className="text-sm font-extrabold text-slate-900">Seguimiento e incidencias</h3><span className="text-[10px] text-slate-400">Historial cronológico</span></div>
                     {modo === "interno" && <form onSubmit={guardarActividad} className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
                       <textarea rows={3} maxLength={5000} value={actividad} onChange={(e) => setActividad(e.target.value)} placeholder="Añade un comentario de gestión o registra una incidencia…" className={inputClass + " resize-y"} />
-                      <div className="mt-2 flex flex-wrap items-center justify-between gap-3"><label className="flex items-center gap-2 text-xs text-slate-600"><input type="checkbox" checked={visibleNotaria} onChange={(e) => setVisibleNotaria(e.target.checked)} /> Visible para la notaría</label><button disabled={!actividad.trim() || guardandoActividad} type="submit" className="rounded-lg bg-amber-500 px-4 py-2 text-xs font-extrabold text-amber-950 disabled:opacity-40">{guardandoActividad ? "Guardando…" : "Añadir al seguimiento"}</button></div>
+                      <div className="mt-2 flex justify-end"><button disabled={!actividad.trim() || guardandoActividad} type="submit" className="rounded-lg bg-amber-500 px-4 py-2 text-xs font-extrabold text-amber-950 disabled:opacity-40">{guardandoActividad ? "Guardando…" : "Añadir al seguimiento"}</button></div>
                     </form>}
                     <div className="mt-4 space-y-3">
                       {!(modo === "interno" ? detalle.actividad : (detalle.actividad || []).filter((entrada) => entrada.visible_notaria)).length ? <p className="py-3 text-xs text-slate-500">El historial aparecerá aquí conforme avance la gestión.</p> : (modo === "interno" ? detalle.actividad : (detalle.actividad || []).filter((entrada) => entrada.visible_notaria)).map((entrada) => (
