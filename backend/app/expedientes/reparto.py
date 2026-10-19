@@ -1,4 +1,4 @@
-from sqlalchemy import text, or_
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from backend.app.empleados.models import Empleado
@@ -75,12 +75,20 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
                 continue
         if porcentaje <= 0:
             continue
-        consulta = db.query(Expediente).filter(Expediente.gestor_asignado_id == empleado.id)
-        if actividad_key == "sede-notarial-protocolo":
-            consulta = consulta.filter(Expediente.actividad_actual.ilike("%Sede notarial%"), Expediente.fecha_firma.isnot(None))
-        else:
-            consulta = consulta.filter(Expediente.actividad_actual.ilike(etiqueta))
-        pendientes = consulta.filter(or_(Expediente.estado_actividad.is_(None), Expediente.estado_actividad != "Cerrada")).count()
+        asignados = db.query(Expediente).filter(Expediente.gestor_asignado_id == empleado.id).all()
+        pendientes = 0
+        for item in asignados:
+            if normalizar(getattr(item, "estado_actividad", None)) == "cerrada":
+                continue
+            actividad_item = normalizar(getattr(item, "actividad_actual", None))
+            if actividad_key == "sede-notarial-protocolo":
+                coincide = "sede notarial" in actividad_item and bool(getattr(item, "fecha_firma", None))
+            elif actividad_key == "sede-notarial":
+                coincide = "sede notarial" in actividad_item and not bool(getattr(item, "fecha_firma", None))
+            else:
+                coincide = actividad_item == normalizar(etiqueta)
+            if coincide:
+                pendientes += 1
         candidatos.append((pendientes / porcentaje, pendientes, empleado.id))
 
     if not candidatos:
