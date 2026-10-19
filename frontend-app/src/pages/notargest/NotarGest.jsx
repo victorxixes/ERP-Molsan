@@ -489,7 +489,7 @@ export default function NotarGest() {
                 <div className="ng-control-titulos">
                   <span className="ng-control-eyebrow">MOLSAN ERP · PREMIUM 2027</span>
                   <h2>NotarGest</h2>
-                  <p>Centro de control notarial · pendientes, firmas e incidencias por notaría.</p>
+                  <p>Visión global del trabajo notarial y detalle operativo de cada notaría habilitada.</p>
                 </div>
               </div>
               <div className="ng-control-acciones">
@@ -503,12 +503,25 @@ export default function NotarGest() {
             </header>
             {cargandoSelectorNotaria && <p className="ng-mensaje">Calculando pendientes de las notarías…</p>}
             {!cargandoSelectorNotaria && notariasSeleccionables.length === 0 && <div className="ng-admin-vacio"><strong>No hay notarías habilitadas</strong><p>Activa el acceso NotarGest desde la ficha CTN de cada notaría.</p></div>}
-            <div className="ng-admin-kpis">
-              <article><span>Notarías habilitadas</span><strong>{notariasSeleccionables.length}</strong></article>
-              <article><span>Expedientes pendientes</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.total_pendiente||0),0)}</strong></article>
-              <article><span>Firmas urgentes</span><strong className={notariasSeleccionables.some(n=>Number(n.firmas_urgentes)>0)?"ng-cifra-urgente":""}>{notariasSeleccionables.reduce((s,n)=>s+Number(n.firmas_urgentes||0),0)}</strong></article>
-              <article><span>Expedientes con defectos</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.con_defectos||0),0)}</strong></article>
-            </div>
+            <section className="ng-admin-global-resumen" aria-label="Resumen global de todas las notarías">
+              <div className="ng-admin-global-titulo">
+                <div><span className="ng-admin-global-eyebrow">RESUMEN CONSOLIDADO</span><h3>Visión global · todas las notarías</h3><p>Contadores acumulados de las {notariasSeleccionables.length} notarías habilitadas.</p></div>
+                <span className="ng-admin-global-total">{notariasSeleccionables.length} habilitadas</span>
+              </div>
+              <div className="ng-admin-kpis ng-admin-kpis-global">
+                <article><span>Nuevos encargos</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_recepcion||0),0)}</strong></article>
+                <article><span>Pendientes de firma</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_firma||0),0)}</strong></article>
+                <article><span>Pendientes copias simples</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_copias||0),0)}</strong></article>
+                <article><span>Pendientes de factura notarial</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_factura||0),0)}</strong></article>
+                <article><span>Pendientes de AJD / ITP</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_ajd_itp||0),0)}</strong></article>
+                <article><span>Pendientes de presentación registral</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_registro||0),0)}</strong></article>
+                <article><span>Expedientes con defectos</span><strong className={notariasSeleccionables.some(n=>Number(n.con_defectos)>0)?"ng-cifra-urgente":""}>{notariasSeleccionables.reduce((s,n)=>s+Number(n.con_defectos||0),0)}</strong></article>
+                <article><span>Inscripciones registrales</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_inscripcion||0),0)}</strong></article>
+                <article><span>Escrituras cerradas inscritas</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.escrituras_cerradas||0),0)}</strong></article>
+                <article><span>Firmas urgentes</span><strong className={notariasSeleccionables.some(n=>Number(n.firmas_urgentes)>0)?"ng-cifra-urgente":""}>{notariasSeleccionables.reduce((s,n)=>s+Number(n.firmas_urgentes||0),0)}</strong></article>
+              </div>
+            </section>
+            <div className="ng-admin-individual-titulo"><span className="ng-admin-global-eyebrow">DETALLE POR NOTARÍA</span><h3>Situación individual</h3><p>Cada ficha muestra los contadores y las incidencias de esa notaría.</p></div>
             <div className="ng-admin-notarias-grid">
               {notariasSeleccionables.map(item => {
                 const urgentes = Number(item.firmas_urgentes || 0);
@@ -545,7 +558,7 @@ export default function NotarGest() {
                     <section className="ng-admin-circuito">
                       <div className="ng-admin-circuito-titulo"><span className="ng-admin-circuito-icono">01</span><h4>Gestión notarial</h4></div>
                       <div className="ng-admin-metricas">
-                        <div><span>Recepción</span><strong>{Number(item.pendientes_recepcion || 0)}</strong></div>
+                        <div><span>Nuevos encargos</span><strong>{Number(item.pendientes_recepcion || 0)}</strong></div>
                         <div><span>Firma</span><strong>{Number(item.pendientes_firma || 0)}</strong></div>
                         <div><span>Facturas</span><strong>{Number(item.pendientes_factura || 0)}</strong></div>
                         <div><span>Copias</span><strong>{Number(item.pendientes_copias || 0)}</strong></div>
@@ -557,6 +570,7 @@ export default function NotarGest() {
                         <div><span>Registro</span><strong>{Number(item.pendientes_registro || 0)}</strong></div>
                         <div><span>AJD / ITP</span><strong>{Number(item.pendientes_ajd_itp || 0)}</strong></div>
                         <div><span>Inscripción</span><strong>{Number(item.pendientes_inscripcion || 0)}</strong></div>
+                        <div><span>Cerradas inscritas</span><strong>{Number(item.escrituras_cerradas || 0)}</strong></div>
                         <div><span>Defectos</span><strong className={defectos > 0 ? "ng-cifra-urgente" : ""}>{defectos}</strong></div>
                       </div>
                     </section>
