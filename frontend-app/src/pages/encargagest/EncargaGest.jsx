@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
+import Sidebar from "../../components/Sidebar";
 import "../../css/ApoderaGest.css";
 import "../../css/EncargaGest.css";
 import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
@@ -616,6 +617,23 @@ export default function EncargaGest() {
 
   return (
     <div className="apoderagest encargagest">
+      {modo === "interno" && (
+        <Sidebar
+          brandName="EncargaGest"
+          navigationItems={[
+            { key: "encargos", label: "Encargos", icon: "clipboard" },
+            { key: "accesos", label: "Accesos notarías", icon: "globe" },
+          ]}
+          activeNavigationItem={modalAccesos ? "Accesos notarías" : "Encargos"}
+          onNavigationItemClick={(label) => {
+            if (label === "Accesos notarías") abrirAccesos();
+            else {
+              setModalAccesos(false);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          }}
+        />
+      )}
       <div className="ag-fondo-decorativo" aria-hidden="true" />
       <header className="ag-hero eg-hero">
         <div className="ag-hero-identidad">
@@ -699,7 +717,7 @@ export default function EncargaGest() {
               <>
                 <div className="eg-panel-head p-5 sm:p-6">
                   <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div className="min-w-0"><p className="text-[10px] font-black tracking-[0.18em] text-amber-700">{detalle.referencia || ("EG-" + detalle.id)} · FICHA DE ENCARGO</p><h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">{detalle.titular}</h2><p className="mt-1 text-sm text-slate-500">{detalle.notaria_nombre}</p></div>
+                    <div className="min-w-0"><p className="text-[10px] font-black tracking-[0.18em] text-amber-700">{detalle.referencia || ("EG-" + detalle.id)} · FICHA DE ENCARGO</p><h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">{detalle.titular}</h2><p className="mt-1 text-sm font-bold text-slate-600">{detalle.notaria_nombre}</p>{detalle.notaria_contacto && <div className="mt-2 flex max-w-3xl flex-wrap gap-x-4 gap-y-1 text-[11px] leading-5 text-slate-500"><span><strong className="font-bold text-slate-600">NIF:</strong> {detalle.notaria_contacto.nif || "—"}</span><span><strong className="font-bold text-slate-600">Dirección:</strong> {[detalle.notaria_contacto.direccion, detalle.notaria_contacto.cp].filter(Boolean).join(" · ") || "—"}</span><span><strong className="font-bold text-slate-600">Municipio · Provincia:</strong> {[detalle.notaria_contacto.municipio, detalle.notaria_contacto.provincia].filter(Boolean).join(" · ") || "—"}</span><span><strong className="font-bold text-slate-600">Teléfono:</strong> {detalle.notaria_contacto.telefono || "—"}</span>{detalle.notaria_contacto.departamento_cancelaciones && <span><strong className="font-bold text-slate-600">Departamento de cancelaciones:</strong> {detalle.notaria_contacto.departamento_cancelaciones}</span>}</div>}</div>
                     <div className="min-w-[220px] max-w-[300px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span><div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>{modo === "interno" && detalle.estado !== "FIRMADO" && <div className="mt-3 space-y-2">{["EN_PROCESO","RECIBIDO","EN_REVISION","DOCUMENTACION_PENDIENTE","EN_GESTION"].includes(detalle.estado) && <button type="button" onClick={() => cambiarEstado("AUTORIZADO").catch(() => {})} className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-indigo-700">✓ Validar documentación y autorizar</button>}{detalle.estado === "INCIDENCIA" && <button type="button" onClick={() => cambiarEstado("AUTORIZADO").catch(() => {})} className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-indigo-700">✓ Incidencia resuelta · volver a autorizados</button>}{["EN_PROCESO","RECIBIDO"].includes(detalle.estado) && <button type="button" onClick={() => { setMotivoIncidencia(""); setModalIncidencia(true); setErrorAccion(""); }} className="w-full rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-extrabold text-rose-700 hover:bg-rose-100">! Registrar incidencia</button>}</div>}{detalle.estado === "FIRMADO" && <p className="mt-1 text-[10px] font-semibold text-slate-500">El cierre por firma se integrará desde ApoderaGest.</p>}{detalle.estado === "INCIDENCIA" && <p className="mt-2 text-[10px] leading-4 text-rose-700">La notaría puede consultar el motivo en la actividad del encargo.</p>}</div>
                   </div>
 {modo === "externo" ? (
