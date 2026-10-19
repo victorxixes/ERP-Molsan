@@ -13,8 +13,8 @@ export default function PortalAccessTabs({ notariaId }) {
   const empleadoSesion = useAuthStore((state) => state.empleado);
   const nombreRol = String(
     empleadoSesion?.rol_nombre || empleadoSesion?.rol?.nombre || empleadoSesion?.role?.name || ""
-  ).normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim().toLowerCase();
-  const esAdministrador = /(^|\\s)(admin|administrador)(\\s|$)/.test(nombreRol);
+  ).normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+  const esAdministrador = /(^|\s)(admin|administrador)(\s|$)/.test(nombreRol);
   const permisosEmpleado = empleadoSesion?.permisos_modulo_dict || empleadoSesion?.permisos_modulo || {};
   const modulosVisibles = Array.isArray(empleadoSesion?.modulos_visibles_list)
     ? empleadoSesion.modulos_visibles_list

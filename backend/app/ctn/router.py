@@ -661,33 +661,52 @@ def cambiar_acceso_notargest(
 
 @router.on_event("startup")
 def crear_tabla_historial_accesos_portales():
-    """Historial de inicios de sesión y cambios de acceso de los portales externos."""
-    with engine.begin() as conexion:
-        conexion.execute(text("""
-            CREATE TABLE IF NOT EXISTS ctn_portal_accesos_historial (
-                id SERIAL PRIMARY KEY, notaria_id INTEGER NOT NULL,
-                portal VARCHAR(30) NOT NULL, evento VARCHAR(40) NOT NULL,
-                resultado VARCHAR(20) NOT NULL DEFAULT 'ok', usuario VARCHAR(150),
-                detalle VARCHAR(500), fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-        """))
-        conexion.execute(text("""
+    """Prepara el historial sin bloquear el arranque si PostgreSQL tiene un lock."""
+    def ejecutar_migracion(etiqueta, sql, parametros=None):
+        try:
+            with engine.begin() as conexion:
+                # Evita que una migración auxiliar deje Render esperando hasta el timeout.
+                conexion.execute(text("SET LOCAL lock_timeout = '3s'"))
+                conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
+                conexion.execute(text(sql), parametros or {})
+            print(f"[CTN PORTALES] {etiqueta}: OK.", flush=True)
+            return True
+        except Exception as exc:
+            # Estas tablas auxiliares no deben impedir que arranque toda la API.
+            print(f"[CTN PORTALES] AVISO: {etiqueta} no se pudo completar; se reintentará en otro arranque. Error: {exc!r}", flush=True)
+            return False
+
+    print("[CTN PORTALES] Preparando historial y cifrado de contraseñas...", flush=True)
+    tabla_ok = ejecutar_migracion(
+        "crear tabla de historial",
+        """
+        CREATE TABLE IF NOT EXISTS ctn_portal_accesos_historial (
+            id SERIAL PRIMARY KEY, notaria_id INTEGER NOT NULL,
+            portal VARCHAR(30) NOT NULL, evento VARCHAR(40) NOT NULL,
+            resultado VARCHAR(20) NOT NULL DEFAULT 'ok', usuario VARCHAR(150),
+            detalle VARCHAR(500), fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+        """,
+    )
+    if tabla_ok:
+        ejecutar_migracion(
+            "crear índice del historial",
+            """
             CREATE INDEX IF NOT EXISTS ix_ctn_portal_historial_notaria_fecha
             ON ctn_portal_accesos_historial (notaria_id, fecha DESC)
-        """))
-        # Añadir columnas reversibles sin sobrescribir hashes existentes.
-        columnas = {
-            "ctn_notarios": {"notargest_password_enc": "TEXT"},
-        }
-        for tabla, pendientes in columnas.items():
-            existen = {fila[0] for fila in conexion.execute(text(
-                "SELECT column_name FROM information_schema.columns "
-                "WHERE table_schema = current_schema() AND table_name = :tabla"
-            ), {"tabla": tabla}).fetchall()}
-            for columna, tipo in pendientes.items():
-                if columna not in existen:
-                    conexion.execute(text(f'ALTER TABLE "{tabla}" ADD COLUMN "{columna}" {tipo}'))
+            """,
+        )
 
+    # La columna es independiente del historial: se migra en otra transacción
+    # para que un bloqueo de una tabla no retenga el resto de la inicialización.
+    ejecutar_migracion(
+        "añadir columna ctn_notarios.notargest_password_enc",
+        """
+        ALTER TABLE ctn_notarios
+        ADD COLUMN IF NOT EXISTS notargest_password_enc TEXT
+        """,
+    )
+    print("[CTN PORTALES] Revisión de esquema finalizada; la API puede continuar.", flush=True)
 
 def _registrar_evento_portal(db, notaria_id, portal, evento, resultado="ok", usuario=None, detalle=None):
     db.execute(text("""
