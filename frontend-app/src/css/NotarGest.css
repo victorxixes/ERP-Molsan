@@ -477,3 +477,36 @@
   .notargest .ng-documentacion-layout>.ng-comentarios-gestor{grid-column:1;grid-row:1;}
   .notargest .ng-documentacion-layout>.ng-carpeta-premium{grid-column:2;grid-row:1;}
 }
+
+
+/* Dashboard NotarGest: tres paneles alineados izquierda-centro-derecha */
+.notargest .ng-dashboard-graficos-tres-columnas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+.notargest .ng-dashboard-graficos-tres-columnas > .ng-dashboard-hitos { order: 1; }
+.notargest .ng-dashboard-graficos-tres-columnas > .ng-dashboard-actividad { order: 2; }
+.notargest .ng-dashboard-graficos-tres-columnas > .ng-dashboard-economica { order: 3; }
+.notargest .ng-dashboard-graficos-tres-columnas > .ng-dashboard-grafico {
+  min-width: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+.notargest .ng-dashboard-graficos-tres-columnas .ng-bloque-heading {
+  min-height: 54px;
+}
+@media (max-width: 1100px) {
+  .notargest .ng-dashboard-graficos-tres-columnas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .notargest .ng-dashboard-graficos-tres-columnas > .ng-dashboard-hitos { order: 1; }
+  .notargest .ng-dashboard-graficos-tres-columnas > .ng-dashboard-actividad { order: 2; }
+  .notargest .ng-dashboard-graficos-tres-columnas > .ng-dashboard-economica { order: 3; }
+}
+@media (max-width: 700px) {
+  .notargest .ng-dashboard-graficos-tres-columnas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
