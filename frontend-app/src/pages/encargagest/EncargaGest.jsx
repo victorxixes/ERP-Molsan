@@ -626,7 +626,7 @@ export default function EncargaGest() {
             { key: "mensajes", label: "Mensajes", icon: "message" },
           ]}
           onNavigationItemClick={(label) => {
-            const rutas = { CTN: "/ctn", Agenda: "/agenda", Mensajes: "/mensajes" };
+            const rutas = { CTN: "/encargagest/ctn", Agenda: "/encargagest/agenda", Mensajes: "/encargagest/mensajes" };
             if (rutas[label]) navigate(rutas[label]);
           }}
         />
