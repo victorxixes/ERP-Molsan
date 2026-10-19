@@ -745,15 +745,25 @@ def listar_notarias_configuracion(db: Session = Depends(get_db), usuario=Depends
     resultado = []
     for notaria in registros:
         config = configuraciones.get(notaria.id, {})
-        gestor = empleados.get(config.get("gestor_id"))
+        gestor_id = config.get("gestor_id")
+        habilitada = bool(config.get("habilitada", False))
+        # Compatibilidad con asignaciones antiguas guardadas en empleados.notarias_encargagest_ids.
+        if not config:
+            for empleado in empleados.values():
+                if notaria.id in _ids_notarias_asignadas(empleado):
+                    continue
+                gestor_id = empleado.id
+                habilitada = True
+                break
+        gestor = empleados.get(gestor_id)
         resultado.append({
             "id": notaria.id,
             "nombre": " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or "Notaría " + str(notaria.id),
             "nif": notaria.nif,
             "municipio": notaria.municipio,
             "provincia": notaria.provincia,
-            "habilitada": bool(config.get("habilitada", False)),
-            "gestor_id": config.get("gestor_id"),
+            "habilitada": habilitada,
+            "gestor_id": gestor_id,
             "gestor_nombre": " ".join(filter(None, [getattr(gestor, "nombre", None), getattr(gestor, "apellidos", None)])).strip() if gestor else "",
         })
     return resultado
