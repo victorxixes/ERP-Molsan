@@ -535,6 +535,7 @@ export default function ModalEmpleado({
   const [empleadosReparto, setEmpleadosReparto] = useState([]);
   const [apoderadosReparto, setApoderadosReparto] = useState([]);
   const [reglasReparto, setReglasReparto] = useState([]);
+  const [gestorRepartoId, setGestorRepartoId] = useState("");
   const [actividadesReparto, setActividadesReparto] = useState([]);
   const [comunidadesReparto, setComunidadesReparto] = useState([]);
   const [cargandoReparto, setCargandoReparto] = useState(false);
@@ -885,27 +886,43 @@ export default function ModalEmpleado({
   useEffect(() => {
     if (!open || pestana !== "asignaciones" || !empleadoId || !esAdministrador) return;
     let vigente = true;
+    setErrorReparto("");
+    Promise.all([listarEmpleados(), listarApoderados()]).then(([empleados, apoderados]) => {
+      if (!vigente) return;
+      const activos = (empleados.data || []).filter((e) => e.activo !== false);
+      setEmpleadosReparto(activos);
+      setApoderadosReparto(apoderados.data || []);
+      setGestorRepartoId((actual) => actual && activos.some((e) => String(e.id) === String(actual)) ? String(actual) : String(empleadoId));
+    }).catch((e) => {
+      if (vigente) setErrorReparto(e?.response?.data?.detail || "No se ha podido cargar el catálogo de gestores.");
+    });
+    return () => { vigente = false; };
+  }, [open, pestana, empleadoId, esAdministrador]);
+
+  useEffect(() => {
+    if (!open || pestana !== "asignaciones" || !gestorRepartoId || !esAdministrador) return;
+    let vigente = true;
     setCargandoReparto(true);
     setErrorReparto("");
-    Promise.all([
-      obtenerReglasRepartoGestor(empleadoId),
-      listarEmpleados(),
-      listarApoderados(),
-    ]).then(([config, empleados, apoderados]) => {
+    setMensajeReparto("");
+    obtenerReglasRepartoGestor(gestorRepartoId).then(({ data: config }) => {
       if (!vigente) return;
-      setReglasReparto((config.data?.reglas || []).map((r, i) => ({ ...r, _key: r._key || `regla-${i}-${r.actividad}` })));
-      setActividadesReparto(config.data?.actividades || []);
-      setComunidadesReparto(config.data?.comunidades || []);
-      setEmpleadosReparto((empleados.data || []).filter((e) => e.activo !== false));
-      setApoderadosReparto(apoderados.data || []);
+      setReglasReparto((config?.reglas || []).map((r, i) => ({
+        ...r,
+        comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []),
+        _key: r._key || `regla-${i}-${r.actividad}`,
+      })));
+      setActividadesReparto(config?.actividades || []);
+      setComunidadesReparto(config?.comunidades || []);
     }).catch((e) => {
       if (!vigente) return;
+      setReglasReparto([]);
       setErrorReparto(e?.response?.data?.detail || "No se han podido cargar las reglas de reparto.");
     }).finally(() => {
       if (vigente) setCargandoReparto(false);
     });
     return () => { vigente = false; };
-  }, [open, pestana, empleadoId, esAdministrador]);
+  }, [open, pestana, gestorRepartoId, esAdministrador]);
 
 
   /* ==========================================================
@@ -3944,10 +3961,16 @@ const permisosDisponibles =
                           <h3 className="text-base font-bold text-slate-900">Reglas de reparto de expedientes</h3>
                           <p className="mt-1 max-w-3xl text-sm text-slate-500">Configura para este gestor el departamento, las actividades que puede tramitar, el ámbito territorial y su porcentaje. Al cambiar de actividad, el sistema equilibrará la carga pendiente entre los gestores elegibles.</p>
                         </div>
-                        <button type="button" disabled={!esAdministrador || cargandoReparto} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now(), actividad: "documentacion-previa", departamento: "", zona_territorial: false, comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">+ Añadir regla</button>
+                        <button type="button" disabled={!esAdministrador || cargandoReparto} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now(), actividad: "documentacion-previa", departamento: "", zona_territorial: false, comunidades: [], comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">+ Añadir regla</button>
                       </div>
-                      <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50/60 p-3 text-sm text-blue-900">
-                        <strong>Gestor:</strong> {nombreEmpleado}. Puedes crear varias reglas para la misma persona, por ejemplo una para Documentación previa en Cataluña y otra para Liquidación de impuestos en toda España.
+                      <div className="mt-4 grid gap-3 rounded-xl border border-blue-100 bg-blue-50/60 p-4 md:grid-cols-[minmax(220px,360px)_1fr] md:items-end">
+                        <label className="block text-xs font-bold text-slate-700">Gestor
+                          <select value={gestorRepartoId} onChange={(e) => setGestorRepartoId(e.target.value)} disabled={!esAdministrador || cargandoReparto} className="mt-1 w-full rounded-lg border border-blue-200 bg-white px-3 py-2.5 text-sm font-normal">
+                            <option value="">Seleccionar gestor…</option>
+                            {empleadosReparto.map((gestor) => <option key={gestor.id} value={gestor.id}>{[gestor.nombre, gestor.apellidos].filter(Boolean).join(" ") || gestor.usuario || ("Empleado " + gestor.id)}</option>)}
+                          </select>
+                        </label>
+                        <p className="text-sm text-blue-900">Selecciona cualquier gestor y configura todas las actividades que puede tramitar. Un mismo gestor puede tener múltiples actividades y varias zonas territoriales dentro de cada regla.</p>
                       </div>
                       {errorReparto && <p role="alert" className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorReparto}</p>}
                       {mensajeReparto && <p role="status" className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{mensajeReparto}</p>}
@@ -3966,8 +3989,14 @@ const permisosDisponibles =
                                 <label className="block text-xs font-bold text-slate-600">Departamento<select value={regla.departamento || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, departamento: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todos los departamentos</option>{regla.departamento && !departamentos.some((d) => String(d.nombre || "").trim() === String(regla.departamento).trim()) && <option value={regla.departamento}>{regla.departamento} (asignación existente)</option>}{departamentos.map((departamento) => <option key={departamento.id} value={departamento.nombre}>{departamento.nombre}</option>)}</select></label>
                                 <label className="block text-xs font-bold text-slate-600">Actividad<select value={regla.actividad || "documentacion-previa"} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, actividad: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal">{actividadesReparto.map((a) => <option key={a.key} value={a.key}>{a.label}</option>)}</select></label>
                                 <label className="block text-xs font-bold text-slate-600">Porcentaje de reparto (%)<input type="number" min="0" max="100" step="1" value={regla.porcentaje ?? 0} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, porcentaje: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-normal" /></label>
-                                <label className="flex items-center gap-2 self-end rounded-lg bg-slate-50 px-3 py-3 text-sm font-semibold text-slate-700"><input type="checkbox" checked={Boolean(regla.zona_territorial)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, zona_territorial: e.target.checked, comunidad: e.target.checked ? (r.comunidad || "Cataluña") : "" } : r))} className="h-4 w-4 accent-blue-600" />Limitar por zona territorial</label>
-                                {regla.zona_territorial && <label className="block text-xs font-bold text-slate-600">Comunidad autónoma<select value={regla.comunidad || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, comunidad: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Seleccionar comunidad…</option>{comunidadesReparto.map((comunidad) => <option key={comunidad} value={comunidad}>{comunidad}</option>)}</select></label>}
+                                <label className="flex items-center gap-2 self-end rounded-lg bg-slate-50 px-3 py-3 text-sm font-semibold text-slate-700"><input type="checkbox" checked={Boolean(regla.zona_territorial)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, zona_territorial: e.target.checked, comunidades: e.target.checked ? ((Array.isArray(r.comunidades) && r.comunidades.length) ? r.comunidades : (r.comunidad ? [r.comunidad] : ["Cataluña"])) : [], comunidad: "" } : r))} className="h-4 w-4 accent-blue-600" />Limitar por zona territorial</label>
+                                {regla.zona_territorial && <div className="rounded-lg border border-slate-200 p-3 md:col-span-2 xl:col-span-3">
+                                  <div className="mb-2 text-xs font-bold text-slate-700">Zonas territoriales (puedes marcar varias)</div>
+                                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                                    {comunidadesReparto.map((comunidad) => <label key={comunidad} className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-slate-700 hover:bg-slate-50"><input type="checkbox" checked={(Array.isArray(regla.comunidades) ? regla.comunidades : (regla.comunidad ? [regla.comunidad] : [])).includes(comunidad)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => { if (i !== indice) return r; const zonas = Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []); const nuevasZonas = e.target.checked ? [...new Set([...zonas, comunidad])] : zonas.filter((z) => z !== comunidad); return { ...r, comunidades: nuevasZonas, comunidad: "" }; }))} className="h-4 w-4 accent-blue-600" />{comunidad}</label>)}
+                                  </div>
+                                  {!(Array.isArray(regla.comunidades) && regla.comunidades.length) && <p className="mt-2 text-xs text-amber-700">Selecciona al menos una comunidad autónoma.</p>}
+                                </div>}
                                 <label className="block text-xs font-bold text-slate-600">Apoderado relacionado (opcional)<select value={regla.apoderado_id || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, apoderado_id: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Sin apoderado específico</option>{apoderadosReparto.map((a) => <option key={a.id} value={a.id}>{[a.nombre, a.apellidos].filter(Boolean).join(" ") || a.usuario || ("Empleado " + a.id)}</option>)}</select></label>
                               </div>
                             </article>
@@ -3977,12 +4006,13 @@ const permisosDisponibles =
                       )}
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
                         <p className="text-xs text-slate-500">{reglasReparto.filter((r) => r.activa !== false).length} regla(s) activa(s)</p>
-                        <button type="button" disabled={!esAdministrador || guardandoReparto || cargandoReparto} onClick={async () => {
+                        <button type="button" disabled={!esAdministrador || guardandoReparto || cargandoReparto || !gestorRepartoId} onClick={async () => {
                           setGuardandoReparto(true); setErrorReparto(""); setMensajeReparto("");
                           try {
-                            const payload = reglasReparto.map(({ _key, ...r }) => ({ ...r, porcentaje: Number(r.porcentaje || 0), apoderado_id: r.apoderado_id || null }));
-                            await guardarReglasRepartoGestor(empleadoId, payload);
-                            setMensajeReparto("Reglas de reparto guardadas correctamente.");
+                            const payload = reglasReparto.map(({ _key, ...r }) => ({ ...r, comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []), comunidad: "", porcentaje: Number(r.porcentaje || 0), apoderado_id: r.apoderado_id || null }));
+                            if (!gestorRepartoId) throw new Error("Selecciona un gestor antes de guardar.");
+                            await guardarReglasRepartoGestor(gestorRepartoId, payload);
+                            setMensajeReparto("Reglas de reparto guardadas correctamente para " + (empleadosReparto.find((e) => String(e.id) === String(gestorRepartoId))?.nombre || "el gestor seleccionado") + ".");
                           } catch (e) { setErrorReparto(e?.response?.data?.detail || "No se pudieron guardar las reglas de reparto."); }
                           finally { setGuardandoReparto(false); }
                         }} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">{guardandoReparto ? "Guardando…" : "Guardar reglas de reparto"}</button>
