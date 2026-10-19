@@ -99,7 +99,9 @@ class Empleado(Base):
     
 
     # Notarías CTN que este empleado puede gestionar desde EncargaGest.
-    notarias_encargagest_ids = Column(JSONB, nullable=False, default=list, server_default="[]")# =========================================================
+    notarias_encargagest_ids = Column(JSONB, nullable=False, default=list, server_default="[]")
+
+    # =========================================================
     # AGENDA
     # =========================================================
 
