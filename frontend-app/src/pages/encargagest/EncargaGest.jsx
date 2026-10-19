@@ -824,11 +824,11 @@ export default function EncargaGest() {
                       <div className="mt-4 border-t border-amber-200 pt-3">
                         <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-amber-800">Carpeta digital · Contrato {indiceContrato + 1}</p>
                         <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-                          <div className="min-h-[280px] overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                          <div className="order-2 min-h-[280px] overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
                             <div className="border-b border-slate-200 bg-white px-3 py-2"><p className="truncate text-xs font-bold text-slate-700">{archivoPrevisualizado?.name || "Visor de documentos"}</p></div>
                             {archivoPrevisualizado && urlPrevisualizacion ? (/^application\/pdf$/i.test(archivoPrevisualizado.type) || /\.pdf$/i.test(archivoPrevisualizado.name) ? <iframe title={"Vista previa de " + archivoPrevisualizado.name} src={urlPrevisualizacion} className="h-[340px] w-full bg-white" /> : (/^image\//i.test(archivoPrevisualizado.type) ? <div className="flex h-[340px] items-center justify-center overflow-auto p-3"><img src={urlPrevisualizacion} alt={archivoPrevisualizado.name} className="max-h-full max-w-full object-contain" /></div> : <div className="flex h-[340px] flex-col items-center justify-center gap-2 p-5 text-center"><p className="text-xs font-bold text-slate-700">Este formato se guardará, pero no tiene vista previa integrada.</p><p className="break-all text-[10px] text-slate-500">{archivoPrevisualizado.name}</p></div>)) : <div className="flex h-[340px] flex-col items-center justify-center gap-2 p-5 text-center text-slate-400"><span className="text-3xl">▤</span><p className="text-xs font-semibold">Selecciona un archivo para ver su contenido aquí.</p></div>}
                           </div>
-                          <div className="grid min-w-0 grid-cols-1 gap-2 md:grid-cols-2">
+                          <div className="order-1 grid min-w-0 grid-cols-1 gap-2 md:grid-cols-2">
                           {CATEGORIAS_DOCUMENTO.map((categoria) => {
                             const clave = indiceContrato + "|" + categoria.nombre;
                             const seleccionados = archivosSolicitud[clave] || [];
