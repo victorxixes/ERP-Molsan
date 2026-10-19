@@ -749,7 +749,7 @@ export default function EncargaGest() {
         usernameLabel="Usuario · NIF de la notaría"
         usernamePlaceholder="NIF registrado en CTN"
         passwordPlaceholder="Tu contraseña de EncargaGest"
-        footnote="Solicita tus credenciales a MOLSAN. El acceso de EncargaGest es independiente de NotarGest."
+        footnote="Usuario y contraseña inicial: NIF completo con letra, sin espacios ni guiones. Después podrás cambiarla en Mi perfil. El acceso es independiente de NotarGest."
         submitLabel="Entrar en EncargaGest EP"
         username={loginUsuario}
         setUsername={setLoginUsuario}
