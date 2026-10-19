@@ -522,3 +522,29 @@
   .eg-contrato-layout > :nth-child(n) { grid-column:1; grid-row:auto; }
   .eg-contrato-layout > :nth-child(5) { border-top:1px solid #f2d38b; padding-top:12px; }
 }
+
+
+/* Distribución definitiva del alta: carpeta digital a la izquierda; datos completos a la derecha */
+.eg-modal-layout { grid-template-columns:minmax(300px,.82fr) minmax(0,1.18fr); align-items:start; }
+.eg-modal-datos { display:flex; flex-direction:column; min-width:0; }
+.eg-modal-datos > .eg-modal-section-heading { order:0; }
+.eg-modal-datos > .eg-modal-field-grid { order:1; display:flex; flex-direction:column; min-width:0; }
+.eg-modal-datos > .eg-modal-field-grid > .eg-span-2:first-of-type { width:100%; }
+.eg-modal-datos .eg-contrato-layout { display:flex; flex-direction:column; width:100%; }
+.eg-modal-datos .eg-contrato-layout > :nth-child(1),
+.eg-modal-datos .eg-contrato-layout > :nth-child(2),
+.eg-modal-datos .eg-contrato-layout > :nth-child(3),
+.eg-modal-datos .eg-contrato-layout > :nth-child(4) { width:100%; }
+.eg-modal-carpeta-lateral { grid-column:1; grid-row:1; min-width:0; }
+.eg-modal-carpeta-lateral > .mt-4.border-t.border-amber-200.pt-3 { margin-top:0; border:0; padding:0; }
+.eg-modal-carpeta-lateral > .mt-4.border-t.border-amber-200.pt-3 > .grid { grid-template-columns:minmax(0,1fr); }
+.eg-modal-carpeta-lateral .eg-modal-visor { min-height:400px; }
+.eg-modal-carpeta-lateral .eg-modal-pdf-frame { min-height:360px; }
+@media (max-width:1100px) {
+  .eg-modal-layout { grid-template-columns:minmax(0,1fr); }
+  .eg-modal-carpeta-lateral { grid-column:1; grid-row:auto; }
+  .eg-modal-carpeta-lateral > .mt-4.border-t.border-amber-200.pt-3 > .grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+}
+@media (max-width:650px) {
+  .eg-modal-carpeta-lateral > .mt-4.border-t.border-amber-200.pt-3 > .grid { grid-template-columns:minmax(0,1fr); }
+}
