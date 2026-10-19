@@ -822,18 +822,15 @@ export default function EncargaGest() {
                         <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-amber-800">Carpeta digital · Contrato {indiceContrato + 1}</p>
                         <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
                           <div className="min-w-0 grid grid-cols-1 gap-2 md:grid-cols-2">
-                            <div className="border-b border-slate-200 bg-white px-3 py-2"><p className="truncate text-xs font-bold text-slate-700">{archivoPrevisualizado?.name || "Visor de documentos"}</p></div>
-                            {archivoPrevisualizado && urlPrevisualizacion ? (/^application\/pdf$/i.test(archivoPrevisualizado.type) || /\.pdf$/i.test(archivoPrevisualizado.name) ? <iframe title={"Vista previa de " + archivoPrevisualizado.name} src={urlPrevisualizacion} className="h-[340px] w-full bg-white" /> : (/^image\//i.test(archivoPrevisualizado.type) ? <div className="flex h-[340px] items-center justify-center overflow-auto p-3"><img src={urlPrevisualizacion} alt={archivoPrevisualizado.name} className="max-h-full max-w-full object-contain" /></div> : <div className="flex h-[340px] flex-col items-center justify-center gap-2 p-5 text-center"><p className="text-xs font-bold text-slate-700">Este formato se guardará, pero no tiene vista previa integrada.</p><p className="break-all text-[10px] text-slate-500">{archivoPrevisualizado.name}</p></div>)) : <div className="flex h-[340px] flex-col items-center justify-center gap-2 p-5 text-center text-slate-400"><span className="text-3xl">▤</span><p className="text-xs font-semibold">Selecciona un archivo para ver su contenido aquí.</p></div>}
-                          </div>
-                          {CATEGORIAS_DOCUMENTO.map((categoria) => {
-                            const clave = indiceContrato + "|" + categoria.nombre;
-                            const seleccionados = archivosSolicitud[clave] || [];
-                            return <div key={clave} className="rounded-xl border border-slate-200 bg-white p-3">
-                              <div className="mb-2 flex items-center gap-2"><span className="grid h-7 w-7 place-items-center rounded-lg bg-amber-100 text-[10px] font-black text-amber-800">{categoria.icono}</span><div className="min-w-0"><p className="text-xs font-bold text-slate-800">{categoria.nombre}</p><p className="text-[10px] text-slate-400">{seleccionados.length} archivo(s)</p></div></div>
-                              <input type="file" multiple accept={EXTENSIONES_DOCUMENTO} disabled={guardando} className="block w-full text-xs" onChange={(e) => { const nuevos = Array.from(e.target.files || []); if (nuevos[0]) setArchivoPrevisualizado(nuevos[0]); setArchivosSolicitud((actual) => ({ ...actual, [clave]: [...(actual[clave] || []), ...nuevos] })); e.target.value = ""; }} />
-                              {seleccionados.length > 0 && <ul className="mt-2 space-y-1">{seleccionados.map((f, idx) => <li key={f.name + idx} className="truncate text-[10px] text-slate-600">{f.name}</li>)}</ul>}
-                            </div>;
-                          })}
+                            {CATEGORIAS_DOCUMENTO.map((categoria) => {
+                              const clave = indiceContrato + "|" + categoria.nombre;
+                              const seleccionados = archivosSolicitud[clave] || [];
+                              return <div key={clave} className="rounded-xl border border-slate-200 bg-white p-3">
+                                <div className="mb-2 flex items-center gap-2"><span className="grid h-7 w-7 place-items-center rounded-lg bg-amber-100 text-[10px] font-black text-amber-800">{categoria.icono}</span><div className="min-w-0"><p className="text-xs font-bold text-slate-800">{categoria.nombre}</p><p className="text-[10px] text-slate-400">{seleccionados.length} archivo(s)</p></div></div>
+                                <input type="file" multiple accept={EXTENSIONES_DOCUMENTO} disabled={guardando} className="block w-full text-xs" onChange={(e) => { const nuevos = Array.from(e.target.files || []); if (nuevos[0]) setArchivoPrevisualizado(nuevos[0]); setArchivosSolicitud((actual) => ({ ...actual, [clave]: [...(actual[clave] || []), ...nuevos] })); e.target.value = ""; }} />
+                                {seleccionados.length > 0 && <ul className="mt-2 space-y-1">{seleccionados.map((f, idx) => <li key={f.name + idx} className="truncate text-[10px] text-slate-600">{f.name}</li>)}</ul>}
+                              </div>;
+                            })}
                           </div>
                           <div className="min-h-[280px] min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
                             <div className="border-b border-slate-200 bg-white px-3 py-2"><p className="truncate text-xs font-bold text-slate-700">{archivoPrevisualizado?.name || "Visor de documentos"}</p></div>
