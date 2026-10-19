@@ -8,9 +8,6 @@ import {
   editarEmpleado,
   subirFotoEmpleado,
   resetPasswordEmpleado,
-  obtenerNotariasEncargaGest,
-  obtenerAsignacionNotariasEncargaGest,
-  guardarAsignacionNotariasEncargaGest,
   obtenerConfiguracionNotariasEncargaGest,
   guardarResponsableNotariaEncargaGest,
   obtenerReglasRepartoGestor,
@@ -530,7 +527,6 @@ export default function ModalEmpleado({
   ] = useState(false);
 
   const [notariasEncargaGest, setNotariasEncargaGest] = useState([]);
-  const [notariasEncargaGestSeleccionadas, setNotariasEncargaGestSeleccionadas] = useState([]);
   const [cargandoNotariasEncargaGest, setCargandoNotariasEncargaGest] = useState(false);
   const [guardandoNotariasEncargaGest, setGuardandoNotariasEncargaGest] = useState(false);
   const [errorNotariasEncargaGest, setErrorNotariasEncargaGest] = useState("");
@@ -3893,8 +3889,8 @@ const permisosDisponibles =
                   <div className="space-y-5">
                     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                       <div className="mb-5">
-                        <h3 className="text-base font-bold text-slate-900">Notarías que puede gestionar</h3>
-                        <p className="mt-1 text-sm text-slate-500">Selecciona las notarías CTN cuyos encargos podrá consultar y gestionar este empleado dentro de EncargaGest.</p>
+                        <h3 className="text-base font-bold text-slate-900">Notarios CTN · habilitación y gestor responsable</h3>
+                        <p className="mt-1 text-sm text-slate-500">Busca un notario, habilítalo para la gestión interna de EncargaGest y asigna el gestor responsable. Cada cambio se guarda individualmente.</p>
                       </div>
                       {!esAdministrador && <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">Solo un administrador puede modificar las notarías asignadas.</p>}
                       {errorNotariasEncargaGest && <p role="alert" className="mb-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorNotariasEncargaGest}</p>}
