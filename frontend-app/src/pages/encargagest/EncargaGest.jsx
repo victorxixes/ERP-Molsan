@@ -17,6 +17,14 @@ const ESTADOS = [
   { valor: "CERRADO", texto: "Cerrado" },
 ];
 
+const FILTROS_BANDEJA = [
+  { valor: "", texto: "Total de encargos" },
+  { valor: "GRUPO_EN_GESTION", texto: "En gestión" },
+  { valor: "GRUPO_EN_PROCESO", texto: "En proceso" },
+  { valor: "GRUPO_REQUIEREN_ATENCION", texto: "Requieren atención" },
+  { valor: "GRUPO_FIRMADOS", texto: "Firmados" },
+];
+
 const ESTILO_ESTADO = {
   RECIBIDO: "border-sky-200 bg-sky-50 text-sky-700",
   EN_REVISION: "border-violet-200 bg-violet-50 text-violet-700",
@@ -587,8 +595,8 @@ export default function EncargaGest() {
               <form className="mt-4 space-y-2" onSubmit={aplicarFiltros}>
                 <input className={inputClass} type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar referencia, notaría, titular o banco…" />
                 <div className="flex gap-2">
-                  <select className={inputClass} value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
-                    {ESTADOS.map((estado) => <option key={estado.valor || "todos"} value={estado.valor}>{estado.texto}</option>)}
+                  <select aria-label="Filtrar bandeja por grupo del panel" className={inputClass} value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
+                    {FILTROS_BANDEJA.map((estado) => <option key={estado.valor || "todos"} value={estado.valor}>{estado.texto}</option>)}
                   </select>
                   <button type="submit" className="shrink-0 rounded-xl bg-amber-500 px-4 text-xs font-extrabold text-amber-950 hover:bg-amber-400">Filtrar</button>
                 </div>
