@@ -29,6 +29,7 @@ from backend.app.expediente_ppad.models import ExpedientePPAD
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.expedientes.defectos.models import ExpedienteDefecto
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
+from backend.app.expedientes.reparto import asignar_gestor_automaticamente
 
 
 router = APIRouter(
@@ -2070,6 +2071,10 @@ def avanzar_actividad_expediente(
     else:
         raise HTTPException(status_code=409, detail=f"No se puede avanzar desde la actividad actual: {expediente.actividad_actual or 'sin actividad'}.")
 
+    actividad_destino_real = resolver_actividad(expediente.actividad_actual)
+    if actividad_destino_real and actividad_destino_real != actual and actividad_destino_real != "facturacion-cierre":
+        asignar_gestor_automaticamente(db, expediente, actividad_destino_real)
+
     try:
         db.add(expediente)
         db.commit()
@@ -2572,7 +2577,10 @@ def obtener_expediente(
             detail="Expediente no encontrado.",
         )
 
-    return expediente_a_dict(expediente)
+    resultado = expediente_a_dict(expediente)
+    gestor = db.query(Empleado).filter(Empleado.id == expediente.gestor_asignado_id).first() if getattr(expediente, "gestor_asignado_id", None) else None
+    resultado["gestor_asignado_nombre"] = " ".join(filter(None, [getattr(gestor, "nombre", None), getattr(gestor, "apellidos", None)])).strip() if gestor else None
+    return resultado
 
 
 # ============================================================
