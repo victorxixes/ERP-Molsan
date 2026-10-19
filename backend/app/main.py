@@ -983,6 +983,51 @@ def instrumentar_inicio_aplicacion():
 
 
 # ============================================================
+# MIGRACIÓN DE CREDENCIALES DE PORTALES CTN
+# ============================================================
+
+def migrar_columnas_credenciales_portales_inicio():
+    """
+    Garantiza que las columnas de contraseñas cifradas existan antes de que
+    SQLAlchemy ejecute consultas ORM sobre ctn_notarios y EncargaGest.
+    La migración es idempotente y reintenta bloqueos transitorios.
+    """
+    migraciones = [
+        (
+            "ctn_notarios.notargest_password_enc",
+            "ALTER TABLE ctn_notarios ADD COLUMN IF NOT EXISTS notargest_password_enc TEXT",
+        ),
+        (
+            "encargagest_usuarios.password_enc",
+            "ALTER TABLE IF EXISTS encargagest_usuarios ADD COLUMN IF NOT EXISTS password_enc TEXT",
+        ),
+    ]
+    for etiqueta, sql in migraciones:
+        completado = False
+        for intento in range(1, 4):
+            try:
+                with engine.begin() as conexion:
+                    conexion.execute(text("SET LOCAL lock_timeout = '5s'"))
+                    conexion.execute(text("SET LOCAL statement_timeout = '10s'"))
+                    conexion.execute(text(sql))
+                print(f"[MIGRACION PORTALES] {etiqueta}: OK.", flush=True)
+                completado = True
+                break
+            except Exception as error:
+                print(
+                    f"[MIGRACION PORTALES] {etiqueta}, intento {intento}/3: {error!r}",
+                    flush=True,
+                )
+                if intento < 3:
+                    import time
+                    time.sleep(2)
+        if not completado:
+            raise RuntimeError(
+                f"No se pudo preparar {etiqueta}; se cancela el arranque para evitar errores UndefinedColumn."
+            )
+
+
+# ============================================================
 # ORDEN DE ARRANQUE
 # ============================================================
 
@@ -990,6 +1035,10 @@ def instrumentar_inicio_aplicacion():
 app.router.on_startup.insert(
     0,
     migrar_esquema_expedientes_inicio,
+)
+app.router.on_startup.insert(
+    0,
+    migrar_columnas_credenciales_portales_inicio,
 )
 
 instrumentar_inicio_aplicacion()
