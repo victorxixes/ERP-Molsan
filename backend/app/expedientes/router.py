@@ -2087,6 +2087,8 @@ def avanzar_actividad_expediente(
         raise HTTPException(status_code=500, detail=f"No se pudo actualizar la actividad: {str(exc)[:300]}")
 
     respuesta = expediente_a_dict(expediente)
+    gestor_actual = db.query(Empleado).filter(Empleado.id == expediente.gestor_asignado_id).first() if getattr(expediente, "gestor_asignado_id", None) else None
+    respuesta["gestor_asignado_nombre"] = " ".join(filter(None, [getattr(gestor_actual, "nombre", None), getattr(gestor_actual, "apellidos", None)])).strip() if gestor_actual else None
     respuesta["actividad_actualizada"] = True
     respuesta["actividad_actual"] = expediente.actividad_actual
     return respuesta
