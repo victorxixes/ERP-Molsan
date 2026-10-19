@@ -70,3 +70,10 @@ class ExpedienteGasto(Base):
     # Referencia al documento de Carpeta Digital, si existe.
     documento_carpeta_id = Column(Integer, nullable=True)
     estado_pago = Column(String(50), nullable=True, default="Pendiente")
+
+    @property
+    def numero_documento(self):
+        """Número estable del documento económico derivado de la PK no reutilizable."""
+        if self.id is None:
+            return None
+        return f"PAG-{int(self.id):06d}"
