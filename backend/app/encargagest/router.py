@@ -44,7 +44,9 @@ CATEGORIAS_DOCUMENTO = {
 ESTADOS = {"EN_PROCESO", "RECIBIDO", "AUTORIZADO", "INCIDENCIA", "FIRMADO"}
 
 # Estados heredados conservados para leer encargos anteriores sin perderlos.
-ESTADOS_LEGACY_RECIBIDOS = {"EN_REVISION", "DOCUMENTACION_PENDIENTE", "EN_GESTION"}
+# Solo el estado explícito RECIBIDO acredita que MOLSAN ha recepcionado el encargo.
+# Los estados antiguos no permiten acreditar por sí solos quién ni cuándo lo recibió.
+ESTADOS_LEGACY_PENDIENTES = {"EN_REVISION", "DOCUMENTACION_PENDIENTE", "EN_GESTION"}
 ESTADOS_LEGACY_FIRMADOS = {"RESUELTO", "CERRADO"}
 PRIORIDADES = {"Baja", "Normal", "Alta", "Urgente"}
 
@@ -194,8 +196,8 @@ def _estado_publico(estado):
     estado = str(estado or "").strip().upper()
     if estado in ESTADOS_LEGACY_FIRMADOS:
         return "FIRMADO"
-    if estado in ESTADOS_LEGACY_RECIBIDOS:
-        return "RECIBIDO"
+    if estado in ESTADOS_LEGACY_PENDIENTES:
+        return "EN_PROCESO"
     return estado
 
 
@@ -515,8 +517,8 @@ def listar_encargos(
             EncargoExterno.entidad_bancaria.ilike(termino),
         ))
     grupos_estado = {
-        "GRUPO_EN_PROCESO": ("EN_PROCESO",),
-        "GRUPO_RECIBIDOS": ("RECIBIDO", *ESTADOS_LEGACY_RECIBIDOS),
+        "GRUPO_EN_PROCESO": ("EN_PROCESO", *ESTADOS_LEGACY_PENDIENTES),
+        "GRUPO_RECIBIDOS": ("RECIBIDO",),
         "GRUPO_AUTORIZADOS": ("AUTORIZADO",),
         "GRUPO_INCIDENCIAS": ("INCIDENCIA",),
         "GRUPO_FIRMADOS": ("FIRMADO", *ESTADOS_LEGACY_FIRMADOS),
@@ -526,7 +528,7 @@ def listar_encargos(
     elif estado == "FIRMADO":
         consulta = consulta.filter(EncargoExterno.estado.in_(("FIRMADO", *ESTADOS_LEGACY_FIRMADOS)))
     elif estado == "RECIBIDO":
-        consulta = consulta.filter(EncargoExterno.estado.in_(("RECIBIDO", *ESTADOS_LEGACY_RECIBIDOS)))
+        consulta = consulta.filter(EncargoExterno.estado == "RECIBIDO")
     elif estado and estado in ESTADOS:
         consulta = consulta.filter(EncargoExterno.estado == estado)
     total = consulta.count()
