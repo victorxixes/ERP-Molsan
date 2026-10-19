@@ -58,6 +58,16 @@ function highlight(text, query) {
 // DISTANCIA KM
 // ============================================================
 
+function coordenadaValida(valor, minimo, maximo) {
+  if (valor === null || valor === undefined || String(valor).trim() === "") {
+    return null;
+  }
+  const numero = Number(valor);
+  return Number.isFinite(numero) && numero >= minimo && numero <= maximo
+    ? numero
+    : null;
+}
+
 function distanciaKm(
   lat1,
   lon1,
@@ -68,7 +78,11 @@ function distanciaKm(
     !Number.isFinite(lat1) ||
     !Number.isFinite(lon1) ||
     !Number.isFinite(lat2) ||
-    !Number.isFinite(lon2)
+    !Number.isFinite(lon2) ||
+    lat1 < -90 || lat1 > 90 ||
+    lat2 < -90 || lat2 > 90 ||
+    lon1 < -180 || lon1 > 180 ||
+    lon2 < -180 || lon2 > 180
   ) {
     return null;
   }
@@ -354,19 +368,18 @@ export default function AutocompleteNotario({
           return;
         }
 
-        const lat =
-          Number(n.lat);
-
-        const lng =
-          Number(n.lng);
+        const lat = coordenadaValida(n.lat, -90, 90);
+        const lng = coordenadaValida(n.lng, -180, 180);
 
         const distancia_km =
-          distanciaKm(
-            MOLSAN_LAT,
-            MOLSAN_LNG,
-            lat,
-            lng
-          );
+          lat === null || lng === null
+            ? null
+            : distanciaKm(
+                MOLSAN_LAT,
+                MOLSAN_LNG,
+                lat,
+                lng
+              );
 
 
         // ====================================================
@@ -427,15 +440,9 @@ export default function AutocompleteNotario({
           vc:
             n.vc || "",
 
-          lat:
-            Number.isFinite(lat)
-              ? lat
-              : null,
+          lat,
 
-          lng:
-            Number.isFinite(lng)
-              ? lng
-              : null,
+          lng,
 
           apoderado:
             n.apoderado ||
@@ -695,13 +702,17 @@ export default function AutocompleteNotario({
                 n.apoderado_s ||
                 "";
 
+              const lat = coordenadaValida(n.lat, -90, 90);
+              const lng = coordenadaValida(n.lng, -180, 180);
               const km =
-                distanciaKm(
-                  MOLSAN_LAT,
-                  MOLSAN_LNG,
-                  Number(n.lat),
-                  Number(n.lng)
-                );
+                lat === null || lng === null
+                  ? null
+                  : distanciaKm(
+                      MOLSAN_LAT,
+                      MOLSAN_LNG,
+                      lat,
+                      lng
+                    );
 
               const iniciales =
                 nombreCompleto
