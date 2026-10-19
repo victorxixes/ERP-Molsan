@@ -1,0 +1,45 @@
+import { useNavigate } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
+import Ctn from "../ctn/Ctn";
+import Agenda from "../agenda/Agenda";
+import Mensajes from "../mensajes/Mensajes";
+import { useAuthStore } from "../../store/authStore";
+
+/** Espacio independiente de EncargaGest para CTN, Agenda y Mensajes. */
+export default function EncargaGestWorkspace({ page }) {
+  const navigate = useNavigate();
+  const empleado = useAuthStore((state) => state.empleado);
+
+  const items = [
+    { key: "ctn", label: "CTN", icon: "building" },
+    { key: "agenda", label: "Agenda", icon: "calendar" },
+    { key: "mensajes", label: "Mensajes", icon: "chat" },
+  ];
+  const rutas = {
+    CTN: "/encargagest/ctn",
+    Agenda: "/encargagest/agenda",
+    Mensajes: "/encargagest/mensajes",
+  };
+
+  return (
+    <div className="apoderagest encargagest min-h-screen">
+      <Sidebar
+        brandName="EncargaGest"
+        navigationItems={items}
+        activeNavigationItem={items.find((item) => item.key === page)?.label || "CTN"}
+        onNavigationItemClick={(label) => {
+          if (rutas[label]) navigate(rutas[label]);
+        }}
+      />
+      <main className="relative min-h-screen px-4 py-6 lg:px-6">
+        {page === "ctn" && <Ctn />}
+        {page === "agenda" && <Agenda />}
+        {page === "mensajes" && (
+          empleado?.id
+            ? <Mensajes usuarioId={empleado.id} />
+            : <div className="p-6 text-white/70">Cargando módulo de mensajes…</div>
+        )}
+      </main>
+    </div>
+  );
+}
