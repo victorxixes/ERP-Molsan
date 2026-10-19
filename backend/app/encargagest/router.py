@@ -646,6 +646,7 @@ def directorio_notarias_encargagest(
         consulta = consulta.filter(or_(
             Notaria.nombre.ilike(termino),
             Notaria.apellidos.ilike(termino),
+            func.concat(Notaria.nombre, " ", Notaria.apellidos).ilike(termino),
             Notaria.nif.ilike(termino),
             Notaria.municipio.ilike(termino),
             Notaria.provincia.ilike(termino),
