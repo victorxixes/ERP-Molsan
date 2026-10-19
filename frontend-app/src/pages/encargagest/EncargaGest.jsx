@@ -892,8 +892,15 @@ export default function EncargaGest() {
 
                     </div>
                   ))}
-                                    <div className="eg-modal-carpeta-lateral">
-                      <div className="mt-4 border-t border-amber-200 pt-3">
+                                    <Campo etiqueta="Observaciones de la solicitud" className="eg-span-2">
+                    <textarea rows={4} maxLength={10000} value={form.observaciones} onChange={(e) => cambiarFiltro("observaciones", e.target.value)} placeholder="Indicaciones y particularidades del encargo…" className={inputClass + " resize-y"} />
+                  </Campo>
+                </div>
+              </section>
+              <aside className="eg-modal-carpeta-lateral">
+                {form.contratos.map((contrato, indiceContrato) => (
+                  <div key={indiceContrato} className="eg-modal-carpeta-contrato">
+                      <div className="eg-modal-carpeta-panel">
                         <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-amber-800">Carpeta digital · Contrato {indiceContrato + 1}</p>
                         <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
                           <div className="min-w-0 grid grid-cols-1 gap-2 md:grid-cols-2">
@@ -914,11 +921,8 @@ export default function EncargaGest() {
                         </div>
                       </div>
                   </div>
-                  <Campo etiqueta="Observaciones de la solicitud" className="eg-span-2">
-                    <textarea rows={4} maxLength={10000} value={form.observaciones} onChange={(e) => cambiarFiltro("observaciones", e.target.value)} placeholder="Indicaciones y particularidades del encargo…" className={inputClass + " resize-y"} />
-                  </Campo>
-                </div>
-              </section>
+                ))}
+              </aside>
 
             </div>
 
