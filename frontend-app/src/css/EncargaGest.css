@@ -588,3 +588,113 @@
 .encargagest .eg-modal-section-heading {
   border-color: #dbeafe;
 }
+
+
+/* Perfil externo CTN: misma estructura y jerarquía visual que el perfil de NotarGest */
+.encargagest .eg-modal-perfil{
+  width:min(1180px,calc(100vw - 48px));
+  max-width:1180px;
+  min-width:0;
+  box-sizing:border-box;
+}
+.encargagest .eg-perfil-cabecera{
+  align-items:center;
+  padding:22px 28px;
+}
+.encargagest .eg-perfil-layout{
+  grid-template-columns:minmax(0,1.35fr) minmax(320px,.85fr);
+  align-items:start;
+  gap:24px;
+  padding:24px 28px;
+}
+.encargagest .eg-perfil-identidad{
+  min-width:0;
+  padding:16px;
+  border-radius:15px;
+  overflow-wrap:anywhere;
+}
+.encargagest .eg-perfil-datos{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  padding:18px 0;
+}
+.encargagest .eg-perfil-dato{
+  min-width:0;
+  overflow-wrap:anywhere;
+  background:#fff;
+  border-color:#edf0f5;
+  border-radius:11px;
+  padding:12px;
+}
+.encargagest .eg-perfil-dato small{
+  display:block;
+  margin-bottom:4px;
+  color:#7b8798;
+  font-size:10px;
+  font-weight:750;
+  letter-spacing:.04em;
+}
+.encargagest .eg-perfil-dato strong{
+  display:block;
+  margin-top:4px;
+  color:#293852;
+  font-size:12px;
+  font-weight:750;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+.encargagest .eg-perfil-observacion{
+  border:1px solid #e8edf5;
+  background:#f8faff;
+  overflow-wrap:anywhere;
+}
+.encargagest .eg-perfil-seguridad{
+  min-width:0;
+  padding:22px;
+  background:#f8faff;
+  border-color:#e0e7f1;
+  border-radius:16px;
+}
+.encargagest .eg-perfil-seguridad label{
+  display:block;
+  min-width:0;
+}
+.encargagest .eg-perfil-seguridad input{
+  display:block;
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+}
+@media(max-width:900px){
+  .encargagest .eg-modal-perfil{
+    width:min(100%,720px);
+  }
+  .encargagest .eg-perfil-layout{
+    grid-template-columns:minmax(0,1fr);
+    gap:18px;
+    padding:18px;
+  }
+  .encargagest .eg-perfil-datos{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .encargagest .eg-perfil-seguridad{
+    padding:18px;
+  }
+}
+@media(max-width:600px){
+  .encargagest .eg-perfil-cabecera{
+    align-items:flex-start;
+    padding:16px;
+  }
+  .encargagest .eg-perfil-layout{
+    padding:14px;
+  }
+  .encargagest .eg-perfil-datos{
+    grid-template-columns:minmax(0,1fr);
+    gap:8px;
+    padding:14px 0;
+  }
+  .encargagest .eg-perfil-seguridad{
+    padding:16px;
+  }
+}
