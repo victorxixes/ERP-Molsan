@@ -42,6 +42,7 @@ class Notaria(Base):
     notargest_password_hash = Column(String(255), nullable=True)
     notargest_password_enc = Column(Text, nullable=True)
     notargest_cambiar_password = Column(Boolean, nullable=False, default=True, server_default="true")
+    notargest_password_provisional = Column(Boolean, nullable=False, default=True, server_default="true")
 
     # Observaciones
     observacion = Column(Text, nullable=True)
