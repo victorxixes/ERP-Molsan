@@ -313,6 +313,7 @@ class EncargoCrear(BaseModel):
 
 
 class EncargoActualizar(BaseModel):
+    tipo_encargo: constr(min_length=2, max_length=120) | None = None
     contacto_nombre: constr(max_length=200) | None = None
     contacto_email: constr(max_length=320) | None = None
     contacto_telefono: constr(max_length=60) | None = None
