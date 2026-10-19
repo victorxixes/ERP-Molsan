@@ -750,20 +750,7 @@ export default function EncargaGest() {
                   </>
 
                   <section className="xl:col-span-2">
-                    <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-900">Documentación adjunta</h3><span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">{detalle.documentos?.length || 0} archivos</span></div>
-                    {modo === "interno" && <form className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3" onSubmit={subirDocumento}>
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
-                        <select aria-label="Contrato al que pertenece el documento" value={detalleContratoIndex} onChange={(e) => setDetalleContratoIndex(Number(e.target.value))} className={inputClass}>
-                          {(detalle.contratos || [{}]).map((contrato, index) => <option key={index} value={index}>Contrato {index + 1} · {contrato.numero_prestamo || "sin número de préstamo"}</option>)}
-                        </select>
-                        <select aria-label="Categoría del documento" value={categoriaDocumento} onChange={(e) => setCategoriaDocumento(e.target.value)} className={inputClass}>
-                          {CATEGORIAS_DOCUMENTO.map((categoria) => <option key={categoria.nombre} value={categoria.nombre}>{categoria.nombre}</option>)}
-                        </select>
-                        <div className="flex items-center gap-2"><input id="encargagest-archivo" type="file" accept={EXTENSIONES_DOCUMENTO} onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="block min-w-0 w-full text-xs text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:text-xs file:font-bold file:text-slate-700" /><button type="submit" disabled={!archivo || subiendo} className="shrink-0 rounded-lg bg-slate-900 px-3 py-2 text-[10px] font-extrabold text-white disabled:opacity-40">{subiendo ? "Subiendo…" : "Subir archivo"}</button></div>
-                      </div>
-                      <p className="mt-2 text-[10px] text-slate-400">PDF, Office, imagen o correo · máx. 25 MB</p>
-                    </form>}
-                    <div                     <div className="mt-3 grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                    <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                       <div className="min-w-0 space-y-4">
                         {(detalle.contratos || [{}]).map((contrato, contratoIndex) => {
                           const docsContrato = (detalle.documentos || []).filter((doc) => Number(doc.contrato_index || 0) === contratoIndex);
