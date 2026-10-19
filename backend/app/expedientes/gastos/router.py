@@ -84,6 +84,7 @@ class GastoUpdate(GastoBase):
 class GastoResponse(GastoBase):
     id: int
     expediente_id: int
+    numero_documento: str
 
 
 def _obtener_expediente(db: Session, expediente_id: int):
