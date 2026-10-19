@@ -7,6 +7,7 @@ import hmac
 import secrets
 import os
 import base64
+import threading
 
 import jwt
 from cryptography.fernet import Fernet
@@ -51,8 +52,7 @@ ESTADOS_LEGACY_FIRMADOS = {"RESUELTO", "CERRADO"}
 PRIORIDADES = {"Baja", "Normal", "Alta", "Urgente"}
 
 
-@router.on_event("startup")
-def crear_tablas_encargagest():
+def _migrar_tablas_encargagest_en_hilo():
     # Las migraciones no deben impedir que FastAPI abra el puerto en Render.
     # Si hay un bloqueo PostgreSQL, se informa y se reintenta en el próximo arranque.
     tablas_modulo = [
@@ -163,6 +163,23 @@ def crear_tablas_encargagest():
             print(f"[ENCARGAGEST MIGRACION] {etiqueta}: OK.", flush=True)
         except Exception as exc:
             print(f"[ENCARGAGEST MIGRACION] AVISO: {etiqueta} pendiente; se reintentará en otro arranque. Error: {exc!r}", flush=True)
+
+
+@router.on_event("startup")
+def crear_tablas_encargagest():
+    # No ejecutar DDL síncrono dentro del ciclo de inicio de FastAPI:
+    # Render debe poder abrir el puerto aunque PostgreSQL tenga bloqueos.
+    hilo = threading.Thread(
+        target=_migrar_tablas_encargagest_en_hilo,
+        name="encargagest-schema-migration",
+        daemon=True,
+    )
+    hilo.start()
+    print(
+        "[ENCARGAGEST MIGRACION] Tarea de migración lanzada en segundo plano; "
+        "el arranque web continúa.",
+        flush=True,
+    )
 
 def _es_externo(actor):
     return isinstance(actor, dict) and actor.get("tipo") == "externo"
