@@ -497,6 +497,7 @@ export default function NotarGest() {
                 <div className="ng-control-botones">
                   <button type="button" className="ng-control-secundario" onClick={() => navigate("/modulos")}>▦ Ir a módulos</button>
                   <button type="button" className="ng-control-primario" onClick={() => fetch(`${API_BASE}/notargest/seleccion/notarias`, {headers:{Authorization:`Bearer ${tokenERP}`}}).then(async r=>{if(!r.ok) throw new Error("No se ha podido actualizar el resumen de notarías");return r.json()}).then(d=>setNotariasSeleccionables(Array.isArray(d)?d:[])).catch(e=>setError(e.message))} disabled={cargandoSelectorNotaria}>{cargandoSelectorNotaria ? "Actualizando…" : "↻ Actualizar datos"}</button>
+                  <button type="button" className="ng-control-salir" onClick={salir}><span aria-hidden="true">↪</span> Cerrar sesión</button>
                 </div>
               </div>
             </header>
@@ -509,22 +510,62 @@ export default function NotarGest() {
               <article><span>Expedientes con defectos</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.con_defectos||0),0)}</strong></article>
             </div>
             <div className="ng-admin-notarias-grid">
-              {notariasSeleccionables.map(item => <article className={`ng-admin-notaria-card ${Number(item.firmas_urgentes)>0 ? "tiene-urgentes" : ""}`} key={item.id}>
-                <div className="ng-admin-notaria-titulo"><span className="ng-admin-notaria-icono">NG</span><div><h3>{item.nombre}</h3><p>{[item.municipio,item.provincia].filter(Boolean).join(" · ") || "Ubicación no indicada"}</p><small>{item.nif || "NIF no indicado"} · {Number(item.total_expedientes||0)} expedientes en circuito</small></div></div>
-                <div className="ng-admin-notaria-cifras">
-                  <div className="principal"><span>Pendientes</span><strong>{Number(item.total_pendiente||0)}</strong></div>
-                  <div><span>Firmas</span><strong>{Number(item.pendientes_firma||0)}</strong></div>
-                  <div><span>Recepción</span><strong>{Number(item.pendientes_recepcion||0)}</strong></div>
-                  <div><span>Facturas</span><strong>{Number(item.pendientes_factura||0)}</strong></div>
-                  <div><span>Registro</span><strong>{Number(item.pendientes_registro||0)}</strong></div>
-                  <div><span>AJD / ITP</span><strong>{Number(item.pendientes_ajd_itp||0)}</strong></div>
-                  <div><span>Inscripciones</span><strong>{Number(item.pendientes_inscripcion||0)}</strong></div>
-                  <div><span>Copias</span><strong>{Number(item.pendientes_copias||0)}</strong></div>
-                  <div><span>Defectos</span><strong>{Number(item.con_defectos||0)}</strong></div>
-                  <div><span>Urgentes</span><strong className={Number(item.firmas_urgentes)>0?"ng-cifra-urgente":""}>{Number(item.firmas_urgentes||0)}</strong></div>
-                </div>
-                <button type="button" className="ng-admin-entrar" disabled={cargando} onClick={()=>seleccionarNotariaAdmin(String(item.id))}>Entrar en esta notaría <span>→</span></button>
-              </article>)}
+              {notariasSeleccionables.map(item => {
+                const urgentes = Number(item.firmas_urgentes || 0);
+                const pendiente = Number(item.total_pendiente || 0);
+                const defectos = Number(item.con_defectos || 0);
+                return <article className={\`ng-admin-notaria-card \${urgentes > 0 ? "tiene-urgentes" : ""}\`} key={item.id}>
+                  <header className="ng-admin-card-header">
+                    <div className="ng-admin-notaria-identidad">
+                      <span className="ng-admin-notaria-icono" aria-hidden="true">NG</span>
+                      <div className="ng-admin-notaria-titulo">
+                        <h3>{item.nombre || "Notaría sin nombre"}</h3>
+                        <p><span aria-hidden="true">⌖</span> {[item.municipio, item.provincia].filter(Boolean).join(" · ") || "Ubicación no indicada"}</p>
+                        <small>{item.nif || "NIF no indicado"} <span>·</span> {Number(item.total_expedientes || 0)} expedientes en circuito</small>
+                      </div>
+                    </div>
+                    <span className={\`ng-admin-estado \${urgentes > 0 || defectos > 0 ? "ng-admin-estado-alerta" : "ng-admin-estado-ok"}\`}>
+                      <i aria-hidden="true" />{urgentes > 0 ? "Requiere atención" : defectos > 0 ? "Con incidencias" : "Operativa"}
+                    </span>
+                  </header>
+                  <div className="ng-admin-resumen">
+                    <div className="ng-admin-resumen-principal">
+                      <span>Pendientes totales</span>
+                      <strong>{pendiente}</strong>
+                      <small>Expedientes que requieren actuación</small>
+                    </div>
+                    <div className={\`ng-admin-resumen-secundario \${urgentes > 0 ? "es-urgente" : ""}\`}>
+                      <span>Firmas urgentes</span><strong>{urgentes}</strong>
+                    </div>
+                    <div className={\`ng-admin-resumen-secundario \${defectos > 0 ? "es-defecto" : ""}\`}>
+                      <span>Con defectos</span><strong>{defectos}</strong>
+                    </div>
+                  </div>
+                  <div className="ng-admin-circuitos">
+                    <section className="ng-admin-circuito">
+                      <div className="ng-admin-circuito-titulo"><span className="ng-admin-circuito-icono">01</span><h4>Gestión notarial</h4></div>
+                      <div className="ng-admin-metricas">
+                        <div><span>Recepción</span><strong>{Number(item.pendientes_recepcion || 0)}</strong></div>
+                        <div><span>Firma</span><strong>{Number(item.pendientes_firma || 0)}</strong></div>
+                        <div><span>Facturas</span><strong>{Number(item.pendientes_factura || 0)}</strong></div>
+                        <div><span>Copias</span><strong>{Number(item.pendientes_copias || 0)}</strong></div>
+                      </div>
+                    </section>
+                    <section className="ng-admin-circuito">
+                      <div className="ng-admin-circuito-titulo"><span className="ng-admin-circuito-icono ng-admin-circuito-icono-fiscal">02</span><h4>Registro y fiscalidad</h4></div>
+                      <div className="ng-admin-metricas">
+                        <div><span>Registro</span><strong>{Number(item.pendientes_registro || 0)}</strong></div>
+                        <div><span>AJD / ITP</span><strong>{Number(item.pendientes_ajd_itp || 0)}</strong></div>
+                        <div><span>Inscripción</span><strong>{Number(item.pendientes_inscripcion || 0)}</strong></div>
+                        <div><span>Defectos</span><strong className={defectos > 0 ? "ng-cifra-urgente" : ""}>{defectos}</strong></div>
+                      </div>
+                    </section>
+                  </div>
+                  <button type="button" className="ng-admin-entrar" disabled={cargando} onClick={() => seleccionarNotariaAdmin(String(item.id))}>
+                    <span>Acceder al espacio de trabajo</span><span aria-hidden="true">→</span>
+                  </button>
+                </article>;
+              })}
             </div>
           </> : <div className="ng-admin-notaria-activa"><div><span className="ng-kicker">NOTARÍA SELECCIONADA</span><h2>{notariasSeleccionables.find(x=>String(x.id)===String(notariaAdminSeleccionada))?.nombre || notario?.nombre || "Notaría"}</h2><p>Estás gestionando esta notaría como administrador.</p></div><button type="button" className="ng-boton-secundario" onClick={()=>seleccionarNotariaAdmin("")}>← Volver al control de notarías</button></div>}
         </section>
