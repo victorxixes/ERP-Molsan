@@ -906,8 +906,8 @@ def reset_password_portal_notaria(
     else:
         raise HTTPException(status_code=400, detail="Portal no válido")
     _registrar_evento_portal(db, notaria_id, portal, "RESET_PASSWORD",
-        detalle="Contraseña restablecida; el valor nuevo solo se muestra en esta respuesta")
+        detalle="Contraseña provisional restablecida al NIF registrado en CTN; la notaría puede cambiarla desde su perfil")
     db.commit()
     return {"ok": True, "portal": portal, "usuario": usuario_login,
         "password_nueva": password_nueva, "habilitado": True,
-        "mensaje": "Guarda esta contraseña ahora: no volverá a mostrarse."}
+        "mensaje": "Contraseña provisional restablecida al NIF del notario. Puede cambiarla desde Mi perfil."}
