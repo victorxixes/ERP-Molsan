@@ -155,6 +155,7 @@ export default function EncargaGest() {
   const [detalleContratoIndex, setDetalleContratoIndex] = useState(0);
   const [archivoPrevisualizado, setArchivoPrevisualizado] = useState(null);
   const [urlPrevisualizacion, setUrlPrevisualizacion] = useState("");
+  const [documentoAbierto, setDocumentoAbierto] = useState(null);
   const [actividad, setActividad] = useState("");
   const [visibleNotaria, setVisibleNotaria] = useState(true);
   const [guardandoActividad, setGuardandoActividad] = useState(false);
@@ -172,6 +173,12 @@ export default function EncargaGest() {
     setUrlPrevisualizacion(url);
     return () => URL.revokeObjectURL(url);
   }, [archivoPrevisualizado]);
+
+  useEffect(() => {
+    return () => {
+      if (documentoAbierto?.url) URL.revokeObjectURL(documentoAbierto.url);
+    };
+  }, [documentoAbierto]);
 
   const cargarListado = useCallback(async (paginaSolicitada = pagina, q = busqueda, estado = filtroEstado) => {
     const respuesta = await axios.get("/encargagest/encargos", {
@@ -401,22 +408,40 @@ export default function EncargaGest() {
     }
   }
 
-  async function descargarDocumento(doc) {
-    if (!detalle) return;
+  async function obtenerBlobDocumento(doc) {
+    if (!detalle) return null;
+    const respuesta = await axios.get(
+      "/encargagest/encargos/" + detalle.id + "/documentos/" + doc.id + "/descargar",
+      { responseType: "blob" }
+    );
+    return respuesta.data;
+  }
+
+  async function verDocumento(doc) {
     setErrorAccion("");
     try {
-      const respuesta = await axios.get(
-        "/encargagest/encargos/" + detalle.id + "/documentos/" + doc.id + "/descargar",
-        { responseType: "blob" }
-      );
-      const url = URL.createObjectURL(respuesta.data);
+      const blob = await obtenerBlobDocumento(doc);
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      setDocumentoAbierto({ url, nombre: doc.nombre_original || "Documento", tipo: blob.type || "" });
+    } catch (e) {
+      setErrorAccion(e?.response?.data?.detail || "No se ha podido abrir la vista previa del documento.");
+    }
+  }
+
+  async function descargarDocumento(doc) {
+    setErrorAccion("");
+    try {
+      const blob = await obtenerBlobDocumento(doc);
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
       const enlace = document.createElement("a");
       enlace.href = url;
       enlace.download = doc.nombre_original || "documento";
       document.body.appendChild(enlace);
       enlace.click();
       enlace.remove();
-      URL.revokeObjectURL(url);
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (e) {
       setErrorAccion(e?.response?.data?.detail || "No se ha podido descargar el documento.");
     }
@@ -654,9 +679,15 @@ export default function EncargaGest() {
                     </dl>
                   </section>
 
-                  <section>
-                    <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-900">Documentación</h3><span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">{detalle.documentos?.length || 0} archivos</span></div>
-                    <form className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3" onSubmit={subirDocumento}>
+                  <section className="xl:col-span-2">
+                    <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-extrabold text-slate-900">Carpeta digital y visor</h3><span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">{detalle.documentos?.length || 0} archivos</span></div>
+                    <div className="mt-3 grid grid-cols-1 gap-4 xl:grid-cols-2">
+                      <div className="min-h-[420px] overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                        <div className="flex items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-2"><p className="truncate text-xs font-bold text-slate-700">{documentoAbierto?.nombre || "Visor de documentos"}</p>{documentoAbierto && <a href={documentoAbierto.url} target="_blank" rel="noreferrer" className="shrink-0 text-[10px] font-bold text-amber-700 hover:underline">Abrir aparte ↗</a>}</div>
+                        {documentoAbierto ? (/^application\/pdf$/i.test(documentoAbierto.tipo) || /\.pdf$/i.test(documentoAbierto.nombre) ? <iframe title={"Vista previa de " + documentoAbierto.nombre} src={documentoAbierto.url} className="h-[520px] w-full bg-white" /> : (/^image\//i.test(documentoAbierto.tipo) || /\.(png|jpe?g|gif|webp|bmp)$/i.test(documentoAbierto.nombre) ? <div className="flex h-[520px] items-center justify-center overflow-auto p-3"><img src={documentoAbierto.url} alt={documentoAbierto.nombre} className="max-h-full max-w-full object-contain" /></div> : <div className="flex h-[520px] flex-col items-center justify-center gap-2 p-6 text-center"><p className="text-sm font-bold text-slate-700">Vista previa no disponible para este formato</p><p className="break-all text-xs text-slate-500">{documentoAbierto.nombre}</p><a href={documentoAbierto.url} download={documentoAbierto.nombre} className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white">Descargar documento</a></div>)) : <div className="flex h-[520px] flex-col items-center justify-center gap-2 p-6 text-center text-slate-400"><span className="text-3xl">▤</span><p className="text-xs font-semibold">Selecciona «Ver» en un documento para visualizarlo aquí.</p></div>}
+                      </div>
+                      <div className="min-w-0">
+                    <form className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3" onSubmit={subirDocumento}>
                       <select aria-label="Contrato al que pertenece el documento" value={detalleContratoIndex} onChange={(e) => setDetalleContratoIndex(Number(e.target.value))} className={inputClass + " mb-3"}>
                         {(detalle.contratos || [{}]).map((contrato, index) => <option key={index} value={index}>Contrato {index + 1} · {contrato.numero_prestamo || "sin número de préstamo"}</option>)}
                       </select>
@@ -672,10 +703,12 @@ export default function EncargaGest() {
                         return <div key={"contrato-docs-" + contratoIndex} className="space-y-2 rounded-xl border border-amber-100 p-3"><h4 className="text-xs font-extrabold text-amber-800">Contrato {contratoIndex + 1} · {contrato.numero_prestamo || "sin número de préstamo"} <span className="font-medium text-slate-400">({docsContrato.length} archivos)</span></h4>{docsContrato.map((doc) => (
                         <div key={doc.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-3">
                           <div className="min-w-0"><p className="break-words text-xs font-bold text-slate-800">{doc.nombre_original}</p><p className="mt-1 text-[10px] text-slate-400">{doc.categoria || "Otros"} · {nombreArchivoTamano(doc.tamano_bytes)} · {fechaHora(doc.fecha_subida)}</p></div>
-                          <div className="flex shrink-0 gap-1"><button type="button" onClick={() => descargarDocumento(doc)} className="rounded-lg border border-slate-200 px-2 py-1.5 text-[10px] font-bold hover:bg-slate-50">Descargar</button>{modo === "interno" && <button type="button" onClick={() => eliminarDocumento(doc)} className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-700 hover:bg-rose-50">×</button>}</div>
+                          <div className="flex shrink-0 gap-1"><button type="button" onClick={() => verDocumento(doc)} className="rounded-lg border border-amber-200 bg-amber-50 px-2 py-1.5 text-[10px] font-bold text-amber-800 hover:bg-amber-100">Ver</button><button type="button" onClick={() => descargarDocumento(doc)} className="rounded-lg border border-slate-200 px-2 py-1.5 text-[10px] font-bold hover:bg-slate-50">Descargar</button>{modo === "interno" && <button type="button" onClick={() => eliminarDocumento(doc)} className="rounded-lg border border-rose-200 px-2 py-1.5 text-[10px] font-bold text-rose-700 hover:bg-rose-50">×</button>}</div>
                         </div>
                       ))}</div>;
                       })}
+                    </div>
+                      </div>
                     </div>
                   </section>
 
@@ -791,7 +824,12 @@ export default function EncargaGest() {
                       </div>
                       <div className="mt-4 border-t border-amber-200 pt-3">
                         <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-amber-800">Carpeta digital · Contrato {indiceContrato + 1}</p>
-                        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                          <div className="min-h-[280px] overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                            <div className="border-b border-slate-200 bg-white px-3 py-2"><p className="truncate text-xs font-bold text-slate-700">{archivoPrevisualizado?.name || "Visor de documentos"}</p></div>
+                            {archivoPrevisualizado && urlPrevisualizacion ? (/^application\/pdf$/i.test(archivoPrevisualizado.type) || /\.pdf$/i.test(archivoPrevisualizado.name) ? <iframe title={"Vista previa de " + archivoPrevisualizado.name} src={urlPrevisualizacion} className="h-[340px] w-full bg-white" /> : (/^image\//i.test(archivoPrevisualizado.type) ? <div className="flex h-[340px] items-center justify-center overflow-auto p-3"><img src={urlPrevisualizacion} alt={archivoPrevisualizado.name} className="max-h-full max-w-full object-contain" /></div> : <div className="flex h-[340px] flex-col items-center justify-center gap-2 p-5 text-center"><p className="text-xs font-bold text-slate-700">Este formato se guardará, pero no tiene vista previa integrada.</p><p className="break-all text-[10px] text-slate-500">{archivoPrevisualizado.name}</p></div>)) : <div className="flex h-[340px] flex-col items-center justify-center gap-2 p-5 text-center text-slate-400"><span className="text-3xl">▤</span><p className="text-xs font-semibold">Selecciona un archivo para ver su contenido aquí.</p></div>}
+                          </div>
+                          <div className="grid min-w-0 grid-cols-1 gap-2 md:grid-cols-2">
                           {CATEGORIAS_DOCUMENTO.map((categoria) => {
                             const clave = indiceContrato + "|" + categoria.nombre;
                             const seleccionados = archivosSolicitud[clave] || [];
@@ -801,6 +839,7 @@ export default function EncargaGest() {
                               {seleccionados.length > 0 && <ul className="mt-2 space-y-1">{seleccionados.map((f, idx) => <li key={f.name + idx} className="truncate text-[10px] text-slate-600">{f.name}</li>)}</ul>}
                             </div>;
                           })}
+                          </div>
                         </div>
                       </div>
                     </div>
