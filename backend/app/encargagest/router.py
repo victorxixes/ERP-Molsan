@@ -733,6 +733,32 @@ def guardar_responsable_notaria(notaria_id: int, datos: ConfiguracionNotariaGest
     return {"ok": True, "notaria_id": notaria_id, "habilitada": bool(datos.habilitada), "gestor_id": gestor.id if gestor else None, "gestor_nombre": " ".join(filter(None, [gestor.nombre, gestor.apellidos])) if gestor else None}
 
 
+@router.get("/gestion/notarias/configuracion")
+def listar_notarias_configuracion(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
+    _autorizar(usuario, "ver")
+    if not _es_administrador_encargagest(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede configurar las notarías.")
+    registros = db.query(Notaria).order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
+    filas = db.execute(text("SELECT notaria_id, gestor_id, habilitada FROM encargagest_notaria_gestor")).mappings().all()
+    configuraciones = {int(fila["notaria_id"]): dict(fila) for fila in filas}
+    empleados = {e.id: e for e in db.query(Empleado).all()}
+    resultado = []
+    for notaria in registros:
+        config = configuraciones.get(notaria.id, {})
+        gestor = empleados.get(config.get("gestor_id"))
+        resultado.append({
+            "id": notaria.id,
+            "nombre": " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or "Notaría " + str(notaria.id),
+            "nif": notaria.nif,
+            "municipio": notaria.municipio,
+            "provincia": notaria.provincia,
+            "habilitada": bool(config.get("habilitada", False)),
+            "gestor_id": config.get("gestor_id"),
+            "gestor_nombre": " ".join(filter(None, [getattr(gestor, "nombre", None), getattr(gestor, "apellidos", None)])).strip() if gestor else "",
+        })
+    return resultado
+
+
 @router.get("/gestion/notarias")
 def listar_notarias_para_asignacion(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "ver")
