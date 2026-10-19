@@ -716,8 +716,8 @@ export default function EncargaGest() {
   async function guardarAcceso(event) {
     event.preventDefault();
     if (!accesoNotariaId) return;
-    if (!accesoSeleccionado?.tiene_acceso && accesoPassword.length < 10) {
-      setErrorAccion("La contraseña inicial debe tener al menos 10 caracteres.");
+    if (!accesoSeleccionado?.tiene_acceso && accesoPassword && accesoPassword.length < 8) {
+      setErrorAccion("La contraseña personalizada debe tener al menos 8 caracteres. Si la dejas vacía, se utilizará el NIF completo como contraseña inicial.");
       return;
     }
     setGuardandoAcceso(true);
