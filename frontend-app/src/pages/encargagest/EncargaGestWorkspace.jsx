@@ -4,6 +4,7 @@ import EncargaGest from "./EncargaGest";
 import Ctn from "../ctn/Ctn";
 import Agenda from "../agenda/Agenda";
 import Mensajes from "../mensajes/Mensajes";
+import Intranet from "../intranet/Intranet.jsx";
 import { useAuthStore } from "../../store/authStore";
 
 /** Espacio independiente de EncargaGest para CTN, Agenda y Mensajes. */
@@ -15,12 +16,14 @@ export default function EncargaGestWorkspace({ page }) {
     { key: "ctn", label: "CTN", icon: "building" },
     { key: "agenda", label: "Agenda", icon: "calendar" },
     { key: "mensajes", label: "Mensajes", icon: "chat" },
+    { key: "intranet", label: "Intranet", icon: "file-text" },
     { key: "encargos", label: "Encargos", icon: "clipboard" },
   ];
   const rutas = {
     CTN: "/encargagest/ctn",
     Agenda: "/encargagest/agenda",
     Mensajes: "/encargagest/mensajes",
+    Intranet: "/encargagest/intranet",
     Encargos: "/encargagest",
   };
 
@@ -38,6 +41,7 @@ export default function EncargaGestWorkspace({ page }) {
         {page === "encargos" && <EncargaGest />}
         {page === "ctn" && <Ctn />}
         {page === "agenda" && <Agenda />}
+        {page === "intranet" && <Intranet />}
         {page === "mensajes" && (
           empleado?.id
             ? <Mensajes usuarioId={empleado.id} />
