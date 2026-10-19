@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.agenda.models import Cita
 from backend.app.ctn.models import Notaria
+from backend.app.ctn.geocode import geocode_notaria
 from backend.app.empleados.models import Empleado
 
 from backend.app.utils.distancia import (
@@ -139,6 +140,24 @@ def km_de_cita(
         return 0.0
 
     # --------------------------------------------------------
+    # Intentar recuperar coordenadas si CTN no las tiene.
+    # Sin coordenadas, cualquier distancia calculada sería falsa.
+    # --------------------------------------------------------
+    lat = getattr(notario, "lat", None)
+    lng = getattr(notario, "lng", None)
+    if lat in (None, "") or lng in (None, ""):
+        try:
+            geocode_notaria(db, notario)
+            db.refresh(notario)
+            lat = getattr(notario, "lat", None)
+            lng = getattr(notario, "lng", None)
+        except Exception as exc:
+            print(
+                f"ERROR GEOCODIFICANDO NOTARIA {notario.id}: {exc}",
+                flush=True,
+            )
+
+    # --------------------------------------------------------
     # VC = 0 KM
     # --------------------------------------------------------
 
@@ -153,30 +172,10 @@ def km_de_cita(
     # Coordenadas
     # --------------------------------------------------------
 
-    lat = getattr(
-        notario,
-        "lat",
-        None,
-    )
+    lat = getattr(notario, "lat", None)
+    lng = getattr(notario, "lng", None)
 
-    lng = getattr(
-        notario,
-        "lng",
-        None,
-    )
-
-    if lat in (
-        None,
-        "",
-    ):
-
-        return 0.0
-
-    if lng in (
-        None,
-        "",
-    ):
-
+    if lat in (None, "") or lng in (None, ""):
         return 0.0
 
     # --------------------------------------------------------
