@@ -81,6 +81,7 @@ class EncargoExternoUsuario(Base):
     usuario = Column(String(100), nullable=False, unique=True, index=True)
     password_hash = Column(String(255), nullable=False)
     password_enc = Column(Text, nullable=True)
+    password_provisional = Column(Boolean, nullable=False, default=True, server_default="true")
     habilitado = Column(Boolean, nullable=False, default=True)
     creado_en = Column(DateTime, nullable=False, default=datetime.utcnow)
     actualizado_en = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
