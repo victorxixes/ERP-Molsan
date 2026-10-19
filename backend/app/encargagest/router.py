@@ -638,18 +638,38 @@ def cambiar_estado(encargo_id: int, datos: CambioEstado, db: Session = Depends(g
     if estado not in ESTADOS:
         raise HTTPException(status_code=422, detail="Estado no válido.")
     anterior = _estado_publico(item.estado)
-    if anterior == "FIRMADO" and estado != "FIRMADO":
-        raise HTTPException(status_code=409, detail="Un encargo firmado está cerrado y no puede reabrirse desde esta bandeja.")
+    if anterior == "FIRMADO":
+        raise HTTPException(status_code=409, detail="Un encargo firmado está cerrado y no puede modificarse.")
+    if estado == anterior:
+        raise HTTPException(status_code=409, detail="El encargo ya se encuentra en ese estado.")
+    comentario = (datos.comentario or "").strip()
+    if estado == "INCIDENCIA" and len(comentario) < 5:
+        raise HTTPException(status_code=422, detail="Para registrar una incidencia debes indicar un motivo detallado que verá la notaría.")
+    transiciones = {
+        "EN_PROCESO": {"RECIBIDO", "INCIDENCIA"},
+        "RECIBIDO": {"AUTORIZADO", "INCIDENCIA"},
+        "AUTORIZADO": {"FIRMADO", "INCIDENCIA"},
+        # Al resolver una incidencia, MOLSAN la devuelve a la bandeja de recibidos
+        # para que el gestor vuelva a validar la fase antes de continuar.
+        "INCIDENCIA": {"RECIBIDO"},
+    }
+    if estado not in transiciones.get(anterior, set()):
+        raise HTTPException(status_code=409, detail=f"No se permite pasar directamente de {anterior} a {estado}. Valida las fases del encargo en orden.")
     item.estado = estado
     item.actualizado_en = datetime.utcnow()
-    mensaje = f"Estado cambiado de {anterior} a {estado}."
-    if estado == "RECIBIDO" and anterior == "EN_PROCESO":
-        mensaje = "Encargo recepcionado por MOLSAN. " + mensaje
-    elif estado == "FIRMADO":
-        mensaje = "Encargo firmado y cerrado. " + mensaje
-    if datos.comentario and datos.comentario.strip():
-        mensaje += f" {datos.comentario.strip()}"
-    _registrar_actividad(db, item.id, usuario, "CAMBIO_ESTADO", mensaje)
+    if estado == "INCIDENCIA":
+        mensaje = "INCIDENCIA comunicada por MOLSAN: " + comentario
+        _registrar_actividad(db, item.id, usuario, "INCIDENCIA", mensaje, visible_notaria=True)
+    else:
+        etiquetas = {
+            "RECIBIDO": "Encargo recepcionado por MOLSAN.",
+            "AUTORIZADO": "Documentación validada por MOLSAN. El encargo queda autorizado para continuar.",
+            "FIRMADO": "Encargo firmado y cerrado definitivamente por MOLSAN.",
+        }
+        mensaje = etiquetas.get(estado, f"Estado validado: {estado}.")
+        if anterior == "INCIDENCIA":
+            mensaje = "Incidencia marcada como resuelta por MOLSAN. " + mensaje
+        _registrar_actividad(db, item.id, usuario, "CAMBIO_ESTADO", mensaje, visible_notaria=True)
     db.commit()
     db.refresh(item)
     return _serializar(item)
