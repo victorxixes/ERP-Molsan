@@ -1203,16 +1203,16 @@ export default function EncargaGest() {
 
 
       {perfilAbierto && modo === "externo" && (
-        <div className="fixed inset-0 z-[80] grid place-items-start overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setPerfilAbierto(false); }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="my-auto w-full max-w-3xl max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
+        <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-4 lg:p-6" onMouseDown={(e) => { if (e.target === e.currentTarget) setPerfilAbierto(false); }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="eg-perfil-titulo" className="my-0 w-full max-w-[1180px] min-w-0 max-h-[calc(100vh-2rem)] overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl">
             <header className="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-7">
               <div><p className="text-[9px] font-extrabold tracking-[0.18em] text-blue-700">ENCARGAGEST · FICHA CTN</p><h2 id="eg-perfil-titulo" className="mt-1 text-xl font-black text-slate-900">Mi perfil profesional</h2><p className="mt-1 text-xs text-slate-500">Datos de la notaría registrados en CTN.</p></div>
               <button type="button" onClick={() => setPerfilAbierto(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500">×</button>
             </header>
-            <div className="grid grid-cols-1 gap-5 p-5 sm:p-7 lg:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-5 p-4 sm:p-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)] lg:gap-6 lg:p-7">
               <div>
                 <div className="mb-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4"><p className="text-xs font-bold text-blue-800">{sesion?.nombre || sesion?.notaria_nombre || "Notaría"}</p><p className="mt-1 text-[11px] text-slate-500">Usuario de acceso</p><p className="mt-1 break-all font-black tracking-wide text-slate-900">{sesion?.usuario || sesion?.nif || "—"}</p><p className="mt-2 text-[11px] leading-5 text-slate-500">La contraseña no se muestra aquí. Si no se ha cambiado, la contraseña inicial es el NIF completo.</p></div>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                   <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">NIF</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.nif || "—"}</strong></div>
                   <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Código CTN</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.codigo || "—"}</strong></div>
                   <div className="rounded-xl border border-slate-100 p-3"><small className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">Teléfono</small><strong className="mt-1 block break-words text-xs text-slate-700">{sesion?.telefono || "—"}</strong></div>
