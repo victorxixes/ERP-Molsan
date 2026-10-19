@@ -757,7 +757,7 @@ export default function EncargaGest() {
                   </Campo>
                   <Campo etiqueta="Tipo de encargo *">
                     <select required value={form.tipo_encargo} onChange={(e) => cambiarFiltro("tipo_encargo", e.target.value)} className={inputClass}>
-                      <option>Cancelación hipotecaria</option><option>Solicitud de documentación</option><option>Gestión registral</option><option>Subsanación de incidencia</option><option>Otro encargo</option>
+                      <option>Cancelación hipotecaria</option><option>Crédito hipotecario</option><option>Otros</option>
                     </select>
                   </Campo>
                   <Campo etiqueta="Prioridad">
