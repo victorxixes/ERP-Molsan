@@ -4645,48 +4645,6 @@ const cuantiaFincasParaEnvio =
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
                     <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite ?? expediente.tipo_tramite_notarial ?? expediente.tramite} />
-                    <Dato campo="Escritura firmada" valor={expediente.escritura_firmada === true ? "Sí" : expediente.escritura_firmada === false ? "No" : null} />
-                    <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
-                    <Dato campo="Protocolo" valor={expediente.protocolo} />
-                    <Dato
-  campo="Tipo del documento formalizado"
-  valor={
-    Array.isArray(expediente.documentos_escritura) &&
-    expediente.documentos_escritura.length > 0
-      ? expediente.documentos_escritura
-          .map((documento) => documento.tipo_documento || "Documento")
-          .join(" | ")
-      : expediente.tipo_documento
-  }
-/>
-<Dato
-  campo="Cuantía del documento"
-  valor={
-    Array.isArray(expediente.documentos_escritura) &&
-    expediente.documentos_escritura.length > 0
-      ? expediente.documentos_escritura
-          .map((documento) => {
-            if (documento.cuantia == null || documento.cuantia === "") {
-              return "Sin cuantía";
-            }
-
-            return `${Number(documento.cuantia).toLocaleString(
-              "es-ES",
-              {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }
-            )} €`;
-          })
-          .join(" | ")
-      : expediente.cuantia != null
-        ? `${Number(expediente.cuantia).toLocaleString("es-ES", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })} €`
-        : null
-  }
-/>
                     <Dato
                       campo="Firma urgente"
                       valor={
@@ -4698,6 +4656,45 @@ const cuantiaFincasParaEnvio =
                           : "No"
                       }
                     />
+                    <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
+                    <Dato campo="Protocolo" valor={expediente.protocolo} />
+                    <Dato
+                      campo="Tipo del documento formalizado"
+                      valor={
+                        Array.isArray(expediente.documentos_escritura) &&
+                        expediente.documentos_escritura.length > 0
+                          ? expediente.documentos_escritura
+                              .map((documento) => documento.tipo_documento || "Documento")
+                              .join(" | ")
+                          : expediente.tipo_documento
+                      }
+                    />
+                    <Dato
+                      campo="Cuantía del documento"
+                      valor={
+                        Array.isArray(expediente.documentos_escritura) &&
+                        expediente.documentos_escritura.length > 0
+                          ? expediente.documentos_escritura
+                              .map((documento) => {
+                                if (documento.cuantia == null || documento.cuantia === "") {
+                                  return "Sin cuantía";
+                                }
+                                return `${Number(documento.cuantia).toLocaleString("es-ES", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })} €`;
+                              })
+                              .join(" | ")
+                          : expediente.cuantia != null
+                            ? `${Number(expediente.cuantia).toLocaleString("es-ES", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })} €`
+                            : null
+                      }
+                    />
+                    <Dato campo="Importe" valor={expediente.importe} tipo="numero" />
+
                     </div>
 
                     {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
