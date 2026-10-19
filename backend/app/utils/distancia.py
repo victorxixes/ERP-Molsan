@@ -2,11 +2,14 @@ import math
 
 
 # ============================================================
-# MOLSAN
+# PUNTO DE PARTIDA MOLSAN
 # ============================================================
-
-MOLSAN_LAT = 41.424960
-MOLSAN_LNG = 2.181740
+# Centro aproximado del código postal 08016, Barcelona.
+# Se usa como origen fijo para que los kilómetros no dependan
+# de la ubicación del usuario que consulta el ERP.
+MOLSAN_CP = "08016"
+MOLSAN_LAT = 41.436194
+MOLSAN_LNG = 2.179865
 
 
 # ============================================================
@@ -64,12 +67,10 @@ def distancia_km(
         math.cos(
             math.radians(lat1)
         )
-        *
-        math.cos(
+        * math.cos(
             math.radians(lat2)
         )
-        *
-        math.sin(
+        * math.sin(
             dlon / 2
         ) ** 2
     )
