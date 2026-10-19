@@ -820,7 +820,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   // ApoderaGest y NotarGest tienen una navegación de trabajo específica;
   // ocultamos «Más» en ambos para mantener sus barras despejadas.
   const mostrarBotonMas = modulosMas.length > 0 &&
-    !["apoderagest", "notargest"].includes(normalizarModulo(brandName));
+    !["apoderagest", "notargest", "encargagest"].includes(normalizarModulo(brandName));
 
 
   /**
