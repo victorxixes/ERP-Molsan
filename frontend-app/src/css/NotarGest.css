@@ -598,3 +598,40 @@
     padding:16px;
   }
 }
+
+
+/* NotarGest · panel global de control de notarías para administración */
+.notargest .ng-admin-notarias{margin:18px 24px 8px;padding:clamp(16px,2vw,26px);border:1px solid #dce5f2;border-radius:20px;background:linear-gradient(145deg,#fff 0%,#f8faff 100%);box-shadow:0 8px 28px rgba(24,43,78,.055)}
+.notargest .ng-admin-notarias-cabecera,.notargest .ng-admin-notaria-activa{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+.notargest .ng-admin-notarias-cabecera h2,.notargest .ng-admin-notaria-activa h2{margin:5px 0;color:#172b4d;font-size:clamp(22px,2vw,30px);font-weight:850;letter-spacing:-.7px}
+.notargest .ng-admin-notarias-cabecera p,.notargest .ng-admin-notaria-activa p{margin:5px 0 0;color:#64748b;font-size:13px;line-height:1.5}
+.notargest .ng-admin-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.notargest .ng-admin-kpis article{display:grid;gap:8px;padding:16px 18px;border:1px solid #e2e9f4;border-radius:14px;background:#fff}
+.notargest .ng-admin-kpis article span{color:#687891;font-size:11px;font-weight:750}
+.notargest .ng-admin-kpis article strong{color:#1e3151;font-size:29px;font-weight:900;line-height:1.1;font-variant-numeric:tabular-nums}
+.notargest .ng-admin-kpis article strong.ng-cifra-urgente,.notargest .ng-cifra-urgente{color:#c62835!important}
+.notargest .ng-admin-notarias-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.notargest .ng-admin-notaria-card{min-width:0;padding:17px;border:1px solid #e0e7f1;border-radius:16px;background:#fff;box-shadow:0 3px 12px rgba(25,45,80,.025);transition:border-color .16s,box-shadow .16s}
+.notargest .ng-admin-notaria-card:hover{border-color:#bdcdfb;box-shadow:0 8px 20px rgba(25,45,80,.07)}
+.notargest .ng-admin-notaria-card.tiene-urgentes{border-color:#fecaca;background:linear-gradient(145deg,#fff 0%,#fff8f8 100%)}
+.notargest .ng-admin-notaria-titulo{display:flex;align-items:flex-start;gap:12px;min-width:0}
+.notargest .ng-admin-notaria-icono{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;border-radius:13px;background:#edf2ff;border:1px solid #dbe5ff;color:#365fe5;font-size:14px;font-weight:900}
+.notargest .ng-admin-notaria-titulo>div{min-width:0}
+.notargest .ng-admin-notaria-titulo h3{margin:0;color:#1e2f4a;font-size:15px;font-weight:850;line-height:1.4;overflow-wrap:anywhere}
+.notargest .ng-admin-notaria-titulo p{margin:4px 0;color:#60718a;font-size:11px}
+.notargest .ng-admin-notaria-titulo small{display:block;color:#8995a8;font-size:10px;line-height:1.5;overflow-wrap:anywhere}
+.notargest .ng-admin-notaria-cifras{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:16px 0}
+.notargest .ng-admin-notaria-cifras>div{display:grid;align-content:center;gap:5px;min-width:0;min-height:56px;padding:8px;border:1px solid #edf1f7;border-radius:10px;background:#fafbfe}
+.notargest .ng-admin-notaria-cifras>div.principal{background:#edf2ff;border-color:#dbe5ff}
+.notargest .ng-admin-notaria-cifras span{color:#718096;font-size:9px;font-weight:750;line-height:1.3}
+.notargest .ng-admin-notaria-cifras strong{color:#203554;font-size:20px;font-weight:900;line-height:1.1;font-variant-numeric:tabular-nums}
+.notargest .ng-admin-notaria-cifras>div.principal strong{color:#365fe5;font-size:24px}
+.notargest .ng-admin-entrar{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:42px;padding:0 14px;border:1px solid #3156d8;border-radius:11px;background:linear-gradient(135deg,#426cf0,#2d51cf);color:#fff;font-size:12px;font-weight:800;cursor:pointer}
+.notargest .ng-admin-entrar:hover{filter:brightness(1.04)}
+.notargest .ng-admin-entrar:disabled{opacity:.55;cursor:wait}
+.notargest .ng-admin-vacio{padding:30px;text-align:center;border:1px dashed #cbd5e1;border-radius:14px;background:#fff}
+.notargest .ng-admin-vacio strong{color:#334155;font-size:15px}
+.notargest .ng-admin-vacio p{margin:7px 0 0;color:#718096;font-size:12px}
+.notargest .ng-admin-notaria-activa{margin:0}
+@media(max-width:1100px){.notargest .ng-admin-notarias-grid{grid-template-columns:1fr}.notargest .ng-admin-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.notargest .ng-admin-notarias{margin:12px 10px;padding:14px}.notargest .ng-admin-notarias-cabecera,.notargest .ng-admin-notaria-activa{align-items:stretch;flex-direction:column}.notargest .ng-admin-kpis{gap:8px}.notargest .ng-admin-kpis article{padding:12px}.notargest .ng-admin-kpis article strong{font-size:24px}.notargest .ng-admin-notaria-cifras{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.notargest .ng-admin-notaria-cifras>div{padding:7px}.notargest .ng-admin-notaria-cifras strong{font-size:18px}}
