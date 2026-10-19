@@ -336,6 +336,11 @@ export default function EncargaGest() {
       nif_titular: detalle.nif_titular || "",
       tipo_encargo: detalle.tipo_encargo || "Cancelación hipotecaria",
       prioridad: detalle.prioridad || "Normal",
+      contacto_nombre: detalle.contacto_nombre || "",
+      contacto_email: detalle.contacto_email || "",
+      contacto_telefono: detalle.contacto_telefono || "",
+      importe: detalle.importe ?? "",
+      fecha_objetivo: detalle.fecha_objetivo || "",
       observaciones: detalle.observaciones || "",
       observaciones_internas: detalle.observaciones_internas || "",
       contratos: contratosOrigen.map((contrato) => ({
@@ -400,6 +405,11 @@ export default function EncargaGest() {
         nif_titular: editForm.nif_titular,
         tipo_encargo: editForm.tipo_encargo,
         prioridad: editForm.prioridad,
+        contacto_nombre: editForm.contacto_nombre,
+        contacto_email: editForm.contacto_email,
+        contacto_telefono: editForm.contacto_telefono,
+        importe: editForm.importe === "" || editForm.importe == null ? null : Number(editForm.importe),
+        fecha_objetivo: editForm.fecha_objetivo || null,
         observaciones: editForm.observaciones,
         observaciones_internas: editForm.observaciones_internas,
         contratos,
@@ -1084,7 +1094,12 @@ export default function EncargaGest() {
                 <Campo etiqueta="NIF / CIF"><input maxLength={50} value={editForm.nif_titular} onChange={(e) => cambiarDatoEdicion("nif_titular", e.target.value)} className={inputClass} /></Campo>
                 <Campo etiqueta="Tipo de encargo"><select value={editForm.tipo_encargo} onChange={(e) => cambiarDatoEdicion("tipo_encargo", e.target.value)} className={inputClass}><option>Cancelación hipotecaria</option><option>Crédito hipotecario</option><option>Otros</option></select></Campo>
                 <Campo etiqueta="Prioridad"><select value={editForm.prioridad} onChange={(e) => cambiarDatoEdicion("prioridad", e.target.value)} className={inputClass}><option>Baja</option><option>Normal</option><option>Alta</option><option>Urgente</option></select></Campo>
-                <Campo etiqueta="Observaciones de la solicitud" className="md:col-span-2"><textarea rows={2} maxLength={10000} value={editForm.observaciones} onChange={(e) => cambiarDatoEdicion("observaciones", e.target.value)} className={inputClass} /></Campo>
+                <Campo etiqueta="Persona de contacto"><input maxLength={200} value={editForm.contacto_nombre} onChange={(e) => cambiarDatoEdicion("contacto_nombre", e.target.value)} className={inputClass} /></Campo>
+                <Campo etiqueta="Correo de contacto"><input type="email" maxLength={320} value={editForm.contacto_email} onChange={(e) => cambiarDatoEdicion("contacto_email", e.target.value)} className={inputClass} /></Campo>
+                <Campo etiqueta="Teléfono de contacto"><input maxLength={60} value={editForm.contacto_telefono} onChange={(e) => cambiarDatoEdicion("contacto_telefono", e.target.value)} className={inputClass} /></Campo>
+                <Campo etiqueta="Importe (€)"><input type="number" min="0" step="0.01" value={editForm.importe} onChange={(e) => cambiarDatoEdicion("importe", e.target.value)} className={inputClass} /></Campo>
+                <Campo etiqueta="Fecha objetivo"><input type="date" value={(editForm.fecha_objetivo || "").slice(0,10)} onChange={(e) => cambiarDatoEdicion("fecha_objetivo", e.target.value)} className={inputClass} /></Campo>
+                <Campo etiqueta="Observaciones de la solicitud" className="md:col-span-2 xl:col-span-3"><textarea rows={2} maxLength={10000} value={editForm.observaciones} onChange={(e) => cambiarDatoEdicion("observaciones", e.target.value)} className={inputClass} /></Campo>
                 <Campo etiqueta="Nota interna MOLSAN" className="md:col-span-2 xl:col-span-3"><textarea rows={2} maxLength={10000} value={editForm.observaciones_internas} onChange={(e) => cambiarDatoEdicion("observaciones_internas", e.target.value)} className={inputClass} /></Campo>
               </section>
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3"><div><h3 className="text-sm font-black text-slate-900">Contratos y fincas</h3><p className="mt-1 text-xs text-slate-500">Puedes añadir o modificar varios contratos y todas sus fincas.</p></div><button type="button" onClick={anadirContratoEdicion} className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white">＋ Añadir contrato</button></div>
