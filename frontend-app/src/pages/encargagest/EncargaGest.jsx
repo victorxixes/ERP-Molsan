@@ -8,35 +8,31 @@ import { useAuthStore } from "../../store/authStore";
 
 const ESTADOS = [
   { valor: "", texto: "Todos los estados" },
+  { valor: "EN_PROCESO", texto: "En proceso" },
   { valor: "RECIBIDO", texto: "Recibido" },
-  { valor: "EN_REVISION", texto: "En revisión" },
-  { valor: "DOCUMENTACION_PENDIENTE", texto: "Documentación pendiente" },
-  { valor: "INCIDENCIA", texto: "Incidencia" },
   { valor: "AUTORIZADO", texto: "Autorizado" },
-  { valor: "RESUELTO", texto: "Resuelto" },
-  { valor: "CERRADO", texto: "Cerrado" },
+  { valor: "INCIDENCIA", texto: "Incidencia" },
+  { valor: "FIRMADO", texto: "Firmado · cerrado" },
 ];
 
 const FILTROS_BANDEJA = [
-  { valor: "", texto: "Total de encargos" },
+  { valor: "", texto: "Todos los encargos" },
   { valor: "GRUPO_EN_PROCESO", texto: "En proceso" },
-  { valor: "GRUPO_REQUIEREN_ATENCION", texto: "Requieren atención" },
+  { valor: "GRUPO_RECIBIDOS", texto: "Recibidos" },
   { valor: "GRUPO_AUTORIZADOS", texto: "Autorizados" },
-  { valor: "GRUPO_FIRMADOS", texto: "Firmados" },
+  { valor: "GRUPO_INCIDENCIAS", texto: "Incidencias" },
+  { valor: "GRUPO_FIRMADOS", texto: "Firmados · cerrados" },
 ];
 
 const ESTILO_ESTADO = {
+  EN_PROCESO: "border-amber-200 bg-amber-50 text-amber-800",
   RECIBIDO: "border-sky-200 bg-sky-50 text-sky-700",
-  EN_REVISION: "border-violet-200 bg-violet-50 text-violet-700",
-  DOCUMENTACION_PENDIENTE: "border-amber-200 bg-amber-50 text-amber-800",
-  EN_GESTION: "border-blue-200 bg-blue-50 text-blue-700",
-  INCIDENCIA: "border-rose-200 bg-rose-50 text-rose-700",
   AUTORIZADO: "border-indigo-200 bg-indigo-50 text-indigo-700",
-  RESUELTO: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  CERRADO: "border-slate-200 bg-slate-100 text-slate-600",
+  INCIDENCIA: "border-rose-200 bg-rose-50 text-rose-700",
+  FIRMADO: "border-emerald-200 bg-emerald-50 text-emerald-700",
 };
 
-const TEXTO_ESTADO = { RECIBIDO: "Recibido", EN_REVISION: "En revisión", DOCUMENTACION_PENDIENTE: "Documentación pendiente", EN_GESTION: "En gestión", INCIDENCIA: "Incidencia", AUTORIZADO: "Autorizado", RESUELTO: "Resuelto", CERRADO: "Cerrado" };
+const TEXTO_ESTADO = { EN_PROCESO: "En proceso", RECIBIDO: "Recibido", AUTORIZADO: "Autorizado", INCIDENCIA: "Incidencia", FIRMADO: "Firmado · cerrado", EN_REVISION: "Recibido", DOCUMENTACION_PENDIENTE: "Recibido", EN_GESTION: "Recibido", RESUELTO: "Firmado · cerrado", CERRADO: "Firmado · cerrado" };
 
 const NUEVO_ENCARGO = {
   notaria_id: "",
@@ -262,8 +258,38 @@ export default function EncargaGest() {
     return () => { vigente = false; };
   }, [seleccionadoId]);
 
+  useEffect(() => {
+    if (modo !== "interno" && modo !== "externo") return undefined;
+    const intervalo = window.setInterval(async () => {
+      try {
+        const [res, listado] = await Promise.all([
+          axios.get("/encargagest/resumen"),
+          axios.get("/encargagest/encargos", { params: { pagina, por_pagina: 20, q: busqueda.trim() || undefined, estado: filtroEstado || undefined } }),
+        ]);
+        setResumen(res.data || { total: 0, por_estado: {} });
+        const data = listado.data || {};
+        const nuevasFilas = Array.isArray(data) ? data : data.items || [];
+        setItems(nuevasFilas);
+        setTotal(Number(data.total ?? nuevasFilas.length));
+        if (seleccionadoId) {
+          const actual = await axios.get("/encargagest/encargos/" + seleccionadoId);
+          setDetalle(actual.data);
+        }
+      } catch {
+        // La siguiente actualización automática volverá a intentarlo sin interrumpir el trabajo.
+      }
+    }, 30000);
+    return () => window.clearInterval(intervalo);
+  }, [modo, pagina, busqueda, filtroEstado, seleccionadoId]);
+
   const filas = useMemo(() => items, [items]);
   const totalPaginas = Math.max(1, Math.ceil(total / 20));
+
+  function aplicarFiltroRapido(estado) {
+    setFiltroEstado(estado);
+    setPagina(1);
+    cargarListado(1, busqueda, estado).catch((e) => setError(e?.response?.data?.detail || "No se pudo filtrar la bandeja."));
+  }
 
   const cambiarFiltro = (campo, valor) => setForm((actual) => ({ ...actual, [campo]: valor }));
   const cambiarContrato = (indice, campo, valor) => setForm((actual) => ({ ...actual, contratos: actual.contratos.map((contrato, i) => i === indice ? { ...contrato, [campo]: valor } : contrato) }));
@@ -605,12 +631,13 @@ export default function EncargaGest() {
         {mensaje && <div className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">{mensaje}</div>}
         {errorAccion && <div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">{errorAccion}</div>}
 
-        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-amber-500">▤</span></div><p className="mt-1 text-xs text-slate-500">Solicitudes registradas</p></div>
-          <div className="ag-kpi ag-kpi-verde eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">En proceso</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{resumen.por_estado?.RECIBIDO || 0}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Encargos recibidos pendientes de gestión</p></div>
-          <div className="ag-kpi ag-kpi-ambar eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-amber-700">Requieren atención</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-amber-900">{resumen.requieren_atencion || 0}</strong><span className="text-xl text-amber-600">!</span></div><p className="mt-1 text-xs text-amber-800">Incidencias o documentación pendiente</p></div>
-          <div className="ag-kpi eg-kpi border border-indigo-100 bg-indigo-50/60"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-indigo-700">Autorizados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-indigo-800">{resumen.por_estado?.AUTORIZADO || 0}</strong><span className="text-xl text-indigo-600">✓</span></div><p className="mt-1 text-xs text-indigo-800">Encargos autorizados para continuar</p></div>
-          <div className="ag-kpi ag-kpi-verde eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-emerald-700">Firmados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-emerald-800">{(resumen.por_estado?.RESUELTO || 0) + (resumen.por_estado?.CERRADO || 0)}</strong><span className="text-xl text-emerald-600">✓</span></div><p className="mt-1 text-xs text-slate-500">Encargos resueltos o cerrados</p></div>
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+          <div className="ag-kpi ag-kpi-azul eg-kpi"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Total de encargos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-slate-900">{resumen.total || 0}</strong><span className="text-xl text-amber-500">▤</span></div><p className="mt-1 text-xs text-slate-500">Todas las solicitudes</p></div>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_EN_PROCESO")} className="ag-kpi ag-kpi-ambar eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-amber-700">En proceso</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-amber-900">{resumen.por_estado?.EN_PROCESO || 0}</strong><span className="text-xl text-amber-600">◷</span></div><p className="mt-1 text-xs text-amber-800">Pendientes de recepción</p></button>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_RECIBIDOS")} className="ag-kpi ag-kpi-verde eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Recibidos</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-sky-700">{resumen.por_estado?.RECIBIDO || 0}</strong><span className="text-xl text-sky-500">↓</span></div><p className="mt-1 text-xs text-slate-500">Recepcionados por MOLSAN</p></button>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_AUTORIZADOS")} className="ag-kpi eg-kpi border border-indigo-100 bg-indigo-50/60 text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-indigo-700">Autorizados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-indigo-800">{resumen.por_estado?.AUTORIZADO || 0}</strong><span className="text-xl text-indigo-600">✓</span></div><p className="mt-1 text-xs text-indigo-800">Validados para continuar</p></button>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_INCIDENCIAS")} className="ag-kpi ag-kpi-ambar eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-rose-700">Incidencias</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-rose-800">{resumen.por_estado?.INCIDENCIA || 0}</strong><span className="text-xl text-rose-600">!</span></div><p className="mt-1 text-xs text-rose-800">Requieren actuación</p></button>
+          <button type="button" onClick={() => aplicarFiltroRapido("GRUPO_FIRMADOS")} className="ag-kpi ag-kpi-verde eg-kpi text-left"><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-emerald-700">Firmados</p><div className="mt-2 flex items-end justify-between"><strong className="text-3xl font-black text-emerald-800">{resumen.por_estado?.FIRMADO || 0}</strong><span className="text-xl text-emerald-600">✓</span></div><p className="mt-1 text-xs text-slate-500">Cerrados definitivamente</p></button>
         </section>
 
         <section className="mt-6 grid min-w-0 grid-cols-1 gap-5 2xl:grid-cols-[minmax(380px,0.92fr)_minmax(0,1.45fr)]">
@@ -654,7 +681,7 @@ export default function EncargaGest() {
                 <div className="eg-panel-head p-5 sm:p-6">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0"><p className="text-[10px] font-black tracking-[0.18em] text-amber-700">{detalle.referencia || ("EG-" + detalle.id)} · FICHA DE ENCARGO</p><h2 className="mt-2 text-xl font-black tracking-tight text-slate-900">{detalle.titular}</h2><p className="mt-1 text-sm text-slate-500">{detalle.notaria_nombre}</p></div>
-                    <div className="min-w-[190px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span>{modo === "interno" ? <select aria-label="Cambiar estado del encargo" value={detalle.estado} onChange={(e) => cambiarEstado(e.target.value)} className={inputClass}>{ESTADOS.filter((x) => x.valor).map((x) => <option key={x.valor} value={x.valor}>{x.texto}</option>)}</select> : <div className="pt-1"><EtiquetaEstado estado={detalle.estado} /></div>}</div>
+                    <div className="min-w-[190px]"><span className="mb-1.5 block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Estado de gestión</span>{modo === "interno" && detalle.estado === "EN_PROCESO" ? <button type="button" onClick={() => cambiarEstado("RECIBIDO")} className="w-full rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-sky-700">Recepcionar encargo</button> : modo === "interno" && detalle.estado !== "FIRMADO" ? <select aria-label="Cambiar estado del encargo" value={detalle.estado} onChange={(e) => cambiarEstado(e.target.value)} className={inputClass}>{ESTADOS.filter((x) => x.valor).map((x) => <option key={x.valor} value={x.valor}>{x.texto}</option>)}</select> : <div className="pt-1"><EtiquetaEstado estado={detalle.estado} />{detalle.estado === "FIRMADO" && <p className="mt-1 text-[10px] font-semibold text-emerald-700">Encargo cerrado definitivamente</p>}</div>}</div>
                   </div>
                   <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
                     <div className="rounded-xl bg-slate-50 p-3"><span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Tipo de encargo</span><p className="mt-1 text-xs font-bold text-slate-800">{detalle.tipo_encargo}</p></div>
