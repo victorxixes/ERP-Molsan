@@ -30,7 +30,7 @@ class EncargoExterno(Base):
     importe = Column(Numeric(14, 2), nullable=True)
     fecha_objetivo = Column(Date, nullable=True)
     prioridad = Column(String(20), nullable=False, default="Normal")
-    estado = Column(String(40), nullable=False, default="RECIBIDO", index=True)
+    estado = Column(String(40), nullable=False, default="EN_PROCESO", index=True)
     observaciones = Column(Text, nullable=True)
     contratos_json = Column(JSON, nullable=True)
     observaciones_internas = Column(Text, nullable=True)
