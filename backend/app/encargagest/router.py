@@ -53,28 +53,23 @@ PRIORIDADES = {"Baja", "Normal", "Alta", "Urgente"}
 
 @router.on_event("startup")
 def crear_tablas_encargagest():
-    # Ninguna migración de este módulo debe dejar la API esperando indefinidamente.
-    # Si PostgreSQL tiene una tabla bloqueada, se omite este intento y se reintenta
-    # en el siguiente arranque; el proceso web debe poder abrir su puerto.
+    # Las migraciones no deben impedir que FastAPI abra el puerto en Render.
+    # Si hay un bloqueo PostgreSQL, se informa y se reintenta en el próximo arranque.
     tablas_modulo = [
         EncargoExterno.__table__,
         EncargoExternoDocumento.__table__,
         EncargoExternoActividad.__table__,
         EncargoExternoUsuario.__table__,
     ]
-    print("[ENCARGAGEST MIGRACION] Inicio; creando/revisando tablas del módulo.", flush=True)
+    print("[ENCARGAGEST MIGRACION] Inicio; revisando tablas del módulo.", flush=True)
     try:
         with engine.begin() as conexion:
             conexion.execute(text("SET LOCAL lock_timeout = '2s'"))
             conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
-            Base.metadata.create_all(
-                bind=conexion,
-                tables=tablas_modulo,
-                checkfirst=True,
-            )
+            Base.metadata.create_all(bind=conexion, tables=tablas_modulo, checkfirst=True)
         print("[ENCARGAGEST MIGRACION] Tablas del módulo revisadas.", flush=True)
     except Exception as exc:
-        print(f"[ENCARGAGEST MIGRACION] AVISO: no se pudieron revisar las tablas del módulo en este arranque; se reintentará. Error: {exc!r}", flush=True)
+        print(f"[ENCARGAGEST MIGRACION] AVISO: tablas del módulo pendientes; se reintentará. Error: {exc!r}", flush=True)
 
     migraciones = {
         "empleados": {
@@ -97,16 +92,24 @@ def crear_tablas_encargagest():
             "contrato_index": "INTEGER NOT NULL DEFAULT 0",
         },
     }
-    inspector = sa_inspect(engine)
-    tablas = set(inspector.get_table_names())
+    try:
+        inspector = sa_inspect(engine)
+        tablas = set(inspector.get_table_names())
+    except Exception as exc:
+        print(f"[ENCARGAGEST MIGRACION] AVISO: no se pudo inspeccionar el esquema; se reintentará. Error: {exc!r}", flush=True)
+        tablas = set()
+
     for tabla, columnas in migraciones.items():
         if tabla not in tablas:
             continue
-        existentes = {columna["name"] for columna in inspector.get_columns(tabla)}
-        faltantes = [(nombre, tipo) for nombre, tipo in columnas.items() if nombre not in existentes]
-        if not faltantes:
+        try:
+            existentes = {columna["name"] for columna in sa_inspect(engine).get_columns(tabla)}
+        except Exception as exc:
+            print(f"[ENCARGAGEST MIGRACION] AVISO: no se pudieron consultar columnas de {tabla}: {exc!r}", flush=True)
             continue
-        for nombre, tipo in faltantes:
+        for nombre, tipo in columnas.items():
+            if nombre in existentes:
+                continue
             try:
                 with engine.begin() as conexion:
                     conexion.execute(text("SET LOCAL lock_timeout = '2s'"))
@@ -114,30 +117,28 @@ def crear_tablas_encargagest():
                     conexion.execute(text(f'ALTER TABLE "{tabla}" ADD COLUMN "{nombre}" {tipo}'))
                 print(f"[ENCARGAGEST MIGRACION] {tabla}.{nombre}: OK.", flush=True)
             except Exception as exc:
-                print(f"[ENCARGAGEST MIGRACION] AVISO: no se pudo añadir {tabla}.{nombre}; se reintentará en otro arranque. Error: {exc!r}", flush=True)
+                print(f"[ENCARGAGEST MIGRACION] AVISO: no se pudo añadir {tabla}.{nombre}; se reintentará. Error: {exc!r}", flush=True)
 
-    # Tablas y columnas del reparto de expedientes y responsables CTN.
-    try:
-        with engine.begin() as conexion:
-            conexion.execute(text("SET LOCAL lock_timeout = '2s'"))
-            conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
-            conexion.execute(text("""
+    # Tablas/columnas de reparto: ejecutar cada operación por separado para que
+    # una tabla bloqueada no haga rollback del resto ni bloquee el arranque.
+    operaciones = [
+        ("tabla responsables CTN", """
             CREATE TABLE IF NOT EXISTS encargagest_notaria_gestor (
                 notaria_id INTEGER PRIMARY KEY REFERENCES ctn_notarios(id) ON DELETE CASCADE,
                 gestor_id INTEGER NULL REFERENCES empleados(id) ON DELETE SET NULL,
                 habilitada BOOLEAN NOT NULL DEFAULT FALSE,
                 actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
-        """))
-        conexion.execute(text("""
+        """),
+        ("columna reparto empleados", """
             ALTER TABLE empleados
             ADD COLUMN IF NOT EXISTS reparto_actividades_json JSONB NOT NULL DEFAULT '[]'::jsonb
-        """))
-        conexion.execute(text("""
+        """),
+        ("columna gestor expedientes", """
             ALTER TABLE expedientes
             ADD COLUMN IF NOT EXISTS gestor_asignado_id INTEGER NULL REFERENCES empleados(id) ON DELETE SET NULL
-        """))
-        conexion.execute(text("""
+        """),
+        ("historial gestores", """
             CREATE TABLE IF NOT EXISTS expediente_gestor_historial (
                 id BIGSERIAL PRIMARY KEY,
                 expediente_id VARCHAR(100) NOT NULL,
@@ -147,15 +148,21 @@ def crear_tablas_encargagest():
                 motivo VARCHAR(80) NOT NULL DEFAULT 'reparto_automatico',
                 fecha TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
-        """))
-            conexion.execute(text("""
-                CREATE INDEX IF NOT EXISTS ix_exp_gestor_historial_expediente
-                ON expediente_gestor_historial (expediente_id, fecha DESC)
-            """))
-        print("[ENCARGAGEST MIGRACION] Tablas de reparto y responsables revisadas.", flush=True)
-    except Exception as exc:
-        print(f"[ENCARGAGEST MIGRACION] AVISO: migración de reparto/CTN bloqueada o pendiente; se reintentará en otro arranque. Error: {exc!r}", flush=True)
-
+        """),
+        ("índice historial gestores", """
+            CREATE INDEX IF NOT EXISTS ix_exp_gestor_historial_expediente
+            ON expediente_gestor_historial (expediente_id, fecha DESC)
+        """),
+    ]
+    for etiqueta, sql in operaciones:
+        try:
+            with engine.begin() as conexion:
+                conexion.execute(text("SET LOCAL lock_timeout = '2s'"))
+                conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
+                conexion.execute(text(sql))
+            print(f"[ENCARGAGEST MIGRACION] {etiqueta}: OK.", flush=True)
+        except Exception as exc:
+            print(f"[ENCARGAGEST MIGRACION] AVISO: {etiqueta} pendiente; se reintentará en otro arranque. Error: {exc!r}", flush=True)
 
 def _es_externo(actor):
     return isinstance(actor, dict) and actor.get("tipo") == "externo"
