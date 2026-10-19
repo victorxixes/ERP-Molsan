@@ -514,7 +514,7 @@ export default function NotarGest() {
                 const urgentes = Number(item.firmas_urgentes || 0);
                 const pendiente = Number(item.total_pendiente || 0);
                 const defectos = Number(item.con_defectos || 0);
-                return <article className={\`ng-admin-notaria-card \${urgentes > 0 ? "tiene-urgentes" : ""}\`} key={item.id}>
+                return <article className={`ng-admin-notaria-card ${urgentes > 0 ? "tiene-urgentes" : ""}`} key={item.id}>
                   <header className="ng-admin-card-header">
                     <div className="ng-admin-notaria-identidad">
                       <span className="ng-admin-notaria-icono" aria-hidden="true">NG</span>
@@ -524,7 +524,7 @@ export default function NotarGest() {
                         <small>{item.nif || "NIF no indicado"} <span>·</span> {Number(item.total_expedientes || 0)} expedientes en circuito</small>
                       </div>
                     </div>
-                    <span className={\`ng-admin-estado \${urgentes > 0 || defectos > 0 ? "ng-admin-estado-alerta" : "ng-admin-estado-ok"}\`}>
+                    <span className={`ng-admin-estado ${urgentes > 0 || defectos > 0 ? "ng-admin-estado-alerta" : "ng-admin-estado-ok"}`}>
                       <i aria-hidden="true" />{urgentes > 0 ? "Requiere atención" : defectos > 0 ? "Con incidencias" : "Operativa"}
                     </span>
                   </header>
@@ -534,10 +534,10 @@ export default function NotarGest() {
                       <strong>{pendiente}</strong>
                       <small>Expedientes que requieren actuación</small>
                     </div>
-                    <div className={\`ng-admin-resumen-secundario \${urgentes > 0 ? "es-urgente" : ""}\`}>
+                    <div className={`ng-admin-resumen-secundario ${urgentes > 0 ? "es-urgente" : ""}`}>
                       <span>Firmas urgentes</span><strong>{urgentes}</strong>
                     </div>
-                    <div className={\`ng-admin-resumen-secundario \${defectos > 0 ? "es-defecto" : ""}\`}>
+                    <div className={`ng-admin-resumen-secundario ${defectos > 0 ? "es-defecto" : ""}`}>
                       <span>Con defectos</span><strong>{defectos}</strong>
                     </div>
                   </div>
