@@ -41,10 +41,11 @@ CATEGORIAS_DOCUMENTO = {
     "Nota simple registral (vigencia de 3 meses)",
     "Otros",
 }
-ESTADOS = {
-    "RECIBIDO", "EN_REVISION", "DOCUMENTACION_PENDIENTE",
-    "EN_GESTION", "INCIDENCIA", "AUTORIZADO", "RESUELTO", "CERRADO",
-}
+ESTADOS = {"EN_PROCESO", "RECIBIDO", "AUTORIZADO", "INCIDENCIA", "FIRMADO"}
+
+# Estados heredados conservados para leer encargos anteriores sin perderlos.
+ESTADOS_LEGACY_RECIBIDOS = {"EN_REVISION", "DOCUMENTACION_PENDIENTE", "EN_GESTION"}
+ESTADOS_LEGACY_FIRMADOS = {"RESUELTO", "CERRADO"}
 PRIORIDADES = {"Baja", "Normal", "Alta", "Urgente"}
 
 
@@ -189,6 +190,15 @@ def _nombre_usuario(usuario):
     ])) or str(getattr(usuario, "usuario", "") or "Usuario ERP")
 
 
+def _estado_publico(estado):
+    estado = str(estado or "").strip().upper()
+    if estado in ESTADOS_LEGACY_FIRMADOS:
+        return "FIRMADO"
+    if estado in ESTADOS_LEGACY_RECIBIDOS:
+        return "RECIBIDO"
+    return estado
+
+
 def _serializar(encargo):
     return {
         "id": encargo.id,
@@ -219,7 +229,7 @@ def _serializar(encargo):
         "importe": float(encargo.importe) if encargo.importe is not None else None,
         "fecha_objetivo": encargo.fecha_objetivo.isoformat() if encargo.fecha_objetivo else None,
         "prioridad": encargo.prioridad,
-        "estado": encargo.estado,
+        "estado": _estado_publico(encargo.estado),
         "observaciones": encargo.observaciones,
         "observaciones_internas": encargo.observaciones_internas,
         "creado_por_nombre": encargo.creado_por_nombre,
@@ -452,12 +462,11 @@ def resumen(db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor
         consulta_base = consulta_base.filter(EncargoExterno.notaria_id == usuario["notaria_id"])
     total = consulta_base.count()
     filas = consulta_base.with_entities(EncargoExterno.estado, func.count(EncargoExterno.id)).group_by(EncargoExterno.estado).all()
-    estados = {estado: cantidad for estado, cantidad in filas}
-    return {
-        "total": total,
-        "por_estado": estados,
-        "requieren_atencion": sum(estados.get(e, 0) for e in ("DOCUMENTACION_PENDIENTE", "INCIDENCIA")),
-    }
+    estados = {}
+    for estado, cantidad in filas:
+        publico = _estado_publico(estado)
+        estados[publico] = estados.get(publico, 0) + cantidad
+    return {"total": total, "por_estado": estados}
 
 
 @router.get("/notarias")
@@ -501,14 +510,18 @@ def listar_encargos(
             EncargoExterno.entidad_bancaria.ilike(termino),
         ))
     grupos_estado = {
-        "GRUPO_EN_GESTION": ("EN_GESTION", "EN_REVISION"),
-        "GRUPO_EN_PROCESO": ("RECIBIDO",),
-        "GRUPO_REQUIEREN_ATENCION": ("DOCUMENTACION_PENDIENTE", "INCIDENCIA"),
+        "GRUPO_EN_PROCESO": ("EN_PROCESO",),
+        "GRUPO_RECIBIDOS": ("RECIBIDO", *ESTADOS_LEGACY_RECIBIDOS),
         "GRUPO_AUTORIZADOS": ("AUTORIZADO",),
-        "GRUPO_FIRMADOS": ("RESUELTO", "CERRADO"),
+        "GRUPO_INCIDENCIAS": ("INCIDENCIA",),
+        "GRUPO_FIRMADOS": ("FIRMADO", *ESTADOS_LEGACY_FIRMADOS),
     }
     if estado in grupos_estado:
         consulta = consulta.filter(EncargoExterno.estado.in_(grupos_estado[estado]))
+    elif estado == "FIRMADO":
+        consulta = consulta.filter(EncargoExterno.estado.in_(("FIRMADO", *ESTADOS_LEGACY_FIRMADOS)))
+    elif estado == "RECIBIDO":
+        consulta = consulta.filter(EncargoExterno.estado.in_(("RECIBIDO", *ESTADOS_LEGACY_RECIBIDOS)))
     elif estado and estado in ESTADOS:
         consulta = consulta.filter(EncargoExterno.estado == estado)
     total = consulta.count()
@@ -552,7 +565,7 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
         importe=Decimal(datos.importe) if datos.importe is not None else None,
         fecha_objetivo=datos.fecha_objetivo,
         prioridad=datos.prioridad,
-        estado="RECIBIDO",
+        estado="EN_PROCESO",
         contacto_nombre=(datos.contacto_nombre or "").strip() or None,
         contacto_email=(datos.contacto_email or "").strip() or None,
         contacto_telefono=(datos.contacto_telefono or "").strip() or None,
@@ -616,10 +629,16 @@ def cambiar_estado(encargo_id: int, datos: CambioEstado, db: Session = Depends(g
     estado = str(datos.estado or "").strip().upper()
     if estado not in ESTADOS:
         raise HTTPException(status_code=422, detail="Estado no válido.")
-    anterior = item.estado
+    anterior = _estado_publico(item.estado)
+    if anterior == "FIRMADO" and estado != "FIRMADO":
+        raise HTTPException(status_code=409, detail="Un encargo firmado está cerrado y no puede reabrirse desde esta bandeja.")
     item.estado = estado
     item.actualizado_en = datetime.utcnow()
     mensaje = f"Estado cambiado de {anterior} a {estado}."
+    if estado == "RECIBIDO" and anterior == "EN_PROCESO":
+        mensaje = "Encargo recepcionado por MOLSAN. " + mensaje
+    elif estado == "FIRMADO":
+        mensaje = "Encargo firmado y cerrado. " + mensaje
     if datos.comentario and datos.comentario.strip():
         mensaje += f" {datos.comentario.strip()}"
     _registrar_actividad(db, item.id, usuario, "CAMBIO_ESTADO", mensaje)
