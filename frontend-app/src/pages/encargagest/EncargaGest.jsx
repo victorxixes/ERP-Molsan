@@ -46,7 +46,7 @@ const NUEVO_ENCARGO = {
   municipio_registro: "",
   registro_propiedad: "",
   observaciones: "",
-  contratos: [{ entidad_bancaria: "", numero_prestamo: "", fecha_constitucion: "", fincas: [{ numero_finca: "", capital_inscrito: "", numero_inscripcion: "", municipio_registro: "", registro_propiedad: "" }] }],
+  contratos: [{ entidad_bancaria: "", numero_prestamo: "", fecha_constitucion: "", fincas: [{ numero_finca: "", capital_inscrito: "", numero_inscripcion: "", seccion: "", municipio_registro: "", registro_propiedad: "" }] }],
 };
 
 const CATEGORIAS_DOCUMENTO = [
@@ -297,9 +297,9 @@ export default function EncargaGest() {
   const cambiarFiltro = (campo, valor) => setForm((actual) => ({ ...actual, [campo]: valor }));
   const cambiarContrato = (indice, campo, valor) => setForm((actual) => ({ ...actual, contratos: actual.contratos.map((contrato, i) => i === indice ? { ...contrato, [campo]: valor } : contrato) }));
   const cambiarFinca = (indiceContrato, indiceFinca, campo, valor) => setForm((actual) => ({ ...actual, contratos: actual.contratos.map((contrato, i) => i !== indiceContrato ? contrato : { ...contrato, fincas: contrato.fincas.map((finca, j) => j === indiceFinca ? { ...finca, [campo]: valor } : finca) }) }));
-  const anadirContrato = () => setForm((actual) => ({ ...actual, contratos: [...actual.contratos, { entidad_bancaria: "", numero_prestamo: "", fecha_constitucion: "", fincas: [{ numero_finca: "", capital_inscrito: "", numero_inscripcion: "", municipio_registro: "", registro_propiedad: "" }] }] }));
+  const anadirContrato = () => setForm((actual) => ({ ...actual, contratos: [...actual.contratos, { entidad_bancaria: "", numero_prestamo: "", fecha_constitucion: "", fincas: [{ numero_finca: "", capital_inscrito: "", numero_inscripcion: "", seccion: "", municipio_registro: "", registro_propiedad: "" }] }] }));
   const quitarContrato = (indice) => setForm((actual) => ({ ...actual, contratos: actual.contratos.filter((_, i) => i !== indice) }));
-  const anadirFinca = (indice) => setForm((actual) => ({ ...actual, contratos: actual.contratos.map((contrato, i) => i === indice ? { ...contrato, fincas: [...contrato.fincas, { numero_finca: "", capital_inscrito: "", numero_inscripcion: "", municipio_registro: "", registro_propiedad: "" }] } : contrato) }));
+  const anadirFinca = (indice) => setForm((actual) => ({ ...actual, contratos: actual.contratos.map((contrato, i) => i === indice ? { ...contrato, fincas: [...contrato.fincas, { numero_finca: "", capital_inscrito: "", numero_inscripcion: "", seccion: "", municipio_registro: "", registro_propiedad: "" }] } : contrato) }));
   const quitarFinca = (indiceContrato, indiceFinca) => setForm((actual) => ({ ...actual, contratos: actual.contratos.map((contrato, i) => i === indiceContrato ? { ...contrato, fincas: contrato.fincas.filter((_, j) => j !== indiceFinca) } : contrato) }));
 
   async function aplicarFiltros(event) {
@@ -327,6 +327,7 @@ export default function EncargaGest() {
             numero_finca: detalle.numero_finca || "",
             capital_inscrito: detalle.capital_inscrito ?? "",
             numero_inscripcion: "",
+            seccion: "",
             municipio_registro: detalle.municipio_registro || "",
             registro_propiedad: detalle.registro_propiedad || "",
           }],
@@ -351,6 +352,7 @@ export default function EncargaGest() {
           numero_finca: finca.numero_finca || "",
           capital_inscrito: finca.capital_inscrito ?? contrato.capital_inscrito ?? "",
           numero_inscripcion: finca.numero_inscripcion || "",
+          seccion: finca.seccion || "",
           municipio_registro: finca.municipio_registro || "",
           registro_propiedad: finca.registro_propiedad || "",
         })),
@@ -375,7 +377,7 @@ export default function EncargaGest() {
   }));
   const anadirContratoEdicion = () => setEditForm((actual) => ({
     ...actual,
-    contratos: [...actual.contratos, { entidad_bancaria: "", numero_prestamo: "", fecha_constitucion: "", fincas: [{ numero_finca: "", capital_inscrito: "", numero_inscripcion: "", municipio_registro: "", registro_propiedad: "" }] }],
+    contratos: [...actual.contratos, { entidad_bancaria: "", numero_prestamo: "", fecha_constitucion: "", fincas: [{ numero_finca: "", capital_inscrito: "", numero_inscripcion: "", seccion: "", municipio_registro: "", registro_propiedad: "" }] }],
   }));
   const anadirFincaEdicion = (indice) => setEditForm((actual) => ({
     ...actual,
@@ -433,7 +435,7 @@ export default function EncargaGest() {
     setErrorAccion("");
     setMensaje("");
     try {
-      const contratosNormalizados = form.contratos.map((contrato) => ({ ...contrato, fecha_constitucion: contrato.fecha_constitucion || null, fincas: (contrato.fincas || []).map((finca) => ({ ...finca, capital_inscrito: finca.capital_inscrito === "" || finca.capital_inscrito == null ? null : Number(finca.capital_inscrito), numero_inscripcion: finca.numero_inscripcion || "" })) }));
+      const contratosNormalizados = form.contratos.map((contrato) => ({ ...contrato, fecha_constitucion: contrato.fecha_constitucion || null, fincas: (contrato.fincas || []).map((finca) => ({ ...finca, capital_inscrito: finca.capital_inscrito === "" || finca.capital_inscrito == null ? null : Number(finca.capital_inscrito), numero_inscripcion: finca.numero_inscripcion || "", seccion: finca.seccion || "" })) }));
       const primerContrato = contratosNormalizados[0] || {};
       const primeraFinca = primerContrato.fincas?.[0] || {};
       const payload = {
@@ -468,7 +470,7 @@ export default function EncargaGest() {
       }
       }
       setModalNuevo(false);
-      setForm({ ...NUEVO_ENCARGO, contratos: [{ entidad_bancaria: "", numero_prestamo: "", fecha_constitucion: "", fincas: [{ numero_finca: "", capital_inscrito: "", numero_inscripcion: "", municipio_registro: "", registro_propiedad: "" }] }] });
+      setForm({ ...NUEVO_ENCARGO, contratos: [{ entidad_bancaria: "", numero_prestamo: "", fecha_constitucion: "", fincas: [{ numero_finca: "", capital_inscrito: "", numero_inscripcion: "", seccion: "", municipio_registro: "", registro_propiedad: "" }] }] });
       setArchivosSolicitud({});
       setArchivoPrevisualizado(null);
       setPagina(1);
@@ -884,6 +886,7 @@ export default function EncargaGest() {
                             <div key={"detalle-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-2 gap-3 rounded-lg bg-slate-50 p-3 md:grid-cols-5">
                               <div><p className="text-[10px] text-slate-500">Número de finca</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.numero_finca || "—"}</p></div>
                               <div><p className="text-[10px] text-slate-500">Inscripción</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.numero_inscripcion || "—"}</p></div>
+                              <div><p className="text-[10px] text-slate-500">Sección</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.seccion || "—"}</p></div>
                               <div><p className="text-[10px] text-slate-500">Capital inscrito</p><p className="mt-1 text-xs font-bold text-slate-800">{euros(finca.capital_inscrito ?? contrato.capital_inscrito)}</p></div>
                               <div><p className="text-[10px] text-slate-500">Municipio del registro</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.municipio_registro || "—"}</p></div>
                               <div><p className="text-[10px] text-slate-500">Registro de la Propiedad</p><p className="mt-1 break-words text-xs font-bold text-slate-800">{finca.registro_propiedad || "—"}</p></div>
@@ -1025,6 +1028,7 @@ export default function EncargaGest() {
                           <div key={indiceFinca} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-2 xl:grid-cols-5">
                             <Campo etiqueta="Número de finca"><input maxLength={150} value={finca.numero_finca} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "numero_finca", e.target.value)} placeholder="N.º finca registral" className={inputClass} /></Campo>
                             <Campo etiqueta="Inscripción"><input maxLength={100} value={finca.numero_inscripcion ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "numero_inscripcion", e.target.value)} placeholder="Inscripción registral" className={inputClass} /></Campo>
+                            <Campo etiqueta="Sección"><input maxLength={100} value={finca.seccion ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "seccion", e.target.value)} placeholder="Sección registral" className={inputClass} /></Campo>
                             <Campo etiqueta="Capital inscrito en el registro (€)"><input type="number" min="0" step="0.01" value={finca.capital_inscrito ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "capital_inscrito", e.target.value)} placeholder="0,00" className={inputClass} /></Campo>
                             <Campo etiqueta="Municipio del registro"><input maxLength={200} value={finca.municipio_registro} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "municipio_registro", e.target.value)} placeholder="Municipio" className={inputClass} /></Campo>
                             <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "registro_propiedad", e.target.value)} placeholder="Registro de la Propiedad" className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => quitarFinca(indiceContrato, indiceFinca)} className="mb-0.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">×</button>}</div>
@@ -1118,6 +1122,7 @@ export default function EncargaGest() {
                       <div key={"editar-finca-" + contratoIndex + "-" + fincaIndex} className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-3 md:grid-cols-2 xl:grid-cols-5">
                         <Campo etiqueta="Número de finca"><input maxLength={150} value={finca.numero_finca} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "numero_finca", e.target.value)} className={inputClass} /></Campo>
                         <Campo etiqueta="Inscripción"><input maxLength={100} value={finca.numero_inscripcion} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "numero_inscripcion", e.target.value)} placeholder="Inscripción registral" className={inputClass} /></Campo>
+                        <Campo etiqueta="Sección"><input maxLength={100} value={finca.seccion ?? ""} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "seccion", e.target.value)} placeholder="Sección registral" className={inputClass} /></Campo>
                         <Campo etiqueta="Capital inscrito (€)"><input type="number" min="0" step="0.01" value={finca.capital_inscrito ?? ""} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "capital_inscrito", e.target.value)} className={inputClass} /></Campo>
                         <Campo etiqueta="Municipio del registro"><input maxLength={200} value={finca.municipio_registro} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "municipio_registro", e.target.value)} className={inputClass} /></Campo>
                         <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "registro_propiedad", e.target.value)} className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => setEditForm((actual) => ({ ...actual, contratos: actual.contratos.map((c, i) => i !== contratoIndex ? c : { ...c, fincas: c.fincas.filter((_, j) => j !== fincaIndex) }) }))} className="mb-0.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">×</button>}</div>
