@@ -188,6 +188,56 @@ function CampoDetalle({ etiqueta, valor, clase = "" }) {
   );
 }
 
+function ImprimirEncargos({ encargos = [] }) {
+  const imprimir = (modo) => {
+    document.body.classList.remove("molsan-print-encargos-lista", "molsan-print-encargos-fichas");
+    document.body.classList.add(modo === "lista" ? "molsan-print-encargos-lista" : "molsan-print-encargos-fichas");
+    const limpiar = () => { document.body.classList.remove("molsan-print-encargos-lista", "molsan-print-encargos-fichas"); window.removeEventListener("afterprint", limpiar); };
+    window.addEventListener("afterprint", limpiar);
+    window.print();
+  };
+  const documentosDe = (encargo) => {
+    const lista = encargo.documentos || encargo.documentos_adjuntos || encargo.archivos || [];
+    return Array.isArray(lista) ? lista : [];
+  };
+  return (
+    <div className="ag-print-tools">
+      <button type="button" className="ag-print-action" onClick={() => imprimir("lista")}>⎙ Imprimir listado</button>
+      <button type="button" className="ag-print-action ag-print-action-secundario" onClick={() => imprimir("fichas")}>▤ Imprimir fichas detalladas</button>
+      <section className="ag-print-root ag-encargos-print-root" aria-hidden="true">
+        <header className="ag-print-header"><strong>MOLSAN ERP · APODERAGEST</strong><h1>Listado de encargos</h1><p>{encargos.length} {encargos.length === 1 ? "encargo" : "encargos"} · Impreso el {new Date().toLocaleDateString("es-ES")}</p></header>
+        <table className="ag-print-table"><thead><tr><th>Expediente</th><th>Solicitante</th><th>Notario</th><th>Fecha prevista</th><th>Horario</th><th>Estado</th></tr></thead><tbody>{encargos.map((e, i) => <tr key={String(e.id_expediente || e.id || i)}><td>{texto(e.id_expediente || e.id)}{e.bloqueado ? <small>Bloqueado</small> : null}</td><td>{texto(e.nombre_solicitante || e.solicitante)}<small>{texto(e.nif_solicitante || e.dni_solicitante, "")}</small></td><td>{texto(e.nombre_notario || e.notario)}</td><td>{fechaLegible(e.fecha_prevista_firma)}</td><td>{horaLegible(e.hora_prevista_firma)}{e.hora_fin_prevista_firma ? " – " + horaLegible(e.hora_fin_prevista_firma) : ""}</td><td>{e.fecha_firma || e.protocolo ? "Firmado" : e.bloqueado ? "Bloqueado" : "Pendiente"}</td></tr>)}</tbody></table>
+        <div className="ag-print-fichas">
+          {encargos.map((e, i) => {
+            const fincas = Array.isArray(e.fincas) ? e.fincas : [];
+            const docs = documentosDe(e);
+            return <article className="ag-print-ficha" key={String(e.id_expediente || e.id || i)}>
+              <header><strong>MOLSAN ERP · APODERAGEST</strong><span>FICHA DE ENCARGO</span><h2>Expediente {texto(e.id_expediente || e.id)}</h2></header>
+              <div className="ag-print-grid">
+                <div><small>Solicitante</small><strong>{texto(e.nombre_solicitante || e.solicitante)}</strong></div>
+                <div><small>NIF / CIF</small><strong>{texto(e.nif_solicitante || e.dni_solicitante)}</strong></div>
+                <div><small>Notario</small><strong>{texto(e.nombre_notario || e.notario)}</strong></div>
+                <div><small>Estado</small><strong>{e.fecha_firma || e.protocolo ? "Firmado" : e.bloqueado ? "Bloqueado" : "Pendiente de firma"}</strong></div>
+                <div><small>Fecha prevista de firma</small><strong>{fechaLegible(e.fecha_prevista_firma)}</strong></div>
+                <div><small>Horario</small><strong>{horaLegible(e.hora_prevista_firma)}{e.hora_fin_prevista_firma ? " – " + horaLegible(e.hora_fin_prevista_firma) : ""}</strong></div>
+                <div><small>Fecha de firma</small><strong>{fechaLegible(e.fecha_firma)}</strong></div>
+                <div><small>Número de protocolo</small><strong>{texto(e.protocolo)}</strong></div>
+                <div><small>Tipo de firma</small><strong>{texto(e.tipo_firma)}</strong></div>
+                <div><small>Expediente bloqueado</small><strong>{e.bloqueado ? "Sí" : "No"}</strong></div>
+              </div>
+              <h3>Información registral</h3>
+              {fincas.length ? <table className="ag-print-table"><thead><tr><th>Finca</th><th>Registro</th><th>Población</th><th>Provincia</th><th>CRU / IDUFIR</th><th>Cuantía</th></tr></thead><tbody>{fincas.map((f, j) => <tr key={j}><td>{texto(f.finca)}</td><td>{texto(f.registro)}</td><td>{texto(f.poblacion)}</td><td>{texto(f.provincia)}</td><td>{texto(f.cru_idufir)}</td><td>{texto(f.cuantia)}</td></tr>)}</tbody></table> : <p>No constan fincas registradas.</p>}
+              <h3>Documentación de carpeta digital</h3>
+              {docs.length ? <ul>{docs.map((d, j) => <li key={j}>{texto(d.nombre_original || d.nombre || d.filename || d.categoria || d.tipo, "Documento adjunto")}</li>)}</ul> : <p>La ficha impresa no incorpora los archivos PDF/adjuntos; consúltalos en la carpeta digital del expediente.</p>}
+              {e.observaciones ? <><h3>Observaciones</h3><p>{e.observaciones}</p></> : null}
+            </article>;
+          })}
+        </div>
+        <footer className="ag-print-footer">Impresión generada desde ApoderaGest. Los documentos originales no se incrustan en esta impresión.</footer>
+      </section>
+    </div>
+  );
+}
 function TablaEncargos({ encargos, onFirmado }) {
   const [abiertos, setAbiertos] = useState({});
   const [firmas, setFirmas] = useState({});
@@ -940,6 +990,7 @@ export default function ApoderaGest() {
               <span className="ag-resultados">{encargosFiltrados.length} resultados</span>
             </div>
             <TablaEncargos encargos={encargosFiltrados} onFirmado={cargarDatos} />
+            <ImprimirEncargos encargos={encargosFiltrados} />
           </div>
         </section>
       ) : null}
