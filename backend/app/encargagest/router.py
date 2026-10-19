@@ -44,8 +44,8 @@ CATEGORIAS_DOCUMENTO = {
 ESTADOS = {"EN_PROCESO", "RECIBIDO", "AUTORIZADO", "INCIDENCIA", "FIRMADO"}
 
 # Estados heredados conservados para leer encargos anteriores sin perderlos.
-# Solo el estado explícito RECIBIDO acredita que MOLSAN ha recepcionado el encargo.
-# Los estados antiguos no permiten acreditar por sí solos quién ni cuándo lo recibió.
+# La bandeja interna unifica las solicitudes pendientes de autorización en «Recibidos».
+# La firma real se integrará desde ApoderaGest; EncargaGest no cierra encargos por firma.
 ESTADOS_LEGACY_PENDIENTES = {"EN_REVISION", "DOCUMENTACION_PENDIENTE", "EN_GESTION"}
 ESTADOS_LEGACY_FIRMADOS = {"RESUELTO", "CERRADO"}
 PRIORIDADES = {"Baja", "Normal", "Alta", "Urgente"}
@@ -517,11 +517,9 @@ def listar_encargos(
             EncargoExterno.entidad_bancaria.ilike(termino),
         ))
     grupos_estado = {
-        "GRUPO_EN_PROCESO": ("EN_PROCESO", *ESTADOS_LEGACY_PENDIENTES),
-        "GRUPO_RECIBIDOS": ("RECIBIDO",),
+        "GRUPO_RECIBIDOS": ("EN_PROCESO", "RECIBIDO", *ESTADOS_LEGACY_PENDIENTES),
         "GRUPO_AUTORIZADOS": ("AUTORIZADO",),
         "GRUPO_INCIDENCIAS": ("INCIDENCIA",),
-        "GRUPO_FIRMADOS": ("FIRMADO", *ESTADOS_LEGACY_FIRMADOS),
     }
     if estado in grupos_estado:
         consulta = consulta.filter(EncargoExterno.estado.in_(grupos_estado[estado]))
@@ -646,12 +644,14 @@ def cambiar_estado(encargo_id: int, datos: CambioEstado, db: Session = Depends(g
     if estado == "INCIDENCIA" and len(comentario) < 5:
         raise HTTPException(status_code=422, detail="Para registrar una incidencia debes indicar un motivo detallado que verá la notaría.")
     transiciones = {
-        "EN_PROCESO": {"RECIBIDO", "INCIDENCIA"},
+        # En proceso y recibido forman una única bandeja: MOLSAN revisa y autoriza
+        # directamente, sin un paso artificial de confirmación de recepción.
+        "EN_PROCESO": {"AUTORIZADO", "INCIDENCIA"},
         "RECIBIDO": {"AUTORIZADO", "INCIDENCIA"},
-        "AUTORIZADO": {"FIRMADO", "INCIDENCIA"},
-        # Al resolver una incidencia, MOLSAN la devuelve a la bandeja de recibidos
-        # para que el gestor vuelva a validar la fase antes de continuar.
-        "INCIDENCIA": {"RECIBIDO"},
+        "AUTORIZADO": {"INCIDENCIA"},
+        # La incidencia resuelta vuelve a autorizados; la firma se confirmará
+        # desde ApoderaGest y no desde EncargaGest.
+        "INCIDENCIA": {"AUTORIZADO"},
     }
     if estado not in transiciones.get(anterior, set()):
         raise HTTPException(status_code=409, detail=f"No se permite pasar directamente de {anterior} a {estado}. Valida las fases del encargo en orden.")
@@ -662,9 +662,8 @@ def cambiar_estado(encargo_id: int, datos: CambioEstado, db: Session = Depends(g
         _registrar_actividad(db, item.id, usuario, "INCIDENCIA", mensaje, visible_notaria=True)
     else:
         etiquetas = {
-            "RECIBIDO": "Encargo recepcionado por MOLSAN.",
+            "RECIBIDO": "Encargo recibido por MOLSAN.",
             "AUTORIZADO": "Documentación validada por MOLSAN. El encargo queda autorizado para continuar.",
-            "FIRMADO": "Encargo firmado y cerrado definitivamente por MOLSAN.",
         }
         mensaje = etiquetas.get(estado, f"Estado validado: {estado}.")
         if anterior == "INCIDENCIA":
