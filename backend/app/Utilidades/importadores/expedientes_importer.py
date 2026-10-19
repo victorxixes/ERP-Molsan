@@ -7,6 +7,7 @@ import pandas as pd
 from sqlalchemy.orm import Session
 
 from backend.app.expedientes.models import Expediente
+from backend.app.expedientes.reparto import asignar_gestor_automaticamente, resolver_key_actividad
 
 
 # ============================================================
@@ -1109,6 +1110,12 @@ def importar_excel_expedientes(
                     "REGISTRALFECHA",
                 )
             )
+
+            # Reparto inicial de expedientes nuevos o todavía sin responsable.
+            if not getattr(exp, "gestor_asignado_id", None):
+                actividad_reparto = resolver_key_actividad(exp.actividad_actual)
+                if actividad_reparto:
+                    asignar_gestor_automaticamente(db, exp, actividad_reparto, "alta_importacion")
 
             procesados += 1
 
