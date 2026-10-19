@@ -3961,7 +3961,7 @@ const permisosDisponibles =
                           <h3 className="text-base font-bold text-slate-900">Reglas de reparto de expedientes</h3>
                           <p className="mt-1 max-w-3xl text-sm text-slate-500">Configura para este gestor el departamento, las actividades que puede tramitar, el ámbito territorial y su porcentaje. Al cambiar de actividad, el sistema equilibrará la carga pendiente entre los gestores elegibles.</p>
                         </div>
-                        <button type="button" disabled={!esAdministrador || cargandoReparto} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now(), actividad: "documentacion-previa", departamento: "", zona_territorial: false, comunidades: [], comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">+ Añadir regla</button>
+                        <button type="button" disabled={!esAdministrador || cargandoReparto || !gestorRepartoId} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now(), actividad: "documentacion-previa", departamento: "", zona_territorial: false, comunidades: [], comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">+ Añadir regla</button>
                       </div>
                       <div className="mt-4 grid gap-3 rounded-xl border border-blue-100 bg-blue-50/60 p-4 md:grid-cols-[minmax(220px,360px)_1fr] md:items-end">
                         <label className="block text-xs font-bold text-slate-700">Gestor
@@ -4006,7 +4006,7 @@ const permisosDisponibles =
                       )}
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
                         <p className="text-xs text-slate-500">{reglasReparto.filter((r) => r.activa !== false).length} regla(s) activa(s)</p>
-                        <button type="button" disabled={!esAdministrador || guardandoReparto || cargandoReparto || !gestorRepartoId} onClick={async () => {
+                        <button type="button" disabled={!esAdministrador || guardandoReparto || cargandoReparto || !gestorRepartoId || reglasReparto.some((r) => r.zona_territorial && !(Array.isArray(r.comunidades) ? r.comunidades.length : r.comunidad))} onClick={async () => {
                           setGuardandoReparto(true); setErrorReparto(""); setMensajeReparto("");
                           try {
                             const payload = reglasReparto.map(({ _key, ...r }) => ({ ...r, comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []), comunidad: "", porcentaje: Number(r.porcentaje || 0), apoderado_id: r.apoderado_id || null }));
