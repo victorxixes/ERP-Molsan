@@ -622,6 +622,52 @@ def guardar_notarias_empleado(empleado_id: int, datos: AsignacionNotariasEncarga
     return {"ok": True, "empleado_id": empleado.id, "notaria_ids": ids}
 
 
+@router.get("/directorio/notarias")
+def directorio_notarias_encargagest(
+    q: str | None = None,
+    alcance: str = Query("habilitadas", regex="^(habilitadas|todas)$"),
+    pagina: int = Query(1, ge=1),
+    por_pagina: int = Query(12, ge=1, le=48),
+    db: Session = Depends(get_db),
+    usuario=Depends(get_encargagest_actor),
+):
+    """Directorio CTN paginado para administración; por defecto solo accesos habilitados."""
+    _exigir_interno(usuario, "ver")
+    if not _es_administrador_encargagest(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede consultar el directorio nacional.")
+
+    consulta = db.query(Notaria, EncargoExternoUsuario).outerjoin(
+        EncargoExternoUsuario, EncargoExternoUsuario.notaria_id == Notaria.id
+    )
+    if alcance == "habilitadas":
+        consulta = consulta.filter(EncargoExternoUsuario.habilitado.is_(True))
+    if q and q.strip():
+        termino = f"%{q.strip()}%"
+        consulta = consulta.filter(or_(
+            Notaria.nombre.ilike(termino),
+            Notaria.apellidos.ilike(termino),
+            func.concat(Notaria.nombre, " ", Notaria.apellidos).ilike(termino),
+            Notaria.nif.ilike(termino),
+            Notaria.municipio.ilike(termino),
+            Notaria.provincia.ilike(termino),
+        ))
+    total = consulta.count()
+    registros = consulta.order_by(Notaria.provincia.asc(), Notaria.municipio.asc(), Notaria.apellidos.asc(), Notaria.nombre.asc()).offset((pagina - 1) * por_pagina).limit(por_pagina).all()
+    items = []
+    for notaria, acceso in registros:
+        items.append({
+            "id": notaria.id,
+            "nombre": " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or f"Notaría {notaria.id}",
+            "nif": notaria.nif,
+            "municipio": notaria.municipio,
+            "provincia": notaria.provincia,
+            "telefono": notaria.telefono,
+            "tiene_acceso": acceso is not None,
+            "habilitada": bool(acceso and acceso.habilitado),
+        })
+    return {"items": items, "total": total, "pagina": pagina, "por_pagina": por_pagina}
+
+
 @router.get("/resumen")
 def resumen(notaria_id: int | None = Query(None), db: Session = Depends(get_db), usuario=Depends(get_encargagest_actor)):
     _autorizar(usuario, "ver")
