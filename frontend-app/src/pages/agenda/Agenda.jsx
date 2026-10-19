@@ -349,6 +349,29 @@ export default function Agenda({ soloApoderado = false } = {}) {
     year === hoy.getFullYear() &&
     month === hoy.getMonth() + 1;
 
+  const imprimirAgenda = () => {
+    document.body.classList.add("molsan-print-agenda");
+    const limpiar = () => { document.body.classList.remove("molsan-print-agenda"); window.removeEventListener("afterprint", limpiar); };
+    window.addEventListener("afterprint", limpiar);
+    window.print();
+  };
+  const fechaTexto = (valor) => {
+    if (!valor) return "—";
+    const fecha = new Date(String(valor).slice(0, 10) + "T12:00:00");
+    return Number.isNaN(fecha.getTime()) ? String(valor) : fecha.toLocaleDateString("es-ES");
+  };
+  const horaTexto = (valor) => valor ? String(valor).slice(0, 5) : "—";
+  const fechaDiaAgenda = new Date(year, month - 1, Math.min(hoy.getDate(), new Date(year, month, 0).getDate()));
+  const inicioSemanaImpresion = new Date(year, month - 1, 1);
+  inicioSemanaImpresion.setDate(inicioSemanaImpresion.getDate() - ((inicioSemanaImpresion.getDay() + 6) % 7));
+  const finSemanaImpresion = new Date(inicioSemanaImpresion); finSemanaImpresion.setDate(finSemanaImpresion.getDate() + 7);
+  const citasImpresion = (Array.isArray(citasSeguras) ? citasSeguras : []).filter((cita) => {
+    const fecha = String(cita.fecha || "").slice(0, 10);
+    if (vista === "mes") return fecha.startsWith(String(year) + "-" + String(month).padStart(2, "0"));
+    if (vista === "dia") return fecha === fechaDiaAgenda.toLocaleDateString("sv-SE");
+    const fechaCita = new Date(fecha + "T12:00:00"); return fechaCita >= inicioSemanaImpresion && fechaCita < finSemanaImpresion;
+  }).sort((a, b) => String(a.fecha || "").localeCompare(String(b.fecha || "")) || String(a.hora_inicio || "").localeCompare(String(b.hora_inicio || "")));
+  const tituloImpresion = vista === "mes" ? "Agenda de " + MESES[month - 1] + " de " + year : vista === "semana" ? "Agenda semanal · " + fechaTexto(inicioSemanaImpresion.toLocaleDateString("sv-SE")) + " – " + fechaTexto(new Date(finSemanaImpresion.getTime() - 86400000).toLocaleDateString("sv-SE")) : "Agenda del día · " + fechaTexto(fechaDiaAgenda.toLocaleDateString("sv-SE"));
   // ============================================================
   // RENDER
   // ============================================================
@@ -434,6 +457,8 @@ export default function Agenda({ soloApoderado = false } = {}) {
               Mes actual
             </span>
           )}
+
+          {soloApoderado ? <button type="button" onClick={imprimirAgenda} className="ag-print-action" title="Imprimir la vista actual de la agenda">⎙ Imprimir agenda</button> : null}
 
           {/* SELECTOR DE VISTA */}
 
@@ -521,6 +546,13 @@ export default function Agenda({ soloApoderado = false } = {}) {
         />
       )}
 
+      {soloApoderado ? (
+        <section className="ag-print-root ag-agenda-print-root" aria-hidden="true">
+          <header className="ag-print-header"><strong>MOLSAN ERP · APODERAGEST</strong><h1>{tituloImpresion}</h1><p>{citasImpresion.length} {citasImpresion.length === 1 ? "cita" : "citas"}</p></header>
+          {citasImpresion.length ? <table className="ag-print-table"><thead><tr><th>Fecha</th><th>Horario</th><th>Expediente / cita</th><th>Notario</th><th>Tipo de firma</th><th>Estado</th></tr></thead><tbody>{citasImpresion.map((cita, index) => <tr key={cita.id || String(cita.fecha) + "-" + index}><td>{fechaTexto(cita.fecha)}</td><td>{horaTexto(cita.hora_inicio)}{cita.hora_fin ? " – " + horaTexto(cita.hora_fin) : ""}</td><td>{cita.expediente || cita.id_expediente || cita.titulo || cita.tipo_cita || "Cita"}{cita.observaciones ? <small>{cita.observaciones}</small> : null}</td><td>{cita.notario_nombre || cita.nombre_notario || cita.notario || "—"}</td><td>{cita.tipo_firma || cita.tipo_cita || "—"}</td><td>{cita.firma_realizada ? "Firmada" : "Pendiente"}</td></tr>)}</tbody></table> : <p>No hay citas en este período.</p>}
+          <footer className="ag-print-footer">Documento generado desde ApoderaGest · {new Date().toLocaleString("es-ES")}</footer>
+        </section>
+      ) : null}
       <AgendaToast />
     </div>
   );
