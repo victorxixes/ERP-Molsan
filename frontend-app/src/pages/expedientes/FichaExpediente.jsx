@@ -4769,7 +4769,7 @@ const cuantiaFincasParaEnvio =
                                   <tr>
                                     <th className="px-3 py-2.5">N.º documento</th>
                                     <th className="px-3 py-2.5">Fecha de pago</th>
-                                    <th className="px-3 py-2.5">Concepto</th>
+                                    <th className="px-3 py-2.5">Tipo concepto</th>
                                     <th className="px-3 py-2.5 text-right">Importe</th>
                                     <th className="px-3 py-2.5 text-right">Saldo real</th>
                                   </tr>
