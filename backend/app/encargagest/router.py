@@ -99,6 +99,40 @@ def crear_tablas_encargagest():
             for nombre, tipo in faltantes:
                 conexion.execute(text(f'ALTER TABLE "{tabla}" ADD COLUMN "{nombre}" {tipo}'))
 
+    # Tablas y columnas del reparto de expedientes y responsables CTN.
+    with engine.begin() as conexion:
+        conexion.execute(text("""
+            CREATE TABLE IF NOT EXISTS encargagest_notaria_gestor (
+                notaria_id INTEGER PRIMARY KEY REFERENCES notarias(id) ON DELETE CASCADE,
+                gestor_id INTEGER NULL REFERENCES empleados(id) ON DELETE SET NULL,
+                habilitada BOOLEAN NOT NULL DEFAULT FALSE,
+                actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        conexion.execute(text("""
+            ALTER TABLE empleados
+            ADD COLUMN IF NOT EXISTS reparto_actividades_json JSONB NOT NULL DEFAULT '[]'::jsonb
+        """))
+        conexion.execute(text("""
+            ALTER TABLE expedientes
+            ADD COLUMN IF NOT EXISTS gestor_asignado_id INTEGER NULL REFERENCES empleados(id) ON DELETE SET NULL
+        """))
+        conexion.execute(text("""
+            CREATE TABLE IF NOT EXISTS expediente_gestor_historial (
+                id BIGSERIAL PRIMARY KEY,
+                expediente_id VARCHAR(100) NOT NULL,
+                actividad VARCHAR(120) NOT NULL,
+                gestor_id INTEGER NULL REFERENCES empleados(id) ON DELETE SET NULL,
+                gestor_anterior_id INTEGER NULL REFERENCES empleados(id) ON DELETE SET NULL,
+                motivo VARCHAR(80) NOT NULL DEFAULT 'reparto_automatico',
+                fecha TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        conexion.execute(text("""
+            CREATE INDEX IF NOT EXISTS ix_exp_gestor_historial_expediente
+            ON expediente_gestor_historial (expediente_id, fecha DESC)
+        """))
+
 
 def _es_externo(actor):
     return isinstance(actor, dict) and actor.get("tipo") == "externo"
