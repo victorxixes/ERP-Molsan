@@ -67,8 +67,12 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
         for regla in reglas:
             if not isinstance(regla, dict) or not regla.get("activa", True) or regla.get("actividad") != actividad_key:
                 continue
-            if regla.get("zona_territorial") and normalizar(regla.get("comunidad")) != comunidad:
-                continue
+            if regla.get("zona_territorial"):
+                zonas = regla.get("comunidades")
+                if not isinstance(zonas, list):
+                    zonas = [regla.get("comunidad")] if regla.get("comunidad") else []
+                if comunidad not in {normalizar(zona) for zona in zonas if zona}:
+                    continue
             try:
                 porcentaje += float(regla.get("porcentaje") or 0)
             except (TypeError, ValueError):
