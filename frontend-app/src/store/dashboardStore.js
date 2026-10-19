@@ -31,6 +31,7 @@ export const useDashboardStore = create(
       set({
         loading: true,
         error: null,
+        errorFirmas: null,
       });
 
       try {
