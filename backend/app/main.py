@@ -306,6 +306,7 @@ from backend.app.Utilidades.importadores.router_absis import (
 
 # EXPEDIENTES
 from backend.app.expedientes.router import router as expedientes_router
+from backend.app.expedientes.auditoria_vinculaciones import router as auditoria_vinculaciones_router
 
 # TIPOS DE CARGA HIPOTECARIA
 from backend.app.tipos_carga_hipotecaria.router import (
@@ -461,6 +462,7 @@ app.include_router(tipos_carga_hipotecaria_router, prefix="/api")
 
 # EXPEDIENTES
 app.include_router(expedientes_router, prefix="/api")
+app.include_router(auditoria_vinculaciones_router, prefix="/api")
 app.include_router(migracion_defectos_router, prefix="/api")
 
 # PPAD
