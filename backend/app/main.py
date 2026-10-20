@@ -55,6 +55,7 @@ from backend.app.expedientes.models import Cliente, Expediente
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.fusiones.router import SolicitudFusion
 from backend.app.expedientes.gastos.models import ExpedienteGasto
+from backend.app.honorarios_gestoria.models import HonorarioGestoria
 from backend.app.expedientes.defectos.models import (
     ExpedienteDefecto,
     DefectoSubtipo,
@@ -181,6 +182,7 @@ from backend.app.seguridad.permisos.permisos_router import (
     router as permisos_router,
 )
 from backend.app.expedientes.gastos.router import router as gastos_router
+from backend.app.honorarios_gestoria.router import router as honorarios_gestoria_router
 from backend.app.carpeta_digital.router import router as carpeta_digital_router
 from backend.app.seguridad.permisos.asignar_router import (
     router as asignar_router,
@@ -350,6 +352,7 @@ app.include_router(expedientes_fincas_router, prefix="/api")
 app.include_router(fusiones_router, prefix="/api")
 app.include_router(reclamaciones_oficina_router, prefix="/api")
 app.include_router(gastos_router, prefix="/api")
+app.include_router(honorarios_gestoria_router, prefix="/api")
 
 # AGENDA
 app.include_router(agenda_router, prefix="/api")
@@ -843,6 +846,9 @@ def inicializar_tablas_auxiliares():
     )
 
     try:
+        HonorarioGestoria.__table__.create(bind=engine, checkfirst=True)
+        print("[HONORARIOS GESTORIA] Catálogo disponible.", flush=True)
+
         ExpedienteAccion.__table__.create(
             bind=engine,
             checkfirst=True,
