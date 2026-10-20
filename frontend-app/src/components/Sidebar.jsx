@@ -693,6 +693,14 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     },
 
     {
+      key: "mantenimiento-tecnico",
+      permiso: "utilidades",
+      to: "/herramientas/mantenimiento-tecnico",
+      label: "Mantenimiento técnico",
+      icon: "settings",
+    },
+
+    {
       key: "seguridad",
       to: "/seguridad",
       label: "Seguridad",
@@ -776,9 +784,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     () =>
       modulosSecundarios.filter(
         (modulo) =>
-          puedeVerModulo(
-            modulo.key
-          )
+          puedeVerModulo(modulo.permiso || modulo.key)
       ),
     [
       empleado,
