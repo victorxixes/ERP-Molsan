@@ -1810,3 +1810,21 @@
   .ag-print-table th,.ag-print-table td{padding:5px 6px!important}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
+
+
+/* ApoderaGest · tarjetas de apoderados en columnas y modal fuera del contenedor */
+.ag-encargos-agrupados.ag-apoderados-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));
+  align-items:start;
+  gap:16px;
+}
+.ag-apoderados-grid>.ag-grupo-apoderado{min-width:0;width:100%}
+.ag-apoderado-grupo-trigger{width:100%;min-width:0}
+.ag-apoderado-grupo-trigger .ag-notario-grupo-info{min-width:0;flex:1}
+.ag-apoderado-grupo-trigger .ag-notario-contadores{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}
+@media(max-width:760px){
+  .ag-encargos-agrupados.ag-apoderados-grid{grid-template-columns:minmax(0,1fr)}
+  .ag-apoderado-grupo-trigger{align-items:flex-start;flex-wrap:wrap;gap:10px}
+  .ag-apoderado-grupo-trigger .ag-notario-contadores{width:100%;justify-content:flex-start}
+}
