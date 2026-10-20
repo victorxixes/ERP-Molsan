@@ -461,8 +461,9 @@ app.include_router(router_absis, prefix="/api")
 app.include_router(tipos_carga_hipotecaria_router, prefix="/api")
 
 # EXPEDIENTES
-app.include_router(expedientes_router, prefix="/api")
+# Las rutas específicas deben registrarse antes de /{id_expediente} del router general.
 app.include_router(auditoria_vinculaciones_router, prefix="/api")
+app.include_router(expedientes_router, prefix="/api")
 app.include_router(migracion_defectos_router, prefix="/api")
 
 # PPAD
