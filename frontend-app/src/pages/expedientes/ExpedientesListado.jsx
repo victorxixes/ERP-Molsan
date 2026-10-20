@@ -1002,6 +1002,7 @@ export default function ExpedientesListado() {
     subtipos_operacion: [],
     gestorias: [],
     tipos_error: [],
+    defectos_abiertos: [],
     estados_ancert: [],
     tipos_acta: [],
     tipos_firma: [],
