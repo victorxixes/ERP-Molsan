@@ -168,12 +168,13 @@ function EstadoVacio({ icono = "◇", titulo, detalle }) {
   );
 }
 
-function agruparEncargosPorNotario(encargos) {
+function agruparEncargosPorApoderado(encargos) {
   const grupos = new Map();
   for (const encargo of encargos) {
-    const nombre = String(encargo.nombre_notario || encargo.notario || "Notario sin identificar").trim();
-    const clave = String(encargo.nif_notario || nombre).toLocaleLowerCase("es");
-    if (!grupos.has(clave)) grupos.set(clave, { clave, nombre, nif: encargo.nif_notario || "", expedientes: [] });
+    const nombre = String(encargo.apoderado || "Apoderado sin asignar").trim();
+    const idEmpleado = encargo.apoderado_empleado_id ?? encargo.apoderado_id ?? "";
+    const clave = String(idEmpleado || nombre).toLocaleLowerCase("es");
+    if (!grupos.has(clave)) grupos.set(clave, { clave, nombre, expedientes: [] });
     grupos.get(clave).expedientes.push(encargo);
   }
   return [...grupos.values()].sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
@@ -287,7 +288,7 @@ function TablaEncargos({ encargos, onFirmado }) {
     return () => { activo = false; };
   }, []);
 
-  const grupos = useMemo(() => agruparEncargosPorNotario(encargos), [encargos]);
+  const grupos = useMemo(() => agruparEncargosPorApoderado(encargos), [encargos]);
 
   function cambiarDatoAceptacion(encargo, campo, valor) {
     const id = String(encargo.id_expediente || encargo.id);
@@ -483,26 +484,30 @@ function TablaEncargos({ encargos, onFirmado }) {
         const direccionNotario = [notarioCtn?.direccion, notarioCtn?.cp].filter(Boolean).join(" · ");
         const ubicacionNotario = [notarioCtn?.municipio, notarioCtn?.provincia].filter(Boolean).join(" · ");
         return (
-          <section className="ag-panel ag-grupo-notario" key={grupo.clave}>
-            <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
-              <span className="ag-notario-grupo-icono" aria-hidden="true">{abierto ? "⌄" : "›"}</span>
+          <section className="ag-panel ag-grupo-notario ag-grupo-apoderado" key={grupo.clave}>
+            <button type="button" className="ag-panel-cabecera ag-notario-grupo-trigger ag-apoderado-grupo-trigger" aria-expanded={abierto} onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: !actual[grupo.clave] }))}>
+              <span className="ag-notario-grupo-icono" aria-hidden="true">♙</span>
               <span className="ag-notario-grupo-info">
                 <span className="ag-notario-linea-unica">
                   <strong>{grupo.nombre}</strong>
-                  <span className="ag-notario-dato-inline"><b>NIF</b>{grupo.nif || notarioCtn?.nif || "—"}</span>
-                  {direccionNotario && <span className="ag-notario-dato-inline"><b>Dirección</b>{direccionNotario}</span>}
-                  {ubicacionNotario && <span className="ag-notario-dato-inline"><b>Localidad</b>{ubicacionNotario}</span>}
-                  {notarioCtn?.telefono && <span className="ag-notario-dato-inline"><b>Tel.</b>{notarioCtn.telefono}</span>}
-                  {!notarioCtn && <span className="ag-notario-sin-ficha">Sin ficha de contacto CTN</span>}
+                  <span className="ag-notario-dato-inline"><b>Encargos</b>{grupo.expedientes.length}</span>
                 </span>
               </span>
               <span className="ag-notario-contadores">
-                <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "expediente pendiente" : "expedientes pendientes"}</span>
+                <span className="ag-contador ag-contador-firmas">✓ {grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas</span>
+                <span className="ag-contador">{grupo.expedientes.length} {grupo.expedientes.length === 1 ? "encargo" : "encargos"}</span>
                 <span className={`ag-contador-bloqueados${expedientesBloqueados > 0 ? " tiene-bloqueados" : ""}`}>{expedientesBloqueados} {expedientesBloqueados === 1 ? "bloqueado" : "bloqueados"}</span>
+                <span className="ag-contador">Ver encargos →</span>
               </span>
             </button>
             {abierto ? (
-              <div className="ag-encargos-detalle-lista ag-ficha-premium">
+              <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
+                <div className="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+                  <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
+                    <div><span className="text-xs font-semibold uppercase tracking-widest text-slate-500">APODERAGEST · BLOQUE DE APODERADO</span><h3 className="mt-1 text-xl font-bold text-slate-900">{grupo.nombre}</h3><p className="text-sm text-slate-600">{grupo.expedientes.filter((e) => e.fecha_firma && e.protocolo).length} firmas registradas · {grupo.expedientes.length} encargos</p></div>
+                    <button type="button" className="rounded-xl border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100" onClick={() => setAbiertos(actual => ({ ...actual, [grupo.clave]: false }))}>Cerrar ✕</button>
+                  </header>
+                  <div className="ag-encargos-detalle-lista ag-ficha-premium overflow-y-auto p-4">
                 {grupo.expedientes.map((encargo, indice) => {
                   const id = String(encargo.id_expediente || encargo.id || indice);
                   const detalleAbierto = Boolean(abiertos[`exp-${id}`]);
@@ -704,6 +709,8 @@ function TablaEncargos({ encargos, onFirmado }) {
                     </article>
                   );
                 })}
+                  </div>
+                </div>
               </div>
             ) : null}
           </section>
