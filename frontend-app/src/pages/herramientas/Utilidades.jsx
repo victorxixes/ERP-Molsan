@@ -40,7 +40,7 @@ export default function Utilidades() {
       </Grupo>
 
       <Grupo titulo="Integraciones y comunicaciones" descripcion="Seguimiento de los procesos de intercambio de información con los sistemas de nuestros clientes.">
-        <Card icon="🔄" titulo="Proceso de ABSIS" descripcion="Control visual de actividades pendientes de envío, incidencias y seguimiento de encargos ABSIS." onClick={() => setAbsisAbierto((abierto) => !abierto)} destacado />
+        <Card icon="🔄" titulo="Proceso de ABSIS" descripcion="Control visual de actividades pendientes de envío, incidencias y seguimiento de encargos ABSIS." onClick={() => setAbsisAbierto((abierto) => !abierto)} enConstruccion destacado />
       </Grupo>
 
       {absisAbierto && (
