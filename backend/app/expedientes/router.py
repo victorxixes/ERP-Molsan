@@ -1146,6 +1146,53 @@ def resumen_expedientes(
 
 
 # ============================================================
+# CATÁLOGOS GLOBALES PARA FILTROS DEL LISTADO
+# ============================================================
+
+@router.get("/catalogos-listado")
+def catalogos_listado_expedientes(
+    db: Session = Depends(get_db),
+):
+    """Devuelve opciones globales para los filtros, sin depender de la página actual."""
+
+    def valores_distintos(columna):
+        filas = (
+            db.query(columna)
+            .filter(columna.isnot(None))
+            .distinct()
+            .all()
+        )
+        valores = {
+            str(fila[0]).strip()
+            for fila in filas
+            if fila and fila[0] is not None and str(fila[0]).strip()
+        }
+        return sorted(valores, key=lambda valor: valor.casefold())
+
+    registros = valores_distintos(ExpedienteFinca.registro)
+    estados_actividad = valores_distintos(Expediente.estado_actividad)
+    estados_expediente = valores_distintos(Expediente.estado_expediente)
+
+    # Las actividades del flujo son un catálogo funcional, no una lista inferida
+    # de los expedientes importados. Debe incluir también Sede notarial con protocolo
+    # aunque todavía no haya filas de esa actividad en el Excel importado.
+    actividades = [
+        {
+            "key": actividad["key"],
+            "actividad": actividad["label"],
+        }
+        for actividad in ACTIVIDADES_EXPEDIENTES
+    ]
+
+    return {
+        "registros": registros,
+        "estados_actividad": estados_actividad,
+        "estados_expediente": estados_expediente,
+        "actividades": actividades,
+    }
+
+
+# ============================================================
 # EXPORTACIÓN A EXCEL
 # ============================================================
 
