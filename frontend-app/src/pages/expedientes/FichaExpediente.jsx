@@ -4123,6 +4123,13 @@ const cuantiaFincasParaEnvio =
             >
               ✉️ Reclamar a oficina
             </button>
+            <a
+              href={`/herramientas/utilidades/correspondencia-tipificada?expediente=${encodeURIComponent(expediente?.id_expediente || id || "")}`}
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-[11px] font-bold leading-tight text-indigo-700 shadow-sm transition hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              title="Generar correspondencia tipificada para este expediente"
+            >
+              📝 Correspondencia tipificada
+            </a>
             <button
               type="button"
               onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")}
