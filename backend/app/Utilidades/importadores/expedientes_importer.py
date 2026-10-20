@@ -688,6 +688,18 @@ def importar_excel_expedientes(
                     clave
                 ] = exp
 
+    # Cargar catálogos una sola vez para enlazar IDs estables.
+    try:
+        notarios_catalogo = db.query(Notaria).all()
+    except Exception as exc:
+        print(f"IMPORTADOR: no se pudo cargar catálogo CTN: {exc}", flush=True)
+        notarios_catalogo = []
+    try:
+        empleados_catalogo = db.query(Empleado).filter(Empleado.activo.is_(True)).all()
+    except Exception as exc:
+        print(f"IMPORTADOR: no se pudo cargar catálogo de empleados: {exc}", flush=True)
+        empleados_catalogo = []
+
     print(
         f"EXPEDIENTES YA EXISTENTES: "
         f"{len(existentes_por_id)}",
