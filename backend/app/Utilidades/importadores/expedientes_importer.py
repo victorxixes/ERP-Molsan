@@ -334,9 +334,8 @@ def importar_finca_relacionada(db, expediente, row):
     clave_registro = clave_vinculacion(registro)
     destino = next((
         item for item in existentes
-        if clave_vinculacion(getattr(item, "finca", None)) == clave_finca
-        and clave_vinculacion(getattr(item, "registro", None)) == clave_registro
-        and (clave_finca or clave_registro)
+        if (clave_finca and clave_vinculacion(getattr(item, "finca", None)) == clave_finca)
+        and (not clave_registro or clave_vinculacion(getattr(item, "registro", None)) == clave_registro)
     ), None)
     if destino is None:
         destino = ExpedienteFinca(expediente_id=expediente.id)
@@ -746,16 +745,8 @@ def importar_excel_expedientes(
                 ] = exp
 
     # Cargar catálogos una sola vez para enlazar IDs estables.
-    try:
-        notarios_catalogo = db.query(Notaria).all()
-    except Exception as exc:
-        print(f"IMPORTADOR: no se pudo cargar catálogo CTN: {exc}", flush=True)
-        notarios_catalogo = []
-    try:
-        empleados_catalogo = db.query(Empleado).filter(Empleado.activo.is_(True)).all()
-    except Exception as exc:
-        print(f"IMPORTADOR: no se pudo cargar catálogo de empleados: {exc}", flush=True)
-        empleados_catalogo = []
+    notarios_catalogo = db.query(Notaria).all()
+    empleados_catalogo = db.query(Empleado).filter(Empleado.activo.is_(True)).all()
 
     print(
         f"EXPEDIENTES YA EXISTENTES: "
