@@ -45,28 +45,6 @@ function normalizar(valor) {
     .toLowerCase();
 }
 
-function tienePermisoVer(permisos, clave) {
-  const permiso = permisos?.[clave] ?? permisos?.["*"];
-
-  if (Array.isArray(permiso)) {
-    return permiso.some((accion) => normalizar(accion) === "ver");
-  }
-
-  if (permiso && typeof permiso === "object") {
-    return (
-      permiso.ver === true ||
-      permiso.ver === 1 ||
-      normalizar(permiso.ver) === "true"
-    );
-  }
-
-  if (typeof permiso === "string") {
-    return normalizar(permiso) === "ver";
-  }
-
-  return false;
-}
-
 export default function ModulosSelector() {
   const navigate = useNavigate();
   const empleado = useAuthStore((state) => state.empleado);
@@ -77,10 +55,6 @@ export default function ModulosSelector() {
   const modulosDisponibles = useMemo(() => {
     if (!empleado) return [];
 
-    const rol = normalizar(
-      empleado.rol_nombre || empleado.rol?.nombre
-    );
-
     const visiblesRaw =
       empleado.modulos_visibles_list ?? empleado.modulos_visibles;
 
@@ -88,24 +62,11 @@ export default function ModulosSelector() {
       ? visiblesRaw.map(normalizar)
       : [];
 
-    const permisos =
-      empleado.permisos_modulo_dict ||
-      empleado.permisos_modulo ||
-      {};
-
-    let candidatos;
-
-    if (rol.includes("director")) {
-      candidatos = ["apoderagest", "cancelagest", "notargest", "encargagest"];
-    } else if (rol.includes("apoderado")) {
-      candidatos = ["apoderagest", "cancelagest"];
-    } else {
-      candidatos = Object.keys(MODULOS);
-    }
-
-    return candidatos
+    // La ficha del empleado decide qué aplicaciones aparecen.
+    // El rol no debe ocultar módulos asignados y los permisos por acción
+    // se siguen aplicando dentro del módulo/API, de forma independiente.
+    return Object.keys(MODULOS)
       .filter((clave) => visibles.includes(clave))
-      .filter((clave) => tienePermisoVer(permisos, clave))
       .map((clave) => ({ clave, ...MODULOS[clave] }));
   }, [empleado]);
 
@@ -178,7 +139,7 @@ export default function ModulosSelector() {
             No hay módulos disponibles para esta cuenta
           </h2>
           <p className="mt-2 text-sm leading-6 text-amber-900">
-            Comprueba en la ficha del empleado los módulos visibles y que el permiso «ver» esté activado.
+            Para mostrar una aplicación, márcala en «Módulos visibles» dentro de la ficha del empleado. Los permisos para consultar, crear, editar o eliminar se configuran por separado.
           </p>
           <p className="mt-3 break-all text-xs text-amber-800">
             Rol detectado: {empleado.rol_nombre || empleado.rol?.nombre || "No informado"}
