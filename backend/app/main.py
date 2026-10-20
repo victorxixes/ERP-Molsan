@@ -294,6 +294,7 @@ from backend.app.dashboard.router import router as dashboard_router
 
 # UTILIDADES
 from backend.app.Utilidades.router import router as utilidades_router
+from backend.app.complementos_saldo import router as complementos_saldo_router, ComplementoSaldo
 from backend.app.informes.router import router as informes_router
 from backend.app.informes.firmas_notarios_router import (
     router as informes_firmas_notarios_router,
@@ -445,6 +446,7 @@ app.include_router(defectos_router, prefix="/api")
 
 # UTILIDADES E INFORMES
 app.include_router(utilidades_router, prefix="/api")
+app.include_router(complementos_saldo_router, prefix="/api")
 app.include_router(informes_router, prefix="/api")
 app.include_router(informes_firmas_notarios_router, prefix="/api")
 app.include_router(router_absis, prefix="/api")
@@ -858,6 +860,9 @@ def inicializar_tablas_auxiliares():
             bind=engine,
             checkfirst=True,
         )
+
+        ComplementoSaldo.__table__.create(bind=engine, checkfirst=True)
+        print("[COMPLEMENTOS SALDO] Tabla disponible.", flush=True)
 
         EmailReclamacion.__table__.create(
             bind=engine,
