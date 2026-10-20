@@ -92,12 +92,6 @@ def add_columna_gestoria_expedientes(
 # REASIGNACIÓN MANUAL DEL GESTOR DE UN EXPEDIENTE
 # ============================================================
 
-from pydantic import BaseModel
-from fastapi import HTTPException
-from backend.app.empleados.models import Empleado
-from backend.app.expedientes.models import Expediente
-
-
 class ReasignarGestorRequest(BaseModel):
     numero_expediente: str
     gestor_id: int
