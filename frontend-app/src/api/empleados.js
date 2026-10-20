@@ -313,36 +313,49 @@ export const resetPasswordEmpleado =
 
 export const listarApoderados =
   async () => {
+    const res = await listarEmpleados();
+    const normalizar = (valor) => String(valor || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toLowerCase();
 
-    const res =
-      await listarEmpleados();
+    // La ficha laboral devuelve seccion_nombre y cargo_nombre.
+    // El criterio principal es la sección «Apoderado»; conservamos
+    // compatibilidad con los indicadores/roles antiguos del empleado.
+    const lista = Array.isArray(res.data)
+      ? res.data.filter((empleado) => {
+          const seccion = normalizar(
+            empleado.seccion_nombre ||
+            empleado.seccion?.nombre ||
+            empleado.seccion ||
+            ""
+          );
+          const cargo = normalizar(
+            empleado.cargo_nombre ||
+            empleado.cargo?.nombre ||
+            empleado.cargo ||
+            ""
+          );
+          const rol = normalizar(
+            empleado.rol_nombre ||
+            empleado.rol?.nombre ||
+            empleado.rol
+          );
 
-    const lista =
-      Array.isArray(
-        res.data
-      )
-        ? res.data.filter(
-            (empleado) =>
-              empleado.apoderado ===
-                true ||
+          return (
+            seccion === "apoderado" ||
+            seccion.includes("apoderado") ||
+            cargo === "apoderado" ||
+            cargo.includes("apoderado") ||
+            empleado.apoderado === true ||
+            empleado.es_apoderado === true ||
+            rol === "apoderado"
+          );
+        })
+      : [];
 
-              empleado.es_apoderado ===
-                true ||
-
-              empleado.rol ===
-                "apoderado" ||
-
-              empleado.rol?.nombre
-                ?.toLowerCase() ===
-                "apoderado"
-          )
-        : [];
-
-
-    return {
-      data:
-        lista,
-    };
+    return { data: lista };
   };
 
 
