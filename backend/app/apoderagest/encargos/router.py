@@ -138,13 +138,16 @@ def _es_administrador_apoderagest(usuario) -> bool:
 def obtener_encargos(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
-    pendientes: bool = Query(True, description="Solo envíos pendientes de firma"),
+    pendientes: bool | None = Query(None, description="Filtrar solo envíos pendientes de firma"),
 ):
     administrador = _es_administrador_apoderagest(usuario)
+    # El apoderado mantiene su bandeja de pendientes; el administrador ve
+    # todos los encargos, incluidos los que ya tienen firma y protocolo.
+    solo_pendientes = pendientes if pendientes is not None else not administrador
     return listar_encargos(
         db,
         usuario,
-        solo_pendientes=pendientes,
+        solo_pendientes=solo_pendientes,
         todos=administrador,
     )
 
