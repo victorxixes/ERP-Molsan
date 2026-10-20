@@ -2612,7 +2612,7 @@ export default function ExpedientesListado() {
                               <span className="inline-flex max-w-[220px] items-center rounded-full border px-2.5 py-1 text-xs font-semibold whitespace-normal" style={estiloEstado(expediente[columna.key])} title={String(expediente[columna.key])}>
                                 {formatearValor(expediente[columna.key], columna.tipo)}
                               </span>
-                            ) : formatearValor(expediente[columna.key], columna.tipo)
+                            ) : formatearValor(expediente[columna.key], columna.tipo)}
 
                           </td>
 
