@@ -52,8 +52,8 @@ export default function HonorariosGestoria() {
     try {
       if (editando) await axios.put(`/honorarios-gestoria/${editando}`, payload);
       else await axios.post("/honorarios-gestoria", payload);
-      setMensaje("Honorario guardado correctamente.");
       nuevo();
+      setMensaje("Honorario guardado correctamente.");
       await cargar();
     } catch (e) {
       setError(e?.response?.data?.detail || "No se pudo guardar el honorario.");
