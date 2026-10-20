@@ -4171,32 +4171,6 @@ const cuantiaFincasParaEnvio =
 
           {/* ESTADO */}
 
-          <nav
-            aria-label="Accesos rápidos a la ficha del expediente"
-            className="sticky top-2 z-20 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur"
-          >
-            <p className="mb-2 text-xs font-bold text-slate-700">Accesos rápidos</p>
-            <p className="mb-3 text-[11px] text-slate-500">Pulsa una opción para ir directamente a esa parte de la ficha.</p>
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {[
-                ["ficha-estado", "Estado y actividad"],
-                ["ficha-fincas", "Fincas y registros"],
-                ["ficha-acciones", "Acciones"],
-                ["ficha-observaciones", "Observaciones"],
-                ["ficha-ppad", "PPAD"],
-                ["ficha-economica", "Información económica"],
-              ].map(([destino, etiqueta]) => (
-                <a
-                  key={destino}
-                  href={`#${destino}`}
-                  className="shrink-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                >
-                  {etiqueta}
-                </a>
-              ))}
-            </div>
-          </nav>
-
           <Seccion
             id="ficha-estado"
             titulo="Estado"
