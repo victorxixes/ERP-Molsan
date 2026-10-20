@@ -2,6 +2,7 @@ from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from typing import Optional, List, Any, Dict
 import io
+import logging
 import json
 import unicodedata
 
@@ -31,6 +32,8 @@ from backend.app.expedientes.defectos.models import ExpedienteDefecto
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.expedientes.reparto import asignar_gestor_automaticamente
 
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/expedientes",
@@ -75,7 +78,11 @@ def migrar_campos_workflow_actividades(
         return {"ok": True, "mensaje": "Migración de actividades completada.", "columnas_creadas_o_verificadas": list(columnas.keys())}
     except Exception as exc:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"No se pudo migrar las columnas de actividades: {str(exc)[:400]}")
+        logger.exception("Error al aplicar la migración de actividades de expedientes")
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudo completar la migración de actividades. Consulta los logs del backend.",
+        ) from exc
 
 
 # ============================================================
