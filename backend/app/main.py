@@ -316,6 +316,9 @@ from backend.app.tipos_carga_hipotecaria.router import (
 from backend.app.expediente_ppad.router import (
     router as expediente_ppad_router,
 )
+from backend.app.expediente_ppad.utilidades_router import (
+    router as utilidades_ppad_router,
+)
 
 # OBSERVACIONES
 from backend.app.expediente_observaciones.router import (
@@ -462,6 +465,7 @@ app.include_router(migracion_defectos_router, prefix="/api")
 
 # PPAD
 app.include_router(expediente_ppad_router, prefix="/api")
+app.include_router(utilidades_ppad_router, prefix="/api")
 
 # OBSERVACIONES
 app.include_router(expediente_observaciones_router, prefix="/api")
@@ -892,6 +896,18 @@ def inicializar_tablas_auxiliares():
             bind=engine,
             checkfirst=True,
         )
+
+        # Migración compatible con la tabla PPAD ya existente.
+        with engine.begin() as conexion_ppad:
+            conexion_ppad.execute(text(
+                "ALTER TABLE public.expediente_ppad "
+                "ADD COLUMN IF NOT EXISTS compensado BOOLEAN NOT NULL DEFAULT FALSE"
+            ))
+            conexion_ppad.execute(text(
+                "ALTER TABLE public.expediente_ppad "
+                "ADD COLUMN IF NOT EXISTS fecha_compensacion TIMESTAMP WITH TIME ZONE"
+            ))
+        print("[PPAD] Campos de compensación comprobados.", flush=True)
 
         ExpedienteObservacion.__table__.create(
             bind=engine,
