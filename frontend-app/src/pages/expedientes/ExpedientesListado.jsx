@@ -2281,7 +2281,7 @@ export default function ExpedientesListado() {
                 </span>
               ) : (
                 <span className="absolute left-1 top-1 w-2 h-2 rounded-full" style={{ background: !actividadSeleccionada && !alertaSeleccionada ? "#fff" : "var(--erp-primary)" }} />
-              )
+              )}
             </button>
 
             <div className="my-2 border-t" style={{ borderColor: "var(--erp-border)" }} />
