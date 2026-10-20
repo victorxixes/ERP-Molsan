@@ -12,6 +12,7 @@ import {
   exportarExcelExpedientes,
   obtenerResumenExpedientes,
   obtenerAlertasControlExpedientes,
+  obtenerCatalogosListadoExpedientes,
 } from "../../api/expedientes";
 
 
@@ -495,12 +496,10 @@ const COLUMNAS = [
   { key: "ultima_accion", label: "Última acción", tipo: "texto" },
   { key: "fecha_ultima_accion", label: "Fecha última acción", tipo: "fecha" },
   { key: "fecha_envio", label: "Fecha de envío", tipo: "fecha" },
-  { key: "apoderado", label: "Apoderado", tipo: "texto" },
   { key: "tipo_documento", label: "Tipo documento", tipo: "texto" },
   { key: "poblacion", label: "Población", tipo: "texto" },
   { key: "provincia", label: "Provincia", tipo: "texto" },
   { key: "tipo_firma", label: "Tipo de firma", tipo: "texto" },
-  { key: "protocolo", label: "Protocolo", tipo: "texto" },
   { key: "asiento_presentacion_libro_diario", label: "Asiento presentación / Libro diario", tipo: "texto" },
   { key: "fecha_presentacion", label: "Fecha presentación", tipo: "fecha" },
   { key: "numero_entrada", label: "Número de Entrada", tipo: "texto" },
@@ -654,12 +653,38 @@ const COLUMNAS_TRAMITACION_INSCRIPCION = [
   "escritura_simple_cancelacion",
 ];
 
+const COLUMNAS_DEFECTOS_REGISTRALES = [
+  ...COLUMNAS_BASE_ACTIVIDAD,
+  "tiene_defectos_abiertos",
+  "tipo_error",
+  "descripcion_error",
+  "falta_defecto",
+  "fcierre_defecto",
+  "fecha_vencimiento",
+  "ultima_accion",
+  "fecha_ultima_accion",
+];
+
+const COLUMNAS_FACTURACION_CIERRE = [
+  ...COLUMNAS_BASE_ACTIVIDAD,
+  "fecha_firma",
+  "fecha_inscripcion",
+  "facturacion_estado",
+  "facturacion_fecha",
+  "fecha_entregado_cliente",
+  "fecha_fin_actividad",
+  "saldo_real",
+  "saldo_disponible",
+];
+
 const COLUMNAS_POR_ACTIVIDAD = {
   "documentacion-previa": COLUMNAS_DOCUMENTACION_PREVIA,
   "sede-notarial": COLUMNAS_SEDE_NOTARIAL,
   "sede-notarial-protocolo": COLUMNAS_SEDE_NOTARIAL_PROTOCOLO,
   "liquidacion-impuestos": COLUMNAS_LIQUIDACION_IMPUESTOS,
   "tramitacion-inscripcion": COLUMNAS_TRAMITACION_INSCRIPCION,
+  "defectos-registrales": COLUMNAS_DEFECTOS_REGISTRALES,
+  "facturacion-cierre": COLUMNAS_FACTURACION_CIERRE,
 };
 
 function obtenerColumnasActividad(actividad) {
@@ -713,23 +738,10 @@ function formatearValor(
       String(valor);
 
 
-    if (
-      /^\d{4}-\d{2}-\d{2}$/.test(
-        texto
-      )
-    ) {
-
-      const [
-        year,
-        month,
-        day,
-      ] = texto.split("-");
-
-
-      return (
-        `${day}/${month}/${year}`
-      );
-
+    const coincidenciaFecha = texto.match(/^(\d{4})-(\d{2})-(\d{2})(?:$|T)/);
+    if (coincidenciaFecha) {
+      const [, year, month, day] = coincidenciaFecha;
+      return `${day}/${month}/${year}`;
     }
 
 
@@ -777,6 +789,18 @@ function formatearValor(
 
 }
 
+
+// ============================================================
+// ESTILO DE ETIQUETAS DE ESTADO
+// ============================================================
+
+function estiloEstado(valor) {
+  const estado = String(valor || "").toLocaleLowerCase("es-ES");
+  if (/vencid|bloquead|error|rechaz|defecto|urgente|atrasad/.test(estado)) return { background: "#fef2f2", color: "#991b1b", borderColor: "#fecaca" };
+  if (/pendient|espera|revis|tramit|proceso/.test(estado)) return { background: "#fffbeb", color: "#92400e", borderColor: "#fde68a" };
+  if (/finaliz|cerrad|complet|inscrit|entregad|facturad|firmad|correcto/.test(estado)) return { background: "#ecfdf5", color: "#065f46", borderColor: "#a7f3d0" };
+  return { background: "var(--erp-surface-soft)", color: "var(--erp-text)", borderColor: "var(--erp-border)" };
+}
 
 // ============================================================
 // FORMATEAR NÚMERO
@@ -875,6 +899,28 @@ export default function ExpedientesListado() {
   const [filtroEstadoActividad, setFiltroEstadoActividad] = useState("");
   const [filtroActividad, setFiltroActividad] = useState("");
   const [filtroEstadoExpediente, setFiltroEstadoExpediente] = useState("");
+  const [filtroOrigenBankia, setFiltroOrigenBankia] = useState("");
+  const [filtroProductoGtg, setFiltroProductoGtg] = useState("");
+  const [filtroApoderado, setFiltroApoderado] = useState("");
+  const [filtroTipoProvision, setFiltroTipoProvision] = useState("");
+  const [filtroTipoOperacion, setFiltroTipoOperacion] = useState("");
+  const [filtroSubtipoOperacion, setFiltroSubtipoOperacion] = useState("");
+  const [filtroNombreGestoria, setFiltroNombreGestoria] = useState("");
+  const [filtroOficinaAlta, setFiltroOficinaAlta] = useState("");
+  const [filtroDan, setFiltroDan] = useState("");
+  const [filtroTipoError, setFiltroTipoError] = useState("");
+  const [filtroEstadoExpedienteAncert, setFiltroEstadoExpedienteAncert] = useState("");
+  const [filtroTipoActa, setFiltroTipoActa] = useState("");
+  const [filtroContrato, setFiltroContrato] = useState("");
+  const [filtroTipoFirma, setFiltroTipoFirma] = useState("");
+  const [filtroTipoDocumento, setFiltroTipoDocumento] = useState("");
+  const [filtroProvincia, setFiltroProvincia] = useState("");
+  const [filtroPoblacion, setFiltroPoblacion] = useState("");
+  const [filtroTributacion, setFiltroTributacion] = useState("");
+  const [filtroEstadoRegistral, setFiltroEstadoRegistral] = useState("");
+  const [filtroEstadoFacturacion, setFiltroEstadoFacturacion] = useState("");
+  const [filtroTieneDefectosAbiertos, setFiltroTieneDefectosAbiertos] = useState("");
+  const [filtroFaltaDefecto, setFiltroFaltaDefecto] = useState("");
 
   const [filtrosAplicados, setFiltrosAplicados] = useState({
     numeroExpediente: "",
@@ -885,6 +931,14 @@ export default function ExpedientesListado() {
     registroPropiedad: "", saldoReal: "", saldoDisponible: "",
     importe: "", observaciones: "", estadoActividad: "",
     actividad: "", estadoExpediente: "",
+    origenBankia: "", productoGtg: "", apoderado: "",
+    tipoProvision: "", tipoOperacion: "", subtipoOperacion: "",
+    nombreGestoria: "", oficinaAlta: "", dan: "",
+    tipoError: "", estadoExpedienteAncert: "", tipoActa: "",
+    contrato: "", tipoFirma: "", tipoDocumento: "", provincia: "",
+    poblacion: "", tributacion: "", estadoRegistral: "", estadoFacturacion: "",
+    tieneDefectosAbiertos: "",
+    faltaDefecto: "",
   });
 
 
@@ -931,6 +985,41 @@ export default function ExpedientesListado() {
     actividades,
     setActividades,
   ] = useState([]);
+
+  // Catálogos globales: no se calculan con los 20 expedientes de la página actual.
+  const [catalogosListado, setCatalogosListado] = useState({
+    registros: [],
+    estados_actividad: [],
+    estados_expediente: [],
+    actividades: [],
+    oficinas: [],
+    oficinas_alta: [],
+    dans: [],
+    origenes_bankia: [],
+    productos_gtg: [],
+    apoderados: [],
+    tipos_provision: [],
+    contratos: [],
+    tipos_operacion: [],
+    subtipos_operacion: [],
+    gestorias: [],
+    tipos_error: [],
+    defectos_abiertos: [],
+    falta_defecto: [],
+    estados_ancert: [],
+    tipos_acta: [],
+    tipos_firma: [],
+    tipos_documento: [],
+    provincias: [],
+    poblaciones: [],
+    tributaciones: [],
+    estados_registrales: [],
+    estados_facturacion: [],
+    dts: [],
+    vinccancs: [],
+    lucys: [],
+    notarios: [],
+  });
 
 
   const [
@@ -1077,6 +1166,28 @@ export default function ExpedientesListado() {
             actividadActual: filtrosAplicados.actividad || undefined,
             alerta: alertaSeleccionada || undefined,
             estadoExpediente: filtrosAplicados.estadoExpediente || undefined,
+            origenBankia: filtrosAplicados.origenBankia || undefined,
+            productoGtg: filtrosAplicados.productoGtg || undefined,
+            apoderado: filtrosAplicados.apoderado || undefined,
+            tipoProvision: filtrosAplicados.tipoProvision || undefined,
+            tipoOperacion: filtrosAplicados.tipoOperacion || undefined,
+            subtipoOperacion: filtrosAplicados.subtipoOperacion || undefined,
+            nombreGestoria: filtrosAplicados.nombreGestoria || undefined,
+            oficinaAlta: filtrosAplicados.oficinaAlta || undefined,
+            dan: filtrosAplicados.dan || undefined,
+            tipoError: filtrosAplicados.tipoError || undefined,
+            estadoExpedienteAncert: filtrosAplicados.estadoExpedienteAncert || undefined,
+            tipoActa: filtrosAplicados.tipoActa || undefined,
+            contrato: filtrosAplicados.contrato || undefined,
+            tipoFirma: filtrosAplicados.tipoFirma || undefined,
+            tipoDocumento: filtrosAplicados.tipoDocumento || undefined,
+            provincia: filtrosAplicados.provincia || undefined,
+            poblacion: filtrosAplicados.poblacion || undefined,
+            tributacion: filtrosAplicados.tributacion || undefined,
+            estadoRegistral: filtrosAplicados.estadoRegistral || undefined,
+            estadoFacturacion: filtrosAplicados.estadoFacturacion || undefined,
+            tieneDefectosAbiertos: filtrosAplicados.tieneDefectosAbiertos || undefined,
+            faltaDefecto: filtrosAplicados.faltaDefecto || undefined,
 
             ordenMultiple:
               ordenMultiple.length > 0
@@ -1202,6 +1313,73 @@ export default function ExpedientesListado() {
     }
 
     cargarAlertasControl();
+    return () => { activo = false; };
+  }, [recargaRealtime]);
+
+  // ==========================================================
+  // CARGAR CATÁLOGOS GLOBALES PARA FILTROS
+  // ==========================================================
+
+  useEffect(() => {
+    let activo = true;
+
+    async function cargarCatalogosListado() {
+      try {
+        const res = await obtenerCatalogosListadoExpedientes();
+        if (!activo) return;
+        setCatalogosListado({
+          registros: Array.isArray(res?.registros) ? res.registros : [],
+          estados_actividad: Array.isArray(res?.estados_actividad) ? res.estados_actividad : [],
+          estados_expediente: Array.isArray(res?.estados_expediente) ? res.estados_expediente : [],
+          actividades: Array.isArray(res?.actividades) ? res.actividades : [],
+          oficinas: Array.isArray(res?.oficinas) ? res.oficinas : [],
+          oficinas_alta: Array.isArray(res?.oficinas_alta) ? res.oficinas_alta : [],
+          dans: Array.isArray(res?.dans) ? res.dans : [],
+          origenes_bankia: Array.isArray(res?.origenes_bankia) ? res.origenes_bankia : [],
+          productos_gtg: Array.isArray(res?.productos_gtg) ? res.productos_gtg : [],
+          apoderados: Array.isArray(res?.apoderados) ? res.apoderados : [],
+          tipos_provision: Array.isArray(res?.tipos_provision) ? res.tipos_provision : [],
+          contratos: Array.isArray(res?.contratos) ? res.contratos : [],
+          tipos_operacion: Array.isArray(res?.tipos_operacion) ? res.tipos_operacion : [],
+          subtipos_operacion: Array.isArray(res?.subtipos_operacion) ? res.subtipos_operacion : [],
+          gestorias: Array.isArray(res?.gestorias) ? res.gestorias : [],
+          tipos_error: Array.isArray(res?.tipos_error) ? res.tipos_error : [],
+          defectos_abiertos: Array.isArray(res?.defectos_abiertos) ? res.defectos_abiertos : [],
+          falta_defecto: Array.isArray(res?.falta_defecto) ? res.falta_defecto : [],
+          estados_ancert: Array.isArray(res?.estados_ancert) ? res.estados_ancert : [],
+          tipos_acta: Array.isArray(res?.tipos_acta) ? res.tipos_acta : [],
+          tipos_firma: Array.isArray(res?.tipos_firma) ? res.tipos_firma : [],
+          tipos_documento: Array.isArray(res?.tipos_documento) ? res.tipos_documento : [],
+          provincias: Array.isArray(res?.provincias) ? res.provincias : [],
+          poblaciones: Array.isArray(res?.poblaciones) ? res.poblaciones : [],
+          tributaciones: Array.isArray(res?.tributaciones) ? res.tributaciones : [],
+          estados_registrales: Array.isArray(res?.estados_registrales) ? res.estados_registrales : [],
+          estados_facturacion: Array.isArray(res?.estados_facturacion) ? res.estados_facturacion : [],
+          dts: Array.isArray(res?.dts) ? res.dts : [],
+          vinccancs: Array.isArray(res?.vinccancs) ? res.vinccancs : [],
+          lucys: Array.isArray(res?.lucys) ? res.lucys : [],
+          notarios: Array.isArray(res?.notarios) ? res.notarios : [],
+        });
+      } catch (err) {
+        console.error("Error cargando catálogos globales del listado:", err);
+        if (activo) {
+          setCatalogosListado({
+            registros: [],
+            estados_actividad: [],
+            estados_expediente: [],
+            actividades: [],
+            oficinas: [], oficinas_alta: [], dans: [], origenes_bankia: [],
+            productos_gtg: [], apoderados: [], tipos_provision: [], contratos: [],
+            tipos_operacion: [], subtipos_operacion: [], gestorias: [], tipos_error: [], defectos_abiertos: [],
+            falta_defecto: [], estados_ancert: [], tipos_acta: [], tipos_firma: [], tipos_documento: [],
+            provincias: [], poblaciones: [], tributaciones: [], estados_registrales: [],
+            estados_facturacion: [], dts: [], vinccancs: [], lucys: [], notarios: [],
+          });
+        }
+      }
+    }
+
+    cargarCatalogosListado();
     return () => { activo = false; };
   }, [recargaRealtime]);
 
@@ -1485,6 +1663,28 @@ export default function ExpedientesListado() {
       estadoActividad: filtroEstadoActividad,
       actividad: filtroActividad,
       estadoExpediente: filtroEstadoExpediente.trim(),
+      origenBankia: filtroOrigenBankia,
+      productoGtg: filtroProductoGtg,
+      apoderado: filtroApoderado,
+      tipoProvision: filtroTipoProvision,
+      tipoOperacion: filtroTipoOperacion,
+      subtipoOperacion: filtroSubtipoOperacion,
+      nombreGestoria: filtroNombreGestoria,
+      oficinaAlta: filtroOficinaAlta,
+      dan: filtroDan,
+      tipoError: filtroTipoError,
+      estadoExpedienteAncert: filtroEstadoExpedienteAncert,
+      tipoActa: filtroTipoActa,
+      contrato: filtroContrato,
+      tipoFirma: filtroTipoFirma,
+      tipoDocumento: filtroTipoDocumento,
+      provincia: filtroProvincia,
+      poblacion: filtroPoblacion,
+      tributacion: filtroTributacion,
+      estadoRegistral: filtroEstadoRegistral,
+      estadoFacturacion: filtroEstadoFacturacion,
+      tieneDefectosAbiertos: filtroTieneDefectosAbiertos,
+      faltaDefecto: filtroFaltaDefecto,
     });
     setPagina(1);
     setError("");
@@ -1520,6 +1720,28 @@ export default function ExpedientesListado() {
     setFiltroEstadoActividad("");
     setFiltroActividad("");
     setFiltroEstadoExpediente("");
+    setFiltroOrigenBankia("");
+    setFiltroProductoGtg("");
+    setFiltroApoderado("");
+    setFiltroTipoProvision("");
+    setFiltroTipoOperacion("");
+    setFiltroSubtipoOperacion("");
+    setFiltroNombreGestoria("");
+    setFiltroOficinaAlta("");
+    setFiltroDan("");
+    setFiltroTipoError("");
+    setFiltroEstadoExpedienteAncert("");
+    setFiltroTipoActa("");
+    setFiltroContrato("");
+    setFiltroTipoFirma("");
+    setFiltroTipoDocumento("");
+    setFiltroProvincia("");
+    setFiltroPoblacion("");
+    setFiltroTributacion("");
+    setFiltroEstadoRegistral("");
+    setFiltroEstadoFacturacion("");
+    setFiltroTieneDefectosAbiertos("");
+    setFiltroFaltaDefecto("");
     setFiltrosAplicados({
       numeroExpediente: "",
       oficina: "", fechaInicio: "", fechaFin: "",
@@ -1529,6 +1751,14 @@ export default function ExpedientesListado() {
       registroPropiedad: "", saldoReal: "", saldoDisponible: "",
       importe: "", observaciones: "", estadoActividad: "",
       actividad: "", estadoExpediente: "",
+      origenBankia: "", productoGtg: "", apoderado: "",
+      tipoProvision: "", tipoOperacion: "", subtipoOperacion: "",
+      nombreGestoria: "", oficinaAlta: "", dan: "",
+      tipoError: "", estadoExpedienteAncert: "", tipoActa: "",
+      contrato: "", tipoFirma: "", tipoDocumento: "", provincia: "",
+      poblacion: "", tributacion: "", estadoRegistral: "", estadoFacturacion: "",
+      tieneDefectosAbiertos: "",
+      faltaDefecto: "",
     });
     setPagina(1);
     setError("");
@@ -1768,6 +1998,28 @@ export default function ExpedientesListado() {
           actividadActual: filtrosAplicados.actividad || undefined,
           estadoExpediente: filtrosAplicados.estadoExpediente || undefined,
           alerta: alertaSeleccionada || undefined,
+          origenBankia: filtrosAplicados.origenBankia || undefined,
+          productoGtg: filtrosAplicados.productoGtg || undefined,
+          apoderado: filtrosAplicados.apoderado || undefined,
+          tipoProvision: filtrosAplicados.tipoProvision || undefined,
+          tipoOperacion: filtrosAplicados.tipoOperacion || undefined,
+          subtipoOperacion: filtrosAplicados.subtipoOperacion || undefined,
+          nombreGestoria: filtrosAplicados.nombreGestoria || undefined,
+          oficinaAlta: filtrosAplicados.oficinaAlta || undefined,
+          dan: filtrosAplicados.dan || undefined,
+          tipoError: filtrosAplicados.tipoError || undefined,
+          estadoExpedienteAncert: filtrosAplicados.estadoExpedienteAncert || undefined,
+          tipoActa: filtrosAplicados.tipoActa || undefined,
+          contrato: filtrosAplicados.contrato || undefined,
+          tipoFirma: filtrosAplicados.tipoFirma || undefined,
+          tipoDocumento: filtrosAplicados.tipoDocumento || undefined,
+          provincia: filtrosAplicados.provincia || undefined,
+          poblacion: filtrosAplicados.poblacion || undefined,
+          tributacion: filtrosAplicados.tributacion || undefined,
+          estadoRegistral: filtrosAplicados.estadoRegistral || undefined,
+          estadoFacturacion: filtrosAplicados.estadoFacturacion || undefined,
+          tieneDefectosAbiertos: filtrosAplicados.tieneDefectosAbiertos || undefined,
+          faltaDefecto: filtrosAplicados.faltaDefecto || undefined,
         });
 
       } catch (
@@ -1866,10 +2118,9 @@ export default function ExpedientesListado() {
 
   const columnasActivas =
     COLUMNAS.filter(
-      (columna) =>
-        columnasVisibles.includes(
-          columna.key
-        )
+      (columna, indice, catalogo) =>
+        columnasVisibles.includes(columna.key) &&
+        catalogo.findIndex((item) => item.key === columna.key) === indice
     );
 
 
@@ -2134,10 +2385,10 @@ export default function ExpedientesListado() {
                     </h2>
                     <p className="text-sm text-[var(--erp-text-soft)] mt-1">
                       {alertaSeleccionada
-                        ? "Expedientes que cumplen el control seleccionado, combinados con los filtros actuales"
+                        ? "Expedientes que necesitan atención. Puedes combinar este control con los filtros."
                         : actividadSeleccionada
-                          ? "Área de trabajo de la actividad seleccionada"
-                          : "Consulta general de todos los expedientes"}
+                          ? "Expedientes de esta fase. Selecciona «Ver ficha» para continuar el trabajo."
+                          : "Busca un expediente o revisa los avisos de gestión y abre su ficha para trabajar."}
                     </p>
                   </div>
                 </div>
@@ -2215,7 +2466,7 @@ export default function ExpedientesListado() {
             </button>
           )}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-2">
           {[
             { key: "defectos_vencidos", accent: "#b91c1c" },
             { key: "sede_notarial", accent: "#9a3412" },
@@ -2231,7 +2482,7 @@ export default function ExpedientesListado() {
                 type="button"
                 onClick={() => { setAlertaSeleccionada(activa ? "" : config.key); setPagina(1); }}
                 aria-pressed={activa}
-                className="text-left rounded-2xl border p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+                className="text-left rounded-xl border p-3 shadow-sm transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
                 style={{
                   background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)",
                   borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)",
@@ -2529,14 +2780,11 @@ export default function ExpedientesListado() {
                             }
                           >
 
-                            {
-                              formatearValor(
-                                expediente[
-                                  columna.key
-                                ],
-                                columna.tipo
-                              )
-                            }
+                            {["estado_expediente", "estado_actividad", "facturacion_estado", "registral_estado"].includes(columna.key) && expediente[columna.key] ? (
+                              <span className="inline-flex max-w-[220px] items-center rounded-full border px-2.5 py-1 text-xs font-semibold whitespace-normal" style={estiloEstado(expediente[columna.key])} title={String(expediente[columna.key])}>
+                                {formatearValor(expediente[columna.key], columna.tipo)}
+                              </span>
+                            ) : formatearValor(expediente[columna.key], columna.tipo)}
 
                           </td>
 
@@ -2846,7 +3094,7 @@ export default function ExpedientesListado() {
                   Filtros avanzados
                 </h3>
                 <p className="text-sm mt-1" style={{ color: "var(--erp-text-soft)" }}>
-                  Combina varios criterios para localizar expedientes.
+                  Empieza por los datos que conozcas. Puedes combinar varios criterios; los campos están agrupados por tema.
                 </p>
               </div>
               <button
@@ -2861,24 +3109,27 @@ export default function ExpedientesListado() {
             </div>
 
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div className="md:col-span-2 xl:col-span-3 border-b pb-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Identificación y fechas</h4><p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Localiza el expediente por número, oficina o fecha de alta.</p></div>
               <FiltroInput label="N.º expediente" value={filtroNumeroExpediente} onChange={setFiltroNumeroExpediente} placeholder="Número completo o parte del expediente" />
-              <FiltroInput label="Oficina" value={filtroOficina} onChange={setFiltroOficina} placeholder="Código o nombre de oficina" />
+              <FiltroSelect label="Oficina" value={filtroOficina} onChange={setFiltroOficina} options={catalogosListado.oficinas} emptyLabel="Todas las oficinas" />
               <FiltroInput label="Fecha de alta desde" type="date" value={filtroFechaInicio} onChange={setFiltroFechaInicio} />
               <FiltroInput label="Fecha de alta hasta" type="date" value={filtroFechaFin} onChange={setFiltroFechaFin} />
+              <div className="md:col-span-2 xl:col-span-3 border-b pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Personas y notaría</h4><p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Titular, solicitante y notario asociados al expediente.</p></div>
               <FiltroInput label="NIF titular" value={filtroNifTitular} onChange={setFiltroNifTitular} placeholder="NIF / CIF titular" />
               <FiltroInput label="Nombre titular" value={filtroNombreTitular} onChange={setFiltroNombreTitular} placeholder="Nombre o razón social" />
               <FiltroInput label="NIF solicitante" value={filtroNifSolicitante} onChange={setFiltroNifSolicitante} placeholder="NIF / CIF solicitante" />
               <FiltroInput label="Nombre solicitante" value={filtroNombreSolicitante} onChange={setFiltroNombreSolicitante} placeholder="Nombre o razón social" />
-              <FiltroInput label="Notario" value={filtroNotario} onChange={setFiltroNotario} placeholder="Nombre del notario" />
+              <FiltroSelect label="Notario" value={filtroNotario} onChange={setFiltroNotario} options={catalogosListado.notarios} emptyLabel="Todos los notarios" />
               <FiltroInput label="NIF notario" value={filtroNifNotario} onChange={setFiltroNifNotario} placeholder="NIF notario" />
+              <div className="md:col-span-2 xl:col-span-3 border-b pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Registro y economía</h4><p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Finca, registro, importes, observaciones y estado de tramitación.</p></div>
               <FiltroInput label="Finca" value={filtroFinca} onChange={setFiltroFinca} placeholder="Número o referencia de finca" />
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Registro de la Propiedad</label>
                 <select value={filtroRegistroPropiedad} onChange={(event) => setFiltroRegistroPropiedad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
                   <option value="">Todos los registros</option>
-                  {[...new Set(expedientes.map((item) => item.registro_propiedad || item.nombre_registro || item.registro).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es")).map((registro) => <option key={registro} value={registro}>{registro}</option>)}
+                  {(catalogosListado.registros.length ? catalogosListado.registros : [...new Set(expedientes.map((item) => item.registro_propiedad || item.nombre_registro || item.registro).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((registro) => <option key={registro} value={registro}>{registro}</option>)}
                 </select>
-                <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>La lista se nutre de los registros presentes en los datos recibidos por el listado.</p>
+                <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Opciones del catálogo completo de registros, independientemente de la página del listado.</p>
               </div>
               <FiltroInput label="Saldo real" type="number" value={filtroSaldoReal} onChange={setFiltroSaldoReal} placeholder="Importe exacto" />
               <FiltroInput label="Saldo disponible" type="number" value={filtroSaldoDisponible} onChange={setFiltroSaldoDisponible} placeholder="Importe exacto" />
@@ -2888,17 +3139,49 @@ export default function ExpedientesListado() {
                 <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Estado actividad</label>
                 <select value={filtroEstadoActividad} onChange={(event) => setFiltroEstadoActividad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
                   <option value="">Todos los estados</option>
-                  {[...new Set(expedientes.map((item) => item.estado_actividad).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es")).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
+                  {(catalogosListado.estados_actividad.length ? catalogosListado.estados_actividad : [...new Set(expedientes.map((item) => item.estado_actividad).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Actividad actual</label>
                 <select value={filtroActividad} onChange={(event) => setFiltroActividad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
                   <option value="">Todas las actividades</option>
-                  {actividades.map((item) => <option key={item.actividad} value={item.actividad}>{item.actividad}</option>)}
+                  {(catalogosListado.actividades.length ? catalogosListado.actividades : actividades).map((item) => <option key={item.actividad} value={item.actividad}>{item.actividad}</option>)}
                 </select>
               </div>
-              <FiltroInput label="Estado expediente" value={filtroEstadoExpediente} onChange={setFiltroEstadoExpediente} placeholder="Estado del expediente" />
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Estado expediente</label>
+                <select value={filtroEstadoExpediente} onChange={(event) => setFiltroEstadoExpediente(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                  <option value="">Todos los estados</option>
+                  {(catalogosListado.estados_expediente.length ? catalogosListado.estados_expediente : [...new Set(expedientes.map((item) => item.estado_expediente).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
+                </select>
+              </div>
+              <div className="md:col-span-2 xl:col-span-3 border-b pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}>
+                <h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Clasificación ABSIS</h4>
+                <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Filtros de categorías importadas; puedes combinarlos entre sí.</p>
+              </div>
+              <FiltroSelect label="Origen Bankia" value={filtroOrigenBankia} onChange={setFiltroOrigenBankia} options={catalogosListado.origenes_bankia} emptyLabel="Todos los orígenes" />
+              <FiltroSelect label="Producto GTG" value={filtroProductoGtg} onChange={setFiltroProductoGtg} options={catalogosListado.productos_gtg} emptyLabel="Todos los productos" />
+              <FiltroSelect label="Apoderado" value={filtroApoderado} onChange={setFiltroApoderado} options={catalogosListado.apoderados} emptyLabel="Todos los apoderados" />
+              <FiltroSelect label="Tipo provisión" value={filtroTipoProvision} onChange={setFiltroTipoProvision} options={catalogosListado.tipos_provision} emptyLabel="Todos los tipos" />
+              <FiltroSelect label="Tipo operación" value={filtroTipoOperacion} onChange={setFiltroTipoOperacion} options={catalogosListado.tipos_operacion} emptyLabel="Todas las operaciones" />
+              <FiltroSelect label="Subtipo operación" value={filtroSubtipoOperacion} onChange={setFiltroSubtipoOperacion} options={catalogosListado.subtipos_operacion} emptyLabel="Todos los subtipos" />
+              <FiltroSelect label="Gestoría" value={filtroNombreGestoria} onChange={setFiltroNombreGestoria} options={catalogosListado.gestorias} emptyLabel="Todas las gestorías" />
+              <FiltroSelect label="Oficina de alta" value={filtroOficinaAlta} onChange={setFiltroOficinaAlta} options={catalogosListado.oficinas_alta} emptyLabel="Todas las oficinas" />
+              <FiltroSelect label="DAN" value={filtroDan} onChange={setFiltroDan} options={catalogosListado.dans} emptyLabel="Todos los DAN" />
+              <FiltroSelect label="Tipo de defecto/error" value={filtroTipoError} onChange={setFiltroTipoError} options={catalogosListado.tipos_error} emptyLabel="Todos los tipos" />
+              <FiltroSelect label="Tiene defectos abiertos" value={filtroTieneDefectosAbiertos} onChange={setFiltroTieneDefectosAbiertos} options={catalogosListado.defectos_abiertos} emptyLabel="Todos los valores" />
+              <FiltroSelect label="FALTADEFECTO · ¿Tiene defecto?" value={filtroFaltaDefecto} onChange={setFiltroFaltaDefecto} options={catalogosListado.falta_defecto} emptyLabel="Sí o no" />
+              <FiltroSelect label="Estado ANCERT" value={filtroEstadoExpedienteAncert} onChange={setFiltroEstadoExpedienteAncert} options={catalogosListado.estados_ancert} emptyLabel="Todos los estados ANCERT" />
+              <FiltroSelect label="Tipo de acta" value={filtroTipoActa} onChange={setFiltroTipoActa} options={catalogosListado.tipos_acta} emptyLabel="Todos los tipos de acta" />
+              <FiltroSelect label="Contrato" value={filtroContrato} onChange={setFiltroContrato} options={catalogosListado.contratos} emptyLabel="Todos los contratos" />
+              <FiltroSelect label="Tipo de firma" value={filtroTipoFirma} onChange={setFiltroTipoFirma} options={catalogosListado.tipos_firma} emptyLabel="Todos los tipos de firma" />
+              <FiltroSelect label="Tipo de documento" value={filtroTipoDocumento} onChange={setFiltroTipoDocumento} options={catalogosListado.tipos_documento} emptyLabel="Todos los documentos" />
+              <FiltroSelect label="Provincia" value={filtroProvincia} onChange={setFiltroProvincia} options={catalogosListado.provincias} emptyLabel="Todas las provincias" />
+              <FiltroSelect label="Población" value={filtroPoblacion} onChange={setFiltroPoblacion} options={catalogosListado.poblaciones} emptyLabel="Todas las poblaciones" />
+              <FiltroSelect label="Tributación" value={filtroTributacion} onChange={setFiltroTributacion} options={catalogosListado.tributaciones} emptyLabel="Todas las tributaciones" />
+              <FiltroSelect label="Estado registral" value={filtroEstadoRegistral} onChange={setFiltroEstadoRegistral} options={catalogosListado.estados_registrales} emptyLabel="Todos los estados registrales" />
+              <FiltroSelect label="Estado facturación" value={filtroEstadoFacturacion} onChange={setFiltroEstadoFacturacion} options={catalogosListado.estados_facturacion} emptyLabel="Todos los estados de facturación" />
             </div>
 
             <div className="px-6 py-4 border-t flex flex-wrap items-center justify-end gap-3" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
@@ -3012,6 +3295,23 @@ export default function ExpedientesListado() {
 // ============================================================
 // FILTRO INPUT
 // ============================================================
+
+function FiltroSelect({ label, value, onChange, options = [], emptyLabel = "Todos" }) {
+  return (
+    <div>
+      <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>{label}</label>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none"
+        style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
+      >
+        <option value="">{emptyLabel}</option>
+        {options.map((option) => <option key={option} value={option}>{option}</option>)}
+      </select>
+    </div>
+  );
+}
 
 function FiltroInput({
   label,

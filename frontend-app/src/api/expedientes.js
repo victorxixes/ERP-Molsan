@@ -92,3 +92,12 @@ export async function obtenerAlertasControlExpedientes() {
   const res = await axios.get("/expedientes/control-alertas");
   return res.data;
 }
+
+
+/**
+ * Catálogos globales para los filtros del listado (no dependen de la página visible).
+ */
+export async function obtenerCatalogosListadoExpedientes() {
+  const res = await axios.get("/expedientes/catalogos-listado");
+  return res.data;
+}
