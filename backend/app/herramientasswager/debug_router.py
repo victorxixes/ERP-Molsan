@@ -149,7 +149,7 @@ def vista_previa_contenido(
         raise HTTPException(status_code=404, detail="No se han encontrado columnas para la tabla indicada.")
 
     # Nunca devolver credenciales o secretos aunque se solicite una vista previa.
-    sensibles = re.compile(r"(password|passwd|secret|token|credential|authorization|api[_-]?key|clave_privada)", re.I)
+    sensibles = re.compile(r"(password|passwd|passphrase|contrasena|contraseña|secret|token|credential|authorization|api[_-]?key|clave_privada|private[_-]?key|refresh[_-]?token|access[_-]?token|password_hash|hash_password)", re.I)
     filas = db.execute(
         text(f'SELECT * FROM "{nombre}" LIMIT :limite'),
         {"limite": limite_seguro},
