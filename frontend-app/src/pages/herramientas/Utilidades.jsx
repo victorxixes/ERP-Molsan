@@ -135,6 +135,7 @@ export default function Utilidades() {
       )}
 
       <Grupo titulo="Gestión de expedientes" descripcion="Acciones manuales y controladas sobre la asignación y el seguimiento de los expedientes.">
+        <Card icon="💶" titulo="Complementos de saldo" descripcion="Registrar y controlar las peticiones de complemento, sus importes y su estado pendiente o cerrado. Incluye buscadores y descarga Excel." link="/herramientas/utilidades/complementos-saldo" destacado />
         <Card icon="🔁" titulo="Cambiar gestor de expediente" descripcion="Busca un expediente por su número y reasígnalo manualmente a otro gestor, dejando constancia del cambio." link="/herramientas/utilidades/cambiar-gestor" />
       </Grupo>
 
