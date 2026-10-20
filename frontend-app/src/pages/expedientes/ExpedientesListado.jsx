@@ -874,12 +874,6 @@ export default function ExpedientesListado() {
     setMostrarColumnas,
   ] = useState(false);
 
-  // Sidebar compacto: se expande al pasar el ratón y permanece abierto
-  // cuando el usuario lo fija con el botón. En móvil se abre mediante toque.
-  const [sidebarFijado, setSidebarFijado] = useState(false);
-  const [sidebarHover, setSidebarHover] = useState(false);
-  const sidebarExpandido = sidebarFijado || sidebarHover;
-
 
   // ==========================================================
   // FILTROS EDITABLES — FILTROS AVANZADOS DEFINITIVOS
@@ -2182,197 +2176,9 @@ export default function ExpedientesListado() {
       )}
 
 
-      {/* ======================================================
-          ESTRUCTURA EXPEDIENTES — SIDEBAR + ÁREA DE TRABAJO
-      ====================================================== */}
+      {/* Área principal de trabajo de expedientes */}
 
-      <div
-        className={"w-full grid grid-cols-1 " + (sidebarExpandido ? "lg:grid-cols-[280px_minmax(0,1fr)]" : "lg:grid-cols-[68px_minmax(0,1fr)]") + " gap-4 items-start"}
-      >
-
-        {/* ====================================================
-            SIDEBAR INTERNO DE EXPEDIENTES
-        ==================================================== */}
-
-        <div
-          className="min-w-0 relative z-30 space-y-4 transition-[width] duration-200 ease-out"
-          style={{ width: sidebarExpandido ? "100%" : "68px", maxWidth: "100%" }}
-          onMouseEnter={() => setSidebarHover(true)}
-          onMouseLeave={() => setSidebarHover(false)}
-        >
-
-        <aside
-          className="rounded-2xl border shadow-sm overflow-hidden transition-all duration-200 ease-out"
-          style={{
-            width: "100%",
-            background: "var(--erp-surface)",
-            borderColor: "var(--erp-border)",
-          }}
-        >
-
-          <div
-            className="px-3 py-4 border-b"
-            style={{
-              borderColor: "var(--erp-border)",
-            }}
-          >
-            <div className={sidebarExpandido ? "flex items-center gap-3" : "flex flex-col items-center gap-3"}>
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
-                style={{
-                  background: "var(--erp-primary-soft)",
-                  color: "var(--erp-primary)",
-                }}
-              >
-                📂
-              </div>
-
-              {sidebarExpandido && (
-                <div className="min-w-0">
-                  <h2 className="font-bold text-base text-[var(--erp-text)]">Expedientes</h2>
-                  <p className="text-xs mt-0.5 text-[var(--erp-text-soft)]">Áreas de trabajo</p>
-                </div>
-              )}
-              <button
-                type="button"
-                onClick={() => {
-                  setSidebarFijado((actual) => !actual);
-                  setSidebarHover(false);
-                }}
-                className="ml-auto shrink-0 w-9 h-9 rounded-xl border flex items-center justify-center text-sm font-bold transition hover:bg-[var(--erp-surface-soft)]"
-                style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
-                aria-label={sidebarFijado ? "Desfijar menú de expedientes" : "Fijar menú de expedientes abierto"}
-                aria-expanded={sidebarExpandido}
-                title={sidebarFijado ? "Desfijar menú" : "Fijar menú abierto"}
-              >
-                {sidebarFijado ? "📌" : sidebarExpandido ? "‹" : "☰"}
-              </button>
-            </div>
-          </div>
-
-          <div className="p-2 space-y-1">
-            <button
-              type="button"
-              onClick={() => {
-                setActividadSeleccionada("");
-                setAlertaSeleccionada("");
-                setColumnasVisibles(COLUMNAS_POR_DEFECTO);
-                setFiltroActividad("");
-                setFiltrosAplicados((actual) => ({ ...actual, actividad: "" }));
-                setPagina(1);
-              }}
-              className="relative w-full flex items-center justify-between gap-3 px-2 py-3 rounded-xl text-left transition-all"
-              style={{
-                background: !actividadSeleccionada && !alertaSeleccionada
-                  ? "var(--erp-primary)"
-                  : "transparent",
-                color: !actividadSeleccionada && !alertaSeleccionada
-                  ? "#fff"
-                  : "var(--erp-text)",
-              }}
-            >
-              <span className={sidebarExpandido ? "flex items-center gap-3 min-w-0" : "flex items-center justify-center min-w-0"}>
-                <span>📋</span>
-                {sidebarExpandido && <span className="font-semibold text-sm truncate">Todos los expedientes</span>}
-              </span>
-              {sidebarExpandido ? (
-                <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg" style={{ background: !actividadSeleccionada && !alertaSeleccionada ? "rgba(255,255,255,.18)" : "var(--erp-surface-soft)" }}>
-                  {formatearNumero(totalActividades)}
-                </span>
-              ) : (
-                <span className="absolute left-1 top-1 w-2 h-2 rounded-full" style={{ background: !actividadSeleccionada && !alertaSeleccionada ? "#fff" : "var(--erp-primary)" }} />
-              )}
-            </button>
-
-            <div className="my-2 border-t" style={{ borderColor: "var(--erp-border)" }} />
-
-            {ACTIVIDADES_EXPEDIENTES.map((actividad) => {
-              const total = actividades
-                .filter((item) => actividadCoincide(actividad, item?.actividad))
-                .reduce((suma, item) => suma + Number(item?.total || 0), 0);
-
-              const activa = actividadSeleccionada === actividad.key;
-
-              return (
-                <button
-                  key={actividad.key}
-                  type="button"
-                  onClick={() => {
-                    const encontrado = actividades.find((item) =>
-                      actividadCoincide(actividad, item?.actividad)
-                    );
-                    const valorBackend = encontrado?.actividad || actividad.label;
-
-                    setActividadSeleccionada(actividad.key);
-                    setAlertaSeleccionada("");
-                    setColumnasVisibles(obtenerColumnasActividad(actividad.key));
-                    setFiltroActividad(valorBackend);
-                    setFiltrosAplicados((actual) => ({ ...actual, actividad: valorBackend }));
-                    setPagina(1);
-                  }}
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left transition-all"
-                  style={{
-                    background: activa ? "var(--erp-primary-soft)" : "transparent",
-                    color: activa ? "var(--erp-primary-dark)" : "var(--erp-text)",
-                    border: activa ? "1px solid var(--erp-primary)" : "1px solid transparent",
-                  }}
-                >
-                  <span className={sidebarExpandido ? "flex items-center gap-3 min-w-0" : "flex items-center justify-center min-w-0"}>
-                    <span>{actividad.icono}</span>
-                    {sidebarExpandido && (
-                      <span className={activa ? "font-bold text-sm truncate" : "font-medium text-sm truncate"}>
-                        {actividad.label}
-                      </span>
-                    )}
-                  </span>
-                  {sidebarExpandido ? (
-                    <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg" style={{ background: "var(--erp-surface-soft)", color: activa ? "var(--erp-primary-dark)" : "var(--erp-text-soft)" }}>
-                      {formatearNumero(total)}
-                    </span>
-                  ) : (
-                    <span className="absolute right-1 top-1 w-2 h-2 rounded-full" style={{ background: activa ? "var(--erp-primary)" : "var(--erp-border)" }} />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </aside>
-
-        {/* ====================================================
-            ACCIONES DEL MÓDULO
-        ==================================================== */}
-
-        <section
-          className="rounded-2xl border shadow-sm p-2"
-          style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
-          aria-label="Acciones de expedientes"
-        >
-          <div className="space-y-2">
-            <button type="button" onClick={exportarExcel} disabled={loading} title="Exportar Excel" aria-label="Exportar Excel"
-              className={sidebarExpandido ? "w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md disabled:opacity-50" : "w-full flex items-center justify-center px-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md disabled:opacity-50"}
-              style={{ background: "var(--erp-success)" }}>
-              📊 {sidebarExpandido && "Exportar Excel"}
-            </button>
-            <button type="button" onClick={() => setMostrarFiltros(true)} title="Filtros avanzados" aria-label="Filtros avanzados"
-              className={sidebarExpandido ? "w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm" : "w-full flex items-center justify-center px-2 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm"}
-              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
-              🔎 {sidebarExpandido && "Filtros"}
-            </button>
-            <button type="button" onClick={() => setMostrarColumnas(true)} title="Columnas visibles" aria-label="Columnas visibles"
-              className={sidebarExpandido ? "w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm" : "w-full flex items-center justify-center px-2 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm"}
-              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
-              ☷ {sidebarExpandido && "Columnas"}
-            </button>
-          </div>
-        </section>
-
-        </div>
-
-        {/* ====================================================
-            ÁREA PRINCIPAL DE TRABAJO
-        ==================================================== */}
-
-        <main className="min-w-0 space-y-6">
+      <main className="min-w-0 w-full space-y-6">
 
           <div
             className="erp-card px-5 py-4 shadow-sm"
@@ -2401,6 +2207,12 @@ export default function ExpedientesListado() {
               
             </div>
           </div>
+
+      <section className="flex flex-wrap items-center justify-end gap-2" aria-label="Acciones de expedientes">
+        <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
+        <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
+        <button type="button" onClick={() => setMostrarColumnas(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>☷ Columnas</button>
+      </section>
 
       {/* BÚSQUEDA FÁCIL: no hace falta conocer los nombres de los filtros */}
       <section
@@ -2448,6 +2260,37 @@ export default function ExpedientesListado() {
             Búsqueda activa: <strong>{busquedaAplicada}</strong>. Puedes combinarla con los filtros avanzados.
           </p>
         )}
+      </section>
+
+      {/* GRIDS DE ACTIVIDAD */}
+      <section className="space-y-3" aria-label="Expedientes por actividad">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div><h3 className="text-base font-bold text-[var(--erp-text)]">Expedientes por actividad</h3><p className="text-sm text-[var(--erp-text-soft)]">Pulsa un grid para ver debajo la tabla con los expedientes de esa actividad.</p></div>
+          {actividadSeleccionada && <button type="button" onClick={() => { setActividadSeleccionada(""); setAlertaSeleccionada(""); setColumnasVisibles(COLUMNAS_POR_DEFECTO); setFiltroActividad(""); setFiltrosAplicados((actual) => ({ ...actual, actividad: "" })); setPagina(1); }} className="self-start rounded-lg border px-3 py-2 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)", background: "var(--erp-surface)" }}>Ver todas las actividades</button>}
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          {ACTIVIDADES_EXPEDIENTES.map((actividad) => {
+            const total = actividades.filter((item) => actividadCoincide(actividad, item?.actividad)).reduce((suma, item) => suma + Number(item?.total || 0), 0);
+            const activa = actividadSeleccionada === actividad.key;
+            return <button key={actividad.key} type="button" aria-pressed={activa}
+              onClick={() => {
+                const encontrado = actividades.find((item) => actividadCoincide(actividad, item?.actividad));
+                const valorBackend = encontrado?.actividad || actividad.label;
+                setActividadSeleccionada(activa ? "" : actividad.key); setAlertaSeleccionada("");
+                setColumnasVisibles(activa ? COLUMNAS_POR_DEFECTO : obtenerColumnasActividad(actividad.key));
+                setFiltroActividad(activa ? "" : valorBackend);
+                setFiltrosAplicados((actual) => ({ ...actual, actividad: activa ? "" : valorBackend })); setPagina(1);
+              }}
+              className="min-h-[148px] rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+              style={{ background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)", boxShadow: activa ? "0 0 0 1px var(--erp-primary)" : undefined }}>
+              <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}>{actividad.icono}</span><span className="text-3xl font-extrabold tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
+              <div className="mt-3 text-sm font-bold leading-snug text-[var(--erp-text)]">{actividad.label}</div>
+              <div className="mt-3"><span className="inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-800">⚠ Fuera de plazo: por clasificar</span></div>
+              <div className="mt-2 text-xs font-semibold" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text-soft)" }}>{activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
+            </button>;
+          })}
+        </div>
+        <div role="note" className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-900">📌 Víctor, falta clasificar los plazos.<span className="ml-1 font-normal">Pendiente de definir los criterios para calcular qué expedientes están fuera de plazo en cada actividad.</span></div>
       </section>
 
       {/* ======================================================
@@ -2696,30 +2539,7 @@ export default function ExpedientesListado() {
                   )}
 
 
-                  <th
-                    className="
-                      px-4
-                      py-3
 
-                      whitespace-nowrap
-
-                      text-white
-
-                      font-semibold
-
-                      border-b
-                      border-white/20
-
-                      sticky
-                      top-0
-
-                      bg-[var(--erp-primary)]
-
-                      z-10
-                    "
-                  >
-                    Acciones
-                  </th>
 
                 </tr>
 
@@ -2784,11 +2604,15 @@ export default function ExpedientesListado() {
                             }
                           >
 
-                            {["estado_expediente", "estado_actividad", "facturacion_estado", "registral_estado"].includes(columna.key) && expediente[columna.key] ? (
+                            {columna.key === "id_expediente" ? (
+                              <Link to={`/expedientes/${encodeURIComponent(expediente.id_expediente || expediente.id || "")}`} className="font-extrabold text-[var(--erp-primary)] underline-offset-2 hover:underline" title={`Abrir ficha del expediente ${expediente.id_expediente || expediente.id || ""}`}>
+                                {formatearValor(expediente[columna.key], columna.tipo)}
+                              </Link>
+                            ) : ["estado_expediente", "estado_actividad", "facturacion_estado", "registral_estado"].includes(columna.key) && expediente[columna.key] ? (
                               <span className="inline-flex max-w-[220px] items-center rounded-full border px-2.5 py-1 text-xs font-semibold whitespace-normal" style={estiloEstado(expediente[columna.key])} title={String(expediente[columna.key])}>
                                 {formatearValor(expediente[columna.key], columna.tipo)}
                               </span>
-                            ) : formatearValor(expediente[columna.key], columna.tipo)}
+                            ) : formatearValor(expediente[columna.key], columna.tipo)
 
                           </td>
 
@@ -2796,48 +2620,7 @@ export default function ExpedientesListado() {
                       )}
 
 
-                      <td
-                        className="
-                          px-4
-                          py-3
 
-                          whitespace-nowrap
-
-                          bg-[var(--erp-surface)]
-                        "
-                      >
-
-                        <Link
-                          to={
-                            `/expedientes/${encodeURIComponent(
-                              expediente.id_expediente
-                            )}`
-                          }
-
-                          className="
-                            inline-flex
-                            items-center
-
-                            px-3
-                            py-1.5
-
-                            rounded-lg
-
-                            bg-[var(--erp-primary-soft)]
-
-                            text-[var(--erp-primary)]
-
-                            font-medium
-
-                            hover:bg-[#dfe9ff]
-
-                            transition
-                          "
-                        >
-                          Ver ficha
-                        </Link>
-
-                      </td>
 
                     </tr>
 
@@ -3063,9 +2846,7 @@ export default function ExpedientesListado() {
 
       </div>
 
-        </main>
-
-      </div>
+      </main>
 
       {/* ======================================================
           MODAL — FILTROS AVANZADOS
