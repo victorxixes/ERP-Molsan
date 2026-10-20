@@ -771,7 +771,7 @@ export default function ApoderaGest() {
         axios.get("/apoderagest/dashboard"),
         axios.get("/apoderagest/agenda"),
         axios.get("/apoderagest/encargos"),
-        axios.get("/apoderagest/encargos/contexto"),
+        axios.get("/apoderagest/encargos/contexto").catch(() => ({ data: { administrador: false } })),
       ]);
 
       setEsAdministradorEncargos(Boolean(resContextoEncargos.data?.administrador));
