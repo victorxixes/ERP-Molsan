@@ -81,6 +81,8 @@ def _ppad_dict(item: ExpedientePPAD):
         "imputable_a": item.imputable_a,
         "fecha_creacion": item.fecha_creacion.isoformat() if item.fecha_creacion else None,
         "fecha_modificacion": item.fecha_modificacion.isoformat() if item.fecha_modificacion else None,
+        "compensado": bool(item.compensado),
+        "fecha_compensacion": item.fecha_compensacion.isoformat() if item.fecha_compensacion else None,
     }
 
 
@@ -148,6 +150,8 @@ def crear_ppad(expediente_id: int, datos: PPADCreate, db: Session = Depends(get_
 def modificar_ppad(expediente_id: int, ppad_id: int, datos: PPADUpdate, db: Session = Depends(get_db)):
     expediente = _comprobar_expediente(db, expediente_id)
     item = _obtener_ppad(db, expediente.id, ppad_id)
+    if item.compensado:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Un PPAD compensado no se puede modificar.")
     cambios = datos.dict(exclude_unset=True)
     if not cambios:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se han enviado cambios.")
@@ -167,6 +171,8 @@ def modificar_ppad(expediente_id: int, ppad_id: int, datos: PPADUpdate, db: Sess
 def eliminar_ppad(expediente_id: int, ppad_id: int, db: Session = Depends(get_db)):
     expediente = _comprobar_expediente(db, expediente_id)
     item = _obtener_ppad(db, expediente.id, ppad_id)
+    if item.compensado:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Un PPAD compensado no se puede eliminar.")
     db.delete(item)
     try:
         db.commit()
@@ -174,3 +180,33 @@ def eliminar_ppad(expediente_id: int, ppad_id: int, db: Session = Depends(get_db
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="No se pudo eliminar el registro PPAD.")
     return {"ok": True, "mensaje": "Registro PPAD eliminado.", "id": ppad_id}
+
+
+
+@router.post("/{ppad_id}/compensar", summary="Marcar un PPAD como compensado")
+def compensar_ppad(expediente_id: int, ppad_id: int, db: Session = Depends(get_db)):
+    expediente = _comprobar_expediente(db, expediente_id)
+    item = _obtener_ppad(db, expediente.id, ppad_id)
+
+    if item.compensado:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Este PPAD ya está compensado.",
+        )
+
+    from datetime import datetime, timezone
+
+    item.compensado = True
+    item.fecha_compensacion = datetime.now(timezone.utc)
+
+    try:
+        db.commit()
+        db.refresh(item)
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="No se pudo registrar la compensación del PPAD.",
+        )
+
+    return _ppad_dict(item)
