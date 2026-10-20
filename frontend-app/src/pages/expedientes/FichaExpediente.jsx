@@ -1329,6 +1329,19 @@ function Boton({
 export default function FichaExpediente() {
   const { id } = useParams();
   const empleadoSesion = useAuthStore((state) => state.empleado);
+  const rolSesionNormalizado = String(
+    empleadoSesion?.rol_nombre || empleadoSesion?.rol?.nombre || empleadoSesion?.rol || ""
+  ).trim().toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ");
+  const esAdministradorSesion = [
+    "admin",
+    "administrador",
+    "administradora",
+    "superadmin",
+    "super admin",
+    "superadministrador",
+    "super administradora",
+    "administrador general",
+  ].includes(rolSesionNormalizado);
 
   const [
     expediente,
@@ -4568,10 +4581,20 @@ const cuantiaFincasParaEnvio =
                       </Boton>
                     )}
                     {!item.compensado && (
-                      <>
-                        <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>
-                        <Boton tipo="danger" onClick={() => eliminarPpad(item.id)}>Eliminar</Boton>
-                      </>
+                      <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>
+                    )}
+                    {(!item.compensado || esAdministradorSesion) && (
+                      <Boton
+                        tipo="danger"
+                        onClick={() => {
+                          const mensaje = item.compensado
+                            ? "Este PPAD ya está compensado. ¿Confirmas que quieres eliminarlo como administrador?"
+                            : "¿Confirmas que quieres eliminar este concepto PPAD?";
+                          if (window.confirm(mensaje)) eliminarPpad(item.id);
+                        }}
+                      >
+                        🗑️ Eliminar
+                      </Boton>
                     )}
                   </div>
                 </div>
