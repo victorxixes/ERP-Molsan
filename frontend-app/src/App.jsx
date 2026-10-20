@@ -58,6 +58,7 @@ import CrearNoticia from "./pages/herramientas/CrearNoticia.jsx";
 import SubirDocumento from "./pages/herramientas/SubirDocumento.jsx";
 import Informes from "./pages/informes/Informes.jsx";
 import MantenimientoTecnico from "./pages/herramientas/MantenimientoTecnico.jsx";
+import CambiarGestorExpediente from "./pages/herramientas/CambiarGestorExpediente.jsx";
 
 /* LOGS */
 import Logs from "./pages/logs/Logs.jsx";
@@ -469,6 +470,11 @@ export default function App() {
           <Route
             path="herramientas/mantenimiento-tecnico"
             element={<MantenimientoTecnico />}
+          />
+
+          <Route
+            path="herramientas/utilidades/cambiar-gestor"
+            element={<CambiarGestorExpediente />}
           />    
           {/* ==================================================
               LOGS
