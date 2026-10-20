@@ -87,7 +87,7 @@ def _cita_a_dict(cita):
     }
 
 
-def listar_citas_apoderado(db, usuario):
+def listar_citas_apoderado(db, usuario, todas=False):
     """Lista las citas del apoderado autenticado.
 
     Se prioriza el identificador de empleado. Solo se utiliza el nombre
@@ -101,7 +101,7 @@ def listar_citas_apoderado(db, usuario):
 
     consulta = db.query(Cita)
 
-    if empleado_id is None and not nombre:
+    if not todas and empleado_id is None and not nombre:
         return []
 
     filtros = []
@@ -119,12 +119,13 @@ def listar_citas_apoderado(db, usuario):
             == func.translate(nombre.strip().lower(), "áéíóúüñ", "aeiouun")
         )
 
-    if not filtros:
+    if not todas and not filtros:
         return []
 
     # No depender únicamente del ID: citas antiguas pueden tener apoderado_id
     # vacío y conservar correctamente el nombre del apoderado.
-    consulta = consulta.filter(or_(*filtros))
+    if not todas:
+        consulta = consulta.filter(or_(*filtros))
 
     citas = (
         consulta
