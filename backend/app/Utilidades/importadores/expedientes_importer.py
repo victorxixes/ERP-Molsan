@@ -938,6 +938,11 @@ def importar_excel_expedientes(
                 "NOMBRENOTARIO",
             )
 
+            # Vincular los IDs de catálogo además de conservar el texto de ABSIS.
+            vincular_catalogos_expediente(
+                exp, row, notarios_catalogo, empleados_catalogo
+            )
+
             # ------------------------------------------------
             # OFICINA
             # ------------------------------------------------
