@@ -61,6 +61,7 @@ import Informes from "./pages/informes/Informes.jsx";
 import MantenimientoTecnico from "./pages/herramientas/MantenimientoTecnico.jsx";
 import CambiarGestorExpediente from "./pages/herramientas/CambiarGestorExpediente.jsx";
 import ComplementosSaldo from "./pages/herramientas/ComplementosSaldo.jsx";
+import ProcesoAbsis from "./pages/herramientas/ProcesoAbsis.jsx";
 
 /* LOGS */
 import Logs from "./pages/logs/Logs.jsx";
@@ -325,6 +326,7 @@ export default function App() {
           />
 
           <Route path="herramientas/utilidades/complementos-saldo" element={<ComplementosSaldo />} />
+          <Route path="herramientas/utilidades/proceso-absis" element={<ProcesoAbsis />} />
 
 
           {/* ==================================================
