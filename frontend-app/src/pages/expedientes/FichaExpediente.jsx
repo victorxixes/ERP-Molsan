@@ -1426,6 +1426,8 @@ export default function FichaExpediente() {
   const [mensajeGastos, setMensajeGastos] = useState("");
   const [conceptosGasto, setConceptosGasto] = useState([]);
   const [cargandoConceptosGasto, setCargandoConceptosGasto] = useState(false);
+  const [honorariosCatalogo, setHonorariosCatalogo] = useState([]);
+  const [honorarioGestoriaId, setHonorarioGestoriaId] = useState("");
   const [documentosFacturaGasto, setDocumentosFacturaGasto] = useState([]);
   const [documentoFacturaSeleccionado, setDocumentoFacturaSeleccionado] = useState("");
   const [urlVistaPreviaFactura, setUrlVistaPreviaFactura] = useState("");
@@ -2490,6 +2492,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       setGastoForm({ tipo: "", descripcion: "", importe: "", fecha: new Date().toLocaleDateString("sv-SE"), documento_url: "", nif_notario: "", nombre_notario: "", pagador: "", cuenta_bancaria: "", medio_pago: "Transferencia", numero_factura: "", fecha_factura: new Date().toLocaleDateString("sv-SE"), importe_total_bruto: "", base_exenta_impuestos: "0.00", base_sujeta_impuestos: "", tramo_impuesto: "General", tipo_impuesto: "IVA 21%", porcentaje_impuesto: "21", base_exenta_retencion: "0.00", base_sujeta_retencion: "0.00", tipo_retencion: "IRPF profesionales", porcentaje_retencion: "15", documento_carpeta_id: "", estado_pago: "Pendiente" });
       setMensajeGastos("El gasto se ha registrado correctamente.");
       setMostrarFormularioGasto(false);
+      setHonorarioGestoriaId("");
       await cargarGastosExpediente();
     } catch (err) {
       const detalle = err?.response?.data?.detail;
@@ -2525,6 +2528,18 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     if (expediente?.id || id) cargarGastosExpediente();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expediente?.id, id]);
+
+  useEffect(() => {
+    if (!mostrarFormularioGasto || honorariosCatalogo.length) return;
+    let activo = true;
+    axios.get("/honorarios-gestoria?activos=true")
+      .then((respuesta) => {
+        if (!activo) return;
+        setHonorariosCatalogo(Array.isArray(respuesta?.data) ? respuesta.data : []);
+      })
+      .catch(() => { if (activo) setErrorGastos("No se pudo cargar el catálogo de honorarios de gestoría."); });
+    return () => { activo = false; };
+  }, [mostrarFormularioGasto, honorariosCatalogo.length]);
 
   useEffect(() => {
     if (!mostrarFormularioGasto || conceptosGasto.length) return;
@@ -4819,7 +4834,8 @@ const cuantiaFincasParaEnvio =
                               <div className="min-w-0">
                               <div className="space-y-3">
                                 <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Factura y proveedor</h6>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}</select></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-indigo-800">Honorarios de gestoría (opcional)</span><select value={honorarioGestoriaId} onChange={(e) => { const idSeleccionado = e.target.value; setHonorarioGestoriaId(idSeleccionado); const tarifa = honorariosCatalogo.find((x) => String(x.id) === idSeleccionado); if (tarifa) { const importeTarifa = Number(tarifa.importe || 0).toFixed(2); setGastoForm((a) => ({ ...a, tipo: "Honorarios de gestoría", descripcion: tarifa.nombre, importe_total_bruto: importeTarifa, importe: importeTarifa, base_exenta_impuestos: importeTarifa, base_sujeta_impuestos: "0.00", porcentaje_impuesto: "0", tipo_impuesto: "Exento", base_exenta_retencion: importeTarifa, base_sujeta_retencion: "0.00", porcentaje_retencion: "0", tipo_retencion: "Sin retención" })); } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
                                 <div className="grid gap-3 sm:grid-cols-2">
                                   <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
                                   <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Nombre del notario</span><input value={gastoForm.nombre_notario} onChange={(e)=>setGastoForm(a=>({...a,nombre_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
