@@ -8,6 +8,7 @@ import Intranet from "../intranet/Intranet";
 import Mensajes from "../mensajes/Mensajes";
 import CtnListadoPage from "../ctn/CtnListadoPage";
 import { useAuthStore } from "../../store/authStore";
+import { createPortal } from "react-dom";
 import "../../css/ApoderaGest.css";
 
 const PESTANAS = [
@@ -476,7 +477,7 @@ function TablaEncargos({ encargos, onFirmado }) {
   }
 
   return (
-    <div className="ag-encargos-agrupados">
+    <div className="ag-encargos-agrupados ag-apoderados-grid">
       {grupos.map((grupo) => {
         const abierto = Boolean(abiertos[grupo.clave]);
         const notarioCtn = encontrarNotarioCtn(grupo, catalogoCtn);
@@ -500,7 +501,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                 <span className="ag-contador">Ver encargos →</span>
               </span>
             </button>
-            {abierto ? (
+            {abierto ? createPortal((
               <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={`Encargos de ${grupo.nombre}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setAbiertos(actual => ({ ...actual, [grupo.clave]: false })); }}>
                 <div className="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
                   <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4">
@@ -712,7 +713,7 @@ function TablaEncargos({ encargos, onFirmado }) {
                   </div>
                 </div>
               </div>
-            ) : null}
+            ), document.body) : null}
           </section>
         );
       })}
