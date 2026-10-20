@@ -39,12 +39,13 @@ router = APIRouter(
 
 
 @router.post("/migraciones/actividades")
-def migrar_campos_workflow_actividades(db: Session = Depends(get_db)):
-    """Migración idempotente para columnas del circuito de actividades.
-
-    Debe ejecutarse una vez desde Swagger después de desplegar el modelo y el router.
-    No consulta el ORM antes de crear las columnas, por lo que también sirve si aún faltan.
-    """
+def migrar_campos_workflow_actividades(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Migración idempotente, reservada a usuarios con permiso administrativo."""
+    from backend.app.auth.permissions import require_perm_modulo
+    require_perm_modulo(usuario, "seguridad", "editar")
     columnas = {
         "fecha_envio": "DATE",
         "asiento_presentacion_libro_diario": "VARCHAR(300)",
