@@ -1946,6 +1946,18 @@ export default function ExpedientesListado() {
           actividadActual: filtrosAplicados.actividad || undefined,
           estadoExpediente: filtrosAplicados.estadoExpediente || undefined,
           alerta: alertaSeleccionada || undefined,
+          origenBankia: filtrosAplicados.origenBankia || undefined,
+          productoGtg: filtrosAplicados.productoGtg || undefined,
+          apoderado: filtrosAplicados.apoderado || undefined,
+          tipoProvision: filtrosAplicados.tipoProvision || undefined,
+          tipoOperacion: filtrosAplicados.tipoOperacion || undefined,
+          subtipoOperacion: filtrosAplicados.subtipoOperacion || undefined,
+          nombreGestoria: filtrosAplicados.nombreGestoria || undefined,
+          oficinaAlta: filtrosAplicados.oficinaAlta || undefined,
+          dan: filtrosAplicados.dan || undefined,
+          tipoError: filtrosAplicados.tipoError || undefined,
+          estadoExpedienteAncert: filtrosAplicados.estadoExpedienteAncert || undefined,
+          tipoActa: filtrosAplicados.tipoActa || undefined,
         });
 
       } catch (
