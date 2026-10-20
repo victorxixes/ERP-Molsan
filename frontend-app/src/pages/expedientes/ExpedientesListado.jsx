@@ -12,6 +12,7 @@ import {
   exportarExcelExpedientes,
   obtenerResumenExpedientes,
   obtenerAlertasControlExpedientes,
+  obtenerCatalogosListadoExpedientes,
 } from "../../api/expedientes";
 
 
@@ -955,6 +956,14 @@ export default function ExpedientesListado() {
     setActividades,
   ] = useState([]);
 
+  // Catálogos globales: no se calculan con los 20 expedientes de la página actual.
+  const [catalogosListado, setCatalogosListado] = useState({
+    registros: [],
+    estados_actividad: [],
+    estados_expediente: [],
+    actividades: [],
+  });
+
 
   const [
     totalActividades,
@@ -1225,6 +1234,40 @@ export default function ExpedientesListado() {
     }
 
     cargarAlertasControl();
+    return () => { activo = false; };
+  }, [recargaRealtime]);
+
+  // ==========================================================
+  // CARGAR CATÁLOGOS GLOBALES PARA FILTROS
+  // ==========================================================
+
+  useEffect(() => {
+    let activo = true;
+
+    async function cargarCatalogosListado() {
+      try {
+        const res = await obtenerCatalogosListadoExpedientes();
+        if (!activo) return;
+        setCatalogosListado({
+          registros: Array.isArray(res?.registros) ? res.registros : [],
+          estados_actividad: Array.isArray(res?.estados_actividad) ? res.estados_actividad : [],
+          estados_expediente: Array.isArray(res?.estados_expediente) ? res.estados_expediente : [],
+          actividades: Array.isArray(res?.actividades) ? res.actividades : [],
+        });
+      } catch (err) {
+        console.error("Error cargando catálogos globales del listado:", err);
+        if (activo) {
+          setCatalogosListado({
+            registros: [],
+            estados_actividad: [],
+            estados_expediente: [],
+            actividades: [],
+          });
+        }
+      }
+    }
+
+    cargarCatalogosListado();
     return () => { activo = false; };
   }, [recargaRealtime]);
 
@@ -2898,9 +2941,9 @@ export default function ExpedientesListado() {
                 <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Registro de la Propiedad</label>
                 <select value={filtroRegistroPropiedad} onChange={(event) => setFiltroRegistroPropiedad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
                   <option value="">Todos los registros</option>
-                  {[...new Set(expedientes.map((item) => item.registro_propiedad || item.nombre_registro || item.registro).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es")).map((registro) => <option key={registro} value={registro}>{registro}</option>)}
+                  {(catalogosListado.registros.length ? catalogosListado.registros : [...new Set(expedientes.map((item) => item.registro_propiedad || item.nombre_registro || item.registro).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((registro) => <option key={registro} value={registro}>{registro}</option>)}
                 </select>
-                <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>La lista muestra los registros disponibles en los datos cargados. Si falta uno, usa la búsqueda general.</p>
+                <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Opciones del catálogo completo de registros, independientemente de la página del listado.</p>
               </div>
               <FiltroInput label="Saldo real" type="number" value={filtroSaldoReal} onChange={setFiltroSaldoReal} placeholder="Importe exacto" />
               <FiltroInput label="Saldo disponible" type="number" value={filtroSaldoDisponible} onChange={setFiltroSaldoDisponible} placeholder="Importe exacto" />
@@ -2910,17 +2953,23 @@ export default function ExpedientesListado() {
                 <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Estado actividad</label>
                 <select value={filtroEstadoActividad} onChange={(event) => setFiltroEstadoActividad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
                   <option value="">Todos los estados</option>
-                  {[...new Set(expedientes.map((item) => item.estado_actividad).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es")).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
+                  {(catalogosListado.estados_actividad.length ? catalogosListado.estados_actividad : [...new Set(expedientes.map((item) => item.estado_actividad).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Actividad actual</label>
                 <select value={filtroActividad} onChange={(event) => setFiltroActividad(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
                   <option value="">Todas las actividades</option>
-                  {actividades.map((item) => <option key={item.actividad} value={item.actividad}>{item.actividad}</option>)}
+                  {(catalogosListado.actividades.length ? catalogosListado.actividades : actividades).map((item) => <option key={item.actividad} value={item.actividad}>{item.actividad}</option>)}
                 </select>
               </div>
-              <FiltroInput label="Estado expediente" value={filtroEstadoExpediente} onChange={setFiltroEstadoExpediente} placeholder="Estado del expediente" />
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Estado expediente</label>
+                <select value={filtroEstadoExpediente} onChange={(event) => setFiltroEstadoExpediente(event.target.value)} className="w-full px-3 py-2.5 rounded-xl border text-sm outline-none" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+                  <option value="">Todos los estados</option>
+                  {(catalogosListado.estados_expediente.length ? catalogosListado.estados_expediente : [...new Set(expedientes.map((item) => item.estado_expediente).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es"))).map((estado) => <option key={estado} value={estado}>{estado}</option>)}
+                </select>
+              </div>
             </div>
 
             <div className="px-6 py-4 border-t flex flex-wrap items-center justify-end gap-3" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
