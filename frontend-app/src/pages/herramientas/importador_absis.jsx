@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import axios from "../../api/axios";
 
 
 /**
@@ -70,6 +70,7 @@ export default function ImportadorAbsis() {
             );
 
             setError(
+                err?.response?.data?.detail ||
                 err?.response?.data?.error ||
                 "Error al importar el archivo. Revisa el formato o el servidor."
             );
