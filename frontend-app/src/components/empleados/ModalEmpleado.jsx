@@ -4018,8 +4018,12 @@ const permisosDisponibles =
                           try {
                             const payload = reglasReparto.map(({ _key, ...r }) => ({ ...r, comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []), comunidad: "", porcentaje: Number(r.porcentaje || 0), apoderado_id: r.apoderado_id || null }));
                             if (!gestorRepartoId) throw new Error("Selecciona un gestor antes de guardar.");
-                            await guardarReglasRepartoGestor(gestorRepartoId, payload);
-                            setMensajeReparto("Reglas de reparto guardadas correctamente para " + (empleadosReparto.find((e) => String(e.id) === String(gestorRepartoId))?.nombre || "el gestor seleccionado") + ".");
+                            const respuesta = await guardarReglasRepartoGestor(gestorRepartoId, payload);
+                            const reglasConfirmadas = respuesta?.data?.reglas;
+                            if (Array.isArray(reglasConfirmadas)) {
+                              setReglasReparto(reglasConfirmadas.map((r, i) => ({ ...r, comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []), _key: `guardada-${i}-${r.actividad}` })));
+                            }
+                            setMensajeReparto("Se han guardado " + payload.length + " regla(s) de actividad para " + (empleadosReparto.find((e) => String(e.id) === String(gestorRepartoId))?.nombre || "el gestor seleccionado") + ".");
                           } catch (e) { setErrorReparto(e?.response?.data?.detail || "No se pudieron guardar las reglas de reparto."); }
                           finally { setGuardandoReparto(false); }
                         }} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">{guardandoReparto ? "Guardando…" : "Guardar reglas de reparto"}</button>
