@@ -837,6 +837,48 @@ def aplicar_filtros(
     return q
 
 
+def aplicar_busqueda_rapida(q, busqueda=None):
+    """Búsqueda global simple para personas que no conocen los filtros técnicos."""
+    termino = str(busqueda or "").strip()
+    if not termino:
+        return q
+
+    patron = f"%{termino}%"
+    columnas = [
+        cast(Expediente.id_expediente, String),
+        Expediente.nombre_titular,
+        Expediente.nif_titular,
+        Expediente.nombre_solicitante,
+        Expediente.nif_solicitante,
+        Expediente.nombre_notario,
+        Expediente.nif_notario,
+        Expediente.notario,
+        Expediente.oficina,
+        Expediente.actividad_actual,
+        Expediente.estado_expediente,
+        Expediente.estado_actividad,
+        Expediente.contrato,
+        Expediente.tipo_operacion,
+        Expediente.subtipo_operacion,
+        Expediente.protocolo,
+        Expediente.observaciones,
+        Expediente.finca,
+    ]
+    condiciones = [
+        columna.ilike(patron)
+        for columna in columnas
+        if columna is not None
+    ]
+    fincas_registros = q.session.query(ExpedienteFinca.expediente_id).filter(
+        or_(
+            ExpedienteFinca.finca.ilike(patron),
+            ExpedienteFinca.registro.ilike(patron),
+        )
+    )
+    condiciones.append(Expediente.id.in_(fincas_registros))
+    return q.filter(or_(*condiciones))
+
+
 # ============================================================
 # CONTROLES DE GESTIÓN — ALERTAS DEL LISTADO
 # ============================================================
@@ -937,6 +979,7 @@ def listado_expedientes(
     importeMin: Optional[float] = None,
     importeMax: Optional[float] = None,
     numeroExpediente: Optional[str] = Query(None, description="Número completo o parcial del expediente"),
+    busqueda: Optional[str] = Query(None, description="Búsqueda rápida por número, persona, notario, finca, registro u otros datos"),
     nifTitular: Optional[str] = None,
     nombreTitular: Optional[str] = None,
     nifSolicitante: Optional[str] = None,
@@ -981,6 +1024,7 @@ def listado_expedientes(
         estadoExpediente=estadoExpediente,
         actividadActual=actividadActual,
     )
+    q = aplicar_busqueda_rapida(q, busqueda)
     q = aplicar_filtro_alerta_control(q, alerta, db)
 
     orden_aplicado = False
