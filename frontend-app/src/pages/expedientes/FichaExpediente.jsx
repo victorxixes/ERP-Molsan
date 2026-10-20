@@ -3924,6 +3924,7 @@ const cuantiaFincasParaEnvio =
                   <span className="font-bold text-blue-700">Gestor asignado:</span>
                   <span className="truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
                 </div>
+                <Link to={"/herramientas/utilidades/correspondencia-tipificada?expediente=" + encodeURIComponent(expediente?.id_expediente || id || "")} className="mt-2 inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-[11px] font-bold text-indigo-700 transition hover:bg-indigo-100">✉️ Correspondencia tipificada</Link>
                 {expedienteBloqueado && <span className="mt-2 inline-flex rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-[11px] font-extrabold text-red-800">🔒 EXPEDIENTE BLOQUEADO · {motivoBloqueoExpediente}</span>}
 
               </div>

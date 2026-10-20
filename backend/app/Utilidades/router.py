@@ -234,3 +234,258 @@ def reasignar_gestor_expediente(
         "gestor_id": gestor_nuevo.id,
         "gestor_nombre": _nombre_empleado(gestor_nuevo),
     }
+
+
+# ============================================================
+# CORRESPONDENCIA TIPIFICADA
+# Plantillas reutilizables y contexto dinámico de expedientes.
+# La tabla se crea de forma idempotente para no exigir acceso a Swagger.
+# ============================================================
+
+def _asegurar_tabla_correspondencia(db: Session):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS correspondencia_plantillas (
+            id SERIAL PRIMARY KEY,
+            nombre VARCHAR(180) NOT NULL,
+            categoria VARCHAR(120) NOT NULL DEFAULT 'General',
+            asunto VARCHAR(500) NOT NULL DEFAULT '',
+            destinatario VARCHAR(500) NOT NULL DEFAULT '',
+            cc VARCHAR(500) NOT NULL DEFAULT '',
+            cuerpo TEXT NOT NULL DEFAULT '',
+            activo BOOLEAN NOT NULL DEFAULT TRUE,
+            creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    db.commit()
+
+
+class PlantillaCorrespondenciaRequest(BaseModel):
+    nombre: str
+    categoria: str = "General"
+    asunto: str = ""
+    destinatario: str = ""
+    cc: str = ""
+    cuerpo: str = ""
+    activo: bool = True
+
+
+def _plantilla_dict(row):
+    return {
+        "id": row["id"],
+        "nombre": row["nombre"],
+        "categoria": row["categoria"],
+        "asunto": row["asunto"],
+        "destinatario": row["destinatario"],
+        "cc": row["cc"],
+        "cuerpo": row["cuerpo"],
+        "activo": row["activo"],
+        "creado_en": row["creado_en"].isoformat() if row.get("creado_en") else None,
+        "actualizado_en": row["actualizado_en"].isoformat() if row.get("actualizado_en") else None,
+    }
+
+
+@router.get("/correspondencia/plantillas")
+def listar_plantillas_correspondencia(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "ver")
+    _asegurar_tabla_correspondencia(db)
+    filas = db.execute(text("""
+        SELECT id, nombre, categoria, asunto, destinatario, cc, cuerpo, activo, creado_en, actualizado_en
+        FROM correspondencia_plantillas
+        ORDER BY activo DESC, categoria ASC, nombre ASC
+    """)).mappings().all()
+    return [_plantilla_dict(fila) for fila in filas]
+
+
+@router.post("/correspondencia/plantillas")
+def crear_plantilla_correspondencia(
+    datos: PlantillaCorrespondenciaRequest,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    nombre = (datos.nombre or "").strip()
+    if not nombre:
+        raise HTTPException(status_code=400, detail="El nombre de la plantilla es obligatorio.")
+    _asegurar_tabla_correspondencia(db)
+    try:
+        fila = db.execute(text("""
+            INSERT INTO correspondencia_plantillas
+                (nombre, categoria, asunto, destinatario, cc, cuerpo, activo, actualizado_en)
+            VALUES
+                (:nombre, :categoria, :asunto, :destinatario, :cc, :cuerpo, :activo, CURRENT_TIMESTAMP)
+            RETURNING id, nombre, categoria, asunto, destinatario, cc, cuerpo, activo, creado_en, actualizado_en
+        """), {
+            "nombre": nombre,
+            "categoria": (datos.categoria or "General").strip() or "General",
+            "asunto": datos.asunto or "",
+            "destinatario": datos.destinatario or "",
+            "cc": datos.cc or "",
+            "cuerpo": datos.cuerpo or "",
+            "activo": datos.activo,
+        }).mappings().first()
+        db.commit()
+        return _plantilla_dict(fila)
+    except Exception:
+        db.rollback()
+        logger.exception("Error creando plantilla de correspondencia")
+        raise HTTPException(status_code=500, detail="No se pudo guardar la plantilla.")
+
+
+@router.put("/correspondencia/plantillas/{plantilla_id}")
+def actualizar_plantilla_correspondencia(
+    plantilla_id: int,
+    datos: PlantillaCorrespondenciaRequest,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    if not (datos.nombre or "").strip():
+        raise HTTPException(status_code=400, detail="El nombre de la plantilla es obligatorio.")
+    _asegurar_tabla_correspondencia(db)
+    try:
+        fila = db.execute(text("""
+            UPDATE correspondencia_plantillas
+            SET nombre=:nombre, categoria=:categoria, asunto=:asunto,
+                destinatario=:destinatario, cc=:cc, cuerpo=:cuerpo,
+                activo=:activo, actualizado_en=CURRENT_TIMESTAMP
+            WHERE id=:id
+            RETURNING id, nombre, categoria, asunto, destinatario, cc, cuerpo, activo, creado_en, actualizado_en
+        """), {
+            "id": plantilla_id,
+            "nombre": datos.nombre.strip(),
+            "categoria": (datos.categoria or "General").strip() or "General",
+            "asunto": datos.asunto or "",
+            "destinatario": datos.destinatario or "",
+            "cc": datos.cc or "",
+            "cuerpo": datos.cuerpo or "",
+            "activo": datos.activo,
+        }).mappings().first()
+        if not fila:
+            db.rollback()
+            raise HTTPException(status_code=404, detail="No se ha encontrado la plantilla.")
+        db.commit()
+        return _plantilla_dict(fila)
+    except HTTPException:
+        raise
+    except Exception:
+        db.rollback()
+        logger.exception("Error actualizando plantilla de correspondencia %s", plantilla_id)
+        raise HTTPException(status_code=500, detail="No se pudo actualizar la plantilla.")
+
+
+@router.delete("/correspondencia/plantillas/{plantilla_id}")
+def eliminar_plantilla_correspondencia(
+    plantilla_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    _asegurar_tabla_correspondencia(db)
+    resultado = db.execute(
+        text("DELETE FROM correspondencia_plantillas WHERE id=:id"),
+        {"id": plantilla_id},
+    )
+    if resultado.rowcount == 0:
+        db.rollback()
+        raise HTTPException(status_code=404, detail="No se ha encontrado la plantilla.")
+    db.commit()
+    return {"ok": True, "id": plantilla_id}
+
+
+@router.get("/correspondencia/campos")
+def listar_campos_correspondencia(
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "ver")
+    return [
+        {"clave": "expediente.numero", "etiqueta": "Número de expediente", "categoria": "Expediente"},
+        {"clave": "expediente.estado", "etiqueta": "Estado del expediente", "categoria": "Expediente"},
+        {"clave": "expediente.actividad", "etiqueta": "Actividad actual", "categoria": "Expediente"},
+        {"clave": "expediente.fecha_alta", "etiqueta": "Fecha de alta", "categoria": "Expediente"},
+        {"clave": "expediente.fecha_firma", "etiqueta": "Fecha de firma", "categoria": "Expediente"},
+        {"clave": "expediente.fecha_prevista_firma", "etiqueta": "Fecha prevista de firma", "categoria": "Firma"},
+        {"clave": "expediente.hora_prevista_firma", "etiqueta": "Hora prevista de firma", "categoria": "Firma"},
+        {"clave": "expediente.fecha_presentacion", "etiqueta": "Fecha de presentación", "categoria": "Registro"},
+        {"clave": "expediente.fecha_vencimiento", "etiqueta": "Fecha de vencimiento", "categoria": "Registro"},
+        {"clave": "expediente.fecha_presentacion_tributaria", "etiqueta": "Fecha de presentación tributaria", "categoria": "Liquidación"},
+        {"clave": "expediente.fecha_inscripcion", "etiqueta": "Fecha de inscripción", "categoria": "Registro"},
+        {"clave": "expediente.protocolo", "etiqueta": "Número de protocolo", "categoria": "Firma"},
+        {"clave": "expediente.nombre_titular", "etiqueta": "Nombre del titular", "categoria": "Titular"},
+        {"clave": "expediente.nif_titular", "etiqueta": "NIF del titular", "categoria": "Titular"},
+        {"clave": "solicitante.nombre", "etiqueta": "Nombre del solicitante", "categoria": "Solicitante"},
+        {"clave": "solicitante.nif", "etiqueta": "NIF del solicitante", "categoria": "Solicitante"},
+        {"clave": "solicitante.email", "etiqueta": "Email del cliente", "categoria": "Solicitante"},
+        {"clave": "solicitante.telefono", "etiqueta": "Teléfono del cliente", "categoria": "Solicitante"},
+        {"clave": "solicitante.direccion", "etiqueta": "Dirección del cliente", "categoria": "Solicitante"},
+        {"clave": "solicitante.poblacion", "etiqueta": "Población del cliente", "categoria": "Solicitante"},
+        {"clave": "solicitante.provincia", "etiqueta": "Provincia del cliente", "categoria": "Solicitante"},
+        {"clave": "notaria.nombre", "etiqueta": "Nombre del notario", "categoria": "Notaría"},
+        {"clave": "notaria.poblacion", "etiqueta": "Población de la notaría", "categoria": "Notaría"},
+        {"clave": "registro.finca", "etiqueta": "Número de finca", "categoria": "Registro"},
+        {"clave": "registro.nombre", "etiqueta": "Registro de la propiedad", "categoria": "Registro"},
+        {"clave": "provision.saldo_disponible", "etiqueta": "Saldo disponible", "categoria": "Provisión"},
+        {"clave": "provision.saldo_real", "etiqueta": "Saldo real", "categoria": "Provisión"},
+        {"clave": "expediente.observaciones", "etiqueta": "Observaciones", "categoria": "Expediente"},
+        {"clave": "gestoria.nombre", "etiqueta": "Gestoría", "categoria": "Gestoría"},
+    ]
+
+
+@router.get("/correspondencia/expediente")
+def contexto_expediente_correspondencia(
+    numero_expediente: str,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "ver")
+    numero = (numero_expediente or "").strip()
+    if not numero:
+        raise HTTPException(status_code=400, detail="Indica un número de expediente.")
+    expediente = db.query(Expediente).filter(func.lower(Expediente.id_expediente) == numero.lower()).first()
+    if not expediente:
+        raise HTTPException(status_code=404, detail="No se ha encontrado el expediente " + numero + ".")
+    cliente = expediente.cliente
+
+    def valor(objeto, atributo):
+        dato = getattr(objeto, atributo, None) if objeto is not None else None
+        if dato is None:
+            return ""
+        if hasattr(dato, "isoformat"):
+            return dato.isoformat()
+        return str(dato)
+
+    contexto = {
+        "expediente.numero": valor(expediente, "id_expediente"),
+        "expediente.estado": valor(expediente, "estado_expediente"),
+        "expediente.actividad": valor(expediente, "actividad_actual"),
+        "expediente.fecha_alta": valor(expediente, "fecha_alta"),
+        "expediente.fecha_firma": valor(expediente, "fecha_firma"),
+        "expediente.fecha_prevista_firma": valor(expediente, "fecha_prevista_firma"),
+        "expediente.hora_prevista_firma": valor(expediente, "hora_prevista_firma"),
+        "expediente.fecha_presentacion": valor(expediente, "fecha_presentacion"),
+        "expediente.fecha_vencimiento": valor(expediente, "fecha_vencimiento"),
+        "expediente.fecha_presentacion_tributaria": valor(expediente, "fecha_presentacion_tributaria"),
+        "expediente.fecha_inscripcion": valor(expediente, "fecha_inscripcion"),
+        "expediente.protocolo": valor(expediente, "protocolo"),
+        "expediente.nombre_titular": valor(expediente, "nombre_titular"),
+        "expediente.nif_titular": valor(expediente, "nif_titular"),
+        "solicitante.nombre": valor(expediente, "nombre_solicitante") or valor(cliente, "nombre_completo"),
+        "solicitante.nif": valor(expediente, "nif_solicitante") or valor(cliente, "dni"),
+        "solicitante.email": valor(cliente, "email"),
+        "solicitante.telefono": valor(cliente, "telefono"),
+        "solicitante.direccion": valor(cliente, "direccion"),
+        "solicitante.poblacion": valor(cliente, "poblacion"),
+        "solicitante.provincia": valor(cliente, "provincia"),
+        "notaria.nombre": valor(expediente, "nombre_notario") or valor(expediente, "notario_otorgante") or valor(expediente, "notario"),
+        "notaria.poblacion": valor(expediente, "poblacion"),
+        "registro.finca": valor(expediente, "finca"),
+        "registro.nombre": valor(expediente, "registro_propiedad"),
+        "provision.saldo_disponible": valor(expediente, "saldo_disponible"),
+        "provision.saldo_real": valor(expediente, "saldo_real"),
+        "expediente.observaciones": valor(expediente, "observaciones"),
+        "gestoria.nombre": valor(expediente, "nombre_gestoria") or valor(expediente, "gestoria") or "Gestoría MOLSAN",
+    }
+    return {"numero_expediente": expediente.id_expediente, "contexto": contexto}
