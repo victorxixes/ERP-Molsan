@@ -999,11 +999,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               />
             ))}
 
-            {/* ==================================================
-                MÁS
-                ================================================== */}
 
-}
 
           </nav>
 
