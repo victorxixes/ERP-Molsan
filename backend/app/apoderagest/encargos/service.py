@@ -229,6 +229,21 @@ def listar_encargos(db, usuario, solo_pendientes=False, todos=False):
     consulta = db.query(Expediente)
     if not todos:
         consulta = consulta.filter(filtro_asignacion)
+    else:
+        # El administrador ve todos los encargos enviados a notaría,
+        # incluidos los ya firmados y los propios, pero no expedientes que
+        # todavía no se han convertido en encargo de ApoderaGest.
+        campos_envio = []
+        if hasattr(Expediente, "fecha_envio_notario"):
+            campos_envio.append(Expediente.fecha_envio_notario.isnot(None))
+        if hasattr(Expediente, "fecha_envio"):
+            campos_envio.append(Expediente.fecha_envio.isnot(None))
+        if campos_envio:
+            consulta = consulta.filter(or_(*campos_envio))
+        else:
+            # Compatibilidad con modelos antiguos: si no existe fecha de
+            # envío, el listado global no debe abrir todos los expedientes.
+            consulta = consulta.filter(filtro_asignacion)
     candidatos = (
         consulta.order_by(
             Expediente.fecha_prevista_firma.asc().nullslast(),
