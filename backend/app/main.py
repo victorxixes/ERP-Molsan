@@ -868,6 +868,17 @@ def inicializar_tablas_auxiliares():
         )
 
         ComplementoSaldo.__table__.create(bind=engine, checkfirst=True)
+        with engine.begin() as conexion_complementos:
+            conexion_complementos.execute(text(
+                "ALTER TABLE public.complementos_saldo ADD COLUMN IF NOT EXISTS provisionado DOUBLE PRECISION NOT NULL DEFAULT 0"
+            ))
+            conexion_complementos.execute(text(
+                "ALTER TABLE public.complementos_saldo ADD COLUMN IF NOT EXISTS saldo_disponible DOUBLE PRECISION NOT NULL DEFAULT 0"
+            ))
+            conexion_complementos.execute(text(
+                "ALTER TABLE public.complementos_saldo ADD COLUMN IF NOT EXISTS motivo VARCHAR(2000)"
+            ))
+        print("[COMPLEMENTOS SALDO] Campos de provisión y motivo comprobados.", flush=True)
         EnvioAbsis.__table__.create(bind=engine, checkfirst=True)
         print("[PROCESO ABSIS] Tabla disponible.", flush=True)
         print("[COMPLEMENTOS SALDO] Tabla disponible.", flush=True)
