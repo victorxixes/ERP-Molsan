@@ -27,6 +27,9 @@ class ComplementoSaldo(Base):
     solicitante = Column(String(300), nullable=True)
     oficina = Column(String(200), nullable=True, index=True)
     importe = Column(Float, nullable=False, default=0)
+    provisionado = Column(Float, nullable=False, default=0)
+    saldo_disponible = Column(Float, nullable=False, default=0)
+    motivo = Column(String(2000), nullable=True)
     estado = Column(String(20), nullable=False, default="Pendiente", index=True)
     observaciones = Column(String(2000), nullable=True)
     creado_por = Column(String(200), nullable=True)
@@ -39,7 +42,10 @@ class ComplementoSaldoCrear(BaseModel):
     fecha_solicitud: date = Field(default_factory=date.today)
     solicitante: Optional[str] = None
     oficina: Optional[str] = None
-    importe: float = Field(..., ge=0)
+    importe: float = Field(..., gt=0)
+    provisionado: float = Field(default=0, ge=0)
+    saldo_disponible: float = Field(default=0)
+    motivo: str = Field(..., min_length=1, max_length=2000)
     estado: str = "Pendiente"
     observaciones: Optional[str] = None
 
@@ -53,8 +59,11 @@ def _serializar(item):
         "solicitante": item.solicitante or "",
         "oficina": item.oficina or "",
         "importe": float(item.importe or 0),
+        "provisionado": float(item.provisionado or 0),
+        "saldo_disponible": float(item.saldo_disponible or 0),
+        "motivo": item.motivo or item.observaciones or "",
         "estado": item.estado or "Pendiente",
-        "observaciones": item.observaciones or "",
+        "observaciones": item.observaciones or item.motivo or "",
         "creado_por": item.creado_por or "",
         "creado_en": item.creado_en.isoformat() if item.creado_en else None,
     }
@@ -113,8 +122,11 @@ def crear_complemento_saldo(
         solicitante=(datos.solicitante or (getattr(expediente, "nombre_solicitante", None) if expediente else None) or "").strip(),
         oficina=(datos.oficina or (getattr(expediente, "oficina", None) if expediente else None) or "").strip(),
         importe=datos.importe,
+        provisionado=datos.provisionado,
+        saldo_disponible=datos.saldo_disponible,
+        motivo=(datos.motivo or "").strip(),
         estado=estado,
-        observaciones=datos.observaciones,
+        observaciones=datos.observaciones or datos.motivo,
         creado_por=str(nombre_usuario or ""),
     )
     db.add(item)
@@ -153,14 +165,15 @@ def exportar_complementos_saldo(
     libro = openpyxl.Workbook()
     hoja = libro.active
     hoja.title = "Complementos de saldo"
-    hoja.append(["N.º expediente", "Fecha solicitud", "Solicitante", "Oficina", "Importe (€)", "Estado", "Observaciones", "Solicitado por"])
+    hoja.append(["N.º expediente", "Fecha solicitud", "Solicitante", "Oficina", "Provisionado (€)", "Saldo disponible (€)", "Saldo a solicitar (€)", "Motivo", "Estado", "Observaciones", "Solicitado por"])
     for celda in hoja[1]:
         celda.font = Font(bold=True, color="FFFFFF")
         celda.fill = PatternFill("solid", fgColor="1D4ED8")
     for item in items:
-        hoja.append([item["numero_expediente"], item["fecha_solicitud"], item["solicitante"], item["oficina"], item["importe"], item["estado"], item["observaciones"], item["creado_por"]])
+        hoja.append([item["numero_expediente"], item["fecha_solicitud"], item["solicitante"], item["oficina"], item["provisionado"], item["saldo_disponible"], item["importe"], item["motivo"], item["estado"], item["observaciones"], item["creado_por"]])
     for fila in hoja.iter_rows(min_row=2):
-        fila[4].number_format = '#,##0.00 [$€-es-ES]'
+        for indice_importe in (4, 5, 6):
+            fila[indice_importe].number_format = '#,##0.00 [$€-es-ES]'
     for columna in hoja.columns:
         letra = columna[0].column_letter
         hoja.column_dimensions[letra].width = min(max(max(len(str(c.value or "")) for c in columna) + 2, 14), 38)
