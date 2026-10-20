@@ -305,6 +305,63 @@ def vincular_catalogos_expediente(expediente, row, notarios, empleados):
             expediente.apoderado_empleado_id = coincidencias[0].id
 
 
+
+def importar_finca_relacionada(db, expediente, row):
+    """Sincroniza fincas/registros cuando la fila ABSIS contiene datos registrales."""
+    finca = limpiar_texto(obtener_valor(row, "FINCA", "NUMEROFINCA"))
+    registro = limpiar_texto(obtener_valor(
+        row, "REGISTROPROPIEDAD", "REGISTRODELAPROPIEDAD",
+        "REGISTRO", "NOMBREREGISTRO", "REGISTROPROPIEDADNOMBRE"
+    ))
+    provincia = limpiar_texto(obtener_valor(row, "PROVINCIAREGISTRO", "PROVINCIADELREGISTRO"))
+    poblacion = limpiar_texto(obtener_valor(
+        row, "MUNICIPIOREGISTRO", "POBLACIONREGISTRO",
+        "MUNICIPIODELREGISTRO", "POBLACIONDELREGISTRO"
+    ))
+    cru = limpiar_texto(obtener_valor(row, "CRU", "CRUIDUFIR", "IDUFIR"))
+    if not any((finca, registro, provincia, poblacion, cru)):
+        return
+
+    if getattr(expediente, "id", None) is None:
+        db.flush()
+
+    existentes = (
+        db.query(ExpedienteFinca)
+        .filter(ExpedienteFinca.expediente_id == expediente.id)
+        .all()
+    )
+    clave_finca = clave_vinculacion(finca)
+    clave_registro = clave_vinculacion(registro)
+    destino = next((
+        item for item in existentes
+        if clave_vinculacion(getattr(item, "finca", None)) == clave_finca
+        and clave_vinculacion(getattr(item, "registro", None)) == clave_registro
+        and (clave_finca or clave_registro)
+    ), None)
+    if destino is None:
+        destino = ExpedienteFinca(expediente_id=expediente.id)
+        db.add(destino)
+
+    campos = (
+        ("finca", finca), ("registro", registro),
+        ("provincia", provincia), ("poblacion", poblacion),
+        ("cru_idufir", cru),
+        ("contrato", limpiar_texto(obtener_valor(row, "CONTRATO"))),
+        ("cuantia", limpiar_texto(obtener_valor(row, "CUANTIAFINCA", "CUANTIAREGISTRAL"))),
+        ("inscripcion", limpiar_texto(obtener_valor(row, "INSCRIPCION", "INSCRIPCIONREGISTRAL"))),
+        ("seccion", limpiar_texto(obtener_valor(row, "SECCIONREGISTRAL", "SECCION"))),
+        ("entidad_original", limpiar_texto(obtener_valor(row, "ENTIDADORIGINAL"))),
+        ("subrogado", limpiar_texto(obtener_valor(row, "SUBROGADO"))),
+    )
+    for campo, valor in campos:
+        if valor is not None:
+            setattr(destino, campo, valor)
+
+    fecha_constitucion = convertir_fecha(obtener_valor(row, "FECHACONSTITUCION"))
+    if fecha_constitucion is not None:
+        destino.fecha_constitucion = fecha_constitucion
+
+
 # IMPORTADOR PRINCIPAL
 # ============================================================
 
