@@ -3,6 +3,8 @@ Migración incremental de columnas de gastos, idempotente y protegida por JWT
 y permiso administrativo. Solo añade columnas opcionales; no borra ni modifica filas.
 """
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
 
@@ -10,6 +12,8 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import engine
 
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/expedientes/gastos/migracion",
@@ -77,14 +81,12 @@ def aplicar_migracion_gastos(usuario=Depends(get_current_user)):
     except HTTPException:
         raise
     except Exception as error:
-        # No devolvemos credenciales ni la cadena de conexión al cliente.
+        # El detalle técnico queda en los logs, no en la respuesta HTTP.
+        logger.exception("Error al aplicar la migración de gastos de expedientes")
         raise HTTPException(
             status_code=500,
-            detail=(
-                "Falló la migración de gastos y se ha revertido la transacción. "
-                f"Detalle: {type(error).__name__}: {error}"
-            ),
-        )
+            detail="Falló la migración de gastos y se ha revertido la transacción. Consulta los logs del backend.",
+        ) from error
 
     return {
         "ok": True,
