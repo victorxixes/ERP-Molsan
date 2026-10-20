@@ -2885,13 +2885,14 @@ export default function ExpedientesListado() {
               <FiltroInput label="Oficina" value={filtroOficina} onChange={setFiltroOficina} placeholder="Código o nombre de oficina" />
               <FiltroInput label="Fecha de alta desde" type="date" value={filtroFechaInicio} onChange={setFiltroFechaInicio} />
               <FiltroInput label="Fecha de alta hasta" type="date" value={filtroFechaFin} onChange={setFiltroFechaFin} />
+              <div className="md:col-span-2 xl:col-span-3 border-b pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Personas y notaría</h4><p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Titular, solicitante y notario asociados al expediente.</p></div>
               <FiltroInput label="NIF titular" value={filtroNifTitular} onChange={setFiltroNifTitular} placeholder="NIF / CIF titular" />
               <FiltroInput label="Nombre titular" value={filtroNombreTitular} onChange={setFiltroNombreTitular} placeholder="Nombre o razón social" />
-              <div className="md:col-span-2 xl:col-span-3 border-b pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Personas y notaría</h4><p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Titular, solicitante y notario asociados al expediente.</p></div>
               <FiltroInput label="NIF solicitante" value={filtroNifSolicitante} onChange={setFiltroNifSolicitante} placeholder="NIF / CIF solicitante" />
               <FiltroInput label="Nombre solicitante" value={filtroNombreSolicitante} onChange={setFiltroNombreSolicitante} placeholder="Nombre o razón social" />
               <FiltroInput label="Notario" value={filtroNotario} onChange={setFiltroNotario} placeholder="Nombre del notario" />
               <FiltroInput label="NIF notario" value={filtroNifNotario} onChange={setFiltroNifNotario} placeholder="NIF notario" />
+              <div className="md:col-span-2 xl:col-span-3 border-b pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Registro y economía</h4><p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Finca, registro, importes, observaciones y estado de tramitación.</p></div>
               <FiltroInput label="Finca" value={filtroFinca} onChange={setFiltroFinca} placeholder="Número o referencia de finca" />
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: "var(--erp-text)" }}>Registro de la Propiedad</label>
@@ -2901,7 +2902,6 @@ export default function ExpedientesListado() {
                 </select>
                 <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>La lista muestra los registros disponibles en los datos cargados. Si falta uno, usa la búsqueda general.</p>
               </div>
-              <div className="md:col-span-2 xl:col-span-3 border-b pb-2 mt-2" style={{ borderColor: "var(--erp-border)" }}><h4 className="text-sm font-bold" style={{ color: "var(--erp-text)" }}>Registro y economía</h4><p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Finca, registro, importes, observaciones y estado de tramitación.</p></div>
               <FiltroInput label="Saldo real" type="number" value={filtroSaldoReal} onChange={setFiltroSaldoReal} placeholder="Importe exacto" />
               <FiltroInput label="Saldo disponible" type="number" value={filtroSaldoDisponible} onChange={setFiltroSaldoDisponible} placeholder="Importe exacto" />
               <FiltroInput label="Importe" type="number" value={filtroImporte} onChange={setFiltroImporte} placeholder="Importe exacto" />
