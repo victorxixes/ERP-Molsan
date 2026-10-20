@@ -749,6 +749,14 @@ def aplicar_filtros(
     tipoError=None,
     estadoExpedienteAncert=None,
     tipoActa=None,
+    contrato=None,
+    tipoFirma=None,
+    tipoDocumento=None,
+    provincia=None,
+    poblacion=None,
+    tributacion=None,
+    estadoRegistral=None,
+    estadoFacturacion=None,
 ):
     """Aplica los mismos filtros a listado y exportación Excel."""
     fecha_inicio = parsear_fecha(fechaInicio, "fechaInicio")
@@ -842,7 +850,7 @@ def aplicar_filtros(
         patron_obs = f"%{texto(observaciones)}%"
         q = q.filter(Expediente.observaciones.ilike(patron_obs))
     if texto(estadoActividad):
-        q = q.filter(Expediente.estado_actividad.ilike(f"%{texto(estadoActividad)}%"))
+        q = q.filter(func.lower(func.trim(Expediente.estado_actividad)) == texto(estadoActividad).lower())
     # actividadActual es el valor persistido; no debe confundirse con
     # el filtro legado `actividad`, que deriva una categoría del expediente.
     if texto(actividadActual):
@@ -865,6 +873,14 @@ def aplicar_filtros(
         (Expediente.tipo_error, tipoError),
         (Expediente.estado_expediente_ancert, estadoExpedienteAncert),
         (Expediente.tipo_acta, tipoActa),
+        (Expediente.contrato, contrato),
+        (Expediente.tipo_firma, tipoFirma),
+        (Expediente.tipo_documento, tipoDocumento),
+        (Expediente.provincia, provincia),
+        (Expediente.poblacion, poblacion),
+        (Expediente.tributacion, tributacion),
+        (Expediente.registral_estado, estadoRegistral),
+        (Expediente.facturacion_estado, estadoFacturacion),
     ]
     for columna, valor in filtros_catalogo:
         if texto(valor):
@@ -1052,6 +1068,14 @@ def listado_expedientes(
     tipoError: Optional[str] = None,
     estadoExpedienteAncert: Optional[str] = None,
     tipoActa: Optional[str] = None,
+    contrato: Optional[str] = None,
+    tipoFirma: Optional[str] = None,
+    tipoDocumento: Optional[str] = None,
+    provincia: Optional[str] = None,
+    poblacion: Optional[str] = None,
+    tributacion: Optional[str] = None,
+    estadoRegistral: Optional[str] = None,
+    estadoFacturacion: Optional[str] = None,
     ordenMultiple: Optional[str] = Query(None),
     alerta: Optional[str] = Query(None, description="Filtra por una alerta de control"),
     db: Session = Depends(get_db),
@@ -1093,6 +1117,14 @@ def listado_expedientes(
         tipoError=tipoError,
         estadoExpedienteAncert=estadoExpedienteAncert,
         tipoActa=tipoActa,
+        contrato=contrato,
+        tipoFirma=tipoFirma,
+        tipoDocumento=tipoDocumento,
+        provincia=provincia,
+        poblacion=poblacion,
+        tributacion=tributacion,
+        estadoRegistral=estadoRegistral,
+        estadoFacturacion=estadoFacturacion,
     )
     q = aplicar_busqueda_rapida(q, busqueda)
     q = aplicar_filtro_alerta_control(q, alerta, db)
@@ -1232,9 +1264,6 @@ def catalogos_listado_expedientes(
                 valores.update(valores_distintos(columna))
         return sorted(valores, key=lambda valor: valor.casefold())
 
-    def columna_modelo(nombre):
-        return getattr(Expediente, nombre, None)
-
     registros = valores_distintos(ExpedienteFinca.registro)
     estados_actividad = valores_distintos(Expediente.estado_actividad)
     estados_expediente = valores_distintos(Expediente.estado_expediente)
@@ -1330,6 +1359,14 @@ def exportar_excel_expedientes(
     tipoError: Optional[str] = None,
     estadoExpedienteAncert: Optional[str] = None,
     tipoActa: Optional[str] = None,
+    contrato: Optional[str] = None,
+    tipoFirma: Optional[str] = None,
+    tipoDocumento: Optional[str] = None,
+    provincia: Optional[str] = None,
+    poblacion: Optional[str] = None,
+    tributacion: Optional[str] = None,
+    estadoRegistral: Optional[str] = None,
+    estadoFacturacion: Optional[str] = None,
     alerta: Optional[str] = Query(None, description="Filtra por una alerta de control"),
     db: Session = Depends(get_db),
 ):
@@ -1370,6 +1407,14 @@ def exportar_excel_expedientes(
         tipoError=tipoError,
         estadoExpedienteAncert=estadoExpedienteAncert,
         tipoActa=tipoActa,
+        contrato=contrato,
+        tipoFirma=tipoFirma,
+        tipoDocumento=tipoDocumento,
+        provincia=provincia,
+        poblacion=poblacion,
+        tributacion=tributacion,
+        estadoRegistral=estadoRegistral,
+        estadoFacturacion=estadoFacturacion,
     )
     q = aplicar_filtro_alerta_control(q, alerta, db)
 
