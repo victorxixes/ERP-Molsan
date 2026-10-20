@@ -108,6 +108,7 @@ export default function MantenimientoTecnico() {
   const [resultado, setResultado] = useState(null);
   const [errorVisible, setErrorVisible] = useState("");
   const [tabla, setTabla] = useState("");
+  const [limiteFilas, setLimiteFilas] = useState(25);
   const [filtroTabla, setFiltroTabla] = useState("");
   const [tablasDisponibles, setTablasDisponibles] = useState([]);
   const [cargandoTablas, setCargandoTablas] = useState(false);
@@ -170,16 +171,18 @@ export default function MantenimientoTecnico() {
       columnas: `${API_ORIGIN}/debug/describe/${encodeURIComponent(nombre)}`,
       indices: `${API_ORIGIN}/debug/indices/${encodeURIComponent(nombre)}`,
       claves: `${API_ORIGIN}/debug/claves-foraneas/${encodeURIComponent(nombre)}`,
+      contenido: `${API_ORIGIN}/debug/contenido/${encodeURIComponent(nombre)}?limite=${Math.min(100, Math.max(1, Number(limiteFilas) || 25))}`,
     };
 
     const titulos = {
       columnas: `Columnas de ${nombre}`,
       indices: `Índices de ${nombre}`,
       claves: `Claves foráneas de ${nombre}`,
+      contenido: `Vista previa de datos de ${nombre}`,
     };
 
     await ejecutarGet(`tabla-${tipo}`, titulos[tipo], rutas[tipo]);
-  }, [tabla, ejecutarGet]);
+  }, [tabla, limiteFilas, ejecutarGet]);
 
   const ejecutarMigracion = useCallback(async (item) => {
     const aceptado = window.confirm(item.confirmar);
@@ -413,11 +416,27 @@ export default function MantenimientoTecnico() {
               ))}
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <label htmlFor="limite-filas-tecnico" className="mb-1 block text-xs font-semibold text-slate-600">
+                Filas de vista previa (máximo 100)
+              </label>
+              <input
+                id="limite-filas-tecnico"
+                type="number"
+                min="1"
+                max="100"
+                value={limiteFilas}
+                onChange={(e) => setLimiteFilas(Math.min(100, Math.max(1, Number(e.target.value) || 1)))}
+                className="w-36 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {[
               ["columnas", "Columnas"],
               ["indices", "Índices"],
               ["claves", "Claves foráneas"],
+              ["contenido", "Vista previa de datos"],
             ].map(([tipo, etiqueta]) => (
               <button
                 key={tipo}
@@ -429,7 +448,11 @@ export default function MantenimientoTecnico() {
                 {cargando === `tabla-${tipo}` ? "…" : etiqueta}
               </button>
             ))}
+            </div>
           </div>
+          <p className="mt-3 text-xs leading-5 text-slate-500">
+            La vista previa solo devuelve un máximo de 100 filas y oculta columnas cuyo nombre parece contener contraseñas, tokens o claves secretas. No permite modificar ni borrar datos.
+          </p>
         </div>
       </section>
 
