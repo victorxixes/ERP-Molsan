@@ -737,6 +737,18 @@ def aplicar_filtros(
     estadoActividad=None,
     estadoExpediente=None,
     actividadActual=None,
+    origenBankia=None,
+    productoGtg=None,
+    apoderado=None,
+    tipoProvision=None,
+    tipoOperacion=None,
+    subtipoOperacion=None,
+    nombreGestoria=None,
+    oficinaAlta=None,
+    dan=None,
+    tipoError=None,
+    estadoExpedienteAncert=None,
+    tipoActa=None,
 ):
     """Aplica los mismos filtros a listado y exportación Excel."""
     fecha_inicio = parsear_fecha(fechaInicio, "fechaInicio")
@@ -836,7 +848,27 @@ def aplicar_filtros(
     if texto(actividadActual):
         q = q.filter(Expediente.actividad_actual.ilike(f"%{texto(actividadActual)}%"))
     if texto(estadoExpediente):
-        q = q.filter(Expediente.estado_expediente.ilike(f"%{texto(estadoExpediente)}%"))
+        q = q.filter(func.lower(func.trim(Expediente.estado_expediente)) == texto(estadoExpediente).lower())
+
+    # Los filtros de categorías usan igualdad sin distinguir mayúsculas y
+    # eliminando espacios exteriores, para no mezclar valores parecidos.
+    filtros_catalogo = [
+        (Expediente.origen_bankia, origenBankia),
+        (Expediente.producto_gtg, productoGtg),
+        (Expediente.apoderado, apoderado),
+        (Expediente.tipo_provision, tipoProvision),
+        (Expediente.tipo_operacion, tipoOperacion),
+        (Expediente.subtipo_operacion, subtipoOperacion),
+        (Expediente.nombre_gestoria, nombreGestoria),
+        (Expediente.oficina_alta, oficinaAlta),
+        (Expediente.dan, dan),
+        (Expediente.tipo_error, tipoError),
+        (Expediente.estado_expediente_ancert, estadoExpedienteAncert),
+        (Expediente.tipo_acta, tipoActa),
+    ]
+    for columna, valor in filtros_catalogo:
+        if texto(valor):
+            q = q.filter(func.lower(func.trim(columna)) == texto(valor).lower())
 
     return q
 
@@ -1008,6 +1040,18 @@ def listado_expedientes(
     estadoActividad: Optional[str] = None,
     estadoExpediente: Optional[str] = None,
     actividadActual: Optional[str] = Query(None, description="Filtra por el valor almacenado en actividad_actual"),
+    origenBankia: Optional[str] = None,
+    productoGtg: Optional[str] = None,
+    apoderado: Optional[str] = None,
+    tipoProvision: Optional[str] = None,
+    tipoOperacion: Optional[str] = None,
+    subtipoOperacion: Optional[str] = None,
+    nombreGestoria: Optional[str] = None,
+    oficinaAlta: Optional[str] = None,
+    dan: Optional[str] = None,
+    tipoError: Optional[str] = None,
+    estadoExpedienteAncert: Optional[str] = None,
+    tipoActa: Optional[str] = None,
     ordenMultiple: Optional[str] = Query(None),
     alerta: Optional[str] = Query(None, description="Filtra por una alerta de control"),
     db: Session = Depends(get_db),
@@ -1037,6 +1081,18 @@ def listado_expedientes(
         estadoActividad=estadoActividad,
         estadoExpediente=estadoExpediente,
         actividadActual=actividadActual,
+        origenBankia=origenBankia,
+        productoGtg=productoGtg,
+        apoderado=apoderado,
+        tipoProvision=tipoProvision,
+        tipoOperacion=tipoOperacion,
+        subtipoOperacion=subtipoOperacion,
+        nombreGestoria=nombreGestoria,
+        oficinaAlta=oficinaAlta,
+        dan=dan,
+        tipoError=tipoError,
+        estadoExpedienteAncert=estadoExpedienteAncert,
+        tipoActa=tipoActa,
     )
     q = aplicar_busqueda_rapida(q, busqueda)
     q = aplicar_filtro_alerta_control(q, alerta, db)
@@ -1169,9 +1225,49 @@ def catalogos_listado_expedientes(
         }
         return sorted(valores, key=lambda valor: valor.casefold())
 
+    def combinar_catalogos(*columnas):
+        valores = set()
+        for columna in columnas:
+            if columna is not None:
+                valores.update(valores_distintos(columna))
+        return sorted(valores, key=lambda valor: valor.casefold())
+
+    def columna_modelo(nombre):
+        return getattr(Expediente, nombre, None)
+
     registros = valores_distintos(ExpedienteFinca.registro)
     estados_actividad = valores_distintos(Expediente.estado_actividad)
     estados_expediente = valores_distintos(Expediente.estado_expediente)
+
+    # Catálogos construidos sobre todos los expedientes, no solo sobre la
+    # página actual. Se limpian espacios exteriores y se deduplican valores.
+    catalogos = {
+        "oficinas": valores_distintos(Expediente.oficina),
+        "oficinas_alta": valores_distintos(Expediente.oficina_alta),
+        "dans": valores_distintos(Expediente.dan),
+        "origenes_bankia": valores_distintos(Expediente.origen_bankia),
+        "productos_gtg": valores_distintos(Expediente.producto_gtg),
+        "apoderados": valores_distintos(Expediente.apoderado),
+        "tipos_provision": valores_distintos(Expediente.tipo_provision),
+        "contratos": valores_distintos(Expediente.contrato),
+        "tipos_operacion": valores_distintos(Expediente.tipo_operacion),
+        "subtipos_operacion": valores_distintos(Expediente.subtipo_operacion),
+        "gestorias": valores_distintos(Expediente.nombre_gestoria),
+        "tipos_error": valores_distintos(Expediente.tipo_error),
+        "estados_ancert": valores_distintos(Expediente.estado_expediente_ancert),
+        "tipos_acta": valores_distintos(Expediente.tipo_acta),
+        "tipos_firma": valores_distintos(Expediente.tipo_firma),
+        "tipos_documento": valores_distintos(Expediente.tipo_documento),
+        "provincias": valores_distintos(Expediente.provincia),
+        "poblaciones": valores_distintos(Expediente.poblacion),
+        "tributaciones": valores_distintos(Expediente.tributacion),
+        "estados_registrales": valores_distintos(Expediente.registral_estado),
+        "estados_facturacion": valores_distintos(Expediente.facturacion_estado),
+        "dts": valores_distintos(Expediente.dt),
+        "vinccancs": valores_distintos(Expediente.vinccanc),
+        "lucys": valores_distintos(Expediente.lucy),
+        "notarios": combinar_catalogos(Expediente.nombre_notario, Expediente.notario),
+    }
 
     # Las actividades del flujo son un catálogo funcional, no una lista inferida
     # de los expedientes importados. Debe incluir también Sede notarial con protocolo
@@ -1189,6 +1285,7 @@ def catalogos_listado_expedientes(
         "estados_actividad": estados_actividad,
         "estados_expediente": estados_expediente,
         "actividades": actividades,
+        **catalogos,
     }
 
 
@@ -1221,6 +1318,18 @@ def exportar_excel_expedientes(
     estadoActividad: Optional[str] = None,
     estadoExpediente: Optional[str] = None,
     actividadActual: Optional[str] = Query(None, description="Filtra por el valor almacenado en actividad_actual"),
+    origenBankia: Optional[str] = None,
+    productoGtg: Optional[str] = None,
+    apoderado: Optional[str] = None,
+    tipoProvision: Optional[str] = None,
+    tipoOperacion: Optional[str] = None,
+    subtipoOperacion: Optional[str] = None,
+    nombreGestoria: Optional[str] = None,
+    oficinaAlta: Optional[str] = None,
+    dan: Optional[str] = None,
+    tipoError: Optional[str] = None,
+    estadoExpedienteAncert: Optional[str] = None,
+    tipoActa: Optional[str] = None,
     alerta: Optional[str] = Query(None, description="Filtra por una alerta de control"),
     db: Session = Depends(get_db),
 ):
@@ -1249,6 +1358,18 @@ def exportar_excel_expedientes(
         estadoActividad=estadoActividad,
         estadoExpediente=estadoExpediente,
         actividadActual=actividadActual,
+        origenBankia=origenBankia,
+        productoGtg=productoGtg,
+        apoderado=apoderado,
+        tipoProvision=tipoProvision,
+        tipoOperacion=tipoOperacion,
+        subtipoOperacion=subtipoOperacion,
+        nombreGestoria=nombreGestoria,
+        oficinaAlta=oficinaAlta,
+        dan=dan,
+        tipoError=tipoError,
+        estadoExpedienteAncert=estadoExpedienteAncert,
+        tipoActa=tipoActa,
     )
     q = aplicar_filtro_alerta_control(q, alerta, db)
 
