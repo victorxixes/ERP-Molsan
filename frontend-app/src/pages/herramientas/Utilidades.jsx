@@ -36,7 +36,7 @@ export default function Utilidades() {
       <Grupo titulo="Intranet y administración" descripcion="Publicación de información y herramientas de soporte integradas en el ERP.">
         <Card icon="📰" titulo="Crear noticia" descripcion="Publicar noticias para los usuarios de la intranet." link="/herramientas/utilidades/crear-noticia" />
         <Card icon="📄" titulo="Subir documento" descripcion="Publicar documentos en la intranet." link="/herramientas/utilidades/subir-documento" />
-        <Card icon="🛠️" titulo="Mantenimiento técnico" descripcion="Diagnóstico y tareas técnicas controladas, sin necesidad de abrir Swagger." link="/herramientas/mantenimiento-tecnico" />
+        <Card icon="🛠️" titulo="Mantenimiento técnico" descripcion="Diagnóstico de base de datos, revisión de estructura y tareas técnicas controladas desde el ERP. También disponible en el menú Más." link="/herramientas/mantenimiento-tecnico" />
       </Grupo>
     </div>
   );
