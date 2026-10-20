@@ -523,45 +523,16 @@ const COLUMNAS = [
 // ============================================================
 
 const COLUMNAS_POR_DEFECTO = [
-
+  // Vista inicial deliberadamente sencilla: el resto de datos sigue disponible
+  // desde "Columnas visibles" o al abrir la ficha del expediente.
   "id_expediente",
-
   "estado_expediente",
-
-  "estado_actividad",
-
-  "fecha_alta",
-
-  "fecha_firma",
-
   "actividad_actual",
-
+  "fecha_alta",
   "nombre_titular",
-
-  "nif_titular",
-
   "nombre_solicitante",
-
-  "nif_solicitante",
-
   "nombre_notario",
-
-  "nif_notario",
-
   "oficina",
-
-  "capital",
-
-  "importe",
-
-  "saldo_disponible",
-
-  "contrato",
-
-  "tipo_operacion",
-
-  "observaciones",
-
 ];
 
 
@@ -883,6 +854,8 @@ export default function ExpedientesListado() {
   // ==========================================================
   // FILTROS EDITABLES — FILTROS AVANZADOS DEFINITIVOS
   // ==========================================================
+  const [busquedaRapida, setBusquedaRapida] = useState("");
+  const [busquedaAplicada, setBusquedaAplicada] = useState("");
   const [filtroNumeroExpediente, setFiltroNumeroExpediente] = useState("");
   const [filtroOficina, setFiltroOficina] = useState("");
   const [filtroFechaInicio, setFiltroFechaInicio] = useState("");
@@ -1084,6 +1057,7 @@ export default function ExpedientesListado() {
             porPagina,
 
             numeroExpediente: filtrosAplicados.numeroExpediente || undefined,
+            busqueda: busquedaAplicada || undefined,
             oficina: filtrosAplicados.oficina || undefined,
             fechaInicio: filtrosAplicados.fechaInicio || undefined,
             fechaFin: filtrosAplicados.fechaFin || undefined,
@@ -1201,6 +1175,7 @@ export default function ExpedientesListado() {
     ordenMultiple,
     recargaRealtime,
     alertaSeleccionada,
+    busquedaAplicada,
   ]);
 
 
@@ -1489,6 +1464,7 @@ export default function ExpedientesListado() {
   // ==========================================================
 
   const aplicarFiltros = () => {
+    setBusquedaAplicada(busquedaRapida.trim());
     setFiltrosAplicados({
       numeroExpediente: filtroNumeroExpediente.trim(),
       oficina: filtroOficina.trim(),
@@ -1520,6 +1496,11 @@ export default function ExpedientesListado() {
   // ==========================================================
 
   const limpiarFiltros = () => {
+    setBusquedaRapida("");
+    setBusquedaAplicada("");
+    setAlertaSeleccionada("");
+    setActividadSeleccionada("");
+    setColumnasVisibles(COLUMNAS_POR_DEFECTO);
     setFiltroNumeroExpediente("");
     setFiltroOficina("");
     setFiltroFechaInicio("");
@@ -1767,6 +1748,7 @@ export default function ExpedientesListado() {
 
         await exportarExcelExpedientes({
           numeroExpediente: filtrosAplicados.numeroExpediente || undefined,
+          busqueda: busquedaAplicada || undefined,
           oficina: filtrosAplicados.oficina || undefined,
           fechaInicio: filtrosAplicados.fechaInicio || undefined,
           fechaFin: filtrosAplicados.fechaFin || undefined,
@@ -2165,6 +2147,54 @@ export default function ExpedientesListado() {
             </div>
           </div>
 
+      {/* BÚSQUEDA FÁCIL: no hace falta conocer los nombres de los filtros */}
+      <section
+        className="rounded-2xl border p-4 sm:p-5 shadow-sm space-y-3"
+        style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
+        aria-label="Buscar expedientes"
+      >
+        <div>
+          <h3 className="text-base font-bold text-[var(--erp-text)]">¿Qué expediente necesitas?</h3>
+          <p className="mt-1 text-sm text-[var(--erp-text-soft)]">
+            Escribe cualquier dato que conozcas: número, nombre, NIF, notario, oficina, finca o registro.
+          </p>
+        </div>
+        <form
+          className="flex flex-col sm:flex-row gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            setBusquedaAplicada(busquedaRapida.trim());
+            setPagina(1);
+          }}
+        >
+          <div className="relative flex-1">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg" aria-hidden="true">🔎</span>
+            <input
+              type="search"
+              value={busquedaRapida}
+              onChange={(event) => setBusquedaRapida(event.target.value)}
+              placeholder="Ej.: 2026-00123, María García, notario, finca…"
+              aria-label="Buscar en todos los datos de los expedientes"
+              className="w-full rounded-xl border py-3 pl-10 pr-3 text-sm outline-none focus:ring-2"
+              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
+            />
+          </div>
+          <button type="submit" className="rounded-xl px-5 py-3 text-sm font-bold text-white" style={{ background: "var(--erp-primary)" }}>
+            Buscar
+          </button>
+          {(busquedaRapida || busquedaAplicada) && (
+            <button type="button" onClick={() => { setBusquedaRapida(""); setBusquedaAplicada(""); setPagina(1); }} className="rounded-xl border px-4 py-3 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+              Limpiar búsqueda
+            </button>
+          )}
+        </form>
+        {busquedaAplicada && (
+          <p className="text-xs text-[var(--erp-text-soft)]" role="status">
+            Búsqueda activa: <strong>{busquedaAplicada}</strong>. Puedes combinarla con los filtros avanzados.
+          </p>
+        )}
+      </section>
+
       {/* ======================================================
           CONTROLES DE GESTIÓN — ALERTAS ACCIONABLES
       ====================================================== */}
@@ -2279,7 +2309,9 @@ export default function ExpedientesListado() {
               text-center
             "
           >
-            No hay expedientes para mostrar.
+            {busquedaAplicada || alertaSeleccionada || Object.values(filtrosAplicados).some(Boolean)
+              ? "No encontramos expedientes con esos datos. Prueba con menos palabras o limpia algún filtro."
+              : "Todavía no hay expedientes para mostrar."}
           </div>
 
         ) : (
