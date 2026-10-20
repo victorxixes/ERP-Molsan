@@ -778,6 +778,14 @@ def importar_excel_expedientes(
                 )
             )
 
+            # Importar las fechas de envío si están presentes en la matriz ABSIS.
+            fecha_envio_notario = convertir_fecha(obtener_valor(row, "FECHAENVIONOTARIO"))
+            if fecha_envio_notario is not None:
+                exp.fecha_envio_notario = fecha_envio_notario
+            fecha_envio = convertir_fecha(obtener_valor(row, "FECHAENVIO"))
+            if fecha_envio is not None:
+                exp.fecha_envio = fecha_envio
+
             exp.fcierre_defecto = convertir_fecha(
                 obtener_valor(
                     row,
