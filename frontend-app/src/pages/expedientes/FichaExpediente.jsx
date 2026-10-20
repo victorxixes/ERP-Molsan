@@ -2286,7 +2286,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
     const valorProvision = Number(String(datos.importe ?? "").replace(",", "."));
     const tieneProvision = datos.importe !== null && datos.importe !== undefined && datos.importe !== "" && Number.isFinite(valorProvision) && valorProvision > 0;
-    const esCaixaBank = entidad.includes("caixabank") || entidad.includes("caixa bank") || entidad.includes("la caixa") || /(^|\\W)caixa(\\W|$)/.test(entidad);
+    const esCaixaBank = entidad.includes("caixabank") || entidad.includes("caixa bank") || entidad.includes("la caixa") || /(^|\W)caixa(\W|$)/.test(entidad);
     const nombreTarifa = !tieneProvision
       ? "Cancelaciones sin provisión"
       : esCaixaBank
