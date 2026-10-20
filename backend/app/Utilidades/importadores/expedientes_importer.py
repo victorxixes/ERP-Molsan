@@ -7,6 +7,9 @@ import pandas as pd
 from sqlalchemy.orm import Session
 
 from backend.app.expedientes.models import Expediente
+from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
+from backend.app.ctn.models import Notaria
+from backend.app.empleados.models import Empleado
 from backend.app.expedientes.reparto import asignar_gestor_automaticamente, resolver_key_actividad
 
 
@@ -240,6 +243,130 @@ def convertir_numero(valor):
 
 
 # ============================================================
+
+def clave_vinculacion(valor: Any) -> str:
+    """Normaliza nombres para resolver vínculos con los catálogos internos."""
+    texto = limpiar_texto(valor) or ""
+    texto = "".join(
+        ch for ch in unicodedata.normalize("NFKD", texto)
+        if not unicodedata.combining(ch)
+    )
+    return " ".join(texto.casefold().replace("-", " ").split())
+
+
+def normalizar_nif(valor: Any) -> str:
+    return "".join(
+        ch for ch in (limpiar_texto(valor) or "").upper()
+        if ch.isalnum()
+    )
+
+
+def vincular_catalogos_expediente(expediente, row, notarios, empleados):
+    """Vincula IDs solo si el valor de ABSIS identifica un único registro."""
+    nombre = obtener_valor(row, "NOMBRENOTARIO", "NOTARIO")
+    nif = normalizar_nif(obtener_valor(row, "NIFNOTARIO"))
+    if nombre or nif:
+        coincidencias = []
+        for notario in notarios:
+            nif_catalogo = normalizar_nif(getattr(notario, "nif", None))
+            nombre_catalogo = " ".join(
+                p for p in [
+                    limpiar_texto(getattr(notario, "nombre", None)),
+                    limpiar_texto(getattr(notario, "apellidos", None)),
+                ] if p
+            )
+            por_nif = bool(nif and nif_catalogo and nif == nif_catalogo)
+            por_nombre = bool(nombre and not nif and clave_vinculacion(nombre) in {
+                clave_vinculacion(nombre_catalogo),
+                clave_vinculacion(getattr(notario, "nombre", None)),
+            })
+            if por_nif or por_nombre:
+                coincidencias.append(notario)
+        if len(coincidencias) == 1:
+            expediente.notario_id = coincidencias[0].id
+
+    nombre_apoderado = obtener_valor(row, "APODERADO")
+    if nombre_apoderado:
+        clave = clave_vinculacion(nombre_apoderado)
+        coincidencias = []
+        for empleado in empleados:
+            nombre_completo = " ".join(
+                p for p in [
+                    limpiar_texto(getattr(empleado, "nombre", None)),
+                    limpiar_texto(getattr(empleado, "apellidos", None)),
+                ] if p
+            )
+            if clave in {
+                clave_vinculacion(nombre_completo),
+                clave_vinculacion(getattr(empleado, "usuario", None)),
+            }:
+                coincidencias.append(empleado)
+        if len(coincidencias) == 1:
+            expediente.apoderado_empleado_id = coincidencias[0].id
+
+
+
+def importar_finca_relacionada(db, expediente, row):
+    """Sincroniza fincas/registros cuando la fila ABSIS contiene datos registrales."""
+    finca = limpiar_texto(obtener_valor(row, "FINCA", "NUMEROFINCA"))
+    registro = limpiar_texto(obtener_valor(
+        row, "REGISTROPROPIEDAD", "REGISTRODELAPROPIEDAD",
+        "REGISTRO", "NOMBREREGISTRO", "REGISTROPROPIEDADNOMBRE"
+    ))
+    provincia = limpiar_texto(obtener_valor(row, "PROVINCIAREGISTRO", "PROVINCIADELREGISTRO"))
+    poblacion = limpiar_texto(obtener_valor(
+        row, "MUNICIPIOREGISTRO", "POBLACIONREGISTRO",
+        "MUNICIPIODELREGISTRO", "POBLACIONDELREGISTRO"
+    ))
+    cru = limpiar_texto(obtener_valor(row, "CRU", "CRUIDUFIR", "IDUFIR"))
+    if not any((finca, registro, provincia, poblacion, cru)):
+        return
+
+    if getattr(expediente, "id", None) is None:
+        db.flush()
+
+    existentes = (
+        db.query(ExpedienteFinca)
+        .filter(ExpedienteFinca.expediente_id == expediente.id)
+        .all()
+    )
+    clave_finca = clave_vinculacion(finca)
+    clave_registro = clave_vinculacion(registro)
+    destino = next((
+        item for item in existentes
+        if (
+            (clave_finca and clave_vinculacion(getattr(item, "finca", None)) == clave_finca)
+            or (
+                not clave_finca and clave_registro
+                and clave_vinculacion(getattr(item, "registro", None)) == clave_registro
+            )
+        )
+        and (not clave_registro or clave_vinculacion(getattr(item, "registro", None)) == clave_registro)
+    ), None)
+    if destino is None:
+        destino = ExpedienteFinca(expediente_id=expediente.id)
+        db.add(destino)
+
+    campos = (
+        ("finca", finca), ("registro", registro),
+        ("provincia", provincia), ("poblacion", poblacion),
+        ("cru_idufir", cru),
+        ("contrato", limpiar_texto(obtener_valor(row, "CONTRATO"))),
+        ("cuantia", limpiar_texto(obtener_valor(row, "CUANTIAFINCA", "CUANTIAREGISTRAL"))),
+        ("inscripcion", limpiar_texto(obtener_valor(row, "INSCRIPCION", "INSCRIPCIONREGISTRAL"))),
+        ("seccion", limpiar_texto(obtener_valor(row, "SECCIONREGISTRAL", "SECCION"))),
+        ("entidad_original", limpiar_texto(obtener_valor(row, "ENTIDADORIGINAL"))),
+        ("subrogado", limpiar_texto(obtener_valor(row, "SUBROGADO"))),
+    )
+    for campo, valor in campos:
+        if valor is not None:
+            setattr(destino, campo, valor)
+
+    fecha_constitucion = convertir_fecha(obtener_valor(row, "FECHACONSTITUCION"))
+    if fecha_constitucion is not None:
+        destino.fecha_constitucion = fecha_constitucion
+
+
 # IMPORTADOR PRINCIPAL
 # ============================================================
 
@@ -623,6 +750,10 @@ def importar_excel_expedientes(
                     clave
                 ] = exp
 
+    # Cargar catálogos una sola vez para enlazar IDs estables.
+    notarios_catalogo = db.query(Notaria).all()
+    empleados_catalogo = db.query(Empleado).filter(Empleado.activo.is_(True)).all()
+
     print(
         f"EXPEDIENTES YA EXISTENTES: "
         f"{len(existentes_por_id)}",
@@ -775,6 +906,32 @@ def importar_excel_expedientes(
                 )
             )
 
+            # Datos de seguimiento que pueden venir en la matriz ABSIS.
+            valor_ultima_accion = obtener_valor(row, "ULTIMAACCION")
+            if valor_ultima_accion is not None:
+                exp.ultima_accion = str(valor_ultima_accion).strip()[:500] or None
+            fecha_ultima_accion = convertir_fecha(obtener_valor(row, "FECHAULTIMAACCION"))
+            if fecha_ultima_accion is not None:
+                exp.fecha_ultima_accion = fecha_ultima_accion
+            for campo, encabezado in (("sol", "SOL"), ("cs", "CS"), ("ns", "NS")):
+                valor = obtener_valor(row, encabezado)
+                if valor is not None:
+                    setattr(exp, campo, str(valor).strip()[:100] or None)
+            fecha_solicitud_pnc = convertir_fecha(obtener_valor(row, "FECHASOLICITUDPNC"))
+            if fecha_solicitud_pnc is not None:
+                exp.fecha_solicitud_pnc = fecha_solicitud_pnc
+            numero_solicitud_pnc = obtener_valor(row, "NUMEROSOLICITUDPNC")
+            if numero_solicitud_pnc is not None:
+                exp.numero_solicitud_pnc = str(numero_solicitud_pnc).strip()[:200] or None
+
+            # Importar las fechas de envío si están presentes en la matriz ABSIS.
+            fecha_envio_notario = convertir_fecha(obtener_valor(row, "FECHAENVIONOTARIO"))
+            if fecha_envio_notario is not None:
+                exp.fecha_envio_notario = fecha_envio_notario
+            fecha_envio = convertir_fecha(obtener_valor(row, "FECHAENVIO"))
+            if fecha_envio is not None:
+                exp.fecha_envio = fecha_envio
+
             exp.fcierre_defecto = convertir_fecha(
                 obtener_valor(
                     row,
@@ -851,6 +1008,26 @@ def importar_excel_expedientes(
                 row,
                 "NOTARIO",
                 "NOMBRENOTARIO",
+            )
+
+            # Campos de firma/documento que ABSIS pueda aportar. Solo se
+            # actualizan si vienen informados para no borrar datos operativos.
+            for campo, encabezado in (
+                ("tipo_firma", "TIPOFIRMA"),
+                ("tipo_documento", "TIPODOCUMENTO"),
+                ("idioma_documento", "IDIOMADOCUMENTO"),
+                ("formato_escritura", "FORMATOESCRITURA"),
+                ("tipo_tramite", "TIPOTRAMITE"),
+                ("poblacion", "POBLACION"),
+                ("provincia", "PROVINCIA"),
+            ):
+                valor = obtener_valor(row, encabezado)
+                if valor is not None:
+                    setattr(exp, campo, str(valor).strip() or None)
+
+            # Vincular los IDs de catálogo además de conservar el texto de ABSIS.
+            vincular_catalogos_expediente(
+                exp, row, notarios_catalogo, empleados_catalogo
             )
 
             # ------------------------------------------------
@@ -1000,6 +1177,10 @@ def importar_excel_expedientes(
                 "FINCA",
             )
 
+            # Crear/actualizar el vínculo finca-registro si ABSIS aporta
+            # columnas registrales explícitas; nunca borrar fincas existentes.
+            importar_finca_relacionada(db, exp, row)
+
             # ------------------------------------------------
             # DEFECTOS
             # ------------------------------------------------
@@ -1083,17 +1264,25 @@ def importar_excel_expedientes(
             # FACTURACIÓN
             # ------------------------------------------------
 
-            exp.facturacion_estado = obtener_valor(
-                row,
-                "FACTURACIONESTADO",
-            )
+            for campo, encabezado in (
+                ("facturacion_nombre", "FACTURACIONNOMBRE"),
+                ("facturacion_apellidos", "FACTURACIONAPELLIDOS"),
+                ("facturacion_dni_nif", "FACTURACIONDNINIF"),
+                ("facturacion_direccion", "FACTURACIONDIRECCION"),
+                ("facturacion_codigo_postal", "FACTURACIONCODIGOPOSTAL"),
+                ("facturacion_poblacion", "FACTURACIONPOBLACION"),
+                ("facturacion_provincia", "FACTURACIONPROVINCIA"),
+                ("facturacion_telefono", "FACTURACIONTELEFONO"),
+                ("facturacion_email", "FACTURACIONEMAIL"),
+                ("facturacion_estado", "FACTURACIONESTADO"),
+            ):
+                valor = obtener_valor(row, encabezado)
+                if valor is not None:
+                    setattr(exp, campo, str(valor).strip() or None)
 
-            exp.facturacion_fecha = convertir_fecha(
-                obtener_valor(
-                    row,
-                    "FACTURACIONFECHA",
-                )
-            )
+            facturacion_fecha = convertir_fecha(obtener_valor(row, "FACTURACIONFECHA"))
+            if facturacion_fecha is not None:
+                exp.facturacion_fecha = facturacion_fecha
 
             # ------------------------------------------------
             # REGISTRAL

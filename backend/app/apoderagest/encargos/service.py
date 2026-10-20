@@ -70,9 +70,25 @@ def _nombre_notario(expediente):
     return _texto(getattr(expediente, "notario", None))
 
 
+
+def _campos_ficha_central(expediente):
+    """Expone los campos del modelo central sin perder los alias de ApoderaGest."""
+    resultado = {}
+    for columna in Expediente.__table__.columns:
+        nombre = columna.name
+        valor = getattr(expediente, nombre, None)
+        if valor is not None and hasattr(valor, "isoformat"):
+            valor = valor.isoformat()
+        resultado[nombre] = valor
+    return resultado
+
+
 def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_apoderado=None):
     """Convierte un expediente en el formato consumido por ApoderaGest."""
     return {
+        # Fuente de verdad: campos persistidos en Expediente/FichaExpediente.
+        # Los alias de compatibilidad de ApoderaGest definidos debajo prevalecen.
+        **_campos_ficha_central(expediente),
         "id": getattr(expediente, "id", None),
         "id_expediente": _texto(
             getattr(expediente, "id_expediente", None)

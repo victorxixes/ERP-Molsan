@@ -423,6 +423,10 @@ CAMPOS_EXPEDIENTE = [
 
     "fecha_envio_notario",
     "fecha_envio",
+    "notargest_estado",
+    "notargest_fecha_cierre",
+    "notargest_fecha_envio_gestoria",
+    "notario_otorgante",
     "fecha_solicitud_pnc",
     "numero_solicitud_pnc",
     "escritura_firmada",
