@@ -20,6 +20,9 @@ class RealtimeManager:
 
         self.global_connections: Set[WebSocket] = set()
 
+        # Sockets con permiso de Mensajes; el resto solo recibe presencia global.
+        self.message_connections: Set[WebSocket] = set()
+
         # --------------------------------------------------------
         # CONEXIONES POR USUARIO
         # --------------------------------------------------------
@@ -84,6 +87,7 @@ class RealtimeManager:
         modulo: str | None = None,
         grupo: str | None = None,
         usuario_info: Dict[str, Any] | None = None,
+        puede_mensajes: bool = False,
     ):
 
         await websocket.accept()
@@ -93,6 +97,9 @@ class RealtimeManager:
             self.global_connections.add(
                 websocket
             )
+
+            if puede_mensajes:
+                self.message_connections.add(websocket)
 
             era_primera = False
 
@@ -176,6 +183,7 @@ class RealtimeManager:
             self.global_connections.discard(
                 websocket
             )
+            self.message_connections.discard(websocket)
 
             # ----------------------------------------------------
             # USUARIO
@@ -348,6 +356,9 @@ class RealtimeManager:
                 set(),
             )
         ):
+            # Los mensajes y adjuntos solo llegan a sockets autorizados.
+            if websocket not in self.message_connections:
+                continue
 
             await self._safe_send(
                 websocket,
