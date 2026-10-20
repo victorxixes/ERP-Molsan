@@ -494,6 +494,10 @@ const COLUMNAS = [
   { key: "hoja_encargo_firmada", label: "Hoja de encargo firmada", tipo: "texto" },
   { key: "justificante_cancelacion", label: "Justificante de cancelación", tipo: "texto" },
   { key: "nota_simple_registral", label: "Nota simple registral", tipo: "texto" },
+  { key: "borradores_escritura", label: "Borradores escritura", tipo: "texto" },
+  { key: "defecto_registral", label: "Defecto registral", tipo: "texto" },
+  { key: "subsanacion_defecto", label: "Subsanación del defecto", tipo: "texto" },
+  { key: "otros_documentos", label: "Otros", tipo: "texto" },
 
   { key: "sol", label: "SOL", tipo: "texto" },
   { key: "cs", label: "CS", tipo: "texto" },
