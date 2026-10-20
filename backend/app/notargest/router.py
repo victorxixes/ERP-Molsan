@@ -437,6 +437,41 @@ def notarias_habilitadas_para_admin(n=Depends(get_notario), db: Session = Depend
     return resultado
 
 
+
+@router.get("/seleccion/expedientes")
+def expedientes_resumen_global(n=Depends(get_notario), db: Session = Depends(get_db)):
+    """Listado de expedientes de todas las notarías habilitadas para el modal de Visión Molsan."""
+    if not _es_usuario_erp(n) or not _es_administrador_notargest(n):
+        raise HTTPException(status_code=403, detail="Solo un administrador ERP puede consultar el resumen global de NotarGest.")
+    require_perm_modulo(n, "notargest", "ver")
+    notarías = db.query(Notaria).filter(Notaria.notargest_habilitado.is_(True)).order_by(Notaria.apellidos.asc(), Notaria.nombre.asc()).all()
+    resultado = []
+    for notaria in notarías:
+        nombre_notaria = " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or f"Notaría {notaria.id}"
+        for expediente in _expedientes_de_notario(notaria, db):
+            item = _resumen(expediente, db)
+            estado = _estado_workflow(expediente)
+            actividad = str(getattr(expediente, "actividad_actual", "") or "").casefold()
+            valor_defectos = str(getattr(expediente, "tiene_defectos_abiertos", "") or "").strip().casefold()
+            con_defectos = ("defecto" in actividad) or valor_defectos in {"si", "sí", "true", "1", "abierto"}
+            item.update({
+                "notaria_id": notaria.id,
+                "notaria_nombre": nombre_notaria,
+                "pendiente_recepcion": estado == "recepcion",
+                "pendiente_firma": estado == "firma",
+                "pendiente_factura_notarial": estado == "factura",
+                "pendiente_presentacion_registro": estado == "registro",
+                "pendiente_ajd_itp": estado == "ajd",
+                "pendiente_inscripcion": estado == "inscripcion",
+                "pendiente_copia_simple": estado == "copia",
+                "escrituras_cerradas_inscritas": estado == "cerrada",
+                "con_defectos": con_defectos,
+                "firmas_urgentes": bool(getattr(expediente, "firma_urgente", False)),
+            })
+            resultado.append(item)
+    return {"items": resultado, "total": len(resultado)}
+
+
 @router.post("/seleccion/notaria/{notaria_id}")
 def seleccionar_notaria_admin(notaria_id: int, n=Depends(get_notario), db: Session = Depends(get_db)):
     if not _es_usuario_erp(n) or not _es_administrador_notargest(n):
