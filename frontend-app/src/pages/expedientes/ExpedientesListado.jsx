@@ -495,12 +495,10 @@ const COLUMNAS = [
   { key: "ultima_accion", label: "Última acción", tipo: "texto" },
   { key: "fecha_ultima_accion", label: "Fecha última acción", tipo: "fecha" },
   { key: "fecha_envio", label: "Fecha de envío", tipo: "fecha" },
-  { key: "apoderado", label: "Apoderado", tipo: "texto" },
   { key: "tipo_documento", label: "Tipo documento", tipo: "texto" },
   { key: "poblacion", label: "Población", tipo: "texto" },
   { key: "provincia", label: "Provincia", tipo: "texto" },
   { key: "tipo_firma", label: "Tipo de firma", tipo: "texto" },
-  { key: "protocolo", label: "Protocolo", tipo: "texto" },
   { key: "asiento_presentacion_libro_diario", label: "Asiento presentación / Libro diario", tipo: "texto" },
   { key: "fecha_presentacion", label: "Fecha presentación", tipo: "fecha" },
   { key: "numero_entrada", label: "Número de Entrada", tipo: "texto" },
@@ -654,12 +652,38 @@ const COLUMNAS_TRAMITACION_INSCRIPCION = [
   "escritura_simple_cancelacion",
 ];
 
+const COLUMNAS_DEFECTOS_REGISTRALES = [
+  ...COLUMNAS_BASE_ACTIVIDAD,
+  "tiene_defectos_abiertos",
+  "tipo_error",
+  "descripcion_error",
+  "falta_defecto",
+  "fcierre_defecto",
+  "fecha_vencimiento",
+  "ultima_accion",
+  "fecha_ultima_accion",
+];
+
+const COLUMNAS_FACTURACION_CIERRE = [
+  ...COLUMNAS_BASE_ACTIVIDAD,
+  "fecha_firma",
+  "fecha_inscripcion",
+  "facturacion_estado",
+  "facturacion_fecha",
+  "fecha_entregado_cliente",
+  "fecha_fin_actividad",
+  "saldo_real",
+  "saldo_disponible",
+];
+
 const COLUMNAS_POR_ACTIVIDAD = {
   "documentacion-previa": COLUMNAS_DOCUMENTACION_PREVIA,
   "sede-notarial": COLUMNAS_SEDE_NOTARIAL,
   "sede-notarial-protocolo": COLUMNAS_SEDE_NOTARIAL_PROTOCOLO,
   "liquidacion-impuestos": COLUMNAS_LIQUIDACION_IMPUESTOS,
   "tramitacion-inscripcion": COLUMNAS_TRAMITACION_INSCRIPCION,
+  "defectos-registrales": COLUMNAS_DEFECTOS_REGISTRALES,
+  "facturacion-cierre": COLUMNAS_FACTURACION_CIERRE,
 };
 
 function obtenerColumnasActividad(actividad) {
@@ -777,6 +801,18 @@ function formatearValor(
 
 }
 
+
+// ============================================================
+// ESTILO DE ETIQUETAS DE ESTADO
+// ============================================================
+
+function estiloEstado(valor) {
+  const estado = String(valor || "").toLocaleLowerCase("es-ES");
+  if (/vencid|bloquead|error|rechaz|defecto|urgente|atrasad/.test(estado)) return { background: "#fef2f2", color: "#991b1b", borderColor: "#fecaca" };
+  if (/pendient|espera|revis|tramit|proceso/.test(estado)) return { background: "#fffbeb", color: "#92400e", borderColor: "#fde68a" };
+  if (/finaliz|cerrad|complet|inscrit|entregad|facturad|firmad|correcto/.test(estado)) return { background: "#ecfdf5", color: "#065f46", borderColor: "#a7f3d0" };
+  return { background: "var(--erp-surface-soft)", color: "var(--erp-text)", borderColor: "var(--erp-border)" };
+}
 
 // ============================================================
 // FORMATEAR NÚMERO
@@ -1866,10 +1902,9 @@ export default function ExpedientesListado() {
 
   const columnasActivas =
     COLUMNAS.filter(
-      (columna) =>
-        columnasVisibles.includes(
-          columna.key
-        )
+      (columna, indice, catalogo) =>
+        columnasVisibles.includes(columna.key) &&
+        catalogo.findIndex((item) => item.key === columna.key) === indice
     );
 
 
@@ -2134,10 +2169,10 @@ export default function ExpedientesListado() {
                     </h2>
                     <p className="text-sm text-[var(--erp-text-soft)] mt-1">
                       {alertaSeleccionada
-                        ? "Expedientes que cumplen el control seleccionado, combinados con los filtros actuales"
+                        ? "Expedientes que necesitan atención. Puedes combinar este control con los filtros."
                         : actividadSeleccionada
-                          ? "Área de trabajo de la actividad seleccionada"
-                          : "Consulta general de todos los expedientes"}
+                          ? "Expedientes de esta fase. Selecciona «Ver ficha» para continuar el trabajo."
+                          : "Busca un expediente o revisa los avisos de gestión y abre su ficha para trabajar."}
                     </p>
                   </div>
                 </div>
@@ -2215,7 +2250,7 @@ export default function ExpedientesListado() {
             </button>
           )}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-2">
           {[
             { key: "defectos_vencidos", accent: "#b91c1c" },
             { key: "sede_notarial", accent: "#9a3412" },
@@ -2231,7 +2266,7 @@ export default function ExpedientesListado() {
                 type="button"
                 onClick={() => { setAlertaSeleccionada(activa ? "" : config.key); setPagina(1); }}
                 aria-pressed={activa}
-                className="text-left rounded-2xl border p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+                className="text-left rounded-xl border p-3 shadow-sm transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
                 style={{
                   background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)",
                   borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)",
@@ -2529,14 +2564,11 @@ export default function ExpedientesListado() {
                             }
                           >
 
-                            {
-                              formatearValor(
-                                expediente[
-                                  columna.key
-                                ],
-                                columna.tipo
-                              )
-                            }
+                            {["estado_expediente", "estado_actividad", "facturacion_estado", "registral_estado"].includes(columna.key) && expediente[columna.key] ? (
+                              <span className="inline-flex max-w-[220px] items-center rounded-full border px-2.5 py-1 text-xs font-semibold whitespace-normal" style={estiloEstado(expediente[columna.key])} title={String(expediente[columna.key])}>
+                                {formatearValor(expediente[columna.key], columna.tipo)}
+                              </span>
+                            ) : formatearValor(expediente[columna.key], columna.tipo)}
 
                           </td>
 
@@ -2878,7 +2910,7 @@ export default function ExpedientesListado() {
                   <option value="">Todos los registros</option>
                   {[...new Set(expedientes.map((item) => item.registro_propiedad || item.nombre_registro || item.registro).filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, "es")).map((registro) => <option key={registro} value={registro}>{registro}</option>)}
                 </select>
-                <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>La lista se nutre de los registros presentes en los datos recibidos por el listado.</p>
+                <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>La lista muestra los registros disponibles en los datos cargados. Si falta uno, usa la búsqueda general.</p>
               </div>
               <FiltroInput label="Saldo real" type="number" value={filtroSaldoReal} onChange={setFiltroSaldoReal} placeholder="Importe exacto" />
               <FiltroInput label="Saldo disponible" type="number" value={filtroSaldoDisponible} onChange={setFiltroSaldoDisponible} placeholder="Importe exacto" />
