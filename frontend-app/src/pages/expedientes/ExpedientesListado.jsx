@@ -539,6 +539,35 @@ const COLUMNAS_POR_DEFECTO = [
   "oficina",
 ];
 
+// Campos procedentes de las columnas conocidas del Excel de ABSIS.
+const COLUMNAS_EXCEL_ABSIS = [
+  "id_expediente", "estado_expediente", "fecha_alta", "origen_bankia",
+  "observaciones", "dt", "producto_gtg", "fecha_firma", "apoderado",
+  "fecha_inscripcion", "actividad_actual", "estado_actividad",
+  "fecha_inicio_actividad", "fecha_fin_actividad", "id_provision",
+  "tipo_provision", "contrato", "num_solicitud_sia", "tipo_operacion",
+  "subtipo_operacion", "id_gestoria_tramite", "nombre_gestoria",
+  "oficina", "dan", "oficina_alta", "capital", "importe", "saldo_real",
+  "saldo_disponible", "vinccanc", "protocolo", "finca",
+  "nombre_solicitante", "nif_solicitante", "nombre_titular", "nif_titular",
+  "nombre_notario", "nif_notario", "tiene_defectos_abiertos", "tipo_error",
+  "descripcion_error", "falta_defecto", "fcierre_defecto",
+  "estado_expediente_ancert", "id_expediente_cgn", "fecha_sol_cgn",
+  "fecha_entregado_cliente",
+];
+
+// Repositorios de la carpeta digital. Se separan visualmente de los campos ABSIS.
+const REPOSITORIOS_CARPETA_DIGITAL = [
+  { key: "documentos_absis", label: "Documentos ABSIS" },
+  { key: "hoja_encargo_firmada", label: "Hoja de encargo firmada" },
+  { key: "justificante_cancelacion", label: "Justificante de cancelación" },
+  { key: "nota_simple_registral", label: "Nota simple registral" },
+  { key: "borradores_escritura", label: "Borradores escritura" },
+  { key: "defecto_registral", label: "Defecto registral" },
+  { key: "subsanacion_defecto", label: "Subsanación del defecto" },
+  { key: "otros_documentos", label: "Otros" },
+];
+
 
 // ============================================================
 // ACTIVIDADES CONOCIDAS DE ABSIS
@@ -2988,22 +3017,43 @@ export default function ExpedientesListado() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-                {COLUMNAS.map((columna) => {
-                  const visible = columnasVisibles.includes(columna.key);
-                  return (
-                    <label
-                      key={columna.key}
-                      className="flex items-start gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-all hover:bg-[var(--erp-primary-soft)]"
-                      style={{ background: visible ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: visible ? "var(--erp-primary)" : "var(--erp-border)" }}
-                    >
-                      <input type="checkbox" checked={visible} onChange={() => toggleColumna(columna.key)} className="mt-0.5 accent-[var(--erp-primary)]" />
-                      <span className="text-sm" style={{ color: visible ? "var(--erp-primary-dark)" : "var(--erp-text)" }}>
-                        {columna.label}
-                      </span>
-                    </label>
-                  );
-                })}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+                <section className="rounded-2xl border p-4" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
+                  <div className="mb-3">
+                    <h4 className="text-base font-bold" style={{ color: "var(--erp-text)" }}>Campos del Excel ABSIS</h4>
+                    <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Selecciona los campos de expediente que proceden del Excel de importación.</p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {COLUMNAS.filter((columna) => COLUMNAS_EXCEL_ABSIS.includes(columna.key)).map((columna) => {
+                      const visible = columnasVisibles.includes(columna.key);
+                      return (
+                        <label key={columna.key} className="flex items-start gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-all hover:bg-[var(--erp-primary-soft)]" style={{ background: visible ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: visible ? "var(--erp-primary)" : "var(--erp-border)" }}>
+                          <input type="checkbox" checked={visible} onChange={() => toggleColumna(columna.key)} className="mt-0.5 accent-[var(--erp-primary)]" />
+                          <span className="text-sm" style={{ color: visible ? "var(--erp-primary-dark)" : "var(--erp-text)" }}>{columna.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                <section className="rounded-2xl border p-4" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
+                  <div className="mb-3">
+                    <h4 className="text-base font-bold" style={{ color: "var(--erp-text)" }}>Repositorios de la carpeta digital</h4>
+                    <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Selecciona los repositorios documentales que quieres ver como columnas.</p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {REPOSITORIOS_CARPETA_DIGITAL.map((repositorio) => {
+                      const visible = columnasVisibles.includes(repositorio.key);
+                      return (
+                        <label key={repositorio.key} className="flex items-start gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-all hover:bg-[var(--erp-primary-soft)]" style={{ background: visible ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: visible ? "var(--erp-primary)" : "var(--erp-border)" }}>
+                          <input type="checkbox" checked={visible} onChange={() => toggleColumna(repositorio.key)} className="mt-0.5 accent-[var(--erp-primary)]" />
+                          <span className="text-sm" style={{ color: visible ? "var(--erp-primary-dark)" : "var(--erp-text)" }}>{repositorio.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-3 text-xs" style={{ color: "var(--erp-text-soft)" }}>Los repositorios nuevos se muestran como columnas cuando el listado dispone de su estado documental.</p>
+                </section>
               </div>
             </div>
 
