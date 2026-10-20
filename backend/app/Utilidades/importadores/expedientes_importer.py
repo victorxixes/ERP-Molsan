@@ -900,6 +900,24 @@ def importar_excel_expedientes(
                 )
             )
 
+            # Datos de seguimiento que pueden venir en la matriz ABSIS.
+            valor_ultima_accion = obtener_valor(row, "ULTIMAACCION")
+            if valor_ultima_accion is not None:
+                exp.ultima_accion = str(valor_ultima_accion).strip()[:500] or None
+            fecha_ultima_accion = convertir_fecha(obtener_valor(row, "FECHAULTIMAACCION"))
+            if fecha_ultima_accion is not None:
+                exp.fecha_ultima_accion = fecha_ultima_accion
+            for campo, encabezado in (("sol", "SOL"), ("cs", "CS"), ("ns", "NS")):
+                valor = obtener_valor(row, encabezado)
+                if valor is not None:
+                    setattr(exp, campo, str(valor).strip()[:100] or None)
+            fecha_solicitud_pnc = convertir_fecha(obtener_valor(row, "FECHASOLICITUDPNC"))
+            if fecha_solicitud_pnc is not None:
+                exp.fecha_solicitud_pnc = fecha_solicitud_pnc
+            numero_solicitud_pnc = obtener_valor(row, "NUMEROSOLICITUDPNC")
+            if numero_solicitud_pnc is not None:
+                exp.numero_solicitud_pnc = str(numero_solicitud_pnc).strip()[:200] or None
+
             # Importar las fechas de envío si están presentes en la matriz ABSIS.
             fecha_envio_notario = convertir_fecha(obtener_valor(row, "FECHAENVIONOTARIO"))
             if fecha_envio_notario is not None:
@@ -985,6 +1003,21 @@ def importar_excel_expedientes(
                 "NOTARIO",
                 "NOMBRENOTARIO",
             )
+
+            # Campos de firma/documento que ABSIS pueda aportar. Solo se
+            # actualizan si vienen informados para no borrar datos operativos.
+            for campo, encabezado in (
+                ("tipo_firma", "TIPOFIRMA"),
+                ("tipo_documento", "TIPODOCUMENTO"),
+                ("idioma_documento", "IDIOMADOCUMENTO"),
+                ("formato_escritura", "FORMATOESCRITURA"),
+                ("tipo_tramite", "TIPOTRAMITE"),
+                ("poblacion", "POBLACION"),
+                ("provincia", "PROVINCIA"),
+            ):
+                valor = obtener_valor(row, encabezado)
+                if valor is not None:
+                    setattr(exp, campo, str(valor).strip() or None)
 
             # Vincular los IDs de catálogo además de conservar el texto de ABSIS.
             vincular_catalogos_expediente(
@@ -1225,17 +1258,25 @@ def importar_excel_expedientes(
             # FACTURACIÓN
             # ------------------------------------------------
 
-            exp.facturacion_estado = obtener_valor(
-                row,
-                "FACTURACIONESTADO",
-            )
+            for campo, encabezado in (
+                ("facturacion_nombre", "FACTURACIONNOMBRE"),
+                ("facturacion_apellidos", "FACTURACIONAPELLIDOS"),
+                ("facturacion_dni_nif", "FACTURACIONDNINIF"),
+                ("facturacion_direccion", "FACTURACIONDIRECCION"),
+                ("facturacion_codigo_postal", "FACTURACIONCODIGOPOSTAL"),
+                ("facturacion_poblacion", "FACTURACIONPOBLACION"),
+                ("facturacion_provincia", "FACTURACIONPROVINCIA"),
+                ("facturacion_telefono", "FACTURACIONTELEFONO"),
+                ("facturacion_email", "FACTURACIONEMAIL"),
+                ("facturacion_estado", "FACTURACIONESTADO"),
+            ):
+                valor = obtener_valor(row, encabezado)
+                if valor is not None:
+                    setattr(exp, campo, str(valor).strip() or None)
 
-            exp.facturacion_fecha = convertir_fecha(
-                obtener_valor(
-                    row,
-                    "FACTURACIONFECHA",
-                )
-            )
+            facturacion_fecha = convertir_fecha(obtener_valor(row, "FACTURACIONFECHA"))
+            if facturacion_fecha is not None:
+                exp.facturacion_fecha = facturacion_fecha
 
             # ------------------------------------------------
             # REGISTRAL
