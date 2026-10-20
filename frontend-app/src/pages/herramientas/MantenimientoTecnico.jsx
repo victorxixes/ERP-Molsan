@@ -201,6 +201,50 @@ export default function MantenimientoTecnico() {
     }
   }, []);
 
+  const ejecutarDiagnosticoCompleto = useCallback(async () => {
+    setCargando("diagnostico-completo");
+    setResultado(null);
+    setErrorVisible("");
+    try {
+      const comprobaciones = await Promise.allSettled(
+        DIAGNOSTICOS.map(async (item) => {
+          const res = await axios.get(item.url);
+          return {
+            id: item.id,
+            titulo: item.titulo,
+            ok: true,
+            http: res.status,
+            datos: res.data,
+          };
+        })
+      );
+      const informe = comprobaciones.map((item, index) => {
+        if (item.status === "fulfilled") return item.value;
+        return {
+          id: DIAGNOSTICOS[index].id,
+          titulo: DIAGNOSTICOS[index].titulo,
+          ok: false,
+          error: obtenerMensajeError(item.reason),
+        };
+      });
+      setResultado({
+        titulo: "Diagnóstico técnico completo",
+        estado: informe.every((item) => item.ok) ? 200 : 207,
+        fecha: new Date().toLocaleString("es-ES"),
+        datos: {
+          resumen: informe.every((item) => item.ok)
+            ? "Todas las comprobaciones han respondido correctamente."
+            : "Una o más comprobaciones han fallado. Revisa el detalle de cada resultado.",
+          comprobaciones: informe,
+        },
+      });
+    } catch (error) {
+      setErrorVisible(obtenerMensajeError(error));
+    } finally {
+      setCargando("");
+    }
+  }, []);
+
   const tablaNormalizada = useMemo(
     () => filtroTabla.trim().toLowerCase(),
     [filtroTabla]
@@ -236,6 +280,14 @@ export default function MantenimientoTecnico() {
               Diagnóstico de base de datos y ejecución controlada de tareas técnicas desde el propio ERP, con confirmación antes de cada operación.
             </p>
           </div>
+          <button
+            type="button"
+            disabled={Boolean(cargando)}
+            onClick={ejecutarDiagnosticoCompleto}
+            className="shrink-0 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-wait disabled:opacity-50"
+          >
+            {cargando === "diagnostico-completo" ? "Ejecutando diagnóstico…" : "▶ Ejecutar diagnóstico completo"}
+          </button>
         </div>
       </header>
 
