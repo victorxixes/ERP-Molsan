@@ -33,6 +33,10 @@ export default function Utilidades() {
         <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." link="/herramientas/importador-absis" destacado />
       </Grupo>
 
+      <Grupo titulo="Integraciones y comunicaciones" descripcion="Seguimiento de los procesos de intercambio de información con los sistemas de nuestros clientes.">
+        <Card icon="🔄" titulo="Proceso de ABSIS" descripcion="Control de envíos, respuestas y cambios de estado que se comunicarán con el sistema del cliente mediante API." enConstruccion />
+      </Grupo>
+
       <Grupo titulo="Gestión de expedientes" descripcion="Acciones manuales y controladas sobre la asignación y el seguimiento de los expedientes.">
         <Card icon="🔁" titulo="Cambiar gestor de expediente" descripcion="Busca un expediente por su número y reasígnalo manualmente a otro gestor, dejando constancia del cambio." link="/herramientas/utilidades/cambiar-gestor" />
       </Grupo>
@@ -76,101 +80,55 @@ function Card({
   descripcion,
   link,
   destacado = false,
+  enConstruccion = false,
 }) {
-  return (
-    <Link
-      to={link}
-      className={`
-        group relative overflow-hidden
-        rounded-[22px]
-        border
-        bg-white/80
-        backdrop-blur-xl
-        p-5
-        shadow-[0_12px_35px_rgba(15,23,42,0.07)]
-        transition-all duration-300
-        hover:-translate-y-1
-        hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)]
-        active:scale-[0.98]
-
-        ${
-          destacado
-            ? "border-blue-200/80 bg-blue-50/50"
-            : "border-slate-200/80"
-        }
-      `}
-    >
-
-      {/* Línea superior */}
-
+  const contenido = (
+    <>
       <div
-        className="
-          absolute inset-x-0 top-0 h-px
-          bg-gradient-to-r
-          from-transparent
-          via-blue-400/50
-          to-transparent
-          opacity-0
-          group-hover:opacity-100
-          transition-opacity
-        "
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
       />
-
       <div className="flex items-start gap-4">
-
-        {/* ICONO */}
-
         <div
-          className={`
-            flex h-12 w-12 shrink-0
-            items-center justify-center
-            rounded-2xl
-            border
-            text-xl
-            transition-all duration-300
-            group-hover:scale-105
-
-            ${
-              destacado
-                ? "bg-blue-100 border-blue-200"
-                : "bg-slate-50 border-slate-200"
-            }
-          `}
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl transition-all duration-300 group-hover:scale-105 ${destacado ? "bg-blue-100 border-blue-200" : "bg-slate-50 border-slate-200"}`}
         >
           {icon}
         </div>
-
-
-        {/* TEXTO */}
-
-        <div className="flex-1 min-w-0">
-
-          <h2 className="text-base font-semibold text-slate-800">
-            {titulo}
-          </h2>
-
-          <p className="mt-1.5 text-sm leading-5 text-slate-500">
-            {descripcion}
-          </p>
-
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-base font-semibold text-slate-800">{titulo}</h2>
+            {enConstruccion && (
+              <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+                En construcción
+              </span>
+            )}
+          </div>
+          <p className="mt-1.5 text-sm leading-5 text-slate-500">{descripcion}</p>
+          {enConstruccion && (
+            <p className="mt-3 text-xs font-medium text-amber-700">
+              Próximamente: registro de envíos, respuestas y cambios de estado vía API.
+            </p>
+          )}
         </div>
-
-
-        {/* FLECHA */}
-
-        <span
-          className="
-            text-slate-300
-            group-hover:text-blue-500
-            group-hover:translate-x-1
-            transition-all
-          "
-        >
-          →
-        </span>
-
+        {!enConstruccion && (
+          <span className="text-slate-300 transition-all group-hover:translate-x-1 group-hover:text-blue-500">→</span>
+        )}
       </div>
+    </>
+  );
 
+  const clases = `group relative overflow-hidden rounded-[22px] border bg-white/80 p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 ${enConstruccion ? "cursor-default border-amber-200/80 bg-amber-50/30" : "cursor-pointer hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98]"} ${destacado ? "border-blue-200/80 bg-blue-50/50" : ""}`;
+
+  if (enConstruccion) {
+    return (
+      <div className={clases} aria-label={`${titulo}: en construcción`}>
+        {contenido}
+      </div>
+    );
+  }
+
+  return (
+    <Link to={link} className={clases}>
+      {contenido}
     </Link>
   );
 }
