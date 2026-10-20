@@ -999,69 +999,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               />
             ))}
 
-            {/* ==================================================
-                MÁS
-                ================================================== */}
 
-            {mostrarBotonMas && (
-
-              <div
-                ref={masRef}
-                className="
-                  relative
-                  flex-shrink-0
-                "
-              >
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setMasAbierto(
-                      (valor) =>
-                        !valor
-                    )
-                  }
-                  aria-expanded={
-                    masAbierto
-                  }
-                  aria-haspopup="menu"
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    px-3
-                    py-2
-                    rounded-xl
-                    whitespace-nowrap
-                    text-sm
-                    font-medium
-                    border
-                    border-[var(--erp-border)]
-                    bg-white
-                    text-[var(--erp-text)]
-                    hover:bg-[var(--erp-primary-soft)]
-                    hover:text-[var(--erp-primary)]
-                    hover:border-[var(--erp-primary)]
-                    transition-all
-                    duration-200
-                    shadow-sm
-                  "
-                >
-
-                  <span>Más</span>
-
-                  <ChevronIcon
-                    open={masAbierto}
-                  />
-
-                </button>
-
-
-
-
-              </div>
-
-            )}
 
           </nav>
 
@@ -1221,49 +1159,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
       </header>
 
-      {masAbierto && masPosicion && typeof document !== "undefined" && createPortal(
-        <div
-          ref={masMenuRef}
-          role="menu"
-          aria-label="Más módulos"
-          style={{
-            position: "fixed",
-            top: masPosicion.top,
-            left: masPosicion.left,
-            width: masPosicion.ancho,
-            maxHeight: "calc(100vh - 24px)",
-            overflowY: "auto",
-            zIndex: 2000,
-          }}
-          className="rounded-2xl border border-[var(--erp-border)] bg-white p-2 shadow-2xl"
-        >
-          <div className="px-3 pb-2 pt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--erp-text-soft)]">
-            Más módulos
-          </div>
-          <div className="grid gap-1">
-            {modulosMas.map((modulo) => (
-              <NavLink
-                key={modulo.key}
-                to={modulo.to}
-                role="menuitem"
-                onClick={() => setMasAbierto(false)}
-                className={({ isActive }) => isActive
-                  ? "flex items-center gap-3 rounded-xl bg-[var(--erp-primary)] px-3 py-2.5 text-sm font-medium text-white transition-all duration-150"
-                  : "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--erp-text)] transition-all duration-150 hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}
-              >
-                <NavIcon name={modulo.icon} />
-                <span className="flex-1">{modulo.label}</span>
-                {modulo.badge > 0 && (
-                  <span className="flex h-[19px] min-w-[19px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
-                    {modulo.badge}
-                  </span>
-                )}
-              </NavLink>
-            ))}
-          </div>
-        </div>,
-        document.body
-      )}
+
 
 
       {/* ========================================================
