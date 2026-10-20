@@ -220,6 +220,19 @@ def _expedientes_de_notario(n, db):
 def _fecha(valor):
     return valor.isoformat() if isinstance(valor, (date, datetime, time)) else valor
 
+
+def _campos_ficha_central(expediente):
+    """Expone todos los campos persistidos en Expediente a NotarGest."""
+    resultado = {}
+    for columna in Expediente.__table__.columns:
+        nombre = columna.name
+        valor = getattr(expediente, nombre, None)
+        if valor is not None and hasattr(valor, "isoformat"):
+            valor = valor.isoformat()
+        resultado[nombre] = valor
+    return resultado
+
+
 def _resumen(e, db):
     actividad = getattr(e, "actividad_actual", None)
     fecha_firma = getattr(e, "fecha_firma", None)
@@ -228,6 +241,9 @@ def _resumen(e, db):
     docs = db.query(DocumentoCarpetaDigital).filter(DocumentoCarpetaDigital.expediente_id == str(e.id_expediente)).all()
     factura = next((d for d in docs if (d.categoria or "").casefold() == "factura notarial"), None)
     return {
+        # Los campos de la ficha central están disponibles en NotarGest.
+        # Los campos derivados/alias de abajo conservan compatibilidad con la UI.
+        **_campos_ficha_central(e),
         "id": e.id,
         "id_expediente": e.id_expediente,
         "notario_id": getattr(e, "notario_id", None),
