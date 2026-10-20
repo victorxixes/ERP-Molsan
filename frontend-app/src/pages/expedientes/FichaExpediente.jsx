@@ -3537,6 +3537,25 @@ async function descargarPDFCalificacion(defecto) {
   }
 
 
+  async function compensarPpad(item) {
+    const numero = expediente?.id_expediente || id;
+    if (!numero || !item?.id || item.compensado) return;
+    const confirmar = window.confirm("¿Confirmas que este PPAD ya está compensado?");
+    if (!confirmar) return;
+    setGuardandoPpad(true);
+    setErrorPpad("");
+    try {
+      await axios.post(`/expedientes/${encodeURIComponent(numero)}/ppad/${item.id}/compensar`);
+      await cargarPpad();
+    } catch (err) {
+      console.error("Error compensando PPAD:", err);
+      setErrorPpad(err?.response?.data?.detail || "No se pudo registrar la compensación del PPAD.");
+    } finally {
+      setGuardandoPpad(false);
+    }
+  }
+
+
 
   const numeroExpedienteFincas = expediente?.id_expediente || id;
 
@@ -4504,7 +4523,7 @@ const cuantiaFincasParaEnvio =
               )}
 
               {ppadItems.map((item) => (
-                <div key={item.id} className="rounded-lg border border-slate-200 bg-white p-2">
+                <div key={item.id} className={`rounded-lg border p-2 ${item.compensado ? "border-emerald-200 bg-emerald-50/40" : "border-slate-200 bg-white"}`}>
                   <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3">
                     <div className="min-w-0">
                       <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Concepto</div>
@@ -4519,9 +4538,24 @@ const cuantiaFincasParaEnvio =
                       <div className="mt-0.5 text-[11px] leading-tight font-semibold text-slate-800">{item.imputable_a || item.imputableA || "Molsan"}</div>
                     </div>
                   </div>
-                  <div className="mt-2 flex justify-end gap-2">
-                    <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>
-                    <Boton tipo="danger" onClick={() => eliminarPpad(item.id)}>Eliminar</Boton>
+                  <div className="mt-2 grid grid-cols-1 gap-2 border-t border-slate-100 pt-2 text-[10px] sm:grid-cols-2">
+                    <div><span className="font-semibold text-slate-400">Fecha alta: </span><span className="font-semibold text-slate-700">{formatearFecha(item.fecha_creacion)}</span></div>
+                    <div><span className="font-semibold text-slate-400">Fecha compensación: </span><span className={item.compensado ? "font-bold text-emerald-700" : "font-semibold text-slate-500"}>{formatearFecha(item.fecha_compensacion)}</span></div>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center justify-end gap-2">
+                    {item.compensado ? (
+                      <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800">✓ COMPENSADO</span>
+                    ) : (
+                      <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad}>
+                        {guardandoPpad ? "Registrando…" : "✓ Compensar"}
+                      </Boton>
+                    )}
+                    {!item.compensado && (
+                      <>
+                        <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>
+                        <Boton tipo="danger" onClick={() => eliminarPpad(item.id)}>Eliminar</Boton>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}
