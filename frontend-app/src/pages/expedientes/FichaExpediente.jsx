@@ -2269,7 +2269,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   }
 
 
-  function calcularHonorariosGestoria() {
+  async function calcularHonorariosGestoria() {
     const datos = expediente || {};
     const entidad = [
       datos.entidad_bancaria,
@@ -2284,37 +2284,37 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       ...(Array.isArray(fincasExpediente) ? fincasExpediente.map((f) => f?.entidad_original) : []),
     ].filter(Boolean).join(" ").toLowerCase();
 
-    const provinciasCanarias = [
-      "las palmas", "palmas (las)", "santa cruz de tenerife",
-      "tenerife", "canarias", "canary islands",
-    ];
-    const ubicacion = [
-      datos.comunidad_autonoma,
-      datos.comunidad,
-      datos.provincia,
-      datos.provincia_finca,
-      datos.oficina_liquidadora,
-      datos.registro_propiedad,
-      ...(Array.isArray(fincasExpediente) ? fincasExpediente.flatMap((f) => [f?.provincia, f?.poblacion, f?.comunidad_autonoma]) : []),
-    ].filter(Boolean).join(" ").toLowerCase();
+    const valorProvision = Number(String(datos.importe ?? "").replace(",", "."));
+    const tieneProvision = datos.importe !== null && datos.importe !== undefined && datos.importe !== "" && Number.isFinite(valorProvision) && valorProvision > 0;
+    const esCaixaBank = entidad.includes("caixabank") || entidad.includes("caixa bank") || entidad.includes("la caixa") || /(^|\\W)caixa(\\W|$)/.test(entidad);
+    const nombreTarifa = !tieneProvision
+      ? "Cancelaciones sin provisión"
+      : esCaixaBank
+        ? "Cancelaciones propias o con provisión"
+        : "Cancelaciones de otra entidad con provisión";
 
-    if (provinciasCanarias.some((termino) => ubicacion.includes(termino))) {
-      return { importe: 69, tarifa: "Canarias", entidad: entidad || "No identificada" };
+    const respuesta = await axios.get("/honorarios-gestoria?activos=true");
+    const catalogo = Array.isArray(respuesta?.data) ? respuesta.data : [];
+    const tarifa = catalogo.find((item) => String(item.nombre || "").trim().toLocaleLowerCase("es-ES") === nombreTarifa.toLocaleLowerCase("es-ES"));
+    if (!tarifa) {
+      throw new Error(`No existe una tarifa activa llamada «${nombreTarifa}». Revisa Utilidades → Honorarios de gestoría.`);
     }
-    if (entidad.includes("caixabank") || entidad.includes("caixa bank") || entidad.includes("la caixa") || /(^|\\W)caixa(\\W|$)/.test(entidad)) {
-      return { importe: 83, tarifa: "CaixaBank", entidad: entidad || "CaixaBank" };
-    }
-    return { importe: 111, tarifa: "Otras entidades", entidad: entidad || "No identificada" };
+    return {
+      importe: Number(tarifa.importe),
+      tarifa: tarifa.nombre,
+      entidad: entidad || "No identificada",
+    };
   }
 
   async function generarHonorariosGestoria() {
     if (!expediente?.id_expediente || generandoHonorariosGestoria) return;
-    const calculo = calcularHonorariosGestoria();
-    setHonorariosGestoria(calculo);
     setGenerandoHonorariosGestoria(true);
     setErrorHonorariosGestoria("");
     setMensajeHonorariosGestoria("");
+    let calculo = null;
     try {
+      calculo = await calcularHonorariosGestoria();
+      setHonorariosGestoria(calculo);
       const respuesta = await axios.post(
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/generar`,
         {
@@ -2330,7 +2330,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     } catch (err) {
       const status = err?.response?.status;
       const detail = err?.response?.data?.detail;
-      if (status === 404 || status === 405) {
+      if (calculo && (status === 404 || status === 405)) {
         setMensajeHonorariosGestoria(
           `Importe calculado: ${calculo.importe.toFixed(2).replace(".", ",")} €. El backend todavía no dispone de una ruta compatible para registrar automáticamente este concepto.`
         );
@@ -2338,8 +2338,8 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         setErrorHonorariosGestoria(
           typeof detail === "string"
             ? detail
-            : detail?.mensaje || JSON.stringify(detail) || err?.message ||
-              "No se pudieron registrar los honorarios. El importe calculado se mantiene visible."
+            : detail?.mensaje || (typeof err?.message === "string" ? err.message : "") ||
+              "No se pudieron registrar los honorarios. Revisa el catálogo y vuelve a intentarlo."
         );
       }
     } finally {
@@ -5776,7 +5776,7 @@ const cuantiaFincasParaEnvio =
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <h3 className="text-sm font-extrabold text-slate-800">Honorarios de gestoría</h3>
-                      <p className="mt-1 text-xs text-slate-600">Canarias: 69 € · CaixaBank: 83 € · Otras entidades: 111 €.</p>
+                      <p className="mt-1 text-xs text-slate-600">La tarifa se obtiene del catálogo de Utilidades según la entidad y si el expediente tiene provisión.</p>
                     </div>
                     <button
                       type="button"
