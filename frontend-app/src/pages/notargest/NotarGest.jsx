@@ -662,7 +662,7 @@ export default function NotarGest() {
                   </div>
                   <div className="ng-admin-circuitos">
                     <section className="ng-admin-circuito">
-                      <div className="ng-admin-circuito-titulo"><span className="ng-admin-circuito-icono">01</span><h4>Gestión notarial</h4></div>
+                      <div className="ng-admin-circuito-titulo"><span className="ng-admin-circuito-icono">01</span><h4>Gestión Prefirma</h4></div>
                       <div className="ng-admin-metricas">
                         <div><span>Nuevos encargos</span><strong>{Number(item.pendientes_recepcion || 0)}</strong></div>
                         <div><span>Firma</span><strong>{Number(item.pendientes_firma || 0)}</strong></div>
@@ -671,7 +671,7 @@ export default function NotarGest() {
                       </div>
                     </section>
                     <section className="ng-admin-circuito">
-                      <div className="ng-admin-circuito-titulo"><span className="ng-admin-circuito-icono ng-admin-circuito-icono-fiscal">02</span><h4>Registro y fiscalidad</h4></div>
+                      <div className="ng-admin-circuito-titulo"><span className="ng-admin-circuito-icono ng-admin-circuito-icono-fiscal">02</span><h4>Gestión Postfirma</h4></div>
                       <div className="ng-admin-metricas">
                         <div><span>Registro</span><strong>{Number(item.pendientes_registro || 0)}</strong></div>
                         <div><span>AJD / ITP</span><strong>{Number(item.pendientes_ajd_itp || 0)}</strong></div>
