@@ -54,6 +54,7 @@ import Herramientas from "./pages/herramientas/Herramientas.jsx";
 import ImportarCTN from "./pages/herramientas/ImportarCTN.jsx";
 import ImportadorAbsis from "./pages/herramientas/importador_absis";
 import Utilidades from "./pages/herramientas/Utilidades.jsx";
+import HonorariosGestoria from "./pages/herramientas/HonorariosGestoria.jsx";
 import CrearNoticia from "./pages/herramientas/CrearNoticia.jsx";
 import SubirDocumento from "./pages/herramientas/SubirDocumento.jsx";
 import Informes from "./pages/informes/Informes.jsx";
@@ -425,6 +426,11 @@ export default function App() {
           <Route
             path="herramientas/utilidades"
             element={<Utilidades />}
+          />
+
+          <Route
+            path="herramientas/honorarios-gestoria"
+            element={<HonorariosGestoria />}
           />
 
           <Route
