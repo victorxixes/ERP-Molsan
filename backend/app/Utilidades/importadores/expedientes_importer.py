@@ -334,7 +334,13 @@ def importar_finca_relacionada(db, expediente, row):
     clave_registro = clave_vinculacion(registro)
     destino = next((
         item for item in existentes
-        if (clave_finca and clave_vinculacion(getattr(item, "finca", None)) == clave_finca)
+        if (
+            (clave_finca and clave_vinculacion(getattr(item, "finca", None)) == clave_finca)
+            or (
+                not clave_finca and clave_registro
+                and clave_vinculacion(getattr(item, "registro", None)) == clave_registro
+            )
+        )
         and (not clave_registro or clave_vinculacion(getattr(item, "registro", None)) == clave_registro)
     ), None)
     if destino is None:
