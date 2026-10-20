@@ -911,3 +911,35 @@
 @media(max-width:760px){
   .ng-workspace-salir{min-height:38px;padding:0 11px;font-size:11px}
 }
+
+
+/* Visión Molsan: bloques interactivos y modal de expedientes */
+.ng-admin-notarias .ng-admin-kpi-button{
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:7px;
+  min-width:0;width:100%;padding:15px;border:1px solid #e1e8f1;border-radius:14px;
+  background:rgba(255,255,255,.96);text-align:left;cursor:pointer;
+  transition:transform .16s,border-color .16s,box-shadow .16s;
+}
+.ng-admin-notarias .ng-admin-kpi-button:hover{transform:translateY(-2px);border-color:#b9d9d1;box-shadow:0 8px 20px rgba(31,48,79,.08)}
+.ng-admin-notarias .ng-admin-kpi-button:focus-visible,.ng-admin-ver-expedientes:focus-visible{outline:3px solid #8ab9ee;outline-offset:2px}
+.ng-admin-notarias .ng-admin-kpi-button>span{color:#6c7c95;font-size:11px;font-weight:800;line-height:1.4}
+.ng-admin-notarias .ng-admin-kpi-button>strong{color:#263956;font-size:27px;font-weight:900;line-height:1.1}
+.ng-admin-notarias .ng-admin-kpi-button>small{color:#49766e;font-size:10px;font-weight:800}
+.ng-admin-notarias .ng-admin-kpi-button>small span{margin-left:3px}
+.ng-admin-notarias .ng-admin-ver-expedientes{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
+  margin:0 0 8px;padding:10px 12px;border:1px solid #cfe5df;border-radius:11px;
+  background:#f0faf7;color:#21675b;font-size:12px;font-weight:800;cursor:pointer;
+}
+.ng-admin-notarias .ng-admin-ver-expedientes:hover{background:#e2f5ef;border-color:#a9d5c9}
+.ng-resumen-expedientes-overlay{z-index:2200}
+.ng-resumen-expedientes-modal{width:min(1500px,calc(100vw - 28px));max-width:1500px;max-height:92vh;display:flex;flex-direction:column}
+.ng-resumen-expedientes-contenido{min-height:0;overflow:auto;padding:0 20px 20px}
+.ng-resumen-expedientes-tabla-wrap{width:100%;overflow:auto;border:1px solid #e4eaf2;border-radius:13px}
+.ng-resumen-expedientes-tabla{width:100%;min-width:900px}
+.ng-resumen-expedientes-tabla th{position:sticky;top:0;z-index:1;background:#f5f8fc}
+.ng-resumen-expedientes-tabla td{vertical-align:middle}
+@media(max-width:700px){
+  .ng-resumen-expedientes-modal{width:calc(100vw - 16px);max-height:95vh}
+  .ng-resumen-expedientes-contenido{padding:0 10px 12px}
+}
