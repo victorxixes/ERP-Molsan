@@ -51,6 +51,7 @@ CATEGORIAS = {
     # Documentación general
     "Mails de la Oficina",
     "Otra documentación",
+    "Otros",
     # Compatibilidad con categorías anteriores
     "Mails de la oficina",
     "Borradores de escrituras",
