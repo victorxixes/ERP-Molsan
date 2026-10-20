@@ -62,6 +62,7 @@ import MantenimientoTecnico from "./pages/herramientas/MantenimientoTecnico.jsx"
 import CambiarGestorExpediente from "./pages/herramientas/CambiarGestorExpediente.jsx";
 import ComplementosSaldo from "./pages/herramientas/ComplementosSaldo.jsx";
 import ProcesoAbsis from "./pages/herramientas/ProcesoAbsis.jsx";
+import PPAD from "./pages/herramientas/PPAD.jsx";
 
 /* LOGS */
 import Logs from "./pages/logs/Logs.jsx";
@@ -327,6 +328,7 @@ export default function App() {
 
           <Route path="herramientas/utilidades/complementos-saldo" element={<ComplementosSaldo />} />
           <Route path="herramientas/utilidades/proceso-absis" element={<ProcesoAbsis />} />
+          <Route path="herramientas/utilidades/ppad" element={<PPAD />} />
 
 
           {/* ==================================================
