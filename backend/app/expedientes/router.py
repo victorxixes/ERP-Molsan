@@ -1028,6 +1028,78 @@ def obtener_alertas_control_expedientes(db: Session = Depends(get_db)):
     return {"fecha_calculo": date.today().isoformat(), "alertas": resultado}
 
 
+# Claves públicas del listado -> categorías reales almacenadas en la carpeta digital.
+# Se aceptan las variantes históricas para no ocultar documentos ya cargados.
+COLUMNAS_CARPETA_DIGITAL = {
+    "documentos_absis": ["Documentos Absis", "Documentos ABSIS"],
+    "hoja_encargo_firmada": ["Hoja de Encargo firmada", "Hoja de encargo firmada"],
+    "justificante_cancelacion": ["Justificante de cancelación"],
+    "nota_simple_registral": ["Nota simple registral"],
+    "borradores_escritura": ["Escrituras/borradores", "Borradores de escrituras", "Borradores de escritura"],
+    "presentacion_registro_documentos": ["Presentación Registro", "Presentacion Registro"],
+    "copia_simple_documentos": ["Copia simple"],
+    "ajd_itp_documentos": ["AJD/ITP", "AJD / ITP", "AJD ITP"],
+    "otros_impuestos_documentos": ["Otros impuestos"],
+    "hoja_inscripcion_documentos": ["Hoja de Inscripción", "Hoja de inscripcion"],
+    "defecto_registral": ["Defecto registral"],
+    "subsanacion_defecto": ["Subsanación del defecto", "Subsanacion del defecto"],
+    "escritura_digital_final_documentos": ["Escritura digital final"],
+    "documento_inscripcion_documentos": ["Documento de inscripción", "Documento de inscripcion"],
+    "expediente_digital_completo_documentos": ["Expediente digital completo"],
+    "factura_notarial_documentos": ["Factura notarial"],
+    "factura_registral_documentos": ["Factura Registral", "Factura registral"],
+    "factura_impuestos_documentos": ["Factura impuestos"],
+    "honorarios_gestoria_documentos": ["Honorarios gestoría", "Honorarios gestoria"],
+    "otros_pagos_documentos": ["Otros pagos"],
+    "otros_documentos_economicos": ["Otros documentos económicos", "Otros documentos economicos"],
+    "otra_documentacion": ["Otra documentación", "Otra documentacion"],
+    "emails_oficina": ["Mails de la Oficina", "Mails de la oficina", "Emails de oficina"],
+    "otros_documentos": ["Otros"],
+}
+
+
+def _normalizar_categoria_documental(valor: str) -> str:
+    return normalizar_actividad_texto(valor)
+
+
+def agregar_resumen_carpeta_digital(db: Session, items: list[dict]) -> list[dict]:
+    """Añade al listado el número real de archivos por repositorio, sin columnas SQL nuevas."""
+    if not items:
+        return items
+
+    ids = {str(item.get("id_expediente")) for item in items if item.get("id_expediente")}
+    if not ids:
+        return items
+
+    documentos = (
+        db.query(DocumentoCarpetaDigital.expediente_id, DocumentoCarpetaDigital.categoria)
+        .filter(DocumentoCarpetaDigital.expediente_id.in_(ids))
+        .all()
+    )
+    por_expediente: dict[str, dict[str, int]] = {}
+    categorias_por_clave = {
+        clave: {_normalizar_categoria_documental(nombre) for nombre in nombres}
+        for clave, nombres in COLUMNAS_CARPETA_DIGITAL.items()
+    }
+    for expediente_id, categoria in documentos:
+        expediente_id = str(expediente_id)
+        recuentos = por_expediente.setdefault(expediente_id, {})
+        recuentos["__total__"] = recuentos.get("__total__", 0) + 1
+        normalizada = _normalizar_categoria_documental(categoria or "")
+        for clave, variantes in categorias_por_clave.items():
+            if normalizada in variantes:
+                recuentos[clave] = recuentos.get(clave, 0) + 1
+
+    for item in items:
+        recuentos = por_expediente.get(str(item.get("id_expediente")), {})
+        total = recuentos.get("__total__", 0)
+        item["carpeta_digital"] = f"{total} archivo(s)"
+        for clave in COLUMNAS_CARPETA_DIGITAL:
+            cantidad = recuentos.get(clave, 0)
+            item[clave] = f"{cantidad} archivo(s)"
+    return items
+
+
 # ============================================================
 # LISTADO DE EXPEDIENTES
 # ============================================================
@@ -1190,11 +1262,14 @@ def listado_expedientes(
         .all()
     )
 
+    items = [
+        expediente_a_dict(expediente)
+        for expediente in items_db
+    ]
+    items = agregar_resumen_carpeta_digital(db, items)
+
     return {
-        "items": [
-            expediente_a_dict(expediente)
-            for expediente in items_db
-        ],
+        "items": items,
         "total": total,
         "pagina": pagina_real,
         "porPagina": porPagina,
