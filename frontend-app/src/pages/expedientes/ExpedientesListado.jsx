@@ -2195,7 +2195,8 @@ export default function ExpedientesListado() {
         ==================================================== */}
 
         <div
-          className="min-w-0 relative z-30 space-y-4"
+          className="min-w-0 relative z-30 space-y-4 transition-[width] duration-200 ease-out"
+          style={{ width: sidebarExpandido ? "100%" : "68px", maxWidth: "100%" }}
           onMouseEnter={() => setSidebarHover(true)}
           onMouseLeave={() => setSidebarHover(false)}
         >
