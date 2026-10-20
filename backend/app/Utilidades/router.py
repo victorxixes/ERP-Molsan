@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
+from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.expedientes.reparto import resolver_key_actividad
 from backend.app.empleados.models import Empleado
 from backend.app.auth.dependencies import get_current_user
@@ -448,6 +449,22 @@ def contexto_expediente_correspondencia(
     if not expediente:
         raise HTTPException(status_code=404, detail="No se ha encontrado el expediente " + numero + ".")
     cliente = expediente.cliente
+    fincas_registros = (
+        db.query(ExpedienteFinca)
+        .filter(ExpedienteFinca.expediente_id == expediente.id)
+        .order_by(ExpedienteFinca.id.asc())
+        .all()
+    )
+    fincas_texto = ", ".join(
+        str(item.finca).strip()
+        for item in fincas_registros
+        if getattr(item, "finca", None)
+    )
+    registros_texto = ", ".join(
+        str(item.registro).strip()
+        for item in fincas_registros
+        if getattr(item, "registro", None)
+    )
 
     def valor(objeto, atributo):
         dato = getattr(objeto, atributo, None) if objeto is not None else None
@@ -481,8 +498,8 @@ def contexto_expediente_correspondencia(
         "solicitante.provincia": valor(cliente, "provincia"),
         "notaria.nombre": valor(expediente, "nombre_notario") or valor(expediente, "notario_otorgante") or valor(expediente, "notario"),
         "notaria.poblacion": valor(expediente, "poblacion"),
-        "registro.finca": valor(expediente, "finca"),
-        "registro.nombre": valor(expediente, "registro_propiedad"),
+        "registro.finca": fincas_texto or valor(expediente, "finca"),
+        "registro.nombre": registros_texto or valor(expediente, "registro_propiedad"),
         "provision.saldo_disponible": valor(expediente, "saldo_disponible"),
         "provision.saldo_real": valor(expediente, "saldo_real"),
         "expediente.observaciones": valor(expediente, "observaciones"),
