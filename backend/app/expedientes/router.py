@@ -838,14 +838,28 @@ def aplicar_filtros(
 
 
 def aplicar_busqueda_rapida(q, busqueda=None):
-    """Búsqueda global simple para personas que no conocen los filtros técnicos."""
+    """Búsqueda global sin exigir conocer el nombre exacto de cada campo."""
     termino = str(busqueda or "").strip()
     if not termino:
         return q
 
-    patron = f"%{termino}%"
+    # La búsqueda no distingue mayúsculas ni acentos: "Maria" encuentra "María".
+    termino_normalizado = unicodedata.normalize("NFD", termino)
+    termino_normalizado = "".join(
+        caracter for caracter in termino_normalizado
+        if unicodedata.category(caracter) != "Mn"
+    ).lower()
+    patron = f"%{termino_normalizado}%"
+
+    def texto_busqueda(columna):
+        return func.translate(
+            func.lower(cast(columna, String)),
+            "áéíóúüñ",
+            "aeiouun",
+        ).ilike(patron)
+
     columnas = [
-        cast(Expediente.id_expediente, String),
+        Expediente.id_expediente,
         Expediente.nombre_titular,
         Expediente.nif_titular,
         Expediente.nombre_solicitante,
@@ -864,15 +878,11 @@ def aplicar_busqueda_rapida(q, busqueda=None):
         Expediente.observaciones,
         Expediente.finca,
     ]
-    condiciones = [
-        columna.ilike(patron)
-        for columna in columnas
-        if columna is not None
-    ]
+    condiciones = [texto_busqueda(columna) for columna in columnas]
     fincas_registros = q.session.query(ExpedienteFinca.expediente_id).filter(
         or_(
-            ExpedienteFinca.finca.ilike(patron),
-            ExpedienteFinca.registro.ilike(patron),
+            texto_busqueda(ExpedienteFinca.finca),
+            texto_busqueda(ExpedienteFinca.registro),
         )
     )
     condiciones.append(Expediente.id.in_(fincas_registros))
