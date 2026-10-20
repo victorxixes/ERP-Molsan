@@ -488,7 +488,12 @@ const COLUMNAS = [
     tipo: "texto",
   },
 
-,
+  // Documentación de la carpeta digital y documentos necesarios para iniciar el trámite.
+  { key: "carpeta_digital", label: "Carpeta digital", tipo: "texto" },
+  { key: "documentos_absis", label: "Documentos ABSIS", tipo: "texto" },
+  { key: "hoja_encargo_firmada", label: "Hoja de encargo firmada", tipo: "texto" },
+  { key: "justificante_cancelacion", label: "Justificante de cancelación", tipo: "texto" },
+  { key: "nota_simple_registral", label: "Nota simple registral", tipo: "texto" },
 
   { key: "sol", label: "SOL", tipo: "texto" },
   { key: "cs", label: "CS", tipo: "texto" },
@@ -597,12 +602,22 @@ const COLUMNAS_BASE_ACTIVIDAD = [
 ];
 
 const COLUMNAS_DOCUMENTACION_PREVIA = [
-  ...COLUMNAS_BASE_ACTIVIDAD,
-  "sol",
-  "cs",
-  "ns",
-  "ultima_accion",
-  "fecha_ultima_accion",
+  "id_expediente",
+  "fecha_alta",
+  "oficina",
+  "estado_expediente",
+  "nombre_solicitante",
+  "nif_solicitante",
+  "contrato",
+  "capital",
+  "tipo_operacion",
+  "importe",
+  "observaciones",
+  "carpeta_digital",
+  "documentos_absis",
+  "hoja_encargo_firmada",
+  "justificante_cancelacion",
+  "nota_simple_registral",
 ];
 
 const COLUMNAS_SEDE_NOTARIAL = [
