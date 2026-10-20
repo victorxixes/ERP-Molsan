@@ -480,6 +480,16 @@ export default function EnviarANotarioModal({
       return;
     }
 
+    if (!form.fecha_solicitud_pnc) {
+      setError("Indica la fecha de solicitud PNC que figura en la ficha del expediente.");
+      return;
+    }
+
+    if (!String(form.numero_solicitud_pnc || "").trim()) {
+      setError("Indica el número de solicitud PNC que figura en la ficha del expediente.");
+      return;
+    }
+
     if (!form.notario?.id || !Number.isFinite(Number(form.notario.id)) || Number(form.notario.id) <= 0) {
       setError("Busca y selecciona un notario válido del catálogo. No introduzcas un ID manual ni uses 0.");
       return;
@@ -530,6 +540,11 @@ export default function EnviarANotarioModal({
 
       escritura_firmada: form.escritura_firmada === "Sí",
       fecha_envio: form.fecha_envio || null,
+      fecha_solicitud_pnc: form.fecha_solicitud_pnc,
+      numero_solicitud_pnc: String(form.numero_solicitud_pnc || "").trim(),
+      fecha_prevista_firma: form.fecha_prevista_firma || null,
+      hora_prevista_firma: form.hora_prevista_firma || null,
+      hora_fin_prevista_firma: form.hora_fin_prevista_firma || null,
       idioma_documento: form.idioma,
 
       fecha_firma:
