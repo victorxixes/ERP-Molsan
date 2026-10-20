@@ -2331,7 +2331,7 @@ export default function ExpedientesListado() {
                     </span>
                   ) : (
                     <span className="absolute right-1 top-1 w-2 h-2 rounded-full" style={{ background: activa ? "var(--erp-primary)" : "var(--erp-border)" }} />
-                  )
+                  )}
                 </button>
               );
             })}
