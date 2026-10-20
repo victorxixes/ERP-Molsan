@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.Utilidades.importadores.ctn_importer import importar_ctn_desde_excel
 from backend.app.Utilidades.importadores.expedientes_importer import importar_excel_expedientes
 
@@ -20,8 +22,10 @@ router = APIRouter(
 @router.post("/ctn/importar")
 async def importar_ctn(
     fichero: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "utilidades", "editar")
     contenido = await fichero.read()
 
     total = importar_ctn_desde_excel(
@@ -40,8 +44,10 @@ async def importar_ctn(
 
 @router.post("/add_columna_gestoria_expedientes")
 def add_columna_gestoria_expedientes(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "seguridad", "editar")
     """
     Crea la columna gestoria en la tabla expedientes
     si todavía no existe.
