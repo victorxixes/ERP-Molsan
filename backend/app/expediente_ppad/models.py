@@ -3,6 +3,7 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
+    Boolean,
     ForeignKey,
     Numeric,
     DateTime,
@@ -51,6 +52,19 @@ class ExpedientePPAD(Base):
         nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
+    )
+
+    # Estado de compensación y fecha en que se confirmó.
+    compensado = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default="false",
+    )
+
+    fecha_compensacion = Column(
+        DateTime(timezone=True),
+        nullable=True,
     )
 
     __table_args__ = (
