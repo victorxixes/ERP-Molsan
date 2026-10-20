@@ -106,6 +106,8 @@ _POST_ES_EDICION = (
     "/mover",
     "/reparar",
     "/sincronizar",
+    # La administración de plantillas se gestiona con permiso de edición de Utilidades.
+    "/correspondencia/plantillas",
 )
 
 
