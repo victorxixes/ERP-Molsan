@@ -758,6 +758,7 @@ def aplicar_filtros(
     estadoRegistral=None,
     estadoFacturacion=None,
     tieneDefectosAbiertos=None,
+    faltaDefecto=None,
 ):
     """Aplica los mismos filtros a listado y exportación Excel."""
     fecha_inicio = parsear_fecha(fechaInicio, "fechaInicio")
@@ -883,6 +884,7 @@ def aplicar_filtros(
         (Expediente.registral_estado, estadoRegistral),
         (Expediente.facturacion_estado, estadoFacturacion),
         (Expediente.tiene_defectos_abiertos, tieneDefectosAbiertos),
+        (Expediente.falta_defecto, faltaDefecto),
     ]
     for columna, valor in filtros_catalogo:
         if texto(valor):
@@ -1079,6 +1081,7 @@ def listado_expedientes(
     estadoRegistral: Optional[str] = None,
     estadoFacturacion: Optional[str] = None,
     tieneDefectosAbiertos: Optional[str] = None,
+    faltaDefecto: Optional[str] = None,
     ordenMultiple: Optional[str] = Query(None),
     alerta: Optional[str] = Query(None, description="Filtra por una alerta de control"),
     db: Session = Depends(get_db),
@@ -1129,6 +1132,7 @@ def listado_expedientes(
         estadoRegistral=estadoRegistral,
         estadoFacturacion=estadoFacturacion,
         tieneDefectosAbiertos=tieneDefectosAbiertos,
+        faltaDefecto=faltaDefecto,
     )
     q = aplicar_busqueda_rapida(q, busqueda)
     q = aplicar_filtro_alerta_control(q, alerta, db)
@@ -1288,6 +1292,7 @@ def catalogos_listado_expedientes(
         "gestorias": valores_distintos(Expediente.nombre_gestoria),
         "tipos_error": valores_distintos(Expediente.tipo_error),
         "defectos_abiertos": valores_distintos(Expediente.tiene_defectos_abiertos),
+        "falta_defecto": valores_distintos(Expediente.falta_defecto),
         "estados_ancert": valores_distintos(Expediente.estado_expediente_ancert),
         "tipos_acta": valores_distintos(Expediente.tipo_acta),
         "tipos_firma": valores_distintos(Expediente.tipo_firma),
@@ -1373,6 +1378,7 @@ def exportar_excel_expedientes(
     estadoRegistral: Optional[str] = None,
     estadoFacturacion: Optional[str] = None,
     tieneDefectosAbiertos: Optional[str] = None,
+    faltaDefecto: Optional[str] = None,
     alerta: Optional[str] = Query(None, description="Filtra por una alerta de control"),
     db: Session = Depends(get_db),
 ):
@@ -1422,6 +1428,7 @@ def exportar_excel_expedientes(
         estadoRegistral=estadoRegistral,
         estadoFacturacion=estadoFacturacion,
         tieneDefectosAbiertos=tieneDefectosAbiertos,
+        faltaDefecto=faltaDefecto,
     )
     q = aplicar_filtro_alerta_control(q, alerta, db)
 
