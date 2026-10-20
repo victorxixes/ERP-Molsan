@@ -29,6 +29,13 @@ const DIAGNOSTICOS = [
     url: `${API_ORIGIN}/debug/health`,
   },
   {
+    id: "resumen",
+    titulo: "Resumen técnico de la base de datos",
+    descripcion: "Consulta versión de PostgreSQL, tamaño de la base de datos, número de tablas, conexiones activas y sesiones bloqueadas.",
+    metodo: "GET",
+    url: `${API_ORIGIN}/debug/resumen`,
+  },
+  {
     id: "tablas",
     titulo: "Tablas de la base de datos",
     descripcion: "Lista las tablas del esquema actual. Solo consulta metadatos.",
