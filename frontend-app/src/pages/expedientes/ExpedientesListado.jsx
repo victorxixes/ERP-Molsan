@@ -2197,7 +2197,7 @@ export default function ExpedientesListado() {
                       {alertaSeleccionada
                         ? "Expedientes que necesitan atención. Puedes combinar este control con los filtros."
                         : actividadSeleccionada
-                          ? "Expedientes de esta fase. Selecciona «Ver ficha» para continuar el trabajo."
+                          ? "Expedientes de esta fase. Pulsa el número de expediente para abrir su ficha."
                           : "Busca un expediente o revisa los avisos de gestión y abre su ficha para trabajar."}
                     </p>
                   </div>
