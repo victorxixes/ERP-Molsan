@@ -125,6 +125,54 @@ def describir_tabla(tabla: str, db: Session = Depends(get_db), _usuario=Depends(
     return {"tabla": nombre, "total": len(filas), "columnas": [dict(f) for f in filas]}
 
 
+@router.get("/contenido/{tabla}")
+def vista_previa_contenido(
+    tabla: str,
+    limite: int = 25,
+    db: Session = Depends(get_db),
+    _usuario=Depends(_autorizar_mantenimiento),
+):
+    """Vista previa acotada de filas para diagnóstico, con columnas sensibles enmascaradas."""
+    nombre = _validar_nombre_tabla(tabla)
+    limite_seguro = max(1, min(int(limite or 25), 100))
+    if not _existe_tabla(db, nombre):
+        raise HTTPException(status_code=404, detail="No existe una tabla con ese nombre en el esquema actual.")
+
+    columnas = db.execute(text("""
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = current_schema() AND table_name = :tabla
+        ORDER BY ordinal_position
+    """), {"tabla": nombre}).scalars().all()
+
+    if not columnas:
+        raise HTTPException(status_code=404, detail="No se han encontrado columnas para la tabla indicada.")
+
+    # Nunca devolver credenciales o secretos aunque se solicite una vista previa.
+    sensibles = re.compile(r"(password|passwd|secret|token|credential|authorization|api[_-]?key|clave_privada)", re.I)
+    filas = db.execute(
+        text(f'SELECT * FROM "{nombre}" LIMIT :limite'),
+        {"limite": limite_seguro},
+    ).mappings().all()
+
+    registros = []
+    for fila in filas:
+        registro = {}
+        for columna in columnas:
+            valor = fila.get(columna)
+            registro[columna] = "[OCULTO]" if sensibles.search(columna) and valor is not None else valor
+        registros.append(registro)
+
+    return {
+        "tabla": nombre,
+        "limite": limite_seguro,
+        "total_devuelto": len(registros),
+        "columnas": columnas,
+        "filas": registros,
+        "aviso": "Vista previa limitada; las columnas que parecen contener credenciales se muestran ocultas.",
+    }
+
+
 @router.get("/indices/{tabla}")
 def indices_tabla(tabla: str, db: Session = Depends(get_db), _usuario=Depends(_autorizar_mantenimiento)):
     nombre = _validar_nombre_tabla(tabla)
