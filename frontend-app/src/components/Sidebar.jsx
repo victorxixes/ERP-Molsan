@@ -1003,7 +1003,159 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                 MÁS
                 ================================================== */}
 
+}
 
+          </nav>
+
+
+          {/* ====================================================
+              ACCIONES DERECHA
+              ==================================================== */}
+
+          <div
+            className="
+              flex
+              items-center
+              gap-1.5
+              flex-shrink-0
+              pl-2
+              border-l
+              border-[var(--erp-border)]
+            "
+          >
+
+            {/* ==================================================
+                CAMPANA — ABRIR NOTIFICACIONES
+                ================================================== */}
+
+            <button
+              type="button"
+              title="Notificaciones"
+              aria-label="Abrir notificaciones"
+              aria-haspopup="dialog"
+              aria-expanded={
+                notificacionesAbiertas
+              }
+              onClick={() => {
+                if (onNotificationsClick) onNotificationsClick();
+                else setNotificacionesAbiertas(true);
+              }}
+              className="
+                relative
+                w-9
+                h-9
+                rounded-xl
+                border
+                border-[var(--erp-border)]
+                bg-white
+                text-[var(--erp-text)]
+                flex
+                items-center
+                justify-center
+                hover:bg-[var(--erp-primary-soft)]
+                hover:text-[var(--erp-primary)]
+                hover:border-[var(--erp-primary)]
+                transition
+                active:scale-[0.96]
+              "
+            >
+
+              <BellIcon />
+
+              {(notificationBadge ?? unreadCount) > 0 && (
+
+                <span
+                  className="
+                    absolute
+                    -top-1
+                    -right-1
+                    min-w-[17px]
+                    h-[17px]
+                    px-1
+                    rounded-full
+                    bg-red-500
+                    text-white
+                    text-[9px]
+                    font-bold
+                    flex
+                    items-center
+                    justify-center
+                    border-2
+                    border-[var(--erp-surface)]
+                  "
+                >
+                  {notificationBadge ?? unreadCount}
+                </span>
+
+              )}
+
+            </button>
+
+
+            {/* ==================================================
+                PERFIL
+                ================================================== */}
+
+            <button
+              type="button"
+              onClick={() => {
+                if (onProfileClick) onProfileClick();
+                else setPerfilModal(safeUser.id);
+              }}
+              title="Mi perfil"
+              className="
+                w-9
+                h-9
+                rounded-xl
+                border
+                border-[var(--erp-border)]
+                bg-white
+                text-[var(--erp-text)]
+                flex
+                items-center
+                justify-center
+                hover:bg-[var(--erp-primary-soft)]
+                hover:text-[var(--erp-primary)]
+                hover:border-[var(--erp-primary)]
+                transition
+                active:scale-[0.96]
+              "
+            >
+
+              <ProfileIcon />
+
+            </button>
+
+
+            {/* ==================================================
+                CERRAR SESIÓN
+                ================================================== */}
+
+            <button
+              type="button"
+              onClick={manejarCerrarSesion}
+              title="Cerrar sesión"
+              className="
+                w-9
+                h-9
+                rounded-xl
+                border
+                border-[var(--erp-border)]
+                bg-white
+                text-red-500
+                flex
+                items-center
+                justify-center
+                hover:bg-red-50
+                hover:border-red-200
+                transition
+                active:scale-[0.96]
+              "
+            >
+
+              <LogoutIcon />
+
+            </button>
 
           </div>
 
