@@ -109,29 +109,70 @@ def reparar_asignacion_encargo(
     }
 
 
+def _valor_usuario(usuario, clave, defecto=None):
+    """Lee datos tanto de modelos SQLAlchemy como de diccionarios de sesión."""
+    if isinstance(usuario, dict):
+        return usuario.get(clave, defecto)
+    return getattr(usuario, clave, defecto)
+
+
 def _es_administrador_apoderagest(usuario) -> bool:
     """Identifica administradores por rol o permisos globales explícitos."""
-    rol = getattr(usuario, "rol", None)
+    rol = _valor_usuario(usuario, "rol")
     nombres_rol = [
-        getattr(usuario, "rol_nombre", None),
-        getattr(usuario, "nombre_rol", None),
-        getattr(rol, "nombre", None),
-        getattr(rol, "nombre_rol", None),
-        getattr(rol, "codigo", None),
+        _valor_usuario(usuario, "rol_nombre"),
+        _valor_usuario(usuario, "nombre_rol"),
+        _valor_usuario(rol, "nombre"),
+        _valor_usuario(rol, "nombre_rol"),
+        _valor_usuario(rol, "codigo"),
     ]
-    if any("admin" in str(nombre or "").casefold() for nombre in nombres_rol):
+    if any(
+        "admin" in str(nombre or "").strip().casefold()
+        or "administrador" in str(nombre or "").strip().casefold()
+        for nombre in nombres_rol
+    ):
         return True
 
-    for fuente in (
-        getattr(usuario, "permisos_modulo_dict", None) or {},
-        getattr(rol, "permisos_modulo_dict", None) or {},
-    ):
+    fuentes = [
+        _valor_usuario(usuario, "permisos_modulo_dict", {}),
+        _valor_usuario(rol, "permisos_modulo_dict", {}),
+        _valor_usuario(usuario, "permisos_modulo", {}),
+    ]
+    for fuente in fuentes:
+        if not isinstance(fuente, dict):
+            continue
         for clave, acciones in fuente.items():
-            clave_normalizada = str(clave).casefold()
-            if clave_normalizada in {"*", "apoderagest.*", "apoderagest", "administracion.*"}:
-                if "*" in (acciones or []) or "ver_todos" in (acciones or []) or "administrar" in (acciones or []):
+            clave_normalizada = str(clave).strip().casefold()
+            if clave_normalizada not in {
+                "*", "apoderagest.*", "apoderagest", "administracion.*",
+                "administracion", "seguridad.*", "seguridad",
+            }:
+                continue
+            if isinstance(acciones, dict):
+                if any(
+                    bool(acciones.get(accion))
+                    for accion in ("*", "ver_todos", "administrar", "admin", "ver_todo")
+                ):
                     return True
+            elif isinstance(acciones, (list, tuple, set)):
+                if any(
+                    str(accion).strip().casefold() in
+                    {"*", "ver_todos", "administrar", "admin", "ver_todo"}
+                    for accion in acciones
+                ):
+                    return True
+            elif str(acciones).strip().casefold() in {"*", "ver_todos", "administrar", "admin", "ver_todo", "true"}:
+                return True
     return False
+
+
+@router.get("/contexto", summary="Indicar si la sesión puede consultar todos los encargos")
+def contexto_encargos_apoderagest(usuario=Depends(get_current_user)):
+    administrador = _es_administrador_apoderagest(usuario)
+    return {
+        "administrador": administrador,
+        "alcance": "todos" if administrador else "propios",
+    }
 
 
 @router.get("")
