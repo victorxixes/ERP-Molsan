@@ -12,6 +12,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
 from sqlalchemy.orm import Session
 
 from backend.app.auth.websocket_auth import autenticar_websocket
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import SessionLocal
 from backend.app.empleados.models import Empleado
 from backend.app.mensajes.adjuntos import ruta_adjunto_mensaje
@@ -50,7 +51,9 @@ async def realtime_ws(websocket: WebSocket):
 
     try:
         try:
-            usuario_id = autenticar_websocket(token, modulo="mensajes", accion="ver")
+            # La presencia es global para empleados autenticados. No se exige
+            # permiso de Mensajes para establecer el canal de presencia.
+            usuario_id = autenticar_websocket(token)
         except HTTPException as exc:
             await websocket.close(
                 code=4403 if exc.status_code == 403 else 4401,
@@ -86,11 +89,20 @@ async def realtime_ws(websocket: WebSocket):
             "foto": getattr(empleado, "foto", None),
         }
 
+        # La presencia no concede acceso a la mensajería. Registramos por
+        # separado si este empleado tiene permiso para recibir/enviar mensajes.
+        try:
+            require_perm_modulo(empleado, "mensajes", "ver")
+            puede_mensajes = True
+        except HTTPException:
+            puede_mensajes = False
+
         era_primera = await realtime_manager.connect(
             websocket,
             usuario_id=usuario_id,
             rol=rol_nombre,
             usuario_info=usuario_info,
+            puede_mensajes=puede_mensajes,
         )
         conectado = True
 
@@ -133,6 +145,10 @@ async def realtime_ws(websocket: WebSocket):
                 await websocket.send_json({"tipo": "pong"})
                 continue
             if tipo not in {"typing", "mensaje", "archivo"}:
+                continue
+
+            # La presencia global no da acceso al canal de Mensajes.
+            if not puede_mensajes:
                 continue
 
             destinatario_id = _destinatario_id(data, usuario_id)
