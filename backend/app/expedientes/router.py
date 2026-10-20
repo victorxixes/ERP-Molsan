@@ -837,6 +837,58 @@ def aplicar_filtros(
     return q
 
 
+def aplicar_busqueda_rapida(q, busqueda=None):
+    """Búsqueda global sin exigir conocer el nombre exacto de cada campo."""
+    termino = str(busqueda or "").strip()
+    if not termino:
+        return q
+
+    # La búsqueda no distingue mayúsculas ni acentos: "Maria" encuentra "María".
+    termino_normalizado = unicodedata.normalize("NFD", termino)
+    termino_normalizado = "".join(
+        caracter for caracter in termino_normalizado
+        if unicodedata.category(caracter) != "Mn"
+    ).lower()
+    patron = f"%{termino_normalizado}%"
+
+    def texto_busqueda(columna):
+        return func.translate(
+            func.lower(cast(columna, String)),
+            "áéíóúüñ",
+            "aeiouun",
+        ).ilike(patron)
+
+    columnas = [
+        Expediente.id_expediente,
+        Expediente.nombre_titular,
+        Expediente.nif_titular,
+        Expediente.nombre_solicitante,
+        Expediente.nif_solicitante,
+        Expediente.nombre_notario,
+        Expediente.nif_notario,
+        Expediente.notario,
+        Expediente.oficina,
+        Expediente.actividad_actual,
+        Expediente.estado_expediente,
+        Expediente.estado_actividad,
+        Expediente.contrato,
+        Expediente.tipo_operacion,
+        Expediente.subtipo_operacion,
+        Expediente.protocolo,
+        Expediente.observaciones,
+        Expediente.finca,
+    ]
+    condiciones = [texto_busqueda(columna) for columna in columnas]
+    fincas_registros = q.session.query(ExpedienteFinca.expediente_id).filter(
+        or_(
+            texto_busqueda(ExpedienteFinca.finca),
+            texto_busqueda(ExpedienteFinca.registro),
+        )
+    )
+    condiciones.append(Expediente.id.in_(fincas_registros))
+    return q.filter(or_(*condiciones))
+
+
 # ============================================================
 # CONTROLES DE GESTIÓN — ALERTAS DEL LISTADO
 # ============================================================
@@ -937,6 +989,7 @@ def listado_expedientes(
     importeMin: Optional[float] = None,
     importeMax: Optional[float] = None,
     numeroExpediente: Optional[str] = Query(None, description="Número completo o parcial del expediente"),
+    busqueda: Optional[str] = Query(None, description="Búsqueda rápida por número, persona, notario, finca, registro u otros datos"),
     nifTitular: Optional[str] = None,
     nombreTitular: Optional[str] = None,
     nifSolicitante: Optional[str] = None,
@@ -981,6 +1034,7 @@ def listado_expedientes(
         estadoExpediente=estadoExpediente,
         actividadActual=actividadActual,
     )
+    q = aplicar_busqueda_rapida(q, busqueda)
     q = aplicar_filtro_alerta_control(q, alerta, db)
 
     orden_aplicado = False
