@@ -2131,7 +2131,8 @@ const permisosDisponibles =
           z-10
           flex
           w-full
-          max-w-6xl
+          w-[min(96vw,1600px)]
+          max-w-7xl
           max-h-[94vh]
           flex-col
           overflow-hidden
