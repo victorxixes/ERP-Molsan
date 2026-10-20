@@ -68,6 +68,8 @@ export default function NotarGest() {
   const [pagosNotario, setPagosNotario] = useState([]);
   const [cargandoPagos, setCargandoPagos] = useState(false);
   const [avisosLeidos, setAvisosLeidos] = useState([]);
+  const [modalExpedientesResumen, setModalExpedientesResumen] = useState(null);
+  const [cargandoResumenExpedientes, setCargandoResumenExpedientes] = useState(false);
 
   const peticion = useCallback(async (path, options = {}) => {
     const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(options.headers || {}) };
@@ -126,6 +128,72 @@ export default function NotarGest() {
       .finally(() => { if (vigente) setCargandoSelectorNotaria(false); });
     return () => { vigente = false; };
   }, [accesoERP, esAdminNotarGest, tokenERP]);
+
+
+  async function abrirModalResumen(filtro, titulo, notariaId = null) {
+    setCargandoResumenExpedientes(true);
+    setError("");
+    try {
+      const response = await fetch(`${API_BASE}/notargest/seleccion/expedientes`, {
+        headers: { Authorization: `Bearer ${tokenERP}` },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.detail || "No se han podido cargar los expedientes del resumen.");
+      const items = (Array.isArray(data.items) ? data.items : []).filter((item) => {
+        const coincideNotaria = notariaId === null || String(item.notaria_id) === String(notariaId);
+        const coincideFiltro = !filtro || Boolean(item[filtro]);
+        return coincideNotaria && coincideFiltro;
+      });
+      setModalExpedientesResumen({ titulo, items, filtro, notariaId });
+    } catch (e) {
+      setError(e.message || "No se han podido cargar los expedientes.");
+    } finally {
+      setCargandoResumenExpedientes(false);
+    }
+  }
+
+  async function abrirFichaDesdeResumen(item) {
+    setCargando(true);
+    setError("");
+    try {
+      const seleccion = await fetch(`${API_BASE}/notargest/seleccion/notaria/${encodeURIComponent(item.notaria_id)}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${tokenERP}`, "Content-Type": "application/json" },
+      });
+      const seleccionData = await seleccion.json().catch(() => ({}));
+      if (!seleccion.ok) throw new Error(seleccionData.detail || "No se ha podido abrir la notaría.");
+      const tokenNotaria = seleccionData.token;
+      const headers = { Authorization: `Bearer ${tokenNotaria}`, "Content-Type": "application/json" };
+      const id = encodeURIComponent(item.id_expediente || item.numero_expediente);
+      const [detalleResponse, gestoresResponse] = await Promise.all([
+        fetch(`${API_BASE}/notargest/expedientes/${id}`, { headers }),
+        fetch(`${API_BASE}/notargest/gestores`, { headers }),
+      ]);
+      const detalleData = await detalleResponse.json().catch(() => ({}));
+      const gestoresData = await gestoresResponse.json().catch(() => []);
+      if (!detalleResponse.ok) throw new Error(detalleData.detail || "No se ha podido abrir la ficha del expediente.");
+      if (!gestoresResponse.ok) throw new Error(Array.isArray(gestoresData) ? "No se ha podido cargar la lista de gestores." : (gestoresData.detail || "No se ha podido cargar la lista de gestores."));
+      setTokenAdminNotaria(tokenNotaria);
+      setNotariaAdminSeleccionada(String(seleccionData.notaria?.id || item.notaria_id));
+      setNotario(seleccionData.notaria || null);
+      setDetalle(detalleData);
+      setGestores(Array.isArray(gestoresData) ? gestoresData : []);
+      setComentarioGestor("");
+      setGestorDestinatario("");
+      setFirmaFecha(detalleData.fecha_firma || "");
+      setProtocolo(detalleData.protocolo || "");
+      setFechaCierre(detalleData.notargest_fecha_cierre || "");
+      setFechaEnvioGestoria(detalleData.notargest_fecha_envio_gestoria || "");
+      vistaOrigenFicha.current = "inicio";
+      setVista("detalle");
+      setBusqueda("");
+      setModalExpedientesResumen(null);
+    } catch (e) {
+      setError(e.message || "No se ha podido abrir la ficha del expediente.");
+    } finally {
+      setCargando(false);
+    }
+  }
 
   async function seleccionarNotariaAdmin(notariaId) {
     if (!notariaId) {
@@ -480,6 +548,37 @@ export default function NotarGest() {
           </form>
           </div>
         </section></div>}
+
+      {modalExpedientesResumen && (
+        <div className="ng-modal-overlay ng-resumen-expedientes-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setModalExpedientesResumen(null); }}>
+          <section className="ng-modal ng-resumen-expedientes-modal" role="dialog" aria-modal="true" aria-labelledby="ng-resumen-expedientes-titulo">
+            <header>
+              <div><span className="ng-kicker">NOTARGEST · VISIÓN MOLSAN</span><h2 id="ng-resumen-expedientes-titulo">{modalExpedientesResumen.titulo}</h2><p>{modalExpedientesResumen.items.length} expediente(s) coinciden con este bloque.</p></div>
+              <button type="button" className="ng-boton-secundario" onClick={() => setModalExpedientesResumen(null)}>Cerrar ✕</button>
+            </header>
+            <div className="ng-resumen-expedientes-contenido">
+              {cargandoResumenExpedientes ? <p className="ng-mensaje">Cargando expedientes…</p> : modalExpedientesResumen.items.length === 0 ? <div className="ng-modal-vacio"><strong>No hay expedientes en este bloque</strong><p>Cuando existan expedientes que cumplan esta condición aparecerán aquí.</p></div> : (
+                <div className="ng-resumen-expedientes-tabla-wrap">
+                  <table className="ng-tabla ng-resumen-expedientes-tabla">
+                    <thead><tr><th>Expediente</th><th>Notaría</th><th>Titular / solicitante</th><th>Actividad actual</th><th>Estado</th><th>Fecha firma</th><th></th></tr></thead>
+                    <tbody>{modalExpedientesResumen.items.map(item => (
+                      <tr key={`${item.notaria_id}:${item.id_expediente}`}>
+                        <td><strong>{texto(item.id_expediente || item.numero_expediente)}</strong></td>
+                        <td>{texto(item.notaria_nombre)}</td>
+                        <td>{texto(item.titular || item.nombre_solicitante || item.solicitante)}</td>
+                        <td>{texto(item.actividad_actual)}</td>
+                        <td>{texto(item.notargest_estado || item.estado_actividad || item.estado_expediente)}</td>
+                        <td>{esFecha(item.fecha_firma)}</td>
+                        <td><button type="button" className="ng-abrir" disabled={cargando} onClick={() => abrirFichaDesdeResumen(item)}>Abrir ficha →</button></td>
+                      </tr>
+                    ))}</tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
       {accesoERP && esAdminNotarGest && (
         <section className="ng-admin-notarias">
           {!tokenAdminNotaria ? <>
@@ -509,16 +608,23 @@ export default function NotarGest() {
                 <span className="ng-admin-global-total">{notariasSeleccionables.length} habilitadas</span>
               </div>
               <div className="ng-admin-kpis ng-admin-kpis-global">
-                <article><span>Nuevos encargos</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_recepcion||0),0)}</strong></article>
-                <article><span>Pendientes de firma</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_firma||0),0)}</strong></article>
-                <article><span>Pendientes copias simples</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_copias||0),0)}</strong></article>
-                <article><span>Pendientes de factura notarial</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_factura||0),0)}</strong></article>
-                <article><span>Pendientes de AJD / ITP</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_ajd_itp||0),0)}</strong></article>
-                <article><span>Pendientes de presentación registral</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_registro||0),0)}</strong></article>
-                <article><span>Expedientes con defectos</span><strong className={notariasSeleccionables.some(n=>Number(n.con_defectos)>0)?"ng-cifra-urgente":""}>{notariasSeleccionables.reduce((s,n)=>s+Number(n.con_defectos||0),0)}</strong></article>
-                <article><span>Inscripciones registrales</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.pendientes_inscripcion||0),0)}</strong></article>
-                <article><span>Escrituras cerradas inscritas</span><strong>{notariasSeleccionables.reduce((s,n)=>s+Number(n.escrituras_cerradas||0),0)}</strong></article>
-                <article><span>Firmas urgentes</span><strong className={notariasSeleccionables.some(n=>Number(n.firmas_urgentes)>0)?"ng-cifra-urgente":""}>{notariasSeleccionables.reduce((s,n)=>s+Number(n.firmas_urgentes||0),0)}</strong></article>
+                {[
+                  ["Nuevos encargos", "pendiente_recepcion", n => n.pendientes_recepcion],
+                  ["Pendientes de firma", "pendiente_firma", n => n.pendientes_firma],
+                  ["Pendientes copias simples", "pendiente_copia_simple", n => n.pendientes_copias],
+                  ["Pendientes de factura notarial", "pendiente_factura_notarial", n => n.pendientes_factura],
+                  ["Pendientes de AJD / ITP", "pendiente_ajd_itp", n => n.pendientes_ajd_itp],
+                  ["Pendientes de presentación registral", "pendiente_presentacion_registro", n => n.pendientes_registro],
+                  ["Expedientes con defectos", "con_defectos", n => n.con_defectos],
+                  ["Inscripciones registrales", "pendiente_inscripcion", n => n.pendientes_inscripcion],
+                  ["Escrituras cerradas inscritas", "escrituras_cerradas_inscritas", n => n.escrituras_cerradas],
+                  ["Firmas urgentes", "firmas_urgentes", n => n.firmas_urgentes],
+                ].map(([label, filtro, cuenta]) => (
+                  <button type="button" className="ng-admin-kpi-button" key={filtro} onClick={() => abrirModalResumen(filtro, label)} title={`Ver expedientes: ${label}`}>
+                    <span>{label}</span><strong className={["con_defectos", "firmas_urgentes"].includes(filtro) && notariasSeleccionables.some(n => Number(cuenta(n)) > 0) ? "ng-cifra-urgente" : ""}>{notariasSeleccionables.reduce((s, n) => s + Number(cuenta(n) || 0), 0)}</strong>
+                    <small>Ver expedientes <span aria-hidden="true">↗</span></small>
+                  </button>
+                ))}
               </div>
             </section>
             <div className="ng-admin-individual-titulo"><span className="ng-admin-global-eyebrow">DETALLE POR NOTARÍA</span><h3>Situación individual</h3><p>Cada ficha muestra los contadores y las incidencias de esa notaría.</p></div>
@@ -575,6 +681,9 @@ export default function NotarGest() {
                       </div>
                     </section>
                   </div>
+                  <button type="button" className="ng-admin-ver-expedientes" disabled={cargandoResumenExpedientes} onClick={() => abrirModalResumen(null, `Expedientes · ${item.nombre || "Notaría"}`, item.id)}>
+                    <span>Ver expedientes</span><span aria-hidden="true">↗</span>
+                  </button>
                   <button type="button" className="ng-admin-entrar" disabled={cargando} onClick={() => seleccionarNotariaAdmin(String(item.id))}>
                     <span>Acceder al espacio de trabajo</span><span aria-hidden="true">→</span>
                   </button>
