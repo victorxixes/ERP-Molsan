@@ -1,0 +1,111 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "../../api/axios";
+
+const hoy = () => new Date().toLocaleDateString("sv-SE");
+const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+const fecha = (v) => v ? String(v).slice(0, 10).split("-").reverse().join("/") : "—";
+
+export default function ComplementosSaldo() {
+  const [items, setItems] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+  const [busqueda, setBusqueda] = useState("");
+  const [estadoFiltro, setEstadoFiltro] = useState("");
+  const [oficinaFiltro, setOficinaFiltro] = useState("");
+  const [exportando, setExportando] = useState(false);
+
+  const cargar = useCallback(async () => {
+    setCargando(true); setError("");
+    try {
+      const params = {};
+      if (busqueda.trim()) params.q = busqueda.trim();
+      if (estadoFiltro) params.estado = estadoFiltro;
+      if (oficinaFiltro.trim()) params.oficina = oficinaFiltro.trim();
+      const { data } = await axios.get("/complementos-saldo", { params });
+      setItems(Array.isArray(data) ? data : []);
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudieron cargar las solicitudes de complemento de saldo.");
+    } finally { setCargando(false); }
+  }, [busqueda, estadoFiltro, oficinaFiltro]);
+
+  useEffect(() => { cargar(); }, [cargar]);
+
+  const metricas = useMemo(() => ({
+    total: items.length,
+    importe: items.reduce((s, x) => s + Number(x.importe || 0), 0),
+    pendientes: items.filter((x) => String(x.estado).toLowerCase() !== "cerrado").length,
+    cerrados: items.filter((x) => String(x.estado).toLowerCase() === "cerrado").length,
+    importePendiente: items.filter((x) => String(x.estado).toLowerCase() !== "cerrado").reduce((s, x) => s + Number(x.importe || 0), 0),
+  }), [items]);
+
+  async function cambiarEstado(item) {
+    const estado = String(item.estado).toLowerCase() === "cerrado" ? "Pendiente" : "Cerrado";
+    try {
+      await axios.patch(`/complementos-saldo/${item.id}/estado`, null, { params: { estado } });
+      await cargar();
+    } catch (e) { setError(e?.response?.data?.detail || "No se pudo actualizar el estado."); }
+  }
+
+  async function exportarExcel() {
+    setExportando(true); setError("");
+    try {
+      const params = {};
+      if (busqueda.trim()) params.q = busqueda.trim();
+      if (estadoFiltro) params.estado = estadoFiltro;
+      if (oficinaFiltro.trim()) params.oficina = oficinaFiltro.trim();
+      const response = await axios.get("/complementos-saldo/exportar/excel", { params, responseType: "blob" });
+      const url = URL.createObjectURL(response.data);
+      const enlace = document.createElement("a");
+      enlace.href = url; enlace.download = `complementos_saldo_${hoy()}.xlsx`;
+      document.body.appendChild(enlace); enlace.click(); enlace.remove(); URL.revokeObjectURL(url);
+    } catch { setError("No se pudo descargar el Excel de complementos de saldo."); }
+    finally { setExportando(false); }
+  }
+
+  return <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+    <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div><Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link><h1 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Complementos de saldo</h1><p className="mt-1 text-sm text-slate-500">Control de solicitudes, importes y estado de cada complemento.</p></div>
+        <button type="button" onClick={cargar} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">↻ Actualizar</button>
+      </div>
+    </header>
+
+    <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <Metrica titulo="Peticiones de complemento" valor={metricas.total} detalle="Solicitudes según los filtros" icono="▤" />
+      <Metrica titulo="Importe total solicitado" valor={euros(metricas.importe)} detalle="Suma de los complementos" icono="€" />
+      <Metrica titulo="Pendientes" valor={metricas.pendientes} detalle={`Importe abierto: ${euros(metricas.importePendiente)}`} icono="◷" alerta />
+      <Metrica titulo="Cerrados" valor={metricas.cerrados} detalle="Solicitudes ya cerradas" icono="✓" verde />
+    </section>
+
+    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+      <div className="border-b border-slate-200 bg-slate-50/80 p-4 sm:p-5"><div className="flex flex-col gap-3 xl:flex-row xl:items-end">
+        <label className="min-w-0 flex-1"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Buscar expediente / solicitante</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="N.º expediente, solicitante u oficina…" className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" /></label>
+        <label className="w-full xl:w-48"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Estado</span><select value={estadoFiltro} onChange={(e) => setEstadoFiltro(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm"><option value="">Todos</option><option value="Pendiente">Pendiente</option><option value="Cerrado">Cerrado</option></select></label>
+        <label className="w-full xl:w-56"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Oficina</span><input value={oficinaFiltro} onChange={(e) => setOficinaFiltro(e.target.value)} placeholder="Todas las oficinas" className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm" /></label>
+        <button type="button" onClick={exportarExcel} disabled={exportando} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60">{exportando ? "Preparando…" : "↓ Descargar Excel"}</button>
+      </div></div>
+
+      {error && <div role="alert" className="m-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
+      <div className="overflow-x-auto"><table className="w-full min-w-[980px] border-collapse text-left text-sm">
+        <thead className="bg-white text-[10px] uppercase tracking-wider text-slate-500"><tr>{["N.º expediente", "Fecha solicitud", "Solicitante", "Oficina", "Importe complemento", "Estado", "Acciones"].map((n) => <th key={n} className="border-b border-slate-200 px-4 py-3.5 font-extrabold">{n}</th>)}</tr></thead>
+        <tbody>{cargando ? <tr><td colSpan={7} className="px-5 py-14 text-center text-slate-500">Cargando solicitudes…</td></tr>
+          : items.length === 0 ? <tr><td colSpan={7} className="px-5 py-14 text-center"><div className="text-3xl">📋</div><p className="mt-2 font-bold text-slate-700">No hay solicitudes que mostrar</p><p className="mt-1 text-xs text-slate-500">Cuando se solicite un complemento desde la ficha de un expediente, aparecerá aquí.</p></td></tr>
+          : items.map((item) => { const cerrado = String(item.estado).toLowerCase() === "cerrado"; return <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-blue-50/40">
+            <td className="px-4 py-3.5"><Link to={item.expediente_id ? `/expedientes/${item.expediente_id}` : "/expedientes"} className="font-extrabold text-blue-700 hover:underline">{item.numero_expediente}</Link></td>
+            <td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{fecha(item.fecha_solicitud)}</td><td className="px-4 py-3.5 font-medium text-slate-700">{item.solicitante || "—"}</td><td className="px-4 py-3.5 text-slate-600">{item.oficina || "—"}</td><td className="whitespace-nowrap px-4 py-3.5 font-extrabold tabular-nums text-slate-900">{euros(item.importe)}</td>
+            <td className="px-4 py-3.5"><span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${cerrado ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>{cerrado ? "Cerrado" : "Pendiente"}</span></td>
+            <td className="px-4 py-3.5"><button type="button" onClick={() => cambiarEstado(item)} className={`rounded-lg border px-3 py-2 text-xs font-bold ${cerrado ? "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100" : "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"}`}>{cerrado ? "Reabrir" : "Cerrar solicitud"}</button></td>
+          </tr>; })}</tbody>
+      </table></div>
+      <footer className="flex flex-col gap-1 border-t border-slate-200 bg-slate-50/70 px-4 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between"><span>{items.length} solicitud(es) en el resultado actual</span><span>Los indicadores se actualizan con los filtros aplicados.</span></footer>
+    </section>
+  </div>;
+}
+
+function Metrica({ titulo, valor, detalle, icono, alerta = false, verde = false }) {
+  return <div className={`rounded-2xl border p-4 shadow-sm ${alerta ? "border-amber-200 bg-amber-50/70" : verde ? "border-emerald-200 bg-emerald-50/60" : "border-slate-200 bg-white"}`}>
+    <div className="flex items-start justify-between gap-2"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{titulo}</p><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 text-lg font-extrabold text-slate-600 shadow-sm">{icono}</span></div><p className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">{valor}</p><p className="mt-1 text-xs text-slate-500">{detalle}</p>
+  </div>;
+}
