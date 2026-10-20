@@ -22,16 +22,23 @@ const API_ORIGIN = String(API_BASE || "")
 
 const DIAGNOSTICOS = [
   {
+    id: "salud",
+    titulo: "Estado del backend y de la base de datos",
+    descripcion: "Comprueba que el backend responde y que puede consultar la base de datos.",
+    metodo: "GET",
+    url: `${API_ORIGIN}/debug/health`,
+  },
+  {
     id: "tablas",
     titulo: "Tablas de la base de datos",
-    descripcion: "Lista las tablas que existen actualmente.",
+    descripcion: "Lista las tablas del esquema actual. Solo consulta metadatos.",
     metodo: "GET",
     url: `${API_ORIGIN}/debug/tablas`,
   },
   {
     id: "bloqueos",
     titulo: "Bloqueos de base de datos",
-    descripcion: "Consulta los bloqueos detectados por el backend.",
+    descripcion: "Consulta las sesiones que están esperando un bloqueo, sin mostrar datos de negocio.",
     metodo: "GET",
     url: `${API_ORIGIN}/debug/bloqueos`,
   },
@@ -64,15 +71,6 @@ const MIGRACIONES = [
     endpoint: "/admin/install-unaccent",
     confirmar:
       "¿Quieres solicitar la instalación de unaccent en PostgreSQL?",
-  },
-  {
-    id: "crear-tablas",
-    titulo: "Crear/revisar tablas de utilidades",
-    descripcion:
-      "Ejecuta el endpoint de creación de tablas de utilidades.",
-    endpoint: "/utilidades/crear_tablas",
-    confirmar:
-      "¿Quieres ejecutar la creación/revisión de tablas de utilidades?",
   },
 ];
 
@@ -249,7 +247,7 @@ export default function MantenimientoTecnico() {
             <div>
               <h2 className="text-lg font-bold text-slate-900">Inspección de tablas</h2>
               <p className="mt-1 text-sm text-slate-500">
-                Consulta la estructura de una tabla: columnas, índices y claves foráneas. No muestra los datos personales almacenados.
+                Consulta la estructura de una tabla: columnas, índices y claves foráneas. Los endpoints están protegidos para administradores y no muestran filas ni datos personales.
               </p>
             </div>
           </div>
@@ -377,7 +375,7 @@ export default function MantenimientoTecnico() {
       )}
 
       <footer className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-5 text-slate-500">
-        Esta pantalla comprueba el permiso de módulo <strong>utilidades</strong> en el ERP. La autorización del backend sigue siendo necesaria para cada endpoint; ocultar una pantalla no sustituye la protección del servidor.
+        Esta pantalla comprueba el permiso de módulo <strong>utilidades</strong>. Las consultas técnicas del backend exigen además autorización administrativa; las migraciones se ejecutan solo bajo confirmación. No se habilitan acciones para borrar tablas o restablecer datos.
       </footer>
     </main>
   );
