@@ -167,12 +167,35 @@ def modificar_ppad(expediente_id: int, ppad_id: int, datos: PPADUpdate, db: Sess
     return _ppad_dict(item)
 
 
+def _es_administrador(usuario) -> bool:
+    rol = getattr(getattr(usuario, "rol", None), "nombre", "") or ""
+    rol_normalizado = " ".join(str(rol).strip().lower().replace("_", " ").replace("-", " ").split())
+    return rol_normalizado in {
+        "admin",
+        "administrador",
+        "administradora",
+        "superadmin",
+        "super admin",
+        "superadministrador",
+        "super administradora",
+        "administrador general",
+    }
+
+
 @router.delete("/{ppad_id}", summary="Eliminar registro PPAD")
-def eliminar_ppad(expediente_id: int, ppad_id: int, db: Session = Depends(get_db)):
+def eliminar_ppad(
+    expediente_id: int,
+    ppad_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
     expediente = _comprobar_expediente(db, expediente_id)
     item = _obtener_ppad(db, expediente.id, ppad_id)
-    if item.compensado:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Un PPAD compensado no se puede eliminar.")
+    if item.compensado and not _es_administrador(usuario):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Solo un administrador puede eliminar un PPAD compensado.",
+        )
     db.delete(item)
     try:
         db.commit()
