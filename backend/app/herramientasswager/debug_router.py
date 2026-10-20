@@ -39,6 +39,38 @@ def estado_tecnico(db: Session = Depends(get_db), _usuario=Depends(_autorizar_ma
     return {"estado": "ok", "backend": "disponible", "base_datos": "conectada", "comprobado_en": datetime.now(timezone.utc).isoformat()}
 
 
+@router.get("/resumen")
+def resumen_tecnico(db: Session = Depends(get_db), _usuario=Depends(_autorizar_mantenimiento)):
+    """Resumen de infraestructura de solo lectura para el panel de mantenimiento."""
+    try:
+        datos = db.execute(text("""
+            SELECT
+                current_database() AS base_datos,
+                current_schema() AS esquema,
+                version() AS version_postgresql,
+                (SELECT COUNT(*) FROM information_schema.tables
+                 WHERE table_schema = current_schema()) AS total_tablas,
+                pg_size_pretty(pg_database_size(current_database())) AS tamano_base_datos,
+                (SELECT COUNT(*) FROM pg_stat_activity
+                 WHERE datname = current_database()) AS conexiones_activas,
+                (SELECT COUNT(*) FROM pg_stat_activity
+                 WHERE datname = current_database()
+                   AND wait_event_type = 'Lock'
+                   AND pid <> pg_backend_pid()) AS sesiones_esperando_bloqueo
+        """)).mappings().one()
+    except Exception as exc:
+        raise HTTPException(
+            status_code=503,
+            detail="No se ha podido obtener el resumen técnico de la base de datos."
+        ) from exc
+
+    return {
+        "estado": "ok",
+        "comprobado_en": datetime.now(timezone.utc).isoformat(),
+        "infraestructura": dict(datos),
+    }
+
+
 @router.get("/tablas")
 def listar_tablas(db: Session = Depends(get_db), _usuario=Depends(_autorizar_mantenimiento)):
     """Lista nombres de tablas del esquema actual, sin leer su contenido."""
