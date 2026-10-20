@@ -107,7 +107,38 @@ export default function PPAD() {
     }
   }
 
-  function Tabla({ titulo, lista, tipo, busqueda, setBusqueda }) {
+  return (
+    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+      <header className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
+        <div className="h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Utilidades · Control económico</p>
+            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Control de PPAD</h1>
+            <p className="mt-2 text-sm text-slate-500">Seguimiento de importes pendientes de compensar y compensados.</p>
+          </div>
+          <Link to="/herramientas/utilidades" className="self-start rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>
+        </div>
+      </header>
+
+      {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {mensaje && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensaje}</div>}
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Metrica titulo="PPAD pendientes" valor={resumen.pendientes_total} detalle="Registros por compensar" />
+        <Metrica titulo="Importe pendiente" valor={euros(resumen.pendientes_importe)} detalle="Total pendiente de compensar" />
+        <Metrica titulo="PPAD compensados" valor={resumen.compensados_total} detalle="Registros compensados" positivo />
+        <Metrica titulo="Importe compensado" valor={euros(resumen.compensados_importe)} detalle="Total ya compensado" positivo />
+      </div>
+
+      <TablaPPAD titulo="PPAD pendientes de compensar" lista={pendientes} tipo="pendiente" busqueda={busquedaPendientes} setBusqueda={setBusquedaPendientes} compensar={compensar} descargarExcel={descargarExcel} cargando={cargando} />
+      <TablaPPAD titulo="PPAD compensados" lista={compensados} tipo="compensado" busqueda={busquedaCompensados} setBusqueda={setBusquedaCompensados} compensar={compensar} descargarExcel={descargarExcel} cargando={cargando} />
+      {cargando && <p className="text-center text-xs text-slate-500">Actualizando datos PPAD…</p>}
+    </div>
+  );
+}
+
+function TablaPPAD({ titulo, lista, tipo, busqueda, setBusqueda, compensar, descargarExcel, cargando }) {
     const esPendiente = tipo === "pendiente";
     return (
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -171,37 +202,6 @@ export default function PPAD() {
       </section>
     );
   }
-
-  return (
-    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
-      <header className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
-        <div className="h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
-        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Utilidades · Control económico</p>
-            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Control de PPAD</h1>
-            <p className="mt-2 text-sm text-slate-500">Seguimiento de importes pendientes de compensar y compensados.</p>
-          </div>
-          <Link to="/herramientas/utilidades" className="self-start rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">← Volver a Utilidades</Link>
-        </div>
-      </header>
-
-      {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
-      {mensaje && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensaje}</div>}
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Metrica titulo="PPAD pendientes" valor={resumen.pendientes_total} detalle="Registros por compensar" />
-        <Metrica titulo="Importe pendiente" valor={euros(resumen.pendientes_importe)} detalle="Total pendiente de compensar" />
-        <Metrica titulo="PPAD compensados" valor={resumen.compensados_total} detalle="Registros compensados" positivo />
-        <Metrica titulo="Importe compensado" valor={euros(resumen.compensados_importe)} detalle="Total ya compensado" positivo />
-      </div>
-
-      <Tabla titulo="PPAD pendientes de compensar" lista={pendientes} tipo="pendiente" busqueda={busquedaPendientes} setBusqueda={setBusquedaPendientes} />
-      <Tabla titulo="PPAD compensados" lista={compensados} tipo="compensado" busqueda={busquedaCompensados} setBusqueda={setBusquedaCompensados} />
-      {cargando && <p className="text-center text-xs text-slate-500">Actualizando datos PPAD…</p>}
-    </div>
-  );
-}
 
 function Metrica({ titulo, valor, detalle, positivo = false }) {
   return (
