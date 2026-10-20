@@ -6,213 +6,53 @@ import { Link } from "react-router-dom";
 
 export default function Utilidades() {
   return (
-    <div className="min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
-
-      {/* =====================================================
-          CABECERA
-      ===================================================== */}
-
-      <div
-        className="
-          relative overflow-hidden
-          rounded-[24px]
-          border border-slate-200/80
-          bg-white/80
-          backdrop-blur-xl
-          shadow-[0_18px_50px_rgba(15,23,42,0.08)]
-          p-6 sm:p-7
-        "
-      >
-
-        <div
-          className="
-            absolute inset-x-0 top-0 h-px
-            bg-gradient-to-r
-            from-transparent
-            via-blue-400/60
-            to-transparent
-          "
-        />
-
+    <div className="min-h-full space-y-7 p-4 sm:p-6 lg:p-8 animate-fadeIn">
+      <header className="relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-7">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="relative flex items-center gap-4">
-
-          <div
-            className="
-              flex h-12 w-12 shrink-0
-              items-center justify-center
-              rounded-2xl
-              bg-indigo-50
-              border border-indigo-100
-              text-2xl
-              shadow-sm
-            "
-          >
-            ⚙️
-          </div>
-
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl shadow-sm">⚙️</div>
           <div>
-
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
-              Utilidades del sistema
-            </h1>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Procesos auxiliares, maestros, importaciones, documentos e informes.
-            </p>
-
+            <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Utilidades del sistema</h1>
+            <p className="mt-1 text-sm text-slate-500">Gestiona los catálogos, importaciones y herramientas de trabajo directamente desde el ERP.</p>
           </div>
-
         </div>
+      </header>
 
-      </div>
+      <Grupo titulo="Maestros y catálogos" descripcion="Datos comunes utilizados por los expedientes y los procesos de la gestoría.">
+        <Card icon="🏘️" titulo="Municipios" descripcion="Comunidades autónomas, provincias y municipios." link="/herramientas/municipios" />
+        <Card icon="🏦" titulo="Entidades bancarias" descripcion="Entidades, códigos europeos, LEI, categorías y direcciones." link="/herramientas/entidades-bancarias" />
+        <Card icon="🏛️" titulo="Oficinas liquidadoras" descripcion="Gestionar oficinas liquidadoras y sus datos asociados." link="/herramientas/oficinas-liquidadoras" />
+        <Card icon="📚" titulo="Registros de la propiedad" descripcion="Gestionar registros de la propiedad." link="/herramientas/registros-propiedad" />
+        <Card icon="📋" titulo="Acciones del expediente" descripcion="Catálogo de acciones y actividades de los expedientes." link="/herramientas/acciones-expediente" />
+        <Card icon="🏠" titulo="Tipos de carga hipotecaria" descripcion="Catálogo de tipos de carga hipotecaria." link="/herramientas/tipos-carga-hipotecaria" />
+        <Card icon="🧾" titulo="Tipos de conceptos de gastos" descripcion="Catálogo de conceptos de gastos." link="/herramientas/tipos-concepto-gastos" />
+      </Grupo>
 
+      <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
+        <Card icon="📥" titulo="Importar CTN" descripcion="Importar un Excel con información de notarías." link="/herramientas/importar-ctn" />
+        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." link="/herramientas/importador-absis" destacado />
+      </Grupo>
 
-      {/* =====================================================
-          CARDS
-      ===================================================== */}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-
-        {/* ===================================================
-            MUNICIPIOS
-        =================================================== */}
-
-        <Card
-          icon="🏘️"
-          titulo="Municipios"
-          descripcion="Gestionar comunidades autónomas, provincias y municipios."
-          link="/herramientas/municipios"
-        />
-
-        {/* ===================================================
-            ENTIDADES BANCARIAS
-        =================================================== */}
-
-        <Card
-          icon="🏦"
-          titulo="Entidades Bancarias"
-          descripcion="Gestionar entidades bancarias, códigos europeos, LEI, categorías y direcciones."
-          link="/herramientas/entidades-bancarias"
-        />
-
-        {/* ===================================================
-            OFICINAS LIQUIDADORAS
-        =================================================== */}
-
-        <Card
-          icon="🏛️"
-          titulo="Oficinas Liquidadoras"
-          descripcion="Gestionar las oficinas liquidadoras y sus datos asociados."
-          link="/herramientas/oficinas-liquidadoras"
-        />
-
-
-        {/* ===================================================
-            REGISTROS DE LA PROPIEDAD
-        =================================================== */}
-
-        <Card
-          icon="📚"
-          titulo="Registros de la Propiedad"
-          descripcion="Gestionar registros de la propiedad y su información."
-          link="/herramientas/registros-propiedad"
-        />
-
-       {/* ===================================================
-    ACCIONES DEL EXPEDIENTE
-=================================================== */}
-
-<Card
-  icon="📋"
-  titulo="Acciones del Expediente"
-  descripcion="Catálogo de acciones, actividades y descripciones asociadas a los expedientes."
-  link="/herramientas/acciones-expediente"
-/>
-        
-        {/* ===================================================
-            IMPORTAR CTN
-        =================================================== */}
-
-        <Card
-          icon="📥"
-          titulo="Importar CTN"
-          descripcion="Importar fichero Excel con información de notarías."
-          link="/herramientas/importar-ctn"
-        />
-
-
-        {/* ===================================================
-            CREAR NOTICIA
-        =================================================== */}
-
-        <Card
-          icon="📰"
-          titulo="Crear noticia"
-          descripcion="Publicar una noticia en la intranet."
-          link="/herramientas/utilidades/crear-noticia"
-        />
-
-
-        {/* ===================================================
-            SUBIR DOCUMENTO
-        =================================================== */}
-
-        <Card
-          icon="📄"
-          titulo="Subir documento"
-          descripcion="Subir documentos a la intranet."
-          link="/herramientas/utilidades/subir-documento"
-        />
-
-{/* ===================================================
-    TIPOS DE CARGA HIPOTECARIA
-=================================================== */}
-
-<Card
-  icon="🏠"
-  titulo="Tipos de Carga Hipotecaria"
-  descripcion="Catálogo de tipos de carga hipotecaria utilizados en los expedientes."
-  link="/herramientas/tipos-carga-hipotecaria"
-/>
-
-        {/* ===================================================
-    TIPOS DE CARGA HIPOTECARIA
-=================================================== */}
-
-<Card
-  icon="🧾"
-  titulo="Tipos de Conceptos de Gastos"
-  descripcion="Catálogo de tipos de conceptos de gastos utilizados en los expedientes."
-  link="/herramientas/tipos-concepto-gastos"
-/>
-         
-
-
-        {/* ===================================================
-            IMPORTADOR ABSIS
-        =================================================== */}
-
-        <Card
-          icon="📦"
-          titulo="Importador ABSIS"
-          descripcion="Importar expedientes desde el Excel matriz ABSIS."
-          link="/herramientas/importador-absis"
-          destacado
-        />
-        
-<Card
-  icon="🛠️"
-  titulo="Mantenimiento técnico"
-  descripcion="Diagnóstico de base de datos y ejecución controlada de tareas técnicas."
-  link="/herramientas/mantenimiento-tecnico"
-/>
-        
-      </div>
-
+      <Grupo titulo="Intranet y administración" descripcion="Publicación de información y herramientas de soporte integradas en el ERP.">
+        <Card icon="📰" titulo="Crear noticia" descripcion="Publicar noticias para los usuarios de la intranet." link="/herramientas/utilidades/crear-noticia" />
+        <Card icon="📄" titulo="Subir documento" descripcion="Publicar documentos en la intranet." link="/herramientas/utilidades/subir-documento" />
+        <Card icon="🛠️" titulo="Mantenimiento técnico" descripcion="Diagnóstico y tareas técnicas controladas, sin necesidad de abrir Swagger." link="/herramientas/mantenimiento-tecnico" />
+      </Grupo>
     </div>
   );
 }
 
+function Grupo({ titulo, descripcion, children }) {
+  return (
+    <section className="space-y-3">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <h2 className="text-lg font-bold tracking-tight text-slate-800">{titulo}</h2>
+        <p className="text-sm text-slate-500">{descripcion}</p>
+      </div>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">{children}</div>
+    </section>
+  );
+}
 
 /* =========================================================
    CARD
