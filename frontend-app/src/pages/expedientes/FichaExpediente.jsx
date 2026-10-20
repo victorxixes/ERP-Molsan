@@ -3900,7 +3900,7 @@ const cuantiaFincasParaEnvio =
               </div>
             </div>
           </div>
-  {expedienteBloqueado && <section role="alert" className="mb-3 rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="text-xs font-black uppercase text-red-700">⛔ Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">{motivoBloqueoExpediente}</h2>{(String(expediente?.estado_expediente||"").trim().toUpperCase()==="LST"||expediente?.liquidado_sin_tramitar)&&<p className="mt-1 text-sm text-red-800">Liquidación sin tramitar · fecha: {formatearFecha(expediente?.fecha_liquidacion_sin_tramitar)}</p>}{expediente?.cambio_gestoria&&<p className="mt-1 text-sm text-red-800">Cambio de gestoría · fecha: {formatearFecha(expediente?.fecha_cambio_gestoria)}</p>}{String(expediente?.estado_expediente||"").trim().toUpperCase().startsWith("RST")&&<p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p>}{expediente?.bloqueo_manual&&<p className="mt-1 text-sm text-red-800">Motivo: {valorVisible(expediente?.motivo_bloqueo)} · fecha: {formatearFecha(expediente?.fecha_bloqueo)}</p>}<p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
+
 
         {/* ===================================================
             BLOQUES SUPERIORES
@@ -4623,6 +4623,7 @@ const cuantiaFincasParaEnvio =
 
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
         <div className="min-w-0 w-full xl:col-span-8">
+          {expedienteBloqueado && <section role="alert" className="mx-auto mb-4 w-full rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="text-xs font-black uppercase text-red-700">⛔ Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">{motivoBloqueoExpediente}</h2>{(String(expediente?.estado_expediente||"").trim().toUpperCase()==="LST"||expediente?.liquidado_sin_tramitar)&&<p className="mt-1 text-sm text-red-800">Liquidación sin tramitar · fecha: {formatearFecha(expediente?.fecha_liquidacion_sin_tramitar)}</p>}{expediente?.cambio_gestoria&&<p className="mt-1 text-sm text-red-800">Cambio de gestoría · fecha: {formatearFecha(expediente?.fecha_cambio_gestoria)}</p>}{String(expediente?.estado_expediente||"").trim().toUpperCase().startsWith("RST")&&<p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p>}{expediente?.bloqueo_manual&&<p className="mt-1 text-sm text-red-800">Motivo: {valorVisible(expediente?.motivo_bloqueo)} · fecha: {formatearFecha(expediente?.fecha_bloqueo)}</p>}<p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
           <div className="flex w-full min-w-0 justify-center">
           {/* =====================================================
               FICHA COMPLETA DE ENVÍO A NOTARIO
