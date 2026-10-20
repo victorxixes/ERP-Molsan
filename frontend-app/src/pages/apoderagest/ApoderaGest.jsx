@@ -142,19 +142,24 @@ function TarjetaIndicador({
   detalle,
   icono,
   variante = "",
+  onClick,
 }) {
-  return (
-    <article className={`ag-kpi ${variante}`}>
+  const contenido = (
+    <>
       <div className="ag-kpi-superior">
         <span className="ag-kpi-titulo">{titulo}</span>
-        <span className="ag-kpi-icono" aria-hidden="true">
-          {icono}
-        </span>
+        <span className="ag-kpi-icono" aria-hidden="true">{icono}</span>
       </div>
       <div className="ag-kpi-valor">{valor}</div>
       {detalle ? <div className="ag-kpi-detalle">{detalle}</div> : null}
-    </article>
+      {onClick ? <span className="ag-kpi-ver-expedientes">Ver expedientes ↗</span> : null}
+    </>
   );
+  return onClick ? (
+    <button type="button" className={`ag-kpi ag-kpi-interactiva ${variante}`} onClick={onClick} aria-label={`Ver expedientes: ${titulo}`}>
+      {contenido}
+    </button>
+  ) : <article className={`ag-kpi ${variante}`}>{contenido}</article>;
 }
 
 function EstadoVacio({ icono = "◇", titulo, detalle }) {
@@ -760,6 +765,7 @@ export default function ApoderaGest() {
   const [error, setError] = useState("");
   const [busquedaEncargos, setBusquedaEncargos] = useState("");
   const [ultimaActualizacion, setUltimaActualizacion] = useState(null);
+  const [modalResumen, setModalResumen] = useState(null);
 
 
   const cargarDatos = useCallback(async () => {
@@ -807,6 +813,31 @@ export default function ApoderaGest() {
   useEffect(() => {
     cargarDatos();
   }, [cargarDatos]);
+
+  const esEncargoFirmado = (encargo) => Boolean(encargo?.fecha_firma && String(encargo?.protocolo || "").trim());
+  const normalizarModalidad = (valor) => String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
+  const encargosDelResumen = useMemo(() => {
+    if (!modalResumen) return [];
+    const lista = encargos.filter((encargo) => {
+      const firmado = esEncargoFirmado(encargo);
+      const modalidad = normalizarModalidad(encargo.tipo_firma);
+      switch (modalResumen.filtro) {
+        case "todos": return true;
+        case "firmados": return firmado;
+        case "pendientes": return !firmado;
+        case "media": return firmado && Boolean(encargo.fecha_prevista_firma && encargo.fecha_firma);
+        case "presenciales": return firmado && (modalidad.includes("presencial") || modalidad === "p");
+        case "videoconferencia": return firmado && (modalidad.includes("videoconferencia") || modalidad.includes("videoconference") || modalidad === "vc" || modalidad === "video");
+        case "kilometros": return firmado && (modalidad.includes("presencial") || modalidad === "p");
+        default: return true;
+      }
+    });
+    return lista.slice().sort((a,b) => String(a.fecha_prevista_firma || "").localeCompare(String(b.fecha_prevista_firma || "")));
+  }, [encargos, modalResumen]);
+
+  function abrirResumenEncargos(filtro, titulo) {
+    setModalResumen({ filtro, titulo });
+  }
 
   const encargosFiltrados = useMemo(() => {
     const termino = busquedaEncargos.trim().toLowerCase();
@@ -905,15 +936,15 @@ export default function ApoderaGest() {
             {ultimaActualizacion ? <span className="ag-actualizado">Actualizado a las {ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span> : null}
           </div>
           <div className="ag-grid-kpi">
-            <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="▤" variante="ag-kpi-azul" />
-            <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="✓" variante="ag-kpi-verde" />
-            <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="◷" variante="ag-kpi-ambar" />
-            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${Math.abs(dashboard.media_dias_hasta_firma)} días ${dashboard.media_dias_hasta_firma < 0 ? "antes" : dashboard.media_dias_hasta_firma > 0 ? "después" : "en fecha"}`} detalle="Desde fecha prevista hasta fecha real" icono="↗" variante="ag-kpi-violeta" />
+            <TarjetaIndicador titulo="Total de encargos" valor={numeroLegible(dashboard?.total_encargos ?? 0)} detalle="Volumen registrado" icono="▤" variante="ag-kpi-azul" onClick={() => abrirResumenEncargos("todos", "Todos los encargos")} />
+            <TarjetaIndicador titulo="Firmados" valor={numeroLegible(dashboard?.firmados ?? 0)} detalle="Encargos completados" icono="✓" variante="ag-kpi-verde" onClick={() => abrirResumenEncargos("firmados", "Encargos firmados")} />
+            <TarjetaIndicador titulo="Pendientes" valor={numeroLegible(dashboard?.pendientes ?? 0)} detalle="Requieren seguimiento" icono="◷" variante="ag-kpi-ambar" onClick={() => abrirResumenEncargos("pendientes", "Encargos pendientes")} />
+            <TarjetaIndicador titulo="Media hasta firma" valor={dashboard?.media_dias_hasta_firma == null ? "—" : `${Math.abs(dashboard.media_dias_hasta_firma)} días ${dashboard.media_dias_hasta_firma < 0 ? "antes" : dashboard.media_dias_hasta_firma > 0 ? "después" : "en fecha"}`} detalle="Desde fecha prevista hasta fecha real" icono="↗" variante="ag-kpi-violeta" onClick={() => abrirResumenEncargos("media", "Encargos incluidos en la media hasta firma")} />
           </div>
           <div className="ag-grid-secundario">
-            <TarjetaIndicador titulo="Firmas presenciales" valor={numeroLegible(dashboard?.firmas_presenciales)} detalle="Actividad presencial" icono="⌖" />
-            <TarjetaIndicador titulo="Firmas por videoconferencia" valor={numeroLegible(dashboard?.firmas_videoconferencia)} detalle="Actividad remota" icono="▣" />
-            <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle={`Desde CP ${dashboard?.origen_kilometros || "08016"} · ${dashboard?.firmas_presenciales_con_distancia ?? 0}/${dashboard?.firmas_presenciales ?? 0} distancias calculadas en línea recta`} icono="⌁" />
+            <TarjetaIndicador titulo="Firmas presenciales" valor={numeroLegible(dashboard?.firmas_presenciales)} detalle="Actividad presencial" icono="⌖" onClick={() => abrirResumenEncargos("presenciales", "Firmas presenciales")} />
+            <TarjetaIndicador titulo="Firmas por videoconferencia" valor={numeroLegible(dashboard?.firmas_videoconferencia)} detalle="Actividad remota" icono="▣" onClick={() => abrirResumenEncargos("videoconferencia", "Firmas por videoconferencia")} />
+            <TarjetaIndicador titulo="Kilómetros presenciales" valor={dashboard?.kilometros_presenciales == null ? "Pendiente" : `${numeroLegible(dashboard.kilometros_presenciales)} km`} detalle={`Desde CP ${dashboard?.origen_kilometros || "08016"} · ${dashboard?.firmas_presenciales_con_distancia ?? 0}/${dashboard?.firmas_presenciales ?? 0} distancias calculadas en línea recta`} icono="⌁" onClick={() => abrirResumenEncargos("kilometros", "Firmas presenciales · cálculo de kilómetros")} />
           </div>
           <div className="ag-dashboard-inferior-grid">
             <section className="ag-panel ag-panel-proximas">
@@ -1050,6 +1081,43 @@ export default function ApoderaGest() {
       ) : null}
 
       {pestana === "Intranet" ? <Intranet /> : null}
+
+      
+      {modalResumen ? (
+        <div className="ag-resumen-modal-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalResumen(null); }}>
+          <section className="ag-resumen-modal" role="dialog" aria-modal="true" aria-labelledby="ag-resumen-modal-titulo">
+            <header className="ag-resumen-modal-cabecera">
+              <div><span className="ag-kicker">APODERAGEST · RESUMEN DE ACTIVIDAD</span><h2 id="ag-resumen-modal-titulo">{modalResumen.titulo}</h2><p>{encargosDelResumen.length} expediente(s) en este indicador.</p></div>
+              <button type="button" className="ag-resumen-modal-cerrar" onClick={() => setModalResumen(null)} aria-label="Cerrar modal">✕</button>
+            </header>
+            <div className="ag-resumen-modal-cuerpo">
+              {!encargosDelResumen.length ? <EstadoVacio icono="▤" titulo="No hay expedientes en este bloque" detalle="No hay encargos que coincidan con este indicador." /> : (
+                <div className="ag-resumen-tabla-wrap">
+                  <table className="ag-resumen-tabla">
+                    <thead><tr><th>Expediente</th><th>Solicitante</th><th>Notario</th><th>Apoderado</th><th>Fecha prevista</th><th>Fecha de firma</th><th>Protocolo</th><th>Modalidad</th><th>Estado</th><th></th></tr></thead>
+                    <tbody>{encargosDelResumen.map((encargo, i) => {
+                      const id = encargo.id_expediente ?? encargo.id ?? i;
+                      const firmado = esEncargoFirmado(encargo);
+                      return <tr key={String(id)}>
+                        <td><strong>{texto(encargo.id_expediente ?? encargo.id)}</strong></td>
+                        <td>{texto(encargo.nombre_solicitante || encargo.solicitante || encargo.titular)}<small>{texto(encargo.nif_solicitante || encargo.dni_solicitante, "")}</small></td>
+                        <td>{texto(encargo.nombre_notario || encargo.notario)}</td>
+                        <td>{texto(encargo.apoderado)}</td>
+                        <td>{fechaLegible(encargo.fecha_prevista_firma)}</td>
+                        <td>{fechaLegible(encargo.fecha_firma)}</td>
+                        <td>{texto(encargo.protocolo)}</td>
+                        <td>{texto(encargo.tipo_firma)}</td>
+                        <td><EstadoPill valor={firmado ? "Firmado" : encargo.bloqueado ? "Bloqueado" : "Pendiente de firma"} /></td>
+                        <td><button type="button" className="ag-resumen-ir-encargo" onClick={() => { setBusquedaEncargos(String(id)); setPestana("Encargos"); setModalResumen(null); }}>Ver en encargos →</button></td>
+                      </tr>;
+                    })}</tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+      ) : null}
 
       <footer className="ag-footer"><span><strong>MOLSAN ERP</strong> · ApoderaGest</span><span>Premium 2027</span></footer>
           </div>

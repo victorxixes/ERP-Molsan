@@ -1840,3 +1840,50 @@
 .ag-apoderado-barra-fondo{height:9px;overflow:hidden;background:#eaf0fb;border-radius:999px}
 .ag-apoderado-barra-fondo span{display:block;height:100%;min-width:3px;background:linear-gradient(90deg,#6487f5,#315ee8);border-radius:999px;transition:width .25s ease}
 @media(max-width:700px){.ag-grafico-apoderados{grid-template-columns:minmax(0,1fr)}}
+
+
+/* ApoderaGest · indicadores interactivos con listado de expedientes */
+.apoderagest .ag-kpi-interactiva{
+  appearance:none;-webkit-appearance:none;display:block;width:100%;min-width:0;
+  font:inherit;text-align:left;color:inherit;cursor:pointer;
+}
+.apoderagest .ag-kpi-interactiva:focus-visible{outline:3px solid #8bbcf2;outline-offset:3px}
+.apoderagest .ag-kpi-ver-expedientes{display:block;margin-top:9px;color:#4e718f;font-size:10px;font-weight:800;letter-spacing:.15px}
+.apoderagest .ag-kpi-interactiva:hover .ag-kpi-ver-expedientes{color:#176a83}
+.ag-resumen-modal-overlay{
+  position:fixed;inset:0;z-index:2500;display:flex;align-items:center;justify-content:center;
+  padding:18px;background:rgba(12,22,42,.62);backdrop-filter:blur(7px);
+}
+.ag-resumen-modal{
+  display:flex;flex-direction:column;width:min(1550px,calc(100vw - 36px));max-height:92vh;
+  overflow:hidden;border:1px solid rgba(255,255,255,.85);border-radius:22px;
+  background:#f8fafc;box-shadow:0 24px 90px rgba(8,20,40,.3);
+}
+.ag-resumen-modal-cabecera{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:18px;
+  padding:22px 24px 18px;border-bottom:1px solid #e3eaf3;background:rgba(255,255,255,.96);
+}
+.ag-resumen-modal-cabecera h2{margin:5px 0 4px;color:#1a2c49;font-size:22px;font-weight:850;letter-spacing:-.5px}
+.ag-resumen-modal-cabecera p{margin:0;color:#74839a;font-size:12px}
+.ag-resumen-modal-cerrar{
+  display:grid;place-items:center;flex:0 0 auto;width:38px;height:38px;border:1px solid #dce5ef;
+  border-radius:12px;background:#fff;color:#53647b;font-size:17px;cursor:pointer;
+}
+.ag-resumen-modal-cerrar:hover{background:#edf3f9}
+.ag-resumen-modal-cuerpo{min-height:120px;overflow:auto;padding:18px 22px 22px}
+.ag-resumen-tabla-wrap{width:100%;overflow:auto;border:1px solid #e1e8f1;border-radius:13px;background:#fff}
+.ag-resumen-tabla{width:100%;min-width:1120px;border-collapse:separate;border-spacing:0;font-size:12px}
+.ag-resumen-tabla th{position:sticky;top:0;z-index:1;padding:12px 13px;background:#f1f5fa;color:#61718a;text-align:left;font-size:10px;font-weight:850;white-space:nowrap}
+.ag-resumen-tabla td{padding:12px 13px;border-top:1px solid #edf1f6;color:#34445c;vertical-align:middle}
+.ag-resumen-tabla tbody tr:hover{background:#f7fafc}
+.ag-resumen-tabla td strong{color:#1e3150;font-weight:850}
+.ag-resumen-tabla td small{display:block;margin-top:3px;color:#7a8799;font-size:10px}
+.ag-resumen-ir-encargo{padding:7px 9px;border:1px solid #d6e7e5;border-radius:9px;background:#f0faf8;color:#22685f;font-size:10px;font-weight:850;white-space:nowrap;cursor:pointer}
+.ag-resumen-ir-encargo:hover{background:#dff4ef}
+@media(max-width:650px){
+  .ag-resumen-modal-overlay{padding:8px}
+  .ag-resumen-modal{width:100%;max-height:95vh;border-radius:15px}
+  .ag-resumen-modal-cabecera{padding:15px;gap:10px}
+  .ag-resumen-modal-cabecera h2{font-size:18px}
+  .ag-resumen-modal-cuerpo{padding:12px}
+}
