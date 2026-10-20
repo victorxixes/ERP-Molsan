@@ -7,7 +7,7 @@ from openpyxl.styles import Font, PatternFill
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import Column, DateTime, Integer, String, func, or_
+from sqlalchemy import Column, DateTime, Integer, String, case, func, or_
 from sqlalchemy.orm import Session
 
 from backend.app.database import Base, get_db
@@ -81,7 +81,7 @@ def listar_actividades_absis(
     filas = db.query(
         EnvioAbsis.tipo,
         func.count(EnvioAbsis.id).label("enviados"),
-        func.sum(func.case((EnvioAbsis.tipo_incidencia.isnot(None), 1), else_=0)).label("errores"),
+        func.sum(case((EnvioAbsis.tipo_incidencia.isnot(None), 1), else_=0)).label("errores"),
     ).group_by(EnvioAbsis.tipo).order_by(EnvioAbsis.tipo.asc()).all()
     return [
         {"tipo": row.tipo or "General", "enviados": int(row.enviados or 0), "errores": int(row.errores or 0)}
