@@ -108,6 +108,8 @@ export default function MantenimientoTecnico() {
   const [errorVisible, setErrorVisible] = useState("");
   const [tabla, setTabla] = useState("");
   const [filtroTabla, setFiltroTabla] = useState("");
+  const [tablasDisponibles, setTablasDisponibles] = useState([]);
+  const [cargandoTablas, setCargandoTablas] = useState(false);
 
   const accesoPermitido = puedeVerModulo("utilidades");
 
@@ -130,6 +132,27 @@ export default function MantenimientoTecnico() {
       setCargando("");
     }
   }, []);
+
+  const cargarListaTablas = useCallback(async () => {
+    setCargandoTablas(true);
+    setErrorVisible("");
+    try {
+      const res = await axios.get(`${API_ORIGIN}/debug/tablas`);
+      const lista = Array.isArray(res.data?.tablas) ? res.data.tablas : [];
+      setTablasDisponibles(lista);
+      if (!tabla && lista.length) setTabla(lista[0].table_name || "");
+      setResultado({
+        titulo: "Tablas disponibles en la base de datos",
+        estado: res.status,
+        fecha: new Date().toLocaleString("es-ES"),
+        datos: res.data,
+      });
+    } catch (error) {
+      setErrorVisible(obtenerMensajeError(error));
+    } finally {
+      setCargandoTablas(false);
+    }
+  }, [tabla]);
 
   const cargarDetalleTabla = useCallback(async (tipo) => {
     const nombre = tabla.trim();
@@ -259,19 +282,47 @@ export default function MantenimientoTecnico() {
             </div>
           </div>
 
-          <label className="mb-2 block text-sm font-semibold text-slate-700" htmlFor="tabla-tecnica">
-            Nombre de la tabla
-          </label>
-          <input
-            id="tabla-tecnica"
-            value={tabla}
-            onChange={(e) => setTabla(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") cargarDetalleTabla("columnas");
-            }}
-            placeholder="Ej.: expedientes"
-            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-          />
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <label className="block text-sm font-semibold text-slate-700" htmlFor="tabla-tecnica">
+              Tabla de la base de datos
+            </label>
+            <button
+              type="button"
+              disabled={cargandoTablas || Boolean(cargando)}
+              onClick={cargarListaTablas}
+              className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100 disabled:opacity-50"
+            >
+              {cargandoTablas ? "Cargando tablas…" : "Cargar lista real de tablas"}
+            </button>
+          </div>
+          {tablasDisponibles.length > 0 ? (
+            <select
+              id="tabla-tecnica"
+              value={tabla}
+              onChange={(e) => setTabla(e.target.value)}
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            >
+              <option value="">Selecciona una tabla…</option>
+              {tablasDisponibles
+                .filter((item) => !tablaNormalizada || String(item.table_name || "").toLowerCase().includes(tablaNormalizada))
+                .map((item) => (
+                  <option key={item.table_name} value={item.table_name}>
+                    {item.table_name}{item.table_type ? ` · ${item.table_type}` : ""}
+                  </option>
+                ))}
+            </select>
+          ) : (
+            <input
+              id="tabla-tecnica"
+              value={tabla}
+              onChange={(e) => setTabla(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") cargarDetalleTabla("columnas");
+              }}
+              placeholder="Carga la lista o escribe: expedientes"
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            />
+          )}
 
           <label className="mb-2 mt-3 block text-sm font-semibold text-slate-700" htmlFor="filtro-tabla">
             Acceso rápido (tablas habituales)
