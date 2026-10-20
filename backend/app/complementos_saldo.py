@@ -165,12 +165,12 @@ def exportar_complementos_saldo(
     libro = openpyxl.Workbook()
     hoja = libro.active
     hoja.title = "Complementos de saldo"
-    hoja.append(["Expediente", "Provisionado (€)", "Saldo disponible (€)", "Fecha de petición", "Saldo a solicitar (€)", "Motivo", "Estado", "Acción", "Solicitado por"])
+    hoja.append(["Expediente", "Provisionado (€)", "Saldo disponible (€)", "Fecha de petición", "Saldo a solicitar (€)", "Motivo", "Acción", "Estado", "Solicitado por"])
     for celda in hoja[1]:
         celda.font = Font(bold=True, color="FFFFFF")
         celda.fill = PatternFill("solid", fgColor="1D4ED8")
     for item in items:
-        hoja.append([item["numero_expediente"], item["provisionado"], item["saldo_disponible"], item["fecha_solicitud"], item["importe"], item["motivo"], item["estado"], "Regularizado" if str(item["estado"]).lower() in ("compensado", "cerrado") else "Compensar", item["creado_por"]])
+        hoja.append([item["numero_expediente"], item["provisionado"], item["saldo_disponible"], item["fecha_solicitud"], item["importe"], item["motivo"], "Regularizado" if str(item["estado"]).lower() in ("compensado", "cerrado") else "Compensar", "Compensado" if str(item["estado"]).lower() in ("compensado", "cerrado") else "Pendiente", item["creado_por"]])
     for fila in hoja.iter_rows(min_row=2):
         for indice_importe in (2, 3, 5):
             fila[indice_importe].number_format = '#,##0.00 [$€-es-ES]'
