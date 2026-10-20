@@ -7,6 +7,9 @@ import pandas as pd
 from sqlalchemy.orm import Session
 
 from backend.app.expedientes.models import Expediente
+from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
+from backend.app.ctn.models import Notaria
+from backend.app.empleados.models import Empleado
 from backend.app.expedientes.reparto import asignar_gestor_automaticamente, resolver_key_actividad
 
 
