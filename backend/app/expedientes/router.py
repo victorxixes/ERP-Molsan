@@ -159,8 +159,9 @@ class EnvioANotarioRequest(BaseModel):
     escritura_firmada: bool = False
 
     fecha_envio: date
-    fecha_solicitud_pnc: date
-    numero_solicitud_pnc: str
+    # PNC se completa desde ApoderaGest después de asignar el encargo.
+    fecha_solicitud_pnc: Optional[date] = None
+    numero_solicitud_pnc: Optional[str] = None
 
     fecha_firma: Optional[date] = None
     protocolo: Optional[str] = None
@@ -1764,7 +1765,7 @@ def enviar_a_notario(
             detail="Debes indicar al menos un Tipo de documento.",
         )
 
-    if datos.fecha_solicitud_pnc > datos.fecha_envio:
+    if datos.fecha_solicitud_pnc and datos.fecha_solicitud_pnc > datos.fecha_envio:
         raise HTTPException(
             status_code=400,
             detail=(
@@ -1773,11 +1774,8 @@ def enviar_a_notario(
             ),
         )
 
-    if not datos.numero_solicitud_pnc.strip():
-        raise HTTPException(
-            status_code=400,
-            detail="El número de solicitud PNC es obligatorio.",
-        )
+    if datos.numero_solicitud_pnc is not None and not datos.numero_solicitud_pnc.strip():
+        datos.numero_solicitud_pnc = None
 
     if (
         datos.fecha_prevista_firma
@@ -1850,10 +1848,12 @@ def enviar_a_notario(
         expediente.fecha_envio_notario = datos.fecha_envio
         # Compatibilidad con listados e informes históricos que consumen fecha_envio.
         expediente.fecha_envio = datos.fecha_envio
-        expediente.fecha_solicitud_pnc = datos.fecha_solicitud_pnc
-        expediente.numero_solicitud_pnc = (
-            datos.numero_solicitud_pnc.strip()
-        )
+        # No borrar valores PNC ya registrados por ApoderaGest cuando el
+        # envío inicial no incluya todavía esos datos.
+        if datos.fecha_solicitud_pnc is not None:
+            expediente.fecha_solicitud_pnc = datos.fecha_solicitud_pnc
+        if datos.numero_solicitud_pnc:
+            expediente.numero_solicitud_pnc = datos.numero_solicitud_pnc.strip()
         expediente.escritura_firmada = bool(firma_preexistente or datos.escritura_firmada)
         expediente.hora_prevista_firma = (
             datos.hora_prevista_firma or time(9, 0)
