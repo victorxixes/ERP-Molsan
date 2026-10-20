@@ -26,6 +26,7 @@ export default function Utilidades() {
         <Card icon="📋" titulo="Acciones del expediente" descripcion="Catálogo de acciones y actividades de los expedientes." link="/herramientas/acciones-expediente" />
         <Card icon="🏠" titulo="Tipos de carga hipotecaria" descripcion="Catálogo de tipos de carga hipotecaria." link="/herramientas/tipos-carga-hipotecaria" />
         <Card icon="🧾" titulo="Tipos de conceptos de gastos" descripcion="Catálogo de conceptos de gastos." link="/herramientas/tipos-concepto-gastos" />
+        <Card icon="💶" titulo="Honorarios de gestoría" descripcion="Crear y modificar las tarifas que se aplican al registrar pagos de honorarios." link="/herramientas/honorarios-gestoria" destacado />
       </Grupo>
 
       <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
