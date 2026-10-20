@@ -1059,7 +1059,12 @@ COLUMNAS_CARPETA_DIGITAL = {
 
 
 def _normalizar_categoria_documental(valor: str) -> str:
-    return normalizar_actividad_texto(valor)
+    texto = normalizar_actividad_texto(valor)
+    # Unifica variantes como "AJD/ITP", "AJD / ITP" y categorías
+    # históricas con barras, guiones o puntuación diferente.
+    return " ".join(
+        "".join(caracter if caracter.isalnum() else " " for caracter in texto).split()
+    )
 
 
 def agregar_resumen_carpeta_digital(db: Session, items: list[dict]) -> list[dict]:
