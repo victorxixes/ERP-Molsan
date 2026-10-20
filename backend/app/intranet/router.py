@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import engine, get_db
 from backend.app.auth.dependencies import get_current_user
-from backend.app.auth.permissions import require_perm_modulo
+from backend.app.intranet.permissions import require_intranet_perm
 from backend.app.intranet.auditoria import IntranetAuditoria
 from backend.app.intranet.noticias.router import router as noticias_router
 from backend.app.intranet.documentos.router import router as documentos_router
@@ -22,7 +22,7 @@ def listar_auditoria_intranet(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    require_perm_modulo(usuario, "intranet", "editar")
+    require_intranet_perm(usuario, "editar")
     limite = max(1, min(limite, 100))
     return (
         db.query(IntranetAuditoria)
