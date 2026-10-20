@@ -1147,6 +1147,10 @@ def importar_excel_expedientes(
                 "FINCA",
             )
 
+            # Crear/actualizar el vínculo finca-registro si ABSIS aporta
+            # columnas registrales explícitas; nunca borrar fincas existentes.
+            importar_finca_relacionada(db, exp, row)
+
             # ------------------------------------------------
             # DEFECTOS
             # ------------------------------------------------
