@@ -815,7 +815,7 @@ export default function ApoderaGest() {
   }, [cargarDatos]);
 
   const esEncargoFirmado = (encargo) => Boolean(encargo?.fecha_firma && String(encargo?.protocolo || "").trim());
-  const normalizarModalidad = (valor) => String(valor || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
+  const normalizarModalidad = (valor) => String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
   const encargosDelResumen = useMemo(() => {
     if (!modalResumen) return [];
     const lista = encargos.filter((encargo) => {
