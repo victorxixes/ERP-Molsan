@@ -3940,7 +3940,6 @@ const cuantiaFincasParaEnvio =
                   <span className="font-bold text-blue-700">Gestor asignado:</span>
                   <span className="truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
                 </div>
-                <Link to={"/herramientas/utilidades/correspondencia-tipificada?expediente=" + encodeURIComponent(expediente?.id_expediente || id || "")} className="mt-2 inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-[11px] font-bold text-indigo-700 transition hover:bg-indigo-100">✉️ Correspondencia tipificada</Link>
                 {expedienteBloqueado && <span className="mt-2 inline-flex rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-[11px] font-extrabold text-red-800">🔒 EXPEDIENTE BLOQUEADO · {motivoBloqueoExpediente}</span>}
 
               </div>
@@ -4136,13 +4135,6 @@ const cuantiaFincasParaEnvio =
             >
               ✉️ Reclamar a oficina
             </button>
-            <a
-              href={`/herramientas/utilidades/correspondencia-tipificada?expediente=${encodeURIComponent(expediente?.id_expediente || id || "")}`}
-              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-[11px] font-bold leading-tight text-indigo-700 shadow-sm transition hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-              title="Generar correspondencia tipificada para este expediente"
-            >
-              📝 Correspondencia tipificada
-            </a>
             <button
               type="button"
               onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")}
