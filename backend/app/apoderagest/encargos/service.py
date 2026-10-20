@@ -182,8 +182,8 @@ def _expediente_a_dict(expediente, fincas=None, documentos=None, observaciones_a
     }
 
 
-def listar_encargos(db, usuario, solo_pendientes=False):
-    """Devuelve los expedientes asociados al apoderado autenticado.
+def listar_encargos(db, usuario, solo_pendientes=False, todos=False):
+    """Devuelve los expedientes del apoderado o todos si el usuario está autorizado.
 
     La búsqueda por nombre ignora diferencias entre mayúsculas y minúsculas
     y espacios exteriores. No devuelve todos los expedientes si no se puede
@@ -195,7 +195,7 @@ def listar_encargos(db, usuario, solo_pendientes=False):
     campo_apoderado = getattr(Expediente, "apoderado", None)
     campo_apoderado_id = getattr(Expediente, "apoderado_empleado_id", None)
 
-    if (not nombre and not usuario_id) or campo_apoderado is None:
+    if (not todos and not nombre and not usuario_id) or campo_apoderado is None:
         return []
 
     # Normalización SQL compatible con PostgreSQL: elimina tildes frecuentes
@@ -226,10 +226,11 @@ def listar_encargos(db, usuario, solo_pendientes=False):
     else:
         filtro_asignacion = filtro_nombre
 
+    consulta = db.query(Expediente)
+    if not todos:
+        consulta = consulta.filter(filtro_asignacion)
     candidatos = (
-        db.query(Expediente)
-        .filter(filtro_asignacion)
-        .order_by(
+        consulta.order_by(
             Expediente.fecha_prevista_firma.asc().nullslast(),
             Expediente.fecha_alta.desc().nullslast(),
             Expediente.id.desc(),
@@ -254,7 +255,7 @@ def listar_encargos(db, usuario, solo_pendientes=False):
             and nombre
             and _normalizar(apoderado) == nombre_normalizado
         )
-        if not (coincide_por_id or coincide_por_nombre):
+        if not todos and not (coincide_por_id or coincide_por_nombre):
             continue
 
         fecha_envio = getattr(expediente, "fecha_envio_notario", None) or getattr(expediente, "fecha_envio", None)
