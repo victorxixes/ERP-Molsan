@@ -104,6 +104,7 @@ function bloqueJson(valor) {
 
 export default function MantenimientoTecnico() {
   const [cargando, setCargando] = useState("");
+  const [validacionTecnica, setValidacionTecnica] = useState(false);
   const [resultado, setResultado] = useState(null);
   const [errorVisible, setErrorVisible] = useState("");
   const [tabla, setTabla] = useState("");
@@ -115,6 +116,7 @@ export default function MantenimientoTecnico() {
 
   const ejecutarGet = useCallback(async (id, titulo, url) => {
     setCargando(id);
+    setValidacionTecnica(false);
     setResultado(null);
     setErrorVisible("");
 
@@ -135,6 +137,7 @@ export default function MantenimientoTecnico() {
 
   const cargarListaTablas = useCallback(async () => {
     setCargandoTablas(true);
+    setValidacionTecnica(false);
     setErrorVisible("");
     try {
       const res = await axios.get(`${API_ORIGIN}/debug/tablas`);
@@ -183,6 +186,7 @@ export default function MantenimientoTecnico() {
     if (!aceptado) return;
 
     setCargando(item.id);
+    setValidacionTecnica(false);
     setResultado(null);
     setErrorVisible("");
 
@@ -203,6 +207,7 @@ export default function MantenimientoTecnico() {
 
   const ejecutarDiagnosticoCompleto = useCallback(async () => {
     setCargando("diagnostico-completo");
+    setValidacionTecnica(false);
     setResultado(null);
     setErrorVisible("");
     try {
@@ -227,6 +232,7 @@ export default function MantenimientoTecnico() {
           error: obtenerMensajeError(item.reason),
         };
       });
+      setValidacionTecnica(informe.every((item) => item.ok));
       setResultado({
         titulo: "Diagnóstico técnico completo",
         estado: informe.every((item) => item.ok) ? 200 : 207,
@@ -270,14 +276,20 @@ export default function MantenimientoTecnico() {
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
-              <span>⚙️</span> HERRAMIENTAS DEL SISTEMA
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                <span>⚙️</span> HERRAMIENTAS DEL SISTEMA
+              </span>
+              <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-bold ${validacionTecnica ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
+                <span className={`h-2 w-2 rounded-full ${validacionTecnica ? "bg-emerald-500" : "bg-amber-500"}`} />
+                {validacionTecnica ? "Diagnóstico técnico correcto" : "Pendiente de validación técnica"}
+              </span>
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
               Mantenimiento técnico
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Diagnóstico de base de datos y ejecución controlada de tareas técnicas desde el propio ERP, con confirmación antes de cada operación.
+              Centro de diagnóstico y mantenimiento integrado en el ERP. Ejecuta primero las comprobaciones y revisa el resultado antes de realizar cambios.
             </p>
           </div>
           <button
@@ -440,7 +452,7 @@ export default function MantenimientoTecnico() {
                 <h3 className="font-semibold text-slate-900">{item.titulo}</h3>
                 <p className="mt-1 text-sm leading-5 text-slate-500">{item.descripcion}</p>
                 <code className="mt-2 inline-block break-all rounded bg-slate-100 px-2 py-1 text-xs text-slate-600">
-                  POST {item.endpoint}
+                  Acción técnica protegida · requiere permiso administrativo
                 </code>
               </div>
               <button
