@@ -165,9 +165,14 @@ function MensajesWrapper() {
 
 export default function App() {
 
+  const empleado = useAuthStore((state) => state.empleado);
+  const token = useAuthStore((state) => state.token);
+
   return (
 
     <div className="animate-fade-in">
+
+      {empleado && token ? <RealtimeGlobal /> : null}
 
       <Routes>
 
@@ -255,18 +260,6 @@ export default function App() {
             <RequireAuth>
 
               <>
-                {/* ==================================================
-                    REALTIME GLOBAL
-                    ==================================================
-                    Se monta una sola vez al entrar al ERP.
-
-                    Permanece activo aunque el usuario cambie
-                    entre Dashboard, Fusiones, Expedientes,
-                    Agenda, Mensajes, etc.
-                    ================================================== */}
-
-                <RealtimeGlobal />
-
                 <Layout />
               </>
 
