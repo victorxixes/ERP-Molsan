@@ -3966,9 +3966,9 @@ const permisosDisponibles =
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
                           <h3 className="text-base font-bold text-slate-900">Reglas de reparto de expedientes</h3>
-                          <p className="mt-1 max-w-3xl text-sm text-slate-500">Configura para este gestor el departamento, las actividades que puede tramitar, el ámbito territorial y su porcentaje. Al cambiar de actividad, el sistema equilibrará la carga pendiente entre los gestores elegibles.</p>
+                          <p className="mt-1 max-w-3xl text-sm text-slate-500">Añade una regla por cada actividad que puede tramitar este gestor. Puedes asignarle varias actividades, cada una con su departamento, porcentaje, zonas territoriales y apoderado relacionado. El sistema equilibrará la carga pendiente entre los gestores elegibles.</p>
                         </div>
-                        <button type="button" disabled={!esAdministrador || cargandoReparto || !gestorRepartoId} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now(), actividad: "documentacion-previa", departamento: "", zona_territorial: false, comunidades: [], comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">+ Añadir regla</button>
+                        <button type="button" disabled={!esAdministrador || cargandoReparto || !gestorRepartoId} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now(), actividad: "documentacion-previa", departamento: "", zona_territorial: false, comunidades: [], comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">+ Añadir actividad</button>
                       </div>
                       <div className="mt-4 grid gap-3 rounded-xl border border-blue-100 bg-blue-50/60 p-4 md:grid-cols-[minmax(220px,360px)_1fr] md:items-end">
                         <label className="block text-xs font-bold text-slate-700">Gestor
@@ -3986,7 +3986,7 @@ const permisosDisponibles =
                           {reglasReparto.map((regla, indice) => (
                             <article key={regla._key || indice} className="rounded-xl border border-slate-200 p-4">
                               <div className="mb-3 flex items-center justify-between gap-3">
-                                <strong className="text-sm text-slate-800">Regla {indice + 1}</strong>
+                                <strong className="text-sm text-slate-800">Actividad / regla {indice + 1}</strong>
                                 <div className="flex items-center gap-3">
                                   <label className="flex items-center gap-2 text-xs font-semibold text-slate-600"><input type="checkbox" checked={regla.activa !== false} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, activa: e.target.checked } : r))} className="h-4 w-4 accent-blue-600" />Activa</label>
                                   <button type="button" onClick={() => setReglasReparto((actual) => actual.filter((_, i) => i !== indice))} className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-bold text-red-700 hover:bg-red-50">Eliminar</button>
@@ -4008,7 +4008,7 @@ const permisosDisponibles =
                               </div>
                             </article>
                           ))}
-                          {reglasReparto.length === 0 && <p className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">Todavía no hay reglas. Pulsa «Añadir regla» para configurar las actividades que puede realizar este gestor.</p>}
+                          {reglasReparto.length === 0 && <p className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">Todavía no hay actividades configuradas. Pulsa «Añadir actividad» para añadir la primera y repite el proceso para cada actividad que pueda tramitar este gestor.</p>}
                         </div>
                       )}
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
