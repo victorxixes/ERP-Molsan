@@ -159,8 +159,9 @@ class EnvioANotarioRequest(BaseModel):
     escritura_firmada: bool = False
 
     fecha_envio: date
-    fecha_solicitud_pnc: date
-    numero_solicitud_pnc: str
+    # PNC se completa desde ApoderaGest después de asignar el encargo.
+    fecha_solicitud_pnc: Optional[date] = None
+    numero_solicitud_pnc: Optional[str] = None
 
     fecha_firma: Optional[date] = None
     protocolo: Optional[str] = None
@@ -1028,6 +1029,83 @@ def obtener_alertas_control_expedientes(db: Session = Depends(get_db)):
     return {"fecha_calculo": date.today().isoformat(), "alertas": resultado}
 
 
+# Claves públicas del listado -> categorías reales almacenadas en la carpeta digital.
+# Se aceptan las variantes históricas para no ocultar documentos ya cargados.
+COLUMNAS_CARPETA_DIGITAL = {
+    "documentos_absis": ["Documentos Absis", "Documentos ABSIS"],
+    "hoja_encargo_firmada": ["Hoja de Encargo firmada", "Hoja de encargo firmada"],
+    "justificante_cancelacion": ["Justificante de cancelación"],
+    "nota_simple_registral": ["Nota simple registral"],
+    "borradores_escritura": ["Escrituras/borradores", "Borradores de escrituras", "Borradores de escritura"],
+    "presentacion_registro_documentos": ["Presentación Registro", "Presentacion Registro"],
+    "copia_simple_documentos": ["Copia simple"],
+    "ajd_itp_documentos": ["AJD/ITP", "AJD / ITP", "AJD ITP"],
+    "otros_impuestos_documentos": ["Otros impuestos"],
+    "hoja_inscripcion_documentos": ["Hoja de Inscripción", "Hoja de inscripcion"],
+    "defecto_registral": ["Defecto registral"],
+    "subsanacion_defecto": ["Subsanación del defecto", "Subsanacion del defecto"],
+    "escritura_digital_final_documentos": ["Escritura digital final"],
+    "documento_inscripcion_documentos": ["Documento de inscripción", "Documento de inscripcion"],
+    "expediente_digital_completo_documentos": ["Expediente digital completo"],
+    "factura_notarial_documentos": ["Factura notarial"],
+    "factura_registral_documentos": ["Factura Registral", "Factura registral"],
+    "factura_impuestos_documentos": ["Factura impuestos"],
+    "honorarios_gestoria_documentos": ["Honorarios gestoría", "Honorarios gestoria"],
+    "otros_pagos_documentos": ["Otros pagos"],
+    "otros_documentos_economicos": ["Otros documentos económicos", "Otros documentos economicos"],
+    "otra_documentacion": ["Otra documentación", "Otra documentacion"],
+    "emails_oficina": ["Mails de la Oficina", "Mails de la oficina", "Emails de oficina"],
+    "otros_documentos": ["Otros"],
+}
+
+
+def _normalizar_categoria_documental(valor: str) -> str:
+    texto = normalizar_actividad_texto(valor)
+    # Unifica variantes como "AJD/ITP", "AJD / ITP" y categorías
+    # históricas con barras, guiones o puntuación diferente.
+    return " ".join(
+        "".join(caracter if caracter.isalnum() else " " for caracter in texto).split()
+    )
+
+
+def agregar_resumen_carpeta_digital(db: Session, items: list[dict]) -> list[dict]:
+    """Añade al listado el número real de archivos por repositorio, sin columnas SQL nuevas."""
+    if not items:
+        return items
+
+    ids = {str(item.get("id_expediente")) for item in items if item.get("id_expediente")}
+    if not ids:
+        return items
+
+    documentos = (
+        db.query(DocumentoCarpetaDigital.expediente_id, DocumentoCarpetaDigital.categoria)
+        .filter(DocumentoCarpetaDigital.expediente_id.in_(ids))
+        .all()
+    )
+    por_expediente: dict[str, dict[str, int]] = {}
+    categorias_por_clave = {
+        clave: {_normalizar_categoria_documental(nombre) for nombre in nombres}
+        for clave, nombres in COLUMNAS_CARPETA_DIGITAL.items()
+    }
+    for expediente_id, categoria in documentos:
+        expediente_id = str(expediente_id)
+        recuentos = por_expediente.setdefault(expediente_id, {})
+        recuentos["__total__"] = recuentos.get("__total__", 0) + 1
+        normalizada = _normalizar_categoria_documental(categoria or "")
+        for clave, variantes in categorias_por_clave.items():
+            if normalizada in variantes:
+                recuentos[clave] = recuentos.get(clave, 0) + 1
+
+    for item in items:
+        recuentos = por_expediente.get(str(item.get("id_expediente")), {})
+        total = recuentos.get("__total__", 0)
+        item["carpeta_digital"] = f"{total} archivo(s)"
+        for clave in COLUMNAS_CARPETA_DIGITAL:
+            cantidad = recuentos.get(clave, 0)
+            item[clave] = f"{cantidad} archivo(s)"
+    return items
+
+
 # ============================================================
 # LISTADO DE EXPEDIENTES
 # ============================================================
@@ -1190,11 +1268,14 @@ def listado_expedientes(
         .all()
     )
 
+    items = [
+        expediente_a_dict(expediente)
+        for expediente in items_db
+    ]
+    items = agregar_resumen_carpeta_digital(db, items)
+
     return {
-        "items": [
-            expediente_a_dict(expediente)
-            for expediente in items_db
-        ],
+        "items": items,
         "total": total,
         "pagina": pagina_real,
         "porPagina": porPagina,
@@ -1684,7 +1765,7 @@ def enviar_a_notario(
             detail="Debes indicar al menos un Tipo de documento.",
         )
 
-    if datos.fecha_solicitud_pnc > datos.fecha_envio:
+    if datos.fecha_solicitud_pnc and datos.fecha_solicitud_pnc > datos.fecha_envio:
         raise HTTPException(
             status_code=400,
             detail=(
@@ -1693,11 +1774,8 @@ def enviar_a_notario(
             ),
         )
 
-    if not datos.numero_solicitud_pnc.strip():
-        raise HTTPException(
-            status_code=400,
-            detail="El número de solicitud PNC es obligatorio.",
-        )
+    if datos.numero_solicitud_pnc is not None and not datos.numero_solicitud_pnc.strip():
+        datos.numero_solicitud_pnc = None
 
     if (
         datos.fecha_prevista_firma
@@ -1770,10 +1848,12 @@ def enviar_a_notario(
         expediente.fecha_envio_notario = datos.fecha_envio
         # Compatibilidad con listados e informes históricos que consumen fecha_envio.
         expediente.fecha_envio = datos.fecha_envio
-        expediente.fecha_solicitud_pnc = datos.fecha_solicitud_pnc
-        expediente.numero_solicitud_pnc = (
-            datos.numero_solicitud_pnc.strip()
-        )
+        # No borrar valores PNC ya registrados por ApoderaGest cuando el
+        # envío inicial no incluya todavía esos datos.
+        if datos.fecha_solicitud_pnc is not None:
+            expediente.fecha_solicitud_pnc = datos.fecha_solicitud_pnc
+        if datos.numero_solicitud_pnc:
+            expediente.numero_solicitud_pnc = datos.numero_solicitud_pnc.strip()
         expediente.escritura_firmada = bool(firma_preexistente or datos.escritura_firmada)
         expediente.hora_prevista_firma = (
             datos.hora_prevista_firma or time(9, 0)

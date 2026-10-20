@@ -530,6 +530,11 @@ export default function EnviarANotarioModal({
 
       escritura_firmada: form.escritura_firmada === "Sí",
       fecha_envio: form.fecha_envio || null,
+      fecha_solicitud_pnc: form.fecha_solicitud_pnc || null,
+      numero_solicitud_pnc: String(form.numero_solicitud_pnc || "").trim() || null,
+      fecha_prevista_firma: form.fecha_prevista_firma || null,
+      hora_prevista_firma: form.hora_prevista_firma || null,
+      hora_fin_prevista_firma: form.hora_fin_prevista_firma || null,
       idioma_documento: form.idioma,
 
       fecha_firma:

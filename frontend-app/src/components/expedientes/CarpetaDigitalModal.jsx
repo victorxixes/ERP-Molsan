@@ -70,6 +70,7 @@ const BLOQUES = [
 const CATEGORIAS_OTROS = [
   { etiqueta: "Otra documentación", categoria: "Otra documentación" },
   { etiqueta: "Emails de oficina", categoria: "Mails de la Oficina" },
+  { etiqueta: "Otros", categoria: "Otros" },
 ];
 
 const BASE = (id) => "/expedientes/" + encodeURIComponent(id) + "/carpeta-digital";
