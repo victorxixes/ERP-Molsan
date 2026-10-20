@@ -874,6 +874,12 @@ export default function ExpedientesListado() {
     setMostrarColumnas,
   ] = useState(false);
 
+  // Sidebar compacto: se expande al pasar el ratón y permanece abierto
+  // cuando el usuario lo fija con el botón. En móvil se abre mediante toque.
+  const [sidebarFijado, setSidebarFijado] = useState(false);
+  const [sidebarHover, setSidebarHover] = useState(false);
+  const sidebarExpandido = sidebarFijado || sidebarHover;
+
 
   // ==========================================================
   // FILTROS EDITABLES — FILTROS AVANZADOS DEFINITIVOS
@@ -2186,9 +2192,9 @@ export default function ExpedientesListado() {
 
           grid
           grid-cols-1
-          lg:grid-cols-[280px_minmax(0,1fr)]
+          ${sidebarExpandido ? "lg:grid-cols-[280px_minmax(0,1fr)]" : "lg:grid-cols-[68px_minmax(0,1fr)]"}
 
-          gap-6
+          gap-4
           items-start
         "
       >
@@ -2197,30 +2203,29 @@ export default function ExpedientesListado() {
             SIDEBAR INTERNO DE EXPEDIENTES
         ==================================================== */}
 
-        <div className="min-w-0 space-y-4">
+        <div
+          className="min-w-0 relative z-30 space-y-4"
+          onMouseEnter={() => setSidebarHover(true)}
+          onMouseLeave={() => setSidebarHover(false)}
+        >
 
         <aside
-          className="
-            rounded-2xl
-            border
-            shadow-sm
-            overflow-hidden
-            lg:sticky
-            lg:top-4
-          "
+          className="absolute left-0 top-0 rounded-2xl border shadow-xl overflow-hidden transition-[width] duration-200 ease-out"
           style={{
+            width: sidebarExpandido ? "280px" : "68px",
+            maxWidth: "calc(100vw - 2rem)",
             background: "var(--erp-surface)",
             borderColor: "var(--erp-border)",
           }}
         >
 
           <div
-            className="px-5 py-5 border-b"
+            className="px-3 py-4 border-b"
             style={{
               borderColor: "var(--erp-border)",
             }}
           >
-            <div className="flex items-center gap-3">
+            <div className={sidebarExpandido ? "flex items-center gap-3" : "flex flex-col items-center gap-3"}>
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
                 style={{
@@ -2231,18 +2236,30 @@ export default function ExpedientesListado() {
                 📂
               </div>
 
-              <div>
-                <h2 className="font-bold text-base text-[var(--erp-text)]">
-                  Expedientes
-                </h2>
-                <p className="text-xs mt-0.5 text-[var(--erp-text-soft)]">
-                  Áreas de trabajo
-                </p>
-              </div>
+              {sidebarExpandido && (
+                <div className="min-w-0">
+                  <h2 className="font-bold text-base text-[var(--erp-text)]">Expedientes</h2>
+                  <p className="text-xs mt-0.5 text-[var(--erp-text-soft)]">Áreas de trabajo</p>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setSidebarFijado((actual) => !actual);
+                  setSidebarHover(false);
+                }}
+                className="ml-auto shrink-0 w-9 h-9 rounded-xl border flex items-center justify-center text-sm font-bold transition hover:bg-[var(--erp-surface-soft)]"
+                style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
+                aria-label={sidebarFijado ? "Desfijar menú de expedientes" : "Fijar menú de expedientes abierto"}
+                aria-expanded={sidebarExpandido}
+                title={sidebarFijado ? "Desfijar menú" : "Fijar menú abierto"}
+              >
+                {sidebarFijado ? "📌" : sidebarExpandido ? "‹" : "☰"}
+              </button>
             </div>
           </div>
 
-          <div className="p-3 space-y-1">
+          <div className="p-2 space-y-1">
             <button
               type="button"
               onClick={() => {
@@ -2263,13 +2280,17 @@ export default function ExpedientesListado() {
                   : "var(--erp-text)",
               }}
             >
-              <span className="flex items-center gap-3 min-w-0">
+              <span className={sidebarExpandido ? "flex items-center gap-3 min-w-0" : "flex items-center justify-center min-w-0"}>
                 <span>📋</span>
-                <span className="font-semibold text-sm truncate">Todos los expedientes</span>
+                {sidebarExpandido && <span className="font-semibold text-sm truncate">Todos los expedientes</span>}
               </span>
-              <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg" style={{ background: !actividadSeleccionada && !alertaSeleccionada ? "rgba(255,255,255,.18)" : "var(--erp-surface-soft)" }}>
-                {formatearNumero(totalActividades)}
-              </span>
+              {sidebarExpandido ? (
+                <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg" style={{ background: !actividadSeleccionada && !alertaSeleccionada ? "rgba(255,255,255,.18)" : "var(--erp-surface-soft)" }}>
+                  {formatearNumero(totalActividades)}
+                </span>
+              ) : (
+                <span className="absolute left-1 top-1 w-2 h-2 rounded-full" style={{ background: !actividadSeleccionada && !alertaSeleccionada ? "#fff" : "var(--erp-primary)" }} />
+              )
             </button>
 
             <div className="my-2 border-t" style={{ borderColor: "var(--erp-border)" }} />
@@ -2305,15 +2326,21 @@ export default function ExpedientesListado() {
                     border: activa ? "1px solid var(--erp-primary)" : "1px solid transparent",
                   }}
                 >
-                  <span className="flex items-center gap-3 min-w-0">
+                  <span className={sidebarExpandido ? "flex items-center gap-3 min-w-0" : "flex items-center justify-center min-w-0"}>
                     <span>{actividad.icono}</span>
-                    <span className={activa ? "font-bold text-sm truncate" : "font-medium text-sm truncate"}>
-                      {actividad.label}
+                    {sidebarExpandido && (
+                      <span className={activa ? "font-bold text-sm truncate" : "font-medium text-sm truncate"}>
+                        {actividad.label}
+                      </span>
+                    )}
+                  </span>
+                  {sidebarExpandido ? (
+                    <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg" style={{ background: "var(--erp-surface-soft)", color: activa ? "var(--erp-primary-dark)" : "var(--erp-text-soft)" }}>
+                      {formatearNumero(total)}
                     </span>
-                  </span>
-                  <span className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg" style={{ background: "var(--erp-surface-soft)", color: activa ? "var(--erp-primary-dark)" : "var(--erp-text-soft)" }}>
-                    {formatearNumero(total)}
-                  </span>
+                  ) : (
+                    <span className="absolute right-1 top-1 w-2 h-2 rounded-full" style={{ background: activa ? "var(--erp-primary)" : "var(--erp-border)" }} />
+                  )
                 </button>
               );
             })}
@@ -2325,39 +2352,25 @@ export default function ExpedientesListado() {
         ==================================================== */}
 
         <section
-          className="rounded-2xl border shadow-sm p-3"
-          style={{
-            background: "var(--erp-surface)",
-            borderColor: "var(--erp-border)",
-          }}
+          className="rounded-2xl border shadow-sm p-2"
+          style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
+          aria-label="Acciones de expedientes"
         >
           <div className="space-y-2">
-            <button
-              type="button"
-              onClick={exportarExcel}
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ background: "var(--erp-success)" }}
-            >
-              📊 Exportar Excel
+            <button type="button" onClick={exportarExcel} disabled={loading} title="Exportar Excel" aria-label="Exportar Excel"
+              className={sidebarExpandido ? "w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md disabled:opacity-50" : "w-full flex items-center justify-center px-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md disabled:opacity-50"}
+              style={{ background: "var(--erp-success)" }}>
+              📊 {sidebarExpandido && "Exportar Excel"}
             </button>
-
-            <button
-              type="button"
-              onClick={() => setMostrarFiltros(true)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm"
-              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
-            >
-              🔎 Filtros avanzados
+            <button type="button" onClick={() => setMostrarFiltros(true)} title="Filtros avanzados" aria-label="Filtros avanzados"
+              className={sidebarExpandido ? "w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm" : "w-full flex items-center justify-center px-2 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm"}
+              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+              🔎 {sidebarExpandido && "Filtros"}
             </button>
-
-            <button
-              type="button"
-              onClick={() => setMostrarColumnas(true)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm"
-              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}
-            >
-              ☷ Columnas visibles
+            <button type="button" onClick={() => setMostrarColumnas(true)} title="Columnas visibles" aria-label="Columnas visibles"
+              className={sidebarExpandido ? "w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm" : "w-full flex items-center justify-center px-2 py-2.5 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm"}
+              style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)", color: "var(--erp-text)" }}>
+              ☷ {sidebarExpandido && "Columnas"}
             </button>
           </div>
         </section>
