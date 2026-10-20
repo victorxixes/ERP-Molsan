@@ -966,9 +966,29 @@ export default function ApoderaGest() {
                   ));
                 })()}
               </div>
-              <p className="ag-estadistica-nota">Cuenta las firmas reales del apoderado por la fecha registrada con el protocolo, no las citas planificadas.</p>
+              <p className="ag-estadistica-nota">Cuenta las firmas reales por la fecha registrada con el protocolo, no las citas planificadas.</p>
             </section>
           </div>
+          {dashboard?.es_dashboard_general ? (
+            <section className="ag-panel ag-panel-estadistica-firma ag-estadistica-apoderados">
+              <div className="ag-panel-cabecera">
+                <div><span className="ag-kicker">ACTIVIDAD ANUAL · POR APODERADO</span><h3>Estadística de firma por apoderado</h3></div>
+                <span className="ag-estadistica-anio">{dashboard?.anio_estadistica_firmas || new Date().getFullYear()}</span>
+              </div>
+              {(() => {
+                const datos = dashboard?.volumen_anual_por_apoderado || [];
+                const maximo = Math.max(1, ...datos.map((item) => Number(item.total || 0)));
+                if (!datos.length) return <EstadoVacio icono="▥" titulo="Todavía no hay firmas registradas este año" detalle="Cuando los apoderados registren firmas con fecha y protocolo, aparecerán aquí." />;
+                return <div className="ag-grafico-apoderados">{datos.map((item) => (
+                  <div className="ag-apoderado-barra" key={item.apoderado}>
+                    <div className="ag-apoderado-barra-cabecera"><strong title={item.apoderado}>{item.apoderado}</strong><span>{item.total}</span></div>
+                    <div className="ag-apoderado-barra-fondo"><span style={{ width: `${Math.max(2, Number(item.total || 0) / maximo * 100)}%` }} /></div>
+                  </div>
+                ))}</div>;
+              })()}
+              <p className="ag-estadistica-nota">Total de firmas reales de todos los apoderados, agrupadas por el empleado asignado al expediente.</p>
+            </section>
+          ) : null}
         </section>
       ) : null}
 
