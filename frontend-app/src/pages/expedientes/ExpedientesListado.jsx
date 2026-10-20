@@ -2187,16 +2187,7 @@ export default function ExpedientesListado() {
       ====================================================== */}
 
       <div
-        className="
-          w-full
-
-          grid
-          grid-cols-1
-          ${sidebarExpandido ? "lg:grid-cols-[280px_minmax(0,1fr)]" : "lg:grid-cols-[68px_minmax(0,1fr)]"}
-
-          gap-4
-          items-start
-        "
+        className={`w-full grid grid-cols-1 ${sidebarExpandido ? "lg:grid-cols-[280px_minmax(0,1fr)]" : "lg:grid-cols-[68px_minmax(0,1fr)]"} gap-4 items-start`}
       >
 
         {/* ====================================================
@@ -2210,10 +2201,9 @@ export default function ExpedientesListado() {
         >
 
         <aside
-          className="absolute left-0 top-0 rounded-2xl border shadow-xl overflow-hidden transition-[width] duration-200 ease-out"
+          className="rounded-2xl border shadow-sm overflow-hidden transition-all duration-200 ease-out"
           style={{
-            width: sidebarExpandido ? "280px" : "68px",
-            maxWidth: "calc(100vw - 2rem)",
+            width: "100%",
             background: "var(--erp-surface)",
             borderColor: "var(--erp-border)",
           }}
@@ -2270,7 +2260,7 @@ export default function ExpedientesListado() {
                 setFiltrosAplicados((actual) => ({ ...actual, actividad: "" }));
                 setPagina(1);
               }}
-              className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left transition-all"
+              className="relative w-full flex items-center justify-between gap-3 px-2 py-3 rounded-xl text-left transition-all"
               style={{
                 background: !actividadSeleccionada && !alertaSeleccionada
                   ? "var(--erp-primary)"
