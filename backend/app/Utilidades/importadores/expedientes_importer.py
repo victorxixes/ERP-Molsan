@@ -1200,10 +1200,14 @@ def importar_excel_expedientes(
                 "DESCRIPCIONERROR",
             )
 
-            exp.falta_defecto = obtener_valor(
-                row,
-                "FALTADEFECTO",
-            )
+            # ABSIS: FALTADEFECTO es un indicador SI/NO, no una fecha.
+            # Normalizamos espacios y mayúsculas para que los filtros sean fiables.
+            falta_defecto = obtener_valor(row, "FALTADEFECTO")
+            if falta_defecto is not None:
+                falta_defecto = str(falta_defecto).strip().upper()
+                if falta_defecto not in ("SI", "NO"):
+                    falta_defecto = str(obtener_valor(row, "FALTADEFECTO")).strip()
+            exp.falta_defecto = falta_defecto or None
 
             # ------------------------------------------------
             # CGN
