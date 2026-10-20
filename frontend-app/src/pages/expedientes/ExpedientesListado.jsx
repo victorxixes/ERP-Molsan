@@ -2187,7 +2187,7 @@ export default function ExpedientesListado() {
       ====================================================== */}
 
       <div
-        className={`w-full grid grid-cols-1 ${sidebarExpandido ? "lg:grid-cols-[280px_minmax(0,1fr)]" : "lg:grid-cols-[68px_minmax(0,1fr)]"} gap-4 items-start`}
+        className={"w-full grid grid-cols-1 " + (sidebarExpandido ? "lg:grid-cols-[280px_minmax(0,1fr)]" : "lg:grid-cols-[68px_minmax(0,1fr)]") + " gap-4 items-start"}
       >
 
         {/* ====================================================
