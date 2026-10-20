@@ -139,14 +139,12 @@ export default function MantenimientoTecnico() {
       columnas: `${API_ORIGIN}/debug/describe/${encodeURIComponent(nombre)}`,
       indices: `${API_ORIGIN}/debug/indices/${encodeURIComponent(nombre)}`,
       claves: `${API_ORIGIN}/debug/claves-foraneas/${encodeURIComponent(nombre)}`,
-      contenido: `${API_ORIGIN}/debug/contenido/${encodeURIComponent(nombre)}`,
     };
 
     const titulos = {
       columnas: `Columnas de ${nombre}`,
       indices: `Índices de ${nombre}`,
       claves: `Claves foráneas de ${nombre}`,
-      contenido: `Contenido de ${nombre}`,
     };
 
     await ejecutarGet(`tabla-${tipo}`, titulos[tipo], rutas[tipo]);
@@ -207,18 +205,9 @@ export default function MantenimientoTecnico() {
               Mantenimiento técnico
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Diagnóstico de base de datos y ejecución controlada de operaciones
-              técnicas que antes se lanzaban desde Swagger.
+              Diagnóstico de base de datos y ejecución controlada de tareas técnicas desde el propio ERP, con confirmación antes de cada operación.
             </p>
           </div>
-          <a
-            href="https://agenda-intranet-b.onrender.com/docs"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-          >
-            Abrir Swagger ↗
-          </a>
         </div>
       </header>
 
@@ -229,7 +218,7 @@ export default function MantenimientoTecnico() {
             <div>
               <h2 className="text-lg font-bold text-slate-900">Diagnóstico rápido</h2>
               <p className="mt-1 text-sm text-slate-500">
-                Consultas de solo lectura para comprobar el estado de la base de datos.
+                Consultas de solo lectura para revisar el estado técnico sin abrir herramientas externas.
               </p>
             </div>
           </div>
@@ -260,7 +249,7 @@ export default function MantenimientoTecnico() {
             <div>
               <h2 className="text-lg font-bold text-slate-900">Inspección de tablas</h2>
               <p className="mt-1 text-sm text-slate-500">
-                Consulta columnas, índices, claves foráneas o contenido de una tabla.
+                Consulta la estructura de una tabla: columnas, índices y claves foráneas. No muestra los datos personales almacenados.
               </p>
             </div>
           </div>
@@ -309,7 +298,6 @@ export default function MantenimientoTecnico() {
               ["columnas", "Columnas"],
               ["indices", "Índices"],
               ["claves", "Claves foráneas"],
-              ["contenido", "Contenido"],
             ].map(([tipo, etiqueta]) => (
               <button
                 key={tipo}
@@ -322,9 +310,6 @@ export default function MantenimientoTecnico() {
               </button>
             ))}
           </div>
-          <p className="mt-3 text-xs leading-5 text-amber-700">
-            La opción Contenido puede mostrar datos de expedientes o empleados. Utilízala únicamente cuando sea necesario.
-          </p>
         </div>
       </section>
 
@@ -334,8 +319,8 @@ export default function MantenimientoTecnico() {
           <div>
             <h2 className="text-lg font-bold text-slate-900">Migraciones y mantenimiento</h2>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">
-              Estas acciones envían solicitudes POST al backend. Lee cada descripción y confirma solo cuando quieras ejecutarla.
-              No se incluyen operaciones para borrar tablas ni resetear la intranet.
+              Estas acciones se ejecutan desde el ERP. Lee cada descripción y confirma expresamente antes de lanzar una migración o tarea de mantenimiento.
+              No se ofrecen acciones para borrar tablas ni resetear la intranet.
             </p>
           </div>
         </div>
@@ -392,8 +377,7 @@ export default function MantenimientoTecnico() {
       )}
 
       <footer className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-5 text-slate-500">
-        Esta pantalla respeta el permiso de módulo <strong>utilidades</strong> en el frontend. La protección real de los endpoints
-        de mantenimiento debe aplicarse también en el backend; ocultar una pantalla no sustituye la autorización del servidor.
+        Esta pantalla comprueba el permiso de módulo <strong>utilidades</strong> en el ERP. La autorización del backend sigue siendo necesaria para cada endpoint; ocultar una pantalla no sustituye la protección del servidor.
       </footer>
     </main>
   );
