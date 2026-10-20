@@ -141,9 +141,31 @@ def _coordenadas_de_encargo(encargo, por_nif, por_nombre, objetos_nif, objetos_n
     return lat, lng
 
 
+
+
+def _es_administrador_apoderagest(usuario):
+    """Detecta cuentas administrativas para agregar datos de todos los apoderados."""
+    rol = getattr(usuario, "rol", None)
+    nombres = [getattr(usuario, "rol_nombre", None), getattr(usuario, "nombre_rol", None),
+               getattr(rol, "nombre", None), getattr(rol, "nombre_rol", None), getattr(rol, "codigo", None)]
+    if any("admin" in str(nombre or "").casefold() for nombre in nombres):
+        return True
+    for fuente in (getattr(usuario, "permisos_modulo_dict", None) or {},
+                   getattr(rol, "permisos_modulo_dict", None) or {}):
+        for clave, acciones in fuente.items():
+            if str(clave).casefold() in {"*", "apoderagest.*", "apoderagest", "administracion.*"} and ("*" in (acciones or []) or "ver_todos" in (acciones or []) or "administrar" in (acciones or [])):
+                return True
+    if isinstance(usuario, dict):
+        rol_txt = " ".join(str(usuario.get(k) or "") for k in ("rol", "rol_nombre", "nombre_rol", "perfil", "tipo_usuario"))
+        if "admin" in rol_txt.casefold():
+            return True
+    return False
+
+
 def obtener_dashboard(db, usuario):
-    """Calcula métricas a partir de firmas reales y de las coordenadas del catálogo CTN."""
-    encargos = listar_encargos(db, usuario, solo_pendientes=False)
+    """Calcula métricas de firma del usuario o del conjunto de apoderados para administración."""
+    administrador = _es_administrador_apoderagest(usuario)
+    encargos = listar_encargos(db, usuario, solo_pendientes=False, todos=administrador)
     firmados = [
         encargo for encargo in encargos
         if _fecha(encargo.get("fecha_firma")) is not None
@@ -206,13 +228,25 @@ def obtener_dashboard(db, usuario):
             )
             firmas_con_distancia += 1
 
+    # Ranking anual por apoderado: cuenta firmas reales con fecha y protocolo.
+    por_apoderado = {}
+    for encargo in firmados:
+        fecha_real = _fecha(encargo.get("fecha_firma"))
+        if not fecha_real or fecha_real.year != anio_actual:
+            continue
+        nombre_apoderado = str(encargo.get("apoderado") or "Apoderado sin asignar").strip()
+        item = por_apoderado.setdefault(nombre_apoderado, {"apoderado": nombre_apoderado, "total": 0})
+        item["total"] += 1
+
     return {
+        "es_dashboard_general": administrador,
         "total_encargos": len(encargos),
         "firmados": len(firmados),
         "pendientes": pendientes,
         "media_dias_hasta_firma": media_dias,
         "anio_estadistica_firmas": anio_actual,
         "volumen_mensual_firmas": volumen_mensual,
+        "volumen_anual_por_apoderado": sorted(por_apoderado.values(), key=lambda item: (-item["total"], item["apoderado"].casefold())),
         "firmas_presenciales": firmas_presenciales,
         "firmas_videoconferencia": firmas_videoconferencia,
         "kilometros_presenciales": round(kilometros_presenciales, 2) if firmas_con_distancia else None,
