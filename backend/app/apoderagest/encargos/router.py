@@ -109,13 +109,44 @@ def reparar_asignacion_encargo(
     }
 
 
+def _es_administrador_apoderagest(usuario) -> bool:
+    """Identifica administradores por rol o permisos globales explícitos."""
+    rol = getattr(usuario, "rol", None)
+    nombres_rol = [
+        getattr(usuario, "rol_nombre", None),
+        getattr(usuario, "nombre_rol", None),
+        getattr(rol, "nombre", None),
+        getattr(rol, "nombre_rol", None),
+        getattr(rol, "codigo", None),
+    ]
+    if any("admin" in str(nombre or "").casefold() for nombre in nombres_rol):
+        return True
+
+    for fuente in (
+        getattr(usuario, "permisos_modulo_dict", None) or {},
+        getattr(rol, "permisos_modulo_dict", None) or {},
+    ):
+        for clave, acciones in fuente.items():
+            clave_normalizada = str(clave).casefold()
+            if clave_normalizada in {"*", "apoderagest.*", "apoderagest", "administracion.*"}:
+                if "*" in (acciones or []) or "ver_todos" in (acciones or []) or "administrar" in (acciones or []):
+                    return True
+    return False
+
+
 @router.get("")
 def obtener_encargos(
     db: Session = Depends(get_db),
-    usuario=Depends(obtener_usuario_actual),
+    usuario=Depends(get_current_user),
     pendientes: bool = Query(True, description="Solo envíos pendientes de firma"),
 ):
-    return listar_encargos(db, usuario, solo_pendientes=pendientes)
+    administrador = _es_administrador_apoderagest(usuario)
+    return listar_encargos(
+        db,
+        usuario,
+        solo_pendientes=pendientes,
+        todos=administrador,
+    )
 
 
 
