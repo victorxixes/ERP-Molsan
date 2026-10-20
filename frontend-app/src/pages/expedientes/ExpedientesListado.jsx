@@ -919,6 +919,7 @@ export default function ExpedientesListado() {
   const [filtroTributacion, setFiltroTributacion] = useState("");
   const [filtroEstadoRegistral, setFiltroEstadoRegistral] = useState("");
   const [filtroEstadoFacturacion, setFiltroEstadoFacturacion] = useState("");
+  const [filtroTieneDefectosAbiertos, setFiltroTieneDefectosAbiertos] = useState("");
 
   const [filtrosAplicados, setFiltrosAplicados] = useState({
     numeroExpediente: "",
@@ -935,6 +936,7 @@ export default function ExpedientesListado() {
     tipoError: "", estadoExpedienteAncert: "", tipoActa: "",
     contrato: "", tipoFirma: "", tipoDocumento: "", provincia: "",
     poblacion: "", tributacion: "", estadoRegistral: "", estadoFacturacion: "",
+    tieneDefectosAbiertos: "",
   });
 
 
@@ -1180,6 +1182,7 @@ export default function ExpedientesListado() {
             tributacion: filtrosAplicados.tributacion || undefined,
             estadoRegistral: filtrosAplicados.estadoRegistral || undefined,
             estadoFacturacion: filtrosAplicados.estadoFacturacion || undefined,
+            tieneDefectosAbiertos: filtrosAplicados.tieneDefectosAbiertos || undefined,
 
             ordenMultiple:
               ordenMultiple.length > 0
@@ -1336,6 +1339,7 @@ export default function ExpedientesListado() {
           subtipos_operacion: Array.isArray(res?.subtipos_operacion) ? res.subtipos_operacion : [],
           gestorias: Array.isArray(res?.gestorias) ? res.gestorias : [],
           tipos_error: Array.isArray(res?.tipos_error) ? res.tipos_error : [],
+          defectos_abiertos: Array.isArray(res?.defectos_abiertos) ? res.defectos_abiertos : [],
           estados_ancert: Array.isArray(res?.estados_ancert) ? res.estados_ancert : [],
           tipos_acta: Array.isArray(res?.tipos_acta) ? res.tipos_acta : [],
           tipos_firma: Array.isArray(res?.tipos_firma) ? res.tipos_firma : [],
@@ -1360,7 +1364,7 @@ export default function ExpedientesListado() {
             actividades: [],
             oficinas: [], oficinas_alta: [], dans: [], origenes_bankia: [],
             productos_gtg: [], apoderados: [], tipos_provision: [], contratos: [],
-            tipos_operacion: [], subtipos_operacion: [], gestorias: [], tipos_error: [],
+            tipos_operacion: [], subtipos_operacion: [], gestorias: [], tipos_error: [], defectos_abiertos: [],
             estados_ancert: [], tipos_acta: [], tipos_firma: [], tipos_documento: [],
             provincias: [], poblaciones: [], tributaciones: [], estados_registrales: [],
             estados_facturacion: [], dts: [], vinccancs: [], lucys: [], notarios: [],
@@ -1673,6 +1677,7 @@ export default function ExpedientesListado() {
       tributacion: filtroTributacion,
       estadoRegistral: filtroEstadoRegistral,
       estadoFacturacion: filtroEstadoFacturacion,
+      tieneDefectosAbiertos: filtroTieneDefectosAbiertos,
     });
     setPagina(1);
     setError("");
@@ -1728,6 +1733,7 @@ export default function ExpedientesListado() {
     setFiltroTributacion("");
     setFiltroEstadoRegistral("");
     setFiltroEstadoFacturacion("");
+    setFiltroTieneDefectosAbiertos("");
     setFiltrosAplicados({
       numeroExpediente: "",
       oficina: "", fechaInicio: "", fechaFin: "",
@@ -1743,6 +1749,7 @@ export default function ExpedientesListado() {
       tipoError: "", estadoExpedienteAncert: "", tipoActa: "",
       contrato: "", tipoFirma: "", tipoDocumento: "", provincia: "",
       poblacion: "", tributacion: "", estadoRegistral: "", estadoFacturacion: "",
+      tieneDefectosAbiertos: "",
     });
     setPagina(1);
     setError("");
@@ -2002,6 +2009,7 @@ export default function ExpedientesListado() {
           tributacion: filtrosAplicados.tributacion || undefined,
           estadoRegistral: filtrosAplicados.estadoRegistral || undefined,
           estadoFacturacion: filtrosAplicados.estadoFacturacion || undefined,
+          tieneDefectosAbiertos: filtrosAplicados.tieneDefectosAbiertos || undefined,
         });
 
       } catch (
@@ -3152,6 +3160,7 @@ export default function ExpedientesListado() {
               <FiltroSelect label="Oficina de alta" value={filtroOficinaAlta} onChange={setFiltroOficinaAlta} options={catalogosListado.oficinas_alta} emptyLabel="Todas las oficinas" />
               <FiltroSelect label="DAN" value={filtroDan} onChange={setFiltroDan} options={catalogosListado.dans} emptyLabel="Todos los DAN" />
               <FiltroSelect label="Tipo de defecto/error" value={filtroTipoError} onChange={setFiltroTipoError} options={catalogosListado.tipos_error} emptyLabel="Todos los tipos" />
+              <FiltroSelect label="Defectos abiertos" value={filtroTieneDefectosAbiertos} onChange={setFiltroTieneDefectosAbiertos} options={catalogosListado.defectos_abiertos} emptyLabel="Todos los valores" />
               <FiltroSelect label="Estado ANCERT" value={filtroEstadoExpedienteAncert} onChange={setFiltroEstadoExpedienteAncert} options={catalogosListado.estados_ancert} emptyLabel="Todos los estados ANCERT" />
               <FiltroSelect label="Tipo de acta" value={filtroTipoActa} onChange={setFiltroTipoActa} options={catalogosListado.tipos_acta} emptyLabel="Todos los tipos de acta" />
               <FiltroSelect label="Contrato" value={filtroContrato} onChange={setFiltroContrato} options={catalogosListado.contratos} emptyLabel="Todos los contratos" />
