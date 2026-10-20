@@ -1429,9 +1429,10 @@ export default function FichaExpediente() {
   const [errorComplementoSaldo, setErrorComplementoSaldo] = useState("");
   const [mensajeComplementoSaldo, setMensajeComplementoSaldo] = useState("");
   const [formComplementoSaldo, setFormComplementoSaldo] = useState({
-    fecha_solicitud: new Date().toLocaleDateString("sv-SE"),
+    provisionado: "",
+    saldo_disponible: "",
     importe: "",
-    observaciones: "",
+    motivo: "",
   });
   const [conceptosGasto, setConceptosGasto] = useState([]);
   const [cargandoConceptosGasto, setCargandoConceptosGasto] = useState(false);
@@ -4809,7 +4810,7 @@ const cuantiaFincasParaEnvio =
                             onClick={() => {
                               setErrorComplementoSaldo("");
                               setMensajeComplementoSaldo("");
-                              setFormComplementoSaldo({ fecha_solicitud: new Date().toLocaleDateString("sv-SE"), importe: "", observaciones: "" });
+                              setFormComplementoSaldo({ provisionado: String(importeInicialProvision || expediente?.importe || ""), saldo_disponible: String(expediente?.saldo_disponible ?? resumenEconomico.saldoActual ?? ""), importe: "", motivo: "" });
                               setMostrarModalComplementoSaldo(true);
                             }}
                             className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
@@ -4830,31 +4831,33 @@ const cuantiaFincasParaEnvio =
                               event.preventDefault(); setErrorComplementoSaldo("");
                               const numeroExpediente = String(expediente?.id_expediente || id || "").trim();
                               const importe = Number(String(formComplementoSaldo.importe).replace(",", "."));
+                              const provisionado = Number(String(formComplementoSaldo.provisionado || 0).replace(",", "."));
+                              const saldoDisponible = Number(String(formComplementoSaldo.saldo_disponible || 0).replace(",", "."));
                               if (!numeroExpediente) { setErrorComplementoSaldo("No se ha podido identificar el expediente."); return; }
-                              if (!formComplementoSaldo.importe || !Number.isFinite(importe) || importe < 0) { setErrorComplementoSaldo("Introduce un importe válido para el complemento."); return; }
+                              if (formComplementoSaldo.importe === "" || !Number.isFinite(importe) || importe <= 0) { setErrorComplementoSaldo("Introduce un saldo a solicitar válido y mayor que cero."); return; }
+                              if (!Number.isFinite(provisionado) || !Number.isFinite(saldoDisponible)) { setErrorComplementoSaldo("No se han podido validar los importes de la provisión."); return; }
+                              if (!String(formComplementoSaldo.motivo || "").trim()) { setErrorComplementoSaldo("Indica el motivo de la solicitud."); return; }
                               setGuardandoComplementoSaldo(true);
                               try {
                                 await axios.post("/complementos-saldo", {
                                   expediente_id: expediente?.id || null, numero_expediente: numeroExpediente,
-                                  fecha_solicitud: formComplementoSaldo.fecha_solicitud,
+                                  fecha_solicitud: new Date().toLocaleDateString("sv-SE"),
                                   solicitante: expediente?.nombre_solicitante || expediente?.solicitante || expediente?.nombre_titular || "",
                                   oficina: expediente?.oficina || expediente?.oficina_alta || "",
-                                  importe, observaciones: formComplementoSaldo.observaciones || null, estado: "Pendiente",
+                                  provisionado, saldo_disponible: saldoDisponible, importe,
+                                  motivo: formComplementoSaldo.motivo.trim(), observaciones: formComplementoSaldo.motivo.trim(), estado: "Pendiente",
                                 });
                                 setMostrarModalComplementoSaldo(false);
                                 setMensajeComplementoSaldo("Solicitud registrada correctamente. Estado: Pendiente.");
-                                setFormComplementoSaldo({ fecha_solicitud: new Date().toLocaleDateString("sv-SE"), importe: "", observaciones: "" });
+                                setFormComplementoSaldo({ provisionado: String(importeInicialProvision || expediente?.importe || ""), saldo_disponible: String(expediente?.saldo_disponible ?? resumenEconomico.saldoActual ?? ""), importe: "", motivo: "" });
                               } catch (error) {
                                 setErrorComplementoSaldo(error?.response?.data?.detail || "No se pudo registrar la solicitud de complemento.");
                               } finally { setGuardandoComplementoSaldo(false); }
                             }} className="grid gap-3 sm:grid-cols-2">
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">N.º expediente</label><input readOnly value={expediente?.id_expediente || id || ""} className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600" /></div>
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Fecha de solicitud</label><input required type="date" value={formComplementoSaldo.fecha_solicitud} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, fecha_solicitud: e.target.value }))} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" /></div>
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Solicitante</label><input readOnly value={expediente?.nombre_solicitante || expediente?.solicitante || expediente?.nombre_titular || "—"} className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600" /></div>
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Oficina</label><input readOnly value={expediente?.oficina || expediente?.oficina_alta || "—"} className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600" /></div>
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Importe del complemento (€)</label><input required min="0" step="0.01" type="number" value={formComplementoSaldo.importe} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, importe: e.target.value }))} placeholder="0,00" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" /></div>
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Estado inicial</label><input readOnly value="Pendiente" className="w-full rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-bold text-amber-800" /></div>
-                              <div className="sm:col-span-2"><label className="mb-1 block text-xs font-bold text-slate-600">Observaciones (opcional)</label><textarea rows={2} value={formComplementoSaldo.observaciones} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, observaciones: e.target.value }))} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" placeholder="Motivo o detalle de la petición…" /></div>
+                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Provisionado (€)</label><input readOnly value={formComplementoSaldo.provisionado} className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600" /></div>
+                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Saldo disponible (€)</label><input readOnly value={formComplementoSaldo.saldo_disponible} className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600" /></div>
+                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Saldo a solicitar (€)</label><input required min="0.01" step="0.01" type="number" value={formComplementoSaldo.importe} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, importe: e.target.value }))} placeholder="0,00" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" /></div>
+                              <div className="sm:col-span-2"><label className="mb-1 block text-xs font-bold text-slate-600">Motivo</label><textarea required rows={3} value={formComplementoSaldo.motivo} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, motivo: e.target.value }))} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" placeholder="Explica el motivo por el que se solicita el complemento…" /></div>
                               {errorComplementoSaldo && <p role="alert" className="sm:col-span-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">{errorComplementoSaldo}</p>}
                               <div className="flex flex-wrap justify-end gap-2 sm:col-span-2"><button type="button" onClick={() => setMostrarModalComplementoSaldo(false)} disabled={guardandoComplementoSaldo} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoComplementoSaldo} className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoComplementoSaldo ? "Registrando…" : "Registrar solicitud"}</button></div>
                             </form>
