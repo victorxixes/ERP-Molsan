@@ -1,22 +1,13 @@
 """
-Migración incremental de columnas para expediente_gastos.
-
-IMPORTANTE:
-- No borra ni modifica los gastos existentes.
-- Añade únicamente columnas opcionales.
-- Para habilitar la ruta, configura en Render la variable:
-  MIGRACION_GASTOS_TOKEN=<secreto-largo>
-- Ejecuta POST /api/expedientes/gastos/migracion/aplicar enviando
-  el header X-Migracion-Token con ese mismo valor.
-- Retira la variable o elimina este router cuando la migración termine.
+Migración incremental de columnas de gastos, idempotente y protegida por JWT
+y permiso administrativo. Solo añade columnas opcionales; no borra ni modifica filas.
 """
 
-import os
-import secrets
-
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
 
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import engine
 
 
@@ -53,27 +44,12 @@ COLUMNAS_GASTOS = {
 
 
 @router.post("/aplicar")
-def aplicar_migracion_gastos(
-    x_migracion_token: str | None = Header(default=None, alias="X-Migracion-Token"),
-):
+def aplicar_migracion_gastos(usuario=Depends(get_current_user)):
     """
-    Añade las columnas que falten. Es idempotente: puede repetirse sin
-    recrear ni borrar columnas existentes.
+    Añade las columnas que falten. Es idempotente y requiere permiso
+    administrativo de edición de seguridad además de una sesión JWT válida.
     """
-    token_configurado = os.getenv("MIGRACION_GASTOS_TOKEN")
-    if not token_configurado:
-        raise HTTPException(
-            status_code=503,
-            detail=(
-                "Migración deshabilitada. Configura MIGRACION_GASTOS_TOKEN "
-                "en las variables de entorno del servicio backend."
-            ),
-        )
-
-    if not x_migracion_token or not secrets.compare_digest(
-        x_migracion_token, token_configurado
-    ):
-        raise HTTPException(status_code=403, detail="Token de migración incorrecto.")
+    require_perm_modulo(usuario, "seguridad", "editar")
 
     columnas_creadas = []
     try:
