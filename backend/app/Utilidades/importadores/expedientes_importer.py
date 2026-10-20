@@ -243,6 +243,68 @@ def convertir_numero(valor):
 
 
 # ============================================================
+
+def clave_vinculacion(valor: Any) -> str:
+    """Normaliza nombres para resolver vínculos con los catálogos internos."""
+    texto = limpiar_texto(valor) or ""
+    texto = "".join(
+        ch for ch in unicodedata.normalize("NFKD", texto)
+        if not unicodedata.combining(ch)
+    )
+    return " ".join(texto.casefold().replace("-", " ").split())
+
+
+def normalizar_nif(valor: Any) -> str:
+    return "".join(
+        ch for ch in (limpiar_texto(valor) or "").upper()
+        if ch.isalnum()
+    )
+
+
+def vincular_catalogos_expediente(expediente, row, notarios, empleados):
+    """Vincula IDs solo si el valor de ABSIS identifica un único registro."""
+    nombre = obtener_valor(row, "NOMBRENOTARIO", "NOTARIO")
+    nif = normalizar_nif(obtener_valor(row, "NIFNOTARIO"))
+    if nombre or nif:
+        coincidencias = []
+        for notario in notarios:
+            nif_catalogo = normalizar_nif(getattr(notario, "nif", None))
+            nombre_catalogo = " ".join(
+                p for p in [
+                    limpiar_texto(getattr(notario, "nombre", None)),
+                    limpiar_texto(getattr(notario, "apellidos", None)),
+                ] if p
+            )
+            por_nif = bool(nif and nif_catalogo and nif == nif_catalogo)
+            por_nombre = bool(nombre and not nif and clave_vinculacion(nombre) in {
+                clave_vinculacion(nombre_catalogo),
+                clave_vinculacion(getattr(notario, "nombre", None)),
+            })
+            if por_nif or por_nombre:
+                coincidencias.append(notario)
+        if len(coincidencias) == 1:
+            expediente.notario_id = coincidencias[0].id
+
+    nombre_apoderado = obtener_valor(row, "APODERADO")
+    if nombre_apoderado:
+        clave = clave_vinculacion(nombre_apoderado)
+        coincidencias = []
+        for empleado in empleados:
+            nombre_completo = " ".join(
+                p for p in [
+                    limpiar_texto(getattr(empleado, "nombre", None)),
+                    limpiar_texto(getattr(empleado, "apellidos", None)),
+                ] if p
+            )
+            if clave in {
+                clave_vinculacion(nombre_completo),
+                clave_vinculacion(getattr(empleado, "usuario", None)),
+            }:
+                coincidencias.append(empleado)
+        if len(coincidencias) == 1:
+            expediente.apoderado_empleado_id = coincidencias[0].id
+
+
 # IMPORTADOR PRINCIPAL
 # ============================================================
 
