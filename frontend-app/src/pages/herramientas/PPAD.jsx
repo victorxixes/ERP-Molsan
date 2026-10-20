@@ -131,14 +131,14 @@ export default function PPAD() {
         <Metrica titulo="Importe compensado" valor={euros(resumen.compensados_importe)} detalle="Total ya compensado" positivo />
       </div>
 
-      <TablaPPAD titulo="PPAD pendientes de compensar" lista={pendientes} tipo="pendiente" busqueda={busquedaPendientes} setBusqueda={setBusquedaPendientes} compensar={compensar} descargarExcel={descargarExcel} cargando={cargando} />
-      <TablaPPAD titulo="PPAD compensados" lista={compensados} tipo="compensado" busqueda={busquedaCompensados} setBusqueda={setBusquedaCompensados} compensar={compensar} descargarExcel={descargarExcel} cargando={cargando} />
+      <TablaPPAD titulo="PPAD pendientes de compensar" lista={pendientes} tipo="pendiente" busqueda={busquedaPendientes} setBusqueda={setBusquedaPendientes} compensar={compensar} accionId={accionId} descargarExcel={descargarExcel} cargando={cargando} />
+      <TablaPPAD titulo="PPAD compensados" lista={compensados} tipo="compensado" busqueda={busquedaCompensados} setBusqueda={setBusquedaCompensados} compensar={compensar} accionId={accionId} descargarExcel={descargarExcel} cargando={cargando} />
       {cargando && <p className="text-center text-xs text-slate-500">Actualizando datos PPAD…</p>}
     </div>
   );
 }
 
-function TablaPPAD({ titulo, lista, tipo, busqueda, setBusqueda, compensar, descargarExcel, cargando }) {
+function TablaPPAD({ titulo, lista, tipo, busqueda, setBusqueda, compensar, accionId, descargarExcel, cargando }) {
     const esPendiente = tipo === "pendiente";
     return (
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
