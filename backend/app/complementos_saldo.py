@@ -86,7 +86,7 @@ def listar_complementos_saldo(
             ComplementoSaldo.oficina.ilike(termino),
             ComplementoSaldo.observaciones.ilike(termino),
         ))
-    if estado and estado.lower() in ("pendiente", "cerrado"):
+    if estado and estado.lower() in ("pendiente", "compensado", "cerrado"):
         consulta = consulta.filter(func.lower(ComplementoSaldo.estado) == estado.lower())
     if oficina and oficina.strip():
         consulta = consulta.filter(ComplementoSaldo.oficina.ilike(f"%{oficina.strip()}%"))
@@ -142,12 +142,12 @@ def cambiar_estado_complemento_saldo(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    if estado.lower() not in ("pendiente", "cerrado"):
-        raise HTTPException(status_code=400, detail="El estado debe ser Pendiente o Cerrado.")
+    if estado.lower() not in ("pendiente", "compensado", "cerrado"):
+        raise HTTPException(status_code=400, detail="El estado debe ser Pendiente o Compensado.")
     item = db.query(ComplementoSaldo).filter(ComplementoSaldo.id == complemento_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="No se ha encontrado la solicitud de complemento.")
-    item.estado = "Cerrado" if estado.lower() == "cerrado" else "Pendiente"
+    item.estado = "Compensado" if estado.lower() in ("compensado", "cerrado") else "Pendiente"
     db.commit()
     db.refresh(item)
     return _serializar(item)
@@ -165,14 +165,14 @@ def exportar_complementos_saldo(
     libro = openpyxl.Workbook()
     hoja = libro.active
     hoja.title = "Complementos de saldo"
-    hoja.append(["N.º expediente", "Fecha solicitud", "Solicitante", "Oficina", "Provisionado (€)", "Saldo disponible (€)", "Saldo a solicitar (€)", "Motivo", "Estado", "Observaciones", "Solicitado por"])
+    hoja.append(["Expediente", "Provisionado (€)", "Saldo disponible (€)", "Fecha de petición", "Saldo a solicitar (€)", "Motivo", "Estado", "Acción", "Solicitado por"])
     for celda in hoja[1]:
         celda.font = Font(bold=True, color="FFFFFF")
         celda.fill = PatternFill("solid", fgColor="1D4ED8")
     for item in items:
-        hoja.append([item["numero_expediente"], item["fecha_solicitud"], item["solicitante"], item["oficina"], item["provisionado"], item["saldo_disponible"], item["importe"], item["motivo"], item["estado"], item["observaciones"], item["creado_por"]])
+        hoja.append([item["numero_expediente"], item["provisionado"], item["saldo_disponible"], item["fecha_solicitud"], item["importe"], item["motivo"], item["estado"], "Regularizado" if str(item["estado"]).lower() in ("compensado", "cerrado") else "Compensar", item["creado_por"]])
     for fila in hoja.iter_rows(min_row=2):
-        for indice_importe in (4, 5, 6):
+        for indice_importe in (2, 3, 5):
             fila[indice_importe].number_format = '#,##0.00 [$€-es-ES]'
     for columna in hoja.columns:
         letra = columna[0].column_letter
