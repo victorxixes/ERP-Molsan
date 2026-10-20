@@ -755,6 +755,7 @@ export default function ApoderaGest() {
   const [dashboard, setDashboard] = useState(null);
   const [agenda, setAgenda] = useState([]);
   const [encargos, setEncargos] = useState([]);
+  const [esAdministradorEncargos, setEsAdministradorEncargos] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
   const [busquedaEncargos, setBusquedaEncargos] = useState("");
@@ -766,12 +767,14 @@ export default function ApoderaGest() {
     setError("");
 
     try {
-      const [resDashboard, resAgenda, resEncargos] = await Promise.all([
+      const [resDashboard, resAgenda, resEncargos, resContextoEncargos] = await Promise.all([
         axios.get("/apoderagest/dashboard"),
         axios.get("/apoderagest/agenda"),
         axios.get("/apoderagest/encargos"),
+        axios.get("/apoderagest/encargos/contexto"),
       ]);
 
+      setEsAdministradorEncargos(Boolean(resContextoEncargos.data?.administrador));
       setDashboard(resDashboard.data || {});
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0);
@@ -813,6 +816,9 @@ export default function ApoderaGest() {
       [
         encargo.id_expediente,
         encargo.id,
+        encargo.apoderado,
+        encargo.nombre_solicitante,
+        encargo.nif_solicitante,
         encargo.titular,
         encargo.estado,
         encargo.notario,
@@ -1011,10 +1017,10 @@ export default function ApoderaGest() {
 
       {pestana === "Encargos" ? (
         <section className="ag-contenido">
-          <div className="ag-titulo-seccion"><div><span className="ag-kicker">GESTIÓN OPERATIVA</span><h2>Mis encargos</h2><p>Seguimiento de expedientes, titulares y estado de firma.</p></div><span className="ag-contador">{encargos.length} encargos</span></div>
+          <div className="ag-titulo-seccion"><div><span className="ag-kicker">{esAdministradorEncargos ? "SUPERVISIÓN GLOBAL" : "GESTIÓN OPERATIVA"}</span><h2>{esAdministradorEncargos ? "Todos los encargos de ApoderaGest" : "Mis encargos"}</h2><p>{esAdministradorEncargos ? "Vista de administrador: encargos de todos los apoderados, incluidos los asignados a tu propio usuario. Puedes buscar por apoderado, expediente, titular o notario." : "Seguimiento de tus expedientes, titulares y estado de firma."}</p></div><span className="ag-contador">{encargos.length} encargos</span></div>
           <div className="ag-panel">
             <div className="ag-toolbar">
-              <label className="ag-busqueda"><span aria-hidden="true">⌕</span><input type="search" value={busquedaEncargos} onChange={(e) => setBusquedaEncargos(e.target.value)} placeholder="Buscar expediente, titular, notario o estado…" aria-label="Buscar encargos" /></label>
+              <label className="ag-busqueda"><span aria-hidden="true">⌕</span><input type="search" value={busquedaEncargos} onChange={(e) => setBusquedaEncargos(e.target.value)} placeholder={esAdministradorEncargos ? "Buscar apoderado, expediente, titular, notario o estado…" : "Buscar expediente, titular, notario o estado…"} aria-label="Buscar encargos" /></label>
               <span className="ag-resultados">{encargosFiltrados.length} resultados</span>
             </div>
             <TablaEncargos encargos={encargosFiltrados} onFirmado={cargarDatos} />
