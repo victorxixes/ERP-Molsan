@@ -911,6 +911,14 @@ export default function ExpedientesListado() {
   const [filtroTipoError, setFiltroTipoError] = useState("");
   const [filtroEstadoExpedienteAncert, setFiltroEstadoExpedienteAncert] = useState("");
   const [filtroTipoActa, setFiltroTipoActa] = useState("");
+  const [filtroContrato, setFiltroContrato] = useState("");
+  const [filtroTipoFirma, setFiltroTipoFirma] = useState("");
+  const [filtroTipoDocumento, setFiltroTipoDocumento] = useState("");
+  const [filtroProvincia, setFiltroProvincia] = useState("");
+  const [filtroPoblacion, setFiltroPoblacion] = useState("");
+  const [filtroTributacion, setFiltroTributacion] = useState("");
+  const [filtroEstadoRegistral, setFiltroEstadoRegistral] = useState("");
+  const [filtroEstadoFacturacion, setFiltroEstadoFacturacion] = useState("");
 
   const [filtrosAplicados, setFiltrosAplicados] = useState({
     numeroExpediente: "",
@@ -925,6 +933,8 @@ export default function ExpedientesListado() {
     tipoProvision: "", tipoOperacion: "", subtipoOperacion: "",
     nombreGestoria: "", oficinaAlta: "", dan: "",
     tipoError: "", estadoExpedienteAncert: "", tipoActa: "",
+    contrato: "", tipoFirma: "", tipoDocumento: "", provincia: "",
+    poblacion: "", tributacion: "", estadoRegistral: "", estadoFacturacion: "",
   });
 
 
@@ -1162,6 +1172,14 @@ export default function ExpedientesListado() {
             tipoError: filtrosAplicados.tipoError || undefined,
             estadoExpedienteAncert: filtrosAplicados.estadoExpedienteAncert || undefined,
             tipoActa: filtrosAplicados.tipoActa || undefined,
+            contrato: filtrosAplicados.contrato || undefined,
+            tipoFirma: filtrosAplicados.tipoFirma || undefined,
+            tipoDocumento: filtrosAplicados.tipoDocumento || undefined,
+            provincia: filtrosAplicados.provincia || undefined,
+            poblacion: filtrosAplicados.poblacion || undefined,
+            tributacion: filtrosAplicados.tributacion || undefined,
+            estadoRegistral: filtrosAplicados.estadoRegistral || undefined,
+            estadoFacturacion: filtrosAplicados.estadoFacturacion || undefined,
 
             ordenMultiple:
               ordenMultiple.length > 0
@@ -1647,6 +1665,14 @@ export default function ExpedientesListado() {
       tipoError: filtroTipoError,
       estadoExpedienteAncert: filtroEstadoExpedienteAncert,
       tipoActa: filtroTipoActa,
+      contrato: filtroContrato,
+      tipoFirma: filtroTipoFirma,
+      tipoDocumento: filtroTipoDocumento,
+      provincia: filtroProvincia,
+      poblacion: filtroPoblacion,
+      tributacion: filtroTributacion,
+      estadoRegistral: filtroEstadoRegistral,
+      estadoFacturacion: filtroEstadoFacturacion,
     });
     setPagina(1);
     setError("");
@@ -1694,6 +1720,14 @@ export default function ExpedientesListado() {
     setFiltroTipoError("");
     setFiltroEstadoExpedienteAncert("");
     setFiltroTipoActa("");
+    setFiltroContrato("");
+    setFiltroTipoFirma("");
+    setFiltroTipoDocumento("");
+    setFiltroProvincia("");
+    setFiltroPoblacion("");
+    setFiltroTributacion("");
+    setFiltroEstadoRegistral("");
+    setFiltroEstadoFacturacion("");
     setFiltrosAplicados({
       numeroExpediente: "",
       oficina: "", fechaInicio: "", fechaFin: "",
@@ -1707,6 +1741,8 @@ export default function ExpedientesListado() {
       tipoProvision: "", tipoOperacion: "", subtipoOperacion: "",
       nombreGestoria: "", oficinaAlta: "", dan: "",
       tipoError: "", estadoExpedienteAncert: "", tipoActa: "",
+      contrato: "", tipoFirma: "", tipoDocumento: "", provincia: "",
+      poblacion: "", tributacion: "", estadoRegistral: "", estadoFacturacion: "",
     });
     setPagina(1);
     setError("");
@@ -1958,6 +1994,14 @@ export default function ExpedientesListado() {
           tipoError: filtrosAplicados.tipoError || undefined,
           estadoExpedienteAncert: filtrosAplicados.estadoExpedienteAncert || undefined,
           tipoActa: filtrosAplicados.tipoActa || undefined,
+          contrato: filtrosAplicados.contrato || undefined,
+          tipoFirma: filtrosAplicados.tipoFirma || undefined,
+          tipoDocumento: filtrosAplicados.tipoDocumento || undefined,
+          provincia: filtrosAplicados.provincia || undefined,
+          poblacion: filtrosAplicados.poblacion || undefined,
+          tributacion: filtrosAplicados.tributacion || undefined,
+          estadoRegistral: filtrosAplicados.estadoRegistral || undefined,
+          estadoFacturacion: filtrosAplicados.estadoFacturacion || undefined,
         });
 
       } catch (
@@ -3110,6 +3154,14 @@ export default function ExpedientesListado() {
               <FiltroSelect label="Tipo de defecto/error" value={filtroTipoError} onChange={setFiltroTipoError} options={catalogosListado.tipos_error} emptyLabel="Todos los tipos" />
               <FiltroSelect label="Estado ANCERT" value={filtroEstadoExpedienteAncert} onChange={setFiltroEstadoExpedienteAncert} options={catalogosListado.estados_ancert} emptyLabel="Todos los estados ANCERT" />
               <FiltroSelect label="Tipo de acta" value={filtroTipoActa} onChange={setFiltroTipoActa} options={catalogosListado.tipos_acta} emptyLabel="Todos los tipos de acta" />
+              <FiltroSelect label="Contrato" value={filtroContrato} onChange={setFiltroContrato} options={catalogosListado.contratos} emptyLabel="Todos los contratos" />
+              <FiltroSelect label="Tipo de firma" value={filtroTipoFirma} onChange={setFiltroTipoFirma} options={catalogosListado.tipos_firma} emptyLabel="Todos los tipos de firma" />
+              <FiltroSelect label="Tipo de documento" value={filtroTipoDocumento} onChange={setFiltroTipoDocumento} options={catalogosListado.tipos_documento} emptyLabel="Todos los documentos" />
+              <FiltroSelect label="Provincia" value={filtroProvincia} onChange={setFiltroProvincia} options={catalogosListado.provincias} emptyLabel="Todas las provincias" />
+              <FiltroSelect label="Población" value={filtroPoblacion} onChange={setFiltroPoblacion} options={catalogosListado.poblaciones} emptyLabel="Todas las poblaciones" />
+              <FiltroSelect label="Tributación" value={filtroTributacion} onChange={setFiltroTributacion} options={catalogosListado.tributaciones} emptyLabel="Todas las tributaciones" />
+              <FiltroSelect label="Estado registral" value={filtroEstadoRegistral} onChange={setFiltroEstadoRegistral} options={catalogosListado.estados_registrales} emptyLabel="Todos los estados registrales" />
+              <FiltroSelect label="Estado facturación" value={filtroEstadoFacturacion} onChange={setFiltroEstadoFacturacion} options={catalogosListado.estados_facturacion} emptyLabel="Todos los estados de facturación" />
             </div>
 
             <div className="px-6 py-4 border-t flex flex-wrap items-center justify-end gap-3" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
