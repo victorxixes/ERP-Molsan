@@ -6,7 +6,7 @@
 import { useDashboard } from "../../hooks/useDashboard";
 import { useNavigate } from "react-router-dom";
 import "../../css/Cancelagest.css";
-import "../../css/ApoderaGest.css";
+import "../../css/DashboardCancelagest.css";
 
 // ============================================================
 // ACTIVIDADES
@@ -255,7 +255,7 @@ export default function Dashboard() {
   const porcentajeVideoconferencia = totalFirmas > 0 ? (firmasVideoconferencia / totalFirmas) * 100 : firmasRealizadas == null ? null : 0;
 
   return (
-    <div className="erp-page w-full">
+    <div className="erp-page w-full dashboard-cancelagest">
       {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
       <header className="ag-hero" style={{ "--ag-muted": "#748198", "--ag-ink": "#17243a" }}>
         <div className="ag-hero-identidad">
