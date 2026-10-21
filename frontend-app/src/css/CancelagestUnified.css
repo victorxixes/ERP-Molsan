@@ -66,14 +66,15 @@ select, textarea) {
   font-size: 12px;
 }
 
-.cg-unified-workspace :is(th, td) {
+.cg-unified-workspace table :is(th, td) {
   padding: 10px 12px;
   border-bottom: 1px solid var(--cg-border-light);
   text-align: left;
   vertical-align: middle;
+  vertical-align: middle;
 }
 
-.cg-unified-workspace th {
+.cg-unified-workspace table th {
   color: #52617a;
   background: #f6f8fc;
   font-size: 10px;
@@ -82,23 +83,23 @@ select, textarea) {
   white-space: nowrap;
 }
 
-.cg-unified-workspace thead tr:first-child th:first-child {
+.cg-unified-workspace table thead tr:first-child th:first-child {
   border-top-left-radius: 8px;
 }
 
-.cg-unified-workspace thead tr:first-child th:last-child {
+.cg-unified-workspace table thead tr:first-child th:last-child {
   border-top-right-radius: 8px;
 }
 
-.cg-unified-workspace tbody tr {
+.cg-unified-workspace table tbody tr {
   transition: background-color .14s ease;
 }
 
-.cg-unified-workspace tbody tr:hover {
+.cg-unified-workspace table tbody tr:hover {
   background-color: #f7f9fd;
 }
 
-.cg-unified-workspace tbody tr:last-child td {
+.cg-unified-workspace table tbody tr:last-child td {
   border-bottom-color: var(--cg-border);
 }
 
@@ -135,13 +136,34 @@ select, textarea) {
   border-radius: 999px;
 }
 
-@media (max-width: 768px) {
-  .cg-unified-workspace :is(th, td) {
-    padding: 8px 10px;
-  }
+/* CTN conserva su estructura propia, pero comparte los tokens del ERP. */
+.cg-unified-workspace .ctn-listado-page {
+  --ctn-bg: var(--cg-page-bg);
+  --ctn-panel: var(--cg-surface);
+  --ctn-border: var(--cg-border);
+  --ctn-text: var(--cg-text);
+  --ctn-muted: var(--cg-text-muted);
+  --ctn-primary: var(--cg-primary);
+  --ctn-primary-dark: var(--cg-primary-hover);
+  --ctn-accent: var(--cg-primary);
+}
 
-  .cg-unified-workspace table {
-    min-width: 640px;
+.cg-unified-workspace .ctn-listado-page :is(input, select, textarea) {
+  min-height: 38px;
+  border-radius: 8px;
+  border-color: var(--cg-border);
+  font: inherit;
+}
+
+.cg-unified-workspace .ctn-listado-page :is(input, select, textarea):focus-visible {
+  outline: none;
+  border-color: var(--cg-primary);
+  box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
+}
+
+@media (max-width: 768px) {
+  .cg-unified-workspace table :is(th, td) {
+    padding: 8px 10px;
   }
 }
 
