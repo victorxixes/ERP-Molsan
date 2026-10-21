@@ -1268,7 +1268,13 @@ def inicializar_tablas_auxiliares():
             ("Banco de San Sebastián"),
             ("Banco de Gijón"),
             ("Mercantil e Industrial"),
-            ("Banco Ibérico")
+            ("Banco Ibérico"),
+            ("Banco de Mataró"),
+            ("Banco de Tolosa"),
+            ("Banco de La Coruña"),
+            ("Banco de Jerez"),
+            ("Banco de Granada"),
+            ("Banco de Progreso")
         ]
         with engine.begin() as conexion_semillas_caixabank:
             for nombre_historico in entidades_historicas_caixabank:
@@ -1286,7 +1292,7 @@ def inicializar_tablas_auxiliares():
         # Entidades que el listado facilitado indica que deben vincularse a CaixaBank.
         # Se respetan los valores de entidad_actual_id que ya estén asignados manualmente.
         patrones_caixabank_facilitados = [
-                  "%CAIXA D'ESTALVIS DE L'EMPORDÀ%",
+                  "%CAIXA D'ESTALVIS DE L'EMPORDÀ%", "%BANCO GRANADA-JEREZ%", "%BANCO DE GRANADA%", "%BANCO DE JEREZ%",
                   "%CAIXA D’ESTALVIS DEL SINDICAT AGRÍCOLA%",
                   "%CAIXA ADHERIDA DEL CERCLE OBRER DE BANYOLES%",
                   "%CAIXA ADHERIDA DE SANT JOAN DE LES ABADESSES%",
@@ -1509,7 +1515,7 @@ def inicializar_tablas_auxiliares():
                     "%CAJA DE AHORROS Y MONTE DE PIEDAD DE LERIDA%", "%BANCO DE CRÉDITO LOCAL%",
                     "%BANCO DE CREDITO LOCAL%", "%UNO-E%", "%ARGENTARIA%", "%BANCO BILBAO VIZCAYA%",
                     "%BANCO DE BILBAO%", "%BANCO DE VIZCAYA%", "%BANCO EXTERIOR DE ESPAÑA%",
-                    "%BANCO EXTERIOR DE ESPANA%", "%BANCO DE CRÉDITO INDUSTRIAL%", "%BANCO DE CREDITO INDUSTRIAL%", "%BANCO HIPOTECARIO DE ESPAÑA%", "%BANCO HIPOTECARIO DE ESPANA%", "%CAJA POSTAL%", "%BANCO DE ALICANTE%", "%BANCA CATALANA%", "%BANCO DE COMERCIO%", "%BANCO DE NEGOCIOS ARGENTARIA%", "%BANCO MERIDIONAL%", "%BANCO DE CRÉDITO CANARIO%", "%BANCO DE CREDITO CANARIO%", "%UNOE BANK%", "%UNOE BANK S.A.%"
+                    "%BANCO EXTERIOR DE ESPANA%", "%BANCO DE LA CORUÑA%", "%BANCO DE LA CORUNA%", "%BANCO DE CRÉDITO INDUSTRIAL%", "%BANCO DE CREDITO INDUSTRIAL%", "%BANCO HIPOTECARIO DE ESPAÑA%", "%BANCO HIPOTECARIO DE ESPANA%", "%CAJA POSTAL%", "%BANCO DE ALICANTE%", "%BANCA CATALANA%", "%BANCO DE COMERCIO%", "%BANCO DE NEGOCIOS ARGENTARIA%", "%BANCO MERIDIONAL%", "%BANCO DE CRÉDITO CANARIO%", "%BANCO DE CREDITO CANARIO%", "%UNOE BANK%", "%UNOE BANK S.A.%"
                 ],
             ),
             (
@@ -1524,7 +1530,7 @@ def inicializar_tablas_auxiliares():
                     "%BANCO CENTRAL HISPANO%", "%BANCO HISPANO AMERICANO%", "%BANCO CENTRAL, S.A.%",
                     "%BANCO DE ANDALUCÍA%", "%BANCO DE ANDALUCIA%", "%BANCO DE CASTILLA%",
                     "%BANCO DE GALICIA%", "%BANCO DE VASCONIA%", "%CRÉDITO BALEAR%",
-                    "%CREDITO BALEAR%", "%BANCO DE ARAGÓN%", "%BANCO DE ARAGON%", "%BANCO INDUSTRIAL DE BARCELONA%", "%BANCO CONTINENTAL%", "%BANCO DE CANARIAS%", "%CRÉDITO NAVARRO%", "%CREDITO NAVARRO%", "%BANCO DE SAN SEBASTIÁN%", "%BANCO DE SAN SEBASTIAN%", "%BANCO DE GIJÓN%", "%BANCO DE GIJON%", "%MERCANTIL E INDUSTRIAL%", "%BANCO IBÉRICO%", "%BANCO IBERICO%"
+                    "%CREDITO BALEAR%", "%BANCO DE ARAGÓN%", "%BANCO DE ARAGON%", "%BANCO DE MATARÓ%", "%BANCO DE MATARO%", "%BANCO DE TOLOSA%", "%BANCO INDUSTRIAL DE BARCELONA%", "%BANCO CONTINENTAL%", "%BANCO DE CANARIAS%", "%CRÉDITO NAVARRO%", "%CREDITO NAVARRO%", "%BANCO DE SAN SEBASTIÁN%", "%BANCO DE SAN SEBASTIAN%", "%BANCO DE GIJÓN%", "%BANCO DE GIJON%", "%MERCANTIL E INDUSTRIAL%", "%BANCO IBÉRICO%", "%BANCO IBERICO%"
                 ],
             ),
             (
@@ -1538,7 +1544,7 @@ def inicializar_tablas_auxiliares():
                     "%CAJA DE AHORROS DEL MEDITERRANEO%", "%CAJA MEDITERRÁNEO%",
                     "%CAJA MEDITERRANEO%", "%BANCO GUIPUZCOANO%", "%BANCO GALLEGO%", "%ACTIVOBANK%", "%BANCO DE ASTURIAS%",
                     "%BANCO ATLÁNTICO%", "%BANCO ATLANTICO%", "%BANCO HERRERO%", "%BANCO URQUIJO%",
-                    "%NATWEST ESPAÑA%", "%NATWEST ESPANA%", "%SOLBANK%", "%LLOYDS BANK ESPAÑA%",
+                    "%BANCO DE PROGRESO%", "%NATWEST ESPAÑA%", "%NATWEST ESPANA%", "%SOLBANK%", "%LLOYDS BANK ESPAÑA%",
                     "%LLOYDS BANK ESPANA%"
                 ],
             ),
