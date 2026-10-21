@@ -154,11 +154,9 @@ def _buscar_expediente(db: Session, id_expediente: str) -> Expediente:
 
 
 def _buscar_tarifa(db: Session, tipo: str, entidad: str, capital: Decimal, territorio: str = "Península") -> Optional[TarifaProvision]:
-    tarifas = (
-        db.query(TarifaProvision)
-        .filter(TarifaProvision.activo.is_(True), TarifaProvision.tipo == tipo)
-        .all()
-    )
+    # La tarifa se busca por entidad (o tarifa genérica), territorio y tramo de capital.
+    # El tipo de operación y el estado activo no intervienen en esta selección.
+    tarifas = db.query(TarifaProvision).all()
     key_entidad = _normalizar(entidad)
     aplicables = []
     for tarifa in tarifas:
@@ -267,19 +265,19 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
     if datos.aplicar_tarifa:
         tarifa = _buscar_tarifa(db, provision.tipo, entidad, capital)
     if datos.aplicar_tarifa and datos.tarifa_id and not tarifa:
-        candidata = db.query(TarifaProvision).filter(TarifaProvision.id == datos.tarifa_id, TarifaProvision.activo.is_(True)).first()
-        if candidata and candidata.tipo == provision.tipo and _normalizar(candidata.entidad) in {"*", _normalizar(entidad)}:
+        candidata = db.query(TarifaProvision).filter(TarifaProvision.id == datos.tarifa_id).first()
+        if candidata and _normalizar(candidata.entidad) in {"*", _normalizar(entidad)}:
             minimo = Decimal(str(candidata.capital_minimo or 0))
             maximo = Decimal(str(candidata.capital_maximo)) if candidata.capital_maximo is not None else None
             if capital >= minimo and (maximo is None or capital <= maximo):
                 tarifa = candidata
         if not tarifa:
-            raise HTTPException(status_code=422, detail=f"La tarifa #{datos.tarifa_id} ya no está activa o no coincide con la entidad, tipo y capital de la operación.")
+            raise HTTPException(status_code=422, detail=f"La tarifa #{datos.tarifa_id} no coincide con la entidad o el capital de la operación.")
 
     if datos.aplicar_tarifa and not tarifa:
         raise HTTPException(
             status_code=422,
-            detail="No hay una tarifa activa para este tipo, entidad y capital. Configura el tarifario o desactiva 'Aplicar tarifa configurada' para introducir los importes manualmente.",
+            detail="No hay una tarifa que coincida con la entidad, el territorio y el capital. Configura el tarifario o desactiva 'Aplicar tarifa configurada' para introducir los importes manualmente.",
         )
 
     if tarifa:
@@ -366,7 +364,7 @@ def calcular_tarifa_provision(datos: CalcularTarifaInput, db: Session = Depends(
     require_perm_modulo(usuario, "expedientes", "crear")
     tarifa = _buscar_tarifa(db, datos.tipo, datos.entidad, datos.capital, datos.territorio)
     if not tarifa:
-        raise HTTPException(status_code=404, detail="No hay una tarifa activa para ese tipo, entidad y capital. Configura una tarifa o introduce los importes manualmente.")
+        raise HTTPException(status_code=404, detail="No hay una tarifa que coincida con la entidad, el territorio y el capital. Configura una tarifa o introduce los importes manualmente.")
     honorarios_base = _dinero(tarifa.honorarios)
     honorarios = Decimal("0.00") if datos.condonar_honorarios else honorarios_base
     total = honorarios + _dinero(tarifa.suplidos) + _dinero(tarifa.gastos_registro) + _dinero(tarifa.otros_gastos)
