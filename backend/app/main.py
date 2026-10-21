@@ -1246,7 +1246,29 @@ def inicializar_tablas_auxiliares():
             ("Banco de Crédito Industrial"),
             ("Banco Hipotecario de España"),
             ("Banco de Valladolid"),
-            ("Banca de Medina")
+            ("Banca de Medina"),
+            ("Santander Consumer Finance, S.A."),
+            ("Banco Industrial de León"),
+            ("Banco Central Hispano Hipotecario"),
+            ("Banco Caixa Geral"),
+            ("Bankoa"),
+            ("Banca Catalana"),
+            ("Banco de Comercio"),
+            ("Banco de Negocios Argentaria"),
+            ("Banco Meridional"),
+            ("Banco de Crédito Canario"),
+            ("Unoe Bank"),
+            ("Activobank"),
+            ("Banco de Asturias"),
+            ("Banco de Aragón"),
+            ("Banco Industrial de Barcelona"),
+            ("Banco Continental"),
+            ("Banco de Canarias"),
+            ("Crédito Navarro"),
+            ("Banco de San Sebastián"),
+            ("Banco de Gijón"),
+            ("Mercantil e Industrial"),
+            ("Banco Ibérico")
         ]
         with engine.begin() as conexion_semillas_caixabank:
             for nombre_historico in entidades_historicas_caixabank:
@@ -1471,7 +1493,7 @@ def inicializar_tablas_auxiliares():
                     "%LA CAIXA%", "%CAJA DE PENSIONES%", "%CAJA DE BARCELONA%",
                     "%CAJA DE AHORROS Y PENSIONES DE BARCELONA%", "%CAIXABANK, S.A.%",
                     "%BARCLAYS BANK%", "%BANKIA%", "%BFA%", "%BANCO MARE NOSTRUM%", "%BMN%",
-                    "%BANCO DE VALENCIA%", "%BANCO ZARAGOZANO%", "%BANCO DE VALLADOLID%", "%BANCA DE MEDINA%", "%BANKPIME%",
+                    "%BANCO DE VALENCIA%", "%BANCO ZARAGOZANO%", "%BANCO DE VALLADOLID%", "%BANCA DE MEDINA%", "%BANKPIME%", "%BANCO DE LAS ISLAS CANARIAS%",
                     "%CAIXA GIRONA%", "%CAIXA DE GIRONA%", "%CAIXA PENEDÈS%", "%CAIXA PENEDES%",
                     "%SA NOSTRA%", "%BANCO DE LAS ISLAS CANARIAS%", "%ISBANC%", "%BANCO DE EUROPA%",
                     "%MORGAN STANLEY%", "%CAIXA D'ESTALVIS DE L'EMPORDÀ%"
@@ -1487,7 +1509,7 @@ def inicializar_tablas_auxiliares():
                     "%CAJA DE AHORROS Y MONTE DE PIEDAD DE LERIDA%", "%BANCO DE CRÉDITO LOCAL%",
                     "%BANCO DE CREDITO LOCAL%", "%UNO-E%", "%ARGENTARIA%", "%BANCO BILBAO VIZCAYA%",
                     "%BANCO DE BILBAO%", "%BANCO DE VIZCAYA%", "%BANCO EXTERIOR DE ESPAÑA%",
-                    "%BANCO EXTERIOR DE ESPANA%", "%BANCO DE CRÉDITO INDUSTRIAL%", "%BANCO DE CREDITO INDUSTRIAL%", "%BANCO HIPOTECARIO DE ESPAÑA%", "%BANCO HIPOTECARIO DE ESPANA%", "%CAJA POSTAL%", "%BANCO DE ALICANTE%"
+                    "%BANCO EXTERIOR DE ESPANA%", "%BANCO DE CRÉDITO INDUSTRIAL%", "%BANCO DE CREDITO INDUSTRIAL%", "%BANCO HIPOTECARIO DE ESPAÑA%", "%BANCO HIPOTECARIO DE ESPANA%", "%CAJA POSTAL%", "%BANCO DE ALICANTE%", "%BANCA CATALANA%", "%BANCO DE COMERCIO%", "%BANCO DE NEGOCIOS ARGENTARIA%", "%BANCO MERIDIONAL%", "%BANCO DE CRÉDITO CANARIO%", "%BANCO DE CREDITO CANARIO%", "%UNOE BANK%", "%UNOE BANK S.A.%"
                 ],
             ),
             (
@@ -1502,7 +1524,7 @@ def inicializar_tablas_auxiliares():
                     "%BANCO CENTRAL HISPANO%", "%BANCO HISPANO AMERICANO%", "%BANCO CENTRAL, S.A.%",
                     "%BANCO DE ANDALUCÍA%", "%BANCO DE ANDALUCIA%", "%BANCO DE CASTILLA%",
                     "%BANCO DE GALICIA%", "%BANCO DE VASCONIA%", "%CRÉDITO BALEAR%",
-                    "%CREDITO BALEAR%"
+                    "%CREDITO BALEAR%", "%BANCO DE ARAGÓN%", "%BANCO DE ARAGON%", "%BANCO INDUSTRIAL DE BARCELONA%", "%BANCO CONTINENTAL%", "%BANCO DE CANARIAS%", "%CRÉDITO NAVARRO%", "%CREDITO NAVARRO%", "%BANCO DE SAN SEBASTIÁN%", "%BANCO DE SAN SEBASTIAN%", "%BANCO DE GIJÓN%", "%BANCO DE GIJON%", "%MERCANTIL E INDUSTRIAL%", "%BANCO IBÉRICO%", "%BANCO IBERICO%"
                 ],
             ),
             (
@@ -1514,7 +1536,7 @@ def inicializar_tablas_auxiliares():
                 [
                     "%BANCO CAM%", "%CAJA DE AHORROS DEL MEDITERRÁNEO%",
                     "%CAJA DE AHORROS DEL MEDITERRANEO%", "%CAJA MEDITERRÁNEO%",
-                    "%CAJA MEDITERRANEO%", "%BANCO GUIPUZCOANO%", "%BANCO GALLEGO%",
+                    "%CAJA MEDITERRANEO%", "%BANCO GUIPUZCOANO%", "%BANCO GALLEGO%", "%ACTIVOBANK%", "%BANCO DE ASTURIAS%",
                     "%BANCO ATLÁNTICO%", "%BANCO ATLANTICO%", "%BANCO HERRERO%", "%BANCO URQUIJO%",
                     "%NATWEST ESPAÑA%", "%NATWEST ESPANA%", "%SOLBANK%", "%LLOYDS BANK ESPAÑA%",
                     "%LLOYDS BANK ESPANA%"
@@ -1561,7 +1583,7 @@ def inicializar_tablas_auxiliares():
                 [
                     "%NOVACAIXAGALICIA%", "%NOVAGALICIA%", "%NCG BANCO%", "%CAIXA GALICIA%",
                     "%CAIXA GALÍCIA%", "%CAIXANOVA%", "%CAIXA NOVA%", "%BANCO ETCHEVERRÍA%",
-                    "%BANCO ETCHEVERRIA%", "%BANCO ECHEVERRÍA%", "%BANCO ECHEVERRIA%"
+                    "%BANCO ETCHEVERRIA%", "%BANCO ECHEVERRÍA%", "%BANCO ECHEVERRIA%", "%BANCO CAIXA GERAL%", "%BANKOA%"
                 ],
             ),
             (
@@ -1571,6 +1593,14 @@ def inicializar_tablas_auxiliares():
                     "%RURALCAJA%", "%CAJA RURAL DEL MEDITERRÁNEO%", "%CAJA RURAL DEL MEDITERRANEO%",
                     "%CAJAS RURALES UNIDAS%", "%CRU-CAJAS RURALES UNIDAS%",
                     "%GRUPO COOPERATIVO CAJAMAR%"
+                ],
+            ),
+            (
+                "SANTANDER CONSUMER FINANCE",
+                "UPPER(actual.nombre) LIKE 'SANTANDER CONSUMER FINANCE%'",
+                [
+                    "%BANCO DE FOMENTO%", "%BANCO INDUSTRIAL DE LEÓN%", "%BANCO INDUSTRIAL DE LEON%",
+                    "%BANCO CENTRAL HISPANO HIPOTECARIO%"
                 ],
             ),
             (
