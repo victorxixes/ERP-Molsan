@@ -7,7 +7,6 @@ import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario 
 
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
-import VisibilidadTablas from "../../components/expedientes/VisibilidadTablas";
 import { useAuthStore } from "../../store/authStore";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
@@ -1557,7 +1556,6 @@ export default function FichaExpediente() {
     mostrarCarpetaDigital,
     setMostrarCarpetaDigital,
   ] = useState(false);
-  const [mostrarVisibilidadTablas, setMostrarVisibilidadTablas] = useState(false);
   const [mostrarReclamarOficina, setMostrarReclamarOficina] = useState(false);
   const [emailReclamacion, setEmailReclamacion] = useState({ destinatario: "", asunto: "", cuerpo: "" });
   const [historicoReclamaciones, setHistoricoReclamaciones] = useState([]);
@@ -3867,14 +3865,6 @@ const cuantiaFincasParaEnvio =
               >
                 ← Expedientes
               </Link>
-              <button
-                type="button"
-                onClick={() => setMostrarVisibilidadTablas(true)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-violet-50 px-3 py-2 text-xs font-extrabold text-violet-800 shadow-sm hover:bg-violet-100 focus:outline-none focus:ring-2 focus:ring-violet-300"
-                title="Configurar las columnas del Excel y los repositorios de carpeta digital por actividad"
-              >
-                ⚙️ Visibilidad tablas
-              </button>
             </div>
 
             <div
@@ -4124,13 +4114,6 @@ const cuantiaFincasParaEnvio =
               {expedienteBloqueado ? "🔒 Control / desbloqueo" : "🔐 Control y bloqueo"}
             </Boton>
 
-            <Boton
-              tipo="secondary"
-              onClick={() => setMostrarVisibilidadTablas(true)}
-              className="!rounded-lg !px-2.5 !py-1.5 !text-[11px] !leading-tight"
-            >
-              ⚙️ Visibilidad tablas
-            </Boton>
 
             <Boton
               tipo="primary"
@@ -5090,7 +5073,6 @@ const cuantiaFincasParaEnvio =
         />
       )}
 
-      {mostrarVisibilidadTablas && <VisibilidadTablas onClose={() => setMostrarVisibilidadTablas(false)} />}
 
       <Modal
         open={mostrarReclamarOficina}
