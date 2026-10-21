@@ -1167,7 +1167,7 @@ def inicializar_tablas_auxiliares():
             ("Cajasol")
         ]
         with engine.begin() as conexion_semillas_caixabank:
-            for (nombre_historico,) in entidades_historicas_caixabank:
+            for nombre_historico in entidades_historicas_caixabank:
                 conexion_semillas_caixabank.execute(text("""
                     INSERT INTO public.entidades_bancarias
                         (codigo_europeo, lei, nombre, categoria, direccion, entidad_actual_id, activo)
