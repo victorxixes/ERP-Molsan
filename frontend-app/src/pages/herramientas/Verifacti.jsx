@@ -43,8 +43,8 @@ export default function Verifacti() {
         </div>
 
         <div className="mt-7 flex flex-wrap gap-3">
-          <a href="https://www.verifacti.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
-            Abrir web oficial de Verifacti <span aria-hidden="true">↗</span>
+          <a href="https://www.verifacti.com/docs" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
+            Abrir documentación API de Verifacti <span aria-hidden="true">↗</span>
           </a>
           <Link to="/herramientas/utilidades" className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
             Volver a Utilidades
