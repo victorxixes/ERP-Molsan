@@ -4122,15 +4122,13 @@ const cuantiaFincasParaEnvio =
               {expedienteBloqueado ? "🔒 Control / desbloqueo" : "🔐 Control y bloqueo"}
             </Boton>
 
-            {esAdministradorSesion && (
-              <Boton
-                tipo="secondary"
-                onClick={() => setMostrarVisibilidadTablas(true)}
-                className="!rounded-lg !px-2.5 !py-1.5 !text-[11px] !leading-tight"
-              >
-                ⚙️ Visibilidad tablas
-              </Boton>
-            )}
+            <Boton
+              tipo="secondary"
+              onClick={() => setMostrarVisibilidadTablas(true)}
+              className="!rounded-lg !px-2.5 !py-1.5 !text-[11px] !leading-tight"
+            >
+              ⚙️ Visibilidad tablas
+            </Boton>
 
             <Boton
               tipo="primary"
