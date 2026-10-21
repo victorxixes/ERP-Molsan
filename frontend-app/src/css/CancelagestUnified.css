@@ -1,0 +1,146 @@
+/* ============================================================
+   MOLSAN ERP · CancelaGest — sistema visual compartido
+   Alcance: áreas operativas comunes utilizadas desde CancelaGest.
+   No modifica estructura de datos, permisos ni lógica de negocio.
+   ============================================================ */
+
+.cg-unified-workspace {
+  --cg-primary: #3156b3;
+  --cg-primary-hover: #274694;
+  --cg-primary-soft: #edf3ff;
+  --cg-page-bg: #eef3f9;
+  --cg-surface: #ffffff;
+  --cg-surface-soft: #f6f8fc;
+  --cg-border: #d7e0ec;
+  --cg-border-light: #e6ebf2;
+  --cg-text: #24324a;
+  --cg-text-muted: #64748b;
+  --cg-radius: 12px;
+  --cg-shadow: 0 4px 12px rgba(15, 23, 42, .06);
+  color: var(--cg-text);
+  min-width: 0;
+}
+
+.cg-unified-workspace :is(h1, h2, h3, h4) {
+  color: #17233a;
+  letter-spacing: -.02em;
+}
+
+.cg-unified-workspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select, textarea) {
+  max-width: 100%;
+  color: var(--cg-text);
+  background-color: #fff;
+  border: 1px solid var(--cg-border-strong, #c4d0df);
+  border-radius: 8px;
+  box-shadow: none;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.cg-unified-workspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select) {
+  min-height: 38px;
+}
+
+.cg-unified-workspace textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.cg-unified-workspace :is(input, select, textarea):focus {
+  outline: none;
+  border-color: var(--cg-primary);
+  box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
+}
+
+.cg-unified-workspace :is(input, select, textarea):disabled {
+  color: #94a3b8;
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+.cg-unified-workspace table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--cg-text);
+  font-size: 12px;
+}
+
+.cg-unified-workspace :is(th, td) {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--cg-border-light);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.cg-unified-workspace th {
+  color: #52617a;
+  background: #f6f8fc;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .025em;
+  white-space: nowrap;
+}
+
+.cg-unified-workspace thead tr:first-child th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.cg-unified-workspace thead tr:first-child th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.cg-unified-workspace tbody tr {
+  transition: background-color .14s ease;
+}
+
+.cg-unified-workspace tbody tr:hover {
+  background-color: #f7f9fd;
+}
+
+.cg-unified-workspace tbody tr:last-child td {
+  border-bottom-color: var(--cg-border);
+}
+
+.cg-unified-workspace :is(.erp-card, .erp-card-soft) {
+  border-color: var(--cg-border);
+  box-shadow: var(--cg-shadow);
+}
+
+.cg-unified-workspace :is(.erp-card, .erp-card-soft, [data-cg-panel="true"]) {
+  border-radius: var(--cg-radius);
+}
+
+.cg-unified-workspace :is(button, [role="button"]) {
+  transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease;
+}
+
+.cg-unified-workspace :is(button, [role="button"]):focus-visible {
+  outline: 3px solid rgba(49, 86, 179, .22);
+  outline-offset: 2px;
+}
+
+.cg-unified-workspace button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.cg-unified-workspace :is(.overflow-x-auto, .table-responsive, [data-table-scroll="true"]) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.cg-unified-workspace :is(.badge, .estado-badge, [data-status]) {
+  border-radius: 999px;
+}
+
+@media (max-width: 768px) {
+  .cg-unified-workspace :is(th, td) {
+    padding: 8px 10px;
+  }
+
+  .cg-unified-workspace table {
+    min-width: 640px;
+  }
+}
