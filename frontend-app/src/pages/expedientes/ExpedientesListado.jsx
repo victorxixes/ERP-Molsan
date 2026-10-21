@@ -3214,6 +3214,7 @@ export default function ExpedientesListado() {
           expedienteId={carpetaDigitalSeleccionada.expedienteId}
           modoActividad={Boolean(carpetaDigitalSeleccionada.actividadId)}
           actividadId={carpetaDigitalSeleccionada.actividadId}
+          tipoOperacion={carpetaDigitalSeleccionada.tipo_operacion || carpetaDigitalSeleccionada.tipoOperacion || carpetaDigitalSeleccionada.operacion}
           onClose={() => setCarpetaDigitalSeleccionada(null)}
         />
       )}
