@@ -958,6 +958,8 @@ ALERTAS_CONTROL_EXPEDIENTES = [
     {"key": "facturacion_cierre", "label": "Liquidación y cierre fuera de plazo", "descripcion": "Más de 5 días desde la inscripción sin fecha fin de actividad", "icono": "💶"},
     {"key": "inscripcion_30_dias", "label": "Tramitación inscripción fuera de plazo", "descripcion": "Más de 23 días desde la liquidación tributaria sin fecha de presentación", "icono": "📑"},
     {"key": "sla_global", "label": "SLA global superado", "descripcion": "Más de 40 días para Propia entidad/Vinculada propia entidad o 70 días para Vinculada otra entidad/Otra entidad, desde el envío hasta Fin actividad o hoy", "icono": "⏱️"},
+    {"key": "sla_caixabank", "label": "Circuito CaixaBank fuera de plazo", "descripcion": "Más de 40 días desde el envío hasta Fin actividad o hoy para Propia entidad y Vinculada propia entidad", "icono": "🏦"},
+    {"key": "sla_otra_entidad", "label": "Circuito otra entidad fuera de plazo", "descripcion": "Más de 70 días desde el envío hasta Fin actividad o hoy para Vinculada otra entidad y Otra entidad", "icono": "🏢"},
 ]
 
 
@@ -968,7 +970,7 @@ def aplicar_filtro_alerta_control(q, clave_alerta: Optional[str], db: Session):
 
     hoy = date.today()
 
-    if clave_alerta == "sla_global":
+    if clave_alerta in {"sla_global", "sla_caixabank", "sla_otra_entidad"}:
         # SLA global independiente de los plazos por actividad.
         # Hipotecario y Crédito Stock se excluyen expresamente.
         expedientes = q.with_entities(
@@ -984,15 +986,26 @@ def aplicar_filtro_alerta_control(q, clave_alerta: Optional[str], db: Session):
             if producto_norm in {"hipotecario", "credito stock"}:
                 continue
             if producto_norm in {"propia entidad", "vinculada propia entidad"}:
+                circuito = "caixabank"
                 limite_sla = 40
             elif producto_norm in {"vinculada otra entidad", "otra entidad"}:
+                circuito = "otra_entidad"
                 limite_sla = 70
             else:
+                continue
+            if clave_alerta == "sla_caixabank" and circuito != "caixabank":
+                continue
+            if clave_alerta == "sla_otra_entidad" and circuito != "otra_entidad":
                 continue
             inicio = fecha_envio_notario or fecha_envio
             if not inicio:
                 continue
             fin = fecha_fin or hoy
+            # Las columnas pueden llegar como date o datetime según el driver.
+            if hasattr(inicio, "date"):
+                inicio = inicio.date()
+            if hasattr(fin, "date"):
+                fin = fin.date()
             if (fin - inicio).days > limite_sla:
                 ids_fuera_sla.append(expediente_id)
         return q.filter(Expediente.id.in_(ids_fuera_sla)) if ids_fuera_sla else q.filter(Expediente.id == -1)
