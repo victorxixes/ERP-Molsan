@@ -686,6 +686,13 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     },
 
     {
+      key: "catalogos",
+      to: "/catalogos",
+      label: "Catálogos",
+      icon: "database",
+    },
+
+    {
       key: "utilidades",
       to: "/herramientas/utilidades",
       label: "Utilidades",
