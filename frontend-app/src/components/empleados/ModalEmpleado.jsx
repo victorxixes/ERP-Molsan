@@ -30,6 +30,7 @@ import {
 
 import MODULOS_ERP from "../../config/modulos";
 import AuthenticatedPhoto from "../AuthenticatedPhoto";
+import VisibilidadTablas from "../expedientes/VisibilidadTablas";
 import { useAuthStore } from "../../store/authStore";
 
 // ============================================================
@@ -2074,6 +2075,7 @@ const permisosDisponibles =
     { id: "accesos", label: "Accesos", icon: "🔐" },
     { id: "encargagest", label: "EncargaGest", icon: "🏛️" },
     { id: "asignaciones", label: "Asignaciones", icon: "⚖️" },
+    { id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "📊" },
     { id: "seguridad", label: "Seguridad", icon: "🛡️" },
     { id: "auditoria", label: "Auditoría", icon: "📋" },
   ];
@@ -2447,6 +2449,8 @@ const permisosDisponibles =
         {/* ====================================================
             CONTENIDO
         ==================================================== */}
+
+        {pestana === "visibilidad-tablas" && <div className="p-4 sm:p-6"><div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 p-4"><h3 className="text-sm font-extrabold text-blue-900">Configuración por actividad</h3><p className="mt-1 text-xs text-blue-800">Configura las columnas de Excel y los repositorios de carpeta digital para cada actividad y guarda cada configuración por separado.</p></div><VisibilidadTablas onClose={() => setPestana("basicos")} /></div>}
 
         <div
           className="
