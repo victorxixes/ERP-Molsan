@@ -5448,6 +5448,7 @@ const cuantiaFincasParaEnvio =
                 expedienteId={expediente?.id_expediente || id}
                 modoActividad
                 actividadId={actividadSeleccionada}
+                tipoOperacion={expediente?.tipo_operacion || expediente?.tipoOperacion || expediente?.operacion}
                 onDocumentosChange={
                   actividadSeleccionada === "documentacion-previa"
                     ? setDocumentosCarpetaPrevia
