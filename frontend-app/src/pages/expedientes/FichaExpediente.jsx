@@ -5491,8 +5491,26 @@ const cuantiaFincasParaEnvio =
                 <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                   <Dato campo="Expediente" valor={expediente?.id_expediente ?? expediente?.expediente} />
                   <Dato campo="Notario" valor={expediente?.nombre_notario ?? expediente?.notario} />
-                  <Dato campo="Tipo de documento" valor={expediente?.tipo_documento ?? expediente?.documentos_escritura?.map((d) => d?.tipo_documento).filter(Boolean).join(" · ")} />
-                  <Dato campo="Cuantía" valor={[expediente?.documentos_escritura?.[0]?.cuantia, cuantiaFincasParaEnvio, expediente?.cuantia, expediente?.finca_cuantia].find((valor) => valor !== null && valor !== undefined && valor !== "")} tipo="numero" />
+                  <Dato campo="NIF notario" valor={expediente?.nif_notario} />
+                  <Dato
+                    campo="Tipo del documento formalizado"
+                    valor={
+                      Array.isArray(expediente?.documentos_escritura) && expediente.documentos_escritura.length
+                        ? expediente.documentos_escritura.map((documento) => documento?.tipo_documento).filter(Boolean).join(" · ")
+                        : expediente?.tipo_documento
+                    }
+                  />
+                  <Dato
+                    campo="Cuantía del documento"
+                    valor={
+                      Array.isArray(expediente?.documentos_escritura) && expediente.documentos_escritura.length
+                        ? expediente.documentos_escritura.map((documento) => {
+                            if (documento?.cuantia === null || documento?.cuantia === undefined || documento?.cuantia === "") return "Sin cuantía";
+                            return `${Number(documento.cuantia).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+                          }).join(" · ")
+                        : [expediente?.cuantia, expediente?.finca_cuantia, cuantiaFincasParaEnvio].find((valor) => valor !== null && valor !== undefined && valor !== "")
+                    }
+                  />
                   <Dato campo="Formato de escritura" valor={expediente?.formato_escritura ?? expediente?.formato_escritura_notarial} />
                   <Dato campo="Tipo de trámite" valor={expediente?.tipo_tramite ?? expediente?.tipo_tramite_notarial ?? expediente?.tramite} />
                   <Dato campo="Fecha de envío" valor={expediente?.fecha_envio_notario || expediente?.fecha_envio} tipo="fecha" />
