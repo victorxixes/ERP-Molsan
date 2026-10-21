@@ -3,6 +3,7 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
+    ForeignKey,
     UniqueConstraint,
 )
 
@@ -75,6 +76,17 @@ class EntidadBancaria(Base):
     direccion = Column(
         String(400),
         nullable=True,
+    )
+
+    # ========================================================
+    # ENTIDAD ACTUAL (RELACIÓN CON OTRA ENTIDAD DEL CATÁLOGO)
+    # ========================================================
+
+    entidad_actual_id = Column(
+        Integer,
+        ForeignKey("entidades_bancarias.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
     )
 
     # ========================================================
