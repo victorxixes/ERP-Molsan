@@ -95,7 +95,11 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
                     apoderado_regla_id = int(apoderado_regla_id)
                 except (TypeError, ValueError):
                     continue
-                if apoderado_expediente_id is None or int(apoderado_expediente_id) != apoderado_regla_id:
+                try:
+                    apoderado_real_id = int(apoderado_expediente_id)
+                except (TypeError, ValueError):
+                    continue
+                if apoderado_real_id != apoderado_regla_id:
                     continue
 
             if regla.get("zona_territorial"):
