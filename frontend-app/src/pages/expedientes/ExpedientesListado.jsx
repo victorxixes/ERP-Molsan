@@ -1114,6 +1114,7 @@ export default function ExpedientesListado() {
 
   const [alertasControl, setAlertasControl] = useState([]);
   const [loadingAlertasControl, setLoadingAlertasControl] = useState(true);
+  const [mostrarAyudaControlPlazos, setMostrarAyudaControlPlazos] = useState(false);
   const [alertaSeleccionada, setAlertaSeleccionada] = useState("");
 
   // ==========================================================
@@ -2569,9 +2570,15 @@ export default function ExpedientesListado() {
             </button>;
           })}
         </div>
-        <div role="note" className="rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)", color: "var(--erp-text)" }}>
-          <span className="font-bold">📌 Control de plazos:</span>
-          <span className="ml-1">Los recuentos por actividad son independientes del SLA global: Sede notarial 5 días; Sede notarial con protocolo 2; Liquidación de impuestos 2; Tramitación inscripción 23; Defectos registrales 60; Liquidación y cierre 5. Documentación previa no tiene plazo de vencimiento. SLA global superado: {formatearNumero(Number(alertasControl.find((item) => item.key === "sla_global")?.total || 0))} expedientes. El SLA global se calcula desde el envío hasta Fin actividad o hoy: 40 días para Propia entidad/Vinculada propia entidad y 70 días para Vinculada otra entidad/Otra entidad; Hipotecario y Crédito Stock se excluyen.</span>
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => setMostrarAyudaControlPlazos(true)}
+            className="inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+            style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-primary)" }}
+          >
+            📌 Ver Control de plazos
+          </button>
         </div>
       </section>
       </div>
@@ -3205,6 +3212,37 @@ export default function ExpedientesListado() {
                 Aplicar filtros
               </button>
             </div>
+          </section>
+        </div>
+      )}
+
+      {mostrarAyudaControlPlazos && (
+        <div className="fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/60 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setMostrarAyudaControlPlazos(false); }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="titulo-control-plazos" className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+            <header className="flex items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
+              <div>
+                <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Expedientes</p>
+                <h2 id="titulo-control-plazos" className="mt-1 text-lg font-extrabold text-slate-900">📌 Control de plazos</h2>
+              </div>
+              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} aria-label="Cerrar" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕</button>
+            </header>
+            <div className="space-y-3 px-5 py-5 text-sm leading-6 text-slate-700">
+              <p>Los recuentos por actividad son independientes del SLA global:</p>
+              <ul className="list-disc space-y-1 pl-5">
+                <li>Sede notarial: 5 días.</li>
+                <li>Sede notarial con protocolo: 2 días.</li>
+                <li>Liquidación de impuestos: 2 días.</li>
+                <li>Tramitación inscripción: 23 días.</li>
+                <li>Defectos registrales: 60 días.</li>
+                <li>Liquidación y cierre: 5 días.</li>
+                <li>Documentación previa no tiene plazo de vencimiento.</li>
+              </ul>
+              <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 font-semibold text-amber-900">SLA global superado: {formatearNumero(Number(alertasControl.find((item) => item.key === "sla_global")?.total || 0))} expedientes.</p>
+              <p>El SLA global se calcula desde el envío hasta Fin actividad o hoy: 40 días para Propia entidad/Vinculada propia entidad y 70 días para Vinculada otra entidad/Otra entidad. Hipotecario y Crédito Stock se excluyen.</p>
+            </div>
+            <footer className="flex justify-end border-t border-slate-200 bg-slate-50 px-5 py-3">
+              <button type="button" onClick={() => setMostrarAyudaControlPlazos(false)} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white hover:bg-indigo-700">Cerrar</button>
+            </footer>
           </section>
         </div>
       )}
