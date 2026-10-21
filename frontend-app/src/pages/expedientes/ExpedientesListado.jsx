@@ -2796,19 +2796,10 @@ export default function ExpedientesListado() {
                               columna.key
                             }
 
-                            className="
-                              px-4
-                              py-3
-
-                              whitespace-nowrap
-
-                              max-w-[400px]
-
-                              overflow-hidden
-                              text-ellipsis
-
-                              text-[var(--erp-text)]
-                            "
+                            className={REPOSITORIOS_CARPETA_DIGITAL.some((item) => item.key === columna.key)
+                              ? "relative px-4 py-3 whitespace-nowrap max-w-[400px] overflow-visible text-[var(--erp-text)]"
+                              : "px-4 py-3 whitespace-nowrap max-w-[400px] overflow-hidden text-ellipsis text-[var(--erp-text)]"
+                            }
 
                             title={
                               expediente[
