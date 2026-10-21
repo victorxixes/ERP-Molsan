@@ -165,9 +165,15 @@ export default function CarpetaDigitalModal({
       "Mails de la Oficina": "emails_oficina",
       "Otros": "otros_documentos",
     };
+    // La configuración puede asignar cualquier repositorio a cualquier actividad,
+    // por lo que se filtra sobre el catálogo completo, no solo sobre el bloque histórico.
+    const todasLasCategorias = [...BLOQUES.flatMap((item) => item.categorias), ...CATEGORIAS_OTROS];
+    const categoriasUnicas = todasLasCategorias.filter((item, index, lista) =>
+      lista.findIndex((otra) => otra.categoria === item.categoria) === index
+    );
     return [{
       ...bloque,
-      categorias: bloque.categorias.filter((item) => configRepositorios.includes(clavePorCategoria[item.categoria])),
+      categorias: categoriasUnicas.filter((item) => configRepositorios.includes(clavePorCategoria[item.categoria])),
     }];
   }, [modoActividad, bloqueActividad, configRepositorios]);
 
