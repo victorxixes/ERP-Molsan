@@ -2,6 +2,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from backend.app.empleados.models import Empleado
+from backend.app.maestros.models import Departamento
 from backend.app.expedientes.models import Expediente
 
 
@@ -61,12 +62,42 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
 
     comunidad = comunidad_expediente(expediente)
     candidatos = []
+    # Resolver los nombres de departamento una sola vez para comparar el
+    # criterio de la ficha (nombre) con el departamento real del empleado.
+    departamentos_por_id = {
+        departamento.id: departamento.nombre
+        for departamento in db.query(Departamento).all()
+    }
+    apoderado_expediente_id = getattr(expediente, "apoderado_empleado_id", None)
     for empleado in db.query(Empleado).filter(Empleado.activo.is_(True)).all():
         reglas = getattr(empleado, "reparto_actividades_json", None) or []
         porcentaje = 0.0
         for regla in reglas:
             if not isinstance(regla, dict) or not regla.get("activa", True) or regla.get("actividad") != actividad_key:
                 continue
+
+            # Departamento en la regla significa el departamento al que
+            # pertenece el empleado candidato. Las reglas sin departamento
+            # siguen siendo compatibles con la configuración anterior.
+            departamento_regla = normalizar(regla.get("departamento"))
+            if departamento_regla:
+                departamento_empleado = normalizar(
+                    departamentos_por_id.get(getattr(empleado, "departamento_id", None))
+                )
+                if departamento_empleado != departamento_regla:
+                    continue
+
+            # Un apoderado específico limita la regla a expedientes con ese
+            # apoderado relacionado. Si no coincide, no aplica la regla.
+            apoderado_regla_id = regla.get("apoderado_id")
+            if apoderado_regla_id not in (None, "", 0, "0"):
+                try:
+                    apoderado_regla_id = int(apoderado_regla_id)
+                except (TypeError, ValueError):
+                    continue
+                if apoderado_expediente_id is None or int(apoderado_expediente_id) != apoderado_regla_id:
+                    continue
+
             if regla.get("zona_territorial"):
                 zonas = regla.get("comunidades")
                 if not isinstance(zonas, list):
