@@ -1256,6 +1256,7 @@ def listado_expedientes(
     ordenMultiple: Optional[str] = Query(None),
     alerta: Optional[str] = Query(None, description="Filtra por una alerta de control"),
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     q = aplicar_filtros(
         db.query(Expediente),
@@ -1307,6 +1308,7 @@ def listado_expedientes(
     )
     q = aplicar_busqueda_rapida(q, busqueda)
     q = aplicar_filtro_alerta_control(q, alerta, db)
+    q = aplicar_ambito_reparto(q, db, usuario)
 
     orden_aplicado = False
 
@@ -1383,10 +1385,10 @@ def listado_expedientes(
 @router.get("/resumen")
 def resumen_expedientes(
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
-    total_expedientes = (
-        db.query(func.count(Expediente.id)).scalar() or 0
-    )
+    consulta_visible = aplicar_ambito_reparto(db.query(Expediente), db, usuario)
+    total_expedientes = consulta_visible.with_entities(func.count(Expediente.id)).scalar() or 0
 
     actividades = []
 
@@ -1395,10 +1397,9 @@ def resumen_expedientes(
 
         if condicion is not None:
             total = (
-                db.query(func.count(Expediente.id))
-                .filter(condicion)
-                .scalar()
-                or 0
+                consulta_visible.filter(condicion)
+                .with_entities(func.count(Expediente.id))
+                .scalar() or 0
             )
         else:
             total = 0
@@ -1422,6 +1423,7 @@ def resumen_expedientes(
 @router.get("/catalogos-listado")
 def catalogos_listado_expedientes(
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     """Devuelve opciones globales para los filtros, sin depender de la página actual."""
 
@@ -1561,6 +1563,7 @@ def exportar_excel_expedientes(
     faltaDefecto: Optional[str] = None,
     alerta: Optional[str] = Query(None, description="Filtra por una alerta de control"),
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     q = aplicar_filtros(
         db.query(Expediente),
@@ -1611,6 +1614,7 @@ def exportar_excel_expedientes(
         faltaDefecto=faltaDefecto,
     )
     q = aplicar_filtro_alerta_control(q, alerta, db)
+    q = aplicar_ambito_reparto(q, db, usuario)
     q = aplicar_ambito_reparto(q, db, usuario)
 
     expedientes = (
@@ -3039,6 +3043,7 @@ def actualizar_control_bloqueo(
 def obtener_expediente(
     id_expediente: str,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     expediente = (
         db.query(Expediente)
