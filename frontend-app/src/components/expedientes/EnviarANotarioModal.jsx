@@ -1221,18 +1221,26 @@ export default function EnviarANotarioModal({
               />
 
               <Resumen
+                label="NIF notario"
+                valor={notario?.nif}
+              />
+
+              <Resumen
                 label="Notario otorgante (firma real)"
                 valor={obtenerValor(expediente, "notario_otorgante") || "Pendiente de confirmar firma"}
               />
 
               <Resumen
-                label="Tipo de documento"
-                valor={form.tipo_documento}
+                label="Tipo del documento formalizado"
+                valor={documentosEscritura.map((documento) => documento.tipo_documento).filter(Boolean).join(" · ") || form.tipo_documento}
               />
 
               <Resumen
-                label="Cuantía"
-                valor={String(cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
+                label="Cuantía del documento"
+                valor={documentosEscritura.map((documento) => {
+                  if (documento.cuantia === null || documento.cuantia === undefined || documento.cuantia === "") return "Sin cuantía";
+                  return `${Number(documento.cuantia).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+                }).join(" · ") || String(cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
                   ? cuantiaFincas
                   : (expediente?.cuantia ?? expediente?.finca_cuantia ?? "—"))}
               />
