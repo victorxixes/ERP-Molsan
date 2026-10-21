@@ -885,6 +885,79 @@ def inicializar_tablas_auxiliares():
                 "REFERENCES public.entidades_bancarias(id) ON DELETE SET NULL"
             ))
         print("[ENTIDADES BANCARIAS] Columna entidad_actual_id comprobada.", flush=True)
+        # Completa automáticamente sucesiones bancarias históricas conocidas.
+        # Solo rellena relaciones vacías: nunca sobrescribe una asignación manual.
+        with engine.begin() as conexion_sucesiones_bancarias:
+            conexion_sucesiones_bancarias.execute(text("""
+                UPDATE public.entidades_bancarias AS origen
+                SET entidad_actual_id = (
+                    SELECT actual.id
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND actual.id <> origen.id
+                      AND (
+                          UPPER(actual.nombre) = 'CAIXABANK'
+                          OR UPPER(actual.nombre) LIKE 'CAIXABANK,%'
+                          OR UPPER(actual.nombre) LIKE 'CAIXABANK %'
+                      )
+                    ORDER BY
+                      CASE WHEN UPPER(actual.nombre) = 'CAIXABANK' THEN 0 ELSE 1 END,
+                      actual.id
+                    LIMIT 1
+                )
+                WHERE origen.entidad_actual_id IS NULL
+                  AND (
+                    UPPER(origen.nombre) LIKE '%BARCLAYS BANK SUCURSAL EN ESPAÑA%'
+                    OR UPPER(origen.nombre) LIKE '%BANCA CÍVICA%'
+                    OR UPPER(origen.nombre) LIKE '%BANCAJA%'
+                    OR UPPER(origen.nombre) LIKE '%BANKIA%'
+                    OR UPPER(origen.nombre) = 'BFA'
+                    OR UPPER(origen.nombre) LIKE '%BANCO MARE NOSTRUM%'
+                    OR UPPER(origen.nombre) LIKE '%BANCO DE VALENCIA%'
+                    OR UPPER(origen.nombre) LIKE '%BANCO DE MURCIA%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA GIRONA%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA LAIETANA%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA ESTALVIS LAIETANA%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA PENEDÈS%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA PENEDES%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA ÁVILA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA AVILA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS DE LA RIOJA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA GRANADA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA INSULAR CANARIAS%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA MADRID%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA MURCIA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA RIOJA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA SEGOVIA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJASOL%'
+                    OR UPPER(origen.nombre) LIKE '%SA NOSTRA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA GENERAL DE AHORROS DE CANARIAS%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y PENSIONES DE BARCELONA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE BARCELONA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS MUNICIPAL DE BURGOS%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD MUNICIPAL DE PAMPLONA%'
+                    OR UPPER(origen.nombre) LIKE '%MONTE DE PIEDAD Y CAJA DE AHORROS DE HUELVA Y SEVILLA%'
+                    OR UPPER(origen.nombre) LIKE '%MONTE DE PIEDAD Y CAJA DE AHORROS SAN FERNANDO%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS PROVINCIAL SAN FERNANDO%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS DE VALENCIA, CASTELLÓN Y ALICANTE%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS DE VALENCIA, CASTELLON Y ALICANTE%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE ÁVILA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE AVILA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE SEGOVIA%'
+                  )
+                  AND EXISTS (
+                    SELECT 1
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND actual.id <> origen.id
+                      AND (
+                          UPPER(actual.nombre) = 'CAIXABANK'
+                          OR UPPER(actual.nombre) LIKE 'CAIXABANK,%'
+                          OR UPPER(actual.nombre) LIKE 'CAIXABANK %'
+                      )
+                  )
+            """))
+        print("[ENTIDADES BANCARIAS] Sucesiones históricas conocidas de CaixaBank comprobadas.", flush=True)
         with engine.begin() as conexion_complementos:
             conexion_complementos.execute(text(
                 "ALTER TABLE public.complementos_saldo ADD COLUMN IF NOT EXISTS provisionado DOUBLE PRECISION NOT NULL DEFAULT 0"
