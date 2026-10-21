@@ -651,6 +651,10 @@ def importar_excel_entidades_bancarias(
 
                 cambio = False
 
+                if codigo and existente.codigo_europeo != codigo:
+                    existente.codigo_europeo = codigo
+                    cambio = True
+
                 if existente.lei != lei:
 
                     existente.lei = lei
