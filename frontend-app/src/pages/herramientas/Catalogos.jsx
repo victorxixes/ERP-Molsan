@@ -57,6 +57,13 @@ const CATALOGOS = [
     grupo: "Catálogos económicos",
   },
   {
+    icon: "🗂️",
+    titulo: "Maestros generales",
+    descripcion: "Acceso al catálogo general de datos maestros del ERP.",
+    ruta: "/maestros",
+    grupo: "Catálogos operativos",
+  },
+  {
     icon: "📋",
     titulo: "Acciones del expediente",
     descripcion: "Acciones y actividades utilizadas en el circuito de expedientes.",
