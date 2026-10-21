@@ -665,7 +665,7 @@ const CATEGORIAS_POR_REPOSITORIO = {
   otros_documentos: ["Otros"],
 };
 
-function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, actividadId, onAbrir }) {
+function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir }) {
   const [hover, setHover] = useState(false);
   const [cargandoDocs, setCargandoDocs] = useState(false);
   const [documentos, setDocumentos] = useState([]);
@@ -2813,7 +2813,6 @@ export default function ExpedientesListado() {
                                 expedienteId={expediente.id_expediente || expediente.id}
                                 repositorioKey={columna.key}
                                 valor={expediente[columna.key]}
-                                actividadId={actividadSeleccionada}
                                 onAbrir={() => setCarpetaDigitalSeleccionada({
                                   expedienteId: expediente.id_expediente || expediente.id,
                                   actividadId: actividadSeleccionada,
