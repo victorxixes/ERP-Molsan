@@ -618,14 +618,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     },
 
     {
-      key: "provisiones-fondos",
-      permiso: "expedientes",
-      to: "/provisiones-fondos",
-      label: "Provisiones de fondos",
-      icon: "clipboard",
-    },
-
-    {
       key: "agenda",
       to: "/agenda",
       label: "Agenda",
@@ -698,6 +690,14 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       to: "/herramientas/utilidades",
       label: "Utilidades",
       icon: "cog",
+    },
+
+    {
+      key: "provisiones-fondos",
+      permiso: "expedientes",
+      to: "/provisiones-fondos",
+      label: "Provisiones de fondos",
+      icon: "clipboard",
     },
 
     {
@@ -805,7 +805,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   // El filtrado de visiblesSecundarios conserva los permisos del empleado.
   const modulosFijados = useMemo(() => {
     const accesosPorMarca = {
-      cancelagest: ["utilidades", "notargest", "apoderagest", "encargagest"],
+      cancelagest: ["utilidades", "provisiones-fondos"],
       apoderagest: ["cancelagest"],
     };
     const claves = accesosPorMarca[normalizarModulo(brandName)] || [];
@@ -833,6 +833,24 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   // ApoderaGest y NotarGest tienen una navegación de trabajo específica;
   // ocultamos «Más» en ambos para mantener sus barras despejadas.
+  const modulosDropdown = useMemo(() => {
+    const claves = new Set(["apoderagest", "notargest", "encargagest"]);
+    return visiblesSecundarios.filter((modulo) => claves.has(modulo.key));
+  }, [visiblesSecundarios]);
+
+  const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
+  const modulosDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const cerrarFuera = (event) => {
+      if (!modulosDropdownRef.current?.contains(event.target)) {
+        setModulosDropdownAbierto(false);
+      }
+    };
+    document.addEventListener("mousedown", cerrarFuera);
+    return () => document.removeEventListener("mousedown", cerrarFuera);
+  }, []);
+
   const mostrarBotonMas = modulosMas.length > 0 &&
     !["apoderagest", "notargest", "encargagest"].includes(normalizarModulo(brandName));
 
@@ -1007,7 +1025,51 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               />
             ))}
 
-
+            {modulosDropdown.length > 0 && !navigationItems && (
+              <div className="relative flex-shrink-0" ref={modulosDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setModulosDropdownAbierto((abierto) => !abierto)}
+                  aria-haspopup="menu"
+                  aria-expanded={modulosDropdownAbierto}
+                  className={`
+                    flex items-center gap-2 px-3 py-2 rounded-xl whitespace-nowrap text-sm font-medium
+                    transition-all duration-200 border
+                    ${modulosDropdownAbierto || modulosDropdown.some((m) => window.location.pathname.startsWith(m.to))
+                      ? "bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] border-[var(--erp-primary)]"
+                      : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"}
+                  `}
+                >
+                  <NavIcon name="folder" />
+                  <span>Módulos</span>
+                  <ChevronIcon open={modulosDropdownAbierto} />
+                </button>
+                {modulosDropdownAbierto && (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full mt-2 z-[100] min-w-[205px] rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-xl"
+                  >
+                    {modulosDropdown.map((modulo) => (
+                      <NavLink
+                        key={modulo.key}
+                        to={modulo.to}
+                        onClick={() => setModulosDropdownAbierto(false)}
+                        role="menuitem"
+                        className={({ isActive }) => `
+                          flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition
+                          ${isActive
+                            ? "bg-[var(--erp-primary)] text-white"
+                            : "text-[var(--erp-text)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}
+                        `}
+                      >
+                        <NavIcon name={modulo.icon} />
+                        <span>{modulo.label}</span>
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
           </nav>
 
