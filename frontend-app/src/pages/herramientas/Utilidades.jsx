@@ -27,6 +27,7 @@ export default function Utilidades() {
       <Grupo titulo="Integraciones y comunicaciones" descripcion="Seguimiento de los procesos de intercambio de información con los sistemas de nuestros clientes.">
         <Card icon="✉️" titulo="Correspondencia tipificada" descripcion="Crea plantillas de email por proceso y genera mensajes con datos reales de la ficha del expediente." link="/herramientas/utilidades/correspondencia-tipificada" destacado />
         <Card icon="🔄" titulo="Proceso de ABSIS" descripcion="Control de expedientes enviados, errores detectados e incidencias, con buscador, acciones y exportación Excel." link="/herramientas/utilidades/proceso-absis" destacado />
+        <Card icon="🧾" titulo="Verifacti" descripcion="Acceso al futuro panel de control de Verifacti para consultar la integración y el estado de los registros de facturación." link="/herramientas/utilidades/verifacti" enConstruccion />
       </Grupo>
 
       <Grupo titulo="Control económico" descripcion="Seguimiento de los PPAD pendientes de compensar y de los ya compensados.">
