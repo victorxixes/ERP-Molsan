@@ -660,6 +660,13 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       icon: "fusion",
     },
 
+    {
+      key: "catalogos",
+      to: "/catalogos",
+      label: "Catálogos",
+      icon: "database",
+    },
+
   ];
 
 
@@ -683,13 +690,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       to: "/informes",
       label: "Informes",
       icon: "chart",
-    },
-
-    {
-      key: "catalogos",
-      to: "/catalogos",
-      label: "Catálogos",
-      icon: "database",
     },
 
     {
