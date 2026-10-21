@@ -23,6 +23,7 @@ class TarifaProvision(Base):
     id = Column(Integer, primary_key=True, index=True)
     tipo = Column(String(20), nullable=False, index=True)  # provision | cancelacion
     entidad = Column(String(300), nullable=False, default="*", index=True)
+    territorio = Column(String(20), nullable=False, default="Península", server_default="Península", index=True)
     capital_minimo = Column(Numeric(14, 2), nullable=False, default=0)
     capital_maximo = Column(Numeric(14, 2), nullable=True)
     honorarios = Column(Numeric(14, 2), nullable=False, default=0)
