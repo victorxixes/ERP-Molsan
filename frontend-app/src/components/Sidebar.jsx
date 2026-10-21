@@ -1110,28 +1110,38 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
             ))}
 
             {modulosDropdown.length > 0 && !navigationItems && (
-              <div className="relative flex-shrink-0" ref={modulosDropdownRef}>
-                <button
-                  type="button"
-                  onClick={() => setModulosDropdownAbierto((abierto) => !abierto)}
-                  aria-haspopup="menu"
-                  aria-expanded={modulosDropdownAbierto}
-                  className={`
-                    flex items-center gap-2 px-3 py-2 rounded-xl whitespace-nowrap text-sm font-medium
-                    transition-all duration-200 border
-                    ${modulosDropdownAbierto || modulosDropdown.some((m) => window.location.pathname.startsWith(m.to))
-                      ? "bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] border-[var(--erp-primary)]"
-                      : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"}
-                  `}
-                >
-                  <NavIcon name="folder" />
-                  <span>Módulos</span>
-                  <ChevronIcon open={modulosDropdownAbierto} />
-                </button>
-                {modulosDropdownAbierto && (
+              <>
+                <div className="relative flex-shrink-0" ref={modulosDropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setModulosDropdownAbierto((abierto) => !abierto)}
+                    aria-haspopup="menu"
+                    aria-expanded={modulosDropdownAbierto}
+                    className={`
+                      flex items-center gap-2 px-3 py-2 rounded-xl whitespace-nowrap text-sm font-medium
+                      transition-all duration-200 border
+                      ${modulosDropdownAbierto || modulosDropdown.some((m) => window.location.pathname.startsWith(m.to))
+                        ? "bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] border-[var(--erp-primary)]"
+                        : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"}
+                    `}
+                  >
+                    <NavIcon name="folder" />
+                    <span>Módulos</span>
+                    <ChevronIcon open={modulosDropdownAbierto} />
+                  </button>
+                </div>
+                {modulosDropdownAbierto && modulosDropdownPosicion && createPortal(
                   <div
+                    ref={modulosDropdownMenuRef}
                     role="menu"
-                    className="absolute right-0 top-full mt-2 z-[100] min-w-[205px] rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-xl"
+                    style={{
+                      position: "fixed",
+                      top: modulosDropdownPosicion.top,
+                      left: modulosDropdownPosicion.left,
+                      width: Math.max(205, modulosDropdownPosicion.ancho),
+                      zIndex: 9999,
+                    }}
+                    className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl"
                   >
                     {modulosDropdown.map((modulo) => (
                       <NavLink
@@ -1150,9 +1160,10 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                         <span>{modulo.label}</span>
                       </NavLink>
                     ))}
-                  </div>
+                  </div>,
+                  document.body
                 )}
-              </div>
+              </>
             )}
 
           </nav>
