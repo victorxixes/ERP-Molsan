@@ -934,7 +934,9 @@ export default function ExpedientesListado() {
     }
     const normalizar = (valor) => String(valor || "").trim().toLocaleLowerCase("es")
       .normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
+    // La selección de los grids guarda la clave de actividad (no la etiqueta).
     const definicion = ACTIVIDADES_EXPEDIENTES.find((item) =>
+      item.key === actividadSeleccionada ||
       [item.label, ...(item.aliases || [])].some((alias) => normalizar(alias) === normalizar(actividadSeleccionada))
     );
     const config = definicion && configuracionesVisibilidad.find((item) => item.actividad_key === definicion.key);
