@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import axios from "../../api/axios";
 import "../../css/Cancelagest.css";
+import "../../css/CancelagestUnified.css";
 
 const MODULOS = [
   { titulo: "Expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "▤", ruta: "/expedientes" },

@@ -21,6 +21,7 @@ import ModuloPendiente from "./pages/ModuloPendiente";
 
 /* DASHBOARD */
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
+import Cancelagest from "./pages/cancelagest/Cancelagest.jsx";
 
 /* AGENDA */
 import Agenda from "./pages/agenda/Agenda.jsx";
@@ -214,7 +215,7 @@ export default function App() {
 
                 <Route
           path="cancelagest"
-          element={<RequireAuth><Navigate to="/dashboard" replace /></RequireAuth>}
+          element={<RequireAuth><Cancelagest /></RequireAuth>}
         />
         
         <Route

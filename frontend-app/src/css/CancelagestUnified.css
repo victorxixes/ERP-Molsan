@@ -1,0 +1,236 @@
+/* ============================================================
+   MOLSAN ERP · CancelaGest — sistema visual compartido
+   Alcance: áreas operativas comunes utilizadas desde CancelaGest.
+   No modifica estructura de datos, permisos ni lógica de negocio.
+   ============================================================ */
+
+.cg-unified-workspace {
+  --cg-primary: #3156b3;
+  --cg-primary-hover: #274694;
+  --cg-primary-soft: #edf3ff;
+  --cg-page-bg: #eef3f9;
+  --cg-surface: #ffffff;
+  --cg-surface-soft: #f6f8fc;
+  --cg-border: #d7e0ec;
+  --cg-border-light: #e6ebf2;
+  --cg-text: #24324a;
+  --cg-text-muted: #64748b;
+  --cg-radius: 12px;
+  --cg-shadow: 0 4px 12px rgba(15, 23, 42, .06);
+  color: var(--cg-text);
+  min-width: 0;
+}
+
+.cg-unified-workspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select, textarea) {
+  max-width: 100%;
+  color: var(--cg-text);
+  background-color: #fff;
+  border: 1px solid var(--cg-border-strong, #c4d0df);
+  border-radius: 8px;
+  box-shadow: none;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.cg-unified-workspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select) {
+  min-height: 38px;
+}
+
+.cg-unified-workspace textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.cg-unified-workspace :is(input, select, textarea):focus {
+  outline: none;
+  border-color: var(--cg-primary);
+  box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
+}
+
+.cg-unified-workspace :is(input, select, textarea):disabled {
+  color: #94a3b8;
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+.cg-unified-workspace table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--cg-text);
+  font-size: 12px;
+}
+
+.cg-unified-workspace table :is(th, td) {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--cg-border-light);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.cg-unified-workspace table th {
+  color: #52617a;
+  background: #f6f8fc;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .025em;
+  white-space: nowrap;
+}
+
+.cg-unified-workspace table thead tr:first-child th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.cg-unified-workspace table thead tr:first-child th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.cg-unified-workspace table tbody tr {
+  transition: background-color .14s ease;
+}
+
+.cg-unified-workspace table tbody tr:hover {
+  background-color: #f7f9fd;
+}
+
+.cg-unified-workspace table tbody tr:last-child td {
+  border-bottom-color: var(--cg-border);
+}
+
+.cg-unified-workspace :is(.erp-card, .erp-card-soft) {
+  border-color: var(--cg-border);
+  box-shadow: var(--cg-shadow);
+}
+
+.cg-unified-workspace :is(.erp-card, .erp-card-soft, [data-cg-panel="true"]) {
+  border-radius: var(--cg-radius);
+}
+
+.cg-unified-workspace :is(button, [role="button"]) {
+  transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease;
+}
+
+.cg-unified-workspace :is(button, [role="button"]):focus-visible {
+  outline: 3px solid rgba(49, 86, 179, .22);
+  outline-offset: 2px;
+}
+
+.cg-unified-workspace button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.cg-unified-workspace :is(.overflow-x-auto, .table-responsive, [data-table-scroll="true"]) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.cg-unified-workspace :is(.badge, .estado-badge, [data-status]) {
+  border-radius: 999px;
+}
+
+/* CTN conserva su estructura propia, pero comparte los tokens del ERP. */
+.cg-unified-workspace .ctn-listado-page {
+  --ctn-bg: var(--cg-page-bg);
+  --ctn-panel: var(--cg-surface);
+  --ctn-border: var(--cg-border);
+  --ctn-text: var(--cg-text);
+  --ctn-muted: var(--cg-text-muted);
+  --ctn-primary: var(--cg-primary);
+  --ctn-primary-dark: var(--cg-primary-hover);
+  --ctn-accent: var(--cg-primary);
+}
+
+.cg-unified-workspace .ctn-listado-page :is(input, select, textarea) {
+  min-height: 38px;
+  border-radius: 8px;
+  border-color: var(--cg-border);
+  font: inherit;
+}
+
+.cg-unified-workspace .ctn-listado-page :is(input, select, textarea):focus-visible {
+  outline: none;
+  border-color: var(--cg-primary);
+  box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
+}
+
+@media (max-width: 768px) {
+  .cg-unified-workspace table :is(th, td) {
+    padding: 8px 10px;
+  }
+}
+
+
+/* El dashboard de CancelaGest comparte la misma paleta corporativa. */
+.cg-page {
+  --cg-primary: #3156b3;
+  --cg-primary-hover: #274694;
+  --cg-primary-soft: #edf3ff;
+}
+
+.cg-page .cg-button-primary {
+  color: #fff;
+  background: linear-gradient(135deg, #3156b3, #274694);
+  border: 1px solid #274694;
+}
+
+.cg-page .cg-button-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4268c5, #3156b3);
+}
+
+.cg-page .cg-module-icon {
+  color: #3156b3;
+  background: #edf3ff;
+  border-color: #d7e3ff;
+}
+
+.cg-page .cg-module-card:hover {
+  border-color: #b8c9f3;
+  box-shadow: 0 10px 22px rgba(49, 86, 179, .08);
+}
+
+.cg-page .cg-month-bar,
+.cg-page .cg-bar-fill {
+  background: linear-gradient(180deg, #6c8de0, #3156b3);
+}
+
+.cg-page .cg-bar-value {
+  color: #3156b3;
+}
+
+
+/* Normalización de acentos Tailwind usados por Herramientas, Catálogos,
+   Intranet e Informes: azul corporativo sin alterar colores semánticos. */
+.cg-unified-workspace :is([class*="bg-indigo-50"], [class*="bg-violet-50"]) {
+  background-color: #edf3ff !important;
+}
+
+.cg-unified-workspace :is([class*="bg-indigo-100"], [class*="bg-violet-100"]) {
+  background-color: #e3ebff !important;
+}
+
+.cg-unified-workspace :is([class*="bg-indigo-600"], [class*="bg-indigo-700"], [class*="bg-violet-600"], [class*="bg-violet-700"]) {
+  background-color: var(--cg-primary) !important;
+}
+
+.cg-unified-workspace :is([class*="text-indigo-600"], [class*="text-indigo-700"], [class*="text-violet-600"], [class*="text-violet-700"]) {
+  color: var(--cg-primary) !important;
+}
+
+.cg-unified-workspace :is([class*="border-indigo-100"], [class*="border-indigo-200"], [class*="border-violet-100"], [class*="border-violet-200"]) {
+  border-color: #d7e3ff !important;
+}
+
+.cg-unified-workspace :is([class*="from-indigo-500"], [class*="from-indigo-600"], [class*="from-violet-500"], [class*="from-violet-600"]) {
+  --tw-gradient-from: #3156b3 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(49 86 179 / 0) var(--tw-gradient-to-position) !important;
+}
+
+.cg-unified-workspace :is([class*="via-indigo-500"], [class*="via-indigo-600"], [class*="via-violet-500"], [class*="via-violet-600"]) {
+  --tw-gradient-stops: var(--tw-gradient-from), #4268c5 var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+.cg-unified-workspace :is([class*="to-cyan-400"], [class*="to-cyan-500"], [class*="to-violet-500"]) {
+  --tw-gradient-to: #6c8de0 var(--tw-gradient-to-position) !important;
+}

@@ -112,7 +112,7 @@ export default function ProvisionesFondosPage() {
   };
   const filtrados = items.filter((x) => [x.numero, x.cliente?.nombre, x.cliente?.nif, x.cliente?.poblacion].some((v) => String(v || "").toLowerCase().includes(busqueda.toLowerCase())));
 
-  return <main className="mx-auto w-full max-w-7xl space-y-6 p-3 md:p-6">
+  return <main className="w-full min-w-0 space-y-6 p-3 md:p-6">
     <header className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-4 py-4 shadow-sm backdrop-blur-xl sm:px-5">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
       <div className="relative z-10 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
