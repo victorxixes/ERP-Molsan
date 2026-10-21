@@ -14,21 +14,10 @@ export default function Utilidades() {
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl shadow-sm">⚙️</div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Utilidades del sistema</h1>
-            <p className="mt-1 text-sm text-slate-500">Gestiona los catálogos, importaciones y herramientas de trabajo directamente desde el ERP.</p>
+            <p className="mt-1 text-sm text-slate-500">Accede a importaciones, integraciones y herramientas de trabajo directamente desde el ERP.</p>
           </div>
         </div>
       </header>
-
-      <Grupo titulo="Maestros y catálogos" descripcion="Datos comunes utilizados por los expedientes y los procesos de la gestoría.">
-        <Card icon="🏘️" titulo="Municipios" descripcion="Comunidades autónomas, provincias y municipios." link="/herramientas/municipios" />
-        <Card icon="🏦" titulo="Entidades bancarias" descripcion="Entidades, códigos europeos, LEI, categorías y direcciones." link="/herramientas/entidades-bancarias" />
-        <Card icon="🏛️" titulo="Oficinas liquidadoras" descripcion="Gestionar oficinas liquidadoras y sus datos asociados." link="/herramientas/oficinas-liquidadoras" />
-        <Card icon="📚" titulo="Registros de la propiedad" descripcion="Gestionar registros de la propiedad." link="/herramientas/registros-propiedad" />
-        <Card icon="📋" titulo="Acciones del expediente" descripcion="Catálogo de acciones y actividades de los expedientes." link="/herramientas/acciones-expediente" />
-        <Card icon="🏠" titulo="Tipos de carga hipotecaria" descripcion="Catálogo de tipos de carga hipotecaria." link="/herramientas/tipos-carga-hipotecaria" />
-        <Card icon="🧾" titulo="Tipos de conceptos de gastos" descripcion="Catálogo de conceptos de gastos." link="/herramientas/tipos-concepto-gastos" />
-        <Card icon="💶" titulo="Honorarios de gestoría" descripcion="Crear y modificar las tarifas que se aplican al registrar pagos de honorarios." link="/herramientas/honorarios-gestoria" destacado />
-      </Grupo>
 
       <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
         <Card icon="📥" titulo="Importar CTN" descripcion="Importar un Excel con información de notarías." link="/herramientas/importar-ctn" />
