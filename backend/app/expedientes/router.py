@@ -1884,35 +1884,39 @@ def exportar_excel_expedientes(
     )
 
     columnas_excel_exportacion = COLUMNAS_EXCEL
+    nombre_hoja_excel = "Expedientes"
     if configActividad:
         clave = str(configActividad).strip()
         if any(item["key"] == clave for item in ACTIVIDADES_VISIBILIDAD):
             try:
                 _asegurar_tabla_visibilidad(db)
-                configuracion = db.execute(text("""
-                    SELECT excel_columns FROM public.expediente_visibilidad_config
+                fila_config = db.execute(text("""
+                    SELECT nombre_tabla, excel_columns
+                    FROM public.expediente_visibilidad_config
                     WHERE actividad_key = :actividad_key
-                """), {"actividad_key": clave}).scalar()
-                if configuracion:
-                    seleccionadas = set(configuracion if isinstance(configuracion, list) else json.loads(configuracion))
-                    columnas_excel_exportacion = [
-                        (cabecera, atributo) for cabecera, atributo in COLUMNAS_EXCEL
-                        if atributo in seleccionadas
-                    ]
-                    # Preservar el orden configurado, no el orden físico del catálogo.
+                """), {"actividad_key": clave}).mappings().first()
+                if fila_config is not None:
+                    nombre_hoja_excel = str(fila_config["nombre_tabla"] or "Expedientes")
+                    configuracion = fila_config["excel_columns"] or []
+                    configuracion = configuracion if isinstance(configuracion, list) else json.loads(configuracion)
                     por_atributo = {atributo: cabecera for cabecera, atributo in COLUMNAS_EXCEL}
+                    # Mantener el orden exacto elegido en Visibilidad tablas.
                     columnas_excel_exportacion = [
                         (por_atributo[atributo], atributo)
-                        for atributo in (configuracion if isinstance(configuracion, list) else json.loads(configuracion))
+                        for atributo in configuracion
                         if atributo in por_atributo
                     ]
+                    if not columnas_excel_exportacion:
+                        columnas_excel_exportacion = COLUMNAS_EXCEL
             except Exception:
                 logger.exception("No se pudo aplicar la configuración de columnas Excel; se usará el Excel completo.")
                 columnas_excel_exportacion = COLUMNAS_EXCEL
+                nombre_hoja_excel = "Expedientes"
 
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Expedientes"
+    # Excel limita el nombre de hoja a 31 caracteres y prohíbe estos símbolos.
+    ws.title = "".join("_" if caracter in "[]:*?\\/" else caracter for caracter in nombre_hoja_excel)[:31] or "Expedientes"
 
     for col, (cabecera, _) in enumerate(columnas_excel_exportacion, start=1):
         ws.cell(
