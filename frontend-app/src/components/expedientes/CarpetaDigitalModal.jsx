@@ -98,6 +98,7 @@ export default function CarpetaDigitalModal({
   onClose,
   modoActividad = false,
   actividadId,
+  tipoOperacion,
   onDocumentosChange,
 }) {
   const empleadoSesion = useAuthStore((state) => state.empleado);
@@ -137,11 +138,15 @@ export default function CarpetaDigitalModal({
   }, [modoActividad, actividadId, empleadoSesion?.empleado_id, empleadoSesion?.id]);
 
   const bloqueActividad = useMemo(() => resolverBloque(actividadId), [actividadId]);
+  const esCancelacionSinProvision = normalizar(tipoOperacion) === "cancelacion-sin-provision";
   const bloquesVisibles = useMemo(() => {
     if (!modoActividad) return BLOQUES;
     // En modo actividad se muestra solo el circuito y los repositorios configurados.
     const bloque = bloqueActividad || BLOQUES[0];
-    if (!Array.isArray(configRepositorios)) return [bloque];
+    const bloqueAjustado = esCancelacionSinProvision && bloque.id === "sede-notarial"
+      ? { ...bloque, categorias: bloque.categorias.filter((item) => item.categoria !== "Presentación Registro") }
+      : bloque;
+    if (!Array.isArray(configRepositorios)) return [bloqueAjustado];
     const clavePorCategoria = {
       "Documentos Absis": "documentos_absis",
       "Hoja de Encargo firmada": "hoja_encargo_firmada",
@@ -175,10 +180,10 @@ export default function CarpetaDigitalModal({
       lista.findIndex((otra) => otra.categoria === item.categoria) === index
     );
     return [{
-      ...bloque,
-      categorias: categoriasUnicas.filter((item) => configRepositorios.includes(clavePorCategoria[item.categoria])),
+      ...bloqueAjustado,
+      categorias: categoriasUnicas.filter((item) => configRepositorios.includes(clavePorCategoria[item.categoria]) && !(esCancelacionSinProvision && bloque.id === "sede-notarial" && item.categoria === "Presentación Registro")),
     }];
-  }, [modoActividad, bloqueActividad, configRepositorios]);
+  }, [modoActividad, bloqueActividad, configRepositorios, esCancelacionSinProvision]);
 
   useEffect(() => {
     if (!bloqueActividad) return;
