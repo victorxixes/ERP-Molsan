@@ -2085,6 +2085,15 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
           return false;
         }
 
+        // En Liquidación de impuestos se ocultan todos los campos generales
+        // del expediente; la actividad muestra únicamente sus campos específicos.
+        if (
+          actividadSeleccionada === "liquidacion-impuestos" &&
+          CAMPOS_COMUNES_ACTIVIDAD.some((comun) => comun.key === campo.key)
+        ) {
+          return false;
+        }
+
         // Estos datos no se muestran en la actividad con protocolo.
         if (
           actividadSeleccionada === "sede-notarial-protocolo" &&
