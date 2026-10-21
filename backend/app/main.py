@@ -1148,7 +1148,12 @@ def inicializar_tablas_auxiliares():
                   "%CAIXA DE GIRONA%",
                   "%BANKPIME%",
                   "%BANCA CÍVICA%",
-                  "%BANCO DE VALENCIA%",
+                  "%BANCO HERRERO%",
+        "%ADQUISICIÓN DE UNA RED DE 29 OFICINAS AL BANCO DE LAS ISLAS CANARIAS%",
+        "%ADQUISICIÓN DE ISBANC%",
+        "%ADQUISICIÓN DE BANCO DE EUROPA%",
+        "%PARTE DEL NEGOCIO DE BANCA PRIVADA DE MORGAN STANLEY%",
+        "%BANCO DE VALENCIA%",
                   "%BARCLAYS BANK SAU%",
                   "%BPI%",
                   "%BANKIA%"
