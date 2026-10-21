@@ -2600,6 +2600,7 @@ export default function EntidadesBancarias() {
       {modalAbierto && (
 
         <ModalEntidadBancaria
+          entidades={entidades}
           modo={
             modoModal
           }
@@ -3222,6 +3223,7 @@ function ModalImportarExcel({
 ============================================================ */
 
 function ModalEntidadBancaria({
+  entidades = [],
   modo,
   entidad,
   guardando,
