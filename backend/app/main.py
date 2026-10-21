@@ -60,6 +60,7 @@ from backend.app.expedientes.defectos.models import (
     ExpedienteDefecto,
     DefectoSubtipo,
 )
+from backend.app.expedientes.defectos.historial_model import HistorialDefecto
 from backend.app.seguridad.roles.models import Rol
 from backend.app.ctn.models import Notaria
 from backend.app.agenda.models import Cita
@@ -864,6 +865,11 @@ def inicializar_tablas_auxiliares():
             bind=engine,
             checkfirst=True,
         )
+
+        # El histórico se usa dentro de la misma transacción al crear defectos.
+        # Crearlo aquí evita que el POST falle si la migración SQL no se ha ejecutado.
+        HistorialDefecto.__table__.create(bind=engine, checkfirst=True)
+        print("[DEFECTOS REGISTRALES] Tabla de historial disponible.", flush=True)
 
         SolicitudFusion.__table__.create(
             bind=engine,
