@@ -44,7 +44,6 @@ export default function Utilidades() {
         <Card icon="📜" titulo="Logs del sistema" descripcion="Revisar registros y errores registrados por la aplicación." link="/logs" />
         <Card icon="🖥️" titulo="Panel técnico" descripcion="Acceder a los paneles de supervisión del sistema y tiempo real." link="/paneltecnico" />
         <Card icon="📈" titulo="Informes" descripcion="Consultar informes y estadísticas operativas." link="/informes" />
-        <Card icon="🗂️" titulo="Maestros" descripcion="Acceder a los catálogos generales del ERP." link="/maestros" />
         <Card icon="📡" titulo="Monitor en tiempo real" descripcion="Consultar la supervisión y actividad del sistema en tiempo real." link="/paneltecnico/monitor-realtime" />
         <Card icon="⚙️" titulo="Mantenimiento técnico" descripcion="Diagnóstico de base de datos, revisión de estructura y tareas técnicas controladas desde el ERP." link="/herramientas/mantenimiento-tecnico" />
       </Grupo>
