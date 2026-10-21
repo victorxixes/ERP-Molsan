@@ -199,6 +199,18 @@ export default function EntidadesBancarias() {
   ] = useState("");
 
 
+  const [
+    ordenColumna,
+    setOrdenColumna
+  ] = useState("nombre");
+
+
+  const [
+    ordenAscendente,
+    setOrdenAscendente
+  ] = useState(true);
+
+
   // ==========================================================
   // PAGINACIÓN
   // ==========================================================
@@ -428,6 +440,7 @@ export default function EntidadesBancarias() {
               entidad.nombre,
               entidad.categoria,
               entidad.direccion,
+              entidades.find((e) => Number(e.id) === Number(entidad.entidad_actual_id))?.nombre,
             ];
 
 
@@ -503,8 +516,91 @@ export default function EntidadesBancarias() {
   ]);
 
 
+  function nombreEntidadActual(entidad) {
+    if (!entidad?.entidad_actual_id) return "";
+    return entidades.find((e) => Number(e.id) === Number(entidad.entidad_actual_id))?.nombre || "";
+  }
+
+
+  const entidadesOrdenadas = useMemo(() => {
+    const copia = [...entidadesFiltradas];
+    copia.sort((a, b) => {
+      const valorA = ordenColumna === "entidad_actual"
+        ? nombreEntidadActual(a)
+        : (a[ordenColumna] ?? "");
+      const valorB = ordenColumna === "entidad_actual"
+        ? nombreEntidadActual(b)
+        : (b[ordenColumna] ?? "");
+      const comparacion = String(valorA).localeCompare(String(valorB), "es", {
+        numeric: true,
+        sensitivity: "base",
+      });
+      return ordenAscendente ? comparacion : -comparacion;
+    });
+    return copia;
+  }, [entidadesFiltradas, ordenColumna, ordenAscendente, entidades]);
+
+
+  function ordenarPor(columna) {
+    if (ordenColumna === columna) {
+      setOrdenAscendente((actual) => !actual);
+    } else {
+      setOrdenColumna(columna);
+      setOrdenAscendente(true);
+    }
+    setPagina(1);
+  }
+
+
+  function descargarExcel() {
+    const escapar = (valor) => String(valor ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+
+    const filas = entidadesOrdenadas.map((entidad) => [
+      entidad.codigo_europeo,
+      entidad.lei,
+      entidad.nombre,
+      entidad.categoria,
+      nombreEntidadActual(entidad) || "Sin cambio",
+      entidad.direccion,
+    ]);
+
+    const cabeceras = [
+      "Código Europeo",
+      "LEI",
+      "Nombre",
+      "Categoría",
+      "Entidad actual",
+      "Dirección",
+    ];
+
+    const tabla = [
+      "<table><thead><tr>",
+      ...cabeceras.map((valor) => `<th>${escapar(valor)}</th>`),
+      "</tr></thead><tbody>",
+      ...filas.map((fila) => `<tr>${fila.map((valor) => `<td>${escapar(valor)}</td>`).join("")}</tr>`),
+      "</tbody></table>",
+    ].join("");
+
+    // Excel abre este libro HTML como hoja de cálculo .xls, sin depender de librerías externas.
+    const contenido = `<html><head><meta charset="UTF-8"></head><body>${tabla}</body></html>`;
+    const blob = new Blob(["\\ufeff", contenido], { type: "application/vnd.ms-excel;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = "catalogo_entidades_bancarias.xls";
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+    URL.revokeObjectURL(url);
+  }
+
+
   const entidadesPagina =
-    entidadesFiltradas.slice(
+    entidadesOrdenadas.slice(
       (
         pagina - 1
       ) *
@@ -1588,6 +1684,23 @@ export default function EntidadesBancarias() {
 
             <button
               type="button"
+              onClick={descargarExcel}
+              disabled={cargando || entidadesOrdenadas.length === 0}
+              className="
+                inline-flex items-center justify-center gap-2 rounded-xl
+                border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold
+                text-slate-700 shadow-sm transition hover:border-indigo-200
+                hover:bg-indigo-50 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-50
+              "
+              title="Descargar el catálogo filtrado en Excel"
+            >
+              <span className="text-lg">⬇️</span>
+              Descargar Excel
+            </button>
+
+
+            <button
+              type="button"
               onClick={
                 abrirNuevo
               }
@@ -2089,7 +2202,10 @@ export default function EntidadesBancarias() {
                       text-slate-500
                     "
                   >
-                    Código Europeo
+                    <button type="button" onClick={() => ordenarPor("codigo_europeo")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Código Europeo">
+                      Código Europeo
+                      <span aria-hidden="true">{ordenColumna === "codigo_europeo" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                    </button>
                   </th>
 
 
@@ -2106,7 +2222,10 @@ export default function EntidadesBancarias() {
                       text-slate-500
                     "
                   >
-                    LEI
+                    <button type="button" onClick={() => ordenarPor("lei")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por LEI">
+                      LEI
+                      <span aria-hidden="true">{ordenColumna === "lei" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                    </button>
                   </th>
 
 
@@ -2123,7 +2242,10 @@ export default function EntidadesBancarias() {
                       text-slate-500
                     "
                   >
-                    Nombre
+                    <button type="button" onClick={() => ordenarPor("nombre")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Nombre">
+                      Nombre
+                      <span aria-hidden="true">{ordenColumna === "nombre" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                    </button>
                   </th>
 
 
@@ -2140,7 +2262,10 @@ export default function EntidadesBancarias() {
                       text-slate-500
                     "
                   >
-                    Categoría
+                    <button type="button" onClick={() => ordenarPor("categoria")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Categoría">
+                      Categoría
+                      <span aria-hidden="true">{ordenColumna === "categoria" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                    </button>
                   </th>
 
 
@@ -2157,7 +2282,10 @@ export default function EntidadesBancarias() {
                       text-slate-500
                     "
                   >
-                    Entidad actual
+                    <button type="button" onClick={() => ordenarPor("entidad_actual")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Entidad actual">
+                      Entidad actual
+                      <span aria-hidden="true">{ordenColumna === "entidad_actual" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                    </button>
                   </th>
 
                   <th
@@ -2173,7 +2301,10 @@ export default function EntidadesBancarias() {
                       text-slate-500
                     "
                   >
-                    Dirección
+                    <button type="button" onClick={() => ordenarPor("direccion")} className="inline-flex items-center gap-1.5 text-left hover:text-indigo-700" title="Ordenar por Dirección">
+                      Dirección
+                      <span aria-hidden="true">{ordenColumna === "direccion" ? (ordenAscendente ? "↑" : "↓") : "↕"}</span>
+                    </button>
                   </th>
 
 
@@ -2345,7 +2476,7 @@ export default function EntidadesBancarias() {
                         className="px-5 py-3.5 align-top text-sm text-slate-600"
                       >
                         {entidad.entidad_actual_id
-                          ? (entidades.find((e) => Number(e.id) === Number(entidad.entidad_actual_id))?.nombre || "Entidad no disponible")
+                          ? (nombreEntidadActual(entidad) || "Entidad no disponible")
                           : <span className="italic text-slate-300">Sin cambio</span>}
                       </td>
 
