@@ -33,6 +33,7 @@ from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
 from backend.app.expedientes.reparto import (
     asignar_gestor_automaticamente,
     ids_expedientes_visibles,
+    resolver_key_actividad,
 )
 
 
@@ -115,6 +116,81 @@ def migrar_campos_workflow_actividades(
             status_code=500,
             detail="No se pudo completar la migración de actividades. Consulta los logs del backend.",
         ) from exc
+
+
+@router.post("/reparto/asignar-pendientes")
+def asignar_gestores_a_expedientes_pendientes(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Asigna gestor por reglas activas a expedientes sin gestor; conserva asignaciones existentes."""
+    from collections import Counter
+    from backend.app.auth.permissions import require_perm_modulo
+
+    require_perm_modulo(usuario, "seguridad", "editar")
+    expedientes = (
+        db.query(Expediente)
+        .filter(
+            or_(
+                Expediente.gestor_asignado_id.is_(None),
+                Expediente.gestor_asignado_id == 0,
+            )
+        )
+        .order_by(Expediente.id)
+        .all()
+    )
+    por_actividad = Counter()
+    sin_regla = Counter()
+    asignaciones = []
+    try:
+        for expediente in expedientes:
+            actividad_key = resolver_key_actividad(
+                expediente.actividad_actual,
+                expediente.fecha_firma,
+            )
+            if not actividad_key:
+                sin_regla[str(expediente.actividad_actual or "Sin actividad")] += 1
+                continue
+            gestor_id = asignar_gestor_automaticamente(
+                db,
+                expediente,
+                actividad_key,
+                "reparto_inicial_pendientes",
+            )
+            if not gestor_id:
+                sin_regla[actividad_key] += 1
+                continue
+            gestor = db.query(Empleado).filter(Empleado.id == gestor_id).first()
+            nombre_gestor = " ".join(filter(None, [
+                getattr(gestor, "nombre", None),
+                getattr(gestor, "apellidos", None),
+            ])).strip() if gestor else None
+            por_actividad[actividad_key] += 1
+            asignaciones.append({
+                "numero_expediente": expediente.id_expediente,
+                "actividad": expediente.actividad_actual,
+                "gestor_id": gestor_id,
+                "gestor": nombre_gestor,
+            })
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        logger.exception("Error al asignar gestores a expedientes pendientes")
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudo completar el reparto inicial de gestores. Consulta los logs del backend.",
+        ) from exc
+
+    return {
+        "ok": True,
+        "mensaje": "Reparto inicial completado. Las asignaciones existentes se han conservado.",
+        "revisados": len(expedientes),
+        "asignados": len(asignaciones),
+        "sin_regla_compatible": sum(sin_regla.values()),
+        "asignados_por_actividad": dict(por_actividad),
+        "pendientes_por_actividad_o_motivo": dict(sin_regla),
+        "detalle_asignaciones": asignaciones,
+    }
 
 
 # ============================================================
