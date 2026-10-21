@@ -73,6 +73,25 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
                     zonas = [regla.get("comunidad")] if regla.get("comunidad") else []
                 if comunidad not in {normalizar(zona) for zona in zonas if zona}:
                     continue
+            oficina_expediente = str(getattr(expediente, "oficina_alta", None) or getattr(expediente, "oficina", None) or "").strip()
+            codigo_oficina = normalizar(oficina_expediente)
+            oficina_tipo = str(regla.get("oficina_tipo") or "").strip().casefold()
+            es_cancela = codigo_oficina == "5316"
+            if oficina_tipo == "cancela" and not es_cancela:
+                continue
+            if oficina_tipo == "oficina" and es_cancela:
+                continue
+            oficinas_regla = regla.get("oficinas")
+            if not isinstance(oficinas_regla, list):
+                oficinas_regla = [x.strip() for x in str(oficinas_regla or "").replace(";", ",").split(",") if x.strip()]
+            if oficinas_regla and normalizar(oficina_expediente) not in {normalizar(x) for x in oficinas_regla}:
+                continue
+            producto_regla = normalizar(regla.get("producto_gtg"))
+            if producto_regla and producto_regla != normalizar(getattr(expediente, "producto_gtg", None)):
+                continue
+            operacion_regla = normalizar(regla.get("tipo_operacion"))
+            if operacion_regla and operacion_regla != normalizar(getattr(expediente, "tipo_operacion", None)):
+                continue
             try:
                 porcentaje += float(regla.get("porcentaje") or 0)
             except (TypeError, ValueError):
