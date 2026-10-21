@@ -1127,18 +1127,16 @@ def aplicar_filtro_alerta_control(q, clave_alerta: Optional[str], db: Session):
 
 
 @router.get("/control-alertas")
-def obtener_alertas_control_expedientes(db: Session = Depends(get_db)):
+def obtener_alertas_control_expedientes(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     """Devuelve recuentos globales, calculados sobre todos los expedientes."""
     resultado = []
     for alerta in ALERTAS_CONTROL_EXPEDIENTES:
-        total = (
-            aplicar_filtro_alerta_control(
-                db.query(func.count(Expediente.id)),
-                alerta["key"],
-                db,
-            ).scalar()
-            or 0
+        consulta = aplicar_filtro_alerta_control(
+            aplicar_ambito_reparto(db.query(Expediente), db, usuario),
+            alerta["key"],
+            db,
         )
+        total = consulta.with_entities(func.count(Expediente.id)).scalar() or 0
         resultado.append({**alerta, "total": int(total)})
 
     return {"fecha_calculo": date.today().isoformat(), "alertas": resultado}
