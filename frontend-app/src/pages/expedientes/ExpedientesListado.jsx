@@ -2344,6 +2344,85 @@ export default function ExpedientesListado() {
         )}
       </section>
 
+      {/* SLA GLOBAL: CIRCUITOS DIFERENCIADOS */}
+      <section className="space-y-3" aria-label="SLA global por circuito">
+        <div>
+          <h3 className="text-base font-bold text-[var(--erp-text)]">SLA global por circuito</h3>
+          <p className="text-sm text-[var(--erp-text-soft)]">Controles independientes de los plazos de cada actividad. Pulsa un circuito para ver sus expedientes fuera de plazo.</p>
+        </div>
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          {[
+            {
+              key: "sla_caixabank",
+              titulo: "Circuito CaixaBank",
+              descripcion: "Propia entidad · Vinculada propia entidad",
+              plazo: "40 días",
+              icono: "🏦",
+              borde: "#2563eb",
+              fondo: "rgba(37, 99, 235, 0.07)",
+            },
+            {
+              key: "sla_otra_entidad",
+              titulo: "Circuito otra entidad",
+              descripcion: "Vinculada otra entidad · Otra entidad",
+              plazo: "70 días",
+              icono: "🏢",
+              borde: "#b7791f",
+              fondo: "rgba(183, 121, 31, 0.08)",
+            },
+          ].map((circuito) => {
+            const alerta = alertasControl.find((item) => item.key === circuito.key);
+            const total = Number(alerta?.total || 0);
+            const activa = alertaSeleccionada === circuito.key;
+            return (
+              <button
+                key={circuito.key}
+                type="button"
+                aria-pressed={activa}
+                onClick={() => {
+                  const seleccionar = activa ? "" : circuito.key;
+                  setAlertaSeleccionada(seleccionar);
+                  setActividadSeleccionada("");
+                  setFiltroActividad("");
+                  setFiltrosAplicados((actual) => ({ ...actual, actividad: "" }));
+                  setColumnasVisibles(COLUMNAS_POR_DEFECTO);
+                  setPagina(1);
+                }}
+                className="rounded-2xl border p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--erp-primary)]"
+                style={{
+                  borderColor: activa ? circuito.borde : "var(--erp-border)",
+                  background: activa ? circuito.fondo : "var(--erp-surface)",
+                  boxShadow: activa ? `0 0 0 1px ${circuito.borde}` : undefined,
+                }}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: circuito.fondo }}>{circuito.icono}</span>
+                    <div className="min-w-0">
+                      <div className="font-bold text-[var(--erp-text)]">{circuito.titulo}</div>
+                      <div className="mt-1 text-xs text-[var(--erp-text-soft)]">{circuito.descripcion}</div>
+                    </div>
+                  </div>
+                  <span className="rounded-full border px-3 py-1 text-xs font-bold whitespace-nowrap" style={{ borderColor: circuito.borde, color: circuito.borde }}>{circuito.plazo}</span>
+                </div>
+                <div className="mt-4 flex items-end justify-between gap-3">
+                  <div>
+                    <div className="text-3xl font-bold tabular-nums" style={{ color: circuito.borde }}>
+                      {loadingAlertasControl ? "—" : formatearNumero(total)}
+                    </div>
+                    <div className="text-xs text-[var(--erp-text-soft)]">expedientes fuera de plazo</div>
+                  </div>
+                  <div className="text-sm font-semibold" style={{ color: circuito.borde }}>
+                    {activa ? "Circuito seleccionado ✓" : "Ver expedientes →"}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-xs text-[var(--erp-text-soft)]">Se calcula desde la fecha de envío hasta Fin actividad o la fecha actual si sigue abierto. Hipotecario y Crédito Stock quedan excluidos.</p>
+      </section>
+
       {/* GRIDS DE ACTIVIDAD */}
       <section className="space-y-3" aria-label="Expedientes por actividad">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
