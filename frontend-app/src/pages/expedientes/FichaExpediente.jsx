@@ -1374,6 +1374,7 @@ export default function FichaExpediente() {
     "documentacion-previa"
   );
 
+  const [pestanaActividad, setPestanaActividad] = useState("datos");
   const [actividadDraft, setActividadDraft] = useState({});
   const [guardandoActividad, setGuardandoActividad] = useState(false);
   const [errorActividad, setErrorActividad] = useState("");
@@ -5437,7 +5438,17 @@ const cuantiaFincasParaEnvio =
             </div>
 
 
-            <div className="mb-4 space-y-4">
+            <div className="mb-4 grid grid-cols-2 gap-2 rounded-xl border border-slate-200 bg-white p-1">
+              <button type="button" onClick={() => setPestanaActividad("datos")} className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-xs font-bold transition ${pestanaActividad === "datos" ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100" : "text-slate-600 hover:bg-slate-50"}`}>
+                <span>☷</span> Datos de actividad
+              </button>
+              <button type="button" onClick={() => setPestanaActividad("documentos")} className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-xs font-bold transition ${pestanaActividad === "documentos" ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100" : "text-slate-600 hover:bg-slate-50"}`}>
+                <span>📁</span> Carpeta digital y visor
+              </button>
+            </div>
+
+            {pestanaActividad === "documentos" && (
+              <div className="mb-4 min-w-0 rounded-xl border border-slate-200 bg-white p-2">
               <CarpetaDigitalModal
                 expedienteId={expediente?.id_expediente || id}
                 modoActividad
@@ -5448,8 +5459,10 @@ const cuantiaFincasParaEnvio =
                     : undefined
                 }
               />
-            </div>
+              </div>
+            )}
 
+            {pestanaActividad === "datos" && <>
             {actividadSeleccionada === "documentacion-previa" && (
               <div className="mb-4 space-y-4">
                 <section className="rounded-xl border border-slate-200 bg-white p-4">
@@ -6266,6 +6279,8 @@ const cuantiaFincasParaEnvio =
                 </p>
               </div>
             )}
+
+            </>}
 
           </div>
 
