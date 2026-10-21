@@ -840,16 +840,54 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
   const modulosDropdownRef = useRef(null);
+  const modulosDropdownMenuRef = useRef(null);
+  const [modulosDropdownPosicion, setModulosDropdownPosicion] = useState(null);
 
   useEffect(() => {
     const cerrarFuera = (event) => {
-      if (!modulosDropdownRef.current?.contains(event.target)) {
+      const dentroDelBoton = modulosDropdownRef.current?.contains(event.target);
+      const dentroDelMenu = modulosDropdownMenuRef.current?.contains(event.target);
+      if (!dentroDelBoton && !dentroDelMenu) {
         setModulosDropdownAbierto(false);
       }
     };
     document.addEventListener("mousedown", cerrarFuera);
     return () => document.removeEventListener("mousedown", cerrarFuera);
   }, []);
+
+  // El desplegable se renderiza en document.body para que el scroll
+  // horizontal de la navegación no lo recorte ni lo deje dentro de la barra.
+  useEffect(() => {
+    if (!modulosDropdownAbierto) {
+      setModulosDropdownPosicion(null);
+      return undefined;
+    }
+
+    const actualizarPosicion = () => {
+      const boton = modulosDropdownRef.current?.querySelector("button");
+      if (!boton) return;
+      const rect = boton.getBoundingClientRect();
+      const ancho = Math.min(240, window.innerWidth - 24);
+      const altoEstimado = Math.min(220, window.innerHeight - 24);
+      const left = Math.max(12, Math.min(rect.right - ancho, window.innerWidth - ancho - 12));
+      const top = Math.max(12, Math.min(rect.bottom + 8, window.innerHeight - altoEstimado - 12));
+      setModulosDropdownPosicion({ top, left, ancho });
+    };
+
+    const cerrarConEscape = (event) => {
+      if (event.key === "Escape") setModulosDropdownAbierto(false);
+    };
+
+    actualizarPosicion();
+    window.addEventListener("resize", actualizarPosicion);
+    window.addEventListener("scroll", actualizarPosicion, true);
+    document.addEventListener("keydown", cerrarConEscape);
+    return () => {
+      window.removeEventListener("resize", actualizarPosicion);
+      window.removeEventListener("scroll", actualizarPosicion, true);
+      document.removeEventListener("keydown", cerrarConEscape);
+    };
+  }, [modulosDropdownAbierto]);
 
   const mostrarBotonMas = modulosMas.length > 0 &&
     !["apoderagest", "notargest", "encargagest"].includes(normalizarModulo(brandName));
@@ -1016,10 +1054,18 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                       </span>
                     ) : null}
                   </button>
-                  {(item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") && modulosDropdownAbierto && (
+                  {(item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") && modulosDropdownAbierto && modulosDropdownPosicion && createPortal(
                     <div
+                      ref={modulosDropdownMenuRef}
                       role="menu"
-                      className="absolute right-0 top-full mt-2 z-[100] min-w-[205px] rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-xl"
+                      style={{
+                        position: "fixed",
+                        top: modulosDropdownPosicion.top,
+                        left: modulosDropdownPosicion.left,
+                        width: modulosDropdownPosicion.ancho,
+                        zIndex: 9999,
+                      }}
+                      className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl"
                     >
                       {modulosDropdown.map((modulo) => (
                         <NavLink
@@ -1038,7 +1084,8 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                           <span>{modulo.label}</span>
                         </NavLink>
                       ))}
-                    </div>
+                    </div>,
+                    document.body
                   )}
                   </div>
                 ))
