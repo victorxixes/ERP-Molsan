@@ -5,11 +5,9 @@ import { useAuthStore } from "../store/authStore";
 import EmpleadoPerfilModal from "../components/SidebarPerfilModal";
 import { useNotificacionesWS } from "../hooks/useNotificacionesWS";
 import NotificacionesToast from "../components/notificaciones/NotificacionesToast";
-import ProvisionesLauncher from "../components/expedientes/ProvisionesLauncher";
 
 /** Layout principal de ERP-Molsan. Mantiene perfil, navegación,
- * WebSockets de empleado/notificaciones y activa la herramienta
- * de Provisiones solo dentro de la ficha de un expediente. */
+ * WebSockets de empleado y notificaciones. */
 export default function Layout() {
   const empleado = useAuthStore((s) => s.empleado);
   const perfilModal = useAuthStore((s) => s.perfilModal);
@@ -53,7 +51,6 @@ export default function Layout() {
       {perfilModal && <EmpleadoPerfilModal id={perfilModal} onClose={() => setPerfilModal(null)} />}
       <Sidebar />
       <NotificacionesToast />
-      <ProvisionesLauncher />
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full">
