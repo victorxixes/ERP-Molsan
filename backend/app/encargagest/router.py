@@ -769,9 +769,23 @@ def guardar_reglas_reparto_gestor(empleado_id: int, datos: ReglasRepartoGestor, 
                 raise HTTPException(status_code=422, detail="El apoderado seleccionado no es válido.")
             if not db.query(Empleado.id).filter(Empleado.id == apoderado_id).first():
                 raise HTTPException(status_code=422, detail="El apoderado seleccionado ya no existe.")
+        oficina_tipo = str(regla.get("oficina_tipo") or "").strip().casefold()
+        if oficina_tipo not in {"", "oficina", "cancela"}:
+            raise HTTPException(status_code=422, detail=f"Tipo de oficina no válido en la regla {indice + 1}.")
+        oficinas_raw = regla.get("oficinas", "")
+        if isinstance(oficinas_raw, list):
+            oficinas_limpias = [str(x).strip() for x in oficinas_raw if str(x).strip()]
+        else:
+            oficinas_limpias = [x.strip() for x in str(oficinas_raw or "").replace(";", ",").split(",") if x.strip()]
+        producto_gtg = str(regla.get("producto_gtg") or "").strip()[:300]
+        tipo_operacion = str(regla.get("tipo_operacion") or "").strip()[:300]
         reglas_limpias.append({
             "actividad": actividad,
             "departamento": str(regla.get("departamento") or "").strip()[:120],
+            "oficina_tipo": oficina_tipo,
+            "oficinas": oficinas_limpias,
+            "producto_gtg": producto_gtg,
+            "tipo_operacion": tipo_operacion,
             "zona_territorial": territorial,
             "comunidades": comunidades_limpias,
             "comunidad": comunidad,
