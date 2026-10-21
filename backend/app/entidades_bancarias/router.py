@@ -63,6 +63,8 @@ class EntidadBancariaBase(BaseModel):
         max_length=400,
     )
 
+    entidad_actual_id: Optional[int] = None
+
 
 class EntidadBancariaCreate(
     EntidadBancariaBase
@@ -121,6 +123,7 @@ def entidad_a_dict(
         "nombre": entidad.nombre,
         "categoria": entidad.categoria,
         "direccion": entidad.direccion,
+        "entidad_actual_id": entidad.entidad_actual_id,
         "activo": entidad.activo,
     }
 
@@ -194,6 +197,10 @@ def crear_entidad_bancaria(
         datos.direccion
     )
 
+    entidad_actual_id = datos.entidad_actual_id or None
+    if entidad_actual_id and not db.query(EntidadBancaria.id).filter(EntidadBancaria.id == entidad_actual_id, EntidadBancaria.activo.is_(True)).first():
+        raise HTTPException(status_code=400, detail="La entidad actual seleccionada no existe o está inactiva.")
+
     # --------------------------------------------------------
     # VALIDACIONES
     # --------------------------------------------------------
@@ -247,6 +254,7 @@ def crear_entidad_bancaria(
             existente.nombre = nombre
             existente.categoria = categoria
             existente.direccion = direccion
+            existente.entidad_actual_id = entidad_actual_id
 
             try:
 
@@ -290,6 +298,7 @@ def crear_entidad_bancaria(
         nombre=nombre,
         categoria=categoria,
         direccion=direccion,
+        entidad_actual_id=entidad_actual_id,
         activo=True,
     )
 
@@ -473,6 +482,12 @@ def actualizar_entidad_bancaria(
         datos.direccion
     )
 
+    entidad_actual_id = datos.entidad_actual_id or None
+    if entidad_actual_id == entidad_id:
+        raise HTTPException(status_code=400, detail="Una entidad no puede ser su propia entidad actual.")
+    if entidad_actual_id and not db.query(EntidadBancaria.id).filter(EntidadBancaria.id == entidad_actual_id, EntidadBancaria.activo.is_(True)).first():
+        raise HTTPException(status_code=400, detail="La entidad actual seleccionada no existe o está inactiva.")
+
     # --------------------------------------------------------
     # VALIDACIONES
     # --------------------------------------------------------
@@ -534,6 +549,7 @@ def actualizar_entidad_bancaria(
     entidad.nombre = nombre
     entidad.categoria = categoria
     entidad.direccion = direccion
+    entidad.entidad_actual_id = entidad_actual_id
     entidad.activo = True
 
     try:
