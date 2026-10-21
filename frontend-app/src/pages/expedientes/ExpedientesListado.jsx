@@ -4,6 +4,7 @@ import {
 } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
+import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 
 import {
   Link,
@@ -627,6 +628,142 @@ const REPOSITORIOS_CARPETA_DIGITAL = [
 ];
 
 
+// Normaliza las categorías para que también funcionen con documentos históricos.
+function normalizarCategoriaDocumento(valor) {
+  return String(valor || "")
+    .normalize("NFD")
+    .replace(/[\\u0300-\\u036f]/g, "")
+    .toLocaleLowerCase("es")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+const CATEGORIAS_POR_REPOSITORIO = {
+  documentos_absis: ["Documentos Absis", "Documentos ABSIS"],
+  hoja_encargo_firmada: ["Hoja de Encargo firmada", "Hoja de encargo firmada"],
+  justificante_cancelacion: ["Justificante de cancelación"],
+  nota_simple_registral: ["Nota simple registral"],
+  borradores_escritura: ["Escrituras/borradores", "Borradores de escrituras", "Borradores de escritura"],
+  presentacion_registro_documentos: ["Presentación Registro", "Presentacion Registro"],
+  copia_simple_documentos: ["Copia simple"],
+  ajd_itp_documentos: ["AJD/ITP", "AJD / ITP", "AJD ITP"],
+  otros_impuestos_documentos: ["Otros impuestos"],
+  hoja_inscripcion_documentos: ["Hoja de Inscripción", "Hoja de inscripcion"],
+  defecto_registral: ["Defecto registral"],
+  subsanacion_defecto: ["Subsanación del defecto", "Subsanacion del defecto"],
+  escritura_digital_final_documentos: ["Escritura digital final"],
+  documento_inscripcion_documentos: ["Documento de inscripción", "Documento de inscripcion"],
+  expediente_digital_completo_documentos: ["Expediente digital completo"],
+  factura_notarial_documentos: ["Factura notarial"],
+  factura_registral_documentos: ["Factura Registral", "Factura registral"],
+  factura_impuestos_documentos: ["Factura impuestos"],
+  honorarios_gestoria_documentos: ["Honorarios gestoría", "Honorarios gestoria"],
+  otros_pagos_documentos: ["Otros pagos"],
+  otros_documentos_economicos: ["Otros documentos económicos", "Otros documentos economicos"],
+  otra_documentacion: ["Otra documentación", "Otra documentacion"],
+  emails_oficina: ["Mails de la Oficina", "Mails de la oficina", "Emails de oficina"],
+  otros_documentos: ["Otros"],
+};
+
+function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, actividadId, onAbrir }) {
+  const [hover, setHover] = useState(false);
+  const [cargandoDocs, setCargandoDocs] = useState(false);
+  const [documentos, setDocumentos] = useState([]);
+  const [errorDocs, setErrorDocs] = useState("");
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [previewNombre, setPreviewNombre] = useState("");
+  const [cargandoPreview, setCargandoPreview] = useState(false);
+
+  const cantidad = Number.parseInt(String(valor || "").match(/\\d+/)?.[0] || "0", 10);
+  const nombresCategoria = CATEGORIAS_POR_REPOSITORIO[repositorioKey] || [];
+  const categoriasNormalizadas = nombresCategoria.map(normalizarCategoriaDocumento);
+
+  useEffect(() => () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+  }, [previewUrl]);
+
+  async function cargarDocumentos() {
+    if (documentos.length || cargandoDocs || cantidad <= 0) return;
+    setCargandoDocs(true);
+    setErrorDocs("");
+    try {
+      const id = encodeURIComponent(expedienteId);
+      const { data } = await axios.get(`/expedientes/${id}/carpeta-digital`);
+      const lista = Array.isArray(data) ? data : (data?.items || []);
+      setDocumentos(lista.filter((doc) => categoriasNormalizadas.includes(normalizarCategoriaDocumento(doc.categoria))));
+    } catch (error) {
+      setErrorDocs(error?.response?.data?.detail || "No se pudieron consultar los documentos.");
+    } finally {
+      setCargandoDocs(false);
+    }
+  }
+
+  async function previsualizar(doc) {
+    if (!doc?.id) return;
+    setCargandoPreview(true);
+    setPreviewNombre(doc.nombre_original || "Documento");
+    setErrorDocs("");
+    try {
+      const id = encodeURIComponent(expedienteId);
+      const response = await axios.get(`/expedientes/${id}/carpeta-digital/${doc.id}/descargar`, { responseType: "blob" });
+      const blob = response.data instanceof Blob ? response.data : new Blob([response.data], { type: doc.tipo_mime || "application/pdf" });
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(URL.createObjectURL(blob));
+    } catch (error) {
+      setErrorDocs(error?.response?.data?.detail || "No se pudo previsualizar el documento.");
+    } finally {
+      setCargandoPreview(false);
+    }
+  }
+
+  if (!cantidad) return null;
+
+  return (
+    <div className="relative inline-flex" onMouseEnter={() => { setHover(true); cargarDocumentos(); }} onMouseLeave={() => setHover(false)}>
+      <button
+        type="button"
+        onClick={onAbrir}
+        className="inline-flex items-center gap-1.5 rounded-lg border px-2 py-1.5 text-xs font-semibold transition-colors hover:shadow-sm"
+        style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)", background: "var(--erp-surface)" }}
+        title={`Abrir carpeta y ver ${cantidad} archivo(s)`}
+        aria-label={`Abrir ${cantidad} documento(s)`}
+      >
+        <span aria-hidden="true">📄</span>
+        <span>{cantidad > 1 ? cantidad : "PDF"}</span>
+      </button>
+      {hover && (
+        <div className="absolute z-50 left-0 top-full mt-2 w-[min(560px,80vw)] rounded-xl border p-3 shadow-2xl" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface)", color: "var(--erp-text)" }} onMouseEnter={() => setHover(true)}>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <strong className="text-xs">{REPOSITORIOS_CARPETA_DIGITAL.find((item) => item.key === repositorioKey)?.label || "Documentos"}</strong>
+            <span className="text-xs" style={{ color: "var(--erp-text-soft)" }}>{cantidad} archivo(s)</span>
+          </div>
+          {cargandoDocs ? <p className="text-xs">Cargando documentos…</p> : errorDocs ? <p className="text-xs text-red-600">{errorDocs}</p> : documentos.length === 0 ? <p className="text-xs" style={{ color: "var(--erp-text-soft)" }}>No se han podido localizar los archivos de esta categoría.</p> : (
+            <div className="grid gap-3 sm:grid-cols-[minmax(140px,0.8fr)_minmax(0,1.4fr)]">
+              <div className="max-h-56 space-y-1 overflow-auto">
+                {documentos.map((doc) => (
+                  <button key={doc.id} type="button" onMouseEnter={() => previsualizar(doc)} onFocus={() => previsualizar(doc)} onClick={() => previsualizar(doc)} className="block w-full rounded-lg px-2 py-2 text-left text-xs hover:bg-[var(--erp-primary-soft)]" title={doc.nombre_original || "Ver documento"}>
+                    <span className="mr-1" aria-hidden="true">📄</span>{doc.nombre_original || "Documento"}
+                    {doc.fecha_subida && <span className="mt-1 block text-[10px]" style={{ color: "var(--erp-text-soft)" }}>{new Date(doc.fecha_subida).toLocaleDateString("es-ES")}</span>}
+                  </button>
+                ))}
+              </div>
+              <div className="min-h-40 overflow-hidden rounded-lg border" style={{ borderColor: "var(--erp-border)" }}>
+                {cargandoPreview ? <p className="p-3 text-xs">Preparando vista previa…</p> : previewUrl ? (
+                  previewNombre.toLowerCase().endsWith(".pdf") || documentos.find((doc) => doc.nombre_original === previewNombre)?.tipo_mime === "application/pdf" ? (
+                    <iframe title={`Vista previa de ${previewNombre}`} src={previewUrl} className="h-56 w-full" />
+                  ) : <div className="p-3 text-xs">Vista previa disponible para PDF. Pulsa el icono para abrir la carpeta y descargar este archivo.</div>
+                ) : <p className="p-3 text-xs" style={{ color: "var(--erp-text-soft)" }}>Pasa el ratón por un PDF para ver su contenido aquí.</p>}
+              </div>
+            </div>
+          )}
+          <p className="mt-2 text-[10px]" style={{ color: "var(--erp-text-soft)" }}>Pulsa el icono para abrir la carpeta digital completa.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 // ============================================================
 // ACTIVIDADES CONOCIDAS DE ABSIS
 // ============================================================
@@ -928,6 +1065,7 @@ function formatearNumero(
 export default function ExpedientesListado() {
   const empleadoSesion = useAuthStore((state) => state.empleado);
   const [configuracionesVisibilidad, setConfiguracionesVisibilidad] = useState([]);
+  const [carpetaDigitalSeleccionada, setCarpetaDigitalSeleccionada] = useState(null);
 
   useEffect(() => {
     let vigente = true;
@@ -1185,8 +1323,14 @@ export default function ExpedientesListado() {
       [item.label, ...(item.aliases || [])].some((alias) => normalizar(alias) === normalizar(actividadSeleccionada))
     );
     const config = definicion && configuracionesVisibilidad.find((item) => item.actividad_key === definicion.key);
-    if (config && Array.isArray(config.excel_columns) && config.excel_columns.length) {
-      setColumnasVisibles(config.excel_columns);
+    if (config) {
+      const columnasBase = Array.isArray(config.excel_columns) && config.excel_columns.length
+        ? config.excel_columns
+        : (definicion ? obtenerColumnasActividad(definicion.key) : COLUMNAS_POR_DEFECTO);
+      const repositoriosSeleccionados = Array.isArray(config.repositorios)
+        ? config.repositorios.filter((key) => REPOSITORIOS_CARPETA_DIGITAL.some((item) => item.key === key))
+        : [];
+      setColumnasVisibles([...new Set([...columnasBase, ...repositoriosSeleccionados])]);
     } else if (definicion) {
       setColumnasVisibles(obtenerColumnasActividad(definicion.key));
     }
@@ -2673,7 +2817,22 @@ export default function ExpedientesListado() {
                             }
                           >
 
-                            {columna.key === "id_expediente" ? (
+                            {REPOSITORIOS_CARPETA_DIGITAL.some((item) => item.key === columna.key) ? (
+                              <CeldaRepositorioDigital
+                                expedienteId={expediente.id_expediente || expediente.id}
+                                repositorioKey={columna.key}
+                                valor={expediente[columna.key]}
+                                actividadId={actividadSeleccionada}
+                                onAbrir={() => setCarpetaDigitalSeleccionada({
+                                  expedienteId: expediente.id_expediente || expediente.id,
+                                  actividadId: actividadSeleccionada,
+                                })}
+                              />
+                            ) : columna.key === "carpeta_digital" ? (
+                              Number.parseInt(String(expediente[columna.key] || "").match(/\\d+/)?.[0] || "0", 10) > 0 ? (
+                                <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="rounded-lg border px-2 py-1 text-xs font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)" }}>📂 {expediente[columna.key]}</button>
+                              ) : null
+                            ) : columna.key === "id_expediente" ? (
                               <Link to={`/expedientes/${encodeURIComponent(expediente.id_expediente || expediente.id || "")}`} className="font-extrabold text-[var(--erp-primary)] underline-offset-2 hover:underline" title={`Abrir ficha del expediente ${expediente.id_expediente || expediente.id || ""}`}>
                                 {formatearValor(expediente[columna.key], columna.tipo)}
                               </Link>
@@ -3060,7 +3219,14 @@ export default function ExpedientesListado() {
         </div>
       )}
 
-
+      {carpetaDigitalSeleccionada && (
+        <CarpetaDigitalModal
+          expedienteId={carpetaDigitalSeleccionada.expedienteId}
+          modoActividad={Boolean(carpetaDigitalSeleccionada.actividadId)}
+          actividadId={carpetaDigitalSeleccionada.actividadId}
+          onClose={() => setCarpetaDigitalSeleccionada(null)}
+        />
+      )}
     </div>
 
   );
