@@ -3860,20 +3860,22 @@ const cuantiaFincasParaEnvio =
 
           <div className="min-w-0">
 
-            <Link
-              to="/expedientes"
-              className="
-                mb-3
-                inline-flex
-                items-center
-                text-[11px]
-                font-bold
-                text-blue-600
-                hover:text-blue-700
-              "
-            >
-              ← Expedientes
-            </Link>
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <Link
+                to="/expedientes"
+                className="inline-flex items-center text-[11px] font-bold text-blue-600 hover:text-blue-700"
+              >
+                ← Expedientes
+              </Link>
+              <button
+                type="button"
+                onClick={() => setMostrarVisibilidadTablas(true)}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-violet-50 px-3 py-2 text-xs font-extrabold text-violet-800 shadow-sm hover:bg-violet-100 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                title="Configurar las columnas del Excel y los repositorios de carpeta digital por actividad"
+              >
+                ⚙️ Visibilidad tablas
+              </button>
+            </div>
 
             <div
               className="
