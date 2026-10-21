@@ -144,3 +144,41 @@ select, textarea) {
     min-width: 640px;
   }
 }
+
+
+/* El dashboard de CancelaGest comparte la misma paleta corporativa. */
+.cg-page {
+  --cg-primary: #3156b3;
+  --cg-primary-hover: #274694;
+  --cg-primary-soft: #edf3ff;
+}
+
+.cg-page .cg-button-primary {
+  color: #fff;
+  background: linear-gradient(135deg, #3156b3, #274694);
+  border: 1px solid #274694;
+}
+
+.cg-page .cg-button-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4268c5, #3156b3);
+}
+
+.cg-page .cg-module-icon {
+  color: #3156b3;
+  background: #edf3ff;
+  border-color: #d7e3ff;
+}
+
+.cg-page .cg-module-card:hover {
+  border-color: #b8c9f3;
+  box-shadow: 0 10px 22px rgba(49, 86, 179, .08);
+}
+
+.cg-page .cg-month-bar,
+.cg-page .cg-bar-fill {
+  background: linear-gradient(180deg, #6c8de0, #3156b3);
+}
+
+.cg-page .cg-bar-value {
+  color: #3156b3;
+}
