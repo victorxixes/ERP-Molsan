@@ -986,14 +986,6 @@ export default function ExpedientesListado() {
     mostrarFiltros,
     setMostrarFiltros,
   ] = useState(false);
-
-
-  const [
-    mostrarColumnas,
-    setMostrarColumnas,
-  ] = useState(false);
-
-
   // ==========================================================
   // FILTROS EDITABLES — FILTROS AVANZADOS DEFINITIVOS
   // ==========================================================
@@ -2183,76 +2175,6 @@ export default function ExpedientesListado() {
 
 
   // ==========================================================
-  // TOGGLE COLUMNA
-  // ==========================================================
-
-  const toggleColumna = (
-    key
-  ) => {
-
-    setColumnasVisibles(
-      (actuales) => {
-
-        if (
-          actuales.includes(
-            key
-          )
-        ) {
-
-          return actuales.filter(
-            (item) =>
-              item !== key
-          );
-
-        }
-
-
-        return [
-
-          ...actuales,
-
-          key,
-
-        ];
-
-      }
-    );
-
-  };
-
-
-  // ==========================================================
-  // MOSTRAR TODAS
-  // ==========================================================
-
-  const mostrarTodasColumnas =
-    () => {
-
-      setColumnasVisibles(
-        COLUMNAS.map(
-          (columna) =>
-            columna.key
-        )
-      );
-
-    };
-
-
-  // ==========================================================
-  // RESTAURAR POR DEFECTO
-  // ==========================================================
-
-  const restaurarColumnas =
-    () => {
-
-      setColumnasVisibles(
-        COLUMNAS_POR_DEFECTO
-      );
-
-    };
-
-
-  // ==========================================================
   // COLUMNAS ACTIVAS
   // ==========================================================
 
@@ -2450,7 +2372,6 @@ export default function ExpedientesListado() {
       <section className="w-full flex flex-wrap items-center justify-start gap-2" aria-label="Acciones de expedientes">
               <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
               <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
-              <button type="button" onClick={() => setMostrarColumnas(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>☷ Columnas</button>
             </section>
       </section>
 
@@ -3139,106 +3060,6 @@ export default function ExpedientesListado() {
         </div>
       )}
 
-      {/* ======================================================
-          MODAL — COLUMNAS VISIBLES
-      ====================================================== */}
-
-      {mostrarColumnas && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-columnas-titulo"
-        >
-          <button
-            type="button"
-            aria-label="Cerrar columnas visibles"
-            onClick={() => setMostrarColumnas(false)}
-            className="absolute inset-0 bg-slate-900/35 backdrop-blur-sm"
-          />
-
-          <section
-            className="relative z-10 w-full max-w-6xl max-h-[88vh] overflow-y-auto rounded-3xl border shadow-2xl"
-            style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
-          >
-            <div className="sticky top-0 z-10 px-6 py-5 border-b flex items-start justify-between gap-4" style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}>
-              <div>
-                <h3 id="modal-columnas-titulo" className="text-xl font-bold" style={{ color: "var(--erp-text)" }}>
-                  Columnas visibles
-                </h3>
-                <p className="text-sm mt-1" style={{ color: "var(--erp-text-soft)" }}>
-                  Selecciona las columnas que quieres mostrar en el listado.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setMostrarColumnas(false)}
-                className="shrink-0 w-10 h-10 rounded-xl border text-lg font-semibold transition hover:bg-[var(--erp-surface-soft)]"
-                style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}
-                aria-label="Cerrar"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="p-6">
-              <div className="flex flex-wrap gap-2 mb-5">
-                <button type="button" onClick={mostrarTodasColumnas} className="px-3 py-2 rounded-xl text-sm font-semibold border transition-all" style={{ background: "var(--erp-primary-soft)", color: "var(--erp-primary)", borderColor: "var(--erp-border)" }}>
-                  Mostrar todas
-                </button>
-                <button type="button" onClick={restaurarColumnas} className="px-3 py-2 rounded-xl text-sm font-semibold border transition-all" style={{ background: "var(--erp-surface)", color: "var(--erp-text)", borderColor: "var(--erp-border)" }}>
-                  Restaurar por defecto
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-                <section className="rounded-2xl border p-4" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
-                  <div className="mb-3">
-                    <h4 className="text-base font-bold" style={{ color: "var(--erp-text)" }}>Campos del Excel ABSIS</h4>
-                    <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Selecciona los campos de expediente que proceden del Excel de importación.</p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {COLUMNAS.filter((columna) => COLUMNAS_EXCEL_ABSIS.includes(columna.key)).map((columna) => {
-                      const visible = columnasVisibles.includes(columna.key);
-                      return (
-                        <label key={columna.key} className="flex items-start gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-all hover:bg-[var(--erp-primary-soft)]" style={{ background: visible ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: visible ? "var(--erp-primary)" : "var(--erp-border)" }}>
-                          <input type="checkbox" checked={visible} onChange={() => toggleColumna(columna.key)} className="mt-0.5 accent-[var(--erp-primary)]" />
-                          <span className="text-sm" style={{ color: visible ? "var(--erp-primary-dark)" : "var(--erp-text)" }}>{columna.label}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </section>
-
-                <section className="rounded-2xl border p-4" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
-                  <div className="mb-3">
-                    <h4 className="text-base font-bold" style={{ color: "var(--erp-text)" }}>Repositorios de la carpeta digital</h4>
-                    <p className="text-xs mt-1" style={{ color: "var(--erp-text-soft)" }}>Selecciona los repositorios documentales que quieres ver como columnas.</p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {REPOSITORIOS_CARPETA_DIGITAL.map((repositorio) => {
-                      const visible = columnasVisibles.includes(repositorio.key);
-                      return (
-                        <label key={repositorio.key} className="flex items-start gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-all hover:bg-[var(--erp-primary-soft)]" style={{ background: visible ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: visible ? "var(--erp-primary)" : "var(--erp-border)" }}>
-                          <input type="checkbox" checked={visible} onChange={() => toggleColumna(repositorio.key)} className="mt-0.5 accent-[var(--erp-primary)]" />
-                          <span className="text-sm" style={{ color: visible ? "var(--erp-primary-dark)" : "var(--erp-text)" }}>{repositorio.label}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                  <p className="mt-3 text-xs" style={{ color: "var(--erp-text-soft)" }}>Los repositorios nuevos se muestran como columnas cuando el listado dispone de su estado documental.</p>
-                </section>
-              </div>
-            </div>
-
-            <div className="px-6 py-4 border-t flex justify-end" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)" }}>
-              <button type="button" onClick={() => setMostrarColumnas(false)} className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md" style={{ background: "var(--erp-primary)" }}>
-                Cerrar
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
 
     </div>
 
