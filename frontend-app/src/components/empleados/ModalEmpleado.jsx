@@ -544,6 +544,7 @@ export default function ModalEmpleado({
   const [comunidadesReparto, setComunidadesReparto] = useState([]);
   const [productosGtgReparto, setProductosGtgReparto] = useState([]);
   const [tiposOperacionReparto, setTiposOperacionReparto] = useState([]);
+  const [estadosExpedienteReparto, setEstadosExpedienteReparto] = useState([]);
   const [cargandoCatalogosReparto, setCargandoCatalogosReparto] = useState(false);
   const [cargandoReparto, setCargandoReparto] = useState(false);
   const [guardandoReparto, setGuardandoReparto] = useState(false);
@@ -921,6 +922,7 @@ export default function ModalEmpleado({
         if (!vigente) return;
         setProductosGtgReparto(Array.isArray(catalogos?.productos_gtg) ? catalogos.productos_gtg : []);
         setTiposOperacionReparto(Array.isArray(catalogos?.tipos_operacion) ? catalogos.tipos_operacion : []);
+        setEstadosExpedienteReparto(Array.isArray(catalogos?.estados_expediente) ? catalogos.estados_expediente : []);
       })
       .catch((e) => {
         if (!vigente) return;
@@ -945,6 +947,7 @@ export default function ModalEmpleado({
         // La API persiste oficinas como lista; el campo de edición es texto.
         oficinas: Array.isArray(r.oficinas) ? r.oficinas.join(", ") : (r.oficinas || ""),
         comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []),
+        estados_expediente: Array.isArray(r.estados_expediente) ? r.estados_expediente : (r.estado_expediente ? [r.estado_expediente] : []),
         _key: r._key || `regla-${i}-${r.actividad}-${r.oficina_tipo || ""}-${Array.isArray(r.oficinas) ? r.oficinas.join(",") : (r.oficinas || "")}`,
       })));
       setActividadesReparto(config?.actividades || []);
@@ -3928,7 +3931,7 @@ const permisosDisponibles =
                           <h3 className="text-base font-bold text-slate-900">Reglas de reparto de expedientes</h3>
                           <p className="mt-1 max-w-3xl text-sm text-slate-500">Conserva las reglas existentes y añade criterios por oficina, Producto GTG y tipo de operación. Puedes tener varias reglas para una misma actividad si corresponden a oficinas o productos diferentes.</p>
                         </div>
-                        <button type="button" disabled={!esAdministrador || cargandoReparto || !gestorRepartoId} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now() + "-" + actual.length, actividad: actividadesReparto[0]?.key || "", departamento: "", oficina_tipo: "", oficinas: "", producto_gtg: "", tipo_operacion: "", zona_territorial: false, comunidades: [], comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">+ Añadir regla</button>
+                        <button type="button" disabled={!esAdministrador || cargandoReparto || !gestorRepartoId} onClick={() => setReglasReparto((actual) => [...actual, { _key: "nueva-" + Date.now() + "-" + actual.length, actividad: actividadesReparto[0]?.key || "", departamento: "", oficina_tipo: "", oficinas: "", producto_gtg: "", tipo_operacion: "", estados_expediente: [], zona_territorial: false, comunidades: [], comunidad: "", porcentaje: 100, apoderado_id: "", activa: true }])} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">+ Añadir regla</button>
                       </div>
                       <div className="mt-4 grid gap-3 rounded-xl border border-blue-100 bg-blue-50/60 p-4 md:grid-cols-[minmax(220px,360px)_1fr] md:items-end">
                         <label className="block text-xs font-bold text-slate-700">Gestor
@@ -3958,6 +3961,22 @@ const permisosDisponibles =
                                 <label className="block text-xs font-bold text-slate-600">Tipo de oficina<select value={regla.oficina_tipo || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, oficina_tipo: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todas</option><option value="oficina">Oficina (excepto 5316)</option><option value="cancela">Cancela (5316)</option></select></label>
                                 <label className="block text-xs font-bold text-slate-600">Producto GTG<select value={regla.producto_gtg || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, producto_gtg: e.target.value } : r))} disabled={cargandoCatalogosReparto} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todos los productos</option>{regla.producto_gtg && !productosGtgReparto.includes(regla.producto_gtg) && <option value={regla.producto_gtg}>{regla.producto_gtg} (valor existente)</option>}{productosGtgReparto.map((producto) => <option key={producto} value={producto}>{producto}</option>)}</select></label>
                                 <label className="block text-xs font-bold text-slate-600">Tipo de operación<select value={regla.tipo_operacion || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, tipo_operacion: e.target.value } : r))} disabled={cargandoCatalogosReparto} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todos los tipos</option>{regla.tipo_operacion && !tiposOperacionReparto.includes(regla.tipo_operacion) && <option value={regla.tipo_operacion}>{regla.tipo_operacion} (valor existente)</option>}{tiposOperacionReparto.map((tipo) => <option key={tipo} value={tipo}>{tipo}</option>)}</select></label>
+                                <div className="rounded-lg border border-slate-200 bg-white p-3 md:col-span-2 xl:col-span-3">
+                                  <div className="mb-2 text-xs font-bold text-slate-700">Estado expediente (marca uno o varios; sin marcar = todos)</div>
+                                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                                    {[...new Set([...(Array.isArray(regla.estados_expediente) ? regla.estados_expediente : []), ...estadosExpedienteReparto])].filter(Boolean).map((estado) => (
+                                      <label key={estado} className="flex items-center gap-2 rounded-md border border-slate-100 px-2 py-1.5 text-sm text-slate-700 hover:bg-slate-50">
+                                        <input type="checkbox" className="h-4 w-4 accent-blue-600" checked={(Array.isArray(regla.estados_expediente) ? regla.estados_expediente : []).includes(estado)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => {
+                                          if (i !== indice) return r;
+                                          const seleccionados = Array.isArray(r.estados_expediente) ? r.estados_expediente : [];
+                                          return { ...r, estados_expediente: e.target.checked ? [...seleccionados.filter((x) => x !== estado), estado] : seleccionados.filter((x) => x !== estado) };
+                                        }))} />
+                                        <span>{estado}</span>
+                                      </label>
+                                    ))}
+                                  </div>
+                                  {cargandoCatalogosReparto && <p className="mt-2 text-xs text-slate-500">Cargando estados del catálogo…</p>}
+                                </div>
                                 <label className="block text-xs font-bold text-slate-600">Porcentaje de reparto (%)<input type="number" min="0" max="100" step="1" value={regla.porcentaje ?? 0} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, porcentaje: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-normal" /></label>
                                 <label className="flex items-center gap-2 self-end rounded-lg bg-slate-50 px-3 py-3 text-sm font-semibold text-slate-700"><input type="checkbox" checked={Boolean(regla.zona_territorial)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, zona_territorial: e.target.checked, comunidades: e.target.checked ? ((Array.isArray(r.comunidades) && r.comunidades.length) ? r.comunidades : (r.comunidad ? [r.comunidad] : ["Cataluña"])) : [], comunidad: "" } : r))} className="h-4 w-4 accent-blue-600" />Limitar por zona territorial</label>
                                 {regla.zona_territorial && <div className="rounded-lg border border-slate-200 p-3 md:col-span-2 xl:col-span-3">
@@ -3979,7 +3998,7 @@ const permisosDisponibles =
                         <button type="button" disabled={!esAdministrador || guardandoReparto || cargandoReparto || !gestorRepartoId || reglasReparto.some((r) => !r.actividad || r.zona_territorial && !(Array.isArray(r.comunidades) ? r.comunidades.length : r.comunidad))} onClick={async () => {
                           setGuardandoReparto(true); setErrorReparto(""); setMensajeReparto("");
                           try {
-                            const payload = reglasReparto.map(({ _key, ...r }) => ({ ...r, comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []), comunidad: "", porcentaje: Number(r.porcentaje || 0), apoderado_id: r.apoderado_id || null }));
+                            const payload = reglasReparto.map(({ _key, ...r }) => ({ ...r, comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []), estados_expediente: Array.isArray(r.estados_expediente) ? r.estados_expediente : (r.estado_expediente ? [r.estado_expediente] : []), comunidad: "", porcentaje: Number(r.porcentaje || 0), apoderado_id: r.apoderado_id || null }));
                             if (payload.some((r) => !r.actividad)) throw new Error("Selecciona una actividad en cada regla antes de guardar.");
                             if (!gestorRepartoId) throw new Error("Selecciona un gestor antes de guardar.");
                             await guardarReglasRepartoGestor(gestorRepartoId, payload);
@@ -3993,6 +4012,7 @@ const permisosDisponibles =
                               ...r,
                               oficinas: Array.isArray(r.oficinas) ? r.oficinas.join(", ") : (r.oficinas || ""),
                               comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []),
+                              estados_expediente: Array.isArray(r.estados_expediente) ? r.estados_expediente : (r.estado_expediente ? [r.estado_expediente] : []),
                               _key: `guardada-${i}-${r.actividad}-${r.oficina_tipo || ""}`,
                             }));
                             // Comprobar que los criterios nuevos también regresan tras leer la configuración.
@@ -4001,6 +4021,7 @@ const permisosDisponibles =
                               JSON.stringify(Array.isArray(r.oficinas) ? r.oficinas : String(r.oficinas || "").split(/[,;]/).map(x => x.trim()).filter(Boolean)) !== JSON.stringify(Array.isArray(payload[i].oficinas) ? payload[i].oficinas : String(payload[i].oficinas || "").replace(/;/g, ",").split(",").map(x => x.trim()).filter(Boolean)) ||
                               String(r.producto_gtg || "") !== String(payload[i].producto_gtg || "") ||
                               String(r.tipo_operacion || "") !== String(payload[i].tipo_operacion || "") ||
+                              JSON.stringify(Array.isArray(r.estados_expediente) ? r.estados_expediente : []) !== JSON.stringify(Array.isArray(payload[i].estados_expediente) ? payload[i].estados_expediente : []) ||
                               String(r.departamento || "") !== String(payload[i].departamento || "") ||
                               Number(r.porcentaje || 0) !== Number(payload[i].porcentaje || 0) ||
                               Boolean(r.activa) !== Boolean(payload[i].activa) ||
