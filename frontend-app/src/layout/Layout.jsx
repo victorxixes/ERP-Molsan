@@ -18,7 +18,7 @@ export default function Layout() {
   // Las rutas dentro de Layout pertenecen al ERP operativo de CancelaGest.
   // Los portales independientes (ApoderaGest, NotarGest y EncargaGest) no usan este Layout.
   // Seguridad, auditoría y panel técnico conservan su presentación especializada.
-  const rutaCancelaGest = !/^\\/(paneltecnico|seguridad|auditoria)(\\/|$)/i.test(pathname);
+  const rutaCancelaGest = !/^\/(paneltecnico|seguridad|auditoria)(\/|$)/i.test(pathname);
 
   useNotificacionesWS(empleado?.id);
 
