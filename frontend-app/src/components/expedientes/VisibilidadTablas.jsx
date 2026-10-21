@@ -69,19 +69,21 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
   const actividad = ACTIVIDADES.find((item) => item.key === actividadKey) || ACTIVIDADES[0];
 
   useEffect(() => {
+    const columnasPermitidas = new Set(catalogo.columnas_excel.map((item) => item.key));
     if (configuracionActual) {
       setNombreTabla(configuracionActual.nombre_tabla || `Expedientes - ${actividad.label}`);
-      setColumnas(Array.isArray(configuracionActual.excel_columns) ? configuracionActual.excel_columns : []);
+      setColumnas((Array.isArray(configuracionActual.excel_columns) ? configuracionActual.excel_columns : []).filter((key) => columnasPermitidas.has(key)));
       setRepositorios(Array.isArray(configuracionActual.repositorios) ? configuracionActual.repositorios : []);
     } else {
       setNombreTabla(`Expedientes - ${actividad.label}`);
-      setColumnas(COLUMNAS_INICIALES[actividadKey] || []);
+      // Los valores iniciales deben pertenecer al catálogo real del backend; así el primer guardado no falla por claves ocultas/no admitidas.
+      setColumnas((COLUMNAS_INICIALES[actividadKey] || []).filter((key) => columnasPermitidas.has(key)));
       setRepositorios(REPOSITORIOS_INICIALES[actividadKey] || []);
     }
     setError("");
     setMensaje("");
     setBusquedaColumna("");
-  }, [actividadKey, configuracionActual, actividad.label]);
+  }, [actividadKey, configuracionActual, actividad.label, catalogo.columnas_excel]);
 
   const columnasFiltradas = useMemo(() => {
     const q = busquedaColumna.trim().toLocaleLowerCase("es");
