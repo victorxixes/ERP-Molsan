@@ -2396,7 +2396,7 @@ export default function ExpedientesListado() {
         </div>
         <div role="note" className="rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)", color: "var(--erp-text)" }}>
           <span className="font-bold">📌 Control de plazos:</span>
-          <span className="ml-1">Los recuentos muestran expedientes que superan el máximo permitido: Sede notarial 5 días; Sede notarial con protocolo 2; Liquidación de impuestos 2; Tramitación inscripción 23; Defectos registrales 60; Liquidación y cierre 5. Documentación previa no tiene plazo de vencimiento.</span>
+          <span className="ml-1">Los recuentos por actividad son independientes del SLA global: Sede notarial 5 días; Sede notarial con protocolo 2; Liquidación de impuestos 2; Tramitación inscripción 23; Defectos registrales 60; Liquidación y cierre 5. Documentación previa no tiene plazo de vencimiento. SLA global superado: {formatearNumero(Number(alertasControl.find((item) => item.key === "sla_global")?.total || 0))} expedientes. El SLA global se calcula desde el envío hasta Fin actividad o hoy: 40 días para Propia entidad/Vinculada propia entidad y 70 días para Vinculada otra entidad/Otra entidad; Hipotecario y Crédito Stock se excluyen.</span>
         </div>
       </section>
 
