@@ -6001,10 +6001,6 @@ const cuantiaFincasParaEnvio =
                     ) : (
                       <div className="space-y-3">
                         {fincasExpediente.map((finca, indice) => {
-                          const domicilio = finca.domicilio || finca.direccion || finca.direccion_finca || finca.calle || finca.direccion_completa || "";
-                          const localidad = finca.localidad || finca.poblacion || finca.municipio || "";
-                          const codigoPostal = finca.codigo_postal || finca.cod_postal || finca.cp || finca.codigoPostal || "";
-                          const provincia = finca.provincia || "";
                           const idufir = finca.idufir || finca.cru_idufir || finca.cru || "";
                           const numeroFinca = finca.finca || finca.numero_finca || "";
                           const fechaInscripcion = expediente?.fecha_inscripcion || "";
@@ -6015,7 +6011,7 @@ const cuantiaFincasParaEnvio =
                           const registroNumero = finca.numero_registro || finca.registro_numero || "";
                           const numeroSeccion = finca.seccion || "";
                           const nombreRegistro = finca.registro || "";
-                          const datosPendientes = !domicilio || !localidad || !codigoPostal || !provincia || !idufir || !numeroFinca || !fechaInscripcion || !registroProvincia || !registroPoblacion || !registroNumero || !numeroSeccion || !nombreRegistro;
+                          const datosPendientes = !idufir || !numeroFinca || !fechaInscripcion || !registroProvincia || !registroPoblacion || !registroNumero || !numeroSeccion || !nombreRegistro;
                           const campoGarantia = (label, valor, fecha = false) => (
                             <div>
                               <span className="block text-[10px] font-semibold text-slate-400">{label}</span>
@@ -6028,23 +6024,12 @@ const cuantiaFincasParaEnvio =
                                 <h5 className="text-xs font-extrabold text-slate-800">Garantía {indice + 1} · Finca {numeroFinca || "No identificada"}</h5>
                                 <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${datosPendientes ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}`}>Datos pendientes: {datosPendientes ? "Sí" : "No"}</span>
                               </div>
-                              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                                <div className="rounded-lg bg-slate-50 p-3">
-                                  <h6 className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Finca del contrato</h6>
-                                  <div className="grid grid-cols-2 gap-3">
-                                    {campoGarantia("Domicilio", domicilio)}
-                                    {campoGarantia("Localidad", localidad)}
-                                    {campoGarantia("Código postal", codigoPostal)}
-                                    {campoGarantia("Provincia", provincia)}
-                                  </div>
-                                </div>
-                                <div className="rounded-lg bg-slate-50 p-3">
-                                  <h6 className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Datos de la garantía</h6>
-                                  <div className="grid grid-cols-2 gap-3">
-                                    {campoGarantia("IDUFIR / CRU", idufir)}
-                                    {campoGarantia("Núm. finca registral", numeroFinca)}
-                                    {campoGarantia("Fecha inscripción cancelación", fechaInscripcion, true)}
-                                  </div>
+                              <div className="rounded-lg bg-slate-50 p-3">
+                                <h6 className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Datos de la garantía</h6>
+                                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                                  {campoGarantia("IDUFIR / CRU", idufir)}
+                                  {campoGarantia("Núm. finca registral", numeroFinca)}
+                                  {campoGarantia("Fecha inscripción cancelación", fechaInscripcion, true)}
                                 </div>
                               </div>
                               <div className="mt-3 rounded-lg border border-slate-100 p-3">
