@@ -2088,8 +2088,18 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         // En Liquidación de impuestos y Tramitación inscripción se ocultan
         // todos los campos generales; cada actividad muestra sus campos específicos.
         if (
-          ["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) &&
+          ["liquidacion-impuestos", "tramitacion-inscripcion", "defectos-registrales"].includes(actividadSeleccionada) &&
           CAMPOS_COMUNES_ACTIVIDAD.some((comun) => comun.key === campo.key)
+        ) {
+          return false;
+        }
+
+        // En Defectos registrales se ocultan también los campos específicos
+        // que describen el estado y el texto del defecto; esta ficha queda limpia
+        // de campos generales y muestra solo los datos de gestión registral restantes.
+        if (
+          actividadSeleccionada === "defectos-registrales" &&
+          ["tiene_defectos_abiertos", "tipo_error", "falta_defecto", "descripcion_error"].includes(campo.key)
         ) {
           return false;
         }
