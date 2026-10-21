@@ -116,6 +116,7 @@ export default function CarpetaDigitalModal({
   const [urlVistaPrevia, setUrlVistaPrevia] = useState("");
   const [cargandoVistaPrevia, setCargandoVistaPrevia] = useState(false);
   const [configRepositorios, setConfigRepositorios] = useState(null);
+  const [busquedaDocumento, setBusquedaDocumento] = useState("");
 
   useEffect(() => {
     let activo = true;
@@ -331,67 +332,41 @@ export default function CarpetaDigitalModal({
   );
 
   const renderCategoria = ({ etiqueta, categoria }) => {
-    const lista = porCategoria(categoria);
+    const lista = porCategoria(categoria).filter((doc) => {
+      const q = normalizar(busquedaDocumento);
+      return !q || normalizar(`${etiqueta} ${doc.nombre_original || ""} ${doc.categoria || ""}`).includes(q);
+    });
+    const totalCategoria = porCategoria(categoria).length;
     return (
-      <article key={categoria} className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div className="min-w-0">
-            <h4 className="text-sm font-bold text-slate-800">{etiqueta}</h4>
-            <p className="mt-0.5 text-xs text-slate-500">{lista.length} archivo(s)</p>
+      <article key={categoria} className="min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <h4 className="text-xs font-bold text-slate-800">{etiqueta}</h4>
+            <p className="text-[10px] text-slate-500">{totalCategoria} archivo(s)</p>
           </div>
-          <span className={`inline-flex min-w-8 justify-center rounded-full px-2.5 py-1 text-xs font-extrabold ${
-            lista.length ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
-          }`}>{lista.length}</span>
+          <span className={`inline-flex min-w-7 justify-center rounded-full px-2 py-1 text-[10px] font-extrabold ${totalCategoria ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{totalCategoria}</span>
+          <label className={`inline-flex cursor-pointer items-center rounded-md border px-2.5 py-1.5 text-[11px] font-bold ${subiendo === categoria ? "border-slate-200 bg-slate-100 text-slate-500" : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"}`}>
+            {subiendo === categoria ? "Subiendo…" : "＋ Adjuntar"}
+            <input className="hidden" type="file" accept=".pdf,application/pdf" multiple onChange={(event) => subir(event, categoria)} disabled={!!subiendo} />
+          </label>
         </div>
-
-        <label className={`mt-3 inline-flex items-center justify-center rounded-lg border px-3 py-2 text-xs font-bold transition ${
-          subiendo === categoria
-            ? "cursor-wait border-slate-200 bg-slate-100 text-slate-500"
-            : "cursor-pointer border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
-        }`}>
-          {subiendo === categoria ? "Guardando archivo…" : "＋ Adjuntar PDF"}
-          <input
-            className="hidden"
-            type="file"
-            accept=".pdf,application/pdf"
-            multiple
-            onChange={(event) => subir(event, categoria)}
-            disabled={!!subiendo}
-          />
-        </label>
-
         {lista.length > 0 ? (
-          <ul className="mt-3 divide-y divide-slate-100">
+          <ul className="mt-2 divide-y divide-slate-100">
             {lista.map((doc) => (
-              <li key={doc.id} className={`flex min-w-0 flex-wrap items-center gap-2 rounded-lg py-2 ${
-                documentoVistaPrevia?.id === doc.id ? "bg-indigo-50/70 px-2" : ""
-              }`}>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-semibold text-slate-700" title={doc.nombre_original}>
-                    {doc.nombre_original}
-                  </p>
-                  <p className="text-[10px] text-slate-400">
-                    {bytes(doc.tamano_bytes || 0)}
-                    {doc.fecha_subida ? ` · ${new Date(doc.fecha_subida).toLocaleString("es-ES")}` : ""}
-                  </p>
-                </div>
-                <button type="button" onClick={() => verDocumento(doc)} className="rounded-md px-2 py-1 text-xs font-bold text-indigo-700 hover:bg-indigo-100">
-                  Ver a la derecha
+              <li key={doc.id} className={`flex min-w-0 flex-wrap items-center gap-2 rounded-md px-1 py-2 ${documentoVistaPrevia?.id === doc.id ? "bg-indigo-50" : ""}`}>
+                <button type="button" onClick={() => verDocumento(doc)} className="min-w-0 flex-1 text-left" title={doc.nombre_original}>
+                  <span className="block truncate text-xs font-semibold text-slate-700">{doc.nombre_original}</span>
+                  <span className="block text-[10px] text-slate-400">{bytes(doc.tamano_bytes || 0)}{doc.fecha_subida ? ` · ${new Date(doc.fecha_subida).toLocaleString("es-ES")}` : ""}</span>
                 </button>
-                <button type="button" onClick={() => descargar(doc)} className="rounded-md px-2 py-1 text-xs font-bold text-slate-600 hover:bg-slate-100" title="Descargar">
-                  ↓
-                </button>
-                <button type="button" onClick={() => eliminar(doc)} className="rounded-md px-2 py-1 text-xs font-bold text-red-600 hover:bg-red-50" title="Eliminar">
-                  Eliminar
-                </button>
+                <button type="button" onClick={() => verDocumento(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-indigo-700 hover:bg-indigo-100">Ver</button>
+                <button type="button" onClick={() => descargar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-slate-600 hover:bg-slate-100" title="Descargar">↓</button>
+                <button type="button" onClick={() => eliminar(doc)} className="rounded-md px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50" title="Eliminar">✕</button>
               </li>
             ))}
           </ul>
-        ) : (
-          <p className="mt-3 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 text-xs text-slate-400">
-            Todavía no hay archivos. Usa «Adjuntar PDF» para incorporarlo aquí.
-          </p>
-        )}
+        ) : totalCategoria === 0 ? (
+          <p className="mt-2 text-[10px] text-slate-400">{busquedaDocumento ? "Sin coincidencias con la búsqueda." : "Sin documentos adjuntos."}</p>
+        ) : null}
       </article>
     );
   };
@@ -536,33 +511,50 @@ export default function CarpetaDigitalModal({
             </div>
           )}
 
-          <div className={modoActividad ? "space-y-3" : "min-h-0 flex-1 space-y-3 overflow-y-auto p-4 sm:p-5"}>
-            {error && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
-            {cargando ? (
-              <p className="rounded-xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">Cargando documentos…</p>
-            ) : (
-              <>
-                <div className="rounded-xl border border-indigo-100 bg-indigo-50/60 px-4 py-3 text-xs text-indigo-900">
-                  <strong>Carpeta documental del expediente.</strong> Cada actividad puede plegarse o desplegarse. Adjunta PDF, selecciónalo para verlo a la derecha y oculta o amplía el visor cuando lo necesites.
-                </div>
-                {bloquesVisibles.map(renderBloque)}
-                {!modoActividad && (
-                  <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                    <button type="button" onClick={() => setOtrosAbierto((v) => !v)} aria-expanded={otrosAbierto} className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left hover:bg-slate-50">
-                      <span className="flex min-w-0 items-center gap-3">
-                        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black ${otrosCantidad ? "bg-emerald-100 text-emerald-700" : "bg-indigo-50 text-indigo-700"}`}>{otrosCantidad}</span>
-                        <span>
-                          <span className="block text-sm font-extrabold text-slate-900">Otros</span>
-                          <span className="mt-0.5 block text-xs text-slate-500">Documentación complementaria y comunicaciones de oficina.</span>
+          <div className={modoActividad
+            ? "grid h-[min(72vh,760px)] min-h-[420px] grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)]"
+            : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}>
+            <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
+              <div className="mb-2 flex flex-wrap items-center gap-2">
+                <input
+                  type="search"
+                  value={busquedaDocumento}
+                  onChange={(event) => setBusquedaDocumento(event.target.value)}
+                  placeholder="Buscar documento por nombre…"
+                  aria-label="Buscar documento por nombre"
+                  className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                />
+                <span className="rounded-lg bg-slate-100 px-3 py-2 text-[11px] font-bold text-slate-600">{totalArchivos} archivo(s)</span>
+              </div>
+              {error && <div role="alert" className="mb-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</div>}
+              {cargando ? (
+                <p className="rounded-xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">Cargando documentos…</p>
+              ) : (
+                <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+                  {bloquesVisibles.map(renderBloque)}
+                  {!modoActividad && (
+                    <section className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+                      <button type="button" onClick={() => setOtrosAbierto((v) => !v)} aria-expanded={otrosAbierto} className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left hover:bg-slate-50">
+                        <span className="flex min-w-0 items-center gap-3">
+                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${otrosCantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{otrosCantidad}</span>
+                          <span><span className="block text-sm font-extrabold text-slate-900">Otros</span><span className="block text-[11px] text-slate-500">Documentación complementaria y comunicaciones.</span></span>
                         </span>
-                      </span>
-                      <span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600">{otrosAbierto ? "⌃ Ocultar" : "⌄ Expandir"}</span>
-                    </button>
-                    {otrosAbierto && <div className="grid gap-3 border-t border-slate-100 bg-slate-50/50 p-3 sm:grid-cols-2 sm:p-4">{CATEGORIAS_OTROS.map(renderCategoria)}</div>}
-                  </section>
-                )}
-              </>
-            )}
+                        <span className="text-xs font-bold text-slate-500">{otrosAbierto ? "⌃" : "⌄"}</span>
+                      </button>
+                      {otrosAbierto && <div className="space-y-2 border-t border-slate-100 bg-slate-50/50 p-2">{CATEGORIAS_OTROS.map(renderCategoria)}</div>}
+                    </section>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="min-h-0 min-w-0 overflow-hidden">
+              {visorVisible ? renderVisor() : (
+                <div className="flex h-full min-h-[260px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white p-5 text-center">
+                  <p className="text-xs text-slate-500">El visor está oculto.</p>
+                  <button type="button" onClick={() => setVisorVisible(true)} className="mt-3 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100">Mostrar visor</button>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       </div>
