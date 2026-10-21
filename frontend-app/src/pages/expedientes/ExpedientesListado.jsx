@@ -2262,34 +2262,6 @@ export default function ExpedientesListado() {
 
       <main className="min-w-0 w-full space-y-6">
 
-          <div
-            className="erp-card px-5 py-4 shadow-sm"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex items-center gap-3">
-                  <span className="text-xl">
-                    {ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.icono || "📋"}
-                  </span>
-                  <div className="min-w-0">
-                    <h2 className="text-xl font-bold text-[var(--erp-text)] truncate">
-                      {alertaSeleccionada ? (alertasControl.find((item) => item.key === alertaSeleccionada)?.label || "Control de gestión") : (ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Todos los expedientes")}
-                    </h2>
-                    <p className="text-sm text-[var(--erp-text-soft)] mt-1">
-                      {alertaSeleccionada
-                        ? "Expedientes que necesitan atención. Puedes combinar este control con los filtros."
-                        : actividadSeleccionada
-                          ? "Expedientes de esta fase. Pulsa el número de expediente para abrir su ficha."
-                          : "Busca un expediente o revisa los avisos de gestión y abre su ficha para trabajar."}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              
-            </div>
-          </div>
-
       <section className="flex flex-wrap items-center justify-end gap-2" aria-label="Acciones de expedientes">
         <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
         <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
