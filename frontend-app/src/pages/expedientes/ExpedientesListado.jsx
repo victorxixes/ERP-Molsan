@@ -543,6 +543,24 @@ const COLUMNAS = [
   { key: "fecha_vencimiento_asiento", label: "Fecha vencimiento asiento", tipo: "fecha" },
   { key: "escritura_simple_cancelacion", label: "Escritura simple de cancelación", tipo: "texto" },
 
+  // Columnas del catálogo Excel que también deben poder verse en la tabla web.
+  { key: "fecha_envio_notario", label: "Fecha envío notario", tipo: "fecha" },
+  { key: "fecha_solicitud_pnc", label: "Fecha solicitud PNC", tipo: "fecha" },
+  { key: "numero_solicitud_pnc", label: "Número solicitud PNC", tipo: "texto" },
+  { key: "idioma_documento", label: "Idioma documento", tipo: "texto" },
+  { key: "formato_escritura", label: "Formato escritura", tipo: "texto" },
+  { key: "tipo_tramite", label: "Tipo trámite", tipo: "texto" },
+  { key: "facturacion_nombre", label: "Nombre facturación", tipo: "texto" },
+  { key: "facturacion_apellidos", label: "Apellidos facturación", tipo: "texto" },
+  { key: "facturacion_dni_nif", label: "DNI/NIF facturación", tipo: "texto" },
+  { key: "facturacion_direccion", label: "Dirección facturación", tipo: "texto" },
+  { key: "facturacion_codigo_postal", label: "Código postal facturación", tipo: "texto" },
+  { key: "facturacion_poblacion", label: "Población facturación", tipo: "texto" },
+  { key: "facturacion_provincia", label: "Provincia facturación", tipo: "texto" },
+  { key: "facturacion_telefono", label: "Teléfono facturación", tipo: "texto" },
+  { key: "facturacion_email", label: "Email facturación", tipo: "texto" },
+  { key: "impuesto_ajd_itp", label: "Impuesto (AJD/ITP)", tipo: "texto" },
+
 ];
 
 
@@ -2439,7 +2457,7 @@ export default function ExpedientesListado() {
       {/* GRIDS DE ACTIVIDAD */}
       <section className="space-y-3" aria-label="Expedientes por actividad">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-          <div><h3 className="text-base font-bold text-[var(--erp-text)]">Expedientes por actividad</h3><p className="text-sm text-[var(--erp-text-soft)]">Pulsa un grid para ver debajo la tabla con los expedientes de esa actividad.</p></div>
+          <div><h3 className="text-base font-bold text-[var(--erp-text)]">{(configuracionesVisibilidad.find((item) => item.actividad_key === actividadSeleccionada)?.nombre_tabla) || "Expedientes por actividad"}</h3><p className="text-sm text-[var(--erp-text-soft)]">Pulsa un grid para ver debajo la tabla con los expedientes de esa actividad.</p></div>
           {actividadSeleccionada && <button type="button" onClick={() => { setActividadSeleccionada(""); setAlertaSeleccionada(""); setColumnasVisibles(COLUMNAS_POR_DEFECTO); setFiltroActividad(""); setFiltrosAplicados((actual) => ({ ...actual, actividad: "" })); setPagina(1); }} className="self-start rounded-lg border px-3 py-2 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)", background: "var(--erp-surface)" }}>Ver todas las actividades</button>}
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
