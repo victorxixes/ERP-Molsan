@@ -6195,7 +6195,10 @@ const cuantiaFincasParaEnvio =
                     // Para los documentos obligatorios de Documentación previa,
                     // se exige su categoría exacta y no solo el nombre del fichero.
                     const tieneDocEnCategoria = (...categorias) => documentos.some((doc) => {
-                      const categoria = normalizar(doc?.categoria || doc?.categoria_nombre || doc?.nombre_categoria || "");
+                      const categoria = normalizar([
+                        doc?.categoria, doc?.categoria_nombre, doc?.nombre_categoria,
+                        doc?.tipo_documento, doc?.metadata?.categoria,
+                      ].filter(Boolean).join(" "));
                       return categorias.some((buscado) => categoria === normalizar(buscado));
                     });
                     const requisito = (etiqueta, ok, detalle) => ({ etiqueta, ok: Boolean(ok), detalle: ok ? "Correcto" : detalle });
