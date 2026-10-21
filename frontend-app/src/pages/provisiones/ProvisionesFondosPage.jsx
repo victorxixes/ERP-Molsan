@@ -52,7 +52,15 @@ export default function ProvisionesFondosPage() {
 
   const cambiarCliente = (campo, valor) => setForm((f) => ({ ...f, cliente: { ...f.cliente, [campo]: valor } }));
   const cambiarOficina = (campo, valor) => setForm((f) => ({ ...f, oficina: { ...f.oficina, [campo]: valor } }));
-  const cambiarGarantia = (i, campo, valor) => setForm((f) => ({ ...f, garantias: f.garantias.map((g, n) => n === i ? { ...g, [campo]: valor, ...(campo === "tipo_carga" && valor !== "Hipotecaria" ? { notaria: "0" } : {}) } : g) }));
+  const cambiarGarantia = (i, campo, valor) => setForm((f) => ({ ...f, garantias: f.garantias.map((g, n) => {
+    if (n !== i) return g;
+    const cambios = { [campo]: valor };
+    if (campo === "tipo_carga" && valor !== "Hipotecaria") {
+      cambios.notaria = "0";
+      cambios.total = ["ajd", "registro", "gestion", "otros_gastos"].reduce((s, k) => s + Number(g[k] || 0), 0).toFixed(2);
+    }
+    return { ...g, ...cambios };
+  }) }));
   const nueva = () => { setForm(nuevoFormulario()); setError(""); setAviso(""); };
   const recuperar = (item) => {
     setForm({ ...nuevoFormulario(), ...item, cliente: { ...nuevoFormulario().cliente, ...(item.cliente || {}) }, oficina: { ...nuevoFormulario().oficina, ...(item.oficina || {}) }, garantias: (item.garantias?.length ? item.garantias : [vaciaGarantia()]).map((g) => Object.fromEntries(Object.entries({ ...vaciaGarantia(), ...g }).map(([k, v]) => [k, v ?? ""]))), observaciones: item.observaciones || "" });
