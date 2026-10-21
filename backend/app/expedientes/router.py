@@ -131,7 +131,7 @@ def _asegurar_tabla_visibilidad(db: Session):
     """))
     db.execute(text("ALTER TABLE public.expediente_visibilidad_config ADD COLUMN IF NOT EXISTS empleado_id INTEGER NOT NULL DEFAULT 0"))
     db.execute(text("""
-        DO $
+        DO $$
         BEGIN
             IF EXISTS (
                 SELECT 1 FROM pg_constraint
@@ -150,7 +150,7 @@ def _asegurar_tabla_visibilidad(db: Session):
                     ADD CONSTRAINT expediente_visibilidad_config_pkey_emp_actividad
                     PRIMARY KEY (empleado_id, actividad_key);
             END IF;
-        END $;
+        END $$;
     """))
     db.commit()
 
