@@ -6312,10 +6312,35 @@ const cuantiaFincasParaEnvio =
                       {
                         key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️",
                         checks: [
-                          requisito("Fecha cierre defecto", !defectos.length || defectos.every((d) => Boolean(d?.fecha_cierre_defecto || d?.fecha_cierre || d?.fcierre_defecto)), "Falta informar la Fecha cierre defecto en uno o varios defectos registrales"),
-                          requisito("Documento Defecto registral", !defectos.length || tieneDocEnCategoria("Defecto registral"), "Sube el documento del defecto en la categoría «Defecto registral» y comprueba que abre en el visor"),
-                          requisito("Documento Subsanación del defecto", !defectos.length || !hayDefectosAbiertos || tieneDocEnCategoria("Subsanación del defecto"), "Sube la subsanación en la categoría «Subsanación del defecto» y comprueba que abre en el visor"),
-                          requisito("Defectos cerrados o subsanados", !hayDefectosAbiertos, "Hay defectos pendientes de subsanar o cerrar"),
+                          requisito(
+                            "Control de defectos registrales",
+                            !hayDefectosAbiertos,
+                            hayDefectosAbiertos
+                              ? "Hay uno o varios defectos abiertos: completa los controles siguientes para documentar su subsanación y cierre."
+                              : "No hay defectos registrales abiertos; esta fase se considera correcta."
+                          ),
+                          requisito(
+                            "Fecha cierre defecto",
+                            !hayDefectosAbiertos && (!defectos.length || defectos.every((d) => Boolean(d?.fecha_cierre_defecto || d?.fecha_cierre || d?.fcierre_defecto))),
+                            hayDefectosAbiertos
+                              ? "Hay defectos abiertos. Registra la fecha de cierre cuando se hayan subsanado."
+                              : "No hay defectos abiertos."
+                          ),
+                          requisito(
+                            "Documento Defecto registral",
+                            !hayDefectosAbiertos || tieneDocEnCategoria("Defecto registral"),
+                            "Sube el documento del defecto en la categoría «Defecto registral» y comprueba que abre en el visor."
+                          ),
+                          requisito(
+                            "Documento Subsanación del defecto",
+                            !hayDefectosAbiertos || tieneDocEnCategoria("Subsanación del defecto"),
+                            "Sube la subsanación en la categoría «Subsanación del defecto» y comprueba que abre en el visor."
+                          ),
+                          requisito(
+                            "Defectos cerrados o subsanados",
+                            !hayDefectosAbiertos,
+                            "Queda algún defecto abierto; subsánalo y registra su cierre."
+                          ),
                         ],
                       },
                       {
