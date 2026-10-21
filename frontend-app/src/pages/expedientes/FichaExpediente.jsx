@@ -6065,112 +6065,87 @@ const cuantiaFincasParaEnvio =
                 <section className="rounded-2xl border border-slate-200 bg-white p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <h3 className="text-sm font-extrabold text-slate-800">Resumen de actividades y documentos</h3>
-                      <p className="mt-1 text-xs text-slate-500">Actividades del expediente y documentos visibles en la carpeta digital.</p>
+                      <h3 className="text-sm font-extrabold text-slate-800">Control de calidad del expediente</h3>
+                      <p className="mt-1 text-xs text-slate-500">Línea de progreso de las actividades y comprobación de documentos vinculados. Para consultar o añadir documentos, utiliza la pestaña «Carpeta digital» de cada actividad.</p>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={cargarDocumentosCierre}
-                        disabled={cargandoDocumentosCierre}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                      >
-                        {cargandoDocumentosCierre ? "Actualizando…" : "↻ Actualizar documentos"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMostrarCarpetaDigital(true)}
-                        className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100"
-                      >
-                        📁 Consultar carpeta digital
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={cargarDocumentosCierre}
+                      disabled={cargandoDocumentosCierre}
+                      className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                    >
+                      {cargandoDocumentosCierre ? "Actualizando…" : "↻ Actualizar control"}
+                    </button>
                   </div>
-                  {cargandoDocumentosCierre && <p className="mt-3 text-xs text-slate-500">Cargando documentos de la carpeta digital…</p>}
+                  {cargandoDocumentosCierre && <p className="mt-3 text-xs text-slate-500">Comprobando documentos de la carpeta digital…</p>}
                   {errorDocumentosCierre && <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorDocumentosCierre}</p>}
-                  <div className="mt-3 space-y-2">
-                    {ACTIVIDADES_EXPEDIENTES.map((actividad, indice) => {
-                      const documentosActividad = (Array.isArray(documentosCierre) ? documentosCierre : []).filter((doc) => {
-                        const nombreActividad = String(
-                          doc?.actividad || doc?.actividad_nombre || doc?.nombre_actividad ||
-                          doc?.fase || doc?.categoria_actividad || doc?.metadata?.actividad || ""
-                        ).toLowerCase();
-                        const etiqueta = `${actividad.key} ${actividad.label}`.toLowerCase();
-                        if (!nombreActividad) return false;
-                        return nombreActividad.includes(actividad.key.toLowerCase()) ||
-                          nombreActividad.includes(actividad.label.toLowerCase()) ||
-                          (actividad.key === "facturacion-cierre" && nombreActividad.includes("cierre"));
-                      });
-                      return (
-                        <article key={actividad.key} className="rounded-xl border border-slate-200 p-3">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex min-w-0 items-center gap-2">
-                              <span className="text-lg">{actividad.icono}</span>
-                              <div>
-                                <p className="text-xs font-bold text-slate-800">{indice + 1}. {actividad.label}</p>
-                                <p className="text-[11px] text-slate-500">
-                                  {actividad.key === actividadActual ? "Actividad actual" : "Actividad del circuito"}
-                                </p>
-                              </div>
-                            </div>
-                            <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">
-                              {documentosActividad.length} documento(s)
-                            </span>
+                  {(() => {
+                    const actividades = Array.isArray(ACTIVIDADES_EXPEDIENTES) ? ACTIVIDADES_EXPEDIENTES : [];
+                    const indiceActual = Math.max(0, actividades.findIndex((actividad) => actividad.key === actividadActual));
+                    const totalSuperadas = indiceActual;
+                    const porcentaje = actividades.length ? Math.round((totalSuperadas / actividades.length) * 100) : 0;
+                    return (
+                      <>
+                        <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                          <div className="mb-2 flex items-center justify-between gap-2">
+                            <span className="text-xs font-bold text-slate-700">Progreso del circuito</span>
+                            <span className="text-xs font-extrabold tabular-nums text-slate-700">{totalSuperadas} de {actividades.length} fases superadas</span>
                           </div>
-                          {documentosActividad.length > 0 ? (
-                            <ul className="mt-2 space-y-1 border-t border-slate-100 pt-2">
-                              {documentosActividad.map((doc, docIndex) => (
-                                <li key={doc?.id || doc?.id_documento || doc?.url || docIndex} className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                                  <span className="font-medium text-slate-700">{doc?.nombre || doc?.nombre_archivo || doc?.filename || doc?.titulo || `Documento ${docIndex + 1}`}</span>
-                                  {(doc?.url || doc?.url_descarga || doc?.ruta || doc?.download_url) && (
-                                    <a href={doc.url || doc.url_descarga || doc.ruta || doc.download_url} target="_blank" rel="noreferrer" className="font-semibold text-blue-700 underline">Abrir documento</a>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p className="mt-2 text-[11px] text-slate-400">No hay documentos de esta actividad cargados en la lista disponible. Si el documento está en la carpeta digital, revisa allí su categoría/actividad.</p>
-                          )}
-                        </article>
-                      );
-                    })}
-                    {documentosCierre.filter((doc) => {
-                      const nombreActividad = String(
-                        doc?.actividad || doc?.actividad_nombre || doc?.nombre_actividad ||
-                        doc?.fase || doc?.categoria_actividad || doc?.metadata?.actividad ||
-                        doc?.categoria_actividad_nombre || ""
-                      ).toLowerCase();
-                      return !nombreActividad || !ACTIVIDADES_EXPEDIENTES.some((actividad) =>
-                        nombreActividad.includes(actividad.key.toLowerCase()) ||
-                        nombreActividad.includes(actividad.label.toLowerCase()) ||
-                        (actividad.key === "facturacion-cierre" && nombreActividad.includes("cierre"))
-                      );
-                    }).length > 0 && (
-                      <article className="rounded-xl border border-amber-200 bg-amber-50/50 p-3">
-                        <p className="text-xs font-bold text-slate-800">Documentos sin actividad identificada</p>
-                        <p className="mt-1 text-[11px] text-slate-500">Estos documentos están en la carpeta digital, pero no incluyen una actividad reconocible en sus metadatos.</p>
-                        <ul className="mt-2 space-y-1 border-t border-amber-100 pt-2">
-                          {documentosCierre.filter((doc) => {
-                            const nombreActividad = String(
+                          <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                            <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${porcentaje}%` }} />
+                          </div>
+                          <p className="mt-2 text-[10px] text-slate-500">La fase superada se estima según la actividad actual del expediente. La presencia de documentos se comprueba por su actividad o categoría registrada.</p>
+                        </div>
+                        <div className="mt-4 space-y-3">
+                          {actividades.map((actividad, indice) => {
+                            const nombreActividad = (doc) => String(
                               doc?.actividad || doc?.actividad_nombre || doc?.nombre_actividad ||
                               doc?.fase || doc?.categoria_actividad || doc?.metadata?.actividad ||
-                              doc?.categoria_actividad_nombre || ""
+                              doc?.categoria_actividad_nombre || doc?.categoria || doc?.categoria_nombre || ""
                             ).toLowerCase();
-                            return !nombreActividad || !ACTIVIDADES_EXPEDIENTES.some((actividad) =>
-                              nombreActividad.includes(actividad.key.toLowerCase()) ||
-                              nombreActividad.includes(actividad.label.toLowerCase()) ||
-                              (actividad.key === "facturacion-cierre" && nombreActividad.includes("cierre"))
+                            const documentosActividad = (Array.isArray(documentosCierre) ? documentosCierre : []).filter((doc) => {
+                              const nombre = nombreActividad(doc);
+                              if (!nombre) return false;
+                              return nombre.includes(actividad.key.toLowerCase()) ||
+                                nombre.includes(actividad.label.toLowerCase()) ||
+                                (actividad.key === "facturacion-cierre" && nombre.includes("cierre")) ||
+                                (actividad.key === "liquidacion-impuestos" && nombre.includes("liquidación")) ||
+                                (actividad.key === "tramitacion-inscripcion" && nombre.includes("inscripción"));
+                            });
+                            const superada = indice < indiceActual;
+                            const enCurso = indice === indiceActual;
+                            const tieneDocumentos = documentosActividad.length > 0;
+                            return (
+                              <article key={actividad.key} className={`relative rounded-xl border p-3 ${superada ? "border-emerald-200 bg-emerald-50/40" : enCurso ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
+                                <div className="flex items-center gap-3">
+                                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${superada ? "border-emerald-500 bg-emerald-500 text-white" : enCurso ? "border-blue-500 bg-white text-blue-700" : "border-slate-300 bg-white text-slate-400"}`}>
+                                    {superada ? "✓" : enCurso ? "●" : indice + 1}
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-bold text-slate-800">{actividad.icono} {actividad.label}</p>
+                                    <p className={`mt-0.5 text-[10px] font-semibold ${superada ? "text-emerald-700" : enCurso ? "text-blue-700" : "text-slate-500"}`}>
+                                      {superada ? "Fase superada" : enCurso ? "En curso" : "Pendiente"}
+                                    </p>
+                                  </div>
+                                  <div className="flex shrink-0 items-center gap-1.5">
+                                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-bold ${tieneDocumentos ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
+                                      <span>{tieneDocumentos ? "✓" : "!"}</span>
+                                      {tieneDocumentos ? `${documentosActividad.length} doc.` : "Sin documentos"}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="ml-11 mt-2 flex items-center gap-2 border-t border-slate-200/70 pt-2">
+                                  <span className={`text-[10px] font-bold ${superada && tieneDocumentos ? "text-emerald-700" : "text-slate-500"}`}>
+                                    {superada && tieneDocumentos ? "✓ Revisión de fase y documentos localizada" : superada ? "✓ Fase superada · revisar documentación" : tieneDocumentos ? "✓ Documentos localizados · fase aún no superada" : "Pendiente de completar y revisar"}
+                                  </span>
+                                </div>
+                              </article>
                             );
-                          }).map((doc, docIndex) => (
-                            <li key={doc?.id || doc?.id_documento || docIndex} className="text-xs text-slate-700">
-                              {doc?.nombre_original || doc?.nombre || doc?.nombre_archivo || doc?.filename || `Documento ${docIndex + 1}`}
-                              {doc?.categoria || doc?.categoria_nombre ? ` · ${doc.categoria || doc.categoria_nombre}` : ""}
-                            </li>
-                          ))}
-                        </ul>
-                      </article>
-                    )}
-                  </div>
+                          })}
+                        </div>
+                      </>
+                    );
+                  })()}
                 </section>
 
                 <section className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4">
