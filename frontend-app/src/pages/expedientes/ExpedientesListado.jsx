@@ -2353,6 +2353,15 @@ export default function ExpedientesListado() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {ACTIVIDADES_EXPEDIENTES.map((actividad) => {
             const total = actividades.filter((item) => actividadCoincide(actividad, item?.actividad)).reduce((suma, item) => suma + Number(item?.total || 0), 0);
+            const reglaPlazo = {
+              "sede-notarial": { alerta: "sede_notarial", etiqueta: (cantidad) => `Más de 10 días: ${cantidad}` },
+              "liquidacion-impuestos": { alerta: "liquidacion_pendiente", etiqueta: (cantidad) => `Pendientes de presentación: ${cantidad}` },
+              "tramitacion-inscripcion": { alerta: "inscripcion_30_dias", etiqueta: (cantidad) => `Más de 30 días: ${cantidad}` },
+              "defectos-registrales": { alerta: "defectos_vencidos", etiqueta: (cantidad) => `Vencidos: ${cantidad}` },
+              "facturacion-cierre": { alerta: "facturacion_cierre", etiqueta: (cantidad) => `Inscritos pendientes de cierre: ${cantidad}` },
+            }[actividad.key];
+            const alertaPlazo = reglaPlazo ? alertasControl.find((item) => item.key === reglaPlazo.alerta) : null;
+            const cantidadPlazo = Number(alertaPlazo?.total || 0);
             const activa = actividadSeleccionada === actividad.key;
             return <button key={actividad.key} type="button" aria-pressed={activa}
               onClick={() => {
@@ -2367,12 +2376,25 @@ export default function ExpedientesListado() {
               style={{ background: activa ? "var(--erp-primary-soft)" : "var(--erp-surface)", borderColor: activa ? "var(--erp-primary)" : "var(--erp-border)", boxShadow: activa ? "0 0 0 1px var(--erp-primary)" : undefined }}>
               <div className="flex items-start justify-between gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-2xl" style={{ background: activa ? "rgba(59,130,246,.14)" : "var(--erp-surface-soft)" }}>{actividad.icono}</span><span className="text-3xl font-extrabold tabular-nums" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text)" }}>{loadingActividades ? "…" : formatearNumero(total)}</span></div>
               <div className="mt-3 text-sm font-bold leading-snug text-[var(--erp-text)]">{actividad.label}</div>
-              <div className="mt-3"><span className="inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-800">⚠ Fuera de plazo: por clasificar</span></div>
+              <div className="mt-3">
+                {loadingAlertasControl ? (
+                  <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)" }}>Calculando plazos…</span>
+                ) : reglaPlazo ? (
+                  <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold ${cantidadPlazo > 0 ? "border-amber-300 bg-amber-50 text-amber-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>
+                    {cantidadPlazo > 0 ? "⚠ " : "✓ "}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)", background: "var(--erp-surface-soft)" }}>Plazo por definir</span>
+                )}
+              </div>
               <div className="mt-2 text-xs font-semibold" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text-soft)" }}>{activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
             </button>;
           })}
         </div>
-        <div role="note" className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-900">📌 Víctor, falta clasificar los plazos.<span className="ml-1 font-normal">Pendiente de definir los criterios para calcular qué expedientes están fuera de plazo en cada actividad.</span></div>
+        <div role="note" className="rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)", color: "var(--erp-text)" }}>
+          <span className="font-bold">📌 Control de plazos:</span>
+          <span className="ml-1">los recuentos de Sede notarial, Liquidación de impuestos, Tramitación inscripción, Defectos registrales y Facturación y cierre se calculan con los criterios definidos. Documentación previa y Sede notarial con protocolo quedan identificadas como pendientes de definir, sin asignarles vencimientos inventados.</span>
+        </div>
       </section>
 
       {/* ======================================================
