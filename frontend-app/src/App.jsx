@@ -31,6 +31,7 @@ import VistaMes from "./pages/agenda/VistaMes.jsx";
 /* EXPEDIENTES */
 import ExpedientesListado from "./pages/expedientes/ExpedientesListado.jsx";
 import FichaExpediente from "./pages/expedientes/FichaExpediente.jsx";
+import ProvisionesFondosPage from "./pages/provisiones/ProvisionesFondosPage.jsx";
 
 /* CTN */
 import Ctn from "./pages/ctn/Ctn.jsx";
@@ -325,6 +326,11 @@ export default function App() {
           <Route
             path="expedientes/:id"
             element={<FichaExpediente />}
+          />
+
+          <Route
+            path="provisiones-fondos"
+            element={<ProvisionesFondosPage />}
           />
 
           <Route path="herramientas/utilidades/complementos-saldo" element={<ComplementosSaldo />} />
