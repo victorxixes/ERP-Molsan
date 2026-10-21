@@ -129,10 +129,18 @@ def _asegurar_tabla_visibilidad(db: Session):
             CONSTRAINT expediente_visibilidad_config_pkey_emp_actividad PRIMARY KEY (empleado_id, actividad_key)
         )
     """))
-    db.execute(text("ALTER TABLE public.expediente_visibilidad_config ADD COLUMN IF NOT EXISTS empleado_id INTEGER NOT NULL DEFAULT 0"))
     db.execute(text("""
-        DO $$
+        DO $
         BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns
+                WHERE table_schema = 'public'
+                  AND table_name = 'expediente_visibilidad_config'
+                  AND column_name = 'empleado_id'
+            ) THEN
+                ALTER TABLE public.expediente_visibilidad_config
+                    ADD COLUMN empleado_id INTEGER NOT NULL DEFAULT 0;
+            END IF;
             IF EXISTS (
                 SELECT 1 FROM pg_constraint
                 WHERE conrelid = 'public.expediente_visibilidad_config'::regclass
@@ -150,7 +158,7 @@ def _asegurar_tabla_visibilidad(db: Session):
                     ADD CONSTRAINT expediente_visibilidad_config_pkey_emp_actividad
                     PRIMARY KEY (empleado_id, actividad_key);
             END IF;
-        END $$;
+        END $;
     """))
     db.commit()
 
@@ -186,6 +194,9 @@ def obtener_configuracion_visibilidad(
     usuario=Depends(get_current_user),
 ):
     """Catálogo de columnas Excel y repositorios más configuración guardada por actividad."""
+    if empleado_id is not None and int(empleado_id) != int(usuario.id):
+        from backend.app.auth.permissions import require_perm_modulo
+        require_perm_modulo(usuario, "seguridad", "editar")
     return {
         "actividades": ACTIVIDADES_VISIBILIDAD,
         "columnas_excel": [
