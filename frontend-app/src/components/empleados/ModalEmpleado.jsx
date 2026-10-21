@@ -915,8 +915,10 @@ export default function ModalEmpleado({
       if (!vigente) return;
       setReglasReparto((config?.reglas || []).map((r, i) => ({
         ...r,
+        // La API persiste oficinas como lista; el campo de edición es texto.
+        oficinas: Array.isArray(r.oficinas) ? r.oficinas.join(", ") : (r.oficinas || ""),
         comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []),
-        _key: r._key || `regla-${i}-${r.actividad}-${r.oficina_tipo || ""}-${r.oficinas || ""}`,
+        _key: r._key || `regla-${i}-${r.actividad}-${r.oficina_tipo || ""}-${Array.isArray(r.oficinas) ? r.oficinas.join(",") : (r.oficinas || "")}`,
       })));
       setActividadesReparto(config?.actividades || []);
       setComunidadesReparto(config?.comunidades || []);
@@ -3954,12 +3956,37 @@ const permisosDisponibles =
                             const payload = reglasReparto.map(({ _key, ...r }) => ({ ...r, comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []), comunidad: "", porcentaje: Number(r.porcentaje || 0), apoderado_id: r.apoderado_id || null }));
                             if (payload.some((r) => !r.actividad)) throw new Error("Selecciona una actividad en cada regla antes de guardar.");
                             if (!gestorRepartoId) throw new Error("Selecciona un gestor antes de guardar.");
-                            const respuesta = await guardarReglasRepartoGestor(gestorRepartoId, payload);
-                            const reglasConfirmadas = respuesta?.data?.reglas;
-                            if (Array.isArray(reglasConfirmadas)) {
-                              setReglasReparto(reglasConfirmadas.map((r, i) => ({ ...r, comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []), _key: `guardada-${i}-${r.actividad}` })));
+                            await guardarReglasRepartoGestor(gestorRepartoId, payload);
+                            // Verificación de persistencia: volver a leer desde el backend tras el commit.
+                            const { data: verificacion } = await obtenerReglasRepartoGestor(gestorRepartoId);
+                            const reglasConfirmadas = verificacion?.reglas;
+                            if (!Array.isArray(reglasConfirmadas) || reglasConfirmadas.length !== payload.length) {
+                              throw new Error("El servidor no ha confirmado todas las reglas guardadas. Vuelve a cargar el gestor antes de hacer más cambios.");
                             }
-                            setMensajeReparto("Se han guardado " + payload.length + " regla(s) de actividad para " + (empleadosReparto.find((e) => String(e.id) === String(gestorRepartoId))?.nombre || "el gestor seleccionado") + ".");
+                            const normalizadas = reglasConfirmadas.map((r, i) => ({
+                              ...r,
+                              oficinas: Array.isArray(r.oficinas) ? r.oficinas.join(", ") : (r.oficinas || ""),
+                              comunidades: Array.isArray(r.comunidades) ? r.comunidades : (r.comunidad ? [r.comunidad] : []),
+                              _key: `guardada-${i}-${r.actividad}-${r.oficina_tipo || ""}`,
+                            }));
+                            // Comprobar que los criterios nuevos también regresan tras leer la configuración.
+                            const criteriosPerdidos = normalizadas.some((r, i) =>
+                              String(r.oficina_tipo || "") !== String(payload[i].oficina_tipo || "") ||
+                              JSON.stringify(Array.isArray(r.oficinas) ? r.oficinas : String(r.oficinas || "").split(/[,;]/).map(x => x.trim()).filter(Boolean)) !== JSON.stringify(Array.isArray(payload[i].oficinas) ? payload[i].oficinas : String(payload[i].oficinas || "").replace(/;/g, ",").split(",").map(x => x.trim()).filter(Boolean)) ||
+                              String(r.producto_gtg || "") !== String(payload[i].producto_gtg || "") ||
+                              String(r.tipo_operacion || "") !== String(payload[i].tipo_operacion || "") ||
+                              String(r.departamento || "") !== String(payload[i].departamento || "") ||
+                              Number(r.porcentaje || 0) !== Number(payload[i].porcentaje || 0) ||
+                              Boolean(r.activa) !== Boolean(payload[i].activa) ||
+                              Number(r.apoderado_id || 0) !== Number(payload[i].apoderado_id || 0) ||
+                              Boolean(r.zona_territorial) !== Boolean(payload[i].zona_territorial) ||
+                              JSON.stringify(r.comunidades || []) !== JSON.stringify(payload[i].comunidades || [])
+                            );
+                            if (criteriosPerdidos) {
+                              throw new Error("La configuración se ha enviado, pero la verificación detectó campos que no coinciden al volver a leerla. No sigas editando hasta revisar la respuesta del servidor.");
+                            }
+                            setReglasReparto(normalizadas);
+                            setMensajeReparto("Guardado y verificado: " + payload.length + " regla(s) de reparto para " + (empleadosReparto.find((e) => String(e.id) === String(gestorRepartoId))?.nombre || "el gestor seleccionado") + ".");
                           } catch (e) { setErrorReparto(e?.response?.data?.detail || "No se pudieron guardar las reglas de reparto."); }
                           finally { setGuardandoReparto(false); }
                         }} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">{guardandoReparto ? "Guardando…" : "Guardar reglas de reparto"}</button>
