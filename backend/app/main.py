@@ -877,6 +877,14 @@ def inicializar_tablas_auxiliares():
         )
 
         ComplementoSaldo.__table__.create(bind=engine, checkfirst=True)
+        # Migración segura del catálogo bancario: conserva todos los registros existentes.
+        with engine.begin() as conexion_entidades_bancarias:
+            conexion_entidades_bancarias.execute(text(
+                "ALTER TABLE public.entidades_bancarias "
+                "ADD COLUMN IF NOT EXISTS entidad_actual_id INTEGER NULL "
+                "REFERENCES public.entidades_bancarias(id) ON DELETE SET NULL"
+            ))
+        print("[ENTIDADES BANCARIAS] Columna entidad_actual_id comprobada.", flush=True)
         with engine.begin() as conexion_complementos:
             conexion_complementos.execute(text(
                 "ALTER TABLE public.complementos_saldo ADD COLUMN IF NOT EXISTS provisionado DOUBLE PRECISION NOT NULL DEFAULT 0"
