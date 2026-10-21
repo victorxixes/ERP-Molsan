@@ -1,0 +1,150 @@
+/* ============================================================
+   MOLSAN ERP PREMIUM 2027 · Dashboard CancelaGest
+   Estilos de cabecera aislados para no heredar ApoderaGest.css.
+   ============================================================ */
+
+.dashboard-cancelagest {
+  --dashboard-cg-primary: var(--erp-primary, #3156b3);
+  --dashboard-cg-primary-dark: var(--erp-primary-dark, #274694);
+  min-width: 0;
+}
+
+.dashboard-cancelagest .ag-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 10px 4px 26px;
+}
+
+.dashboard-cancelagest .ag-hero-identidad {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  min-width: 0;
+}
+
+.dashboard-cancelagest .ag-marca {
+  display: grid;
+  flex: 0 0 62px;
+  width: 62px;
+  height: 62px;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(145deg, #4268c5, #274694);
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(49, 86, 179, .2);
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: -1px;
+}
+
+.dashboard-cancelagest .ag-eyebrow {
+  display: block;
+  color: #63769b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.65px;
+  line-height: 1.5;
+}
+
+.dashboard-cancelagest .ag-hero h1 {
+  margin: 5px 0 4px;
+  color: var(--erp-text-strong, #17233a);
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 820;
+  letter-spacing: -1.3px;
+  line-height: 1.12;
+}
+
+.dashboard-cancelagest .ag-hero p {
+  max-width: 650px;
+  margin: 0;
+  color: var(--erp-text-soft, #64748b);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.dashboard-cancelagest .ag-hero-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dashboard-cancelagest .ag-fecha-actual {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 13px;
+  color: var(--erp-text-soft, #64748b);
+  background: rgba(255, 255, 255, .8);
+  border: 1px solid var(--erp-border, #d7e0ec);
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 650;
+  text-transform: capitalize;
+}
+
+.dashboard-cancelagest .ag-punto-vivo {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  background: var(--erp-primary, #3156b3);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(49, 86, 179, .1);
+}
+
+.dashboard-cancelagest .ag-boton-actualizar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 16px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--dashboard-cg-primary), var(--dashboard-cg-primary-dark));
+  border: 1px solid var(--dashboard-cg-primary);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.dashboard-cancelagest .ag-boton-actualizar:hover:not(:disabled) {
+  box-shadow: 0 6px 16px rgba(49, 86, 179, .18);
+  transform: translateY(-1px);
+}
+
+.dashboard-cancelagest .ag-boton-actualizar:focus-visible {
+  outline: 3px solid rgba(49, 86, 179, .22);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .dashboard-cancelagest .ag-hero {
+    align-items: flex-start;
+    padding-bottom: 18px;
+  }
+
+  .dashboard-cancelagest .ag-hero-identidad {
+    align-items: flex-start;
+    gap: 11px;
+  }
+
+  .dashboard-cancelagest .ag-marca {
+    flex-basis: 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+  }
+
+  .dashboard-cancelagest .ag-hero-acciones {
+    justify-content: flex-start;
+    width: 100%;
+  }
+}
