@@ -6008,11 +6008,13 @@ const cuantiaFincasParaEnvio =
                           const idufir = finca.idufir || finca.cru_idufir || finca.cru || "";
                           const numeroFinca = finca.finca || finca.numero_finca || "";
                           const fechaInscripcion = expediente?.fecha_inscripcion || "";
-                          const registroProvincia = finca.provincia_registro || finca.registro_provincia || provincia;
-                          const registroPoblacion = finca.poblacion_registro || finca.registro_poblacion || localidad;
-                          const registroNumero = finca.numero_registro || finca.registro_numero || finca.registro || "";
+                          // Identificación registral: enlazada directamente con Fincas y registros.
+                          const registroProvincia = finca.provincia || "";
+                          const registroPoblacion = finca.poblacion || "";
+                          // El número del registro aún no tiene un campo dedicado programado.
+                          const registroNumero = finca.numero_registro || finca.registro_numero || "";
                           const numeroSeccion = finca.seccion || "";
-                          const nombreRegistro = finca.nombre_registro || finca.registro_nombre || "";
+                          const nombreRegistro = finca.registro || "";
                           const datosPendientes = !domicilio || !localidad || !codigoPostal || !provincia || !idufir || !numeroFinca || !fechaInscripcion || !registroProvincia || !registroPoblacion || !registroNumero || !numeroSeccion || !nombreRegistro;
                           const campoGarantia = (label, valor, fecha = false) => (
                             <div>
