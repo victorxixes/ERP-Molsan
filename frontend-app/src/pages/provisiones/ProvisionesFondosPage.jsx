@@ -113,12 +113,23 @@ export default function ProvisionesFondosPage() {
   const filtrados = items.filter((x) => [x.numero, x.cliente?.nombre, x.cliente?.nif, x.cliente?.poblacion].some((v) => String(v || "").toLowerCase().includes(busqueda.toLowerCase())));
 
   return <main className="mx-auto w-full max-w-7xl space-y-6 p-3 md:p-6">
-    <header className="overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-800 to-blue-900 p-6 text-white shadow-lg md:p-8">
-      <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
-        <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-200">MOLSAN ERP PREMIUM 2027</p><h1 className="mt-2 text-3xl font-bold">Provisiones de fondos</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-200">Presupuestos independientes para clientes que contactan con la gestoría, sin necesidad de expediente asociado. Las provisiones quedan guardadas para recuperarlas cuando lo necesites.</p></div>
-        <button type="button" onClick={nueva} className={`${boton} bg-white text-slate-900 hover:bg-blue-50`}>＋ Nueva provisión</button>
+    <header className="relative overflow-hidden rounded-[24px] border border-white/80 bg-white/80 p-6 shadow-[0_15px_45px_rgba(15,23,42,0.08)] backdrop-blur-2xl sm:p-7">
+      <div className="pointer-events-none absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent" />
+      <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-blue-400/10 blur-3xl" />
+      <div className="relative z-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+        <div className="flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 shadow-sm">
+            <span className="text-xl" aria-hidden="true">📑</span>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-700">MOLSAN ERP PREMIUM 2027</p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Provisiones de fondos</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Presupuestos independientes para clientes que contactan con la gestoría, sin necesidad de expediente asociado. Las provisiones quedan guardadas para recuperarlas cuando lo necesites.</p>
+          </div>
+        </div>
+        <button type="button" onClick={nueva} className={`${boton} shrink-0 bg-blue-600 text-white shadow-sm hover:bg-blue-700`}>＋ Nueva provisión</button>
       </div>
-      {form.id && <div className="mt-5 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold">Editando {form.numero || `provisión #${form.id}`}</div>}
+      {form.id && <div className="relative z-10 mt-5 inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">Editando {form.numero || `provisión #${form.id}`}</div>}
     </header>
 
     {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{String(error)}</div>}
