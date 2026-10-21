@@ -374,101 +374,36 @@ export default function CarpetaDigitalModal({
   const renderBloque = (bloque) => {
     const abierto = !!bloquesAbiertos[bloque.id];
     const cantidad = contarBloque(bloque);
-    const visorAmpliadoAqui = visorExpandido && bloqueVisorExpandido === bloque.id;
     return (
-      <section key={bloque.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <button
-          type="button"
-          onClick={() => setBloquesAbiertos((prev) => ({ ...prev, [bloque.id]: !prev[bloque.id] }))}
-          aria-expanded={abierto}
-          className={`flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition ${
-            abierto ? "bg-slate-50" : "bg-white hover:bg-slate-50"
-          }`}
-        >
+      <section key={bloque.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+        <button type="button" onClick={() => setBloquesAbiertos((prev) => ({ ...prev, [bloque.id]: !prev[bloque.id] }))} aria-expanded={abierto} className={`flex w-full items-center justify-between gap-3 px-3 py-3 text-left transition ${abierto ? "bg-slate-50" : "bg-white hover:bg-slate-50"}`}>
           <span className="flex min-w-0 items-center gap-3">
-            <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black ${
-              cantidad ? "bg-emerald-100 text-emerald-700" : "bg-indigo-50 text-indigo-700"
-            }`}>{cantidad}</span>
-            <span className="min-w-0">
-              <span className="block text-sm font-extrabold text-slate-900">{bloque.titulo}</span>
-              <span className="mt-0.5 block text-xs font-normal text-slate-500">{bloque.descripcion}</span>
-            </span>
+            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${cantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{cantidad}</span>
+            <span className="min-w-0"><span className="block text-sm font-extrabold text-slate-900">{bloque.titulo}</span><span className="block truncate text-[11px] font-normal text-slate-500">{bloque.descripcion}</span></span>
           </span>
-          <span className="shrink-0 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600" aria-hidden="true">
-            {abierto ? "⌃ Ocultar" : "⌄ Expandir"}
-          </span>
+          <span className="shrink-0 text-xs font-bold text-slate-500">{abierto ? "⌃" : "⌄"}</span>
         </button>
-
-        {abierto && (
-          <div className="border-t border-slate-100 bg-slate-50/50 p-3 sm:p-4">
-            <div className={`grid items-start gap-3 ${visorVisible ? "2xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]" : "grid-cols-1"}`}>
-              <div className={`grid min-w-0 gap-3 ${modoActividad ? "grid-cols-1" : "md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2"}`}>
-                {bloque.categorias.map(renderCategoria)}
-              </div>
-
-              {visorVisible ? (
-                <aside className={`${visorAmpliadoAqui ? "fixed inset-3 z-[10500]" : "min-w-0"}`}>
-                  <div className={`flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm ${
-                    visorAmpliadoAqui ? "h-full max-h-[calc(100vh-1.5rem)]" : "2xl:sticky 2xl:top-3"
-                  }`}>
-                    <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-3">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">▤</span>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-sm font-extrabold text-slate-800">Visor de documentos</h4>
-                        <p className="truncate text-[11px] text-slate-500" title={documentoVistaPrevia?.nombre_original || "Sin documento seleccionado"}>
-                          {documentoVistaPrevia?.nombre_original || "Selecciona «Ver a la derecha» en un archivo"}
-                        </p>
-                      </div>
-                      <button type="button" onClick={() => {
-                          const ampliar = !(visorExpandido && bloqueVisorExpandido === bloque.id);
-                          setVisorExpandido(ampliar);
-                          setBloqueVisorExpandido(ampliar ? bloque.id : null);
-                        }} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={visorAmpliadoAqui ? "Reducir visor" : "Ampliar visor"}>
-                        {visorAmpliadoAqui ? "Reducir" : "⛶ Ampliar"}
-                      </button>
-                      <button type="button" onClick={() => { setVisorVisible(false); setVisorExpandido(false); setBloqueVisorExpandido(null); }} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title="Ocultar visor">
-                        Ocultar
-                      </button>
-                    </header>
-                    <div className="min-h-[360px] flex-1 overflow-hidden bg-slate-100 p-2 sm:p-3">
-                      {cargandoVistaPrevia ? (
-                        <div className="flex min-h-[340px] items-center justify-center text-sm text-slate-500">Cargando documento…</div>
-                      ) : urlVistaPrevia && documentoVistaPrevia ? (
-                        <iframe title={`Vista previa: ${documentoVistaPrevia.nombre_original || "documento"}`} src={urlVistaPrevia} className={`w-full rounded-lg border border-slate-200 bg-white ${visorAmpliadoAqui ? "h-[calc(100vh-7rem)]" : "h-[440px] 2xl:h-[calc(100vh-18rem)] 2xl:min-h-[460px]"}`} />
-                      ) : (
-                        <div className="flex min-h-[340px] flex-col items-center justify-center px-6 text-center">
-                          <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">📄</span>
-                          <p className="text-sm font-bold text-slate-700">Vista previa</p>
-                          <p className="mt-1 max-w-xs text-xs leading-5 text-slate-500">Adjunta un PDF o pulsa «Ver a la derecha» en uno de los documentos para consultarlo aquí sin salir de la actividad.</p>
-                        </div>
-                      )}
-                    </div>
-                    {documentoVistaPrevia && (
-                      <footer className="flex items-center justify-between gap-2 border-t border-slate-200 bg-white px-3 py-2">
-                        <span className="min-w-0 truncate text-[11px] text-slate-500">{documentoVistaPrevia.nombre_original}</span>
-                        <div className="flex shrink-0 gap-2">
-                          <button type="button" onClick={() => descargar(documentoVistaPrevia)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Descargar</button>
-                          <button type="button" onClick={cerrarVisor} className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200">Cerrar PDF</button>
-                        </div>
-                      </footer>
-                    )}
-                  </div>
-                </aside>
-              ) : (
-                <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-dashed border-slate-300 bg-white p-3">
-                  <p className="text-xs text-slate-500">El visor está oculto. Puedes seguir adjuntando y gestionando documentos.</p>
-                  <button type="button" onClick={() => setVisorVisible(true)} className="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100">
-                    Mostrar visor a la derecha
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+        {abierto && <div className="space-y-2 border-t border-slate-100 bg-slate-50/50 p-2 sm:p-3">{bloque.categorias.map(renderCategoria)}</div>}
       </section>
     );
   };
 
+  const renderVisor = () => (
+    <aside className={`flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm ${visorExpandido ? "fixed inset-3 z-[10500] h-[calc(100vh-1.5rem)]" : "h-full"}`}>
+      <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-3">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">▤</span>
+        <div className="min-w-0 flex-1"><h4 className="text-sm font-extrabold text-slate-800">Visor de documentos</h4><p className="truncate text-[11px] text-slate-500" title={documentoVistaPrevia?.nombre_original || "Sin documento seleccionado"}>{documentoVistaPrevia?.nombre_original || "Selecciona un archivo de la lista"}</p></div>
+        <button type="button" onClick={() => setVisorExpandido((v) => !v)} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={visorExpandido ? "Reducir visor" : "Ampliar visor"}>{visorExpandido ? "Reducir" : "⛶ Ampliar"}</button>
+        <button type="button" onClick={() => { setVisorVisible(false); setVisorExpandido(false); }} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title="Ocultar visor">Ocultar</button>
+      </header>
+      <div className="min-h-0 flex-1 overflow-hidden bg-slate-100 p-2 sm:p-3">
+        {cargandoVistaPrevia ? <div className="flex h-full min-h-[300px] items-center justify-center text-sm text-slate-500">Cargando documento…</div> : urlVistaPrevia && documentoVistaPrevia ? (
+          <iframe title={`Vista previa: ${documentoVistaPrevia.nombre_original || "documento"}`} src={urlVistaPrevia} className="h-full min-h-[360px] w-full rounded-lg border border-slate-200 bg-white" />
+        ) : <div className="flex h-full min-h-[300px] flex-col items-center justify-center px-6 text-center"><span className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">📄</span><p className="text-sm font-bold text-slate-700">Vista previa</p><p className="mt-1 max-w-xs text-xs leading-5 text-slate-500">Selecciona un PDF en el panel izquierdo. El visor permanecerá visible mientras navegas por la lista.</p></div>}
+      </div>
+      {documentoVistaPrevia && <footer className="flex items-center justify-between gap-2 border-t border-slate-200 bg-white px-3 py-2"><span className="min-w-0 truncate text-[11px] text-slate-500">{documentoVistaPrevia.nombre_original}</span><div className="flex shrink-0 gap-2"><button type="button" onClick={() => descargar(documentoVistaPrevia)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Descargar</button><button type="button" onClick={cerrarVisor} className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200">Cerrar PDF</button></div></footer>}
+    </aside>
+  );
   const otrosCantidad = CATEGORIAS_OTROS.reduce((suma, item) => suma + porCategoria(item.categoria).length, 0);
 
   return (
