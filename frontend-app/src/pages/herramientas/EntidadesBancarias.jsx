@@ -580,6 +580,7 @@ export default function EntidadesBancarias() {
       nombre: "",
       categoria: "",
       direccion: "",
+      entidad_actual_id: "",
     });
 
     setModoModal(
@@ -774,6 +775,11 @@ export default function EntidadesBancarias() {
                 direccion:
                   direccion ||
                   null,
+
+                entidad_actual_id:
+                  datos.entidad_actual_id
+                    ? Number(datos.entidad_actual_id)
+                    : null,
               }),
           }
         );
@@ -815,6 +821,12 @@ export default function EntidadesBancarias() {
         null
       );
 
+
+      if (esNuevo) {
+        setBusqueda(codigo);
+        setCategoriaFiltro("");
+        setPagina(1);
+      }
 
       await cargarEntidadesBancarias();
 
