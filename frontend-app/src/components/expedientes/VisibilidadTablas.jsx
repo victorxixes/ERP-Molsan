@@ -13,8 +13,8 @@ const ACTIVIDADES = [
 
 const COLUMNAS_INICIALES = {
   "documentacion-previa": ["id_expediente", "fecha_alta", "oficina", "estado_expediente", "nombre_solicitante", "nif_solicitante", "contrato", "capital", "tipo_operacion", "importe", "observaciones"],
-  "sede-notarial": ["id_expediente", "estado_expediente", "actividad_actual", "fecha_envio_notario", "fecha_prevista_firma", "apoderado", "tipo_documento", "poblacion", "provincia", "tipo_firma"],
-  "sede-notarial-protocolo": ["id_expediente", "estado_expediente", "fecha_firma", "protocolo", "nombre_notario", "asiento_presentacion_libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"],
+  "sede-notarial": ["id_expediente", "estado_expediente", "actividad_actual", "fecha_envio_notario", "fecha_envio", "fecha_prevista_firma", "apoderado", "tipo_documento", "poblacion", "provincia", "tipo_firma"],
+  "sede-notarial-protocolo": ["id_expediente", "estado_expediente", "fecha_envio", "fecha_firma", "protocolo", "nombre_notario", "asiento_presentacion_libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"],
   "liquidacion-impuestos": ["id_expediente", "estado_expediente", "fecha_firma", "fecha_presentacion_tributaria", "fecha_liquidacion_tributaria", "oficina_liquidadora", "base_imponible", "tributacion", "impuesto_ajd_itp"],
   "tramitacion-inscripcion": ["id_expediente", "estado_expediente", "fecha_presentacion", "fecha_vencimiento_asiento", "fecha_inscripcion", "finca", "observaciones"],
   "defectos-registrales": ["id_expediente", "estado_expediente", "falta_defecto", "tipo_error", "descripcion_error", "fecha_vencimiento", "fcierre_defecto", "observaciones"],
