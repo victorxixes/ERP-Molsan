@@ -1160,6 +1160,10 @@ def inicializar_tablas_auxiliares():
             ("Bankpime"),
             ("Banco de Valencia"),
             ("CaixaBank"),
+            ("Caja de Pensiones"),
+            ("Caja de Barcelona"),
+            ("Caja de Ahorros y Pensiones de Barcelona"),
+            ("BPI"),
             ("Caixa Penedès"),
             ("Caja Navarra"),
             ("CajaCanarias"),
@@ -1286,11 +1290,7 @@ def inicializar_tablas_auxiliares():
                             FROM public.entidades_bancarias AS actual
                             WHERE actual.activo IS TRUE
                               AND actual.id <> origen.id
-                              AND (
-                                UPPER(actual.nombre) = 'CAIXABANK'
-                                OR UPPER(actual.nombre) LIKE 'CAIXABANK,%'
-                                OR UPPER(actual.nombre) LIKE 'CAIXABANK %'
-                              )
+                              AND UPPER(TRIM(actual.nombre)) = 'CAIXABANK'
                             ORDER BY actual.id
                             LIMIT 1
                         )
@@ -1300,25 +1300,41 @@ def inicializar_tablas_auxiliares():
                             SELECT 1 FROM public.entidades_bancarias AS actual
                             WHERE actual.activo IS TRUE
                               AND actual.id <> origen.id
-                              AND (
-                                UPPER(actual.nombre) = 'CAIXABANK'
-                                OR UPPER(actual.nombre) LIKE 'CAIXABANK,%'
-                                OR UPPER(actual.nombre) LIKE 'CAIXABANK %'
-                              )
+                              AND UPPER(TRIM(actual.nombre)) = 'CAIXABANK'
                           )
                     """),
                     {"patron": patron_origen},
                 )
+        # Reparar vínculos históricos que por coincidencia de prefijo quedaron enlazados
+        # al fondo "CAIXABANK MONETARIO RENDIMIENTO, FI" en lugar del banco CaixaBank.
+        with engine.begin() as conexion_corregir_destino_caixabank:
+            conexion_corregir_destino_caixabank.execute(text("""
+                UPDATE public.entidades_bancarias AS origen
+                SET entidad_actual_id = (
+                    SELECT banco.id
+                    FROM public.entidades_bancarias AS banco
+                    WHERE banco.activo IS TRUE
+                      AND UPPER(TRIM(banco.nombre)) = 'CAIXABANK'
+                    ORDER BY banco.id
+                    LIMIT 1
+                )
+                WHERE origen.entidad_actual_id IN (
+                    SELECT fondo.id
+                    FROM public.entidades_bancarias AS fondo
+                    WHERE UPPER(TRIM(fondo.nombre)) = 'CAIXABANK MONETARIO RENDIMIENTO, FI'
+                )
+                AND EXISTS (
+                    SELECT 1 FROM public.entidades_bancarias AS banco
+                    WHERE banco.activo IS TRUE
+                      AND UPPER(TRIM(banco.nombre)) = 'CAIXABANK'
+                )
+            """))
         print("[ENTIDADES BANCARIAS] Sucesiones CaixaBank del listado facilitado comprobadas.", flush=True)
 
         reglas_sucesion_bancaria = [
             (
                 "CAIXABANK",
-                """(
-                    UPPER(actual.nombre) = 'CAIXABANK'
-                    OR UPPER(actual.nombre) LIKE 'CAIXABANK,%'
-                    OR UPPER(actual.nombre) LIKE 'CAIXABANK %'
-                )""",
+                "UPPER(TRIM(actual.nombre)) = 'CAIXABANK'",
                 [
                     "%CAJA NAVARRA%",
                     "%CAJA DE AHORROS Y MONTE DE PIEDAD DE NAVARRA%",
