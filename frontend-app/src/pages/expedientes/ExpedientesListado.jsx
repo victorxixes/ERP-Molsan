@@ -2344,6 +2344,7 @@ export default function ExpedientesListado() {
         )}
       </section>
 
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-2 xl:items-start">
       {/* SLA GLOBAL: CIRCUITOS DIFERENCIADOS */}
       <section className="space-y-3" aria-label="SLA global por circuito">
         <div>
@@ -2478,6 +2479,7 @@ export default function ExpedientesListado() {
           <span className="ml-1">Los recuentos por actividad son independientes del SLA global: Sede notarial 5 días; Sede notarial con protocolo 2; Liquidación de impuestos 2; Tramitación inscripción 23; Defectos registrales 60; Liquidación y cierre 5. Documentación previa no tiene plazo de vencimiento. SLA global superado: {formatearNumero(Number(alertasControl.find((item) => item.key === "sla_global")?.total || 0))} expedientes. El SLA global se calcula desde el envío hasta Fin actividad o hoy: 40 días para Propia entidad/Vinculada propia entidad y 70 días para Vinculada otra entidad/Otra entidad; Hipotecario y Crédito Stock se excluyen.</span>
         </div>
       </section>
+      </div>
 
       {/* ======================================================
           TABLA
