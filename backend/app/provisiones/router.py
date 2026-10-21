@@ -29,6 +29,7 @@ from backend.app.provisiones.models import (
     ProvisionOperacion,
     ProvisionOperacionFinca,
     TarifaProvision,
+    ProvisionIndependiente,
 )
 
 router = APIRouter(
@@ -611,6 +612,165 @@ def generar_documento_provision(id_expediente: str, provision_id: int, db: Sessi
     return StreamingResponse(buffer, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="{filename}"', "Cache-Control": "no-store"})
 
 
+
+
+class ProvisionIndependienteInput(BaseModel):
+    fecha: date
+    cliente: dict = Field(default_factory=dict)
+    oficina: dict = Field(default_factory=dict)
+    garantias: List[dict] = Field(default_factory=list)
+    observaciones: Optional[str] = None
+
+    @validator("garantias")
+    def validar_garantias(cls, valor):
+        if not valor:
+            raise ValueError("Añade al menos una garantía u operación.")
+        return valor
+
+
+def _independiente_dict(item: ProvisionIndependiente) -> dict:
+    return {
+        "id": item.id, "numero": item.numero,
+        "fecha": item.fecha.isoformat() if item.fecha else None,
+        "cliente": {
+            "nombre": item.cliente_nombre, "nif": item.cliente_nif,
+            "direccion": item.cliente_direccion, "cp": item.cliente_cp,
+            "poblacion": item.cliente_poblacion, "provincia": item.cliente_provincia,
+            "telefono": item.cliente_telefono, "email": item.cliente_email,
+        },
+        "oficina": {"numero": item.oficina_numero, "contacto": item.oficina_contacto, "email": item.oficina_email},
+        "garantias": (item.datos or {}).get("garantias", []),
+        "observaciones": (item.datos or {}).get("observaciones", ""),
+        "importe_total": float(item.importe_total or 0),
+        "estado": item.estado,
+        "creado_en": item.creado_en.isoformat() if item.creado_en else None,
+        "actualizado_en": item.actualizado_en.isoformat() if item.actualizado_en else None,
+    }
+
+
+def _guardar_independiente(item: ProvisionIndependiente, datos: ProvisionIndependienteInput, usuario) -> None:
+    cliente = datos.cliente or {}
+    oficina = datos.oficina or {}
+    garantias = datos.garantias or []
+    total = Decimal("0.00")
+    for g in garantias:
+        subtotal = _dinero(g.get("total") or g.get("importe_manual") or 0)
+        if not subtotal:
+            subtotal = sum((_dinero(g.get(k, 0)) for k in ("notaria", "ajd", "registro", "gestion", "otros_gastos")), Decimal("0.00"))
+        g["total"] = float(subtotal.quantize(Decimal("0.01")))
+        total += subtotal
+    item.fecha = datos.fecha
+    item.cliente_nombre = str(cliente.get("nombre") or "").strip()
+    if not item.cliente_nombre:
+        raise HTTPException(status_code=422, detail="El nombre del cliente es obligatorio.")
+    item.cliente_nif = cliente.get("nif") or None
+    item.cliente_direccion = cliente.get("direccion") or None
+    item.cliente_cp = cliente.get("cp") or None
+    item.cliente_poblacion = cliente.get("poblacion") or None
+    item.cliente_provincia = cliente.get("provincia") or None
+    item.cliente_telefono = cliente.get("telefono") or None
+    item.cliente_email = cliente.get("email") or None
+    item.oficina_numero = oficina.get("numero") or None
+    item.oficina_contacto = oficina.get("contacto") or None
+    item.oficina_email = oficina.get("email") or None
+    item.datos = {"garantias": garantias, "observaciones": (datos.observaciones or "").strip()}
+    item.importe_total = total.quantize(Decimal("0.01"))
+    item.creado_por_id = item.creado_por_id or getattr(usuario, "id", None)
+
+
+@router.get("/provisiones-independientes", summary="Histórico de provisiones independientes")
+def listar_provisiones_independientes(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "expedientes", "ver")
+    items = db.query(ProvisionIndependiente).order_by(ProvisionIndependiente.fecha.desc(), ProvisionIndependiente.id.desc()).all()
+    return {"items": [_independiente_dict(x) for x in items], "total": len(items)}
+
+
+@router.get("/provisiones-independientes/{provision_id}", summary="Recuperar provisión independiente")
+def obtener_provision_independiente(provision_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "expedientes", "ver")
+    item = db.query(ProvisionIndependiente).filter(ProvisionIndependiente.id == provision_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Provisión no encontrada.")
+    return _independiente_dict(item)
+
+
+@router.post("/provisiones-independientes", status_code=status.HTTP_201_CREATED, summary="Guardar provisión independiente")
+def crear_provision_independiente(datos: ProvisionIndependienteInput, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "expedientes", "crear")
+    item = ProvisionIndependiente(numero="TEMP", fecha=datos.fecha, cliente_nombre="")
+    db.add(item)
+    try:
+        db.flush()
+        item.numero = f"PF-{datos.fecha.year}-{item.id:06d}"
+        _guardar_independiente(item, datos, usuario)
+        db.commit()
+        db.refresh(item)
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudo guardar la provisión: {str(exc)[:250]}") from exc
+    return _independiente_dict(item)
+
+
+@router.put("/provisiones-independientes/{provision_id}", summary="Actualizar provisión independiente")
+def actualizar_provision_independiente(provision_id: int, datos: ProvisionIndependienteInput, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "expedientes", "editar")
+    item = db.query(ProvisionIndependiente).filter(ProvisionIndependiente.id == provision_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Provisión no encontrada.")
+    if item.estado == "anulada":
+        raise HTTPException(status_code=409, detail="No se puede editar una provisión anulada.")
+    try:
+        _guardar_independiente(item, datos, usuario)
+        db.commit()
+        db.refresh(item)
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudo actualizar la provisión: {str(exc)[:250]}") from exc
+    return _independiente_dict(item)
+
+
+@router.get("/provisiones-independientes/{provision_id}/documento", summary="Generar PDF de provisión independiente")
+def documento_provision_independiente(provision_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "expedientes", "ver")
+    item = db.query(ProvisionIndependiente).filter(ProvisionIndependiente.id == provision_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Provisión no encontrada.")
+    data = _independiente_dict(item)
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=17*mm, leftMargin=17*mm, topMargin=16*mm, bottomMargin=17*mm, title=f"Provisión {item.numero}", author="ERP-Molsan")
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name="TituloInd", parent=styles["Title"], fontName="Helvetica-Bold", fontSize=17, leading=21, textColor=colors.HexColor("#15325b")))
+    styles.add(ParagraphStyle(name="TextoInd", parent=styles["Normal"], fontSize=9, leading=13))
+    story = [Paragraph("MOLSAN GESTION Y TRAMITACION, S.L.", styles["TituloInd"]), Paragraph("PROVISIÓN ESTIMATIVA DE FONDOS", styles["Heading2"]), Paragraph(f"Número: <b>{escape(item.numero)}</b> &nbsp;&nbsp; Fecha: <b>{item.fecha.strftime('%d/%m/%Y')}</b>", styles["TextoInd"]), Spacer(1, 5*mm)]
+    story.append(Paragraph("<b>DATOS DEL CLIENTE</b>", styles["Heading3"]))
+    cli = data["cliente"]
+    story.append(Paragraph(escape(" · ".join(str(x) for x in [cli.get("nombre"), cli.get("nif"), cli.get("direccion"), cli.get("cp"), cli.get("poblacion"), cli.get("provincia"), cli.get("telefono"), cli.get("email")] if x)), styles["TextoInd"]))
+    story.append(Spacer(1, 3*mm))
+    off = data["oficina"]
+    story.append(Paragraph("<b>OFICINA DE ORIGEN</b>", styles["Heading3"]))
+    story.append(Paragraph(escape(" · ".join(str(x) for x in [off.get("numero"), off.get("contacto"), off.get("email")] if x) or "—"), styles["TextoInd"]))
+    story.append(Spacer(1, 4*mm))
+    rows = [[_p("Entidad", styles["TextoInd"]), _p("Capital", styles["TextoInd"]), _p("Finca / Registro", styles["TextoInd"]), _p("Notaría", styles["TextoInd"]), _p("AJD", styles["TextoInd"]), _p("Registro", styles["TextoInd"]), _p("Gestión", styles["TextoInd"]), _p("Total", styles["TextoInd"])]]
+    for g in data["garantias"]:
+        rows.append([_p(g.get("entidad"), styles["TextoInd"]), _p(_euros(g.get("capital", 0)), styles["TextoInd"]), _p(" / ".join(str(x) for x in [g.get("finca"), g.get("registro_propiedad"), g.get("poblacion")] if x), styles["TextoInd"]), _p(_euros(g.get("notaria", 0)), styles["TextoInd"]), _p(_euros(g.get("ajd", 0)), styles["TextoInd"]), _p(_euros(g.get("registro", 0)), styles["TextoInd"]), _p(_euros(g.get("gestion", 0)), styles["TextoInd"]), _p(_euros(g.get("total", 0)), styles["TextoInd"])])
+    table = Table(rows, colWidths=[24*mm, 20*mm, 36*mm, 18*mm, 15*mm, 18*mm, 18*mm, 19*mm], repeatRows=1)
+    table.setStyle(TableStyle([("BACKGROUND",(0,0),(-1,0),colors.HexColor("#eaf0f8")),("GRID",(0,0),(-1,-1),0.35,colors.HexColor("#cdd6e2")),("VALIGN",(0,0),(-1,-1),"TOP"),("FONTSIZE",(0,0),(-1,-1),7),("LEFTPADDING",(0,0),(-1,-1),3),("RIGHTPADDING",(0,0),(-1,-1),3),("TOPPADDING",(0,0),(-1,-1),4),("BOTTOMPADDING",(0,0),(-1,-1),4)]))
+    story.extend([table, Spacer(1, 4*mm), Paragraph(f"IMPORTE TOTAL ESTIMADO: <b>{_euros(item.importe_total)}</b>", styles["Heading2"])])
+    if data.get("observaciones"):
+        story.extend([Spacer(1, 3*mm), Paragraph("<b>Observaciones:</b> " + escape(data["observaciones"]), styles["TextoInd"])])
+    story.extend([Spacer(1, 7*mm), Paragraph("La presente provisión es estimativa y podrá ajustarse a los gastos efectivamente devengados.", styles["TextoInd"]), Spacer(1, 15*mm), Paragraph("Firma del cliente: __________________________________________", styles["TextoInd"])])
+    doc.build(story)
+    buffer.seek(0)
+    return StreamingResponse(buffer, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="{item.numero}.pdf"', "Cache-Control": "no-store"})
+
+
+
 @router.on_event("startup")
 def inicializar_tablas_provisiones() -> None:
     """Crea solo tablas nuevas del módulo; no altera ni borra tablas existentes."""
@@ -618,3 +778,4 @@ def inicializar_tablas_provisiones() -> None:
     ProvisionFondo.__table__.create(bind=engine, checkfirst=True)
     ProvisionOperacion.__table__.create(bind=engine, checkfirst=True)
     ProvisionOperacionFinca.__table__.create(bind=engine, checkfirst=True)
+    ProvisionIndependiente.__table__.create(bind=engine, checkfirst=True)
