@@ -2385,7 +2385,7 @@ export default function ExpedientesListado() {
                     {cantidadPlazo > 0 ? "⚠ " : "✓ "}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)", background: "var(--erp-surface-soft)" }}>Plazo por definir</span>
+                  {actividad.key !== "documentacion-previa" && <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)", background: "var(--erp-surface-soft)" }}>Sin alerta de plazo</span>}
                 )}
               </div>
               <div className="mt-2 text-xs font-semibold" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text-soft)" }}>{activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
@@ -2394,7 +2394,7 @@ export default function ExpedientesListado() {
         </div>
         <div role="note" className="rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)", color: "var(--erp-text)" }}>
           <span className="font-bold">📌 Control de plazos:</span>
-          <span className="ml-1">Los recuentos muestran expedientes que superan el máximo permitido: Sede notarial 5 días; Sede notarial con protocolo 2; Liquidación de impuestos 2; Tramitación inscripción 23; Defectos registrales 60; Liquidación y cierre 5. Documentación previa sigue pendiente de definir.</span>
+          <span className="ml-1">Los recuentos muestran expedientes que superan el máximo permitido: Sede notarial 5 días; Sede notarial con protocolo 2; Liquidación de impuestos 2; Tramitación inscripción 23; Defectos registrales 60; Liquidación y cierre 5. Documentación previa no tiene plazo de vencimiento.</span>
         </div>
       </section>
 
