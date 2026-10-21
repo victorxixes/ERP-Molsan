@@ -60,7 +60,7 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
       })
       .finally(() => { if (activo) setCargando(false); });
     return () => { activo = false; };
-  }, []);
+  }, [empleadoId]);
 
   const configuracionActual = useMemo(
     () => catalogo.configuraciones.find((item) => item.actividad_key === actividadKey),
