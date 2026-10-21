@@ -30,10 +30,20 @@ from backend.app.expediente_ppad.models import ExpedientePPAD
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.expedientes.defectos.models import ExpedienteDefecto
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
-from backend.app.expedientes.reparto import (\n    asignar_gestor_automaticamente,\n    ids_expedientes_visibles,\n)
+from backend.app.expedientes.reparto import (
+    asignar_gestor_automaticamente,
+    ids_expedientes_visibles,
+)
 
 
-logger = logging.getLogger(__name__)\n\ndef aplicar_ambito_reparto(query, db: Session, usuario):\n    """Restringe consultas a expedientes cubiertos por reglas activas del usuario."""\n    ids_visibles = ids_expedientes_visibles(db, usuario)\n    if ids_visibles is None:\n        return query\n    return query.filter(Expediente.id.in_(ids_visibles))
+logger = logging.getLogger(__name__)
+
+def aplicar_ambito_reparto(query, db: Session, usuario):
+    """Restringe consultas a expedientes cubiertos por reglas activas del usuario."""
+    ids_visibles = ids_expedientes_visibles(db, usuario)
+    if ids_visibles is None:
+        return query
+    return query.filter(Expediente.id.in_(ids_visibles))
 
 router = APIRouter(
     prefix="/expedientes",
@@ -1600,7 +1610,8 @@ def exportar_excel_expedientes(
         tieneDefectosAbiertos=tieneDefectosAbiertos,
         faltaDefecto=faltaDefecto,
     )
-    q = aplicar_filtro_alerta_control(q, alerta, db)\n    q = aplicar_ambito_reparto(q, db, usuario)
+    q = aplicar_filtro_alerta_control(q, alerta, db)
+    q = aplicar_ambito_reparto(q, db, usuario)
 
     expedientes = (
         q.order_by(
@@ -3041,7 +3052,11 @@ def obtener_expediente(
             detail="Expediente no encontrado.",
         )
 
-    ids_visibles = ids_expedientes_visibles(db, usuario)\n    if ids_visibles is not None and expediente.id not in ids_visibles:\n        # No revelar si existe un expediente fuera del ámbito del usuario.\n        raise HTTPException(status_code=404, detail="Expediente no encontrado.")\n    resultado = expediente_a_dict(expediente)
+    ids_visibles = ids_expedientes_visibles(db, usuario)
+    if ids_visibles is not None and expediente.id not in ids_visibles:
+        # No revelar si existe un expediente fuera del ámbito del usuario.
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    resultado = expediente_a_dict(expediente)
     gestor = db.query(Empleado).filter(Empleado.id == expediente.gestor_asignado_id).first() if getattr(expediente, "gestor_asignado_id", None) else None
     resultado["gestor_asignado_nombre"] = " ".join(filter(None, [getattr(gestor, "nombre", None), getattr(gestor, "apellidos", None)])).strip() if gestor else None
     return resultado
