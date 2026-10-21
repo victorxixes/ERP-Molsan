@@ -1647,6 +1647,49 @@ def inicializar_tablas_auxiliares():
                         """),
                         {"patron_origen": patron_origen},
                     )
+        # Corrección de sucesiones históricas que apuntaban por error a un fondo monetario.
+        # Kutxa, Caja Vital y Cajasur corresponden al banco Kutxabank, S.A.;
+        # el fondo KUTXABANK MONETARIO AHORRO, FI no es el banco sucesor.
+        with engine.begin() as conexion_correcciones_catalogo:
+            conexion_correcciones_catalogo.execute(text("""
+                UPDATE public.entidades_bancarias AS origen
+                SET entidad_actual_id = (
+                    SELECT actual.id
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND UPPER(TRIM(actual.nombre)) = 'KUTXABANK, S.A.'
+                    ORDER BY actual.id
+                    LIMIT 1
+                ),
+                pendiente_revision = FALSE
+                WHERE UPPER(TRIM(origen.nombre)) IN (
+                    'CAJASUR',
+                    'CAJA VITAL',
+                    'CAJA VITAL KUTXA',
+                    'KUTXA'
+                )
+                  AND EXISTS (
+                    SELECT 1
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND UPPER(TRIM(actual.nombre)) = 'KUTXABANK, S.A.'
+                  )
+            """))
+            conexion_correcciones_catalogo.execute(text("""
+                UPDATE public.entidades_bancarias
+                SET entidad_actual_id = NULL
+                WHERE UPPER(TRIM(nombre)) = 'KUTXABANK MONETARIO AHORRO, FI'
+            """))
+            conexion_correcciones_catalogo.execute(text("""
+                UPDATE public.entidades_bancarias
+                SET entidad_actual_id = NULL
+                WHERE UPPER(TRIM(nombre)) = 'KUTXABANK, S.A.'
+                  AND entidad_actual_id IN (
+                    SELECT id FROM public.entidades_bancarias
+                    WHERE UPPER(TRIM(nombre)) = 'KUTXABANK MONETARIO AHORRO, FI'
+                  )
+            """))
+        print("[ENTIDADES BANCARIAS] Correcciones de Kutxabank/Cajasur y fondos revisadas.", flush=True)
         print("[ENTIDADES BANCARIAS] Sucesiones de grupos bancarios españoles comprobadas.", flush=True)
         print("[ENTIDADES BANCARIAS] Sucesiones históricas adicionales comprobadas.", flush=True)
         with engine.begin() as conexion_complementos:
