@@ -8,7 +8,7 @@ from fastapi import (
     UploadFile,
 )
 from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 
 from backend.app.database import get_db
 from backend.app.entidades_bancarias.models import (
@@ -160,6 +160,44 @@ def listar_entidades_bancarias(
             registro
         )
         for registro in registros
+    ]
+
+
+# ============================================================
+# GET /api/entidades-bancarias/auditoria-sucesiones
+# Devuelve el catálogo completo con el sucesor asociado, si existe.
+# Facilita detectar nombres históricos que aún requieren revisión.
+# ============================================================
+
+@router.get("/auditoria-sucesiones")
+def auditar_sucesiones_entidades_bancarias(
+    db: Session = Depends(get_db),
+):
+    EntidadActual = aliased(EntidadBancaria)
+    registros = (
+        db.query(
+            EntidadBancaria,
+            EntidadActual.nombre.label("entidad_actual"),
+        )
+        .outerjoin(
+            EntidadActual,
+            EntidadBancaria.entidad_actual_id == EntidadActual.id,
+        )
+        .filter(EntidadBancaria.activo.is_(True))
+        .order_by(EntidadBancaria.nombre.asc())
+        .all()
+    )
+
+    return [
+        {
+            "id": entidad.id,
+            "nombre": entidad.nombre,
+            "categoria": entidad.categoria,
+            "entidad_actual_id": entidad.entidad_actual_id,
+            "entidad_actual": entidad_actual,
+            "pendiente_revision": entidad.entidad_actual_id is None,
+        }
+        for entidad, entidad_actual in registros
     ]
 
 
