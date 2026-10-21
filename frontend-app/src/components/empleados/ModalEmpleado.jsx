@@ -2080,10 +2080,11 @@ const permisosDisponibles =
     { id: "auditoria", label: "Auditoría", icon: "📋" },
   ];
 
-  // Un empleado puede abrir su propia ficha sin permiso de administración,
-  // pero por defecto solo ve Datos básicos y Datos personales.
+  // Un empleado puede abrir su propia ficha sin permiso de administración.
+  // También debe poder gestionar la visibilidad de sus tablas y repositorios;
+  // la API mantiene sus propias comprobaciones al editar la configuración.
   const pestanasVisibles = esPropiaFicha && !esAdministrador
-    ? pestanasEmpleado.filter((item) => ["basicos", "personales"].includes(item.id))
+    ? pestanasEmpleado.filter((item) => ["basicos", "personales", "visibilidad-tablas"].includes(item.id))
     : pestanasEmpleado;
 
   useEffect(() => {
