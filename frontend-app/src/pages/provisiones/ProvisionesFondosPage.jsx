@@ -85,7 +85,14 @@ export default function ProvisionesFondosPage() {
   };
   const guardar = async (e) => {
     e.preventDefault(); setGuardando(true); setError(""); setAviso("");
-    const payload = { fecha: form.fecha || hoy(), cliente: form.cliente, oficina: form.oficina, garantias: form.garantias.map((g) => ({ ...g, capital: Number(g.capital || 0), notaria: Number(g.notaria || 0), ajd: Number(g.ajd || 0), registro: Number(g.registro || 0), gestion: Number(g.gestion || 0), otros_gastos: Number(g.otros_gastos || 0), total: Number(g.total || 0) })), observaciones: form.observaciones };
+    const payload = { fecha: form.fecha || hoy(), cliente: form.cliente, oficina: form.oficina, garantias: form.garantias.map((g) => {
+      const notaria = g.tipo_carga === "Hipotecaria" ? Number(g.notaria || 0) : 0;
+      const ajd = Number(g.ajd || 0);
+      const registro = Number(g.registro || 0);
+      const gestion = Number(g.gestion || 0);
+      const otros_gastos = Number(g.otros_gastos || 0);
+      return { ...g, capital: Number(g.capital || 0), notaria, ajd, registro, gestion, otros_gastos, total: notaria + ajd + registro + gestion + otros_gastos };
+    }), observaciones: form.observaciones };
     try {
       const r = form.id ? await axios.put(`/expedientes/provisiones-independientes/${form.id}`, payload) : await axios.post("/expedientes/provisiones-independientes", payload);
       setForm({ ...nuevoFormulario(), ...r.data, cliente: { ...nuevoFormulario().cliente, ...r.data.cliente }, oficina: { ...nuevoFormulario().oficina, ...r.data.oficina }, garantias: (r.data.garantias || [vaciaGarantia()]).map((g) => ({ ...vaciaGarantia(), ...g })), observaciones: r.data.observaciones || "" });
