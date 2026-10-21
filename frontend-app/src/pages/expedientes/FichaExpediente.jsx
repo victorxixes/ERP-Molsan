@@ -5186,7 +5186,15 @@ const cuantiaFincasParaEnvio =
             "
           >
 
-            {ACTIVIDADES_EXPEDIENTES.map(
+            {ACTIVIDADES_EXPEDIENTES.filter((actividad) => {
+              const operacion = String(expediente?.tipo_operacion || "").trim().toLowerCase()
+                .replace("ó", "o")
+                .replace("í", "i");
+              if (operacion === "cancelacion sin provision") {
+                return ["documentacion-previa", "sede-notarial"].includes(actividad.key);
+              }
+              return true;
+            }).map(
               (actividad) => {
 
                 const activa =
