@@ -1260,7 +1260,6 @@ def inicializar_tablas_auxiliares():
                   "%CAIXA DE GIRONA%",
                   "%BANKPIME%",
                   "%BANCA CÍVICA%",
-                  "%BANCO HERRERO%",
         "%ADQUISICIÓN DE UNA RED DE 29 OFICINAS AL BANCO DE LAS ISLAS CANARIAS%",
         "%ADQUISICIÓN DE ISBANC%",
         "%ADQUISICIÓN DE BANCO DE EUROPA%",
@@ -1349,6 +1348,35 @@ def inicializar_tablas_auxiliares():
                     WHERE actual.activo IS TRUE
                       AND UPPER(TRIM(actual.nombre)) IN ('BANCO BPI, S.A.', 'BANCO BPI')
                       AND actual.id <> origen.id
+                  )
+            """))
+        # Banco Herrero terminó integrado en Banco Sabadell; corregir también vínculos previos erróneos.
+        with engine.begin() as conexion_herrero:
+            conexion_herrero.execute(text("""
+                UPDATE public.entidades_bancarias AS origen
+                SET entidad_actual_id = (
+                    SELECT actual.id
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND actual.id <> origen.id
+                      AND (
+                        UPPER(TRIM(actual.nombre)) LIKE 'BANCO DE SABADELL%'
+                        OR UPPER(TRIM(actual.nombre)) LIKE 'BANCO SABADELL%'
+                      )
+                    ORDER BY
+                      CASE WHEN UPPER(TRIM(actual.nombre)) = 'BANCO SABADELL' THEN 0 ELSE 1 END,
+                      actual.id
+                    LIMIT 1
+                )
+                WHERE UPPER(TRIM(origen.nombre)) LIKE '%BANCO HERRERO%'
+                  AND EXISTS (
+                    SELECT 1 FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND actual.id <> origen.id
+                      AND (
+                        UPPER(TRIM(actual.nombre)) LIKE 'BANCO DE SABADELL%'
+                        OR UPPER(TRIM(actual.nombre)) LIKE 'BANCO SABADELL%'
+                      )
                   )
             """))
         print("[ENTIDADES BANCARIAS] Sucesiones CaixaBank del listado facilitado comprobadas.", flush=True)
