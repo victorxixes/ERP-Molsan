@@ -2298,7 +2298,7 @@ export default function ExpedientesListado() {
 
       {/* BÚSQUEDA FÁCIL: no hace falta conocer los nombres de los filtros */}
       <section
-        className="rounded-2xl border p-4 sm:p-5 shadow-sm space-y-3"
+        className="w-full xl:w-[calc(50%-0.625rem)] rounded-2xl border p-3 sm:p-4 shadow-sm space-y-2"
         style={{ background: "var(--erp-surface)", borderColor: "var(--erp-border)" }}
         aria-label="Buscar expedientes"
       >
