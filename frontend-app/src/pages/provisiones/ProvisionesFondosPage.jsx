@@ -63,9 +63,9 @@ export default function ProvisionesFondosPage() {
     const g = form.garantias[i];
     if (!g.entidad.trim()) { setError("Indica la entidad bancaria antes de calcular."); return; }
     try {
-      const r = await axios.post("/expedientes/provisiones/tarifas/calcular", { tipo: "provision", entidad: g.entidad, capital: Number(g.capital || 0) });
+      const r = await axios.post("/expedientes/provisiones/tarifas/calcular", { tipo: "provision", entidad: g.entidad, territorio: g.territorio || "Península", capital: Number(g.capital || 0) });
       const t = r.data?.tarifa || {};
-      const notaria = Number(t.suplidos || 0);
+      const notaria = g.tipo_carga === "Hipotecaria" ? Number(t.suplidos || 0) : 0;
       const registro = Number(t.gastos_registro || 0);
       const gestion = Number(r.data?.honorarios || t.honorarios || 0);
       const otros = Number(t.otros_gastos || 0);
