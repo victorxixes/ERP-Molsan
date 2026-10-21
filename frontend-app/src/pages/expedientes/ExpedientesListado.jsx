@@ -2,6 +2,8 @@ import {
   useEffect,
   useState,
 } from "react";
+import axios from "../../api/axios";
+import { useAuthStore } from "../../store/authStore";
 
 import {
   Link,
@@ -906,6 +908,42 @@ function formatearNumero(
 // ============================================================
 
 export default function ExpedientesListado() {
+  const empleadoSesion = useAuthStore((state) => state.empleado);
+  const [configuracionesVisibilidad, setConfiguracionesVisibilidad] = useState([]);
+
+  useEffect(() => {
+    let vigente = true;
+    const empleadoId = empleadoSesion?.empleado_id ?? empleadoSesion?.id;
+    if (!empleadoId) return () => { vigente = false; };
+    axios.get("/expedientes/configuracion-visibilidad", { params: { empleado_id: empleadoId } })
+      .then(({ data }) => {
+        if (vigente) setConfiguracionesVisibilidad(Array.isArray(data?.configuraciones) ? data.configuraciones : []);
+      })
+      .catch((error) => {
+        console.error("No se pudo cargar la visibilidad configurada para el empleado:", error);
+        if (vigente) setConfiguracionesVisibilidad([]);
+      });
+    return () => { vigente = false; };
+  }, [empleadoSesion?.empleado_id, empleadoSesion?.id]);
+
+  // Aplicar la selección guardada en la ficha del empleado a la tabla real.
+  useEffect(() => {
+    if (!actividadSeleccionada) {
+      setColumnasVisibles(COLUMNAS_POR_DEFECTO);
+      return;
+    }
+    const normalizar = (valor) => String(valor || "").trim().toLocaleLowerCase("es")
+      .normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
+    const definicion = ACTIVIDADES_EXPEDIENTES.find((item) =>
+      [item.label, ...(item.aliases || [])].some((alias) => normalizar(alias) === normalizar(actividadSeleccionada))
+    );
+    const config = definicion && configuracionesVisibilidad.find((item) => item.actividad_key === definicion.key);
+    if (config && Array.isArray(config.excel_columns) && config.excel_columns.length) {
+      setColumnasVisibles(config.excel_columns);
+    } else if (definicion) {
+      setColumnasVisibles(obtenerColumnasActividad(definicion.key));
+    }
+  }, [actividadSeleccionada, configuracionesVisibilidad]);
 
   // ==========================================================
   // DATOS
