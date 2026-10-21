@@ -1398,6 +1398,15 @@ export default function FichaExpediente() {
   const [generandoHonorariosGestoria, setGenerandoHonorariosGestoria] = useState(false);
   const [errorHonorariosGestoria, setErrorHonorariosGestoria] = useState("");
   const [mensajeHonorariosGestoria, setMensajeHonorariosGestoria] = useState("");
+  const [mostrarModalFacturaHonorarios, setMostrarModalFacturaHonorarios] = useState(false);
+  const [previsualizandoFacturaHonorarios, setPrevisualizandoFacturaHonorarios] = useState(false);
+  const [guardandoFacturaHonorarios, setGuardandoFacturaHonorarios] = useState(false);
+  const [facturaHonorariosForm, setFacturaHonorariosForm] = useState({
+    cliente: "", nifCliente: "", numeroFactura: "", fechaFactura: new Date().toISOString().slice(0, 10),
+    concepto: "Honorarios de gestoría", baseImponible: "0.00", tipoImpuesto: "IVA", porcentajeImpuesto: "21",
+    importeImpuesto: "0.00", totalFactura: "0.00", provisionFondos: "0.00", saldoDisponible: "0.00",
+    tarifa: "", entidad: "", observaciones: "",
+  });
 
   const cargarDocumentosCierre = useCallback(async () => {
     const numero = expediente?.id_expediente || id;
@@ -2376,44 +2385,109 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     };
   }
 
+  function actualizarImportesFacturaHonorarios(formActual, cambios = {}) {
+    const siguiente = { ...formActual, ...cambios };
+    const base = Math.max(0, Number(String(siguiente.baseImponible ?? "0").replace(",", ".")) || 0);
+    const porcentaje = Math.max(0, Number(String(siguiente.porcentajeImpuesto ?? "0").replace(",", ".")) || 0);
+    const impuesto = Math.round((base * porcentaje + Number.EPSILON) * 100) / 100;
+    siguiente.importeImpuesto = impuesto.toFixed(2);
+    siguiente.totalFactura = (Math.round((base + impuesto + Number.EPSILON) * 100) / 100).toFixed(2);
+    return siguiente;
+  }
+
   async function generarHonorariosGestoria() {
     if (!expediente?.id_expediente || generandoHonorariosGestoria) return;
     setGenerandoHonorariosGestoria(true);
     setErrorHonorariosGestoria("");
     setMensajeHonorariosGestoria("");
-    let calculo = null;
     try {
-      calculo = await calcularHonorariosGestoria();
-      setHonorariosGestoria(calculo);
+      const calculo = await calcularHonorariosGestoria();
+      const datos = expediente || {};
+      const totalCatalogo = Math.max(0, Number(calculo.importe) || 0);
+      const esCanarias = normalizarTexto(calculo.tarifa).includes("canarias");
+      const porcentaje = esCanarias ? 7 : 21;
+      const base = Math.round((totalCatalogo / (1 + porcentaje / 100) + Number.EPSILON) * 100) / 100;
+      const nombreCliente = datos.nombre_titular || datos.nombre_solicitante || datos.titular || "";
+      const nifCliente = datos.nif_titular || datos.nif_solicitante || datos.nif || "";
+      const saldo = datos.saldo_disponible ?? datos.saldo_real ?? "";
+      const form = actualizarImportesFacturaHonorarios({
+        cliente: String(nombreCliente || ""),
+        nifCliente: String(nifCliente || ""),
+        numeroFactura: "",
+        fechaFactura: new Date().toISOString().slice(0, 10),
+        concepto: "Honorarios de gestoría",
+        baseImponible: base.toFixed(2),
+        tipoImpuesto: esCanarias ? "IGIC" : "IVA",
+        porcentajeImpuesto: String(porcentaje),
+        importeImpuesto: (totalCatalogo - base).toFixed(2),
+        totalFactura: totalCatalogo.toFixed(2),
+        provisionFondos: String(datos.importe ?? "0"),
+        saldoDisponible: String(saldo ?? "0"),
+        tarifa: calculo.tarifa,
+        entidad: calculo.entidad,
+        observaciones: "",
+      });
+      setFacturaHonorariosForm(form);
+      setPrevisualizandoFacturaHonorarios(false);
+      setMostrarModalFacturaHonorarios(true);
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setErrorHonorariosGestoria(
+        typeof detail === "string" ? detail :
+        detail?.mensaje || err?.message ||
+        "No se pudo preparar la factura de honorarios. Revisa el catálogo y vuelve a intentarlo."
+      );
+    } finally {
+      setGenerandoHonorariosGestoria(false);
+    }
+  }
+
+  async function confirmarFacturaHonorarios() {
+    if (!expediente?.id_expediente || guardandoFacturaHonorarios) return;
+    setGuardandoFacturaHonorarios(true);
+    setErrorHonorariosGestoria("");
+    setMensajeHonorariosGestoria("");
+    try {
+      const base = Math.max(0, Number(String(facturaHonorariosForm.baseImponible).replace(",", ".")) || 0);
+      const impuesto = Math.max(0, Number(String(facturaHonorariosForm.importeImpuesto).replace(",", ".")) || 0);
+      const total = Math.round((base + impuesto + Number.EPSILON) * 100) / 100;
       const respuesta = await axios.post(
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/generar`,
         {
-          importe: calculo.importe,
-          tarifa: calculo.tarifa,
-          concepto: "Honorarios de gestoría",
-          entidad: calculo.entidad,
+          importe: total,
+          tarifa: facturaHonorariosForm.tarifa,
+          concepto: facturaHonorariosForm.concepto || "Honorarios de gestoría",
+          entidad: facturaHonorariosForm.entidad,
           id_expediente: expediente.id_expediente,
+          cliente: facturaHonorariosForm.cliente,
+          nif_cliente: facturaHonorariosForm.nifCliente,
+          numero_factura: facturaHonorariosForm.numeroFactura,
+          fecha_factura: facturaHonorariosForm.fechaFactura,
+          base_imponible: base,
+          tipo_impuesto: facturaHonorariosForm.tipoImpuesto,
+          porcentaje_impuesto: Number(facturaHonorariosForm.porcentajeImpuesto) || 0,
+          importe_impuesto: impuesto,
+          observaciones: facturaHonorariosForm.observaciones,
         }
       );
-      setHonorariosGestoria((actual) => ({ ...actual, ...(respuesta?.data || {}), guardado: true }));
-      setMensajeHonorariosGestoria("Honorarios de gestoría generados y registrados.");
+      setHonorariosGestoria({
+        importe: total,
+        tarifa: facturaHonorariosForm.tarifa,
+        entidad: facturaHonorariosForm.entidad,
+        ...(respuesta?.data || {}),
+        guardado: true,
+      });
+      setMensajeHonorariosGestoria("Honorarios registrados en el expediente.");
+      setMostrarModalFacturaHonorarios(false);
     } catch (err) {
-      const status = err?.response?.status;
       const detail = err?.response?.data?.detail;
-      if (calculo && (status === 404 || status === 405)) {
-        setMensajeHonorariosGestoria(
-          `Importe calculado: ${calculo.importe.toFixed(2).replace(".", ",")} €. El backend todavía no dispone de una ruta compatible para registrar automáticamente este concepto.`
-        );
-      } else {
-        setErrorHonorariosGestoria(
-          typeof detail === "string"
-            ? detail
-            : detail?.mensaje || (typeof err?.message === "string" ? err.message : "") ||
-              "No se pudieron registrar los honorarios. Revisa el catálogo y vuelve a intentarlo."
-        );
-      }
+      setErrorHonorariosGestoria(
+        typeof detail === "string" ? detail :
+        detail?.mensaje || err?.message ||
+        "No se pudieron registrar los honorarios. No se ha confirmado la factura."
+      );
     } finally {
-      setGenerandoHonorariosGestoria(false);
+      setGuardandoFacturaHonorarios(false);
     }
   }
 
@@ -7423,6 +7497,99 @@ const cuantiaFincasParaEnvio =
       {/* =====================================================
           MODAL ENVIAR A NOTARIO
       ====================================================== */}
+
+      <Modal
+        open={mostrarModalFacturaHonorarios}
+        onClose={() => !guardandoFacturaHonorarios && setMostrarModalFacturaHonorarios(false)}
+        titulo="🧾 Factura de honorario"
+        subtitulo={`Expediente ${expediente?.id_expediente || ""} · Revisa los datos antes de registrar`}
+        ancho="max-w-5xl"
+        footer={
+          <div className="flex w-full flex-wrap justify-between gap-2">
+            <Boton onClick={() => setMostrarModalFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}>Cancelar</Boton>
+            <div className="flex flex-wrap gap-2">
+              {previsualizandoFacturaHonorarios && <Boton onClick={() => setPrevisualizandoFacturaHonorarios(false)} disabled={guardandoFacturaHonorarios}>← Editar datos</Boton>}
+              {!previsualizandoFacturaHonorarios ? (
+                <Boton tipo="primary" onClick={() => setPrevisualizandoFacturaHonorarios(true)}>👁 Previsualizar factura</Boton>
+              ) : (
+                <Boton tipo="primary" onClick={confirmarFacturaHonorarios} disabled={guardandoFacturaHonorarios}>
+                  {guardandoFacturaHonorarios ? "Guardando…" : "💾 Guardar y facturar"}
+                </Boton>
+              )}
+            </div>
+          </div>
+        }
+      >
+        <div className="max-h-[68vh] space-y-5 overflow-y-auto pr-1">
+          {errorHonorariosGestoria && <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorHonorariosGestoria}</p>}
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Provisión de fondos</p>
+              <p className="mt-1 text-lg font-extrabold text-slate-800">{Number(String(facturaHonorariosForm.provisionFondos || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Saldo disponible (dato del expediente)</p>
+              <p className="mt-1 text-lg font-extrabold text-slate-800">{Number(String(facturaHonorariosForm.saldoDisponible || "0").replace(",", "." ) || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
+            </div>
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Total factura</p>
+              <p className="mt-1 text-xl font-extrabold text-emerald-800">{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</p>
+            </div>
+          </div>
+
+          {previsualizandoFacturaHonorarios ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-4">
+                <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">MOLSAN ERP · Facturación</p><h3 className="mt-2 text-2xl font-extrabold text-slate-800">FACTURA DE HONORARIOS</h3><p className="mt-1 text-sm text-slate-500">Expediente {expediente?.id_expediente}</p></div>
+                <div className="text-right"><p className="text-sm font-bold text-slate-700">{facturaHonorariosForm.numeroFactura || "Número pendiente de asignación"}</p><p className="text-sm text-slate-500">Fecha: {facturaHonorariosForm.fechaFactura || "—"}</p></div>
+              </div>
+              <div className="grid gap-4 py-5 md:grid-cols-2">
+                <div><p className="text-[10px] font-bold uppercase text-slate-400">Facturar a</p><p className="mt-1 font-bold text-slate-800">{facturaHonorariosForm.cliente || "Cliente pendiente de completar"}</p><p className="text-sm text-slate-600">NIF: {facturaHonorariosForm.nifCliente || "—"}</p></div>
+                <div><p className="text-[10px] font-bold uppercase text-slate-400">Concepto</p><p className="mt-1 font-semibold text-slate-800">{facturaHonorariosForm.concepto}</p><p className="text-sm text-slate-500">{facturaHonorariosForm.tarifa}</p></div>
+              </div>
+              <div className="overflow-hidden rounded-xl border border-slate-200">
+                <div className="grid grid-cols-[1fr_auto] gap-3 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-600"><span>Concepto</span><span>Importe</span></div>
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>Base imponible</span><span>{Number(facturaHonorariosForm.baseImponible || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-100 px-4 py-3 text-sm"><span>{facturaHonorariosForm.tipoImpuesto} ({facturaHonorariosForm.porcentajeImpuesto}%)</span><span>{Number(facturaHonorariosForm.importeImpuesto || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
+                <div className="grid grid-cols-[1fr_auto] gap-3 border-t border-slate-200 bg-emerald-50 px-4 py-4 font-extrabold text-emerald-900"><span>TOTAL FACTURA</span><span>{Number(facturaHonorariosForm.totalFactura || 0).toLocaleString("es-ES",{style:"currency",currency:"EUR"})}</span></div>
+              </div>
+              {facturaHonorariosForm.observaciones && <p className="mt-4 whitespace-pre-wrap text-sm text-slate-600">{facturaHonorariosForm.observaciones}</p>}
+              <p className="mt-4 text-xs text-amber-700">Vista previa de revisión. El registro definitivo se realiza al pulsar «Guardar y facturar».</p>
+            </div>
+          ) : (
+            <>
+              <section className="rounded-xl border border-slate-200 p-4">
+                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Datos de factura y cliente</h3>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <label className="text-xs font-semibold text-slate-600">Cliente / titular<input value={facturaHonorariosForm.cliente} onChange={e => setFacturaHonorariosForm(f => ({...f,cliente:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600">NIF / CIF<input value={facturaHonorariosForm.nifCliente} onChange={e => setFacturaHonorariosForm(f => ({...f,nifCliente:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600">Número de factura<input value={facturaHonorariosForm.numeroFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,numeroFactura:e.target.value}))} placeholder="Se puede asignar al guardar" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600">Fecha de factura<input type="date" value={facturaHonorariosForm.fechaFactura} onChange={e => setFacturaHonorariosForm(f => ({...f,fechaFactura:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600 md:col-span-2">Concepto<input value={facturaHonorariosForm.concepto} onChange={e => setFacturaHonorariosForm(f => ({...f,concepto:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                </div>
+              </section>
+              <section className="rounded-xl border border-slate-200 p-4">
+                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Tarifa e impuestos</h3>
+                <p className="mb-3 text-xs text-slate-500">Tarifa del catálogo: <strong>{facturaHonorariosForm.tarifa}</strong> · Entidad detectada: {facturaHonorariosForm.entidad || "No identificada"}</p>
+                <div className="grid gap-3 md:grid-cols-4">
+                  <label className="text-xs font-semibold text-slate-600">Base imponible (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.baseImponible} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{baseImponible:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600">Impuesto<select value={facturaHonorariosForm.tipoImpuesto} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{tipoImpuesto:e.target.value,porcentajeImpuesto:e.target.value==="IGIC"?"7":"21"}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"><option>IVA</option><option>IGIC</option></select></label>
+                  <label className="text-xs font-semibold text-slate-600">Tipo (%)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.porcentajeImpuesto} onChange={e => setFacturaHonorariosForm(f => actualizarImportesFacturaHonorarios(f,{porcentajeImpuesto:e.target.value}))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+                  <label className="text-xs font-semibold text-slate-600">Impuesto (€)<input type="number" min="0" step="0.01" value={facturaHonorariosForm.importeImpuesto} readOnly className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" /></label>
+                </div>
+                <label className="mt-3 block text-xs font-semibold text-slate-600">Observaciones<textarea value={facturaHonorariosForm.observaciones} onChange={e => setFacturaHonorariosForm(f => ({...f,observaciones:e.target.value}))} rows={2} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></label>
+              </section>
+              <section className="rounded-xl border border-slate-200 p-4">
+                <h3 className="mb-2 text-sm font-extrabold text-slate-800">Checklist de control</h3>
+                <p className="mb-3 text-xs text-slate-500">Revisión visual de documentos y actividades vinculados al expediente. Los documentos no se marcan como completados automáticamente.</p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {["Documentación previa","Firma / protocolo","Liquidación de impuestos","Tramitación de inscripción","Defectos registrales","Documentos de facturación y cierre"].map((item, i) => <div key={item} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700"><span className="text-slate-400">□</span><span>{item}</span></div>)}
+                </div>
+              </section>
+            </>
+          )}
+        </div>
+      </Modal>
 
       {mostrarEnviarNotario && (
         <EnviarANotarioModal
