@@ -103,3 +103,29 @@ class ProvisionOperacionFinca(Base):
     poblacion = Column(String(150), nullable=True)
     seccion = Column(String(100), nullable=True)
 
+
+
+class ProvisionIndependiente(Base):
+    """Provisión estimativa creada desde llamada de cliente, sin expediente asociado."""
+    __tablename__ = "provisiones_independientes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    numero = Column(String(40), nullable=False, unique=True, index=True)
+    fecha = Column(Date, nullable=False, default=func.current_date(), index=True)
+    cliente_nombre = Column(String(300), nullable=False, default="")
+    cliente_nif = Column(String(40), nullable=True)
+    cliente_direccion = Column(String(400), nullable=True)
+    cliente_cp = Column(String(20), nullable=True)
+    cliente_poblacion = Column(String(150), nullable=True)
+    cliente_provincia = Column(String(150), nullable=True)
+    cliente_telefono = Column(String(60), nullable=True)
+    cliente_email = Column(String(250), nullable=True)
+    oficina_numero = Column(String(100), nullable=True)
+    oficina_contacto = Column(String(200), nullable=True)
+    oficina_email = Column(String(250), nullable=True)
+    datos = Column(__import__("sqlalchemy").JSON, nullable=False, default=dict)
+    importe_total = Column(Numeric(14, 2), nullable=False, default=0, server_default="0")
+    estado = Column(String(20), nullable=False, default="borrador", server_default="borrador", index=True)
+    creado_por_id = Column(Integer, nullable=True)
+    creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    actualizado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
