@@ -66,6 +66,7 @@ import CambiarGestorExpediente from "./pages/herramientas/CambiarGestorExpedient
 import ComplementosSaldo from "./pages/herramientas/ComplementosSaldo.jsx";
 import ProcesoAbsis from "./pages/herramientas/ProcesoAbsis.jsx";
 import PPAD from "./pages/herramientas/PPAD.jsx";
+import Verifacti from "./pages/herramientas/Verifacti.jsx";
 
 /* LOGS */
 import Logs from "./pages/logs/Logs.jsx";
@@ -337,6 +338,7 @@ export default function App() {
           <Route path="herramientas/utilidades/complementos-saldo" element={<ComplementosSaldo />} />
           <Route path="herramientas/utilidades/proceso-absis" element={<ProcesoAbsis />} />
           <Route path="herramientas/utilidades/ppad" element={<PPAD />} />
+          <Route path="herramientas/utilidades/verifacti" element={<Verifacti />} />
 
 
           {/* ==================================================
