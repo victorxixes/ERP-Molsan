@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
@@ -24,7 +24,6 @@ export default function ProvisionesFondosPage() {
   const [error, setError] = useState("");
   const [aviso, setAviso] = useState("");
   const [busqueda, setBusqueda] = useState("");
-  const total = useMemo(() => form.garantias.reduce((s, g) => s + Number(g.total || g.importe_manual || 0), 0), [form.garantias]);
 
   const cargar = useCallback(async () => {
     setCargando(true);
