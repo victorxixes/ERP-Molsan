@@ -1512,17 +1512,20 @@ const permisosDisponibles =
      GUARDAR DATOS EMPLEADO
   ========================================================== */
 
+  const idSesionEmpleado = usuarioSesion?.empleado_id ?? usuarioSesion?.id;
+  const esPropiaFicha = empleadoId !== null && empleadoId !== undefined &&
+    String(idSesionEmpleado ?? "") !== "" &&
+    String(idSesionEmpleado) === String(empleadoId);
+
   const guardarDatosEmpleado =
     async () => {
 
-      if (!esAdministrador || !empleadoId) {
-        if (!esAdministrador) setError("Solo un administrador puede modificar estos datos.");
+      if ((!esAdministrador && !esPropiaFicha) || !empleadoId) {
+        setError("No tienes permiso para modificar esta ficha.");
         return;
       }
 
-      if (
-        !empleadoId
-      ) {
+      if (!empleadoId) {
         return;
       }
 
@@ -1537,110 +1540,52 @@ const permisosDisponibles =
          * en EmpleadoUpdate.
          */
 
-        const payload = {
-
-          nombre:
-            empleadoFormulario.nombre ??
-            null,
-
-          apellidos:
-            empleadoFormulario.apellidos ??
-            null,
-
-          dni:
-            empleadoFormulario.dni ??
-            null,
-
-          telefono:
-            empleadoFormulario.telefono ??
-            null,
-
-          email_personal:
-            empleadoFormulario.email_personal ??
-            null,
-
-          email_empresa:
-            empleadoFormulario.email_empresa ??
-            null,
-
-          extension:
-            empleadoFormulario.extension ??
-            null,
-
-          usuario:
-            empleadoFormulario.usuario ??
-            null,
-
-          direccion:
-            empleadoFormulario.direccion ??
-            null,
-
-          codigo_postal:
-            empleadoFormulario.codigo_postal ??
-            null,
-
-          poblacion:
-            empleadoFormulario.poblacion ??
-            null,
-
-          provincia:
-            empleadoFormulario.provincia ??
-            null,
-
-          fecha_nacimiento:
-            empleadoFormulario.fecha_nacimiento ??
-            null,
-
-          alergias:
-            empleadoFormulario.alergias ??
-            null,
-
-          persona_contacto:
-            empleadoFormulario.persona_contacto ??
-            null,
-
-          telefono_contacto:
-            empleadoFormulario.telefono_contacto ??
-            null,
-
-          observaciones:
-            empleadoFormulario.observaciones ??
-            null,
-
-          departamento_id:
-            convertirNumeroONull(
-              empleadoFormulario.departamento_id
-            ),
-
-          seccion_id:
-            convertirNumeroONull(
-              empleadoFormulario.seccion_id
-            ),
-
-          cargo_id:
-            convertirNumeroONull(
-              empleadoFormulario.cargo_id
-            ),
-
-          fecha_alta:
-            empleadoFormulario.fecha_alta ??
-            null,
-
-          fecha_baja:
-            empleadoFormulario.fecha_baja ??
-            null,
-
-          activo:
-            typeof empleadoFormulario.activo ===
-            "boolean"
-              ? empleadoFormulario.activo
-              : null,
-
-          rol_id:
-            convertirNumeroONull(
-              empleadoFormulario.rol_id
-            ),
-        };
+        // En la ficha propia, el empleado solo puede actualizar datos
+        // identificativos y personales. Los datos laborales, rol, usuario,
+        // estado y configuración de acceso quedan reservados a administración.
+        const payload = esPropiaFicha && !esAdministrador
+          ? {
+              nombre: empleadoFormulario.nombre ?? null,
+              apellidos: empleadoFormulario.apellidos ?? null,
+              dni: empleadoFormulario.dni ?? null,
+              telefono: empleadoFormulario.telefono ?? null,
+              email_personal: empleadoFormulario.email_personal ?? null,
+              direccion: empleadoFormulario.direccion ?? null,
+              codigo_postal: empleadoFormulario.codigo_postal ?? null,
+              poblacion: empleadoFormulario.poblacion ?? null,
+              provincia: empleadoFormulario.provincia ?? null,
+              fecha_nacimiento: empleadoFormulario.fecha_nacimiento ?? null,
+              alergias: empleadoFormulario.alergias ?? null,
+              persona_contacto: empleadoFormulario.persona_contacto ?? null,
+              telefono_contacto: empleadoFormulario.telefono_contacto ?? null,
+              observaciones: empleadoFormulario.observaciones ?? null,
+            }
+          : {
+              nombre: empleadoFormulario.nombre ?? null,
+              apellidos: empleadoFormulario.apellidos ?? null,
+              dni: empleadoFormulario.dni ?? null,
+              telefono: empleadoFormulario.telefono ?? null,
+              email_personal: empleadoFormulario.email_personal ?? null,
+              email_empresa: empleadoFormulario.email_empresa ?? null,
+              extension: empleadoFormulario.extension ?? null,
+              usuario: empleadoFormulario.usuario ?? null,
+              direccion: empleadoFormulario.direccion ?? null,
+              codigo_postal: empleadoFormulario.codigo_postal ?? null,
+              poblacion: empleadoFormulario.poblacion ?? null,
+              provincia: empleadoFormulario.provincia ?? null,
+              fecha_nacimiento: empleadoFormulario.fecha_nacimiento ?? null,
+              alergias: empleadoFormulario.alergias ?? null,
+              persona_contacto: empleadoFormulario.persona_contacto ?? null,
+              telefono_contacto: empleadoFormulario.telefono_contacto ?? null,
+              observaciones: empleadoFormulario.observaciones ?? null,
+              departamento_id: convertirNumeroONull(empleadoFormulario.departamento_id),
+              seccion_id: convertirNumeroONull(empleadoFormulario.seccion_id),
+              cargo_id: convertirNumeroONull(empleadoFormulario.cargo_id),
+              fecha_alta: empleadoFormulario.fecha_alta ?? null,
+              fecha_baja: empleadoFormulario.fecha_baja ?? null,
+              activo: typeof empleadoFormulario.activo === "boolean" ? empleadoFormulario.activo : null,
+              rol_id: convertirNumeroONull(empleadoFormulario.rol_id),
+            };
 
 
         await editarEmpleado(
@@ -2077,6 +2022,33 @@ const permisosDisponibles =
 
 
   /* ==========================================================
+     PESTAÑAS Y ACCESO A LA FICHA PROPIA
+  ========================================================== */
+
+  const pestanasEmpleado = [
+    { id: "basicos", label: "Datos básicos", icon: "👤" },
+    { id: "personales", label: "Datos personales", icon: "🏠" },
+    { id: "laborales", label: "Datos laborales", icon: "💼" },
+    { id: "accesos", label: "Accesos", icon: "🔐" },
+    { id: "encargagest", label: "EncargaGest", icon: "🏛️" },
+    { id: "asignaciones", label: "Asignaciones", icon: "⚖️" },
+    { id: "seguridad", label: "Seguridad", icon: "🛡️" },
+    { id: "auditoria", label: "Auditoría", icon: "📋" },
+  ];
+
+  // Un empleado puede abrir su propia ficha sin permiso de administración,
+  // pero por defecto solo ve Datos básicos y Datos personales.
+  const pestanasVisibles = esPropiaFicha && !esAdministrador
+    ? pestanasEmpleado.filter((item) => ["basicos", "personales"].includes(item.id))
+    : pestanasEmpleado;
+
+  useEffect(() => {
+    if (!pestanasVisibles.some((item) => item.id === pestana)) {
+      setPestana("basicos");
+    }
+  }, [empleadoId, esPropiaFicha, esAdministrador, pestana]);
+
+  /* ==========================================================
      NO RENDER
   ========================================================== */
 
@@ -2367,48 +2339,7 @@ const permisosDisponibles =
           "
         >
 
-          {[
-            {
-              id: "basicos",
-              label: "Datos básicos",
-              icon: "👤",
-            },
-            {
-              id: "personales",
-              label: "Datos personales",
-              icon: "🏠",
-            },
-            {
-              id: "laborales",
-              label: "Datos laborales",
-              icon: "💼",
-            },
-            {
-              id: "accesos",
-              label: "Accesos",
-              icon: "🔐",
-            },
-            {
-              id: "encargagest",
-              label: "EncargaGest",
-              icon: "🏛️",
-            },
-            {
-              id: "asignaciones",
-              label: "Asignaciones",
-              icon: "⚖️",
-            },
-            {
-              id: "seguridad",
-              label: "Seguridad",
-              icon: "🛡️",
-            },
-            {
-              id: "auditoria",
-              label: "Auditoría",
-              icon: "📋",
-            },
-          ].map(
+          {pestanasVisibles.map(
             (item) => (
 
               <button
