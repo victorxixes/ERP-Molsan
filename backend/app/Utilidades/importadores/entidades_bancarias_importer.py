@@ -627,7 +627,7 @@ def importar_excel_entidades_bancarias(
                 if existente is None:
 
                     nueva = EntidadBancaria(
-                        codigo_europeo=codigo,
+                        codigo_europeo=codigo or None,
                         lei=lei,
                         nombre=nombre,
                         categoria=categoria,
