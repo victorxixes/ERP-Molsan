@@ -1087,8 +1087,6 @@ def inicializar_tablas_auxiliares():
                     "%CAJASOL%",
                     "%BANCA CIVICA%",
                     "%BANCA CÍVICA%",
-                    "%CAJA DE AHORROS Y MONTE DE PIEDAD DE CÓRDOBA%",
-                    "%CAJA DE AHORROS Y MONTE DE PIEDAD DE CORDOBA%",
                     "%LA CAIXA%",
                     "%CAIXABANK, S.A.%"
                 ],
@@ -1192,6 +1190,8 @@ def inicializar_tablas_auxiliares():
                 [
                     "%CAJASUR%",
                     "%CAJA SUR%",
+                    "%CAJA DE AHORROS Y MONTE DE PIEDAD DE CÓRDOBA%",
+                    "%CAJA DE AHORROS Y MONTE DE PIEDAD DE CORDOBA%",
                     "%BBK%",
                     "%KUTXA%",
                     "%CAJA VITAL%",
@@ -1246,8 +1246,6 @@ def inicializar_tablas_auxiliares():
                 "UPPER(actual.nombre) LIKE 'BANKINTER%'",
                 [
                     "%EVO BANCO%",
-                    "%NOVO BANCO ESPAÑA%",
-                    "%NOVO BANCO ESPANA%"
                 ],
             ),
         ]
