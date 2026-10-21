@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 from decimal import Decimal
 from io import BytesIO
+from uuid import uuid4
 import unicodedata
 from typing import List, Literal, Optional
 from xml.sax.saxutils import escape
@@ -697,7 +698,7 @@ def obtener_provision_independiente(provision_id: int, db: Session = Depends(get
 @router.post("/provisiones-independientes", status_code=status.HTTP_201_CREATED, summary="Guardar provisión independiente")
 def crear_provision_independiente(datos: ProvisionIndependienteInput, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     require_perm_modulo(usuario, "expedientes", "crear")
-    item = ProvisionIndependiente(numero="TEMP", fecha=datos.fecha, cliente_nombre="")
+    item = ProvisionIndependiente(numero=f"PF-TEMP-{uuid4().hex}", fecha=datos.fecha, cliente_nombre="")
     db.add(item)
     try:
         db.flush()
