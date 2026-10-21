@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { useAuthStore } from "../store/authStore";
 import EmpleadoPerfilModal from "../components/SidebarPerfilModal";
 import { useNotificacionesWS } from "../hooks/useNotificacionesWS";
 import NotificacionesToast from "../components/notificaciones/NotificacionesToast";
+import "../css/CancelagestUnified.css";
 
 /** Layout principal de ERP-Molsan. Mantiene perfil, navegación,
  * WebSockets de empleado y notificaciones. */
@@ -12,6 +13,11 @@ export default function Layout() {
   const empleado = useAuthStore((s) => s.empleado);
   const perfilModal = useAuthStore((s) => s.perfilModal);
   const setPerfilModal = useAuthStore((s) => s.setPerfilModal);
+  const { pathname } = useLocation();
+
+  // Estas rutas son el espacio operativo compartido desde CancelaGest.
+  // El tema se limita a dichas pantallas y no afecta a Seguridad ni al panel técnico.
+  const rutaCancelaGest = /^\/(expedientes|agenda|informes|mensajes|ctn|intranet|provisiones-fondos|catalogos|herramientas)(\/|$)/i.test(pathname);
 
   useNotificacionesWS(empleado?.id);
 
@@ -53,7 +59,7 @@ export default function Layout() {
       <NotificacionesToast />
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
-          <div className="w-full">
+          <div className={`w-full${rutaCancelaGest ? " cg-unified-workspace" : ""}`}>
             <Outlet />
           </div>
         </div>
