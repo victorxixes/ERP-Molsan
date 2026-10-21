@@ -2397,45 +2397,56 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
   async function generarHonorariosGestoria() {
     if (!expediente?.id_expediente || generandoHonorariosGestoria) return;
-    setGenerandoHonorariosGestoria(true);
+
+    // Abrir primero la ventana. La consulta del catálogo nunca debe retrasar
+    // ni sustituir la apertura del modal por una generación directa.
+    const datos = expediente || {};
+    const nombreCliente = datos.nombre_titular || datos.nombre_solicitante || datos.titular || "";
+    const nifCliente = datos.nif_titular || datos.nif_solicitante || datos.nif || "";
+    const saldo = datos.saldo_disponible ?? datos.saldo_real ?? "";
     setErrorHonorariosGestoria("");
     setMensajeHonorariosGestoria("");
+    setPrevisualizandoFacturaHonorarios(false);
+    setFacturaHonorariosForm({
+      cliente: String(nombreCliente || ""),
+      nifCliente: String(nifCliente || ""),
+      numeroFactura: "",
+      fechaFactura: new Date().toISOString().slice(0, 10),
+      concepto: "Honorarios de gestoría",
+      baseImponible: "0.00",
+      tipoImpuesto: "IVA",
+      porcentajeImpuesto: "21",
+      importeImpuesto: "0.00",
+      totalFactura: "0.00",
+      provisionFondos: String(datos.importe ?? "0"),
+      saldoDisponible: String(saldo ?? "0"),
+      tarifa: "",
+      entidad: "",
+      observaciones: "",
+    });
+    setMostrarModalFacturaHonorarios(true);
+    setGenerandoHonorariosGestoria(true);
+
     try {
       const calculo = await calcularHonorariosGestoria();
-      const datos = expediente || {};
       const totalCatalogo = Math.max(0, Number(calculo.importe) || 0);
       const esCanarias = normalizarTexto(calculo.tarifa).includes("canarias");
       const porcentaje = esCanarias ? 7 : 21;
       const base = Math.round((totalCatalogo / (1 + porcentaje / 100) + Number.EPSILON) * 100) / 100;
-      const nombreCliente = datos.nombre_titular || datos.nombre_solicitante || datos.titular || "";
-      const nifCliente = datos.nif_titular || datos.nif_solicitante || datos.nif || "";
-      const saldo = datos.saldo_disponible ?? datos.saldo_real ?? "";
-      const form = actualizarImportesFacturaHonorarios({
-        cliente: String(nombreCliente || ""),
-        nifCliente: String(nifCliente || ""),
-        numeroFactura: "",
-        fechaFactura: new Date().toISOString().slice(0, 10),
-        concepto: "Honorarios de gestoría",
+      setFacturaHonorariosForm((actual) => actualizarImportesFacturaHonorarios({
+        ...actual,
         baseImponible: base.toFixed(2),
         tipoImpuesto: esCanarias ? "IGIC" : "IVA",
         porcentajeImpuesto: String(porcentaje),
-        importeImpuesto: (totalCatalogo - base).toFixed(2),
-        totalFactura: totalCatalogo.toFixed(2),
-        provisionFondos: String(datos.importe ?? "0"),
-        saldoDisponible: String(saldo ?? "0"),
         tarifa: calculo.tarifa,
         entidad: calculo.entidad,
-        observaciones: "",
-      });
-      setFacturaHonorariosForm(form);
-      setPrevisualizandoFacturaHonorarios(false);
-      setMostrarModalFacturaHonorarios(true);
+      }));
     } catch (err) {
       const detail = err?.response?.data?.detail;
       setErrorHonorariosGestoria(
         typeof detail === "string" ? detail :
         detail?.mensaje || err?.message ||
-        "No se pudo preparar la factura de honorarios. Revisa el catálogo y vuelve a intentarlo."
+        "No se pudo cargar la tarifa de honorarios. Puedes revisar el catálogo y volver a intentarlo."
       );
     } finally {
       setGenerandoHonorariosGestoria(false);
