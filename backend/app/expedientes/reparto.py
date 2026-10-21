@@ -92,6 +92,12 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
             operacion_regla = normalizar(regla.get("tipo_operacion"))
             if operacion_regla and operacion_regla != normalizar(getattr(expediente, "tipo_operacion", None)):
                 continue
+            estados_regla = regla.get("estados_expediente")
+            if not isinstance(estados_regla, list):
+                estados_regla = [regla.get("estado_expediente")] if regla.get("estado_expediente") else []
+            estados_regla_normalizados = {normalizar(estado) for estado in estados_regla if estado}
+            if estados_regla_normalizados and normalizar(getattr(expediente, "estado_expediente", None)) not in estados_regla_normalizados:
+                continue
             try:
                 porcentaje += float(regla.get("porcentaje") or 0)
             except (TypeError, ValueError):
