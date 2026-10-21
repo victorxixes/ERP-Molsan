@@ -33,7 +33,7 @@ const REPOSITORIOS_INICIALES = {
 
 const CLASE_INPUT = "w-full rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2.5 text-sm text-[var(--erp-text)] outline-none focus:border-[var(--erp-primary)] focus:ring-2 focus:ring-[var(--erp-primary-soft)]";
 
-export default function VisibilidadTablas({ onClose }) {
+export default function VisibilidadTablas({ empleadoId, onClose }) {
   const [catalogo, setCatalogo] = useState({ columnas_excel: [], repositorios: [], configuraciones: [] });
   const [actividadKey, setActividadKey] = useState(ACTIVIDADES[0].key);
   const [nombreTabla, setNombreTabla] = useState("");
@@ -47,7 +47,7 @@ export default function VisibilidadTablas({ onClose }) {
 
   useEffect(() => {
     let activo = true;
-    axios.get("/expedientes/configuracion-visibilidad")
+    axios.get("/expedientes/configuracion-visibilidad", { params: { empleado_id: empleadoId } })
       .then(({ data }) => {
         if (activo) setCatalogo({
           columnas_excel: data?.columnas_excel || [],
@@ -106,6 +106,7 @@ export default function VisibilidadTablas({ onClose }) {
     setMensaje("");
     try {
       const { data } = await axios.put("/expedientes/configuracion-visibilidad", {
+        empleado_id: empleadoId,
         actividad_key: actividadKey,
         nombre_tabla: nombreTabla.trim(),
         excel_columns: columnas,
@@ -115,7 +116,7 @@ export default function VisibilidadTablas({ onClose }) {
         ...actual,
         configuraciones: [
           ...actual.configuraciones.filter((item) => item.actividad_key !== actividadKey),
-          { ...data, actividad_key: actividadKey, actividad_label: actividad.label },
+          { ...data, empleado_id: empleadoId, actividad_key: actividadKey, actividad_label: actividad.label },
         ],
       }));
       setMensaje(`Configuración de «${actividad.label}» guardada correctamente.`);
