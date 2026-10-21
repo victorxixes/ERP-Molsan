@@ -2145,6 +2145,22 @@ export default function EntidadesBancarias() {
 
                   <th
                     className="
+                      min-w-[220px]
+                      px-5
+                      py-3.5
+                      text-left
+                      text-[11px]
+                      font-bold
+                      uppercase
+                      tracking-wider
+                      text-slate-500
+                    "
+                  >
+                    Entidad actual
+                  </th>
+
+                  <th
+                    className="
                       min-w-[350px]
                       px-5
                       py-3.5
@@ -2319,6 +2335,17 @@ export default function EntidadesBancarias() {
                           {entidad.categoria}
                         </span>
 
+                      </td>
+
+
+                      {/* ENTIDAD ACTUAL */}
+
+                      <td
+                        className="px-5 py-3.5 align-top text-sm text-slate-600"
+                      >
+                        {entidad.entidad_actual_id
+                          ? (entidades.find((e) => Number(e.id) === Number(entidad.entidad_actual_id))?.nombre || "Entidad no disponible")
+                          : <span className="italic text-slate-300">Sin cambio</span>}
                       </td>
 
 
@@ -3228,6 +3255,11 @@ function ModalEntidadBancaria({
     direccion:
       entidad?.direccion ||
       "",
+
+    entidad_actual_id:
+      entidad?.entidad_actual_id
+        ? String(entidad.entidad_actual_id)
+        : "",
   });
 
 
@@ -3618,6 +3650,28 @@ function ModalEntidadBancaria({
 
               </datalist>
 
+            </div>
+
+
+            {/* ENTIDAD ACTUAL */}
+
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                Entidad actual
+              </label>
+              <select
+                value={formulario.entidad_actual_id}
+                onChange={(e) => cambiarCampo("entidad_actual_id", e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+              >
+                <option value="">La misma entidad / no especificada</option>
+                {entidades
+                  .filter((e) => Number(e.id) !== Number(formulario.id))
+                  .map((e) => (
+                    <option key={e.id} value={e.id}>{e.nombre}</option>
+                  ))}
+              </select>
+              <p className="mt-1 text-xs text-slate-400">Si esta entidad fue absorbida o cambió de nombre, selecciona aquí la entidad sucesora.</p>
             </div>
 
 
