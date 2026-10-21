@@ -2385,7 +2385,9 @@ export default function ExpedientesListado() {
                     {cantidadPlazo > 0 ? "⚠ " : "✓ "}{reglaPlazo.etiqueta(formatearNumero(cantidadPlazo))}
                   </span>
                 ) : (
-                  {actividad.key !== "documentacion-previa" && <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)", background: "var(--erp-surface-soft)" }}>Sin alerta de plazo</span>}
+                  actividad.key !== "documentacion-previa" ? (
+                    <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text-soft)", background: "var(--erp-surface-soft)" }}>Sin alerta de plazo</span>
+                  ) : null
                 )}
               </div>
               <div className="mt-2 text-xs font-semibold" style={{ color: activa ? "var(--erp-primary)" : "var(--erp-text-soft)" }}>{activa ? "Actividad seleccionada · pulsa para quitar" : "Ver expedientes →"}</div>
