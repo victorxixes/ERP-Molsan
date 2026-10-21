@@ -119,36 +119,69 @@ REPOSITORIOS_VISIBILIDAD = [
 def _asegurar_tabla_visibilidad(db: Session):
     db.execute(text("""
         CREATE TABLE IF NOT EXISTS public.expediente_visibilidad_config (
-            actividad_key VARCHAR(80) PRIMARY KEY,
+            empleado_id INTEGER NOT NULL DEFAULT 0,
+            actividad_key VARCHAR(80) NOT NULL,
             actividad_label VARCHAR(160) NOT NULL,
             nombre_tabla VARCHAR(200) NOT NULL DEFAULT '',
             excel_columns JSONB NOT NULL DEFAULT '[]'::jsonb,
             repositorios JSONB NOT NULL DEFAULT '[]'::jsonb,
-            actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+            actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT expediente_visibilidad_config_pkey_emp_actividad PRIMARY KEY (empleado_id, actividad_key)
         )
+    """))
+    db.execute(text("ALTER TABLE public.expediente_visibilidad_config ADD COLUMN IF NOT EXISTS empleado_id INTEGER NOT NULL DEFAULT 0"))
+    db.execute(text("""
+        DO $
+        BEGIN
+            IF EXISTS (
+                SELECT 1 FROM pg_constraint
+                WHERE conrelid = 'public.expediente_visibilidad_config'::regclass
+                  AND conname = 'expediente_visibilidad_config_pkey'
+            ) THEN
+                ALTER TABLE public.expediente_visibilidad_config
+                    DROP CONSTRAINT expediente_visibilidad_config_pkey;
+            END IF;
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_constraint
+                WHERE conrelid = 'public.expediente_visibilidad_config'::regclass
+                  AND conname = 'expediente_visibilidad_config_pkey_emp_actividad'
+            ) THEN
+                ALTER TABLE public.expediente_visibilidad_config
+                    ADD CONSTRAINT expediente_visibilidad_config_pkey_emp_actividad
+                    PRIMARY KEY (empleado_id, actividad_key);
+            END IF;
+        END $;
     """))
     db.commit()
 
 
-def _configuraciones_visibilidad(db: Session):
+def _configuraciones_visibilidad(db: Session, empleado_id: int = 0):
     _asegurar_tabla_visibilidad(db)
     filas = db.execute(text("""
-        SELECT actividad_key, actividad_label, nombre_tabla,
+        SELECT empleado_id, actividad_key, actividad_label, nombre_tabla,
                excel_columns, repositorios, actualizado_en
         FROM public.expediente_visibilidad_config
-    """)).mappings().all()
-    return [{
-        "actividad_key": fila["actividad_key"],
-        "actividad_label": fila["actividad_label"],
-        "nombre_tabla": fila["nombre_tabla"],
-        "excel_columns": fila["excel_columns"] or [],
-        "repositorios": fila["repositorios"] or [],
-        "actualizado_en": fila["actualizado_en"].isoformat() if fila["actualizado_en"] else None,
-    } for fila in filas]
+        WHERE empleado_id IN (0, :empleado_id)
+        ORDER BY empleado_id ASC
+    """), {"empleado_id": int(empleado_id or 0)}).mappings().all()
+    # Las filas del empleado prevalecen sobre las filas antiguas globales (empleado_id=0).
+    por_actividad = {}
+    for fila in filas:
+        por_actividad[fila["actividad_key"]] = {
+            "empleado_id": fila["empleado_id"],
+            "actividad_key": fila["actividad_key"],
+            "actividad_label": fila["actividad_label"],
+            "nombre_tabla": fila["nombre_tabla"],
+            "excel_columns": fila["excel_columns"] or [],
+            "repositorios": fila["repositorios"] or [],
+            "actualizado_en": fila["actualizado_en"].isoformat() if fila["actualizado_en"] else None,
+        }
+    return list(por_actividad.values())
 
 
 @router.get("/configuracion-visibilidad")
 def obtener_configuracion_visibilidad(
+    empleado_id: Optional[int] = Query(None),
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
@@ -160,7 +193,7 @@ def obtener_configuracion_visibilidad(
             for cabecera, atributo in COLUMNAS_EXCEL
         ],
         "repositorios": REPOSITORIOS_VISIBILIDAD,
-        "configuraciones": _configuraciones_visibilidad(db),
+        "configuraciones": _configuraciones_visibilidad(db, int(empleado_id if empleado_id is not None else usuario.id)),
     }
 
 
@@ -173,6 +206,11 @@ def guardar_configuracion_visibilidad(
     from backend.app.auth.permissions import require_perm_modulo
     require_perm_modulo(usuario, "seguridad", "editar")
 
+    empleado_id = int(datos.get("empleado_id") or usuario.id)
+    if empleado_id != int(usuario.id):
+        # La configuración de otro empleado solo se puede modificar con el permiso administrativo ya exigido arriba.
+        from backend.app.auth.permissions import require_perm_modulo
+        require_perm_modulo(usuario, "seguridad", "editar")
     actividad_key = str(datos.get("actividad_key") or "").strip()
     actividad = next((item for item in ACTIVIDADES_VISIBILIDAD if item["key"] == actividad_key), None)
     if not actividad:
@@ -200,17 +238,18 @@ def guardar_configuracion_visibilidad(
         _asegurar_tabla_visibilidad(db)
         db.execute(text("""
             INSERT INTO public.expediente_visibilidad_config
-                (actividad_key, actividad_label, nombre_tabla, excel_columns, repositorios, actualizado_en)
+                (empleado_id, actividad_key, actividad_label, nombre_tabla, excel_columns, repositorios, actualizado_en)
             VALUES
-                (:actividad_key, :actividad_label, :nombre_tabla,
+                (:empleado_id, :actividad_key, :actividad_label, :nombre_tabla,
                  CAST(:excel_columns AS jsonb), CAST(:repositorios AS jsonb), CURRENT_TIMESTAMP)
-            ON CONFLICT (actividad_key) DO UPDATE SET
+            ON CONFLICT (empleado_id, actividad_key) DO UPDATE SET
                 actividad_label = EXCLUDED.actividad_label,
                 nombre_tabla = EXCLUDED.nombre_tabla,
                 excel_columns = EXCLUDED.excel_columns,
                 repositorios = EXCLUDED.repositorios,
                 actualizado_en = CURRENT_TIMESTAMP
         """), {
+            "empleado_id": empleado_id,
             "actividad_key": actividad_key,
             "actividad_label": actividad["label"],
             "nombre_tabla": nombre_tabla,
@@ -225,6 +264,7 @@ def guardar_configuracion_visibilidad(
 
     return {
         "ok": True,
+        "empleado_id": empleado_id,
         "actividad_key": actividad_key,
         "actividad_label": actividad["label"],
         "nombre_tabla": nombre_tabla,
