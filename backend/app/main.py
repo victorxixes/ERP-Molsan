@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse
 from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import text
+from sqlalchemy import text, or_
 
 
 import os
@@ -1015,6 +1015,9 @@ def asignar_gestores_pendientes_al_iniciar():
             else:
                 sin_regla[actividad_key] += 1
 
+            # La sesión está configurada con autoflush=False: hacemos flush
+            # para que el siguiente cálculo de carga vea la asignación actual.
+            db.flush()
             # Confirma en bloques pequeños para no mantener una transacción
             # larga si hay muchos expedientes históricos.
             if (asignados + sum(sin_regla.values())) % 100 == 0:
