@@ -2447,7 +2447,7 @@ export default function ExpedientesListado() {
         )}
       </section>
 
-<section className="flex flex-wrap items-center justify-end gap-2" aria-label="Acciones de expedientes">
+<section className="w-full xl:w-[calc(50%-0.625rem)] flex flex-wrap items-center justify-start gap-2" aria-label="Acciones de expedientes">
         <button type="button" onClick={exportarExcel} disabled={loading} className="rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50" style={{ background: "var(--erp-success)" }}>📊 Exportar Excel</button>
         <button type="button" onClick={() => setMostrarFiltros(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>🔎 Filtros avanzados</button>
         <button type="button" onClick={() => setMostrarColumnas(true)} className="rounded-xl border px-4 py-2.5 text-sm font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-text)", background: "var(--erp-surface)" }}>☷ Columnas</button>
