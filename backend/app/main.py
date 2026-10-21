@@ -1160,6 +1160,8 @@ def inicializar_tablas_auxiliares():
             ("Bankpime"),
             ("Banco de Valencia"),
             ("CaixaBank"),
+            ("BPI"),
+            ("Banco BPI, S.A."),
             ("Caja de Pensiones"),
             ("Caja de Barcelona"),
             ("Caja de Ahorros y Pensiones de Barcelona"),
@@ -1326,6 +1328,28 @@ def inicializar_tablas_auxiliares():
                     WHERE banco.activo IS TRUE
                       AND UPPER(TRIM(banco.nombre)) = 'CAIXABANK'
                 )
+            """))
+        # BPI sigue operando como Banco BPI, S.A.; es filial del grupo, no un banco absorbido por CaixaBank.
+        with engine.begin() as conexion_bpi:
+            conexion_bpi.execute(text("""
+                UPDATE public.entidades_bancarias AS origen
+                SET entidad_actual_id = (
+                    SELECT actual.id
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND UPPER(TRIM(actual.nombre)) IN ('BANCO BPI, S.A.', 'BANCO BPI')
+                      AND actual.id <> origen.id
+                    ORDER BY CASE WHEN UPPER(TRIM(actual.nombre)) = 'BANCO BPI, S.A.' THEN 0 ELSE 1 END, actual.id
+                    LIMIT 1
+                )
+                WHERE UPPER(TRIM(origen.nombre)) = 'BPI'
+                  AND origen.entidad_actual_id IS NULL
+                  AND EXISTS (
+                    SELECT 1 FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND UPPER(TRIM(actual.nombre)) IN ('BANCO BPI, S.A.', 'BANCO BPI')
+                      AND actual.id <> origen.id
+                  )
             """))
         print("[ENTIDADES BANCARIAS] Sucesiones CaixaBank del listado facilitado comprobadas.", flush=True)
 
