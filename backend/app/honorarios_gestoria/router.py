@@ -81,23 +81,62 @@ class HonorarioResponse(HonorarioPayload):
 
 
 def asegurar_catalogo_inicial(db: Session):
-    if db.query(HonorarioGestoria.id).first():
-        return
-    iniciales = [
-        ("Cancelaciones propias o con provisión", Decimal("69.00"), "IVA", Decimal("21"), "Tarifa base 69,00 € + IVA configurable."),
-        ("Cancelaciones de otra entidad con provisión", Decimal("92.00"), "IVA", Decimal("21"), "Tarifa base 92,00 € + IVA configurable."),
-        ("Cancelaciones sin provisión", Decimal("24.00"), "IVA", Decimal("21"), "Tarifa base editable + impuesto configurable."),
+    """Restaura y mantiene las tres tarifas históricas de honorarios."""
+    tarifas = [
+        {
+            "nombre": "Honorarios de gestoría — CaixaBank",
+            "base": Decimal("69.00"),
+            "tipo": "IVA",
+            "porcentaje": Decimal("21"),
+            "descripcion": "Tarifa histórica CaixaBank: base 69,00 € + IVA 21 % = 83,49 €.",
+            "legacy": "Cancelaciones propias o con provisión",
+        },
+        {
+            "nombre": "Honorarios de gestoría — Otra entidad",
+            "base": Decimal("92.00"),
+            "tipo": "IVA",
+            "porcentaje": Decimal("21"),
+            "descripcion": "Tarifa histórica de otra entidad: base 92,00 € + IVA 21 % = 111,32 €.",
+            "legacy": "Cancelaciones de otra entidad con provisión",
+        },
+        {
+            "nombre": "Honorarios de gestoría — Canarias",
+            "base": Decimal("69.00"),
+            "tipo": "IGIC",
+            "porcentaje": Decimal("7"),
+            "descripcion": "Tarifa histórica para Canarias: base 69,00 € + IGIC 7 % = 73,83 €.",
+            "legacy": "Cancelaciones sin provisión",
+        },
     ]
-    for nombre, base, tipo, porcentaje, descripcion in iniciales:
-        impuesto = (base * porcentaje / Decimal("100")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        db.add(HonorarioGestoria(nombre=nombre, base_imponible=base, tipo_impuesto=tipo, porcentaje_impuesto=porcentaje, importe=base + impuesto, descripcion=descripcion, activo=True))
+    for tarifa in tarifas:
+        honorario = (
+            db.query(HonorarioGestoria)
+            .filter(HonorarioGestoria.nombre == tarifa["nombre"])
+            .first()
+        )
+        if honorario is None:
+            honorario = (
+                db.query(HonorarioGestoria)
+                .filter(HonorarioGestoria.nombre == tarifa["legacy"])
+                .first()
+            )
+        impuesto = (
+            tarifa["base"] * tarifa["porcentaje"] / Decimal("100")
+        ).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        if honorario is None:
+            honorario = HonorarioGestoria(nombre=tarifa["nombre"])
+            db.add(honorario)
+        honorario.nombre = tarifa["nombre"]
+        honorario.descripcion = tarifa["descripcion"]
+        honorario.base_imponible = tarifa["base"]
+        honorario.tipo_impuesto = tarifa["tipo"]
+        honorario.porcentaje_impuesto = tarifa["porcentaje"]
+        honorario.importe = tarifa["base"] + impuesto
+        honorario.activo = True
     try:
         db.commit()
     except Exception:
         db.rollback()
-        # Si dos arranques insertan a la vez, el catálogo podrá cargarse igualmente
-        # en la siguiente petición.
-        return
 
 
 @router.get("", response_model=list[HonorarioResponse])
