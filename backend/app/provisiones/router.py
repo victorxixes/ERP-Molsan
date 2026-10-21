@@ -118,6 +118,7 @@ class ProvisionInput(BaseModel):
 class TarifaInput(BaseModel):
     tipo: Literal["provision", "cancelacion"]
     entidad: str = Field(..., min_length=1, max_length=300)
+    territorio: Literal["Península", "Canarias"] = "Península"
     capital_minimo: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
     capital_maximo: Optional[Decimal] = Field(None, ge=0, max_digits=14, decimal_places=2)
     honorarios: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
@@ -140,6 +141,7 @@ class TarifaInput(BaseModel):
 class CalcularTarifaInput(BaseModel):
     tipo: Literal["provision", "cancelacion"]
     entidad: str = Field(..., min_length=1, max_length=300)
+    territorio: Literal["Península", "Canarias"] = "Península"
     capital: Decimal = Field(..., ge=0, max_digits=14, decimal_places=2)
     condonar_honorarios: bool = False
 
@@ -151,7 +153,7 @@ def _buscar_expediente(db: Session, id_expediente: str) -> Expediente:
     return item
 
 
-def _buscar_tarifa(db: Session, tipo: str, entidad: str, capital: Decimal) -> Optional[TarifaProvision]:
+def _buscar_tarifa(db: Session, tipo: str, entidad: str, capital: Decimal, territorio: str = "Península") -> Optional[TarifaProvision]:
     tarifas = (
         db.query(TarifaProvision)
         .filter(TarifaProvision.activo.is_(True), TarifaProvision.tipo == tipo)
@@ -162,6 +164,8 @@ def _buscar_tarifa(db: Session, tipo: str, entidad: str, capital: Decimal) -> Op
     for tarifa in tarifas:
         minimo = Decimal(str(tarifa.capital_minimo or 0))
         maximo = Decimal(str(tarifa.capital_maximo)) if tarifa.capital_maximo is not None else None
+        if (getattr(tarifa, "territorio", "Península") or "Península") != territorio:
+            continue
         if capital < minimo or (maximo is not None and capital > maximo):
             continue
         key_tarifa = _normalizar(tarifa.entidad)
@@ -180,7 +184,8 @@ def _tarifa_dict(item: TarifaProvision) -> dict:
         "id": item.id,
         "tipo": item.tipo,
         "entidad": item.entidad,
-        "capital_minimo": float(item.capital_minimo or 0),
+        "territorio": getattr(item, "territorio", "Península") or "Península",
+        "capital_minimo: float(item.capital_minimo or 0),
         "capital_maximo": float(item.capital_maximo) if item.capital_maximo is not None else None,
         "honorarios": float(item.honorarios or 0),
         "suplidos": float(item.suplidos or 0),
@@ -243,7 +248,7 @@ def _comprobar_tarifas_sin_solapamiento(db: Session, data: TarifaInput, omit_id:
     for tarifa in tarifas:
         if omit_id and tarifa.id == omit_id:
             continue
-        if _normalizar(tarifa.entidad) != entidad_key:
+        if _normalizar(tarifa.entidad) != entidad_key or (getattr(tarifa, "territorio", "Península") or "Península") != data.territorio:
             continue
         min_a = Decimal(str(tarifa.capital_minimo or 0))
         max_a = Decimal(str(tarifa.capital_maximo)) if tarifa.capital_maximo is not None else None
@@ -359,7 +364,7 @@ def catalogo_registros_provisiones(db: Session = Depends(get_db), usuario=Depend
 @router.post("/provisiones/tarifas/calcular", summary="Calcular una tarifa por entidad y rango de capital")
 def calcular_tarifa_provision(datos: CalcularTarifaInput, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     require_perm_modulo(usuario, "expedientes", "crear")
-    tarifa = _buscar_tarifa(db, datos.tipo, datos.entidad, datos.capital)
+    tarifa = _buscar_tarifa(db, datos.tipo, datos.entidad, datos.capital, datos.territorio)
     if not tarifa:
         raise HTTPException(status_code=404, detail="No hay una tarifa activa para ese tipo, entidad y capital. Configura una tarifa o introduce los importes manualmente.")
     honorarios_base = _dinero(tarifa.honorarios)
@@ -757,10 +762,10 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
     story.append(Paragraph("<b>OFICINA DE ORIGEN</b>", styles["Heading3"]))
     story.append(Paragraph(escape(" · ".join(str(x) for x in [off.get("numero"), off.get("contacto"), off.get("email")] if x) or "—"), styles["TextoInd"]))
     story.append(Spacer(1, 4*mm))
-    rows = [[_p("Entidad", styles["TextoInd"]), _p("Capital", styles["TextoInd"]), _p("Finca / Registro", styles["TextoInd"]), _p("Notaría", styles["TextoInd"]), _p("AJD", styles["TextoInd"]), _p("Registro", styles["TextoInd"]), _p("Gestión", styles["TextoInd"]), _p("Total", styles["TextoInd"])]]
+    rows = [[_p("Entidad", styles["TextoInd"]), _p("Territorio", styles["TextoInd"]), _p("Tipo de carga", styles["TextoInd"]), _p("Capital", styles["TextoInd"]), _p("Finca / Registro", styles["TextoInd"]), _p("Notaría", styles["TextoInd"]), _p("AJD", styles["TextoInd"]), _p("Registro", styles["TextoInd"]), _p("Gestión", styles["TextoInd"]), _p("Otros", styles["TextoInd"]), _p("Total", styles["TextoInd"])]]
     for g in data["garantias"]:
-        rows.append([_p(g.get("entidad"), styles["TextoInd"]), _p(_euros(g.get("capital", 0)), styles["TextoInd"]), _p(" / ".join(str(x) for x in [g.get("finca"), g.get("registro_propiedad"), g.get("poblacion")] if x), styles["TextoInd"]), _p(_euros(g.get("notaria", 0)), styles["TextoInd"]), _p(_euros(g.get("ajd", 0)), styles["TextoInd"]), _p(_euros(g.get("registro", 0)), styles["TextoInd"]), _p(_euros(g.get("gestion", 0)), styles["TextoInd"]), _p(_euros(g.get("total", 0)), styles["TextoInd"])])
-    table = Table(rows, colWidths=[24*mm, 20*mm, 36*mm, 18*mm, 15*mm, 18*mm, 18*mm, 19*mm], repeatRows=1)
+        rows.append([_p(g.get("entidad"), styles["TextoInd"]), _p(g.get("territorio", "Península"), styles["TextoInd"]), _p(g.get("tipo_carga", "Hipotecaria"), styles["TextoInd"]), _p(_euros(g.get("capital", 0)), styles["TextoInd"]), _p(" / ".join(str(x) for x in [g.get("finca"), g.get("registro_propiedad"), g.get("poblacion")] if x), styles["TextoInd"]), _p(_euros(g.get("notaria", 0)), styles["TextoInd"]), _p(_euros(g.get("ajd", 0)), styles["TextoInd"]), _p(_euros(g.get("registro", 0)), styles["TextoInd"]), _p(_euros(g.get("gestion", 0)), styles["TextoInd"]), _p(_euros(g.get("otros_gastos", 0)), styles["TextoInd"]), _p(_euros(g.get("total", 0)), styles["TextoInd"])])
+    table = Table(rows, colWidths=[19*mm, 15*mm, 18*mm, 14*mm, 25*mm, 12*mm, 12*mm, 13*mm, 13*mm, 12*mm, 15*mm], repeatRows=1)
     table.setStyle(TableStyle([("BACKGROUND",(0,0),(-1,0),colors.HexColor("#eaf0f8")),("GRID",(0,0),(-1,-1),0.35,colors.HexColor("#cdd6e2")),("VALIGN",(0,0),(-1,-1),"TOP"),("FONTSIZE",(0,0),(-1,-1),7),("LEFTPADDING",(0,0),(-1,-1),3),("RIGHTPADDING",(0,0),(-1,-1),3),("TOPPADDING",(0,0),(-1,-1),4),("BOTTOMPADDING",(0,0),(-1,-1),4)]))
     story.extend([table, Spacer(1, 4*mm), Paragraph(f"IMPORTE TOTAL ESTIMADO: <b>{_euros(item.importe_total)}</b>", styles["Heading2"])])
     if data.get("observaciones"):
@@ -776,6 +781,12 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
 def inicializar_tablas_provisiones() -> None:
     """Crea solo tablas nuevas del módulo; no altera ni borra tablas existentes."""
     TarifaProvision.__table__.create(bind=engine, checkfirst=True)
+    # Compatibilidad con bases de datos ya existentes: añade la columna sin borrar datos.
+    from sqlalchemy import inspect, text
+    columnas_tarifas = {col["name"] for col in inspect(engine).get_columns("tarifas_provisiones")}
+    if "territorio" not in columnas_tarifas:
+        with engine.begin() as conexion:
+            conexion.execute(text("ALTER TABLE tarifas_provisiones ADD COLUMN territorio VARCHAR(20) NOT NULL DEFAULT 'Península'"))
     ProvisionFondo.__table__.create(bind=engine, checkfirst=True)
     ProvisionOperacion.__table__.create(bind=engine, checkfirst=True)
     ProvisionOperacionFinca.__table__.create(bind=engine, checkfirst=True)
