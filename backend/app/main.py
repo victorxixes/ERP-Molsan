@@ -1072,6 +1072,113 @@ def inicializar_tablas_auxiliares():
                 "ALTER TABLE public.entidades_bancarias ALTER COLUMN codigo_europeo DROP NOT NULL"
             ))
 
+        # Carga idempotente del catálogo histórico publicado por CaixaBank (fusiones históricas).
+        # Los códigos europeos y LEI se dejan vacíos cuando no están acreditados; no son obligatorios.
+        # Se conserva el nombre histórico y se vincula a CaixaBank solo si no existe una relación manual.
+        entidades_historicas_caixabank = [
+            ("Barclays Bank SAU"),
+            ("Bankia"),
+            ("BFA"),
+            ("Banco Mare Nostrum (BMN)"),
+            ("Banca Cívica"),
+            ("Caixa de Girona"),
+            ("Caixa Penedès"),
+            ("Sa Nostra"),
+            ("Caixa d'Estalvis de l'Empordà, Figueres"),
+            ("Caixa d’Estalvis del Sindicat Agrícola de l’Institut Obrer de la Seu d’Urgell"),
+            ("Caixa Adherida del Cercle Obrer de Banyoles"),
+            ("Caixa Adherida de Sant Joan de les Abadesses"),
+            ("Caixa d'Estalvis de Palamós"),
+            ("Caixa Adherida de la Joventut Seràfica d'Arenys de Mar"),
+            ("Mont de Pietat (i Caixa d'Estalvis) de la Verge de l'Esperança de Barcelona"),
+            ("Caixa Adherida de la Congregació Mariana de Canet de Mar"),
+            ("Caixa Rural de Torroella de Montgrí"),
+            ("Caixa d'Estalvis de l'Ateneu Social de St. Feliu de Guíxols"),
+            ("Caixa d'Estalvis de Súria"),
+            ("Caixa d'Estalvis de Palafrugell"),
+            ("Caixa Rural de Santa Coloma de Queralt"),
+            ("Caixa Adherida del Centre Parroquial de Torelló"),
+            ("Caixa Rural de la Federació Catòlico-Agrària d'Eivissa"),
+            ("Caixa Rural de Petra"),
+            ("Caixa d'Estalvis del Patronat Obrer de Cardona"),
+            ("Caixa d'Estalvis de la Fàbrica Bebié (La Farga) Ripoll"),
+            ("Caixa Adherida de Premià de Mar"),
+            ("Caixa Rural de Moià"),
+            ("Caixa Rural de Son Cervera"),
+            ("Caixa d'Estalvis de Vilanova i la Geltrú"),
+            ("Caixa Rural de la Bisbal de l'Empordà"),
+            ("Caixa d'Estalvis del Patronat d'Esparreguera"),
+            ("Caixa Adherida de la Colònia Bonmatí (Amer)"),
+            ("Caixa d'Estalvis Parroquial de Sant Hilari Sacalm"),
+            ("Caixa Rural de Sant Sadurní d'Anoia"),
+            ("Caixa de la Federació Agrària de Girona"),
+            ("Caixa d'Estalvis del Cercle Catòlic de Gràcia-Barcelona"),
+            ("Caixa d'Estalvis i Mont de Pietat de Manacor"),
+            ("Caixa d'Estalvis Social de Mataró"),
+            ("Caixa Rural d'Estalvis i Préstecs de Sineu"),
+            ("Caixa Rural del Sindicat Agrícola de Campos del Port"),
+            ("Caixa Rural d'Estalvis i Préstecs de Felanitx"),
+            ("Caixa Rural del Sindicat Agrícola Catòlic de Capdepera"),
+            ("Caixa Rural d'Estalvis i Préstecs de Capdepera"),
+            ("Banc de Crèdit Agrícola i Comercial de Llucmajor"),
+            ("Caixa Rural d'Estalvis i Préstecs de Porreres"),
+            ("Sindicat Agrícola i Caixa Rural d'Estalvis i Préstecs de Sineu"),
+            ("Caixa d'Estalvis i Previsió Molletenca, Mollet del Vallès"),
+            ("Foment Agrícola, Comercial i Industrial de Llucmajor"),
+            ("Caixa Rural del Sindicat Agrícola La Torre de Campos del Port"),
+            ("Caixa Rural d'Estalvis i Préstecs d'Artà"),
+            ("Caixa d'Estalvis de Castellar del Vallès"),
+            ("Caixa adherida al Patronat Social de Vilassar"),
+            ("Caixa d'Estalvis del Foment de Cultura de St. Feliu de Codines"),
+            ("Caixa d'Estalvis Municipal de la Pobla de Lillet"),
+            ("Caixa d'Estalvis de Darnius"),
+            ("Caixa del Sindicat Agrícola de Ses Salines"),
+            ("Caixa Rural de Crèdit i Estalvi de Castelló d'Empúries"),
+            ("Caixa d'Estalvis de Sant Llorenç de Morunys"),
+            ("Caixa d'Estalvis de Calonge"),
+            ("Caixa d'Estalvis de la Bisbal del Penedès"),
+            ("Caixa d'Estalvis i Mont de Pietat de Maó"),
+            ("Caixa d'Estalvis i Mont de Pietat de Lleida"),
+            ("Caja Rural de Talavera"),
+            ("Caja Rural de Palencia"),
+            ("Caja Rural de Cantabria"),
+            ("Banque pour la Construction et l'Équipement"),
+            ("Société de Crédit et de Banque"),
+            ("Banco de las Islas Canarias"),
+            ("Caixa de la Sagrada Família"),
+            ("Caixa Rural del Pirineu"),
+            ("Caixa Rural de la Cooperativa Agrícola de Calafell"),
+            ("Caixa Rural de la Cooperativa Agrícola del Perelló"),
+            ("Caixa Rural d'Almenar"),
+            ("Caixa Rural Provincial de Barcelona"),
+            ("Cooperativa Agrícola de Jesús i Maria"),
+            ("Isbanc"),
+            ("Banco de Europa"),
+            ("Banco Herrero"),
+            ("Banco Granada-Jerez"),
+            ("Parte del negocio de banca privada de Morgan Stanley en España"),
+            ("Bankpime"),
+            ("Banco de Valencia"),
+            ("CaixaBank"),
+            ("Caixa Penedès"),
+            ("Caja Navarra"),
+            ("CajaCanarias"),
+            ("Caja de Burgos"),
+            ("Cajasol")
+        ]
+        with engine.begin() as conexion_semillas_caixabank:
+            for (nombre_historico,) in entidades_historicas_caixabank:
+                conexion_semillas_caixabank.execute(text("""
+                    INSERT INTO public.entidades_bancarias
+                        (codigo_europeo, lei, nombre, categoria, direccion, entidad_actual_id, activo)
+                    SELECT NULL, NULL, :nombre, 'Entidad de crédito', NULL, NULL, TRUE
+                    WHERE NOT EXISTS (
+                        SELECT 1 FROM public.entidades_bancarias existente
+                        WHERE UPPER(TRIM(existente.nombre)) = UPPER(TRIM(:nombre))
+                    )
+                """), {"nombre": nombre_historico})
+        print("[ENTIDADES BANCARIAS] Catálogo histórico de CaixaBank comprobado (sin duplicados).", flush=True)
+
         # Entidades que el listado facilitado indica que deben vincularse a CaixaBank.
         # Se respetan los valores de entidad_actual_id que ya estén asignados manualmente.
         patrones_caixabank_facilitados = [
