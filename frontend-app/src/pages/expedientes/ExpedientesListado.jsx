@@ -926,27 +926,6 @@ export default function ExpedientesListado() {
     return () => { vigente = false; };
   }, [empleadoSesion?.empleado_id, empleadoSesion?.id]);
 
-  // Aplicar la selección guardada en la ficha del empleado a la tabla real.
-  useEffect(() => {
-    if (!actividadSeleccionada) {
-      setColumnasVisibles(COLUMNAS_POR_DEFECTO);
-      return;
-    }
-    const normalizar = (valor) => String(valor || "").trim().toLocaleLowerCase("es")
-      .normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
-    // La selección de los grids guarda la clave de actividad (no la etiqueta).
-    const definicion = ACTIVIDADES_EXPEDIENTES.find((item) =>
-      item.key === actividadSeleccionada ||
-      [item.label, ...(item.aliases || [])].some((alias) => normalizar(alias) === normalizar(actividadSeleccionada))
-    );
-    const config = definicion && configuracionesVisibilidad.find((item) => item.actividad_key === definicion.key);
-    if (config && Array.isArray(config.excel_columns) && config.excel_columns.length) {
-      setColumnasVisibles(config.excel_columns);
-    } else if (definicion) {
-      setColumnasVisibles(obtenerColumnasActividad(definicion.key));
-    }
-  }, [actividadSeleccionada, configuracionesVisibilidad]);
-
   // ==========================================================
   // DATOS
   // ==========================================================
@@ -1182,6 +1161,26 @@ export default function ExpedientesListado() {
   ] = useState(
     COLUMNAS_POR_DEFECTO
   );
+
+  useEffect(() => {
+    if (!actividadSeleccionada) {
+      setColumnasVisibles(COLUMNAS_POR_DEFECTO);
+      return;
+    }
+    const normalizar = (valor) => String(valor || "").trim().toLocaleLowerCase("es")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    // Los grids guardan la clave de actividad, no la etiqueta visible.
+    const definicion = ACTIVIDADES_EXPEDIENTES.find((item) =>
+      item.key === actividadSeleccionada ||
+      [item.label, ...(item.aliases || [])].some((alias) => normalizar(alias) === normalizar(actividadSeleccionada))
+    );
+    const config = definicion && configuracionesVisibilidad.find((item) => item.actividad_key === definicion.key);
+    if (config && Array.isArray(config.excel_columns) && config.excel_columns.length) {
+      setColumnasVisibles(config.excel_columns);
+    } else if (definicion) {
+      setColumnasVisibles(obtenerColumnasActividad(definicion.key));
+    }
+  }, [actividadSeleccionada, configuracionesVisibilidad]);
 
 
   // ==========================================================
