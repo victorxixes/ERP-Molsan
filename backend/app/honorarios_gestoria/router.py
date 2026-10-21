@@ -15,7 +15,10 @@ router = APIRouter(prefix="/honorarios-gestoria", tags=["Honorarios de gestoría
 class HonorarioPayload(BaseModel):
     nombre: str = Field(..., min_length=2, max_length=200)
     descripcion: Optional[str] = Field(None, max_length=2000)
-    importe: Decimal
+    importe: Optional[Decimal] = None
+    base_imponible: Optional[Decimal] = None
+    tipo_impuesto: str = "IVA"
+    porcentaje_impuesto: Decimal = Decimal("21")
     activo: bool = True
 
     @validator("nombre")
@@ -25,15 +28,49 @@ class HonorarioPayload(BaseModel):
             raise ValueError("El nombre es obligatorio.")
         return value
 
-    @validator("importe", pre=True)
-    def validar_importe(cls, value):
+    @validator("tipo_impuesto")
+    def validar_tipo_impuesto(cls, value):
+        value = str(value or "IVA").strip().upper()
+        if value not in {"IVA", "IGIC", "EXENTO"}:
+            raise ValueError("El impuesto debe ser IVA, IGIC o Exento.")
+        return value
+
+    @validator("base_imponible", "importe", "porcentaje_impuesto", pre=True)
+    def validar_importes(cls, value, field):
+        if value is None or value == "":
+            return None
         try:
             amount = Decimal(str(value).replace(",", "."))
         except (InvalidOperation, ValueError):
             raise ValueError("El importe debe ser un número válido.")
         if not amount.is_finite() or amount < 0:
-            raise ValueError("El importe debe ser un número positivo o cero.")
+            raise ValueError("Los importes deben ser números positivos o cero.")
         return amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    @validator("porcentaje_impuesto")
+    def validar_porcentaje(cls, value):
+        if value is None or value > Decimal("100"):
+            raise ValueError("El porcentaje del impuesto debe estar entre 0 y 100.")
+        return value
+
+    def datos_con_total(self):
+        data = self.dict()
+        base = data.get("base_imponible")
+        tipo = data.get("tipo_impuesto") or "IVA"
+        porcentaje = data.get("porcentaje_impuesto") or Decimal("0")
+        if base is None:
+            # Compatibilidad con clientes antiguos que solo envían importe total.
+            total = data.get("importe") or Decimal("0")
+            base = total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            porcentaje = Decimal("0")
+            tipo = "EXENTO"
+        tasa = Decimal("0") if tipo == "EXENTO" else porcentaje
+        impuesto = (base * tasa / Decimal("100")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        data["base_imponible"] = base
+        data["tipo_impuesto"] = tipo
+        data["porcentaje_impuesto"] = porcentaje
+        data["importe"] = (base + impuesto).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        return data
 
     class Config:
         orm_mode = True
@@ -47,12 +84,13 @@ def asegurar_catalogo_inicial(db: Session):
     if db.query(HonorarioGestoria.id).first():
         return
     iniciales = [
-        ("Cancelaciones propias o con provisión", Decimal("83.49"), "Honorarios de gestoría, IVA incluido."),
-        ("Cancelaciones de otra entidad con provisión", Decimal("111.32"), "Honorarios de gestoría, IVA incluido."),
-        ("Cancelaciones sin provisión", Decimal("24.00"), "Honorarios de gestoría."),
+        ("Cancelaciones propias o con provisión", Decimal("69.00"), "IVA", Decimal("21"), "Tarifa base 69,00 € + IVA configurable."),
+        ("Cancelaciones de otra entidad con provisión", Decimal("92.00"), "IVA", Decimal("21"), "Tarifa base 92,00 € + IVA configurable."),
+        ("Cancelaciones sin provisión", Decimal("24.00"), "IVA", Decimal("21"), "Tarifa base editable + impuesto configurable."),
     ]
-    for nombre, importe, descripcion in iniciales:
-        db.add(HonorarioGestoria(nombre=nombre, importe=importe, descripcion=descripcion, activo=True))
+    for nombre, base, tipo, porcentaje, descripcion in iniciales:
+        impuesto = (base * porcentaje / Decimal("100")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        db.add(HonorarioGestoria(nombre=nombre, base_imponible=base, tipo_impuesto=tipo, porcentaje_impuesto=porcentaje, importe=base + impuesto, descripcion=descripcion, activo=True))
     try:
         db.commit()
     except Exception:
@@ -77,7 +115,7 @@ def crear_honorario(payload: HonorarioPayload, db: Session = Depends(get_db)):
     existente = db.query(HonorarioGestoria).filter(HonorarioGestoria.nombre.ilike(payload.nombre)).first()
     if existente:
         raise HTTPException(status_code=409, detail="Ya existe un honorario con ese nombre.")
-    honorario = HonorarioGestoria(**payload.dict())
+    datos = payload.datos_con_total()\n    honorario = HonorarioGestoria(**datos)
     db.add(honorario)
     try:
         db.commit()
@@ -99,7 +137,7 @@ def actualizar_honorario(honorario_id: int, payload: HonorarioPayload, db: Sessi
     ).first()
     if duplicado:
         raise HTTPException(status_code=409, detail="Ya existe otro honorario con ese nombre.")
-    for campo, valor in payload.dict().items():
+    datos = payload.datos_con_total()\n    for campo, valor in datos.items():
         setattr(honorario, campo, valor)
     try:
         db.commit()
