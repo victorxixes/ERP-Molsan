@@ -618,6 +618,14 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     },
 
     {
+      key: "provisiones-fondos",
+      permiso: "expedientes",
+      to: "/provisiones-fondos",
+      label: "Provisiones de fondos",
+      icon: "clipboard",
+    },
+
+    {
       key: "agenda",
       to: "/agenda",
       label: "Agenda",
@@ -770,7 +778,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       modulosPrincipales.filter(
         (modulo) =>
           puedeVerModulo(
-            modulo.key
+            modulo.permiso || modulo.key
           )
       ),
     [
