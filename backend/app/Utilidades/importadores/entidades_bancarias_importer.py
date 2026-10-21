@@ -250,7 +250,6 @@ def detectar_columnas(
     faltantes = [
         campo
         for campo in [
-            "codigo_europeo",
             "nombre",
             "categoria",
         ]
@@ -464,30 +463,6 @@ def importar_excel_entidades_bancarias(
             continue
 
         # ----------------------------------------------------
-        # CÓDIGO OBLIGATORIO
-        # ----------------------------------------------------
-
-        if not codigo:
-
-            errores += 1
-
-            if len(
-                errores_detalle
-            ) < 100:
-
-                errores_detalle.append(
-                    {
-                        "fila":
-                            fila_excel,
-
-                        "error":
-                            "Código Europeo vacío.",
-                    }
-                )
-
-            continue
-
-        # ----------------------------------------------------
         # NOMBRE OBLIGATORIO
         # ----------------------------------------------------
 
@@ -545,8 +520,10 @@ def importar_excel_entidades_bancarias(
         # DUPLICADO EXCEL
         # ----------------------------------------------------
 
-        clave_codigo = clave(
-            codigo
+        clave_codigo = (
+            "codigo:" + clave(codigo)
+            if codigo
+            else "nombre:" + clave(nombre)
         )
 
         if (
@@ -583,12 +560,14 @@ def importar_excel_entidades_bancarias(
         .all()
     )
 
-    existentes_por_codigo = {
-        clave(
-            registro.codigo_europeo
-        ): registro
-        for registro in existentes
-    }
+    existentes_por_codigo = {}
+    for registro in existentes:
+        clave_registro = (
+            "codigo:" + clave(registro.codigo_europeo)
+            if normalizar_texto(registro.codigo_europeo)
+            else "nombre:" + clave(registro.nombre)
+        )
+        existentes_por_codigo[clave_registro] = registro
 
     # ========================================================
     # CONTADORES
@@ -624,11 +603,22 @@ def importar_excel_entidades_bancarias(
                 direccion,
             ) in lote:
 
-                existente = (
-                    existentes_por_codigo.get(
-                        clave(codigo)
-                    )
+                clave_fila = (
+                    "codigo:" + clave(codigo)
+                    if codigo
+                    else "nombre:" + clave(nombre)
                 )
+                existente = existentes_por_codigo.get(clave_fila)
+                # Si el fichero trae código pero el registro histórico solo tiene nombre,
+                # reutilizarlo antes de crear un duplicado.
+                if existente is None:
+                    existente = next(
+                        (
+                            registro for registro in existentes
+                            if clave(registro.nombre) == clave(nombre)
+                        ),
+                        None,
+                    )
 
                 # ==========================================
                 # NUEVA
@@ -649,9 +639,7 @@ def importar_excel_entidades_bancarias(
                         nueva
                     )
 
-                    existentes_por_codigo[
-                        clave(codigo)
-                    ] = nueva
+                    existentes_por_codigo[clave_fila] = nueva
 
                     creados += 1
 
