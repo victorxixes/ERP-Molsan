@@ -2348,17 +2348,26 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     const valorProvision = Number(String(datos.importe ?? "").replace(",", "."));
     const tieneProvision = datos.importe !== null && datos.importe !== undefined && datos.importe !== "" && Number.isFinite(valorProvision) && valorProvision > 0;
     const esCaixaBank = entidad.includes("caixabank") || entidad.includes("caixa bank") || entidad.includes("la caixa") || /(^|\W)caixa(\W|$)/.test(entidad);
+    // Usar los nombres actuales del catálogo económico. Los nombres antiguos
+    // ("Cancelaciones ...") se migraron a "Honorarios de gestoría — ...".
     const nombreTarifa = !tieneProvision
-      ? "Cancelaciones sin provisión"
+      ? "Honorarios de gestoría — Canarias"
       : esCaixaBank
-        ? "Cancelaciones propias o con provisión"
-        : "Cancelaciones de otra entidad con provisión";
+        ? "Honorarios de gestoría — CaixaBank"
+        : "Honorarios de gestoría — Otra entidad";
 
     const respuesta = await axios.get("/honorarios-gestoria?activos=true");
     const catalogo = Array.isArray(respuesta?.data) ? respuesta.data : [];
-    const tarifa = catalogo.find((item) => String(item.nombre || "").trim().toLocaleLowerCase("es-ES") === nombreTarifa.toLocaleLowerCase("es-ES"));
+    const normalizarNombre = (valor) => String(valor || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toLocaleLowerCase("es-ES");
+    const tarifa = catalogo.find((item) =>
+      normalizarNombre(item.nombre) === normalizarNombre(nombreTarifa)
+    );
     if (!tarifa) {
-      throw new Error(`No existe una tarifa activa llamada «${nombreTarifa}». Revisa Utilidades → Honorarios de gestoría.`);
+      throw new Error(`No se encuentra activa la tarifa «${nombreTarifa}» en el catálogo de Honorarios de gestoría. Abre Utilidades → Honorarios de gestoría y comprueba que esté activa.`);
     }
     return {
       importe: Number(tarifa.importe),
