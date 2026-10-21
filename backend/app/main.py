@@ -1062,6 +1062,228 @@ def inicializar_tablas_auxiliares():
                       AND UPPER(actual.nombre) LIKE 'BBVA%'
                   )
             """))
+        # Completa sucesiones históricas de otros grupos bancarios españoles.
+        # La migración es idempotente y respeta cualquier asignación manual existente.
+        # Solo relaciona nombres históricos cuando la entidad sucesora activa está en el catálogo.
+        reglas_sucesion_bancaria = [
+            (
+                "CAIXABANK",
+                """(
+                    UPPER(actual.nombre) = 'CAIXABANK'
+                    OR UPPER(actual.nombre) LIKE 'CAIXABANK,%'
+                    OR UPPER(actual.nombre) LIKE 'CAIXABANK %'
+                )""",
+                [
+                    "%CAJA NAVARRA%",
+                    "%CAJA DE AHORROS Y MONTE DE PIEDAD DE NAVARRA%",
+                    "%CAJA DE BURGOS%",
+                    "%CAJA DE AHORROS MUNICIPAL DE BURGOS%",
+                    "%CAJA GUADALAJARA%",
+                    "%CAJA DE AHORROS PROVINCIAL DE GUADALAJARA%",
+                    "%CAJA CANARIAS%",
+                    "%CAJA DE CANARIAS%",
+                    "%CAJA GENERAL DE AHORROS DE CANARIAS%",
+                    "%GENERAL DE CANARIAS%",
+                    "%CAJASOL%",
+                    "%BANCA CIVICA%",
+                    "%BANCA CÍVICA%",
+                    "%CAJA DE AHORROS Y MONTE DE PIEDAD DE CÓRDOBA%",
+                    "%CAJA DE AHORROS Y MONTE DE PIEDAD DE CORDOBA%",
+                    "%LA CAIXA%",
+                    "%CAIXABANK, S.A.%"
+                ],
+            ),
+            (
+                "BBVA",
+                "UPPER(actual.nombre) LIKE 'BBVA%'",
+                [
+                    "%UNNIM%",
+                    "%UNNIM BANC%",
+                    "%CATALUNYACAIXA%",
+                    "%CATALUNYA BANC%",
+                    "%CAIXA CATALUNYA%",
+                    "%CAIXA TARRAGONA%",
+                    "%CAIXA MANRESA%",
+                    "%CAIXA SABADELL%",
+                    "%CAIXA TERRASSA%",
+                    "%CAIXA MANLLEU%",
+                    "%CAJA DE AHORROS Y MONTE DE PIEDAD DE LÉRIDA%",
+                    "%CAJA DE AHORROS Y MONTE DE PIEDAD DE LERIDA%",
+                    "%BANCO DE CRÉDITO LOCAL%",
+                    "%BANCO DE CREDITO LOCAL%",
+                    "%UNO-E%",
+                ],
+            ),
+            (
+                "BANCO SANTANDER",
+                """(
+                    UPPER(actual.nombre) LIKE 'BANCO SANTANDER%'
+                    OR UPPER(actual.nombre) LIKE 'SANTANDER%'
+                )""",
+                [
+                    "%BANCO POPULAR%",
+                    "%BANCO PASTOR%",
+                    "%BANESTO%",
+                    "%BANCO ESPAÑOL DE CRÉDITO%",
+                    "%BANCO ESPANOL DE CREDITO%",
+                    "%BANIF%",
+                    "%BANCO DE ANDALUCÍA%",
+                    "%BANCO DE ANDALUCIA%",
+                    "%BANCO DE CASTILLA%",
+                    "%BANCO DE GALICIA%",
+                    "%BANCO DE VASCONIA%",
+                    "%CRÉDITO BALEAR%",
+                    "%CREDITO BALEAR%",
+                    "%BANCO CENTRAL HISPANO%",
+                    "%BANCO HISPANO AMERICANO%",
+                    "%BANCO CENTRAL, S.A.%"
+                ],
+            ),
+            (
+                "BANCO SABADELL",
+                """(
+                    UPPER(actual.nombre) LIKE 'BANCO DE SABADELL%'
+                    OR UPPER(actual.nombre) LIKE 'BANCO SABADELL%'
+                )""",
+                [
+                    "%BANCO CAM%",
+                    "%CAJA DE AHORROS DEL MEDITERRÁNEO%",
+                    "%CAJA DE AHORROS DEL MEDITERRANEO%",
+                    "%CAJA MEDITERRÁNEO%",
+                    "%CAJA MEDITERRANEO%",
+                    "%BANCO GUIPUZCOANO%",
+                    "%BANCO GALLEGO%",
+                    "%BANCO ATLÁNTICO%",
+                    "%BANCO ATLANTICO%",
+                    "%BANCO HERRERO%",
+                    "%BANCO URQUIJO%"
+                ],
+            ),
+            (
+                "UNICAJA",
+                "UPPER(actual.nombre) LIKE 'UNICAJA%'",
+                [
+                    "%BANCO CEISS%",
+                    "%CAJA ESPAÑA-DUERO%",
+                    "%CAJA ESPANA-DUERO%",
+                    "%CAJA ESPAÑA DE INVERSIONES%",
+                    "%CAJA ESPANA DE INVERSIONES%",
+                    "%CAJA DUERO%",
+                    "%CAJA ESPAÑA%",
+                    "%CAJA ESPANA%",
+                    "%CAJA DE JAÉN%",
+                    "%CAJA DE JAEN%",
+                    "%CAJA JAÉN%",
+                    "%CAJA JAEN%",
+                    "%LIBERBANK%",
+                    "%CAJASTUR%",
+                    "%CAJA DE AHORROS DE ASTURIAS%",
+                    "%CAJA CANTABRIA%",
+                    "%CAJA EXTREMADURA%",
+                    "%CAJA CASTILLA LA MANCHA%",
+                    "%CAJA CASTILLA-LA MANCHA%",
+                    "%CCM%",
+                    "%CAJA DE AHORROS PROVINCIAL DE CIUDAD REAL%"
+                ],
+            ),
+            (
+                "KUTXABANK",
+                "UPPER(actual.nombre) LIKE 'KUTXABANK%'",
+                [
+                    "%CAJASUR%",
+                    "%CAJA SUR%",
+                    "%BBK%",
+                    "%KUTXA%",
+                    "%CAJA VITAL%",
+                    "%CAJA DE AHORROS DE VITORIA Y ÁLAVA%",
+                    "%CAJA DE AHORROS DE VITORIA Y ALAVA%"
+                ],
+            ),
+            (
+                "IBERCAJA",
+                "UPPER(actual.nombre) LIKE 'IBERCAJA%'",
+                [
+                    "%CAJA3%",
+                    "%CAJA INMACULADA%",
+                    "%CAJA DE AHORROS DE LA INMACULADA%",
+                    "%CAJA CÍRCULO%",
+                    "%CAJA CIRCULO%",
+                    "%CAJA BADAJOZ%",
+                    "%BANCO GRUPO CAJA 3%"
+                ],
+            ),
+            (
+                "ABANCA",
+                "UPPER(actual.nombre) LIKE 'ABANCA%'",
+                [
+                    "%NOVACAIXAGALICIA%",
+                    "%NOVAGALICIA%",
+                    "%NCG BANCO%",
+                    "%CAIXA GALICIA%",
+                    "%CAIXA GALÍCIA%",
+                    "%CAIXANOVA%",
+                    "%CAIXA NOVA%",
+                    "%BANCO ETCHEVERRÍA%",
+                    "%BANCO ETCHEVERRIA%",
+                    "%BANCO ECHEVERRÍA%",
+                    "%BANCO ECHEVERRIA%"
+                ],
+            ),
+            (
+                "CAJAMAR",
+                "UPPER(actual.nombre) LIKE 'CAJAMAR%'",
+                [
+                    "%RURALCAJA%",
+                    "%CAJA RURAL DEL MEDITERRÁNEO%",
+                    "%CAJA RURAL DEL MEDITERRANEO%",
+                    "%CAJAS RURALES UNIDAS%",
+                    "%CRU-CAJAS RURALES UNIDAS%",
+                    "%GRUPO COOPERATIVO CAJAMAR%"
+                ],
+            ),
+            (
+                "BANKINTER",
+                "UPPER(actual.nombre) LIKE 'BANKINTER%'",
+                [
+                    "%EVO BANCO%",
+                    "%NOVO BANCO ESPAÑA%",
+                    "%NOVO BANCO ESPANA%"
+                ],
+            ),
+        ]
+        with engine.begin() as conexion_sucesiones_ampliadas:
+            for nombre_grupo, condicion_destino, patrones_origen in reglas_sucesion_bancaria:
+                for patron_origen in patrones_origen:
+                    conexion_sucesiones_ampliadas.execute(
+                        text(f"""
+                            UPDATE public.entidades_bancarias AS origen
+                            SET entidad_actual_id = (
+                                SELECT actual.id
+                                FROM public.entidades_bancarias AS actual
+                                WHERE actual.activo IS TRUE
+                                  AND actual.id <> origen.id
+                                  AND {condicion_destino}
+                                ORDER BY
+                                  CASE
+                                    WHEN UPPER(actual.nombre) = '{nombre_grupo}' THEN 0
+                                    ELSE 1
+                                  END,
+                                  actual.id
+                                LIMIT 1
+                            )
+                            WHERE origen.entidad_actual_id IS NULL
+                              AND UPPER(origen.nombre) LIKE :patron_origen
+                              AND EXISTS (
+                                SELECT 1
+                                FROM public.entidades_bancarias AS actual
+                                WHERE actual.activo IS TRUE
+                                  AND actual.id <> origen.id
+                                  AND {condicion_destino}
+                              )
+                        """),
+                        {"patron_origen": patron_origen},
+                    )
+        print("[ENTIDADES BANCARIAS] Sucesiones de grupos bancarios españoles comprobadas.", flush=True)
         print("[ENTIDADES BANCARIAS] Sucesiones históricas adicionales comprobadas.", flush=True)
         with engine.begin() as conexion_complementos:
             conexion_complementos.execute(text(
