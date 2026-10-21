@@ -159,18 +159,20 @@ export default function ProvisionesFondosPage() {
       </Seccion>
 
       <Seccion titulo="3. Datos de la garantía y cálculo" detalle="Añade una línea por cada préstamo o garantía. Puedes calcular con el tarifario disponible o introducir los importes manualmente.">
+        <datalist id="catalogo-entidades-bancarias">{entidadesBancarias.map((e) => <option key={e.id || e.nombre} value={e.nombre} />)}</datalist>
+        <datalist id="catalogo-tipos-carga">{TIPOS_CARGA.map((tipo) => <option key={tipo} value={tipo} />)}</datalist>
         <div className="space-y-4">
           {form.garantias.map((g, i) => <div key={i} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
             <div className="mb-4 flex items-center justify-between"><h3 className="text-sm font-bold text-slate-800">Garantía {i + 1}</h3>{form.garantias.length > 1 && <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: f.garantias.filter((_, n) => n !== i) }))} className="text-xs font-semibold text-red-600 hover:text-red-800">Eliminar</button>}</div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <div><Campo titulo="Entidad bancaria" valor={g.entidad} onChange={(v) => cambiarGarantia(i, "entidad", v)} requerido listId="catalogo-entidades-bancarias" placeholder="Escribe para buscar una entidad…" /><datalist id="catalogo-entidades-bancarias">{entidadesBancarias.map((e) => <option key={e.id || e.nombre} value={e.nombre} />)}</datalist></div>
+              <Campo titulo="Entidad bancaria" valor={g.entidad} onChange={(v) => cambiarGarantia(i, "entidad", v)} requerido listId="catalogo-entidades-bancarias" placeholder="Escribe para buscar una entidad…" />
               <Campo titulo="Capital del préstamo (€)" tipo="number" valor={g.capital} onChange={(v) => cambiarGarantia(i, "capital", v)} />
               <Campo titulo="N.º finca registral" valor={g.finca} onChange={(v) => cambiarGarantia(i, "finca", v)} />
               <Campo titulo="CRU / IDUFIR" valor={g.cru_idufir} onChange={(v) => cambiarGarantia(i, "cru_idufir", v)} />
               <Campo titulo="Registro de la Propiedad" valor={g.registro_propiedad} onChange={(v) => cambiarGarantia(i, "registro_propiedad", v)} />
               <Campo titulo="Población" valor={g.poblacion} onChange={(v) => cambiarGarantia(i, "poblacion", v)} />
               <Campo titulo="Provincia" valor={g.provincia} onChange={(v) => cambiarGarantia(i, "provincia", v)} />
-              <div><Campo titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} requerido listId="catalogo-tipos-carga" placeholder="Escribe para buscar el tipo…" /><datalist id="catalogo-tipos-carga">{TIPOS_CARGA.map((tipo) => <option key={tipo} value={tipo} />)}</datalist></div>
+              <Campo titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} requerido listId="catalogo-tipos-carga" placeholder="Escribe para buscar el tipo…" />
               <Selector titulo="Territorio" valor={g.territorio} onChange={(v) => cambiarGarantia(i, "territorio", v)} opciones={TERRITORIOS} requerido />
             </div>
             {g.tipo_carga !== "Hipotecaria" && <div role="note" className="mb-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900"><strong>Atención:</strong> en cargas administrativas, judiciales, bienes muebles u otras (por ejemplo, embargos) no se debe presupuestar gasto notarial. Añade en Observaciones una nota indicando la carga que debe cancelarse. El importe de Notaría queda a 0 €.</div>}
