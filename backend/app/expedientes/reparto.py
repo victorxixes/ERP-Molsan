@@ -201,26 +201,25 @@ def usuario_admin_expedientes(usuario):
         getattr(usuario, "permisos_modulo_dict", None) or {},
         getattr(rol, "permisos_modulo_dict", None) or {},
     ):
-        if isinstance(origen, dict) and (
-            "*" in origen or "expedientes.*" in origen
-        ):
-            acciones = origen.get("*") or origen.get("expedientes.*") or []
-            if isinstance(acciones, (list, tuple, set)) and (
-                "*" in acciones or "ver" in acciones or "editar" in acciones
-            ):
-                return True
+        if isinstance(origen, dict):
+            for modulo in ("*", "expedientes.*", "seguridad"):
+                acciones = origen.get(modulo) or []
+                if isinstance(acciones, (list, tuple, set)) and (
+                    "*" in acciones or "ver" in acciones or "editar" in acciones
+                ):
+                    if modulo in ("*", "expedientes.*") or (modulo == "seguridad" and "editar" in acciones):
+                        return True
     return False
 
 
-def expediente_cumple_reglas_empleado(db: Session, empleado: Empleado, expediente: Expediente) -> bool:
+def expediente_cumple_reglas_empleado(db: Session, empleado: Empleado, expediente: Expediente, departamentos=None) -> bool:
     """True si al menos una regla activa del empleado cubre la actividad y los criterios del expediente."""
     reglas = getattr(empleado, "reparto_actividades_json", None) or []
     if not isinstance(reglas, list) or not reglas:
         return False
 
-    departamentos = {
-        d.id: d.nombre for d in db.query(Departamento).all()
-    }
+    if departamentos is None:
+        departamentos = {d.id: d.nombre for d in db.query(Departamento).all()}
     actividad_actual = resolver_key_actividad(
         getattr(expediente, "actividad_actual", None),
         getattr(expediente, "fecha_firma", None),
@@ -315,8 +314,9 @@ def ids_expedientes_visibles(db: Session, usuario):
     if not empleado:
         return []
     expedientes = db.query(Expediente).all()
+    departamentos = {d.id: d.nombre for d in db.query(Departamento).all()}
     return [
         expediente.id
         for expediente in expedientes
-        if expediente_cumple_reglas_empleado(db, empleado, expediente)
+        if expediente_cumple_reglas_empleado(db, empleado, expediente, departamentos)
     ]
