@@ -2074,7 +2074,27 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       const todos = [
         ...CAMPOS_COMUNES_ACTIVIDAD,
         ...especificos,
-      ];
+      ].filter((campo) => {
+        // En Sede notarial con protocolo solo se conserva el número de expediente
+        // de los campos generales; el resto no pertenece a esta ficha de actividad.
+        if (
+          actividadSeleccionada === "sede-notarial-protocolo" &&
+          CAMPOS_COMUNES_ACTIVIDAD.some((comun) => comun.key === campo.key) &&
+          campo.key !== "id_expediente"
+        ) {
+          return false;
+        }
+
+        // Estos datos no se muestran en la actividad con protocolo.
+        if (
+          actividadSeleccionada === "sede-notarial-protocolo" &&
+          ["tipo_documento", "poblacion", "provincia", "tipo_firma"].includes(campo.key)
+        ) {
+          return false;
+        }
+
+        return true;
+      });
 
       const vistos =
         new Set();
