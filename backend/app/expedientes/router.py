@@ -27,6 +27,7 @@ from backend.app.expedientes.models import (
 )
 from backend.app.ctn.models import Notaria
 from backend.app.expediente_ppad.models import ExpedientePPAD
+from backend.app.honorarios_gestoria.models import HonorarioGestoria
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
 from backend.app.expedientes.defectos.models import ExpedienteDefecto
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
@@ -3289,16 +3290,57 @@ def generar_honorarios_gestoria(
     # muestra la ficha como último recurso; la tarifa siempre es fija del servidor.
     entidad_key = (entidades_guardadas or entidad_solicitada).casefold()
 
-    if any(termino in ubicacion_guardada for termino in (
-        "las palmas", "palmas (las)", "santa cruz de tenerife", "tenerife", "canarias", "canary islands"
-    )):
-        importe, tarifa = Decimal("69.00"), "Canarias"
-    elif any(termino in entidad_key for termino in (
-        "caixabank", "caixa bank", "la caixa"
-    )):
-        importe, tarifa = Decimal("83.00"), "CaixaBank"
-    else:
-        importe, tarifa = Decimal("111.00"), "Otras entidades"
+    # La interfaz envía la categoría elegida a partir de la ficha y del
+    # importe de provisión. El importe final siempre se lee del catálogo del servidor.
+    tarifas_permitidas = {
+        "Honorarios de gestoría — CaixaBank": ("CaixaBank", "Honorarios de gestoría — CaixaBank"),
+        "Honorarios de gestoría — Otra entidad": ("Otras entidades", "Honorarios de gestoría — Otra entidad"),
+        "Honorarios de gestoría — Canarias": ("Canarias", "Honorarios de gestoría — Canarias"),
+    }
+    nombre_solicitado = str(datos.get("tarifa") or "").strip()
+    seleccion = tarifas_permitidas.get(nombre_solicitado)
+
+    # Compatibilidad con llamadas antiguas que no enviaban el nombre de tarifa.
+    if seleccion is None:
+        if any(termino in ubicacion_guardada for termino in (
+            "las palmas", "palmas (las)", "santa cruz de tenerife", "tenerife", "canarias", "canary islands"
+        )):
+            seleccion = ("Canarias", "Honorarios de gestoría — Canarias")
+        elif any(termino in entidad_key for termino in (
+            "caixabank", "caixa bank", "la caixa"
+        )):
+            seleccion = ("CaixaBank", "Honorarios de gestoría — CaixaBank")
+        else:
+            seleccion = ("Otras entidades", "Honorarios de gestoría — Otra entidad")
+
+    tarifa, nombre_catalogo = seleccion
+    honorario_catalogo = (
+        db.query(HonorarioGestoria)
+        .filter(
+            HonorarioGestoria.nombre == nombre_catalogo,
+            HonorarioGestoria.activo.is_(True),
+        )
+        .first()
+    )
+    if honorario_catalogo is None:
+        # La ruta de listado crea/restaura las tarifas iniciales, pero el endpoint
+        # de generación debe poder recuperarlas aunque se invoque directamente.
+        from backend.app.honorarios_gestoria.router import asegurar_catalogo_inicial
+        asegurar_catalogo_inicial(db)
+        honorario_catalogo = (
+            db.query(HonorarioGestoria)
+            .filter(
+                HonorarioGestoria.nombre == nombre_catalogo,
+                HonorarioGestoria.activo.is_(True),
+            )
+            .first()
+        )
+    if honorario_catalogo is None:
+        raise HTTPException(
+            status_code=409,
+            detail=f"No existe una tarifa activa en el catálogo: {nombre_catalogo}.",
+        )
+    importe = Decimal(str(honorario_catalogo.importe or "0")).quantize(Decimal("0.01"))
 
     imputable_a = str(datos.get("imputable_a") or "Molsan").strip()
     if imputable_a not in ("Molsan", "Externo"):
