@@ -187,6 +187,23 @@ def _configuraciones_visibilidad(db: Session, empleado_id: int = 0):
     return list(por_actividad.values())
 
 
+def _usuario_es_admin_visibilidad(usuario) -> bool:
+    """Reconoce la cuenta técnica admin o un rol cuyo nombre sea administrador."""
+    nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().lower()
+    if nombre_usuario == "admin" or getattr(usuario, "rol_id", None) == 0:
+        return True
+    rol = getattr(usuario, "rol", None)
+    nombre_rol = (
+        getattr(rol, "nombre", None)
+        or getattr(rol, "name", None)
+        or getattr(usuario, "rol_nombre", None)
+        or getattr(usuario, "nombre_rol", None)
+        or ""
+    )
+    nombre_rol = str(nombre_rol).strip().lower()
+    return nombre_rol in {"admin", "administrador", "administrator"}
+
+
 @router.get("/configuracion-visibilidad")
 def obtener_configuracion_visibilidad(
     empleado_id: Optional[int] = Query(None),
@@ -194,7 +211,11 @@ def obtener_configuracion_visibilidad(
     usuario=Depends(get_current_user),
 ):
     """Catálogo de columnas Excel y repositorios más configuración guardada por actividad."""
-    if empleado_id is not None and int(empleado_id) != int(usuario.id):
+    if (
+        empleado_id is not None
+        and int(empleado_id) != int(usuario.id)
+        and not _usuario_es_admin_visibilidad(usuario)
+    ):
         from backend.app.auth.permissions import require_perm_modulo
         require_perm_modulo(usuario, "seguridad", "editar")
     return {
@@ -215,12 +236,12 @@ def guardar_configuracion_visibilidad(
     usuario=Depends(get_current_user),
 ):
     from backend.app.auth.permissions import require_perm_modulo
-    require_perm_modulo(usuario, "seguridad", "editar")
+    es_admin = _usuario_es_admin_visibilidad(usuario)
+    if not es_admin:
+        require_perm_modulo(usuario, "seguridad", "editar")
 
     empleado_id = int(datos.get("empleado_id") or usuario.id)
-    if empleado_id != int(usuario.id):
-        # La configuración de otro empleado solo se puede modificar con el permiso administrativo ya exigido arriba.
-        from backend.app.auth.permissions import require_perm_modulo
+    if empleado_id != int(usuario.id) and not es_admin:
         require_perm_modulo(usuario, "seguridad", "editar")
     actividad_key = str(datos.get("actividad_key") or "").strip()
     actividad = next((item for item in ACTIVIDADES_VISIBILIDAD if item["key"] == actividad_key), None)
