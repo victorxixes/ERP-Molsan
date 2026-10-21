@@ -35,7 +35,7 @@ class EntidadBancaria(Base):
 
     codigo_europeo = Column(
         String(50),
-        nullable=False,
+        nullable=True,
         index=True,
     )
 
