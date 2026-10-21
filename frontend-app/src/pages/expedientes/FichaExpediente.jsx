@@ -6208,6 +6208,9 @@ const cuantiaFincasParaEnvio =
                           requisito("Hoja de encargo firmada", tieneDoc("Hoja de Encargo firmada"), "Falta el documento en la carpeta digital"),
                           requisito("Justificante de cancelación", tieneDoc("Justificante de cancelación"), "Falta el documento en la carpeta digital"),
                           requisito("Nota simple registral", tieneDoc("Nota simple registral"), "Falta el documento en la carpeta digital"),
+                          requisito("Fecha de envío a notario", Boolean(fechaEnvio), "No consta la fecha de envío en FichaExpediente → Enviar a notario"),
+                          requisito("Nombre del notario", Boolean(notario), "No consta el nombre del notario en FichaExpediente → Enviar a notario"),
+                          requisito("NIF del notario", Boolean(valor("nif_notario")), "No consta el NIF del notario en FichaExpediente → Enviar a notario"),
                         ],
                       },
                       {
