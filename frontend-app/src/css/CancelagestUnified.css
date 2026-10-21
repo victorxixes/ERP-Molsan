@@ -198,3 +198,39 @@ select, textarea) {
 .cg-page .cg-bar-value {
   color: #3156b3;
 }
+
+
+/* Normalización de acentos Tailwind usados por Herramientas, Catálogos,
+   Intranet e Informes: azul corporativo sin alterar colores semánticos. */
+.cg-unified-workspace :is([class*="bg-indigo-50"], [class*="bg-violet-50"]) {
+  background-color: #edf3ff !important;
+}
+
+.cg-unified-workspace :is([class*="bg-indigo-100"], [class*="bg-violet-100"]) {
+  background-color: #e3ebff !important;
+}
+
+.cg-unified-workspace :is([class*="bg-indigo-600"], [class*="bg-indigo-700"], [class*="bg-violet-600"], [class*="bg-violet-700"]) {
+  background-color: var(--cg-primary) !important;
+}
+
+.cg-unified-workspace :is([class*="text-indigo-600"], [class*="text-indigo-700"], [class*="text-violet-600"], [class*="text-violet-700"]) {
+  color: var(--cg-primary) !important;
+}
+
+.cg-unified-workspace :is([class*="border-indigo-100"], [class*="border-indigo-200"], [class*="border-violet-100"], [class*="border-violet-200"]) {
+  border-color: #d7e3ff !important;
+}
+
+.cg-unified-workspace :is([class*="from-indigo-500"], [class*="from-indigo-600"], [class*="from-violet-500"], [class*="from-violet-600"]) {
+  --tw-gradient-from: #3156b3 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(49 86 179 / 0) var(--tw-gradient-to-position) !important;
+}
+
+.cg-unified-workspace :is([class*="via-indigo-500"], [class*="via-indigo-600"], [class*="via-violet-500"], [class*="via-violet-600"]) {
+  --tw-gradient-stops: var(--tw-gradient-from), #4268c5 var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+.cg-unified-workspace :is([class*="to-cyan-400"], [class*="to-cyan-500"], [class*="to-violet-500"]) {
+  --tw-gradient-to: #6c8de0 var(--tw-gradient-to-position) !important;
+}
