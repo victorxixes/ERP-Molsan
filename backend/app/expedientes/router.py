@@ -1934,7 +1934,10 @@ def exportar_excel_expedientes(
                     SELECT nombre_tabla, excel_columns
                     FROM public.expediente_visibilidad_config
                     WHERE actividad_key = :actividad_key
-                """), {"actividad_key": clave}).mappings().first()
+                      AND empleado_id IN (0, :empleado_id)
+                    ORDER BY empleado_id DESC
+                    LIMIT 1
+                """), {"actividad_key": clave, "empleado_id": int(usuario.id)}).mappings().first()
                 if fila_config is not None:
                     nombre_hoja_excel = str(fila_config["nombre_tabla"] or "Expedientes")
                     configuracion = fila_config["excel_columns"] or []
