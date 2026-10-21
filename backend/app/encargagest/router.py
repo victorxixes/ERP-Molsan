@@ -779,6 +779,14 @@ def guardar_reglas_reparto_gestor(empleado_id: int, datos: ReglasRepartoGestor, 
             oficinas_limpias = [x.strip() for x in str(oficinas_raw or "").replace(";", ",").split(",") if x.strip()]
         producto_gtg = str(regla.get("producto_gtg") or "").strip()[:300]
         tipo_operacion = str(regla.get("tipo_operacion") or "").strip()[:300]
+        estados_raw = regla.get("estados_expediente")
+        if not isinstance(estados_raw, list):
+            estados_raw = [regla.get("estado_expediente")] if regla.get("estado_expediente") else []
+        estados_expediente = []
+        for estado in estados_raw:
+            estado_texto = str(estado or "").strip()[:100]
+            if estado_texto and estado_texto not in estados_expediente:
+                estados_expediente.append(estado_texto)
         reglas_limpias.append({
             "actividad": actividad,
             "departamento": str(regla.get("departamento") or "").strip()[:120],
@@ -786,6 +794,7 @@ def guardar_reglas_reparto_gestor(empleado_id: int, datos: ReglasRepartoGestor, 
             "oficinas": oficinas_limpias,
             "producto_gtg": producto_gtg,
             "tipo_operacion": tipo_operacion,
+            "estados_expediente": estados_expediente,
             "zona_territorial": territorial,
             "comunidades": comunidades_limpias,
             "comunidad": comunidad,
