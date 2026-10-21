@@ -922,7 +922,17 @@ export default function ModalEmpleado({
         if (!vigente) return;
         setProductosGtgReparto(Array.isArray(catalogos?.productos_gtg) ? catalogos.productos_gtg : []);
         setTiposOperacionReparto(Array.isArray(catalogos?.tipos_operacion) ? catalogos.tipos_operacion : []);
-        setEstadosExpedienteReparto(Array.isArray(catalogos?.estados_expediente) ? catalogos.estados_expediente : []);
+        setEstadosExpedienteReparto(
+          [...new Set([
+            "LIQ",
+            "VIG",
+            "LST",
+            "RTS",
+            "PVA",
+            ...(Array.isArray(catalogos?.estados_expediente) ? catalogos.estados_expediente : []),
+          ].map((estado) => String(estado || "").trim()).filter(Boolean))]
+            .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }))
+        );
       })
       .catch((e) => {
         if (!vigente) return;
