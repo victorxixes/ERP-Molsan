@@ -5964,6 +5964,51 @@ const cuantiaFincasParaEnvio =
 
             {actividadSeleccionada === "facturacion-cierre" && (
               <div className="mt-4 space-y-4">
+                <section className="rounded-2xl border border-indigo-200 bg-indigo-50/30 p-4">
+                  <div className="mb-3">
+                    <h3 className="text-sm font-extrabold text-slate-800">Datos vinculados de la ficha del expediente</h3>
+                    <p className="mt-1 text-xs text-slate-500">Información enlazada con Enviar a notario, Fincas y registros e Información crediticia. Los datos se consultan desde el expediente, sin duplicarlos.</p>
+                  </div>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    <Dato campo="Expediente" valor={expediente?.numero_expediente ?? expediente?.id_expediente} compacto />
+                    <Dato campo="Nombre notario" valor={expediente?.nombre_notario ?? expediente?.notario} compacto />
+                    <Dato campo="NIF notario" valor={expediente?.nif_notario} compacto />
+                    <Dato campo="Fecha de firma" valor={expediente?.fecha_firma} tipo="fecha" compacto />
+                    <Dato campo="Protocolo" valor={expediente?.protocolo} compacto />
+                    <Dato campo="Tipo del documento formalizado" valor={Array.isArray(expediente?.documentos_escritura) && expediente.documentos_escritura.length ? expediente.documentos_escritura.map((documento) => documento?.tipo_documento).filter(Boolean).join(" · ") : expediente?.tipo_documento} compacto />
+                    <Dato campo="Importe (Información crediticia)" valor={expediente?.importe} tipo="numero" destaque compacto />
+                    <Dato campo="Saldo real actual (Información crediticia)" valor={resumenEconomico?.saldoActual ?? expediente?.saldo_real} tipo="numero" destaque compacto />
+                  </div>
+                  <div className="mt-4 border-t border-indigo-100 pt-3">
+                    <h4 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-700">Fincas y datos registrales vinculados</h4>
+                    {errorFincas && <p className="mb-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{errorFincas}</p>}
+                    {cargandoFincas ? (
+                      <p className="text-xs text-slate-500">Cargando fincas y registros…</p>
+                    ) : fincasExpediente.length === 0 ? (
+                      <p className="rounded-xl border border-dashed border-slate-200 bg-white p-3 text-xs text-slate-500">No hay fincas ni registros vinculados a este expediente.</p>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+                        {fincasExpediente.map((finca, indice) => (
+                          <article key={finca.id || String(finca.finca || finca.numero_finca || "finca") + "-" + indice} className="rounded-xl border border-slate-200 bg-white p-3">
+                            <p className="text-xs font-extrabold text-slate-800">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                            <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
+                              <div><span className="block text-slate-400">Registro</span><strong>{finca.registro || "—"}</strong></div>
+                              <div><span className="block text-slate-400">Sección</span><strong>{finca.seccion || "—"}</strong></div>
+                              <div><span className="block text-slate-400">CRU / IDUFIR</span><strong>{finca.cru_idufir || finca.cru || finca.idufir || "—"}</strong></div>
+                              <div><span className="block text-slate-400">Población</span><strong>{finca.poblacion || "—"}</strong></div>
+                              <div><span className="block text-slate-400">Provincia</span><strong>{finca.provincia || "—"}</strong></div>
+                              <div><span className="block text-slate-400">Inscripción</span><strong>{finca.inscripcion || "—"}</strong></div>
+                              <div><span className="block text-slate-400">Cuantía</span><strong>{finca.cuantia !== null && finca.cuantia !== undefined && finca.cuantia !== "" ? Number(finca.cuantia).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €" : "—"}</strong></div>
+                              <div><span className="block text-slate-400">Contrato</span><strong>{finca.contrato || "—"}</strong></div>
+                              <div><span className="block text-slate-400">Entidad original</span><strong>{finca.entidad_original || "—"}</strong></div>
+                              <div><span className="block text-slate-400">Fecha constitución</span><strong>{finca.fecha_constitucion || "—"}</strong></div>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </section>
                 <section className="rounded-2xl border border-slate-200 bg-white p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
