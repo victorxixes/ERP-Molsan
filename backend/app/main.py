@@ -1322,6 +1322,21 @@ def instrumentar_inicio_aplicacion():
 
 
 # ============================================================
+def migrar_catalogo_honorarios_impuestos():
+    """Añade de forma idempotente base e impuesto al catálogo de honorarios."""
+    with engine.begin() as conexion:
+        existe = conexion.execute(text("SELECT to_regclass('public.honorarios_gestoria_catalogo')")).scalar()
+        if not existe:
+            print("[MIGRACION HONORARIOS] Tabla aún no creada; se revisará en la siguiente petición.", flush=True)
+            return
+        conexion.execute(text("ALTER TABLE public.honorarios_gestoria_catalogo ADD COLUMN IF NOT EXISTS base_imponible NUMERIC(12,2)"))
+        conexion.execute(text("ALTER TABLE public.honorarios_gestoria_catalogo ADD COLUMN IF NOT EXISTS tipo_impuesto VARCHAR(20) NOT NULL DEFAULT 'IVA'"))
+        conexion.execute(text("ALTER TABLE public.honorarios_gestoria_catalogo ADD COLUMN IF NOT EXISTS porcentaje_impuesto NUMERIC(5,2) NOT NULL DEFAULT 21"))
+        # Los registros antiguos guardaban el total con IVA incluido.
+        conexion.execute(text("UPDATE public.honorarios_gestoria_catalogo SET base_imponible = ROUND(importe / 1.21, 2) WHERE base_imponible IS NULL AND importe IS NOT NULL"))
+        print("[MIGRACION HONORARIOS] Base e impuesto revisados.", flush=True)
+
+
 # ORDEN DE ARRANQUE
 # ============================================================
 
@@ -1330,5 +1345,6 @@ app.router.on_startup.insert(
     0,
     migrar_esquema_expedientes_inicio,
 )
+app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
 
 instrumentar_inicio_aplicacion()
