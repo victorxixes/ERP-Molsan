@@ -35,9 +35,8 @@ router = APIRouter(
 
 class EntidadBancariaBase(BaseModel):
 
-    codigo_europeo: str = Field(
-        ...,
-        min_length=1,
+    codigo_europeo: Optional[str] = Field(
+        None,
         max_length=50,
     )
 
@@ -177,7 +176,7 @@ def crear_entidad_bancaria(
     db: Session = Depends(get_db),
 ):
 
-    codigo = limpiar_texto(
+    codigo = limpiar_opcional(
         datos.codigo_europeo
     )
 
@@ -205,13 +204,6 @@ def crear_entidad_bancaria(
     # VALIDACIONES
     # --------------------------------------------------------
 
-    if not codigo:
-
-        raise HTTPException(
-            status_code=400,
-            detail="El Código Europeo es obligatorio.",
-        )
-
     if not nombre:
 
         raise HTTPException(
@@ -230,16 +222,13 @@ def crear_entidad_bancaria(
     # BUSCAR EXISTENTE
     # --------------------------------------------------------
 
-    existente = (
-        db.query(
-            EntidadBancaria
+    existente = None
+    if codigo:
+        existente = (
+            db.query(EntidadBancaria)
+            .filter(EntidadBancaria.codigo_europeo == codigo)
+            .first()
         )
-        .filter(
-            EntidadBancaria.codigo_europeo
-            == codigo
-        )
-        .first()
-    )
 
     # --------------------------------------------------------
     # REACTIVAR
@@ -517,18 +506,16 @@ def actualizar_entidad_bancaria(
     # DUPLICADO
     # --------------------------------------------------------
 
-    duplicado = (
-        db.query(
-            EntidadBancaria
+    duplicado = None
+    if codigo:
+        duplicado = (
+            db.query(EntidadBancaria)
+            .filter(
+                EntidadBancaria.codigo_europeo == codigo,
+                EntidadBancaria.id != entidad_id,
+            )
+            .first()
         )
-        .filter(
-            EntidadBancaria.codigo_europeo
-            == codigo,
-            EntidadBancaria.id
-            != entidad_id,
-        )
-        .first()
-    )
 
     if duplicado:
 
