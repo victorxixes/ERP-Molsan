@@ -632,7 +632,7 @@ const REPOSITORIOS_CARPETA_DIGITAL = [
 function normalizarCategoriaDocumento(valor) {
   return String(valor || "")
     .normalize("NFD")
-    .replace(/[\\u0300-\\u036f]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLocaleLowerCase("es")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
@@ -674,7 +674,7 @@ function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir 
   const [previewNombre, setPreviewNombre] = useState("");
   const [cargandoPreview, setCargandoPreview] = useState(false);
 
-  const cantidad = Number.parseInt(String(valor || "").match(/\\d+/)?.[0] || "0", 10);
+  const cantidad = Number.parseInt(String(valor || "").match(/\d+/)?.[0] || "0", 10);
   const nombresCategoria = CATEGORIAS_POR_REPOSITORIO[repositorioKey] || [];
   const categoriasNormalizadas = nombresCategoria.map(normalizarCategoriaDocumento);
 
@@ -2819,7 +2819,7 @@ export default function ExpedientesListado() {
                                 })}
                               />
                             ) : columna.key === "carpeta_digital" ? (
-                              Number.parseInt(String(expediente[columna.key] || "").match(/\\d+/)?.[0] || "0", 10) > 0 ? (
+                              Number.parseInt(String(expediente[columna.key] || "").match(/\d+/)?.[0] || "0", 10) > 0 ? (
                                 <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="rounded-lg border px-2 py-1 text-xs font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)" }}>📂 {expediente[columna.key]}</button>
                               ) : null
                             ) : columna.key === "id_expediente" ? (
