@@ -2080,12 +2080,11 @@ const permisosDisponibles =
     { id: "auditoria", label: "Auditoría", icon: "📋" },
   ];
 
-  // Un empleado puede abrir su propia ficha sin permiso de administración.
-  // También debe poder gestionar la visibilidad de sus tablas y repositorios;
-  // la API mantiene sus propias comprobaciones al editar la configuración.
-  const pestanasVisibles = esPropiaFicha && !esAdministrador
-    ? pestanasEmpleado.filter((item) => ["basicos", "personales", "visibilidad-tablas"].includes(item.id))
-    : pestanasEmpleado;
+  // Visibilidad tablas es una herramienta de configuración administrativa.
+  // Nunca debe aparecer en la ficha de un empleado estándar, ni siquiera en la propia.
+  const pestanasVisibles = esAdministrador
+    ? pestanasEmpleado
+    : pestanasEmpleado.filter((item) => ["basicos", "personales"].includes(item.id));
 
   useEffect(() => {
     if (!pestanasVisibles.some((item) => item.id === pestana)) {
