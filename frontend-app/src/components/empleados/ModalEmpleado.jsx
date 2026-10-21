@@ -3575,9 +3575,7 @@ const permisosDisponibles =
                                       }
                                     `}
                                   >
-                                    {capitalizar(
-                                      modulo
-                                    )}
+                                    {MODULOS_ERP.find((item) => item.key === modulo)?.label || capitalizar(modulo)}
                                   </span>
 
                                 </label>
@@ -3715,9 +3713,7 @@ const permisosDisponibles =
                                         text-slate-800
                                       "
                                     >
-                                      {capitalizar(
-                                        modulo
-                                      )}
+                                      {MODULOS_ERP.find((item) => item.key === modulo)?.label || capitalizar(modulo)}
                                     </span>
 
 
