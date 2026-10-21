@@ -2450,7 +2450,7 @@ const permisosDisponibles =
             CONTENIDO
         ==================================================== */}
 
-        {pestana === "visibilidad-tablas" && <div className="p-4 sm:p-6"><div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 p-4"><h3 className="text-sm font-extrabold text-blue-900">Configuración por actividad</h3><p className="mt-1 text-xs text-blue-800">Configura las columnas de Excel y los repositorios de carpeta digital para cada actividad y guarda cada configuración por separado.</p></div><VisibilidadTablas onClose={() => setPestana("basicos")} /></div>}
+        {pestana === "visibilidad-tablas" && <div className="p-4 sm:p-6"><div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 p-4"><h3 className="text-sm font-extrabold text-blue-900">Configuración por actividad</h3><p className="mt-1 text-xs text-blue-800">Configura las columnas de Excel y los repositorios de carpeta digital para cada actividad y guarda cada configuración por separado.</p></div><VisibilidadTablas empleadoId={empleadoId} onClose={() => setPestana("basicos")} /></div>}
 
         <div
           className="
