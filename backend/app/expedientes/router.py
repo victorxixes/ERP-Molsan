@@ -951,27 +951,30 @@ def aplicar_busqueda_rapida(q, busqueda=None):
 # ============================================================
 
 ALERTAS_CONTROL_EXPEDIENTES = [
-    {"key": "defectos_vencidos", "label": "Defectos registrales vencidos", "descripcion": "Presentación vencida y pendiente de subsanar", "icono": "⚠️"},
-    {"key": "sede_notarial", "label": "Sede notarial +10 días", "descripcion": "Enviado hace más de 10 días sin firma registrada", "icono": "🖋️"},
-    {"key": "liquidacion_pendiente", "label": "Liquidación de impuestos", "descripcion": "Pendiente de fecha de presentación tributaria", "icono": "🧾"},
-    {"key": "facturacion_cierre", "label": "Facturación y cierre", "descripcion": "Inscrito y listo para cerrar", "icono": "💶"},
-    {"key": "inscripcion_30_dias", "label": "Tramitación inscripción +30 días", "descripcion": "Más de 30 días desde la presentación", "icono": "📑"},
+    {"key": "defectos_vencidos", "label": "Defectos registrales fuera de plazo", "descripcion": "Defectos abiertos durante más de 60 días desde la notificación del Registro", "icono": "⚠️"},
+    {"key": "sede_notarial", "label": "Sede notarial fuera de plazo", "descripcion": "Más de 5 días desde la fecha de alta sin fecha de envío", "icono": "🖋️"},
+    {"key": "sede_notarial_protocolo", "label": "Sede notarial con protocolo fuera de plazo", "descripcion": "Más de 2 días desde el envío sin fecha de firma", "icono": "🖋️"},
+    {"key": "liquidacion_pendiente", "label": "Liquidación de impuestos fuera de plazo", "descripcion": "Más de 2 días desde la firma sin fecha de liquidación tributaria", "icono": "🧾"},
+    {"key": "facturacion_cierre", "label": "Liquidación y cierre fuera de plazo", "descripcion": "Más de 5 días desde la inscripción sin fecha fin de actividad", "icono": "💶"},
+    {"key": "inscripcion_30_dias", "label": "Tramitación inscripción fuera de plazo", "descripcion": "Más de 23 días desde la liquidación tributaria sin fecha de presentación", "icono": "📑"},
 ]
 
 
 def aplicar_filtro_alerta_control(q, clave_alerta: Optional[str], db: Session):
+    """Filtra expedientes cuyo plazo máximo de la actividad ya ha vencido."""
     if not clave_alerta:
         return q
 
     hoy = date.today()
+
     if clave_alerta == "defectos_vencidos":
-        expedientes_con_defecto_vencido = (
+        defectos_fuera_plazo = (
             db.query(ExpedienteDefecto.expediente_id)
             .filter(
-                ExpedienteDefecto.fecha_vencimiento_presentacion.isnot(None),
-                ExpedienteDefecto.fecha_vencimiento_presentacion < hoy,
-                ExpedienteDefecto.fecha_entrada_subsanacion.is_(None),
+                ExpedienteDefecto.fecha_notificacion_registro.isnot(None),
+                ExpedienteDefecto.fecha_notificacion_registro < hoy - timedelta(days=60),
                 ExpedienteDefecto.fecha_cierre_defecto.is_(None),
+                ExpedienteDefecto.fecha_entrada_subsanacion.is_(None),
                 or_(
                     ExpedienteDefecto.tiene_defectos_abiertos.is_(None),
                     func.upper(func.trim(ExpedienteDefecto.tiene_defectos_abiertos)).notin_(
@@ -980,32 +983,52 @@ def aplicar_filtro_alerta_control(q, clave_alerta: Optional[str], db: Session):
                 ),
             )
         )
-        return q.filter(Expediente.id.in_(expedientes_con_defecto_vencido))
+        return q.filter(Expediente.id.in_(defectos_fuera_plazo))
 
     if clave_alerta == "sede_notarial":
         return q.filter(
             condicion_actividad("sede-notarial"),
-            Expediente.fecha_envio.isnot(None),
-            Expediente.fecha_envio < hoy - timedelta(days=10),
+            Expediente.fecha_alta.isnot(None),
+            Expediente.fecha_alta < hoy - timedelta(days=5),
+            Expediente.fecha_envio.is_(None),
+            Expediente.fecha_envio_notario.is_(None),
+        )
+
+    if clave_alerta == "sede_notarial_protocolo":
+        actividad = func.trim(Expediente.actividad_actual)
+        fecha_envio = func.coalesce(Expediente.fecha_envio_notario, Expediente.fecha_envio)
+        return q.filter(
+            or_(
+                actividad.ilike("Sede notarial con protocolo"),
+                actividad.ilike("Sede Notarial con protocolo"),
+            ),
+            fecha_envio.isnot(None),
+            fecha_envio < hoy - timedelta(days=2),
+            Expediente.fecha_firma.is_(None),
         )
 
     if clave_alerta == "liquidacion_pendiente":
         return q.filter(
             condicion_actividad("liquidacion-impuestos"),
-            Expediente.fecha_presentacion_tributaria.is_(None),
+            Expediente.fecha_firma.isnot(None),
+            Expediente.fecha_firma < hoy - timedelta(days=2),
+            Expediente.fecha_liquidacion_tributaria.is_(None),
         )
 
     if clave_alerta == "facturacion_cierre":
         return q.filter(
             condicion_actividad("facturacion-cierre"),
             Expediente.fecha_inscripcion.isnot(None),
+            Expediente.fecha_inscripcion < hoy - timedelta(days=5),
+            Expediente.fecha_fin_actividad.is_(None),
         )
 
     if clave_alerta == "inscripcion_30_dias":
         return q.filter(
             condicion_actividad("tramitacion-inscripcion"),
-            Expediente.fecha_presentacion.isnot(None),
-            Expediente.fecha_presentacion < hoy - timedelta(days=30),
+            Expediente.fecha_liquidacion_tributaria.isnot(None),
+            Expediente.fecha_liquidacion_tributaria < hoy - timedelta(days=23),
+            Expediente.fecha_presentacion.is_(None),
         )
 
     raise HTTPException(status_code=400, detail=f"Alerta de control no válida: {clave_alerta}")
