@@ -979,9 +979,11 @@ def aplicar_filtro_alerta_control(q, clave_alerta: Optional[str], db: Session):
             Expediente.fecha_envio_notario,
             Expediente.fecha_envio,
             Expediente.fecha_fin_actividad,
+            Expediente.estado_actividad,
         ).all()
         ids_fuera_sla = []
-        for expediente_id, producto, fecha_envio_notario, fecha_envio, fecha_fin in expedientes:
+        estados_cerrados = {"cerrada", "cerrado", "cerrada automaticamente", "cerrado automaticamente"}
+        for expediente_id, producto, fecha_envio_notario, fecha_envio, fecha_fin, estado_actividad in expedientes:
             producto_norm = normalizar_actividad_texto(producto)
             if producto_norm in {"hipotecario", "credito stock"}:
                 continue
@@ -997,16 +999,31 @@ def aplicar_filtro_alerta_control(q, clave_alerta: Optional[str], db: Session):
                 continue
             if clave_alerta == "sla_otra_entidad" and circuito != "otra_entidad":
                 continue
+
+            # fecha_envio_notario es la fecha oficial del envío; fecha_envio
+            # se conserva como respaldo para expedientes históricos.
             inicio = fecha_envio_notario or fecha_envio
             if not inicio:
                 continue
-            fin = fecha_fin or hoy
+
+            # Un expediente cerrado sin fecha_fin_actividad tiene datos incompletos:
+            # no se debe tratar erróneamente como si siguiera abierto hasta hoy.
+            estado_norm = normalizar_actividad_texto(estado_actividad)
+            if fecha_fin:
+                fin = fecha_fin
+            elif estado_norm in estados_cerrados:
+                continue
+            else:
+                fin = hoy
+
             # Las columnas pueden llegar como date o datetime según el driver.
             if hasattr(inicio, "date"):
                 inicio = inicio.date()
             if hasattr(fin, "date"):
                 fin = fin.date()
-            if (fin - inicio).days > limite_sla:
+
+            dias_transcurridos = (fin - inicio).days
+            if dias_transcurridos > limite_sla:
                 ids_fuera_sla.append(expediente_id)
         return q.filter(Expediente.id.in_(ids_fuera_sla)) if ids_fuera_sla else q.filter(Expediente.id == -1)
 
