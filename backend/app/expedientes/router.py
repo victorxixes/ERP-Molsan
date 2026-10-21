@@ -10,7 +10,7 @@ import openpyxl
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 
-from fastapi import APIRouter, Query, Depends, HTTPException
+from fastapi import APIRouter, Query, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy import or_, func, and_, text, cast, String
@@ -45,9 +45,31 @@ def aplicar_ambito_reparto(query, db: Session, usuario):
         return query
     return query.filter(Expediente.id.in_(ids_visibles))
 
+def validar_ambito_reparto_ruta(
+    request: Request,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Protege también lecturas y escrituras por URL directa de un expediente."""
+    id_expediente = request.path_params.get("id_expediente")
+    if id_expediente is None:
+        return
+    expediente = (
+        db.query(Expediente)
+        .filter(Expediente.id_expediente == str(id_expediente))
+        .first()
+    )
+    if expediente is None:
+        return  # El endpoint correspondiente emitirá su 404 habitual.
+    ids_visibles = ids_expedientes_visibles(db, usuario)
+    if ids_visibles is not None and expediente.id not in ids_visibles:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+
 router = APIRouter(
     prefix="/expedientes",
     tags=["Expedientes"],
+    dependencies=[Depends(validar_ambito_reparto_ruta)],
 )
 
 
