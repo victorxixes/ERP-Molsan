@@ -7,6 +7,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    JSON,
     Numeric,
     String,
     Text,
@@ -123,7 +124,7 @@ class ProvisionIndependiente(Base):
     oficina_numero = Column(String(100), nullable=True)
     oficina_contacto = Column(String(200), nullable=True)
     oficina_email = Column(String(250), nullable=True)
-    datos = Column(__import__("sqlalchemy").JSON, nullable=False, default=dict)
+    datos = Column(JSON, nullable=False, default=dict)
     importe_total = Column(Numeric(14, 2), nullable=False, default=0, server_default="0")
     estado = Column(String(20), nullable=False, default="borrador", server_default="borrador", index=True)
     creado_por_id = Column(Integer, nullable=True)
