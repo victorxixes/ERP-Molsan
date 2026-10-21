@@ -15,9 +15,10 @@ export default function Layout() {
   const setPerfilModal = useAuthStore((s) => s.setPerfilModal);
   const { pathname } = useLocation();
 
-  // Estas rutas son el espacio operativo compartido desde CancelaGest.
-  // El tema se limita a dichas pantallas y no afecta a Seguridad ni al panel técnico.
-  const rutaCancelaGest = /^\/(expedientes|agenda|informes|mensajes|ctn|intranet|provisiones-fondos|catalogos|herramientas)(\/|$)/i.test(pathname);
+  // Las rutas dentro de Layout pertenecen al ERP operativo de CancelaGest.
+  // Los portales independientes (ApoderaGest, NotarGest y EncargaGest) no usan este Layout.
+  // Seguridad, auditoría y panel técnico conservan su presentación especializada.
+  const rutaCancelaGest = !/^\\/(paneltecnico|seguridad|auditoria)(\\/|$)/i.test(pathname);
 
   useNotificacionesWS(empleado?.id);
 
