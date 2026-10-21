@@ -1392,6 +1392,11 @@ export default function FichaExpediente() {
   const [registrandoSolicitudIntegracion, setRegistrandoSolicitudIntegracion] = useState(false);
   const [documentosCarpetaPrevia, setDocumentosCarpetaPrevia] = useState([]);
   const [documentosCierre, setDocumentosCierre] = useState([]);
+  const actualizarDocumentosCarpetaPrevia = useCallback((lista) => {
+    const documentos = Array.isArray(lista) ? lista : [];
+    setDocumentosCarpetaPrevia(documentos);
+    setDocumentosCierre(documentos);
+  }, []);
   const [cargandoDocumentosCierre, setCargandoDocumentosCierre] = useState(false);
   const [errorDocumentosCierre, setErrorDocumentosCierre] = useState("");
   const [honorariosGestoria, setHonorariosGestoria] = useState(null);
@@ -5545,7 +5550,7 @@ const cuantiaFincasParaEnvio =
                 tipoOperacion={expediente?.tipo_operacion || expediente?.tipoOperacion || expediente?.operacion}
                 onDocumentosChange={
                   actividadSeleccionada === "documentacion-previa"
-                    ? setDocumentosCarpetaPrevia
+                    ? actualizarDocumentosCarpetaPrevia
                     : undefined
                 }
               />
@@ -6187,6 +6192,12 @@ const cuantiaFincasParaEnvio =
                         return categoria.includes(objetivo) || nombre.includes(objetivo);
                       });
                     });
+                    // Para los documentos obligatorios de Documentación previa,
+                    // se exige su categoría exacta y no solo el nombre del fichero.
+                    const tieneDocEnCategoria = (...categorias) => documentos.some((doc) => {
+                      const categoria = normalizar(doc?.categoria || doc?.categoria_nombre || doc?.nombre_categoria || "");
+                      return categorias.some((buscado) => categoria === normalizar(buscado));
+                    });
                     const requisito = (etiqueta, ok, detalle) => ({ etiqueta, ok: Boolean(ok), detalle: ok ? "Correcto" : detalle });
                     const fechaEnvio = valor("fecha_envio_notario", "fecha_envio");
                     const notario = valor("nombre_notario", "notario", "notario_otorgante");
@@ -6205,10 +6216,42 @@ const cuantiaFincasParaEnvio =
                       {
                         key: "documentacion-previa", label: "Documentación previa", icono: "📄",
                         checks: [
-                          requisito("Hoja de encargo firmada", tieneDoc("Hoja de Encargo firmada"), "Falta el documento en la carpeta digital"),
-                          requisito("Justificante de cancelación", tieneDoc("Justificante de cancelación"), "Falta el documento en la carpeta digital"),
-                          requisito("Nota simple registral", tieneDoc("Nota simple registral"), "Falta el documento en la carpeta digital"),
+                          requisito(
+                            "Certificado Saldo «0» erróneo",
+                            Boolean(estadoDocumentacionAbsis.fecha_actualizacion),
+                            "Selecciona Sí o No en Documentación previa y pulsa «Guardar datos para integración»."
+                          ),
                           requisito("Fecha de envío a notario", Boolean(fechaEnvio), "No consta la fecha de envío en FichaExpediente → Enviar a notario"),
+                          requisito(
+                            "Hoja de encargo firmada · marcada",
+                            Boolean(estadoDocumentacionAbsis.solicitud_cancelacion_notarial),
+                            "Marca «Hoja de Encargo firmada» en Documentación previa y guarda los datos."
+                          ),
+                          requisito(
+                            "Hoja de encargo firmada · documento subido",
+                            tieneDocEnCategoria("Hoja de Encargo firmada"),
+                            "Sube el documento a la categoría «Hoja de encargo firmada» de Carpeta digital y comprueba que se pueda abrir en el visor."
+                          ),
+                          requisito(
+                            "Justificante de cancelación · marcado",
+                            Boolean(estadoDocumentacionAbsis.certificado_cancelacion_administrativo),
+                            "Marca «Justificante de cancelación» en Documentación previa y guarda los datos."
+                          ),
+                          requisito(
+                            "Justificante de cancelación · documento subido",
+                            tieneDocEnCategoria("Justificante de cancelación"),
+                            "Sube el documento a la categoría «Justificante de cancelación» de Carpeta digital y comprueba que se pueda abrir en el visor."
+                          ),
+                          requisito(
+                            "Nota simple registral · marcada",
+                            Boolean(estadoDocumentacionAbsis.nota_simple_registral),
+                            "Marca «Nota simple registral» en Documentación previa y guarda los datos."
+                          ),
+                          requisito(
+                            "Nota simple registral · documento subido",
+                            tieneDocEnCategoria("Nota simple registral"),
+                            "Sube el documento a la categoría «Nota simple registral» de Carpeta digital y comprueba que se pueda abrir en el visor."
+                          ),
                           requisito("Nombre del notario", Boolean(notario), "No consta el nombre del notario en FichaExpediente → Enviar a notario"),
                           requisito("NIF del notario", Boolean(valor("nif_notario")), "No consta el NIF del notario en FichaExpediente → Enviar a notario"),
                         ],
