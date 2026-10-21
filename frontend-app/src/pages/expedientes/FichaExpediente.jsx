@@ -5488,7 +5488,8 @@ const cuantiaFincasParaEnvio =
               </section>
             )}
 
-            {actividadSeleccionada !== "documentacion-previa" && (
+            {actividadSeleccionada !== "documentacion-previa" &&
+              actividadSeleccionada !== "sede-notarial" && (
               <div
                 className="
                   grid
@@ -5499,10 +5500,7 @@ const cuantiaFincasParaEnvio =
                 "
               >
 
-              {(actividadSeleccionada === "sede-notarial"
-                ? camposActividad.filter((campo) => CAMPOS_COMUNES_ACTIVIDAD.some((item) => item.key === campo.key))
-                : camposActividad
-              ).map((campo) => {
+              {camposActividad.map((campo) => {
                 const esComun = CAMPOS_COMUNES_ACTIVIDAD.some((item) => item.key === campo.key);
                 const valorActual = actividadDraft[campo.key] ?? expediente?.[campo.key] ?? "";
                 if (esComun || campo.key === "fecha_envio") {
