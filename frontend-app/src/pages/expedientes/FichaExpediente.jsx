@@ -5535,6 +5535,44 @@ const cuantiaFincasParaEnvio =
               </section>
             )}
 
+            {actividadSeleccionada === "tramitacion-inscripcion" && (
+              <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-sm font-extrabold text-slate-800">Datos vinculados de Enviar a notario</h3>
+                  <span className="text-[11px] font-medium text-slate-500">Información de la ficha del expediente</span>
+                </div>
+                <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                  <Dato campo="Notario" valor={expediente?.nombre_notario ?? expediente?.notario} />
+                  <Dato campo="NIF notario" valor={expediente?.nif_notario} />
+                  <Dato campo="Fecha de firma" valor={expediente?.fecha_firma} tipo="fecha" />
+                  <Dato campo="Protocolo" valor={expediente?.protocolo} />
+                </div>
+                <div className="mt-3 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-2 text-xs font-extrabold text-slate-700">Fincas y registros vinculados</h4>
+                  {cargandoFincas ? (
+                    <p className="text-xs text-slate-500">Cargando fincas y registros…</p>
+                  ) : fincasExpediente.length === 0 ? (
+                    <p className="text-xs text-slate-500">No hay fincas ni registros vinculados a este expediente.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {fincasExpediente.map((finca, indice) => (
+                        <article key={finca.id || `${finca.finca || finca.numero_finca || "finca"}-${indice}`} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+                          <p className="text-xs font-bold text-slate-800">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                          <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                            <Dato campo="Registro" valor={finca.registro} />
+                            <Dato campo="Sección" valor={finca.seccion} />
+                            <Dato campo="CRU / IDUFIR" valor={finca.cru_idufir} />
+                            <Dato campo="Población" valor={finca.poblacion} />
+                            <Dato campo="Provincia" valor={finca.provincia} />
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
+
             {actividadSeleccionada !== "documentacion-previa" &&
               actividadSeleccionada !== "sede-notarial" && (
               <div
