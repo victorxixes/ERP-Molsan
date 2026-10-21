@@ -305,6 +305,7 @@ def crear_admin_por_defecto(
         "auditoria",
         "seguridad",
         "utilidades",
+        "catalogos",
         "logs",
         "ctn",
         "maestros",
