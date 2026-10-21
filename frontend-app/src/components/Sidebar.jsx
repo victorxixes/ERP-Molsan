@@ -982,10 +982,22 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
             {navigationItems
               ? navigationItems.map((item) => (
-                  <button
+                  <div
                     key={item.key}
+                    className="relative flex-shrink-0"
+                    ref={item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos" ? modulosDropdownRef : undefined}
+                  >
+                  <button
                     type="button"
-                    onClick={() => onNavigationItemClick?.(item.label)}
+                    onClick={() => {
+                      if (item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") {
+                        setModulosDropdownAbierto((abierto) => !abierto);
+                        return;
+                      }
+                      onNavigationItemClick?.(item.label);
+                    }}
+                    aria-haspopup={(item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") ? "menu" : undefined}
+                    aria-expanded={(item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") ? modulosDropdownAbierto : undefined}
                     aria-current={activeNavigationItem === item.label ? "page" : undefined}
                     className={`
                       flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0
@@ -1004,6 +1016,31 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                       </span>
                     ) : null}
                   </button>
+                  {(item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") && modulosDropdownAbierto && (
+                    <div
+                      role="menu"
+                      className="absolute right-0 top-full mt-2 z-[100] min-w-[205px] rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-xl"
+                    >
+                      {modulosDropdown.map((modulo) => (
+                        <NavLink
+                          key={modulo.key}
+                          to={modulo.to}
+                          onClick={() => setModulosDropdownAbierto(false)}
+                          role="menuitem"
+                          className={({ isActive }) => `
+                            flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition
+                            ${isActive
+                              ? "bg-[var(--erp-primary)] text-white"
+                              : "text-[var(--erp-text)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}
+                          `}
+                        >
+                          <NavIcon name={modulo.icon} />
+                          <span>{modulo.label}</span>
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                  </div>
                 ))
               : visiblesPrincipales.map((modulo) => (
                   <TopNavItem
