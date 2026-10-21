@@ -130,7 +130,7 @@ def _asegurar_tabla_visibilidad(db: Session):
         )
     """))
     db.execute(text("""
-        DO $
+        DO $$
         BEGIN
             IF NOT EXISTS (
                 SELECT 1 FROM information_schema.columns
