@@ -5596,20 +5596,9 @@ const cuantiaFincasParaEnvio =
                   )}
                 </div>
 
-                <div className="mt-3 rounded-xl border border-amber-200 bg-white p-3">
-                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <h4 className="text-xs font-extrabold text-slate-700">Defectos registrados · mismos campos que «Alta defecto»</h4>
-                    <button
-                      type="button"
-                      onClick={abrirDefecto}
-                      className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-[11px] font-bold text-amber-800 hover:bg-amber-100"
-                    >
-                      + Alta defecto
-                    </button>
-                  </div>
-                  {defectosRegistrados.length === 0 ? (
-                    <p className="text-xs text-slate-500">Todavía no hay defectos registrados. Usa «Alta defecto» para crear uno; quedará vinculado a este expediente.</p>
-                  ) : (
+                {defectosRegistrados.length > 0 && (
+                  <div className="mt-3 rounded-xl border border-amber-200 bg-white p-3">
+                    <h4 className="mb-3 text-xs font-extrabold text-slate-700">Datos de defectos registrales informados</h4>
                     <div className="space-y-3">
                       {defectosRegistrados.map((defecto) => {
                         const tipoCarga = defecto.tipo_carga_hipotecaria_nombre || tiposCargaHipotecaria.find(
@@ -5617,15 +5606,7 @@ const cuantiaFincasParaEnvio =
                         )?.nombre;
                         return (
                           <article key={defecto.id ?? defecto.id_defecto} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                              <p className="text-xs font-extrabold text-slate-800">{defecto.motivo_defecto || defecto.tipo_error || "Defecto registral"}</p>
-                              <div className="flex flex-wrap gap-2">
-                                {defecto.calificacion_nombre && (
-                                  <Boton onClick={() => descargarPDFCalificacion(defecto)}>📄 Descargar PDF</Boton>
-                                )}
-                                <Boton onClick={() => editarDefectoRegistrado(defecto)}>✏️ Editar defecto</Boton>
-                              </div>
-                            </div>
+                            <p className="mb-2 text-xs font-extrabold text-slate-800">{defecto.motivo_defecto || defecto.tipo_error || "Defecto registral"}</p>
                             <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                               <Dato campo="Tipo de carga hipotecaria" valor={tipoCarga} />
                               <Dato campo="Motivos del defecto" valor={defecto.motivo_defecto} />
@@ -5641,8 +5622,8 @@ const cuantiaFincasParaEnvio =
                         );
                       })}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </section>
             )}
 
