@@ -158,7 +158,7 @@ def _asegurar_tabla_visibilidad(db: Session):
                     ADD CONSTRAINT expediente_visibilidad_config_pkey_emp_actividad
                     PRIMARY KEY (empleado_id, actividad_key);
             END IF;
-        END $;
+        END $$;
     """))
     db.commit()
 
