@@ -1262,8 +1262,19 @@ def inicializar_tablas_auxiliares():
         "%PARTE DEL NEGOCIO DE BANCA PRIVADA DE MORGAN STANLEY%",
         "%BANCO DE VALENCIA%",
                   "%BARCLAYS BANK SAU%",
+                  "%BARCLAYS BANK%",
                   "%BPI%",
-                  "%BANKIA%"
+                  "%BANKIA%",
+                  "%BFA%",
+                  "%BANCO MARE NOSTRUM%",
+                  "%BMN%",
+                  "%SA NOSTRA%",
+                  "%CAIXA PENEDÈS%",
+                  "%CAIXA PENEDES%",
+                  "%CAIXA D'ESTALVIS DE PENEDÈS%",
+                  "%CAIXA D'ESTALVIS DE PENEDES%",
+                  "%CAIXA GIRONA%",
+                  "%CAIXA DE GIRONA%"
         ]
         with engine.begin() as conexion_caixabank_facilitados:
             for patron_origen in patrones_caixabank_facilitados:
