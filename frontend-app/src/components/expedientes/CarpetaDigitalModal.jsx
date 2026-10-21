@@ -113,15 +113,63 @@ export default function CarpetaDigitalModal({
   const [documentoVistaPrevia, setDocumentoVistaPrevia] = useState(null);
   const [urlVistaPrevia, setUrlVistaPrevia] = useState("");
   const [cargandoVistaPrevia, setCargandoVistaPrevia] = useState(false);
+  const [configRepositorios, setConfigRepositorios] = useState(null);
+
+  useEffect(() => {
+    let activo = true;
+    setConfigRepositorios(null);
+    if (!modoActividad || !actividadId) return () => { activo = false; };
+    axios.get("/expedientes/configuracion-visibilidad")
+      .then(({ data }) => {
+        if (!activo) return;
+        const configuracion = (data?.configuraciones || []).find((item) => item.actividad_key === actividadId);
+        if (configuracion && Array.isArray(configuracion.repositorios)) {
+          setConfigRepositorios(configuracion.repositorios);
+        }
+      })
+      .catch(() => {
+        // Si no se puede cargar la configuración, mantener la visibilidad actual.
+      });
+    return () => { activo = false; };
+  }, [modoActividad, actividadId]);
 
   const bloqueActividad = useMemo(() => resolverBloque(actividadId), [actividadId]);
   const bloquesVisibles = useMemo(() => {
     if (!modoActividad) return BLOQUES;
-    // En modo actividad se muestra solo la actividad seleccionada.
-    // Si aún no se pasa actividadId, se mantiene la compatibilidad con la
-    // llamada anterior y se muestra Documentación previa.
-    return [bloqueActividad || BLOQUES[0]];
-  }, [modoActividad, bloqueActividad]);
+    // En modo actividad se muestra solo el circuito y los repositorios configurados.
+    const bloque = bloqueActividad || BLOQUES[0];
+    if (!Array.isArray(configRepositorios)) return [bloque];
+    const clavePorCategoria = {
+      "Documentos Absis": "documentos_absis",
+      "Hoja de Encargo firmada": "hoja_encargo_firmada",
+      "Justificante de cancelación": "justificante_cancelacion",
+      "Nota simple registral": "nota_simple_registral",
+      "Escrituras/borradores": "borradores_escritura",
+      "Presentación Registro": "presentacion_registro_documentos",
+      "Copia simple": "copia_simple_documentos",
+      "AJD/ITP": "ajd_itp_documentos",
+      "Otros impuestos": "otros_impuestos_documentos",
+      "Hoja de Inscripción": "hoja_inscripcion_documentos",
+      "Defecto registral": "defecto_registral",
+      "Subsanación del defecto": "subsanacion_defecto",
+      "Escritura digital final": "escritura_digital_final_documentos",
+      "Documento de inscripción": "documento_inscripcion_documentos",
+      "Expediente digital completo": "expediente_digital_completo_documentos",
+      "Factura notarial": "factura_notarial_documentos",
+      "Factura Registral": "factura_registral_documentos",
+      "Factura impuestos": "factura_impuestos_documentos",
+      "Honorarios gestoría": "honorarios_gestoria_documentos",
+      "Otros pagos": "otros_pagos_documentos",
+      "Otros documentos económicos": "otros_documentos_economicos",
+      "Otra documentación": "otra_documentacion",
+      "Mails de la Oficina": "emails_oficina",
+      "Otros": "otros_documentos",
+    };
+    return [{
+      ...bloque,
+      categorias: bloque.categorias.filter((item) => configRepositorios.includes(clavePorCategoria[item.categoria])),
+    }];
+  }, [modoActividad, bloqueActividad, configRepositorios]);
 
   useEffect(() => {
     if (!bloqueActividad) return;
