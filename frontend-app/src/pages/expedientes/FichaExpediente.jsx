@@ -2360,7 +2360,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     const catalogo = Array.isArray(respuesta?.data) ? respuesta.data : [];
     const normalizarNombre = (valor) => String(valor || "")
       .normalize("NFD")
-      .replace(/[\\u0300-\\u036f]/g, "")
+      .replace(/[\u0300-\u036f]/g, "")
       .trim()
       .toLocaleLowerCase("es-ES");
     const tarifa = catalogo.find((item) =>
