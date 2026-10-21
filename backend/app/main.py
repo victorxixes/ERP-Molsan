@@ -1065,6 +1065,129 @@ def inicializar_tablas_auxiliares():
         # Completa sucesiones históricas de otros grupos bancarios españoles.
         # La migración es idempotente y respeta cualquier asignación manual existente.
         # Solo relaciona nombres históricos cuando la entidad sucesora activa está en el catálogo.
+        # El código europeo se conserva como dato opcional para cajas históricas y entidades
+        # que no disponen de un identificador europeo en la documentación disponible.
+        with engine.begin() as conexion_codigo_entidad:
+            conexion_codigo_entidad.execute(text(
+                "ALTER TABLE public.entidades_bancarias ALTER COLUMN codigo_europeo DROP NOT NULL"
+            ))
+
+        # Entidades que el listado facilitado indica que deben vincularse a CaixaBank.
+        # Se respetan los valores de entidad_actual_id que ya estén asignados manualmente.
+        patrones_caixabank_facilitados = [
+                  "%CAIXA D'ESTALVIS DE L'EMPORDÀ%",
+                  "%CAIXA D’ESTALVIS DEL SINDICAT AGRÍCOLA%",
+                  "%CAIXA ADHERIDA DEL CERCLE OBRER DE BANYOLES%",
+                  "%CAIXA ADHERIDA DE SANT JOAN DE LES ABADESSES%",
+                  "%CAIXA D'ESTALVIS DE PALAMÓS%",
+                  "%JOVENTUT SERÀFICA D'ARENYS DE MAR%",
+                  "%MONT DE PIETAT%",
+                  "%VERGE DE L'ESPERANÇA%",
+                  "%CONGREGACIÓ MARIANA DE CANET DE MAR%",
+                  "%CAIXA RURAL DE TORROELLA DE MONTGRÍ%",
+                  "%ATENEU SOCIAL DE ST. FELIU DE GUÍXOLS%",
+                  "%CAIXA D'ESTALVIS DE SÚRIA%",
+                  "%CAIXA D'ESTALVIS DE PALAFRUGELL%",
+                  "%SANTA COLOMA DE QUERALT%",
+                  "%CENTRE PARROQUIAL DE TORELLÓ%",
+                  "%FEDERACIÓ CATÒLICO-AGRÀRIA D'EIVISSA%",
+                  "%CAIXA RURAL DE PETRA%",
+                  "%PATRONAT OBRER DE CARDONA%",
+                  "%FÀBRICA BEBIÉ%",
+                  "%PREMIÀ DE MAR%",
+                  "%CAIXA RURAL DE MOIÀ%",
+                  "%SON CERVERA%",
+                  "%VILANOVA I LA GELTRÚ%",
+                  "%BISBAL DE L'EMPORDÀ%",
+                  "%PATRONAT D'ESPARREGUERA%",
+                  "%COLÒNIA BONMATÍ%",
+                  "%SANT HILARI SACALM%",
+                  "%SANT SADURNÍ D'ANOIA%",
+                  "%FEDERACIÓ AGRÀRIA DE GIRONA%",
+                  "%CERCLE CATÒLIC DE GRÀCIA%",
+                  "%MANACOR%",
+                  "%MATA RÓ%",
+                  "%SINEU%",
+                  "%CAMPOS DEL PORT%",
+                  "%FELANITX%",
+                  "%CAPDEPERA%",
+                  "%LLUCMAJOR%",
+                  "%PORRERES%",
+                  "%MOLLETENCA%",
+                  "%FOMENT AGRÍCOLA, COMERCIAL I INDUSTRIAL DE LLUCMAJOR%",
+                  "%LA TORRE%",
+                  "%ARTÀ%",
+                  "%CASTELLAR DEL VALLÈS%",
+                  "%PATRONAT SOCIAL DE VILASSAR%",
+                  "%FOMENT DE CULTURA DE ST. FELIU DE CODINES%",
+                  "%POBLA DE LILLET%",
+                  "%DARNIUS%",
+                  "%SES SALINES%",
+                  "%CASTELLÓ D'EMPÚRIES%",
+                  "%SANT LLORENÇ DE MORUNYS%",
+                  "%CALONGE%",
+                  "%BISBAL DEL PENEDÈS%",
+                  "%MAÓ%",
+                  "%MONT DE PIETAT DE LLEIDA%",
+                  "%CAJA RURAL DE TALAVERA%",
+                  "%CAJA RURAL DE PALENCIA%",
+                  "%CAJA RURAL DE CANTABRIA%",
+                  "%BANQUE POUR LA CONSTRUCTION ET L'ÉQUIPEMENT%",
+                  "%SOCIÉTÉ DE CRÉDIT ET DE BANQUE%",
+                  "%BANCO DE LAS ISLAS CANARIAS%",
+                  "%CAIXA DE LA SAGRADA FAMÍLIA%",
+                  "%CAIXA RURAL DEL PIRINEU%",
+                  "%COOPERATIVA AGRÍCOLA DE CALAFELL%",
+                  "%COOPERATIVA AGRÍCOLA DEL PERELLÓ%",
+                  "%CAIXA RURAL D'ALMENAR%",
+                  "%CAIXA RURAL PROVINCIAL DE BARCELONA%",
+                  "%ISBANC%",
+                  "%BANCO DE EUROPA%",
+                  "%BANCO GRANADA-JEREZ%",
+                  "%MORGAN STANLEY%",
+                  "%CAIXA DE GIRONA%",
+                  "%BANKPIME%",
+                  "%BANCA CÍVICA%",
+                  "%BANCO DE VALENCIA%",
+                  "%BARCLAYS BANK SAU%",
+                  "%BPI%",
+                  "%BANKIA%"
+        ]
+        with engine.begin() as conexion_caixabank_facilitados:
+            for patron_origen in patrones_caixabank_facilitados:
+                conexion_caixabank_facilitados.execute(
+                    text("""
+                        UPDATE public.entidades_bancarias AS origen
+                        SET entidad_actual_id = (
+                            SELECT actual.id
+                            FROM public.entidades_bancarias AS actual
+                            WHERE actual.activo IS TRUE
+                              AND actual.id <> origen.id
+                              AND (
+                                UPPER(actual.nombre) = 'CAIXABANK'
+                                OR UPPER(actual.nombre) LIKE 'CAIXABANK,%'
+                                OR UPPER(actual.nombre) LIKE 'CAIXABANK %'
+                              )
+                            ORDER BY actual.id
+                            LIMIT 1
+                        )
+                        WHERE origen.entidad_actual_id IS NULL
+                          AND UPPER(origen.nombre) LIKE :patron
+                          AND EXISTS (
+                            SELECT 1 FROM public.entidades_bancarias AS actual
+                            WHERE actual.activo IS TRUE
+                              AND actual.id <> origen.id
+                              AND (
+                                UPPER(actual.nombre) = 'CAIXABANK'
+                                OR UPPER(actual.nombre) LIKE 'CAIXABANK,%'
+                                OR UPPER(actual.nombre) LIKE 'CAIXABANK %'
+                              )
+                          )
+                    """),
+                    {"patron": patron_origen},
+                )
+        print("[ENTIDADES BANCARIAS] Sucesiones CaixaBank del listado facilitado comprobadas.", flush=True)
+
         reglas_sucesion_bancaria = [
             (
                 "CAIXABANK",
