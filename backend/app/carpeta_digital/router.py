@@ -90,6 +90,13 @@ def _expediente_existe(db: Session, expediente_id: str):
     )
     if not encontrado:
         raise HTTPException(status_code=404, detail=f"No existe el expediente {expediente_id}")
+    return encontrado
+
+
+def _normalizar_texto(valor: str | None) -> str:
+    import unicodedata
+    texto = unicodedata.normalize("NFD", str(valor or "").strip().lower())
+    return "".join(c for c in texto if unicodedata.category(c) != "Mn")
 
 
 def _ruta_segura(nombre_guardado: str) -> Path:
@@ -123,7 +130,7 @@ async def subir_documento(
     archivo: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    _expediente_existe(db, expediente_id)
+    expediente = _expediente_existe(db, expediente_id)
     if categoria not in CATEGORIAS:
         raise HTTPException(status_code=400, detail="Categoría documental no válida")
 
@@ -160,6 +167,18 @@ async def subir_documento(
                 fecha_subida=datetime.utcnow(),
             )
             db.add(registro)
+
+            # Una cancelación sin provisión termina al aportar la copia simple.
+            # Reutiliza el campo existente Fin actividad.
+            operacion = _normalizar_texto(expediente.tipo_operacion)
+            if categoria == "Copia simple" and operacion == "cancelacion sin provision":
+                from datetime import date
+                expediente.estado_expediente = "Liquidado"
+                expediente.estado_actividad = "Cerrada automáticamente"
+                expediente.actividad_actual = "Cierre del expediente"
+                expediente.fecha_fin_actividad = date.today()
+                db.add(expediente)
+
             db.commit()
             db.refresh(registro)
             return registro
