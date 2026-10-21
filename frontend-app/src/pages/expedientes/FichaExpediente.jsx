@@ -5545,6 +5545,107 @@ const cuantiaFincasParaEnvio =
               </section>
             )}
 
+            {actividadSeleccionada === "defectos-registrales" && (
+              <section className="mb-3 rounded-2xl border border-amber-200 bg-amber-50/30 p-3 sm:p-4">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-sm font-extrabold text-slate-800">Datos vinculados de Enviar a notario</h3>
+                  <span className="text-[11px] font-medium text-slate-500">Datos enlazados a la ficha del expediente</span>
+                </div>
+                <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                  <Dato campo="Notario" valor={expediente?.nombre_notario ?? expediente?.notario} />
+                  <Dato campo="NIF notario" valor={expediente?.nif_notario} />
+                  <Dato campo="Fecha de firma" valor={expediente?.fecha_firma} tipo="fecha" />
+                  <Dato campo="Protocolo" valor={expediente?.protocolo} />
+                  <Dato
+                    campo="Tipo del documento formalizado"
+                    valor={
+                      Array.isArray(expediente?.documentos_escritura) && expediente.documentos_escritura.length
+                        ? expediente.documentos_escritura.map((documento) => documento?.tipo_documento).filter(Boolean).join(" · ")
+                        : expediente?.tipo_documento
+                    }
+                  />
+                </div>
+
+                <div className="mt-3 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-2 text-xs font-extrabold text-slate-700">Información de fincas y registro</h4>
+                  {cargandoFincas ? (
+                    <p className="text-xs text-slate-500">Cargando fincas y datos registrales…</p>
+                  ) : fincasExpediente.length === 0 ? (
+                    <p className="text-xs text-slate-500">No hay fincas ni datos registrales vinculados a este expediente.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {fincasExpediente.map((finca, indice) => (
+                        <article key={finca.id || `${finca.finca || finca.numero_finca || "finca"}-${indice}`} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+                          <p className="text-xs font-bold text-slate-800">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                          <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                            <Dato campo="Registro" valor={finca.registro} />
+                            <Dato campo="Sección" valor={finca.seccion} />
+                            <Dato campo="CRU / IDUFIR" valor={finca.cru_idufir} />
+                            <Dato campo="Población" valor={finca.poblacion} />
+                            <Dato campo="Provincia" valor={finca.provincia} />
+                            <Dato campo="Inscripción" valor={finca.inscripcion} />
+                            <Dato campo="Cuantía" valor={finca.cuantia} />
+                            <Dato campo="Contrato" valor={finca.contrato} />
+                            <Dato campo="Fecha constitución" valor={finca.fecha_constitucion} tipo="fecha" />
+                            <Dato campo="Entidad original" valor={finca.entidad_original} />
+                            <Dato campo="Subrogado" valor={finca.subrogado} />
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-3 rounded-xl border border-amber-200 bg-white p-3">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h4 className="text-xs font-extrabold text-slate-700">Defectos registrados · mismos campos que «Alta defecto»</h4>
+                    <button
+                      type="button"
+                      onClick={abrirDefecto}
+                      className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-[11px] font-bold text-amber-800 hover:bg-amber-100"
+                    >
+                      + Alta defecto
+                    </button>
+                  </div>
+                  {defectosRegistrados.length === 0 ? (
+                    <p className="text-xs text-slate-500">Todavía no hay defectos registrados. Usa «Alta defecto» para crear uno; quedará vinculado a este expediente.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {defectosRegistrados.map((defecto) => {
+                        const tipoCarga = defecto.tipo_carga_hipotecaria_nombre || tiposCargaHipotecaria.find(
+                          (tipo) => String(tipo.id) === String(defecto.tipo_carga_hipotecaria_id)
+                        )?.nombre;
+                        return (
+                          <article key={defecto.id ?? defecto.id_defecto} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                              <p className="text-xs font-extrabold text-slate-800">{defecto.motivo_defecto || defecto.tipo_error || "Defecto registral"}</p>
+                              <div className="flex flex-wrap gap-2">
+                                {defecto.calificacion_nombre && (
+                                  <Boton onClick={() => descargarPDFCalificacion(defecto)}>📄 Descargar PDF</Boton>
+                                )}
+                                <Boton onClick={() => editarDefectoRegistrado(defecto)}>✏️ Editar defecto</Boton>
+                              </div>
+                            </div>
+                            <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                              <Dato campo="Tipo de carga hipotecaria" valor={tipoCarga} />
+                              <Dato campo="Motivos del defecto" valor={defecto.motivo_defecto} />
+                              <Dato campo="Subtipo del defecto" valor={defecto.subtipo_defecto} />
+                              <Dato campo="Fecha Notificación Registro" valor={defecto.fecha_notificacion_registro} tipo="fecha" />
+                              <Dato campo="Fecha Vencimiento Presentación Registro" valor={defecto.fecha_vencimiento_presentacion} tipo="fecha" />
+                              <Dato campo="Fecha Entrada Registro Subsanación" valor={defecto.fecha_entrada_subsanacion} tipo="fecha" />
+                              <Dato campo="Calificación del Registro" valor={defecto.calificacion_registro} />
+                              <Dato campo="Observaciones" valor={defecto.observaciones_registro} />
+                              <Dato campo="Estado de subsanación" valor={defecto.fecha_entrada_subsanacion ? "Subsanado" : "Pendiente de subsanación"} />
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
+
             {actividadSeleccionada === "tramitacion-inscripcion" && (
               <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
