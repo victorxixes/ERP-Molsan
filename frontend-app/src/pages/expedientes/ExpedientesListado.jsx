@@ -2078,6 +2078,7 @@ export default function ExpedientesListado() {
           observaciones: filtrosAplicados.observaciones || undefined,
           estadoActividad: filtrosAplicados.estadoActividad || undefined,
           actividadActual: filtrosAplicados.actividad || undefined,
+          configActividad: actividadSeleccionada || undefined,
           estadoExpediente: filtrosAplicados.estadoExpediente || undefined,
           alerta: alertaSeleccionada || undefined,
           origenBankia: filtrosAplicados.origenBankia || undefined,
