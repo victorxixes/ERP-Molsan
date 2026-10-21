@@ -5989,6 +5989,78 @@ const cuantiaFincasParaEnvio =
                       </div>
                     )}
                   </div>
+
+                  <div className="mt-4 border-t border-indigo-100 pt-3">
+                    <h4 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-700">Garantías</h4>
+                    <p className="mb-3 text-xs text-slate-500">Datos derivados de Fincas y registros y de la fecha de inscripción de Tramitación inscripción. No se duplican ni se editan desde este apartado.</p>
+                    {errorFincas && <p className="mb-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{errorFincas}</p>}
+                    {cargandoFincas ? (
+                      <p className="text-xs text-slate-500">Cargando garantías…</p>
+                    ) : fincasExpediente.length === 0 ? (
+                      <p className="rounded-xl border border-dashed border-slate-200 bg-white p-3 text-xs text-slate-500">No hay fincas ni registros vinculados para generar garantías.</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {fincasExpediente.map((finca, indice) => {
+                          const domicilio = finca.domicilio || finca.direccion || finca.direccion_finca || finca.calle || finca.direccion_completa || "";
+                          const localidad = finca.localidad || finca.poblacion || finca.municipio || "";
+                          const codigoPostal = finca.codigo_postal || finca.cod_postal || finca.cp || finca.codigoPostal || "";
+                          const provincia = finca.provincia || "";
+                          const idufir = finca.idufir || finca.cru_idufir || finca.cru || "";
+                          const numeroFinca = finca.finca || finca.numero_finca || "";
+                          const fechaInscripcion = expediente?.fecha_inscripcion || "";
+                          const registroProvincia = finca.provincia_registro || finca.registro_provincia || provincia;
+                          const registroPoblacion = finca.poblacion_registro || finca.registro_poblacion || localidad;
+                          const registroNumero = finca.numero_registro || finca.registro_numero || finca.registro || "";
+                          const numeroSeccion = finca.seccion || "";
+                          const nombreRegistro = finca.nombre_registro || finca.registro_nombre || "";
+                          const datosPendientes = !domicilio || !localidad || !codigoPostal || !provincia || !idufir || !numeroFinca || !fechaInscripcion || !registroProvincia || !registroPoblacion || !registroNumero || !numeroSeccion || !nombreRegistro;
+                          const campoGarantia = (label, valor, fecha = false) => (
+                            <div>
+                              <span className="block text-[10px] font-semibold text-slate-400">{label}</span>
+                              <strong className="mt-0.5 block break-words text-xs font-semibold text-slate-700">{valor ? (fecha ? formatearFecha(valor) : valor) : "No consta"}</strong>
+                            </div>
+                          );
+                          return (
+                            <article key={finca.id || String(numeroFinca || "finca") + "-garantia-" + indice} className="rounded-xl border border-slate-200 bg-white p-3">
+                              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                                <h5 className="text-xs font-extrabold text-slate-800">Garantía {indice + 1} · Finca {numeroFinca || "No identificada"}</h5>
+                                <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${datosPendientes ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}`}>Datos pendientes: {datosPendientes ? "Sí" : "No"}</span>
+                              </div>
+                              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                <div className="rounded-lg bg-slate-50 p-3">
+                                  <h6 className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Finca del contrato</h6>
+                                  <div className="grid grid-cols-2 gap-3">
+                                    {campoGarantia("Domicilio", domicilio)}
+                                    {campoGarantia("Localidad", localidad)}
+                                    {campoGarantia("Código postal", codigoPostal)}
+                                    {campoGarantia("Provincia", provincia)}
+                                  </div>
+                                </div>
+                                <div className="rounded-lg bg-slate-50 p-3">
+                                  <h6 className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Datos de la garantía</h6>
+                                  <div className="grid grid-cols-2 gap-3">
+                                    {campoGarantia("IDUFIR / CRU", idufir)}
+                                    {campoGarantia("Núm. finca registral", numeroFinca)}
+                                    {campoGarantia("Fecha inscripción cancelación", fechaInscripcion, true)}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="mt-3 rounded-lg border border-slate-100 p-3">
+                                <h6 className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Identificación del registro de propiedad</h6>
+                                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                                  {campoGarantia("Provincia", registroProvincia)}
+                                  {campoGarantia("Población", registroPoblacion)}
+                                  {campoGarantia("Registro (Número)", registroNumero)}
+                                  {campoGarantia("Núm. sección", numeroSeccion)}
+                                  {campoGarantia("Registro (Nombre)", nombreRegistro)}
+                                </div>
+                              </div>
+                            </article>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </section>
                 <section className="rounded-2xl border border-slate-200 bg-white p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
@@ -6099,35 +6171,6 @@ const cuantiaFincasParaEnvio =
                       </article>
                     )}
                   </div>
-                </section>
-
-                <section className="rounded-2xl border border-slate-200 bg-white p-4">
-                  <div className="mb-3">
-                    <h3 className="text-sm font-extrabold text-slate-800">Garantías</h3>
-                    <p className="mt-1 text-xs text-slate-500">Fincas y registros vinculados al expediente.</p>
-                  </div>
-                  {errorFincas && <p className="mb-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{errorFincas}</p>}
-                  {cargandoFincas ? (
-                    <p className="text-xs text-slate-500">Cargando garantías…</p>
-                  ) : fincasExpediente.length === 0 ? (
-                    <p className="rounded-xl border border-dashed border-slate-200 p-3 text-xs text-slate-500">No hay fincas ni registros vinculados.</p>
-                  ) : (
-                    <div className="space-y-2">
-                      {fincasExpediente.map((finca, i) => (
-                        <article key={finca.id || `${finca.finca}-${i}`} className="rounded-xl border border-slate-200 p-3">
-                          <p className="text-xs font-bold text-slate-800">Finca {finca.finca || finca.numero_finca || "—"}</p>
-                          <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
-                            <div><span className="block text-slate-400">Registro</span><strong>{finca.registro || "—"}</strong></div>
-                            <div><span className="block text-slate-400">Sección</span><strong>{finca.seccion || "—"}</strong></div>
-                            <div><span className="block text-slate-400">Población</span><strong>{finca.poblacion || "—"}</strong></div>
-                            <div><span className="block text-slate-400">Provincia</span><strong>{finca.provincia || "—"}</strong></div>
-                            <div><span className="block text-slate-400">CRU/Idufir</span><strong>{finca.cru_idufir || "—"}</strong></div>
-                            <div><span className="block text-slate-400">Inscripción</span><strong>{finca.inscripcion || "—"}</strong></div>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-                  )}
                 </section>
 
                 <section className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4">
