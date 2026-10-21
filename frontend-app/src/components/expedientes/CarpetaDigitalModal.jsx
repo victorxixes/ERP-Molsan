@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import { useAuthStore } from "../../store/authStore";
 
 // Se conservan las categorías del repositorio actual para no romper
 // los documentos ya almacenados.
@@ -99,6 +100,7 @@ export default function CarpetaDigitalModal({
   actividadId,
   onDocumentosChange,
 }) {
+  const empleadoSesion = useAuthStore((state) => state.empleado);
   const [documentos, setDocumentos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -119,7 +121,7 @@ export default function CarpetaDigitalModal({
     let activo = true;
     setConfigRepositorios(null);
     if (!modoActividad || !actividadId) return () => { activo = false; };
-    axios.get("/expedientes/configuracion-visibilidad")
+    axios.get("/expedientes/configuracion-visibilidad", { params: { empleado_id: empleadoSesion?.empleado_id ?? empleadoSesion?.id } })
       .then(({ data }) => {
         if (!activo) return;
         const configuracion = (data?.configuraciones || []).find((item) => item.actividad_key === actividadId);
@@ -131,7 +133,7 @@ export default function CarpetaDigitalModal({
         // Si no se puede cargar la configuración, mantener la visibilidad actual.
       });
     return () => { activo = false; };
-  }, [modoActividad, actividadId]);
+  }, [modoActividad, actividadId, empleadoSesion?.empleado_id, empleadoSesion?.id]);
 
   const bloqueActividad = useMemo(() => resolverBloque(actividadId), [actividadId]);
   const bloquesVisibles = useMemo(() => {
