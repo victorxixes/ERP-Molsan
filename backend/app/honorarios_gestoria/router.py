@@ -154,7 +154,8 @@ def crear_honorario(payload: HonorarioPayload, db: Session = Depends(get_db)):
     existente = db.query(HonorarioGestoria).filter(HonorarioGestoria.nombre.ilike(payload.nombre)).first()
     if existente:
         raise HTTPException(status_code=409, detail="Ya existe un honorario con ese nombre.")
-    datos = payload.datos_con_total()\n    honorario = HonorarioGestoria(**datos)
+    datos = payload.datos_con_total()
+    honorario = HonorarioGestoria(**datos)
     db.add(honorario)
     try:
         db.commit()
@@ -176,7 +177,8 @@ def actualizar_honorario(honorario_id: int, payload: HonorarioPayload, db: Sessi
     ).first()
     if duplicado:
         raise HTTPException(status_code=409, detail="Ya existe otro honorario con ese nombre.")
-    datos = payload.datos_con_total()\n    for campo, valor in datos.items():
+    datos = payload.datos_con_total()
+    for campo, valor in datos.items():
         setattr(honorario, campo, valor)
     try:
         db.commit()
