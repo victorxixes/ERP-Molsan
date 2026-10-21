@@ -98,6 +98,15 @@ function formatearFecha(valor) {
   return texto;
 }
 
+function normalizarMunicipio(valor) {
+  return String(valor ?? "")
+    .normalize("NFD")
+    .replace(/[\\u0300-\\u036f]/g, "")
+    .trim()
+    .replace(/\\s+/g, " ")
+    .toLocaleLowerCase("es");
+}
+
 function obtenerValor(objeto, ...claves) {
   for (const clave of claves) {
     const valor = objeto?.[clave];
@@ -301,6 +310,9 @@ export default function EnviarANotarioModal({
     return [{ id: 1, tipo_documento: inicial.tipo_documento || "", cuantia: cuantiaInicial }];
   });
 
+  const [municipios, setMunicipios] = useState([]);
+  const [municipiosAbierto, setMunicipiosAbierto] = useState(false);
+  const [municipiosLoading, setMunicipiosLoading] = useState(false);
   const [tiposDocumento, setTiposDocumento] = useState([]);
   const [loadingTipos, setLoadingTipos] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -349,6 +361,50 @@ export default function EnviarANotarioModal({
   }, []);
 
   // ==========================================================
+  // ==========================================================
+  // MUNICIPIOS: POBLACIÓN AUTOCOMPLETADA Y PROVINCIA VINCULADA
+  // ==========================================================
+
+  useEffect(() => {
+    let activo = true;
+
+    async function cargarMunicipios() {
+      setMunicipiosLoading(true);
+      try {
+        const response = await axios.get("/municipios");
+        if (!activo) return;
+
+        const lista = Array.isArray(response?.data) ? response.data : [];
+        setMunicipios(lista);
+
+        // En expedientes antiguos, sincronizamos la provincia solo si la
+        // población guardada coincide con un municipio del catálogo.
+        setForm((actual) => {
+          const coincidencia = lista.find(
+            (item) =>
+              normalizarMunicipio(item.municipio) ===
+              normalizarMunicipio(actual.facturacion_poblacion)
+          );
+          if (!coincidencia) return actual;
+          return {
+            ...actual,
+            facturacion_poblacion: coincidencia.municipio,
+            facturacion_provincia: coincidencia.provincia,
+          };
+        });
+      } catch (err) {
+        console.error("ERROR CARGANDO MUNICIPIOS PARA FACTURACIÓN:", err);
+      } finally {
+        if (activo) setMunicipiosLoading(false);
+      }
+    }
+
+    cargarMunicipios();
+    return () => {
+      activo = false;
+    };
+  }, []);
+
   // CERRAR CON ESC
   // ==========================================================
 
@@ -1050,25 +1106,98 @@ export default function EnviarANotarioModal({
                       }
                     />
 
-                    <CampoTexto
-                      label="Población"
-                      value={form.facturacion_poblacion}
-                      disabled={loading}
-                      autoComplete="address-level2"
-                      onChange={(v) =>
-                        cambiarCampo("facturacion_poblacion", v)
-                      }
-                    />
+                    <div className="relative min-w-0">
+                      <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                        Población
+                      </label>
+                      <input
+                        type="text"
+                        value={form.facturacion_poblacion ?? ""}
+                        disabled={loading}
+                        autoComplete="off"
+                        placeholder={municipiosLoading ? "Cargando municipios..." : "Escribe para buscar un municipio"}
+                        onFocus={() => setMunicipiosAbierto(true)}
+                        onChange={(event) => {
+                          const valor = event.target.value;
+                          const coincidencia = municipios.find(
+                            (item) => normalizarMunicipio(item.municipio) === normalizarMunicipio(valor)
+                          );
+                          setForm((actual) => ({
+                            ...actual,
+                            facturacion_poblacion: valor,
+                            facturacion_provincia: coincidencia ? coincidencia.provincia : "",
+                          }));
+                          setMunicipiosAbierto(true);
+                          setError("");
+                        }}
+                        onBlur={() => {
+                          setTimeout(() => setMunicipiosAbierto(false), 120);
+                        }}
+                        className={clasesInput()}
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-expanded={municipiosAbierto}
+                        aria-label="Población de facturación"
+                      />
+                      {municipiosAbierto && !loading && form.facturacion_poblacion.trim() && (
+                        <div
+                          role="listbox"
+                          className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl"
+                        >
+                          {municipios
+                            .filter((item) =>
+                              normalizarMunicipio(item.municipio).includes(normalizarMunicipio(form.facturacion_poblacion)) ||
+                              normalizarMunicipio(item.provincia).includes(normalizarMunicipio(form.facturacion_poblacion))
+                            )
+                            .slice(0, 10)
+                            .map((item) => (
+                              <button
+                                key={item.id}
+                                type="button"
+                                role="option"
+                                aria-selected={normalizarMunicipio(item.municipio) === normalizarMunicipio(form.facturacion_poblacion)}
+                                onMouseDown={(event) => event.preventDefault()}
+                                onClick={() => {
+                                  setForm((actual) => ({
+                                    ...actual,
+                                    facturacion_poblacion: item.municipio,
+                                    facturacion_provincia: item.provincia,
+                                  }));
+                                  setMunicipiosAbierto(false);
+                                  setError("");
+                                }}
+                                className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-indigo-50"
+                              >
+                                <span className="font-medium text-slate-800">{item.municipio}</span>
+                                <span className="text-xs text-slate-500">{item.provincia}</span>
+                              </button>
+                            ))}
+                          {municipios.filter((item) =>
+                            normalizarMunicipio(item.municipio).includes(normalizarMunicipio(form.facturacion_poblacion)) ||
+                            normalizarMunicipio(item.provincia).includes(normalizarMunicipio(form.facturacion_poblacion))
+                          ).length === 0 && (
+                            <p className="px-3 py-2 text-xs text-slate-500">
+                              No se encuentra en el catálogo. Comprueba la población en Utilidades → Municipios.
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      <p className="mt-1 text-[11px] text-slate-500">
+                        {municipiosLoading
+                          ? "Cargando catálogo de municipios…"
+                          : "Selecciona un municipio para completar automáticamente la provincia."}
+                      </p>
+                    </div>
                   </div>
 
                   <CampoTexto
                     label="Provincia"
                     value={form.facturacion_provincia}
-                    disabled={loading}
+                    disabled={loading || municipios.some((item) =>
+                      normalizarMunicipio(item.municipio) === normalizarMunicipio(form.facturacion_poblacion)
+                    )}
                     autoComplete="address-level1"
-                    onChange={(v) =>
-                      cambiarCampo("facturacion_provincia", v)
-                    }
+                    onChange={(v) => cambiarCampo("facturacion_provincia", v)}
                   />
 
                   <CampoTexto
