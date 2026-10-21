@@ -2354,11 +2354,12 @@ export default function ExpedientesListado() {
           {ACTIVIDADES_EXPEDIENTES.map((actividad) => {
             const total = actividades.filter((item) => actividadCoincide(actividad, item?.actividad)).reduce((suma, item) => suma + Number(item?.total || 0), 0);
             const reglaPlazo = {
-              "sede-notarial": { alerta: "sede_notarial", etiqueta: (cantidad) => `Más de 10 días: ${cantidad}` },
-              "liquidacion-impuestos": { alerta: "liquidacion_pendiente", etiqueta: (cantidad) => `Pendientes de presentación: ${cantidad}` },
-              "tramitacion-inscripcion": { alerta: "inscripcion_30_dias", etiqueta: (cantidad) => `Más de 30 días: ${cantidad}` },
-              "defectos-registrales": { alerta: "defectos_vencidos", etiqueta: (cantidad) => `Vencidos: ${cantidad}` },
-              "facturacion-cierre": { alerta: "facturacion_cierre", etiqueta: (cantidad) => `Inscritos pendientes de cierre: ${cantidad}` },
+              "sede-notarial": { alerta: "sede_notarial", etiqueta: (cantidad) => `Fuera de plazo (>5 días): ${cantidad}` },
+              "sede-notarial-protocolo": { alerta: "sede_notarial_protocolo", etiqueta: (cantidad) => `Fuera de plazo (>2 días): ${cantidad}` },
+              "liquidacion-impuestos": { alerta: "liquidacion_pendiente", etiqueta: (cantidad) => `Fuera de plazo (>2 días): ${cantidad}` },
+              "tramitacion-inscripcion": { alerta: "inscripcion_30_dias", etiqueta: (cantidad) => `Fuera de plazo (>23 días): ${cantidad}` },
+              "defectos-registrales": { alerta: "defectos_vencidos", etiqueta: (cantidad) => `Fuera de plazo (>60 días): ${cantidad}` },
+              "facturacion-cierre": { alerta: "facturacion_cierre", etiqueta: (cantidad) => `Fuera de plazo (>5 días): ${cantidad}` },
             }[actividad.key];
             const alertaPlazo = reglaPlazo ? alertasControl.find((item) => item.key === reglaPlazo.alerta) : null;
             const cantidadPlazo = Number(alertaPlazo?.total || 0);
@@ -2393,7 +2394,7 @@ export default function ExpedientesListado() {
         </div>
         <div role="note" className="rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "var(--erp-border)", background: "var(--erp-surface-soft)", color: "var(--erp-text)" }}>
           <span className="font-bold">📌 Control de plazos:</span>
-          <span className="ml-1">los recuentos de Sede notarial, Liquidación de impuestos, Tramitación inscripción, Defectos registrales y Facturación y cierre se calculan con los criterios definidos. Documentación previa y Sede notarial con protocolo quedan identificadas como pendientes de definir, sin asignarles vencimientos inventados.</span>
+          <span className="ml-1">Los recuentos muestran expedientes que superan el máximo permitido: Sede notarial 5 días; Sede notarial con protocolo 2; Liquidación de impuestos 2; Tramitación inscripción 23; Defectos registrales 60; Liquidación y cierre 5. Documentación previa sigue pendiente de definir.</span>
         </div>
       </section>
 
