@@ -185,7 +185,7 @@ def _tarifa_dict(item: TarifaProvision) -> dict:
         "tipo": item.tipo,
         "entidad": item.entidad,
         "territorio": getattr(item, "territorio", "Península") or "Península",
-        "capital_minimo: float(item.capital_minimo or 0),
+        "capital_minimo": float(item.capital_minimo or 0),
         "capital_maximo": float(item.capital_maximo) if item.capital_maximo is not None else None,
         "honorarios": float(item.honorarios or 0),
         "suplidos": float(item.suplidos or 0),
