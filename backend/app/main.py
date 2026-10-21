@@ -1660,8 +1660,7 @@ def inicializar_tablas_auxiliares():
                       AND UPPER(TRIM(actual.nombre)) = 'KUTXABANK, S.A.'
                     ORDER BY actual.id
                     LIMIT 1
-                ),
-                pendiente_revision = FALSE
+                )
                 WHERE UPPER(TRIM(origen.nombre)) IN (
                     'CAJASUR',
                     'CAJA VITAL',
@@ -1703,8 +1702,7 @@ def inicializar_tablas_auxiliares():
                       CASE WHEN UPPER(TRIM(actual.nombre)) = 'UNICAJA BANCO, S.A.' THEN 0 ELSE 1 END,
                       actual.id
                     LIMIT 1
-                ),
-                pendiente_revision = FALSE
+                )
                 WHERE UPPER(TRIM(origen.nombre)) IN (
                     'ESPAÑADUERO',
                     'ESPANADUERO',
@@ -1725,8 +1723,7 @@ def inicializar_tablas_auxiliares():
                       AND UPPER(TRIM(actual.nombre)) LIKE 'BBVA%'
                     ORDER BY actual.id
                     LIMIT 1
-                ),
-                pendiente_revision = FALSE
+                )
                 WHERE UPPER(TRIM(origen.nombre)) IN ('UNO-E', 'UNO-E BANK', 'UNOE BANK')
                   AND EXISTS (
                     SELECT 1 FROM public.entidades_bancarias AS actual
