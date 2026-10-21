@@ -958,6 +958,111 @@ def inicializar_tablas_auxiliares():
                   )
             """))
         print("[ENTIDADES BANCARIAS] Sucesiones históricas conocidas de CaixaBank comprobadas.", flush=True)
+        # Otras sucesiones conocidas que terminaron en CaixaBank.
+        with engine.begin() as conexion_sucesiones_adicionales:
+            conexion_sucesiones_adicionales.execute(text("""
+                UPDATE public.entidades_bancarias AS origen
+                SET entidad_actual_id = (
+                    SELECT actual.id
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND actual.id <> origen.id
+                      AND (
+                          UPPER(actual.nombre) = 'CAIXABANK'
+                          OR UPPER(actual.nombre) LIKE 'CAIXABANK,%'
+                          OR UPPER(actual.nombre) LIKE 'CAIXABANK %'
+                      )
+                    ORDER BY
+                      CASE WHEN UPPER(actual.nombre) = 'CAIXABANK' THEN 0 ELSE 1 END,
+                      actual.id
+                    LIMIT 1
+                )
+                WHERE origen.entidad_actual_id IS NULL
+                  AND (
+                    UPPER(origen.nombre) LIKE '%BANCO ZARAGOZANO%'
+                    OR UPPER(origen.nombre) LIKE '%BANCO DE LA PEQUEÑA Y MEDIANA EMPRESA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS PROVINCIAL DE GUADALAJARA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE NAVARRA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE ALCALÁ DE HENARES%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE ALCIRA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE JÁTIVA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE JATIVA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE SEGORBE%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS DE VILLARREAL%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y PRÉSTAMOS DE CARLET%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y PRESTAMOS DE CARLET%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y SOCORROS Y MONTE DE PIEDAD DE GANDÍA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y SOCORROS Y MONTE DE PIEDAD DE GANDIA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y SOCORROS Y MONTE DE PIEDAD DE ALBERIQUE%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA D´ESTALVIS SAGRADA FAMILIA%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA D''ESTALVIS SAGRADA FAMILIA%'
+                  )
+                  AND EXISTS (
+                    SELECT 1
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND actual.id <> origen.id
+                      AND (
+                          UPPER(actual.nombre) = 'CAIXABANK'
+                          OR UPPER(actual.nombre) LIKE 'CAIXABANK,%'
+                          OR UPPER(actual.nombre) LIKE 'CAIXABANK %'
+                      )
+                  )
+            """))
+            # La Caja de Ahorros Provincial de Ciudad Real pasó a CCM,
+            # después a Liberbank y finalmente a Unicaja Banco.
+            conexion_sucesiones_adicionales.execute(text("""
+                UPDATE public.entidades_bancarias AS origen
+                SET entidad_actual_id = (
+                    SELECT actual.id
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND actual.id <> origen.id
+                      AND UPPER(actual.nombre) LIKE '%UNICAJA%'
+                    ORDER BY actual.id
+                    LIMIT 1
+                )
+                WHERE origen.entidad_actual_id IS NULL
+                  AND UPPER(origen.nombre) LIKE '%CAJA DE AHORROS PROVINCIAL DE CIUDAD REAL%'
+                  AND EXISTS (
+                    SELECT 1 FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND UPPER(actual.nombre) LIKE '%UNICAJA%'
+                  )
+            """))
+            # Las antiguas cajas de Catalunya, Tarragona, Manresa y Lleida
+            # terminaron integradas en CatalunyaCaixa/Unnim y posteriormente BBVA.
+            conexion_sucesiones_adicionales.execute(text("""
+                UPDATE public.entidades_bancarias AS origen
+                SET entidad_actual_id = (
+                    SELECT actual.id
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND actual.id <> origen.id
+                      AND UPPER(actual.nombre) LIKE 'BBVA%'
+                    ORDER BY actual.id
+                    LIMIT 1
+                )
+                WHERE origen.entidad_actual_id IS NULL
+                  AND (
+                    UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE LÉRIDA%'
+                    OR UPPER(origen.nombre) LIKE '%CAJA DE AHORROS Y MONTE DE PIEDAD DE LERIDA%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA CATALUNYA%'
+                    OR UPPER(origen.nombre) LIKE '%CATALUNYACAIXA%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA TARRAGONA%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA MANRESA%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA SABADELL%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA TERRASSA%'
+                    OR UPPER(origen.nombre) LIKE '%CAIXA MANLLEU%'
+                    OR UPPER(origen.nombre) LIKE '%UNNIM%'
+                  )
+                  AND EXISTS (
+                    SELECT 1 FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND UPPER(actual.nombre) LIKE 'BBVA%'
+                  )
+            """))
+        print("[ENTIDADES BANCARIAS] Sucesiones históricas adicionales comprobadas.", flush=True)
         with engine.begin() as conexion_complementos:
             conexion_complementos.execute(text(
                 "ALTER TABLE public.complementos_saldo ADD COLUMN IF NOT EXISTS provisionado DOUBLE PRECISION NOT NULL DEFAULT 0"
