@@ -31,7 +31,7 @@ const REPOSITORIOS_INICIALES = {
   "facturacion-cierre": ["escritura_digital_final_documentos", "documento_inscripcion_documentos", "expediente_digital_completo_documentos", "factura_notarial_documentos", "factura_registral_documentos", "factura_impuestos_documentos", "honorarios_gestoria_documentos", "otros_pagos_documentos"],
 };
 
-const CLASE_INPUT = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
+const CLASE_INPUT = "w-full rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2.5 text-sm text-[var(--erp-text)] outline-none focus:border-[var(--erp-primary)] focus:ring-2 focus:ring-[var(--erp-primary-soft)]";
 
 export default function VisibilidadTablas({ onClose }) {
   const [catalogo, setCatalogo] = useState({ columnas_excel: [], repositorios: [], configuraciones: [] });
@@ -127,15 +127,15 @@ export default function VisibilidadTablas({ onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[12000] overflow-y-auto bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="Visibilidad tablas">
-      <div className="mx-auto my-2 max-w-7xl overflow-hidden rounded-2xl border border-white/60 bg-slate-50 shadow-2xl">
-        <header className="flex flex-wrap items-center gap-3 bg-slate-900 px-5 py-4 text-white">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-xl">⚙️</div>
+    <div className="erp-page fixed inset-0 z-[12000] overflow-y-auto bg-slate-900/40 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="Visibilidad tablas">
+      <div className="mx-auto my-2 max-w-7xl overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] shadow-[var(--erp-shadow-lg)]">
+        <header className="flex flex-wrap items-center gap-3 bg-[var(--erp-primary)] px-5 py-4 text-white">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-xl">⚙️</div>
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-extrabold">Visibilidad tablas</h2>
-            <p className="text-xs text-slate-300">Columnas de Excel y repositorios de carpeta digital por actividad</p>
+            <p className="text-xs text-white/85">Columnas de Excel y repositorios de carpeta digital por actividad</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold hover:bg-white/10">Cerrar ✕</button>
+          <button type="button" onClick={onClose} className="rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold text-white hover:bg-white/10">Cerrar ✕</button>
         </header>
 
         <div className="space-y-5 p-4 sm:p-6">
@@ -164,13 +164,13 @@ export default function VisibilidadTablas({ onClose }) {
                     <h3 className="text-sm font-extrabold text-slate-800">Columnas del Excel</h3>
                     <p className="mt-1 text-xs text-slate-500">Marca las columnas y ordénalas con las flechas. La exportación de esta actividad respetará esta selección.</p>
                   </div>
-                  <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">{columnas.length} seleccionadas</span>
+                  <span className="rounded-full bg-[var(--erp-primary-soft)] px-3 py-1 text-xs font-bold text-[var(--erp-primary-dark)]">{columnas.length} seleccionadas</span>
                 </div>
                 <input value={busquedaColumna} onChange={(e) => setBusquedaColumna(e.target.value)} className={CLASE_INPUT + " mb-3"} placeholder="Buscar columna Excel…" />
                 <div className="grid max-h-[34vh] gap-2 overflow-y-auto sm:grid-cols-2 xl:grid-cols-3">
                   {columnasFiltradas.map((item) => (
-                    <label key={item.key} className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-xs ${columnas.includes(item.key) ? "border-blue-200 bg-blue-50 text-blue-800" : "border-slate-200 bg-white text-slate-600"}`}>
-                      <input type="checkbox" checked={columnas.includes(item.key)} onChange={(e) => alternar(setColumnas, columnas, item.key, e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-blue-600" />
+                    <label key={item.key} className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-xs ${columnas.includes(item.key) ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)] text-[var(--erp-primary-dark)]" : "border-slate-200 bg-white text-slate-600"}`}>
+                      <input type="checkbox" checked={columnas.includes(item.key)} onChange={(e) => alternar(setColumnas, columnas, item.key, e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-[var(--erp-primary)]" />
                       <span className="min-w-0 flex-1">{item.label}</span>
                     </label>
                   ))}
@@ -184,7 +184,7 @@ export default function VisibilidadTablas({ onClose }) {
                   <div className="flex flex-wrap gap-2">
                     {columnas.map((key, index) => {
                       const item = catalogo.columnas_excel.find((col) => col.key === key);
-                      return <span key={key} className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-2 py-1 text-xs text-slate-700">
+                      return <span key={key} className="inline-flex items-center gap-1 rounded-lg border border-[var(--erp-border)] bg-[var(--erp-surface-soft)] px-2 py-1 text-xs text-[var(--erp-text)]">
                         {item?.label || key}
                         <button type="button" aria-label={`Mover ${key} arriba`} disabled={index === 0} onClick={() => setColumnas((actual) => { const next = [...actual]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; return next; })} className="px-1 font-bold disabled:opacity-30">↑</button>
                         <button type="button" aria-label={`Mover ${key} abajo`} disabled={index === columnas.length - 1} onClick={() => setColumnas((actual) => { const next = [...actual]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; return next; })} className="px-1 font-bold disabled:opacity-30">↓</button>
@@ -201,8 +201,8 @@ export default function VisibilidadTablas({ onClose }) {
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                   {catalogo.repositorios.map((item) => (
-                    <label key={item.key} className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-xs ${repositorios.includes(item.key) ? "border-indigo-200 bg-indigo-50 text-indigo-800" : "border-slate-200 bg-white text-slate-600"}`}>
-                      <input type="checkbox" checked={repositorios.includes(item.key)} onChange={(e) => alternar(setRepositorios, repositorios, item.key, e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
+                    <label key={item.key} className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-xs ${repositorios.includes(item.key) ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)] text-[var(--erp-primary-dark)]" : "border-slate-200 bg-white text-slate-600"}`}>
+                      <input type="checkbox" checked={repositorios.includes(item.key)} onChange={(e) => alternar(setRepositorios, repositorios, item.key, e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-[var(--erp-primary)]" />
                       <span>{item.label}</span>
                     </label>
                   ))}
@@ -211,8 +211,8 @@ export default function VisibilidadTablas({ onClose }) {
               <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
                 <p className="text-xs text-slate-500">{configuracionActual ? "Esta actividad ya tiene una configuración guardada." : "Se mostrarán valores iniciales hasta que guardes la configuración."}</p>
                 <div className="flex gap-2">
-                  <button type="button" onClick={onClose} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700">Cancelar</button>
-                  <button type="button" disabled={guardando} onClick={guardar} className="rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm hover:bg-blue-800 disabled:cursor-wait disabled:opacity-60">{guardando ? "Guardando…" : "Guardar configuración"}</button>
+                  <button type="button" onClick={onClose} className="erp-btn-secondary rounded-xl px-4 py-2.5 text-sm font-bold">Cancelar</button>
+                  <button type="button" disabled={guardando} onClick={guardar} className="erp-btn-primary rounded-xl px-5 py-2.5 text-sm font-extrabold shadow-sm disabled:cursor-wait disabled:opacity-60">{guardando ? "Guardando…" : "Guardar configuración"}</button>
                 </div>
               </footer>
             </>
