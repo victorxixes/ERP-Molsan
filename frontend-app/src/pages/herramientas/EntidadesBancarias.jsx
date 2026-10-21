@@ -686,17 +686,6 @@ export default function EntidadesBancarias() {
     // VALIDACIONES
     // --------------------------------------------------------
 
-    if (!codigo) {
-
-      mostrarMensaje(
-        "El Código Europeo es obligatorio.",
-        "error"
-      );
-
-      return;
-
-    }
-
 
     if (!nombre) {
 
@@ -760,7 +749,7 @@ export default function EntidadesBancarias() {
             body:
               JSON.stringify({
                 codigo_europeo:
-                  codigo,
+                  codigo || null,
 
                 lei:
                   lei ||
@@ -3460,7 +3449,7 @@ function ModalEntidadBancaria({
                     text-slate-700
                   "
                 >
-                  Código Europeo *
+                  Código Europeo (opcional)
                 </label>
 
 
@@ -3475,7 +3464,7 @@ function ModalEntidadBancaria({
                       e.target.value.toUpperCase()
                     )
                   }
-                  placeholder="Ej. ES0241"
+                  placeholder="Puedes dejarlo vacío"
                   maxLength={50}
                   autoFocus
                   className="
