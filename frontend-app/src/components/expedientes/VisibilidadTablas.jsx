@@ -136,7 +136,7 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-xl">⚙️</div>
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-extrabold">Visibilidad tablas</h2>
-            <p className="text-xs text-white/85">Columnas de Excel y repositorios de carpeta digital por actividad</p>
+            <p className="text-xs text-white/85">Empleado ID {empleadoId ?? "actual"} · Columnas de Excel y repositorios de carpeta digital por actividad</p>
           </div>
           <button type="button" onClick={onClose} className="rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold text-white hover:bg-white/10">Cerrar ✕</button>
         </header>
