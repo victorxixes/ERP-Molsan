@@ -3,7 +3,10 @@ import axios from "../../api/axios";
 
 const euros = (value) => Number(value || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
 
-const VACIO = { nombre: "", descripcion: "", base_imponible: "", tipo_impuesto: "IVA", porcentaje_impuesto: "21", activo: true };\nconst redondear = (n) => Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;\nconst totalHonorario = (form) => redondear(Number(String(form.base_imponible || "0").replace(",", ".")) * (1 + (form.tipo_impuesto === "EXENTO" ? 0 : Number(String(form.porcentaje_impuesto || "0").replace(",", "."))) / 100));\nconst impuestoHonorario = (form) => redondear(totalHonorario(form) - Number(String(form.base_imponible || "0").replace(",", ".")));
+const VACIO = { nombre: "", descripcion: "", base_imponible: "", tipo_impuesto: "IVA", porcentaje_impuesto: "21", activo: true };
+const redondear = (n) => Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
+const totalHonorario = (form) => redondear(Number(String(form.base_imponible || "0").replace(",", ".")) * (1 + (form.tipo_impuesto === "EXENTO" ? 0 : Number(String(form.porcentaje_impuesto || "0").replace(",", "."))) / 100));
+const impuestoHonorario = (form) => redondear(totalHonorario(form) - Number(String(form.base_imponible || "0").replace(",", ".")));
 
 export default function HonorariosGestoria() {
   const [items, setItems] = useState([]);
