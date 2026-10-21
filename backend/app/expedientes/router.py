@@ -74,6 +74,166 @@ router = APIRouter(
 )
 
 
+# ============================================================
+# CONFIGURACIÓN PERSISTENTE DE VISIBILIDAD POR ACTIVIDAD
+# ============================================================
+
+ACTIVIDADES_VISIBILIDAD = [
+    {"key": "documentacion-previa", "label": "Documentación previa"},
+    {"key": "sede-notarial", "label": "Sede notarial"},
+    {"key": "sede-notarial-protocolo", "label": "Sede notarial con protocolo"},
+    {"key": "liquidacion-impuestos", "label": "Liquidación de impuestos"},
+    {"key": "tramitacion-inscripcion", "label": "Tramitación inscripción"},
+    {"key": "defectos-registrales", "label": "Defectos registrales"},
+    {"key": "facturacion-cierre", "label": "Facturación y cierre"},
+]
+
+REPOSITORIOS_VISIBILIDAD = [
+    {"key": "documentos_absis", "label": "Documentos ABSIS", "categoria": "Documentos Absis"},
+    {"key": "hoja_encargo_firmada", "label": "Hoja de encargo firmada", "categoria": "Hoja de Encargo firmada"},
+    {"key": "justificante_cancelacion", "label": "Justificante de cancelación", "categoria": "Justificante de cancelación"},
+    {"key": "nota_simple_registral", "label": "Nota simple registral", "categoria": "Nota simple registral"},
+    {"key": "borradores_escritura", "label": "Borradores de escritura", "categoria": "Escrituras/borradores"},
+    {"key": "presentacion_registro_documentos", "label": "Presentación Registro", "categoria": "Presentación Registro"},
+    {"key": "copia_simple_documentos", "label": "Copia simple", "categoria": "Copia simple"},
+    {"key": "ajd_itp_documentos", "label": "AJD / ITP", "categoria": "AJD/ITP"},
+    {"key": "otros_impuestos_documentos", "label": "Otros impuestos", "categoria": "Otros impuestos"},
+    {"key": "hoja_inscripcion_documentos", "label": "Hoja de inscripción", "categoria": "Hoja de Inscripción"},
+    {"key": "defecto_registral", "label": "Defecto registral", "categoria": "Defecto registral"},
+    {"key": "subsanacion_defecto", "label": "Subsanación del defecto", "categoria": "Subsanación del defecto"},
+    {"key": "escritura_digital_final_documentos", "label": "Escritura digital final", "categoria": "Escritura digital final"},
+    {"key": "documento_inscripcion_documentos", "label": "Documento de inscripción", "categoria": "Documento de inscripción"},
+    {"key": "expediente_digital_completo_documentos", "label": "Expediente digital completo", "categoria": "Expediente digital completo"},
+    {"key": "factura_notarial_documentos", "label": "Factura notarial", "categoria": "Factura notarial"},
+    {"key": "factura_registral_documentos", "label": "Factura registral", "categoria": "Factura Registral"},
+    {"key": "factura_impuestos_documentos", "label": "Factura impuestos", "categoria": "Factura impuestos"},
+    {"key": "honorarios_gestoria_documentos", "label": "Honorarios de gestoría", "categoria": "Honorarios gestoría"},
+    {"key": "otros_pagos_documentos", "label": "Otros pagos", "categoria": "Otros pagos"},
+    {"key": "otros_documentos_economicos", "label": "Otros documentos económicos", "categoria": "Otros documentos económicos"},
+    {"key": "otra_documentacion", "label": "Otra documentación", "categoria": "Otra documentación"},
+    {"key": "emails_oficina", "label": "Emails de oficina", "categoria": "Mails de la Oficina"},
+    {"key": "otros_documentos", "label": "Otros", "categoria": "Otros"},
+]
+
+
+def _asegurar_tabla_visibilidad(db: Session):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS public.expediente_visibilidad_config (
+            actividad_key VARCHAR(80) PRIMARY KEY,
+            actividad_label VARCHAR(160) NOT NULL,
+            nombre_tabla VARCHAR(200) NOT NULL DEFAULT '',
+            excel_columns JSONB NOT NULL DEFAULT '[]'::jsonb,
+            repositorios JSONB NOT NULL DEFAULT '[]'::jsonb,
+            actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    db.commit()
+
+
+def _configuraciones_visibilidad(db: Session):
+    _asegurar_tabla_visibilidad(db)
+    filas = db.execute(text("""
+        SELECT actividad_key, actividad_label, nombre_tabla,
+               excel_columns, repositorios, actualizado_en
+        FROM public.expediente_visibilidad_config
+    """)).mappings().all()
+    return [{
+        "actividad_key": fila["actividad_key"],
+        "actividad_label": fila["actividad_label"],
+        "nombre_tabla": fila["nombre_tabla"],
+        "excel_columns": fila["excel_columns"] or [],
+        "repositorios": fila["repositorios"] or [],
+        "actualizado_en": fila["actualizado_en"].isoformat() if fila["actualizado_en"] else None,
+    } for fila in filas]
+
+
+@router.get("/configuracion-visibilidad")
+def obtener_configuracion_visibilidad(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Catálogo de columnas Excel y repositorios más configuración guardada por actividad."""
+    return {
+        "actividades": ACTIVIDADES_VISIBILIDAD,
+        "columnas_excel": [
+            {"key": atributo, "label": cabecera}
+            for cabecera, atributo in COLUMNAS_EXCEL
+        ],
+        "repositorios": REPOSITORIOS_VISIBILIDAD,
+        "configuraciones": _configuraciones_visibilidad(db),
+    }
+
+
+@router.put("/configuracion-visibilidad")
+def guardar_configuracion_visibilidad(
+    datos: Dict[str, Any],
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    from backend.app.auth.permissions import require_perm_modulo
+    require_perm_modulo(usuario, "seguridad", "editar")
+
+    actividad_key = str(datos.get("actividad_key") or "").strip()
+    actividad = next((item for item in ACTIVIDADES_VISIBILIDAD if item["key"] == actividad_key), None)
+    if not actividad:
+        raise HTTPException(status_code=422, detail="Actividad no válida.")
+
+    columnas_validas = {atributo for _, atributo in COLUMNAS_EXCEL}
+    repositorios_validos = {item["key"] for item in REPOSITORIOS_VISIBILIDAD}
+    columnas = datos.get("excel_columns")
+    repositorios = datos.get("repositorios")
+    if not isinstance(columnas, list) or not isinstance(repositorios, list):
+        raise HTTPException(status_code=422, detail="Las columnas Excel y los repositorios deben ser listas.")
+    if any(not isinstance(item, str) or item not in columnas_validas for item in columnas):
+        raise HTTPException(status_code=422, detail="La configuración contiene columnas Excel no reconocidas.")
+    if any(not isinstance(item, str) or item not in repositorios_validos for item in repositorios):
+        raise HTTPException(status_code=422, detail="La configuración contiene repositorios no reconocidos.")
+
+    nombre_tabla = str(datos.get("nombre_tabla") or "").strip()[:200]
+    if not nombre_tabla:
+        raise HTTPException(status_code=422, detail="Indica el nombre de la tabla Excel.")
+    # Mantener el orden elegido por el usuario y evitar claves repetidas.
+    columnas = list(dict.fromkeys(columnas))
+    repositorios = list(dict.fromkeys(repositorios))
+
+    try:
+        _asegurar_tabla_visibilidad(db)
+        db.execute(text("""
+            INSERT INTO public.expediente_visibilidad_config
+                (actividad_key, actividad_label, nombre_tabla, excel_columns, repositorios, actualizado_en)
+            VALUES
+                (:actividad_key, :actividad_label, :nombre_tabla,
+                 CAST(:excel_columns AS jsonb), CAST(:repositorios AS jsonb), CURRENT_TIMESTAMP)
+            ON CONFLICT (actividad_key) DO UPDATE SET
+                actividad_label = EXCLUDED.actividad_label,
+                nombre_tabla = EXCLUDED.nombre_tabla,
+                excel_columns = EXCLUDED.excel_columns,
+                repositorios = EXCLUDED.repositorios,
+                actualizado_en = CURRENT_TIMESTAMP
+        """), {
+            "actividad_key": actividad_key,
+            "actividad_label": actividad["label"],
+            "nombre_tabla": nombre_tabla,
+            "excel_columns": json.dumps(columnas, ensure_ascii=False),
+            "repositorios": json.dumps(repositorios, ensure_ascii=False),
+        })
+        db.commit()
+    except Exception:
+        db.rollback()
+        logger.exception("No se pudo guardar la configuración de visibilidad")
+        raise HTTPException(status_code=500, detail="No se pudo guardar la configuración de visibilidad.")
+
+    return {
+        "ok": True,
+        "actividad_key": actividad_key,
+        "actividad_label": actividad["label"],
+        "nombre_tabla": nombre_tabla,
+        "excel_columns": columnas,
+        "repositorios": repositorios,
+    }
+
+
+
 @router.post("/migraciones/actividades")
 def migrar_campos_workflow_actividades(
     db: Session = Depends(get_db),
@@ -1658,6 +1818,7 @@ def exportar_excel_expedientes(
     tieneDefectosAbiertos: Optional[str] = None,
     faltaDefecto: Optional[str] = None,
     alerta: Optional[str] = Query(None, description="Filtra por una alerta de control"),
+    configActividad: Optional[str] = Query(None, description="Clave de actividad cuya configuración Excel se aplicará"),
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
@@ -1722,11 +1883,38 @@ def exportar_excel_expedientes(
         .all()
     )
 
+    columnas_excel_exportacion = COLUMNAS_EXCEL
+    if configActividad:
+        clave = str(configActividad).strip()
+        if any(item["key"] == clave for item in ACTIVIDADES_VISIBILIDAD):
+            try:
+                _asegurar_tabla_visibilidad(db)
+                configuracion = db.execute(text("""
+                    SELECT excel_columns FROM public.expediente_visibilidad_config
+                    WHERE actividad_key = :actividad_key
+                """), {"actividad_key": clave}).scalar()
+                if configuracion:
+                    seleccionadas = set(configuracion if isinstance(configuracion, list) else json.loads(configuracion))
+                    columnas_excel_exportacion = [
+                        (cabecera, atributo) for cabecera, atributo in COLUMNAS_EXCEL
+                        if atributo in seleccionadas
+                    ]
+                    # Preservar el orden configurado, no el orden físico del catálogo.
+                    por_atributo = {atributo: cabecera for cabecera, atributo in COLUMNAS_EXCEL}
+                    columnas_excel_exportacion = [
+                        (por_atributo[atributo], atributo)
+                        for atributo in (configuracion if isinstance(configuracion, list) else json.loads(configuracion))
+                        if atributo in por_atributo
+                    ]
+            except Exception:
+                logger.exception("No se pudo aplicar la configuración de columnas Excel; se usará el Excel completo.")
+                columnas_excel_exportacion = COLUMNAS_EXCEL
+
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Expedientes"
 
-    for col, (cabecera, _) in enumerate(COLUMNAS_EXCEL, start=1):
+    for col, (cabecera, _) in enumerate(columnas_excel_exportacion, start=1):
         ws.cell(
             row=1,
             column=col,
@@ -1734,7 +1922,7 @@ def exportar_excel_expedientes(
         ).font = Font(bold=True)
 
     for fila, expediente in enumerate(expedientes, start=2):
-        for col, (_, atributo) in enumerate(COLUMNAS_EXCEL, start=1):
+        for col, (_, atributo) in enumerate(columnas_excel_exportacion, start=1):
             valor = getattr(expediente, atributo, None)
 
             cell = ws.cell(
@@ -1750,10 +1938,10 @@ def exportar_excel_expedientes(
 
     ws.freeze_panes = "A2"
 
-    ultima_columna = get_column_letter(len(COLUMNAS_EXCEL))
+    ultima_columna = get_column_letter(max(len(columnas_excel_exportacion), 1))
     ws.auto_filter.ref = f"A1:{ultima_columna}{len(expedientes) + 1}"
 
-    for col, (cabecera, _) in enumerate(COLUMNAS_EXCEL, start=1):
+    for col, (cabecera, _) in enumerate(columnas_excel_exportacion, start=1):
         max_length = len(str(cabecera))
 
         for fila in range(2, min(len(expedientes) + 2, 500)):
