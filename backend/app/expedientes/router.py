@@ -1438,7 +1438,13 @@ def catalogos_listado_expedientes(
 
     registros = valores_distintos(ExpedienteFinca.registro)
     estados_actividad = valores_distintos(Expediente.estado_actividad)
-    estados_expediente = valores_distintos(Expediente.estado_expediente)
+    # Catálogo oficial de ABSIS: debe mostrar todos los códigos aunque todavía
+    # no haya expedientes cargados con alguno de ellos.
+    estados_expediente = sorted(
+        set(valores_distintos(Expediente.estado_expediente))
+        | {"LIQ", "VIG", "LST", "RTS", "PVA"},
+        key=lambda valor: valor.casefold(),
+    )
 
     # Catálogos construidos sobre todos los expedientes, no solo sobre la
     # página actual. Se limpian espacios exteriores y se deduplican valores.
