@@ -1689,6 +1689,50 @@ def inicializar_tablas_auxiliares():
                     WHERE UPPER(TRIM(nombre)) = 'KUTXABANK MONETARIO AHORRO, FI'
                   )
             """))
+        # Sucesiones que deben quedar cubiertas incluso si la regla genérica no encontró
+        # la fila de origen en una inicialización anterior.
+        with engine.begin() as conexion_sucesiones_puntuales:
+            conexion_sucesiones_puntuales.execute(text("""
+                UPDATE public.entidades_bancarias AS origen
+                SET entidad_actual_id = (
+                    SELECT actual.id
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND UPPER(TRIM(actual.nombre)) LIKE 'UNICAJA%'
+                    ORDER BY
+                      CASE WHEN UPPER(TRIM(actual.nombre)) = 'UNICAJA BANCO, S.A.' THEN 0 ELSE 1 END,
+                      actual.id
+                    LIMIT 1
+                ),
+                pendiente_revision = FALSE
+                WHERE UPPER(TRIM(origen.nombre)) IN (
+                    'ESPAÑADUERO',
+                    'ESPANADUERO',
+                    'BANCO CEISS',
+                    'BANCO DE CAJA ESPAÑA DE INVERSIONES, SALAMANCA Y SORIA, S.A.'
+                )
+                  AND EXISTS (
+                    SELECT 1 FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE AND UPPER(TRIM(actual.nombre)) LIKE 'UNICAJA%'
+                  )
+            """))
+            conexion_sucesiones_puntuales.execute(text("""
+                UPDATE public.entidades_bancarias AS origen
+                SET entidad_actual_id = (
+                    SELECT actual.id
+                    FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE
+                      AND UPPER(TRIM(actual.nombre)) LIKE 'BBVA%'
+                    ORDER BY actual.id
+                    LIMIT 1
+                ),
+                pendiente_revision = FALSE
+                WHERE UPPER(TRIM(origen.nombre)) IN ('UNO-E', 'UNO-E BANK', 'UNOE BANK')
+                  AND EXISTS (
+                    SELECT 1 FROM public.entidades_bancarias AS actual
+                    WHERE actual.activo IS TRUE AND UPPER(TRIM(actual.nombre)) LIKE 'BBVA%'
+                  )
+            """))
         print("[ENTIDADES BANCARIAS] Correcciones de Kutxabank/Cajasur y fondos revisadas.", flush=True)
         print("[ENTIDADES BANCARIAS] Sucesiones de grupos bancarios españoles comprobadas.", flush=True)
         print("[ENTIDADES BANCARIAS] Sucesiones históricas adicionales comprobadas.", flush=True)
