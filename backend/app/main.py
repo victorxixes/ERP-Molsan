@@ -1242,7 +1242,11 @@ def inicializar_tablas_auxiliares():
             ("Caja de Ahorros Provincial de Ciudad Real"),
             ("Banco de Crédito Industrial"),
             ("Banco de Fomento"),
-            ("Banco de Bilbao Vizcaya Argentaria")
+            ("Banco de Bilbao Vizcaya Argentaria"),
+            ("Banco de Crédito Industrial"),
+            ("Banco Hipotecario de España"),
+            ("Banco de Valladolid"),
+            ("Banca de Medina")
         ]
         with engine.begin() as conexion_semillas_caixabank:
             for nombre_historico in entidades_historicas_caixabank:
@@ -1467,7 +1471,7 @@ def inicializar_tablas_auxiliares():
                     "%LA CAIXA%", "%CAJA DE PENSIONES%", "%CAJA DE BARCELONA%",
                     "%CAJA DE AHORROS Y PENSIONES DE BARCELONA%", "%CAIXABANK, S.A.%",
                     "%BARCLAYS BANK%", "%BANKIA%", "%BFA%", "%BANCO MARE NOSTRUM%", "%BMN%",
-                    "%BANCO DE VALENCIA%", "%BANCO ZARAGOZANO%", "%BANKPIME%",
+                    "%BANCO DE VALENCIA%", "%BANCO ZARAGOZANO%", "%BANCO DE VALLADOLID%", "%BANCA DE MEDINA%", "%BANKPIME%",
                     "%CAIXA GIRONA%", "%CAIXA DE GIRONA%", "%CAIXA PENEDÈS%", "%CAIXA PENEDES%",
                     "%SA NOSTRA%", "%BANCO DE LAS ISLAS CANARIAS%", "%ISBANC%", "%BANCO DE EUROPA%",
                     "%MORGAN STANLEY%", "%CAIXA D'ESTALVIS DE L'EMPORDÀ%"
@@ -1483,7 +1487,7 @@ def inicializar_tablas_auxiliares():
                     "%CAJA DE AHORROS Y MONTE DE PIEDAD DE LERIDA%", "%BANCO DE CRÉDITO LOCAL%",
                     "%BANCO DE CREDITO LOCAL%", "%UNO-E%", "%ARGENTARIA%", "%BANCO BILBAO VIZCAYA%",
                     "%BANCO DE BILBAO%", "%BANCO DE VIZCAYA%", "%BANCO EXTERIOR DE ESPAÑA%",
-                    "%BANCO EXTERIOR DE ESPANA%", "%CAJA POSTAL%", "%BANCO DE ALICANTE%"
+                    "%BANCO EXTERIOR DE ESPANA%", "%BANCO DE CRÉDITO INDUSTRIAL%", "%BANCO DE CREDITO INDUSTRIAL%", "%BANCO HIPOTECARIO DE ESPAÑA%", "%BANCO HIPOTECARIO DE ESPANA%", "%CAJA POSTAL%", "%BANCO DE ALICANTE%"
                 ],
             ),
             (
