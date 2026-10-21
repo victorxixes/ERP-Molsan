@@ -182,3 +182,141 @@ def asignar_gestor_automaticamente(db: Session, expediente: Expediente, activida
         "motivo": motivo,
     })
     return gestor_id
+
+
+def usuario_admin_expedientes(usuario):
+    """Reconoce únicamente administradores globales para no saltarse el ámbito de reparto."""
+    import unicodedata
+
+    def norm(valor):
+        texto = unicodedata.normalize("NFD", str(valor or "").strip().casefold())
+        return "".join(c for c in texto if unicodedata.category(c) != "Mn")
+
+    rol = getattr(usuario, "rol", None)
+    nombre_rol = norm(getattr(rol, "nombre", ""))
+    if nombre_rol in {"admin", "administrador", "superadmin", "super administrador"}:
+        return True
+
+    for origen in (
+        getattr(usuario, "permisos_modulo_dict", None) or {},
+        getattr(rol, "permisos_modulo_dict", None) or {},
+    ):
+        if isinstance(origen, dict) and (
+            "*" in origen or "expedientes.*" in origen
+        ):
+            acciones = origen.get("*") or origen.get("expedientes.*") or []
+            if isinstance(acciones, (list, tuple, set)) and (
+                "*" in acciones or "ver" in acciones or "editar" in acciones
+            ):
+                return True
+    return False
+
+
+def expediente_cumple_reglas_empleado(db: Session, empleado: Empleado, expediente: Expediente) -> bool:
+    """True si al menos una regla activa del empleado cubre la actividad y los criterios del expediente."""
+    reglas = getattr(empleado, "reparto_actividades_json", None) or []
+    if not isinstance(reglas, list) or not reglas:
+        return False
+
+    departamentos = {
+        d.id: d.nombre for d in db.query(Departamento).all()
+    }
+    actividad_actual = resolver_key_actividad(
+        getattr(expediente, "actividad_actual", None),
+        getattr(expediente, "fecha_firma", None),
+    )
+    if not actividad_actual:
+        return False
+
+    comunidad = comunidad_expediente(expediente)
+    oficina = str(
+        getattr(expediente, "oficina_alta", None)
+        or getattr(expediente, "oficina", None)
+        or ""
+    ).strip()
+    es_cancela = normalizar(oficina) == "5316"
+    estado = normalizar(getattr(expediente, "estado_expediente", None))
+    producto = normalizar(getattr(expediente, "producto_gtg", None))
+    operacion = normalizar(getattr(expediente, "tipo_operacion", None))
+    apoderado_expediente_id = getattr(expediente, "apoderado_empleado_id", None)
+
+    for regla in reglas:
+        if not isinstance(regla, dict) or not regla.get("activa", True):
+            continue
+        if str(regla.get("actividad") or "").strip() != actividad_actual:
+            continue
+
+        departamento_regla = normalizar(regla.get("departamento"))
+        if departamento_regla:
+            departamento_empleado = normalizar(
+                departamentos.get(getattr(empleado, "departamento_id", None))
+            )
+            if departamento_empleado != departamento_regla:
+                continue
+
+        apoderado_regla_id = regla.get("apoderado_id")
+        if apoderado_regla_id not in (None, "", 0, "0"):
+            try:
+                if int(apoderado_expediente_id) != int(apoderado_regla_id):
+                    continue
+            except (TypeError, ValueError):
+                continue
+
+        if regla.get("zona_territorial"):
+            zonas = regla.get("comunidades")
+            if not isinstance(zonas, list):
+                zonas = [regla.get("comunidad")] if regla.get("comunidad") else []
+            if comunidad not in {normalizar(z) for z in zonas if z}:
+                continue
+
+        oficina_tipo = str(regla.get("oficina_tipo") or "").strip().casefold()
+        if oficina_tipo == "cancela" and not es_cancela:
+            continue
+        if oficina_tipo == "oficina" and es_cancela:
+            continue
+        oficinas_regla = regla.get("oficinas")
+        if not isinstance(oficinas_regla, list):
+            oficinas_regla = [
+                x.strip() for x in str(oficinas_regla or "").replace(";", ",").split(",")
+                if x.strip()
+            ]
+        if oficinas_regla and normalizar(oficina) not in {normalizar(x) for x in oficinas_regla}:
+            continue
+
+        producto_regla = normalizar(regla.get("producto_gtg"))
+        if producto_regla and producto_regla != producto:
+            continue
+        operacion_regla = normalizar(regla.get("tipo_operacion"))
+        if operacion_regla and operacion_regla != operacion:
+            continue
+
+        estados = regla.get("estados_expediente")
+        if not isinstance(estados, list):
+            estados = [regla.get("estado_expediente")] if regla.get("estado_expediente") else []
+        estados = {normalizar(x) for x in estados if x}
+        if estados and estado not in estados:
+            continue
+
+        try:
+            if float(regla.get("porcentaje") or 0) <= 0:
+                continue
+        except (TypeError, ValueError):
+            continue
+
+        return True
+    return False
+
+
+def ids_expedientes_visibles(db: Session, usuario):
+    """Devuelve None para administradores y una lista de IDs permitidos para usuarios normales."""
+    if usuario_admin_expedientes(usuario):
+        return None
+    empleado = db.query(Empleado).filter(Empleado.id == getattr(usuario, "id", None)).first()
+    if not empleado:
+        return []
+    expedientes = db.query(Expediente).all()
+    return [
+        expediente.id
+        for expediente in expedientes
+        if expediente_cumple_reglas_empleado(db, empleado, expediente)
+    ]
