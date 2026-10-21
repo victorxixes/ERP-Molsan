@@ -21,6 +21,10 @@ import {
 } from "../../api/maestros";
 
 import {
+  obtenerCatalogosListadoExpedientes,
+} from "../../api/expedientes";
+
+import {
   useSeguridadStore,
 } from "../../store/seguridadStore";
 
@@ -538,6 +542,9 @@ export default function ModalEmpleado({
   const [gestorRepartoId, setGestorRepartoId] = useState("");
   const [actividadesReparto, setActividadesReparto] = useState([]);
   const [comunidadesReparto, setComunidadesReparto] = useState([]);
+  const [productosGtgReparto, setProductosGtgReparto] = useState([]);
+  const [tiposOperacionReparto, setTiposOperacionReparto] = useState([]);
+  const [cargandoCatalogosReparto, setCargandoCatalogosReparto] = useState(false);
   const [cargandoReparto, setCargandoReparto] = useState(false);
   const [guardandoReparto, setGuardandoReparto] = useState(false);
   const [errorReparto, setErrorReparto] = useState("");
@@ -904,6 +911,26 @@ export default function ModalEmpleado({
     });
     return () => { vigente = false; };
   }, [open, pestana, empleadoId, esAdministrador]);
+
+  useEffect(() => {
+    if (!open || pestana !== "asignaciones" || !esAdministrador) return;
+    let vigente = true;
+    setCargandoCatalogosReparto(true);
+    obtenerCatalogosListadoExpedientes()
+      .then((catalogos) => {
+        if (!vigente) return;
+        setProductosGtgReparto(Array.isArray(catalogos?.productos_gtg) ? catalogos.productos_gtg : []);
+        setTiposOperacionReparto(Array.isArray(catalogos?.tipos_operacion) ? catalogos.tipos_operacion : []);
+      })
+      .catch((e) => {
+        if (!vigente) return;
+        setErrorReparto(e?.response?.data?.detail || "No se han podido cargar los catálogos de producto y operación de los expedientes.");
+      })
+      .finally(() => {
+        if (vigente) setCargandoCatalogosReparto(false);
+      });
+    return () => { vigente = false; };
+  }, [open, pestana, esAdministrador]);
 
   useEffect(() => {
     if (!open || pestana !== "asignaciones" || !gestorRepartoId || !esAdministrador) return;
@@ -3929,9 +3956,8 @@ const permisosDisponibles =
                                 <label className="block text-xs font-bold text-slate-600">Departamento<select value={regla.departamento || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, departamento: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todos los departamentos</option>{regla.departamento && !departamentos.some((d) => String(d.nombre || "").trim() === String(regla.departamento).trim()) && <option value={regla.departamento}>{regla.departamento} (asignación existente)</option>}{departamentos.map((departamento) => <option key={departamento.id} value={departamento.nombre}>{departamento.nombre}</option>)}</select></label>
                                 <label className="block text-xs font-bold text-slate-600">Actividad<select value={regla.actividad || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, actividad: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Seleccionar actividad…</option>{actividadesReparto.map((a) => <option key={a.key} value={a.key}>{a.label}</option>)}</select></label>
                                 <label className="block text-xs font-bold text-slate-600">Tipo de oficina<select value={regla.oficina_tipo || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, oficina_tipo: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todas</option><option value="oficina">Oficina (excepto 5316)</option><option value="cancela">Cancela (5316)</option></select></label>
-                                <label className="block text-xs font-bold text-slate-600">N.º de oficina(s)<input type="text" value={regla.oficinas || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, oficinas: e.target.value } : r))} placeholder="Ej. 1234, 5678 (vacío = todas)" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-normal" /></label>
-                                <label className="block text-xs font-bold text-slate-600">Producto GTG<input type="text" value={regla.producto_gtg || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, producto_gtg: e.target.value } : r))} placeholder="Vacío = todos los productos" className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-normal" /></label>
-                                <label className="block text-xs font-bold text-slate-600">Tipo de operación<input type="text" value={regla.tipo_operacion || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, tipo_operacion: e.target.value } : r))} placeholder="Vacío = todos los tipos" className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal" /></label>
+                                <label className="block text-xs font-bold text-slate-600">Producto GTG<select value={regla.producto_gtg || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, producto_gtg: e.target.value } : r))} disabled={cargandoCatalogosReparto} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todos los productos</option>{regla.producto_gtg && !productosGtgReparto.includes(regla.producto_gtg) && <option value={regla.producto_gtg}>{regla.producto_gtg} (valor existente)</option>}{productosGtgReparto.map((producto) => <option key={producto} value={producto}>{producto}</option>)}</select></label>
+                                <label className="block text-xs font-bold text-slate-600">Tipo de operación<select value={regla.tipo_operacion || ""} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, tipo_operacion: e.target.value } : r))} disabled={cargandoCatalogosReparto} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal"><option value="">Todos los tipos</option>{regla.tipo_operacion && !tiposOperacionReparto.includes(regla.tipo_operacion) && <option value={regla.tipo_operacion}>{regla.tipo_operacion} (valor existente)</option>}{tiposOperacionReparto.map((tipo) => <option key={tipo} value={tipo}>{tipo}</option>)}</select></label>
                                 <label className="block text-xs font-bold text-slate-600">Porcentaje de reparto (%)<input type="number" min="0" max="100" step="1" value={regla.porcentaje ?? 0} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, porcentaje: e.target.value } : r))} className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-normal" /></label>
                                 <label className="flex items-center gap-2 self-end rounded-lg bg-slate-50 px-3 py-3 text-sm font-semibold text-slate-700"><input type="checkbox" checked={Boolean(regla.zona_territorial)} onChange={(e) => setReglasReparto((actual) => actual.map((r, i) => i === indice ? { ...r, zona_territorial: e.target.checked, comunidades: e.target.checked ? ((Array.isArray(r.comunidades) && r.comunidades.length) ? r.comunidades : (r.comunidad ? [r.comunidad] : ["Cataluña"])) : [], comunidad: "" } : r))} className="h-4 w-4 accent-blue-600" />Limitar por zona territorial</label>
                                 {regla.zona_territorial && <div className="rounded-lg border border-slate-200 p-3 md:col-span-2 xl:col-span-3">
