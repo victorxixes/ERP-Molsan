@@ -2088,7 +2088,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         // En Liquidación de impuestos y Tramitación inscripción se ocultan
         // todos los campos generales; cada actividad muestra sus campos específicos.
         if (
-          ["liquidacion-impuestos", "tramitacion-inscripcion", "defectos-registrales"].includes(actividadSeleccionada) &&
+          ["liquidacion-impuestos", "tramitacion-inscripcion", "defectos-registrales", "facturacion-cierre"].includes(actividadSeleccionada) &&
           CAMPOS_COMUNES_ACTIVIDAD.some((comun) => comun.key === campo.key)
         ) {
           return false;
