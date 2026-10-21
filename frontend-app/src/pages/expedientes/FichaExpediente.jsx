@@ -6259,44 +6259,60 @@ const cuantiaFincasParaEnvio =
                       {
                         key: "sede-notarial", label: "Sede notarial", icono: "🏛️",
                         checks: [
-                          requisito("Fecha de envío a notario", Boolean(fechaEnvio), "No consta la fecha de envío"),
-                          requisito("Notario identificado", Boolean(notario), "Falta el notario"),
-                          requisito("Fecha prevista de firma", Boolean(valor("fecha_prevista_firma")), "Falta la fecha prevista de firma"),
-                          requisito("Tipo de documento", Boolean(valor("tipo_documento")), "Falta el tipo de documento"),
-                          requisito("Datos de firma", Boolean(valor("tipo_firma") && valor("poblacion") && valor("provincia")), "Completar tipo de firma, población y provincia"),
+                          requisito("Notario", Boolean(notario), "Falta seleccionar o indicar el notario en Enviar a notario"),
+                          requisito("Fecha de envío", Boolean(fechaEnvio), "No consta la fecha de envío a notario"),
                         ],
                       },
                       {
                         key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜",
                         checks: [
-                          requisito("Fecha de firma", Boolean(fechaFirma), "No consta la fecha de firma"),
-                          requisito("Número de protocolo", Boolean(protocolo), "No consta el número de protocolo"),
-                          requisito("Notario otorgante", Boolean(valor("notario_otorgante", "nombre_notario", "notario")), "No consta el notario otorgante"),
-                          requisito("Copia simple", tieneDoc("Copia simple"), "Falta la copia simple en la carpeta digital"),
+                          requisito("Apoderado", Boolean(valor("apoderado")), "Selecciona Gestoría o CaixaBank"),
+                          requisito("Fecha firma", Boolean(fechaFirma), "No consta la fecha de firma"),
+                          requisito("Protocolo", Boolean(protocolo), "No consta el número de protocolo"),
+                          requisito("Asiento presentación / Libro diario", Boolean(valor("asiento_presentacion_libro_diario")), "Falta el asiento de presentación o libro diario"),
+                          requisito("Fecha presentación", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación en Registro"),
+                          requisito("Número de entrada", Boolean(valor("numero_entrada")), "Falta el número de entrada"),
+                          requisito("Fecha recogida notario o presentación telemática", Boolean(valor("fecha_recogida_notario_presentacion_telematica")), "Falta la fecha de recogida o presentación telemática"),
+                          requisito("Documento Presentación Registro", tieneDocEnCategoria("Presentación Registro"), "Sube el documento en la categoría «Presentación Registro» de Carpeta digital y comprueba que abre en el visor"),
+                          requisito("Documento Copia simple", tieneDocEnCategoria("Copia simple", "Copia simple de escritura"), "Sube la copia simple en su categoría de Carpeta digital y comprueba que abre en el visor"),
                         ],
                       },
                       {
                         key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶",
                         checks: [
-                          requisito("Fecha presentación tributaria", Boolean(fechaPresentacionTributaria), "Falta la fecha de presentación tributaria"),
-                          requisito("Tributación definida", Boolean(tributacion), "Indicar AJD, TPO, prescrito, exento, bonificación o renuncia"),
-                          requisito("Oficina liquidadora", Boolean(valor("oficina_liquidadora")), "Falta la oficina liquidadora / comunidad autónoma"),
-                          requisito("Justificante AJD / ITP", esExencionTributaria || tieneDoc("AJD/ITP", "AJD ITP", "Otros impuestos"), "Falta el justificante de impuestos o registrar una tributación exenta/prescrita/renunciada"),
+                          requisito("Fecha presentación tributaria", Boolean(valor("fecha_presentacion_tributaria")), "Falta la fecha de presentación tributaria"),
+                          requisito("Fecha liquidación tributaria", Boolean(valor("fecha_liquidacion_tributaria")), "Falta la fecha de liquidación tributaria"),
+                          requisito("Oficina liquidadora / comunidad autónoma", Boolean(valor("oficina_liquidadora")), "Selecciona la oficina liquidadora o comunidad autónoma"),
+                          requisito("Base imponible (€)", valor("base_imponible") !== "" && Number.isFinite(Number(valor("base_imponible"))) && Number(valor("base_imponible")) >= 0, "Indica una base imponible válida en euros"),
+                          requisito("Tributación", Boolean(valor("tributacion")), "Selecciona Prescrito, Exento, Bonificación, Renuncia, AJD o TPO"),
+                          requisito("Impuesto (AJD / ITP)", Boolean(valor("impuesto_ajd_itp")), "Indica el impuesto AJD / ITP"),
+                          requisito("Documento AJD / ITP", tieneDocEnCategoria("AJD / ITP", "AJD/ITP", "AJD - ITP"), "Sube el documento en la categoría «AJD / ITP» de Carpeta digital y comprueba que abre en el visor"),
                         ],
                       },
                       {
                         key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢",
                         checks: [
-                          requisito("Fecha de presentación en Registro", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación"),
-                          requisito("Fecha de inscripción", Boolean(valor("fecha_inscripcion")), "Todavía no consta la inscripción registral"),
-                          requisito("Hoja de inscripción", tieneDoc("Hoja de Inscripción", "Hoja de inscripcion"), "Falta la hoja de inscripción en la carpeta digital"),
+                          requisito("Fecha presentación", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación en Registro"),
+                          requisito("Fecha vencimiento asiento (+60 días naturales)", Boolean(valor("fecha_vencimiento_asiento", "fecha_vencimiento")), "No consta la fecha de vencimiento del asiento, calculada a 60 días naturales desde la presentación"),
+                          requisito("Vencimiento calculado correctamente (+60 días)", (() => {
+                            const presentacion = valor("fecha_presentacion");
+                            const vencimiento = valor("fecha_vencimiento_asiento", "fecha_vencimiento");
+                            if (!presentacion || !vencimiento) return false;
+                            const fecha = new Date(String(presentacion).slice(0, 10) + "T00:00:00");
+                            fecha.setDate(fecha.getDate() + 60);
+                            return fecha.toISOString().slice(0, 10) === String(vencimiento).slice(0, 10);
+                          })(), "La fecha de vencimiento debe ser exactamente 60 días naturales después de la fecha de presentación"),
+                          requisito("Fecha inscripción", Boolean(valor("fecha_inscripcion")), "Todavía no consta la fecha de inscripción registral"),
+                          requisito("Hoja de inscripción", tieneDocEnCategoria("Hoja de inscripción", "Hoja de Inscripción"), "Sube la hoja de inscripción a su categoría de Carpeta digital y comprueba que abre en el visor"),
                         ],
                       },
                       {
                         key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️",
                         checks: [
-                          requisito("Defectos revisados", !hayDefectosAbiertos, hayDefectosAbiertos ? "Hay defectos pendientes de subsanar o cerrar" : "No hay defectos abiertos registrados"),
-                          requisito("Documentación de defectos", !defectos.length || !hayDefectosAbiertos || tieneDoc("Defecto registral", "Subsanación del defecto"), "Si existe un defecto, incorporar la calificación o la subsanación a la carpeta digital"),
+                          requisito("Fecha cierre defecto", !defectos.length || defectos.every((d) => Boolean(d?.fecha_cierre_defecto || d?.fecha_cierre || d?.fcierre_defecto)), "Falta informar la Fecha cierre defecto en uno o varios defectos registrales"),
+                          requisito("Documento Defecto registral", !defectos.length || tieneDocEnCategoria("Defecto registral"), "Sube el documento del defecto en la categoría «Defecto registral» y comprueba que abre en el visor"),
+                          requisito("Documento Subsanación del defecto", !defectos.length || !hayDefectosAbiertos || tieneDocEnCategoria("Subsanación del defecto"), "Sube la subsanación en la categoría «Subsanación del defecto» y comprueba que abre en el visor"),
+                          requisito("Defectos cerrados o subsanados", !hayDefectosAbiertos, "Hay defectos pendientes de subsanar o cerrar"),
                         ],
                       },
                       {
