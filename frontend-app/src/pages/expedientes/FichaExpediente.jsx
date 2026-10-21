@@ -6065,8 +6065,8 @@ const cuantiaFincasParaEnvio =
                 <section className="rounded-2xl border border-slate-200 bg-white p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <h3 className="text-sm font-extrabold text-slate-800">Control de calidad del expediente</h3>
-                      <p className="mt-1 text-xs text-slate-500">Línea de progreso de las actividades y comprobación de documentos vinculados. Para consultar o añadir documentos, utiliza la pestaña «Carpeta digital» de cada actividad.</p>
+                      <h3 className="text-sm font-extrabold text-slate-800">Checklist de calidad del expediente</h3>
+                      <p className="mt-1 text-xs text-slate-500">Cada visto se obtiene de los datos guardados y de los documentos encontrados en la carpeta digital. Los requisitos pendientes se muestran para poder corregirlos.</p>
                     </div>
                     <button
                       type="button"
@@ -6074,71 +6074,158 @@ const cuantiaFincasParaEnvio =
                       disabled={cargandoDocumentosCierre}
                       className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
                     >
-                      {cargandoDocumentosCierre ? "Actualizando…" : "↻ Actualizar control"}
+                      {cargandoDocumentosCierre ? "Comprobando…" : "↻ Comprobar de nuevo"}
                     </button>
                   </div>
-                  {cargandoDocumentosCierre && <p className="mt-3 text-xs text-slate-500">Comprobando documentos de la carpeta digital…</p>}
+                  {cargandoDocumentosCierre && <p className="mt-3 text-xs text-slate-500">Actualizando datos documentales…</p>}
                   {errorDocumentosCierre && <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorDocumentosCierre}</p>}
                   {(() => {
-                    const actividades = Array.isArray(ACTIVIDADES_EXPEDIENTES) ? ACTIVIDADES_EXPEDIENTES : [];
-                    const indiceActual = Math.max(0, actividades.findIndex((actividad) => actividad.key === actividadActual));
-                    const totalSuperadas = indiceActual;
-                    const porcentaje = actividades.length ? Math.round((totalSuperadas / actividades.length) * 100) : 0;
+                    const valor = (...claves) => {
+                      for (const clave of claves) {
+                        const dato = expediente?.[clave] ?? actividadDraft?.[clave];
+                        if (dato !== undefined && dato !== null && String(dato).trim() !== "") return dato;
+                      }
+                      return "";
+                    };
+                    const normalizar = (dato) => String(dato ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+                    const documentos = Array.isArray(documentosCierre) ? documentosCierre : [];
+                    const tieneDoc = (...categorias) => documentos.some((doc) => {
+                      const categoria = normalizar([doc?.categoria, doc?.categoria_nombre, doc?.nombre_categoria, doc?.actividad, doc?.actividad_nombre, doc?.fase].filter(Boolean).join(" "));
+                      const nombre = normalizar([doc?.nombre, doc?.nombre_archivo, doc?.nombre_original, doc?.filename, doc?.titulo].filter(Boolean).join(" "));
+                      return categorias.some((buscado) => {
+                        const objetivo = normalizar(buscado);
+                        return categoria.includes(objetivo) || nombre.includes(objetivo);
+                      });
+                    });
+                    const requisito = (etiqueta, ok, detalle) => ({ etiqueta, ok: Boolean(ok), detalle: ok ? "Correcto" : detalle });
+                    const fechaEnvio = valor("fecha_envio_notario", "fecha_envio");
+                    const notario = valor("nombre_notario", "notario", "notario_otorgante");
+                    const fechaFirma = valor("fecha_firma");
+                    const protocolo = valor("protocolo", "numero_protocolo");
+                    const fechaPresentacionTributaria = valor("fecha_presentacion_tributaria");
+                    const tributacion = normalizar(valor("tributacion"));
+                    const esExencionTributaria = ["prescrito", "exento", "renuncia"].some((x) => tributacion === x);
+                    const defectos = Array.isArray(defectosRegistrados) ? defectosRegistrados : [];
+                    const hayDefectosAbiertos = defectos.some((d) => {
+                      const cerrado = Boolean(d?.fecha_cierre_defecto || d?.fecha_cierre || d?.fcierre_defecto || d?.fecha_entrada_subsanacion);
+                      const estado = normalizar(d?.estado || d?.estado_defecto || d?.situacion);
+                      return !cerrado && !["cerrado", "subsanado", "resuelto", "archivado"].some((x) => estado.includes(x));
+                    });
+                    const fases = [
+                      {
+                        key: "documentacion-previa", label: "Documentación previa", icono: "📄",
+                        checks: [
+                          requisito("Hoja de encargo firmada", tieneDoc("Hoja de Encargo firmada"), "Falta el documento en la carpeta digital"),
+                          requisito("Justificante de cancelación", tieneDoc("Justificante de cancelación"), "Falta el documento en la carpeta digital"),
+                          requisito("Nota simple registral", tieneDoc("Nota simple registral"), "Falta el documento en la carpeta digital"),
+                        ],
+                      },
+                      {
+                        key: "sede-notarial", label: "Sede notarial", icono: "🏛️",
+                        checks: [
+                          requisito("Fecha de envío a notario", Boolean(fechaEnvio), "No consta la fecha de envío"),
+                          requisito("Notario identificado", Boolean(notario), "Falta el notario"),
+                          requisito("Fecha prevista de firma", Boolean(valor("fecha_prevista_firma")), "Falta la fecha prevista de firma"),
+                          requisito("Tipo de documento", Boolean(valor("tipo_documento")), "Falta el tipo de documento"),
+                          requisito("Datos de firma", Boolean(valor("tipo_firma") && valor("poblacion") && valor("provincia")), "Completar tipo de firma, población y provincia"),
+                        ],
+                      },
+                      {
+                        key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜",
+                        checks: [
+                          requisito("Fecha de firma", Boolean(fechaFirma), "No consta la fecha de firma"),
+                          requisito("Número de protocolo", Boolean(protocolo), "No consta el número de protocolo"),
+                          requisito("Notario otorgante", Boolean(valor("notario_otorgante", "nombre_notario", "notario")), "No consta el notario otorgante"),
+                          requisito("Copia simple", tieneDoc("Copia simple"), "Falta la copia simple en la carpeta digital"),
+                        ],
+                      },
+                      {
+                        key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶",
+                        checks: [
+                          requisito("Fecha presentación tributaria", Boolean(fechaPresentacionTributaria), "Falta la fecha de presentación tributaria"),
+                          requisito("Tributación definida", Boolean(tributacion), "Indicar AJD, TPO, prescrito, exento, bonificación o renuncia"),
+                          requisito("Oficina liquidadora", Boolean(valor("oficina_liquidadora")), "Falta la oficina liquidadora / comunidad autónoma"),
+                          requisito("Justificante AJD / ITP", esExencionTributaria || tieneDoc("AJD/ITP", "AJD ITP", "Otros impuestos"), "Falta el justificante de impuestos o registrar una tributación exenta/prescrita/renunciada"),
+                        ],
+                      },
+                      {
+                        key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢",
+                        checks: [
+                          requisito("Fecha de presentación en Registro", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación"),
+                          requisito("Fecha de inscripción", Boolean(valor("fecha_inscripcion")), "Todavía no consta la inscripción registral"),
+                          requisito("Hoja de inscripción", tieneDoc("Hoja de Inscripción", "Hoja de inscripcion"), "Falta la hoja de inscripción en la carpeta digital"),
+                        ],
+                      },
+                      {
+                        key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️",
+                        checks: [
+                          requisito("Defectos revisados", !hayDefectosAbiertos, hayDefectosAbiertos ? "Hay defectos pendientes de subsanar o cerrar" : "No hay defectos abiertos registrados"),
+                          requisito("Documentación de defectos", !defectos.length || !hayDefectosAbiertos || tieneDoc("Defecto registral", "Subsanación del defecto"), "Si existe un defecto, incorporar la calificación o la subsanación a la carpeta digital"),
+                        ],
+                      },
+                      {
+                        key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾",
+                        checks: [
+                          requisito("Estado de facturación", Boolean(valor("facturacion_estado")), "Falta el estado de facturación"),
+                          requisito("Fecha de facturación", Boolean(valor("facturacion_fecha")), "Falta la fecha de facturación"),
+                          requisito("Entrega al cliente", Boolean(valor("fecha_entregado_cliente")), "Falta la fecha de entrega al cliente"),
+                          requisito("Fin de actividad", Boolean(valor("fecha_fin_actividad")), "Falta la fecha de cierre de la actividad"),
+                          requisito("Escritura digital final", tieneDoc("Escritura digital final"), "Falta la escritura digital final"),
+                          requisito("Factura notarial", tieneDoc("Factura notarial"), "Falta la factura notarial"),
+                          requisito("Factura registral", tieneDoc("Factura Registral", "Factura registral"), "Falta la factura registral"),
+                        ],
+                      },
+                    ];
+                    const completadas = fases.filter((fase) => fase.checks.every((check) => check.ok)).length;
+                    const totalChecks = fases.reduce((suma, fase) => suma + fase.checks.length, 0);
+                    const checksOk = fases.reduce((suma, fase) => suma + fase.checks.filter((check) => check.ok).length, 0);
+                    const porcentaje = totalChecks ? Math.round((checksOk / totalChecks) * 100) : 0;
                     return (
                       <>
                         <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                          <div className="mb-2 flex items-center justify-between gap-2">
-                            <span className="text-xs font-bold text-slate-700">Progreso del circuito</span>
-                            <span className="text-xs font-extrabold tabular-nums text-slate-700">{totalSuperadas} de {actividades.length} fases superadas</span>
+                          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                            <span className="text-xs font-bold text-slate-700">Calidad documental y de datos</span>
+                            <span className="text-xs font-extrabold tabular-nums text-slate-700">{completadas}/7 fases completas · {checksOk}/{totalChecks} comprobaciones</span>
                           </div>
                           <div className="h-2 overflow-hidden rounded-full bg-slate-200">
                             <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${porcentaje}%` }} />
                           </div>
-                          <p className="mt-2 text-[10px] text-slate-500">La fase superada se estima según la actividad actual del expediente. La presencia de documentos se comprueba por su actividad o categoría registrada.</p>
+                          <p className="mt-2 text-[10px] text-slate-500">Una fase solo se marca como completa cuando todos sus requisitos configurados están cumplidos. La falta de datos no se considera correcta por el mero hecho de haber avanzado de actividad.</p>
                         </div>
                         <div className="mt-4 space-y-3">
-                          {actividades.map((actividad, indice) => {
-                            const nombreActividad = (doc) => String(
-                              doc?.actividad || doc?.actividad_nombre || doc?.nombre_actividad ||
-                              doc?.fase || doc?.categoria_actividad || doc?.metadata?.actividad ||
-                              doc?.categoria_actividad_nombre || doc?.categoria || doc?.categoria_nombre || ""
-                            ).toLowerCase();
-                            const documentosActividad = (Array.isArray(documentosCierre) ? documentosCierre : []).filter((doc) => {
-                              const nombre = nombreActividad(doc);
-                              if (!nombre) return false;
-                              return nombre.includes(actividad.key.toLowerCase()) ||
-                                nombre.includes(actividad.label.toLowerCase()) ||
-                                (actividad.key === "facturacion-cierre" && nombre.includes("cierre")) ||
-                                (actividad.key === "liquidacion-impuestos" && nombre.includes("liquidación")) ||
-                                (actividad.key === "tramitacion-inscripcion" && nombre.includes("inscripción"));
-                            });
-                            const superada = indice < indiceActual;
-                            const enCurso = indice === indiceActual;
-                            const tieneDocumentos = documentosActividad.length > 0;
+                          {fases.map((fase, indice) => {
+                            const pendientes = fase.checks.filter((check) => !check.ok);
+                            const completa = pendientes.length === 0;
+                            const actual = fase.key === actividadActual;
                             return (
-                              <article key={actividad.key} className={`relative rounded-xl border p-3 ${superada ? "border-emerald-200 bg-emerald-50/40" : enCurso ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
+                              <article key={fase.key} className={`rounded-xl border p-3 ${completa ? "border-emerald-200 bg-emerald-50/40" : actual ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
                                 <div className="flex items-center gap-3">
-                                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${superada ? "border-emerald-500 bg-emerald-500 text-white" : enCurso ? "border-blue-500 bg-white text-blue-700" : "border-slate-300 bg-white text-slate-400"}`}>
-                                    {superada ? "✓" : enCurso ? "●" : indice + 1}
+                                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${completa ? "border-emerald-500 bg-emerald-500 text-white" : actual ? "border-blue-500 bg-white text-blue-700" : "border-slate-300 bg-white text-slate-400"}`}>
+                                    {completa ? "✓" : actual ? "●" : indice + 1}
                                   </div>
                                   <div className="min-w-0 flex-1">
-                                    <p className="text-xs font-bold text-slate-800">{actividad.icono} {actividad.label}</p>
-                                    <p className={`mt-0.5 text-[10px] font-semibold ${superada ? "text-emerald-700" : enCurso ? "text-blue-700" : "text-slate-500"}`}>
-                                      {superada ? "Fase superada" : enCurso ? "En curso" : "Pendiente"}
+                                    <p className="text-xs font-bold text-slate-800">{fase.icono} {fase.label}</p>
+                                    <p className={`mt-0.5 text-[10px] font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
+                                      {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
                                     </p>
                                   </div>
-                                  <div className="flex shrink-0 items-center gap-1.5">
-                                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-bold ${tieneDocumentos ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
-                                      <span>{tieneDocumentos ? "✓" : "!"}</span>
-                                      {tieneDocumentos ? `${documentosActividad.length} doc.` : "Sin documentos"}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="ml-11 mt-2 flex items-center gap-2 border-t border-slate-200/70 pt-2">
-                                  <span className={`text-[10px] font-bold ${superada && tieneDocumentos ? "text-emerald-700" : "text-slate-500"}`}>
-                                    {superada && tieneDocumentos ? "✓ Revisión de fase y documentos localizada" : superada ? "✓ Fase superada · revisar documentación" : tieneDocumentos ? "✓ Documentos localizados · fase aún no superada" : "Pendiente de completar y revisar"}
+                                  <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${completa ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
+                                    {completa ? "✓ Correcto" : `${pendientes.length} pendiente(s)`}
                                   </span>
                                 </div>
+                                {pendientes.length > 0 && (
+                                  <ul className="ml-11 mt-2 space-y-1 border-t border-slate-200/70 pt-2">
+                                    {pendientes.map((check) => (
+                                      <li key={check.etiqueta} className="flex items-start gap-2 text-[11px] text-amber-800">
+                                        <span className="font-extrabold">!</span>
+                                        <span><strong>{check.etiqueta}:</strong> {check.detalle}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                                {completa && (
+                                  <p className="ml-11 mt-2 border-t border-emerald-200/70 pt-2 text-[10px] font-semibold text-emerald-700">✓ Todos los controles definidos para esta fase están cumplidos.</p>
+                                )}
                               </article>
                             );
                           })}
