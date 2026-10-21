@@ -2085,10 +2085,10 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
           return false;
         }
 
-        // En Liquidación de impuestos se ocultan todos los campos generales
-        // del expediente; la actividad muestra únicamente sus campos específicos.
+        // En Liquidación de impuestos y Tramitación inscripción se ocultan
+        // todos los campos generales; cada actividad muestra sus campos específicos.
         if (
-          actividadSeleccionada === "liquidacion-impuestos" &&
+          ["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) &&
           CAMPOS_COMUNES_ACTIVIDAD.some((comun) => comun.key === campo.key)
         ) {
           return false;
