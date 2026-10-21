@@ -483,8 +483,11 @@ export default function ModalEmpleado({
     .trim()
     .toLowerCase();
   const esAdministrador =
-    /(^|[^a-z])admin(istrador)?([^a-z]|$)/.test(nombreRolSesion) ||
-    (!nombreRolSesion && (usuarioSesionNormalizado === "admin" || rolIdSesion === 0));
+    // El ID técnico 0 es administrador aunque el backend también envíe
+    // un nombre de rol distinto (por ejemplo, "Superusuario").
+    rolIdSesion === 0 ||
+    usuarioSesionNormalizado === "admin" ||
+    /admin|administrador|administradora|superusuario|superuser|root/.test(nombreRolSesion);
 
 
   /* ==========================================================
