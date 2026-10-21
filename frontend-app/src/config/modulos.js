@@ -24,6 +24,13 @@ const MODULOS_ERP = [
   },
 
   {
+    key: "provisiones-fondos",
+    label: "Provisiones de fondos",
+    route: "/provisiones-fondos",
+    icon: "clipboard",
+  },
+
+  {
     key: "dashboard",
     label: "Dashboard",
     route: "/dashboard",
