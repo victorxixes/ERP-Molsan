@@ -957,6 +957,7 @@ ALERTAS_CONTROL_EXPEDIENTES = [
     {"key": "liquidacion_pendiente", "label": "Liquidación de impuestos fuera de plazo", "descripcion": "Más de 2 días desde la firma sin fecha de liquidación tributaria", "icono": "🧾"},
     {"key": "facturacion_cierre", "label": "Liquidación y cierre fuera de plazo", "descripcion": "Más de 5 días desde la inscripción sin fecha fin de actividad", "icono": "💶"},
     {"key": "inscripcion_30_dias", "label": "Tramitación inscripción fuera de plazo", "descripcion": "Más de 23 días desde la liquidación tributaria sin fecha de presentación", "icono": "📑"},
+    {"key": "sla_global", "label": "SLA global superado", "descripcion": "Más de 40 días para Propia entidad/Vinculada propia entidad o 70 días para Vinculada otra entidad/Otra entidad, desde el envío hasta Fin actividad o hoy", "icono": "⏱️"},
 ]
 
 
@@ -966,6 +967,35 @@ def aplicar_filtro_alerta_control(q, clave_alerta: Optional[str], db: Session):
         return q
 
     hoy = date.today()
+
+    if clave_alerta == "sla_global":
+        # SLA global independiente de los plazos por actividad.
+        # Hipotecario y Crédito Stock se excluyen expresamente.
+        expedientes = q.with_entities(
+            Expediente.id,
+            Expediente.producto_gtg,
+            Expediente.fecha_envio_notario,
+            Expediente.fecha_envio,
+            Expediente.fecha_fin_actividad,
+        ).all()
+        ids_fuera_sla = []
+        for expediente_id, producto, fecha_envio_notario, fecha_envio, fecha_fin in expedientes:
+            producto_norm = normalizar_actividad_texto(producto)
+            if producto_norm in {"hipotecario", "credito stock"}:
+                continue
+            if producto_norm in {"propia entidad", "vinculada propia entidad"}:
+                limite_sla = 40
+            elif producto_norm in {"vinculada otra entidad", "otra entidad"}:
+                limite_sla = 70
+            else:
+                continue
+            inicio = fecha_envio_notario or fecha_envio
+            if not inicio:
+                continue
+            fin = fecha_fin or hoy
+            if (fin - inicio).days > limite_sla:
+                ids_fuera_sla.append(expediente_id)
+        return q.filter(Expediente.id.in_(ids_fuera_sla)) if ids_fuera_sla else q.filter(Expediente.id == -1)
 
     if clave_alerta == "defectos_vencidos":
         defectos_fuera_plazo = (
