@@ -44,7 +44,7 @@ app.add_middleware(
 # BASE DE DATOS
 # ============================================================
 
-from backend.app.database import Base, engine
+from backend.app.database import Base, engine, SessionLocal
 
 
 # ============================================================
@@ -939,6 +939,105 @@ def inicializar_tablas_auxiliares():
             flush=True,
         )
         raise
+
+
+# ============================================================
+# REPARTO AUTOMÁTICO INICIAL DE GESTORES
+# ============================================================
+
+@app.on_event("startup")
+def asignar_gestores_pendientes_al_iniciar():
+    """
+    Aplica automáticamente las reglas activas de la ficha de empleado
+    a expedientes que todavía no tienen gestor. Nunca reemplaza un gestor
+    ya asignado; los nuevos cambios de actividad/importaciones mantienen
+    sus propios puntos de reparto.
+    """
+    from collections import Counter
+    from backend.app.expedientes.reparto import (
+        asignar_gestor_automaticamente,
+        resolver_key_actividad,
+    )
+
+    db = SessionLocal()
+    try:
+        # Garantiza que el histórico existe aunque EncargaGest aún no haya
+        # ejecutado su propia inicialización en esta instancia.
+        db.execute(text("""
+            CREATE TABLE IF NOT EXISTS public.expediente_gestor_historial (
+                id BIGSERIAL PRIMARY KEY,
+                expediente_id VARCHAR(100) NOT NULL,
+                actividad VARCHAR(100) NULL,
+                gestor_id INTEGER NULL,
+                gestor_anterior_id INTEGER NULL,
+                motivo VARCHAR(100) NOT NULL DEFAULT 'reparto_automatico',
+                fecha TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        db.commit()
+
+        pendientes = (
+            db.query(Expediente)
+            .filter(
+                or_(
+                    Expediente.gestor_asignado_id.is_(None),
+                    Expediente.gestor_asignado_id == 0,
+                )
+            )
+            .order_by(Expediente.id)
+            .all()
+        )
+        if not pendientes:
+            print("[REPARTO AUTOMÁTICO] No hay expedientes sin gestor.", flush=True)
+            return
+
+        asignados = 0
+        sin_regla = Counter()
+        por_actividad = Counter()
+        for expediente in pendientes:
+            actividad_key = resolver_key_actividad(
+                expediente.actividad_actual,
+                expediente.fecha_firma,
+            )
+            if not actividad_key:
+                sin_regla[str(expediente.actividad_actual or "Sin actividad")] += 1
+                continue
+
+            gestor_id = asignar_gestor_automaticamente(
+                db,
+                expediente,
+                actividad_key,
+                "reparto_automatico_arranque",
+            )
+            if gestor_id:
+                asignados += 1
+                por_actividad[actividad_key] += 1
+            else:
+                sin_regla[actividad_key] += 1
+
+            # Confirma en bloques pequeños para no mantener una transacción
+            # larga si hay muchos expedientes históricos.
+            if (asignados + sum(sin_regla.values())) % 100 == 0:
+                db.commit()
+
+        db.commit()
+        print(
+            "[REPARTO AUTOMÁTICO] Revisados={}; asignados={}; sin regla compatible={}; por actividad={}; motivos={}".format(
+                len(pendientes),
+                asignados,
+                sum(sin_regla.values()),
+                dict(por_actividad),
+                dict(sin_regla),
+            ),
+            flush=True,
+        )
+    except Exception as error:
+        db.rollback()
+        # El reparto no debe impedir que el ERP arranque; dejamos el error
+        # explícito en Render para poder corregirlo sin perder disponibilidad.
+        print(f"[REPARTO AUTOMÁTICO] ERROR al asignar gestores pendientes: {error!r}", flush=True)
+    finally:
+        db.close()
 
 
 # ============================================================
