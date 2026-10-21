@@ -6348,19 +6348,22 @@ const cuantiaFincasParaEnvio =
                                     {completa ? "✓ Correcto" : `${pendientes.length} pendiente(s)`}
                                   </span>
                                 </div>
-                                {pendientes.length > 0 && (
-                                  <ul className="ml-11 mt-2 space-y-1 border-t border-slate-200/70 pt-2">
-                                    {pendientes.map((check) => (
-                                      <li key={check.etiqueta} className="flex items-start gap-2 text-[11px] text-amber-800">
-                                        <span className="font-extrabold">!</span>
-                                        <span><strong>{check.etiqueta}:</strong> {check.detalle}</span>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                )}
-                                {completa && (
-                                  <p className="ml-11 mt-2 border-t border-emerald-200/70 pt-2 text-[10px] font-semibold text-emerald-700">✓ Todos los controles definidos para esta fase están cumplidos.</p>
-                                )}
+                                <ul className="ml-11 mt-2 space-y-1 border-t border-slate-200/70 pt-2">
+                                  {fase.checks.map((check) => (
+                                    <li key={check.etiqueta} className="flex items-start gap-2 text-[11px]">
+                                      <span
+                                        aria-label={check.ok ? "Correcto" : "Pendiente"}
+                                        title={check.ok ? "Correcto" : "Pendiente"}
+                                        className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-black ${check.ok ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
+                                      >
+                                        {check.ok ? "✓" : "✕"}
+                                      </span>
+                                      <span className={check.ok ? "text-emerald-800" : "text-red-800"}>
+                                        <strong>{check.etiqueta}:</strong> {check.ok ? "Correcto" : check.detalle}
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
                               </article>
                             );
                           })}
