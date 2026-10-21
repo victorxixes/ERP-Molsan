@@ -101,6 +101,13 @@ const MODULOS_ERP = [
   },
 
   {
+    key: "catalogos",
+    label: "Catálogos",
+    route: "/catalogos",
+    icon: "database",
+  },
+
+  {
     key: "utilidades",
     label: "Utilidades",
     route: "/herramientas/utilidades",
