@@ -654,11 +654,6 @@ const CAMPOS_ACTIVIDADES = {
 
   "facturacion-cierre": [
     {
-      key: "facturacion_estado",
-      label: "Estado facturación",
-      estado: true,
-    },
-    {
       key: "facturacion_fecha",
       label: "Fecha facturación",
       tipo: "fecha",
@@ -6166,7 +6161,6 @@ const cuantiaFincasParaEnvio =
                       {
                         key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾",
                         checks: [
-                          requisito("Estado de facturación", Boolean(valor("facturacion_estado")), "Falta el estado de facturación"),
                           requisito("Fecha de facturación", Boolean(valor("facturacion_fecha")), "Falta la fecha de facturación"),
                           requisito("Entrega al cliente", Boolean(valor("fecha_entregado_cliente")), "Falta la fecha de entrega al cliente"),
                           requisito("Fin de actividad", Boolean(valor("fecha_fin_actividad")), "Falta la fecha de cierre de la actividad"),
