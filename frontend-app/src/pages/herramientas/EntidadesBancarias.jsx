@@ -587,7 +587,7 @@ export default function EntidadesBancarias() {
 
     // Excel abre este libro HTML como hoja de cálculo .xls, sin depender de librerías externas.
     const contenido = `<html><head><meta charset="UTF-8"></head><body>${tabla}</body></html>`;
-    const blob = new Blob(["\\ufeff", contenido], { type: "application/vnd.ms-excel;charset=utf-8;" });
+    const blob = new Blob(["\uFEFF", contenido], { type: "application/vnd.ms-excel;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const enlace = document.createElement("a");
     enlace.href = url;
