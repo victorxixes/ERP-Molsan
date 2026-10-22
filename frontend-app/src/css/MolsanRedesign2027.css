@@ -1271,7 +1271,7 @@
   .encargagest .eg-modal-form,
   .notargest .ng-modal,
   .apoderagest .ag-resumen-modal,
-  .ctn-modal-overlay .ctn-modal-panel,
+  .ctn-modal-overlay .ctn-modal-panel
 ) :where(
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
   select,
@@ -1284,7 +1284,7 @@
   .eg-modal-form,
   .ng-modal,
   .ag-resumen-modal,
-  .ctn-modal-panel,
+  .ctn-modal-panel
 ) :where(
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
   select,
