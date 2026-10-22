@@ -11,6 +11,7 @@ import VistaDia from "./VistaDia";
 import ModalNuevaCita from "../../components/agenda/ModalNuevaCita.jsx";
 import AgendaToast from "../../components/agenda/AgendaToast.jsx";
 import SelectSJ from "../../components/ui/SelectSJ";
+import "./Agenda.css";
 
 const MESES = [
   "Enero",
@@ -377,7 +378,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
   // ============================================================
 
   return (
-    <div className="space-y-5 p-6 text-[var(--erp-text)] animate-fade-in">
+    <div className="agenda-premium-page space-y-5 p-6 text-[var(--erp-text)] animate-fade-in">
       {/* CABECERA Y NAVEGACIÓN */}
 
       <div className="erp-card p-4 shadow-sm">
