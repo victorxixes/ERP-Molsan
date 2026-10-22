@@ -132,12 +132,8 @@ def _migrar_tablas_encargagest_en_hilo():
             )
         """),
         ("columna reparto empleados", """
-            ALTER TABLE empleados
-            ADD COLUMN IF NOT EXISTS reparto_actividades_json JSONB NOT NULL DEFAULT '[]'::jsonb
-        """),
-        ("columna gestor expedientes", """
-            ALTER TABLE expedientes
-            ADD COLUMN IF NOT EXISTS gestor_asignado_id INTEGER NULL REFERENCES empleados(id) ON DELETE SET NULL
+            ALTER TABLE public.empleados
+            ADD COLUMN reparto_actividades_json JSONB NOT NULL DEFAULT '[]'::jsonb
         """),
         ("historial gestores", """
             CREATE TABLE IF NOT EXISTS expediente_gestor_historial (
@@ -156,14 +152,55 @@ def _migrar_tablas_encargagest_en_hilo():
         """),
     ]
     for etiqueta, sql in operaciones:
-        try:
-            with engine.begin() as conexion:
-                conexion.execute(text("SET LOCAL lock_timeout = '2s'"))
-                conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
-                conexion.execute(text(sql))
-            print(f"[ENCARGAGEST MIGRACION] {etiqueta}: OK.", flush=True)
-        except Exception as exc:
-            print(f"[ENCARGAGEST MIGRACION] AVISO: {etiqueta} pendiente; se reintentará en otro arranque. Error: {exc!r}", flush=True)
+        # La columna de reparto de empleados se comprueba antes del DDL:
+        # ADD COLUMN IF NOT EXISTS también solicita un bloqueo aunque ya exista.
+        if etiqueta == "columna reparto empleados":
+            try:
+                with engine.connect() as conexion:
+                    existe = conexion.execute(text(
+                        "SELECT 1 FROM information_schema.columns "
+                        "WHERE table_schema = 'public' AND table_name = 'empleados' "
+                        "AND column_name = 'reparto_actividades_json'"
+                    )).first()
+                if existe:
+                    print("[ENCARGAGEST MIGRACION] empleados.reparto_actividades_json ya existe; se omite ALTER.", flush=True)
+                    continue
+            except Exception:
+                # Se intenta el DDL normal si la consulta de comprobación falla.
+                pass
+
+        ultimo_error = None
+        max_intentos = 10 if etiqueta == "columna reparto empleados" else 1
+        for intento in range(1, max_intentos + 1):
+            try:
+                with engine.begin() as conexion:
+                    conexion.execute(text("SET LOCAL lock_timeout = '3s'"))
+                    conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
+                    conexion.execute(text(sql))
+                print(f"[ENCARGAGEST MIGRACION] {etiqueta}: OK.", flush=True)
+                break
+            except Exception as exc:
+                ultimo_error = exc
+                temporal = any(marca in str(exc).lower() for marca in (
+                    "locknotavailable", "lock timeout", "canceling statement due to lock timeout",
+                    "could not obtain lock",
+                ))
+                if temporal and intento < max_intentos:
+                    espera = min(intento, 3)
+                    print(
+                        f"[ENCARGAGEST MIGRACION] Bloqueo temporal en {etiqueta}; "
+                        f"reintento {intento}/{max_intentos} en {espera}s.",
+                        flush=True,
+                    )
+                    import time
+                    time.sleep(espera)
+                    continue
+                print(
+                    f"[ENCARGAGEST MIGRACION] AVISO: {etiqueta} pendiente; "
+                    f"se reintentará en otro arranque. Error: {ultimo_error!r}",
+                    flush=True,
+                )
+                break
 
 
 @router.on_event("startup")
