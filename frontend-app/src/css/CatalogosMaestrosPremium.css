@@ -1,19 +1,19 @@
 /* MOLSAN ERP Premium 2027 — revisión de maestros de datos. */
-.catalogo-maestro-modal-premium { min-width: 0; color: var(--erp-text, #172033); }
-.catalogo-maestro-modal-premium > * { min-width: 0; }
-.catalogo-maestro-modal-premium table { width: 100%; border-collapse: separate; border-spacing: 0; }
-.catalogo-maestro-modal-premium th { position: sticky; top: 0; z-index: 1; background: var(--erp-surface-soft, #f4f6fb); color: var(--erp-text, #172033); }
-.catalogo-maestro-modal-premium td, .catalogo-maestro-modal-premium th { overflow-wrap: anywhere; }
-.catalogo-maestro-modal-premium input:not([type="checkbox"]):not([type="radio"]), .catalogo-maestro-modal-premium select, .catalogo-maestro-modal-premium textarea { max-width: 100%; min-width: 0; }
-.catalogo-maestro-modal-premium input:focus-visible, .catalogo-maestro-modal-premium select:focus-visible, .catalogo-maestro-modal-premium textarea:focus-visible, .catalogo-maestro-modal-premium button:focus-visible { outline: 2px solid var(--erp-primary, #4169e1); outline-offset: 2px; }
-.catalogo-maestro-modal-premium [role="dialog"] { max-height: min(90dvh, 900px); overflow-y: auto; overscroll-behavior: contain; }
-.catalogo-maestro-modal-premium button { touch-action: manipulation; }
+:is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) { min-width: 0; color: var(--erp-text, #172033); }
+:is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) > * { min-width: 0; }
+:is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) table { width: 100%; border-collapse: separate; border-spacing: 0; }
+:is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) th { position: sticky; top: 0; z-index: 1; background: var(--erp-surface-soft, #f4f6fb); color: var(--erp-text, #172033); }
+:is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) td, :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) th { overflow-wrap: anywhere; }
+:is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) input:not([type="checkbox"]):not([type="radio"]), :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) select, :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) textarea { max-width: 100%; min-width: 0; }
+:is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) input:focus-visible, :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) select:focus-visible, :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) textarea:focus-visible, :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) button:focus-visible { outline: 2px solid var(--erp-primary, #4169e1); outline-offset: 2px; }
+:is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) [role="dialog"] { max-height: min(90dvh, 900px); overflow-y: auto; overscroll-behavior: contain; }
+:is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) button { touch-action: manipulation; }
 @media (max-width: 720px) {
- .catalogo-maestro-modal-premium { padding-left: .75rem; padding-right: .75rem; }
- .catalogo-maestro-modal-premium table { min-width: 680px; }
- .catalogo-maestro-modal-premium .overflow-x-auto { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
- .catalogo-maestro-modal-premium [role="dialog"] { width: min(100%, 100vw - 1rem); max-width: 100%; }
+ :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) { padding-left: .75rem; padding-right: .75rem; }
+ :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) table { min-width: 680px; }
+ :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) .overflow-x-auto { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+ :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) [role="dialog"] { width: min(100%, 100vw - 1rem); max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
- .catalogo-maestro-modal-premium *, .catalogo-maestro-modal-premium *::before, .catalogo-maestro-modal-premium *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+ :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) *, :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) *::before, :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium) *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
