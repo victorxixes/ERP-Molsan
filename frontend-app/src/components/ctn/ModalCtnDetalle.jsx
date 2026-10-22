@@ -294,7 +294,7 @@ export default function ModalCtnDetalle({
       }}
     >
       <section
-        className="ctn-modal-panel"
+        className="ctn-modal-panel molsan-panel"
         role="dialog"
         aria-modal="true"
         aria-labelledby="ctn-ficha-titulo"
@@ -302,7 +302,7 @@ export default function ModalCtnDetalle({
       {/* CABECERA DE LA FICHA */}
 
       <header
-        className="ctn-modal-header"
+        className="ctn-modal-header molsan-page-header"
         style={{
           display: "flex",
           alignItems: "center",
@@ -358,7 +358,7 @@ export default function ModalCtnDetalle({
 
         <button
           type="button"
-          className="ctn-modal-cerrar"
+          className="ctn-modal-cerrar molsan-btn molsan-btn--secondary"
           aria-label="Cerrar ficha"
           onClick={() => (onClose || onCerrar)?.()}
         >
@@ -502,7 +502,7 @@ export default function ModalCtnDetalle({
             <div className="ctn-modal-mapa-pie">
               <p>{[datos.direccion, datos.cp || datos.codigo_postal, datos.municipio, datos.provincia].filter(Boolean).join(", ") || "Ubicación según las coordenadas registradas"}</p>
               <a
-                className="ctn-btn ctn-btn-secondary"
+                className="ctn-btn ctn-btn-secondary molsan-btn molsan-btn--secondary"
                 href={urlAbrirMapa}
                 target="_blank"
                 rel="noreferrer"
