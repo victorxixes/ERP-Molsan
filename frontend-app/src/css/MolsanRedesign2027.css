@@ -1118,3 +1118,107 @@
     max-width: 100%;
   }
 }
+
+
+/* ============================================================
+   FASE 2 · COMPONENTES COMPARTIDOS
+   Igualación de superficies, cabeceras y tablas de módulos heredados.
+   Se limita a clases de presentación: no modifica datos ni acciones.
+   ============================================================ */
+
+/* Superficies operativas: un mismo borde y sombra en filtros/listados. */
+:where(.ctn-listado-page, .expedientes-page, .cg-page, .apoderagest, .notargest) :is(
+  .ctn-filtros,
+  .ctn-tabla-contenedor,
+  .expedientes-filter-panel,
+  .expedientes-table-panel,
+  .cg-panel,
+  .ag-panel,
+  .ng-panel
+) {
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+/* CTN conservaba una cabecera de tabla azul intensa distinta del resto.
+   La sustituimos por la cabecera clara usada en Expedientes y listados ERP. */
+.ctn-listado-page .ctn-tabla th {
+  color: var(--molsan-text-secondary);
+  background: var(--molsan-surface-soft);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-sm, 12px);
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.ctn-listado-page .ctn-tabla td {
+  color: var(--molsan-text-secondary);
+  border-bottom-color: var(--molsan-border-light);
+  line-height: 1.45;
+}
+
+.ctn-listado-page .ctn-tabla tbody tr:hover td {
+  background: #f2f6fd;
+}
+
+.ctn-listado-page .ctn-tabla-cabecera {
+  color: var(--molsan-text);
+  background: var(--molsan-surface);
+  border-bottom-color: var(--molsan-border-light);
+}
+
+.ctn-listado-page .ctn-listado-header h1 {
+  color: var(--molsan-text);
+}
+
+/* Las cabeceras de página comparten jerarquía sin imponer su estructura. */
+:where(.ctn-listado-page, .expedientes-page, .cg-page, .apoderagest, .notargest) :is(
+  .ctn-listado-header h1,
+  .expedientes-page__header h1,
+  .cg-hero h1,
+  .ag-hero h1,
+  .ng-cabecera h1
+) {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  letter-spacing: -0.025em;
+}
+
+/* Unifica radios y bordes de controles sin tocar sus valores ni validaciones. */
+:where(.ctn-listado-page, .expedientes-page, .cg-page, .apoderagest, .notargest) :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea
+) {
+  border-color: var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-control);
+}
+
+:where(.ctn-listado-page, .expedientes-page, .cg-page, .apoderagest, .notargest) :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea
+):focus-visible {
+  border-color: var(--molsan-primary);
+  outline: 2px solid rgba(49, 86, 179, .18);
+  outline-offset: 1px;
+}
+
+/* El contenedor conserva el scroll interno de tablas anchas en móvil. */
+.ctn-listado-page .ctn-tabla-contenedor,
+.ctn-listado-page .ctn-tabla-scroll,
+.expedientes-page .expedientes-table-scroll {
+  min-width: 0;
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .ctn-listado-page .ctn-filtros,
+  .ctn-listado-page .ctn-tabla-contenedor {
+    border-radius: 12px;
+  }
+}
