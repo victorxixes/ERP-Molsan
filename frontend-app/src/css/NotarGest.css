@@ -997,3 +997,54 @@
   .notargest .ng-cabecera { flex-wrap: wrap; gap: 12px; }
 }
 
+
+
+/* MOLSAN ERP PREMIUM 2027 — NotarGest alineado con el sistema común */
+.notargest {
+  --ng-primary: #3156b3;
+  --ng-primary-dark: #274694;
+  color: #24324a;
+}
+.notargest .ng-cabecera {
+  gap: 16px;
+}
+.notargest .ng-cabecera h1 {
+  color: #1e2d46;
+  letter-spacing: -.03em;
+}
+.notargest :is(.ng-boton-secundario, .ng-volver) {
+  border-color: #d4deeb;
+  border-radius: 9px;
+  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+}
+.notargest :is(.ng-boton-secundario, .ng-volver):focus-visible,
+.notargest button:focus-visible,
+.notargest a:focus-visible {
+  outline: 2px solid rgb(49 86 179 / 58%);
+  outline-offset: 2px;
+}
+.notargest :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
+  max-width: 100%;
+  min-width: 0;
+  border: 1px solid #d4deeb;
+  border-radius: 9px;
+  color: #24324a;
+  font: inherit;
+}
+.notargest :is(input, select, textarea):focus-visible {
+  outline: none;
+  border-color: #3156b3;
+  box-shadow: 0 0 0 3px rgb(49 86 179 / 13%);
+}
+@media (max-width: 760px) {
+  .notargest {
+    padding: 14px;
+  }
+  .notargest .ng-cabecera {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .notargest .ng-contadores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
