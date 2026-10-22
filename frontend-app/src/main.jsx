@@ -12,14 +12,12 @@ import { useAuthStore } from "./store/authStore";
 // Añade JWT a llamadas fetch antiguas al backend; Axios ya lo hace solo.
 import "./api/fetchAuth";
 
-// Estilos globales SJ-2026
+// Estilos heredados y utilidades globales SJ-2026.
 import "./css/index.css";
-// Design system compartido MOLSAN: clases opt-in para migración progresiva.
-import "./css/molsan-design-system.css";
-// Sistema visual compartido por familias: tokens, layout, tablas, controles,
-// overlays y movimiento. Las hojas heredadas se migrarán progresivamente.
+// Tokens primero; las reglas del design system los consumen después.
 import "./css/molsan-tokens.css";
-import "./css/molsan-layout.css";
+// Capa opt-in consolidada: estructura, tablas, controles y componentes.
+import "./css/molsan-design-system.css";
 import "./css/molsan-tables.css";
 import "./css/molsan-controls.css";
 import "./css/molsan-overlays.css";
