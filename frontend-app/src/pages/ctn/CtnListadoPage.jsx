@@ -209,7 +209,7 @@ export default function CtnListadoPage() {
       const data = await response.json().catch(() => []);
       if (response.ok) setAccesosEncargaGest(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.warn("No se pudo refrescar el estado de accesos EncargaGest:", err);
+      console.warn("No se ha podido actualizar el estado de accesos EncargaGest.");
     }
   };
 
