@@ -1365,11 +1365,8 @@ export default function ExpedientesListado() {
         }
 
 
-        console.log(
-          "[EXPEDIENTES] Importación finalizada. Recargando listado...",
-          data.data
-        );
-
+        // No registramos el contenido del evento de importación en consola:
+        // puede contener datos identificativos de expedientes.
 
         setRecargaRealtime(
           (valor) =>
