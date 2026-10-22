@@ -18,6 +18,8 @@ import {
   getMaestros,
 } from "../../api/maestros";
 
+import "../../css/ComponentesAccesoPremium.css";
+
 /* ============================================================
    EMPLEADO PERFIL
    ============================================================ */
@@ -574,7 +576,7 @@ export default function EmpleadoPerfil({
 
     return (
 
-      <div className="erp-page">
+      <div className="empleado-perfil-premium erp-page">
 
         <div className="
           erp-card
