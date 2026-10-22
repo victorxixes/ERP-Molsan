@@ -742,3 +742,174 @@
   --ag-blue: var(--molsan-primary);
   --ag-blue-dark: var(--molsan-primary-hover);
 }
+
+
+/* =========================================================
+   Revisión visual basada en pantallas reales · octubre 2026
+   Mejoras de lectura y adaptación, sin tocar rutas ni lógica.
+   ========================================================= */
+
+/* CancelaGest: tabla legible, scroll horizontal deliberado y acciones visibles. */
+.cg-page {
+  min-width: 0;
+  color: var(--molsan-text);
+}
+.cg-page .cg-table-wrap,
+.cg-page .cg-table-container,
+.cg-page .cg-table-scroll,
+.cg-page .cg-table-responsive {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.cg-page table {
+  max-width: 100%;
+}
+.cg-page table th {
+  color: var(--molsan-text-secondary);
+}
+.cg-page table td {
+  line-height: 1.45;
+}
+.cg-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.cg-page select,
+.cg-page textarea {
+  max-width: 100%;
+  min-width: 0;
+}
+.cg-page :where(.cg-panel, .cg-card, .cg-stat, .cg-section) {
+  min-width: 0;
+}
+
+/* CTN: filtros fluidos y tabla desplazable en escritorio pequeño/móvil. */
+.ctn-listado-page {
+  min-width: 0;
+}
+.ctn-tabla-contenedor,
+.ctn-tabla-scroll {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+}
+.ctn-tabla td,
+.ctn-tabla th {
+  line-height: 1.45;
+}
+.ctn-modal-body,
+.ctn-modal-contenido {
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+@media (max-width: 1100px) {
+  .ctn-filtros-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .ctn-listado-page {
+    padding: 14px;
+  }
+  .ctn-listado-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .ctn-listado-header-acciones {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .ctn-filtros {
+    padding: 14px;
+  }
+  .ctn-filtros-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ctn-modal-overlay {
+    align-items: stretch;
+    padding: 8px;
+  }
+  .ctn-modal-panel {
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 12px;
+  }
+  .ctn-modal-header {
+    padding: 16px;
+  }
+}
+
+/* Provisiones de fondos: misma superficie, campos y tablas que el ERP. */
+.provisiones-fondos-page {
+  color: var(--molsan-text);
+  background: var(--molsan-page-bg);
+}
+.provisiones-fondos-page > header {
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-panel);
+  box-shadow: var(--molsan-shadow-panel);
+}
+.provisiones-fondos-page > form > section,
+.provisiones-fondos-page > section {
+  min-width: 0;
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-panel);
+  box-shadow: var(--molsan-shadow-panel);
+}
+.provisiones-fondos-page label {
+  min-width: 0;
+  line-height: 1.45;
+}
+.provisiones-fondos-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.provisiones-fondos-page select,
+.provisiones-fondos-page textarea {
+  max-width: 100%;
+  min-width: 0;
+  border-color: var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-control);
+}
+.provisiones-fondos-page input:focus-visible,
+.provisiones-fondos-page select:focus-visible,
+.provisiones-fondos-page textarea:focus-visible,
+.provisiones-fondos-page button:focus-visible {
+  outline: 3px solid rgba(49, 86, 179, 0.22);
+  outline-offset: 2px;
+}
+.provisiones-fondos-page table {
+  font-variant-numeric: tabular-nums;
+}
+.provisiones-fondos-page thead {
+  background: var(--molsan-surface-soft);
+}
+.provisiones-fondos-page th {
+  color: var(--molsan-text-secondary);
+  white-space: nowrap;
+}
+.provisiones-fondos-page td {
+  line-height: 1.45;
+}
+.provisiones-fondos-page [role="alert"] {
+  border-radius: var(--molsan-radius-control);
+}
+.provisiones-fondos-page .sticky {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+@media (max-width: 640px) {
+  .provisiones-fondos-page > form > section,
+  .provisiones-fondos-page > section {
+    padding: 14px;
+  }
+  .provisiones-fondos-page .sticky {
+    position: static;
+  }
+}
+
+/* Agenda y calendarios: evitar que las tarjetas de citas rompan la cuadrícula. */
+:where(.agenda-page, .agenda-container, .calendario-agenda, .vista-mes) {
+  min-width: 0;
+}
+:where(.agenda-page, .agenda-container, .calendario-agenda, .vista-mes) :where(table, .calendar-grid, .calendario-grid) {
+  max-width: 100%;
+}
+:where(.agenda-page, .agenda-container, .calendario-agenda, .vista-mes) :where(button, input, select) {
+  max-width: 100%;
+}
