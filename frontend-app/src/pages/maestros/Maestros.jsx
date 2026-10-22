@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import "./Maestros.css";
 
 import {
   getMaestros,
@@ -368,7 +369,7 @@ export default function Maestros() {
   ---------------------------------------------------------- */
 
   return (
-    <div className="p-6 space-y-6 animate-fade-in">
+    <div className="maestros-premium-page p-6 space-y-6 animate-fade-in">
 
       {/* ======================================================
           CABECERA
