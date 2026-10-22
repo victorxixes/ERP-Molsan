@@ -1,4 +1,5 @@
 import {
+import "./SeguridadSubpaginasPremium.css";
   useMemo,
   useState,
   useCallback,
@@ -942,10 +943,7 @@ export default function SeguridadLogs() {
 
   return (
 
-    <div className="
-      space-y-6
-      animate-fade-in
-    ">
+    <div className="seguridad-logs-premium seguridad-subpagina-premium space-y-6 animate-fade-in">
 
 
       {/* ====================================================
