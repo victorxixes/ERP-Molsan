@@ -328,3 +328,74 @@
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Cobertura adicional para subpantallas de Herramientas y catálogos maestros. */
+:where(
+  .herramientas-subpagina-premium,
+  .herramienta-operativa-premium,
+  .subir-documento-premium,
+  .catalogos-maestros-premium,
+  .catalogos-maestros-page
+) {
+  min-width: 0;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+:where(
+  .herramientas-subpagina-premium,
+  .herramienta-operativa-premium,
+  .subir-documento-premium,
+  .catalogos-maestros-premium,
+  .catalogos-maestros-page
+) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  max-width: 100%;
+  min-width: 0;
+  border-radius: var(--molsan-radius-control);
+}
+
+:where(
+  .herramientas-subpagina-premium,
+  .herramienta-operativa-premium,
+  .subir-documento-premium,
+  .catalogos-maestros-premium,
+  .catalogos-maestros-page
+) :where(button, a, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--molsan-primary);
+  outline-offset: 2px;
+}
+
+:where(
+  .herramientas-subpagina-premium,
+  .herramienta-operativa-premium,
+  .subir-documento-premium,
+  .catalogos-maestros-premium,
+  .catalogos-maestros-page
+) :where(.overflow-x-auto, .table-responsive, [data-table-scroll="true"]) {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 760px) {
+  :where(
+    .herramientas-subpagina-premium,
+    .herramienta-operativa-premium,
+    .subir-documento-premium,
+    .catalogos-maestros-premium,
+    .catalogos-maestros-page
+  ) {
+    overflow-wrap: anywhere;
+  }
+
+  :where(
+    .herramientas-subpagina-premium,
+    .herramienta-operativa-premium,
+    .subir-documento-premium,
+    .catalogos-maestros-premium,
+    .catalogos-maestros-page
+  ) :where(table) {
+    min-width: 640px;
+  }
+}
