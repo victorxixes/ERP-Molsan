@@ -849,27 +849,8 @@
   --ag-blue-dark: #274694;
   color: #24324a;
 }
-.encargagest :is(.eg-panel, .eg-kpi) {
-  border-color: #dbe3ef;
-  box-shadow: 0 5px 18px rgb(23 43 77 / 5%);
-}
-.encargagest :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
-  max-width: 100%;
-  min-width: 0;
-  border-color: #d4deeb;
-  border-radius: 9px;
-  color: #24324a;
-  font: inherit;
-}
-.encargagest :is(input, select, textarea):focus-visible {
-  outline: none;
-  border-color: #3156b3;
-  box-shadow: 0 0 0 3px rgb(49 86 179 / 13%);
-}
-.encargagest :is(button, [role="button"], a):focus-visible {
-  outline: 2px solid rgb(49 86 179 / 58%);
-  outline-offset: 2px;
-}
+
+
 @media (max-width: 760px) {
   .encargagest {
     padding: 14px;
