@@ -75,10 +75,7 @@ export default function EmpleadoFicha({
 
     } catch (err) {
 
-      console.error(
-        "Error cargando ficha:",
-        err
-      );
+      console.error("No se ha podido cargar la ficha del empleado.");
 
       setError(
         err?.response?.data?.detail ||
