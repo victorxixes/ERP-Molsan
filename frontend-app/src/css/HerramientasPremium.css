@@ -1,0 +1,80 @@
+/* MOLSAN ERP PREMIUM 2027 · Catálogos y Utilidades
+   Identidad visual coherente para las dos centrales de herramientas. */
+:is(.catalogos-premium-page, .utilidades-premium-page) {
+  --tools-primary: var(--erp-primary, #3156b3);
+  --tools-primary-dark: var(--erp-primary-dark, #274694);
+  --tools-soft: var(--erp-primary-soft, #edf3ff);
+  --tools-border: var(--erp-border, #d7e0ec);
+  --tools-text: var(--erp-text, #24324a);
+  --tools-muted: var(--erp-text-soft, #64748b);
+  min-width: 0;
+  color: var(--tools-text);
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) > header {
+  border-color: var(--tools-border);
+  border-radius: 18px;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 5px 20px rgba(22,42,75,.06);
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) > header > div:first-child {
+  background-image: linear-gradient(90deg, var(--tools-primary), #6c8de0, #a7baf0);
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) h1 {
+  color: var(--tools-text);
+  letter-spacing: -.035em;
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) h2 {
+  color: var(--tools-text);
+  letter-spacing: -.02em;
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) a:focus-visible,
+:is(.catalogos-premium-page, .utilidades-premium-page) button:focus-visible {
+  outline: 2px solid var(--tools-primary);
+  outline-offset: 3px;
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) a.group {
+  border-color: var(--tools-border);
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(22,42,75,.045);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) a.group:hover {
+  border-color: #b7c8ed;
+  box-shadow: 0 12px 25px rgba(49,86,179,.10);
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) a.group:active {
+  transform: translateY(0);
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) a.group :is(.text-indigo-600, .text-blue-600, .group-hover\:text-blue-500) {
+  color: var(--tools-primary);
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) a.group .border-indigo-100 {
+  border-color: #d7e3ff;
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) a.group .bg-indigo-50 {
+  background-color: var(--tools-soft);
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) a.group .bg-indigo-100 {
+  background-color: #e3ebff;
+}
+:is(.catalogos-premium-page, .utilidades-premium-page) :is(p.text-slate-500, p.text-slate-600) {
+  color: var(--tools-muted);
+}
+@media (max-width: 640px) {
+  :is(.catalogos-premium-page, .utilidades-premium-page) {
+    padding: 12px;
+    gap: 16px;
+  }
+  :is(.catalogos-premium-page, .utilidades-premium-page) > header {
+    padding: 18px;
+    border-radius: 15px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.catalogos-premium-page, .utilidades-premium-page) *,
+  :is(.catalogos-premium-page, .utilidades-premium-page) *::before,
+  :is(.catalogos-premium-page, .utilidades-premium-page) *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
