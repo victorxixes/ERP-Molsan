@@ -1,0 +1,24 @@
+/* MOLSAN ERP Premium 2027 — seguridad y auditoría */
+.seguridad-usuarios-premium,
+.seguridad-auditoria-premium { min-width: 0; }
+.seguridad-usuarios-premium :is(input, select, textarea, button):focus-visible,
+.seguridad-auditoria-premium :is(input, select, textarea, button):focus-visible {
+  outline: 2px solid var(--erp-primary, #2563eb);
+  outline-offset: 2px;
+}
+.seguridad-usuarios-premium :is(table, [role="table"]),
+.seguridad-auditoria-premium :is(table, [role="table"]) { max-width: 100%; }
+.seguridad-usuarios-premium :is(td, th),
+.seguridad-auditoria-premium :is(td, th) { overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .seguridad-usuarios-premium,
+  .seguridad-auditoria-premium { font-size: .9375rem; }
+  .seguridad-usuarios-premium :is(input, select, textarea),
+  .seguridad-auditoria-premium :is(input, select, textarea) { max-width: 100%; min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seguridad-usuarios-premium *, .seguridad-usuarios-premium *::before, .seguridad-usuarios-premium *::after,
+  .seguridad-auditoria-premium *, .seguridad-auditoria-premium *::before, .seguridad-auditoria-premium *::after {
+    animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important;
+  }
+}
