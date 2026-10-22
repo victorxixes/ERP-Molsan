@@ -301,7 +301,7 @@ export default function NotarGest() {
   async function entrar(e) {
     e.preventDefault(); setCargando(true); setError("");
     try {
-      const response = await fetch(`${API_BASE}/notargest/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usuario: usuario.trim().toUpperCase(), password: password.trim().toUpperCase() }) });
+      const response = await fetch(`${API_BASE}/notargest/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usuario: usuario.trim().toUpperCase(), password: password.trim() }) });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.detail || "Credenciales incorrectas.");
       localStorage.setItem(TOKEN_KEY, data.token); setTokenNotario(data.token); setNotario(data.notario); setPassword("");
@@ -456,7 +456,7 @@ export default function NotarGest() {
       username={usuario}
       setUsername={(valor) => setUsuario(valor.toUpperCase())}
       password={password}
-      setPassword={(valor) => setPassword(valor.toUpperCase())}
+      setPassword={setPassword}
       onSubmit={entrar}
       loading={cargando}
       error={error}
