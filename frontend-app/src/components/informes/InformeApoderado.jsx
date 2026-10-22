@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "../../api/axios";
 
 
+import "../../css/ComponentesOperativosPremium.css";
+
 /**
  * ============================================================
  * INFORME APODERADO — MOLSAN ERP SAAS PREMIUM 2027
@@ -243,7 +245,7 @@ export default function InformeApoderado({
     return (
 
       <div
-        className="
+        className="informe-apoderado-premium 
           rounded-[28px]
           border
           border-slate-200

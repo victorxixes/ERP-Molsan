@@ -8,6 +8,8 @@ import {
 } from "../../store/notificacionesStore";
 
 
+import "../../css/ComponentesOperativosPremium.css";
+
 /**
  * ============================================================
  * NOTIFICACIONES TOAST
@@ -66,7 +68,7 @@ export default function NotificacionesToast() {
 
   return (
     <div
-      className="
+      className="notificaciones-toast-premium 
         pointer-events-none
         fixed
         bottom-5
