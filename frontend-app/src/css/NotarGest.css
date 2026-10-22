@@ -387,7 +387,7 @@
 .notargest .ng-tabla-pagos th,.notargest .ng-tabla-pagos td{white-space:nowrap}
 .notargest .ng-pdf-link{display:inline-grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid #f0caca;border-radius:9px;background:#fff5f5;color:#b4232e;cursor:pointer}
 .notargest .ng-pdf-link span{font-size:9px;font-weight:900;letter-spacing:.02em}
-@media(max-width:1000px){.notargest .ng-dashboard-graficos{grid-template-columns:1fr}.notargest .ng-dashboard-graficos>.ng-dashboard-etapas,.notargest .ng-dashboard-graficos>.ng-dashboard-pagos{grid-column:1;grid-row:auto}}
+@media(max-width:1000px){.notargest .ng-dashboard-graficos>.ng-dashboard-etapas,.notargest .ng-dashboard-graficos>.ng-dashboard-pagos{grid-column:1;grid-row:auto}}
 
 
 /* NotarGest: últimas mejoras del dashboard */
@@ -739,7 +739,7 @@
 .ng-admin-notarias .ng-control-primario{color:#fff;background:linear-gradient(135deg,#426cf0,#2d51cf);border:1px solid rgba(255,255,255,.85);box-shadow:0 7px 16px rgba(49,94,232,.18)}
 .ng-admin-notarias .ng-control-salir{color:#a33a48;background:rgba(255,255,255,.72);border:1px solid #f0d8dc}
 .ng-admin-notarias .ng-control-secundario:hover,.ng-admin-notarias .ng-control-primario:hover,.ng-admin-notarias .ng-control-salir:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(31,48,79,.1)}
-.ng-admin-notarias .ng-control-primario:disabled{opacity:.6;cursor:wait;transform:none}
+
 .ng-admin-notarias .ng-admin-kpis{
   display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important;
   margin:0 0 24px!important;
@@ -757,7 +757,7 @@
 .ng-admin-notarias .ng-admin-kpis article:nth-child(4)::before{background:linear-gradient(180deg,#e8a23b,#f7d49b)}
 .ng-admin-notarias .ng-admin-kpis article span{color:#748198;font-size:11px;font-weight:750;line-height:1.45}
 .ng-admin-notarias .ng-admin-kpis article strong{margin:1px 0 0;color:#172b4d;font-size:clamp(27px,2.7vw,36px);font-weight:850;line-height:1.05;letter-spacing:-.8px}
-.ng-admin-notarias .ng-admin-kpis article strong.ng-cifra-urgente{color:#c62835!important}
+
 .ng-admin-notarias .ng-admin-notarias-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .ng-admin-notarias .ng-admin-notaria-card{
   display:flex;flex-direction:column;min-width:0;padding:20px!important;
