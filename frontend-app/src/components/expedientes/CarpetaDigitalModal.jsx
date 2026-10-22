@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
+import "../../css/ModalesHerramientasPremium.css";
 
 // Se conservan las categorías del repositorio actual para no romper
 // los documentos ya almacenados.
@@ -414,7 +415,7 @@ export default function CarpetaDigitalModal({
   return (
     <>
       <div
-        className={modoActividad ? "w-full space-y-3" : "fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6"}
+        className={modoActividad ? "carpeta-digital-premium panel-modal-premium w-full space-y-3" : "carpeta-digital-premium panel-modal-premium fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6"}
         onMouseDown={(event) => {
           if (!modoActividad && event.target === event.currentTarget) onClose?.();
         }}
