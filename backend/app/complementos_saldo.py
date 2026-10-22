@@ -12,9 +12,36 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import Base, get_db
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.expedientes.models import Expediente
 
 router = APIRouter(prefix="/complementos-saldo", tags=["Complementos de saldo"])
+
+def _autorizar_complementos_ver(usuario=Depends(get_current_user)):
+    for modulo in ("expedientes", "utilidades"):
+        try:
+            require_perm_modulo(usuario, modulo, "ver")
+            return usuario
+        except HTTPException as exc:
+            if exc.status_code != 403:
+                raise
+    raise HTTPException(status_code=403, detail="No tienes permiso para consultar los complementos de saldo.")
+
+
+def _autorizar_complementos_editar(usuario=Depends(get_current_user)):
+    for modulo in ("expedientes", "utilidades"):
+        try:
+            require_perm_modulo(usuario, modulo, "editar")
+            return usuario
+        except HTTPException as exc:
+            if exc.status_code != 403:
+                raise
+    raise HTTPException(status_code=403, detail="No tienes permiso para modificar los complementos de saldo.")
+
+
+_autorizar_complementos_ver._molsan_permiso_guard = ("expedientes", "ver")
+_autorizar_complementos_editar._molsan_permiso_guard = ("expedientes", "editar")
+
 
 
 class ComplementoSaldo(Base):
@@ -69,7 +96,7 @@ def _serializar(item):
     }
 
 
-@router.get("")
+@router.get("", dependencies=[Depends(_autorizar_complementos_ver)])
 def listar_complementos_saldo(
     q: Optional[str] = Query(None),
     estado: Optional[str] = Query(None),
@@ -94,7 +121,7 @@ def listar_complementos_saldo(
     return [_serializar(item) for item in items]
 
 
-@router.post("", status_code=201)
+@router.post("", status_code=201, dependencies=[Depends(_autorizar_complementos_editar)])
 def crear_complemento_saldo(
     datos: ComplementoSaldoCrear,
     db: Session = Depends(get_db),
@@ -135,7 +162,7 @@ def crear_complemento_saldo(
     return _serializar(item)
 
 
-@router.patch("/{complemento_id}/estado")
+@router.patch("/{complemento_id}/estado", dependencies=[Depends(_autorizar_complementos_editar)])
 def cambiar_estado_complemento_saldo(
     complemento_id: int,
     estado: str,
@@ -153,7 +180,7 @@ def cambiar_estado_complemento_saldo(
     return _serializar(item)
 
 
-@router.get("/exportar/excel")
+@router.get("/exportar/excel", dependencies=[Depends(_autorizar_complementos_ver)])
 def exportar_complementos_saldo(
     q: Optional[str] = Query(None),
     estado: Optional[str] = Query(None),
