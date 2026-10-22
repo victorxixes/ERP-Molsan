@@ -26,8 +26,14 @@
 .empleados-premium-page select:focus,
 .empleados-premium-page textarea:focus {
   border-color: var(--empleados-accent);
-  outline: none;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--empleados-accent) 13%, transparent);
+}
+
+.empleados-premium-page input:not([type="checkbox"]):not([type="radio"]):focus-visible,
+.empleados-premium-page select:focus-visible,
+.empleados-premium-page textarea:focus-visible {
+  outline: 2px solid var(--empleados-accent);
+  outline-offset: 2px;
 }
 
 .empleados-premium-page table {
