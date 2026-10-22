@@ -4,6 +4,7 @@ import {
 } from "react";
 
 import axios from "axios";
+import "./EmpleadoFicha.css";
 
 import {
   API_BASE,
@@ -173,6 +174,7 @@ export default function EmpleadoFicha({
   return (
     <div className="
       erp-page
+      empleado-ficha-premium
       space-y-5
     ">
 
