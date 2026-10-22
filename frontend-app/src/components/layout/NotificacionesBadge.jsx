@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
+import "../../css/ComponentesOperativosPremium.css";
 
 /**
  * NotificacionesBadge — SJ‑2026 Premium
@@ -16,9 +17,9 @@ export default function NotificacionesBadge() {
   const count = useMemo(() => notificaciones.length, [notificaciones]);
 
   return (
-    <div className="relative inline-flex items-center">
+    <div className="relative inline-flex items-center notificaciones-badge-premium" aria-label={count > 0 ? `${count} notificaciones sin revisar` : "Sin notificaciones pendientes"}>
       {/* Icono */}
-      <span className="material-icons text-white/80 drop-shadow">
+      <span aria-hidden="true" className="material-icons text-white/80 drop-shadow">
         notifications
       </span>
 
@@ -30,6 +31,8 @@ export default function NotificacionesBadge() {
             px-1.5 py-0.5 rounded-full shadow-lg backdrop-blur-md
             border border-white/20 animate-[fadeIn_0.3s_ease]
           "
+          role="status"
+          aria-label={`${count} notificaciones sin revisar`}
           style={{ animationFillMode: "both" }}
         >
           {count}
