@@ -1,0 +1,66 @@
+/* MOLSAN ERP PREMIUM 2027 · Ficha de empleado
+   Estilos aislados: no modifica otras fichas ni componentes compartidos. */
+.empleado-ficha-premium {
+  --ef-line: var(--erp-border, rgba(148, 163, 184, .22));
+  --ef-surface: var(--erp-surface, rgba(255, 255, 255, .82));
+  --ef-soft: var(--erp-surface-soft, rgba(248, 250, 252, .76));
+  padding-bottom: 1.25rem;
+}
+.empleado-ficha-premium > section {
+  border: 1px solid var(--ef-line);
+  border-radius: 1.15rem;
+  background: var(--ef-surface);
+  box-shadow: 0 8px 26px rgba(15, 23, 42, .045);
+  backdrop-filter: blur(14px);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.empleado-ficha-premium > section:hover {
+  border-color: color-mix(in srgb, var(--erp-primary, #2563eb) 24%, var(--ef-line));
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .065);
+}
+.empleado-ficha-premium h2 {
+  letter-spacing: -.018em;
+}
+.empleado-ficha-premium > section:first-child img {
+  display: block;
+}
+.empleado-ficha-premium button {
+  font-weight: 650;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, .12);
+}
+.empleado-ficha-premium button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--erp-primary, #2563eb) 40%, transparent);
+  outline-offset: 3px;
+}
+.empleado-ficha-premium table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.empleado-ficha-premium tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--ef-soft) 48%, transparent);
+}
+.empleado-ficha-premium tbody tr:hover {
+  background: color-mix(in srgb, var(--erp-primary, #2563eb) 7%, transparent);
+}
+@media (max-width: 640px) {
+  .empleado-ficha-premium > section {
+    border-radius: .9rem;
+  }
+  .empleado-ficha-premium > section:first-child {
+    padding: 1rem;
+  }
+  .empleado-ficha-premium h1 {
+    overflow-wrap: anywhere;
+    font-size: 1.35rem;
+    line-height: 1.35;
+  }
+  .empleado-ficha-premium table {
+    min-width: 620px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .empleado-ficha-premium > section {
+    transition: none;
+  }
+}
