@@ -302,36 +302,21 @@ export default function ModalCtnDetalle({
       {/* CABECERA DE LA FICHA */}
 
       <header
-        className="ctn-modal-header molsan-page-header"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 16,
-          flexWrap: "wrap",
-          padding: "0 0 18px",
-          marginBottom: 20,
-          borderBottom: "1px solid #e5eaf0",
-        }}
+        className="ctn-modal-header molsan-page-header ctn-modal-header-unified"
       >
-        <div style={{ minWidth: 0 }}>
+        <div className="ctn-modal-header-identity">
           <span className="ctn-modal-eyebrow">
             MOLSAN ERP · CTN
           </span>
 
           <h2
             id="ctn-ficha-titulo"
-            style={{
-              margin: "6px 0",
-              fontSize: "clamp(20px, 2vw, 28px)",
-              fontWeight: 750,
-              overflowWrap: "anywhere",
-            }}
+            className="ctn-modal-title"
           >
             {nombreNotario(datos)}
           </h2>
 
-          <p style={{ margin: 0, color: "#64748b" }}>
+          <p className="ctn-modal-meta">
             NIF: {valor(datos.nif)}
             {" · "}
             Código: {valor(datos.codigo)}
@@ -340,19 +325,7 @@ export default function ModalCtnDetalle({
           </p>
         </div>
 
-        <span
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            padding: "7px 12px",
-            borderRadius: 999,
-            background: "#edf5ff",
-            color: "#2458a6",
-            fontSize: 12,
-            fontWeight: 700,
-            whiteSpace: "nowrap",
-          }}
-        >
+        <span className="ctn-modal-header-badge">
           Ficha de notaría
         </span>
 
@@ -387,9 +360,8 @@ export default function ModalCtnDetalle({
       </nav>
       {error && (
         <div
-          className="ctn-modal-alerta"
+          className="ctn-modal-alerta ctn-modal-alerta--spaced"
           role="alert"
-          style={{ marginBottom: 16 }}
         >
           {error}
         </div>
