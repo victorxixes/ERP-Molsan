@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import AutocompleteNotario from "./AutocompleteNotario";
+import "../../css/ModalesHerramientasPremium.css";
 
 import { obtenerNotaria } from "../../api/ctn";
 
@@ -719,7 +720,7 @@ export default function ModalNuevaCita({
   return (
 
     <div
-      className="
+      className="modal-nueva-cita-premium panel-modal-premium
         fixed inset-0
         bg-slate-950/50
         backdrop-blur-sm
