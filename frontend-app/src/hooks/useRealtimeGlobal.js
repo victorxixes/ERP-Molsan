@@ -181,10 +181,7 @@ export default function useRealtimeGlobal() {
         error
       ) {
 
-        console.warn(
-          "[REALTIME] No se pudo propagar erp:realtime:",
-          error
-        );
+        console.warn("[REALTIME] No se pudo propagar el evento interno.");
 
       }
 
