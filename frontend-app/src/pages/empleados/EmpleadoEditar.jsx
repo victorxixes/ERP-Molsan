@@ -4,6 +4,8 @@ import {
   useCallback,
 } from "react";
 
+import "./EmpleadoEditar.css";
+
 import {
   obtenerEmpleado,
   editarEmpleado,
@@ -264,6 +266,7 @@ export default function EmpleadoEditar({
 
     <div className="
       erp-card
+      empleado-editar-premium
       p-6
       space-y-6
     ">
