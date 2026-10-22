@@ -17,3 +17,34 @@
 @media (prefers-reduced-motion: reduce) {
   :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium, .herramienta-operativa-premium, .correspondencia-tipificada-premium, .importar-ctn-premium, .subir-documento-premium, .cambiar-gestor-premium) *, :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium, .herramienta-operativa-premium, .correspondencia-tipificada-premium, .importar-ctn-premium, .subir-documento-premium, .cambiar-gestor-premium) *::before, :is(.catalogo-maestro-modal-premium, .honorarios-gestoria-premium, .oficinas-liquidadoras-premium, .catalogo-maestro-page-premium, .tipos-concepto-gastos-premium, .herramienta-operativa-premium, .correspondencia-tipificada-premium, .importar-ctn-premium, .subir-documento-premium, .cambiar-gestor-premium) *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+/* Revisión integral: páginas de catálogos maestros. Mantener reglas acotadas a estos módulos. */
+:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--erp-text, #172033);
+}
+:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) :is(input, select, textarea, button):focus-visible {
+  outline: 2px solid var(--erp-primary, #4169e1);
+  outline-offset: 2px;
+}
+:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) :is(table, [role="table"]) {
+  width: 100%;
+  max-width: 100%;
+}
+:is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) :is(td, th) {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+  :is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) {
+    font-size: .94rem;
+  }
+  :is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) .overflow-x-auto {
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  :is(.entidades-bancarias-premium, .registros-propiedad-premium, .municipios-premium, .tipos-carga-hipotecaria-premium) :is(input, select, textarea) {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
