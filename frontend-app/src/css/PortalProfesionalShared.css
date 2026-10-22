@@ -1566,8 +1566,8 @@
   .ag-ficha-paneles .ag-ficha-facturacion,
   .ag-ficha-paneles .ag-ficha-encargo-notarial{grid-column:auto!important}
   .ag-ficha-paneles .ag-ficha-encargo-notarial .ag-encargo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .ag-ficha-paneles .ag-ficha-archivo{grid-column:1!important}
-  .ag-ficha-paneles .ag-ficha-registral{grid-column:2!important}
+  
+  
 }
 
 .ag-detalle-campo.ag-firma-urgente-activa{padding:8px 10px;border:1px solid #fecaca;border-radius:10px;background:#fff1f2}
@@ -1602,10 +1602,10 @@
   .ag-aceptar-campo>span{white-space:normal}
 }
 @media(max-width:700px){
-  .ag-aceptar-resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
+  
 }
 @media(max-width:460px){
-  .ag-aceptar-resumen{grid-template-columns:minmax(0,1fr)}
+  
   .ag-encargo-detalle-cabecera{gap:8px;padding:10px}
   .ag-encargo-detalle-cabecera>span:last-child{font-size:10px}
 }
