@@ -315,7 +315,7 @@ export default function SeguridadResumen({ empleadoId }) {
   // ============================================================
 
   return (
-    <div className="erp-page">
+    <div className="erp-page seguridad-subpagina-premium seguridad-resumen-premium">
 
       {/* ======================================================
           CABECERA
