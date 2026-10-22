@@ -20,7 +20,7 @@
   padding: 24px;
   color: var(--ctn-text);
   background: var(--ctn-bg);
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", Arial, sans-serif);
   box-sizing: border-box;
 }
 
