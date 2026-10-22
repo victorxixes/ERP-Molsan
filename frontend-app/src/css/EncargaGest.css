@@ -856,3 +856,47 @@
     padding: 14px;
   }
 }
+
+/* Robustez final del perfil CTN en EncargaGest: viewport móvil y contenido largo. */
+.encargagest .eg-modal-perfil {
+  max-height: calc(100dvh - 24px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.encargagest .eg-perfil-layout,
+.encargagest .eg-perfil-seguridad,
+.encargagest .eg-perfil-identidad {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.encargagest .eg-perfil-dato,
+.encargagest .eg-perfil-observacion {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.encargagest .eg-perfil-seguridad :is(input, select, textarea, button) {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .encargagest .eg-modal-perfil {
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    border-radius: 14px;
+  }
+
+  .encargagest .eg-perfil-layout {
+    gap: 12px;
+  }
+
+  .encargagest .eg-perfil-seguridad {
+    padding: 12px;
+  }
+}
