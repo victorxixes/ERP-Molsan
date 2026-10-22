@@ -1,0 +1,114 @@
+/* MOLSAN ERP PREMIUM 2027 · Agenda
+   Mejora visual aislada: no altera consultas, eventos ni sincronización. */
+.agenda-premium-page {
+  --agenda-primary: var(--erp-primary, #3156b3);
+  --agenda-primary-soft: var(--erp-primary-soft, #edf3ff);
+  --agenda-border: var(--erp-border, #d7e0ec);
+  --agenda-surface: var(--erp-surface, #fff);
+  --agenda-soft: var(--erp-surface-soft, #f6f8fc);
+  --agenda-text: var(--erp-text, #24324a);
+  --agenda-muted: var(--erp-text-soft, #64748b);
+  min-width: 0;
+  color: var(--agenda-text);
+  font-size: 13px;
+}
+.agenda-premium-page > .erp-card {
+  border: 1px solid var(--agenda-border);
+  border-radius: 16px;
+  background: var(--agenda-surface);
+  box-shadow: 0 5px 18px rgba(22, 42, 75, .055);
+}
+.agenda-premium-page > .erp-card:first-of-type {
+  position: relative;
+  overflow: visible;
+  padding: 16px;
+}
+.agenda-premium-page > .erp-card:first-of-type > .flex {
+  row-gap: 12px;
+}
+.agenda-premium-page select,
+.agenda-premium-page input:not([type="checkbox"]):not([type="radio"]),
+.agenda-premium-page textarea {
+  max-width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--agenda-border);
+  border-radius: 9px;
+  background-color: #fff;
+  color: var(--agenda-text);
+  font-size: 13px;
+}
+.agenda-premium-page :is(select, input, textarea):focus-visible {
+  outline: 2px solid rgba(49, 86, 179, .25);
+  outline-offset: 1px;
+  border-color: var(--agenda-primary);
+}
+.agenda-premium-page button {
+  transition: background-color .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
+}
+.agenda-premium-page button:focus-visible,
+.agenda-premium-page a:focus-visible {
+  outline: 2px solid rgba(49, 86, 179, .6);
+  outline-offset: 2px;
+}
+.agenda-premium-page > .erp-card:first-of-type button[aria-pressed="true"],
+.agenda-premium-page > .erp-card:first-of-type button[data-active="true"] {
+  color: #fff;
+  background: var(--agenda-primary);
+  border-color: var(--agenda-primary);
+}
+.agenda-premium-page .ag-print-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--agenda-border);
+  border-radius: 9px;
+  color: var(--agenda-text);
+  background: var(--agenda-surface);
+  font-size: 12px;
+  font-weight: 700;
+}
+.agenda-premium-page .ag-print-action:hover {
+  color: var(--agenda-primary);
+  border-color: var(--agenda-primary);
+  background: var(--agenda-primary-soft);
+}
+.agenda-premium-page > .erp-card:nth-of-type(2) {
+  overflow: hidden;
+  padding: 0;
+}
+.agenda-premium-page :is(.grid, [class*="grid-cols-"]) {
+  min-width: 0;
+}
+.agenda-premium-page :is(button, [role="button"]) {
+  -webkit-tap-highlight-color: transparent;
+}
+.agenda-premium-page .ag-print-root {
+  display: none;
+}
+@media (max-width: 768px) {
+  .agenda-premium-page {
+    padding: 12px;
+    gap: 12px;
+  }
+  .agenda-premium-page > .erp-card:first-of-type {
+    padding: 12px;
+  }
+  .agenda-premium-page > .erp-card:first-of-type > .flex {
+    gap: 8px;
+  }
+  .agenda-premium-page > .erp-card:first-of-type .ml-auto {
+    margin-left: 0;
+    width: 100%;
+    justify-content: stretch;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .agenda-premium-page *,
+  .agenda-premium-page *::before,
+  .agenda-premium-page *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
