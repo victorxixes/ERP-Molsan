@@ -1,5 +1,6 @@
 import { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
+import "../../css/ComponentesCompartidosPremium.css";
 
 const HORAS = Array.from(
   { length: 12 },
@@ -83,7 +84,7 @@ export default function VistaDia({
   }, [citasSeguras]);
 
   return (
-    <div className="grid grid-cols-[70px,1fr] gap-4 text-xs animate-fade-in">
+    <div className="agenda-vista-premium agenda-vista-dia-premium grid grid-cols-[70px,1fr] gap-4 text-xs animate-fade-in">
 
       {/* HORAS */}
 

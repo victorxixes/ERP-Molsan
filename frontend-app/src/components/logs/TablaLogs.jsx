@@ -1,4 +1,5 @@
 import { useMemo, useCallback, useState } from "react";
+import "../../css/ComponentesCompartidosPremium.css";
 
 /**
  * TABLA LOGS — MOLSAN ERP SAAS PREMIUM 2027
