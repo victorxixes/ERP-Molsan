@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 
+import "../../css/ComponentesOperativosPremium.css";
+
 const ACTIVIDADES = [
   { key: "documentacion-previa", label: "Documentación previa" },
   { key: "sede-notarial", label: "Sede notarial" },
@@ -130,7 +132,7 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
   }
 
   return (
-    <div className="erp-page fixed inset-0 z-[12000] overflow-y-auto bg-slate-900/40 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="Visibilidad tablas">
+    <div className="visibilidad-tablas-premium erp-page fixed inset-0 z-[12000] overflow-y-auto bg-slate-900/40 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="Visibilidad tablas">
       <div className="mx-auto my-2 max-w-7xl overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] shadow-[var(--erp-shadow-lg)]">
         <header className="flex flex-wrap items-center gap-3 bg-[var(--erp-primary)] px-5 py-4 text-white">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-xl">⚙️</div>
