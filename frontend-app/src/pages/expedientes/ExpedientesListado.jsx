@@ -5,6 +5,7 @@ import {
 import axios from "../../api/axios";
 import { useAuthStore } from "../../store/authStore";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
+import "./ExpedientesListado.css";
 
 import {
   Link,
@@ -2340,6 +2341,8 @@ export default function ExpedientesListado() {
     <div
       className="
         erp-page
+        molsan-page
+        expedientes-page
         min-h-full
 
         p-4
@@ -2386,6 +2389,21 @@ export default function ExpedientesListado() {
       {/* Área principal de trabajo de expedientes */}
 
       <main className="min-w-0 w-full space-y-6">
+        <header className="molsan-page-header expedientes-page__header">
+          <div className="molsan-page-header__identity">
+            <div className="expedientes-page__header-icon" aria-hidden="true">▤</div>
+            <div className="min-w-0">
+              <p className="expedientes-page__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+              <h1 className="molsan-page-header__title">Expedientes</h1>
+              <p className="molsan-page-header__description">
+                Consulta, seguimiento y control de la tramitación de expedientes.
+              </p>
+            </div>
+          </div>
+          <div className="molsan-page-header__actions">
+            <span className="expedientes-page__header-note">Gestión y seguimiento</span>
+          </div>
+        </header>
 
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-2 xl:items-start">
       {/* SLA GLOBAL: CIRCUITOS DIFERENCIADOS */}
