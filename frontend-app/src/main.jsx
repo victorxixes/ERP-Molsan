@@ -16,6 +16,14 @@ import "./api/fetchAuth";
 import "./css/index.css";
 // Design system compartido MOLSAN: clases opt-in para migración progresiva.
 import "./css/molsan-design-system.css";
+// Sistema visual compartido por familias: tokens, layout, tablas, controles,
+// overlays y movimiento. Las hojas heredadas se migrarán progresivamente.
+import "./css/molsan-tokens.css";
+import "./css/molsan-layout.css";
+import "./css/molsan-tables.css";
+import "./css/molsan-controls.css";
+import "./css/molsan-overlays.css";
+import "./css/molsan-motion.css";
 
 // ============================================================
 // Root — Inicialización del ERP SJ-2026
