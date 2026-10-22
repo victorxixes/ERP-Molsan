@@ -935,6 +935,7 @@
   max-width: none;
   min-width: 0;
   margin: 0;
+  padding: 0;
   color: var(--molsan-text);
   font-family: var(--molsan-font-family);
 }
@@ -1002,10 +1003,6 @@
   ) {
     min-width: 0;
     max-width: 100%;
-  }
-
-  .notargest-workspace-premium .notargest {
-    padding: 16px;
   }
 }
 
