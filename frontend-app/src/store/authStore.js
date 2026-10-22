@@ -125,8 +125,7 @@ function tokenEstaExpirado(token) {
   } catch (error) {
 
     console.warn(
-      "No se ha podido comprobar la expiración del JWT.",
-      error
+      "No se ha podido comprobar la expiración del JWT."
     );
 
     /*
@@ -309,7 +308,7 @@ export const useAuthStore = create(
         try {
           localStorage.setItem("empleado", JSON.stringify(empleado));
         } catch (error) {
-          console.warn("No se pudo sincronizar el empleado de la sesión.", error);
+          console.warn("No se pudo sincronizar el empleado de la sesión.");
         }
 
         return { empleado };
@@ -457,8 +456,7 @@ export const useAuthStore = create(
       catch (error) {
 
         console.warn(
-          "Sesión almacenada inválida. Cerrando sesión.",
-          error
+          "Sesión almacenada inválida. Cerrando sesión."
         );
 
 
@@ -480,11 +478,11 @@ export const useAuthStore = create(
       }
 
       } catch (error) {
-        console.error("No se pudo inicializar la sesión del ERP.", error);
+        console.error("No se pudo inicializar la sesión del ERP.");
         try {
           limpiarSesionLocal();
         } catch (storageError) {
-          console.warn("No se pudo limpiar el almacenamiento local.", storageError);
+          console.warn("No se pudo limpiar el almacenamiento local.");
         }
         set({ token: null, empleado: null });
       } finally {
