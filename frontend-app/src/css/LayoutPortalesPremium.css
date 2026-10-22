@@ -1,6 +1,7 @@
 /* MOLSAN ERP Premium 2027 · layout, portales e intranet */
 .mol-sidebar-premium { isolation:isolate; }
 .mol-sidebar-premium a,.mol-sidebar-premium button { transition:background-color .16s ease,color .16s ease,border-color .16s ease; }
+.mol-sidebar-premium nav { min-width:0; max-width:100%; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:var(--erp-border,#dce4ef) transparent; }
 .mol-sidebar-premium a:focus-visible,.mol-sidebar-premium button:focus-visible,.portal-login-premium input:focus-visible,.portal-login-premium button:focus-visible,.portal-access-tabs-premium button:focus-visible,.sidebar-perfil-modal-premium button:focus-visible,.sidebar-perfil-modal-premium input:focus-visible,.sidebar-perfil-modal-premium select:focus-visible { outline:2px solid var(--erp-primary,#4169e1); outline-offset:2px; }
 .portal-login-premium { min-height:100dvh; }
 .portal-login-premium input,.portal-login-premium button { max-width:100%; }
