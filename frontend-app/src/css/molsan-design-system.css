@@ -565,3 +565,16 @@
   border-color: var(--molsan-primary);
   transform: none;
 }
+
+
+/* Las reglas responsivas quedan al final para prevalecer sobre el puente legado. */
+@media (max-width: 640px) {
+  .cg-page .cg-hero,
+  .ag-hero,
+  .ng-cabecera,
+  .encargagest .eg-hero {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px;
+  }
+}
