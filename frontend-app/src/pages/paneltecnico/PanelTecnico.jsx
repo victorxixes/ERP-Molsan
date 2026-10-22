@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import "./PanelTecnico.css";
 import { useAuthStore } from "../../store/authStore";
 import EmpleadosModulo2026 from "../empleados/EmpleadosModulo2026";
 import MonitorSistema from "./MonitorSistema";
@@ -33,7 +34,7 @@ export default function PanelTecnico() {
   );
 
   return (
-    <div className="w-full space-y-8 animate-fade-in">
+    <div className="panel-tecnico-premium w-full space-y-8 animate-fade-in">
 
       {/* ======================================================
           CABECERA
