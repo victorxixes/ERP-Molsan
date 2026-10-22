@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
 
+import "../css/ComponentesAccesoPremium.css";
+
 export default function ModuloPendiente({ nombre }) {
   const navigate = useNavigate();
   const esEncargaGest = String(nombre || "").toLowerCase() === "encargagest";
 
   return (
-    <section className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
+    <section className="modulo-pendiente-premium mx-auto max-w-4xl px-4 py-10 sm:py-14">
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_18px_55px_rgba(31,48,79,0.08)]">
         <div className="h-1.5 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-200" />
 
