@@ -86,7 +86,7 @@ button {
 }
 
 button:active {
-  transform: scale(0.97);
+  transform: none;
 }
 
 
@@ -99,16 +99,15 @@ textarea,
 select {
   font-family: inherit;
   color: var(--erp-text);
-  transition:
-    box-shadow 0.25s ease,
-    transform 0.25s ease;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
+/* Los campos no deben desplazarse al pasar el cursor: evita saltos en grids
+   y formularios densos. El foco visible comunica la interacción de forma clara. */
 input:hover,
 textarea:hover,
 select:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transform: none;
 }
 
 
