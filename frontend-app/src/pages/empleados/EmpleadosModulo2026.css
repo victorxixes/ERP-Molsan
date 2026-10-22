@@ -1,0 +1,100 @@
+/* MOLSAN ERP PREMIUM 2027 · GLASS LUXE
+   Estilos acotados al listado de empleados. Sin cambios de lógica. */
+
+.empleados-premium-page {
+  --empleados-accent: var(--erp-primary, #2563eb);
+  color: var(--erp-text, #172033);
+}
+
+.empleados-premium-page > section.erp-card {
+  border: 1px solid var(--erp-border, rgba(148, 163, 184, .24));
+  border-radius: 1.25rem;
+  background: var(--erp-surface, rgba(255, 255, 255, .92));
+  box-shadow: 0 12px 32px rgba(15, 23, 42, .055);
+}
+
+.empleados-premium-page input:not([type="checkbox"]):not([type="radio"]),
+.empleados-premium-page select,
+.empleados-premium-page textarea {
+  max-width: 100%;
+  border-color: var(--erp-border, #dbe2ea);
+  border-radius: .75rem;
+  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+}
+
+.empleados-premium-page input:not([type="checkbox"]):not([type="radio"]):focus,
+.empleados-premium-page select:focus,
+.empleados-premium-page textarea:focus {
+  border-color: var(--empleados-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--empleados-accent) 13%, transparent);
+}
+
+.empleados-premium-page table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.empleados-premium-page thead th {
+  background: var(--erp-surface-soft, #f5f7fb);
+  color: var(--erp-text-soft, #64748b);
+  font-size: .7rem;
+  font-weight: 750;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.empleados-premium-page tbody tr {
+  transition: background-color .15s ease;
+}
+
+.empleados-premium-page tbody tr:hover {
+  background: color-mix(in srgb, var(--empleados-accent) 4%, transparent);
+}
+
+.empleados-premium-page th,
+.empleados-premium-page td {
+  border-bottom-color: var(--erp-border, #e2e8f0);
+}
+
+.empleados-premium-page button {
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.empleados-premium-page button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--empleados-accent) 38%, transparent);
+  outline-offset: 2px;
+}
+
+.empleados-premium-page .rounded-2xl.border {
+  border-color: var(--erp-border, rgba(148, 163, 184, .24));
+}
+
+@media (max-width: 768px) {
+  .empleados-premium-page > section.erp-card {
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+
+  .empleados-premium-page table {
+    min-width: 680px;
+  }
+
+  .empleados-premium-page .overflow-x-auto {
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .empleados-premium-page *,
+  .empleados-premium-page *::before,
+  .empleados-premium-page *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
