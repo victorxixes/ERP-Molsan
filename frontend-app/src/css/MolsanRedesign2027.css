@@ -884,3 +884,128 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   FASE 1 · UNIFICACIÓN TRANSVERSAL DEL ERP
+   Normaliza el lenguaje visual de los portales y listados que aún
+   conservan clases heredadas. No modifica estructura ni lógica.
+   ============================================================ */
+
+:where(
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
+  .expedientes-page
+) {
+  min-width: 0;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  text-rendering: optimizeLegibility;
+}
+
+/* Tokens puente: los portales antiguos consumen los mismos valores
+   que el sistema visual general, sin tener que reescribir su JSX. */
+.apoderagest {
+  --ag-ink: var(--molsan-text);
+  --ag-muted: var(--molsan-text-muted);
+  --ag-line: var(--molsan-border-light);
+  --ag-panel: var(--molsan-surface);
+  --ag-blue: var(--molsan-primary);
+  --ag-blue-dark: var(--molsan-primary-hover);
+}
+
+/* Evita que el marco de ApoderaGest/NotarGest/EncargaGest parezca
+   una aplicación distinta al resto del ERP. Se conservan sus tarjetas,
+   estados, indicadores y componentes de negocio internos. */
+.apoderagest:not(.encargagest-workspace-premium) {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  background: var(--molsan-page-bg);
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+}
+
+/* NotarGest estaba limitado a 1500px y añadía un segundo marco/padding.
+   El área de trabajo usa ahora el mismo ancho disponible que los demás
+   módulos, evitando márgenes dobles dentro del portal. */
+.notargest-workspace-premium .notargest {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+/* Controles heredados: tipografía, borde y foco coherentes, manteniendo
+   colores semánticos de botones (primario, peligro, estado, etc.). */
+:where(
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
+  .expedientes-page,
+  .cg-unified-workspace
+) :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea
+) {
+  max-width: 100%;
+  min-width: 0;
+  font-family: var(--molsan-font-family);
+  color: var(--molsan-text);
+  border-radius: var(--molsan-radius-control);
+}
+
+:where(
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
+  .expedientes-page,
+  .cg-unified-workspace
+) :where(button, [role="button"]) {
+  font-family: var(--molsan-font-family);
+  transition-duration: var(--molsan-transition-fast);
+}
+
+:where(
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
+  .expedientes-page,
+  .cg-unified-workspace
+) :where(button, a, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--molsan-primary);
+  outline-offset: 2px;
+}
+
+/* En móvil, las áreas de trabajo deben poder encogerse sin provocar
+   scroll horizontal de toda la aplicación. Las tablas conservan su
+   desplazamiento interno cuando necesitan más anchura. */
+@media (max-width: 760px) {
+  :where(
+    .apoderagest,
+    .notargest-workspace-premium,
+    .encargagest-workspace-premium,
+    .notargest,
+    .ctn-listado-page,
+    .expedientes-page,
+    .cg-unified-workspace
+  ) {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .notargest-workspace-premium .notargest {
+    padding: 16px;
+  }
+}
+
