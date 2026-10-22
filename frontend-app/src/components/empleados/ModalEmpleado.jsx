@@ -1,3 +1,5 @@
+import "../../css/ModalesOperativosPremium.css";
+
 import {
   useEffect,
   useMemo,
@@ -2111,7 +2113,7 @@ const permisosDisponibles =
   return (
 
     <div
-      className="
+      className="empleado-operativo-modal
         fixed
         inset-0
         z-[100]
