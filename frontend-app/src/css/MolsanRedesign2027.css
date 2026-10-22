@@ -1245,13 +1245,11 @@
 
 /* Paneles de diálogo: superficie blanca, borde y sombra corporativos.
    Se respetan anchuras/alturas particulares (p. ej. visor de pagos o CTN). */
-:where(
-  .modal-sj,
-  .eg-modal-form,
-  .ng-modal,
-  .ag-resumen-modal,
-  .ctn-modal
-) {
+.modal-sj,
+.encargagest .eg-modal-form,
+.notargest .ng-modal,
+.apoderagest .ag-resumen-modal,
+.ctn-modal-overlay .ctn-modal {
   color: var(--molsan-text, #18263c);
   background-color: var(--molsan-surface, #fff);
   border-color: var(--molsan-border, #dce4ef);
@@ -1270,11 +1268,11 @@
 }
 
 /* Los campos de los modales siguen las mismas métricas que los formularios. */
-:where(
-  .eg-modal-form,
-  .ng-modal,
-  .ag-resumen-modal,
-  .ctn-modal,
+:is(
+  .encargagest .eg-modal-form,
+  .notargest .ng-modal,
+  .apoderagest .ag-resumen-modal,
+  .ctn-modal-overlay .ctn-modal,
   .modal-sj
 ) :where(
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
