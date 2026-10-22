@@ -17,14 +17,17 @@
   --molsan-border-light: var(--erp-border-light, #e6ebf2);
   --molsan-border-strong: var(--erp-border-strong, #c4d0df);
   --molsan-text: var(--erp-text, #17243a);
+  --molsan-text-secondary: var(--erp-text-secondary, #526176);
   --molsan-text-muted: var(--erp-text-soft, #64748b);
   --molsan-success: var(--erp-success, #16845b);
   --molsan-warning: var(--erp-warning, #b7791f);
   --molsan-danger: var(--erp-danger, #c43d4b);
   --molsan-radius-control: 8px;
   --molsan-radius-card: 12px;
+  --molsan-radius-panel: var(--molsan-radius-card);
   --molsan-radius-dialog: 14px;
   --molsan-shadow-card: 0 4px 14px rgba(36, 50, 74, 0.06);
+  --molsan-shadow-panel: var(--molsan-shadow-card);
   --molsan-shadow-popover: 0 18px 45px rgba(15, 23, 42, 0.14);
   --molsan-transition-fast: 150ms ease;
   --molsan-transition-normal: 180ms ease;
