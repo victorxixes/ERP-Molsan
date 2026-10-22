@@ -92,13 +92,13 @@ function porcentaje(valor) {
 
 function KpiCard({ icono, titulo, valor, descripcion }) {
   return (
-    <div className="erp-card group relative overflow-hidden p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+    <div className="erp-card dashboard-kpi group relative overflow-hidden p-4 transition-all duration-150">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="mb-2 text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--erp-text-soft)" }}>
             {titulo}
           </div>
-          <div className="text-3xl font-bold tracking-tight" style={{ color: "var(--erp-text)" }}>
+          <div className="dashboard-kpi__value text-3xl font-bold tracking-tight" style={{ color: "var(--erp-text)" }}>
             {valor}
           </div>
           {descripcion && (
@@ -107,7 +107,7 @@ function KpiCard({ icono, titulo, valor, descripcion }) {
             </div>
           )}
         </div>
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl" style={{ background: "var(--erp-primary-soft)", color: "var(--erp-primary)" }}>
+        <div className="dashboard-kpi__icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)", color: "var(--erp-primary)" }}>
           {icono}
         </div>
       </div>
@@ -254,18 +254,18 @@ export default function Dashboard() {
   const porcentajeVideoconferencia = totalFirmas > 0 ? (firmasVideoconferencia / totalFirmas) * 100 : firmasRealizadas == null ? null : 0;
 
   return (
-    <div className="erp-page w-full dashboard-cancelagest">
+    <div className="erp-page w-full dashboard-cancelagest molsan-page">
       {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
-      <header className="ag-hero" style={{ "--ag-muted": "#748198", "--ag-ink": "#17243a" }}>
-        <div className="ag-hero-identidad">
+      <header className="ag-hero molsan-page-header dashboard-header" style={{ "--ag-muted": "#748198", "--ag-ink": "#17243a" }}>
+        <div className="ag-hero-identidad molsan-page-header__identity">
           <div className="ag-marca cg-marca-cancelagest" aria-label="CancelaGest">CG</div>
           <div>
             <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1>CancelaGest</h1>
-            <p>Centro de gestión de cancelaciones, provisiones, firmas y seguimiento registral.</p>
+            <h1>Dashboard</h1>
+            <p>Resumen operativo de expedientes, actividad del circuito y firmas realizadas.</p>
           </div>
         </div>
-        <div className="ag-hero-acciones">
+        <div className="ag-hero-acciones molsan-page-header__actions">
           <div className="ag-fecha-actual">
             <span className="ag-punto-vivo" aria-hidden="true" />
             <span>{fechaActual}</span>
@@ -304,7 +304,7 @@ export default function Dashboard() {
       )}
 
       {/* KPIs PRINCIPALES */}
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="dashboard-kpis mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard icono="📁" titulo="Total expedientes" valor={numero(totalExpedientes)} descripcion="Expedientes registrados" />
         <KpiCard icono="🔄" titulo="Actividades" valor="7" descripcion="Etapas del circuito" />
         <KpiCard icono="📊" titulo="En circuito" valor={numero(enCircuito)} descripcion="Expedientes por actividad" />
@@ -312,7 +312,7 @@ export default function Dashboard() {
       </div>
 
       {/* ACTIVIDADES + TIEMPO MEDIO HASTA FIRMA */}
-      <div className="mb-6 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+      <div className="dashboard-main-grid mb-6 grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
       {/* ACTIVIDADES */}
       <section className="min-w-0">
         <div className="mb-4">
@@ -402,7 +402,7 @@ export default function Dashboard() {
       </div>
 
       {/* FIRMAS REALIZADAS + DISTRIBUCIÓN DEL CIRCUITO */}
-      <div className="mb-6 grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
+      <div className="dashboard-secondary-grid mb-6 grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
       {/* FIRMAS REALIZADAS */}
       <section className="min-w-0">
         <div className="mb-4 flex flex-col gap-1">
@@ -411,7 +411,7 @@ export default function Dashboard() {
             Distribución de las firmas realizadas según la modalidad seleccionada en el encargo al notario.
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-4">
+        <div className="dashboard-firmas-grid grid grid-cols-1 gap-3">
           <KpiCard icono="✍️" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
           <FirmaCard icono="🏛️" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
           <FirmaCard icono="💻" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
