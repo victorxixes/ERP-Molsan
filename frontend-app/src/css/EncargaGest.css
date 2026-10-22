@@ -794,3 +794,60 @@
   .encargagest .eg-directorio-tabla thead th,
   .encargagest .eg-directorio-tabla tbody td { padding:9px 10px; }
 }
+
+/* Integración con tokens compartidos MOLSAN Premium 2027.
+   Se preservan los componentes, estados y reglas propias de EncargaGest. */
+.encargagest {
+  --eg-line: var(--molsan-border, #dce4ef);
+  --eg-muted: var(--molsan-text-muted, #64748b);
+  --eg-blue: var(--molsan-primary, #3156b3);
+  --eg-blue-dark: var(--molsan-primary-hover, #274694);
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, ui-sans-serif, system-ui, sans-serif);
+}
+.encargagest .eg-kpi,
+.encargagest .eg-panel,
+.encargagest .eg-card,
+.encargagest .eg-table-wrap {
+  border-color: var(--molsan-border, #dce4ef);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+}
+.encargagest .eg-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--molsan-radius-panel, 12px);
+}
+.encargagest table th {
+  color: var(--molsan-text-secondary, #526176);
+  background: var(--molsan-surface-soft, #f5f7fb);
+}
+.encargagest table td { border-color: var(--molsan-border-light, #e8edf5); }
+.encargagest table tbody tr:hover td { background: var(--molsan-surface-soft, #f5f7fb); }
+.encargagest input:not([type="checkbox"]):not([type="radio"]),
+.encargagest select,
+.encargagest textarea {
+  border-color: var(--molsan-border-strong, #c4d0df);
+  border-radius: var(--molsan-radius-control, 8px);
+}
+.encargagest button:focus-visible,
+.encargagest a:focus-visible,
+.encargagest input:focus-visible,
+.encargagest select:focus-visible,
+.encargagest textarea:focus-visible {
+  outline: 3px solid rgba(49, 86, 179, .23);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .encargagest *,
+  .encargagest *::before,
+  .encargagest *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+@media (max-width: 560px) {
+  .encargagest .eg-main { padding-left: 12px; padding-right: 12px; }
+  .encargagest .eg-table-wrap { border-radius: 10px; }
+}
+
