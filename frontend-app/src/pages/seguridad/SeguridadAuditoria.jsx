@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import "./SeguridadSubpaginasPremium.css";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
 
@@ -1463,10 +1464,7 @@ export default function SeguridadAuditoria() {
 
   return (
     <div
-      className="
-        space-y-6
-        animate-fade-in
-      "
+      className="seguridad-auditoria-premium space-y-6 animate-fade-in"
     >
 
       {/* ======================================================
