@@ -532,10 +532,7 @@ export const useAuthStore = create(
           !res.data.empleado
         ) {
 
-          console.error(
-            "Respuesta de login inválida:",
-            res.data
-          );
+          console.error("Respuesta de login inválida.");
 
           return false;
 
@@ -586,10 +583,7 @@ export const useAuthStore = create(
           !empleado.empleado_id
         ) {
 
-          console.error(
-            "El backend no ha devuelto un empleado válido:",
-            res.data.empleado
-          );
+          console.error("El backend no ha devuelto un empleado válido.");
 
           return false;
 
@@ -632,65 +626,13 @@ export const useAuthStore = create(
         });
 
 
-        /*
-         * -------------------------------------------------
-         * DEBUG
-         * -------------------------------------------------
-         */
-
-        console.log(
-          "========================================"
-        );
-
-        console.log(
-          "LOGIN CORRECTO"
-        );
-
-        console.log(
-          "USUARIO:",
-          empleado.usuario
-        );
-
-        console.log(
-          "ID:",
-          empleado.empleado_id
-        );
-
-        console.log(
-          "ROL:",
-          empleado.rol_id
-        );
-
-        console.log(
-          "ROL NOMBRE:",
-          empleado.rol_nombre
-        );
-
-        console.log(
-          "MÓDULOS:",
-          empleado.modulos_visibles_list
-        );
-
-        console.log(
-          "PERMISOS:",
-          empleado.permisos_modulo_dict
-        );
-
-        console.log(
-          "========================================"
-        );
-
-
         return true;
 
       }
 
       catch (error) {
 
-        console.error(
-          "ERROR LOGIN:",
-          error
-        );
+        console.error("No se ha podido completar el inicio de sesión.");
 
         return false;
 
