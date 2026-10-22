@@ -199,10 +199,6 @@
     padding: 12px;
   }
 
-  .molsan-table th,
-  .molsan-table td {
-    padding: 8px 10px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
