@@ -74,7 +74,7 @@ function formatearFecha(valor) {
 
 
 function sumarDiasNaturales(fechaISO, dias) {
-  if (!fechaISO || !/^\\d{4}-\\d{2}-\\d{2}/.test(String(fechaISO))) return "";
+  if (!fechaISO || !/^\d{4}-\d{2}-\d{2}/.test(String(fechaISO))) return "";
   const [year, month, day] = String(fechaISO).slice(0, 10).split("-").map(Number);
   const fecha = new Date(Date.UTC(year, month - 1, day));
   fecha.setUTCDate(fecha.getUTCDate() + dias);
