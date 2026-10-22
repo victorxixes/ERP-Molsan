@@ -635,10 +635,7 @@ export default function ModalEmpleado({
 
       } catch (err) {
 
-        console.error(
-          "MODAL EMPLEADO — ERROR CARGANDO FICHA:",
-          err
-        );
+        console.error("No se ha podido cargar la ficha del empleado.");
 
         if (activo) {
 
@@ -732,10 +729,7 @@ export default function ModalEmpleado({
 
       } catch (err) {
 
-        console.error(
-          "MODAL EMPLEADO — ERROR CARGANDO MAESTROS:",
-          err
-        );
+        console.error("No se han podido cargar los catálogos del empleado.");
 
         if (activo) {
 
@@ -1658,10 +1652,7 @@ const permisosDisponibles =
 
       } catch (err) {
 
-        console.error(
-          "MODAL EMPLEADO — ERROR GUARDANDO DATOS:",
-          err
-        );
+        console.error("No se han podido guardar los datos del empleado.");
 
         setError(
           obtenerMensajeError(
@@ -1814,10 +1805,7 @@ const permisosDisponibles =
 
       } catch (err) {
 
-        console.error(
-          "MODAL EMPLEADO — ERROR GUARDANDO ACCESOS:",
-          err
-        );
+        console.error("No se han podido guardar los permisos del empleado.");
 
         setError(
           obtenerMensajeError(
@@ -1897,10 +1885,7 @@ const permisosDisponibles =
 
       } catch (err) {
 
-        console.error(
-          "MODAL EMPLEADO — ERROR RESETEANDO PASSWORD:",
-          err
-        );
+        console.error("No se ha podido restablecer la contraseña del empleado.");
 
         setError(
           obtenerMensajeError(
@@ -2042,10 +2027,7 @@ const permisosDisponibles =
 
     } catch (err) {
 
-      console.error(
-        "MODAL EMPLEADO — ERROR SUBIENDO FOTO:",
-        err
-      );
+      console.error("No se ha podido subir la foto del empleado.");
 
       setError(
         obtenerMensajeError(
