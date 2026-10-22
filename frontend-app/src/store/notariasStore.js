@@ -30,7 +30,7 @@ export const useNotariasStore = create((set) => ({
         error: null,
       });
     } catch (err) {
-      console.error("Error cargando notarías:", err);
+      console.error("Error cargando notarías:", "Error interno");
       set({
         cargando: false,
         error: err.message || "Error cargando notarías",
