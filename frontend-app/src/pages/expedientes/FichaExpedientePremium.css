@@ -51,9 +51,6 @@
   .ficha-expediente-premium .overflow-x-auto table {
     min-width: 620px;
   }
-  .ficha-expediente-premium table:not(.overflow-x-auto table) {
-    max-width: 100%;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   .ficha-expediente-premium *,
