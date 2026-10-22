@@ -102,6 +102,7 @@ _POST_ES_EDICION = (
     "/honorarios-gestoria",
     "/proceso-absis",
     "/crear-tablas",
+    "/complementos-saldo",
     "/complementos-saldo/estado",
     "/migracion",
     "/migraciones",
