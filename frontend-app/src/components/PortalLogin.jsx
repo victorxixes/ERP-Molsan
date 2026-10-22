@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import "../css/LayoutPortalesPremium.css";
 /**
  * Login de los portales profesionales.
  * Replica el formato visual del login principal de MOLSAN ERP,
@@ -27,7 +28,7 @@ export default function PortalLogin({
   const idPassword = variant + "-password";
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center overflow-hidden px-4 py-8 bg-slate-50 animate-fadeIn">
+    <div className="portal-login-premium min-h-screen relative flex items-center justify-center overflow-hidden px-4 py-8 bg-slate-50 animate-fadeIn">
       {/* Fondo Premium: misma composición que el login de CancelaGest */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div className="absolute -top-56 -left-56 w-[620px] h-[620px] rounded-full bg-blue-400/10 blur-3xl" />
