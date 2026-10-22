@@ -1887,3 +1887,82 @@
   .ag-resumen-modal-cabecera h2{font-size:18px}
   .ag-resumen-modal-cuerpo{padding:12px}
 }
+
+
+/* =========================================================
+   MOLSAN ERP PREMIUM 2027 — base compartida de portales
+   ApoderaGest, NotarGest y EncargaGest importan esta hoja.
+   ========================================================= */
+.apoderagest {
+  --ag-blue: #3156b3;
+  --ag-blue-dark: #274694;
+  --ag-ink: #24324a;
+  --ag-muted: #64748b;
+  --ag-line: #dbe3ef;
+}
+.apoderagest :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
+  max-width: 100%;
+  min-width: 0;
+  border-color: #d4deeb;
+  border-radius: 9px;
+  color: #24324a;
+  font: inherit;
+  box-shadow: none;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+.apoderagest :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select) {
+  min-height: 38px;
+}
+.apoderagest :is(input, select, textarea):focus-visible {
+  outline: none;
+  border-color: #3156b3;
+  box-shadow: 0 0 0 3px rgb(49 86 179 / 13%);
+}
+.apoderagest :is(button, [role="button"]) {
+  transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease, color .16s ease;
+}
+.apoderagest :is(button, [role="button"], a):focus-visible {
+  outline: 2px solid rgb(49 86 179 / 58%);
+  outline-offset: 2px;
+}
+.apoderagest :is(.ag-panel, .ag-card, .ag-kpi, .eg-panel, .eg-kpi, .ng-panel, .ng-tarea, .ng-contador) {
+  border-color: #dbe3ef;
+  box-shadow: 0 5px 18px rgb(23 43 77 / 5%);
+}
+.apoderagest :is(table, .ag-tabla, .eg-tabla, .ng-tabla) {
+  font-variant-numeric: tabular-nums;
+}
+.apoderagest table thead th {
+  color: #53627a;
+  background-color: #f5f7fb;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .025em;
+}
+.apoderagest table :is(th, td) {
+  border-bottom-color: #e6ebf2;
+}
+.apoderagest table tbody tr {
+  transition: background-color .14s ease;
+}
+.apoderagest table tbody tr:hover > td {
+  background-color: #f7f9fd;
+}
+@media (max-width: 760px) {
+  .apoderagest {
+    padding: 14px;
+    border-radius: 16px;
+  }
+  .apoderagest :is(table, .ag-tabla, .eg-tabla, .ng-tabla) {
+    max-width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .apoderagest *,
+  .apoderagest *::before,
+  .apoderagest *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
