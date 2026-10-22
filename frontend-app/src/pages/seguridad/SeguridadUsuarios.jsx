@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSeguridad } from "../../hooks/useSeguridad";
 import EmpleadosListado from "../empleados/EmpleadosListado";
 import { API_BASE } from "../../api/config";
+import "./SeguridadSubpaginasPremium.css";
 
 export default function SeguridadUsuarios() {
   const {
@@ -192,7 +193,7 @@ export default function SeguridadUsuarios() {
     false;
 
   return (
-    <div className="erp-page">
+    <div className="erp-page seguridad-usuarios-premium">
 
       {/* ======================================================
           CABECERA
