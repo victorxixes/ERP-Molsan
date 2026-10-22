@@ -98,3 +98,21 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Evita que el listado o una ficha expandan el ancho del viewport. */
+.empleados-premium-page {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.empleados-premium-page > section.erp-card {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.empleados-premium-page .overflow-x-auto {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
