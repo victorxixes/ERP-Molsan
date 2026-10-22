@@ -203,10 +203,7 @@ export default function EmpleadoEditar({
 
         } catch (err) {
 
-          console.error(
-            "Error guardando empleado:",
-            err
-          );
+          console.error("No se ha podido guardar el empleado.");
 
           setError(
             err?.response?.data?.detail ||
