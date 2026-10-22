@@ -66,6 +66,7 @@ _PREFIJOS_MODULO = (
     ("/api/admin", "seguridad"),
     ("/api/empleados", "empleados"),
     ("/api/agenda", "agenda"),
+    ("/api/apoderagest", "apoderagest"),
     ("/api/ctn", "ctn"),
     ("/api/expedientes", "expedientes"),
     ("/api/mensajes", "mensajes"),
@@ -104,6 +105,8 @@ _POST_ES_EDICION = (
     "/modulos",
     "/bloqueo",
     "/mover",
+    "/aceptar",
+    "/firmar",
     "/reparar",
     "/sincronizar",
     # La administración de plantillas se gestiona con permiso de edición de Utilidades.
