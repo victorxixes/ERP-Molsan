@@ -1076,3 +1076,37 @@
   }
 }
 
+/* Robustez del modal NotarGest en móviles y pantallas con viewport dinámico. */
+.ng-modal-overlay {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ng-modal {
+  min-width: 0;
+  max-height: min(86vh, calc(100dvh - 24px));
+}
+
+.ng-modal-lista {
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  overscroll-behavior: contain;
+}
+
+.ng-modal :is(p, strong, small, span, label) {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .ng-modal-overlay {
+    padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
+  }
+
+  .ng-modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 14px;
+  }
+}
