@@ -3,6 +3,8 @@ import {
   useCallback,
 } from "react";
 
+import "./EmpleadosModulo2026.css";
+
 import EmpleadosListado
   from "./EmpleadosListado";
 
@@ -69,6 +71,7 @@ export default function EmpleadosModulo2026() {
 
     <div className="
       erp-page
+      empleados-premium-page
       space-y-6
       animate-fade-in
     ">
