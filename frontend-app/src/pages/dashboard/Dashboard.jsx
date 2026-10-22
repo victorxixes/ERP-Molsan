@@ -115,7 +115,7 @@ function KpiCard({ icono, titulo, valor, descripcion }) {
   );
 }
 
-function ActividadCard({ actividad, total }) {
+function ActividadCard({ actividad, total, porcentajeValor }) {
   return (
     <div className="flex items-center gap-3 border-b px-4 py-3.5 last:border-b-0 transition-colors duration-150 hover:bg-[var(--erp-surface-soft)]" style={{ borderColor: "var(--erp-border)" }}>
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)" }}>
@@ -131,6 +131,12 @@ function ActividadCard({ actividad, total }) {
       </div>
       <div className="min-w-12 rounded-lg px-3 py-1 text-right text-lg font-bold tabular-nums" style={{ color: "var(--erp-primary)", background: "var(--erp-primary-soft)" }}>
         {numero(total)}
+      </div>
+      <div className="dashboard-activity-inline" aria-label={actividad.nombre + ': ' + porcentaje(porcentajeValor) + ' del total'}>
+        <div className="dashboard-activity-track h-1.5 overflow-hidden rounded-full" style={{ background: "var(--erp-surface-soft)" }}>
+          <div className="dashboard-activity-bar h-full rounded-full" style={{ width: Math.min(Math.max(Number(porcentajeValor || 0), 0), 100) + "%", background: "var(--erp-primary)" }} />
+        </div>
+        <span className="text-xs tabular-nums" style={{ color: "var(--erp-text-soft)" }}>{porcentaje(porcentajeValor)}</span>
       </div>
     </div>
   );
@@ -323,7 +329,7 @@ export default function Dashboard() {
         </div>
         <div className="erp-card min-w-0 overflow-hidden p-0">
           {actividades.map((actividad) => (
-            <ActividadCard key={actividad.key} actividad={actividad} total={actividad.total} />
+            <ActividadCard key={actividad.key} actividad={actividad} total={actividad.total} porcentajeValor={totalExpedientes > 0 ? (actividad.total / totalExpedientes) * 100 : 0} />
           ))}
         </div>
       </section>
