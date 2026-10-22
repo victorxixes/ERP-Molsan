@@ -2391,9 +2391,9 @@ export default function ExpedientesListado() {
       <main className="min-w-0 w-full space-y-6">
         <header className="molsan-page-header expedientes-page__header">
           <div className="molsan-page-header__identity">
-            <div className="expedientes-page__header-icon" aria-hidden="true">▤</div>
+            <div className="expedientes-page__header-icon molsan-page-header__mark" aria-hidden="true">EXP</div>
             <div className="min-w-0">
-              <p className="expedientes-page__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
+              <p className="expedientes-page__eyebrow molsan-page-header__eyebrow">MOLSAN ERP · PREMIUM 2027</p>
               <h1 className="molsan-page-header__title">Expedientes</h1>
               <p className="molsan-page-header__description">
                 Consulta, seguimiento y control de la tramitación de expedientes.
