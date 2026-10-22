@@ -1077,7 +1077,7 @@ export default function ExpedientesListado() {
         if (vigente) setConfiguracionesVisibilidad(Array.isArray(data?.configuraciones) ? data.configuraciones : []);
       })
       .catch((error) => {
-        console.error("No se pudo cargar la visibilidad configurada para el empleado:", error);
+        console.error("No se ha podido cargar la configuración de visibilidad.");
         if (vigente) setConfiguracionesVisibilidad([]);
       });
     return () => { vigente = false; };
@@ -1579,7 +1579,7 @@ export default function ExpedientesListado() {
           setAlertasControl(Array.isArray(res?.alertas) ? res.alertas : []);
         }
       } catch (err) {
-        console.error("Error cargando controles de expedientes:", err);
+        console.error("No se han podido cargar los controles de expedientes.");
         if (activo) setAlertasControl([]);
       } finally {
         if (activo) setLoadingAlertasControl(false);
@@ -1635,7 +1635,7 @@ export default function ExpedientesListado() {
           notarios: Array.isArray(res?.notarios) ? res.notarios : [],
         });
       } catch (err) {
-        console.error("Error cargando catálogos globales del listado:", err);
+        console.error("No se han podido cargar los catálogos del listado.");
         if (activo) {
           setCatalogosListado({
             registros: [],
