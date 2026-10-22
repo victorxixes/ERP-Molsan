@@ -697,10 +697,7 @@ export default function useRealtimeGlobal() {
 
       try {
 
-        console.log(
-          "[REALTIME] Conectando usuario:",
-          empleado.id
-        );
+        console.log("[REALTIME] Iniciando conexión.");
 
 
         ws =
@@ -717,10 +714,7 @@ export default function useRealtimeGlobal() {
         error
       ) {
 
-        console.error(
-          "[REALTIME] Error creando WebSocket:",
-          error
-        );
+        console.error("[REALTIME] No se pudo crear la conexión WebSocket.");
 
 
         ws =
@@ -752,10 +746,7 @@ export default function useRealtimeGlobal() {
         }
 
 
-        console.log(
-          "[REALTIME] Conectado:",
-          empleado.id
-        );
+        console.log("[REALTIME] Conexión establecida.");
 
 
         // ----------------------------------------------------
@@ -920,10 +911,7 @@ export default function useRealtimeGlobal() {
         error
       ) => {
 
-        console.warn(
-          "[REALTIME] Error WebSocket:",
-          error
-        );
+        console.warn("[REALTIME] Se ha producido un error de conexión WebSocket.");
 
       };
 
