@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
 
+import "../../css/ComponentesOperativosPremium.css";
+
 /**
  * AgendaToast — SJ-2026
  *
@@ -54,7 +56,7 @@ export default function AgendaToast() {
 
   return (
     <div
-      className="
+      className="agenda-toast-premium 
         fixed
         bottom-6
         right-6
