@@ -95,7 +95,7 @@ def reparar_asignacion_encargo(
         db.rollback()
         raise HTTPException(
             status_code=500,
-            detail=f"No se pudo corregir la asignación del expediente: {str(exc)[:200]}",
+            detail="No se pudo corregir la asignación del expediente. Revisa los datos e inténtalo de nuevo.",
         )
 
     return {
@@ -402,7 +402,7 @@ def firmar_encargo(
         db.rollback()
         raise HTTPException(
             status_code=500,
-            detail=f"No se pudo registrar la firma real y actualizar Agenda: {str(exc)[:250]}",
+            detail="No se pudo registrar la firma real y actualizar Agenda. Inténtalo de nuevo o contacta con soporte.",
         )
 
     return {
@@ -546,7 +546,7 @@ def aceptar_encargo(
         raise
     except Exception as exc:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"No se pudo aceptar el encargo ni sincronizar Agenda: {str(exc)[:250]}")
+        raise HTTPException(status_code=500, detail="No se pudo aceptar el encargo ni sincronizar Agenda. Inténtalo de nuevo o contacta con soporte.")
 
     return {
         "ok": True,
