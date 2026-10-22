@@ -21,12 +21,10 @@ import "./css/molsan-tables.css";
 import "./css/molsan-controls.css";
 import "./css/molsan-overlays.css";
 import "./css/molsan-motion.css";
-// Armonización visual transversal de módulos ya migrados.
-import "./css/MolsanRedesign2027.css";
-
-// La app se importa después de la base global para que los estilos específicos
-// de cada página/portal puedan prevalecer sobre los estilos compartidos.
+// Componentes y módulos funcionales.
 import App from "./App";
+// Capa final de diseño: se carga después de los estilos de módulos para unificar el acabado.
+import "./css/MolsanRedesign2027.css";
 
 // ============================================================
 // Root — Inicialización del ERP SJ-2026
