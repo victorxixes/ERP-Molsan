@@ -7,9 +7,31 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.honorarios_gestoria.models import HonorarioGestoria
 
 router = APIRouter(prefix="/honorarios-gestoria", tags=["Honorarios de gestoría"])
+
+def _autorizar_honorarios_ver(usuario=Depends(get_current_user)):
+    for modulo in ("utilidades", "expedientes"):
+        try:
+            require_perm_modulo(usuario, modulo, "ver")
+            return usuario
+        except HTTPException as exc:
+            if exc.status_code != 403:
+                raise
+    raise HTTPException(status_code=403, detail="No tienes permiso para consultar los honorarios.")
+
+
+def _autorizar_honorarios_editar(usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    return usuario
+
+
+_autorizar_honorarios_ver._molsan_permiso_guard = ("utilidades", "ver")
+_autorizar_honorarios_editar._molsan_permiso_guard = ("utilidades", "editar")
+
 
 
 class HonorarioPayload(BaseModel):
@@ -139,7 +161,7 @@ def asegurar_catalogo_inicial(db: Session):
         db.rollback()
 
 
-@router.get("", response_model=list[HonorarioResponse])
+@router.get("", response_model=list[HonorarioResponse], dependencies=[Depends(_autorizar_honorarios_ver)])
 def listar_honorarios(activos: bool = False, db: Session = Depends(get_db)):
     asegurar_catalogo_inicial(db)
     query = db.query(HonorarioGestoria)
@@ -148,7 +170,7 @@ def listar_honorarios(activos: bool = False, db: Session = Depends(get_db)):
     return query.order_by(HonorarioGestoria.activo.desc(), HonorarioGestoria.nombre.asc()).all()
 
 
-@router.post("", response_model=HonorarioResponse, status_code=201)
+@router.post("", response_model=HonorarioResponse, status_code=201, dependencies=[Depends(_autorizar_honorarios_editar)])
 def crear_honorario(payload: HonorarioPayload, db: Session = Depends(get_db)):
     asegurar_catalogo_inicial(db)
     existente = db.query(HonorarioGestoria).filter(HonorarioGestoria.nombre.ilike(payload.nombre)).first()
@@ -166,7 +188,7 @@ def crear_honorario(payload: HonorarioPayload, db: Session = Depends(get_db)):
     return honorario
 
 
-@router.put("/{honorario_id}", response_model=HonorarioResponse)
+@router.put("/{honorario_id}", response_model=HonorarioResponse, dependencies=[Depends(_autorizar_honorarios_editar)])
 def actualizar_honorario(honorario_id: int, payload: HonorarioPayload, db: Session = Depends(get_db)):
     honorario = db.query(HonorarioGestoria).filter(HonorarioGestoria.id == honorario_id).first()
     if not honorario:
@@ -189,7 +211,7 @@ def actualizar_honorario(honorario_id: int, payload: HonorarioPayload, db: Sessi
     return honorario
 
 
-@router.delete("/{honorario_id}", response_model=HonorarioResponse)
+@router.delete("/{honorario_id}", response_model=HonorarioResponse, dependencies=[Depends(_autorizar_honorarios_editar)])
 def desactivar_honorario(honorario_id: int, db: Session = Depends(get_db)):
     honorario = db.query(HonorarioGestoria).filter(HonorarioGestoria.id == honorario_id).first()
     if not honorario:
