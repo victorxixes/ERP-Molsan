@@ -507,6 +507,7 @@ def migrar_esquema_expedientes_inicio():
         ("fecha_inicio_actividad", "DATE"),
         ("fecha_fin_actividad", "DATE"),
         ("actividad_actual", "VARCHAR(300)"),
+        ("gestor_asignado_id", "INTEGER REFERENCES empleados(id) ON DELETE SET NULL"),
         ("estado_actividad", "VARCHAR(200)"),
         ("liquidado_sin_tramitar", "BOOLEAN NOT NULL DEFAULT FALSE"),
         ("fecha_liquidacion_sin_tramitar", "DATE"),
