@@ -1232,7 +1232,6 @@
 
 /* Fondo de los diálogos: oscurecimiento homogéneo y desenfoque moderado. */
 :where(
-  
   .eg-modal-overlay,
   .ng-modal-overlay,
   .ag-resumen-modal-overlay,
@@ -1260,8 +1259,7 @@
   .eg-modal-header,
   .ng-modal > header,
   .ag-resumen-modal-cabecera,
-  .ctn-modal-header,
-  .modal-sj-header
+  .ctn-modal-header
 ) {
   border-bottom-color: var(--molsan-border-light, #e8edf4);
 }
