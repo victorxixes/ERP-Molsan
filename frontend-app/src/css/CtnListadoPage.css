@@ -1526,3 +1526,37 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Ajustes de robustez del modal CTN: viewport móvil, contenido y tablas. */
+.ctn-modal-overlay {
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ctn-modal-panel,
+.ctn-modal-contenido {
+  min-width: 0;
+}
+
+.ctn-modal-contenido {
+  overscroll-behavior-y: contain;
+}
+
+.ctn-modal-tabla-scroll {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 760px) {
+  .ctn-modal-panel {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+  }
+
+  .ctn-modal-tabla {
+    min-width: 680px;
+  }
+}
