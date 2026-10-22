@@ -157,10 +157,7 @@ export const useDashboardStore = create(
 
       } catch (error) {
 
-        console.error(
-          "Error cargando Dashboard de Expedientes:",
-          error
-        );
+        console.error("No se ha podido cargar el dashboard de expedientes.");
 
 
         const mensaje =
