@@ -1,0 +1,59 @@
+/* Revisión integral: ficha de expediente */
+.ficha-expediente-premium {
+  min-width: 0;
+  color: var(--erp-text, #172033);
+}
+.ficha-expediente-premium > section,
+.ficha-expediente-premium article,
+.ficha-expediente-premium form {
+  min-width: 0;
+}
+.ficha-expediente-premium table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.ficha-expediente-premium th,
+.ficha-expediente-premium td {
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+.ficha-expediente-premium input,
+.ficha-expediente-premium select,
+.ficha-expediente-premium textarea,
+.ficha-expediente-premium button {
+  max-width: 100%;
+}
+.ficha-expediente-premium input:focus-visible,
+.ficha-expediente-premium select:focus-visible,
+.ficha-expediente-premium textarea:focus-visible,
+.ficha-expediente-premium button:focus-visible,
+.ficha-expediente-premium a:focus-visible {
+  outline: 2px solid var(--erp-primary, #4169e1);
+  outline-offset: 2px;
+}
+.ficha-expediente-premium img {
+  max-width: 100%;
+}
+@media (max-width: 720px) {
+  .ficha-expediente-premium {
+    padding-left: .75rem;
+    padding-right: .75rem;
+  }
+  .ficha-expediente-premium table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ficha-expediente-premium *,
+  .ficha-expediente-premium *::before,
+  .ficha-expediente-premium *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
