@@ -1,4 +1,5 @@
 import {
+import "./SeguridadSubpaginasPremium.css";
   useMemo,
   useState,
 } from "react";
@@ -650,10 +651,7 @@ export default function SeguridadRoles() {
 
   return (
     <div
-      className="
-        w-full
-        space-y-4
-      "
+      className="seguridad-subpagina-premium seguridad-roles-premium w-full space-y-4"
     >
 
       {/* CABECERA */}
