@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import "./Notificaciones.css";
 import { useNotificacionesStore } from "../../store/notificacionesStore";
 import { useNotificacionesWS } from "../../hooks/useNotificacionesWS";
 
@@ -206,6 +207,7 @@ export default function Notificaciones() {
 
     <div
       className="
+        notificaciones-premium-page
         p-4
         md:p-6
         space-y-6
