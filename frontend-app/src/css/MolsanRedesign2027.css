@@ -30,7 +30,7 @@
 
 /* Normalización segura: solo sobre las pantallas que ya adoptaron el sistema. */
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -66,7 +66,7 @@
 
 /* Jerarquía tipográfica consistente sin sobrescribir títulos personalizados. */
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -92,7 +92,7 @@
 
 /* Campos: foco visible, tamaño consistente y protección contra desbordamientos. */
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -120,7 +120,7 @@
 }
 
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -148,7 +148,7 @@
 
 /* Contenedores de tablas y contenido: permiten que el layout no se ensanche. */
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -173,7 +173,7 @@
 }
 
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -196,7 +196,7 @@
 }
 
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -221,7 +221,7 @@
 
 @media (max-width: 760px) {
   :where(
-    .cg-page,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .ficha-expediente-premium,
     .agenda-premium-page,
@@ -246,7 +246,7 @@
   }
 
   :where(
-    .cg-page,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .agenda-premium-page,
     .catalogos-premium-page,
@@ -269,7 +269,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   :where(
-    .cg-page,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .agenda-premium-page,
     .catalogos-premium-page,
@@ -287,7 +287,7 @@
     .molsan-intranet-page
   ) *,
   :where(
-    .cg-page,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .agenda-premium-page,
     .catalogos-premium-page,
@@ -305,7 +305,7 @@
     .molsan-intranet-page
   ) *::before,
   :where(
-    .cg-page,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .agenda-premium-page,
     .catalogos-premium-page,
@@ -408,56 +408,56 @@
    workspace operativo y al sidebar; no cambia lógica ni datos.
    ============================================================ */
 
-.cg-page {
+:is(.cg-page, .cg-unified-workspace) {
   --molsan-page-bg: #f1f5fb;
   color: var(--molsan-text, #18263c);
   font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
 }
 
-.cg-page .erp-card,
-.cg-page .erp-card-soft,
-.cg-page [data-cg-panel="true"] {
+:is(.cg-page, .cg-unified-workspace) .erp-card,
+:is(.cg-page, .cg-unified-workspace) .erp-card-soft,
+:is(.cg-page, .cg-unified-workspace) [data-cg-panel="true"] {
   border: 1px solid var(--molsan-border, #dce4ef);
   border-radius: 14px;
   box-shadow: 0 4px 16px rgba(27, 43, 70, .055);
 }
 
-.cg-page .erp-card {
+:is(.cg-page, .cg-unified-workspace) .erp-card {
   background-color: var(--molsan-surface, #fff);
 }
 
-.cg-page :is(h1, h2, h3) {
+:is(.cg-page, .cg-unified-workspace) :is(h1, h2, h3) {
   color: var(--molsan-text, #18263c);
   letter-spacing: -.02em;
 }
 
-.cg-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
+:is(.cg-page, .cg-unified-workspace) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
   border-color: var(--molsan-border-strong, #c5d0df);
   border-radius: 9px;
   box-shadow: none;
 }
 
-.cg-page :is(input, select, textarea):focus {
+:is(.cg-page, .cg-unified-workspace) :is(input, select, textarea):focus {
   border-color: var(--molsan-primary, #3156b3);
   outline: none;
   box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
 }
 
-.cg-page table thead th {
+:is(.cg-page, .cg-unified-workspace) table thead th {
   color: #53637a;
   background: #f3f6fb;
   font-weight: 750;
 }
 
-.cg-page table tbody tr:hover > td {
+:is(.cg-page, .cg-unified-workspace) table tbody tr:hover > td {
   background-color: #f5f8fe;
 }
 
-.cg-page :is(button, [role="button"]) {
+:is(.cg-page, .cg-unified-workspace) :is(button, [role="button"]) {
   transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
 }
 
-.cg-page :is(button, [role="button"]):focus-visible,
+:is(.cg-page, .cg-unified-workspace) :is(button, [role="button"]):focus-visible,
 .mol-sidebar-premium :is(a, button):focus-visible {
   outline: 2px solid var(--molsan-primary, #3156b3);
   outline-offset: 2px;
@@ -480,7 +480,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cg-page *,
+  :is(.cg-page, .cg-unified-workspace) *,
   .mol-sidebar-premium * {
     scroll-behavior: auto !important;
     transition-duration: .01ms !important;
@@ -496,7 +496,7 @@
    ============================================================ */
 
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -543,7 +543,7 @@
 
 /* Fondo y ritmo: diferencia la zona de trabajo de las superficies de contenido. */
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -571,7 +571,7 @@
 
 /* Superficies principales: las tarjetas dejan de parecer bloques planos. */
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -608,7 +608,7 @@
 
 /* Secciones y cabeceras: jerarquía más clara sin cambiar su estructura. */
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -641,7 +641,7 @@
 }
 
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -668,7 +668,7 @@
 
 /* Botones interactivos con estado hover y foco más evidente. */
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -699,7 +699,7 @@
 }
 
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -730,7 +730,7 @@
 }
 
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -763,7 +763,7 @@
 
 /* Tablas: cabecera diferenciada y filas legibles en todos los módulos migrados. */
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -792,7 +792,7 @@
 }
 
 :where(
-  .cg-page,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -819,7 +819,7 @@
 
 @media (max-width: 760px) {
   :where(
-    .cg-page,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .ficha-expediente-premium,
     .agenda-premium-page,
@@ -852,7 +852,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   :where(
-    .cg-page,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .ficha-expediente-premium,
     .agenda-premium-page,
@@ -920,8 +920,8 @@
   .mensajes-premium-page,
   .selector-modulos-premium,
   .molsan-intranet-page,
-  .cg-page,
-  .cg-page
+  :is(.cg-page, .cg-unified-workspace),
+  :is(.cg-page, .cg-unified-workspace)
 ) {
   min-width: 0;
   color: var(--molsan-text);
@@ -993,8 +993,8 @@
   .mensajes-premium-page,
   .selector-modulos-premium,
   .molsan-intranet-page,
-  .cg-page,
-  .cg-page
+  :is(.cg-page, .cg-unified-workspace),
+  :is(.cg-page, .cg-unified-workspace)
 ) :where(
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
   select,
@@ -1036,8 +1036,8 @@
   .mensajes-premium-page,
   .selector-modulos-premium,
   .molsan-intranet-page,
-  .cg-page,
-  .cg-page
+  :is(.cg-page, .cg-unified-workspace),
+  :is(.cg-page, .cg-unified-workspace)
 ) :where(button, [role="button"]) {
   font-family: var(--molsan-font-family);
   transition-duration: var(--molsan-transition-fast);
@@ -1072,8 +1072,8 @@
   .mensajes-premium-page,
   .selector-modulos-premium,
   .molsan-intranet-page,
-  .cg-page,
-  .cg-page
+  :is(.cg-page, .cg-unified-workspace),
+  :is(.cg-page, .cg-unified-workspace)
 ) :where(button, a, input, select, textarea, [role="button"]):focus-visible {
   outline: 2px solid var(--molsan-primary);
   outline-offset: 2px;
@@ -1111,8 +1111,8 @@
   .mensajes-premium-page,
   .selector-modulos-premium,
   .molsan-intranet-page,
-  .cg-page,
-  .cg-page
+  :is(.cg-page, .cg-unified-workspace),
+  :is(.cg-page, .cg-unified-workspace)
   ) {
     min-width: 0;
     max-width: 100%;
@@ -1127,7 +1127,7 @@
    ============================================================ */
 
 /* Superficies operativas: un mismo borde y sombra en filtros/listados. */
-:where(.ctn-listado-page, .expedientes-page, .cg-page, .apoderagest, .notargest) :is(
+:where(.ctn-listado-page, .expedientes-page, :is(.cg-page, .cg-unified-workspace), .apoderagest, .notargest) :is(
   .ctn-filtros,
   .ctn-tabla-contenedor,
   .expedientes-filter-panel,
@@ -1174,7 +1174,7 @@
 }
 
 /* Las cabeceras de página comparten jerarquía sin imponer su estructura. */
-:where(.ctn-listado-page, .expedientes-page, .cg-page, .apoderagest, .notargest) :is(
+:where(.ctn-listado-page, .expedientes-page, :is(.cg-page, .cg-unified-workspace), .apoderagest, .notargest) :is(
   .ctn-listado-header h1,
   .expedientes-page__header h1,
   .cg-hero h1,
@@ -1187,7 +1187,7 @@
 }
 
 /* Unifica radios y bordes de controles sin tocar sus valores ni validaciones. */
-:where(.ctn-listado-page, .expedientes-page, .cg-page, .apoderagest, .notargest) :where(
+:where(.ctn-listado-page, .expedientes-page, :is(.cg-page, .cg-unified-workspace), .apoderagest, .notargest) :where(
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
   select,
   textarea
@@ -1196,7 +1196,7 @@
   border-radius: var(--molsan-radius-control);
 }
 
-:where(.ctn-listado-page, .expedientes-page, .cg-page, .apoderagest, .notargest) :where(
+:where(.ctn-listado-page, .expedientes-page, :is(.cg-page, .cg-unified-workspace), .apoderagest, .notargest) :where(
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
   select,
   textarea
@@ -1316,9 +1316,9 @@
   .ctn-listado-page .ctn-tabla-contenedor,
   .expedientes-page .erp-card,
   .expedientes-page [class~="bg-white"],
-  .cg-page .erp-card,
-  .cg-page .erp-card-soft,
-  .cg-page [data-cg-panel="true"]
+  :is(.cg-page, .cg-unified-workspace) .erp-card,
+  :is(.cg-page, .cg-unified-workspace) .erp-card-soft,
+  :is(.cg-page, .cg-unified-workspace) [data-cg-panel="true"]
 ) {
   border-color: var(--molsan-card-border, var(--molsan-border, #dce4ef));
   border-radius: var(--molsan-radius-card, 14px);
@@ -1345,7 +1345,7 @@
   .notargest .ng-login-submit,
   .ctn-listado-page .ctn-btn,
   .expedientes-page button,
-  .cg-page button
+  :is(.cg-page, .cg-unified-workspace) button
 ) {
   border-radius: var(--molsan-radius-control, 9px);
   font-family: var(--molsan-font-family, Inter, "Segoe UI", system-ui, sans-serif);
@@ -1359,7 +1359,7 @@
   .notargest,
   .ctn-listado-page,
   .expedientes-page,
-  .cg-page
+  :is(.cg-page, .cg-unified-workspace)
 ) :where(button, a, input, select, textarea, [role="button"]):focus-visible {
   outline: 2px solid rgba(49, 86, 179, .62);
   outline-offset: 2px;
@@ -1394,7 +1394,7 @@
     .ctn-listado-page .ctn-filtros,
     .ctn-listado-page .ctn-tabla-contenedor,
     .expedientes-page .erp-card,
-    .cg-page .erp-card
+    :is(.cg-page, .cg-unified-workspace) .erp-card
   ) {
     min-width: 0;
     max-width: 100%;
