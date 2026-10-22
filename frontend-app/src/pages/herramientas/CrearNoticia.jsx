@@ -39,7 +39,7 @@ export default function CrearNoticia() {
       setDescripcion("");
 
     } catch (error) {
-      console.error("Error creando noticia:", error);
+      console.error("No se ha podido crear la noticia.");
     } finally {
       setEnviando(false);
     }
