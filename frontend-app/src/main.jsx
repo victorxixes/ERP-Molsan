@@ -48,7 +48,7 @@ function Root() {
           localStorage.removeItem("token");
           localStorage.removeItem("empleado");
         } catch (storageError) {
-          console.warn("No se pudo limpiar la sesión local.", storageError);
+          console.warn("No se pudo limpiar la sesión local.");
         }
 
         if (activo) {
