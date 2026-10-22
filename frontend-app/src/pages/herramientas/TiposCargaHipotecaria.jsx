@@ -3,6 +3,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import "../../css/ModalesHerramientasPremium.css";
 
 
 // ============================================================
@@ -575,6 +576,7 @@ export default function TiposCargaHipotecaria() {
   return (
     <div
       className="
+        catalogo-maestro-page-premium herramientas-subpagina-premium
         erp-page
         space-y-5
       "
