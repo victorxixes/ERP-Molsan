@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import "../css/ModalesHerramientasPremium.css";
 
 const MODULOS = {
   apoderagest: {
@@ -83,7 +84,7 @@ export default function ModulosSelector() {
   }
 
   return (
-    <main className="relative isolate min-h-[calc(100vh-110px)] overflow-hidden rounded-3xl border border-white/80 bg-gradient-to-br from-slate-50 via-white to-blue-50/70 px-5 py-8 text-slate-800 shadow-sm sm:px-8 sm:py-10">
+    <main className="selector-modulos-premium herramientas-subpagina-premium relative isolate min-h-[calc(100vh-110px)] overflow-hidden rounded-3xl border border-white/80 bg-gradient-to-br from-slate-50 via-white to-blue-50/70 px-5 py-8 text-slate-800 shadow-sm sm:px-8 sm:py-10">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80 rounded-full border border-blue-100/70"
