@@ -321,10 +321,7 @@ export default function AutocompleteNotario({
 
           .catch((err) => {
 
-            console.error(
-              "ERROR BUSCANDO NOTARIOS:",
-              err
-            );
+            console.error("ERROR BUSCANDO NOTARIOS:", "Error interno");
 
             setNotarios([]);
             const status = err?.response?.status;
