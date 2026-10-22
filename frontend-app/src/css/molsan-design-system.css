@@ -656,3 +656,63 @@
     gap: 8px;
   }
 }
+
+/* Intranet: misma jerarquía de cabecera, superficies y tablas que el ERP. */
+.molsan-intranet-page > header {
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-panel);
+  background: linear-gradient(115deg, #fff 0%, #f7f9fd 70%, #f1f5fb 100%);
+  box-shadow: var(--molsan-shadow-panel);
+}
+
+.molsan-intranet-page > section {
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-panel);
+  background: var(--molsan-surface);
+  box-shadow: var(--molsan-shadow-panel);
+}
+
+.molsan-intranet-page h1,
+.molsan-intranet-page h2,
+.molsan-intranet-page h3 {
+  letter-spacing: -0.02em;
+}
+
+.molsan-intranet-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.molsan-intranet-page textarea,
+.molsan-intranet-page select {
+  border-color: var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-control);
+}
+
+.molsan-intranet-page input:focus-visible,
+.molsan-intranet-page textarea:focus-visible,
+.molsan-intranet-page select:focus-visible,
+.molsan-intranet-page button:focus-visible {
+  outline: 3px solid rgba(49, 86, 179, 0.22);
+  outline-offset: 2px;
+}
+
+.molsan-intranet-page table thead tr {
+  background: var(--molsan-surface-soft);
+}
+
+.molsan-intranet-page table thead th {
+  color: var(--molsan-text-secondary);
+  border-color: var(--molsan-border);
+}
+
+.molsan-intranet-page table tbody tr {
+  border-color: var(--molsan-border-light);
+}
+
+@media (max-width: 640px) {
+  .molsan-intranet-page {
+    gap: 16px;
+  }
+
+  .molsan-intranet-page > header,
+  .molsan-intranet-page > section {
+    border-radius: 12px;
+  }
+}
