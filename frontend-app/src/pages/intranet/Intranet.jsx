@@ -54,7 +54,7 @@ export default function Intranet() {
       if (puede("editar")) setAuditoria(Array.isArray(r[2]?.data) ? r[2].data : []);
       setError("");
     } catch (e) {
-      console.error("Error cargando Intranet", e);
+      console.error("No se ha podido cargar la Intranet.");
       setError(errorText(e, "No se ha podido cargar la Intranet. Comprueba los permisos."));
     } finally { if (mostrar) setLoading(false); }
   }, [authReady, token, puede]);
