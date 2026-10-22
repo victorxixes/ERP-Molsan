@@ -9,7 +9,7 @@ import Mensajes from "../mensajes/Mensajes";
 import CtnListadoPage from "../ctn/CtnListadoPage";
 import { useAuthStore } from "../../store/authStore";
 import { createPortal } from "react-dom";
-import "../../css/ApoderaGest.css";
+import "../../css/PortalProfesionalShared.css";
 
 const PESTANAS = [
   { nombre: "Dashboard", icono: "◫" },
