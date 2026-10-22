@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
+import "../../css/ModalesHerramientasPremium.css";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
 /**
@@ -55,7 +56,7 @@ export default function SubirDocumento() {
   ]);
 
   return (
-    <div className="min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
+    <div className="subir-documento-premium herramientas-subpagina-premium min-h-full p-4 sm:p-6 lg:p-8 space-y-6 animate-fadeIn">
 
       {/* =====================================================
           CABECERA
