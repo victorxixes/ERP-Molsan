@@ -448,3 +448,120 @@
     transition: none;
   }
 }
+
+
+/* Puente de compatibilidad para paneles, tablas y botones heredados. */
+.cg-page .cg-panel,
+.ag-panel,
+.ng-panel,
+.encargagest .eg-panel {
+  color: var(--molsan-text);
+  background: var(--molsan-surface);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.ag-panel-cabecera,
+.ng-panel-titulo,
+.encargagest .eg-panel-head {
+  border-bottom-color: var(--molsan-border-light);
+}
+
+.ag-tabla-marco,
+.ng-tabla-contenedor,
+.encargagest .eg-directorio-tabla-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  background: var(--molsan-surface);
+}
+
+.ag-tabla,
+.ng-tabla,
+.encargagest .eg-directorio-tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--molsan-text);
+  font-size: 13px;
+}
+
+.ag-tabla th,
+.ng-tabla th,
+.encargagest .eg-directorio-tabla th {
+  color: #52617a;
+  background: var(--molsan-surface-soft);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.ag-tabla th,
+.ag-tabla td,
+.ng-tabla th,
+.ng-tabla td,
+.encargagest .eg-directorio-tabla th,
+.encargagest .eg-directorio-tabla td {
+  padding: 9px 12px;
+}
+
+.ag-tabla td,
+.ng-tabla td,
+.encargagest .eg-directorio-tabla td {
+  border-bottom: 1px solid var(--molsan-border-light);
+}
+
+.ag-tabla tbody tr:hover,
+.ng-tabla tbody tr:hover,
+.encargagest .eg-directorio-tabla tbody tr:hover {
+  background: #f7f9fd;
+}
+
+.cg-page .cg-button-primary,
+.encargagest .eg-button-primary {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--molsan-primary);
+  border-radius: var(--molsan-radius-control);
+  background: var(--molsan-primary);
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.cg-page .cg-button-primary:hover:not(:disabled),
+.encargagest .eg-button-primary:hover:not(:disabled) {
+  background: var(--molsan-primary-hover);
+  border-color: var(--molsan-primary-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+.cg-page .cg-button-secondary,
+.encargagest .eg-secondary,
+.ng-boton-secundario,
+.ng-volver {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-control);
+  color: var(--molsan-text);
+  background: var(--molsan-surface);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.cg-page .cg-button-secondary:hover,
+.encargagest .eg-secondary:hover,
+.ng-boton-secundario:hover,
+.ng-volver:hover {
+  color: var(--molsan-text);
+  background: var(--molsan-surface-soft);
+  border-color: var(--molsan-primary);
+  transform: none;
+}
