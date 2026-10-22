@@ -8,6 +8,7 @@ import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario 
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
 import { useAuthStore } from "../../store/authStore";
+import "./FichaExpedientePremium.css";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
@@ -3768,7 +3769,7 @@ async function descargarPDFCalificacion(defecto) {
   return (
       <div
         className="
-          erp-page
+          ficha-expediente-premium erp-page
           p-6
         "
       >
@@ -3807,7 +3808,7 @@ async function descargarPDFCalificacion(defecto) {
     return (
       <div
         className="
-          erp-page
+          ficha-expediente-premium erp-page
           p-6
         "
       >
@@ -3957,7 +3958,7 @@ const cuantiaFincasParaEnvio =
   return (
     <div
       className="
-        erp-page
+        ficha-expediente-premium erp-page
         space-y-4
         pb-8
       "
