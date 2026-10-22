@@ -77,10 +77,7 @@ export default function LoginPage() {
           "Usuario o contraseña incorrectos."
         );
       } catch (err) {
-        console.error(
-          "ERROR LOGIN:",
-          err
-        );
+        console.error("No se ha podido completar el inicio de sesión.");
 
         setError(
           "No se ha podido iniciar sesión."
