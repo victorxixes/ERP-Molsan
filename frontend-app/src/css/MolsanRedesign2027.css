@@ -887,69 +887,19 @@
 
 /* ============================================================
    FASE 1 · UNIFICACIÓN TRANSVERSAL DEL ERP
-   Normaliza el lenguaje visual de los portales y listados que aún
-   conservan clases heredadas. No modifica estructura ni lógica.
+   Normaliza el lenguaje visual de portales y módulos heredados.
+   No modifica estructura, rutas ni lógica de negocio.
    ============================================================ */
 
 :where(
-  .apoderagest,
-  .notargest-workspace-premium,
-  .encargagest-workspace-premium,
-  .notargest,
-  .ctn-listado-page,
-  .expedientes-page
-) {
-  min-width: 0;
-  color: var(--molsan-text);
-  font-family: var(--molsan-font-family);
-  text-rendering: optimizeLegibility;
-}
-
-/* Tokens puente: los portales antiguos consumen los mismos valores
-   que el sistema visual general, sin tener que reescribir su JSX. */
-.apoderagest {
-  --ag-ink: var(--molsan-text);
-  --ag-muted: var(--molsan-text-muted);
-  --ag-line: var(--molsan-border-light);
-  --ag-panel: var(--molsan-surface);
-  --ag-blue: var(--molsan-primary);
-  --ag-blue-dark: var(--molsan-primary-hover);
-}
-
-/* Evita que el marco de ApoderaGest/NotarGest/EncargaGest parezca
-   una aplicación distinta al resto del ERP. Se conservan sus tarjetas,
-   estados, indicadores y componentes de negocio internos. */
-.apoderagest:not(.encargagest-workspace-premium) {
-  color: var(--molsan-text);
-  font-family: var(--molsan-font-family);
-  background: var(--molsan-page-bg);
-  border-color: var(--molsan-border);
-  border-radius: var(--molsan-radius-card);
-}
-
-/* NotarGest estaba limitado a 1500px y añadía un segundo marco/padding.
-   El área de trabajo usa ahora el mismo ancho disponible que los demás
-   módulos, evitando márgenes dobles dentro del portal. */
-.notargest-workspace-premium .notargest {
-  width: 100%;
-  max-width: none;
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  color: var(--molsan-text);
-  font-family: var(--molsan-font-family);
-}
-
-/* Controles heredados: tipografía, borde y foco coherentes, manteniendo
-   colores semánticos de botones (primario, peligro, estado, etc.). */
-:where(
-  .apoderagest,
-  .notargest-workspace-premium,
-  .encargagest-workspace-premium,
-  .notargest,
-  .ctn-listado-page,
-  .expedientes-page,
   .molsan-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
+  .ctn-workspace-premium,
+  .expedientes-page,
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -969,7 +919,79 @@
   .informes-premium-page,
   .mensajes-premium-page,
   .selector-modulos-premium,
+  .molsan-intranet-page,
+  .dashboard-cancelagest,
+  .cg-unified-workspace
+) {
+  min-width: 0;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  text-rendering: optimizeLegibility;
+}
+
+/* Tokens puente: los portales antiguos consumen los mismos valores
+   que el sistema visual general, sin reescribir su JSX. */
+.apoderagest {
+  --ag-ink: var(--molsan-text);
+  --ag-muted: var(--molsan-text-muted);
+  --ag-line: var(--molsan-border-light);
+  --ag-panel: var(--molsan-surface);
+  --ag-blue: var(--molsan-primary);
+  --ag-blue-dark: var(--molsan-primary-hover);
+}
+
+/* Marco común para ApoderaGest y NotarGest. EncargaGest ya hereda
+   la estructura premium compartida y conserva su shell propio. */
+.apoderagest:not(.encargagest-workspace-premium) {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  background: var(--molsan-page-bg);
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+}
+
+/* NotarGest tenía ancho máximo y padding anidado duplicado.
+   El marco exterior mantiene el espaciado común del portal. */
+.notargest-workspace-premium .notargest {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+/* Controles heredados: tipografía y radios comunes, manteniendo
+   los colores semánticos de botones y los estilos de estado. */
+:where(
+  .molsan-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
   .ctn-workspace-premium,
+  .expedientes-page,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .selector-modulos-premium,
   .molsan-intranet-page,
   .dashboard-cancelagest,
   .cg-unified-workspace
@@ -986,13 +1008,14 @@
 }
 
 :where(
+  .molsan-page,
   .apoderagest,
   .notargest-workspace-premium,
   .encargagest-workspace-premium,
   .notargest,
   .ctn-listado-page,
+  .ctn-workspace-premium,
   .expedientes-page,
-  .molsan-page,
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -1012,7 +1035,6 @@
   .informes-premium-page,
   .mensajes-premium-page,
   .selector-modulos-premium,
-  .ctn-workspace-premium,
   .molsan-intranet-page,
   .dashboard-cancelagest,
   .cg-unified-workspace
@@ -1022,13 +1044,14 @@
 }
 
 :where(
+  .molsan-page,
   .apoderagest,
   .notargest-workspace-premium,
   .encargagest-workspace-premium,
   .notargest,
   .ctn-listado-page,
+  .ctn-workspace-premium,
   .expedientes-page,
-  .molsan-page,
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -1048,7 +1071,6 @@
   .informes-premium-page,
   .mensajes-premium-page,
   .selector-modulos-premium,
-  .ctn-workspace-premium,
   .molsan-intranet-page,
   .dashboard-cancelagest,
   .cg-unified-workspace
@@ -1057,18 +1079,18 @@
   outline-offset: 2px;
 }
 
-/* En móvil, las áreas de trabajo deben poder encogerse sin provocar
-   scroll horizontal de toda la aplicación. Las tablas conservan su
-   desplazamiento interno cuando necesitan más anchura. */
+/* En móvil las áreas de trabajo se pueden encoger; las tablas siguen
+   gestionando su desplazamiento horizontal dentro de su contenedor. */
 @media (max-width: 760px) {
   :where(
-    .apoderagest,
-    .notargest-workspace-premium,
-    .encargagest-workspace-premium,
-    .notargest,
-    .ctn-listado-page,
-    .expedientes-page,
   .molsan-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
+  .ctn-workspace-premium,
+  .expedientes-page,
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -1088,13 +1110,11 @@
   .informes-premium-page,
   .mensajes-premium-page,
   .selector-modulos-premium,
-  .ctn-workspace-premium,
   .molsan-intranet-page,
   .dashboard-cancelagest,
-    .cg-unified-workspace
+  .cg-unified-workspace
   ) {
     min-width: 0;
     max-width: 100%;
   }
 }
-
