@@ -678,10 +678,7 @@ export default function useRealtimeGlobal() {
         error
       ) {
 
-        console.error(
-          "[REALTIME] Error construyendo URL:",
-          error
-        );
+        console.error("[REALTIME] No se pudo construir la URL de conexión.");
 
 
         programarReconexion();
