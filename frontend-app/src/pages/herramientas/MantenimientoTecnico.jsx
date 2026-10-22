@@ -3,6 +3,8 @@ import axios from "../../api/axios";
 import { API_BASE } from "../../api/config";
 import { puedeVerModulo } from "../../utils/permisos";
 
+import "../../css/ComponentesOperativosPremium.css";
+
 /**
  * MANTENIMIENTO TÉCNICO — MOLSAN ERP PREMIUM 2027
  *
@@ -261,7 +263,7 @@ export default function MantenimientoTecnico() {
 
   if (!accesoPermitido) {
     return (
-      <div className="p-6">
+      <div className="mantenimiento-tecnico-premium p-6">
         <div className="mx-auto max-w-3xl rounded-2xl border border-rose-200 bg-white p-6 shadow-sm">
           <div className="text-2xl">🔒 Acceso restringido</div>
           <p className="mt-2 text-sm text-slate-600">
