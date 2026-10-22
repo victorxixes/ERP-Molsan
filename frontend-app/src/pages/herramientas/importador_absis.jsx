@@ -65,10 +65,7 @@ export default function ImportadorAbsis() {
 
         } catch (err) {
 
-            console.error(
-                "Error importando ABSIS:",
-                err
-            );
+            console.error("Error importando ABSIS:", "Error interno");
 
             setError(
                 err?.response?.data?.detail ||
