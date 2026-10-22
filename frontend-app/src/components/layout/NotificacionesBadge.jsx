@@ -17,7 +17,7 @@ export default function NotificacionesBadge() {
   const count = useMemo(() => notificaciones.length, [notificaciones]);
 
   return (
-    <div className="relative inline-flex items-center notificaciones-badge-premium" aria-label={count > 0 ? `${count} notificaciones sin revisar` : "Sin notificaciones pendientes"}>
+    <div className="relative inline-flex items-center notificaciones-badge-premium" aria-label={count > 0 ? `${count} notificaciones` : "Sin notificaciones"}>
       {/* Icono */}
       <span aria-hidden="true" className="material-icons text-white/80 drop-shadow">
         notifications
@@ -32,7 +32,7 @@ export default function NotificacionesBadge() {
             border border-white/20 animate-[fadeIn_0.3s_ease]
           "
           role="status"
-          aria-label={`${count} notificaciones sin revisar`}
+          aria-label={`${count} notificaciones`}
           style={{ animationFillMode: "both" }}
         >
           {count}
