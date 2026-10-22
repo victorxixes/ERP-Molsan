@@ -14,6 +14,8 @@ import "./api/fetchAuth";
 
 // Estilos globales SJ-2026
 import "./css/index.css";
+// Design system compartido MOLSAN: clases opt-in para migración progresiva.
+import "./css/molsan-design-system.css";
 
 // ============================================================
 // Root — Inicialización del ERP SJ-2026
