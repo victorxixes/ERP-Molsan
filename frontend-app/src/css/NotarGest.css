@@ -943,3 +943,57 @@
   .ng-resumen-expedientes-modal{width:calc(100vw - 16px);max-height:95vh}
   .ng-resumen-expedientes-contenido{padding:0 10px 12px}
 }
+
+/* Integración progresiva de NotarGest con MOLSAN Premium 2027.
+   Se limitan los cambios a presentación; los flujos operativos permanecen intactos. */
+.notargest {
+  --ng-border: var(--molsan-border, #dce4ef);
+  --ng-text: var(--molsan-text, #17243a);
+  --ng-muted: var(--molsan-text-muted, #64748b);
+  --ng-primary: var(--molsan-primary, #3156b3);
+  font-family: var(--molsan-font-family, Inter, ui-sans-serif, system-ui, sans-serif);
+  color: var(--ng-text);
+}
+.notargest .ng-cabecera h1 { color: var(--molsan-text, #17243a); letter-spacing: -.025em; }
+.notargest .ng-panel {
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-panel, 12px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+}
+.notargest .ng-tabla-contenedor { border: 1px solid var(--molsan-border, #dce4ef); border-radius: var(--molsan-radius-panel, 12px); }
+.notargest .ng-tabla th {
+  color: var(--molsan-text-secondary, #526176);
+  background: var(--molsan-surface-soft, #f5f7fb);
+  border-bottom: 1px solid var(--molsan-border, #dce4ef);
+}
+.notargest .ng-tabla td { border-color: var(--molsan-border-light, #e8edf5); }
+.notargest .ng-tabla tbody tr:hover td { background: var(--molsan-surface-soft, #f5f7fb); }
+.notargest .ng-boton-secundario,
+.notargest .ng-volver,
+.notargest .ng-adjuntar,
+.notargest .ng-filtros input,
+.notargest .ng-login input,
+.notargest .ng-workflow-form input,
+.notargest .ng-workflow-form select,
+.notargest .ng-workflow-form textarea {
+  border-color: var(--molsan-border-strong, #c4d0df);
+  border-radius: var(--molsan-radius-control, 8px);
+}
+.notargest .ng-boton-secundario:focus-visible,
+.notargest .ng-volver:focus-visible,
+.notargest .ng-abrir:focus-visible,
+.notargest button:focus-visible,
+.notargest input:focus-visible,
+.notargest select:focus-visible,
+.notargest textarea:focus-visible {
+  outline: 3px solid rgba(49, 86, 179, .23);
+  outline-offset: 2px;
+}
+.notargest .ng-contador:hover,
+.notargest .ng-tarea:hover,
+.notargest .ng-acceso:hover { transform: none; }
+@media (max-width: 560px) {
+  .notargest { padding: 14px; }
+  .notargest .ng-cabecera { flex-wrap: wrap; gap: 12px; }
+}
+
