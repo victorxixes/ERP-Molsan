@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { getLogs } from "../../api/logs";
+import "./PanelTecnicoSubmodulos.css";
 
 /**
  * ============================================================
@@ -73,7 +74,7 @@ export default function LogsAvanzados() {
   // ============================================================
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="logs-avanzados-premium panel-tecnico-submodulo-premium space-y-6 animate-fade-in">
 
       {/* ======================================================
           CABECERA
