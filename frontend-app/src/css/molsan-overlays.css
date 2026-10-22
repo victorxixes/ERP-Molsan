@@ -1,0 +1,8 @@
+/* MOLSAN ERP · base común para diálogos que adopten clases molsan */
+.molsan-dialog-backdrop { position:fixed; inset:0; z-index:1000; display:grid; place-items:center; padding:20px; background:rgba(15,23,42,.48); }
+.molsan-dialog { width:min(100%,900px); max-height:min(90dvh,900px); overflow:auto; color:var(--molsan-text); background:var(--molsan-surface); border:1px solid var(--molsan-border); border-radius:var(--molsan-radius-dialog); box-shadow:var(--molsan-shadow-popover); }
+.molsan-dialog__header,.molsan-dialog__footer { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; }
+.molsan-dialog__header { border-bottom:1px solid var(--molsan-border-light); }
+.molsan-dialog__footer { border-top:1px solid var(--molsan-border-light); }
+.molsan-dialog__body { min-width:0; padding:20px; }
+@media(max-width:640px) { .molsan-dialog-backdrop { padding:8px; } .molsan-dialog { max-height:calc(100dvh - 16px); border-radius:12px; } .molsan-dialog__header,.molsan-dialog__body,.molsan-dialog__footer { padding:14px; } }

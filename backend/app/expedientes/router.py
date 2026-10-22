@@ -52,7 +52,14 @@ def validar_ambito_reparto_ruta(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    """Protege también lecturas y escrituras por URL directa de un expediente."""
+    """Protege expedientes por URL directa, sin confundir provisiones independientes.
+
+    Las provisiones independientes tienen su propio identificador y sus permisos
+    específicos; no pertenecen a un expediente y no deben pasar por el filtro
+    de visibilidad por reparto de expedientes.
+    """
+    if "/provisiones-independientes" in request.url.path:
+        return
     id_expediente = request.path_params.get("id_expediente")
     if id_expediente is None:
         return

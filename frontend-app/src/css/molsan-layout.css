@@ -1,0 +1,20 @@
+/* MOLSAN ERP · patrones compartidos de estructura */
+.molsan-page { min-width: 0; color: var(--molsan-text); font-family: var(--molsan-font-family); }
+.molsan-page-header { display:flex; align-items:center; justify-content:space-between; gap:16px; min-width:0; margin:0 0 20px; padding:0 0 16px; border-bottom:1px solid var(--molsan-border); }
+.molsan-page-header__identity { display:flex; align-items:center; gap:12px; min-width:0; }
+.molsan-page-header__title { margin:0; color:var(--molsan-text); font-size:var(--molsan-font-size-title); font-weight:700; letter-spacing:-.025em; line-height:1.25; }
+.molsan-page-header__description { margin:4px 0 0; color:var(--molsan-text-muted); font-size:var(--molsan-font-size-md); line-height:1.5; }
+.molsan-page-header__actions { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:var(--molsan-space-2); }
+.molsan-section-header { display:flex; align-items:center; justify-content:space-between; gap:12px; min-width:0; margin-bottom:12px; }
+.molsan-section-header__title { margin:0; color:var(--molsan-text); font-size:var(--molsan-font-size-lg); font-weight:650; line-height:1.35; }
+.molsan-panel { min-width:0; color:var(--molsan-text); background:var(--molsan-surface); border:1px solid var(--molsan-border); border-radius:var(--molsan-radius-card); box-shadow:var(--molsan-shadow-card); }
+.molsan-panel__header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border-bottom:1px solid var(--molsan-border-light); }
+.molsan-panel__body { min-width:0; padding:16px; }
+.molsan-grid { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:var(--molsan-space-4); min-width:0; }
+.molsan-grid > * { min-width:0; }
+@media(max-width:700px) {
+ .molsan-page-header { align-items:flex-start; flex-direction:column; }
+ .molsan-page-header__actions { width:100%; justify-content:flex-start; }
+ .molsan-panel__header,.molsan-panel__body { padding:12px; }
+ .molsan-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+}

@@ -1,0 +1,39 @@
+/* MOLSAN ERP · tokens visuales únicos compartidos */
+:root {
+  --molsan-font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --molsan-font-size-xs: 11px;
+  --molsan-font-size-sm: 12px;
+  --molsan-font-size-md: 13px;
+  --molsan-font-size-lg: 16px;
+  --molsan-font-size-title: 22px;
+  --molsan-space-1: 4px;
+  --molsan-space-2: 8px;
+  --molsan-space-3: 12px;
+  --molsan-space-4: 16px;
+  --molsan-space-5: 20px;
+  --molsan-space-6: 24px;
+  --molsan-control-height: 36px;
+  --molsan-control-height-compact: 30px;
+  --molsan-radius-control: 8px;
+  --molsan-radius-card: 12px;
+  --molsan-radius-dialog: 14px;
+  --molsan-primary: var(--erp-primary, #3156b3);
+  --molsan-primary-hover: var(--erp-primary-dark, #274694);
+  --molsan-primary-soft: var(--erp-primary-soft, #edf3ff);
+  --molsan-page-bg: var(--erp-bg, #f3f6fb);
+  --molsan-surface: var(--erp-surface, #fff);
+  --molsan-surface-soft: var(--erp-surface-soft, #f6f8fc);
+  --molsan-border: var(--erp-border, #dce4ef);
+  --molsan-border-light: var(--erp-border-light, #e6ebf2);
+  --molsan-border-strong: var(--erp-border-strong, #c4d0df);
+  --molsan-text: var(--erp-text, #17243a);
+  --molsan-text-secondary: var(--erp-text-secondary, #526176);
+  --molsan-text-muted: var(--erp-text-soft, #64748b);
+  --molsan-success: var(--erp-success, #16845b);
+  --molsan-warning: var(--erp-warning, #b7791f);
+  --molsan-danger: var(--erp-danger, #c43d4b);
+  --molsan-shadow-card: 0 4px 14px rgba(36, 50, 74, .06);
+  --molsan-shadow-popover: 0 18px 45px rgba(15, 23, 42, .14);
+  --molsan-transition-fast: 150ms ease;
+  --molsan-transition-normal: 180ms ease;
+}
