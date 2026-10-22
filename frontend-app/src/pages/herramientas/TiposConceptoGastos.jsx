@@ -4,6 +4,7 @@ import React, {
   useState,
 } from "react";
 import "../../css/ModalesHerramientasPremium.css";
+import "../../css/CatalogosMaestrosPremium.css";
 
 
 // ============================================================
