@@ -1,0 +1,19 @@
+/* MOLSAN ERP Premium 2027 — listado de empleados */
+.empleados-listado-premium { min-width: 0; }
+.empleados-listado-premium :is(input, select, textarea, button):focus-visible {
+  outline: 2px solid var(--erp-primary, #2563eb);
+  outline-offset: 2px;
+}
+.empleados-listado-premium table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.empleados-listado-premium .empleados-tabla-scroll { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.empleados-listado-premium :is(th, td) { overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .empleados-listado-premium { font-size: .9375rem; }
+  .empleados-listado-premium :is(input, select, textarea) { max-width: 100%; min-width: 0; }
+  .empleados-listado-premium .empleados-tabla-scroll { margin-inline: -0.25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .empleados-listado-premium *, .empleados-listado-premium *::before, .empleados-listado-premium *::after {
+    animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important;
+  }
+}
