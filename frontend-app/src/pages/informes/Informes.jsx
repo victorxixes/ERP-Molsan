@@ -3242,7 +3242,7 @@ export default function Informes() {
   ) || APARTADOS_INFORMES[0];
 
   return (
-    <div className="informes-premium-page herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-[#eef5fb] via-[#f7faff] to-[#eaf2fb] p-4 text-slate-700 md:p-6>
+    <div className="informes-premium-page herramientas-subpagina-premium min-h-screen space-y-5 bg-gradient-to-br from-[#eef5fb] via-[#f7faff] to-[#eaf2fb] p-4 text-slate-700 md:p-6">
       <header className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-blue-100 text-xl shadow-sm">📊</div>
