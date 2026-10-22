@@ -17,3 +17,68 @@
 .sidebar-perfil-modal-premium [role=dialog] { max-height:calc(100dvh - 1rem); overflow-y:auto; overscroll-behavior:contain; }
 @media(max-width:640px){.portal-access-tabs-premium [role=tablist]{gap:.35rem}.intranet-documentos-table-premium{overflow-x:auto;-webkit-overflow-scrolling:touch}.sidebar-perfil-modal-premium [role=dialog]{width:100%;max-height:calc(100dvh - .5rem)}}
 @media(prefers-reduced-motion:reduce){.mol-sidebar-premium *,.portal-login-premium *,.portal-access-tabs-premium *,.intranet-documentos-table-premium *,.intranet-noticias-feed-premium *,.sidebar-perfil-modal-premium *{transition:none!important;animation:none!important}}
+
+
+/* Navegación principal MOLSAN ONE: cabecera limpia y barra consistente. */
+.mol-sidebar-premium {
+  position: relative;
+  z-index: 50;
+  color: var(--molsan-text, #17243a);
+  background: rgba(255,255,255,.96);
+  border-bottom: 1px solid var(--molsan-border, #dce4ef);
+  box-shadow: 0 3px 12px rgba(22, 36, 58, .035);
+  backdrop-filter: blur(14px);
+}
+.mol-sidebar-premium > div {
+  min-width: 0;
+}
+.mol-sidebar-premium nav a,
+.mol-sidebar-premium nav button {
+  min-height: 36px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.mol-sidebar-premium nav a[aria-current="page"],
+.mol-sidebar-premium nav button[aria-current="page"],
+.mol-sidebar-premium nav a[data-active="true"],
+.mol-sidebar-premium nav button[data-active="true"] {
+  color: var(--molsan-primary, #3156b3);
+  background: var(--molsan-primary-soft, #edf3ff);
+  box-shadow: inset 0 0 0 1px rgba(49,86,179,.10);
+}
+.mol-sidebar-premium nav a:hover,
+.mol-sidebar-premium nav button:hover {
+  color: var(--molsan-primary, #3156b3);
+  background: #f3f6fc;
+}
+.mol-sidebar-premium button:focus-visible,
+.mol-sidebar-premium a:focus-visible {
+  outline: 3px solid rgba(49,86,179,.32);
+  outline-offset: 2px;
+}
+.sidebar-perfil-modal-premium [role="dialog"] {
+  border: 1px solid var(--molsan-border, #dce4ef);
+  border-radius: 16px;
+  box-shadow: 0 24px 72px rgba(15,23,42,.22);
+}
+.portal-login-premium {
+  color: var(--molsan-text, #17243a);
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(49,86,179,.12), transparent 42%),
+    var(--molsan-page-bg, #f3f6fb);
+}
+.portal-login-premium [role="form"],
+.portal-login-premium form {
+  border: 1px solid var(--molsan-border, #dce4ef);
+  border-radius: 16px;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 12px 36px rgba(25,42,70,.08);
+}
+@media (max-width: 760px) {
+  .mol-sidebar-premium nav a,
+  .mol-sidebar-premium nav button {
+    min-height: 34px;
+    flex-shrink: 0;
+  }
+}
