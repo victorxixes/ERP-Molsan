@@ -18,7 +18,7 @@ if (
   try {
     apiOrigin = new URL(API_BASE_URL, window.location.href).origin;
   } catch (error) {
-    console.error("[MOLSAN FETCH AUTH] VITE_API_URL no es válida.", error);
+    console.error("[MOLSAN FETCH AUTH] VITE_API_URL no es válida.");
   }
 
   const fetchOriginal = window.fetch.bind(window);
