@@ -81,10 +81,7 @@ export const sendRealtime = (
 
   } catch (error) {
 
-    console.error(
-      "[REALTIME] Error enviando evento:",
-      error
-    );
+    console.error("[REALTIME] No se ha podido enviar el evento.");
 
     return false;
 
