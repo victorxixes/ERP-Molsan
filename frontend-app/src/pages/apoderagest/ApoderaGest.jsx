@@ -288,7 +288,7 @@ function TablaEncargos({ encargos, onFirmado }) {
     axios.get("/apoderagest/encargos/gestores")
       .then(({ data }) => { if (activo) setGestoresDisponibles(Array.isArray(data) ? data : []); })
       .catch((error) => {
-        console.error("No se pudo cargar el catálogo de gestores para ApoderaGest.", error);
+        console.error("No se ha podido cargar el catálogo de gestores de ApoderaGest.");
         if (activo) setGestoresDisponibles([]);
       });
     return () => { activo = false; };
@@ -800,7 +800,7 @@ export default function ApoderaGest() {
       setEncargos(Array.isArray(resEncargos.data) ? resEncargos.data : []);
       setUltimaActualizacion(new Date());
     } catch (err) {
-      console.error("Error cargando ApoderaGest:", err);
+      console.error("No se ha podido cargar ApoderaGest.");
       setError(
         err?.response?.data?.detail ||
           "No se han podido cargar los datos. Comprueba tu conexión o vuelve a intentarlo."
