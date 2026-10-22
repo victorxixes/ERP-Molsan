@@ -1,5 +1,4 @@
 import {
-import "./SeguridadSubpaginasPremium.css";
   useCallback,
   useEffect,
   useMemo,
@@ -9,6 +8,7 @@ import "./SeguridadSubpaginasPremium.css";
 import { useSeguridad } from "../../hooks/useSeguridad";
 
 import MODULOS_ERP from "../../config/modulos";
+import "./SeguridadSubpaginasPremium.css";
 
 
 /* ============================================================
