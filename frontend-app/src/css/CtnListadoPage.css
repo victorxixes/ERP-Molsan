@@ -6,15 +6,15 @@
    ========================================================= */
 
 .ctn-listado-page {
-  --ctn-bg: #f4f6fa;
-  --ctn-panel: #ffffff;
-  --ctn-border: #e2e7ef;
-  --ctn-text: #17243a;
-  --ctn-muted: #718096;
-  --ctn-primary: #254c77;
-  --ctn-primary-dark: #193653;
-  --ctn-accent: #d9b978;
-  --ctn-danger: #b42332;
+  --ctn-bg: var(--molsan-page-bg, #f3f6fb);
+  --ctn-panel: var(--molsan-surface, #ffffff);
+  --ctn-border: var(--molsan-border, #dce4ef);
+  --ctn-text: var(--molsan-text, #17243a);
+  --ctn-muted: var(--molsan-text-muted, #64748b);
+  --ctn-primary: var(--molsan-primary, #3156b3);
+  --ctn-primary-dark: var(--molsan-primary-hover, #274694);
+  --ctn-accent: var(--molsan-accent, #d9b978);
+  --ctn-danger: var(--molsan-danger, #c43d4b);
 
   min-height: 100%;
   padding: 24px;
@@ -1426,5 +1426,104 @@
 @media (prefers-reduced-motion: reduce) {
   .ctn-ficha-pestana {
     transition: none;
+  }
+}
+
+/* Integración CTN con el sistema visual compartido MOLSAN Premium 2027.
+   Solo modifica presentación: conserva filtros, eventos, navegación y datos. */
+.ctn-listado-page {
+  background: var(--molsan-page-bg, #f3f6fb);
+}
+
+.ctn-listado-header h1 {
+  color: var(--molsan-text, #17243a);
+  letter-spacing: -0.6px;
+}
+
+.ctn-filtros,
+.ctn-tabla-contenedor {
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-panel, 12px);
+  box-shadow: 0 2px 8px rgba(23, 36, 58, 0.035);
+}
+
+.ctn-tabla-cabecera {
+  background: var(--molsan-surface, #fff);
+}
+
+.ctn-tabla th {
+  color: var(--molsan-text-secondary, #526176);
+  background: var(--molsan-surface-soft, #f5f7fb);
+  border-bottom-color: var(--molsan-border, #dce4ef);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.ctn-tabla td {
+  border-bottom-color: var(--molsan-border-light, #e8edf5);
+}
+
+.ctn-tabla tbody tr:hover td {
+  background: var(--molsan-surface-soft, #f5f7fb);
+}
+
+.ctn-btn-primary {
+  color: #fff;
+  background: var(--molsan-primary, #3156b3);
+  border-color: var(--molsan-primary, #3156b3);
+  border-radius: var(--molsan-radius-control, 8px);
+}
+
+.ctn-btn-primary:hover:not(:disabled) {
+  background: var(--molsan-primary-hover, #274694);
+  border-color: var(--molsan-primary-hover, #274694);
+}
+
+.ctn-btn-secondary {
+  color: var(--molsan-text, #17243a);
+  background: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border-strong, #cbd5e1);
+  border-radius: var(--molsan-radius-control, 8px);
+}
+
+.ctn-btn-secondary:hover:not(:disabled) {
+  color: var(--molsan-primary, #3156b3);
+  background: var(--molsan-surface-soft, #f5f7fb);
+  border-color: var(--molsan-primary, #3156b3);
+}
+
+.ctn-btn:focus-visible,
+.ctn-listado-page input:focus-visible,
+.ctn-listado-page select:focus-visible,
+.ctn-modal-overlay input:focus-visible,
+.ctn-modal-overlay select:focus-visible,
+.ctn-modal-overlay button:focus-visible {
+  outline: 3px solid rgba(49, 86, 179, 0.22);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .ctn-listado-page {
+    padding: 14px;
+  }
+
+  .ctn-listado-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ctn-listado-header-acciones {
+    justify-content: flex-start;
+  }
+
+  .ctn-filtros-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .ctn-filtros-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
