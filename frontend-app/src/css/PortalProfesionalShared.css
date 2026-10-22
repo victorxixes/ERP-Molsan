@@ -2031,3 +2031,49 @@
     min-height: 0;
   }
 }
+
+/* ApoderaGest: visor integrado en la ficha, distinto del modal de documentos. */
+.ag-visor-inline,
+.ag-visor-inline-contenido {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ag-visor-inline-contenido {
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ag-visor-inline-contenido .ag-visor-pdf {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 560px) {
+  .ag-visor-inline-cabecera {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .ag-visor-inline-cabecera > strong {
+    flex: 1 1 100%;
+  }
+
+  .ag-visor-inline-cabecera > div {
+    flex-wrap: wrap;
+  }
+
+  .ag-visor-inline-contenido {
+    height: min(340px, 48dvh);
+    min-height: 220px;
+  }
+
+  .ag-visor-inline-contenido .ag-visor-pdf {
+    min-height: 220px;
+  }
+
+  .ag-visor-inline-contenido .ag-visor-imagen {
+    padding: 8px;
+  }
+}
