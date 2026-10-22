@@ -142,3 +142,40 @@
   .seguridad-resumen-premium * { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 
+
+
+/* Pulido visual de uso diario: jerarquía de cabeceras, superficies y controles. */
+:is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) {
+  --seguridad-radius: 16px;
+  --seguridad-shadow: 0 8px 24px rgba(24, 39, 75, .055);
+}
+:is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) > :is(section, article, .erp-card) {
+  border-radius: var(--seguridad-radius);
+  box-shadow: var(--seguridad-shadow);
+}
+:is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  border-color: var(--erp-border, #d8e0ec);
+  border-radius: 10px;
+  background-color: var(--erp-surface, #fff);
+  color: var(--erp-text, #172033);
+}
+:is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) :is(button, [role="button"]) {
+  transition: box-shadow .16s ease, border-color .16s ease, background-color .16s ease;
+}
+:is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) :is(button, [role="button"]):hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(24, 39, 75, .09);
+}
+:is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) table thead th {
+  background: var(--erp-surface-soft, #f3f6fb);
+  color: var(--erp-text-soft, #526078);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+:is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) table tbody tr:hover {
+  background: color-mix(in srgb, var(--erp-primary, #4169e1) 4%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) * { transition: none !important; }
+}
