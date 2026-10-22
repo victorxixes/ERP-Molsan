@@ -1424,7 +1424,7 @@ export default function Municipios() {
   return (
 
     <div
-      className="panel-modal-premium catalogo-maestro-modal-premium 
+      className="herramientas-subpagina-premium catalogo-maestro-modal-premium 
         min-h-full
         p-4 sm:p-6 lg:p-8
         space-y-6
