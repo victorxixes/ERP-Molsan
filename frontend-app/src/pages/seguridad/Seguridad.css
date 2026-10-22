@@ -1,0 +1,51 @@
+/* MOLSAN ERP PREMIUM 2027 · Centro de seguridad */
+.seguridad-premium-page {
+  min-width: 0;
+  color: var(--erp-text, #172033);
+}
+.seguridad-premium-page > section {
+  min-width: 0;
+}
+.seguridad-premium-page > section:not(:last-child) {
+  border-radius: 1.15rem;
+}
+.seguridad-premium-page section > [class*="bg-"] {
+  min-width: 0;
+}
+.seguridad-premium-page button,
+.seguridad-premium-page input,
+.seguridad-premium-page select,
+.seguridad-premium-page textarea {
+  max-width: 100%;
+}
+.seguridad-premium-page button:focus-visible,
+.seguridad-premium-page input:focus-visible,
+.seguridad-premium-page select:focus-visible,
+.seguridad-premium-page textarea:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--erp-primary, #2563eb) 35%, transparent);
+  outline-offset: 2px;
+}
+.seguridad-premium-page table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.seguridad-premium-page table tbody tr {
+  transition: background-color .16s ease;
+}
+.seguridad-premium-page table tbody tr:hover {
+  background: color-mix(in srgb, var(--erp-primary, #2563eb) 6%, transparent);
+}
+.seguridad-premium-page h1,
+.seguridad-premium-page h2,
+.seguridad-premium-page h3 {
+  letter-spacing: -.018em;
+}
+@media (max-width: 640px) {
+  .seguridad-premium-page { padding-bottom: 1rem; }
+  .seguridad-premium-page > section { border-radius: .9rem; }
+  .seguridad-premium-page table { min-width: 620px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seguridad-premium-page table tbody tr { transition: none; }
+}
