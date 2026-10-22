@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import { buildRealtimeWsUrl } from "../../api/monitorRealtime";
+import "./PanelTecnicoSubmodulos.css";
 
 /**
  * ============================================================
@@ -519,7 +520,7 @@ export default function MonitorRealtime() {
   return (
 
     <section
-      className="
+      className="monitor-realtime-premium panel-tecnico-submodulo-premium
         bg-[var(--erp-surface)]
         border
         border-[var(--erp-border)]
