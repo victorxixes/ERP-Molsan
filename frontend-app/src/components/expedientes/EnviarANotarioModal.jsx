@@ -340,7 +340,7 @@ export default function EnviarANotarioModal({
           Array.isArray(response?.data) ? response.data : []
         );
       } catch (err) {
-        console.error("ERROR CARGANDO TIPOS DE DOCUMENTO:", err);
+        console.error("No se han podido cargar los tipos de documento.");
 
         if (activo) {
           setError(
@@ -394,7 +394,7 @@ export default function EnviarANotarioModal({
           };
         });
       } catch (err) {
-        console.error("ERROR CARGANDO MUNICIPIOS PARA FACTURACIÓN:", err);
+        console.error("No se ha podido cargar el catálogo de municipios.");
       } finally {
         if (activo) setMunicipiosLoading(false);
       }
