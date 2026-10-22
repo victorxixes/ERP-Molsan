@@ -6,7 +6,6 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
-import App from "./App";
 import { useAuthStore } from "./store/authStore";
 
 // Añade JWT a llamadas fetch antiguas al backend; Axios ya lo hace solo.
@@ -24,6 +23,10 @@ import "./css/molsan-overlays.css";
 import "./css/molsan-motion.css";
 // Armonización visual transversal de módulos ya migrados.
 import "./css/MolsanRedesign2027.css";
+
+// La app se importa después de la base global para que los estilos específicos
+// de cada página/portal puedan prevalecer sobre los estilos compartidos.
+import App from "./App";
 
 // ============================================================
 // Root — Inicialización del ERP SJ-2026
