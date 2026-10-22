@@ -22,3 +22,13 @@
     animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important;
   }
 }
+/* Subpantallas de seguridad: tablas, formularios y acciones coherentes. */
+.seguridad-subpagina-premium,
+.seguridad-logs-premium { min-width: 0; color: var(--erp-text, #172033); }
+.seguridad-subpagina-premium :is(input, select, textarea, button):focus-visible,
+.seguridad-logs-premium :is(input, select, textarea, button):focus-visible { outline: 2px solid var(--erp-primary, #4169e1); outline-offset: 2px; }
+.seguridad-subpagina-premium :is(table, [role="table"]),
+.seguridad-logs-premium :is(table, [role="table"]) { width: 100%; max-width: 100%; }
+.seguridad-subpagina-premium :is(td, th), .seguridad-logs-premium :is(td, th) { overflow-wrap: anywhere; }
+.seguridad-subpagina-premium :is(code, pre), .seguridad-logs-premium :is(code, pre) { overflow-wrap: anywhere; word-break: break-word; }
+@media (max-width: 640px) { .seguridad-subpagina-premium, .seguridad-logs-premium { font-size: .94rem; } .seguridad-subpagina-premium table, .seguridad-logs-premium table { min-width: 640px; } .seguridad-subpagina-premium .overflow-x-auto, .seguridad-logs-premium .overflow-x-auto { -webkit-overflow-scrolling: touch; } }
