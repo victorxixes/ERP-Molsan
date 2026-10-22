@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
+import "../../css/ComponentesOperativosPremium.css";
+
 const SECCIONES = [
   { id: "resumen", label: "Resumen", icon: "◫" },
   { id: "facturas", label: "Consultar facturas", icon: "⌕" },
@@ -26,7 +28,7 @@ const ENDPOINTS = [
 
 function Campo({ label, value, onChange, placeholder = "", type = "text", required = false, help }) {
   return (
-    <label className="block min-w-0">
+    <label className="verifacti-premium block min-w-0">
       <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">{label}{required && <span className="text-rose-500"> *</span>}</span>
       <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} required={required}
         className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100" />
