@@ -3,6 +3,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import "../../css/ModalesHerramientasPremium.css";
 
 
 // ============================================================
@@ -620,6 +621,7 @@ export default function TiposConceptoGastos() {
   return (
     <div
       className="
+        tipos-concepto-gastos-premium herramientas-subpagina-premium
         min-h-screen
         bg-slate-50
         p-4
