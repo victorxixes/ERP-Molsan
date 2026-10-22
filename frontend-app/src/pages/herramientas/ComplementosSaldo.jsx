@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
+import "../../css/ModalesHerramientasPremium.css";
 
 const hoy = () => new Date().toLocaleDateString("sv-SE");
 const euros = (v) => Number(v || 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
@@ -63,7 +64,7 @@ export default function ComplementosSaldo() {
     finally { setExportando(false); }
   }
 
-  return <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+  return <div className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
     <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
