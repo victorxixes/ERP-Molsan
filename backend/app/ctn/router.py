@@ -641,8 +641,10 @@ def cambiar_acceso_notargest(
     notaria_id: int,
     habilitado: bool = Query(...),
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
-    """Habilita o revoca el acceso al portal para una notaría concreta."""
+    """Habilita o revoca el acceso al portal con permiso explícito de edición."""
+    _exigir_permiso_portal(usuario, "notargestweb", "editar")
     notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
     if not notaria:
         raise HTTPException(status_code=404, detail="Notaría no encontrada")
