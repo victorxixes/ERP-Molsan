@@ -153,18 +153,18 @@ export default function CtnDetallePage() {
   if (!notaria) return <div className="ctn-detalle-page"><p>{error || "No se ha encontrado el notario."}</p><button onClick={() => navigate(-1)}>Volver</button></div>;
 
   return (
-    <div className="ctn-detalle-page" style={{ padding: 20, maxWidth: 1400, margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+    <div className="ctn-detalle-page ctn-detalle-page--content">
+      <div className="ctn-detalle-header">
         <div>
-          <h1 style={{ marginBottom: 4 }}>{nombreNotario(notaria)}</h1>
-          <div style={{ opacity: 0.75 }}>Ficha CTN · NIF: {valor(notaria.nif)} · Código: {valor(notaria.codigo)}</div>
+          <h1 className="ctn-detalle-title">{nombreNotario(notaria)}</h1>
+          <div className="ctn-detalle-meta">Ficha CTN · NIF: {valor(notaria.nif)} · Código: {valor(notaria.codigo)}</div>
         </div>
         <button type="button" onClick={() => navigate(-1)}>Volver al listado</button>
       </div>
 
-      {error && <div role="alert" style={{ margin: "14px 0", padding: 12, border: "1px solid #d88", borderRadius: 8 }}>{error}</div>}
+      {error && <div role="alert" className="ctn-detalle-alert">{error}</div>}
 
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 12, marginTop: 20 }}>
+      <section className="ctn-detalle-grid ctn-detalle-grid--info">
         <Info titulo="Teléfono" valor={notaria.telefono} />
         <Info titulo="Dirección" valor={notaria.direccion} />
         <Info titulo="Municipio" valor={notaria.municipio} />
@@ -175,59 +175,59 @@ export default function CtnDetallePage() {
         <Info titulo="Observaciones" valor={notaria.observacion} />
       </section>
 
-      <h2 style={{ marginTop: 28 }}>Histórico de firmas reales</h2>
-      <p style={{ opacity: 0.75 }}>Se consideran expedientes con fecha de firma registrada. Las citas de agenda no se contabilizan como firmas realizadas.</p>
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 14 }}>
-        <div style={tarjeta}>
+      <h2 className="ctn-detalle-section-title">Histórico de firmas reales</h2>
+      <p className="ctn-detalle-muted">Se consideran expedientes con fecha de firma registrada. Las citas de agenda no se contabilizan como firmas realizadas.</p>
+      <section className="ctn-detalle-grid ctn-detalle-grid--stats">
+        <div className="ctn-detalle-stat">
           <h3>Videoconferencia</h3>
-          <p style={{ fontSize: 28, fontWeight: 700, margin: "8px 0" }}>{firmasVC}</p>
+          <p className="ctn-detalle-stat__value">{firmasVC}</p>
           <button type="button" onClick={() => abrirHistorico("VC")}>Mostrar listado</button>
         </div>
-        <div style={tarjeta}>
+        <div className="ctn-detalle-stat">
           <h3>Presencial</h3>
-          <p style={{ fontSize: 28, fontWeight: 700, margin: "8px 0" }}>{firmasPresenciales}</p>
+          <p className="ctn-detalle-stat__value">{firmasPresenciales}</p>
           <button type="button" onClick={() => abrirHistorico("PRESENCIAL")}>Mostrar listado</button>
         </div>
-        <div style={tarjeta}>
+        <div className="ctn-detalle-stat">
           <h3>Sin modalidad clasificada</h3>
-          <p style={{ fontSize: 28, fontWeight: 700, margin: "8px 0" }}>{Number(totales.total_sin_clasificar || 0)}</p>
-          <p style={{ fontSize: 13, opacity: 0.75 }}>El endpoint de histórico debe devolver este total para que se muestre correctamente.</p>
+          <p className="ctn-detalle-stat__value">{Number(totales.total_sin_clasificar || 0)}</p>
+          <p className="ctn-detalle-muted ctn-detalle-muted--small">El endpoint de histórico debe devolver este total para que se muestre correctamente.</p>
         </div>
       </section>
 
-      <section style={{ ...tarjeta, marginTop: 24 }}>
-        <h2 style={{ marginTop: 0 }}>Notarios asociados</h2>
-        <p style={{ opacity: 0.75 }}>Las asociaciones se guardan en ambos sentidos. Eliminar una asociación desde cualquiera de las dos fichas la elimina para ambos notarios.</p>
-        <label style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>Buscar notario por nombre, apellidos o NIF</label>
+      <section className="ctn-detalle-panel ctn-detalle-panel--associations">
+        <h2 className="ctn-detalle-section-title ctn-detalle-section-title--flush">Notarios asociados</h2>
+        <p className="ctn-detalle-muted">Las asociaciones se guardan en ambos sentidos. Eliminar una asociación desde cualquiera de las dos fichas la elimina para ambos notarios.</p>
+        <label className="ctn-detalle-label">Buscar notario por nombre, apellidos o NIF</label>
         <input
           value={busquedaNotario}
           onChange={(e) => setBusquedaNotario(e.target.value)}
           placeholder="Escribe al menos 2 caracteres…"
-          style={{ width: "100%", maxWidth: 520, padding: 10, boxSizing: "border-box" }}
+          className="ctn-detalle-search"
         />
         {resultados.length > 0 && (
-          <div style={{ marginTop: 8, maxWidth: 720, border: "1px solid #ddd", borderRadius: 8, overflow: "hidden" }}>
+          <div className="ctn-detalle-results">
             {resultados.map((n) => (
-              <div key={n.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, padding: 10, borderBottom: "1px solid #eee" }}>
+              <div key={n.id} className="ctn-detalle-result-row">
                 <span>{nombreNotario(n)} · NIF: {valor(n.nif)}</span>
                 <button type="button" disabled={guardandoAsociacion} onClick={() => agregarAsociacion(n.id)}>Asociar</button>
               </div>
             ))}
           </div>
         )}
-        {busquedaNotario.trim().length >= 2 && resultados.length === 0 && <p style={{ opacity: 0.7 }}>No hay resultados nuevos para asociar.</p>}
-        <h3 style={{ marginTop: 22 }}>Asociaciones actuales ({asociadas.length})</h3>
+        {busquedaNotario.trim().length >= 2 && resultados.length === 0 && <p className="ctn-detalle-muted">No hay resultados nuevos para asociar.</p>}
+        <h3 className="ctn-detalle-subtitle">Asociaciones actuales ({asociadas.length})</h3>
         {asociadas.length === 0 ? <p>No hay notarios asociados.</p> : (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead><tr><th style={th}>Notario</th><th style={th}>NIF</th><th style={th}>Municipio</th><th style={th}>Acción</th></tr></thead>
+          <div className="ctn-detalle-table-wrap">
+            <table className="ctn-detalle-table">
+              <thead><tr><th className="ctn-detalle-th">Notario</th><th className="ctn-detalle-th">NIF</th><th className="ctn-detalle-th">Municipio</th><th className="ctn-detalle-th">Acción</th></tr></thead>
               <tbody>
                 {asociadas.map((n) => (
                   <tr key={n.id}>
-                    <td style={td}>{nombreNotario(n)}</td>
-                    <td style={td}>{valor(n.nif)}</td>
-                    <td style={td}>{valor(n.municipio)}</td>
-                    <td style={td}><button type="button" disabled={guardandoAsociacion} onClick={() => quitarAsociacion(n.id)}>Eliminar asociación</button></td>
+                    <td className="ctn-detalle-td">{nombreNotario(n)}</td>
+                    <td className="ctn-detalle-td">{valor(n.nif)}</td>
+                    <td className="ctn-detalle-td">{valor(n.municipio)}</td>
+                    <td className="ctn-detalle-td"><button type="button" disabled={guardandoAsociacion} onClick={() => quitarAsociacion(n.id)}>Eliminar asociación</button></td>
                   </tr>
                 ))}
               </tbody>
@@ -237,38 +237,38 @@ export default function CtnDetallePage() {
       </section>
 
       {modalAbierto && (
-        <div role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }} style={overlay}>
-          <div role="dialog" aria-modal="true" aria-label={`Firmas realizadas: ${modalidadTexto}`} style={modal}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-              <div><h2 style={{ margin: 0 }}>Firmas realizadas · {modalidadTexto}</h2><p style={{ margin: "6px 0 14px", opacity: 0.75 }}>{nombreNotario(notaria)}</p></div>
+        <div className="ctn-detalle-overlay" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
+          <div className="ctn-detalle-modal" role="dialog" aria-modal="true" aria-label={`Firmas realizadas: ${modalidadTexto}`}>
+            <div className="ctn-detalle-modal-header">
+              <div><h2 className="ctn-detalle-modal-title">Firmas realizadas · {modalidadTexto}</h2><p className="ctn-detalle-muted ctn-detalle-modal-subtitle">{nombreNotario(notaria)}</p></div>
               <button type="button" onClick={() => setModalAbierto(false)}>Cerrar</button>
             </div>
-            <form onSubmit={buscarHistorico} style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
-              <input value={filtroHistorico} onChange={(e) => setFiltroHistorico(e.target.value)} placeholder="Buscar expediente, titular, NIF o protocolo" style={{ flex: 1, minWidth: 240, padding: 9 }} />
+            <form className="ctn-detalle-search-form" onSubmit={buscarHistorico}>
+              <input value={filtroHistorico} onChange={(e) => setFiltroHistorico(e.target.value)} placeholder="Buscar expediente, titular, NIF o protocolo" className="ctn-detalle-search ctn-detalle-search--grow" />
               <button type="submit">Buscar</button>
             </form>
             {cargandoHistorico ? <p>Cargando firmas…</p> : historico.length === 0 ? <p>No se han encontrado firmas registradas para esta modalidad.</p> : (
-              <div style={{ overflow: "auto", maxHeight: "60vh" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 850 }}>
-                  <thead><tr>{["Fecha firma", "Expediente", "Titular", "NIF titular", "Solicitante", "Protocolo", "Oficina", "Importe"].map((x) => <th key={x} style={th}>{x}</th>)}</tr></thead>
+              <div className="ctn-detalle-history-table-wrap">
+                <table className="ctn-detalle-table ctn-detalle-table--history">
+                  <thead><tr>{["Fecha firma", "Expediente", "Titular", "NIF titular", "Solicitante", "Protocolo", "Oficina", "Importe"].map((x) => <th key={x} className="ctn-detalle-th">{x}</th>)}</tr></thead>
                   <tbody>
                     {historico.map((f, i) => (
                       <tr key={f.id ?? `${f.id_expediente}-${i}`}>
-                        <td style={td}>{valor(f.fecha_firma)}</td>
-                        <td style={td}>{valor(f.id_expediente)}</td>
-                        <td style={td}>{valor(f.nombre_titular)}</td>
-                        <td style={td}>{valor(f.nif_titular)}</td>
-                        <td style={td}>{valor(f.nombre_solicitante)}</td>
-                        <td style={td}>{valor(f.protocolo)}</td>
-                        <td style={td}>{valor(f.oficina)}</td>
-                        <td style={td}>{valor(f.importe ?? f.capital)}</td>
+                        <td className="ctn-detalle-td">{valor(f.fecha_firma)}</td>
+                        <td className="ctn-detalle-td">{valor(f.id_expediente)}</td>
+                        <td className="ctn-detalle-td">{valor(f.nombre_titular)}</td>
+                        <td className="ctn-detalle-td">{valor(f.nif_titular)}</td>
+                        <td className="ctn-detalle-td">{valor(f.nombre_solicitante)}</td>
+                        <td className="ctn-detalle-td">{valor(f.protocolo)}</td>
+                        <td className="ctn-detalle-td">{valor(f.oficina)}</td>
+                        <td className="ctn-detalle-td">{valor(f.importe ?? f.capital)}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             )}
-            <div style={{ marginTop: 12, opacity: 0.75 }}>Resultados: {historico.length}</div>
+            <div className="ctn-detalle-muted ctn-detalle-results-count"> {historico.length}</div>
           </div>
         </div>
       )}
@@ -277,11 +277,5 @@ export default function CtnDetallePage() {
 }
 
 function Info({ titulo, valor: contenido }) {
-  return <div style={tarjeta}><div style={{ fontSize: 13, opacity: 0.7 }}>{titulo}</div><div style={{ fontWeight: 600, marginTop: 5, whiteSpace: "pre-wrap" }}>{valor(contenido)}</div></div>;
+  return <div className="ctn-detalle-stat"><div className="ctn-detalle-info-label">{titulo}</div><div className="ctn-detalle-info-value">{valor(contenido)}</div></div>;
 }
-
-const tarjeta = { border: "1px solid #ddd", borderRadius: 12, padding: 16, background: "var(--ctn-card-bg, #fff)" };
-const th = { textAlign: "left", padding: 9, borderBottom: "1px solid #ddd", whiteSpace: "nowrap" };
-const td = { padding: 9, borderBottom: "1px solid #eee", verticalAlign: "top" };
-const overlay = { position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 18 };
-const modal = { width: "min(1200px, 100%)", maxHeight: "90vh", overflow: "auto", background: "white", color: "#222", borderRadius: 14, padding: 20, boxShadow: "0 20px 60px rgba(0,0,0,.25)" };
