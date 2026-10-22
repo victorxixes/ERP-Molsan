@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import "./CtnDetallePage.css";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   listarNotarias,
