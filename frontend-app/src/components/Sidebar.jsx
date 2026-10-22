@@ -913,6 +913,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
       <header
         className="
+          mol-sidebar-premium
           w-full
           bg-[var(--erp-surface)]
           border-b

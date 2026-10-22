@@ -399,3 +399,90 @@
     min-width: 640px;
   }
 }
+
+
+/* ============================================================
+   CAPA VISUAL REAL · ERP MOLSAN
+   Esta capa va al final de la hoja global para que el rediseño
+   sea visible sobre los componentes heredados. Solo afecta al
+   workspace operativo y al sidebar; no cambia lógica ni datos.
+   ============================================================ */
+
+.cg-unified-workspace {
+  --molsan-page-bg: #f1f5fb;
+  color: var(--molsan-text, #18263c);
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
+}
+
+.cg-unified-workspace .erp-card,
+.cg-unified-workspace .erp-card-soft,
+.cg-unified-workspace [data-cg-panel="true"] {
+  border: 1px solid var(--molsan-border, #dce4ef);
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(27, 43, 70, .055);
+}
+
+.cg-unified-workspace .erp-card {
+  background-color: var(--molsan-surface, #fff);
+}
+
+.cg-unified-workspace :is(h1, h2, h3) {
+  color: var(--molsan-text, #18263c);
+  letter-spacing: -.02em;
+}
+
+.cg-unified-workspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
+  border-color: var(--molsan-border-strong, #c5d0df);
+  border-radius: 9px;
+  box-shadow: none;
+}
+
+.cg-unified-workspace :is(input, select, textarea):focus {
+  border-color: var(--molsan-primary, #3156b3);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
+}
+
+.cg-unified-workspace table thead th {
+  color: #53637a;
+  background: #f3f6fb;
+  font-weight: 750;
+}
+
+.cg-unified-workspace table tbody tr:hover > td {
+  background-color: #f5f8fe;
+}
+
+.cg-unified-workspace :is(button, [role="button"]) {
+  transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.cg-unified-workspace :is(button, [role="button"]):focus-visible,
+.mol-sidebar-premium :is(a, button):focus-visible {
+  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline-offset: 2px;
+}
+
+/* Navegación principal: superficie clara, separación definida y estados activos legibles. */
+.mol-sidebar-premium {
+  position: relative;
+  z-index: 50;
+  border-bottom: 1px solid var(--molsan-border, #dce4ef);
+  box-shadow: 0 3px 14px rgba(27, 43, 70, .045);
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
+}
+
+.mol-sidebar-premium a[aria-current="page"],
+.mol-sidebar-premium a.active,
+.mol-sidebar-premium button[aria-current="page"] {
+  color: var(--molsan-primary, #3156b3);
+  background: var(--molsan-primary-soft, #edf3ff);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cg-unified-workspace *,
+  .mol-sidebar-premium * {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
