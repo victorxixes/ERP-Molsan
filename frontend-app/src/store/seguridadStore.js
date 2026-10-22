@@ -593,8 +593,7 @@ export const useSeguridadStore =
 
         console.error(
           "SEGURIDAD — ERROR CARGANDO ROLES:",
-          error
-        );
+          "Error interno");
 
         throw error;
       }
@@ -805,8 +804,7 @@ export const useSeguridadStore =
 
             console.error(
               "SEGURIDAD — ERROR CARGANDO DATOS:",
-              error
-            );
+              "Error interno");
 
 
             set({
@@ -990,8 +988,7 @@ export const useSeguridadStore =
 
         console.error(
           "SEGURIDAD — ERROR CARGANDO FICHA:",
-          error
-        );
+          "Error interno");
 
 
         set({
@@ -1066,8 +1063,7 @@ export const useSeguridadStore =
 
         console.error(
           "SEGURIDAD — ERROR ASIGNANDO ROL:",
-          error
-        );
+          "Error interno");
 
         throw error;
       }
@@ -1107,8 +1103,7 @@ export const useSeguridadStore =
 
         console.error(
           "SEGURIDAD — ERROR ASIGNANDO PERMISOS:",
-          error
-        );
+          "Error interno");
 
         throw error;
       }
@@ -1148,8 +1143,7 @@ export const useSeguridadStore =
 
         console.error(
           "SEGURIDAD — ERROR ASIGNANDO MÓDULOS:",
-          error
-        );
+          "Error interno");
 
         throw error;
       }
@@ -1188,8 +1182,7 @@ export const useSeguridadStore =
 
         console.error(
           "SEGURIDAD — ERROR RESETEANDO PASSWORD:",
-          error
-        );
+          "Error interno");
 
         throw error;
       }
@@ -1230,8 +1223,7 @@ export const useSeguridadStore =
 
         console.error(
           "SEGURIDAD — ERROR BLOQUEANDO USUARIO:",
-          error
-        );
+          "Error interno");
 
         throw error;
       }
@@ -1272,8 +1264,7 @@ export const useSeguridadStore =
 
         console.error(
           "SEGURIDAD — ERROR DESBLOQUEANDO USUARIO:",
-          error
-        );
+          "Error interno");
 
         throw error;
       }
