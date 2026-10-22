@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useIntranet } from "../../hooks/useIntranet";
 
+import "../../css/LayoutPortalesPremium.css";
 /**
  * DOCUMENTOS TABLE — MOLSAN ERP SAAS PREMIUM 2027
  *
