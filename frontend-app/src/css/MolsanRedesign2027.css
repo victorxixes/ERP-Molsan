@@ -942,7 +942,7 @@
 
 /* Marco común para ApoderaGest y NotarGest. EncargaGest ya hereda
    la estructura premium compartida y conserva su shell propio. */
-.apoderagest:not(.encargagest-workspace-premium) {
+.apoderagest:not(.encargagest):not(.encargagest-workspace-premium) {
   color: var(--molsan-text);
   font-family: var(--molsan-font-family);
   background: var(--molsan-page-bg);
