@@ -2055,3 +2055,106 @@ body {
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* Capa común para overlays y fichas modales heredadas de todos los módulos. */
+:where(
+  .cg-page, .cg-unified-workspace, .expedientes-page,
+  .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .apoderagest, .notargest, .notargest-workspace-premium,
+  .encargagest, .encargagest-workspace-premium,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .molsan-intranet-page
+) :is([role="dialog"], [aria-modal="true"]) {
+  min-width: 0;
+  color: var(--molsan-text);
+  background-color: var(--molsan-surface);
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-dialog);
+  box-shadow: var(--molsan-shadow-popover);
+}
+
+:where(
+  .cg-page, .cg-unified-workspace, .expedientes-page,
+  .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .apoderagest, .notargest, .notargest-workspace-premium,
+  .encargagest, .encargagest-workspace-premium,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .molsan-intranet-page
+) :is([role="tablist"], .tabs, [class*="-tabs"]) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+:where(
+  .cg-page, .cg-unified-workspace, .expedientes-page,
+  .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .apoderagest, .notargest, .notargest-workspace-premium,
+  .encargagest, .encargagest-workspace-premium,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .molsan-intranet-page
+) :is(button, a[role="button"], input[type="button"], input[type="submit"]) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(
+  .cg-page, .cg-unified-workspace, .expedientes-page,
+  .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .apoderagest, .notargest, .notargest-workspace-premium,
+  .encargagest, .encargagest-workspace-premium,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .molsan-intranet-page
+) :is(.badge, [class*="badge"], [class*="status"], [class*="estado"]) {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  :where(
+    .cg-page, .cg-unified-workspace, .expedientes-page,
+    .expedientes-listado-premium, .ficha-expediente-premium,
+    .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+    .apoderagest, .notargest, .notargest-workspace-premium,
+    .encargagest, .encargagest-workspace-premium,
+    .catalogos-premium-page, .utilidades-premium-page,
+    .honorarios-gestoria-premium, .empleados-premium-page,
+    .empleados-listado-premium, .empleado-ficha-premium,
+    .empleado-editar-premium, .maestros-premium-page,
+    .logs-premium-page, .seguridad-premium-page,
+    .notificaciones-premium-page, .panel-tecnico-premium,
+    .panel-tecnico-submodulo-premium, .informes-premium-page,
+    .mensajes-premium-page, .molsan-intranet-page
+  ) :is([role="dialog"], [aria-modal="true"]) {
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+}
