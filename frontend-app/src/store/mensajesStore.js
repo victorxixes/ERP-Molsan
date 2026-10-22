@@ -54,8 +54,7 @@ export const useMensajesStore = create(
 
         console.error(
           "Error cargando conversación:",
-          err
-        );
+          "Error interno");
 
         set({
           error:
@@ -101,8 +100,7 @@ export const useMensajesStore = create(
 
         console.error(
           "Error cargando conectados:",
-          err
-        );
+          "Error interno");
 
         set({
           error:
@@ -308,8 +306,7 @@ export const useMensajesStore = create(
 
           console.error(
             "Error enviando mensaje REST:",
-            err
-          );
+            "Error interno");
 
           set({
             error:
@@ -342,8 +339,7 @@ export const useMensajesStore = create(
 
           console.error(
             "Error marcando leído:",
-            err
-          );
+            "Error interno");
 
         }
 
@@ -379,8 +375,7 @@ export const useMensajesStore = create(
 
           console.error(
             "Error marcando conversación leída:",
-            err
-          );
+            "Error interno");
 
         }
 
