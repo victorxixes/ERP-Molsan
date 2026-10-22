@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
+import "../../css/ComponentesOperativosPremium.css";
+
 export default function SelectSJ({
   value,
   onChange,
@@ -118,7 +120,7 @@ export default function SelectSJ({
           }
         `}
       >
-        <span className="truncate">
+        <span className="select-sj-premium truncate">
           {opcionSeleccionada?.label ?? placeholder}
         </span>
 
