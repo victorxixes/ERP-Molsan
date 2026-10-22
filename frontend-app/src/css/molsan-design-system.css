@@ -578,3 +578,81 @@
     padding: 14px;
   }
 }
+
+/*
+ * Acabado común de controles para las pantallas operativas ya existentes.
+ * Selectores limitados a los módulos identificados; no afecta al login ni
+ * modifica estados, validaciones, formularios controlados o eventos React.
+ */
+.apoderagest input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):focus-visible,
+.apoderagest select:focus-visible,
+.apoderagest textarea:focus-visible,
+.notargest input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):focus-visible,
+.notargest select:focus-visible,
+.notargest textarea:focus-visible,
+.encargagest input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):focus-visible,
+.encargagest select:focus-visible,
+.encargagest textarea:focus-visible,
+.cg-page input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):focus-visible,
+.cg-page select:focus-visible,
+.cg-page textarea:focus-visible {
+  outline: 3px solid rgba(49, 86, 179, 0.2);
+  outline-offset: 1px;
+  border-color: var(--molsan-primary);
+}
+
+.apoderagest .ag-panel-cabecera,
+.apoderagest .ag-ficha-bloque-heading,
+.apoderagest .ag-toolbar,
+.notargest .ng-panel-titulo,
+.notargest .ng-bloque-heading,
+.encargagest .eg-panel-head,
+.cg-page .cg-section-heading {
+  min-width: 0;
+}
+
+.apoderagest .ag-panel,
+.notargest .ng-panel,
+.encargagest .eg-panel,
+.cg-page .cg-panel {
+  overflow-wrap: anywhere;
+}
+
+.apoderagest .ag-panel-cabecera h2,
+.apoderagest .ag-ficha-bloque-heading h4,
+.notargest .ng-panel-titulo h2,
+.notargest .ng-bloque-heading h2,
+.encargagest .eg-panel-head h2,
+.encargagest .eg-panel-head h3,
+.cg-page .cg-section-heading h2 {
+  letter-spacing: -0.015em;
+}
+
+.apoderagest button:focus-visible,
+.notargest button:focus-visible,
+.encargagest button:focus-visible,
+.cg-page button:focus-visible,
+.apoderagest a:focus-visible,
+.notargest a:focus-visible,
+.encargagest a:focus-visible,
+.cg-page a:focus-visible {
+  outline: 3px solid rgba(49, 86, 179, 0.24);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .apoderagest .ag-panel,
+  .notargest .ng-panel,
+  .encargagest .eg-panel,
+  .cg-page .cg-panel {
+    border-radius: 12px;
+  }
+
+  .apoderagest .ag-panel-cabecera,
+  .notargest .ng-panel-titulo,
+  .encargagest .eg-panel-head,
+  .cg-page .cg-section-heading {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
