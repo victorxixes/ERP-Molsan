@@ -124,7 +124,7 @@ export default function CtnListadoPage() {
         setTotal(Number(data.total ?? data.count ?? filas.length));
         setPagina(Number(data.page ?? paginaSolicitada));
       } catch (err) {
-        console.error("Error cargando listado CTN:", err);
+        console.error("No se ha podido cargar el listado CTN.");
         setItems([]);
         setTotal(0);
         setError(leerDetalleError(err, "No se ha podido cargar el listado de notarios."));
@@ -248,7 +248,7 @@ export default function CtnListadoPage() {
       enlace.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (err) {
-      console.error("Error exportando CTN:", err);
+      console.error("No se ha podido exportar el Excel de CTN.");
       setError(leerDetalleError(err, "No se ha podido exportar el Excel."));
     } finally {
       setExportando(false);
