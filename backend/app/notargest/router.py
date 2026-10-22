@@ -222,16 +222,42 @@ def _fecha(valor):
 
 
 def _campos_ficha_central(expediente):
-    """Expone todos los campos persistidos en Expediente a NotarGest."""
+    """Campos base explícitos del portal; no serializar automáticamente toda la fila ORM."""
+    permitidos = {
+        "id", "id_expediente", "fecha_alta", "oficina", "oficina_alta",
+        "nombre_titular", "apellidos", "nif_titular", "nombre_solicitante",
+        "nif_solicitante", "finca", "nombre_notario", "notario", "nif_notario",
+        "notario_id", "poblacion", "provincia", "fecha_envio", "fecha_envio_notario",
+        "fecha_prevista_firma", "hora_prevista_firma", "fecha_firma", "protocolo",
+        "escritura_firmada", "tipo_documento", "idioma_documento", "formato_escritura",
+        "tipo_tramite", "tipo_firma", "capital", "importe", "contrato",
+        "tipo_operacion", "subtipo_operacion", "observaciones", "numero_entrada",
+        "asiento_presentacion_libro_diario", "fecha_presentacion",
+        "fecha_presentacion_tributaria", "fecha_liquidacion_tributaria",
+        "fecha_inscripcion", "actividad_actual", "estado_actividad",
+        "estado_expediente", "notargest_estado", "notargest_fecha_cierre",
+        "notargest_fecha_envio_gestoria", "tiene_defectos_abiertos",
+        "numero_solicitud_pnc", "fecha_solicitud_pnc", "firma_urgente",
+    }
     resultado = {}
-    for columna in Expediente.__table__.columns:
-        nombre = columna.name
+    for nombre in permitidos:
+        if not hasattr(expediente, nombre):
+            continue
         valor = getattr(expediente, nombre, None)
         if valor is not None and hasattr(valor, "isoformat"):
             valor = valor.isoformat()
         resultado[nombre] = valor
     return resultado
 
+
+def _filtrar_campos_sensibles_notario_externo(datos):
+    """Retira campos financieros internos que no forman parte del portal notarial."""
+    for campo in (
+        "saldo_real", "saldo_disponible", "origen_bankia", "producto_gtg",
+        "tipo_provision", "id_provision",
+    ):
+        datos.pop(campo, None)
+    return datos
 
 def _resumen(e, db):
     actividad = getattr(e, "actividad_actual", None)
@@ -747,6 +773,8 @@ def mis_expedientes(n=Depends(get_notario), db: Session = Depends(get_db)):
     items = []
     for e in filas:
         item = _resumen(e, db)
+        if not _es_usuario_erp(n):
+            item = _filtrar_campos_sensibles_notario_externo(item)
         # Estados separados para que cada bandeja tenga una condición clara.
         actividad = (e.actividad_actual or "").casefold()
         estado = _estado_workflow(e)
@@ -855,6 +883,8 @@ def detalle_expediente(expediente_id: str, n=Depends(get_notario), db: Session =
         )
     ).order_by(ExpedienteObservacion.fecha.desc()).all()
     datos = _resumen(e, db)
+    if not _es_usuario_erp(n):
+        datos = _filtrar_campos_sensibles_notario_externo(datos)
     datos["fincas"] = [{
         "id": f.id, "finca": f.finca, "cru_idufir": f.cru_idufir,
         "provincia": f.provincia, "poblacion": f.poblacion, "registro": f.registro,
