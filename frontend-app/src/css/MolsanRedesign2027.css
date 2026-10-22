@@ -1222,3 +1222,87 @@
     border-radius: 12px;
   }
 }
+
+
+/* ============================================================
+   FASE 3 · MODALES CONSISTENTES
+   Acerca los diálogos heredados al mismo acabado visual.
+   No altera sus dimensiones, z-index, eventos ni contenido.
+   ============================================================ */
+
+/* Fondo de los diálogos: oscurecimiento homogéneo y desenfoque moderado. */
+:where(
+  .modal-overlay-sj,
+  .eg-modal-overlay,
+  .ng-modal-overlay,
+  .ag-resumen-modal-overlay,
+  .ctn-modal-overlay
+) {
+  background-color: rgba(15, 23, 42, .48);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+/* Paneles de diálogo: superficie blanca, borde y sombra corporativos.
+   Se respetan anchuras/alturas particulares (p. ej. visor de pagos o CTN). */
+:where(
+  .modal-sj,
+  .eg-modal-form,
+  .ng-modal,
+  .ag-resumen-modal,
+  .ctn-modal
+) {
+  color: var(--molsan-text, #18263c);
+  background-color: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #dce4ef);
+  box-shadow: var(--molsan-shadow-popover, 0 20px 50px rgba(20, 32, 54, .18));
+}
+
+/* Cabeceras y pies de diálogos antiguos comparten separadores suaves. */
+:where(
+  .eg-modal-header,
+  .ng-modal > header,
+  .ag-resumen-modal-cabecera,
+  .ctn-modal-header,
+  .modal-sj-header
+) {
+  border-bottom-color: var(--molsan-border-light, #e8edf4);
+}
+
+/* Los campos de los modales siguen las mismas métricas que los formularios. */
+:where(
+  .eg-modal-form,
+  .ng-modal,
+  .ag-resumen-modal,
+  .ctn-modal,
+  .modal-sj
+) :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea
+) {
+  border-radius: var(--molsan-radius-control, 9px);
+}
+
+:where(
+  .eg-modal-form,
+  .ng-modal,
+  .ag-resumen-modal,
+  .ctn-modal,
+  .modal-sj
+) :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea,
+  button
+):focus-visible {
+  outline: 2px solid rgba(49, 86, 179, .3);
+  outline-offset: 2px;
+}
+
+/* En pantallas pequeñas, evita que el contenido del diálogo desborde. */
+@media (max-width: 640px) {
+  :where(.ng-modal, .ag-resumen-modal, .ctn-modal, .modal-sj) {
+    max-width: 100%;
+  }
+}
