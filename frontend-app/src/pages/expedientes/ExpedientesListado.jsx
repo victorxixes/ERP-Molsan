@@ -2654,6 +2654,7 @@ export default function ExpedientesListado() {
 
           <div
             className="
+              expedientes-table-scroll
               overflow-auto
 
               rounded-xl

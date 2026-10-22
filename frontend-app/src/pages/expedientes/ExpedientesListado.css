@@ -258,3 +258,18 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* El listado principal usa una tabla de ancho natural. El scroll debe quedar
+   dentro de su contenedor y no ensanchar toda la página en ventanas pequeñas. */
+.expedientes-page .expedientes-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.expedientes-page .expedientes-table-scroll table {
+  width: max-content;
+  min-width: 100%;
+}
