@@ -62,10 +62,7 @@ export const useLogsStore = create((set) => ({
 
     } catch (error) {
 
-      console.error(
-        "ERROR CARGANDO LOGS:",
-        error
-      );
+      console.error("No se han podido cargar los registros del sistema.");
 
       set({
         logs: [],
