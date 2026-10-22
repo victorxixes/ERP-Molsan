@@ -9,3 +9,21 @@
 .panel-tecnico-submodulo-premium td, .panel-tecnico-submodulo-premium th { overflow-wrap: anywhere; }
 .panel-tecnico-submodulo-premium code { overflow-wrap: anywhere; word-break: break-word; }
 @media (max-width: 640px) { .panel-tecnico-submodulo-premium { font-size: .94rem; } .panel-tecnico-submodulo-premium table { min-width: 640px; } .panel-tecnico-submodulo-premium .overflow-x-auto { -webkit-overflow-scrolling: touch; } }
+
+/* Accesibilidad y contención en monitores y auditoría técnica. */
+.panel-tecnico-submodulo-premium :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--erp-primary, #4169e1);
+  outline-offset: 2px;
+}
+.panel-tecnico-submodulo-premium pre,
+.panel-tecnico-submodulo-premium code { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.panel-tecnico-submodulo-premium .overflow-x-auto { max-width: 100%; -webkit-overflow-scrolling: touch; }
+.panel-tecnico-submodulo-premium :is(input, select, textarea) { min-width: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .panel-tecnico-submodulo-premium *, .panel-tecnico-submodulo-premium *::before,
+  .panel-tecnico-submodulo-premium *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
