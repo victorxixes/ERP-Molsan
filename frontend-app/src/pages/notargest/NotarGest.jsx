@@ -695,7 +695,7 @@ export default function NotarGest() {
       )}
       {(!accesoERP || !esAdminNotarGest || Boolean(tokenAdminNotaria)) && <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
-          <div className="w-full apoderagest">
+          <div className="w-full apoderagest notargest-workspace-premium">
             <div className="notargest ng-content">
     <header className="ag-hero ng-hero-apoderagest">
       <div className="ag-hero-identidad">

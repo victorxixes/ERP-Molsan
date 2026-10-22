@@ -1048,3 +1048,42 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* Revisión integral 2026: contenedor del espacio de trabajo del portal. */
+.notargest-workspace-premium {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.notargest-workspace-premium :is(main, section, article, form, .ng-panel, .ng-modal) {
+  min-width: 0;
+}
+.notargest-workspace-premium :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--ng-primary, #3156b3);
+  outline-offset: 2px;
+}
+.notargest-workspace-premium :is(td, th, p, strong, small, code) {
+  overflow-wrap: anywhere;
+}
+.notargest-workspace-premium .ng-tabla-contenedor,
+.notargest-workspace-premium .ng-resumen-expedientes-tabla-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 640px) {
+  .notargest-workspace-premium { overflow-x: clip; }
+  .notargest-workspace-premium .ng-modal {
+    max-width: calc(100vw - 16px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .notargest-workspace-premium *,
+  .notargest-workspace-premium *::before,
+  .notargest-workspace-premium *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
