@@ -133,10 +133,7 @@ export default function Maestros() {
 
       } catch (err) {
 
-        console.error(
-          "Maestros: error cargando datos:",
-          err
-        );
+        console.error("Maestros: error cargando datos:", "Error interno");
 
         setDatos([]);
 
@@ -288,10 +285,7 @@ export default function Maestros() {
 
     } catch (err) {
 
-      console.error(
-        "Maestros: error guardando:",
-        err
-      );
+      console.error("Maestros: error guardando:", "Error interno");
 
       setError(
         err?.response?.data?.detail ||
@@ -345,10 +339,7 @@ export default function Maestros() {
 
     } catch (err) {
 
-      console.error(
-        "Maestros: error eliminando:",
-        err
-      );
+      console.error("Maestros: error eliminando:", "Error interno");
 
       setError(
         err?.response?.data?.detail ||
