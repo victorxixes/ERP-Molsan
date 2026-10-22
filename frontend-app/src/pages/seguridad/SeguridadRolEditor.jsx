@@ -251,10 +251,7 @@ export default function SeguridadRolEditor() {
 
       } catch (err) {
 
-        console.error(
-          "Error guardando rol:",
-          err
-        );
+        console.error("Error guardando rol:", "Error interno");
 
         setError(
           err?.message ||
@@ -355,10 +352,7 @@ export default function SeguridadRolEditor() {
 
         } catch (err) {
 
-          console.error(
-            "Error eliminando rol:",
-            err
-          );
+          console.error("Error eliminando rol:", "Error interno");
 
           setError(
             err?.message ||
