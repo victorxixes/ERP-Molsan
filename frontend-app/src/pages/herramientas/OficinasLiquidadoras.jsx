@@ -1,4 +1,5 @@
 import React, {
+import "../../css/ModalesHerramientasPremium.css";
   useCallback,
   useEffect,
   useMemo,
@@ -1083,6 +1084,7 @@ export default function OficinasLiquidadoras() {
   return (
     <div
       className="
+        oficinas-liquidadoras-premium herramientas-subpagina-premium
         erp-page
         min-h-full
         p-4
