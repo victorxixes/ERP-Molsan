@@ -4,7 +4,7 @@ import PortalLogin from "../../components/PortalLogin";
 import Sidebar from "../../components/Sidebar";
 import { useAuthStore } from "../../store/authStore";
 import { API_BASE } from "../../api/config";
-import "../../css/ApoderaGest.css";
+import "../../css/PortalProfesionalShared.css";
 import "../../css/NotarGest.css";
 
 const TOKEN_KEY = "notargest_token";
