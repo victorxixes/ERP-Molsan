@@ -1075,12 +1075,4 @@
     max-width: calc(100vw - 16px);
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .notargest-workspace-premium *,
-  .notargest-workspace-premium *::before,
-  .notargest-workspace-premium *::after {
-    scroll-behavior: auto !important;
-    animation-duration: .01ms !important;
-    transition-duration: .01ms !important;
-  }
-}
+
