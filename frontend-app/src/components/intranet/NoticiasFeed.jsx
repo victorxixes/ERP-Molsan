@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useIntranet } from "../../hooks/useIntranet";
 
+import "../../css/LayoutPortalesPremium.css";
 /**
  * NOTICIAS FEED — MOLSAN ERP SAAS PREMIUM 2027
  *
@@ -30,7 +31,7 @@ export default function NoticiasFeed() {
   );
 
   return (
-    <div className="space-y-4">
+    <div className="intranet-noticias-feed-premium space-y-4">
 
       {noticias.length === 0 ? (
 
