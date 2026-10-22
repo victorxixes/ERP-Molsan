@@ -175,7 +175,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
         setCitaSeleccionada(citaCompleta);
         setMostrarModal(true);
       } catch (err) {
-        console.error("Error cargando cita completa:", err);
+        console.error("No se pudo cargar el detalle de la cita.");
 
         notify(
           err?.response?.data?.detail ||
@@ -247,7 +247,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
         setMostrarModal(false);
       } catch (err) {
-        console.error("ERROR AL GUARDAR CITA:", err);
+        console.error("No se pudo guardar la cita.");
 
         notify(
           err?.response?.data?.detail ||
@@ -289,7 +289,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
       notify("Cita eliminada.");
       setMostrarModal(false);
     } catch (err) {
-      console.error("ERROR AL ELIMINAR CITA:", err);
+      console.error("No se pudo eliminar la cita.");
 
       notify(
         err?.response?.data?.detail ||
