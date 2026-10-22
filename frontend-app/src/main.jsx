@@ -24,6 +24,8 @@ import "./css/molsan-tables.css";
 import "./css/molsan-controls.css";
 import "./css/molsan-overlays.css";
 import "./css/molsan-motion.css";
+// Armonización visual transversal de módulos ya migrados.
+import "./css/MolsanRedesign2027.css";
 
 // ============================================================
 // Root — Inicialización del ERP SJ-2026

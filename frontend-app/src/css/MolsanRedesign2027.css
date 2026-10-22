@@ -1,0 +1,330 @@
+/* ============================================================
+   MOLSAN ERP · REDISEÑO INTEGRAL 2027
+   Capa de armonización visual sobre los módulos existentes.
+   No altera rutas, datos, permisos, API ni lógica de negocio.
+   ============================================================ */
+
+:root {
+  --molsan-font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --molsan-page-bg: #f3f6fb;
+  --molsan-surface: #ffffff;
+  --molsan-surface-soft: #f7f9fc;
+  --molsan-border: #dce4ef;
+  --molsan-border-light: #e8edf4;
+  --molsan-border-strong: #c5d0df;
+  --molsan-text: #18263c;
+  --molsan-text-secondary: #53637a;
+  --molsan-text-muted: #6b7a90;
+  --molsan-primary: #3156b3;
+  --molsan-primary-hover: #274694;
+  --molsan-primary-soft: #edf3ff;
+  --molsan-success: #16845b;
+  --molsan-warning: #a86b13;
+  --molsan-danger: #c43d4b;
+  --molsan-radius-control: 9px;
+  --molsan-radius-card: 14px;
+  --molsan-radius-dialog: 18px;
+  --molsan-shadow-card: 0 4px 16px rgba(27, 43, 70, .055);
+  --molsan-shadow-popover: 0 20px 50px rgba(20, 32, 54, .18);
+}
+
+/* Normalización segura: solo sobre las pantallas que ya adoptaron el sistema. */
+:where(
+  .cg-unified-workspace,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .empleado-perfil-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .seguridad-subpagina-premium,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .selector-modulos-premium,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .portal-login-premium,
+  .herramientas-home-premium,
+  .molsan-intranet-page,
+  .provisiones-fondos-premium
+) {
+  min-width: 0;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  text-rendering: optimizeLegibility;
+}
+
+/* Jerarquía tipográfica consistente sin sobrescribir títulos personalizados. */
+:where(
+  .cg-unified-workspace,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .empleados-premium-page,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .selector-modulos-premium,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .molsan-intranet-page
+) :where(h1, h2, h3) {
+  text-wrap: pretty;
+}
+
+/* Campos: foco visible, tamaño consistente y protección contra desbordamientos. */
+:where(
+  .cg-unified-workspace,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .molsan-intranet-page
+) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  max-width: 100%;
+  min-width: 0;
+  border-radius: var(--molsan-radius-control);
+}
+
+:where(
+  .cg-unified-workspace,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .molsan-intranet-page
+) :where(button, a, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--molsan-primary);
+  outline-offset: 2px;
+}
+
+/* Contenedores de tablas y contenido: permiten que el layout no se ensanche. */
+:where(
+  .cg-unified-workspace,
+  .expedientes-listado-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .molsan-intranet-page
+) :where(.overflow-x-auto, .table-responsive, [data-table-scroll="true"]) {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+:where(
+  .cg-unified-workspace,
+  .expedientes-listado-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .molsan-intranet-page
+) :where(table) {
+  max-width: 100%;
+}
+
+:where(
+  .cg-unified-workspace,
+  .expedientes-listado-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .empleados-premium-page,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .selector-modulos-premium,
+  .ctn-workspace-premium,
+  .encargagest-workspace-premium,
+  .molsan-intranet-page
+) :where(img, svg, video, canvas) {
+  max-width: 100%;
+}
+
+@media (max-width: 760px) {
+  :where(
+    .cg-unified-workspace,
+    .expedientes-listado-premium,
+    .ficha-expediente-premium,
+    .agenda-premium-page,
+    .catalogos-premium-page,
+    .utilidades-premium-page,
+    .empleados-premium-page,
+    .empleado-ficha-premium,
+    .empleado-editar-premium,
+    .maestros-premium-page,
+    .logs-premium-page,
+    .seguridad-premium-page,
+    .notificaciones-premium-page,
+    .panel-tecnico-premium,
+    .informes-premium-page,
+    .mensajes-premium-page,
+    .selector-modulos-premium,
+    .ctn-workspace-premium,
+    .encargagest-workspace-premium,
+    .molsan-intranet-page
+  ) {
+    overflow-wrap: anywhere;
+  }
+
+  :where(
+    .cg-unified-workspace,
+    .expedientes-listado-premium,
+    .agenda-premium-page,
+    .catalogos-premium-page,
+    .utilidades-premium-page,
+    .empleados-premium-page,
+    .maestros-premium-page,
+    .logs-premium-page,
+    .seguridad-premium-page,
+    .notificaciones-premium-page,
+    .panel-tecnico-premium,
+    .informes-premium-page,
+    .mensajes-premium-page,
+    .ctn-workspace-premium,
+    .encargagest-workspace-premium,
+    .molsan-intranet-page
+  ) :where(table) {
+    min-width: 640px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    .cg-unified-workspace,
+    .expedientes-listado-premium,
+    .agenda-premium-page,
+    .catalogos-premium-page,
+    .utilidades-premium-page,
+    .empleados-premium-page,
+    .maestros-premium-page,
+    .logs-premium-page,
+    .seguridad-premium-page,
+    .notificaciones-premium-page,
+    .panel-tecnico-premium,
+    .informes-premium-page,
+    .mensajes-premium-page,
+    .ctn-workspace-premium,
+    .encargagest-workspace-premium,
+    .molsan-intranet-page
+  ) *,
+  :where(
+    .cg-unified-workspace,
+    .expedientes-listado-premium,
+    .agenda-premium-page,
+    .catalogos-premium-page,
+    .utilidades-premium-page,
+    .empleados-premium-page,
+    .maestros-premium-page,
+    .logs-premium-page,
+    .seguridad-premium-page,
+    .notificaciones-premium-page,
+    .panel-tecnico-premium,
+    .informes-premium-page,
+    .mensajes-premium-page,
+    .ctn-workspace-premium,
+    .encargagest-workspace-premium,
+    .molsan-intranet-page
+  ) *::before,
+  :where(
+    .cg-unified-workspace,
+    .expedientes-listado-premium,
+    .agenda-premium-page,
+    .catalogos-premium-page,
+    .utilidades-premium-page,
+    .empleados-premium-page,
+    .maestros-premium-page,
+    .logs-premium-page,
+    .seguridad-premium-page,
+    .notificaciones-premium-page,
+    .panel-tecnico-premium,
+    .informes-premium-page,
+    .mensajes-premium-page,
+    .ctn-workspace-premium,
+    .encargagest-workspace-premium,
+    .molsan-intranet-page
+  ) *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
