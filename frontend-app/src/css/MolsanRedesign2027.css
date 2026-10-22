@@ -30,7 +30,7 @@
 
 /* Normalización segura: solo sobre las pantallas que ya adoptaron el sistema. */
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -66,7 +66,7 @@
 
 /* Jerarquía tipográfica consistente sin sobrescribir títulos personalizados. */
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -92,7 +92,7 @@
 
 /* Campos: foco visible, tamaño consistente y protección contra desbordamientos. */
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -120,7 +120,7 @@
 }
 
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -148,7 +148,7 @@
 
 /* Contenedores de tablas y contenido: permiten que el layout no se ensanche. */
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -173,7 +173,7 @@
 }
 
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -196,7 +196,7 @@
 }
 
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -221,7 +221,7 @@
 
 @media (max-width: 760px) {
   :where(
-    .cg-unified-workspace,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .ficha-expediente-premium,
     .agenda-premium-page,
@@ -246,7 +246,7 @@
   }
 
   :where(
-    .cg-unified-workspace,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .agenda-premium-page,
     .catalogos-premium-page,
@@ -269,7 +269,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   :where(
-    .cg-unified-workspace,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .agenda-premium-page,
     .catalogos-premium-page,
@@ -287,7 +287,7 @@
     .molsan-intranet-page
   ) *,
   :where(
-    .cg-unified-workspace,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .agenda-premium-page,
     .catalogos-premium-page,
@@ -305,7 +305,7 @@
     .molsan-intranet-page
   ) *::before,
   :where(
-    .cg-unified-workspace,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .agenda-premium-page,
     .catalogos-premium-page,
@@ -408,56 +408,56 @@
    workspace operativo y al sidebar; no cambia lógica ni datos.
    ============================================================ */
 
-.cg-unified-workspace {
+:is(.cg-page, .cg-unified-workspace) {
   --molsan-page-bg: #f1f5fb;
   color: var(--molsan-text, #18263c);
   font-family: var(--molsan-font-family, Inter, "Segoe UI", sans-serif);
 }
 
-.cg-unified-workspace .erp-card,
-.cg-unified-workspace .erp-card-soft,
-.cg-unified-workspace [data-cg-panel="true"] {
+:is(.cg-page, .cg-unified-workspace) .erp-card,
+:is(.cg-page, .cg-unified-workspace) .erp-card-soft,
+:is(.cg-page, .cg-unified-workspace) [data-cg-panel="true"] {
   border: 1px solid var(--molsan-border, #dce4ef);
   border-radius: 14px;
   box-shadow: 0 4px 16px rgba(27, 43, 70, .055);
 }
 
-.cg-unified-workspace .erp-card {
+:is(.cg-page, .cg-unified-workspace) .erp-card {
   background-color: var(--molsan-surface, #fff);
 }
 
-.cg-unified-workspace :is(h1, h2, h3) {
+:is(.cg-page, .cg-unified-workspace) :is(h1, h2, h3) {
   color: var(--molsan-text, #18263c);
   letter-spacing: -.02em;
 }
 
-.cg-unified-workspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
+:is(.cg-page, .cg-unified-workspace) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
   border-color: var(--molsan-border-strong, #c5d0df);
   border-radius: 9px;
   box-shadow: none;
 }
 
-.cg-unified-workspace :is(input, select, textarea):focus {
+:is(.cg-page, .cg-unified-workspace) :is(input, select, textarea):focus {
   border-color: var(--molsan-primary, #3156b3);
   outline: none;
   box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
 }
 
-.cg-unified-workspace table thead th {
+:is(.cg-page, .cg-unified-workspace) table thead th {
   color: #53637a;
   background: #f3f6fb;
   font-weight: 750;
 }
 
-.cg-unified-workspace table tbody tr:hover > td {
+:is(.cg-page, .cg-unified-workspace) table tbody tr:hover > td {
   background-color: #f5f8fe;
 }
 
-.cg-unified-workspace :is(button, [role="button"]) {
+:is(.cg-page, .cg-unified-workspace) :is(button, [role="button"]) {
   transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
 }
 
-.cg-unified-workspace :is(button, [role="button"]):focus-visible,
+:is(.cg-page, .cg-unified-workspace) :is(button, [role="button"]):focus-visible,
 .mol-sidebar-premium :is(a, button):focus-visible {
   outline: 2px solid var(--molsan-primary, #3156b3);
   outline-offset: 2px;
@@ -480,7 +480,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cg-unified-workspace *,
+  :is(.cg-page, .cg-unified-workspace) *,
   .mol-sidebar-premium * {
     scroll-behavior: auto !important;
     transition-duration: .01ms !important;
@@ -496,7 +496,7 @@
    ============================================================ */
 
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -543,7 +543,7 @@
 
 /* Fondo y ritmo: diferencia la zona de trabajo de las superficies de contenido. */
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -571,7 +571,7 @@
 
 /* Superficies principales: las tarjetas dejan de parecer bloques planos. */
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -608,7 +608,7 @@
 
 /* Secciones y cabeceras: jerarquía más clara sin cambiar su estructura. */
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -641,7 +641,7 @@
 }
 
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -668,7 +668,7 @@
 
 /* Botones interactivos con estado hover y foco más evidente. */
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -699,7 +699,7 @@
 }
 
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -730,7 +730,7 @@
 }
 
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .ficha-expediente-premium,
   .agenda-premium-page,
@@ -763,7 +763,7 @@
 
 /* Tablas: cabecera diferenciada y filas legibles en todos los módulos migrados. */
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -792,7 +792,7 @@
 }
 
 :where(
-  .cg-unified-workspace,
+  :is(.cg-page, .cg-unified-workspace),
   .expedientes-listado-premium,
   .agenda-premium-page,
   .catalogos-premium-page,
@@ -819,7 +819,7 @@
 
 @media (max-width: 760px) {
   :where(
-    .cg-unified-workspace,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .ficha-expediente-premium,
     .agenda-premium-page,
@@ -852,7 +852,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   :where(
-    .cg-unified-workspace,
+    :is(.cg-page, .cg-unified-workspace),
     .expedientes-listado-premium,
     .ficha-expediente-premium,
     .agenda-premium-page,
@@ -882,5 +882,516 @@
     animation: none !important;
     transition-duration: .01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   FASE 1 · UNIFICACIÓN TRANSVERSAL DEL ERP
+   Normaliza el lenguaje visual de portales y módulos heredados.
+   No modifica estructura, rutas ni lógica de negocio.
+   ============================================================ */
+
+:where(
+  .molsan-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
+  .ctn-workspace-premium,
+  .expedientes-page,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .selector-modulos-premium,
+  .molsan-intranet-page,
+  :is(.cg-page, .cg-unified-workspace)
+) {
+  min-width: 0;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  text-rendering: optimizeLegibility;
+}
+
+/* Tokens puente: los portales antiguos consumen los mismos valores
+   que el sistema visual general, sin reescribir su JSX. */
+.apoderagest {
+  --ag-ink: var(--molsan-text);
+  --ag-muted: var(--molsan-text-muted);
+  --ag-line: var(--molsan-border-light);
+  --ag-panel: var(--molsan-surface);
+  --ag-blue: var(--molsan-primary);
+  --ag-blue-dark: var(--molsan-primary-hover);
+}
+
+/* Marco común para ApoderaGest y NotarGest. EncargaGest ya hereda
+   la estructura premium compartida y conserva su shell propio. */
+.apoderagest:not(.encargagest):not(.encargagest-workspace-premium) {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  background: var(--molsan-page-bg);
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+}
+
+/* NotarGest tenía ancho máximo y padding anidado duplicado.
+   El marco exterior mantiene el espaciado común del portal. */
+.notargest-workspace-premium .notargest {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+}
+
+/* Controles heredados: tipografía y radios comunes, manteniendo
+   los colores semánticos de botones y los estilos de estado. */
+:where(
+  .molsan-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
+  .ctn-workspace-premium,
+  .expedientes-page,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .selector-modulos-premium,
+  .molsan-intranet-page,
+  :is(.cg-page, .cg-unified-workspace)
+) :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea
+) {
+  max-width: 100%;
+  min-width: 0;
+  font-family: var(--molsan-font-family);
+  color: var(--molsan-text);
+  border-radius: var(--molsan-radius-control);
+}
+
+:where(
+  .molsan-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
+  .ctn-workspace-premium,
+  .expedientes-page,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .selector-modulos-premium,
+  .molsan-intranet-page,
+  :is(.cg-page, .cg-unified-workspace)
+) :where(button, [role="button"]) {
+  font-family: var(--molsan-font-family);
+  transition-duration: var(--molsan-transition-fast);
+}
+
+:where(
+  .molsan-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
+  .ctn-workspace-premium,
+  .expedientes-page,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .selector-modulos-premium,
+  .molsan-intranet-page,
+  :is(.cg-page, .cg-unified-workspace)
+) :where(button, a, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--molsan-primary);
+  outline-offset: 2px;
+}
+
+/* En móvil las áreas de trabajo se pueden encoger; las tablas siguen
+   gestionando su desplazamiento horizontal dentro de su contenedor. */
+@media (max-width: 760px) {
+  :where(
+  .molsan-page,
+  .apoderagest,
+  .notargest-workspace-premium,
+  .encargagest-workspace-premium,
+  .notargest,
+  .ctn-listado-page,
+  .ctn-workspace-premium,
+  .expedientes-page,
+  .expedientes-listado-premium,
+  .ficha-expediente-premium,
+  .agenda-premium-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .honorarios-gestoria-premium,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .maestros-premium-page,
+  .logs-premium-page,
+  .seguridad-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium,
+  .informes-premium-page,
+  .mensajes-premium-page,
+  .selector-modulos-premium,
+  .molsan-intranet-page,
+  :is(.cg-page, .cg-unified-workspace)
+  ) {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+
+/* ============================================================
+   FASE 2 · COMPONENTES COMPARTIDOS
+   Igualación de superficies, cabeceras y tablas de módulos heredados.
+   Se limita a clases de presentación: no modifica datos ni acciones.
+   ============================================================ */
+
+/* Superficies operativas: un mismo borde y sombra en filtros/listados. */
+:where(.ctn-listado-page, .expedientes-page, :is(.cg-page, .cg-unified-workspace), .apoderagest, .notargest) :is(
+  .ctn-filtros,
+  .ctn-tabla-contenedor,
+  .expedientes-filter-panel,
+  .expedientes-table-panel,
+  .cg-panel,
+  .ag-panel,
+  .ng-panel
+) {
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+/* CTN conservaba una cabecera de tabla azul intensa distinta del resto.
+   La sustituimos por la cabecera clara usada en Expedientes y listados ERP. */
+.ctn-listado-page .ctn-tabla th {
+  color: var(--molsan-text-secondary);
+  background: var(--molsan-surface-soft);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-sm, 12px);
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.ctn-listado-page .ctn-tabla td {
+  color: var(--molsan-text-secondary);
+  border-bottom-color: var(--molsan-border-light);
+  line-height: 1.45;
+}
+
+.ctn-listado-page .ctn-tabla tbody tr:hover td {
+  background: #f2f6fd;
+}
+
+.ctn-listado-page .ctn-tabla-cabecera {
+  color: var(--molsan-text);
+  background: var(--molsan-surface);
+  border-bottom-color: var(--molsan-border-light);
+}
+
+.ctn-listado-page .ctn-listado-header h1 {
+  color: var(--molsan-text);
+}
+
+/* Las cabeceras de página comparten jerarquía sin imponer su estructura. */
+:where(.ctn-listado-page, .expedientes-page, :is(.cg-page, .cg-unified-workspace), .apoderagest, .notargest) :is(
+  .ctn-listado-header h1,
+  .expedientes-page__header h1,
+  .cg-hero h1,
+  .ag-hero h1,
+  .ng-cabecera h1
+) {
+  color: var(--molsan-text);
+  font-family: var(--molsan-font-family);
+  letter-spacing: -0.025em;
+}
+
+/* Unifica radios y bordes de controles sin tocar sus valores ni validaciones. */
+:where(.ctn-listado-page, .expedientes-page, :is(.cg-page, .cg-unified-workspace), .apoderagest, .notargest) :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea
+) {
+  border-color: var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-control);
+}
+
+:where(.ctn-listado-page, .expedientes-page, :is(.cg-page, .cg-unified-workspace), .apoderagest, .notargest) :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea
+):focus-visible {
+  border-color: var(--molsan-primary);
+  outline: 2px solid rgba(49, 86, 179, .18);
+  outline-offset: 1px;
+}
+
+/* El contenedor conserva el scroll interno de tablas anchas en móvil. */
+.ctn-listado-page .ctn-tabla-contenedor,
+.ctn-listado-page .ctn-tabla-scroll,
+.expedientes-page .expedientes-table-scroll {
+  min-width: 0;
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .ctn-listado-page .ctn-filtros,
+  .ctn-listado-page .ctn-tabla-contenedor {
+    border-radius: 12px;
+  }
+}
+
+
+/* ============================================================
+   FASE 3 · MODALES CONSISTENTES
+   Acerca los diálogos heredados al mismo acabado visual.
+   No altera sus dimensiones, z-index, eventos ni contenido.
+   ============================================================ */
+
+/* Fondo de los diálogos: oscurecimiento homogéneo y desenfoque moderado. */
+:where(
+  .eg-modal-overlay,
+  .ng-modal-overlay,
+  .ag-resumen-modal-overlay,
+  .ctn-modal-overlay
+) {
+  background-color: rgba(15, 23, 42, .48);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+/* Paneles de diálogo: superficie blanca, borde y sombra corporativos.
+   Se respetan anchuras/alturas particulares (p. ej. visor de pagos o CTN). */
+.encargagest .eg-modal-form,
+.notargest .ng-modal,
+.apoderagest .ag-resumen-modal,
+.ctn-modal-overlay .ctn-modal-panel {
+  color: var(--molsan-text, #18263c);
+  background-color: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #dce4ef);
+  box-shadow: var(--molsan-shadow-popover, 0 20px 50px rgba(20, 32, 54, .18));
+}
+
+/* Cabeceras y pies de diálogos antiguos comparten separadores suaves. */
+:where(
+  .eg-modal-header,
+  .ng-modal > header,
+  .ag-resumen-modal-cabecera,
+  .ctn-modal-header
+) {
+  border-bottom-color: var(--molsan-border-light, #e8edf4);
+}
+
+/* Los campos de los modales siguen las mismas métricas que los formularios. */
+:is(
+  .encargagest .eg-modal-form,
+  .notargest .ng-modal,
+  .apoderagest .ag-resumen-modal,
+  .ctn-modal-overlay .ctn-modal-panel
+) :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea
+) {
+  border-radius: var(--molsan-radius-control, 9px);
+}
+
+:where(
+  .eg-modal-form,
+  .ng-modal,
+  .ag-resumen-modal,
+  .ctn-modal-panel
+) :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select,
+  textarea,
+  button
+):focus-visible {
+  outline: 2px solid rgba(49, 86, 179, .3);
+  outline-offset: 2px;
+}
+
+/* En pantallas pequeñas, evita que el contenido del diálogo desborde. */
+@media (max-width: 640px) {
+  :where(.ng-modal, .ag-resumen-modal, .ctn-modal-panel) {
+    max-width: 100%;
+  }
+}
+
+
+/* ============================================================
+   FASE 4 · SUPERFICIES Y CONTROLES COHERENTES
+   Alinea paneles y controles usando las clases reales de cada módulo.
+   Mantiene los colores de estado y las variantes de botón existentes.
+   ============================================================ */
+
+/* Paneles principales: misma geometría y elevación, sin forzar su fondo. */
+:where(
+  .apoderagest .ag-panel,
+  .encargagest .eg-panel,
+  .notargest .ng-panel,
+  .ctn-listado-page .ctn-filtros,
+  .ctn-listado-page .ctn-tabla-contenedor,
+  .expedientes-page .erp-card,
+  .expedientes-page [class~="bg-white"],
+  :is(.cg-page, .cg-unified-workspace) .erp-card,
+  :is(.cg-page, .cg-unified-workspace) .erp-card-soft,
+  :is(.cg-page, .cg-unified-workspace) [data-cg-panel="true"]
+) {
+  border-color: var(--molsan-card-border, var(--molsan-border, #dce4ef));
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-card-shadow, var(--molsan-shadow-card, 0 4px 16px rgba(27, 43, 70, .055)));
+}
+
+/* Cabeceras de panel con separación visual homogénea. */
+:where(
+  .apoderagest .ag-panel-cabecera,
+  .encargagest .eg-panel-head,
+  .notargest .ng-panel-titulo,
+  .ctn-listado-page .ctn-tabla-cabecera
+) {
+  border-bottom-color: var(--molsan-border-light, #e8edf4);
+}
+
+/* Controles: solo forma, tipografía y transiciones; no cambia colores funcionales. */
+:where(
+  .apoderagest .ag-boton-actualizar,
+  .encargagest .eg-button-primary,
+  .encargagest .eg-modal-footer button,
+  .notargest .ng-boton-secundario,
+  .notargest .ng-volver,
+  .notargest .ng-login-submit,
+  .ctn-listado-page .ctn-btn,
+  .expedientes-page button,
+  :is(.cg-page, .cg-unified-workspace) button
+) {
+  border-radius: var(--molsan-radius-control, 9px);
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", system-ui, sans-serif);
+  transition-duration: .16s;
+}
+
+/* Mantiene un indicador de teclado visible en los controles operativos. */
+:where(
+  .apoderagest,
+  .encargagest,
+  .notargest,
+  .ctn-listado-page,
+  .expedientes-page,
+  :is(.cg-page, .cg-unified-workspace)
+) :where(button, a, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid rgba(49, 86, 179, .62);
+  outline-offset: 2px;
+}
+
+/* Tablas: el ancho lo gestiona el contenedor; las celdas pueden ajustar contenido. */
+:where(
+  .apoderagest .ag-tabla,
+  .notargest .ng-tabla,
+  .ctn-listado-page .ctn-tabla,
+  .expedientes-page table
+) {
+  border-color: var(--molsan-border, #dce4ef);
+  font-variant-numeric: tabular-nums;
+}
+
+:where(
+  .apoderagest .ag-tabla th,
+  .notargest .ng-tabla th,
+  .ctn-listado-page .ctn-tabla th,
+  .expedientes-page table thead th
+) {
+  border-bottom-color: var(--molsan-border, #dce4ef);
+}
+
+/* En móvil, los paneles conservan su ancho dentro de la zona de trabajo. */
+@media (max-width: 760px) {
+  :where(
+    .apoderagest .ag-panel,
+    .encargagest .eg-panel,
+    .notargest .ng-panel,
+    .ctn-listado-page .ctn-filtros,
+    .ctn-listado-page .ctn-tabla-contenedor,
+    .expedientes-page .erp-card,
+    :is(.cg-page, .cg-unified-workspace) .erp-card
+  ) {
+    min-width: 0;
+    max-width: 100%;
   }
 }
