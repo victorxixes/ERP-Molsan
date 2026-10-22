@@ -256,7 +256,7 @@ export default function CtnListadoPage() {
   };
 
   return (
-    <main className="ctn-listado-page">
+    <main className="ctn-listado-page molsan-page">
       <header className="ctn-listado-header">
         <div>
           <h1>Listado CTN</h1>
@@ -272,7 +272,7 @@ export default function CtnListadoPage() {
         </div>
       </header>
 
-      <section className="ctn-filtros" aria-label="Filtros del listado CTN">
+      <section className="ctn-filtros molsan-panel" aria-label="Filtros del listado CTN">
         <h2>Filtros de búsqueda</h2>
         <form onSubmit={aplicarFiltros}>
           <div className="ctn-filtros-grid">
@@ -315,10 +315,10 @@ export default function CtnListadoPage() {
 
       {error && <div className="ctn-alerta-error" role="alert"><strong>No se ha podido completar la operación.</strong><span>{error}</span></div>}
 
-      <section className="ctn-tabla-contenedor">
+      <section className="ctn-tabla-contenedor molsan-table-wrap">
         <div className="ctn-tabla-cabecera"><div><h2>Notarios</h2><p>{total.toLocaleString("es-ES")} resultados encontrados</p></div></div>
         <div className="ctn-tabla-scroll">
-          <table className="ctn-tabla">
+          <table className="ctn-tabla molsan-table">
             <thead><tr>
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("id")}>ID {indicadorOrden("id")}</button></th>
               <th><button type="button" className="ctn-orden" onClick={() => ordenarPor("nombre_completo")}>Notario {indicadorOrden("nombre_completo")}</button></th>
