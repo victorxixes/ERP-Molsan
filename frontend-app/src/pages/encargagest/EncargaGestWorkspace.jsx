@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import "../../css/EncargaGestWorkspace.css";
 import Sidebar from "../../components/Sidebar";
 import EncargaGest from "./EncargaGest";
 import Ctn from "../ctn/Ctn";
@@ -28,7 +29,7 @@ export default function EncargaGestWorkspace({ page }) {
   };
 
   return (
-    <div className="apoderagest encargagest min-h-screen">
+    <div className="encargagest-workspace-premium apoderagest encargagest min-h-screen">
       <Sidebar
         brandName="EncargaGest"
         navigationItems={items}
