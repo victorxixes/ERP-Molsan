@@ -1304,3 +1304,104 @@
     max-width: 100%;
   }
 }
+
+
+/* ============================================================
+   FASE 4 · SUPERFICIES Y CONTROLES COHERENTES
+   Alinea paneles y controles usando las clases reales de cada módulo.
+   Mantiene los colores de estado y las variantes de botón existentes.
+   ============================================================ */
+
+/* Paneles principales: misma geometría y elevación, sin forzar su fondo. */
+:where(
+  .apoderagest .ag-panel,
+  .encargagest .eg-panel,
+  .notargest .ng-panel,
+  .ctn-listado-page .ctn-filtros,
+  .ctn-listado-page .ctn-tabla-contenedor,
+  .expedientes-page .erp-card,
+  .expedientes-page [class~="bg-white"],
+  .cg-unified-workspace .erp-card,
+  .cg-unified-workspace .erp-card-soft,
+  .cg-unified-workspace [data-cg-panel="true"]
+) {
+  border-color: var(--molsan-card-border, var(--molsan-border, #dce4ef));
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-card-shadow, var(--molsan-shadow-card, 0 4px 16px rgba(27, 43, 70, .055)));
+}
+
+/* Cabeceras de panel con separación visual homogénea. */
+:where(
+  .apoderagest .ag-panel-cabecera,
+  .encargagest .eg-panel-head,
+  .notargest .ng-panel-titulo,
+  .ctn-listado-page .ctn-tabla-cabecera
+) {
+  border-bottom-color: var(--molsan-border-light, #e8edf4);
+}
+
+/* Controles: solo forma, tipografía y transiciones; no cambia colores funcionales. */
+:where(
+  .apoderagest .ag-boton-actualizar,
+  .encargagest .eg-button-primary,
+  .encargagest .eg-modal-footer button,
+  .notargest .ng-boton-secundario,
+  .notargest .ng-volver,
+  .notargest .ng-login-submit,
+  .ctn-listado-page .ctn-btn,
+  .expedientes-page button,
+  .cg-unified-workspace button
+) {
+  border-radius: var(--molsan-radius-control, 9px);
+  font-family: var(--molsan-font-family, Inter, "Segoe UI", system-ui, sans-serif);
+  transition-duration: .16s;
+}
+
+/* Mantiene un indicador de teclado visible en los controles operativos. */
+:where(
+  .apoderagest,
+  .encargagest,
+  .notargest,
+  .ctn-listado-page,
+  .expedientes-page,
+  .cg-unified-workspace
+) :where(button, a, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid rgba(49, 86, 179, .62);
+  outline-offset: 2px;
+}
+
+/* Tablas: el ancho lo gestiona el contenedor; las celdas pueden ajustar contenido. */
+:where(
+  .apoderagest .ag-tabla,
+  .notargest .ng-tabla,
+  .ctn-listado-page .ctn-tabla,
+  .expedientes-page table
+) {
+  border-color: var(--molsan-border, #dce4ef);
+  font-variant-numeric: tabular-nums;
+}
+
+:where(
+  .apoderagest .ag-tabla th,
+  .notargest .ng-tabla th,
+  .ctn-listado-page .ctn-tabla th,
+  .expedientes-page table thead th
+) {
+  border-bottom-color: var(--molsan-border, #dce4ef);
+}
+
+/* En móvil, los paneles conservan su ancho dentro de la zona de trabajo. */
+@media (max-width: 760px) {
+  :where(
+    .apoderagest .ag-panel,
+    .encargagest .eg-panel,
+    .notargest .ng-panel,
+    .ctn-listado-page .ctn-filtros,
+    .ctn-listado-page .ctn-tabla-contenedor,
+    .expedientes-page .erp-card,
+    .cg-unified-workspace .erp-card
+  ) {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
