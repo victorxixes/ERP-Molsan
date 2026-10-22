@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import MonitorRealtime from "./MonitorRealtime";
+import "./PanelTecnicoSubmodulos.css";
 import {
   listarTablas,
   describirTabla,
@@ -170,7 +171,7 @@ export default function MonitorSistema() {
   // ============================================================
 
   return (
-    <div className="p-6 space-y-6 animate-fade-in">
+    <div className="monitor-sistema-premium panel-tecnico-submodulo-premium p-6 space-y-6 animate-fade-in">
 
       {/* ======================================================
           CABECERA
