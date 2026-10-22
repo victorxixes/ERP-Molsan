@@ -1523,7 +1523,7 @@ export default function EntidadesBancarias() {
   return (
 
     <div
-      className="herramientas-subpagina-premium catalogo-maestro-modal-premium 
+      className="entidades-bancarias-premium herramientas-subpagina-premium catalogo-maestro-modal-premium 
         min-h-full
         p-4 sm:p-6 lg:p-8
         space-y-6
