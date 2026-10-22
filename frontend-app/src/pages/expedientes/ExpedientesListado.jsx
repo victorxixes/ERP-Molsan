@@ -2643,6 +2643,7 @@ export default function ExpedientesListado() {
           <div
             className="
               expedientes-table-scroll
+              molsan-table-wrap
               overflow-auto
 
               rounded-xl
@@ -2656,6 +2657,7 @@ export default function ExpedientesListado() {
 
             <table
               className="
+                molsan-table
                 min-w-max
 
                 w-full
