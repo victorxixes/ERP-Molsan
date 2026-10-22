@@ -369,3 +369,10 @@ select, textarea) {
     transition-duration: .01ms !important;
   }
 }
+
+/* Los listados anchos se desplazan dentro de su contenedor, no en toda la página. */
+.cg-unified-workspace :where(.overflow-x-auto, .table-responsive, [data-table-scroll="true"]) {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
