@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import "./SeguridadSubpaginasPremium.css";
 
 export default function SeguridadResumen({ empleadoId }) {
   const {
@@ -256,7 +257,7 @@ export default function SeguridadResumen({ empleadoId }) {
 
   if (!fichaSegura) {
     return (
-      <div className="erp-page">
+      <div className="erp-page seguridad-subpagina-premium seguridad-resumen-premium">
 
         <div className="erp-page-header">
 
