@@ -699,13 +699,39 @@ def crear_tabla_historial_accesos_portales():
 
     # La columna es independiente del historial: se migra en otra transacción
     # para que un bloqueo de una tabla no retenga el resto de la inicialización.
-    ejecutar_migracion(
-        "añadir columna ctn_notarios.notargest_password_enc",
-        """
-        ALTER TABLE ctn_notarios
-        ADD COLUMN IF NOT EXISTS notargest_password_enc TEXT
-        """,
-    )
+    # No ejecutar ALTER TABLE en cada arranque si la columna ya existe:
+    # incluso ADD COLUMN IF NOT EXISTS necesita un bloqueo de tabla en PostgreSQL.
+    try:
+        with engine.connect() as conexion:
+            columna_password_enc = conexion.execute(
+                text(
+                    "SELECT 1 FROM information_schema.columns "
+                    "WHERE table_schema = 'public' "
+                    "AND table_name = 'ctn_notarios' "
+                    "AND column_name = 'notargest_password_enc'"
+                )
+            ).first()
+    except Exception as exc:
+        print(
+            "[CTN PORTALES] AVISO: no se pudo comprobar "
+            "ctn_notarios.notargest_password_enc; se reintentará en otro arranque.",
+            flush=True,
+        )
+        columna_password_enc = None
+
+    if columna_password_enc:
+        print(
+            "[CTN PORTALES] ctn_notarios.notargest_password_enc ya existe; se omite ALTER.",
+            flush=True,
+        )
+    else:
+        ejecutar_migracion(
+            "añadir columna ctn_notarios.notargest_password_enc",
+            """
+            ALTER TABLE public.ctn_notarios
+            ADD COLUMN IF NOT EXISTS notargest_password_enc TEXT
+            """,
+        )
     print("[CTN PORTALES] Revisión de esquema finalizada; la API puede continuar.", flush=True)
 
 def _registrar_evento_portal(db, notaria_id, portal, evento, resultado="ok", usuario=None, detalle=None):
