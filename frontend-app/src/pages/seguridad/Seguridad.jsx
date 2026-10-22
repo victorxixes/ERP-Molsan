@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import "./Seguridad.css";
 
 import SeguridadRoles from "./SeguridadRoles";
 import SeguridadPermisos from "./SeguridadPermisos";
@@ -1170,6 +1171,7 @@ export default function Seguridad() {
   return (
     <div
       className="
+        seguridad-premium-page
         space-y-6
         animate-fade-in
       "
