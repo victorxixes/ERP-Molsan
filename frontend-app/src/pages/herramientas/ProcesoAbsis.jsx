@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
+import "../../css/ModalesHerramientasPremium.css";
 
 const euroFecha = (v) => {
   if (!v) return "—";
@@ -79,7 +80,7 @@ export default function ProcesoAbsis() {
     } finally { setExportando(false); }
   }
 
-  return <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+  return <main className="herramienta-operativa-premium herramientas-subpagina-premium min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
     <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
       <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-700 hover:underline">← Volver a Utilidades</Link>
