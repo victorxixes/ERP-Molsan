@@ -1496,3 +1496,98 @@
     font-size: 17px;
   }
 }
+
+
+/* Cabecera corporativa para los portales que comparten el shell AG. */
+:is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 24px !important;
+  min-width: 0;
+  padding: 10px 4px 26px !important;
+  margin: 0 0 20px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero-identidad {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  min-width: 0;
+}
+
+:is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero .ag-marca {
+  display: grid;
+  flex: 0 0 62px;
+  width: 62px;
+  height: 62px;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(145deg, #4268c5, #274694);
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(49, 86, 179, .2);
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: -1px;
+}
+
+:is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero .ag-eyebrow {
+  display: block;
+  color: #63769b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.65px;
+  line-height: 1.5;
+}
+
+:is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero h1 {
+  margin: 5px 0 4px;
+  color: var(--erp-text-strong, #17233a);
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 820;
+  letter-spacing: -1.3px;
+  line-height: 1.12;
+}
+
+:is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero p {
+  max-width: 650px;
+  margin: 0;
+  color: var(--erp-text-soft, #64748b);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+:is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 760px) {
+  :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero {
+    align-items: flex-start !important;
+    gap: 16px !important;
+    padding: 8px 0 20px !important;
+  }
+
+  :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero-acciones {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero .ag-marca {
+    flex-basis: 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+    font-size: 17px;
+  }
+}
