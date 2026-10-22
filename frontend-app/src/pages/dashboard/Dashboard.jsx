@@ -115,7 +115,7 @@ function KpiCard({ icono, titulo, valor, descripcion }) {
   );
 }
 
-function ActividadCard({ actividad, total }) {
+function ActividadCard({ actividad, total, porcentajeValor }) {
   return (
     <div className="flex items-center gap-3 border-b px-4 py-3.5 last:border-b-0 transition-colors duration-150 hover:bg-[var(--erp-surface-soft)]" style={{ borderColor: "var(--erp-border)" }}>
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg" style={{ background: "var(--erp-primary-soft)" }}>
@@ -131,6 +131,12 @@ function ActividadCard({ actividad, total }) {
       </div>
       <div className="min-w-12 rounded-lg px-3 py-1 text-right text-lg font-bold tabular-nums" style={{ color: "var(--erp-primary)", background: "var(--erp-primary-soft)" }}>
         {numero(total)}
+      </div>
+      <div className="dashboard-activity-inline" aria-label={actividad.nombre + ': ' + porcentaje(porcentajeValor) + ' del total'}>
+        <div className="dashboard-activity-track h-1.5 overflow-hidden rounded-full" style={{ background: "var(--erp-surface-soft)" }}>
+          <div className="dashboard-activity-bar h-full rounded-full" style={{ width: Math.min(Math.max(Number(porcentajeValor || 0), 0), 100) + "%", background: "var(--erp-primary)" }} />
+        </div>
+        <span className="text-xs tabular-nums" style={{ color: "var(--erp-text-soft)" }}>{porcentaje(porcentajeValor)}</span>
       </div>
     </div>
   );
@@ -323,7 +329,7 @@ export default function Dashboard() {
         </div>
         <div className="erp-card min-w-0 overflow-hidden p-0">
           {actividades.map((actividad) => (
-            <ActividadCard key={actividad.key} actividad={actividad} total={actividad.total} />
+            <ActividadCard key={actividad.key} actividad={actividad} total={actividad.total} porcentajeValor={totalExpedientes > 0 ? (actividad.total / totalExpedientes) * 100 : 0} />
           ))}
         </div>
       </section>
@@ -402,7 +408,7 @@ export default function Dashboard() {
       </div>
 
       {/* FIRMAS REALIZADAS + DISTRIBUCIÓN DEL CIRCUITO */}
-      <div className="dashboard-secondary-grid mb-6 grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
+      <div className="dashboard-signatures-wrap mb-6">
       {/* FIRMAS REALIZADAS */}
       <section className="min-w-0">
         <div className="mb-4 flex flex-col gap-1">
@@ -411,60 +417,12 @@ export default function Dashboard() {
             Distribución de las firmas realizadas según la modalidad seleccionada en el encargo al notario.
           </p>
         </div>
-        <div className="dashboard-firmas-grid grid grid-cols-1 gap-3">
+        <div className="dashboard-firmas-grid grid grid-cols-1 gap-3 sm:grid-cols-3">
           <KpiCard icono="✍️" titulo="Total firmas" valor={numero(totalFirmas)} descripcion="Firmas realizadas" />
           <FirmaCard icono="🏛️" titulo="Presencial" total={firmasPresenciales} porcentajeValor={porcentajePresencial} />
           <FirmaCard icono="💻" titulo="Videoconferencia" total={firmasVideoconferencia} porcentajeValor={porcentajeVideoconferencia} />
         </div>
       </section>
-
-        {/* DISTRIBUCIÓN VISUAL DEL CIRCUITO */}
-        <section className="min-w-0">
-          <div className="mb-4">
-            <h2 className="text-lg font-bold" style={{ color: "var(--erp-text)" }}>
-              Distribución del circuito
-            </h2>
-            <p className="mt-1 text-sm" style={{ color: "var(--erp-text-soft)" }}>
-              Representación visual de los expedientes por actividad.
-            </p>
-          </div>
-
-          <div className="erp-card min-w-0 p-5">
-            <div className="space-y-4">
-              {actividades.map((actividad) => {
-                const total = Number(actividad.total || 0);
-                const porcentajeActividad = totalExpedientes > 0 ? (total / totalExpedientes) * 100 : 0;
-
-                return (
-                  <div key={actividad.key}>
-                    <div className="mb-2 flex items-center justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <span className="shrink-0 text-base">{actividad.icono}</span>
-                        <span className="truncate text-sm font-medium" style={{ color: "var(--erp-text)" }}>
-                          {actividad.nombre}
-                        </span>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <span className="text-sm font-semibold" style={{ color: "var(--erp-text)" }}>
-                          {numero(total)}
-                        </span>
-                        <span className="w-14 text-right text-xs" style={{ color: "var(--erp-text-soft)" }}>
-                          {porcentaje(porcentajeActividad)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="h-2 overflow-hidden rounded-full" style={{ background: "var(--erp-surface-soft)" }}>
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${Math.min(Math.max(porcentajeActividad, 0), 100)}%`, background: "var(--erp-primary)" }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
 
       </div>
 
