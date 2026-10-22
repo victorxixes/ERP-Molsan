@@ -121,10 +121,7 @@ instance.interceptors.response.use(
 
     if (!error.response) {
 
-      console.error(
-        "AXIOS — Error de red o servidor no disponible:",
-        error
-      );
+      console.error("AXIOS — Error de red o servidor no disponible.");
 
       return Promise.reject(error);
 
