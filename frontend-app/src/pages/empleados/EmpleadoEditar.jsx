@@ -110,10 +110,7 @@ export default function EmpleadoEditar({
             return;
           }
 
-          console.error(
-            "Error cargando empleado:",
-            err
-          );
+          console.error("No se ha podido cargar el empleado.");
 
           setError(
             err?.response?.data?.detail ||
