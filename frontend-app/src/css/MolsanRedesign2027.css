@@ -4,29 +4,7 @@
    No altera rutas, datos, permisos, API ni lógica de negocio.
    ============================================================ */
 
-:root {
-  --molsan-font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --molsan-page-bg: #f3f6fb;
-  --molsan-surface: #ffffff;
-  --molsan-surface-soft: #f7f9fc;
-  --molsan-border: #dce4ef;
-  --molsan-border-light: #e8edf4;
-  --molsan-border-strong: #c5d0df;
-  --molsan-text: #18263c;
-  --molsan-text-secondary: #53637a;
-  --molsan-text-muted: #6b7a90;
-  --molsan-primary: #3156b3;
-  --molsan-primary-hover: #274694;
-  --molsan-primary-soft: #edf3ff;
-  --molsan-success: #16845b;
-  --molsan-warning: #a86b13;
-  --molsan-danger: #c43d4b;
-  --molsan-radius-control: 9px;
-  --molsan-radius-card: 14px;
-  --molsan-radius-dialog: 18px;
-  --molsan-shadow-card: 0 4px 16px rgba(27, 43, 70, .055);
-  --molsan-shadow-popover: 0 20px 50px rgba(20, 32, 54, .18);
-}
+/* Los tokens globales se centralizan en molsan-tokens.css. */
 
 /* Normalización segura: solo sobre las pantallas que ya adoptaron el sistema. */
 :where(
