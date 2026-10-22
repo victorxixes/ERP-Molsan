@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PortalLogin from "../../components/PortalLogin";
 import Sidebar from "../../components/Sidebar";
-import "../../css/ApoderaGest.css";
+import "../../css/PortalProfesionalShared.css";
 import "../../css/EncargaGest.css";
 import axios, { configurarSesionEncargaGest, limpiarSesionEncargaGest } from "../../api/encargagest";
 import { useAuthStore } from "../../store/authStore";
