@@ -1855,6 +1855,7 @@
 }
 .ag-resumen-modal{
   display:flex;flex-direction:column;width:min(1550px,calc(100vw - 36px));max-height:92vh;
+  max-height:calc(100dvh - 36px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
   overflow:hidden;border:1px solid rgba(255,255,255,.85);border-radius:22px;
   background:#f8fafc;box-shadow:0 24px 90px rgba(8,20,40,.3);
 }
@@ -1881,7 +1882,7 @@
 .ag-resumen-ir-encargo:hover{background:#dff4ef}
 @media(max-width:650px){
   .ag-resumen-modal-overlay{padding:8px}
-  .ag-resumen-modal{width:100%;max-height:95vh;border-radius:15px}
+  .ag-resumen-modal{width:100%;max-height:95vh;max-height:calc(100dvh - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));border-radius:15px}
   .ag-resumen-modal-cabecera{padding:15px;gap:10px}
   .ag-resumen-modal-cabecera h2{font-size:18px}
   .ag-resumen-modal-cuerpo{padding:12px}
@@ -1913,7 +1914,8 @@
   min-height: 38px;
 }
 .apoderagest :is(input, select, textarea):focus-visible {
-  outline: none;
+  outline: 2px solid #3156b3;
+  outline-offset: 2px;
   border-color: #3156b3;
   box-shadow: 0 0 0 3px rgb(49 86 179 / 13%);
 }
