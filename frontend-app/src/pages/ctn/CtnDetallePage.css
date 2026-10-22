@@ -1,0 +1,131 @@
+/* MOLSAN ERP PREMIUM 2027 · Ficha CTN */
+.ctn-detalle-page {
+  --ctnd-primary: var(--molsan-primary, #3156b3);
+  --ctnd-border: var(--molsan-border, #d7e0ec);
+  --ctnd-text: var(--molsan-text, #24324a);
+  --ctnd-muted: var(--molsan-text-muted, #64748b);
+  color: var(--ctnd-text);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+  font-size: 13px;
+  box-sizing: border-box;
+}
+.ctn-detalle-page *,
+.ctn-detalle-page *::before,
+.ctn-detalle-page *::after { box-sizing: border-box; }
+.ctn-detalle-page > div:first-child {
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid var(--ctnd-border);
+  border-radius: 15px;
+  box-shadow: 0 4px 16px rgba(22,42,75,.05);
+}
+.ctn-detalle-page h1 {
+  color: var(--ctnd-text);
+  font-size: clamp(22px, 2.5vw, 30px);
+  font-weight: 780;
+  letter-spacing: -.035em;
+}
+.ctn-detalle-page h2 {
+  color: var(--ctnd-text);
+  font-size: 18px;
+  font-weight: 750;
+  letter-spacing: -.02em;
+}
+.ctn-detalle-page h3 {
+  color: var(--ctnd-text);
+  font-size: 14px;
+  font-weight: 700;
+}
+.ctn-detalle-page p,
+.ctn-detalle-page label { color: var(--ctnd-muted); }
+.ctn-detalle-page section {
+  min-width: 0;
+}
+.ctn-detalle-page section > div {
+  min-width: 0;
+}
+.ctn-detalle-page section[style*="gridTemplateColumns"] > div {
+  padding: 15px;
+  background: #fff;
+  border: 1px solid var(--ctnd-border);
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(22,42,75,.045);
+}
+.ctn-detalle-page button {
+  min-height: 36px;
+  padding: 8px 12px;
+  color: var(--ctnd-text);
+  background: #fff;
+  border: 1px solid var(--ctnd-border);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 650;
+  transition: background-color .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
+}
+.ctn-detalle-page button:hover:not(:disabled) {
+  color: var(--ctnd-primary);
+  background: #edf3ff;
+  border-color: #b9c9ed;
+}
+.ctn-detalle-page button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+.ctn-detalle-page :is(input, select, textarea) {
+  max-width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  color: var(--ctnd-text);
+  background: #fff;
+  border: 1px solid var(--ctnd-border);
+  border-radius: 8px;
+  font: inherit;
+}
+.ctn-detalle-page :is(input, select, textarea):focus-visible,
+.ctn-detalle-page button:focus-visible {
+  outline: 2px solid rgba(49,86,179,.35);
+  outline-offset: 2px;
+  border-color: var(--ctnd-primary);
+}
+.ctn-detalle-page table {
+  width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0;
+  font-size: 12px;
+}
+.ctn-detalle-page th {
+  padding: 10px 12px;
+  color: #52617a;
+  background: #f6f8fc;
+  border-bottom: 1px solid var(--ctnd-border);
+  text-align: left;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.ctn-detalle-page td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e8edf4;
+  vertical-align: middle;
+}
+.ctn-detalle-page tbody tr:hover { background: #f8faff; }
+.ctn-detalle-page [role="alert"] {
+  color: #9f2634;
+  background: #fff3f4;
+  border-color: #f0c3c8 !important;
+  border-radius: 10px !important;
+}
+.ctn-detalle-page [role="dialog"] {
+  max-width: calc(100vw - 28px);
+  border: 1px solid var(--ctnd-border);
+  border-radius: 16px;
+  box-shadow: 0 24px 70px rgba(15,23,42,.25);
+}
+@media (max-width: 640px) {
+  .ctn-detalle-page { padding: 12px !important; }
+  .ctn-detalle-page > div:first-child { padding: 14px; }
+  .ctn-detalle-page section[style*="gridTemplateColumns"] { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ctn-detalle-page * { transition-duration: .01ms !important; }
+}
