@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../api/axios";
 import "../../css/ModalesHerramientasPremium.css";
+import "../../css/CatalogosMaestrosPremium.css";
 
 function fecha(valor) {
   if (!valor) return "—";

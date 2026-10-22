@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import "../../css/ModalesHerramientasPremium.css";
+import "../../css/CatalogosMaestrosPremium.css";
 import { useUtilidades } from "../../hooks/useUtilidades";
 
 /**

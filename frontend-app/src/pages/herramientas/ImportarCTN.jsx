@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useUtilidades } from "../../hooks/useUtilidades";
 import "../../css/ModalesHerramientasPremium.css";
+import "../../css/CatalogosMaestrosPremium.css";
 
 /**
  * IMPORTAR CTN — MOLSAN ERP PREMIUM 2027
