@@ -1,0 +1,18 @@
+/* MOLSAN ERP Premium 2027 · layout, portales e intranet */
+.mol-sidebar-premium { isolation:isolate; }
+.mol-sidebar-premium a,.mol-sidebar-premium button { transition:background-color .16s ease,color .16s ease,border-color .16s ease; }
+.mol-sidebar-premium a:focus-visible,.mol-sidebar-premium button:focus-visible,.portal-login-premium input:focus-visible,.portal-login-premium button:focus-visible,.portal-access-tabs-premium button:focus-visible,.sidebar-perfil-modal-premium button:focus-visible,.sidebar-perfil-modal-premium input:focus-visible,.sidebar-perfil-modal-premium select:focus-visible { outline:2px solid var(--erp-primary,#4169e1); outline-offset:2px; }
+.portal-login-premium { min-height:100dvh; }
+.portal-login-premium input,.portal-login-premium button { max-width:100%; }
+.portal-access-tabs-premium { min-width:0; }
+.portal-access-tabs-premium [role=tablist] { display:flex; flex-wrap:wrap; gap:.5rem; }
+.intranet-documentos-table-premium { min-width:0; }
+.intranet-documentos-table-premium table { width:100%; border-collapse:separate; border-spacing:0; }
+.intranet-documentos-table-premium th { background:var(--erp-surface-soft,#f5f7fb); }
+.intranet-documentos-table-premium td,.intranet-documentos-table-premium th { overflow-wrap:anywhere; }
+.intranet-noticias-feed-premium { min-width:0; }
+.intranet-noticias-feed-premium img { max-width:100%; }
+.sidebar-perfil-modal-premium { min-width:0; }
+.sidebar-perfil-modal-premium [role=dialog] { max-height:calc(100dvh - 1rem); overflow-y:auto; overscroll-behavior:contain; }
+@media(max-width:640px){.portal-access-tabs-premium [role=tablist]{gap:.35rem}.intranet-documentos-table-premium{overflow-x:auto;-webkit-overflow-scrolling:touch}.sidebar-perfil-modal-premium [role=dialog]{width:100%;max-height:calc(100dvh - .5rem)}}
+@media(prefers-reduced-motion:reduce){.mol-sidebar-premium *,.portal-login-premium *,.portal-access-tabs-premium *,.intranet-documentos-table-premium *,.intranet-noticias-feed-premium *,.sidebar-perfil-modal-premium *{transition:none!important;animation:none!important}}
