@@ -1,11 +1,11 @@
 import {
-import "./SeguridadSubpaginasPremium.css";
   useCallback,
   useMemo,
   useState,
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import "./SeguridadSubpaginasPremium.css";
 
 
 function arraySeguro(valor) {
