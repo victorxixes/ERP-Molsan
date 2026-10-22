@@ -2269,3 +2269,100 @@ body {
     padding: 14px;
   }
 }
+
+
+/* Selectores de compatibilidad con sidecars de portales: misma jerarquía visual. */
+:is(.notargest) .ng-cabecera,
+:is(.apoderagest) .ag-hero,
+:is(.encargagest) .eg-hero,
+:is(.cg-page) .cg-hero,
+:is(.ctn-listado-page) .ctn-listado-header,
+:is(.expedientes-listado-premium) .expedientes-header {
+  color: var(--molsan-text);
+  background: rgba(255,255,255,.96);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+:is(.notargest) .ng-cabecera h1,
+:is(.apoderagest) .ag-hero h1,
+:is(.encargagest) .eg-hero h1,
+:is(.cg-page) .cg-hero h1,
+:is(.ctn-listado-page) .ctn-listado-header h1,
+:is(.expedientes-listado-premium) .expedientes-header h1 {
+  color: var(--molsan-text);
+  font-size: var(--molsan-font-size-title);
+  font-weight: 750;
+  letter-spacing: -.025em;
+}
+
+:is(.notargest) .ng-panel,
+:is(.apoderagest) .ag-panel,
+:is(.encargagest) .eg-panel,
+:is(.cg-page) .cg-panel,
+:is(.ctn-listado-page) .ctn-panel,
+:is(.expedientes-listado-premium) .expedientes-panel {
+  color: var(--molsan-text);
+  background: var(--molsan-surface);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+:is(.notargest) .ng-tabla th,
+:is(.apoderagest) .ag-tabla th,
+:is(.encargagest) .eg-directorio-tabla th,
+:is(.ctn-listado-page) table thead th,
+:is(.expedientes-listado-premium) table thead th {
+  color: var(--molsan-text-secondary);
+  background: var(--molsan-surface-soft);
+  border-bottom: 1px solid var(--molsan-border);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+:is(.notargest) .ng-tabla td,
+:is(.apoderagest) .ag-tabla td,
+:is(.encargagest) .eg-directorio-tabla td,
+:is(.ctn-listado-page) table tbody td,
+:is(.expedientes-listado-premium) table tbody td {
+  border-bottom-color: var(--molsan-border-light);
+}
+
+:is(.notargest, .apoderagest, .encargagest, .ctn-listado-page, .expedientes-listado-premium) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), select, textarea) {
+  min-width: 0;
+  max-width: 100%;
+  border-color: var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-control);
+  background: #fff;
+  color: var(--molsan-text);
+  font: inherit;
+}
+
+:is(.notargest, .apoderagest, .encargagest, .ctn-listado-page, .expedientes-listado-premium) :is(button, a[role="button"]) {
+  border-radius: var(--molsan-radius-control);
+}
+
+:is(.notargest, .apoderagest, .encargagest, .ctn-listado-page, .expedientes-listado-premium) :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--molsan-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  :is(.notargest) .ng-cabecera,
+  :is(.apoderagest) .ag-hero,
+  :is(.encargagest) .eg-hero,
+  :is(.cg-page) .cg-hero,
+  :is(.ctn-listado-page) .ctn-listado-header,
+  :is(.expedientes-listado-premium) .expedientes-header {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  :is(.notargest, .apoderagest, .encargagest, .ctn-listado-page, .expedientes-listado-premium) table {
+    font-size: 12px;
+  }
+}
