@@ -1,4 +1,5 @@
 import {
+import "./SeguridadSubpaginasPremium.css";
   useCallback,
   useEffect,
   useMemo,
@@ -1516,10 +1517,7 @@ const permisosGlobales =
 
   return (
     <div
-      className="
-        w-full
-        space-y-4
-      "
+      className="seguridad-subpagina-premium seguridad-ficha-premium w-full space-y-4"
     >
 
       {/* ======================================================
