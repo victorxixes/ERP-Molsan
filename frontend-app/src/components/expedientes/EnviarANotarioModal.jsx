@@ -649,21 +649,14 @@ export default function EnviarANotarioModal({
     try {
       setLoading(true);
 
-      console.log("ENVÍO A NOTARIO — INICIO");
-      console.log("EXPEDIENTE:", expediente.id_expediente);
-      console.log("PAYLOAD EXPEDIENTE:", payload);
-
       // El endpoint de envío a notario guarda los datos del expediente
       // y crea/actualiza la cita de Agenda en una única operación.
       // No hacemos un segundo POST a /agenda/ para evitar duplicados.
       await onGuardar(payload);
 
-      console.log("ENVÍO A NOTARIO — COMPLETADO");
       onClose();
     } catch (err) {
-      console.error("ERROR ENVIANDO EXPEDIENTE A NOTARIO:", err);
-      console.error("RESPONSE:", err?.response?.data);
-      console.error("STATUS:", err?.response?.status);
+      console.error("No se ha podido completar el envío a notario.", err?.response?.status ?? "sin estado HTTP");
 
       setError(
         err?.response?.data?.detail ||
