@@ -257,16 +257,16 @@ export default function CtnListadoPage() {
 
   return (
     <main className="ctn-listado-page molsan-page">
-      <header className="ctn-listado-header">
+      <header className="ctn-listado-header molsan-page-header">
         <div>
           <h1>Listado CTN</h1>
           <p>Consulta, filtra y gestiona los notarios y sus asociaciones.</p>
         </div>
-        <div className="ctn-listado-header-acciones">
-          <button type="button" className="ctn-btn ctn-btn-excel" onClick={exportarExcel} disabled={exportando}>
+        <div className="ctn-listado-header-acciones molsan-page-header__actions">
+          <button type="button" className="ctn-btn ctn-btn-excel molsan-btn" onClick={exportarExcel} disabled={exportando}>
             {exportando ? "Preparando Excel…" : "⇩ Exportar Excel"}
           </button>
-          <button type="button" className="ctn-btn ctn-btn-secondary" onClick={() => cargarListado(pagina, filtrosAplicados)} disabled={cargando}>
+          <button type="button" className="ctn-btn ctn-btn-secondary molsan-btn molsan-btn--secondary" onClick={() => cargarListado(pagina, filtrosAplicados)} disabled={cargando}>
             {cargando ? "Actualizando…" : "↻ Actualizar"}
           </button>
         </div>
@@ -277,22 +277,22 @@ export default function CtnListadoPage() {
         <form onSubmit={aplicarFiltros}>
           <div className="ctn-filtros-grid">
             <label>Buscar notario
-              <input value={filtros.q} onChange={(e) => cambiarFiltro("q", e.target.value)} placeholder="Nombre, apellidos, NIF o código" />
+              <input className="molsan-field__control" value={filtros.q} onChange={(e) => cambiarFiltro("q", e.target.value)} placeholder="Nombre, apellidos, NIF o código" />
             </label>
             <label>Provincia
-              <input value={filtros.provincia} onChange={(e) => cambiarFiltro("provincia", e.target.value)} placeholder="Provincia" />
+              <input className="molsan-field__control" value={filtros.provincia} onChange={(e) => cambiarFiltro("provincia", e.target.value)} placeholder="Provincia" />
             </label>
             <label>Municipio
-              <input value={filtros.municipio} onChange={(e) => cambiarFiltro("municipio", e.target.value)} placeholder="Municipio" />
+              <input className="molsan-field__control" value={filtros.municipio} onChange={(e) => cambiarFiltro("municipio", e.target.value)} placeholder="Municipio" />
             </label>
             <label>Notario asociado
-              <input value={filtros.asociado} onChange={(e) => cambiarFiltro("asociado", e.target.value)} placeholder="Nombre del asociado" />
+              <input className="molsan-field__control" value={filtros.asociado} onChange={(e) => cambiarFiltro("asociado", e.target.value)} placeholder="Nombre del asociado" />
             </label>
             <label>Apoderado
-              <input value={filtros.apoderado} onChange={(e) => cambiarFiltro("apoderado", e.target.value)} placeholder="Apoderado" />
+              <input className="molsan-field__control" value={filtros.apoderado} onChange={(e) => cambiarFiltro("apoderado", e.target.value)} placeholder="Apoderado" />
             </label>
             <label>Videoconferencia (VC)
-              <select value={filtros.vc} onChange={(e) => cambiarFiltro("vc", e.target.value)}>
+              <select className="molsan-field__control" value={filtros.vc} onChange={(e) => cambiarFiltro("vc", e.target.value)}>
                 <option value="">Todos</option>
                 <option value="SI">Sí</option>
                 <option value="NO">No</option>
@@ -301,7 +301,7 @@ export default function CtnListadoPage() {
           </div>
           <div className="ctn-filtros-acciones">
             <button type="button" className="ctn-btn ctn-btn-secondary" onClick={limpiarFiltros}>Limpiar</button>
-            <button type="submit" className="ctn-btn ctn-btn-primary">Buscar</button>
+            <button type="submit" className="ctn-btn ctn-btn-primary molsan-btn molsan-btn--primary">Buscar</button>
           </div>
         </form>
       </section>
@@ -346,7 +346,7 @@ export default function CtnListadoPage() {
                     <td><span className={`ctn-etiqueta ${item.notargest_habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{item.notargest_habilitado ? "✓ Habilitado" : "Deshabilitado"}</span></td>
                     <td>{(() => { const acceso = accesosEncargaGest.find((x) => Number(x.notaria_id) === Number(item.id)); const habilitado = Boolean(acceso?.tiene_acceso && acceso?.habilitado); const configurado = Boolean(acceso?.tiene_acceso); return <span className={`ctn-etiqueta ${habilitado ? "ctn-etiqueta-si" : "ctn-etiqueta-neutra"}`} title="El acceso se gestiona desde la ficha de la notaría">{habilitado ? "✓ Habilitado" : configurado ? "Deshabilitado" : "Sin configurar"}</span>; })()}</td>
                     <td>{item.distancia_km == null ? "—" : `${Number(item.distancia_km).toLocaleString("es-ES", { maximumFractionDigits: 1 })} km`}</td>
-                    <td><button type="button" className="ctn-btn ctn-btn-primary ctn-btn-small" onClick={() => setNotariaSeleccionada(item)}>Ver ficha</button></td>
+                    <td><button type="button" className="ctn-btn ctn-btn-primary ctn-btn-small molsan-btn molsan-btn--primary molsan-btn--compact" onClick={() => setNotariaSeleccionada(item)}>Ver ficha</button></td>
                   </tr>
                 );
               })}
@@ -356,7 +356,7 @@ export default function CtnListadoPage() {
         <footer className="ctn-paginacion">
           <span>Mostrando {items.length ? (pagina - 1) * PAGE_SIZE + 1 : 0}–{Math.min((pagina - 1) * PAGE_SIZE + items.length, total)} de {total}</span>
           <div className="ctn-paginacion-acciones">
-            <button type="button" className="ctn-btn ctn-btn-secondary ctn-btn-small" onClick={() => setPagina(1)} disabled={pagina <= 1 || cargando}>« Primera</button>
+            <button type="button" className="ctn-btn ctn-btn-secondary ctn-btn-small molsan-btn molsan-btn--secondary molsan-btn--compact" onClick={() => setPagina(1)} disabled={pagina <= 1 || cargando}>« Primera</button>
             <button type="button" className="ctn-btn ctn-btn-secondary ctn-btn-small" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={pagina <= 1 || cargando}>‹ Anterior</button>
             <span className="ctn-pagina-indicador">Página {pagina} de {totalPaginas}</span>
             <button type="button" className="ctn-btn ctn-btn-secondary ctn-btn-small" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={pagina >= totalPaginas || cargando}>Siguiente ›</button>
