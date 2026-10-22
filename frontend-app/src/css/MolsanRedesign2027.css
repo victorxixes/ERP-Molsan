@@ -1573,3 +1573,240 @@
     font-size: 17px;
   }
 }
+
+
+/* ============================================================
+   FASE FINAL · MOLSAN ONE
+   Capa común de acabado para todo el ERP, incluidos los módulos
+   heredados y los portales independientes. Solo presentación.
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+  --molsan-page-gutter: clamp(12px, 1.5vw, 24px);
+  --molsan-panel-padding: clamp(12px, 1.35vw, 20px);
+}
+
+:where(
+  .cg-page, .cg-unified-workspace, .expedientes-page,
+  .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .apoderagest, .notargest, .notargest-workspace-premium,
+  .encargagest, .encargagest-workspace-premium,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .selector-modulos-premium,
+  .molsan-intranet-page, .portal-login-premium,
+  .portal-access-tabs-premium
+) {
+  min-width: 0;
+  font-family: var(--molsan-font-family);
+  color: var(--molsan-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+:where(
+  .cg-page, .cg-unified-workspace, .expedientes-page,
+  .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .apoderagest, .notargest, .notargest-workspace-premium,
+  .encargagest, .encargagest-workspace-premium,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .selector-modulos-premium,
+  .molsan-intranet-page
+) :is(
+  .erp-card, .cg-panel, .ag-panel, .ng-panel,
+  .ctn-filtros, .ctn-tabla-contenedor,
+  .expedientes-filter-panel, .expedientes-table-panel,
+  .dashboard-card, .dashboard-panel, .panel-card,
+  .ficha-panel, .ficha-seccion, .form-section,
+  .section-card, .stat-card, .kpi-card,
+  [data-cg-panel="true"]
+) {
+  border-color: var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+:where(
+  .cg-page, .cg-unified-workspace, .expedientes-page,
+  .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .apoderagest, .notargest, .notargest-workspace-premium,
+  .encargagest, .encargagest-workspace-premium,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .molsan-intranet-page
+) :is(table:not([class*="calendar"]), .data-table, .erp-table) {
+  max-width: 100%;
+  font-family: var(--molsan-font-family);
+  border-color: var(--molsan-border-light);
+}
+
+:where(
+  .cg-page, .cg-unified-workspace, .expedientes-page,
+  .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .apoderagest, .notargest, .notargest-workspace-premium,
+  .encargagest, .encargagest-workspace-premium,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .molsan-intranet-page
+) :is(th, thead th) {
+  color: var(--molsan-text-secondary);
+  background-color: var(--molsan-surface-soft);
+  border-color: var(--molsan-border-light);
+  font-family: var(--molsan-font-family);
+  font-size: var(--molsan-font-size-sm);
+  font-weight: 700;
+}
+
+:where(
+  .cg-page, .cg-unified-workspace, .expedientes-page,
+  .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .apoderagest, .notargest, .notargest-workspace-premium,
+  .encargagest, .encargagest-workspace-premium,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .molsan-intranet-page
+) :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select, textarea
+) {
+  min-height: var(--molsan-control-height);
+  border-color: var(--molsan-border-strong);
+  border-radius: var(--molsan-radius-control);
+  font-family: var(--molsan-font-family);
+  font-size: var(--molsan-font-size-md);
+  box-shadow: none;
+}
+
+:where(
+  .cg-page, .cg-unified-workspace, .expedientes-page,
+  .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .apoderagest, .notargest, .notargest-workspace-premium,
+  .encargagest, .encargagest-workspace-premium,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .molsan-intranet-page
+) :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+  select, textarea
+):focus {
+  border-color: var(--molsan-primary);
+  outline: 0;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--molsan-primary) 14%, transparent);
+}
+
+:where(
+  .cg-page, .cg-unified-workspace, .expedientes-page,
+  .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+  .apoderagest, .notargest, .notargest-workspace-premium,
+  .encargagest, .encargagest-workspace-premium,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .honorarios-gestoria-premium, .empleados-premium-page,
+  .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .maestros-premium-page,
+  .logs-premium-page, .seguridad-premium-page,
+  .notificaciones-premium-page, .panel-tecnico-premium,
+  .panel-tecnico-submodulo-premium, .informes-premium-page,
+  .mensajes-premium-page, .molsan-intranet-page
+) :is(a, button, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--molsan-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  :where(
+    .cg-page, .cg-unified-workspace, .expedientes-page,
+    .expedientes-listado-premium, .ficha-expediente-premium,
+    .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+    .apoderagest, .notargest, .notargest-workspace-premium,
+    .encargagest, .encargagest-workspace-premium,
+    .catalogos-premium-page, .utilidades-premium-page,
+    .honorarios-gestoria-premium, .empleados-premium-page,
+    .empleados-listado-premium, .empleado-ficha-premium,
+    .empleado-editar-premium, .maestros-premium-page,
+    .logs-premium-page, .seguridad-premium-page,
+    .notificaciones-premium-page, .panel-tecnico-premium,
+    .panel-tecnico-submodulo-premium, .informes-premium-page,
+    .mensajes-premium-page, .molsan-intranet-page
+  ) {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  :where(
+    .cg-page, .cg-unified-workspace, .expedientes-page,
+    .expedientes-listado-premium, .ficha-expediente-premium,
+    .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+    .apoderagest, .notargest, .notargest-workspace-premium,
+    .encargagest, .encargagest-workspace-premium,
+    .catalogos-premium-page, .utilidades-premium-page,
+    .honorarios-gestoria-premium, .empleados-premium-page,
+    .empleados-listado-premium, .empleado-ficha-premium,
+    .empleado-editar-premium, .maestros-premium-page,
+    .logs-premium-page, .seguridad-premium-page,
+    .notificaciones-premium-page, .panel-tecnico-premium,
+    .panel-tecnico-submodulo-premium, .informes-premium-page,
+    .mensajes-premium-page, .molsan-intranet-page
+  ) :is(.molsan-page-header, .expedientes-header, .ctn-listado-header, .ag-hero) {
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    .cg-page, .cg-unified-workspace, .expedientes-page,
+    .expedientes-listado-premium, .ficha-expediente-premium,
+    .agenda-premium-page, .ctn-listado-page, .ctn-workspace-premium,
+    .apoderagest, .notargest, .notargest-workspace-premium,
+    .encargagest, .encargagest-workspace-premium,
+    .catalogos-premium-page, .utilidades-premium-page,
+    .honorarios-gestoria-premium, .empleados-premium-page,
+    .empleados-listado-premium, .empleado-ficha-premium,
+    .empleado-editar-premium, .maestros-premium-page,
+    .logs-premium-page, .seguridad-premium-page,
+    .notificaciones-premium-page, .panel-tecnico-premium,
+    .panel-tecnico-submodulo-premium, .informes-premium-page,
+    .mensajes-premium-page, .molsan-intranet-page
+  ) * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
