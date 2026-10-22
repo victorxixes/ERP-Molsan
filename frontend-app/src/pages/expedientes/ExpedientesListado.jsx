@@ -1510,10 +1510,7 @@ export default function ExpedientesListado() {
         err
       ) {
 
-        console.error(
-          "Error cargando expedientes:",
-          err
-        );
+        console.error("No se han podido cargar los expedientes.");
 
 
         if (activo) {
@@ -1864,10 +1861,7 @@ export default function ExpedientesListado() {
         err
       ) {
 
-        console.error(
-          "Error cargando actividades:",
-          err
-        );
+        console.error("No se han podido cargar las actividades del expediente.");
 
 
         if (activo) {
@@ -2301,10 +2295,7 @@ export default function ExpedientesListado() {
         err
       ) {
 
-        console.error(
-          "Error exportando Excel:",
-          err
-        );
+        console.error("No se ha podido exportar el Excel de expedientes.");
 
 
         setError(
