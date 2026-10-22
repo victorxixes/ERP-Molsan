@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import AuthenticatedPhoto from "../../components/AuthenticatedPhoto";
+import "./EmpleadosListadoPremium.css";
 
 import {
   buscarEmpleados,
@@ -906,10 +907,7 @@ export default function EmpleadosListado({
 
   return (
 
-    <div className="
-      space-y-5
-      animate-fade-in
-    ">
+    <div className="empleados-listado-premium space-y-5 animate-fade-in">
 
       {/* ======================================================
           CABECERA
