@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
 import CarpetaDigitalModal from "./CarpetaDigitalModal";
 import axios from "../../api/axios";
+import "../../css/ModalesOperativosPremium.css";
 
 // ============================================================
 // ERP MOLSAN — ENVÍO A NOTARIO + DATOS DE FACTURACIÓN
@@ -688,7 +689,7 @@ export default function EnviarANotarioModal({
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-3"
+      className="expediente-operativo-modal fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-3"
       onMouseDown={(event) => {
         if (
           event.target === event.currentTarget &&
