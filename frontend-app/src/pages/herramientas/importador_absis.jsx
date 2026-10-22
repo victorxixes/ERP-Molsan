@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "../../api/axios";
+import "../../css/ModalesHerramientasPremium.css";
 
 
 /**
@@ -142,6 +143,7 @@ export default function ImportadorAbsis() {
 
         <div
             className="
+                herramientas-subpagina-premium
                 w-full
                 p-4
                 lg:p-6

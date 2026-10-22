@@ -1,3 +1,4 @@
+import "../../css/ModalesHerramientasPremium.css";
 import React, {
   useCallback,
   useEffect,
@@ -1240,7 +1241,7 @@ export default function AccionesExpediente() {
   return (
     <div
       className="
-        erp-page
+        herramientas-subpagina-premium erp-page
         min-h-full
         p-4
         sm:p-6
