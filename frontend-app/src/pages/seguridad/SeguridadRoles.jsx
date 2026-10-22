@@ -1,10 +1,10 @@
 import {
-import "./SeguridadSubpaginasPremium.css";
   useMemo,
   useState,
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import "./SeguridadSubpaginasPremium.css";
 
 
 /**
