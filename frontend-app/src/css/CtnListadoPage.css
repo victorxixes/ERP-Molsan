@@ -1560,3 +1560,43 @@
     min-width: 680px;
   }
 }
+
+
+/* Cabecera unificada de la ficha CTN. */
+.ctn-modal-header-unified {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:16px;
+  padding:0 0 18px;
+  margin-bottom:20px;
+  border-bottom:1px solid var(--molsan-border,#dce4ef);
+}
+.ctn-modal-header-identity { min-width:0; }
+.ctn-modal-title {
+  margin:6px 0;
+  color:var(--molsan-text,#17243a);
+  font-size:clamp(20px,2vw,28px);
+  font-weight:750;
+  letter-spacing:-.025em;
+  overflow-wrap:anywhere;
+}
+.ctn-modal-meta { margin:0; color:var(--molsan-text-muted,#64748b); font-size:12px; }
+.ctn-modal-header-badge {
+  display:inline-flex;
+  align-items:center;
+  padding:7px 12px;
+  color:var(--molsan-primary,#3156b3);
+  background:var(--molsan-primary-soft,#edf3ff);
+  border:1px solid rgba(49,86,179,.10);
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.ctn-modal-alerta--spaced { margin-bottom:16px; }
+@media(max-width:640px) {
+  .ctn-modal-header-unified { align-items:flex-start; gap:10px; padding-bottom:14px; margin-bottom:14px; }
+  .ctn-modal-header-badge { order:3; }
+}
