@@ -76,7 +76,7 @@
 .notargest .ng-login small{color:#8792a5;font-size:10px}
 @media(max-width:700px){.apoderagest.notargest{padding:14px;border-radius:18px}.notargest .ng-cabecera{align-items:flex-start;padding:4px 1px 20px}.notargest .ng-contadores{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.notargest .ng-contador{padding:14px;border-radius:14px}.notargest .ng-panel-titulo{padding:14px}.notargest .ng-lista-tareas{padding:0 14px}.notargest .ng-filtros{align-items:stretch;flex-direction:column;padding:12px}.notargest .ng-filtros label{align-items:stretch;flex-direction:column}.notargest .ng-ficha-cuerpo{padding:12px}.notargest .ng-detalle-bloque{padding:13px}}
 @media(max-width:520px){.notargest .ng-contadores{grid-template-columns:1fr}.notargest .ng-datos-grid{grid-template-columns:1fr}.notargest .ng-documento{align-items:flex-start;flex-direction:column}.notargest .ng-cabecera-acciones{width:100%;justify-content:flex-start}}
-@media(prefers-reduced-motion:reduce){.notargest *,.notargest *:before,.notargest *:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
 
 /* Inicio: tarjetas de estados, reemplazan los contadores y la lista duplicada */
 .notargest .ng-estados-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 20px}
@@ -530,7 +530,6 @@
 @media(max-width:390px){.notargest .ng-modulos-grid{grid-template-columns:1fr}}
 
 
-
 /* Ficha de perfil NotarGest: modal amplio para evitar que los datos queden comprimidos */
 .ng-modal.ng-modal-perfil{
   width:min(1180px,calc(100vw - 48px))!important;
@@ -701,7 +700,6 @@
   .ng-admin-notarias .ng-admin-notarias-grid{grid-template-columns:1fr}
   .ng-admin-notarias .ng-admin-notaria-card{padding:14px}
 }
-
 
 
 /* ============================================================
@@ -996,7 +994,6 @@
   .notargest { padding: 14px; }
   .notargest .ng-cabecera { flex-wrap: wrap; gap: 12px; }
 }
-
 
 
 /* MOLSAN ERP PREMIUM 2027 — NotarGest alineado con el sistema común */
