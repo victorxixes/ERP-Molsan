@@ -3,6 +3,7 @@ import {
   getAuditoria,
   getAuditoriaMetricas,
 } from "../../api/auditoria";
+import "./PanelTecnicoSubmodulos.css";
 
 /**
  * ============================================================
@@ -86,7 +87,7 @@ export default function AuditoriaAvanzada() {
   // ============================================================
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="auditoria-avanzada-premium panel-tecnico-submodulo-premium space-y-6 animate-fade-in">
 
       {/* ======================================================
           CABECERA
