@@ -100,10 +100,10 @@
 
 /* Botones */
 .btn-sj {
-  transition: transform 0.25s ease;
+  transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 .btn-sj:hover {
-  transform: scale(1.03);
+  transform: none;
 }
 
 /* Tablas */
@@ -124,11 +124,10 @@
 
 /* Inputs */
 .input-sj {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 .input-sj:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.10);
+  transform: none;
 }
 
 /* Modales */
@@ -141,8 +140,9 @@
 
 /* Grids */
 .grid-sj > * {
-  transition: transform 0.25s ease;
+  transition: box-shadow 0.18s ease, border-color 0.18s ease;
 }
 .grid-sj > *:hover {
-  transform: translateY(-4px);
+  transform: none;
 }
+\n/* Accesibilidad: respeta la preferencia del sistema para reducir movimiento. */\n@media (prefers-reduced-motion: reduce) {\n  *,\n  *::before,\n  *::after {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    scroll-behavior: auto !important;\n    transition-duration: 0.01ms !important;\n  }\n}\n
