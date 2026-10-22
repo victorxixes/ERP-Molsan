@@ -913,3 +913,18 @@
 :where(.agenda-page, .agenda-container, .calendario-agenda, .vista-mes) :where(button, input, select) {
   max-width: 100%;
 }
+
+/* Layout compartido consolidado aquí para evitar una segunda hoja con
+   selectores duplicados de cabecera y panel. */
+.molsan-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--molsan-space-4, 16px);
+  min-width: 0;
+}
+.molsan-grid > * { min-width: 0; }
+
+@media (max-width: 700px) {
+  .molsan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+}
+
