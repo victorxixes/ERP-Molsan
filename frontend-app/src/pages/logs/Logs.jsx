@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import "./Logs.css";
 
 import { useLogs } from "../../hooks/useLogs";
 
@@ -206,6 +207,7 @@ export default function Logs() {
 
     <div
       className="
+        logs-premium-page
         relative
         min-h-full
         space-y-6
