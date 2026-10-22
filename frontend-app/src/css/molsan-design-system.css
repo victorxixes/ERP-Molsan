@@ -719,3 +719,26 @@
     border-radius: 12px;
   }
 }
+
+
+/* Tokens compartidos para los módulos operativos.
+   Mantiene sus fondos Glass Luxe, pero alinea color primario, texto y bordes. */
+:root .apoderagest,
+:root .encargagest,
+:root .notargest {
+  --ag-ink: var(--molsan-text);
+  --ag-muted: var(--molsan-text-muted);
+  --ag-line: var(--molsan-border);
+  --ag-blue: var(--molsan-primary);
+  --ag-blue-dark: var(--molsan-primary-hover);
+}
+
+/* NotarGest comparte algunas variables heredadas con ApoderaGest.css;
+   este selector de mayor alcance evita que reaparezca la paleta azul antigua. */
+:root .apoderagest.notargest {
+  --ag-ink: var(--molsan-text);
+  --ag-muted: var(--molsan-text-muted);
+  --ag-line: var(--molsan-border);
+  --ag-blue: var(--molsan-primary);
+  --ag-blue-dark: var(--molsan-primary-hover);
+}
