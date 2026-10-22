@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import "./SeguridadSubpaginasPremium.css";
 
 
 const API_URL =
@@ -421,7 +422,7 @@ export default function SeguridadRolEditor() {
 
   return (
 
-    <div className="space-y-6 animate-fade-in">
+    <div className="seguridad-subpagina-premium seguridad-rol-editor-premium space-y-6 animate-fade-in">
 
       {/* ======================================================
           CABECERA
