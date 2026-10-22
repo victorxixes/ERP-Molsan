@@ -920,7 +920,6 @@
   .mensajes-premium-page,
   .selector-modulos-premium,
   .molsan-intranet-page,
-  :is(.cg-page, .cg-unified-workspace),
   :is(.cg-page, .cg-unified-workspace)
 ) {
   min-width: 0;
@@ -993,7 +992,6 @@
   .mensajes-premium-page,
   .selector-modulos-premium,
   .molsan-intranet-page,
-  :is(.cg-page, .cg-unified-workspace),
   :is(.cg-page, .cg-unified-workspace)
 ) :where(
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
@@ -1036,7 +1034,6 @@
   .mensajes-premium-page,
   .selector-modulos-premium,
   .molsan-intranet-page,
-  :is(.cg-page, .cg-unified-workspace),
   :is(.cg-page, .cg-unified-workspace)
 ) :where(button, [role="button"]) {
   font-family: var(--molsan-font-family);
@@ -1072,7 +1069,6 @@
   .mensajes-premium-page,
   .selector-modulos-premium,
   .molsan-intranet-page,
-  :is(.cg-page, .cg-unified-workspace),
   :is(.cg-page, .cg-unified-workspace)
 ) :where(button, a, input, select, textarea, [role="button"]):focus-visible {
   outline: 2px solid var(--molsan-primary);
@@ -1111,7 +1107,6 @@
   .mensajes-premium-page,
   .selector-modulos-premium,
   .molsan-intranet-page,
-  :is(.cg-page, .cg-unified-workspace),
   :is(.cg-page, .cg-unified-workspace)
   ) {
     min-width: 0;
