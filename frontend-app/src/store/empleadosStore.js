@@ -179,8 +179,7 @@ export const useEmpleadosStore = create(
 
         console.error(
           "Error cargando empleados:",
-          err
-        );
+          "Error interno");
 
         set({
           cargando: false,
@@ -238,8 +237,7 @@ export const useEmpleadosStore = create(
 
         console.error(
           "Error cargando apoderados:",
-          err
-        );
+          "Error interno");
 
         set({
           cargando: false,
@@ -301,8 +299,7 @@ export const useEmpleadosStore = create(
 
         console.error(
           "Error buscando empleados:",
-          err
-        );
+          "Error interno");
 
         set({
           cargando: false,
@@ -357,8 +354,7 @@ export const useEmpleadosStore = create(
 
         console.error(
           "Error obteniendo empleado:",
-          err
-        );
+          "Error interno");
 
         set({
           empleadoActual:
@@ -411,8 +407,7 @@ export const useEmpleadosStore = create(
 
         console.error(
           "Error creando empleado:",
-          err
-        );
+          "Error interno");
 
         set({
           cargando: false,
@@ -480,8 +475,7 @@ export const useEmpleadosStore = create(
 
         console.error(
           "Error editando empleado:",
-          err
-        );
+          "Error interno");
 
         set({
           cargando: false,
@@ -537,8 +531,7 @@ export const useEmpleadosStore = create(
 
         console.error(
           "Error eliminando empleado:",
-          err
-        );
+          "Error interno");
 
         set({
           cargando: false,
