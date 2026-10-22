@@ -1,9 +1,11 @@
 import CtnListadoPage from "./CtnListadoPage";
 
+import "../../css/ComponentesAccesoPremium.css";
+
 export default function Ctn() {
   return (
     <div
-      className="
+      className="ctn-workspace-premium 
         erp-page
         w-full
         p-4
