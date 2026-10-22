@@ -417,8 +417,12 @@
 
 :is(.cg-page, .cg-unified-workspace) :is(input, select, textarea):focus {
   border-color: var(--molsan-primary, #3156b3);
-  outline: none;
   box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
+}
+
+:is(.cg-page, .cg-unified-workspace) :is(input, select, textarea):focus-visible {
+  outline: 2px solid var(--molsan-primary, #3156b3);
+  outline-offset: 2px;
 }
 
 :is(.cg-page, .cg-unified-workspace) table thead th {
