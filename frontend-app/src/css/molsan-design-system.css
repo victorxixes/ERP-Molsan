@@ -355,6 +355,69 @@
   border-color: #d8e3ff;
 }
 
+
+
+/*
+ * Puente visual temporal para las cabeceras actuales.
+ * Normaliza las cabeceras existentes sin tocar sus componentes, rutas o lógica.
+ * Cuando cada pantalla migre a molsan-page-header, estas reglas podrán retirarse.
+ */
+.cg-page .cg-hero,
+.ag-hero,
+.ng-cabecera,
+.encargagest .eg-hero {
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  color: var(--molsan-text);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.cg-page .cg-hero h1,
+.ag-hero h1,
+.ng-cabecera h1,
+.encargagest .eg-hero h1 {
+  color: var(--molsan-text);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.cg-page .cg-hero p,
+.ag-hero p,
+.ng-cabecera p,
+.encargagest .eg-hero p {
+  color: var(--molsan-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.cg-page .cg-hero .cg-eyebrow,
+.ag-hero .ag-eyebrow,
+.ng-cabecera .ng-sobrelinea,
+.encargagest .eg-hero .ag-eyebrow {
+  color: var(--molsan-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 640px) {
+  .cg-page .cg-hero,
+  .ag-hero,
+  .ng-cabecera,
+  .encargagest .eg-hero {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px;
+  }
+}
+
 /* Respeto a pantallas pequeñas y preferencias de movimiento */
 @media (max-width: 640px) {
   .molsan-page-header {
