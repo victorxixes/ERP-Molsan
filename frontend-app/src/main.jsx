@@ -42,7 +42,7 @@ function Root() {
       } catch (error) {
         // Última protección: si init falla fuera de su control interno,
         // mostrar el login en lugar de dejar el ERP en carga indefinida.
-        console.error("Fallo inesperado al inicializar la sesión.", error);
+        console.error("Fallo inesperado al inicializar la sesión.");
 
         try {
           localStorage.removeItem("token");
