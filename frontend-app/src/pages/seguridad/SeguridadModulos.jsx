@@ -1,4 +1,5 @@
 import {
+import "./SeguridadSubpaginasPremium.css";
   useCallback,
   useMemo,
   useState,
@@ -298,10 +299,7 @@ export default function SeguridadModulos() {
 
   return (
     <div
-      className="
-        w-full
-        space-y-4
-      "
+      className="seguridad-subpagina-premium seguridad-modulos-premium w-full space-y-4"
     >
 
       {/* CABECERA */}
