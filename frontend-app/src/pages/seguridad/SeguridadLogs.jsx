@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import "./SeguridadSubpaginasPremium.css";
 
 
 /**
@@ -942,10 +943,7 @@ export default function SeguridadLogs() {
 
   return (
 
-    <div className="
-      space-y-6
-      animate-fade-in
-    ">
+    <div className="seguridad-logs-premium seguridad-subpagina-premium space-y-6 animate-fade-in">
 
 
       {/* ====================================================

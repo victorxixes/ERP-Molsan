@@ -8,6 +8,7 @@ import {
 import { useSeguridad } from "../../hooks/useSeguridad";
 
 import MODULOS_ERP from "../../config/modulos";
+import "./SeguridadSubpaginasPremium.css";
 
 
 /* ============================================================
@@ -1516,10 +1517,7 @@ const permisosGlobales =
 
   return (
     <div
-      className="
-        w-full
-        space-y-4
-      "
+      className="seguridad-subpagina-premium seguridad-ficha-premium w-full space-y-4"
     >
 
       {/* ======================================================

@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import "./SeguridadSubpaginasPremium.css";
 
 import MODULOS_ERP from "../../config/modulos";
 
@@ -298,10 +299,7 @@ export default function SeguridadModulos() {
 
   return (
     <div
-      className="
-        w-full
-        space-y-4
-      "
+      className="seguridad-subpagina-premium seguridad-modulos-premium w-full space-y-4"
     >
 
       {/* CABECERA */}
