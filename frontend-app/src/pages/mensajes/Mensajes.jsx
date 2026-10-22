@@ -1,4 +1,5 @@
 import {
+import "../../css/ModalesHerramientasPremium.css";
   useCallback,
   useEffect,
   useMemo,
