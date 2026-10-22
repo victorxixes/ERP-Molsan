@@ -836,21 +836,11 @@
   outline: 3px solid rgba(49, 86, 179, .23);
   outline-offset: 2px;
 }
-@media (prefers-reduced-motion: reduce) {
-  .encargagest *,
-  .encargagest *::before,
-  .encargagest *::after {
-    scroll-behavior: auto !important;
-    transition-duration: .01ms !important;
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-  }
-}
+
 @media (max-width: 560px) {
   .encargagest .eg-main { padding-left: 12px; padding-right: 12px; }
   .encargagest .eg-table-wrap { border-radius: 10px; }
 }
-
 
 
 /* MOLSAN ERP PREMIUM 2027 — EncargaGest alineado con los portales */
