@@ -69,3 +69,76 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Revisión integral: fichas y subpantallas de Seguridad. */
+.seguridad-subpagina-premium,
+.seguridad-ficha-premium,
+.seguridad-roles-premium,
+.seguridad-permisos-premium,
+.seguridad-modulos-premium,
+.seguridad-logs-premium,
+.seguridad-resumen-premium {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--erp-text, #172033);
+}
+.seguridad-subpagina-premium :is(input, select, textarea, button),
+.seguridad-ficha-premium :is(input, select, textarea, button),
+.seguridad-roles-premium :is(input, select, textarea, button),
+.seguridad-permisos-premium :is(input, select, textarea, button),
+.seguridad-modulos-premium :is(input, select, textarea, button),
+.seguridad-logs-premium :is(input, select, textarea, button),
+.seguridad-resumen-premium :is(input, select, textarea, button) {
+  max-width: 100%;
+}
+.seguridad-subpagina-premium :is(input, select, textarea, button):focus-visible,
+.seguridad-ficha-premium :is(input, select, textarea, button):focus-visible,
+.seguridad-roles-premium :is(input, select, textarea, button):focus-visible,
+.seguridad-permisos-premium :is(input, select, textarea, button):focus-visible,
+.seguridad-modulos-premium :is(input, select, textarea, button):focus-visible,
+.seguridad-logs-premium :is(input, select, textarea, button):focus-visible,
+.seguridad-resumen-premium :is(input, select, textarea, button):focus-visible {
+  outline: 2px solid var(--erp-primary, #2563eb);
+  outline-offset: 2px;
+}
+.seguridad-ficha-premium :is(td, th),
+.seguridad-roles-premium :is(td, th),
+.seguridad-permisos-premium :is(td, th),
+.seguridad-modulos-premium :is(td, th),
+.seguridad-logs-premium :is(td, th),
+.seguridad-resumen-premium :is(td, th) {
+  overflow-wrap: anywhere;
+}
+.seguridad-ficha-premium :is(table, [role="table"]),
+.seguridad-roles-premium :is(table, [role="table"]),
+.seguridad-permisos-premium :is(table, [role="table"]),
+.seguridad-modulos-premium :is(table, [role="table"]),
+.seguridad-logs-premium :is(table, [role="table"]),
+.seguridad-resumen-premium :is(table, [role="table"]) {
+  max-width: 100%;
+}
+@media (max-width: 760px) {
+  .seguridad-subpagina-premium,
+  .seguridad-ficha-premium,
+  .seguridad-roles-premium,
+  .seguridad-permisos-premium,
+  .seguridad-modulos-premium,
+  .seguridad-logs-premium,
+  .seguridad-resumen-premium { font-size: .9375rem; }
+  .seguridad-ficha-premium :is(table, [role="table"]),
+  .seguridad-roles-premium :is(table, [role="table"]),
+  .seguridad-permisos-premium :is(table, [role="table"]),
+  .seguridad-modulos-premium :is(table, [role="table"]),
+  .seguridad-logs-premium :is(table, [role="table"]),
+  .seguridad-resumen-premium :is(table, [role="table"]) { display: block; overflow-x: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seguridad-subpagina-premium *,
+  .seguridad-ficha-premium *,
+  .seguridad-roles-premium *,
+  .seguridad-permisos-premium *,
+  .seguridad-modulos-premium *,
+  .seguridad-logs-premium *,
+  .seguridad-resumen-premium * { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
