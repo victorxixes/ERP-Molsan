@@ -98,3 +98,163 @@
     transition: none;
   }
 }
+
+
+/* ============================================================
+   MOLSAN ERP PREMIUM 2027 — Expedientes / listado y filtros
+   Ajustes visuales locales, sin alterar acciones ni estructura.
+   ============================================================ */
+
+.expedientes-page {
+  min-width: 0;
+  color: var(--molsan-text, #24324a);
+}
+
+.expedientes-page .molsan-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, #fff 0%, #f8faff 100%);
+}
+
+.expedientes-page .molsan-page-header__identity {
+  min-width: 0;
+}
+
+.expedientes-page .molsan-page-header__title {
+  margin: 0;
+  color: #1e2d46;
+  font-size: clamp(1.25rem, 1.8vw, 1.65rem);
+  font-weight: 780;
+  line-height: 1.2;
+  letter-spacing: -.035em;
+}
+
+.expedientes-page .molsan-page-header__description {
+  margin-top: 5px;
+  color: #65748b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.expedientes-page .molsan-page-header__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.expedientes-page :is(.erp-card, [class~="bg-white"]) {
+  min-width: 0;
+}
+
+.expedientes-page .erp-card {
+  border: 1px solid var(--molsan-border, #dbe3ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: 0 4px 14px rgb(23 43 77 / 5%);
+}
+
+.expedientes-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
+  max-width: 100%;
+  min-width: 0;
+  border: 1px solid #d4deeb;
+  border-radius: 9px;
+  background-color: #fff;
+  color: #24324a;
+  font-size: 13px;
+  box-shadow: none;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.expedientes-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select) {
+  min-height: 38px;
+}
+
+.expedientes-page textarea {
+  min-height: 84px;
+  line-height: 1.5;
+}
+
+.expedientes-page :is(input, select, textarea):focus {
+  border-color: #3156b3;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(49 86 179 / 12%);
+}
+
+.expedientes-page :is(button, [role="button"]) {
+  border-radius: 9px;
+  transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease, color .16s ease;
+}
+
+.expedientes-page :is(button, [role="button"]):focus-visible,
+.expedientes-page a:focus-visible {
+  outline: 2px solid rgb(49 86 179 / 65%);
+  outline-offset: 2px;
+}
+
+.expedientes-page :is(.overflow-x-auto, [class*="overflow-x-auto"]) {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+}
+
+.expedientes-page table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.expedientes-page table thead th {
+  color: #53627a;
+  background: #f5f7fb;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .035em;
+  line-height: 1.35;
+}
+
+.expedientes-page table :is(th, td) {
+  border-bottom: 1px solid #e6ebf2;
+  vertical-align: middle;
+}
+
+.expedientes-page table tbody tr {
+  transition: background-color .14s ease;
+}
+
+.expedientes-page table tbody tr:hover > td {
+  background-color: #f7f9fd;
+}
+
+.expedientes-page :is(.text-red-600, .text-red-700, .text-rose-600, .text-rose-700) {
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .expedientes-page .molsan-page-header {
+    align-items: flex-start;
+    padding: 14px;
+  }
+
+  .expedientes-page .molsan-page-header__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .expedientes-page .molsan-page-header__actions > * {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expedientes-page *,
+  .expedientes-page *::before,
+  .expedientes-page *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
