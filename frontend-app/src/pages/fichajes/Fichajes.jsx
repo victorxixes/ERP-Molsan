@@ -85,7 +85,7 @@ export default function Fichajes({ modo = "empleado" }) {
     const [e, m, v, d] = await Promise.all([
       axios.get("/fichajes/admin/empleados"),
       axios.get("/fichajes/admin/marcajes", { params: { desde: fechaDesde || undefined, hasta: fechaHasta || undefined, empleado_id: empleadoFiltro || undefined } }),
-      axios.get("/fichajes/admin/vacaciones"),
+      axios.get("/fichajes/admin/vacaciones", { params: { empleado_id: empleadoFiltro || undefined } }),
       axios.get("/fichajes/admin/documentos", { params: { desde: fechaDesde || undefined, hasta: fechaHasta || undefined, empleado_id: empleadoFiltro || undefined } }),
     ]);
     setEmpleados(Array.isArray(e.data) ? e.data : []);
@@ -308,6 +308,7 @@ export default function Fichajes({ modo = "empleado" }) {
                   <div><h2 className="text-lg font-extrabold">Solicitudes de vacaciones</h2><p className="text-sm text-[var(--erp-text-soft)]">Revisa, aprueba o rechaza las solicitudes recibidas desde Fichaje Molsan.</p></div>
                   <div className="rounded-xl bg-amber-50 px-4 py-2 text-sm font-bold text-amber-900">Pendientes: {vacacionesAdmin.filter(v => v.estado === "SOLICITADO").length}</div>
                 </div>
+                <div className="mb-4 grid gap-3 sm:grid-cols-2"><label className="text-xs font-bold text-slate-500">Filtrar empleado<select value={empleadoFiltro} onChange={e => setEmpleadoFiltro(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal"><option value="">Toda la plantilla</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label><div className="flex items-end"><button type="button" onClick={() => recargarAdmin().catch(e => setError(e?.response?.data?.detail || "No se pudieron actualizar las solicitudes."))} className="rounded-xl border px-4 py-2.5 text-sm font-bold">Actualizar solicitudes</button></div></div>
                 <div className="overflow-x-auto rounded-2xl border border-[var(--erp-border)]">
                   <table className="w-full min-w-[850px] text-left text-sm">
                     <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Desde</th><th className="p-3">Hasta</th><th className="p-3">Días</th><th className="p-3">Estado</th><th className="p-3">Observaciones</th><th className="p-3">Acciones</th></tr></thead>
@@ -322,7 +323,8 @@ export default function Fichajes({ modo = "empleado" }) {
 
             {esAdminVista && pestana === "documentosAdmin" && (
               <div className="p-4 sm:p-6">
-                <div className="mb-4"><h2 className="text-lg font-extrabold">Documentos y justificantes</h2><p className="text-sm text-[var(--erp-text-soft)]">Consulta los documentos enviados por los empleados, con filtro de plantilla y fechas del panel de control.</p></div>
+                <div className="mb-4"><h2 className="text-lg font-extrabold">Documentos y justificantes</h2><p className="text-sm text-[var(--erp-text-soft)]">Consulta y descarga los documentos enviados por los empleados.</p></div>
+                <div className="mb-4 grid gap-3 sm:grid-cols-3"><label className="text-xs font-bold text-slate-500">Desde<input type="date" value={fechaDesde} onChange={e => setFechaDesde(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-normal" /></label><label className="text-xs font-bold text-slate-500">Hasta<input type="date" value={fechaHasta} onChange={e => setFechaHasta(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-normal" /></label><label className="text-xs font-bold text-slate-500">Empleado<select value={empleadoFiltro} onChange={e => setEmpleadoFiltro(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal"><option value="">Toda la plantilla</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label></div>
                 <div className="overflow-x-auto rounded-2xl border border-[var(--erp-border)]">
                   <table className="w-full min-w-[800px] text-left text-sm">
                     <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Tipo</th><th className="p-3">Fecha del documento</th><th className="p-3">Archivo</th><th className="p-3">Subido</th><th className="p-3">Acción</th></tr></thead>
