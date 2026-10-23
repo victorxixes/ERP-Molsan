@@ -35,6 +35,9 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
   const [historialId, setHistorialId] = useState(null);
   const [historial, setHistorial] = useState([]);
   const [motivoPeriodo, setMotivoPeriodo] = useState("");
+  const [empleadoBolsaId, setEmpleadoBolsaId] = useState("");
+  const [diasBolsa, setDiasBolsa] = useState("22");
+  const [anioBolsa, setAnioBolsa] = useState(String(new Date().getFullYear()));
 
   const cargar = useCallback(async () => {
     setCargando(true); setError("");
@@ -125,8 +128,13 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
 
   return <div className="p-4 sm:p-6">
     <section className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
-      <h2 className="font-bold text-emerald-950">Asignación anual de vacaciones</h2>
-      <p className="mt-1 text-xs text-emerald-900">La bolsa ordinaria de vacaciones sigue configurándose desde la gestión de solicitudes.</p>
+      <h2 className="font-bold text-emerald-950">Asignación anual de vacaciones</h2><p className="mt-1 text-xs text-emerald-900">Configura los días iniciales de cada empleado; las solicitudes aprobadas descuentan el saldo.</p>
+      <form className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" onSubmit={async (e) => { e.preventDefault(); setGuardando(true); setError(""); setMensaje(""); try { const d = new FormData(); d.append("empleado_id", empleadoBolsaId); d.append("anio", anioBolsa); d.append("dias_asignados", diasBolsa); await axios.post("/fichajes/admin/vacaciones-bolsa", d); setMensaje("Bolsa anual de vacaciones guardada."); } catch (err) { setError(err?.response?.data?.detail || "No se pudo guardar la bolsa de vacaciones."); } finally { setGuardando(false); } }}>
+        <label className={label}>Empleado<select required value={empleadoBolsaId} onChange={(e) => setEmpleadoBolsaId(e.target.value)} className={input}><option value="">Selecciona empleado…</option>{empleados.map((e) => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label>
+        <label className={label}>Año<input required type="number" min="2000" max="2100" value={anioBolsa} onChange={(e) => setAnioBolsa(e.target.value)} className={input} /></label>
+        <label className={label}>Días asignados<input required type="number" min="0" max="60" value={diasBolsa} onChange={(e) => setDiasBolsa(e.target.value)} className={input} /></label>
+        <div className="flex items-end"><button disabled={guardando || !empleadoBolsaId} className="w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-bold text-white disabled:opacity-50">Guardar asignación</button></div>
+      </form>
     </section>
 
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
