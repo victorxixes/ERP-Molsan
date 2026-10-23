@@ -661,7 +661,7 @@ def admin_resolver_solicitud_ausencia(
     if estado == "APROBADO":
         vacaciones = db.query(FichajeVacaciones).filter(
             FichajeVacaciones.empleado_id == registro.empleado_id,
-            FichajeVacaciones.estado == "APROBADO",
+            FichajeVacaciones.estado.in_({"SOLICITADO", "APROBADO"}),
             FichajeVacaciones.fecha_inicio <= registro.fecha_fin,
             FichajeVacaciones.fecha_fin >= registro.fecha_inicio,
         ).first()
@@ -1133,6 +1133,14 @@ def admin_resolver_solicitud_compensacion(solicitud_id: int, estado: str = Form(
     if estado not in ESTADOS_SOLICITUD: raise HTTPException(status_code=422, detail="El estado debe ser APROBADO o RECHAZADO.")
     anterior = s.estado
     if estado == "APROBADO":
+        vacaciones = db.query(FichajeVacaciones).filter(FichajeVacaciones.empleado_id == s.empleado_id,
+            FichajeVacaciones.estado.in_({"SOLICITADO", "APROBADO"}), FichajeVacaciones.fecha_inicio <= s.fecha_disfrute,
+            FichajeVacaciones.fecha_fin >= s.fecha_disfrute).first()
+        if vacaciones: raise HTTPException(status_code=409, detail="No se puede aprobar: hay vacaciones pendientes o aprobadas en esa fecha.")
+        ausencia = db.query(FichajeSolicitudAusencia).filter(FichajeSolicitudAusencia.empleado_id == s.empleado_id,
+            FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}), FichajeSolicitudAusencia.fecha_inicio <= s.fecha_disfrute,
+            FichajeSolicitudAusencia.fecha_fin >= s.fecha_disfrute).first()
+        if ausencia: raise HTTPException(status_code=409, detail="No se puede aprobar: hay una ausencia pendiente o aprobada en esa fecha.")
         _procesar_compensaciones_vencidas(db, s.empleado_id)
         disponible_sin_esta = _saldo_compensacion(db, s.empleado_id, s.unidad) - sum(float(x.cantidad) for x in db.query(FichajeSolicitudCompensacion).filter(
             FichajeSolicitudCompensacion.empleado_id == s.empleado_id,
