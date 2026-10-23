@@ -317,4 +317,43 @@ Ejecución: https://github.com/victorxixes/ERP-Molsan/actions/runs/39910917160
 
 **Alcance de esta prueba:** valida que la rama de auditoría compila el frontend y que el backend compila/importa en el entorno temporal. No equivale a una suite de pruebas de negocio; el repositorio no declara script de tests en frontend-app/package.json, y el workflow existente no prueba la matriz de permisos, la integridad referencial de todos los catálogos ni la edición de formularios contra datos históricos.
 
-Para terminar la verificación dinámica y la implementación funcional segura, falta elegir explícitamente el workspace de Render que contiene el servicio y/o la base de pruebas correcta. Hay dos workspaces disponibles en la cuenta (Molsan y Agenda_Molsan); no se selecciona ninguno automáticamente para evitar consultar o modificar recursos del entorno equivocado.
+Para terminar la verificación dinámica y la implementación funcional segura, falta elegir explícitamente el workspace de Render que contiene el servicio y/o la base de pruebas correcta. El workspace se ha seleccionado explícitamente como **Molsan**. En la inspección de recursos de Render se encontró una única instancia PostgreSQL (`BBDD_Molsan`, estado `available`, rol `primary`) y no aparece una instancia identificada como base de pruebas. Por precaución, no se ejecutaron consultas SQL ni pruebas autenticadas contra esa base: queda pendiente identificar una copia de pruebas aislada y usuarios de prueba.
+
+
+## 10. Continuación de auditoría en Render: entorno, permisos y formulario de agenda
+
+**Workspace elegido:** `Molsan` (`tea-d8cr02ek1jcs73a3s880`).
+
+### 10.1 Inventario de recursos Render
+
+La lectura de recursos del workspace devolvió:
+- Servicio backend `agenda-intranet-b`, rama `main`, conectado al repositorio `victorxixes/ERP-Molsan`, URL `https://agenda-intranet-b.onrender.com`.
+- Servicio frontend `agenda-intranet-f`, rama `main`, conectado al mismo repositorio, URL `https://agenda-intranet-f.onrender.com`.
+- PostgreSQL `BBDD_Molsan`, ID `dpg-dac07k2jnfac73eh6q8g-a`, estado `available`, rol `primary`, base `bbdd_molsan`.
+
+No se ha identificado una base de datos separada de pruebas en este workspace. Aunque la herramienta de consulta SQL impone transacciones de solo lectura, no se ha usado sobre la instancia primaria porque eso no demuestra que sea una copia de pruebas y no se ha autorizado consultar producción. No se han modificado recursos de Render, variables, despliegues ni datos.
+
+### 10.2 Revisión de permisos y límite de la prueba dinámica
+
+La lectura estática de `backend/app/auth/route_guard.py`, `backend/app/auth/permissions.py` y `backend/app/maestros/router.py` confirma:
+- Las rutas `/api/maestros/*` entran bajo el prefijo del guard global y se asignan al módulo `maestros`.
+- El guard añade autenticación JWT a las rutas API protegidas y asigna acción según método HTTP/sufijo.
+- La autorización comprueba la unión de permisos del empleado y del rol, incluidos comodines.
+- El CRUD genérico de Maestros no declara dependencia de usuario en cada endpoint, por lo que su seguridad depende del guard global registrado en la aplicación.
+
+No se enviaron peticiones autenticadas o no autenticadas al backend. Por tanto, no se afirma que los códigos 401/403 se hayan verificado en ejecución ni que la matriz de permisos de usuarios reales esté probada. Para hacerlo con seguridad hacen falta un entorno aislado y cuentas de prueba con perfiles diferenciados; no se deben probar escrituras de CRUD contra la base primaria.
+
+### 10.3 Formulario de tipos de cita: revisión estática de contrato
+
+Archivos revisados:
+- `frontend-app/src/components/agenda/ModalNuevaCita.jsx`
+- `backend/app/agenda/schemas.py`
+
+Observaciones:
+1. El formulario mantiene una lista local fija: `Firma notarial`, `Reunión`, `Visita` y `Otros`; no procede aún de un catálogo editable.
+2. Al cambiar de `Firma notarial` a otro tipo, el frontend limpia el notario seleccionado, el tipo de firma y el apoderado visible. Esta regla debe conservarse si los tipos pasan a administrarse desde Catálogos.
+3. En el schema de creación (`CitaBase`/`CitaCreate`) se exige `notario_id` cuando `tipo_cita == "Firma notarial"`.
+4. El schema de actualización (`CitaUpdate`) declara `tipo_cita` y `notario_id` como opcionales y no reproduce esa validación cruzada. Antes de cambiar el formulario o hacerlo configurable, hay que comprobar el comportamiento del endpoint de actualización y decidir si el servidor debe validar también las transiciones de edición.
+5. No se ejecutaron pruebas de navegador ni se guardaron citas de prueba; estas conclusiones proceden de lectura de código.
+
+**Siguiente paso recomendado:** cuando exista una base de pruebas confirmada, ejecutar tests con datos sintéticos para: crear/editar citas notariales y no notariales, cambiar de un tipo a otro y comprobar limpieza/validación; probar GET sin token (401), GET con permiso de lectura, POST/PUT/DELETE con permisos insuficientes (403) y con permisos autorizados; comprobar el esquema real de tablas y restricciones mediante consultas de solo lectura. Mantener la base primaria sin consultas hasta confirmar expresamente el entorno de pruebas.
