@@ -1213,7 +1213,6 @@ export default function SeguridadUsuarios() {
         <ModalEmpleado
           open={mostrarModalEdicion}
           empleadoId={empleadoIdSeleccionado}
-          modoAdministracion
           onClose={() => { setMostrarModalEdicion(false); setVersionListado((v) => v + 1); cargarTodo(); cargarFicha(empleadoIdSeleccionado); }}
         />
       )}
