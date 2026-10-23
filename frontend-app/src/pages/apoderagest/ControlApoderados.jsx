@@ -80,6 +80,17 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     } catch (e) { setError(e?.response?.data?.detail || "No se ha podido guardar la revisión."); }
   };
 
+  const revisarRelacion = async (x, decision) => {
+    try {
+      const data = new FormData();
+      data.append("decision", decision);
+      data.append("observaciones", observaciones[`rel-${x.id}`] || "");
+      await axios.post(`/apoderagest/liquidaciones/admin/${x.id}/relacion/revisar`, data);
+      setMensaje("Revisión de la relación mensual guardada.");
+      await cargar();
+    } catch (e) { setError(e?.response?.data?.detail || "No se ha podido guardar la revisión de la relación."); }
+  };
+
   const descargar = async (x) => {
     try {
       const res = await axios.get(`/apoderagest/liquidaciones/admin/${x.id}/factura`, { responseType: "blob" });
@@ -113,6 +124,8 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         <p className="mb-4 mt-1 text-sm text-slate-500">Se muestran las relaciones guardadas para el periodo seleccionado. La instantánea validada por el colaborador se conserva para auditoría.</p>
         {items.length === 0 ? <p className="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">Todavía no hay relaciones guardadas para este periodo. El colaborador debe acceder a su liquidación para generar y revisar su relación.</p> : <div className="space-y-4">{items.map((x) => <article key={x.id} className="rounded-2xl border border-slate-200 p-4">
           <div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="font-bold text-slate-800">{x.colaborador}</h3><p className="text-sm text-slate-500">{x.periodo} · {x.expedientes?.length || 0} firmas · {estado(x.estado_relacion)}</p><p className="mt-1 text-sm text-slate-500">Factura: {estado(x.estado_factura)} {x.factura_nombre ? `· ${x.factura_nombre}` : ""}</p></div>{x.tiene_factura && <button onClick={() => descargar(x)} className="rounded-lg border px-3 py-2 text-sm font-semibold">Descargar factura</button>}</div>
+          <p className="mt-2 text-sm text-slate-600">Revisión de la relación: <strong>{estado(x.estado_revision_relacion)}</strong>{x.observaciones_revision_relacion ? ` · ${x.observaciones_revision_relacion}` : ""}</p>
+          {x.validado_en && <div className="mt-3 rounded-xl border border-indigo-100 bg-indigo-50/50 p-3"><p className="text-sm font-semibold text-slate-800">Revisar relación validada por el colaborador</p><textarea value={observaciones[`rel-${x.id}`] ?? x.observaciones_revision_relacion ?? ""} onChange={(e) => setObservaciones((p) => ({ ...p, [`rel-${x.id}`]: e.target.value }))} placeholder="Observaciones o correcciones para el colaborador…" className="mt-2 min-h-16 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm" /><div className="mt-2 flex flex-wrap gap-2"><button onClick={() => revisarRelacion(x, "aceptada")} className="rounded-xl bg-emerald-700 px-3 py-2 text-sm font-semibold text-white">Aceptar relación</button><button onClick={() => revisarRelacion(x, "correccion_solicitada")} className="rounded-xl border border-amber-300 px-3 py-2 text-sm font-semibold text-amber-800">Solicitar corrección</button><button onClick={() => revisarRelacion(x, "rechazada")} className="rounded-xl border border-red-300 px-3 py-2 text-sm font-semibold text-red-700">Rechazar relación</button></div></div>}
           <details className="mt-3"><summary className="cursor-pointer text-sm font-semibold text-indigo-700">Ver expedientes incluidos ({x.expedientes?.length || 0})</summary><div className="mt-2 overflow-x-auto"><table className="w-full text-sm"><thead><tr><th className="p-2 text-left">Expediente</th><th className="p-2 text-left">Fecha firma</th><th className="p-2 text-left">Protocolo</th></tr></thead><tbody>{(x.expedientes || []).map((e) => <tr key={e.expediente_id}><td className="p-2">{e.id_expediente}</td><td className="p-2">{fecha(e.fecha_firma)}</td><td className="p-2">{e.protocolo || "—"}</td></tr>)}</tbody></table></div></details>
           {x.tiene_factura && <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]"><textarea value={observaciones[x.id] ?? x.factura_observaciones ?? ""} onChange={(e) => setObservaciones((p) => ({ ...p, [x.id]: e.target.value }))} placeholder="Observaciones para el colaborador…" className="min-h-20 rounded-xl border border-slate-300 p-3 text-sm" /><div className="flex flex-wrap gap-2"><button onClick={() => revisar(x, "aceptada")} className="rounded-xl bg-emerald-700 px-3 py-2 text-sm font-semibold text-white">Aceptar</button><button onClick={() => revisar(x, "correccion_solicitada")} className="rounded-xl border border-amber-300 px-3 py-2 text-sm font-semibold text-amber-800">Pedir corrección</button><button onClick={() => revisar(x, "rechazada")} className="rounded-xl border border-red-300 px-3 py-2 text-sm font-semibold text-red-700">Rechazar</button></div></div>}
         </article>)}</div>}
