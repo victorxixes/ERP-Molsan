@@ -937,7 +937,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
             gap-3
             min-w-0
             ${headerActions ? "flex-wrap" : ""}
-          "
+          `}
         >
 
           {/* ====================================================
