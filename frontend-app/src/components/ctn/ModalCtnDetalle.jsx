@@ -76,7 +76,7 @@ export default function ModalCtnDetalle({
   const id = notaria?.id;
 
   const [ficha, setFicha] = useState(notaria || null);
-  const [pestanaActiva, setPestanaActiva] = useState("ficha");
+  const [pestanaActiva, setPestanaActiva] = useState(mostrarAccesosPortales ? "portales" : "ficha");
   const [asociadas, setAsociadas] = useState([]);
 
   const [guardandoAsociacion, setGuardandoAsociacion] =
