@@ -242,6 +242,7 @@ def es_conflicto_nombre(
 )
 def crear_roles_base(
     db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_permiso_seguridad("editar")),
 ):
     """
     Crea los roles base del sistema si todavía no existen.
