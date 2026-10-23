@@ -112,14 +112,16 @@ function Campo({ etiqueta, children, className = "" }) {
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100";
 
-export default function EncargaGest() {
+export default function EncargaGest({ accessMode = "auto" } = {}) {
   const navigate = useNavigate();
   const empleado = useAuthStore((state) => state.empleado);
   const tokenERP = useAuthStore((state) => state.token);
   const rolEncargaGest = String(empleado?.rol?.nombre || empleado?.rol_nombre || empleado?.nombre_rol || "").trim().toLowerCase();
   const esAdminEncargaGest = String(empleado?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin)$/.test(rolEncargaGest);
   const [modo, setModo] = useState(() => (
-    empleado && tokenERP ? "interno" : (localStorage.getItem("encargagest_token") ? "externo" : "login")
+    accessMode === "external"
+      ? (localStorage.getItem("encargagest_token") ? "externo" : "login")
+      : (empleado && tokenERP ? "interno" : (localStorage.getItem("encargagest_token") ? "externo" : "login"))
   ));
   const [sesion, setSesion] = useState(null);
   const [loginUsuario, setLoginUsuario] = useState("");
@@ -241,6 +243,18 @@ export default function EncargaGest() {
   }, [cargarListado, pagina, busqueda, filtroEstado, filtroNotariaId, modo, esAdminEncargaGest]);
 
   useEffect(() => {
+    // Las rutas públicas de notaría deben mantener su sesión independiente,
+    // incluso si el navegador conserva credenciales del ERP interno.
+    if (accessMode === "external") {
+      if (localStorage.getItem("encargagest_token")) {
+        configurarSesionEncargaGest("externo");
+        setModo("externo");
+      } else {
+        limpiarSesionEncargaGest();
+        setModo("login");
+      }
+      return;
+    }
     if (empleado && tokenERP) {
       configurarSesionEncargaGest("interno");
       setModo("interno");
@@ -252,7 +266,7 @@ export default function EncargaGest() {
     } else {
       setModo("login");
     }
-  }, [empleado, tokenERP]);
+  }, [empleado, tokenERP, accessMode]);
 
   useEffect(() => {
     if (modo !== "interno" && modo !== "externo") return;
