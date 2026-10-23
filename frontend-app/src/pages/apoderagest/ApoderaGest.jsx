@@ -889,13 +889,13 @@ export default function ApoderaGest() {
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest">
-      <header className="ag-hero">
-        <div className="ag-hero-identidad">
+      <header className="ag-hero molsan-page-header">
+        <div className="ag-hero-identidad molsan-page-header__identity">
           <div className="ag-marca">AG</div>
           <div>
             <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1>ApoderaGest</h1>
-            <p>Centro de gestión de encargos, firmas y actividad del apoderado.</p>
+            <h1 className="molsan-page-header__title">ApoderaGest</h1>
+            <p className="molsan-page-header__description">Centro de gestión de encargos, firmas y actividad del apoderado.</p>
           </div>
         </div>
         <div className="ag-hero-acciones">
