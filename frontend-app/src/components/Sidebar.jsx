@@ -903,7 +903,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       for (const valor of [item?.key, item?.label, item?.to, item?.route]) {
         const normalizado = normalizarClave(valor);
         if (normalizado) {
-          if (normalizado.startsWith("/")) rutasEnBarra.add(normalizado.replace(/\\/$/, ""));
+          if (normalizado.startsWith("/")) rutasEnBarra.add(normalizado.replace(/\/$/, ""));
           else clavesEnBarra.add(normalizado);
         }
       }
@@ -911,7 +911,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     const yaVisible = (modulo) =>
       clavesEnBarra.has(normalizarClave(modulo.key)) ||
       clavesEnBarra.has(normalizarClave(modulo.label)) ||
-      rutasEnBarra.has(normalizarClave(modulo.route).replace(/\\/$/, ""));
+      rutasEnBarra.has(normalizarClave(modulo.route).replace(/\/$/, ""));
     const items = MODULOS_ERP
       .filter((modulo) =>
         Boolean(modulo.route) &&
