@@ -4,7 +4,7 @@ import axios from "../../api/axios";
 const TIPOS = [
   ["ENTRADA", "Entrada a trabajar"], ["PAUSA_DESAYUNO_INICIO", "Pausa desayuno"], ["PAUSA_DESAYUNO_FIN", "Regreso desayuno"],
   ["PAUSA_COMIDA_INICIO", "Pausa comida"], ["PAUSA_COMIDA_FIN", "Regreso comida"], ["PAUSA_CIGARRILLO_INICIO", "Pausa cigarrillo"],
-  ["PAUSA_CIGARRILLO_FIN", "Regreso cigarrillo"], ["AUSENCIA", "Registrar ausencia"], ["AUSENCIA_PUNTUAL", "Ausencia puntual"],
+  ["PAUSA_CIGARRILLO_FIN", "Regreso cigarrillo"], ["AUSENCIA", "Ausencia histórica (pausa)"], ["AUSENCIA_PUNTUAL", "Registrar ausencia"],
   ["SALIDA", "Salida del trabajo"], ["PAUSA_CAFE_INICIO", "Pausa café (histórica)"], ["RETORNO_AUSENCIA", "Regreso de ausencia (histórico)"]
 ];
 const PAD = (n) => String(n).padStart(2, "0");
