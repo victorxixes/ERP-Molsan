@@ -1042,22 +1042,16 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     if (!Array.isArray(navigationItems)) return null;
     const sinFichajes = navigationItems.filter((item) =>
       item?.key !== "fichajes" &&
-      normalizarModulo(item?.label) !== "fichajes"
+      normalizarModulo(item?.label) !== "fichajes" &&
+      item?.key !== "modulos" &&
+      !["módulos", "modulos"].includes(normalizarModulo(item?.label))
     );
-    const yaTieneModulos = sinFichajes.some((item) =>
-      item?.key === "modulos" ||
-      normalizarModulo(item?.label) === "modulos"
-    );
-    if (modulosDropdown.length > 0 && !yaTieneModulos) {
+    // «Módulos» debe ser siempre el último botón de la barra, no quedar
+    // intercalado entre pestañas propias y accesos comunes del ERP.
+    if (modulosDropdown.length > 0) {
       sinFichajes.push({ key: "modulos", label: "Módulos", icon: "database" });
     }
-    // El control Módulos se pinta con el mismo patrón visual en todos los portales.
-    return sinFichajes.map((item) =>
-      item?.key === "modulos" ||
-      ["módulos", "modulos"].includes(normalizarModulo(item?.label))
-        ? { ...item, key: "modulos", label: "Módulos", icon: "database" }
-        : item
-    );
+    return sinFichajes;
   }, [navigationItems, modulosDropdown]);
 
   const mostrarBotonMas = modulosMas.length > 0 &&
@@ -1279,7 +1273,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
             {/* Navegación común del ERP: los módulos autorizados siguen disponibles
                 desde cualquier módulo interno, sin sustituir las pestañas propias
                 de cada espacio de trabajo. Los portales externos quedan aislados. */}
-            {navigationItemsConModulos && !esPortalNotarialExterno && visiblesPrincipales
+            {!navigationItemsConModulos && !esPortalNotarialExterno && visiblesPrincipales
               .filter((modulo) => !navigationItemsConModulos.some((item) =>
                 item?.key === modulo.key ||
                 normalizarModulo(item?.label) === normalizarModulo(modulo.label)
@@ -1294,7 +1288,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                 />
               ))}
 
-            {modulosFijadosUnicos.map((modulo) => (
+            {!navigationItemsConModulos && modulosFijadosUnicos.map((modulo) => (
               <TopNavItem
                 key={modulo.key}
                 to={modulo.to}
