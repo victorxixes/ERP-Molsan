@@ -133,22 +133,35 @@ def _normalizar_path(path: str) -> str:
 
 
 def _ya_tiene_autenticacion(dependant: Any) -> bool:
-    """Evita insertar get_current_user si una ruta ya lo declara."""
-    if getattr(dependant, "call", None) is get_current_user:
-        return True
-    for child in getattr(dependant, "dependencies", []) or []:
-        if _ya_tiene_autenticacion(child):
+    """Evita duplicar JWT y tolera grafos de dependencias compartidos o cíclicos."""
+    pendientes = [dependant]
+    visitados: set[int] = set()
+    while pendientes:
+        actual = pendientes.pop()
+        identidad = id(actual)
+        if identidad in visitados:
+            continue
+        visitados.add(identidad)
+        if getattr(actual, "call", None) is get_current_user:
             return True
+        pendientes.extend(getattr(actual, "dependencies", []) or [])
     return False
 
 
 def _ya_tiene_permiso(dependant: Any, modulo: str, accion: str) -> bool:
+    """Busca el permiso sin recursión y sin recorrer dos veces el mismo nodo."""
     esperado = (modulo, accion)
-    if getattr(getattr(dependant, "call", None), "_molsan_permiso_guard", None) == esperado:
-        return True
-    for child in getattr(dependant, "dependencies", []) or []:
-        if _ya_tiene_permiso(child, modulo, accion):
+    pendientes = [dependant]
+    visitados: set[int] = set()
+    while pendientes:
+        actual = pendientes.pop()
+        identidad = id(actual)
+        if identidad in visitados:
+            continue
+        visitados.add(identidad)
+        if getattr(getattr(actual, "call", None), "_molsan_permiso_guard", None) == esperado:
             return True
+        pendientes.extend(getattr(actual, "dependencies", []) or [])
     return False
 
 
@@ -223,9 +236,18 @@ def proteger_rutas_api(app: Any) -> dict[str, int]:
             except ValueError:
                 pass
 
-    for route in list(getattr(app, "routes", []) or []):
+    rutas_registradas = list(getattr(app, "routes", []) or [])
+    total_rutas = sum(1 for ruta in rutas_registradas if isinstance(ruta, APIRoute))
+    print(f"[AUTH GUARD] Inicio de revisión de {total_rutas} rutas HTTP.", flush=True)
+
+    procesadas = 0
+    for route in rutas_registradas:
         if not isinstance(route, APIRoute):
             continue
+
+        procesadas += 1
+        if procesadas % 100 == 0:
+            print(f"[AUTH GUARD] Revisadas {procesadas}/{total_rutas} rutas.", flush=True)
 
         path = _normalizar_path(getattr(route, "path", ""))
         if not path.startswith("/api/"):
