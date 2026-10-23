@@ -416,6 +416,39 @@ def _saldo_compensacion(db, empleado_id, unidad):
     return round(saldo, 2)
 
 
+def _procesar_compensaciones_vencidas(db, empleado_id):
+    """Convierte reservas aprobadas cuya fecha ya llegó en disfrutes efectivos."""
+    hoy = date.today()
+    vencidas = db.query(FichajeSolicitudCompensacion).filter(
+        FichajeSolicitudCompensacion.empleado_id == empleado_id,
+        FichajeSolicitudCompensacion.estado == "APROBADO",
+        FichajeSolicitudCompensacion.fecha_disfrute <= hoy,
+    ).with_for_update().all()
+    for s in vencidas:
+        s.estado = "DISFRUTADO"
+        db.add(FichajeCompensacionMovimiento(
+            empleado_id=s.empleado_id, tipo="CONSUMO", cantidad=s.cantidad,
+            unidad=s.unidad, fecha=s.fecha_disfrute, referencia_tipo="SOLICITUD",
+            referencia_id=s.id, observaciones=f"Compensación disfrutada el {s.fecha_disfrute}",
+            creado_por_id=s.resuelto_por_id,
+        ))
+        _auditar_compensacion(db, s.empleado_id, s.resuelto_por_id, "SOLICITUD", s.id,
+                               "DISFRUTE_AUTOMATICO", "APROBADO", "DISFRUTADO",
+                               f"Fecha de disfrute alcanzada: {s.fecha_disfrute}")
+    if vencidas:
+        db.flush()
+
+
+def _saldo_disponible_compensacion(db, empleado_id, unidad):
+    saldo = _saldo_compensacion(db, empleado_id, unidad)
+    reservado = sum(float(s.cantidad) for s in db.query(FichajeSolicitudCompensacion).filter(
+        FichajeSolicitudCompensacion.empleado_id == empleado_id,
+        FichajeSolicitudCompensacion.unidad == unidad,
+        FichajeSolicitudCompensacion.estado.in_({"SOLICITADO", "APROBADO"}),
+    ).all())
+    return round(saldo - reservado, 2)
+
+
 def _movimiento_dict(m):
     return {"id": m.id, "tipo": m.tipo, "cantidad": float(m.cantidad), "unidad": m.unidad,
             "fecha": m.fecha.isoformat(), "referencia_tipo": m.referencia_tipo,
@@ -444,6 +477,7 @@ def _solicitud_comp_dict(s, nombre=None):
 @router.get("/compensaciones/resumen")
 def resumen_mi_compensacion(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
     require_perm_modulo(usuario, "fichajes", "ver")
+    _procesar_compensaciones_vencidas(db, usuario.id)
     festivos = db.query(FichajeFestivoTrabajado).filter(
         FichajeFestivoTrabajado.empleado_id == usuario.id
     ).order_by(desc(FichajeFestivoTrabajado.fecha)).limit(300).all()
@@ -454,8 +488,8 @@ def resumen_mi_compensacion(usuario=Depends(get_current_user), db: Session = Dep
         FichajeCompensacionMovimiento.empleado_id == usuario.id
     ).order_by(desc(FichajeCompensacionMovimiento.creado_en)).limit(500).all()
     return {
-        "saldo_dias": _saldo_compensacion(db, usuario.id, "DIAS"),
-        "saldo_horas": _saldo_compensacion(db, usuario.id, "HORAS"),
+        "saldo_dias": _saldo_disponible_compensacion(db, usuario.id, "DIAS"),
+        "saldo_horas": _saldo_disponible_compensacion(db, usuario.id, "HORAS"),
         "festivos": [_festivo_dict(f) for f in festivos],
         "solicitudes": [_solicitud_comp_dict(s) for s in solicitudes],
         "movimientos": [_movimiento_dict(m) for m in movimientos],
@@ -473,14 +507,17 @@ def solicitar_compensacion(fecha_disfrute: date = Form(...), cantidad: float = F
         raise HTTPException(status_code=422, detail="Indica una cantidad positiva y una unidad válida (días u horas).")
     if fecha_disfrute < date.today():
         raise HTTPException(status_code=422, detail="La fecha de disfrute no puede estar en el pasado.")
-    saldo = _saldo_compensacion(db, usuario.id, unidad)
-    reservadas = sum(float(s.cantidad) for s in db.query(FichajeSolicitudCompensacion).filter(
+    _procesar_compensaciones_vencidas(db, usuario.id)
+    disponible = _saldo_disponible_compensacion(db, usuario.id, unidad)
+    if cantidad > disponible + 0.0001:
+        raise HTTPException(status_code=409, detail=f"Saldo insuficiente. Disponible sin reservas: {max(0, disponible):g} {unidad.lower()}.")
+    duplicada = db.query(FichajeSolicitudCompensacion).filter(
         FichajeSolicitudCompensacion.empleado_id == usuario.id,
-        FichajeSolicitudCompensacion.unidad == unidad,
+        FichajeSolicitudCompensacion.fecha_disfrute == fecha_disfrute,
         FichajeSolicitudCompensacion.estado.in_({"SOLICITADO", "APROBADO"}),
-    ).all())
-    if cantidad > saldo - reservadas + 0.0001:
-        raise HTTPException(status_code=409, detail=f"Saldo insuficiente. Disponible sin reservas: {max(0, saldo - reservadas):g} {unidad.lower()}.")
+    ).first()
+    if duplicada:
+        raise HTTPException(status_code=409, detail="Ya existe una solicitud pendiente o aprobada para esa fecha.")
     registro = FichajeSolicitudCompensacion(empleado_id=usuario.id, fecha_disfrute=fecha_disfrute,
         cantidad=cantidad, unidad=unidad, estado="SOLICITADO",
         observaciones=(observaciones or "").strip()[:500] or None)
@@ -595,23 +632,21 @@ def admin_resolver_solicitud_compensacion(solicitud_id: int, estado: str = Form(
     if estado not in ESTADOS_SOLICITUD: raise HTTPException(status_code=422, detail="El estado debe ser APROBADO o RECHAZADO.")
     anterior = s.estado
     if estado == "APROBADO":
-        saldo = _saldo_compensacion(db, s.empleado_id, s.unidad)
-        otras_reservas = sum(float(x.cantidad) for x in db.query(FichajeSolicitudCompensacion).filter(
+        _procesar_compensaciones_vencidas(db, s.empleado_id)
+        disponible_sin_esta = _saldo_compensacion(db, s.empleado_id, s.unidad) - sum(float(x.cantidad) for x in db.query(FichajeSolicitudCompensacion).filter(
             FichajeSolicitudCompensacion.empleado_id == s.empleado_id,
             FichajeSolicitudCompensacion.unidad == s.unidad,
-            FichajeSolicitudCompensacion.estado == "SOLICITADO",
+            FichajeSolicitudCompensacion.estado.in_({"SOLICITADO", "APROBADO"}),
             FichajeSolicitudCompensacion.id != s.id,
         ).all())
-        if float(s.cantidad) > saldo - otras_reservas + 0.0001:
+        if float(s.cantidad) > disponible_sin_esta + 0.0001:
             raise HTTPException(status_code=409, detail="No se puede aprobar: el saldo disponible ya está comprometido por otras solicitudes.")
-        db.add(FichajeCompensacionMovimiento(empleado_id=s.empleado_id, tipo="CONSUMO",
-            cantidad=s.cantidad, unidad=s.unidad, fecha=s.fecha_disfrute, referencia_tipo="SOLICITUD",
-            referencia_id=s.id, observaciones=f"Compensación disfrutada/aprobada para {s.fecha_disfrute}",
-            creado_por_id=usuario.id))
     s.estado = estado; s.resuelto_por_id = usuario.id; s.resuelto_en = datetime.utcnow()
     if observaciones.strip(): s.observaciones = (s.observaciones or "") + (" | " if s.observaciones else "") + observaciones.strip()[:400]
     _auditar_compensacion(db, s.empleado_id, usuario.id, "SOLICITUD", s.id, "RESOLUCION",
                            anterior, estado, observaciones)
+    if estado == "APROBADO" and s.fecha_disfrute <= date.today():
+        _procesar_compensaciones_vencidas(db, s.empleado_id)
     db.commit(); db.refresh(s)
     return _solicitud_comp_dict(s)
 
@@ -623,7 +658,8 @@ def admin_saldos_compensacion(usuario=Depends(get_current_user), db: Session = D
     empleados = db.query(Empleado).filter(Empleado.activo.is_(True)).order_by(Empleado.nombre, Empleado.apellidos).all()
     resultado = []
     for e in empleados:
+        _procesar_compensaciones_vencidas(db, e.id)
         resultado.append({"empleado_id": e.id, "empleado_nombre": _nombre_completo(e) or e.usuario,
-                          "saldo_dias": _saldo_compensacion(db, e.id, "DIAS"),
-                          "saldo_horas": _saldo_compensacion(db, e.id, "HORAS")})
+                          "saldo_dias": _saldo_disponible_compensacion(db, e.id, "DIAS"),
+                          "saldo_horas": _saldo_disponible_compensacion(db, e.id, "HORAS")})
     return resultado
