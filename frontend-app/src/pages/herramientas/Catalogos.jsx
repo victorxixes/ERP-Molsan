@@ -82,6 +82,7 @@ const CATALOGOS = [
 ];
 
 const GRUPOS = [
+  "Integraciones y catálogos técnicos",
   "Datos territoriales y entidades",
   "Catálogos económicos",
   "Catálogos operativos",
