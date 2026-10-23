@@ -2918,21 +2918,6 @@ const permisosDisponibles =
                     </section>
 
 
-                    {esAdministrador && (
-                      <section className="rounded-2xl border border-indigo-200 bg-indigo-50/50 p-5 shadow-sm">
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <div>
-                            <h3 className="text-base font-bold text-slate-900">Colaborador de ApoderaGest</h3>
-                            <p className="mt-1 text-sm text-slate-600">Habilita la revisión mensual de firmas reales y la presentación de facturas. Se reutiliza esta ficha de empleado.</p>
-                          </div>
-                          <label className="inline-flex cursor-pointer items-center gap-3 rounded-xl bg-white px-4 py-3">
-                            <input type="checkbox" checked={Boolean(empleadoFormulario.es_colaborador)} onChange={(event) => cambiarCampo("es_colaborador", event.target.checked)} className="h-5 w-5 accent-indigo-600" />
-                            <span className="text-sm font-semibold text-slate-800">{empleadoFormulario.es_colaborador ? "Colaborador habilitado" : "No habilitado"}</span>
-                          </label>
-                        </div>
-                      </section>
-                    )}
-
                     <GuardarButton
                       onClick={
                         guardarDatosEmpleado
