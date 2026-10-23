@@ -25,6 +25,7 @@ function nombre(n) {
 export default function AccesosNotariales() {
   const navigate = useNavigate();
   const [notarias, setNotarias] = useState([]);
+  const [resumen, setResumen] = useState({ notargest: null, encargagest: null });
   const [busqueda, setBusqueda] = useState("");
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -57,6 +58,19 @@ export default function AccesosNotariales() {
         if (activo) setNotarias(unicas);
       } catch (e) { if (activo) setError(mensajeLegible(e?.message, "No se ha podido cargar el listado de notarías.")); }
       finally { if (activo) setCargando(false); }
+    })();
+    return () => { activo = false; };
+  }, []);
+
+  useEffect(() => {
+    let activo = true;
+    (async () => {
+      try {
+        const r = await fetch(API_BASE + "/ctn/accesos-portales/resumen", { headers: headers(), credentials: "include" });
+        const body = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error("No se han podido cargar los contadores.");
+        if (activo) setResumen({ notargest: body?.notargest_habilitados ?? null, encargagest: body?.encargagest_habilitados ?? null });
+      } catch { if (activo) setResumen({ notargest: null, encargagest: null }); }
     })();
     return () => { activo = false; };
   }, []);
