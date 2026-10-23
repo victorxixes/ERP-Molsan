@@ -4,7 +4,9 @@ import "../css/ComponentesAccesoPremium.css";
 
 export default function ModuloPendiente({ nombre }) {
   const navigate = useNavigate();
-  const esEncargaGest = String(nombre || "").toLowerCase() === "encargagest";
+  const nombreNormalizado = String(nombre || "").trim().toLowerCase();
+  const esEncargaGest = nombreNormalizado === "encargagest";
+  const esFichajes = nombreNormalizado === "fichajes";
 
   return (
     <section className="modulo-pendiente-premium mx-auto max-w-4xl px-4 py-10 sm:py-14">
@@ -15,7 +17,7 @@ export default function ModuloPendiente({ nombre }) {
           <div className="flex flex-wrap items-start justify-between gap-5">
             <div className="flex items-start gap-4">
               <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-100 text-sm font-black tracking-wide text-amber-800">
-                {esEncargaGest ? "EG" : "M"}
+                {esEncargaGest ? "EG" : esFichajes ? "FI" : "M"}
               </div>
               <div>
                 <p className="text-[10px] font-extrabold tracking-[0.2em] text-amber-700">
@@ -27,7 +29,9 @@ export default function ModuloPendiente({ nombre }) {
                 <p className="mt-2 text-sm text-slate-500">
                   {esEncargaGest
                     ? "Portal de encargos para notarías externas"
-                    : "Módulo en preparación"}
+                    : esFichajes
+                      ? "Control horario y registro de jornada de empleados"
+                      : "Módulo en preparación"}
                 </p>
               </div>
             </div>
@@ -37,7 +41,14 @@ export default function ModuloPendiente({ nombre }) {
             </span>
           </div>
 
-          {esEncargaGest ? (
+          {esFichajes ? (
+            <div className="mt-8 rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/80 to-white p-5 sm:p-6">
+              <h2 className="text-lg font-extrabold text-slate-900">Estamos preparando Fichajes</h2>
+              <p className="mt-2 text-sm leading-7 text-slate-600">
+                Este módulo permitirá registrar la jornada laboral de los empleados y consultar sus entradas y salidas. La funcionalidad de fichaje todavía no está activa.
+              </p>
+            </div>
+          ) : esEncargaGest ? (
             <>
               <div className="mt-8 rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/80 to-white p-5 sm:p-6">
                 <h2 className="text-lg font-extrabold text-slate-900">
@@ -120,7 +131,7 @@ export default function ModuloPendiente({ nombre }) {
               Volver al selector
             </button>
             <span className="text-xs text-slate-400">
-              {esEncargaGest
+              {esEncargaGest || esFichajes
                 ? "La pantalla operativa se incorporará en una siguiente fase."
                 : "MOLSAN ERP"}
             </span>
