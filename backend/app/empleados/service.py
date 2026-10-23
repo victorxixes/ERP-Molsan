@@ -19,6 +19,7 @@ from backend.app.maestros.models import (
     Seccion,
     Cargo
 )
+from backend.app.seguridad.roles.models import Rol
 
 
 # =========================================================
@@ -548,6 +549,10 @@ def listar_empleados(
 
         Empleado.rol_id,
 
+        Rol.nombre.label(
+            "rol_nombre"
+        ),
+
         Departamento.nombre.label(
             "departamento_nombre"
         ),
@@ -581,6 +586,10 @@ def listar_empleados(
             Cargo,
             Empleado.cargo_id
             == Cargo.id
+        )
+        .outerjoin(
+            Rol,
+            Empleado.rol_id == Rol.id
         )
     )
 

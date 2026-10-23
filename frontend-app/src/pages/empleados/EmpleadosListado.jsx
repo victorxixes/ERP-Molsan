@@ -455,6 +455,11 @@ export default function EmpleadosListado({
                       empleado.cargo_nombre
                     ),
 
+                  rol_nombre:
+                    safeText(
+                      empleado.rol_nombre
+                    ),
+
                   foto:
                     typeof empleado.foto ===
                     "string"
@@ -1362,8 +1367,13 @@ export default function EmpleadosListado({
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-semibold text-[var(--erp-text)]">
-                      {empleado.nombre} {empleado.apellidos}
+                    <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="truncate text-sm font-semibold text-[var(--erp-text)]">
+                        {empleado.nombre} {empleado.apellidos}
+                      </span>
+                      <span className="inline-flex max-w-full items-center rounded-full border border-[var(--erp-border)] bg-[var(--erp-surface-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--erp-text-soft)]">
+                        {empleado.rol_nombre || "Sin rol asignado"}
+                      </span>
                     </div>
                     <div className="mt-0.5 text-xs text-[var(--erp-text-soft)]">
                       ID #{empleado.id}
