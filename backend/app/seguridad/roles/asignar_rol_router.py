@@ -107,7 +107,8 @@ def asignar_rol(
 def asignar_rol_compatibilidad(
     empleado_id: int,
     rol_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_edicion_seguridad),
 ):
     """
     Endpoint compatible con versiones anteriores
