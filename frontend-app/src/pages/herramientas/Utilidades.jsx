@@ -42,6 +42,7 @@ export default function Utilidades() {
       </Grupo>
 
       <Grupo titulo="Control económico" descripcion="Seguimiento de los PPAD pendientes de compensar y de los ya compensados.">
+        <Card icon="🧾" titulo="Control Apoderados" descripcion="Gestiona colaboradores, revisa las relaciones mensuales de firmas reales y valida las facturas recibidas." link="/herramientas/utilidades/control-apoderados" destacado />
         <Card icon="💶" titulo="PPAD" descripcion="Consulta importes pendientes y compensados, revisa cada expediente y descarga los listados a Excel." link="/herramientas/utilidades/ppad" destacado />
       </Grupo>
 
