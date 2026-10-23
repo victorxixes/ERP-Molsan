@@ -60,10 +60,19 @@ export function puedeVerModulo(modulo) {
   }
 
 
-  const modulos =
-    empleado.modulos_visibles || [];
+  const normalizar = (valor) =>
+    String(valor || "")
+      .normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .trim()
+      .toLowerCase();
 
-  return modulos.includes(modulo);
+  const modulos = [
+    ...(Array.isArray(empleado.modulos_visibles_list) ? empleado.modulos_visibles_list : []),
+    ...(Array.isArray(empleado.modulos_visibles) ? empleado.modulos_visibles : []),
+  ].map(normalizar);
+
+  return modulos.includes(normalizar(modulo));
 }
 
 
