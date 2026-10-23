@@ -260,7 +260,7 @@ export default function Dashboard() {
   const porcentajeVideoconferencia = totalFirmas > 0 ? (firmasVideoconferencia / totalFirmas) * 100 : firmasRealizadas == null ? null : 0;
 
   return (
-    <div className="erp-page w-full dashboard-cancelagest molsan-page">
+    <div className="erp-page w-full dashboard-cancelagest molsan-page" aria-busy={loading}>
       {/* CABECERA UNIFICADA CON APODERAGEST Y NOTARGEST */}
       <header className="ag-hero molsan-page-header dashboard-header" style={{ "--ag-muted": "#748198", "--ag-ink": "#17243a" }}>
         <div className="ag-hero-identidad molsan-page-header__identity">
@@ -297,13 +297,13 @@ export default function Dashboard() {
 
       {/* ERRORES DE CARGA */}
       {error && (
-        <div className="mb-6 rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "#fecaca", background: "#fef2f2", color: "#b91c1c" }}>
+        <div role="alert" aria-live="assertive" className="mb-6 rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "#fecaca", background: "#fef2f2", color: "#b91c1c" }}>
           <strong className="font-semibold">No se ha podido cargar el Dashboard.</strong>
           <div className="mt-1">{error}</div>
         </div>
       )}
       {errorFirmas && (
-        <div className="mb-6 rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "#fed7aa", background: "#fff7ed", color: "#9a3412" }}>
+        <div role="alert" aria-live="assertive" className="mb-6 rounded-xl border px-4 py-3 text-sm" style={{ borderColor: "#fed7aa", background: "#fff7ed", color: "#9a3412" }}>
           <strong className="font-semibold">No se han podido cargar las firmas reales.</strong>
           <div className="mt-1">{errorFirmas}</div>
         </div>
