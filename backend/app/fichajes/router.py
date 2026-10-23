@@ -1,4 +1,5 @@
 from datetime import date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
 from io import BytesIO
 from urllib.parse import quote
 import unicodedata
@@ -373,6 +374,8 @@ def admin_crear_marcaje(
         instante = datetime.fromisoformat(fecha_hora)
     except (TypeError, ValueError):
         raise HTTPException(status_code=422, detail="Fecha y hora no válidas.")
+    if instante.tzinfo is None:
+        instante = instante.replace(tzinfo=ZoneInfo("Europe/Madrid"))
     _exigir_periodo_abierto(db, instante)
     marcaje = FichajeMarcaje(empleado_id=empleado_id, tipo=tipo, fecha_hora=instante,
                             observaciones=(observaciones or "").strip()[:500] or None, creado_por_id=usuario.id)
@@ -408,6 +411,8 @@ def admin_editar_marcaje(
         nuevo_instante = datetime.fromisoformat(fecha_hora)
     except (TypeError, ValueError):
         raise HTTPException(status_code=422, detail="Fecha y hora no válidas.")
+    if nuevo_instante.tzinfo is None:
+        nuevo_instante = nuevo_instante.replace(tzinfo=ZoneInfo("Europe/Madrid"))
     _exigir_periodo_abierto(db, marcaje.fecha_hora)
     _exigir_periodo_abierto(db, nuevo_instante)
     empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
