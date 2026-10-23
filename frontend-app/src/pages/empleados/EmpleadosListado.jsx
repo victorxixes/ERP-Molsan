@@ -1341,220 +1341,44 @@ export default function EmpleadosListado({
 
 
               return (
-
                 <button
                   type="button"
-                  key={
-                    empleado.id
-                  }
-                  onClick={() =>
-                    onSeleccionar(
-                      empleado.id
-                    )
-                  }
-                  className="
-                    group
-                    rounded-2xl
-                    border
-                    border-[var(--erp-border)]
-                    bg-[var(--erp-surface)]
-                    p-5
-                    text-left
-                    shadow-sm
-                    transition-all
-                    duration-200
-                    hover:-translate-y-0.5
-                    hover:shadow-xl
-                    focus:outline-none
-                    focus:ring-2
+                  key={empleado.id}
+                  onClick={() => onSeleccionar(empleado.id)}
+                  className={`
+                    group flex w-full min-w-0 items-center gap-3
+                    rounded-xl border border-[var(--erp-border)]
+                    bg-[var(--erp-surface)] px-3 py-3 text-left
+                    shadow-sm transition hover:border-[var(--erp-primary)]
+                    hover:shadow-md focus:outline-none focus:ring-2
                     focus:ring-[var(--erp-primary)]
-                  "
+                  `}
                 >
-
-                  {/* CABECERA TARJETA */}
-
-                  <div className="
-                    flex
-                    items-center
-                    justify-between
-                    gap-4
-                  ">
-
-                    <div className="
-                      flex
-                      min-w-0
-                      items-center
-                      gap-4
-                    ">
-
-                      <div className="
-                        h-16
-                        w-16
-                        shrink-0
-                        overflow-hidden
-                        rounded-2xl
-                        border
-                        border-[var(--erp-border)]
-                        bg-[var(--erp-surface-soft)]
-                      ">
-
-                        <AuthenticatedPhoto
-                          src={foto}
-                          alt="Foto empleado"
-                          className="
-                            h-full
-                            w-full
-                            object-cover
-                            transition-transform
-                            duration-300
-                            group-hover:scale-105
-                          "
-                        />
-
-                      </div>
-
-
-                      <div className="
-                        min-w-0
-                      ">
-
-                        <div className="
-                          truncate
-                          font-semibold
-                          text-[var(--erp-text)]
-                        ">
-                          {
-                            empleado.nombre
-                          }{" "}
-                          {
-                            empleado.apellidos
-                          }
-                        </div>
-
-                        <div className="
-                          mt-1
-                          text-xs
-                          text-[var(--erp-text-soft)]
-                        ">
-                          ID #{
-                            empleado.id
-                          }
-                        </div>
-
-                      </div>
-
+                  <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full border border-[var(--erp-border)] bg-[var(--erp-surface-soft)]">
+                    <AuthenticatedPhoto
+                      src={foto}
+                      alt={`Foto de ${empleado.nombre || "empleado"}`}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-semibold text-[var(--erp-text)]">
+                      {empleado.nombre} {empleado.apellidos}
                     </div>
-
-
-                    <span
-                      className={`
-                        shrink-0
-                        rounded-lg
-                        border
-                        px-2.5
-                        py-1
-                        text-[11px]
-                        font-semibold
-
-                        ${
-                          empleado.activo
-                            ? "border-green-200 bg-green-50 text-green-700"
-                            : "border-red-200 bg-red-50 text-red-700"
-                        }
-                      `}
-                    >
-                      {
-                        empleado.activo
-                          ? "Activo"
-                          : "Inactivo"
-                      }
-                    </span>
-
+                    <div className="mt-0.5 text-xs text-[var(--erp-text-soft)]">
+                      ID #{empleado.id}
+                    </div>
                   </div>
-
-
-                  {/* DATOS */}
-
-                  <div className="
-                    mt-5
-                    space-y-2
-                    border-t
-                    border-[var(--erp-border)]
-                    pt-4
-                  ">
-
-                    <Info
-                      label="Teléfono"
-                      value={
-                        empleado.telefono
-                      }
-                    />
-
-                    <Info
-                      label="Email"
-                      value={
-                        empleado.email_empresa
-                      }
-                    />
-
-                    <Info
-                      label="Extensión"
-                      value={
-                        empleado.extension
-                      }
-                    />
-
-                    <Info
-                      label="Departamento"
-                      value={
-                        empleado.departamento_nombre
-                      }
-                    />
-
-                    <Info
-                      label="Sección"
-                      value={
-                        empleado.seccion_nombre
-                      }
-                    />
-
-                    <Info
-                      label="Cargo"
-                      value={
-                        empleado.cargo_nombre
-                      }
-                    />
-
-                  </div>
-
-
-                  {/* FOOTER */}
-
-                  <div className="
-                    mt-5
-                    flex
-                    items-center
-                    justify-between
-                  ">
-
-                    <span className="
-                      text-xs
-                      text-[var(--erp-text-soft)]
-                    ">
-                      Ver ficha
-                    </span>
-
-                    <span className="
-                      text-lg
-                      text-[var(--erp-primary)]
-                      transition-transform
-                      group-hover:translate-x-1
-                    ">
-                      →
-                    </span>
-
-                  </div>
-
+                  <span
+                    className={`
+                      shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold
+                      ${empleado.activo
+                        ? "border-green-200 bg-green-50 text-green-700"
+                        : "border-red-200 bg-red-50 text-red-700"}
+                    `}
+                  >
+                    {empleado.activo ? "Activo" : "Inactivo"}
+                  </span>
                 </button>
 
               );
