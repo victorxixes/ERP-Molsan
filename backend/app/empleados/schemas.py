@@ -100,8 +100,6 @@ class Empleado(BaseModel):
 
     es_colaborador: Optional[bool] = False
 
-    es_colaborador: Optional[bool] = False
-
     visible_en_listado: Optional[bool] = True
 
     # =====================================================
@@ -239,8 +237,6 @@ class EmpleadoUpdate(BaseModel):
     # =====================================================
 
     activo: Optional[bool] = None
-
-    es_colaborador: Optional[bool] = None
 
     es_colaborador: Optional[bool] = None
 
