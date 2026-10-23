@@ -42,10 +42,11 @@ export default function FichajesResumen({ recargar }) {
     </article>
     <article className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5">
       <p className="text-sm font-semibold text-emerald-800">Vacaciones · {vacaciones?.anio || new Date().getFullYear()}</p>
-      <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+      <div className="mt-3 grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
         <div><p className="text-xs text-slate-500">Asignados</p><p className="text-xl font-bold">{vacaciones?.dias_asignados ?? "—"}</p></div>
         <div><p className="text-xs text-slate-500">Disfrutados</p><p className="text-xl font-bold">{vacaciones?.dias_disfrutados ?? 0}</p></div>
-        <div><p className="text-xs text-slate-500">Restantes</p><p className="text-xl font-bold">{vacaciones?.dias_restantes ?? "Pendiente"}</p></div>
+        <div><p className="text-xs text-slate-500">Reservados</p><p className="text-xl font-bold">{vacaciones?.dias_reservados ?? 0}</p></div>
+        <div><p className="text-xs text-slate-500">Disponibles</p><p className="text-xl font-bold">{vacaciones?.dias_restantes ?? "Pendiente"}</p></div>
       </div>
       {vacaciones?.aviso && <p className="mt-2 text-xs text-slate-600">{vacaciones.aviso}</p>}
       {vacaciones?.registros?.length > 0 && <div className="mt-3 space-y-1 text-xs">{vacaciones.registros.map((v) => <p key={v.id} className="rounded-lg bg-white/70 p-2">{v.fecha_inicio} – {v.fecha_fin} · {v.dias} días · {v.estado}</p>)}</div>}
