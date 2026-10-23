@@ -73,12 +73,12 @@ export default function ModulosSelector() {
   const modulosDisponibles = useMemo(() => {
     if (!empleado) return [];
 
-    const visiblesRaw =
-      empleado.modulos_visibles_list ?? empleado.modulos_visibles;
-
-    const visibles = Array.isArray(visiblesRaw)
-      ? visiblesRaw.map(normalizar)
-      : [];
+    // La API puede entregar ambos campos y dejar uno vacío/desactualizado.
+    // Unimos los dos para no ocultar módulos asignados como Fichajes.
+    const visibles = [
+      ...(Array.isArray(empleado.modulos_visibles_list) ? empleado.modulos_visibles_list : []),
+      ...(Array.isArray(empleado.modulos_visibles) ? empleado.modulos_visibles : []),
+    ].map(normalizar);
 
     // La ficha del empleado decide qué aplicaciones aparecen.
     // El rol no debe ocultar módulos asignados y los permisos por acción
