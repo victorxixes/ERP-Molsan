@@ -23,11 +23,13 @@ const esFecha = (v) => v ? String(v).slice(0, 10).split("-").reverse().join("-")
 const texto = (v) => v === null || v === undefined || v === "" ? "—" : String(v);
 const euros = (v) => v === null || v === undefined || v === "" ? "—" : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v));
 
-export default function NotarGest() {
+export default function NotarGest({ accessMode = "auto" } = {}) {
   const navigate = useNavigate();
   const tokenERP = useAuthStore((s) => s.token);
   const empleadoERP = useAuthStore((s) => s.empleado);
-  const accesoERP = Boolean(tokenERP && empleadoERP);
+  // En la URL del portal externo se respeta siempre la sesión de notaría,
+  // aunque el navegador conserve una sesión de empleado de MOLSAN.
+  const accesoERP = accessMode !== "external" && Boolean(tokenERP && empleadoERP);
   const rolNotarGest = String(empleadoERP?.rol?.nombre || empleadoERP?.rol_nombre || empleadoERP?.nombre_rol || "").trim().toLowerCase();
   const esAdminNotarGest = String(empleadoERP?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin)$/.test(rolNotarGest);
   const [tokenNotario, setTokenNotario] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
