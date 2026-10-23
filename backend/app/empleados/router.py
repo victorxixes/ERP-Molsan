@@ -258,12 +258,22 @@ def editar(
             detail="Empleado no encontrado",
         )
 
-    # Cada empleado puede modificar exclusivamente sus propios datos
-    # identificativos y personales, sin necesitar permiso de Empleados.
+    # Si el usuario tiene permiso explícito de edición en Empleados,
+    # puede administrar también su propia ficha. Antes se aplicaba siempre
+    # la lista limitada de campos propios, descartando silenciosamente
+    # es_colaborador cuando un administrador editaba su propia ficha.
     id_usuario = getattr(usuario, "empleado_id", None) or getattr(usuario, "id", None)
     es_ficha_propia = id_usuario is not None and int(id_usuario) == int(empleado_id)
 
-    if es_ficha_propia:
+    tiene_permiso_edicion = True
+    try:
+        require_perm_modulo(usuario, "empleados", "editar")
+    except HTTPException as error:
+        if error.status_code != 403:
+            raise
+        tiene_permiso_edicion = False
+
+    if es_ficha_propia and not tiene_permiso_edicion:
         campos_autorizados = {
             "nombre", "apellidos", "dni", "telefono", "email_personal",
             "direccion", "codigo_postal", "poblacion", "provincia",
@@ -287,9 +297,10 @@ def editar(
             raise
         return empleado
 
-    # Para modificar la ficha de otra persona sigue siendo obligatorio
-    # el permiso explícito de edición en el módulo Empleados.
-    require_perm_modulo(usuario, "empleados", "editar")
+    # Las fichas ajenas siguen requiriendo permiso explícito; si ya se
+    # validó arriba no hace falta comprobarlo de nuevo.
+    if not tiene_permiso_edicion:
+        require_perm_modulo(usuario, "empleados", "editar")
     return editar_empleado(db, empleado_id, data)
 
 
