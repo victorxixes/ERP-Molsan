@@ -249,28 +249,49 @@ def editar(
     empleado_id: int,
     data: EmpleadoUpdate,
     db: Session = Depends(get_db),
-    _usuario=Depends(_permiso_empleados("editar")),
+    usuario=Depends(get_current_user),
 ):
-
-    empleado = editar_empleado(
-        db,
-        empleado_id,
-        data,
-    )
-
+    empleado = obtener_empleado(db, empleado_id)
     if not empleado:
-
         raise HTTPException(
             status_code=404,
             detail="Empleado no encontrado",
         )
 
-    return empleado
+    # Cada empleado puede modificar exclusivamente sus propios datos
+    # identificativos y personales, sin necesitar permiso de Empleados.
+    id_usuario = getattr(usuario, "empleado_id", None) or getattr(usuario, "id", None)
+    es_ficha_propia = id_usuario is not None and int(id_usuario) == int(empleado_id)
 
+    if es_ficha_propia:
+        campos_autorizados = {
+            "nombre", "apellidos", "dni", "telefono", "email_personal",
+            "direccion", "codigo_postal", "poblacion", "provincia",
+            "fecha_nacimiento", "alergias", "persona_contacto",
+            "telefono_contacto", "observaciones",
+        }
+        try:
+            valores = data.model_dump(exclude_unset=True)
+        except AttributeError:
+            valores = data.dict(exclude_unset=True)
 
-# =========================================================
-# ELIMINAR EMPLEADO
-# =========================================================
+        for campo, valor in valores.items():
+            if campo in campos_autorizados:
+                setattr(empleado, campo, valor)
+
+        try:
+            db.commit()
+            db.refresh(empleado)
+        except Exception:
+            db.rollback()
+            raise
+        return empleado
+
+    # Para modificar la ficha de otra persona sigue siendo obligatorio
+    # el permiso explícito de edición en el módulo Empleados.
+    require_perm_modulo(usuario, "empleados", "editar")
+    return editar_empleado(db, empleado_id, data)
+
 
 @router.delete("/{empleado_id}")
 def eliminar(
