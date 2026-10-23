@@ -411,7 +411,7 @@ const TopNavItem = ({
  * ============================================================
  */
 
-export default function Sidebar({ brandName = "CancelaGest", navigationItems = null, activeNavigationItem = "", onNavigationItemClick = null, onNotificationsClick = null, notificationBadge = null, onProfileClick = null, onLogoutClick = null } = {}) {
+export default function Sidebar({ brandName = "CancelaGest", navigationItems = null, activeNavigationItem = "", onNavigationItemClick = null, onNotificationsClick = null, notificationBadge = null, onProfileClick = null, onLogoutClick = null, headerActions = null } = {}) {
 
   const navigate = useNavigate();
 
@@ -1193,6 +1193,12 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               border-[var(--erp-border)]
             "
           >
+
+            {headerActions ? (
+              <div className="molsan-sidebar-header-actions flex items-center gap-2 pr-2">
+                {headerActions}
+              </div>
+            ) : null}
 
             {/* ==================================================
                 CAMPANA — ABRIR NOTIFICACIONES
