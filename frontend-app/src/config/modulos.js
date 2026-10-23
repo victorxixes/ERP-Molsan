@@ -53,7 +53,7 @@ const MODULOS_ERP = [
 
   {
     key: "fichajes",
-    label: "Fichajes",
+    label: "Fichaje Molsan",
     route: "/fichajes",
     icon: "clock",
   },
