@@ -33,6 +33,7 @@ MODULOS_BASE = [
     "dashboard",
     "agenda",
     "empleados",
+    "herramientas",
     "fichajes",
     "ctn",
     "intranet",
