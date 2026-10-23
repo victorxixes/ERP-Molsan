@@ -2379,3 +2379,58 @@ body {
     font-size: 12px;
   }
 }
+
+
+/* Cabecera compartida: aplica el mismo marco a CancelaGest y los portales
+   profesionales que ya adoptan molsan-page-header. */
+.molsan-page-header.ag-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  min-width: 0;
+  margin: 0 0 20px;
+  padding: 16px 20px;
+  color: var(--molsan-text);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--molsan-border);
+  border-radius: var(--molsan-radius-card);
+  box-shadow: var(--molsan-shadow-card);
+}
+
+.molsan-page-header.ag-hero .molsan-page-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.molsan-page-header.ag-hero .molsan-page-header__title {
+  margin: 0;
+  color: var(--molsan-text);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.molsan-page-header.ag-hero .molsan-page-header__description {
+  margin: 4px 0 0;
+  color: var(--molsan-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .molsan-page-header.ag-hero {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px;
+  }
+
+  .molsan-page-header.ag-hero .ag-hero-acciones {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
