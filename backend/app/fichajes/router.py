@@ -58,7 +58,7 @@ def _es_admin(usuario):
     rol = getattr(getattr(usuario, "rol", None), "nombre", "") or ""
     rol_norm = unicodedata.normalize("NFD", str(rol)).encode("ascii", "ignore").decode().lower()
     usuario_norm = str(getattr(usuario, "usuario", "") or "").strip().lower()
-    return usuario_norm == "admin" or any(p in rol_norm for p in ("admin", "superuser", "superusuario"))
+    return usuario_norm == "admin" or any(p in rol_norm for p in ("admin", "superuser", "superusuario", "gestor", "manager"))
 
 
 def _exigir_admin(usuario):
@@ -330,6 +330,14 @@ def solicitar_vacaciones(fecha_inicio: date = Form(...), fecha_fin: date = Form(
     dias = (fecha_fin - fecha_inicio).days + 1
     if dias > 60:
         raise HTTPException(status_code=422, detail="Una solicitud no puede superar 60 días naturales.")
+    vacaciones_solapadas = db.query(FichajeVacaciones).filter(
+        FichajeVacaciones.empleado_id == usuario.id,
+        FichajeVacaciones.estado.in_({"SOLICITADO", "APROBADO"}),
+        FichajeVacaciones.fecha_inicio <= fecha_fin,
+        FichajeVacaciones.fecha_fin >= fecha_inicio,
+    ).first()
+    if vacaciones_solapadas:
+        raise HTTPException(status_code=409, detail="Ya existe otra solicitud de vacaciones pendiente o aprobada que coincide con esas fechas.")
     compensacion_duplicada = db.query(FichajeSolicitudCompensacion).filter(
         FichajeSolicitudCompensacion.empleado_id == usuario.id,
         FichajeSolicitudCompensacion.fecha_disfrute >= fecha_inicio,
@@ -376,6 +384,123 @@ def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_cu
     return {"anio": anio, "horas_trabajadas": round(max(0, segundos) / 3600, 2), "horas_previstas": None,
             "diferencia_horas": None, "marcajes": len(registros), "jornadas_incompletas": incompletos,
             "aviso": "Las horas previstas y la diferencia se habilitarán al configurar el calendario laboral individual."}
+
+
+@router.get("/admin/vacaciones")
+def admin_listar_solicitudes_vacaciones(
+    estado: str | None = Query(default=None),
+    empleado_id: int | None = Query(default=None),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    consulta = db.query(FichajeVacaciones, Empleado).join(
+        Empleado, Empleado.id == FichajeVacaciones.empleado_id
+    )
+    if estado:
+        consulta = consulta.filter(FichajeVacaciones.estado == estado.strip().upper())
+    if empleado_id:
+        consulta = consulta.filter(FichajeVacaciones.empleado_id == empleado_id)
+    filas = consulta.order_by(desc(FichajeVacaciones.creado_en)).limit(2000).all()
+    return [{
+        "id": v.id,
+        "empleado_id": v.empleado_id,
+        "empleado_nombre": _nombre_completo(e) or e.usuario,
+        "fecha_inicio": v.fecha_inicio.isoformat(),
+        "fecha_fin": v.fecha_fin.isoformat(),
+        "dias": v.dias,
+        "estado": v.estado,
+        "observaciones": v.observaciones,
+        "creado_en": v.creado_en.isoformat() if v.creado_en else None,
+    } for v, e in filas]
+
+
+@router.patch("/admin/vacaciones/{solicitud_id}")
+def admin_resolver_solicitud_vacaciones(
+    solicitud_id: int,
+    estado: str = Form(...),
+    observaciones: str = Form(""),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    solicitud = db.query(FichajeVacaciones).filter(
+        FichajeVacaciones.id == solicitud_id
+    ).with_for_update().first()
+    if not solicitud:
+        raise HTTPException(status_code=404, detail="Solicitud de vacaciones no encontrada.")
+    if solicitud.estado != "SOLICITADO":
+        raise HTTPException(status_code=409, detail="Esta solicitud ya se ha resuelto.")
+    estado = estado.strip().upper()
+    if estado not in {"APROBADO", "RECHAZADO"}:
+        raise HTTPException(status_code=422, detail="El estado debe ser APROBADO o RECHAZADO.")
+    if estado == "APROBADO":
+        conflicto_vacaciones = db.query(FichajeVacaciones).filter(
+            FichajeVacaciones.empleado_id == solicitud.empleado_id,
+            FichajeVacaciones.id != solicitud.id,
+            FichajeVacaciones.estado == "APROBADO",
+            FichajeVacaciones.fecha_inicio <= solicitud.fecha_fin,
+            FichajeVacaciones.fecha_fin >= solicitud.fecha_inicio,
+        ).first()
+        if conflicto_vacaciones:
+            raise HTTPException(status_code=409, detail="No se puede aprobar: las fechas coinciden con otras vacaciones ya aprobadas.")
+        conflicto_compensacion = db.query(FichajeSolicitudCompensacion).filter(
+            FichajeSolicitudCompensacion.empleado_id == solicitud.empleado_id,
+            FichajeSolicitudCompensacion.fecha_disfrute >= solicitud.fecha_inicio,
+            FichajeSolicitudCompensacion.fecha_disfrute <= solicitud.fecha_fin,
+            FichajeSolicitudCompensacion.estado.in_({"SOLICITADO", "APROBADO"}),
+        ).first()
+        if conflicto_compensacion:
+            raise HTTPException(status_code=409, detail="No se puede aprobar: hay una solicitud de compensación en esas fechas.")
+        bolsa = db.query(FichajeBolsaVacaciones).filter(
+            FichajeBolsaVacaciones.empleado_id == solicitud.empleado_id,
+            FichajeBolsaVacaciones.anio == solicitud.fecha_inicio.year,
+        ).first()
+        if bolsa:
+            comprometidos = sum(v.dias for v in db.query(FichajeVacaciones).filter(
+                FichajeVacaciones.empleado_id == solicitud.empleado_id,
+                FichajeVacaciones.estado == "APROBADO",
+                FichajeVacaciones.id != solicitud.id,
+                FichajeVacaciones.fecha_inicio >= date(solicitud.fecha_inicio.year, 1, 1),
+                FichajeVacaciones.fecha_inicio < date(solicitud.fecha_inicio.year + 1, 1, 1),
+            ).all())
+            if comprometidos + solicitud.dias > bolsa.dias_asignados:
+                raise HTTPException(status_code=409, detail="No se puede aprobar: la solicitud supera el saldo de vacaciones asignado.")
+    solicitud.estado = estado
+    if observaciones.strip():
+        solicitud.observaciones = (solicitud.observaciones or "")
+        solicitud.observaciones += (" | " if solicitud.observaciones else "") + observaciones.strip()[:400]
+    db.commit()
+    db.refresh(solicitud)
+    return {"id": solicitud.id, "estado": solicitud.estado, "dias": solicitud.dias}
+
+
+@router.get("/admin/documentos")
+def admin_listar_documentos(
+    empleado_id: int | None = Query(default=None),
+    desde: date | None = Query(default=None),
+    hasta: date | None = Query(default=None),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    consulta = db.query(FichajeDocumento, Empleado).join(
+        Empleado, Empleado.id == FichajeDocumento.empleado_id
+    )
+    if empleado_id:
+        consulta = consulta.filter(FichajeDocumento.empleado_id == empleado_id)
+    if desde:
+        consulta = consulta.filter(FichajeDocumento.fecha_documento >= desde)
+    if hasta:
+        consulta = consulta.filter(FichajeDocumento.fecha_documento <= hasta)
+    filas = consulta.order_by(desc(FichajeDocumento.subido_en)).limit(2000).all()
+    return [{
+        **_documento_dict(d),
+        "empleado_nombre": _nombre_completo(e) or e.usuario,
+    } for d, e in filas]
 
 
 @router.get("/admin/vacaciones-bolsa")
