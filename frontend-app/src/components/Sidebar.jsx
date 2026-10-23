@@ -925,7 +925,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       >
 
         <div
-          className="
+          className={`
             w-full
             max-w-none
             mx-auto
