@@ -859,19 +859,12 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       ...(Array.isArray(empleado?.modulos_visibles) ? empleado.modulos_visibles : []),
     ].map(normalizarClave);
 
-    const clavesWorkspace = new Set([
-      "apoderagest",
-      "cancelagest",
-      "notargest",
-      "encargagest",
-      "fichajes",
-    ]);
-
-    const items = MODULOS_ERP
+    // El desplegable «Módulos» muestra el catálogo completo de rutas autorizadas,
+    // no solo los cinco portales de trabajo. Así el menú es común a todo el ERP.
+    const items = esPortalNotarialExterno ? [] : MODULOS_ERP
       .filter((modulo) =>
-        clavesWorkspace.has(normalizarClave(modulo.key)) &&
         Boolean(modulo.route) &&
-        clavesVisibles.includes(normalizarClave(modulo.key))
+        puedeVerModulo(modulo.key)
       )
       .map((modulo) => ({
         key: modulo.key,
@@ -880,10 +873,22 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
         icon: modulo.icon,
       }));
 
+    // Provisiones de fondos se gobierna por el permiso de Expedientes.
+    if (!esPortalNotarialExterno && puedeVerModulo("expedientes") &&
+        !items.some((item) => item.key === "provisiones-fondos")) {
+      items.push({
+        key: "provisiones-fondos",
+        to: "/provisiones-fondos",
+        label: "Provisiones de fondos",
+        icon: "clipboard",
+      });
+    }
+
     const rol = normalizarClave(empleado?.rol?.nombre || empleado?.rol_nombre || empleado?.nombre_rol);
     const usuarioAdmin = normalizarClave(empleado?.usuario) === "admin";
     const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario", "gestor", "manager"].some((r) => rol.includes(r));
-    if (esAdmin && clavesVisibles.includes("fichajes")) {
+    if (!esPortalNotarialExterno && esAdmin && puedeVerModulo("fichajes") &&
+        !items.some((item) => item.key === "control-fichajes")) {
       items.push({
         key: "control-fichajes",
         to: "/control-fichajes",
@@ -892,7 +897,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       });
     }
     return items;
-  }, [empleado]);
+  }, [empleado, esPortalNotarialExterno]);
 
   const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
   const modulosDropdownRef = useRef(null);
