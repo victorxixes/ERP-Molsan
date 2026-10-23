@@ -2,6 +2,7 @@ import {
   useState,
   useCallback,
   useMemo,
+  useEffect,
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
@@ -45,6 +46,11 @@ export default function SeguridadRolEditor() {
   // ============================================================
   // ROLES
   // ============================================================
+
+  useEffect(() => {
+    cargarTodo();
+  }, [cargarTodo]);
+
 
   const rolesSeguros = useMemo(() => {
 
