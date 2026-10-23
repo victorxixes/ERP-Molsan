@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 
 from backend.app.seguridad.auditoria.schemas import (
     AuditoriaCreate,
@@ -106,6 +107,8 @@ def metricas(
 )
 def registrar(
     datos: AuditoriaCreate,
+    request: Request,
+    usuario_actual=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -122,11 +125,19 @@ def registrar(
     }
     """
 
+    actor = (
+        getattr(usuario_actual, "usuario", None)
+        or getattr(usuario_actual, "username", None)
+        or getattr(usuario_actual, "email", None)
+        or f"empleado:{getattr(usuario_actual, 'id', 'autenticado')}"
+    )
+    ip = request.client.host if request.client else None
+    detalle = (datos.descripcion or "Registro manual solicitado")[:400]
     return registrar_auditoria(
         db=db,
-        usuario=datos.usuario,
-        modulo=datos.modulo,
-        accion=datos.accion,
-        descripcion=datos.descripcion,
-        ip=datos.ip,
+        usuario=str(actor)[:100],
+        modulo="auditoria",
+        accion="REGISTRO_MANUAL",
+        descripcion=f"Registro manual: {detalle}"[:500],
+        ip=ip,
     )
