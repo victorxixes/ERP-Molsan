@@ -33,7 +33,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
   const rolNotarGest = String(empleadoERP?.rol?.nombre || empleadoERP?.rol_nombre || empleadoERP?.nombre_rol || "").trim().toLowerCase();
   const esAdminNotarGest = String(empleadoERP?.usuario || "").trim().toLowerCase() === "admin" || /^(admin|administrador|administradora|superadmin)$/.test(rolNotarGest);
   const [tokenNotario, setTokenNotario] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
-  const [tokenAdminNotaria, setTokenAdminNotaria] = useState("");
+  const [tokenAdminNotaria, setTokenAdminNotaria] = useState(() => sessionStorage.getItem("notargest_soporte_token") || "");
   const [notariasSeleccionables, setNotariasSeleccionables] = useState([]);
   const [notariaAdminSeleccionada, setNotariaAdminSeleccionada] = useState("");
   const [cargandoSelectorNotaria, setCargandoSelectorNotaria] = useState(false);
