@@ -2033,7 +2033,8 @@ def migrar_catalogo_absis():
                 ("Estado Actividad", "Abierta", None, ""),
                 ("Estado Actividad", "Reabierta", None, ""),
                 ("Estado Actividad", "Cerrada automáticamente", None, ""),
-                ("Tipo Provision", "Pendiente", None, ""),
+                ("Tipo Provision", "E", None, "Encargo"),
+                ("Tipo Provision", "P", None, "Provisión"),
                 ("Tipo de operación", "Cancelación sin provisión", None, ""),
                 ("Tipo de operación", "Cancelación con provisión", None, ""),
                 ("Tipo de operación", "Constitución", None, ""),
@@ -2068,6 +2069,25 @@ def migrar_catalogo_absis():
             )
             print(f"[CATÁLOGO ABSIS] Cargadas {len(iniciales)} entradas iniciales.", flush=True)
         else:
+            # Corrige la semilla anterior "Pendiente" a los códigos E/P usados por Excel.
+            # Solo actúa sobre ese valor heredado; conserva el resto de entradas configuradas.
+            conexion.execute(text("""
+                UPDATE public.catalogos_absis
+                SET valor = 'E', descripcion = 'Encargo'
+                WHERE categoria = 'Tipo Provision' AND valor = 'Pendiente'
+                  AND NOT EXISTS (
+                      SELECT 1 FROM public.catalogos_absis existente
+                      WHERE existente.categoria = 'Tipo Provision' AND existente.valor = 'E'
+                  )
+            """))
+            conexion.execute(text("""
+                INSERT INTO public.catalogos_absis (categoria, valor, codigo, descripcion)
+                SELECT 'Tipo Provision', 'P', NULL, 'Provisión'
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM public.catalogos_absis
+                    WHERE categoria = 'Tipo Provision' AND valor = 'P'
+                )
+            """))
             print("[CATÁLOGO ABSIS] Tabla verificada; se conservan sus entradas actuales.", flush=True)
 
 
