@@ -639,36 +639,30 @@ export default function SeguridadUsuarios() {
 
                       <div className="flex flex-wrap gap-2 mt-3">
 
-                        {(
-                          Array.isArray(fichaSegura.roles)
+                        {(() => {
+                          const rolesFicha = Array.isArray(fichaSegura.roles)
                             ? fichaSegura.roles
-                            : []
-                        ).length > 0 ? (
-
-                          fichaSegura.roles.map((rol) => (
-
-                            <span
-                              key={
-                                rol?.id ??
-                                rol?.nombre ??
-                                Math.random()
-                              }
-                              className="erp-badge erp-badge-primary"
-                            >
-                              {typeof rol?.nombre === "string"
-                                ? rol.nombre
-                                : "Rol"}
-                            </span>
-
-                          ))
-
-                        ) : (
-
-                          <span className="erp-text-muted">
-                            Sin roles asignados
-                          </span>
-
-                        )}
+                            : [];
+                          const rolId = fichaSegura?.empleado?.rol_id ?? fichaSegura?.rol_id;
+                          const rolNombre = fichaSegura?.empleado?.rol_nombre ?? fichaSegura?.empleado?.rol?.nombre ?? fichaSegura?.rol_nombre;
+                          const rolesMostrar = rolesFicha.length
+                            ? rolesFicha
+                            : (rolId != null || (typeof rolNombre === "string" && rolNombre.trim()))
+                              ? [{ id: rolId ?? "rol-actual", nombre: rolNombre || `Rol #${rolId}` }]
+                              : [];
+                          return rolesMostrar.length > 0
+                            ? rolesMostrar.map((rol, index) => (
+                                <span
+                                  key={rol?.id ?? rol?.nombre ?? index}
+                                  className="erp-badge erp-badge-primary"
+                                >
+                                  {typeof rol?.nombre === "string" && rol.nombre.trim()
+                                    ? rol.nombre
+                                    : rol?.id != null ? `Rol #${rol.id}` : "Rol"}
+                                </span>
+                              ))
+                            : <span className="erp-text-muted">Sin roles asignados</span>;
+                        })()}
 
                       </div>
 
@@ -684,39 +678,33 @@ export default function SeguridadUsuarios() {
 
                       <div className="flex flex-wrap gap-2 mt-3">
 
-                        {(
-                          Array.isArray(fichaSegura.permisos)
+                        {(() => {
+                          const permisosFicha = Array.isArray(fichaSegura.permisos)
                             ? fichaSegura.permisos
-                            : []
-                        ).length > 0 ? (
-
-                          fichaSegura.permisos.map((permiso) => (
-
-                            <span
-                              key={
-                                permiso?.id ??
-                                permiso?.codigo ??
-                                permiso?.nombre ??
-                                Math.random()
-                              }
-                              className="erp-badge erp-badge-purple"
-                            >
-                              {typeof permiso?.nombre === "string"
-                                ? permiso.nombre
-                                : typeof permiso?.codigo === "string"
-                                ? permiso.codigo
-                                : "Permiso"}
-                            </span>
-
-                          ))
-
-                        ) : (
-
-                          <span className="erp-text-muted">
-                            Sin permisos asignados
-                          </span>
-
-                        )}
+                            : [];
+                          const permisosDict = fichaSegura.permisos_modulo_dict ?? fichaSegura.permisos_modulo;
+                          const permisosDesdeModulos = permisosDict && typeof permisosDict === "object" && !Array.isArray(permisosDict)
+                            ? Object.entries(permisosDict).flatMap(([modulo, acciones]) =>
+                                Array.isArray(acciones)
+                                  ? acciones.map((accion) => ({ modulo, nombre: accion }))
+                                  : []
+                              )
+                            : [];
+                          const permisosMostrar = permisosFicha.length ? permisosFicha : permisosDesdeModulos;
+                          return permisosMostrar.length > 0
+                            ? permisosMostrar.map((permiso, index) => (
+                                <span
+                                  key={permiso?.id ?? permiso?.codigo ?? `${permiso?.modulo ?? "modulo"}-${permiso?.nombre ?? permiso?.permiso ?? index}`}
+                                  className="erp-badge erp-badge-purple"
+                                >
+                                  {[
+                                    typeof permiso?.modulo === "string" ? permiso.modulo : "",
+                                    typeof permiso?.nombre === "string" ? permiso.nombre : typeof permiso?.permiso === "string" ? permiso.permiso : typeof permiso?.codigo === "string" ? permiso.codigo : ""
+                                  ].filter(Boolean).join(" · ") || "Permiso"}
+                                </span>
+                              ))
+                            : <span className="erp-text-muted">No hay permisos individuales devueltos por la ficha.</span>;
+                        })()}
 
                       </div>
 
