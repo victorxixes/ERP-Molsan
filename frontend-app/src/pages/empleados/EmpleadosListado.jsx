@@ -1071,6 +1071,7 @@ export default function EmpleadosListado({
         ">
 
           <div className="
+            empleados-filtros-busqueda
             relative
             flex-1
           ">
