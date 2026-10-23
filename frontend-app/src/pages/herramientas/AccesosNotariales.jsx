@@ -105,6 +105,16 @@ export default function AccesosNotariales() {
         </div>
         <button type="button" className="ctn-btn ctn-btn-secondary molsan-btn molsan-btn--secondary" onClick={() => navigate("/herramientas/utilidades")}>Volver a Utilidades</button>
       </header>
+      <section className="accesos-notariales-resumen" aria-label="Resumen de accesos habilitados">
+        <article className="accesos-notariales-resumen-card">
+          <span aria-hidden="true">🔐</span>
+          <div><p>Notarios habilitados en NotarGest</p><strong>{resumen.notargest === null ? "—" : resumen.notargest}</strong><small>Acceso activo al portal</small></div>
+        </article>
+        <article className="accesos-notariales-resumen-card">
+          <span aria-hidden="true">📋</span>
+          <div><p>Notarios habilitados en EncargaGest</p><strong>{resumen.encargagest === null ? "—" : resumen.encargagest}</strong><small>Acceso activo al portal</small></div>
+        </article>
+      </section>
       <section className="ctn-filtros molsan-panel" aria-label="Buscar notaría">
         <h2>Buscar notaría</h2>
         <label className="block">Nombre, apellidos, NIF, código, municipio o provincia
