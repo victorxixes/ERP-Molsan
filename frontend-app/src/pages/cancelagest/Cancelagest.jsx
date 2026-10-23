@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { puedeVerModulo } from "../../utils/permisos";
+import MODULOS_ERP from "../../config/modulos";
 import axios from "../../api/axios";
 import "../../css/Cancelagest.css";
 import "../../css/CancelagestUnified.css";
 
-const MODULOS = [
-  { titulo: "Expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "▤", ruta: "/expedientes" },
-  { titulo: "Agenda", descripcion: "Revisar citas y actividad programada.", icono: "▦", ruta: "/agenda" },
-  { titulo: "Informes", descripcion: "Acceder a informes y seguimiento de gestión.", icono: "▥", ruta: "/informes" },
-  { titulo: "ApoderaGest", descripcion: "Encargos, firmas y actividad del apoderado.", icono: "AG", ruta: "/apoderagest" },
-  { titulo: "NotarGest", descripcion: "Seguimiento del trabajo y estados notariales.", icono: "NG", ruta: "/notargest" },
-  { titulo: "CTN", descripcion: "Consultar el catálogo de notarías y sus relaciones.", icono: "◇", ruta: "/ctn" },
+const TARJETAS_DASHBOARD = [
+  { key: "expedientes", descripcion: "Consultar expedientes y su situación actual.", icono: "▤" },
+  { key: "agenda", descripcion: "Revisar citas y actividad programada.", icono: "▦" },
+  { key: "informes", descripcion: "Acceder a informes y seguimiento de gestión.", icono: "▥" },
+  { key: "apoderagest", descripcion: "Encargos, firmas y actividad del apoderado.", icono: "AG" },
+  { key: "notargest", descripcion: "Seguimiento del trabajo y estados notariales.", icono: "NG" },
+  { key: "ctn", descripcion: "Consultar el catálogo de notarías y sus relaciones.", icono: "◇" },
 ];
 
 const fmtNumero = (n) => Number(n || 0).toLocaleString("es-ES");
@@ -69,7 +70,15 @@ export default function Cancelagest() {
   const categorias = datos?.categorias_firma || [];
   const tiempos = datos?.tiempos_circuito || [];
 
-  const modulosVisibles = MODULOS.filter((modulo) => puedeVerModulo(({"/expedientes":"expedientes","/agenda":"agenda","/informes":"informes","/apoderagest":"apoderagest","/notargest":"notargest","/ctn":"ctn"})[modulo.ruta] || "dashboard"));
+  // Los accesos del dashboard reutilizan nombres, rutas, iconos y claves
+  // del catálogo central. La descripción y el icono ilustrativo son propios
+  // de estas tarjetas; el permiso siempre se comprueba con la clave del catálogo.
+  const modulosVisibles = TARJETAS_DASHBOARD
+    .map((tarjeta) => {
+      const modulo = MODULOS_ERP.find((item) => item.key === tarjeta.key && item.route);
+      return modulo ? { ...modulo, ...tarjeta, titulo: modulo.label, ruta: modulo.route } : null;
+    })
+    .filter((modulo) => modulo && puedeVerModulo(modulo.key));
 
   return <main className="cg-page">
       <header className="cg-hero">
