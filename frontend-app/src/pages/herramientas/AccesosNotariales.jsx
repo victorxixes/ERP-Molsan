@@ -8,6 +8,16 @@ function headers() {
   const token = localStorage.getItem("token");
   return { Accept: "application/json", ...(token ? { Authorization: "Bearer " + token } : {}) };
 }
+function mensajeLegible(valor, fallback) {
+  if (typeof valor === "string" && valor.trim()) return valor;
+  if (valor && typeof valor === "object") {
+    if (typeof valor.detail === "string") return valor.detail;
+    if (typeof valor.message === "string") return valor.message;
+    if (Array.isArray(valor)) return valor.map((item) => typeof item === "string" ? item : JSON.stringify(item)).join("; ");
+    try { return JSON.stringify(valor); } catch { return fallback; }
+  }
+  return fallback;
+}
 function nombre(n) {
   return [n?.nombre, n?.apellidos].filter(Boolean).join(" ").trim() || n?.nombre_completo || n?.notario || "";
 }
@@ -27,10 +37,10 @@ export default function AccesosNotariales() {
       try {
         const r = await fetch(API_BASE + "/ctn/notarias?page=1&page_size=1000", { headers: headers(), credentials: "include" });
         const body = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(body?.detail || "Error HTTP " + r.status);
+        if (!r.ok) throw new Error(mensajeLegible(body?.detail ?? body, "No se ha podido cargar el listado de notarías (HTTP " + r.status + ")."));
         const lista = Array.isArray(body) ? body : body.items || body.notarias || body.results || [];
         if (activo) setNotarias(lista);
-      } catch (e) { if (activo) setError(e.message || "No se ha podido cargar el listado de notarías."); }
+      } catch (e) { if (activo) setError(mensajeLegible(e?.message, "No se ha podido cargar el listado de notarías.")); }
       finally { if (activo) setCargando(false); }
     })();
     return () => { activo = false; };
@@ -47,10 +57,10 @@ export default function AccesosNotariales() {
     try {
       const r = await fetch(API_BASE + "/ctn/notarias/" + n.id + "/accesos-portales", { headers: headers(), credentials: "include" });
       const body = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(body?.detail || "No tienes permiso para gestionar accesos notariales (HTTP " + r.status + ").");
+      if (!r.ok) throw new Error(mensajeLegible(body?.detail ?? body, "No tienes permiso para gestionar accesos notariales (HTTP " + r.status + ")."));
       if (!body?.permisos?.notargestweb?.ver && !body?.permisos?.encargagestweb?.ver) throw new Error("Tu usuario no tiene permisos para consultar accesos notariales.");
       setSeleccionada(n);
-    } catch (e) { setError(e.message || "No se ha podido comprobar el permiso de acceso."); }
+    } catch (e) { setError(mensajeLegible(e?.message, "No se ha podido comprobar el permiso de acceso.")); }
   };
 
   return (
