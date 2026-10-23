@@ -57,6 +57,7 @@ import ImportarCTN from "./pages/herramientas/ImportarCTN.jsx";
 import ImportadorAbsis from "./pages/herramientas/importador_absis";
 import Utilidades from "./pages/herramientas/Utilidades.jsx";
 import Catalogos from "./pages/herramientas/Catalogos.jsx";
+import CatalogoAbsis from "./pages/herramientas/CatalogoAbsis.jsx";
 import CorrespondenciaTipificada from "./pages/herramientas/CorrespondenciaTipificada.jsx";
 import HonorariosGestoria from "./pages/herramientas/HonorariosGestoria.jsx";
 import CrearNoticia from "./pages/herramientas/CrearNoticia.jsx";
@@ -449,6 +450,11 @@ export default function App() {
           <Route
             path="catalogos"
             element={<Catalogos />}
+          />
+
+          <Route
+            path="catalogos/absis"
+            element={<CatalogoAbsis />}
           />
 
           <Route
