@@ -30,7 +30,7 @@ function fechaLarga(valor) {
   return new Date(valor).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" });
 }
 function formatearTipo(tipo) {
-  const etiquetas = { PAUSA_CAFE_INICIO: "Pausa desayuno", RETORNO_AUSENCIA: "Regreso de pausa / ausencia" };
+  const etiquetas = { PAUSA_CAFE_INICIO: "Pausa desayuno", RETORNO_AUSENCIA: "Regreso de pausa / ausencia", AUSENCIA_PUNTUAL: "Registrar ausencia" };
   return TIPOS.find((t) => t.value === tipo)?.label || etiquetas[tipo] || tipo;
 }
 function inicioMes(fecha) { return new Date(fecha.getFullYear(), fecha.getMonth(), 1); }
