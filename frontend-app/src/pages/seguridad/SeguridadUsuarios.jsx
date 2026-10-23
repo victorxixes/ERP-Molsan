@@ -486,15 +486,7 @@ export default function SeguridadUsuarios() {
                           {mensajeColaborador}
                         </p>
                       )}
-                      <span className={
-                        empleadoBasicoSeguro.es_colaborador
-                          ? "erp-badge erp-badge-success"
-                          : "erp-badge erp-badge-neutral"
-                      }>
-                        {empleadoBasicoSeguro.es_colaborador
-                          ? "Colaborador de ApoderaGest"
-                          : "ApoderaGest: no habilitado"}
-                      </span>
+
 
                     </div>
 
