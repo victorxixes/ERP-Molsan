@@ -38,6 +38,7 @@ export default function Fichajes({ modo = "empleado" }) {
   const [documentos, setDocumentos] = useState([]);
   const [tiposAusencia, setTiposAusencia] = useState([]);
   const [tipoAusencia, setTipoAusencia] = useState("");
+  const [mostrarSelectorAusencia, setMostrarSelectorAusencia] = useState(false);
   const [reloj, setReloj] = useState(new Date());
   const [empleados, setEmpleados] = useState([]);
   const [marcajesAdmin, setMarcajesAdmin] = useState([]);
@@ -190,17 +191,17 @@ export default function Fichajes({ modo = "empleado" }) {
               </div>
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {TIPOS.map((t) => (
-                  <button key={t.value} type="button" disabled={guardando} onClick={() => enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 rounded-2xl border px-5 py-4 text-left font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-50 ${t.tone === "emerald" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : t.tone === "rose" ? "border-rose-200 bg-rose-50 text-rose-800" : t.tone === "amber" ? "border-amber-200 bg-amber-50 text-amber-900" : "border-sky-200 bg-sky-50 text-sky-900"}`}>
+                  <button key={t.value} type="button" disabled={guardando} onClick={() => t.value === "AUSENCIA" ? setMostrarSelectorAusencia(true) : enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 rounded-2xl border px-5 py-4 text-left font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-50 ${t.tone === "emerald" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : t.tone === "rose" ? "border-rose-200 bg-rose-50 text-rose-800" : t.tone === "amber" ? "border-amber-200 bg-amber-50 text-amber-900" : "border-sky-200 bg-sky-50 text-sky-900"}`}>
                     <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/80 text-2xl">{t.icon}</span><span>{t.label}<span className="mt-1 block text-xs font-medium opacity-70">Registrar ahora</span></span>
                   </button>
                 ))}
               </div>
-              <label className="mt-4 block text-xs font-bold text-[var(--erp-text-soft)]">Tipo de ausencia (obligatorio al registrar una ausencia)
+              {mostrarSelectorAusencia && <div className="mt-4 rounded-xl border border-violet-200 bg-violet-50/70 p-4"><label className="block text-xs font-bold text-violet-900">Selecciona el tipo de ausencia
                 <select value={tipoAusencia} onChange={(e) => setTipoAusencia(e.target.value)} className="mt-2 w-full rounded-xl border border-[var(--erp-border)] bg-white px-4 py-3 text-sm font-normal text-slate-800">
                   <option value="">Selecciona una ausencia…</option>
                   {tiposAusencia.map((x) => <option key={x.id} value={x.nombre}>{x.nombre}{x.requiere_justificante ? " · requiere justificante" : ""}</option>)}
                 </select>
-              </label>
+              </label><button type="button" disabled={guardando || !tipoAusencia} onClick={() => enviarMarcaje("AUSENCIA")} className="mt-3 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">Confirmar ausencia</button><button type="button" onClick={() => setMostrarSelectorAusencia(false)} className="ml-2 rounded-xl border border-violet-200 px-4 py-2.5 text-sm font-semibold text-violet-900">Cancelar</button></div>}
               <label className="mt-4 block text-xs font-bold text-[var(--erp-text-soft)]">Observaciones opcionales
                 <input value={observaciones} onChange={(e) => setObservaciones(e.target.value)} maxLength={500} placeholder="Añadir una nota al marcaje…" className="mt-2 w-full rounded-xl border border-[var(--erp-border)] bg-white px-4 py-3 text-sm font-normal text-slate-800 outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100" />
               </label>
