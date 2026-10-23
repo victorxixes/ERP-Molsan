@@ -179,3 +179,56 @@
 @media (prefers-reduced-motion: reduce) {
   :is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) * { transition: none !important; }
 }
+
+
+/* Cabeceras ERP explícitas para las subpantallas de Seguridad. */
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header {
+  display:flex; align-items:center; justify-content:space-between; gap:1.25rem; flex-wrap:wrap;
+  margin:0 0 1.5rem; padding:1.5rem 1.75rem; border:1px solid var(--erp-border,#d7e0ec);
+  border-radius:1.15rem; background:linear-gradient(135deg,var(--erp-surface,#fff) 0%,var(--erp-surface-soft,#f6f8fc) 100%);
+  box-shadow:0 8px 24px rgba(24,39,75,.055);
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-eyebrow {
+  margin-bottom:.4rem; color:var(--erp-primary,#3156b3); font-size:.7rem; line-height:1.4;
+  font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-title {
+  margin:0; color:var(--erp-text-strong,#17233a); font-size:clamp(1.55rem,2.2vw,2rem);
+  line-height:1.2; font-weight:800; letter-spacing:-.035em;
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(.erp-page-subtitle,.erp-page-description) {
+  max-width:60rem; margin:.55rem 0 0; color:var(--erp-text-soft,#64748b); font-size:.94rem; line-height:1.6;
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header-status { display:flex; align-items:center; gap:.5rem; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-badge {
+  display:inline-flex; align-items:center; justify-content:center; gap:.35rem; max-width:100%; padding:.35rem .7rem;
+  border:1px solid var(--erp-border,#d7e0ec); border-radius:999px; background:var(--erp-surface-soft,#f6f8fc);
+  color:var(--erp-text-soft,#64748b); font-size:.75rem; line-height:1.35; font-weight:700; white-space:normal;
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-badge-primary { border-color:#cbd8fb; background:#edf3ff; color:#3156b3; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-badge-success { border-color:#b7e4c7; background:#eaf8f0; color:#166534; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-badge-danger { border-color:#fecaca; background:#fff0f1; color:#b91c1c; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:.45rem; min-height:2.45rem; padding:.6rem 1rem;
+  border:1px solid transparent; border-radius:.7rem; font-family:inherit; font-size:.875rem; font-weight:700;
+  line-height:1.25; text-decoration:none; cursor:pointer;
+  transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; transform:none; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-primary { border-color:var(--erp-primary,#3156b3); background:var(--erp-primary,#3156b3); color:#fff; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-primary:hover:not(:disabled) { border-color:var(--erp-primary-dark,#274694); background:var(--erp-primary-dark,#274694); box-shadow:0 5px 14px rgba(49,86,179,.2); transform:translateY(-1px); }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-secondary { border-color:var(--erp-border,#d7e0ec); background:var(--erp-surface,#fff); color:var(--erp-text,#24324a); }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-secondary:hover:not(:disabled) { border-color:var(--erp-border-strong,#c4d0df); background:var(--erp-surface-soft,#f6f8fc); }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-danger { border-color:var(--erp-danger,#dc3545); background:var(--erp-danger,#dc3545); color:#fff; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-danger:hover:not(:disabled) { background:#b91c1c; border-color:#b91c1c; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-success { border-color:var(--erp-success,#198754); background:var(--erp-success,#198754); color:#fff; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) {
+  width:100%; min-height:2.65rem; padding:.65rem .8rem; border:1px solid var(--erp-border,#d7e0ec);
+  border-radius:.7rem; background:var(--erp-surface,#fff); color:var(--erp-text,#24324a); box-shadow:inset 0 1px 2px rgba(15,23,42,.025);
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(input,select,textarea):focus { border-color:var(--erp-primary,#3156b3); outline:3px solid color-mix(in srgb,var(--erp-primary,#3156b3) 15%,transparent); }
+@media(max-width:680px) {
+  :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header { align-items:flex-start; padding:1.1rem; gap:.8rem; }
+  :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header-status { width:100%; }
+}
+@media(prefers-reduced-motion:reduce) { :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn { transition:none; } }
