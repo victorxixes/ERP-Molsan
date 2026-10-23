@@ -46,6 +46,7 @@ MODULOS_BASE = [
     "notificaciones",
     "notargest",
     "encargagest",
+    "fichajes",
 ]
 
 
