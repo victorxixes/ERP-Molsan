@@ -379,6 +379,7 @@ def listar_roles(
 def crear_rol(
     datos: RolCreate,
     db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_permiso_seguridad("crear")),
 ):
     """
     Crea un nuevo rol.
