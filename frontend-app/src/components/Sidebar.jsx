@@ -887,31 +887,15 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     const usuarioAdmin = normalizarClave(empleado?.usuario) === "admin";
     const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario"].some((r) => rol.includes(r));
 
-    const elementosEnBarra = Array.isArray(navigationItems) ? navigationItems : [];
-    const clavesFijadas = new Set(modulosFijados.map((modulo) => modulo.key));
-    const elementosVisibles = [
-      ...visiblesPrincipales,
-      ...visiblesSecundarios.filter((modulo) => clavesFijadas.has(modulo.key)),
-    ];
-
-    const yaVisible = (modulo) =>
-      elementosEnBarra.some((item) =>
-        item?.key === modulo.key ||
-        normalizarClave(item?.label) === normalizarClave(modulo.label)
-      ) ||
-      elementosVisibles.some((item) =>
-        item.key === modulo.key ||
-        normalizarClave(item.label) === normalizarClave(modulo.label)
-      ) ||
-      normalizarClave(modulo.label) === normalizarClave(brandName);
-
+    // "Módulos" es el catálogo general del ERP: no excluye los accesos
+    // que ya están en la navegación o en el módulo actual.
+    // La deduplicación se hace únicamente dentro del propio catálogo.
     const items = MODULOS_ERP
       .filter((modulo) =>
         Boolean(modulo.route) &&
         modulo.key !== "notificaciones" &&
         normalizarClave(modulo.label) !== "notificaciones" &&
-        (esAdmin || puedeVerModulo(modulo.key)) &&
-        !yaVisible(modulo)
+        (esAdmin || puedeVerModulo(modulo.key))
       )
       .map((modulo) => ({
         key: modulo.key,
@@ -926,7 +910,10 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
           clock: "clock",
           settings: "settings",
         })[modulo.icon] || modulo.icon,
-      }));
+      }))
+      .filter((modulo, index, lista) =>
+        lista.findIndex((otro) => otro.key === modulo.key) === index
+      );
 
     // Excepciones operativas que no forman parte del catálogo general.
     const provisiones = {
@@ -936,7 +923,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       icon: "clipboard",
     };
     if ((esAdmin || puedeVerModulo("expedientes")) &&
-        !yaVisible(provisiones) &&
         !items.some((item) => item.key === provisiones.key)) {
       items.push(provisiones);
     }
@@ -948,7 +934,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       icon: "clock",
     };
     if (esAdmin &&
-        !yaVisible(controlFichajes) &&
         !items.some((item) => item.key === controlFichajes.key)) {
       items.push(controlFichajes);
     }
