@@ -936,6 +936,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
             items-center
             gap-3
             min-w-0
+            ${headerActions ? "flex-wrap" : ""}
           "
         >
 
@@ -1019,6 +1020,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               flex-1
               min-w-0
               ${navigationItems ? "flex-nowrap overflow-x-auto overflow-y-visible" : "overflow-x-auto overflow-y-visible"}
+              ${headerActions && Array.isArray(navigationItems) && navigationItems.length === 0 ? "hidden" : ""}
               pb-0.5
             `}
           >
