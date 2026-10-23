@@ -42,7 +42,7 @@ export default function Fichajes({ modo = "empleado" }) {
   const [reloj, setReloj] = useState(new Date());
   const [empleados, setEmpleados] = useState([]);
   const [marcajesAdmin, setMarcajesAdmin] = useState([]);
-  const [pestana, setPestana] = useState(modo === "admin" ? "control" : "calendario");
+  const [pestana, setPestana] = useState(modo === "admin" ? "control" : "resumen");
   const [mes, setMes] = useState(inicioMes(FECHA_HOY));
   const [busqueda, setBusqueda] = useState("");
   const [fechaDesde, setFechaDesde] = useState(fechaISO(new Date(FECHA_HOY.getFullYear(), FECHA_HOY.getMonth(), 1)));
@@ -166,7 +166,7 @@ export default function Fichajes({ modo = "empleado" }) {
 
   const tabs = esAdminVista
     ? [{ id: "control", label: "Control de marcajes" }]
-    : [{ id: "calendario", label: "Calendario mensual" }, { id: "resumen", label: "Resumen de marcajes" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }];
+    : [{ id: "resumen", label: "Resumen de marcajes" }, { id: "calendario", label: "Calendario mensual" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }];
 
   return (
     <main className="mx-auto w-full max-w-[1500px] space-y-6 p-4 text-[var(--erp-text)] sm:p-6">
