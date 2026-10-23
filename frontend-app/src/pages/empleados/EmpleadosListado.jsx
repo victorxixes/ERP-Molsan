@@ -1067,7 +1067,6 @@ export default function EmpleadosListado({
           flex
           flex-col
           gap-3
-          lg:flex-row
         ">
 
           <div className="
