@@ -228,7 +228,7 @@ export default function SeguridadUsuarios() {
           CONTENIDO PRINCIPAL
       ====================================================== */}
 
-      <div className="grid grid-cols-1 xl:grid-cols-[340px_minmax(0,1fr)] gap-6">
+      <div className="seguridad-usuarios-layout grid grid-cols-1 xl:grid-cols-[minmax(280px,0.8fr)_minmax(0,2fr)] gap-6">
 
         {/* ====================================================
             EMPLEADOS
