@@ -36,7 +36,7 @@ export default function SolicitudesAusencia({ modo = "empleado", empleados = [] 
       }
     } catch (e) { setError(e?.response?.data?.detail || "No se pudieron cargar las solicitudes de ausencia."); }
     finally { setCargando(false); }
-  }, [admin, estado, empleadoId]);
+  }, [admin, estado, empleadoId, tipo]);
 
   useEffect(() => { cargar(); }, [cargar]);
 
