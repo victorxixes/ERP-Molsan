@@ -7,7 +7,7 @@ from datetime import date, datetime
 from io import BytesIO
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
-from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, ForeignKey, LargeBinary, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, ForeignKey, LargeBinary, UniqueConstraint, and_, func, or_
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Session
 from backend.app.database import Base, get_db
@@ -76,8 +76,22 @@ def _nombre(empleado):
 def _relacion_firmas(db, empleado_id, periodo):
     inicio = _periodo(periodo)
     fin = date(inicio.year + (inicio.month == 12), 1 if inicio.month == 12 else inicio.month + 1, 1)
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    nombre = _nombre(empleado)
+    filtro_apoderado = Expediente.apoderado_empleado_id == empleado_id
+    if nombre:
+        # Compatibilidad con expedientes históricos sin FK de apoderado.
+        # Cuando la FK existe, sigue siendo la relación autoritativa.
+        nombre_expediente = func.translate(
+            func.lower(func.trim(Expediente.apoderado)), "áéíóúüñ", "aeiouun"
+        )
+        nombre_colaborador = func.translate(nombre.lower().strip(), "áéíóúüñ", "aeiouun")
+        filtro_apoderado = or_(
+            Expediente.apoderado_empleado_id == empleado_id,
+            and_(Expediente.apoderado_empleado_id.is_(None), nombre_expediente == nombre_colaborador),
+        )
     filas = (db.query(Expediente)
-        .filter(Expediente.apoderado_empleado_id == empleado_id,
+        .filter(filtro_apoderado,
                 Expediente.fecha_firma >= inicio,
                 Expediente.fecha_firma < fin)
         .order_by(Expediente.fecha_firma, Expediente.id_expediente)
