@@ -326,3 +326,49 @@
   .seguridad-rol-editor-premium table,
   .seguridad-usuarios-premium table { min-width:620px; }
 }
+
+
+/* Distribución de la pantalla Usuarios y seguridad: directorio estrecho, ficha amplia. */
+.seguridad-usuarios-layout { align-items:start; grid-template-columns:minmax(280px,.8fr) minmax(0,2fr); }
+.seguridad-usuarios-layout > .erp-card,
+.seguridad-usuarios-layout > .space-y-6 { min-width:0; width:100%; }
+.seguridad-usuarios-layout > .erp-card { position:sticky; top:1rem; }
+.seguridad-usuarios-layout > .erp-card .erp-card-header { padding:1.1rem 1.2rem; }
+.seguridad-usuarios-layout > .erp-card .erp-card-body { min-width:0; }
+.seguridad-usuarios-layout > .erp-card .erp-card-body > * { min-width:0; max-width:100%; }
+/* El directorio se presenta como una lista vertical; evita mini tarjetas en columnas. */
+.seguridad-usuarios-layout > .erp-card .erp-card-body .grid {
+  grid-template-columns:minmax(0,1fr) !important;
+}
+.seguridad-usuarios-layout > .erp-card .erp-card-body [class*="grid-cols-"] {
+  grid-template-columns:minmax(0,1fr) !important;
+}
+.seguridad-usuarios-layout > .erp-card .erp-card-body img {
+  max-width:100%; object-fit:cover;
+}
+.seguridad-usuarios-layout > .space-y-6 > .erp-card,
+.seguridad-usuarios-layout > .space-y-6 .erp-card { min-width:0; }
+.seguridad-usuarios-layout .erp-data-item {
+  display:flex; flex-direction:column; align-items:flex-start; gap:.35rem;
+  min-width:0; padding:.85rem 1rem; border:1px solid #e5ebf4;
+  border-radius:12px; background:#fbfcfe;
+}
+.seguridad-usuarios-layout .erp-data-value { overflow-wrap:anywhere; word-break:break-word; }
+.seguridad-usuarios-layout .erp-action-bar {
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  gap:1rem; padding:1rem; border:1px solid #e1e8f2; border-radius:12px;
+  background:#f8faff;
+}
+@media(max-width:1100px) {
+  .seguridad-usuarios-layout { grid-template-columns:minmax(0,1fr); }
+  .seguridad-usuarios-layout > .erp-card { position:static; }
+  .seguridad-usuarios-layout > .erp-card .erp-card-body .grid,
+  .seguridad-usuarios-layout > .erp-card .erp-card-body [class*="grid-cols-"] {
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+}
+@media(max-width:640px) {
+  .seguridad-usuarios-layout { gap:1rem; }
+  .seguridad-usuarios-layout .erp-action-bar { align-items:stretch; }
+  .seguridad-usuarios-layout .erp-action-bar > * { width:100%; }
+}
