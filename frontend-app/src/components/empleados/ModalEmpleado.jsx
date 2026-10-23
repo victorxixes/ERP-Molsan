@@ -2077,7 +2077,7 @@ const permisosDisponibles =
 
   useEffect(() => {
     if (!pestanasVisibles.some((item) => item.id === pestana)) {
-      setPestana("basicos");
+      setPestana(pestanasVisibles[0]?.id || "basicos");
     }
   }, [empleadoId, esPropiaFicha, esAdministrador, pestana]);
 
