@@ -12,7 +12,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import Base, engine, get_db
 from backend.app.empleados.models import Empleado
-from backend.app.fichajes.models import FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones
+from backend.app.fichajes.models import FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones
 
 router = APIRouter(prefix="/fichajes", tags=["Fichaje Molsan"])
 TIPOS_MARCAJE = {"ENTRADA", "SALIDA", "PAUSA_CAFE_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "RETORNO_AUSENCIA", "AUSENCIA"}
@@ -31,7 +31,7 @@ def _migrar_tablas():
             conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
             Base.metadata.create_all(
                 bind=conexion,
-                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__, FichajeTipoAusencia.__table__, FichajeVacaciones.__table__],
+                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__, FichajeTipoAusencia.__table__, FichajeVacaciones.__table__, FichajeBolsaVacaciones.__table__],
                 checkfirst=True,
             )
         from sqlalchemy.orm import Session as _Session
@@ -303,7 +303,10 @@ def mis_vacaciones(usuario=Depends(get_current_user), db: Session = Depends(get_
     registros = db.query(FichajeVacaciones).filter(FichajeVacaciones.empleado_id == usuario.id,
         FichajeVacaciones.fecha_inicio >= date(anio, 1, 1), FichajeVacaciones.fecha_inicio < date(anio + 1, 1, 1)).order_by(FichajeVacaciones.fecha_inicio).all()
     disfrutados = sum(v.dias for v in registros if v.estado == "APROBADO")
-    return {"anio": anio, "dias_asignados": 0, "dias_disfrutados": disfrutados, "dias_restantes": None,
+    bolsa = db.query(FichajeBolsaVacaciones).filter(FichajeBolsaVacaciones.empleado_id == usuario.id, FichajeBolsaVacaciones.anio == anio).first()
+    asignados = bolsa.dias_asignados if bolsa else None
+    return {"anio": anio, "dias_asignados": asignados, "dias_disfrutados": disfrutados,
+            "dias_restantes": max(0, asignados - disfrutados) if asignados is not None else None,
             "registros": [{"id": v.id, "fecha_inicio": v.fecha_inicio.isoformat(), "fecha_fin": v.fecha_fin.isoformat(), "dias": v.dias, "estado": v.estado, "observaciones": v.observaciones} for v in registros],
             "aviso": "La asignación anual debe configurarla administración; no se inventa una bolsa de días."}
 
@@ -356,3 +359,32 @@ def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_cu
     return {"anio": anio, "horas_trabajadas": round(max(0, segundos) / 3600, 2), "horas_previstas": None,
             "diferencia_horas": None, "marcajes": len(registros), "jornadas_incompletas": incompletos,
             "aviso": "Las horas previstas y la diferencia se habilitarán al configurar el calendario laboral individual."}
+
+
+@router.get("/admin/vacaciones-bolsa")
+def admin_listar_bolsas_vacaciones(anio: int | None = Query(default=None),
+                                   usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    anio = anio or date.today().year
+    filas = db.query(FichajeBolsaVacaciones, Empleado).join(Empleado, Empleado.id == FichajeBolsaVacaciones.empleado_id).filter(FichajeBolsaVacaciones.anio == anio).all()
+    return [{"empleado_id": b.empleado_id, "empleado_nombre": _nombre_completo(e) or e.usuario, "anio": b.anio, "dias_asignados": b.dias_asignados} for b, e in filas]
+
+
+@router.post("/admin/vacaciones-bolsa")
+def admin_configurar_bolsa_vacaciones(empleado_id: int = Form(...), anio: int = Form(...), dias_asignados: int = Form(...),
+                                      usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "crear")
+    _exigir_admin(usuario)
+    if anio < 2000 or anio > 2100 or dias_asignados < 0 or dias_asignados > 60:
+        raise HTTPException(status_code=422, detail="Indica un año válido y entre 0 y 60 días asignados.")
+    if not db.query(Empleado).filter(Empleado.id == empleado_id).first():
+        raise HTTPException(status_code=404, detail="Empleado no encontrado.")
+    bolsa = db.query(FichajeBolsaVacaciones).filter(FichajeBolsaVacaciones.empleado_id == empleado_id, FichajeBolsaVacaciones.anio == anio).first()
+    if bolsa:
+        bolsa.dias_asignados = dias_asignados
+    else:
+        bolsa = FichajeBolsaVacaciones(empleado_id=empleado_id, anio=anio, dias_asignados=dias_asignados)
+        db.add(bolsa)
+    db.commit()
+    return {"empleado_id": empleado_id, "anio": anio, "dias_asignados": dias_asignados}
