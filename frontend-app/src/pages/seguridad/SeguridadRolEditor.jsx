@@ -422,7 +422,7 @@ export default function SeguridadRolEditor() {
 
   return (
 
-    <div className="seguridad-subpagina-premium seguridad-rol-editor-premium space-y-6 animate-fade-in">
+    <div className="erp-page seguridad-subpagina-premium seguridad-rol-editor-premium space-y-6 animate-fade-in">
 
       {/* ======================================================
           CABECERA
@@ -452,19 +452,7 @@ export default function SeguridadRolEditor() {
           <button
             type="button"
             onClick={iniciarCrear}
-            className="
-              inline-flex items-center gap-2
-              px-4 py-2.5
-              rounded-xl
-              bg-[var(--erp-accent)]
-              text-white
-              font-semibold
-              text-sm
-              shadow-sm
-              hover:brightness-105
-              active:scale-[0.98]
-              transition
-            "
+            className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
 
             <span className="text-base">
@@ -1022,24 +1010,7 @@ export default function SeguridadRolEditor() {
                   !nombreRol.trim()
                 }
                 onClick={guardarRol}
-                className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  gap-2
-                  px-5 py-2.5
-                  rounded-xl
-                  bg-[var(--erp-accent)]
-                  text-white
-                  text-sm
-                  font-semibold
-                  shadow-sm
-                  hover:brightness-105
-                  active:scale-[0.98]
-                  disabled:opacity-50
-                  disabled:cursor-not-allowed
-                  transition
-                "
+                className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
 
                 {guardando ? (
@@ -1074,18 +1045,7 @@ export default function SeguridadRolEditor() {
                 type="button"
                 disabled={guardando}
                 onClick={cancelar}
-                className="
-                  px-5 py-2.5
-                  rounded-xl
-                  border border-[var(--erp-border)]
-                  bg-white
-                  text-[var(--erp-text)]
-                  text-sm
-                  font-semibold
-                  hover:bg-[var(--erp-surface-soft)]
-                  disabled:opacity-50
-                  transition
-                "
+                className="erp-btn erp-btn-secondary px-5 py-2.5 text-sm font-semibold disabled:opacity-50"
               >
                 Cancelar
               </button>

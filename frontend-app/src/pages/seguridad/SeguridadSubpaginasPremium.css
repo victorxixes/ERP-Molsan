@@ -179,3 +179,150 @@
 @media (prefers-reduced-motion: reduce) {
   :is(.seguridad-subpagina-premium, .seguridad-ficha-premium, .seguridad-roles-premium, .seguridad-permisos-premium, .seguridad-modulos-premium, .seguridad-logs-premium, .seguridad-resumen-premium) * { transition: none !important; }
 }
+
+
+/* Cabeceras ERP explícitas para las subpantallas de Seguridad. */
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header {
+  display:flex; align-items:center; justify-content:space-between; gap:1.25rem; flex-wrap:wrap;
+  margin:0 0 1.5rem; padding:1.5rem 1.75rem; border:1px solid var(--erp-border,#d7e0ec);
+  border-radius:1.15rem; background:linear-gradient(135deg,var(--erp-surface,#fff) 0%,var(--erp-surface-soft,#f6f8fc) 100%);
+  box-shadow:0 8px 24px rgba(24,39,75,.055);
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-eyebrow {
+  margin-bottom:.4rem; color:var(--erp-primary,#3156b3); font-size:.7rem; line-height:1.4;
+  font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-title {
+  margin:0; color:var(--erp-text-strong,#17233a); font-size:clamp(1.55rem,2.2vw,2rem);
+  line-height:1.2; font-weight:800; letter-spacing:-.035em;
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(.erp-page-subtitle,.erp-page-description) {
+  max-width:60rem; margin:.55rem 0 0; color:var(--erp-text-soft,#64748b); font-size:.94rem; line-height:1.6;
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header-status { display:flex; align-items:center; gap:.5rem; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-badge {
+  display:inline-flex; align-items:center; justify-content:center; gap:.35rem; max-width:100%; padding:.35rem .7rem;
+  border:1px solid var(--erp-border,#d7e0ec); border-radius:999px; background:var(--erp-surface-soft,#f6f8fc);
+  color:var(--erp-text-soft,#64748b); font-size:.75rem; line-height:1.35; font-weight:700; white-space:normal;
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-badge-primary { border-color:#cbd8fb; background:#edf3ff; color:#3156b3; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-badge-success { border-color:#b7e4c7; background:#eaf8f0; color:#166534; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-badge-danger { border-color:#fecaca; background:#fff0f1; color:#b91c1c; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:.45rem; min-height:2.45rem; padding:.6rem 1rem;
+  border:1px solid transparent; border-radius:.7rem; font-family:inherit; font-size:.875rem; font-weight:700;
+  line-height:1.25; text-decoration:none; cursor:pointer;
+  transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; transform:none; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-primary { border-color:var(--erp-primary,#3156b3); background:var(--erp-primary,#3156b3); color:#fff; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-primary:hover:not(:disabled) { border-color:var(--erp-primary-dark,#274694); background:var(--erp-primary-dark,#274694); box-shadow:0 5px 14px rgba(49,86,179,.2); transform:translateY(-1px); }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-secondary { border-color:var(--erp-border,#d7e0ec); background:var(--erp-surface,#fff); color:var(--erp-text,#24324a); }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-secondary:hover:not(:disabled) { border-color:var(--erp-border-strong,#c4d0df); background:var(--erp-surface-soft,#f6f8fc); }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-danger { border-color:var(--erp-danger,#dc3545); background:var(--erp-danger,#dc3545); color:#fff; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-danger:hover:not(:disabled) { background:#b91c1c; border-color:#b91c1c; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn-success { border-color:var(--erp-success,#198754); background:var(--erp-success,#198754); color:#fff; }
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) {
+  width:100%; min-height:2.65rem; padding:.65rem .8rem; border:1px solid var(--erp-border,#d7e0ec);
+  border-radius:.7rem; background:var(--erp-surface,#fff); color:var(--erp-text,#24324a); box-shadow:inset 0 1px 2px rgba(15,23,42,.025);
+}
+:is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) :is(input,select,textarea):focus { border-color:var(--erp-primary,#3156b3); outline:3px solid color-mix(in srgb,var(--erp-primary,#3156b3) 15%,transparent); }
+@media(max-width:680px) {
+  :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header { align-items:flex-start; padding:1.1rem; gap:.8rem; }
+  :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-page-header-status { width:100%; }
+}
+@media(prefers-reduced-motion:reduce) { :is(.seguridad-subpagina-premium, .seguridad-usuarios-premium) .erp-btn { transition:none; } }
+
+
+/* Segunda pasada visual: estructura, acciones y tablas de Roles y Usuarios. */
+.seguridad-rol-editor-premium,
+.seguridad-usuarios-premium { width:100%; min-width:0; }
+.seguridad-rol-editor-premium > .erp-page-header,
+.seguridad-usuarios-premium > .erp-page-header { min-height:132px; }
+.seguridad-rol-editor-premium > .erp-card,
+.seguridad-usuarios-premium .erp-card {
+  min-width:0; overflow:hidden; border:1px solid var(--erp-border,#dbe3ef);
+  border-radius:16px; background:var(--erp-surface,#fff);
+  box-shadow:0 8px 24px rgba(20,35,65,.06);
+}
+.seguridad-rol-editor-premium .erp-card > :first-child,
+.seguridad-usuarios-premium .erp-card > :first-child { min-width:0; }
+.seguridad-rol-editor-premium table,
+.seguridad-usuarios-premium table { border-collapse:separate; border-spacing:0; }
+.seguridad-rol-editor-premium table thead th,
+.seguridad-usuarios-premium table thead th {
+  padding:.85rem 1rem; background:#f4f7fb; color:#526078; text-align:left;
+  font-size:.7rem; font-weight:800; letter-spacing:.055em; text-transform:uppercase;
+  border-bottom:1px solid var(--erp-border,#dbe3ef);
+}
+.seguridad-rol-editor-premium table tbody td,
+.seguridad-usuarios-premium table tbody td {
+  padding:.9rem 1rem; border-bottom:1px solid #edf1f6; vertical-align:middle;
+  color:var(--erp-text,#24324a);
+}
+.seguridad-rol-editor-premium table tbody tr:last-child td,
+.seguridad-usuarios-premium table tbody tr:last-child td { border-bottom:0; }
+.seguridad-rol-editor-premium table tbody tr:hover,
+.seguridad-usuarios-premium table tbody tr:hover { background:#f8faff; }
+.seguridad-rol-editor-premium button:not(.erp-btn),
+.seguridad-usuarios-premium button:not(.erp-btn) {
+  max-width:100%; border-radius:.65rem; font-family:inherit; font-weight:650;
+  line-height:1.3; transition:background-color .15s ease,border-color .15s ease,box-shadow .15s ease;
+}
+.seguridad-rol-editor-premium button[class*="bg-"]:not(.erp-btn),
+.seguridad-usuarios-premium button[class*="bg-"]:not(.erp-btn) {
+  padding:.55rem .85rem;
+}
+.seguridad-rol-editor-premium button[class*="bg-blue"],
+.seguridad-usuarios-premium button[class*="bg-blue"],
+.seguridad-rol-editor-premium button[class*="bg-indigo"],
+.seguridad-usuarios-premium button[class*="bg-indigo"] {
+  box-shadow:0 2px 5px rgba(49,86,179,.12);
+}
+.seguridad-rol-editor-premium button[class*="bg-red"],
+.seguridad-usuarios-premium button[class*="bg-red"],
+.seguridad-rol-editor-premium button[class*="bg-rose"],
+.seguridad-usuarios-premium button[class*="bg-rose"] { border:1px solid #fecaca; }
+.seguridad-rol-editor-premium .erp-card-header,
+.seguridad-usuarios-premium .erp-card-header {
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  padding:1.2rem 1.4rem; border-bottom:1px solid var(--erp-border,#dbe3ef);
+}
+.seguridad-rol-editor-premium .erp-card-title,
+.seguridad-usuarios-premium .erp-card-title {
+  margin:0; color:var(--erp-text-strong,#17233a); font-size:1rem; font-weight:800; line-height:1.35;
+}
+.seguridad-rol-editor-premium .erp-card-description,
+.seguridad-usuarios-premium .erp-card-description {
+  margin:.35rem 0 0; color:var(--erp-text-soft,#64748b); font-size:.84rem; line-height:1.5;
+}
+.seguridad-usuarios-premium > .grid { align-items:start; }
+.seguridad-usuarios-premium > .grid > .erp-card { position:relative; }
+.seguridad-usuarios-premium .erp-card-body { padding:1.35rem; min-width:0; }
+.seguridad-usuarios-premium .erp-card-body.p-0 { padding:0; }
+.seguridad-usuarios-premium .erp-empty-state {
+  display:flex; align-items:center; gap:1rem; min-height:150px; padding:1.25rem;
+  border:1px dashed #cbd5e1; border-radius:12px; background:#f8fafc;
+}
+.seguridad-usuarios-premium .erp-empty-state-icon {
+  display:grid; place-items:center; flex:0 0 48px; width:48px; height:48px;
+  border-radius:14px; background:#eaf0ff; font-size:1.35rem;
+}
+.seguridad-usuarios-premium .erp-empty-state-title { margin:0; color:#1e293b; font-weight:800; }
+.seguridad-usuarios-premium .erp-empty-state-description { margin:.35rem 0 0; color:#64748b; line-height:1.55; }
+.seguridad-usuarios-premium .erp-alert { padding:.85rem 1rem; border-radius:10px; border:1px solid #bfdbfe; background:#eff6ff; color:#1d4ed8; }
+.seguridad-usuarios-premium .erp-alert-success { border-color:#bbf7d0; background:#f0fdf4; color:#166534; }
+.seguridad-usuarios-premium .erp-alert-danger { border-color:#fecaca; background:#fef2f2; color:#b91c1c; }
+@media(max-width:900px) {
+  .seguridad-usuarios-premium > .grid { grid-template-columns:minmax(0,1fr); }
+  .seguridad-usuarios-premium .erp-card-header { align-items:flex-start; }
+}
+@media(max-width:640px) {
+  .seguridad-rol-editor-premium > .erp-page-header,
+  .seguridad-usuarios-premium > .erp-page-header { min-height:0; }
+  .seguridad-rol-editor-premium .erp-card-header,
+  .seguridad-usuarios-premium .erp-card-header { padding:1rem; }
+  .seguridad-usuarios-premium .erp-card-body { padding:1rem; }
+  .seguridad-rol-editor-premium table,
+  .seguridad-usuarios-premium table { min-width:620px; }
+}
