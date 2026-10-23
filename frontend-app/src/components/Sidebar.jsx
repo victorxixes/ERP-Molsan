@@ -853,12 +853,37 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     });
   }, [visiblesSecundarios, navigationItems, brandName, modulosFijados]);
 
-  // ApoderaGest y NotarGest tienen una navegación de trabajo específica;
-  // ocultamos «Más» en ambos para mantener sus barras despejadas.
+  // El desplegable «Módulos» replica las aplicaciones de Espacio de trabajo.
+  // Esa página se guía por los módulos visibles asignados a la ficha del empleado,
+  // por lo que usamos exactamente las mismas fuentes y no todos los accesos internos.
   const modulosDropdown = useMemo(() => {
-    const claves = new Set(["apoderagest", "notargest", "encargagest"]);
-    return visiblesSecundarios.filter((modulo) => claves.has(modulo.key));
-  }, [visiblesSecundarios]);
+    const normalizarClave = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
+    const clavesVisibles = [
+      ...(Array.isArray(empleado?.modulos_visibles_list) ? empleado.modulos_visibles_list : []),
+      ...(Array.isArray(empleado?.modulos_visibles) ? empleado.modulos_visibles : []),
+    ].map(normalizarClave);
+
+    const clavesWorkspace = new Set([
+      "apoderagest",
+      "cancelagest",
+      "notargest",
+      "encargagest",
+      "fichajes",
+    ]);
+
+    return MODULOS_ERP
+      .filter((modulo) =>
+        clavesWorkspace.has(normalizarClave(modulo.key)) &&
+        Boolean(modulo.route) &&
+        clavesVisibles.includes(normalizarClave(modulo.key))
+      )
+      .map((modulo) => ({
+        key: modulo.key,
+        to: modulo.route,
+        label: modulo.label,
+        icon: modulo.icon,
+      }));
+  }, [empleado]);
 
   const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
   const modulosDropdownRef = useRef(null);
@@ -890,7 +915,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       if (!boton) return;
       const rect = boton.getBoundingClientRect();
       const ancho = Math.min(240, window.innerWidth - 24);
-      const altoEstimado = Math.min(220, window.innerHeight - 24);
+      const altoEstimado = Math.min(380, window.innerHeight - 24);
       const left = Math.max(12, Math.min(rect.right - ancho, window.innerWidth - ancho - 12));
       const top = Math.max(12, Math.min(rect.bottom + 8, window.innerHeight - altoEstimado - 12));
       setModulosDropdownPosicion({ top, left, ancho });
@@ -1090,7 +1115,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                         width: modulosDropdownPosicion.ancho,
                         zIndex: 9999,
                       }}
-                      className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl"
+                      className="max-h-[min(70vh,380px)] overflow-y-auto rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl"
                     >
                       {modulosDropdown.map((modulo) => (
                         <NavLink
@@ -1166,7 +1191,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                       width: Math.max(205, modulosDropdownPosicion.ancho),
                       zIndex: 9999,
                     }}
-                    className="rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl"
+                    className="max-h-[min(70vh,380px)] overflow-y-auto rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl"
                   >
                     {modulosDropdown.map((modulo) => (
                       <NavLink
