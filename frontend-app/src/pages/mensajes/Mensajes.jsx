@@ -628,6 +628,7 @@ export default function Mensajes({
   return (
     <div
       className="
+        mensajes-premium-page
         relative
 
         min-h-0
