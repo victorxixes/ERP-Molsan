@@ -140,6 +140,7 @@ import NotarGest from "./pages/notargest/NotarGest.jsx";
 import EncargaGest from "./pages/encargagest/EncargaGest.jsx";
 import EncargaGestWorkspace from "./pages/encargagest/EncargaGestWorkspace.jsx";
 import Fichajes from "./pages/fichajes/Fichajes.jsx";
+import CatalogoFichajes from "./pages/herramientas/CatalogoFichajes.jsx";
 
 
 /**
@@ -487,6 +488,10 @@ export default function App() {
           <Route
             path="catalogos/oficinas"
             element={<CatalogoOficinas />}
+          />
+          <Route
+            path="catalogos/fichajes"
+            element={<CatalogoFichajes />}
           />
 
           <Route

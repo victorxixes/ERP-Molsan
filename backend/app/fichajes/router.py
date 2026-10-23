@@ -12,10 +12,11 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import Base, engine, get_db
 from backend.app.empleados.models import Empleado
-from backend.app.fichajes.models import FichajeDocumento, FichajeMarcaje
+from backend.app.fichajes.models import FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones
 
 router = APIRouter(prefix="/fichajes", tags=["Fichaje Molsan"])
-TIPOS_MARCAJE = {"ENTRADA", "SALIDA", "PAUSA_CAFE", "AUSENCIA_COMER"}
+TIPOS_MARCAJE = {"ENTRADA", "SALIDA", "PAUSA_CAFE_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "RETORNO_AUSENCIA", "AUSENCIA"}
+TIPOS_AUSENCIA_INICIALES = [("Visita médica", 1), ("Asunto personal", 0), ("Gestiones administrativas", 0), ("Permiso retribuido", 0), ("Permiso no retribuido", 0), ("Baja médica", 1), ("Vacaciones", 0), ("Formación", 0), ("Deberes familiares", 0), ("Otra ausencia", 0)]
 TIPOS_DOCUMENTO = {
     "Justificante médico", "Vacaciones", "Ausencia", "Permiso", "Otro"
 }
@@ -30,10 +31,16 @@ def _migrar_tablas():
             conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
             Base.metadata.create_all(
                 bind=conexion,
-                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__],
+                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__, FichajeTipoAusencia.__table__, FichajeVacaciones.__table__, FichajeBolsaVacaciones.__table__],
                 checkfirst=True,
             )
-        print("[FICHAJES] Tablas comprobadas.", flush=True)
+        from sqlalchemy.orm import Session as _Session
+        with _Session(engine) as db:
+            for nombre, justificante in TIPOS_AUSENCIA_INICIALES:
+                if not db.query(FichajeTipoAusencia).filter(FichajeTipoAusencia.nombre == nombre).first():
+                    db.add(FichajeTipoAusencia(nombre=nombre, requiere_justificante=justificante, activo=1))
+            db.commit()
+        print("[FICHAJES] Tablas y catálogo inicial de ausencias comprobados.", flush=True)
     except Exception as exc:
         print(f"[FICHAJES] Aviso: migración pendiente; se reintentará al siguiente arranque: {exc!r}", flush=True)
 
@@ -117,6 +124,7 @@ def listar_mis_marcajes(
 def crear_marcaje(
     tipo: str = Form(...),
     observaciones: str = Form(""),
+    tipo_ausencia: str = Form(""),
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -124,6 +132,12 @@ def crear_marcaje(
     tipo = tipo.strip().upper()
     if tipo not in TIPOS_MARCAJE:
         raise HTTPException(status_code=422, detail="Tipo de marcaje no válido.")
+    if tipo == "AUSENCIA":
+        nombre_ausencia = (tipo_ausencia or "").strip()
+        valido = db.query(FichajeTipoAusencia).filter(FichajeTipoAusencia.nombre == nombre_ausencia, FichajeTipoAusencia.activo == 1).first()
+        if not valido:
+            raise HTTPException(status_code=422, detail="Selecciona un tipo de ausencia válido del catálogo.")
+        observaciones = f"Ausencia: {nombre_ausencia}. {observaciones or ''}".strip()
     ultimo = db.query(FichajeMarcaje).filter(
         FichajeMarcaje.empleado_id == usuario.id
     ).order_by(desc(FichajeMarcaje.fecha_hora)).first()
@@ -131,13 +145,17 @@ def crear_marcaje(
         FichajeMarcaje.empleado_id == usuario.id,
         FichajeMarcaje.tipo.in_({"ENTRADA", "SALIDA"}),
     ).order_by(desc(FichajeMarcaje.fecha_hora)).first()
-    # Las pausas no cierran la jornada: no se permite otra entrada hasta marcar salida.
     if tipo == "ENTRADA" and ultimo_jornada and ultimo_jornada.tipo == "ENTRADA":
         raise HTTPException(status_code=409, detail="Ya consta una entrada sin una salida posterior.")
     if tipo == "SALIDA" and (not ultimo_jornada or ultimo_jornada.tipo != "ENTRADA"):
         raise HTTPException(status_code=409, detail="Para registrar la salida debe existir una entrada previa sin cerrar.")
-    if ultimo and ultimo.tipo == tipo and tipo in {"ENTRADA", "SALIDA"}:
-        raise HTTPException(status_code=409, detail=f"El último marcaje ya es {tipo.lower()}.")
+    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
+    if ultimo and ultimo.tipo in pausas and tipo not in {"RETORNO_AUSENCIA", "SALIDA"}:
+        raise HTTPException(status_code=409, detail="Tienes una pausa o ausencia abierta. Registra primero el retorno.")
+    if tipo in pausas and (not ultimo_jornada or ultimo_jornada.tipo != "ENTRADA"):
+        raise HTTPException(status_code=409, detail="Para iniciar una pausa o ausencia debes tener una jornada abierta.")
+    if tipo == "RETORNO_AUSENCIA" and (not ultimo or ultimo.tipo not in pausas):
+        raise HTTPException(status_code=409, detail="No hay una pausa o ausencia abierta que puedas cerrar.")
     marcaje = FichajeMarcaje(
         empleado_id=usuario.id,
         tipo=tipo,
@@ -254,3 +272,119 @@ def admin_marcajes(
         **_marcaje_dict(m),
         "empleado_nombre": _nombre_completo(e) or e.usuario,
     } for m, e in filas]
+
+ 
+@router.get("/catalogo-ausencias")
+def listar_tipos_ausencia(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    return [{"id": x.id, "nombre": x.nombre, "requiere_justificante": bool(x.requiere_justificante)}
+            for x in db.query(FichajeTipoAusencia).filter(FichajeTipoAusencia.activo == 1).order_by(FichajeTipoAusencia.nombre).all()]
+
+
+@router.post("/catalogo-ausencias")
+def crear_tipo_ausencia(nombre: str = Form(...), requiere_justificante: bool = Form(False),
+                        usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "crear")
+    _exigir_admin(usuario)
+    nombre = nombre.strip()
+    if not nombre or len(nombre) > 120:
+        raise HTTPException(status_code=422, detail="Indica un nombre de ausencia de hasta 120 caracteres.")
+    if db.query(FichajeTipoAusencia).filter(FichajeTipoAusencia.nombre.ilike(nombre)).first():
+        raise HTTPException(status_code=409, detail="Ese tipo de ausencia ya existe.")
+    item = FichajeTipoAusencia(nombre=nombre, requiere_justificante=1 if requiere_justificante else 0, activo=1)
+    db.add(item); db.commit(); db.refresh(item)
+    return {"id": item.id, "nombre": item.nombre, "requiere_justificante": bool(item.requiere_justificante)}
+
+
+@router.get("/vacaciones")
+def mis_vacaciones(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    anio = date.today().year
+    registros = db.query(FichajeVacaciones).filter(FichajeVacaciones.empleado_id == usuario.id,
+        FichajeVacaciones.fecha_inicio >= date(anio, 1, 1), FichajeVacaciones.fecha_inicio < date(anio + 1, 1, 1)).order_by(FichajeVacaciones.fecha_inicio).all()
+    disfrutados = sum(v.dias for v in registros if v.estado == "APROBADO")
+    bolsa = db.query(FichajeBolsaVacaciones).filter(FichajeBolsaVacaciones.empleado_id == usuario.id, FichajeBolsaVacaciones.anio == anio).first()
+    asignados = bolsa.dias_asignados if bolsa else None
+    return {"anio": anio, "dias_asignados": asignados, "dias_disfrutados": disfrutados,
+            "dias_restantes": max(0, asignados - disfrutados) if asignados is not None else None,
+            "registros": [{"id": v.id, "fecha_inicio": v.fecha_inicio.isoformat(), "fecha_fin": v.fecha_fin.isoformat(), "dias": v.dias, "estado": v.estado, "observaciones": v.observaciones} for v in registros],
+            "aviso": "La asignación anual debe configurarla administración; no se inventa una bolsa de días."}
+
+
+@router.post("/vacaciones")
+def solicitar_vacaciones(fecha_inicio: date = Form(...), fecha_fin: date = Form(...), observaciones: str = Form(""),
+                          usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "crear")
+    if fecha_fin < fecha_inicio:
+        raise HTTPException(status_code=422, detail="La fecha final no puede ser anterior a la inicial.")
+    if fecha_inicio.year != fecha_fin.year:
+        raise HTTPException(status_code=422, detail="Divide la solicitud si abarca dos años naturales.")
+    dias = (fecha_fin - fecha_inicio).days + 1
+    if dias > 60:
+        raise HTTPException(status_code=422, detail="Una solicitud no puede superar 60 días naturales.")
+    registro = FichajeVacaciones(empleado_id=usuario.id, fecha_inicio=fecha_inicio, fecha_fin=fecha_fin, dias=dias,
+        estado="SOLICITADO", observaciones=(observaciones or "").strip()[:500] or None)
+    db.add(registro); db.commit(); db.refresh(registro)
+    return {"id": registro.id, "estado": registro.estado, "dias": registro.dias}
+
+
+@router.get("/resumen-horas")
+def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    anio = anio or date.today().year
+    require_perm_modulo(usuario, "fichajes", "ver")
+    if anio < 2000 or anio > 2100:
+        raise HTTPException(status_code=422, detail="Año no válido.")
+    inicio, fin = date(anio, 1, 1), date(anio + 1, 1, 1)
+    registros = db.query(FichajeMarcaje).filter(FichajeMarcaje.empleado_id == usuario.id,
+        FichajeMarcaje.fecha_hora >= datetime.combine(inicio, time.min), FichajeMarcaje.fecha_hora < datetime.combine(fin, time.min)).order_by(FichajeMarcaje.fecha_hora).all()
+    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
+    jornada_abierta = None; pausa_abierta = None; pausa_segundos = 0; segundos = 0; incompletos = 0
+    for m in registros:
+        ts = m.fecha_hora
+        if m.tipo == "ENTRADA":
+            if jornada_abierta is not None: incompletos += 1
+            jornada_abierta = ts; pausa_abierta = None; pausa_segundos = 0
+        elif m.tipo in pausas and jornada_abierta is not None:
+            if pausa_abierta is None: pausa_abierta = ts
+        elif m.tipo == "RETORNO_AUSENCIA" and pausa_abierta is not None:
+            pausa_segundos += max(0, (ts - pausa_abierta).total_seconds())
+            pausa_abierta = None
+        elif m.tipo == "SALIDA" and jornada_abierta is not None:
+            fin_pausa = 0
+            if pausa_abierta is not None:
+                fin_pausa = max(0, (ts - pausa_abierta).total_seconds()); incompletos += 1
+            segundos += max(0, (ts - jornada_abierta).total_seconds() - pausa_segundos - fin_pausa)
+            jornada_abierta = None; pausa_abierta = None; pausa_segundos = 0
+    if jornada_abierta is not None: incompletos += 1
+    return {"anio": anio, "horas_trabajadas": round(max(0, segundos) / 3600, 2), "horas_previstas": None,
+            "diferencia_horas": None, "marcajes": len(registros), "jornadas_incompletas": incompletos,
+            "aviso": "Las horas previstas y la diferencia se habilitarán al configurar el calendario laboral individual."}
+
+
+@router.get("/admin/vacaciones-bolsa")
+def admin_listar_bolsas_vacaciones(anio: int | None = Query(default=None),
+                                   usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    anio = anio or date.today().year
+    filas = db.query(FichajeBolsaVacaciones, Empleado).join(Empleado, Empleado.id == FichajeBolsaVacaciones.empleado_id).filter(FichajeBolsaVacaciones.anio == anio).all()
+    return [{"empleado_id": b.empleado_id, "empleado_nombre": _nombre_completo(e) or e.usuario, "anio": b.anio, "dias_asignados": b.dias_asignados} for b, e in filas]
+
+
+@router.post("/admin/vacaciones-bolsa")
+def admin_configurar_bolsa_vacaciones(empleado_id: int = Form(...), anio: int = Form(...), dias_asignados: int = Form(...),
+                                      usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "crear")
+    _exigir_admin(usuario)
+    if anio < 2000 or anio > 2100 or dias_asignados < 0 or dias_asignados > 60:
+        raise HTTPException(status_code=422, detail="Indica un año válido y entre 0 y 60 días asignados.")
+    if not db.query(Empleado).filter(Empleado.id == empleado_id).first():
+        raise HTTPException(status_code=404, detail="Empleado no encontrado.")
+    bolsa = db.query(FichajeBolsaVacaciones).filter(FichajeBolsaVacaciones.empleado_id == empleado_id, FichajeBolsaVacaciones.anio == anio).first()
+    if bolsa:
+        bolsa.dias_asignados = dias_asignados
+    else:
+        bolsa = FichajeBolsaVacaciones(empleado_id=empleado_id, anio=anio, dias_asignados=dias_asignados)
+        db.add(bolsa)
+    db.commit()
+    return {"empleado_id": empleado_id, "anio": anio, "dias_asignados": dias_asignados}

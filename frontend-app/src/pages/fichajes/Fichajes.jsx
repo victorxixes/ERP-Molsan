@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import FichajesResumen from "./FichajesResumen.jsx";
 
 const TIPOS = [
-  { value: "ENTRADA", label: "Entrada", icon: "↗", tone: "emerald" },
-  { value: "SALIDA", label: "Salida", icon: "↙", tone: "rose" },
-  { value: "PAUSA_CAFE", label: "Pausa café / desayuno", icon: "☕", tone: "amber" },
-  { value: "AUSENCIA_COMER", label: "Ausencia / comer", icon: "🍽", tone: "sky" },
+  { value: "ENTRADA", label: "Entrada a trabajar", icon: "↗", tone: "emerald" },
+  { value: "PAUSA_CAFE_INICIO", label: "Entrada pausa café / desayuno", icon: "☕", tone: "amber" },
+  { value: "PAUSA_COMIDA_INICIO", label: "Pausa para comer", icon: "🍽️", tone: "sky" },
+  { value: "PAUSA_CIGARRILLO_INICIO", label: "Pausa cigarrillo", icon: "🚬", tone: "amber" },
+  { value: "RETORNO_AUSENCIA", label: "Retorno de pausa / ausencia", icon: "↩", tone: "blue" },
+  { value: "SALIDA", label: "Salida del trabajo", icon: "↙", tone: "rose" },
+  { value: "AUSENCIA", label: "Registrar ausencia", icon: "📅", tone: "violet" },
 ];
 const TIPOS_DOCUMENTO = ["Justificante médico", "Vacaciones", "Ausencia", "Permiso", "Otro"];
 const FECHA_HOY = new Date();
@@ -32,6 +36,10 @@ export default function Fichajes({ modo = "empleado" }) {
   const [perfil, setPerfil] = useState(null);
   const [marcajes, setMarcajes] = useState([]);
   const [documentos, setDocumentos] = useState([]);
+  const [tiposAusencia, setTiposAusencia] = useState([]);
+  const [tipoAusencia, setTipoAusencia] = useState("");
+  const [mostrarSelectorAusencia, setMostrarSelectorAusencia] = useState(false);
+  const [reloj, setReloj] = useState(new Date());
   const [empleados, setEmpleados] = useState([]);
   const [marcajesAdmin, setMarcajesAdmin] = useState([]);
   const [pestana, setPestana] = useState(modo === "admin" ? "control" : "calendario");
@@ -40,6 +48,9 @@ export default function Fichajes({ modo = "empleado" }) {
   const [fechaDesde, setFechaDesde] = useState(fechaISO(new Date(FECHA_HOY.getFullYear(), FECHA_HOY.getMonth(), 1)));
   const [fechaHasta, setFechaHasta] = useState(fechaISO(FECHA_HOY));
   const [empleadoFiltro, setEmpleadoFiltro] = useState("");
+  const [empleadoBolsaId, setEmpleadoBolsaId] = useState("");
+  const [diasBolsa, setDiasBolsa] = useState("22");
+  const [anioBolsa, setAnioBolsa] = useState(String(new Date().getFullYear()));
   const [tipoDocumento, setTipoDocumento] = useState(TIPOS_DOCUMENTO[0]);
   const [fechaDocumento, setFechaDocumento] = useState(fechaISO(FECHA_HOY));
   const [archivo, setArchivo] = useState(null);
@@ -51,14 +62,14 @@ export default function Fichajes({ modo = "empleado" }) {
 
   const esAdminVista = modo === "admin";
   const recargarEmpleado = useCallback(async () => {
-    const [p, m, d] = await Promise.all([
-      axios.get("/fichajes/mi-perfil"),
-      axios.get("/fichajes/marcajes"),
-      axios.get("/fichajes/documentos"),
+    const [p, m, d, ta] = await Promise.all([
+      axios.get("/fichajes/mi-perfil"), axios.get("/fichajes/marcajes"),
+      axios.get("/fichajes/documentos"), axios.get("/fichajes/catalogo-ausencias"),
     ]);
     setPerfil(p.data);
     setMarcajes(Array.isArray(m.data) ? m.data : []);
     setDocumentos(Array.isArray(d.data) ? d.data : []);
+    setTiposAusencia(Array.isArray(ta.data) ? ta.data : []);
   }, []);
 
   const recargarAdmin = useCallback(async () => {
@@ -105,15 +116,18 @@ export default function Fichajes({ modo = "empleado" }) {
   }, [marcajes]);
 
   const ultimoMarcaje = marcajes[0] || null;
+  useEffect(() => { const timer = window.setInterval(() => setReloj(new Date()), 1000); return () => window.clearInterval(timer); }, []);
   const enviarMarcaje = async (tipo) => {
+    if (tipo === "AUSENCIA" && !tipoAusencia) { setError("Selecciona primero el tipo de ausencia."); return; }
     setGuardando(true); setError(""); setMensaje("");
     try {
       const data = new FormData();
       data.append("tipo", tipo);
       data.append("observaciones", observaciones);
+      if (tipo === "AUSENCIA") data.append("tipo_ausencia", tipoAusencia);
       await axios.post("/fichajes/marcajes", data);
       setObservaciones("");
-      setMensaje(`Marcaje de «${formatearTipo(tipo)}» registrado correctamente.`);
+      setMensaje(`Marcaje de «${formatearTipo(tipo)}» registrado correctamente a las ${new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}.`);
       await recargarEmpleado();
     } catch (e) {
       setError(e?.response?.data?.detail || "No se ha podido registrar el marcaje.");
@@ -175,21 +189,29 @@ export default function Fichajes({ modo = "empleado" }) {
           {!esAdminVista && (
             <section className="rounded-3xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-5 shadow-sm sm:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div><h2 className="text-lg font-bold">Jornada de hoy</h2><p className="mt-1 text-sm text-[var(--erp-text-soft)]">{FECHA_HOY.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p></div>
+                <div><h2 className="text-lg font-bold">Jornada de hoy</h2><p className="mt-1 text-sm text-[var(--erp-text-soft)]">{reloj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p><p className="mt-2 font-mono text-4xl font-extrabold tracking-tight text-blue-800 tabular-nums">{reloj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p><p className="text-xs text-slate-500">Hora local · reloj en tiempo real</p></div>
                 <div className="rounded-xl bg-slate-50 px-3 py-2 text-sm"><span className="text-slate-500">Último movimiento: </span><strong>{ultimoMarcaje ? formatearTipo(ultimoMarcaje.tipo) : "Sin marcajes hoy"}</strong>{ultimoMarcaje && <span className="ml-2 text-slate-500">{hora(ultimoMarcaje.fecha_hora)}</span>}</div>
               </div>
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {TIPOS.map((t) => (
-                  <button key={t.value} type="button" disabled={guardando} onClick={() => enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 rounded-2xl border px-5 py-4 text-left font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-50 ${t.tone === "emerald" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : t.tone === "rose" ? "border-rose-200 bg-rose-50 text-rose-800" : t.tone === "amber" ? "border-amber-200 bg-amber-50 text-amber-900" : "border-sky-200 bg-sky-50 text-sky-900"}`}>
+                  <button key={t.value} type="button" disabled={guardando} onClick={() => t.value === "AUSENCIA" ? setMostrarSelectorAusencia(true) : enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 rounded-2xl border px-5 py-4 text-left font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-50 ${t.tone === "emerald" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : t.tone === "rose" ? "border-rose-200 bg-rose-50 text-rose-800" : t.tone === "amber" ? "border-amber-200 bg-amber-50 text-amber-900" : "border-sky-200 bg-sky-50 text-sky-900"}`}>
                     <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/80 text-2xl">{t.icon}</span><span>{t.label}<span className="mt-1 block text-xs font-medium opacity-70">Registrar ahora</span></span>
                   </button>
                 ))}
               </div>
+              {mostrarSelectorAusencia && <div className="mt-4 rounded-xl border border-violet-200 bg-violet-50/70 p-4"><label className="block text-xs font-bold text-violet-900">Selecciona el tipo de ausencia
+                <select value={tipoAusencia} onChange={(e) => setTipoAusencia(e.target.value)} className="mt-2 w-full rounded-xl border border-[var(--erp-border)] bg-white px-4 py-3 text-sm font-normal text-slate-800">
+                  <option value="">Selecciona una ausencia…</option>
+                  {tiposAusencia.map((x) => <option key={x.id} value={x.nombre}>{x.nombre}{x.requiere_justificante ? " · requiere justificante" : ""}</option>)}
+                </select>
+              </label><button type="button" disabled={guardando || !tipoAusencia} onClick={() => enviarMarcaje("AUSENCIA")} className="mt-3 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">Confirmar ausencia</button><button type="button" onClick={() => setMostrarSelectorAusencia(false)} className="ml-2 rounded-xl border border-violet-200 px-4 py-2.5 text-sm font-semibold text-violet-900">Cancelar</button></div>}
               <label className="mt-4 block text-xs font-bold text-[var(--erp-text-soft)]">Observaciones opcionales
                 <input value={observaciones} onChange={(e) => setObservaciones(e.target.value)} maxLength={500} placeholder="Añadir una nota al marcaje…" className="mt-2 w-full rounded-xl border border-[var(--erp-border)] bg-white px-4 py-3 text-sm font-normal text-slate-800 outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100" />
               </label>
             </section>
           )}
+
+          {!esAdminVista && <FichajesResumen recargar={recargarEmpleado} />}
 
           <section className="overflow-hidden rounded-3xl border border-[var(--erp-border)] bg-[var(--erp-surface)] shadow-sm">
             <div className="flex flex-wrap gap-2 border-b border-[var(--erp-border)] p-3 sm:p-4">
@@ -244,6 +266,16 @@ export default function Fichajes({ modo = "empleado" }) {
 
             {esAdminVista && pestana === "control" && (
               <div className="p-4 sm:p-6">
+                <section className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
+                  <h2 className="font-bold text-emerald-900">Asignación anual de vacaciones</h2>
+                  <p className="mt-1 text-xs text-emerald-800">Configura los días iniciales de cada empleado; su módulo calculará el saldo con las solicitudes aprobadas.</p>
+                  <form className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" onSubmit={async (e) => { e.preventDefault(); setGuardando(true); setError(""); setMensaje(""); try { const d = new FormData(); d.append("empleado_id", empleadoBolsaId); d.append("anio", anioBolsa); d.append("dias_asignados", diasBolsa); await axios.post("/fichajes/admin/vacaciones-bolsa", d); setMensaje("Bolsa anual de vacaciones guardada."); } catch (err) { setError(err?.response?.data?.detail || "No se pudo guardar la bolsa de vacaciones."); } finally { setGuardando(false); } }}>
+                    <label className="text-xs font-bold text-slate-600">Empleado<select required value={empleadoBolsaId} onChange={(e) => setEmpleadoBolsaId(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal"><option value="">Selecciona empleado…</option>{empleados.map((e) => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label>
+                    <label className="text-xs font-bold text-slate-600">Año<input required type="number" min="2000" max="2100" value={anioBolsa} onChange={(e) => setAnioBolsa(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal" /></label>
+                    <label className="text-xs font-bold text-slate-600">Días asignados<input required type="number" min="0" max="60" value={diasBolsa} onChange={(e) => setDiasBolsa(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal" /></label>
+                    <div className="flex items-end"><button disabled={guardando || !empleadoBolsaId} className="w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-bold text-white disabled:opacity-50">Guardar asignación</button></div>
+                  </form>
+                </section>
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                   <label className="text-xs font-bold text-slate-500">Desde<input type="date" value={fechaDesde} onChange={(e) => setFechaDesde(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-normal" /></label>
                   <label className="text-xs font-bold text-slate-500">Hasta<input type="date" value={fechaHasta} onChange={(e) => setFechaHasta(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-normal" /></label>
