@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSeguridad } from "../../hooks/useSeguridad";
 import ModalEmpleado from "../../components/empleados/ModalEmpleado";
+import { useAuthStore } from "../../store/authStore";
 
 /**
  * Panel administrativo de empleado reutilizado desde Utilidades.
@@ -9,6 +10,11 @@ import ModalEmpleado from "../../components/empleados/ModalEmpleado";
  */
 export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-tablas" }) {
   const { empleados, cargarTodo, loading } = useSeguridad();
+  const usuarioSesion = useAuthStore((state) => state.empleado);
+  const rol = String(usuarioSesion?.rol_nombre || usuarioSesion?.rol?.nombre || usuarioSesion?.rol || "").toLowerCase();
+  const esAdministrador = Number(usuarioSesion?.rol_id ?? usuarioSesion?.rol?.id) === 0
+    || String(usuarioSesion?.usuario || "").trim().toLowerCase() === "admin"
+    || /admin|administrador|superusuario|superuser|root/.test(rol);
   const [empleadoId, setEmpleadoId] = useState("");
   const [modalAbierto, setModalAbierto] = useState(false);
 
@@ -22,6 +28,17 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
     : "Selecciona un empleado para configurar las columnas y la visibilidad asociadas a sus actividades.";
 
   const empleadosSeguros = Array.isArray(empleados) ? empleados.filter((e) => e && e.id != null) : [];
+
+  if (!esAdministrador) {
+    return (
+      <div className="p-6">
+        <section className="max-w-2xl rounded-2xl border border-amber-200 bg-amber-50 p-6">
+          <h1 className="text-xl font-bold text-amber-900">Acceso restringido</h1>
+          <p className="mt-2 text-sm text-amber-800">Solo un administrador puede gestionar la visibilidad de tablas y las asignaciones de empleados.</p>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
