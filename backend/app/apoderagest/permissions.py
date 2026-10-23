@@ -58,4 +58,13 @@ def obtener_id_empleado(usuario):
         except (TypeError, ValueError):
             return None
 
+    # get_current_user devuelve un objeto SQLAlchemy Empleado, cuyo .id
+    # es el identificador de empleado. No inferirlo de diccionarios genéricos.
+    if not isinstance(usuario, dict):
+        valor = obtener_valor(usuario, "id")
+        try:
+            return int(valor) if valor is not None else None
+        except (TypeError, ValueError):
+            return None
+
     return None
