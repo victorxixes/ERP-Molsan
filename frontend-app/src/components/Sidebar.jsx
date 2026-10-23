@@ -876,10 +876,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     });
   }, [visiblesSecundarios, navigationItems, brandName, modulosFijados]);
 
-  // «Módulos» es el catálogo completo de aplicaciones accesibles para el usuario.
-  // En administración se muestran todos los módulos con ruta; en el resto de perfiles
-  // se respeta la asignación de permisos. Notificaciones se gestiona exclusivamente
-  // desde la campana y no debe aparecer como módulo del desplegable.
+  // «Módulos» muestra las aplicaciones autorizadas que NO estén ya accesibles
+  // desde la barra actual, «Más» o los accesos fijos del espacio de trabajo.
+  // Así el administrador conserva el catálogo completo sin duplicar enlaces.
   const modulosDropdown = useMemo(() => {
     const normalizarClave = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
     if (esPortalNotarialExterno) return [];
@@ -888,12 +887,31 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     const usuarioAdmin = normalizarClave(empleado?.usuario) === "admin";
     const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario"].some((r) => rol.includes(r));
 
+    const elementosEnBarra = Array.isArray(navigationItems) ? navigationItems : [];
+    const clavesFijadas = new Set(modulosFijados.map((modulo) => modulo.key));
+    const elementosVisibles = [
+      ...visiblesPrincipales,
+      ...visiblesSecundarios.filter((modulo) => clavesFijadas.has(modulo.key)),
+    ];
+
+    const yaVisible = (modulo) =>
+      elementosEnBarra.some((item) =>
+        item?.key === modulo.key ||
+        normalizarClave(item?.label) === normalizarClave(modulo.label)
+      ) ||
+      elementosVisibles.some((item) =>
+        item.key === modulo.key ||
+        normalizarClave(item.label) === normalizarClave(modulo.label)
+      ) ||
+      normalizarClave(modulo.label) === normalizarClave(brandName);
+
     const items = MODULOS_ERP
       .filter((modulo) =>
         Boolean(modulo.route) &&
         modulo.key !== "notificaciones" &&
         normalizarClave(modulo.label) !== "notificaciones" &&
-        (esAdmin || puedeVerModulo(modulo.key))
+        (esAdmin || puedeVerModulo(modulo.key)) &&
+        !yaVisible(modulo)
       )
       .map((modulo) => ({
         key: modulo.key,
@@ -911,26 +929,31 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       }));
 
     // Excepciones operativas que no forman parte del catálogo general.
+    const provisiones = {
+      key: "provisiones-fondos",
+      to: "/provisiones-fondos",
+      label: "Provisiones de fondos",
+      icon: "clipboard",
+    };
     if ((esAdmin || puedeVerModulo("expedientes")) &&
-        !items.some((item) => item.key === "provisiones-fondos")) {
-      items.push({
-        key: "provisiones-fondos",
-        to: "/provisiones-fondos",
-        label: "Provisiones de fondos",
-        icon: "clipboard",
-      });
+        !yaVisible(provisiones) &&
+        !items.some((item) => item.key === provisiones.key)) {
+      items.push(provisiones);
     }
 
-    if (esAdmin && !items.some((item) => item.key === "control-fichajes")) {
-      items.push({
-        key: "control-fichajes",
-        to: "/control-fichajes",
-        label: "Control de Fichajes",
-        icon: "clock",
-      });
+    const controlFichajes = {
+      key: "control-fichajes",
+      to: "/control-fichajes",
+      label: "Control de Fichajes",
+      icon: "clock",
+    };
+    if (esAdmin &&
+        !yaVisible(controlFichajes) &&
+        !items.some((item) => item.key === controlFichajes.key)) {
+      items.push(controlFichajes);
     }
     return items;
-  }, [empleado, esPortalNotarialExterno]);
+  }, [empleado, esPortalNotarialExterno, navigationItems, visiblesPrincipales, visiblesSecundarios, modulosFijados, brandName]);
   const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
   const modulosDropdownRef = useRef(null);
   const modulosDropdownMenuRef = useRef(null);
