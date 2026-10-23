@@ -304,3 +304,17 @@ Se revisaron los modelos de expedientes, fincas/registros, gastos, provisiones, 
 ### 8.3 Qué falta para verificar integridad real
 
 El código del modelo indica las relaciones declaradas por SQLAlchemy, pero no prueba que el esquema desplegado coincida exactamente ni revela la calidad de los datos existentes. Falta comparar estas observaciones con constraints reales de una copia de base de datos, revisar migraciones SQL/alembic y ejecutar consultas de solo lectura para contar IDs huérfanos, valores de texto no presentes en catálogos y categorías documentales usadas. Esta comprobación sigue pendiente y no se ha ejecutado contra producción.
+
+
+## 9. Verificación automatizada de la rama de auditoría
+
+GitHub Actions ejecutó el workflow existente `.github/workflows/encargagest-checks.yml` sobre el commit `8052c67dcf5d9d6c872f6c483440286446e0b346` de esta rama. Resultado: **los dos jobs finalizaron correctamente**.
+
+- **Frontend build:** instalación de dependencias y `npm run build` completados correctamente.
+- **Backend Python syntax:** `python -m compileall -q backend`, instalación de dependencias e importación de la aplicación FastAPI con SQLite temporal completados correctamente. El smoke test también creó las tablas de EncargaGest previstas por ese workflow.
+
+Ejecución: https://github.com/victorxixes/ERP-Molsan/actions/runs/39910917160
+
+**Alcance de esta prueba:** valida que la rama de auditoría compila el frontend y que el backend compila/importa en el entorno temporal. No equivale a una suite de pruebas de negocio; el repositorio no declara script de tests en frontend-app/package.json, y el workflow existente no prueba la matriz de permisos, la integridad referencial de todos los catálogos ni la edición de formularios contra datos históricos.
+
+Para terminar la verificación dinámica y la implementación funcional segura, falta elegir explícitamente el workspace de Render que contiene el servicio y/o la base de pruebas correcta. Hay dos workspaces disponibles en la cuenta (Molsan y Agenda_Molsan); no se selecciona ninguno automáticamente para evitar consultar o modificar recursos del entorno equivocado.
