@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 import FichajesResumen from "./FichajesResumen.jsx";
+import FestivosCompensaciones from "./FestivosCompensaciones.jsx";
 
 const TIPOS = [
   { value: "ENTRADA", label: "Entrada a trabajar", icon: "↗", tone: "emerald" },
@@ -165,8 +166,8 @@ export default function Fichajes({ modo = "empleado" }) {
   };
 
   const tabs = esAdminVista
-    ? [{ id: "control", label: "Control de marcajes" }]
-    : [{ id: "resumen", label: "Resumen de marcajes" }, { id: "calendario", label: "Calendario mensual" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }];
+    ? [{ id: "control", label: "Control de marcajes" }, { id: "compensaciones", label: "Festivos y compensaciones" }]
+    : [{ id: "resumen", label: "Resumen de marcajes" }, { id: "calendario", label: "Calendario mensual" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }, { id: "compensaciones", label: "Festivos y compensaciones" }];
 
   return (
     <main className="mx-auto w-full max-w-[1500px] space-y-6 p-4 text-[var(--erp-text)] sm:p-6">
@@ -263,6 +264,10 @@ export default function Fichajes({ modo = "empleado" }) {
                 <p className="text-xs text-slate-400 sm:col-span-2 lg:col-span-3">La información se obtiene de tu ficha de empleado del ERP. Para modificarla, utiliza el procedimiento de actualización de tu ficha personal.</p>
               </div>
             )}
+
+            {!esAdminVista && pestana === "compensaciones" && <FestivosCompensaciones modo="empleado" />}
+
+            {esAdminVista && pestana === "compensaciones" && <FestivosCompensaciones modo="admin" />}
 
             {esAdminVista && pestana === "control" && (
               <div className="p-4 sm:p-6">
