@@ -478,6 +478,7 @@ def _solicitud_comp_dict(s, nombre=None):
 def resumen_mi_compensacion(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
     require_perm_modulo(usuario, "fichajes", "ver")
     _procesar_compensaciones_vencidas(db, usuario.id)
+    db.commit()
     festivos = db.query(FichajeFestivoTrabajado).filter(
         FichajeFestivoTrabajado.empleado_id == usuario.id
     ).order_by(desc(FichajeFestivoTrabajado.fecha)).limit(300).all()
@@ -662,4 +663,5 @@ def admin_saldos_compensacion(usuario=Depends(get_current_user), db: Session = D
         resultado.append({"empleado_id": e.id, "empleado_nombre": _nombre_completo(e) or e.usuario,
                           "saldo_dias": _saldo_disponible_compensacion(db, e.id, "DIAS"),
                           "saldo_horas": _saldo_disponible_compensacion(db, e.id, "HORAS")})
+    db.commit()
     return resultado
