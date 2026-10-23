@@ -60,6 +60,7 @@ import AdministracionEmpleadoConfig from "./pages/herramientas/AdministracionEmp
 import AccesosNotariales from "./pages/herramientas/AccesosNotariales.jsx";
 import Catalogos from "./pages/herramientas/Catalogos.jsx";
 import CatalogoAbsis from "./pages/herramientas/CatalogoAbsis.jsx";
+import CatalogoOficinas from "./pages/herramientas/CatalogoOficinas.jsx";
 import CorrespondenciaTipificada from "./pages/herramientas/CorrespondenciaTipificada.jsx";
 import HonorariosGestoria from "./pages/herramientas/HonorariosGestoria.jsx";
 import CrearNoticia from "./pages/herramientas/CrearNoticia.jsx";
@@ -484,6 +485,11 @@ export default function App() {
           <Route
             path="catalogos/absis"
             element={<CatalogoAbsis />}
+          />
+
+          <Route
+            path="catalogos/oficinas"
+            element={<CatalogoOficinas />}
           />
 
           <Route
