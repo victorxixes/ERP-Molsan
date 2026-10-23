@@ -372,7 +372,7 @@ Se ha añadido en la rama de auditoría una pantalla única para mantener ocho l
 
 La pantalla incluye selección de lista, búsqueda, alta, edición, eliminación, indicador activo y descripción. Los datos se guardan en la tabla nueva `catalogos_absis`; la migración de arranque crea esa tabla y carga los valores proporcionados únicamente si la tabla no existía. En arranques posteriores no vuelve a sembrar ni restaura entradas borradas. La API queda protegida por JWT y permisos del módulo `maestros`.
 
-Valores iniciales incorporados: estados LIQ, VIG, LST, RTS y PVA; cinco valores de Producto GTG; cinco de Actividad Actual; cuatro de Estado Actividad; Pendiente para Tipo Provision; cinco tipos de operación; tres subtipos; y los 13 códigos de defectos proporcionados con sus descripciones.
+Valores iniciales incorporados: estados LIQ, VIG, LST, RTS y PVA; cinco valores de Producto GTG; cinco de Actividad Actual; cuatro de Estado Actividad; Tipo Provision: códigos `E` (Encargo) y `P` (Provisión), para mantener compatibilidad con los Excel de importación. La migración también corrige la semilla antigua `Pendiente` si ya estuviera presente.; cinco tipos de operación; tres subtipos; y los 13 códigos de defectos proporcionados con sus descripciones.
 
 Verificación: en el workflow de GitHub Actions #39913267638 terminaron correctamente `python -m compileall`, la importación de la aplicación FastAPI y `npm run build`. El workflow se ejecutó antes del último ajuste textual de las semillas de estados, que solo coloca esos cinco valores en la columna Valor en lugar de Código. No se han probado todavía operaciones CRUD contra la base de datos de producción ni se ha desplegado/mezclado esta rama.
 
