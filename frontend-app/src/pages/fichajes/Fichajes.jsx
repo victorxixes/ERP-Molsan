@@ -272,7 +272,7 @@ export default function Fichajes({ modo = "empleado" }) {
               </div>
             )}
 
-            {!esAdminVista && pestana === "compensaciones" && <FestivosCompensaciones modo="empleado" />}
+            {!esAdminVista && pestana === "compensaciones" && <FestivosCompensaciones modo="empleado" onUpdated={recargarEmpleado} />}
 
             {esAdminVista && pestana === "compensaciones" && <FestivosCompensaciones modo="admin" />}
 
