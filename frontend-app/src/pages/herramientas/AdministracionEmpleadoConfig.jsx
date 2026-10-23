@@ -19,8 +19,8 @@ export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-ta
   const [modalAbierto, setModalAbierto] = useState(false);
 
   useEffect(() => {
-    cargarTodo();
-  }, [cargarTodo]);
+    if (esAdministrador) cargarTodo();
+  }, [cargarTodo, esAdministrador]);
 
   const titulo = seccion === "asignaciones" ? "Asignaciones de empleados" : "Visibilidad de tablas";
   const descripcion = seccion === "asignaciones"
