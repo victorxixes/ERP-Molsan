@@ -168,3 +168,32 @@ class FichajePeriodoCerrado(Base):
     motivo = Column(String(500), nullable=False)
     actor_id = Column(Integer, ForeignKey("empleados.id", ondelete="SET NULL"), nullable=True)
     actualizado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+
+
+class FichajeDocumentoRevision(Base):
+    """Decisiones administrativas sobre justificantes; cada revisión queda como evento histórico."""
+    __tablename__ = "fichajes_documentos_revision"
+
+    id = Column(Integer, primary_key=True, index=True)
+    documento_id = Column(Integer, ForeignKey("fichajes_documentos.id", ondelete="CASCADE"), nullable=False, index=True)
+    estado = Column(String(20), nullable=False, index=True)
+    motivo = Column(String(500), nullable=False)
+    actor_id = Column(Integer, ForeignKey("empleados.id", ondelete="SET NULL"), nullable=True)
+    creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), index=True)
+
+
+class FichajeSolicitudAusencia(Base):
+    """Solicitud de ausencia/permiso enviada por el empleado y resuelta por administración."""
+    __tablename__ = "fichajes_solicitudes_ausencia"
+
+    id = Column(Integer, primary_key=True, index=True)
+    empleado_id = Column(Integer, ForeignKey("empleados.id", ondelete="CASCADE"), nullable=False, index=True)
+    fecha_inicio = Column(Date, nullable=False, index=True)
+    fecha_fin = Column(Date, nullable=False, index=True)
+    tipo_ausencia = Column(String(120), nullable=False)
+    observaciones = Column(String(500), nullable=True)
+    estado = Column(String(20), nullable=False, default="SOLICITADO", index=True)
+    creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    resuelto_por_id = Column(Integer, ForeignKey("empleados.id", ondelete="SET NULL"), nullable=True)
+    resuelto_en = Column(DateTime(timezone=True), nullable=True)
+    motivo_resolucion = Column(String(500), nullable=True)
