@@ -38,6 +38,14 @@ const MODULOS = {
     categoria: "PORTAL DE ENCARGOS EXTERNOS",
     estilo: "eg",
   },
+  fichajes: {
+    nombre: "Fichajes",
+    descripcion: "Registro de jornada, entradas, salidas y consulta de fichajes de empleados.",
+    ruta: "/fichajes",
+    siglas: "FI",
+    categoria: "CONTROL HORARIO DE EMPLEADOS",
+    estilo: "fi",
+  },
 };
 
 function normalizar(valor) {
