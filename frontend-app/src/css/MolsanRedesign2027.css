@@ -34,7 +34,8 @@
   .portal-login-premium,
   .herramientas-home-premium,
   .molsan-intranet-page,
-  .provisiones-fondos-premium
+  .provisiones-fondos-premium,
+  .provisiones-fondos-page
 ) {
   min-width: 0;
   color: var(--molsan-text);
@@ -505,6 +506,7 @@
   .herramientas-home-premium,
   .molsan-intranet-page,
   .provisiones-fondos-premium,
+  .provisiones-fondos-page,
   .herramientas-subpagina-premium,
   .herramienta-operativa-premium,
   .subir-documento-premium,
@@ -546,6 +548,7 @@
   .encargagest-workspace-premium,
   .molsan-intranet-page,
   .provisiones-fondos-premium,
+  .provisiones-fondos-page,
   .herramientas-subpagina-premium
 ) {
   background-color: var(--molsan-page-bg, #f3f6fb);
@@ -578,6 +581,7 @@
   .encargagest-workspace-premium,
   .molsan-intranet-page,
   .provisiones-fondos-premium,
+  .provisiones-fondos-page,
   .herramientas-subpagina-premium,
   .herramienta-operativa-premium,
   .catalogos-maestros-premium,
@@ -615,6 +619,7 @@
   .encargagest-workspace-premium,
   .molsan-intranet-page,
   .provisiones-fondos-premium,
+  .provisiones-fondos-page,
   .herramientas-subpagina-premium
 ) :is(h1, h2, h3) {
   color: var(--molsan-text, #18263c);
@@ -643,6 +648,7 @@
   .encargagest-workspace-premium,
   .molsan-intranet-page,
   .provisiones-fondos-premium,
+  .provisiones-fondos-page,
   .herramientas-subpagina-premium
 ) :is(header, [data-page-header="true"]) {
   min-width: 0;
@@ -675,6 +681,7 @@
   .encargagest-workspace-premium,
   .molsan-intranet-page,
   .provisiones-fondos-premium,
+  .provisiones-fondos-page,
   .herramientas-subpagina-premium
 ) :is(button, a[role="button"], [role="button"]) {
   transition: box-shadow .16s ease, filter .16s ease, border-color .16s ease, background-color .16s ease;
@@ -706,6 +713,7 @@
   .encargagest-workspace-premium,
   .molsan-intranet-page,
   .provisiones-fondos-premium,
+  .provisiones-fondos-page,
   .herramientas-subpagina-premium
 ) :is(button, a[role="button"], [role="button"]):hover:not(:disabled) {
   filter: brightness(.985);
@@ -737,6 +745,7 @@
   .encargagest-workspace-premium,
   .molsan-intranet-page,
   .provisiones-fondos-premium,
+  .provisiones-fondos-page,
   .herramientas-subpagina-premium
 ) :is(button, a[role="button"], [role="button"]):focus-visible {
   outline: 3px solid rgba(49, 86, 179, .28);
@@ -765,6 +774,7 @@
   .encargagest-workspace-premium,
   .molsan-intranet-page,
   .provisiones-fondos-premium,
+  .provisiones-fondos-page,
   .herramientas-subpagina-premium
 ) table thead th {
   color: var(--molsan-text-secondary, #53637a);
@@ -794,6 +804,7 @@
   .encargagest-workspace-premium,
   .molsan-intranet-page,
   .provisiones-fondos-premium,
+  .provisiones-fondos-page,
   .herramientas-subpagina-premium
 ) table tbody tr:hover > td {
   background-color: #f2f6fd;
@@ -826,6 +837,7 @@
     .encargagest-workspace-premium,
     .molsan-intranet-page,
     .provisiones-fondos-premium,
+  .provisiones-fondos-page,
     .herramientas-subpagina-premium
   ) {
     overflow-wrap: anywhere;
@@ -859,6 +871,7 @@
     .encargagest-workspace-premium,
     .molsan-intranet-page,
     .provisiones-fondos-premium,
+  .provisiones-fondos-page,
     .herramientas-subpagina-premium
   ) * {
     animation: none !important;
