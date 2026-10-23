@@ -2185,6 +2185,59 @@ def migrar_visibilidad_empleado():
             print("[EMPLEADOS] Columna visible_en_listado ya existe; no se altera la tabla.", flush=True)
 
 
+
+def reparar_vinculos_apoderado_expedientes():
+    """
+    Repara expedientes ya enviados cuyo nombre de apoderado coincide
+    inequívocamente con un empleado, pero cuya FK quedó vacía.
+    No sustituye identificadores ya asignados ni modifica el nombre guardado.
+    """
+    with engine.begin() as conexion:
+        resultado = conexion.execute(text("""
+            WITH nombres_empleado AS (
+                SELECT
+                    id,
+                    lower(trim(regexp_replace(
+                        translate(
+                            coalesce(nombre, '') || ' ' || coalesce(apellidos, ''),
+                            'áéíóúüñÁÉÍÓÚÜÑ',
+                            'aeiouunAEIOUUN'
+                        ),
+                        '\\s+', ' ', 'g'
+                    ))) AS nombre_normalizado
+                FROM public.empleados
+            ),
+            coincidencias_unicas AS (
+                SELECT nombre_normalizado, MIN(id) AS empleado_id
+                FROM nombres_empleado
+                WHERE nombre_normalizado <> ''
+                GROUP BY nombre_normalizado
+                HAVING COUNT(*) = 1
+            )
+            UPDATE public.expedientes AS e
+            SET apoderado_empleado_id = c.empleado_id
+            FROM coincidencias_unicas AS c
+            WHERE e.apoderado_empleado_id IS NULL
+              AND NULLIF(trim(e.apoderado), '') IS NOT NULL
+              AND (e.fecha_envio_notario IS NOT NULL OR e.fecha_envio IS NOT NULL)
+              AND lower(trim(regexp_replace(
+                    translate(
+                        coalesce(e.apoderado, ''),
+                        'áéíóúüñÁÉÍÓÚÜÑ',
+                        'aeiouunAEIOUUN'
+                    ),
+                    '\\s+', ' ', 'g'
+                  ))) = c.nombre_normalizado
+        """))
+        if resultado.rowcount:
+            print(
+                f"[APODERAGEST] Reparados {resultado.rowcount} vínculos de apoderado por coincidencia única.",
+                flush=True,
+            )
+        else:
+            print("[APODERAGEST] No hay vínculos de apoderado pendientes de reparar.", flush=True)
+
+
 # ORDEN DE ARRANQUE
 # ============================================================
 
@@ -2196,5 +2249,6 @@ app.router.on_startup.insert(
 app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
 app.router.on_startup.insert(2, migrar_catalogo_absis)
 app.router.on_startup.insert(3, migrar_visibilidad_empleado)
+app.router.on_startup.insert(4, reparar_vinculos_apoderado_expedientes)
 
 instrumentar_inicio_aplicacion()
