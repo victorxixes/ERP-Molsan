@@ -51,7 +51,6 @@ export default function Utilidades() {
       </Grupo>
 
       <Grupo titulo="Administración, seguridad y supervisión" descripcion="Accesos directos para administrar usuarios y revisar el estado operativo del ERP.">
-        <Card icon="🛡️" titulo="Seguridad" descripcion="Administrar usuarios, roles, módulos y permisos." link="/seguridad" />
         <Card icon="🧾" titulo="Auditoría" descripcion="Consultar los eventos de auditoría disponibles para tu perfil." link="/auditoria" />
         <Card icon="📜" titulo="Logs del sistema" descripcion="Revisar registros y errores registrados por la aplicación." link="/logs" />
         <Card icon="🖥️" titulo="Panel técnico" descripcion="Acceder a los paneles de supervisión del sistema y tiempo real." link="/paneltecnico" />
