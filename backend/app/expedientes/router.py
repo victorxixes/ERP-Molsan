@@ -2408,7 +2408,12 @@ def enviar_a_notario(
                 if nombre_empleado and nombre_empleado == nombre_objetivo:
                     apoderado_id = empleado.id
                     break
-        if apoderado_id is None and notaria_ctn:
+        # Si se ha indicado un apoderado explícito, no heredar el ID
+        # genérico asociado al notario cuando no se encuentra una coincidencia
+        # exacta en Empleados: ese ID puede pertenecer a otra persona y hace
+        # que ApoderaGest oculte el expediente al apoderado cuyo nombre se guardó.
+        # El ID del registro CTN solo es un respaldo cuando no se indicó nombre.
+        if apoderado_id is None and not nombre_objetivo and notaria_ctn:
             apoderado_id = getattr(notaria_ctn, "apoderado_id", None)
         expediente.apoderado_empleado_id = apoderado_id
 
