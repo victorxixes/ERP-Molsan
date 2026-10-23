@@ -17,3 +17,23 @@
     animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important;
   }
 }
+
+
+/* Buscador visible también dentro del panel estrecho de Seguridad. */
+.empleados-listado-premium .empleados-filtros-busqueda { min-width:0; width:100%; }
+.empleados-listado-premium .empleados-filtros-busqueda input[type="search"],
+.empleados-listado-premium .empleados-filtros-busqueda input[type="text"] {
+  display:block; width:100%; min-width:0; height:44px; padding:.7rem .9rem .7rem 2.75rem;
+  border:1px solid #b8c7dc !important; border-radius:11px; background:#fff !important;
+  color:#172b4d !important; font-size:.9rem; line-height:1.4;
+  box-shadow:0 1px 3px rgba(15,35,65,.08); opacity:1;
+}
+.empleados-listado-premium .empleados-filtros-busqueda input::placeholder {
+  color:#64748b !important; opacity:1;
+}
+.empleados-listado-premium .empleados-filtros-busqueda input:focus {
+  border-color:#3156b3 !important; outline:3px solid rgba(49,86,179,.14); outline-offset:1px;
+}
+.empleados-listado-premium .empleados-filtros-busqueda > span {
+  color:#526784 !important; font-size:1.1rem; z-index:1;
+}
