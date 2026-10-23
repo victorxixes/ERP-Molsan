@@ -514,6 +514,24 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         notificationBadge={totalAvisosPendientes}
         onProfileClick={() => setPerfilNotarioAbierto(true)}
         onLogoutClick={salir}
+        headerActions={
+          <>
+            <div className="ag-fecha-actual" aria-label={`Fecha actual: ${fechaActual}`}>
+              <span className="ag-punto-vivo" aria-hidden="true" />
+              <span>{fechaActual}</span>
+            </div>
+            <button
+              type="button"
+              className="ag-boton-actualizar"
+              onClick={cargar}
+              disabled={cargando}
+              aria-live="polite"
+            >
+              <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
+              {cargando ? "Actualizando…" : "Actualizar datos"}
+            </button>
+          </>
+        }
       />
       {notificacionesAbiertas && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setNotificacionesAbiertas(false); }}><section className="ng-modal ng-modal-avisos" role="dialog" aria-modal="true" aria-labelledby="ng-avisos-titulo"><header><div><span className="ng-kicker">NOTARGEST · AVISOS</span><h2 id="ng-avisos-titulo">Notificaciones pendientes</h2><p>Documentos nuevos y observaciones del gestor vinculados a tus expedientes.</p></div><button type="button" className="ng-boton-secundario" onClick={() => setNotificacionesAbiertas(false)}>Cerrar ✕</button></header><div className="ng-modal-lista">{totalAvisosPendientes === 0 ? <div className="ng-modal-vacio"><strong>Todo al día</strong><p>No tienes notificaciones pendientes de leer.</p></div> : <>{avisosPendientes.documentos.map(item => <article className="ng-aviso-item" key={`documento:${item.id}`}><span className="ng-aviso-icono">PDF</span><div className="ng-aviso-contenido"><strong>Nuevo documento en expediente {item.id_expediente}</strong><p>{texto(item.nombre)} · {texto(item.categoria)}</p><small>{texto(item.oficina)} · {texto(item.fecha_subida)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("documento", item.id)}>Marcar como leída</button></div></div></article>)}{avisosPendientes.comentarios.map(item => <article className="ng-aviso-item" key={`comentario:${item.id}`}><span className="ng-aviso-icono ng-aviso-icono-observacion">!</span><div className="ng-aviso-contenido"><strong>Nueva observación · expediente {item.id_expediente}</strong><p>{texto(item.comentario)}</p><small>{texto(item.oficina)} · {texto(item.fecha)}</small><div className="ng-aviso-acciones"><button type="button" className="ng-login-submit" onClick={() => abrirAvisoExpediente(item)}>Ver expediente</button><button type="button" className="ng-boton-secundario" onClick={() => marcarAvisoLeido("comentario", item.id)}>Marcar como leída</button></div></div></article>)}</>}</div></section></div>}
       {pagosAbiertos && <div className="ng-modal-overlay" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setPagosAbiertos(false); }}>
@@ -709,13 +727,8 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         </div>
       </div>
       <div className="ag-hero-acciones">
-        <div className="ag-fecha-actual">
-          <span className="ag-punto-vivo" />
-          <span>{fechaActual}</span>
-        </div>
         {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"><span aria-hidden="true">▦</span> Ir a módulos</button>}
         <button type="button" onClick={salir} className="ng-workspace-salir" aria-label="Cerrar sesión"><span aria-hidden="true">↪</span> Cerrar sesión</button>
-        <button type="button" className="ag-boton-actualizar" onClick={cargar} disabled={cargando}><span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>{cargando ? "Actualizando…" : "Actualizar datos"}</button>
       </div>
     </header>
     <nav className="ng-modulos-grid" aria-label="Secciones de NotarGest">
