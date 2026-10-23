@@ -50,7 +50,7 @@ export default function VistaSemana({
 
   const obtenerFechaDia = useCallback(
     (idx) => {
-      const fecha = new Date(fechaBase);
+      const fecha = new Date(`${fechaBase}T12:00:00`);
 
       fecha.setDate(
         fecha.getDate() + idx
