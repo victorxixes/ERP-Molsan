@@ -104,6 +104,7 @@ export default function SeguridadUsuarios() {
       email_empresa: safe(empleadoBasico.email_empresa),
       extension: safe(empleadoBasico.extension),
       activo: Boolean(empleadoBasico.activo),
+      es_colaborador: Boolean(empleadoBasico.es_colaborador),
       departamento_nombre: safe(
         empleadoBasico.departamento_nombre
       ),
@@ -371,6 +372,16 @@ export default function SeguridadUsuarios() {
                           {empleadoBasicoSeguro.cargo_nombre}
                         </span>
                       )}
+
+                      <span className={
+                        empleadoBasicoSeguro.es_colaborador
+                          ? "erp-badge erp-badge-success"
+                          : "erp-badge erp-badge-neutral"
+                      }>
+                        {empleadoBasicoSeguro.es_colaborador
+                          ? "Colaborador de ApoderaGest"
+                          : "ApoderaGest: no habilitado"}
+                      </span>
 
                     </div>
 
