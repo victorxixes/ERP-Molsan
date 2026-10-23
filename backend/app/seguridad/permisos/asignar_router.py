@@ -3,12 +3,20 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.empleados.models import Empleado
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 
 
 router = APIRouter(
     prefix="/seguridad/asignar",
     tags=["Seguridad - Asignación"]
 )
+
+
+def _requiere_edicion_seguridad(usuario=Depends(get_current_user)):
+    """Solo usuarios autenticados con permiso explícito pueden cambiar seguridad."""
+    require_perm_modulo(usuario, "seguridad", "editar")
+    return usuario
 
 
 # ============================================================
@@ -71,7 +79,8 @@ def _permisos_dict(valor):
 def asignar_modulos(
     empleado_id: int,
     modulos: list,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_edicion_seguridad),
 ):
     """
     Asigna los módulos visibles a un empleado.
@@ -122,7 +131,8 @@ def asignar_modulos(
 def asignar_permisos(
     empleado_id: int,
     permisos: dict,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_edicion_seguridad),
 ):
     """
     Asigna permisos personalizados a un empleado.
