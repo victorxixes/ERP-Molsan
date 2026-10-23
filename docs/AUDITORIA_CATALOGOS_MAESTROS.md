@@ -357,3 +357,22 @@ Observaciones:
 5. No se ejecutaron pruebas de navegador ni se guardaron citas de prueba; estas conclusiones proceden de lectura de código.
 
 **Siguiente paso recomendado:** cuando exista una base de pruebas confirmada, ejecutar tests con datos sintéticos para: crear/editar citas notariales y no notariales, cambiar de un tipo a otro y comprobar limpieza/validación; probar GET sin token (401), GET con permiso de lectura, POST/PUT/DELETE con permisos insuficientes (403) y con permisos autorizados; comprobar el esquema real de tablas y restricciones mediante consultas de solo lectura. Mantener la base primaria sin consultas hasta confirmar expresamente el entorno de pruebas.
+
+## Implementación inicial del Catálogo ABSIS (2026-10-23)
+
+Se ha añadido en la rama de auditoría una pantalla única para mantener ocho listas ABSIS desde una tabla compartida:
+- Estados expedientes
+- Producto GTG
+- Actividad Actual
+- Estado Actividad
+- Tipo Provision
+- Tipo de operación
+- Subtipo operación
+- Tipos de errores de defecto
+
+La pantalla incluye selección de lista, búsqueda, alta, edición, eliminación, indicador activo y descripción. Los datos se guardan en la tabla nueva `catalogos_absis`; la migración de arranque crea esa tabla y carga los valores proporcionados únicamente si la tabla no existía. En arranques posteriores no vuelve a sembrar ni restaura entradas borradas. La API queda protegida por JWT y permisos del módulo `maestros`.
+
+Valores iniciales incorporados: estados LIQ, VIG, LST, RTS y PVA; cinco valores de Producto GTG; cinco de Actividad Actual; cuatro de Estado Actividad; Pendiente para Tipo Provision; cinco tipos de operación; tres subtipos; y los 12 códigos de defectos proporcionados con sus descripciones.
+
+Verificación: en el workflow de GitHub Actions #39913267638 terminaron correctamente `python -m compileall`, la importación de la aplicación FastAPI y `npm run build`. El workflow se ejecutó antes del último ajuste textual de las semillas de estados, que solo coloca esos cinco valores en la columna Valor en lugar de Código. No se han probado todavía operaciones CRUD contra la base de datos de producción ni se ha desplegado/mezclado esta rama.
+
