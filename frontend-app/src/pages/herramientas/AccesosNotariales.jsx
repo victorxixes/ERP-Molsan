@@ -35,7 +35,7 @@ export default function AccesosNotariales() {
     (async () => {
       setCargando(true); setError("");
       try {
-        const r = await fetch(API_BASE + "/ctn/notarias?page=1&page_size=1000", { headers: headers(), credentials: "include" });
+        const r = await fetch(API_BASE + "/ctn/notarias?page=1&page_size=200", { headers: headers(), credentials: "include" });
         const body = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(mensajeLegible(body?.detail ?? body, "No se ha podido cargar el listado de notarías (HTTP " + r.status + ")."));
         const lista = Array.isArray(body) ? body : body.items || body.notarias || body.results || [];
