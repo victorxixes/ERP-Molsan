@@ -1,0 +1,80 @@
+import { useEffect, useState } from "react";
+import { useSeguridad } from "../../hooks/useSeguridad";
+import ModalEmpleado from "../../components/empleados/ModalEmpleado";
+
+/**
+ * Panel administrativo de empleado reutilizado desde Utilidades.
+ * La ficha ordinaria conserva únicamente los datos personales/laborales,
+ * seguridad y auditoría; las herramientas de configuración se abren aquí.
+ */
+export default function AdministracionEmpleadoConfig({ seccion = "visibilidad-tablas" }) {
+  const { empleados, cargarTodo, loading } = useSeguridad();
+  const [empleadoId, setEmpleadoId] = useState("");
+  const [modalAbierto, setModalAbierto] = useState(false);
+
+  useEffect(() => {
+    cargarTodo();
+  }, [cargarTodo]);
+
+  const titulo = seccion === "asignaciones" ? "Asignaciones de empleados" : "Visibilidad de tablas";
+  const descripcion = seccion === "asignaciones"
+    ? "Selecciona un empleado y administra las reglas de reparto y asignación desde este panel central."
+    : "Selecciona un empleado para configurar las columnas y la visibilidad asociadas a sus actividades.";
+
+  const empleadosSeguros = Array.isArray(empleados) ? empleados.filter((e) => e && e.id != null) : [];
+
+  return (
+    <div className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+      <header className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-600">Utilidades · Administración de empleados</p>
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{titulo}</h1>
+        <p className="mt-2 max-w-3xl text-sm text-slate-500">{descripcion}</p>
+      </header>
+
+      <section className="max-w-3xl rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <label htmlFor="empleado-configuracion" className="block text-sm font-semibold text-slate-800">Empleado</label>
+        <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+          <select
+            id="empleado-configuracion"
+            value={empleadoId}
+            onChange={(event) => { setEmpleadoId(event.target.value); setModalAbierto(false); }}
+            disabled={loading}
+            className="min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800"
+          >
+            <option value="">{loading ? "Cargando empleados…" : "Seleccionar empleado…"}</option>
+            {empleadosSeguros.map((empleado) => (
+              <option key={empleado.id} value={empleado.id}>
+                {[
+                  [empleado.nombre, empleado.apellidos].filter(Boolean).join(" ").trim(),
+                  empleado.usuario ? "(" + empleado.usuario + ")" : "",
+                  "ID " + empleado.id,
+                ].filter(Boolean).join(" · ")}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={!empleadoId}
+            onClick={() => setModalAbierto(true)}
+            className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Abrir configuración
+          </button>
+        </div>
+        {!loading && empleadosSeguros.length === 0 && (
+          <p className="mt-3 text-sm text-amber-700">No se ha recibido el listado de empleados. Comprueba los permisos de administración y vuelve a cargar la página.</p>
+        )}
+      </section>
+
+      {modalAbierto && empleadoId && (
+        <ModalEmpleado
+          open={true}
+          empleadoId={Number(empleadoId)}
+          modoAdministracion={true}
+          pestanaInicial={seccion}
+          onClose={() => setModalAbierto(false)}
+        />
+      )}
+    </div>
+  );
+}
