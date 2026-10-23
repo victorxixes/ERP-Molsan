@@ -126,3 +126,17 @@ class FichajeCompensacionAuditoria(Base):
     estado_nuevo = Column(String(30), nullable=True)
     detalle = Column(Text, nullable=True)
     creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+
+
+class FichajeFestivoCalendario(Base):
+    """Calendario de festivos aprobado para identificar fechas compensables."""
+    __tablename__ = "fichajes_calendario_festivos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    fecha = Column(Date, nullable=False, unique=True, index=True)
+    nombre = Column(String(160), nullable=False)
+    ambito = Column(String(40), nullable=False, default="EMPRESA")
+    activo = Column(Integer, nullable=False, default=1)
+    creado_por_id = Column(Integer, ForeignKey("empleados.id", ondelete="SET NULL"), nullable=True)
+    creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
