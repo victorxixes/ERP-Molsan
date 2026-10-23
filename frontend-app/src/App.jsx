@@ -56,6 +56,7 @@ import Herramientas from "./pages/herramientas/Herramientas.jsx";
 import ImportarCTN from "./pages/herramientas/ImportarCTN.jsx";
 import ImportadorAbsis from "./pages/herramientas/importador_absis";
 import Utilidades from "./pages/herramientas/Utilidades.jsx";
+import AdministracionEmpleadoConfig from "./pages/herramientas/AdministracionEmpleadoConfig.jsx";
 import AccesosNotariales from "./pages/herramientas/AccesosNotariales.jsx";
 import Catalogos from "./pages/herramientas/Catalogos.jsx";
 import CatalogoAbsis from "./pages/herramientas/CatalogoAbsis.jsx";
@@ -348,6 +349,8 @@ export default function App() {
             element={<ProvisionesFondosPage />}
           />
 
+          <Route path="herramientas/utilidades/visibilidad-tablas" element={<AdministracionEmpleadoConfig seccion="visibilidad-tablas" />} />
+          <Route path="herramientas/utilidades/asignaciones" element={<AdministracionEmpleadoConfig seccion="asignaciones" />} />
           <Route path="herramientas/utilidades/complementos-saldo" element={<ComplementosSaldo />} />
           <Route path="herramientas/utilidades/proceso-absis" element={<ProcesoAbsis />} />
           <Route path="herramientas/utilidades/ppad" element={<PPAD />} />
