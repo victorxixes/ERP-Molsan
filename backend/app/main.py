@@ -2014,11 +2014,11 @@ def migrar_catalogo_absis():
         """))
         if not existe:
             iniciales = [
-                ("Estados expedientes", "", "LIQ", ""),
-                ("Estados expedientes", "", "VIG", ""),
-                ("Estados expedientes", "", "LST", ""),
-                ("Estados expedientes", "", "RTS", ""),
-                ("Estados expedientes", "", "PVA", ""),
+                ("Estados expedientes", "LIQ", None, ""),
+                ("Estados expedientes", "VIG", None, ""),
+                ("Estados expedientes", "LST", None, ""),
+                ("Estados expedientes", "RTS", None, ""),
+                ("Estados expedientes", "PVA", None, ""),
                 ("Producto GTG", "Propia entidad", None, ""),
                 ("Producto GTG", "Vinculada otra entidad", None, ""),
                 ("Producto GTG", "Vinculada propia entidad", None, ""),
