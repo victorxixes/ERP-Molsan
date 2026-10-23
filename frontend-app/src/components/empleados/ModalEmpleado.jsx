@@ -2898,7 +2898,7 @@ const permisosDisponibles =
                 {pestana ===
                   "personales" && (
 
-                  <div className="space-y-5">
+                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 [&_input]:cursor-default [&_textarea]:cursor-default [&_button]:hidden" : "space-y-5"}>
 
                     <section
                       className="
@@ -3084,16 +3084,12 @@ const permisosDisponibles =
                     </section>
 
 
-                    <GuardarButton
-                      onClick={
-                        guardarDatosEmpleado
-                      }
-                      loading={
-                        guardando
-                      }
-                    />
+                    {esAdministrador && <GuardarButton
+                      onClick={guardarDatosEmpleado}
+                      loading={guardando}
+                    />}
 
-                  </div>
+                  </fieldset>
 
                 )}
 
