@@ -757,12 +757,32 @@ def migrar_esquema_expedientes_inicio():
                 "Otra instancia mantiene el bloqueo de migración durante más de 60 segundos."
             )
 
-        # Migración de Control Apoderados dentro del mismo bloqueo global y
-        # con el mecanismo de reintentos/lock_timeout usado por el ERP.
-        ejecutar_ddl_con_reintentos(
-            "crear columna empleados.es_colaborador",
-            "ALTER TABLE public.empleados ADD COLUMN IF NOT EXISTS es_colaborador BOOLEAN NOT NULL DEFAULT FALSE",
-        )
+        # Migración de Control Apoderados dentro del mismo bloqueo global.
+        # Evita solicitar un bloqueo exclusivo de empleados en cada arranque:
+        # ADD COLUMN IF NOT EXISTS también bloquea la tabla aunque la columna
+        # ya exista. Solo ejecutamos DDL si falta realmente en el catálogo.
+        with conexion.begin():
+            existe_es_colaborador = bool(
+                conexion.execute(
+                    text("""
+                        SELECT EXISTS (
+                            SELECT 1
+                            FROM pg_attribute
+                            WHERE attrelid = 'public.empleados'::regclass
+                              AND attname = 'es_colaborador'
+                              AND NOT attisdropped
+                        )
+                    """)
+                ).scalar()
+            )
+        if not existe_es_colaborador:
+            ejecutar_ddl_con_reintentos(
+                "crear columna empleados.es_colaborador",
+                "ALTER TABLE public.empleados ADD COLUMN es_colaborador BOOLEAN NOT NULL DEFAULT FALSE",
+            )
+            print("[MIGRACION STARTUP] Columna empleados.es_colaborador creada.", flush=True)
+        else:
+            print("[MIGRACION STARTUP] Columna empleados.es_colaborador ya existe; se omite DDL.", flush=True)
         tabla_liquidaciones_creada = False
         for intento_tabla in range(1, 21):
             try:
