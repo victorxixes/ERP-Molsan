@@ -136,8 +136,8 @@ export default function Intranet() {
     } catch (e) { setMensaje(errorText(e, "No se ha podido descargar el documento.")); }
   }
 
-  if (!authReady || loading) return <div className="flex min-h-[360px] items-center justify-center"><div className="rounded-2xl border border-slate-200 bg-white px-6 py-4 text-sm text-slate-600 shadow-sm">Cargando Intranet…</div></div>;
-  if (error && !noticias.length && !documentos.length) return <div className="rounded-3xl border border-red-200 bg-white p-8 text-sm text-red-700 shadow-sm"><b>No se ha podido cargar la Intranet</b><p className="mt-2">{error}</p><button className={`${secondary} mt-4`} onClick={() => cargar(true)}>Reintentar</button></div>;
+  if (!authReady || loading) return <div role="status" aria-live="polite" className="flex min-h-[360px] items-center justify-center"><div className="rounded-2xl border border-slate-200 bg-white px-6 py-4 text-sm text-slate-600 shadow-sm">Cargando Intranet…</div></div>;
+  if (error && !noticias.length && !documentos.length) return <div role="alert" aria-live="assertive" className="rounded-3xl border border-red-200 bg-white p-8 text-sm text-red-700 shadow-sm"><b>No se ha podido cargar la Intranet</b><p className="mt-2">{error}</p><button className={`${secondary} mt-4`} onClick={() => cargar(true)}>Reintentar</button></div>;
 
   return <div className="molsan-intranet-page relative space-y-6 animate-fadeIn">
     <header className="rounded-[28px] border border-white/80 bg-gradient-to-r from-white via-blue-50/80 to-cyan-50/80 p-6 shadow-[0_18px_55px_rgba(15,23,42,0.08)] sm:p-8">
