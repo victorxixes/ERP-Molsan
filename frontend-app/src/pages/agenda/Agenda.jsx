@@ -573,7 +573,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
         {vista === "semana" && (
           <VistaSemana
             fechaBase={(() => { const [ay, am, ad] = String(fechaAncla).split("-").map(Number); const inicio = new Date(ay, am - 1, ad); inicio.setDate(inicio.getDate() - ((inicio.getDay() + 6) % 7)); return inicio.toLocaleDateString("sv-SE"); })()}
-            citas={citasSeguras}
+            citas={citasFiltradas}
             onCitaClick={handleCitaClick}
             onCrearCita={handleDiaClick}
           />
