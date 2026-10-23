@@ -452,6 +452,14 @@ const PERMISOS_ESTANDAR = [
   "eliminar",
 ];
   
+  const empleadoValido =
+    empleado !== null &&
+    empleadoIdSeguro !== null &&
+    textoSeguro(
+      empleado.nombre
+    ).trim() !== "";
+
+
   const cambiarVisibilidadEmpleado = useCallback(async () => {
     if (!empleadoValido || empleadoIdSeguro === null || guardandoVisibilidad) return;
 
@@ -475,14 +483,6 @@ const PERMISOS_ESTANDAR = [
       setGuardandoVisibilidad(false);
     }
   }, [empleadoValido, empleadoIdSeguro, guardandoVisibilidad, empleado?.visible_en_listado, cargarFicha]);
-
-
-  const empleadoValido =
-    empleado !== null &&
-    empleadoIdSeguro !== null &&
-    textoSeguro(
-      empleado.nombre
-    ).trim() !== "";
 
 
   /* ============================================================
