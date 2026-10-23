@@ -843,13 +843,13 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
         />
       )}
       <div className="ag-fondo-decorativo" aria-hidden="true" />
-      <header className="ag-hero eg-hero">
-        <div className="ag-hero-identidad">
+      <header className="ag-hero eg-hero molsan-page-header">
+        <div className="ag-hero-identidad molsan-page-header__identity">
           <div className="ag-marca eg-marca" aria-label="EncargaGest">EG</div>
           <div>
             <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-            <h1>EncargaGest</h1>
-            <p>{modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}</p>
+            <h1 className="molsan-page-header__title">EncargaGest</h1>
+            <p className="molsan-page-header__description">{modo === "externo" ? "Portal profesional · " + (sesion?.notaria_nombre || "Sesión externa") : "Recepción y seguimiento de encargos notariales externos."}</p>
           </div>
         </div>
         <div className="ag-hero-acciones">
