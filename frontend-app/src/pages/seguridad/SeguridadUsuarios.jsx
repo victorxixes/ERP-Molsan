@@ -803,11 +803,12 @@ export default function SeguridadUsuarios() {
               </span>
 
               <strong className="erp-stat-value">
-                {Array.isArray(
-                  fichaSegura?.roles
-                )
+                {Array.isArray(fichaSegura?.roles) && fichaSegura.roles.length
                   ? fichaSegura.roles.length
-                  : 0}
+                  : (fichaSegura?.empleado?.rol_id ?? fichaSegura?.rol_id ?? null) !== null ||
+                    Boolean(fichaSegura?.empleado?.rol_nombre ?? fichaSegura?.empleado?.rol?.nombre ?? fichaSegura?.rol_nombre)
+                    ? 1
+                    : 0}
               </strong>
             </div>
 
@@ -817,11 +818,12 @@ export default function SeguridadUsuarios() {
               </span>
 
               <strong className="erp-stat-value">
-                {Array.isArray(
-                  fichaSegura?.permisos
-                )
+                {Array.isArray(fichaSegura?.permisos) && fichaSegura.permisos.length
                   ? fichaSegura.permisos.length
-                  : 0}
+                  : Object.values(fichaSegura?.permisos_modulo_dict ?? fichaSegura?.permisos_modulo ?? {}).reduce(
+                      (total, acciones) => total + (Array.isArray(acciones) ? acciones.length : 0),
+                      0
+                    )}
               </strong>
             </div>
 
