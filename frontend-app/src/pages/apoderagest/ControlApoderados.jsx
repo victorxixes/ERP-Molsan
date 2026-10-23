@@ -12,6 +12,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
   const [periodo, setPeriodo] = useState(mesActual());
   const [item, setItem] = useState(null);
   const [items, setItems] = useState([]);
+  const [historial, setHistorial] = useState([]);
   const [colaboradores, setColaboradores] = useState([]);
   const [archivo, setArchivo] = useState(null);
   const [discrepancia, setDiscrepancia] = useState("");
@@ -31,8 +32,12 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         setItems(Array.isArray(rel.data) ? rel.data : []);
         setColaboradores(Array.isArray(col.data) ? col.data : []);
       } else {
-        const res = await axios.get("/apoderagest/liquidaciones/mi", { params: { periodo } });
+        const [res, hist] = await Promise.all([
+          axios.get("/apoderagest/liquidaciones/mi", { params: { periodo } }),
+          axios.get("/apoderagest/liquidaciones/mis-periodos"),
+        ]);
         setItem(res.data);
+        setHistorial(Array.isArray(hist.data) ? hist.data : []);
       }
     } catch (e) {
       setError(e?.response?.data?.detail || "No se han podido cargar las liquidaciones. Comprueba tus permisos y que tu ficha esté habilitada como colaborador.");
@@ -142,6 +147,11 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         {item.factura_nombre && <p className="mt-3 text-sm">Archivo presentado: <strong>{item.factura_nombre}</strong> · {estado(item.estado_factura)}</p>}
         {item.estado_relacion === "validada" ? <div className="mt-4 flex flex-wrap items-center gap-3"><input type="file" accept=".pdf,.xml,.jpg,.jpeg,.png" onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="max-w-full text-sm" /><button onClick={subir} disabled={!archivo || cargando} className="rounded-xl bg-indigo-700 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">{item.factura_nombre ? "Sustituir factura" : "Enviar factura"}</button></div> : <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">Primero valida la relación de expedientes.</p>}
         {item.factura_observaciones && <p className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Observaciones de Molsan: {item.factura_observaciones}</p>}
+      </section>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="text-lg font-bold text-slate-800">Histórico de liquidaciones</h2>
+        <p className="mb-3 mt-1 text-sm text-slate-500">Consulta el estado de las relaciones y facturas de otros meses.</p>
+        {historial.length ? <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Periodo</th><th className="p-3">Firmas</th><th className="p-3">Relación</th><th className="p-3">Factura</th><th className="p-3">Consulta</th></tr></thead><tbody>{historial.map((h) => <tr key={h.id} className="border-b last:border-0"><td className="p-3 font-semibold">{h.periodo}</td><td className="p-3">{h.expedientes?.length || 0}</td><td className="p-3">{estado(h.estado_relacion)}</td><td className="p-3">{estado(h.estado_factura)}</td><td className="p-3"><button onClick={() => setPeriodo(h.periodo)} className="font-semibold text-indigo-700 hover:underline">Abrir mes</button></td></tr>)}</tbody></table></div> : <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">Todavía no hay otros periodos registrados.</p>}
       </section>
     </> : !cargando && <section className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">No se ha podido cargar la relación mensual. Si eres colaborador, solicita que habiliten tu ficha desde Utilidades → Control Apoderados.</section>}
     <div><button onClick={() => navigate(admin ? "/herramientas/utilidades" : "/apoderagest")} className="text-sm font-semibold text-indigo-700 hover:underline">← Volver</button></div>
