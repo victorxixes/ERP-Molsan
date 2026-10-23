@@ -51,18 +51,24 @@ El repositorio tiene pantallas y módulos backend específicos para, al menos:
 - Acciones del expediente: `.../AccionesExpediente.jsx`, `backend/app/acciones_expediente/`.
 - Honorarios de gestoría: `.../HonorariosGestoria.jsx`, `backend/app/honorarios_gestoria/`.
 - Provisiones y cancelaciones: `backend/app/provisiones/`, con lógica de tarifas y cálculos que debe tratarse como sensible.
+- Notarías/CTN: `backend/app/ctn/`, con su propio catálogo y relaciones.
 
 Estos módulos deben conservar sus esquemas y reglas específicas. No se debe crear una segunda tabla genérica para reemplazar los registros que ya administran.
 
 ### 1.4 Catálogos funcionales dentro de otros módulos
 Se han localizado ejemplos de valores que se presentan como catálogos, pero que están definidos o consumidos fuera de la central:
 
-- `backend/app/expedientes/router.py`: endpoint de catálogos para filtros del listado y actividades del circuito.
+- `backend/app/expedientes/router.py`: endpoint de catálogos para filtros del listado. Incluye estados, tipos de acta, tipos de firma, tipos de documento, provincias, poblaciones y otros valores distintos obtenidos de los expedientes. Parte de esta respuesta se deriva de los datos existentes; por tanto, no equivale necesariamente a un catálogo maestro editable.
+- `backend/app/expedientes/router.py`: actividades del circuito que el propio código describe como catálogo funcional.
 - `frontend-app/src/pages/expedientes/FichaExpediente.jsx`: lista `ENTIDADES_ORIGINALES_FINCA` con entidades bancarias históricas. Hay que determinar su finalidad exacta y si representa entidades históricas de una operación concreta; no se debe mezclar automáticamente con el maestro de entidades bancarias actuales.
+- `frontend-app/src/pages/provisiones/ProvisionesFondosPage.jsx`: constantes de tipos de carga y territorios, además de valores iniciales de formulario. Hay que compararlas con el catálogo de tipos de carga ya existente y determinar si son conceptos equivalentes o un conjunto específico del cálculo de provisiones.
+- `frontend-app/src/pages/herramientas/TiposConceptoGastos.jsx`: contiene conceptos iniciales; hay que comprobar si son semillas para la tabla o si siguen funcionando como una segunda fuente.
 - `frontend-app/src/pages/encargagest/EncargaGest.jsx`: estados definidos en código para el flujo EncargaGest.
 - `backend/app/encargagest/models.py`: estados y prioridad con valores predeterminados que forman parte de un flujo operativo.
 - `backend/app/provisiones/models.py`: estados y tipos operativos de provisiones/cancelaciones.
-- `frontend-app/src/components/empleados/ModalEmpleado.jsx`: consume catálogos para reparto (comunidades, productos, tipos de operación y estados de expediente), cuya fuente y posibilidad de mantenimiento hay que rastrear.
+- `frontend-app/src/components/agenda/ModalNuevaCita.jsx`: tipos de cita definidos en una constante.
+- `frontend-app/src/components/empleados/ModalEmpleado.jsx`: consume catálogos para reparto (comunidades, productos, tipos de operación, estados de expediente y actividades), cuya fuente y posibilidad de mantenimiento hay que rastrear.
+- `frontend-app/src/components/expedientes/EnviarANotarioModal.jsx`: campos del flujo de envío a notario; deben revisarse las opciones de tipo de trámite/firma/documento antes de proponer un catálogo común.
 
 Estos valores no deben hacerse editables sin clasificar primero si son datos maestros, valores históricos o estados de una máquina de flujo.
 
@@ -77,6 +83,8 @@ Estos valores no deben hacerse editables sin clasificar primero si son datos mae
 | Economía | Honorarios, conceptos de gasto, provisiones/cancelaciones | Proteger cálculos, tarifas históricas y expedientes existentes |
 | Actividades | Acciones del expediente y catálogos de filtros/actividades | Determinar si hay fuentes duplicadas o listas fijas |
 | Documentación | Carpeta digital, checklist y categorías definidas en módulos | Inventariar tipos documentales y requisitos por operación/fase |
+| Agenda | Tipos de cita en una constante frontend | Ver si deben ser configurables o mantenerse como opciones controladas |
+| Reparto de expedientes | Reglas consumen productos, tipos de operación, comunidades y estados | Localizar las fuentes API y comprobar si son configurables |
 | Estados operativos | Estados de expedientes y flujos especializados | Separar valores configurables de transiciones críticas de negocio |
 | Organización y seguridad | Departamentos, secciones, cargos, roles y permisos | Evitar mezclar maestros organizativos con credenciales y autorizaciones |
 
@@ -94,7 +102,7 @@ Estos valores no deben hacerse editables sin clasificar primero si son datos mae
 - Recorrer las rutas de `frontend-app/src/App.jsx` y el índice completo de módulos para verificar qué pantallas están fuera de la central Catálogos.
 - Leer modelos, schemas, routers y servicios de cada catálogo dedicado, y registrar sus campos, CRUD, restricciones y permisos.
 - Seguir las llamadas frontend/API para descubrir listas de opciones, constantes y configuraciones mantenidas fuera de Catálogos.
-- Revisar los modelos y relaciones relevantes de expedientes, carpeta digital, notarios/CTN, empleados, seguridad y provisiones.
+- Revisar los modelos y relaciones relevantes de expedientes, carpeta digital, notarios/CTN, empleados, seguridad, agenda y provisiones.
 - Comparar las fuentes que parecen representar el mismo dato y marcar cada caso como duplicado confirmado, dato histórico o concepto distinto.
 - Entregar un inventario final con ubicación, fuente de datos, consumidores, riesgo y acción propuesta antes de comenzar migraciones o nuevas tablas.
 
