@@ -17,14 +17,14 @@ export function useEmpleadosWS(onEvento) {
   const wsRef = useRef(null);
   const callbackRef = useRef(onEvento);
 
-  const { token, authReady } = useAuthStore();
+  const { token, authReady, user } = useAuthStore();
 
   useEffect(() => {
     callbackRef.current = onEvento;
   }, [onEvento]);
 
   useEffect(() => {
-    if (!authReady || !token) {
+    if (!authReady || !token || !user?.id) {
       return;
     }
 
@@ -33,7 +33,7 @@ export function useEmpleadosWS(onEvento) {
     }
 
     const wsUrl =
-      `${import.meta.env.VITE_WS_URL}/ws/empleados?token=${encodeURIComponent(token)}`;
+      `${import.meta.env.VITE_WS_URL}/ws/empleados/${encodeURIComponent(user.id)}?token=${encodeURIComponent(token)}`;
 
     let ws;
 
@@ -122,5 +122,5 @@ export function useEmpleadosWS(onEvento) {
         wsRef.current = null;
       }
     };
-  }, [token, authReady]);
+  }, [token, authReady, user?.id]);
 }
