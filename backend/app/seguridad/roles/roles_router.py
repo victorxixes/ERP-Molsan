@@ -846,6 +846,7 @@ def editar_rol(
 def eliminar_rol(
     rol_id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_permiso_seguridad("eliminar")),
 ):
     """
     Elimina un rol.
