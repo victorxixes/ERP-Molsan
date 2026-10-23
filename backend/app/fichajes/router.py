@@ -1037,6 +1037,14 @@ def solicitar_compensacion(fecha_disfrute: date = Form(...), cantidad: float = F
     ).first()
     if vacaciones_duplicadas:
         raise HTTPException(status_code=409, detail="Ya existe una solicitud de vacaciones ordinarias para esa fecha. No se puede reservar también como compensación.")
+    ausencia_duplicada = db.query(FichajeSolicitudAusencia).filter(
+        FichajeSolicitudAusencia.empleado_id == usuario.id,
+        FichajeSolicitudAusencia.fecha_inicio <= fecha_disfrute,
+        FichajeSolicitudAusencia.fecha_fin >= fecha_disfrute,
+        FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}),
+    ).first()
+    if ausencia_duplicada:
+        raise HTTPException(status_code=409, detail="Ya existe una solicitud de ausencia pendiente o aprobada para esa fecha.")
     _procesar_compensaciones_vencidas(db, usuario.id)
     disponible = _saldo_disponible_compensacion(db, usuario.id, unidad)
     if cantidad > disponible + 0.0001:
