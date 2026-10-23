@@ -337,7 +337,7 @@ from backend.app.provisiones.router import router as provisiones_router
 from backend.app.apoderagest.router import ( 
     router as apoderagest_router,
 )
-from backend.app.apoderagest.liquidaciones import router as liquidaciones_apoderagest_router
+from backend.app.apoderagest.liquidaciones import router as liquidaciones_apoderagest_router, LiquidacionMensual
 
 
 # ENCARGAGEST
@@ -756,6 +756,15 @@ def migrar_esquema_expedientes_inicio():
             raise RuntimeError(
                 "Otra instancia mantiene el bloqueo de migración durante más de 60 segundos."
             )
+
+        # Migración de Control Apoderados dentro del mismo bloqueo global y
+        # con el mecanismo de reintentos/lock_timeout usado por el ERP.
+        ejecutar_ddl_con_reintentos(
+            "crear columna empleados.es_colaborador",
+            "ALTER TABLE public.empleados ADD COLUMN IF NOT EXISTS es_colaborador BOOLEAN NOT NULL DEFAULT FALSE",
+        )
+        with conexion.begin():
+            LiquidacionMensual.__table__.create(bind=conexion, checkfirst=True)
 
         with conexion.begin():
             resultado = conexion.execute(
