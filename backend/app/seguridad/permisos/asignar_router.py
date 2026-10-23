@@ -5,6 +5,7 @@ from backend.app.database import get_db
 from backend.app.empleados.models import Empleado
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
+from backend.app.seguridad.permisos.permisos_router import MODULOS_BASE, PERMISOS_BASE
 
 
 router = APIRouter(
@@ -62,9 +63,10 @@ def _permisos_dict(valor):
         if not isinstance(modulo, str):
             continue
 
-        resultado[modulo] = _lista_strings(
-            permisos
-        )
+        resultado[modulo] = [
+            accion for accion in _lista_strings(permisos)
+            if accion in PERMISOS_BASE
+        ]
 
     return resultado
 
@@ -153,13 +155,15 @@ def asignar_permisos(
             detail="Empleado no encontrado"
         )
 
-    permisos_limpios = _permisos_dict(
-        permisos
-    )
+    recibidos = _permisos_dict(permisos)
+    # Persistir un estado explícito para cada módulo del catálogo:
+    # módulo no enviado = ningún permiso, nunca permiso heredado.
+    permisos_limpios = {
+        modulo: list(recibidos.get(modulo, []))
+        for modulo in MODULOS_BASE
+    }
 
-    empleado.permisos_modulo_dict = (
-        permisos_limpios
-    )
+    empleado.permisos_modulo_dict = permisos_limpios
 
     db.commit()
     db.refresh(empleado)
