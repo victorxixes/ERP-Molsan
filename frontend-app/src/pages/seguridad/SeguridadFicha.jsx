@@ -268,6 +268,7 @@ export default function SeguridadFicha({
     desbloquear,
     resetPassword,
     asignarRol,
+    roles,
     asignarPermisos,
     asignarModulos,
     permisos,
@@ -489,17 +490,17 @@ const PERMISOS_ESTANDAR = [
      ROL
   ============================================================ */
 
-  const nombreRol =
-    objetoSeguro(
-      empleado?.rol
-    ) &&
-    textoSeguro(
-      empleado.rol.nombre
-    ).trim() !== ""
-      ? textoSeguro(
-          empleado.rol.nombre
-        )
-      : "-";
+  const rolActualId = idSeguro(
+    empleado?.rol_id ?? empleado?.rol?.id ?? ficha?.rol?.id
+  );
+
+  const nombreRol = textoSeguro(
+    empleado?.rol?.nombre ??
+    empleado?.rol_nombre ??
+    ficha?.rol?.nombre ??
+    roles.find((rol) => idSeguro(rol?.id) === rolActualId)?.nombre ??
+    ""
+  ).trim() || "Sin rol asignado";
 
 
   /* ============================================================
@@ -2197,16 +2198,9 @@ const permisosGlobales =
               "
             >
 
-              <input
-                type="number"
-                min="1"
+              <select
                 value={nuevoRol}
-                onChange={(event) =>
-                  setNuevoRol(
-                    event.target.value
-                  )
-                }
-                placeholder="ID del nuevo rol"
+                onChange={(event) => setNuevoRol(event.target.value)}
                 className="
                   min-w-0
                   flex-1
@@ -2219,10 +2213,17 @@ const permisosGlobales =
                   text-sm
                   text-[var(--erp-text)]
                   outline-none
-                  placeholder:text-[var(--erp-text-soft)]
                   focus:border-[var(--erp-primary)]
                 "
-              />
+                aria-label="Seleccionar nuevo rol"
+              >
+                <option value="">Selecciona un rol…</option>
+                {roles.map((rol) => (
+                  <option key={rol.id} value={String(rol.id)}>
+                    {rol.nombre}{rol.descripcion ? ` — ${rol.descripcion}` : ""}
+                  </option>
+                ))}
+              </select>
 
               <button
                 type="button"
@@ -2230,9 +2231,8 @@ const permisosGlobales =
                   ejecutarAsignarRol
                 }
                 disabled={
-                  idSeguro(
-                    nuevoRol
-                  ) === null
+                  idSeguro(nuevoRol) === null ||
+                  idSeguro(nuevoRol) === rolActualId
                 }
                 className="
                   rounded-xl
@@ -2248,7 +2248,7 @@ const permisosGlobales =
                   disabled:opacity-40
                 "
               >
-                Asignar rol
+                {idSeguro(nuevoRol) === rolActualId ? "Rol actual seleccionado" : "Asignar rol"}
               </button>
 
             </div>
