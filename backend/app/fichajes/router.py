@@ -138,6 +138,9 @@ def crear_marcaje(
         if not valido:
             raise HTTPException(status_code=422, detail="Selecciona un tipo de ausencia válido del catálogo.")
         observaciones = f"Ausencia: {nombre_ausencia}. {observaciones or ''}".strip()
+        # El nuevo botón registra la ausencia como evento puntual, ya que la interfaz
+        # no ofrece un control de regreso de ausencia. Los AUSENCIA históricos se conservan.
+        tipo = "AUSENCIA_PUNTUAL"
     ultimo = db.query(FichajeMarcaje).filter(
         FichajeMarcaje.empleado_id == usuario.id
     ).order_by(desc(FichajeMarcaje.fecha_hora)).first()
@@ -374,7 +377,8 @@ def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_cu
     inicio, fin = date(anio, 1, 1), date(anio + 1, 1, 1)
     registros = db.query(FichajeMarcaje).filter(FichajeMarcaje.empleado_id == usuario.id,
         FichajeMarcaje.fecha_hora >= datetime.combine(inicio, time.min), FichajeMarcaje.fecha_hora < datetime.combine(fin, time.min)).order_by(FichajeMarcaje.fecha_hora).all()
-    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO"}
+    # AUSENCIA es el tipo histórico de pausa con retorno; AUSENCIA_PUNTUAL no resta horas.
+    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
     retornos = {"PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"}
     jornada_abierta = None; pausa_abierta = None; pausa_segundos = 0; segundos = 0; incompletos = 0
     for m in registros:
