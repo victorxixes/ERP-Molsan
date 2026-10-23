@@ -633,13 +633,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     },
 
     {
-      key: "fichajes",
-      to: "/fichajes",
-      label: "Fichajes",
-      icon: "clock",
-    },
-
-    {
       key: "empleados",
       to: "/empleados",
       label: "Empleados",
@@ -936,6 +929,24 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     };
   }, [modulosDropdownAbierto]);
 
+  // En barras de navegación específicas también agrupamos Fichajes bajo «Módulos»
+  // para evitar que aparezca como botón independiente.
+  const navigationItemsConModulos = useMemo(() => {
+    if (!Array.isArray(navigationItems)) return null;
+    const sinFichajes = navigationItems.filter((item) =>
+      item?.key !== "fichajes" &&
+      normalizarModulo(item?.label) !== "fichajes"
+    );
+    const yaTieneModulos = sinFichajes.some((item) =>
+      item?.key === "modulos" ||
+      normalizarModulo(item?.label) === "modulos"
+    );
+    if (modulosDropdown.length > 0 && !yaTieneModulos) {
+      sinFichajes.push({ key: "modulos", label: "Módulos", icon: "database" });
+    }
+    return sinFichajes;
+  }, [navigationItems, modulosDropdown]);
+
   const mostrarBotonMas = modulosMas.length > 0 &&
     !["apoderagest", "notargest", "encargagest"].includes(normalizarModulo(brandName));
 
@@ -1068,8 +1079,8 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                 MÓDULOS PRINCIPALES
                 ================================================== */}
 
-            {navigationItems
-              ? navigationItems.map((item) => (
+            {navigationItemsConModulos
+              ? navigationItemsConModulos.map((item) => (
                   <div
                     key={item.key}
                     className="relative flex-shrink-0"
