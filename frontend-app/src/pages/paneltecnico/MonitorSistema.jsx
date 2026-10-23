@@ -56,10 +56,22 @@ export default function MonitorSistema() {
 
         const res = await listarTablas();
 
+        // La API devuelve objetos { table_name, table_type }.
+        // El selector usa nombres de tabla como cadenas para evitar
+        // que React intente renderizar el objeto completo como hijo.
+        const listado = Array.isArray(res.data?.tablas)
+          ? res.data.tablas
+          : [];
         setTablas(
-          Array.isArray(res.data?.tablas)
-            ? res.data.tablas
-            : []
+          listado
+            .map((item) =>
+              typeof item === "string"
+                ? item
+                : item && typeof item.table_name === "string"
+                  ? item.table_name
+                  : ""
+            )
+            .filter(Boolean)
         );
 
       } catch (error) {
