@@ -127,11 +127,17 @@ def crear_marcaje(
     ultimo = db.query(FichajeMarcaje).filter(
         FichajeMarcaje.empleado_id == usuario.id
     ).order_by(desc(FichajeMarcaje.fecha_hora)).first()
-    # No se permite duplicar consecutivamente el mismo estado ni entrar dos veces sin salida.
+    ultimo_jornada = db.query(FichajeMarcaje).filter(
+        FichajeMarcaje.empleado_id == usuario.id,
+        FichajeMarcaje.tipo.in_({"ENTRADA", "SALIDA"}),
+    ).order_by(desc(FichajeMarcaje.fecha_hora)).first()
+    # Las pausas no cierran la jornada: no se permite otra entrada hasta marcar salida.
+    if tipo == "ENTRADA" and ultimo_jornada and ultimo_jornada.tipo == "ENTRADA":
+        raise HTTPException(status_code=409, detail="Ya consta una entrada sin una salida posterior.")
+    if tipo == "SALIDA" and (not ultimo_jornada or ultimo_jornada.tipo != "ENTRADA"):
+        raise HTTPException(status_code=409, detail="Para registrar la salida debe existir una entrada previa sin cerrar.")
     if ultimo and ultimo.tipo == tipo and tipo in {"ENTRADA", "SALIDA"}:
         raise HTTPException(status_code=409, detail=f"El último marcaje ya es {tipo.lower()}.")
-    if tipo == "ENTRADA" and ultimo and ultimo.tipo == "ENTRADA":
-        raise HTTPException(status_code=409, detail="Ya consta una entrada sin una salida posterior.")
     marcaje = FichajeMarcaje(
         empleado_id=usuario.id,
         tipo=tipo,
