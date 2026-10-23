@@ -310,13 +310,24 @@ def mis_vacaciones(usuario=Depends(get_current_user), db: Session = Depends(get_
     anio = date.today().year
     registros = db.query(FichajeVacaciones).filter(FichajeVacaciones.empleado_id == usuario.id,
         FichajeVacaciones.fecha_inicio >= date(anio, 1, 1), FichajeVacaciones.fecha_inicio < date(anio + 1, 1, 1)).order_by(FichajeVacaciones.fecha_inicio).all()
-    disfrutados = sum(v.dias for v in registros if v.estado == "APROBADO")
+    hoy = date.today()
+    aprobadas = [v for v in registros if v.estado == "APROBADO"]
+    disfrutados = sum(
+        min(v.dias, max(0, (min(hoy, v.fecha_fin) - v.fecha_inicio).days + 1))
+        for v in aprobadas if v.fecha_inicio <= hoy
+    )
+    reservados = sum(
+        max(0, v.dias - min(v.dias, max(0, (min(hoy, v.fecha_fin) - v.fecha_inicio).days + 1)))
+        for v in aprobadas if v.fecha_fin >= hoy
+    )
     bolsa = db.query(FichajeBolsaVacaciones).filter(FichajeBolsaVacaciones.empleado_id == usuario.id, FichajeBolsaVacaciones.anio == anio).first()
     asignados = bolsa.dias_asignados if bolsa else None
+    comprometidos = sum(v.dias for v in aprobadas)
     return {"anio": anio, "dias_asignados": asignados, "dias_disfrutados": disfrutados,
-            "dias_restantes": max(0, asignados - disfrutados) if asignados is not None else None,
+            "dias_reservados": reservados,
+            "dias_restantes": max(0, asignados - comprometidos) if asignados is not None else None,
             "registros": [{"id": v.id, "fecha_inicio": v.fecha_inicio.isoformat(), "fecha_fin": v.fecha_fin.isoformat(), "dias": v.dias, "estado": v.estado, "observaciones": v.observaciones} for v in registros],
-            "aviso": "La asignación anual debe configurarla administración; no se inventa una bolsa de días."}
+            "aviso": "Los días restantes descuentan las vacaciones aprobadas, incluidas las fechas futuras reservadas. Las solicitudes pendientes no consumen saldo."}
 
 
 @router.post("/vacaciones")
