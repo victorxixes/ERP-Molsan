@@ -48,6 +48,9 @@ export default function Fichajes({ modo = "empleado" }) {
   const [fechaDesde, setFechaDesde] = useState(fechaISO(new Date(FECHA_HOY.getFullYear(), FECHA_HOY.getMonth(), 1)));
   const [fechaHasta, setFechaHasta] = useState(fechaISO(FECHA_HOY));
   const [empleadoFiltro, setEmpleadoFiltro] = useState("");
+  const [empleadoBolsaId, setEmpleadoBolsaId] = useState("");
+  const [diasBolsa, setDiasBolsa] = useState("22");
+  const [anioBolsa, setAnioBolsa] = useState(String(new Date().getFullYear()));
   const [tipoDocumento, setTipoDocumento] = useState(TIPOS_DOCUMENTO[0]);
   const [fechaDocumento, setFechaDocumento] = useState(fechaISO(FECHA_HOY));
   const [archivo, setArchivo] = useState(null);
@@ -263,6 +266,16 @@ export default function Fichajes({ modo = "empleado" }) {
 
             {esAdminVista && pestana === "control" && (
               <div className="p-4 sm:p-6">
+                <section className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
+                  <h2 className="font-bold text-emerald-900">Asignación anual de vacaciones</h2>
+                  <p className="mt-1 text-xs text-emerald-800">Configura los días iniciales de cada empleado; su módulo calculará el saldo con las solicitudes aprobadas.</p>
+                  <form className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" onSubmit={async (e) => { e.preventDefault(); setGuardando(true); setError(""); setMensaje(""); try { const d = new FormData(); d.append("empleado_id", empleadoBolsaId); d.append("anio", anioBolsa); d.append("dias_asignados", diasBolsa); await axios.post("/fichajes/admin/vacaciones-bolsa", d); setMensaje("Bolsa anual de vacaciones guardada."); } catch (err) { setError(err?.response?.data?.detail || "No se pudo guardar la bolsa de vacaciones."); } finally { setGuardando(false); } }}>
+                    <label className="text-xs font-bold text-slate-600">Empleado<select required value={empleadoBolsaId} onChange={(e) => setEmpleadoBolsaId(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal"><option value="">Selecciona empleado…</option>{empleados.map((e) => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label>
+                    <label className="text-xs font-bold text-slate-600">Año<input required type="number" min="2000" max="2100" value={anioBolsa} onChange={(e) => setAnioBolsa(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal" /></label>
+                    <label className="text-xs font-bold text-slate-600">Días asignados<input required type="number" min="0" max="60" value={diasBolsa} onChange={(e) => setDiasBolsa(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal" /></label>
+                    <div className="flex items-end"><button disabled={guardando || !empleadoBolsaId} className="w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-bold text-white disabled:opacity-50">Guardar asignación</button></div>
+                  </form>
+                </section>
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                   <label className="text-xs font-bold text-slate-500">Desde<input type="date" value={fechaDesde} onChange={(e) => setFechaDesde(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-normal" /></label>
                   <label className="text-xs font-bold text-slate-500">Hasta<input type="date" value={fechaHasta} onChange={(e) => setFechaHasta(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-normal" /></label>
