@@ -106,7 +106,7 @@ export default function Seguridad() {
             </div>
           </div>
           <span className="inline-flex w-fit items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-[var(--erp-bg)] px-3 py-2 text-xs text-[var(--erp-text-soft)]">
-            <Icono name="layout-grid" className="h-4 w-4" />
+            <Icono name="folder" className="h-4 w-4" />
             Panel de administración
           </span>
         </div>
@@ -124,9 +124,9 @@ export default function Seguridad() {
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
             <Indicador icon="user-group" label="Empleados" value={empleadosList.length} detail="Registros disponibles" />
-            <Indicador icon="user-check" label="Activos" value={empleadosActivos} detail="Empleados marcados como activos" />
+            <Indicador icon="user-group" label="Activos" value={empleadosActivos} detail="Empleados marcados como activos" />
             <Indicador icon="shield" label="Roles" value={rolesList.length} detail="Roles registrados" />
-            <Indicador icon="key-round" label="Permisos" value={permisosList.length} detail="Permisos registrados" />
+            <Indicador icon="shield" label="Permisos" value={permisosList.length} detail="Permisos registrados" />
             <Indicador icon="clipboard-list" label="Auditoría" value={auditoriaList.length} detail="Eventos disponibles" />
           </div>
         )}
@@ -140,7 +140,7 @@ export default function Seguridad() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Acceso to="/seguridad/usuarios" icon="users" title="Empleados y permisos" description="Selecciona empleados y gestiona su acceso según los permisos de tu perfil." />
           <Acceso to="/seguridad/roles/editor" icon="shield-check" title="Roles" description="Crea, edita y administra los perfiles de seguridad que se asignan a los empleados." />
-          <Acceso to="/seguridad/modulos" icon="layout-grid" title="Módulos y permisos" description="Consulta los módulos del ERP y la configuración de acceso disponible." />
+          <Acceso to="/seguridad/modulos" icon="folder" title="Módulos y permisos" description="Consulta los módulos del ERP y la configuración de acceso disponible." />
           <Acceso to="/auditoria" icon="clipboard-list" title="Auditoría" description="Consulta las operaciones y los eventos registrados en el sistema." />
         </div>
       </section>
@@ -165,7 +165,7 @@ export default function Seguridad() {
               return (
                 <li key={item?.id ?? `auditoria-${index}`} className="flex items-start gap-3 px-5 py-3.5">
                   <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]">
-                    <Icono name="clipboard-list" className="h-4 w-4" />
+                    <Icono name="clipboard" className="h-4 w-4" />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-medium text-[var(--erp-text)]">{usuario} · {accion}</span>
@@ -181,7 +181,7 @@ export default function Seguridad() {
 
       <section className="flex flex-col gap-3 rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <Icono name="info" className="mt-0.5 h-5 w-5 text-[var(--erp-primary)]" />
+          <Icono name="shield" className="mt-0.5 h-5 w-5 text-[var(--erp-primary)]" />
           <div>
             <p className="text-sm font-medium text-[var(--erp-text)]">Supervisión técnica</p>
             <p className="mt-0.5 text-xs text-[var(--erp-text-soft)]">{logsList.length} registros técnicos cargados. Consulta los logs para revisar errores y advertencias.</p>
