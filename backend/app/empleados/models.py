@@ -82,6 +82,14 @@ class Empleado(Base):
         nullable=False
     )
 
+    # Controla la aparición en el listado visual de tarjetas, sin desactivar la cuenta.
+    visible_en_listado = Column(
+        Boolean,
+        default=True,
+        nullable=False,
+        server_default="true"
+    )
+
     # =========================================================
     # SEGURIDAD
     # =========================================================
