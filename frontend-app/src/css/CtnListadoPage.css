@@ -1600,3 +1600,54 @@
   .ctn-modal-header-unified { align-items:flex-start; gap:10px; padding-bottom:14px; margin-bottom:14px; }
   .ctn-modal-header-badge { order:3; }
 }
+
+
+/* Resumen de accesos a portales notariales */
+.accesos-notariales-resumen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+.accesos-notariales-resumen-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--molsan-border, #d9e0e8);
+  border-radius: 14px;
+  background: var(--molsan-surface, #fff);
+  box-shadow: 0 2px 8px rgb(15 23 42 / 5%);
+}
+.accesos-notariales-resumen-card > span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 12px;
+  background: var(--molsan-surface-muted, #f1f5f9);
+  font-size: 1.35rem;
+}
+.accesos-notariales-resumen-card p {
+  margin: 0 0 .25rem;
+  color: var(--molsan-text, #334155);
+  font-size: .92rem;
+  font-weight: 600;
+}
+.accesos-notariales-resumen-card strong {
+  display: block;
+  font-size: 1.8rem;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.accesos-notariales-resumen-card small {
+  display: block;
+  margin-top: .2rem;
+  color: var(--molsan-text-muted, #64748b);
+  font-size: .78rem;
+}
+@media (max-width: 640px) {
+  .accesos-notariales-resumen { grid-template-columns: minmax(0, 1fr); }
+}
