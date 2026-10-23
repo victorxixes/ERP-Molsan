@@ -13,7 +13,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import Base, engine, get_db
 from backend.app.empleados.models import Empleado
-from backend.app.fichajes.models import (FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones, FichajeFestivoTrabajado, FichajeCompensacionMovimiento, FichajeSolicitudCompensacion, FichajeCompensacionAuditoria, FichajeFestivoCalendario, FichajeMarcajeAuditoria, FichajePeriodoCerrado)
+from backend.app.fichajes.models import (FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones, FichajeFestivoTrabajado, FichajeCompensacionMovimiento, FichajeSolicitudCompensacion, FichajeCompensacionAuditoria, FichajeFestivoCalendario, FichajeMarcajeAuditoria, FichajePeriodoCerrado, FichajeDocumentoRevision, FichajeSolicitudAusencia)
 
 router = APIRouter(prefix="/fichajes", tags=["Fichaje Molsan"])
 TIPOS_MARCAJE = {"ENTRADA", "SALIDA", "PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_INICIO", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_INICIO", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA", "AUSENCIA"}
@@ -32,7 +32,7 @@ def _migrar_tablas():
             conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
             Base.metadata.create_all(
                 bind=conexion,
-                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__, FichajeTipoAusencia.__table__, FichajeVacaciones.__table__, FichajeBolsaVacaciones.__table__, FichajeFestivoTrabajado.__table__, FichajeCompensacionMovimiento.__table__, FichajeSolicitudCompensacion.__table__, FichajeCompensacionAuditoria.__table__, FichajeFestivoCalendario.__table__, FichajeMarcajeAuditoria.__table__, FichajePeriodoCerrado.__table__],
+                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__, FichajeTipoAusencia.__table__, FichajeVacaciones.__table__, FichajeBolsaVacaciones.__table__, FichajeFestivoTrabajado.__table__, FichajeCompensacionMovimiento.__table__, FichajeSolicitudCompensacion.__table__, FichajeCompensacionAuditoria.__table__, FichajeFestivoCalendario.__table__, FichajeMarcajeAuditoria.__table__, FichajePeriodoCerrado.__table__, FichajeDocumentoRevision.__table__, FichajeSolicitudAusencia.__table__],
                 checkfirst=True,
             )
         from sqlalchemy.orm import Session as _Session
@@ -228,7 +228,11 @@ def listar_mis_documentos(
     documentos = db.query(FichajeDocumento).filter(
         FichajeDocumento.empleado_id == usuario.id
     ).order_by(desc(FichajeDocumento.subido_en)).limit(500).all()
-    return [_documento_dict(d) for d in documentos]
+    resultado = []
+    for d in documentos:
+        revision = db.query(FichajeDocumentoRevision).filter(FichajeDocumentoRevision.documento_id == d.id).order_by(desc(FichajeDocumentoRevision.creado_en)).first()
+        resultado.append({**_documento_dict(d), "revision_estado": revision.estado if revision else "PENDIENTE", "revision_motivo": revision.motivo if revision else None})
+    return resultado
 
 
 @router.post("/documentos")
@@ -702,10 +706,11 @@ def admin_listar_documentos(
     if hasta:
         consulta = consulta.filter(FichajeDocumento.fecha_documento <= hasta)
     filas = consulta.order_by(desc(FichajeDocumento.subido_en)).limit(2000).all()
-    return [{
-        **_documento_dict(d),
-        "empleado_nombre": _nombre_completo(e) or e.usuario,
-    } for d, e in filas]
+    resultado = []
+    for d, e in filas:
+        revision = db.query(FichajeDocumentoRevision).filter(FichajeDocumentoRevision.documento_id == d.id).order_by(desc(FichajeDocumentoRevision.creado_en)).first()
+        resultado.append({**_documento_dict(d), "empleado_nombre": _nombre_completo(e) or e.usuario, "revision_estado": revision.estado if revision else "PENDIENTE", "revision_motivo": revision.motivo if revision else None})
+    return resultado
 
 
 @router.get("/admin/vacaciones-bolsa")
