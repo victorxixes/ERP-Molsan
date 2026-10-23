@@ -112,7 +112,7 @@ export default function FestivosCompensaciones({ modo = "empleado", onUpdated })
     return ejecutar(() => axios.post("/fichajes/compensaciones/solicitudes", d));
   };
   const fechaBonita = (v) => v ? new Date(`${v}T12:00:00`).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" }) : "—";
-  const estado = (v) => ({ PENDIENTE: "Pendiente de validar", VALIDADO: "Validado", RECHAZADO: "Rechazado", SOLICITADO: "Pendiente de aprobación", APROBADO: "Aprobada", CONSUMIDO: "Disfrutada" }[v] || v);
+  const estado = (v) => ({ PENDIENTE: "Pendiente de validar", VALIDADO: "Validado", RECHAZADO: "Rechazado", SOLICITADO: "Pendiente de aprobación", APROBADO: "Aprobada", DISFRUTADO: "Disfrutada", CONSUMIDO: "Disfrutada" }[v] || v);
 
   return <section className="space-y-5 p-4 sm:p-6">
     <header><h2 className="text-xl font-extrabold">Festivos y compensaciones</h2>
