@@ -53,13 +53,13 @@ export default function Fichajes({ modo = "empleado" }) {
   const recargarEmpleado = useCallback(async () => {
     const [p, m, d] = await Promise.all([
       axios.get("/fichajes/mi-perfil"),
-      axios.get("/fichajes/marcajes", { params: { desde: fechaISO(new Date(mes.getFullYear(), mes.getMonth(), 1)), hasta: fechaISO(new Date(mes.getFullYear(), mes.getMonth() + 1, 0)) } }),
+      axios.get("/fichajes/marcajes"),
       axios.get("/fichajes/documentos"),
     ]);
     setPerfil(p.data);
     setMarcajes(Array.isArray(m.data) ? m.data : []);
     setDocumentos(Array.isArray(d.data) ? d.data : []);
-  }, [mes]);
+  }, []);
 
   const recargarAdmin = useCallback(async () => {
     const [e, m] = await Promise.all([
