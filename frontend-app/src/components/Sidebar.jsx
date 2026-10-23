@@ -887,15 +887,25 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     const usuarioAdmin = normalizarClave(empleado?.usuario) === "admin";
     const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario"].some((r) => rol.includes(r));
 
-    // "Módulos" es el catálogo general del ERP: no excluye los accesos
-    // que ya están en la navegación o en el módulo actual.
-    // La deduplicación se hace únicamente dentro del propio catálogo.
+    // «Módulos» completa la navegación: solo muestra entradas del catálogo
+    // que no estén ya visibles en la barra ni en los accesos fijados.
+    // Así se evita que el administrador vea cada módulo dos veces.
+    const elementosEnBarra = [
+      ...(Array.isArray(navigationItems) ? navigationItems : []),
+      ...visiblesPrincipales,
+      ...modulosFijados,
+    ];
+    const clavesEnBarra = new Set(elementosEnBarra.map((item) =>
+      normalizarClave(item?.key || item?.label)
+    ));
     const items = MODULOS_ERP
       .filter((modulo) =>
         Boolean(modulo.route) &&
         modulo.key !== "notificaciones" &&
         normalizarClave(modulo.label) !== "notificaciones" &&
-        (esAdmin || puedeVerModulo(modulo.key))
+        (esAdmin || puedeVerModulo(modulo.key)) &&
+        !clavesEnBarra.has(normalizarClave(modulo.key)) &&
+        !clavesEnBarra.has(normalizarClave(modulo.label))
       )
       .map((modulo) => ({
         key: modulo.key,
