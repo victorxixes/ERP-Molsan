@@ -26,6 +26,7 @@ class LiquidacionMensual(Base):
     expedientes_json = Column(JSONB, nullable=False, default=list)
     estado_relacion = Column(String(30), nullable=False, default="pendiente")
     validado_en = Column(DateTime(timezone=True), nullable=True)
+    validado_por_id = Column(Integer, ForeignKey("empleados.id"), nullable=True)
     validado_version = Column(Integer, nullable=False, default=1)
     discrepancia = Column(String(2000), nullable=True)
     factura_bytes = Column(LargeBinary, nullable=True)
@@ -99,7 +100,7 @@ def _dict(item, db, incluir_datos_factura=False):
         "colaborador": _nombre(empleado) if empleado else str(item.empleado_id),
         "periodo": item.periodo, "expedientes": item.expedientes_json or [],
         "estado_relacion": item.estado_relacion, "validado_en": item.validado_en.isoformat() if item.validado_en else None,
-        "validado_version": item.validado_version, "discrepancia": item.discrepancia,
+        "validado_por_id": item.validado_por_id, "validado_version": item.validado_version, "discrepancia": item.discrepancia,
         "factura_nombre": item.factura_nombre, "factura_subida_en": item.factura_subida_en.isoformat() if item.factura_subida_en else None,
         "estado_factura": item.estado_factura, "factura_revisada_en": item.factura_revisada_en.isoformat() if item.factura_revisada_en else None,
         "factura_observaciones": item.factura_observaciones,
@@ -150,6 +151,7 @@ def validar_mi_relacion(liquidacion_id: int, discrepancia: str = Form(""), db: S
     item.discrepancia = discrepancia.strip() or None
     item.estado_relacion = "validada"
     item.validado_en = datetime.utcnow()
+    item.validado_por_id = usuario.id
     item.validado_version = item.validado_version or 1
     db.commit()
     db.refresh(item)
@@ -186,11 +188,17 @@ def subir_factura(liquidacion_id: int, archivo: UploadFile = File(...), db: Sess
 @router.get("/admin")
 def listar_control_apoderados(periodo: str | None = None, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _exigir_admin(usuario)
-    q = db.query(LiquidacionMensual).join(Empleado, Empleado.id == LiquidacionMensual.empleado_id).filter(Empleado.es_colaborador.is_(True))
     if periodo:
         _periodo(periodo)
+        # Preparar la relación de cada colaborador para que la administración
+        # pueda consultar el periodo aunque el colaborador aún no haya entrado.
+        colaboradores = db.query(Empleado).filter(Empleado.es_colaborador.is_(True), Empleado.activo.is_(True)).all()
+        for colaborador in colaboradores:
+            _obtener_o_crear(db, colaborador.id, periodo)
+    q = db.query(LiquidacionMensual).join(Empleado, Empleado.id == LiquidacionMensual.empleado_id).filter(Empleado.es_colaborador.is_(True))
+    if periodo:
         q = q.filter(LiquidacionMensual.periodo == periodo)
-    return [_dict(x, db, True) for x in q.order_by(LiquidacionMensual.periodo.desc(), LiquidacionMensual.empleado_id).all()]
+    return [_dict(x, db, True) for x in q.order_by(LiquidacionMensual.periodo.desc(), LiquidacionMensual.empleado_id).all()
 
 @router.get("/admin/colaboradores")
 def listar_colaboradores(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
