@@ -44,6 +44,14 @@ const CATALOGOS = [
     grupo: "Datos territoriales y entidades",
   },
   {
+    icon: "🏢",
+    titulo: "Catálogo de oficinas",
+    descripcion: "Busca oficinas e importa y actualiza sus datos desde tu Excel.",
+    ruta: "/catalogos/oficinas",
+    grupo: "Datos territoriales y entidades",
+    destacado: true,
+  },
+  {
     icon: "💶",
     titulo: "Honorarios de gestoría",
     descripcion: "Tarifas con base imponible, IVA o IGIC y total calculado.",
