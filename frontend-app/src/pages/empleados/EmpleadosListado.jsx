@@ -304,6 +304,8 @@ export default function EmpleadosListado({
     setActivo,
   ] = useState(null);
 
+  const [mostrarOcultos, setMostrarOcultos] = useState(false);
+
 
   const [
     cargando,
@@ -568,12 +570,13 @@ export default function EmpleadosListado({
       () =>
         Array.isArray(empleados)
           ? (incluirOcultos
-              ? empleados
+              ? (mostrarOcultos ? empleados : empleados.filter((empleado) => empleado.visible_en_listado !== false))
               : empleados.filter((empleado) => empleado.visible_en_listado !== false))
           : [],
       [
         empleados,
         incluirOcultos,
+        mostrarOcultos,
       ]
     );
 
@@ -1054,6 +1057,19 @@ export default function EmpleadosListado({
 
       )}
 
+
+      {incluirOcultos && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface)] px-4 py-3">
+          <div>
+            <div className="text-sm font-semibold text-[var(--erp-text)]">Visibilidad de usuarios</div>
+            <p className="text-xs text-[var(--erp-text-soft)]">Los usuarios ocultos no aparecen en los listados habituales, pero se pueden recuperar desde Seguridad.</p>
+          </div>
+          <label className="inline-flex items-center gap-2 text-sm font-medium text-[var(--erp-text)]">
+            <input type="checkbox" checked={mostrarOcultos} onChange={(event) => setMostrarOcultos(event.target.checked)} />
+            Mostrar usuarios ocultos
+          </label>
+        </div>
+      )}
 
       {/* ======================================================
           FILTROS
