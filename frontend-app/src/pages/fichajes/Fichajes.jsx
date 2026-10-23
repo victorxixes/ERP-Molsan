@@ -5,12 +5,14 @@ import FestivosCompensaciones from "./FestivosCompensaciones.jsx";
 
 const TIPOS = [
   { value: "ENTRADA", label: "Entrada a trabajar", icon: "↗", tone: "emerald" },
-  { value: "PAUSA_CAFE_INICIO", label: "Entrada pausa café / desayuno", icon: "☕", tone: "amber" },
-  { value: "PAUSA_COMIDA_INICIO", label: "Pausa para comer", icon: "🍽️", tone: "sky" },
+  { value: "PAUSA_DESAYUNO_INICIO", label: "Pausa desayuno", icon: "☕", tone: "amber" },
+  { value: "PAUSA_DESAYUNO_FIN", label: "Regreso desayuno", icon: "↩", tone: "blue" },
+  { value: "PAUSA_COMIDA_INICIO", label: "Pausa comida", icon: "🍽️", tone: "sky" },
+  { value: "PAUSA_COMIDA_FIN", label: "Regreso comida", icon: "↩", tone: "blue" },
   { value: "PAUSA_CIGARRILLO_INICIO", label: "Pausa cigarrillo", icon: "🚬", tone: "amber" },
-  { value: "RETORNO_AUSENCIA", label: "Retorno de pausa / ausencia", icon: "↩", tone: "blue" },
-  { value: "SALIDA", label: "Salida del trabajo", icon: "↙", tone: "rose" },
+  { value: "PAUSA_CIGARRILLO_FIN", label: "Regreso cigarrillo", icon: "🚬", tone: "blue" },
   { value: "AUSENCIA", label: "Registrar ausencia", icon: "📅", tone: "violet" },
+  { value: "SALIDA", label: "Salida del trabajo", icon: "↙", tone: "rose" },
 ];
 const TIPOS_DOCUMENTO = ["Justificante médico", "Vacaciones", "Ausencia", "Permiso", "Otro"];
 const FECHA_HOY = new Date();
@@ -28,7 +30,8 @@ function fechaLarga(valor) {
   return new Date(valor).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" });
 }
 function formatearTipo(tipo) {
-  return TIPOS.find((t) => t.value === tipo)?.label || tipo;
+  const etiquetas = { PAUSA_CAFE_INICIO: "Pausa desayuno", RETORNO_AUSENCIA: "Regreso de pausa / ausencia" };
+  return TIPOS.find((t) => t.value === tipo)?.label || etiquetas[tipo] || tipo;
 }
 function inicioMes(fecha) { return new Date(fecha.getFullYear(), fecha.getMonth(), 1); }
 function finMes(fecha) { return new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0); }
@@ -196,9 +199,9 @@ export default function Fichajes({ modo = "empleado" }) {
                 <div><h2 className="text-lg font-bold">Jornada de hoy</h2><p className="mt-1 text-sm text-[var(--erp-text-soft)]">{reloj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p><p className="mt-2 font-mono text-4xl font-extrabold tracking-tight text-blue-800 tabular-nums">{reloj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p><p className="text-xs text-slate-500">Hora local · reloj en tiempo real</p></div>
                 <div className="rounded-xl bg-slate-50 px-3 py-2 text-sm"><span className="text-slate-500">Último movimiento: </span><strong>{ultimoMarcaje ? formatearTipo(ultimoMarcaje.tipo) : "Sin marcajes hoy"}</strong>{ultimoMarcaje && <span className="ml-2 text-slate-500">{hora(ultimoMarcaje.fecha_hora)}</span>}</div>
               </div>
-              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {TIPOS.map((t) => (
-                  <button key={t.value} type="button" disabled={guardando} onClick={() => t.value === "AUSENCIA" ? setMostrarSelectorAusencia(true) : enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 rounded-2xl border px-5 py-4 text-left font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-50 ${t.tone === "emerald" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : t.tone === "rose" ? "border-rose-200 bg-rose-50 text-rose-800" : t.tone === "amber" ? "border-amber-200 bg-amber-50 text-amber-900" : "border-sky-200 bg-sky-50 text-sky-900"}`}>
+                  <button key={t.value} type="button" disabled={guardando} onClick={() => t.value === "AUSENCIA" ? setMostrarSelectorAusencia(true) : enviarMarcaje(t.value)} className={`flex min-h-[94px] items-center gap-4 rounded-2xl border px-5 py-4 text-left font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-50 ${t.tone === "emerald" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : t.tone === "rose" ? "border-rose-200 bg-rose-50 text-rose-800" : t.tone === "amber" ? "border-amber-200 bg-amber-50 text-amber-900" : t.tone === "violet" ? "border-violet-200 bg-violet-50 text-violet-900" : t.tone === "blue" ? "border-blue-200 bg-blue-50 text-blue-900" : "border-sky-200 bg-sky-50 text-sky-900"}`}>
                     <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/80 text-2xl">{t.icon}</span><span>{t.label}<span className="mt-1 block text-xs font-medium opacity-70">Registrar ahora</span></span>
                   </button>
                 ))}
@@ -209,9 +212,7 @@ export default function Fichajes({ modo = "empleado" }) {
                   {tiposAusencia.map((x) => <option key={x.id} value={x.nombre}>{x.nombre}{x.requiere_justificante ? " · requiere justificante" : ""}</option>)}
                 </select>
               </label><button type="button" disabled={guardando || !tipoAusencia} onClick={() => enviarMarcaje("AUSENCIA")} className="mt-3 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">Confirmar ausencia</button><button type="button" onClick={() => setMostrarSelectorAusencia(false)} className="ml-2 rounded-xl border border-violet-200 px-4 py-2.5 text-sm font-semibold text-violet-900">Cancelar</button></div>}
-              <label className="mt-4 block text-xs font-bold text-[var(--erp-text-soft)]">Observaciones opcionales
-                <input value={observaciones} onChange={(e) => setObservaciones(e.target.value)} maxLength={500} placeholder="Añadir una nota al marcaje…" className="mt-2 w-full rounded-xl border border-[var(--erp-border)] bg-white px-4 py-3 text-sm font-normal text-slate-800 outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100" />
-              </label>
+
             </section>
           )}
 
@@ -222,7 +223,7 @@ export default function Fichajes({ modo = "empleado" }) {
               {tabs.map((t) => <button key={t.id} type="button" onClick={() => setPestana(t.id)} className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${pestana === t.id ? "bg-blue-700 text-white shadow-sm" : "text-[var(--erp-text-soft)] hover:bg-blue-50 hover:text-blue-800"}`}>{t.label}</button>)}
             </div>
 
-            {!esAdminVista && (
+            {!esAdminVista && pestana === "calendario" && (
               <div className="p-4 sm:p-6">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                   <div><h2 className="text-lg font-bold">Calendario de marcajes</h2><p className="text-sm text-[var(--erp-text-soft)]">Consulta tus registros por día y navega entre meses y años.</p></div>
@@ -238,7 +239,7 @@ export default function Fichajes({ modo = "empleado" }) {
                     const solicitudesDia = dia ? (resumenCompensacion.solicitudes || []).filter((s) => s.fecha_disfrute === claveDia && ["SOLICITADO", "APROBADO", "DISFRUTADO"].includes(s.estado)) : [];
                     const esHoy = dia && claveDia === fechaISO(FECHA_HOY);
                     return <div key={dia ? fechaISO(dia) : "vacio-" + i} className={`min-h-[78px] rounded-xl border p-2 sm:min-h-[105px] ${!dia ? "border-transparent bg-transparent" : esHoy ? "border-blue-300 bg-blue-50/80" : "border-[var(--erp-border)] bg-white"}`}>
-                      {dia && <><div className={`text-sm font-bold ${esHoy ? "text-blue-800" : "text-slate-700"}`}>{dia.getDate()}</div><div className="mt-1 space-y-1">{registros.slice(0, 3).map((m) => <div key={m.id} title={formatearTipo(m.tipo)} className="truncate rounded-md bg-slate-100 px-1.5 py-1 text-[10px] font-semibold text-slate-700 sm:text-xs">{hora(m.fecha_hora)} {m.tipo === "ENTRADA" ? "Entrada" : m.tipo === "SALIDA" ? "Salida" : m.tipo === "PAUSA_CAFE" ? "Pausa" : "Comer"}</div>)}{registros.length > 3 && <p className="text-[10px] text-slate-500">+{registros.length - 3} más</p>}{calendarioFestivosDia.map((f) => <div key={"calendario-festivo-" + f.id} className="truncate rounded-md bg-orange-100 px-1.5 py-1 text-[10px] font-bold text-orange-900" title={f.nombre}>{f.nombre}</div>)}{festivosDia.map((f) => <div key={"festivo-" + f.id} className="truncate rounded-md bg-amber-100 px-1.5 py-1 text-[10px] font-bold text-amber-900" title="Festivo trabajado">{f.estado === "VALIDADO" ? "Festivo validado" : f.estado === "RECHAZADO" ? "Festivo rechazado" : "Festivo pendiente"}</div>)}{solicitudesDia.map((s) => <div key={"comp-" + s.id} className="truncate rounded-md bg-violet-100 px-1.5 py-1 text-[10px] font-bold text-violet-900" title="Compensación">{s.estado === "SOLICITADO" ? "Compensación solicitada" : s.estado === "APROBADO" ? "Compensación aprobada" : "Compensación disfrutada"}</div>)}</div></>}
+                      {dia && <><div className={`text-sm font-bold ${esHoy ? "text-blue-800" : "text-slate-700"}`}>{dia.getDate()}</div><div className="mt-1 space-y-1">{registros.slice(0, 3).map((m) => <div key={m.id} title={formatearTipo(m.tipo)} className="truncate rounded-md bg-slate-100 px-1.5 py-1 text-[10px] font-semibold text-slate-700 sm:text-xs">{hora(m.fecha_hora)} {formatearTipo(m.tipo)}</div>)}{registros.length > 3 && <p className="text-[10px] text-slate-500">+{registros.length - 3} más</p>}{calendarioFestivosDia.map((f) => <div key={"calendario-festivo-" + f.id} className="truncate rounded-md bg-orange-100 px-1.5 py-1 text-[10px] font-bold text-orange-900" title={f.nombre}>{f.nombre}</div>)}{festivosDia.map((f) => <div key={"festivo-" + f.id} className="truncate rounded-md bg-amber-100 px-1.5 py-1 text-[10px] font-bold text-amber-900" title="Festivo trabajado">{f.estado === "VALIDADO" ? "Festivo validado" : f.estado === "RECHAZADO" ? "Festivo rechazado" : "Festivo pendiente"}</div>)}{solicitudesDia.map((s) => <div key={"comp-" + s.id} className="truncate rounded-md bg-violet-100 px-1.5 py-1 text-[10px] font-bold text-violet-900" title="Compensación">{s.estado === "SOLICITADO" ? "Compensación solicitada" : s.estado === "APROBADO" ? "Compensación aprobada" : "Compensación disfrutada"}</div>)}</div></>}
                     </div>;
                   })}
                 </div>

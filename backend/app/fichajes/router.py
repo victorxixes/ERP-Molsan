@@ -15,7 +15,7 @@ from backend.app.empleados.models import Empleado
 from backend.app.fichajes.models import (FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones, FichajeFestivoTrabajado, FichajeCompensacionMovimiento, FichajeSolicitudCompensacion, FichajeCompensacionAuditoria, FichajeFestivoCalendario)
 
 router = APIRouter(prefix="/fichajes", tags=["Fichaje Molsan"])
-TIPOS_MARCAJE = {"ENTRADA", "SALIDA", "PAUSA_CAFE_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "RETORNO_AUSENCIA", "AUSENCIA"}
+TIPOS_MARCAJE = {"ENTRADA", "SALIDA", "PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_INICIO", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_INICIO", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA", "AUSENCIA"}
 TIPOS_AUSENCIA_INICIALES = [("Visita médica", 1), ("Asunto personal", 0), ("Gestiones administrativas", 0), ("Permiso retribuido", 0), ("Permiso no retribuido", 0), ("Baja médica", 1), ("Vacaciones", 0), ("Formación", 0), ("Deberes familiares", 0), ("Otra ausencia", 0)]
 TIPOS_DOCUMENTO = {
     "Justificante médico", "Vacaciones", "Ausencia", "Permiso", "Otro"
@@ -149,13 +149,21 @@ def crear_marcaje(
         raise HTTPException(status_code=409, detail="Ya consta una entrada sin una salida posterior.")
     if tipo == "SALIDA" and (not ultimo_jornada or ultimo_jornada.tipo != "ENTRADA"):
         raise HTTPException(status_code=409, detail="Para registrar la salida debe existir una entrada previa sin cerrar.")
-    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
-    if ultimo and ultimo.tipo in pausas and tipo not in {"RETORNO_AUSENCIA", "SALIDA"}:
-        raise HTTPException(status_code=409, detail="Tienes una pausa o ausencia abierta. Registra primero el retorno.")
+    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
+    retornos_por_pausa = {
+        "PAUSA_CAFE_INICIO": {"PAUSA_DESAYUNO_FIN", "RETORNO_AUSENCIA"},
+        "PAUSA_DESAYUNO_INICIO": {"PAUSA_DESAYUNO_FIN", "RETORNO_AUSENCIA"},
+        "PAUSA_COMIDA_INICIO": {"PAUSA_COMIDA_FIN", "RETORNO_AUSENCIA"},
+        "PAUSA_CIGARRILLO_INICIO": {"PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"},
+        "AUSENCIA": {"RETORNO_AUSENCIA"},
+    }
+    tipos_retorno = {"PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"}
+    if ultimo and ultimo.tipo in pausas and tipo not in retornos_por_pausa.get(ultimo.tipo, set()) | {"SALIDA"}:
+        raise HTTPException(status_code=409, detail="Tienes una pausa o ausencia abierta. Registra el regreso correspondiente antes de iniciar otro movimiento.")
     if tipo in pausas and (not ultimo_jornada or ultimo_jornada.tipo != "ENTRADA"):
         raise HTTPException(status_code=409, detail="Para iniciar una pausa o ausencia debes tener una jornada abierta.")
-    if tipo == "RETORNO_AUSENCIA" and (not ultimo or ultimo.tipo not in pausas):
-        raise HTTPException(status_code=409, detail="No hay una pausa o ausencia abierta que puedas cerrar.")
+    if tipo in tipos_retorno and (not ultimo or tipo not in retornos_por_pausa.get(ultimo.tipo, set())):
+        raise HTTPException(status_code=409, detail="El regreso no coincide con la pausa abierta. Selecciona el regreso correspondiente.")
     marcaje = FichajeMarcaje(
         empleado_id=usuario.id,
         tipo=tipo,
@@ -345,7 +353,8 @@ def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_cu
     inicio, fin = date(anio, 1, 1), date(anio + 1, 1, 1)
     registros = db.query(FichajeMarcaje).filter(FichajeMarcaje.empleado_id == usuario.id,
         FichajeMarcaje.fecha_hora >= datetime.combine(inicio, time.min), FichajeMarcaje.fecha_hora < datetime.combine(fin, time.min)).order_by(FichajeMarcaje.fecha_hora).all()
-    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
+    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
+    retornos = {"PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"}
     jornada_abierta = None; pausa_abierta = None; pausa_segundos = 0; segundos = 0; incompletos = 0
     for m in registros:
         ts = m.fecha_hora
@@ -354,7 +363,7 @@ def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_cu
             jornada_abierta = ts; pausa_abierta = None; pausa_segundos = 0
         elif m.tipo in pausas and jornada_abierta is not None:
             if pausa_abierta is None: pausa_abierta = ts
-        elif m.tipo == "RETORNO_AUSENCIA" and pausa_abierta is not None:
+        elif m.tipo in retornos and pausa_abierta is not None:
             pausa_segundos += max(0, (ts - pausa_abierta).total_seconds())
             pausa_abierta = None
         elif m.tipo == "SALIDA" and jornada_abierta is not None:
