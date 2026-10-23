@@ -503,11 +503,44 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     setVista(destinos[label] || "inicio");
   };
 
+  const actualizarDatosSidebar = async () => {
+    if (accesoERP && esAdminNotarGest && !tokenAdminNotaria) {
+      setCargandoSelectorNotaria(true);
+      setError("");
+      try {
+        const response = await fetch(API_BASE + "/notargest/seleccion/notarias", {
+          headers: { Authorization: "Bearer " + tokenERP },
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.detail || "No se ha podido actualizar el resumen de notarías.");
+        setNotariasSeleccionables(Array.isArray(data) ? data : []);
+      } catch (e) {
+        setError(e.message || "No se ha podido actualizar el resumen de notarías.");
+      } finally {
+        setCargandoSelectorNotaria(false);
+      }
+      return;
+    }
+    await cargar();
+  };
+
   return (
     <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
       <Sidebar
         brandName="NotarGest"
-        navigationItems={[]}
+        navigationItems={accesoERP && esAdminNotarGest && !tokenAdminNotaria ? [] : [
+          { key: "inicio", label: "Dashboard", icon: "layout-dashboard" },
+          { key: "recepcion", label: "Nuevos encargos", icon: "inbox" },
+          { key: "firma", label: "Pendientes de firma", icon: "pen-line" },
+          { key: "copia", label: "Pendientes copias simples", icon: "files" },
+          { key: "factura", label: "Pendientes de factura notarial", icon: "receipt" },
+          { key: "ajd", label: "Pendientes de AJD / ITP", icon: "landmark" },
+          { key: "registro", label: "Pendientes de presentación registral", icon: "folder-check" },
+          { key: "defectos", label: "Expedientes con defectos", icon: "alert-triangle" },
+          { key: "inscripcion", label: "Inscripciones registrales", icon: "book-check" },
+          { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "archive" },
+          { key: "firmas_urgentes", label: "Firmas urgentes", icon: "clock-alert" },
+        ]}
         activeNavigationItem={sidebarVista}
         onNavigationItemClick={navegarSidebar}
         onNotificationsClick={() => setNotificacionesAbiertas(true)}
@@ -523,12 +556,12 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
             <button
               type="button"
               className="ag-boton-actualizar"
-              onClick={cargar}
-              disabled={cargando}
+              onClick={actualizarDatosSidebar}
+              disabled={cargando || cargandoSelectorNotaria}
               aria-live="polite"
             >
-              <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
-              {cargando ? "Actualizando…" : "Actualizar datos"}
+              <span className={cargando || cargandoSelectorNotaria ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
+              {cargando || cargandoSelectorNotaria ? "Actualizando…" : "Actualizar datos"}
             </button>
           </>
         }
@@ -612,11 +645,8 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
                 </div>
               </div>
               <div className="ng-control-acciones">
-                <div className="ng-control-fecha"><span className="ng-control-punto" />{fechaActual}</div>
                 <div className="ng-control-botones">
                   <button type="button" className="ng-control-secundario" onClick={() => navigate("/modulos")}>▦ Ir a módulos</button>
-                  <button type="button" className="ng-control-primario" onClick={() => fetch(`${API_BASE}/notargest/seleccion/notarias`, {headers:{Authorization:`Bearer ${tokenERP}`}}).then(async r=>{if(!r.ok) throw new Error("No se ha podido actualizar el resumen de notarías");return r.json()}).then(d=>setNotariasSeleccionables(Array.isArray(d)?d:[])).catch(e=>setError(e.message))} disabled={cargandoSelectorNotaria}>{cargandoSelectorNotaria ? "Actualizando…" : "↻ Actualizar datos"}</button>
-                  <button type="button" className="ng-control-salir" onClick={salir}><span aria-hidden="true">↪</span> Cerrar sesión</button>
                 </div>
               </div>
             </header>
