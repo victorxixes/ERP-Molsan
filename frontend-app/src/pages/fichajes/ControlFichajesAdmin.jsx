@@ -24,6 +24,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
   const [estado, setEstado] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [marcajes, setMarcajes] = useState([]);
+  const [marcajesCalculo, setMarcajesCalculo] = useState([]);
   const [periodos, setPeriodos] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [guardando, setGuardando] = useState(false);
@@ -38,11 +39,13 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
   const cargar = useCallback(async () => {
     setCargando(true); setError("");
     try {
-      const [m, p] = await Promise.all([
+      const [m, p, all] = await Promise.all([
         axios.get("/fichajes/admin/marcajes", { params: { desde: desde || undefined, hasta: hasta || undefined, empleado_id: empleadoId || undefined, tipo: tipo || undefined, estado: estado || undefined, busqueda: busqueda || undefined } }),
-        axios.get("/fichajes/admin/periodos")
+        axios.get("/fichajes/admin/periodos"),
+        axios.get("/fichajes/admin/marcajes", { params: { desde: desde || undefined, hasta: hasta || undefined, empleado_id: empleadoId || undefined } })
       ]);
       setMarcajes(Array.isArray(m.data) ? m.data : []);
+      setMarcajesCalculo(Array.isArray(all.data) ? all.data : []);
       setPeriodos(Array.isArray(p.data) ? p.data : []);
     } catch (e) { setError(e?.response?.data?.detail || "No se pudieron cargar los marcajes de administración."); }
     finally { setCargando(false); }
@@ -96,7 +99,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
     const porEmpleado = new Map();
     const pausas = new Set(["PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"]);
     const retornos = new Set(["PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"]);
-    const ordenados = [...marcajes].sort((a, b) => new Date(a.fecha_hora) - new Date(b.fecha_hora));
+    const ordenados = [...marcajesCalculo].sort((a, b) => new Date(a.fecha_hora) - new Date(b.fecha_hora));
     const estados = new Map();
     for (const m of ordenados) {
       if (!estados.has(m.empleado_id)) estados.set(m.empleado_id, { entrada: null, pausa: null, pausaSeg: 0, totalSeg: 0, incompletas: 0 });
@@ -113,7 +116,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
     }
     for (const [id, s] of estados) { if (s.entrada !== null) s.incompletas++; porEmpleado.set(id, { horas: Math.round(s.totalSeg / 36) / 100, incompletas: s.incompletas }); }
     return porEmpleado;
-  }, [marcajes]);
+  }, [marcajesCalculo]);
 
   const empleadosConMarcajes = new Set(marcajes.map((m) => m.empleado_id)).size;
   const periodo = periodos.find((p) => p.anio === Number((desde || "").slice(0, 4)) && p.mes === Number((desde || "").slice(5, 7)));
