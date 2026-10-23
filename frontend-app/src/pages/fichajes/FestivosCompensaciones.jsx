@@ -21,6 +21,7 @@ export default function FestivosCompensaciones({ modo = "empleado" }) {
   const [ambitoFestivo, setAmbitoFestivo] = useState("EMPRESA");
   const [empleadoId, setEmpleadoId] = useState("");
   const [fecha, setFecha] = useState(hoy());
+  const [fechaFestivoTrabajado, setFechaFestivoTrabajado] = useState("");
   const [horas, setHoras] = useState("8");
   const [observaciones, setObservaciones] = useState("");
   const [cantidad, setCantidad] = useState("1");
@@ -167,11 +168,11 @@ export default function FestivosCompensaciones({ modo = "empleado" }) {
         <h3 className="p-4 font-bold">Saldos de compensación por empleado</h3>
         <table className="w-full min-w-[520px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Días disponibles</th><th className="p-3">Horas disponibles</th></tr></thead><tbody>{saldos.map(s => <tr key={s.empleado_id} className="border-b last:border-0"><td className="p-3 font-semibold">{s.empleado_nombre}</td><td className="p-3">{s.saldo_dias}</td><td className="p-3">{s.saldo_horas}</td></tr>)}</tbody></table>
       </div>
-    </> : <>
       <div className="overflow-x-auto rounded-2xl border">
         <h3 className="p-4 font-bold">Auditoría de cambios</h3>
         <table className="w-full min-w-[780px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Fecha y hora</th><th className="p-3">Empleado</th><th className="p-3">Acción</th><th className="p-3">Estado</th><th className="p-3">Detalle</th></tr></thead><tbody>{auditoria.map(a => <tr key={a.id} className="border-b last:border-0"><td className="p-3">{a.creado_en ? new Date(a.creado_en).toLocaleString("es-ES") : "—"}</td><td className="p-3">{a.empleado_nombre}</td><td className="p-3">{a.entidad} · {a.accion}</td><td className="p-3">{a.estado_anterior || "—"} → {a.estado_nuevo || "—"}</td><td className="p-3">{a.detalle || "—"}</td></tr>)}{!auditoria.length && <tr><td colSpan="5" className="p-8 text-center text-slate-400">No hay cambios auditados.</td></tr>}</tbody></table>
       </div>
+    </> : <>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5"><p className="text-sm font-bold text-emerald-900">Saldo disponible · días</p><p className="mt-2 text-4xl font-extrabold text-emerald-900">{Number(resumen.saldo_dias || 0).toLocaleString("es-ES")}</p></div>
         <div className="rounded-2xl border border-sky-200 bg-sky-50/60 p-5"><p className="text-sm font-bold text-sky-900">Saldo disponible · horas</p><p className="mt-2 text-4xl font-extrabold text-sky-900">{Number(resumen.saldo_horas || 0).toLocaleString("es-ES")}</p></div>
@@ -186,14 +187,14 @@ export default function FestivosCompensaciones({ modo = "empleado" }) {
         </div>
         <button disabled={guardando} className={`mt-3 ${boton}`}>Enviar solicitud</button>
       </form>
-      <form onSubmit={(e) => { e.preventDefault(); const d = new FormData(); d.append("fecha", fecha); d.append("horas_trabajadas", horas); d.append("observaciones", observaciones); return ejecutar(() => axios.post("/fichajes/compensaciones/mis-festivos", d)); }} className="rounded-2xl border border-amber-100 bg-amber-50/50 p-4">
+      <form onSubmit={(e) => { e.preventDefault(); const d = new FormData(); d.append("fecha", fechaFestivoTrabajado); d.append("horas_trabajadas", horas); d.append("observaciones", observaciones); return ejecutar(() => axios.post("/fichajes/compensaciones/mis-festivos", d)); }} className="rounded-2xl border border-amber-100 bg-amber-50/50 p-4">
         <h3 className="font-bold">Comunicar un festivo trabajado</h3>
         <p className="mt-1 text-xs text-slate-600">Selecciona una fecha del calendario laboral que ya hayas trabajado. La solicitud quedará pendiente de validación y no generará saldo hasta que administración la apruebe.</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <label className="text-xs font-bold text-slate-600">Festivo<select required value={fecha} onChange={e => setFecha(e.target.value)} className={`mt-1 w-full ${caja}`}><option value="">Selecciona un festivo…</option>{(resumen.calendario_festivos || []).filter(f => f.fecha <= hoy()).map(f => <option key={f.id} value={f.fecha}>{fechaBonita(f.fecha)} · {f.nombre}</option>)}</select></label>
+          <label className="text-xs font-bold text-slate-600">Festivo<select required value={fechaFestivoTrabajado} onChange={e => setFechaFestivoTrabajado(e.target.value)} className={`mt-1 w-full ${caja}`}><option value="">Selecciona un festivo…</option>{(resumen.calendario_festivos || []).filter(f => f.fecha <= hoy()).map(f => <option key={f.id} value={f.fecha}>{fechaBonita(f.fecha)} · {f.nombre}</option>)}</select></label>
           <label className="text-xs font-bold text-slate-600">Horas trabajadas<input required type="number" min="0.25" max="24" step="0.25" value={horas} onChange={e => setHoras(e.target.value)} className={`mt-1 w-full ${caja}`} /></label>
           <label className="text-xs font-bold text-slate-600">Observaciones<input maxLength="500" value={observaciones} onChange={e => setObservaciones(e.target.value)} placeholder="Turno, autorización…" className={`mt-1 w-full ${caja}`} /></label>
-          <div className="flex items-end"><button disabled={guardando || !(resumen.calendario_festivos || []).some(f => f.fecha === fecha && f.fecha <= hoy())} className={`w-full ${boton}`}>Enviar para validar</button></div>
+          <div className="flex items-end"><button disabled={guardando || !(resumen.calendario_festivos || []).some(f => f.fecha === fechaFestivoTrabajado && f.fecha <= hoy())} className={`w-full ${boton}`}>Enviar para validar</button></div>
         </div>
         {!(resumen.calendario_festivos || []).length && <p className="mt-3 text-xs text-amber-800">No hay festivos configurados todavía. Contacta con administración para que los añada al calendario laboral.</p>}
       </form>
