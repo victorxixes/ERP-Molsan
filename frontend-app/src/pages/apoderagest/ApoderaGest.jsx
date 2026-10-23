@@ -882,7 +882,9 @@ export default function ApoderaGest() {
           { key: "ctn", label: "CTN", icon: "globe" },
           { key: "mensajes", label: "Mensajes", icon: "chat" },
           { key: "intranet", label: "Intranet", icon: "folder" },
-          { key: "liquidaciones", label: "Mi liquidación", icon: "receipt" },
+          ...(empleado?.es_colaborador === true ? [
+            { key: "liquidaciones", label: "Mi liquidación", icon: "receipt" },
+          ] : []),
         ]}
         activeNavigationItem={pestana}
         onNavigationItemClick={(key) => { if (String(key).toLowerCase() === "liquidaciones") { navigate("/apoderagest/liquidaciones"); return; } setPestana(({ dashboard: "Dashboard", agenda: "Agenda", encargos: "Encargos", ctn: "CTN", mensajes: "Mensajes", intranet: "Intranet" }[String(key).toLowerCase()] || key)); }}
