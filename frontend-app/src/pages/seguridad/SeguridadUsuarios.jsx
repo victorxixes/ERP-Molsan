@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useSeguridad } from "../../hooks/useSeguridad";
 import EmpleadosListado from "../empleados/EmpleadosListado";
 import { API_BASE } from "../../api/config";
+import SeguridadModulos from "./SeguridadModulos.jsx";
+import SeguridadPermisos from "./SeguridadPermisos.jsx";
 import "./SeguridadSubpaginasPremium.css";
 
 export default function SeguridadUsuarios() {
@@ -15,11 +17,15 @@ export default function SeguridadUsuarios() {
     loading,
     cargarTodo,
     cargarFicha,
+    asignarRol,
     bloquear,
     desbloquear,
   } = useSeguridad();
 
   const [empleadoIdSeleccionado, setEmpleadoIdSeleccionado] = useState(null);
+  const [pestanaActiva, setPestanaActiva] = useState("resumen");
+  const [guardandoRol, setGuardandoRol] = useState(false);
+  const [mensajeRol, setMensajeRol] = useState("");
 
   // ============================================================
   // CARGA INICIAL
@@ -189,9 +195,68 @@ export default function SeguridadUsuarios() {
   // ============================================================
 
   const usuarioActivo =
+    fichaSegura?.empleado?.activo ??
     fichaSegura?.activo ??
     empleadoBasicoSeguro?.activo ??
     false;
+
+  const rolActualId = Number(
+    fichaSegura?.empleado?.rol_id ??
+    fichaSegura?.empleado?.rol?.id ??
+    fichaSegura?.rol_id ??
+    empleadoBasico?.rol_id ??
+    0
+  );
+
+  const auditoriaEmpleado = useMemo(() => {
+    const registros = Array.isArray(fichaSegura?.auditoria)
+      ? fichaSegura.auditoria
+      : [];
+    return registros
+      .filter((item) => item && typeof item === "object")
+      .slice()
+      .sort((a, b) => {
+        const fechaA = new Date(a.fecha || 0).getTime() || 0;
+        const fechaB = new Date(b.fecha || 0).getTime() || 0;
+        return fechaB - fechaA;
+      });
+  }, [fichaSegura]);
+
+  const fechaSeguridad = useMemo(() => {
+    const directa =
+      fichaSegura?.fecha_actualizacion_seguridad ??
+      fichaSegura?.ultima_actualizacion_seguridad ??
+      fichaSegura?.fecha_modificacion_seguridad ??
+      fichaSegura?.updated_at ??
+      fichaSegura?.empleado?.fecha_actualizacion_seguridad ??
+      fichaSegura?.empleado?.updated_at;
+    if (directa) return directa;
+    return auditoriaEmpleado[0]?.fecha || null;
+  }, [fichaSegura, auditoriaEmpleado]);
+
+  const fechaSeguridadTexto = useMemo(() => {
+    if (!fechaSeguridad) return "Sin registro disponible";
+    const fecha = new Date(fechaSeguridad);
+    if (Number.isNaN(fecha.getTime())) return String(fechaSeguridad);
+    return new Intl.DateTimeFormat("es-ES", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(fecha);
+  }, [fechaSeguridad]);
+
+  const asignarRolSeleccionado = async (rolId) => {
+    if (!empleadoIdSeleccionado || !rolId || guardandoRol) return;
+    setGuardandoRol(true);
+    setMensajeRol("");
+    try {
+      await asignarRol(empleadoIdSeleccionado, rolId);
+      setMensajeRol("Rol asignado y ficha actualizada.");
+    } catch {
+      setMensajeRol("No se pudo asignar el rol. Comprueba tus permisos e inténtalo de nuevo.");
+    } finally {
+      setGuardandoRol(false);
+    }
+  };
 
   return (
     <div className="erp-page seguridad-usuarios-premium">
@@ -417,6 +482,50 @@ export default function SeguridadUsuarios() {
 
           </div>
 
+          {/* Navegación de la ficha integral de seguridad */}
+          {empleadoBasicoSeguro && (
+            <div className="erp-card">
+              <div className="erp-card-body">
+                <div className="flex flex-wrap gap-2" role="tablist" aria-label="Secciones de seguridad del empleado">
+                  {[
+                    { id: "resumen", label: "Resumen", icon: "◈" },
+                    { id: "modulos", label: "Módulos", icon: "▦" },
+                    { id: "permisos", label: "Permisos", icon: "⚿" },
+                    { id: "roles", label: "Roles", icon: "♙" },
+                    { id: "auditoria", label: "Auditoría", icon: "◷" },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={pestanaActiva === tab.id}
+                      onClick={() => setPestanaActiva(tab.id)}
+                      className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition ${pestanaActiva === tab.id
+                        ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] shadow-sm"
+                        : "border-[var(--erp-border)] bg-[var(--erp-surface)] text-[var(--erp-text-soft)] hover:bg-[var(--erp-bg)]"}`}
+                    >
+                      <span className="mr-2" aria-hidden="true">{tab.icon}</span>{tab.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="erp-data-item">
+                    <span className="erp-data-label">Fecha de seguridad · último cambio registrado</span>
+                    <span className="erp-data-value">{fechaSeguridadTexto}</span>
+                  </div>
+                  <div className="erp-data-item">
+                    <span className="erp-data-label">Estado de la cuenta</span>
+                    <span className={usuarioActivo ? "erp-badge erp-badge-success w-fit" : "erp-badge erp-badge-danger w-fit"}>
+                      {usuarioActivo ? "Acceso activo" : "Acceso inactivo"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {pestanaActiva === "resumen" && (
+            <>
           {/* ==================================================
               FICHA DE SEGURIDAD
           ================================================== */}
@@ -935,6 +1044,103 @@ export default function SeguridadUsuarios() {
             </div>
 
           </div>
+            </>
+          )}
+
+          {pestanaActiva === "modulos" && (
+            <div className="erp-card">
+              <div className="erp-card-body">
+                <SeguridadModulos />
+              </div>
+            </div>
+          )}
+
+          {pestanaActiva === "permisos" && (
+            <div className="erp-card">
+              <div className="erp-card-body">
+                <SeguridadPermisos />
+              </div>
+            </div>
+          )}
+
+          {pestanaActiva === "roles" && (
+            <div className="erp-card">
+              <div className="erp-card-header">
+                <div>
+                  <h2 className="erp-card-title">Roles del empleado</h2>
+                  <p className="erp-card-description">Asigna el rol de acceso que corresponda. El cambio se guarda en el backend y actualiza esta ficha.</p>
+                </div>
+                <span className="erp-badge erp-badge-neutral">{rolesSeguros.length} roles disponibles</span>
+              </div>
+              <div className="erp-card-body space-y-4">
+                {mensajeRol && (
+                  <div className={mensajeRol.startsWith("Rol asignado") ? "erp-alert erp-alert-success" : "erp-alert erp-alert-danger"} role="status">
+                    {mensajeRol}
+                  </div>
+                )}
+                <div className="erp-alert erp-alert-info">
+                  Rol actual: <strong>{rolesSeguros.find((rol) => Number(rol.id) === rolActualId)?.nombre || fichaSegura?.empleado?.rol_nombre || "Sin rol asignado"}</strong>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {rolesSeguros.map((rol) => {
+                    const asignado = Number(rol.id) === rolActualId;
+                    return (
+                      <div key={rol.id ?? rol.nombre} className="rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-4 flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="font-semibold text-[var(--erp-text)]">{rol.nombre}</div>
+                          <p className="mt-1 text-sm text-[var(--erp-text-soft)]">{typeof rol.descripcion === "string" && rol.descripcion ? rol.descripcion : "Perfil de acceso de ERP-Molsan."}</p>
+                          {asignado && <span className="mt-2 inline-flex erp-badge erp-badge-success">Asignado actualmente</span>}
+                        </div>
+                        <button type="button" className={asignado ? "erp-btn erp-btn-secondary" : "erp-btn erp-btn-primary"} disabled={asignado || guardandoRol || !empleadoIdSeleccionado || !rol.id} onClick={() => asignarRolSeleccionado(rol.id)}>
+                          {guardandoRol ? "Guardando…" : asignado ? "Asignado" : "Asignar"}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+                {rolesSeguros.length === 0 && <div className="erp-empty-inline">No hay roles disponibles para asignar.</div>}
+                <p className="text-xs text-[var(--erp-text-soft)]">Los permisos específicos por módulo se configuran en la pestaña Permisos. La asignación de rol no sustituye las comprobaciones de permisos del backend.</p>
+              </div>
+            </div>
+          )}
+
+          {pestanaActiva === "auditoria" && (
+            <div className="erp-card">
+              <div className="erp-card-header">
+                <div>
+                  <h2 className="erp-card-title">Auditoría del empleado</h2>
+                  <p className="erp-card-description">Historial de seguridad que devuelve la ficha del empleado.</p>
+                </div>
+                <span className="erp-badge erp-badge-neutral">{auditoriaEmpleado.length}</span>
+              </div>
+              <div className="erp-card-body">
+                {auditoriaEmpleado.length > 0 ? (
+                  <div className="space-y-3">
+                    {auditoriaEmpleado.map((item, index) => (
+                      <div key={item.id ?? `${item.fecha}-${item.accion}-${index}`} className="erp-activity-item">
+                        <div className="flex flex-wrap items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="font-semibold text-[var(--erp-text)]">{item.accion || item.evento || "Evento de seguridad"}</div>
+                            <p className="mt-1 text-sm text-[var(--erp-text-soft)] break-words">{item.descripcion || item.detalle || "Sin descripción adicional"}</p>
+                            {item.modulo && <span className="mt-2 inline-flex erp-badge erp-badge-neutral">{item.modulo}</span>}
+                          </div>
+                          <span className="text-xs text-[var(--erp-text-soft)]">{item.fecha || "Fecha no disponible"}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="erp-empty-state">
+                    <div className="erp-empty-state-icon">◷</div>
+                    <div>
+                      <h3 className="erp-empty-state-title">Sin eventos de auditoría en la ficha</h3>
+                      <p className="erp-empty-state-description">Cuando el backend devuelva eventos asociados a este empleado, aparecerán aquí. No se muestran eventos de otros usuarios para evitar mezclar historiales.</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
         </div>
 
