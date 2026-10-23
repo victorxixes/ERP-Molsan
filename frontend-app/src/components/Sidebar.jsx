@@ -1274,10 +1274,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                 desde cualquier módulo interno, sin sustituir las pestañas propias
                 de cada espacio de trabajo. Los portales externos quedan aislados. */}
             {!navigationItemsConModulos && !esPortalNotarialExterno && visiblesPrincipales
-              .filter((modulo) => !navigationItemsConModulos.some((item) =>
-                item?.key === modulo.key ||
-                normalizarModulo(item?.label) === normalizarModulo(modulo.label)
-              ))
               .map((modulo) => (
                 <TopNavItem
                   key={`erp-${modulo.key}`}
