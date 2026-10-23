@@ -854,11 +854,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   // por lo que usamos exactamente las mismas fuentes y no todos los accesos internos.
   const modulosDropdown = useMemo(() => {
     const normalizarClave = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
-    const clavesVisibles = [
-      ...(Array.isArray(empleado?.modulos_visibles_list) ? empleado.modulos_visibles_list : []),
-      ...(Array.isArray(empleado?.modulos_visibles) ? empleado.modulos_visibles : []),
-    ].map(normalizarClave);
-
     // El desplegable «Módulos» muestra el catálogo completo de rutas autorizadas,
     // no solo los cinco portales de trabajo. Así el menú es común a todo el ERP.
     const items = esPortalNotarialExterno ? [] : MODULOS_ERP
