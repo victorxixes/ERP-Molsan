@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import { buildRealtimeWsUrl } from "../../api/monitorRealtime";
+import { useAuthStore } from "../../store/authStore";
 import "./PanelTecnicoSubmodulos.css";
 
 /**
@@ -51,6 +52,8 @@ export default function MonitorRealtime() {
   // ============================================================
   // CONFIGURACIÓN
   // ============================================================
+
+  const token = useAuthStore((s) => s.token);
 
   const modulo = "panel-tecnico";
 
@@ -280,11 +283,15 @@ export default function MonitorRealtime() {
 
     try {
 
-      wsUrl = buildRealtimeWsUrl({
-        modulo,
-        grupo,
-        rol,
-      });
+      if (!token) {
+        connectingRef.current = false;
+        setEstado("desconectado");
+        return;
+      }
+
+      // El servidor exige un JWT y obtiene identidad/rol del propio token.
+      // No se deben enviar módulo, grupo o rol como sustituto de autenticación.
+      wsUrl = buildRealtimeWsUrl({ token });
 
     } catch (error) {
 
@@ -439,6 +446,7 @@ export default function MonitorRealtime() {
     grupo,
     modulo,
     rol,
+    token,
     programarReconexión,
   ]);
 
