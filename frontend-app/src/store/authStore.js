@@ -155,12 +155,30 @@ function normalizarEmpleado(empleado) {
    * -------------------------------------------------------
    */
 
-  let modulos =
-    empleado.modulos_visibles_list;
+  // La API y las pantallas de seguridad pueden exponer la asignación
+  // con cualquiera de estos nombres. No descartamos un campo por el hecho
+  // de que el otro exista pero llegue vacío.
+  const normalizarListaModulos = (valor) => {
+    if (Array.isArray(valor)) return valor;
+    if (typeof valor !== "string" || !valor.trim()) return [];
+    try {
+      const parseado = JSON.parse(valor);
+      if (Array.isArray(parseado)) return parseado;
+    } catch {
+      // Compatibilidad con listas separadas por comas.
+    }
+    return valor.split(",").map((item) => item.trim()).filter(Boolean);
+  };
 
-  if (!Array.isArray(modulos)) {
-    modulos = [];
-  }
+  const modulos = [
+    ...normalizarListaModulos(empleado.modulos_visibles_list),
+    ...normalizarListaModulos(empleado.modulos_visibles),
+  ].filter((modulo, indice, lista) =>
+    lista.findIndex((otro) =>
+      String(otro || "").trim().toLocaleLowerCase("es") ===
+      String(modulo || "").trim().toLocaleLowerCase("es")
+    ) === indice
+  );
 
 
   /*
