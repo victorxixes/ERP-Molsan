@@ -152,8 +152,19 @@ export default function Fichajes({ modo = "empleado" }) {
       if (tipo === "AUSENCIA") data.append("tipo_ausencia", tipoAusencia);
       await axios.post("/fichajes/marcajes", data);
       setObservaciones("");
-      setMensaje(`Marcaje de «${formatearTipo(tipo)}» registrado correctamente a las ${new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}.`);
-      await recargarEmpleado();
+      if (tipo === "AUSENCIA") {
+        const nombreAusenciaRegistrada = tipoAusencia;
+        setMostrarSelectorAusencia(false);
+        setTipoAusencia("");
+        setMensaje(`Ausencia «${nombreAusenciaRegistrada}» registrada correctamente a las ${new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}.`);
+      } else {
+        setMensaje(`Marcaje de «${formatearTipo(tipo)}» registrado correctamente a las ${new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}.`);
+      }
+      try {
+        await recargarEmpleado();
+      } catch (actualizacionError) {
+        setError("El marcaje se ha guardado, pero no se pudieron actualizar los datos de pantalla. Recarga la página para comprobarlo.");
+      }
     } catch (e) {
       setError(e?.response?.data?.detail || "No se ha podido registrar el marcaje.");
     } finally { setGuardando(false); }
@@ -244,11 +255,12 @@ export default function Fichajes({ modo = "empleado" }) {
                 ))}
               </div>
               {mostrarSelectorAusencia && <div className="mt-4 rounded-xl border border-violet-200 bg-violet-50/70 p-4"><label className="block text-xs font-bold text-violet-900">Selecciona el tipo de ausencia
-                <select value={tipoAusencia} onChange={(e) => setTipoAusencia(e.target.value)} className="mt-2 w-full rounded-xl border border-[var(--erp-border)] bg-white px-4 py-3 text-sm font-normal text-slate-800">
-                  <option value="">Selecciona una ausencia…</option>
+                <select value={tipoAusencia} disabled={guardando || tiposAusencia.length === 0} onChange={(e) => { setTipoAusencia(e.target.value); setError(""); }} className="mt-2 w-full rounded-xl border border-[var(--erp-border)] bg-white px-4 py-3 text-sm font-normal text-slate-800">
+                  <option value="">{tiposAusencia.length ? "Selecciona una ausencia…" : "No hay tipos de ausencia disponibles"}</option>
                   {tiposAusencia.map((x) => <option key={x.id} value={x.nombre}>{x.nombre}{x.requiere_justificante ? " · requiere justificante" : ""}</option>)}
                 </select>
-              </label><button type="button" disabled={guardando || !tipoAusencia} onClick={() => enviarMarcaje("AUSENCIA")} className="mt-3 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">Confirmar ausencia</button><button type="button" onClick={() => setMostrarSelectorAusencia(false)} className="ml-2 rounded-xl border border-violet-200 px-4 py-2.5 text-sm font-semibold text-violet-900">Cancelar</button></div>}
+                {tiposAusencia.length === 0 && <p className="mt-2 text-xs font-medium text-rose-700">No se ha podido cargar el catálogo de ausencias. Actualiza Fichaje Molsan o contacta con administración.</p>}
+              </label><button type="button" disabled={guardando || !tipoAusencia || tiposAusencia.length === 0} onClick={() => enviarMarcaje("AUSENCIA")} className="mt-3 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">{guardando ? "Registrando…" : "Confirmar ausencia"}</button><button type="button" disabled={guardando} onClick={() => { setMostrarSelectorAusencia(false); setTipoAusencia(""); setError(""); }} className="ml-2 rounded-xl border border-violet-200 px-4 py-2.5 text-sm font-semibold text-violet-900 disabled:opacity-50">Cancelar</button></div>}
 
             </section>
           )}
