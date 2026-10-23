@@ -187,6 +187,8 @@ def subir_factura(liquidacion_id: int, archivo: UploadFile = File(...), db: Sess
         raise HTTPException(status_code=404, detail="Relación mensual no encontrada.")
     if item.estado_relacion != "validada" or not item.validado_en:
         raise HTTPException(status_code=409, detail="Primero debes validar la relación mensual de expedientes.")
+    if item.estado_factura == "aceptada":
+        raise HTTPException(status_code=409, detail="La factura ya fue aceptada por Molsan. Solicita que la reabran si necesitas sustituirla.")
     if not archivo.filename or not archivo.filename.lower().endswith((".pdf", ".xml", ".jpg", ".jpeg", ".png")):
         raise HTTPException(status_code=422, detail="Adjunta una factura PDF, XML, JPG o PNG.")
     contenido = archivo.file.read(10 * 1024 * 1024 + 1)
@@ -264,7 +266,8 @@ def descargar_factura(liquidacion_id: int, db: Session = Depends(get_db), usuari
     item = db.query(LiquidacionMensual).filter_by(id=liquidacion_id).first()
     if item is None or not item.factura_bytes:
         raise HTTPException(status_code=404, detail="No hay factura adjunta.")
-    return StreamingResponse(BytesIO(item.factura_bytes), media_type=item.factura_tipo or "application/octet-stream", headers={"Content-Disposition": f'attachment; filename="{item.factura_nombre or "factura"}"'})
+    nombre_seguro = (item.factura_nombre or "factura").replace("\\r", "").replace("\\n", "").replace('"', "'").replace("/", "_").replace("\\\\", "_")
+    return StreamingResponse(BytesIO(item.factura_bytes), media_type=item.factura_tipo or "application/octet-stream", headers={"Content-Disposition": f'attachment; filename="{nombre_seguro}"'})
 
 @router.post("/admin/{liquidacion_id}/factura/revisar")
 def revisar_factura(liquidacion_id: int, decision: str = Form(...), observaciones: str = Form(""), db: Session = Depends(get_db), usuario=Depends(get_current_user)):
