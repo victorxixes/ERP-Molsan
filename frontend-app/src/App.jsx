@@ -230,6 +230,8 @@ export default function App() {
 
         
         />
+
+        <Route path="encargagest/notario" element={<EncargaGest accessMode="external" />} />
         
         {/* Espacio interno EncargaGest: módulos compartidos sin entrar en CancelaGest. */}
         <Route path="encargagest/ctn" element={<EncargaGestWorkspace page="ctn" />} />
