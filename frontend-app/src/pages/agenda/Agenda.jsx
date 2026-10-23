@@ -37,6 +37,9 @@ export default function Agenda({ soloApoderado = false } = {}) {
   const [year, setYear] = useState(hoy.getFullYear());
   const [month, setMonth] = useState(hoy.getMonth() + 1);
   const [vista, setVista] = useState("mes");
+  const [fechaAncla, setFechaAncla] = useState(hoy.toLocaleDateString("sv-SE"));
+  const [busqueda, setBusqueda] = useState("");
+  const [modalidadFiltro, setModalidadFiltro] = useState("todas");
 
   const {
     citas,
@@ -83,6 +86,13 @@ export default function Agenda({ soloApoderado = false } = {}) {
   useEffect(() => {
     cargarMes(year, month);
   }, [year, month, cargarMes]);
+
+  useEffect(() => {
+    setFechaAncla((actual) => {
+      const prefijo = `${year}-${String(month).padStart(2, "0")}`;
+      return String(actual || "").slice(0, 7) === prefijo ? actual : `${prefijo}-01`;
+    });
+  }, [year, month]);
 
   // En ApoderaGest, obtener las citas desde el endpoint autenticado del apoderado.
   // Evita depender del filtrado local de la agenda compartida, que puede ocultar
@@ -192,6 +202,8 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
   const handleDiaClick = useCallback(
     (fecha) => {
+      const fechaTexto = typeof fecha === "string" ? fecha.slice(0, 10) : fecha?.toLocaleDateString("sv-SE");
+      if (fechaTexto) setFechaAncla(fechaTexto);
       abrirCrear(fecha);
     },
     [abrirCrear]
@@ -342,6 +354,32 @@ export default function Agenda({ soloApoderado = false } = {}) {
     );
   }, [citas, citasApoderado, soloApoderado, year, month]);
 
+  // Resumen y filtros derivados de las citas ya cargadas; no añade llamadas al backend.
+  const hoyISO = hoy.toLocaleDateString("sv-SE");
+  const normalizarTexto = (valor) => String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es");
+  const modalidadCita = (cita) => {
+    const tipo = normalizarTexto(cita?.tipo_firma);
+    if (tipo.includes("video") || tipo === "vc" || tipo === "si") return "videoconferencia";
+    if (tipo.includes("presencial") || tipo === "p") return "presencial";
+    return "sin-especificar";
+  };
+  const citasDelPeriodo = useMemo(() => {
+    const prefijo = `${year}-${String(month).padStart(2, "0")}`;
+    return (Array.isArray(citasSeguras) ? citasSeguras : []).filter((cita) => String(cita.fecha || "").slice(0, 7) === prefijo);
+  }, [citasSeguras, year, month]);
+  const citasFiltradas = useMemo(() => {
+    const q = normalizarTexto(busqueda.trim());
+    return citasDelPeriodo.filter((cita) => {
+      const modalidad = modalidadCita(cita);
+      const coincideModalidad = modalidadFiltro === "todas" || modalidad === modalidadFiltro;
+      const texto = normalizarTexto([cita.tipo_cita, cita.tipo_firma, cita.notario_nombre, cita.notario, cita.apoderado_nombre, cita.apoderado, cita.observaciones, cita.expediente, cita.id_expediente].join(" "));
+      return coincideModalidad && (!q || texto.includes(q));
+    }).sort((a, b) => String(a.fecha || "").localeCompare(String(b.fecha || "")) || String(a.hora_inicio || "").localeCompare(String(b.hora_inicio || "")));
+  }, [citasDelPeriodo, busqueda, modalidadFiltro]);
+  const citasPorRealizar = citasDelPeriodo.filter((cita) => String(cita.fecha || "").slice(0, 10) >= hoyISO && !(Boolean(cita.firma_realizada) && normalizarTexto(cita.tipo_cita).includes("firma"))).length;
+  const citasPresenciales = citasDelPeriodo.filter((cita) => modalidadCita(cita) === "presencial").length;
+  const citasVideoconferencia = citasDelPeriodo.filter((cita) => modalidadCita(cita) === "videoconferencia").length;
+
   // ============================================================
   // FECHA ACTUAL
   // ============================================================
@@ -445,6 +483,13 @@ export default function Agenda({ soloApoderado = false } = {}) {
             →
           </button>
 
+          <button type="button" className="agenda-today-action" onClick={() => {
+            const actual = new Date();
+            setYear(actual.getFullYear());
+            setMonth(actual.getMonth() + 1);
+            setFechaAncla(actual.toLocaleDateString("sv-SE"));
+          }}>Hoy</button>
+
           {esMesActual && (
             <span
               className="
@@ -499,14 +544,27 @@ export default function Agenda({ soloApoderado = false } = {}) {
         </div>
       </div>
 
-      {/* CALENDARIO */}
+      {/* INDICADORES DEL PERÍODO */}
+      <section className="agenda-resumen-grid" aria-label="Resumen de citas del mes">
+        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-blue">▦</span><div><span className="agenda-stat-label">Citas del mes</span><strong>{citasDelPeriodo.length}</strong><small>{MESES[month - 1]} de {year}</small></div></article>
+        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-amber">◷</span><div><span className="agenda-stat-label">Por realizar</span><strong>{citasPorRealizar}</strong><small>Hoy y fechas futuras</small></div></article>
+        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-green">⌖</span><div><span className="agenda-stat-label">Presenciales</span><strong>{citasPresenciales}</strong><small>Según tipo de firma</small></div></article>
+        <article className="agenda-stat-card"><span className="agenda-stat-icon agenda-stat-icon-purple">▣</span><div><span className="agenda-stat-label">Videoconferencias</span><strong>{citasVideoconferencia}</strong><small>Según tipo de firma</small></div></article>
+      </section>
 
-      <div className="erp-card p-4 shadow-sm overflow-hidden">
+      {/* FILTROS Y CALENDARIO */}
+      <div className="erp-card p-4 shadow-sm agenda-calendar-card">
+        <div className="agenda-filters">
+          <label className="agenda-search"><span aria-hidden="true">⌕</span><input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar cita, notario, apoderado…" aria-label="Buscar citas" /></label>
+          <div className="agenda-filter-buttons" aria-label="Filtrar por modalidad">{[["todas", "Todas"], ["presencial", "Presencial"], ["videoconferencia", "Videoconferencia"]].map(([valor, etiqueta]) => <button key={valor} type="button" aria-pressed={modalidadFiltro === valor} onClick={() => setModalidadFiltro(valor)}>{etiqueta}</button>)}</div>
+          {(busqueda || modalidadFiltro !== "todas") && <button type="button" className="agenda-clear-filters" onClick={() => { setBusqueda(""); setModalidadFiltro("todas"); }}>Limpiar filtros</button>}
+        </div>
+        <div className="agenda-calendar-scroll">
         {vista === "mes" && (
           <VistaMes
             year={year}
             month={month}
-            citas={citasSeguras}
+            citas={citasFiltradas}
             onDiaClick={handleDiaClick}
             onCitaClick={handleCitaClick}
           />
@@ -514,8 +572,8 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
         {vista === "semana" && (
           <VistaSemana
-            fechaBase={`${year}-${String(month).padStart(2, "0")}-01`}
-            citas={citasSeguras}
+            fechaBase={(() => { const [ay, am, ad] = String(fechaAncla).split("-").map(Number); const inicio = new Date(ay, am - 1, ad); inicio.setDate(inicio.getDate() - ((inicio.getDay() + 6) % 7)); return inicio.toLocaleDateString("sv-SE"); })()}
+            citas={citasFiltradas}
             onCitaClick={handleCitaClick}
             onCrearCita={handleDiaClick}
           />
@@ -523,15 +581,29 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
         {vista === "dia" && (
           <VistaDia
-            fechaDia={new Date(year, month - 1, hoy.getDate())}
-            citas={citasSeguras}
+            fechaDia={new Date(`${fechaAncla}T12:00:00`)}
+            citas={citasFiltradas}
             onCitaClick={handleCitaClick}
             onCrearCita={handleDiaClick}
           />
         )}
       </div>
 
-      {/* MODAL DE CITA */}
+        </div>
+
+      <section className="erp-card agenda-upcoming-card">
+        <div className="agenda-list-heading"><div><h2>Citas del período</h2><p>{citasFiltradas.length} {citasFiltradas.length === 1 ? "cita visible" : "citas visibles"} · selecciona una para abrir su ficha</p></div></div>
+        {citasFiltradas.length ? <div className="agenda-list-table-wrap"><table className="agenda-list-table"><thead><tr><th>Fecha y hora</th><th>Cita</th><th>Modalidad</th><th>Notario / responsable</th><th>Estado</th><th></th></tr></thead><tbody>{citasFiltradas.map((cita) => {
+          const firma = normalizarTexto(cita.tipo_cita).includes("firma");
+          const realizada = firma && (Boolean(cita.firma_realizada) || /FIRMA\s+REALIZADA|FIRMADA/.test(normalizarTexto(cita.observaciones).toUpperCase()));
+          const fecha = String(cita.fecha || "").slice(0, 10);
+          const anterior = fecha < hoyISO && !realizada;
+          const modalidad = modalidadCita(cita);
+          return <tr key={cita.id}><td><strong>{fechaTexto(cita.fecha)}</strong><small>{horaTexto(cita.hora_inicio)} – {horaTexto(cita.hora_fin)}</small></td><td><strong>{cita.tipo_cita || "Cita"}</strong>{cita.observaciones ? <small>{cita.observaciones}</small> : null}</td><td><span className={`agenda-modality-pill ${modalidad === "videoconferencia" ? "is-video" : modalidad === "presencial" ? "is-presencial" : ""}`}>{modalidad === "videoconferencia" ? "Videoconferencia" : modalidad === "presencial" ? "Presencial" : cita.tipo_firma || "Sin especificar"}</span></td><td>{cita.notario_nombre || cita.apoderado_nombre || cita.apoderado || "—"}</td><td><span className={`agenda-status-pill ${realizada ? "is-done" : anterior ? "is-past" : "is-pending"}`}>{realizada ? "Firma realizada" : anterior ? "Fecha pasada · revisar" : "Programada"}</span></td><td><button type="button" className="agenda-open-cita" onClick={() => handleCitaClick(cita)}>Abrir</button></td></tr>;
+        })}</tbody></table></div> : <div className="agenda-empty-state"><span>▦</span><strong>No hay citas para mostrar</strong><p>Prueba con otra búsqueda o cambia el filtro de modalidad.</p></div>}
+      </section>
+
+            {/* MODAL DE CITA */}
 
       {mostrarModal && (
         <ModalNuevaCita

@@ -2,7 +2,7 @@ import { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
 import "../../css/ComponentesCompartidosPremium.css";
 
-const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
 const colorPorTipo = (tipo) => {
   switch (tipo) {
@@ -62,7 +62,7 @@ function generarMatriz(fechaBase) {
   for (let i = 0; i < cells.length; i += 7) {
     const semanaCompleta = cells.slice(i, i + 7);
 
-    weeks.push(semanaCompleta.slice(0, 6));
+    weeks.push(semanaCompleta);
   }
 
   return weeks;
@@ -112,7 +112,7 @@ export default function VistaMes({
       {/* CABECERA DÍAS */}
 
       <div
-        className="grid grid-cols-6 gap-2 mb-2"
+        className="grid grid-cols-7 gap-2 mb-2"
       >
         {DIAS_SEMANA.map((d) => (
           <div
@@ -136,7 +136,7 @@ export default function VistaMes({
 
       {/* CALENDARIO */}
 
-      <div className="grid grid-cols-6 gap-2">
+      <div className="grid grid-cols-7 gap-2">
 
         {matrix.map((week, wi) =>
           week.map((day, di) => {

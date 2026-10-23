@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from "react";
 import { useAgendaStore } from "../../store/agendaStore";
 import "../../css/ComponentesCompartidosPremium.css";
 
-const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie"];
+const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const HORAS = Array.from(
   { length: 12 },
   (_, i) => `${9 + i}:00`
@@ -50,7 +50,7 @@ export default function VistaSemana({
 
   const obtenerFechaDia = useCallback(
     (idx) => {
-      const fecha = new Date(fechaBase);
+      const fecha = new Date(`${fechaBase}T12:00:00`);
 
       fecha.setDate(
         fecha.getDate() + idx
@@ -75,7 +75,7 @@ export default function VistaSemana({
       const idxDia =
         diaSemana - 1;
 
-      if (idxDia < 0 || idxDia > 4) {
+      if (idxDia < 0 || idxDia > 6) {
         return;
       }
 
@@ -98,7 +98,7 @@ export default function VistaSemana({
   return (
     <div
       className="agenda-vista-premium agenda-vista-semana-premium 
-        grid grid-cols-[70px,repeat(5,minmax(0,1fr))]
+        grid grid-cols-[70px,repeat(7,minmax(0,1fr))]
         gap-1
         text-xs
         bg-[var(--erp-surface)]

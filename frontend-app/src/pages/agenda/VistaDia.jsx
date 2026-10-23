@@ -49,8 +49,8 @@ export default function VistaDia({
   );
 
   const citasSeguras = useMemo(
-    () => (Array.isArray(citas) ? citas : []),
-    [citas]
+    () => (Array.isArray(citas) ? citas : []).filter((cita) => String(cita.fecha || "").slice(0, 10) === fechaNormalizada),
+    [citas, fechaNormalizada]
   );
 
   const crearCitaDia = useCallback(() => {
