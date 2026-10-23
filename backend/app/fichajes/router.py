@@ -597,6 +597,22 @@ def crear_solicitud_ausencia(
     ).first()
     if solapada:
         raise HTTPException(status_code=409, detail="Ya existe una solicitud de ausencia pendiente o aprobada en esas fechas.")
+    vacaciones = db.query(FichajeVacaciones).filter(
+        FichajeVacaciones.empleado_id == usuario.id,
+        FichajeVacaciones.estado.in_({"SOLICITADO", "APROBADO"}),
+        FichajeVacaciones.fecha_inicio <= fecha_fin,
+        FichajeVacaciones.fecha_fin >= fecha_inicio,
+    ).first()
+    if vacaciones:
+        raise HTTPException(status_code=409, detail="Ya hay una solicitud de vacaciones pendiente o aprobada en esas fechas.")
+    compensacion = db.query(FichajeSolicitudCompensacion).filter(
+        FichajeSolicitudCompensacion.empleado_id == usuario.id,
+        FichajeSolicitudCompensacion.estado.in_({"SOLICITADO", "APROBADO"}),
+        FichajeSolicitudCompensacion.fecha_disfrute >= fecha_inicio,
+        FichajeSolicitudCompensacion.fecha_disfrute <= fecha_fin,
+    ).first()
+    if compensacion:
+        raise HTTPException(status_code=409, detail="Ya hay una solicitud de compensación pendiente o aprobada en esas fechas.")
     registro = FichajeSolicitudAusencia(empleado_id=usuario.id, fecha_inicio=fecha_inicio, fecha_fin=fecha_fin,
         tipo_ausencia=tipo, observaciones=(observaciones or "").strip()[:500] or None, estado="SOLICITADO")
     db.add(registro)
@@ -662,6 +678,14 @@ def admin_resolver_solicitud_ausencia(
         ).first()
         if otra:
             raise HTTPException(status_code=409, detail="La solicitud se solapa con otra ausencia aprobada.")
+        compensacion = db.query(FichajeSolicitudCompensacion).filter(
+            FichajeSolicitudCompensacion.empleado_id == registro.empleado_id,
+            FichajeSolicitudCompensacion.estado.in_({"SOLICITADO", "APROBADO"}),
+            FichajeSolicitudCompensacion.fecha_disfrute >= registro.fecha_inicio,
+            FichajeSolicitudCompensacion.fecha_disfrute <= registro.fecha_fin,
+        ).first()
+        if compensacion:
+            raise HTTPException(status_code=409, detail="La solicitud se solapa con una compensación pendiente o aprobada.")
     registro.estado = estado
     registro.motivo_resolucion = motivo[:500]
     registro.resuelto_por_id = usuario.id
@@ -773,6 +797,14 @@ def admin_resolver_solicitud_vacaciones(
         ).first()
         if conflicto_compensacion:
             raise HTTPException(status_code=409, detail="No se puede aprobar: hay una solicitud de compensación en esas fechas.")
+        conflicto_ausencia = db.query(FichajeSolicitudAusencia).filter(
+            FichajeSolicitudAusencia.empleado_id == solicitud.empleado_id,
+            FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}),
+            FichajeSolicitudAusencia.fecha_inicio <= solicitud.fecha_fin,
+            FichajeSolicitudAusencia.fecha_fin >= solicitud.fecha_inicio,
+        ).first()
+        if conflicto_ausencia:
+            raise HTTPException(status_code=409, detail="No se puede aprobar: hay una solicitud de ausencia pendiente o aprobada en esas fechas.")
         bolsa = db.query(FichajeBolsaVacaciones).filter(
             FichajeBolsaVacaciones.empleado_id == solicitud.empleado_id,
             FichajeBolsaVacaciones.anio == solicitud.fecha_inicio.year,
