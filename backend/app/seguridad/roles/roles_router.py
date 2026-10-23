@@ -678,6 +678,7 @@ def editar_rol(
     rol_id: int,
     datos: RolCreate,
     db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_permiso_seguridad("editar")),
 ):
     """
     Actualiza un rol existente.
