@@ -49,3 +49,102 @@
 @media (prefers-reduced-motion: reduce) {
   .seguridad-premium-page table tbody tr { transition: none; }
 }
+
+
+/* Accesos de Administración de seguridad: estilos explícitos para evitar
+   que el aspecto dependa de que las clases utilitarias se incluyan en build. */
+.seguridad-premium-page .seguridad-accesos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: stretch;
+  width: 100%;
+}
+.seguridad-premium-page .seguridad-acceso {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  min-width: 0;
+  min-height: 112px;
+  padding: 1.25rem;
+  border: 1px solid var(--erp-border, #dbe2ea);
+  border-radius: 1rem;
+  background: var(--erp-surface, #fff);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, .045);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.seguridad-premium-page .seguridad-acceso:hover {
+  border-color: var(--erp-primary, #2563eb);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .09);
+  transform: translateY(-2px);
+}
+.seguridad-premium-page .seguridad-acceso:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--erp-primary, #2563eb) 35%, transparent);
+  outline-offset: 3px;
+}
+.seguridad-premium-page .seguridad-acceso-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: .85rem;
+  background: var(--erp-primary-soft, #eff6ff);
+  color: var(--erp-primary, #2563eb);
+}
+.seguridad-premium-page .seguridad-acceso-icon svg {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.seguridad-premium-page .seguridad-acceso-body {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.seguridad-premium-page .seguridad-acceso-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  color: var(--erp-text, #172033);
+  font-size: .95rem;
+  line-height: 1.4;
+  font-weight: 700;
+}
+.seguridad-premium-page .seguridad-acceso-arrow {
+  flex: 0 0 auto;
+  color: var(--erp-text-soft, #64748b);
+  transition: transform .18s ease, color .18s ease;
+}
+.seguridad-premium-page .seguridad-acceso:hover .seguridad-acceso-arrow {
+  color: var(--erp-primary, #2563eb);
+  transform: translateX(3px);
+}
+.seguridad-premium-page .seguridad-acceso-description {
+  display: block;
+  margin-top: .45rem;
+  color: var(--erp-text-soft, #64748b);
+  font-size: .875rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 700px) {
+  .seguridad-premium-page .seguridad-accesos-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: .75rem;
+  }
+  .seguridad-premium-page .seguridad-acceso {
+    min-height: 0;
+    padding: 1rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seguridad-premium-page .seguridad-acceso,
+  .seguridad-premium-page .seguridad-acceso-arrow {
+    transition: none;
+  }
+}

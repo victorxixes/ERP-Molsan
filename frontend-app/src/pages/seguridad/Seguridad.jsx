@@ -40,17 +40,17 @@ function Acceso({ to, icon, title, description }) {
   return (
     <Link
       to={to}
-      className="group flex h-full items-start gap-4 rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--erp-primary)] hover:shadow-md"
+      className="seguridad-acceso group"
     >
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--erp-primary-soft)] text-[var(--erp-primary)]">
+      <span className="seguridad-acceso-icon">
         <Icono name={icon} className="h-5 w-5" />
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="flex items-center justify-between gap-2 text-sm font-semibold text-[var(--erp-text)]">
+      <span className="seguridad-acceso-body">
+        <span className="seguridad-acceso-title">
           {title}
-          <span className="text-[var(--erp-text-soft)] transition group-hover:translate-x-0.5">→</span>
+          <span className="seguridad-acceso-arrow">→</span>
         </span>
-        <span className="mt-1 block text-sm leading-5 text-[var(--erp-text-soft)]">{description}</span>
+        <span className="seguridad-acceso-description">{description}</span>
       </span>
     </Link>
   );
@@ -137,9 +137,9 @@ export default function Seguridad() {
           <h2 id="seguridad-accesos-title" className="text-lg font-semibold text-[var(--erp-text)]">Administración de seguridad</h2>
           <p className="mt-0.5 text-sm text-[var(--erp-text-soft)]">Cada función tiene su propia pantalla para evitar formularios y listados duplicados.</p>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Acceso to="/seguridad/usuarios" icon="users" title="Empleados y permisos" description="Selecciona empleados y gestiona su acceso según los permisos de tu perfil." />
-          <Acceso to="/seguridad/roles/editor" icon="shield-check" title="Roles" description="Crea, edita y administra los perfiles de seguridad que se asignan a los empleados." />
+        <div className="seguridad-accesos-grid">
+          <Acceso to="/seguridad/usuarios" icon="user-group" title="Empleados y permisos" description="Selecciona empleados y gestiona su acceso según los permisos de tu perfil." />
+          <Acceso to="/seguridad/roles/editor" icon="shield" title="Roles" description="Crea, edita y administra los perfiles de seguridad que se asignan a los empleados." />
           <Acceso to="/seguridad/modulos" icon="folder" title="Módulos y permisos" description="Consulta los módulos del ERP y la configuración de acceso disponible." />
           <Acceso to="/auditoria" icon="clipboard-list" title="Auditoría" description="Consulta las operaciones y los eventos registrados en el sistema." />
         </div>
