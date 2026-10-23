@@ -879,7 +879,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
     const rol = normalizarClave(empleado?.rol?.nombre || empleado?.rol_nombre || empleado?.nombre_rol);
     const usuarioAdmin = normalizarClave(empleado?.usuario) === "admin";
-    const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario"].some((r) => rol.includes(r));
+    const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario", "gestor", "manager"].some((r) => rol.includes(r));
     if (esAdmin && clavesVisibles.includes("fichajes")) {
       items.push({
         key: "control-fichajes",

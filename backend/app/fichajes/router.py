@@ -58,7 +58,7 @@ def _es_admin(usuario):
     rol = getattr(getattr(usuario, "rol", None), "nombre", "") or ""
     rol_norm = unicodedata.normalize("NFD", str(rol)).encode("ascii", "ignore").decode().lower()
     usuario_norm = str(getattr(usuario, "usuario", "") or "").strip().lower()
-    return usuario_norm == "admin" or any(p in rol_norm for p in ("admin", "superuser", "superusuario"))
+    return usuario_norm == "admin" or any(p in rol_norm for p in ("admin", "superuser", "superusuario", "gestor", "manager"))
 
 
 def _exigir_admin(usuario):
@@ -138,6 +138,9 @@ def crear_marcaje(
         if not valido:
             raise HTTPException(status_code=422, detail="Selecciona un tipo de ausencia válido del catálogo.")
         observaciones = f"Ausencia: {nombre_ausencia}. {observaciones or ''}".strip()
+        # El nuevo botón registra la ausencia como evento puntual, ya que la interfaz
+        # no ofrece un control de regreso de ausencia. Los AUSENCIA históricos se conservan.
+        tipo = "AUSENCIA_PUNTUAL"
     ultimo = db.query(FichajeMarcaje).filter(
         FichajeMarcaje.empleado_id == usuario.id
     ).order_by(desc(FichajeMarcaje.fecha_hora)).first()
@@ -149,7 +152,9 @@ def crear_marcaje(
         raise HTTPException(status_code=409, detail="Ya consta una entrada sin una salida posterior.")
     if tipo == "SALIDA" and (not ultimo_jornada or ultimo_jornada.tipo != "ENTRADA"):
         raise HTTPException(status_code=409, detail="Para registrar la salida debe existir una entrada previa sin cerrar.")
-    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
+    # AUSENCIA es un registro puntual de ausencia/permiso, no una pausa que bloquee
+    # el resto de los controles: el panel nuevo no tiene un botón de "regreso de ausencia".
+    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO"}
     retornos_por_pausa = {
         "PAUSA_CAFE_INICIO": {"PAUSA_DESAYUNO_FIN", "RETORNO_AUSENCIA"},
         "PAUSA_DESAYUNO_INICIO": {"PAUSA_DESAYUNO_FIN", "RETORNO_AUSENCIA"},
@@ -310,13 +315,24 @@ def mis_vacaciones(usuario=Depends(get_current_user), db: Session = Depends(get_
     anio = date.today().year
     registros = db.query(FichajeVacaciones).filter(FichajeVacaciones.empleado_id == usuario.id,
         FichajeVacaciones.fecha_inicio >= date(anio, 1, 1), FichajeVacaciones.fecha_inicio < date(anio + 1, 1, 1)).order_by(FichajeVacaciones.fecha_inicio).all()
-    disfrutados = sum(v.dias for v in registros if v.estado == "APROBADO")
+    hoy = date.today()
+    aprobadas = [v for v in registros if v.estado == "APROBADO"]
+    disfrutados = sum(
+        min(v.dias, max(0, (min(hoy, v.fecha_fin) - v.fecha_inicio).days + 1))
+        for v in aprobadas if v.fecha_inicio <= hoy
+    )
+    reservados = sum(
+        max(0, v.dias - min(v.dias, max(0, (min(hoy, v.fecha_fin) - v.fecha_inicio).days + 1)))
+        for v in aprobadas if v.fecha_fin >= hoy
+    )
     bolsa = db.query(FichajeBolsaVacaciones).filter(FichajeBolsaVacaciones.empleado_id == usuario.id, FichajeBolsaVacaciones.anio == anio).first()
     asignados = bolsa.dias_asignados if bolsa else None
+    comprometidos = sum(v.dias for v in aprobadas)
     return {"anio": anio, "dias_asignados": asignados, "dias_disfrutados": disfrutados,
-            "dias_restantes": max(0, asignados - disfrutados) if asignados is not None else None,
+            "dias_reservados": reservados,
+            "dias_restantes": max(0, asignados - comprometidos) if asignados is not None else None,
             "registros": [{"id": v.id, "fecha_inicio": v.fecha_inicio.isoformat(), "fecha_fin": v.fecha_fin.isoformat(), "dias": v.dias, "estado": v.estado, "observaciones": v.observaciones} for v in registros],
-            "aviso": "La asignación anual debe configurarla administración; no se inventa una bolsa de días."}
+            "aviso": "Los días restantes descuentan las vacaciones aprobadas, incluidas las fechas futuras reservadas. Las solicitudes pendientes no consumen saldo."}
 
 
 @router.post("/vacaciones")
@@ -330,6 +346,14 @@ def solicitar_vacaciones(fecha_inicio: date = Form(...), fecha_fin: date = Form(
     dias = (fecha_fin - fecha_inicio).days + 1
     if dias > 60:
         raise HTTPException(status_code=422, detail="Una solicitud no puede superar 60 días naturales.")
+    vacaciones_solapadas = db.query(FichajeVacaciones).filter(
+        FichajeVacaciones.empleado_id == usuario.id,
+        FichajeVacaciones.estado.in_({"SOLICITADO", "APROBADO"}),
+        FichajeVacaciones.fecha_inicio <= fecha_fin,
+        FichajeVacaciones.fecha_fin >= fecha_inicio,
+    ).first()
+    if vacaciones_solapadas:
+        raise HTTPException(status_code=409, detail="Ya existe otra solicitud de vacaciones pendiente o aprobada que coincide con esas fechas.")
     compensacion_duplicada = db.query(FichajeSolicitudCompensacion).filter(
         FichajeSolicitudCompensacion.empleado_id == usuario.id,
         FichajeSolicitudCompensacion.fecha_disfrute >= fecha_inicio,
@@ -353,6 +377,7 @@ def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_cu
     inicio, fin = date(anio, 1, 1), date(anio + 1, 1, 1)
     registros = db.query(FichajeMarcaje).filter(FichajeMarcaje.empleado_id == usuario.id,
         FichajeMarcaje.fecha_hora >= datetime.combine(inicio, time.min), FichajeMarcaje.fecha_hora < datetime.combine(fin, time.min)).order_by(FichajeMarcaje.fecha_hora).all()
+    # AUSENCIA es el tipo histórico de pausa con retorno; AUSENCIA_PUNTUAL no resta horas.
     pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
     retornos = {"PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"}
     jornada_abierta = None; pausa_abierta = None; pausa_segundos = 0; segundos = 0; incompletos = 0
@@ -376,6 +401,124 @@ def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_cu
     return {"anio": anio, "horas_trabajadas": round(max(0, segundos) / 3600, 2), "horas_previstas": None,
             "diferencia_horas": None, "marcajes": len(registros), "jornadas_incompletas": incompletos,
             "aviso": "Las horas previstas y la diferencia se habilitarán al configurar el calendario laboral individual."}
+
+
+@router.get("/admin/vacaciones")
+def admin_listar_solicitudes_vacaciones(
+    estado: str | None = Query(default=None),
+    empleado_id: int | None = Query(default=None),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    consulta = db.query(FichajeVacaciones, Empleado).join(
+        Empleado, Empleado.id == FichajeVacaciones.empleado_id
+    )
+    if estado:
+        consulta = consulta.filter(FichajeVacaciones.estado == estado.strip().upper())
+    if empleado_id:
+        consulta = consulta.filter(FichajeVacaciones.empleado_id == empleado_id)
+    filas = consulta.order_by(desc(FichajeVacaciones.creado_en)).limit(2000).all()
+    return [{
+        "id": v.id,
+        "empleado_id": v.empleado_id,
+        "empleado_nombre": _nombre_completo(e) or e.usuario,
+        "fecha_inicio": v.fecha_inicio.isoformat(),
+        "fecha_fin": v.fecha_fin.isoformat(),
+        "dias": v.dias,
+        "estado": v.estado,
+        "observaciones": v.observaciones,
+        "creado_en": v.creado_en.isoformat() if v.creado_en else None,
+    } for v, e in filas]
+
+
+@router.patch("/admin/vacaciones/{solicitud_id}")
+def admin_resolver_solicitud_vacaciones(
+    solicitud_id: int,
+    estado: str = Form(...),
+    observaciones: str = Form(""),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    solicitud = db.query(FichajeVacaciones).filter(
+        FichajeVacaciones.id == solicitud_id
+    ).with_for_update().first()
+    if not solicitud:
+        raise HTTPException(status_code=404, detail="Solicitud de vacaciones no encontrada.")
+    if solicitud.estado != "SOLICITADO":
+        raise HTTPException(status_code=409, detail="Esta solicitud ya se ha resuelto.")
+    estado = estado.strip().upper()
+    if estado not in {"APROBADO", "RECHAZADO"}:
+        raise HTTPException(status_code=422, detail="El estado debe ser APROBADO o RECHAZADO.")
+    if estado == "APROBADO":
+        conflicto_vacaciones = db.query(FichajeVacaciones).filter(
+            FichajeVacaciones.empleado_id == solicitud.empleado_id,
+            FichajeVacaciones.id != solicitud.id,
+            FichajeVacaciones.estado == "APROBADO",
+            FichajeVacaciones.fecha_inicio <= solicitud.fecha_fin,
+            FichajeVacaciones.fecha_fin >= solicitud.fecha_inicio,
+        ).first()
+        if conflicto_vacaciones:
+            raise HTTPException(status_code=409, detail="No se puede aprobar: las fechas coinciden con otras vacaciones ya aprobadas.")
+        conflicto_compensacion = db.query(FichajeSolicitudCompensacion).filter(
+            FichajeSolicitudCompensacion.empleado_id == solicitud.empleado_id,
+            FichajeSolicitudCompensacion.fecha_disfrute >= solicitud.fecha_inicio,
+            FichajeSolicitudCompensacion.fecha_disfrute <= solicitud.fecha_fin,
+            FichajeSolicitudCompensacion.estado.in_({"SOLICITADO", "APROBADO"}),
+        ).first()
+        if conflicto_compensacion:
+            raise HTTPException(status_code=409, detail="No se puede aprobar: hay una solicitud de compensación en esas fechas.")
+        bolsa = db.query(FichajeBolsaVacaciones).filter(
+            FichajeBolsaVacaciones.empleado_id == solicitud.empleado_id,
+            FichajeBolsaVacaciones.anio == solicitud.fecha_inicio.year,
+        ).first()
+        if not bolsa:
+            raise HTTPException(status_code=409, detail="No se puede aprobar: administración todavía no ha asignado las vacaciones de este empleado para ese año.")
+        comprometidos = sum(v.dias for v in db.query(FichajeVacaciones).filter(
+            FichajeVacaciones.empleado_id == solicitud.empleado_id,
+            FichajeVacaciones.estado == "APROBADO",
+            FichajeVacaciones.id != solicitud.id,
+            FichajeVacaciones.fecha_inicio >= date(solicitud.fecha_inicio.year, 1, 1),
+            FichajeVacaciones.fecha_inicio < date(solicitud.fecha_inicio.year + 1, 1, 1),
+        ).all())
+        if comprometidos + solicitud.dias > bolsa.dias_asignados:
+            raise HTTPException(status_code=409, detail="No se puede aprobar: la solicitud supera el saldo de vacaciones asignado.")
+    solicitud.estado = estado
+    if observaciones.strip():
+        solicitud.observaciones = (solicitud.observaciones or "")
+        solicitud.observaciones += (" | " if solicitud.observaciones else "") + observaciones.strip()[:400]
+    db.commit()
+    db.refresh(solicitud)
+    return {"id": solicitud.id, "estado": solicitud.estado, "dias": solicitud.dias}
+
+
+@router.get("/admin/documentos")
+def admin_listar_documentos(
+    empleado_id: int | None = Query(default=None),
+    desde: date | None = Query(default=None),
+    hasta: date | None = Query(default=None),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    consulta = db.query(FichajeDocumento, Empleado).join(
+        Empleado, Empleado.id == FichajeDocumento.empleado_id
+    )
+    if empleado_id:
+        consulta = consulta.filter(FichajeDocumento.empleado_id == empleado_id)
+    if desde:
+        consulta = consulta.filter(FichajeDocumento.fecha_documento >= desde)
+    if hasta:
+        consulta = consulta.filter(FichajeDocumento.fecha_documento <= hasta)
+    filas = consulta.order_by(desc(FichajeDocumento.subido_en)).limit(2000).all()
+    return [{
+        **_documento_dict(d),
+        "empleado_nombre": _nombre_completo(e) or e.usuario,
+    } for d, e in filas]
 
 
 @router.get("/admin/vacaciones-bolsa")

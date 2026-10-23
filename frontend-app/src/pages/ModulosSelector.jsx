@@ -88,7 +88,7 @@ export default function ModulosSelector() {
       .map((clave) => ({ clave, ...MODULOS[clave] }));
     const rol = normalizar(empleado.rol?.nombre || empleado.rol_nombre || empleado.nombre_rol);
     const usuario = normalizar(empleado.usuario);
-    const esAdmin = usuario === "admin" || ["admin", "administrador", "administradora", "superadmin"].includes(rol);
+    const esAdmin = usuario === "admin" || ["admin", "administrador", "administradora", "superadmin", "superusuario", "gestor", "manager"].some((r) => rol.includes(r));
     if (esAdmin && visibles.includes("fichajes")) {
       disponibles.push({
         clave: "control-fichajes",
