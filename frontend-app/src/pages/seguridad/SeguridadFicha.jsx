@@ -1419,7 +1419,7 @@ const permisosGlobales =
         }
 
 
-        if (rolId === rolActualId || guardandoRol) {
+        if (guardandoRol) {
           return;
         }
 
@@ -1437,7 +1437,11 @@ const permisosGlobales =
           );
 
           setNuevoRol("");
-          setMensajeRol("Rol guardado correctamente.");
+          setMensajeRol(
+            rolId === rolActualId
+              ? "El empleado ya tenía ese rol; se ha verificado la asignación."
+              : "Rol guardado correctamente."
+          );
         } catch (error) {
           console.error(
             "Error asignando rol:",
@@ -2247,8 +2251,7 @@ const permisosGlobales =
                 disabled={
                   !empleadoValido ||
                   guardandoRol ||
-                  idSeguro(nuevoRol) === null ||
-                  idSeguro(nuevoRol) === rolActualId
+                  idSeguro(nuevoRol) === null
                 }
                 className="
                   rounded-xl
