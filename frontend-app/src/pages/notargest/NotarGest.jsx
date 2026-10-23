@@ -728,7 +728,6 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
       </div>
       <div className="ag-hero-acciones">
         {accesoERP && <button type="button" onClick={() => navigate("/modulos")} className="flex items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2 text-sm font-medium text-[var(--erp-text)] transition hover:border-[var(--erp-primary)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"><span aria-hidden="true">▦</span> Ir a módulos</button>}
-        <button type="button" onClick={salir} className="ng-workspace-salir" aria-label="Cerrar sesión"><span aria-hidden="true">↪</span> Cerrar sesión</button>
       </div>
     </header>
     <nav className="ng-modulos-grid" aria-label="Secciones de NotarGest">
