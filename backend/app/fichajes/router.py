@@ -559,6 +559,112 @@ def solicitar_vacaciones(fecha_inicio: date = Form(...), fecha_fin: date = Form(
     return {"id": registro.id, "estado": registro.estado, "dias": registro.dias}
 
 
+
+@router.get("/solicitudes-ausencia")
+def listar_mis_solicitudes_ausencia(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    filas = db.query(FichajeSolicitudAusencia).filter(FichajeSolicitudAusencia.empleado_id == usuario.id).order_by(desc(FichajeSolicitudAusencia.creado_en)).limit(500).all()
+    return [{"id": a.id, "fecha_inicio": a.fecha_inicio.isoformat(), "fecha_fin": a.fecha_fin.isoformat(),
+             "tipo_ausencia": a.tipo_ausencia, "observaciones": a.observaciones, "estado": a.estado,
+             "creado_en": a.creado_en.isoformat() if a.creado_en else None, "motivo_resolucion": a.motivo_resolucion}
+            for a in filas]
+
+
+@router.post("/solicitudes-ausencia")
+def crear_solicitud_ausencia(
+    fecha_inicio: date = Form(...), fecha_fin: date = Form(...), tipo_ausencia: str = Form(...),
+    observaciones: str = Form(""), usuario=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    require_perm_modulo(usuario, "fichajes", "crear")
+    if fecha_fin < fecha_inicio:
+        raise HTTPException(status_code=422, detail="La fecha final no puede ser anterior a la inicial.")
+    if (fecha_fin - fecha_inicio).days > 60:
+        raise HTTPException(status_code=422, detail="Una solicitud no puede superar 60 días naturales.")
+    tipo = (tipo_ausencia or "").strip()
+    catalogo = db.query(FichajeTipoAusencia).filter(FichajeTipoAusencia.nombre == tipo, FichajeTipoAusencia.activo == 1).first()
+    if not catalogo:
+        raise HTTPException(status_code=422, detail="Selecciona un tipo de ausencia válido.")
+    solapada = db.query(FichajeSolicitudAusencia).filter(
+        FichajeSolicitudAusencia.empleado_id == usuario.id,
+        FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}),
+        FichajeSolicitudAusencia.fecha_inicio <= fecha_fin,
+        FichajeSolicitudAusencia.fecha_fin >= fecha_inicio,
+    ).first()
+    if solapada:
+        raise HTTPException(status_code=409, detail="Ya existe una solicitud de ausencia pendiente o aprobada en esas fechas.")
+    registro = FichajeSolicitudAusencia(empleado_id=usuario.id, fecha_inicio=fecha_inicio, fecha_fin=fecha_fin,
+        tipo_ausencia=tipo, observaciones=(observaciones or "").strip()[:500] or None, estado="SOLICITADO")
+    db.add(registro)
+    db.commit()
+    db.refresh(registro)
+    return {"id": registro.id, "estado": registro.estado}
+
+
+@router.get("/admin/solicitudes-ausencia")
+def admin_listar_solicitudes_ausencia(
+    estado: str | None = Query(default=None), empleado_id: int | None = Query(default=None),
+    desde: date | None = Query(default=None), hasta: date | None = Query(default=None),
+    usuario=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    consulta = db.query(FichajeSolicitudAusencia, Empleado).join(Empleado, Empleado.id == FichajeSolicitudAusencia.empleado_id)
+    if estado:
+        consulta = consulta.filter(FichajeSolicitudAusencia.estado == estado.strip().upper())
+    if empleado_id:
+        consulta = consulta.filter(FichajeSolicitudAusencia.empleado_id == empleado_id)
+    if desde:
+        consulta = consulta.filter(FichajeSolicitudAusencia.fecha_fin >= desde)
+    if hasta:
+        consulta = consulta.filter(FichajeSolicitudAusencia.fecha_inicio <= hasta)
+    return [{"id": a.id, "empleado_id": a.empleado_id, "empleado_nombre": _nombre_completo(e) or e.usuario,
+             "fecha_inicio": a.fecha_inicio.isoformat(), "fecha_fin": a.fecha_fin.isoformat(), "tipo_ausencia": a.tipo_ausencia,
+             "observaciones": a.observaciones, "estado": a.estado, "creado_en": a.creado_en.isoformat() if a.creado_en else None,
+             "motivo_resolucion": a.motivo_resolucion} for a, e in consulta.order_by(desc(FichajeSolicitudAusencia.creado_en)).limit(2000).all()]
+
+
+@router.patch("/admin/solicitudes-ausencia/{solicitud_id}")
+def admin_resolver_solicitud_ausencia(
+    solicitud_id: int, estado: str = Form(...), motivo: str = Form(...),
+    usuario=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    registro = db.query(FichajeSolicitudAusencia).filter(FichajeSolicitudAusencia.id == solicitud_id).with_for_update().first()
+    if not registro:
+        raise HTTPException(status_code=404, detail="No se encuentra la solicitud de ausencia.")
+    estado = estado.strip().upper()
+    if estado not in {"APROBADO", "RECHAZADO"}:
+        raise HTTPException(status_code=422, detail="Estado de resolución no válido.")
+    motivo = (motivo or "").strip()
+    if len(motivo) < 5:
+        raise HTTPException(status_code=422, detail="Indica el motivo de la resolución (mínimo cinco caracteres).")
+    if estado == "APROBADO":
+        vacaciones = db.query(FichajeVacaciones).filter(
+            FichajeVacaciones.empleado_id == registro.empleado_id,
+            FichajeVacaciones.estado == "APROBADO",
+            FichajeVacaciones.fecha_inicio <= registro.fecha_fin,
+            FichajeVacaciones.fecha_fin >= registro.fecha_inicio,
+        ).first()
+        if vacaciones:
+            raise HTTPException(status_code=409, detail="La solicitud se solapa con vacaciones ya aprobadas.")
+        otra = db.query(FichajeSolicitudAusencia).filter(
+            FichajeSolicitudAusencia.id != registro.id,
+            FichajeSolicitudAusencia.empleado_id == registro.empleado_id,
+            FichajeSolicitudAusencia.estado == "APROBADO",
+            FichajeSolicitudAusencia.fecha_inicio <= registro.fecha_fin,
+            FichajeSolicitudAusencia.fecha_fin >= registro.fecha_inicio,
+        ).first()
+        if otra:
+            raise HTTPException(status_code=409, detail="La solicitud se solapa con otra ausencia aprobada.")
+    registro.estado = estado
+    registro.motivo_resolucion = motivo[:500]
+    registro.resuelto_por_id = usuario.id
+    registro.resuelto_en = datetime.now()
+    db.commit()
+    return {"id": registro.id, "estado": registro.estado, "motivo_resolucion": registro.motivo_resolucion}
+
+
 @router.get("/resumen-horas")
 def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_current_user), db: Session = Depends(get_db)):
     anio = anio or date.today().year
