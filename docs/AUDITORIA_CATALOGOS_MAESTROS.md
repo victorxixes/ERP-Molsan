@@ -55,6 +55,20 @@ El repositorio tiene pantallas y módulos backend específicos para, al menos:
 
 Estos módulos deben conservar sus esquemas y reglas específicas. No se debe crear una segunda tabla genérica para reemplazar los registros que ya administran.
 
+### 1.3.1 Primeras comprobaciones de los modelos
+La lectura inicial de los modelos confirma que hay campos de mantenimiento ya disponibles:
+
+- `entidades_bancarias`: código europeo, LEI, nombre, categoría, dirección, relación `entidad_actual_id` y campo `activo`; existe restricción única para código europeo.
+- `municipios`: comunidad autónoma, provincia, municipio y `activo`, con restricción única compuesta.
+- `registros_propiedad`: datos de contacto y ubicación, además de campo de estado activo.
+- `oficinas_liquidadoras`: datos de contacto/horario y `activo`, con nombre único.
+- `tipos_carga_hipotecaria` y `tipos_concepto_gastos`: nombre y `activo`, con nombre único.
+- `acciones_expediente`: departamento, sección, actividad, descripción y `activo`.
+- `honorarios_gestoria_catalogo`: base imponible, tipo y porcentaje de impuesto, total compatible y `activo`.
+- `ctn_notarios`: datos de notaría/notario y relaciones con empleados/citas, pero también campos de acceso a NotarGest y credenciales protegidas. Este módulo no debe tratarse como una tabla maestra genérica sin separar cuidadosamente los permisos y la información sensible.
+
+La presencia de un campo `activo` en el modelo no garantiza por sí sola que todas las pantallas y endpoints respeten la desactivación; esto debe verificarse en routers, servicios y formularios.
+
 ### 1.4 Catálogos funcionales dentro de otros módulos
 Se han localizado ejemplos de valores que se presentan como catálogos, pero que están definidos o consumidos fuera de la central:
 
