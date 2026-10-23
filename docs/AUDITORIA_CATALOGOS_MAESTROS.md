@@ -277,3 +277,30 @@ Para cerrar esta parte hay que inspeccionar modelos de expediente/finca/gastos/p
 ### 7.6 Estado de esta segunda pasada
 
 Se verificó estáticamente el mecanismo global de autenticación/permisos y se detectaron diferencias entre módulos y riesgos en servicios/semillas. **No se ha probado la autorización en ejecución, inspeccionado una base de datos real/copia de pruebas, ni ejecutado build o suite de tests.** Los permisos efectivos por perfil y las relaciones históricas siguen pendientes de verificación dinámica. No se modificaron datos, tablas ni lógica de negocio en esta fase.
+
+
+## 8. Tercera pasada: relaciones declaradas en modelos de expedientes y módulos consumidores
+
+Se revisaron los modelos de expedientes, fincas/registros, gastos, provisiones, carpeta digital, agenda, CTN y empleados para distinguir relaciones declaradas en base de datos de coincidencias de texto.
+
+### 8.1 Relaciones y campos confirmados
+
+- **Expediente → cliente y empleados:** expedientes tiene FK a clientes y a empleados para apoderado/gestor asignado. Los campos de estado y varios datos notariales/documentales siguen almacenados como texto.
+- **Fincas de expediente → expediente:** expediente_fincas tiene FK expediente_id, pero los datos de finca guardan registro, provincia, población y entidad original como texto. No aparece en este modelo una FK directa al catálogo de registros de la propiedad o al catálogo de entidades bancarias.
+- **Gastos → expediente:** expediente_gastos tiene FK a expedientes. El tipo de gasto se guarda como texto; documento_carpeta_id aparece como entero sin FK visible en el modelo revisado.
+- **Provisiones:** provisiones_fondo se relaciona con expedientes mediante FK; provisiones_operaciones se relaciona con provisiones y tarifas mediante FK; provisiones_operaciones_fincas se relaciona con operaciones. En las fincas de provisión, registro_propiedad_id es un entero indexado sin FK visible y también se guarda registro_propiedad como texto. Las tarifas usan entidad y territorio como texto, no FK a entidad bancaria/municipio.
+- **Carpeta digital:** los documentos se vinculan mediante expediente_id de texto y categoría de texto; el modelo revisado no declara FK a expediente ni a un catálogo de categorías. Antes de cambiar categorías hay que preservar la asociación histórica por identificador/texto y comprobar las reglas de checklist.
+- **Agenda y CTN:** agenda_citas declara relaciones/FK a notario, expediente y apoderado según el modelo; CTN mantiene el catálogo de notarios, campos de provincia/municipio en texto, asociación a empleado para apoderado y datos de acceso a NotarGest.
+- **Empleados → organización:** empleados contiene departamento_id, seccion_id y cargo_id como enteros, pero en el modelo revisado no se ven declaradas claves foráneas a las tablas departamentos, secciones y cargos. La relación actual puede depender de convenciones de aplicación; debe comprobarse en el esquema real antes de editar o borrar estos maestros.
+
+### 8.2 Implicaciones para no alterar históricos
+
+1. No sustituir los textos de registro, población, provincia, entidad original, tipo de gasto, categoría documental, territorio o entidad en expedientes existentes por el nombre vigente de un maestro. Los textos pueden reflejar el valor que se utilizó cuando se tramitó el expediente.
+2. En provisiones, no conectar automáticamente registro_propiedad_id con el ID actual del catálogo: el campo es un entero indexado sin FK declarada en el modelo, por lo que primero hay que comprobar su semántica y los valores existentes.
+3. Para empleados, comprobar si departamento_id/seccion_id/cargo_id corresponden efectivamente a los IDs de las tablas de Maestros y si hay referencias huérfanas. Hasta tener esa prueba, no ejecutar borrados ni reasignaciones.
+4. Para documentos digitales, categoría es texto usado junto al expediente_id; cambiar los nombres o migrar a IDs podría romper búsquedas, checklists o clasificación documental.
+5. Los catálogos que se incorporen deben usarse para nuevas selecciones, pero la lectura de expedientes antiguos debe seguir mostrando los datos históricos aunque el maestro se desactive o cambie de nombre.
+
+### 8.3 Qué falta para verificar integridad real
+
+El código del modelo indica las relaciones declaradas por SQLAlchemy, pero no prueba que el esquema desplegado coincida exactamente ni revela la calidad de los datos existentes. Falta comparar estas observaciones con constraints reales de una copia de base de datos, revisar migraciones SQL/alembic y ejecutar consultas de solo lectura para contar IDs huérfanos, valores de texto no presentes en catálogos y categorías documentales usadas. Esta comprobación sigue pendiente y no se ha ejecutado contra producción.
