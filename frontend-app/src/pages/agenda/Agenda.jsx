@@ -582,7 +582,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
         {vista === "dia" && (
           <VistaDia
             fechaDia={new Date(`${fechaAncla}T12:00:00`)}
-            citas={citasSeguras}
+            citas={citasFiltradas}
             onCitaClick={handleCitaClick}
             onCrearCita={handleDiaClick}
           />
@@ -590,7 +590,6 @@ export default function Agenda({ soloApoderado = false } = {}) {
       </div>
 
         </div>
-      </div>
 
       <section className="erp-card agenda-upcoming-card">
         <div className="agenda-list-heading"><div><h2>Citas del período</h2><p>{citasFiltradas.length} {citasFiltradas.length === 1 ? "cita visible" : "citas visibles"} · selecciona una para abrir su ficha</p></div></div>
