@@ -2091,7 +2091,7 @@ const permisosDisponibles =
      NO RENDER
   ========================================================== */
 
-  if (!open) {
+  if (!open || (modoAdministracion && !esAdministrador)) {
     return null;
   }
 
