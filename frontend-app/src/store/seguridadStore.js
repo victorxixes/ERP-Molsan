@@ -1151,6 +1151,40 @@ export const useSeguridadStore =
 
 
     // ========================================================
+    // HABILITAR / DESHABILITAR COLABORADOR DE APODERAGEST
+    // ========================================================
+
+    actualizarColaboradorApoderaGest: async (
+      empleadoId,
+      esColaborador
+    ) => {
+      if (
+        empleadoId === null ||
+        empleadoId === undefined ||
+        typeof esColaborador !== "boolean"
+      ) {
+        throw new Error("Datos de colaborador no válidos.");
+      }
+
+      try {
+        await axios.put(
+          `${API}/empleados/${empleadoId}/colaborador-apoderagest`,
+          { es_colaborador: esColaborador }
+        );
+
+        await get().cargarTodo();
+        await get().cargarFicha(empleadoId);
+      } catch (error) {
+        console.error(
+          "SEGURIDAD — ERROR ACTUALIZANDO COLABORADOR:",
+          "Error interno"
+        );
+        throw error;
+      }
+    },
+
+
+    // ========================================================
     // RESET PASSWORD
     // ========================================================
 
