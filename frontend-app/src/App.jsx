@@ -222,10 +222,7 @@ export default function App() {
             element={<ApoderaGest />}
           />
 
-                <Route
-          path="cancelagest"
-          element={<RequireAuth><Cancelagest /></RequireAuth>}
-        />
+        
         
         <Route
 
@@ -309,6 +306,8 @@ export default function App() {
             path="dashboard"
             element={<Dashboard />}
           />
+
+          <Route path="cancelagest" element={<Cancelagest />} />
 
           {/* Fichaje Molsan: módulo de empleado y control administrativo. */}
           <Route path="fichajes" element={<Fichajes modo="empleado" />} />

@@ -786,6 +786,33 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
 
   /**
+   * El catálogo central es la fuente de verdad para etiquetas, rutas e iconos.
+   * Se conservan los metadatos locales (p. ej. permiso alternativo y contador)
+   * solo para excepciones operativas que no forman parte del catálogo general.
+   */
+  const aplicarCatalogoCentral = (items) => items.map((item) => {
+    const central = MODULOS_ERP.find((modulo) => modulo.key === item.key && modulo.route);
+    if (!central) return item;
+    return {
+      ...item,
+      to: central.route,
+      label: central.label,
+      icon: ({
+        "user-group": "user-group",
+        "file-check": "folder",
+        briefcase: "activity",
+        landmark: "globe",
+        "clipboard-list": "clipboard",
+        clock: "clock",
+        settings: "settings",
+      })[central.icon] || central.icon,
+    };
+  });
+
+  const navegacionPrincipalCatalogo = aplicarCatalogoCentral(modulosPrincipales);
+  const navegacionSecundariaCatalogo = aplicarCatalogoCentral(modulosSecundarios);
+
+  /**
    * ==========================================================
    * FILTRADO POR PERMISOS
    * ==========================================================
@@ -793,7 +820,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   const visiblesPrincipales = useMemo(
     () =>
-      modulosPrincipales.filter(
+      navegacionPrincipalCatalogo.filter(
         (modulo) =>
           puedeVerModulo(
             modulo.permiso || modulo.key
@@ -808,7 +835,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   const visiblesSecundarios = useMemo(
     () =>
-      modulosSecundarios.filter(
+      navegacionSecundariaCatalogo.filter(
         (modulo) =>
           puedeVerModulo(modulo.permiso || modulo.key)
       ),
@@ -854,22 +881,38 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   // por lo que usamos exactamente las mismas fuentes y no todos los accesos internos.
   const modulosDropdown = useMemo(() => {
     const normalizarClave = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
-    // El desplegable «Módulos» muestra el catálogo completo de rutas autorizadas,
-    // no solo los cinco portales de trabajo. Así el menú es común a todo el ERP.
-    const items = esPortalNotarialExterno ? [] : MODULOS_ERP
+    if (esPortalNotarialExterno) return [];
+
+    // «Módulos» solo contiene accesos excepcionales que no aparecen ya en
+    // la barra principal ni en «Más». Evita duplicar la navegación ordinaria.
+    const yaVisibles = new Set([
+      ...visiblesPrincipales.map((item) => item.key),
+      ...visiblesSecundarios.map((item) => item.key),
+      ...modulosFijados.map((item) => item.key),
+    ]);
+    const items = MODULOS_ERP
       .filter((modulo) =>
         Boolean(modulo.route) &&
+        !yaVisibles.has(modulo.key) &&
         puedeVerModulo(modulo.key)
       )
       .map((modulo) => ({
         key: modulo.key,
         to: modulo.route,
         label: modulo.label,
-        icon: modulo.icon,
+        icon: ({
+          "user-group": "user-group",
+          "file-check": "folder",
+          briefcase: "activity",
+          landmark: "globe",
+          "clipboard-list": "clipboard",
+          clock: "clock",
+          settings: "settings",
+        })[modulo.icon] || modulo.icon,
       }));
 
-    // Provisiones de fondos se gobierna por el permiso de Expedientes.
-    if (!esPortalNotarialExterno && puedeVerModulo("expedientes") &&
+    // Excepciones operativas fuera del catálogo general.
+    if (puedeVerModulo("expedientes") && !yaVisibles.has("provisiones-fondos") &&
         !items.some((item) => item.key === "provisiones-fondos")) {
       items.push({
         key: "provisiones-fondos",
@@ -882,7 +925,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     const rol = normalizarClave(empleado?.rol?.nombre || empleado?.rol_nombre || empleado?.nombre_rol);
     const usuarioAdmin = normalizarClave(empleado?.usuario) === "admin";
     const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario", "gestor", "manager"].some((r) => rol.includes(r));
-    if (!esPortalNotarialExterno && esAdmin && puedeVerModulo("fichajes") &&
+    if (esAdmin && puedeVerModulo("fichajes") && !yaVisibles.has("control-fichajes") &&
         !items.some((item) => item.key === "control-fichajes")) {
       items.push({
         key: "control-fichajes",
@@ -892,8 +935,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       });
     }
     return items;
-  }, [empleado, esPortalNotarialExterno]);
-
+  }, [empleado, esPortalNotarialExterno, visiblesPrincipales, visiblesSecundarios, modulosFijados]);
   const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
   const modulosDropdownRef = useRef(null);
   const modulosDropdownMenuRef = useRef(null);
