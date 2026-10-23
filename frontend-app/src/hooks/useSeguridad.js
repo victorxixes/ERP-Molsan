@@ -131,6 +131,11 @@ export const useSeguridad = () => {
       (state) => state.desbloquear
     );
 
+  const actualizarColaboradorApoderaGest =
+    useSeguridadStore(
+      (state) => state.actualizarColaboradorApoderaGest
+    );
+
 
   // ============================================================
   // ROLES
@@ -643,6 +648,8 @@ export const useSeguridad = () => {
     bloquear,
 
     desbloquear,
+
+    actualizarColaboradorApoderaGest,
 
   };
 
