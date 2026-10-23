@@ -218,7 +218,7 @@ export default function Fichajes({ modo = "empleado" }) {
               {tabs.map((t) => <button key={t.id} type="button" onClick={() => setPestana(t.id)} className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${pestana === t.id ? "bg-blue-700 text-white shadow-sm" : "text-[var(--erp-text-soft)] hover:bg-blue-50 hover:text-blue-800"}`}>{t.label}</button>)}
             </div>
 
-            {!esAdminVista && pestana === "calendario" && (
+            {!esAdminVista && (
               <div className="p-4 sm:p-6">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                   <div><h2 className="text-lg font-bold">Calendario de marcajes</h2><p className="text-sm text-[var(--erp-text-soft)]">Consulta tus registros por día y navega entre meses y años.</p></div>
