@@ -882,9 +882,10 @@ export default function ApoderaGest() {
           { key: "ctn", label: "CTN", icon: "globe" },
           { key: "mensajes", label: "Mensajes", icon: "chat" },
           { key: "intranet", label: "Intranet", icon: "folder" },
+          { key: "liquidaciones", label: "Mi liquidación", icon: "receipt" },
         ]}
         activeNavigationItem={pestana}
-        onNavigationItemClick={(key) => setPestana(({ dashboard: "Dashboard", agenda: "Agenda", encargos: "Encargos", ctn: "CTN", mensajes: "Mensajes", intranet: "Intranet" }[String(key).toLowerCase()] || key))}
+        onNavigationItemClick={(key) => { if (String(key).toLowerCase() === "liquidaciones") { navigate("/apoderagest/liquidaciones"); return; } setPestana(({ dashboard: "Dashboard", agenda: "Agenda", encargos: "Encargos", ctn: "CTN", mensajes: "Mensajes", intranet: "Intranet" }[String(key).toLowerCase()] || key)); }}
       />
       <main className="relative min-h-[calc(100vh-70px)]">
         <div className="w-full px-4 py-6 lg:px-6">

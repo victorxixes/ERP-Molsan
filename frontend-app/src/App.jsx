@@ -141,6 +141,7 @@ import EncargaGest from "./pages/encargagest/EncargaGest.jsx";
 import EncargaGestWorkspace from "./pages/encargagest/EncargaGestWorkspace.jsx";
 import Fichajes from "./pages/fichajes/Fichajes.jsx";
 import CatalogoFichajes from "./pages/herramientas/CatalogoFichajes.jsx";
+import ControlApoderados from "./pages/apoderagest/ControlApoderados.jsx";
 
 
 /**
@@ -312,6 +313,8 @@ export default function App() {
           {/* Fichaje Molsan: módulo de empleado y control administrativo. */}
           <Route path="fichajes" element={<Fichajes modo="empleado" />} />
           <Route path="control-fichajes" element={<Fichajes modo="admin" />} />
+          <Route path="apoderagest/liquidaciones" element={<ControlApoderados modo="colaborador" />} />
+          <Route path="herramientas/utilidades/control-apoderados" element={<ControlApoderados modo="admin" />} />
 
 
           {/* ==================================================

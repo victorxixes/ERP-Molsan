@@ -82,6 +82,9 @@ class Empleado(Base):
         nullable=False
     )
 
+    # Habilita el circuito mensual de liquidaciones de ApoderaGest.
+    es_colaborador = Column(Boolean, nullable=False, default=False, server_default="false")
+
     # Controla la aparición en el listado visual de tarjetas, sin desactivar la cuenta.
     visible_en_listado = Column(
         Boolean,
