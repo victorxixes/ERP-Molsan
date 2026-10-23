@@ -1,0 +1,200 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAuthStore } from "../../store/authStore";
+import { API_BASE } from "../../api/config";
+
+const API_URL = `${API_BASE}/catalogos-absis`;
+
+const CATEGORIAS = [
+  "Estados expedientes",
+  "Producto GTG",
+  "Actividad Actual",
+  "Estado Actividad",
+  "Tipo Provision",
+  "Tipo de operación",
+  "Subtipo operación",
+  "Tipos de errores de defecto",
+];
+
+const VACIO = { categoria: CATEGORIAS[0], codigo: "", valor: "", descripcion: "", activo: true };
+
+async function respuesta(response) {
+  const raw = await response.text();
+  let data;
+  try { data = raw ? JSON.parse(raw) : null; } catch { data = null; }
+  if (!response.ok) throw new Error(data?.detail || raw || `Error HTTP ${response.status}`);
+  return data;
+}
+
+export default function CatalogoAbsis() {
+  const token = useAuthStore((state) => state.token);
+  const [filas, setFilas] = useState([]);
+  const [categoria, setCategoria] = useState(CATEGORIAS[0]);
+  const [busqueda, setBusqueda] = useState("");
+  const [formulario, setFormulario] = useState(VACIO);
+  const [editando, setEditando] = useState(null);
+  const [modal, setModal] = useState(false);
+  const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState(false);
+  const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState("");
+
+  const headers = useMemo(() => ({
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  }), [token]);
+
+  const cargar = useCallback(async () => {
+    setCargando(true);
+    setError("");
+    try {
+      const data = await respuesta(await fetch(API_URL, { headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) } }));
+      setFilas(Array.isArray(data) ? data : []);
+    } catch (e) {
+      setError(`No se ha podido cargar el catálogo: ${e.message}`);
+    } finally {
+      setCargando(false);
+    }
+  }, [token]);
+
+  useEffect(() => { cargar(); }, [cargar]);
+
+  const visibles = filas.filter((fila) => fila.categoria === categoria && [
+    fila.codigo, fila.valor, fila.descripcion
+  ].some((dato) => String(dato || "").toLocaleLowerCase("es").includes(busqueda.trim().toLocaleLowerCase("es"))));
+
+  function abrirNuevo() {
+    setEditando(null);
+    setFormulario({ ...VACIO, categoria });
+    setError("");
+    setMensaje("");
+    setModal(true);
+  }
+
+  function abrirEdicion(fila) {
+    setEditando(fila.id);
+    setFormulario({ categoria: fila.categoria, codigo: fila.codigo || "", valor: fila.valor || "", descripcion: fila.descripcion || "", activo: fila.activo });
+    setError("");
+    setMensaje("");
+    setModal(true);
+  }
+
+  async function guardar(event) {
+    event.preventDefault();
+    setGuardando(true);
+    setError("");
+    setMensaje("");
+    try {
+      await respuesta(await fetch(editando ? `${API_URL}/${editando}` : API_URL, {
+        method: editando ? "PUT" : "POST",
+        headers,
+        body: JSON.stringify({ ...formulario, codigo: formulario.codigo.trim() || null }),
+      }));
+      setModal(false);
+      setMensaje(editando ? "Entrada actualizada." : "Entrada añadida.");
+      await cargar();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  async function eliminar(fila) {
+    if (!window.confirm(`¿Eliminar "${fila.valor || fila.codigo}" de ${fila.categoria}?`)) return;
+    setError("");
+    setMensaje("");
+    try {
+      await respuesta(await fetch(`${API_URL}/${fila.id}`, { method: "DELETE", headers }));
+      setMensaje("Entrada eliminada.");
+      await cargar();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  return (
+    <main className="min-h-full space-y-6 p-4 sm:p-6 lg:p-8">
+      <header className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400" />
+        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · DATOS ABSIS</p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">Catálogo ABSIS</h1>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Gestiona en una única pantalla los estados y listas auxiliares que utiliza la integración ABSIS. Cada lista se mantiene por separado y sus cambios quedan guardados en el servidor.</p>
+          </div>
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-5 py-4">
+            <p className="text-3xl font-bold text-slate-900">{filas.filter((f) => f.activo).length}</p>
+            <p className="text-xs font-medium text-slate-500">entradas activas</p>
+          </div>
+        </div>
+      </header>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <label className="mb-2 block text-sm font-semibold text-slate-700" htmlFor="absis-categoria">Lista que quieres gestionar</label>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-100">
+            {CATEGORIAS.map((item) => <option key={item} value={item}>{item}</option>)}
+          </select>
+          <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200">
+            <span aria-hidden="true" className="text-lg leading-none">+</span> Añadir entrada
+          </button>
+        </div>
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <input type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar código, valor o descripción…" aria-label="Buscar en el catálogo seleccionado" className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100 sm:max-w-md" />
+          <p className="text-sm text-slate-500">{visibles.length} entradas en esta lista</p>
+        </div>
+      </section>
+
+      {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</div>}
+      {mensaje && !modal && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{mensaje}</div>}
+
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+          <div><h2 className="font-bold text-slate-800">{categoria}</h2><p className="mt-1 text-xs text-slate-500">Listado editable · datos persistentes</p></div>
+          <button type="button" onClick={cargar} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Actualizar</button>
+        </div>
+        {cargando ? <div className="p-10 text-center text-sm text-slate-500">Cargando listado…</div> :
+          visibles.length === 0 ? <div className="p-10 text-center"><p className="font-semibold text-slate-700">Todavía no hay entradas en esta lista</p><p className="mt-1 text-sm text-slate-500">Usa «Añadir entrada» para incorporar el primer valor.</p></div> :
+          <div className="overflow-x-auto"><table className="w-full min-w-[680px] text-left text-sm">
+            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr>
+              <th className="px-5 py-3 font-semibold">Código</th><th className="px-5 py-3 font-semibold">Valor</th><th className="px-5 py-3 font-semibold">Descripción</th><th className="px-5 py-3 font-semibold">Estado</th><th className="px-5 py-3 text-right font-semibold">Acciones</th>
+            </tr></thead>
+            <tbody className="divide-y divide-slate-100">{visibles.map((fila) => <tr key={fila.id} className="hover:bg-slate-50/70">
+              <td className="whitespace-nowrap px-5 py-3 font-mono text-xs text-slate-600">{fila.codigo || "—"}</td>
+              <td className="px-5 py-3 font-medium text-slate-800">{fila.valor || "—"}</td>
+              <td className="max-w-xl px-5 py-3 text-slate-600">{fila.descripcion || "—"}</td>
+              <td className="px-5 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${fila.activo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{fila.activo ? "Activo" : "Inactivo"}</span></td>
+              <td className="whitespace-nowrap px-5 py-3 text-right"><button type="button" onClick={() => abrirEdicion(fila)} className="rounded-lg px-2 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50">Editar</button><button type="button" onClick={() => eliminar(fila)} className="ml-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">Eliminar</button></td>
+            </tr>)}</tbody>
+          </table></div>
+        }
+      </section>
+
+      {modal && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/50 p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModal(false); }}>
+        <section role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="my-auto w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+          <form onSubmit={guardar}>
+            <div className="border-b border-slate-200 px-6 py-5"><h2 id="absis-modal-titulo" className="text-lg font-bold text-slate-900">{editando ? "Editar entrada" : "Añadir entrada"} · {categoria}</h2><p className="mt-1 text-sm text-slate-500">Elige la lista y rellena los datos. El código es opcional.</p></div>
+            <div className="grid gap-4 p-6 sm:grid-cols-2">
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2">Lista
+                <select value={formulario.categoria} onChange={(e) => setFormulario((f) => ({ ...f, categoria: e.target.value }))} className="rounded-xl border border-slate-200 px-3 py-2.5" required>{CATEGORIAS.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+              </label>
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">Código
+                <input value={formulario.codigo} onChange={(e) => setFormulario((f) => ({ ...f, codigo: e.target.value }))} maxLength={40} className="rounded-xl border border-slate-200 px-3 py-2.5" placeholder="Ej. 118" />
+              </label>
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">Valor
+                <input value={formulario.valor} onChange={(e) => setFormulario((f) => ({ ...f, valor: e.target.value }))} maxLength={300} className="rounded-xl border border-slate-200 px-3 py-2.5" placeholder="Nombre del valor" required={!formulario.codigo} />
+              </label>
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2">Descripción
+                <textarea value={formulario.descripcion} onChange={(e) => setFormulario((f) => ({ ...f, descripcion: e.target.value }))} rows={3} maxLength={2000} className="rounded-xl border border-slate-200 px-3 py-2.5" placeholder="Descripción (opcional)" />
+              </label>
+              <label className="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2"><input type="checkbox" checked={formulario.activo} onChange={(e) => setFormulario((f) => ({ ...f, activo: e.target.checked }))} /> Entrada activa</label>
+              {error && <p role="alert" className="text-sm text-red-700 sm:col-span-2">{error}</p>}
+            </div>
+            <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4"><button type="button" onClick={() => setModal(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Cancelar</button><button type="submit" disabled={guardando} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{guardando ? "Guardando…" : "Guardar entrada"}</button></div>
+          </form>
+        </section>
+      </div>}
+    </main>
+  );
+}

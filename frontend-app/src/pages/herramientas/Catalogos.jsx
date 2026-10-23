@@ -8,6 +8,14 @@ import "../../css/HerramientasPremium.css";
  */
 const CATALOGOS = [
   {
+    icon: "🔗",
+    titulo: "Catálogo ABSIS",
+    descripcion: "Estados de expediente, productos GTG, actividades, operaciones y defectos.",
+    ruta: "/catalogos/absis",
+    grupo: "Integraciones y catálogos técnicos",
+    destacado: true,
+  },
+  {
     icon: "🏦",
     titulo: "Entidades bancarias",
     descripcion: "Entidades, códigos europeos, LEI, categorías y direcciones.",
