@@ -52,6 +52,13 @@ const MODULOS_ERP = [
   },
 
   {
+    key: "fichajes",
+    label: "Fichajes",
+    route: "/fichajes",
+    icon: "clock",
+  },
+
+  {
     key: "ctn",
     label: "CTN",
     route: "/ctn",
