@@ -58,7 +58,6 @@ MODULOS_BASE = [
     "encargagestweb",
 ]
 
-
 PERMISOS_BASE = [
     "ver",
     "crear",
@@ -166,8 +165,10 @@ def obtener_permisos(
 
 @router.post("/crear-base")
 def crear_permisos_base(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "seguridad", "editar")
     """
     Crea todos los permisos base que todavía no existan.
 
