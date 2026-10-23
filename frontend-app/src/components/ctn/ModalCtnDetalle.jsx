@@ -69,6 +69,7 @@ export default function ModalCtnDetalle({
   notaria,
   onClose,
   onCerrar,
+  mostrarAccesosPortales = false,
 }) {
   // Se conservan las propiedades anteriores para no romper
   // las llamadas existentes desde ApoderaGest.
@@ -343,7 +344,7 @@ export default function ModalCtnDetalle({
       <nav className="ctn-ficha-pestanas" role="tablist" aria-label="Secciones de la ficha del notario">
         {[
           ["ficha", "Ficha del notario"],
-          ["portales", "Acceso a portales"],
+          ...(mostrarAccesosPortales ? [["portales", "Acceso a portales"]] : []),
           ["firmas", "Histórico de firmas reales"],
         ].map(([key, titulo]) => (
           <button
@@ -493,7 +494,7 @@ export default function ModalCtnDetalle({
         </>
       )}
 
-      {pestanaActiva === "portales" && <PortalAccessTabs notariaId={id} />}
+      {mostrarAccesosPortales && pestanaActiva === "portales" && <PortalAccessTabs notariaId={id} />}
 
       {pestanaActiva === "firmas" && (
         <>
