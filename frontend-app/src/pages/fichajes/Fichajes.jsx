@@ -4,6 +4,7 @@ import FichajesResumen from "./FichajesResumen.jsx";
 import FestivosCompensaciones from "./FestivosCompensaciones.jsx";
 import ControlFichajesAdmin from "./ControlFichajesAdmin.jsx";
 import SolicitudesAusencia from "./SolicitudesAusencia.jsx";
+import DocumentosAdmin from "./DocumentosAdmin.jsx";
 
 const TIPOS = [
   { value: "ENTRADA", label: "Entrada a trabajar", icon: "↗", tone: "emerald" },
@@ -314,7 +315,7 @@ export default function Fichajes({ modo = "empleado" }) {
                   <label className="block text-xs font-bold text-slate-600">Archivo<input type="file" required onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="mt-1 block w-full rounded-xl border bg-white p-2 text-sm font-normal" /><span className="mt-1 block font-normal text-slate-400">Máximo 10 MB por archivo.</span></label>
                   <button disabled={guardando} className="w-full rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white hover:bg-blue-800 disabled:opacity-50">{guardando ? "Guardando…" : "Guardar documento"}</button>
                 </form>
-                <div><h2 className="font-bold">Historial de documentos</h2><div className="mt-3 space-y-2">{documentos.map((d) => <div key={d.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--erp-border)] p-3"><div className="min-w-0"><p className="truncate text-sm font-bold">{d.nombre_archivo}</p><p className="mt-1 text-xs text-slate-500">{d.tipo_justificante} · Fecha: {d.fecha_documento} · Subido: {d.subido_en ? fechaLarga(d.subido_en) : "—"}</p></div><button type="button" onClick={() => descargar(d)} className="rounded-lg border px-3 py-2 text-xs font-bold hover:bg-slate-50">Descargar</button></div>)}{documentos.length === 0 && <p className="rounded-xl border border-dashed p-8 text-center text-sm text-slate-400">Todavía no has adjuntado documentos.</p>}</div></div>
+                <div><h2 className="font-bold">Historial de documentos</h2><div className="mt-3 space-y-2">{documentos.map((d) => <div key={d.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--erp-border)] p-3"><div className="min-w-0"><p className="truncate text-sm font-bold">{d.nombre_archivo}</p><p className="mt-1 text-xs text-slate-500">{d.tipo_justificante} · Fecha: {d.fecha_documento} · Subido: {d.subido_en ? fechaLarga(d.subido_en) : "—"}</p><p className="mt-1 text-xs font-bold text-blue-700">Revisión: {d.revision_estado === "APROBADO" ? "Aprobado" : d.revision_estado === "RECHAZADO" ? "Rechazado" : "Pendiente"}</p>{d.revision_motivo && <p className="mt-1 text-xs text-slate-500">{d.revision_motivo}</p></div><button type="button" onClick={() => descargar(d)} className="rounded-lg border px-3 py-2 text-xs font-bold hover:bg-slate-50">Descargar</button></div>)}{documentos.length === 0 && <p className="rounded-xl border border-dashed p-8 text-center text-sm text-slate-400">Todavía no has adjuntado documentos.</p>}</div></div>
               </div>
             )}
 
@@ -352,18 +353,8 @@ export default function Fichajes({ modo = "empleado" }) {
               </div>
             )}
 
-            {esAdminVista && pestana === "documentosAdmin" && (
-              <div className="p-4 sm:p-6">
-                <div className="mb-4"><h2 className="text-lg font-extrabold">Documentos y justificantes</h2><p className="text-sm text-[var(--erp-text-soft)]">Consulta y descarga los documentos enviados por los empleados.</p></div>
-                <div className="mb-4 grid gap-3 sm:grid-cols-3"><label className="text-xs font-bold text-slate-500">Desde<input type="date" value={fechaDesde} onChange={e => setFechaDesde(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-normal" /></label><label className="text-xs font-bold text-slate-500">Hasta<input type="date" value={fechaHasta} onChange={e => setFechaHasta(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm font-normal" /></label><label className="text-xs font-bold text-slate-500">Empleado<select value={empleadoFiltro} onChange={e => setEmpleadoFiltro(e.target.value)} className="mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm font-normal"><option value="">Toda la plantilla</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label></div>
-                <div className="overflow-x-auto rounded-2xl border border-[var(--erp-border)]">
-                  <table className="w-full min-w-[800px] text-left text-sm">
-                    <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Tipo</th><th className="p-3">Fecha del documento</th><th className="p-3">Archivo</th><th className="p-3">Subido</th><th className="p-3">Acción</th></tr></thead>
-                    <tbody>{documentosAdmin.map(d => <tr key={d.id} className="border-b last:border-0"><td className="p-3 font-semibold">{d.empleado_nombre}</td><td className="p-3">{d.tipo_justificante}</td><td className="p-3">{fechaLarga(d.fecha_documento)}</td><td className="max-w-[260px] truncate p-3">{d.nombre_archivo}</td><td className="p-3">{d.subido_en ? fechaLarga(d.subido_en) : "—"}</td><td className="p-3"><button type="button" onClick={() => descargar(d)} className="rounded-lg border px-3 py-2 text-xs font-bold hover:bg-slate-50">Descargar</button></td></tr>)}{!documentosAdmin.length && <tr><td colSpan="6" className="p-10 text-center text-slate-400">No hay documentos para los filtros seleccionados.</td></tr>}</tbody>
-                  </table>
-                </div>
-              </div>
-            )}
+            {esAdminVista && pestana === "documentosAdmin" && <DocumentosAdmin documentos={documentosAdmin} descargar={descargar} recargar={recargarAdmin} guardando={guardando} setGuardando={setGuardando} setError={setError} setMensaje={setMensaje} />}
+
 
             {esAdminVista && pestana === "control" && <ControlFichajesAdmin empleados={empleados} />}
 
