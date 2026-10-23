@@ -372,3 +372,30 @@
   .seguridad-usuarios-layout .erp-action-bar { align-items:stretch; }
   .seguridad-usuarios-layout .erp-action-bar > * { width:100%; }
 }
+
+
+/* Buscador del directorio dentro de Seguridad > Usuarios y seguridad. */
+.seguridad-usuarios-layout .empleados-filtros-busqueda {
+  display:block; position:relative; width:100%; min-width:0;
+}
+.seguridad-usuarios-layout .empleados-filtros-busqueda input {
+  display:block; box-sizing:border-box; width:100%; min-width:0; max-width:100%;
+  height:44px; padding:.7rem .75rem .7rem 2.7rem;
+  border:1px solid #aebfd6 !important; border-radius:10px;
+  background:#fff !important; color:#172b4d !important;
+  font-size:.875rem; line-height:1.4; opacity:1;
+  box-shadow:0 1px 3px rgba(15,35,65,.08);
+}
+.seguridad-usuarios-layout .empleados-filtros-busqueda input::placeholder {
+  color:#64748b !important; opacity:1; white-space:nowrap;
+}
+.seguridad-usuarios-layout .empleados-filtros-busqueda input:focus {
+  border-color:#3156b3 !important; outline:3px solid rgba(49,86,179,.16);
+  outline-offset:1px;
+}
+.seguridad-usuarios-layout .empleados-filtros-busqueda > span {
+  left:.85rem; color:#526784 !important; font-size:1.15rem; line-height:1;
+}
+.seguridad-usuarios-layout .erp-card-body > .rounded-2xl {
+  min-width:0; width:100%; box-sizing:border-box;
+}
