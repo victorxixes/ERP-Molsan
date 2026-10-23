@@ -77,6 +77,7 @@ from backend.app.expediente_observaciones.models import ExpedienteObservacion
 from backend.app.tipos_concepto_gastos.models import TipoConceptoGastos
 from backend.app.acciones_expediente.models import AccionExpediente
 from backend.app.catalogos_absis.router import router as catalogos_absis_router
+from backend.app.oficinas_catalogo.router import router as oficinas_catalogo_router
 from backend.app.expediente_acciones.models import ExpedienteAccion
 
 
@@ -396,6 +397,7 @@ app.include_router(empleados_router, prefix="/api")
 # MAESTROS
 app.include_router(maestros_router, prefix="/api")
 app.include_router(catalogos_absis_router, prefix="/api")
+app.include_router(oficinas_catalogo_router, prefix="/api")
 
 # INTRANET
 app.include_router(intranet_router, prefix="/api")
