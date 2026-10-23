@@ -4,6 +4,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 
 from backend.app.seguridad.roles.models import Rol
 from backend.app.seguridad.roles.schemas import (
@@ -20,6 +22,13 @@ router = APIRouter(
     prefix="/seguridad/roles",
     tags=["Seguridad - Roles"],
 )
+
+
+def _requiere_permiso_seguridad(accion: str):
+    def comprobar(usuario=Depends(get_current_user)):
+        require_perm_modulo(usuario, "seguridad", accion)
+        return usuario
+    return comprobar
 
 
 # ============================================================
@@ -233,6 +242,7 @@ def es_conflicto_nombre(
 )
 def crear_roles_base(
     db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_permiso_seguridad("editar")),
 ):
     """
     Crea los roles base del sistema si todavía no existen.
@@ -335,6 +345,7 @@ def crear_roles_base(
 )
 def listar_roles(
     db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_permiso_seguridad("ver")),
 ):
     """
     Devuelve todos los roles disponibles.
@@ -368,6 +379,7 @@ def listar_roles(
 def crear_rol(
     datos: RolCreate,
     db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_permiso_seguridad("crear")),
 ):
     """
     Crea un nuevo rol.
@@ -666,6 +678,7 @@ def editar_rol(
     rol_id: int,
     datos: RolCreate,
     db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_permiso_seguridad("editar")),
 ):
     """
     Actualiza un rol existente.
@@ -833,6 +846,7 @@ def editar_rol(
 def eliminar_rol(
     rol_id: int,
     db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_permiso_seguridad("eliminar")),
 ):
     """
     Elimina un rol.

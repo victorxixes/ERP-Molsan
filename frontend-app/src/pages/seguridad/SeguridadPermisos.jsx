@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import { useSeguridad } from "../../hooks/useSeguridad";
+import MODULOS_ERP from "../../config/modulos";
 import "./SeguridadSubpaginasPremium.css";
 
 
@@ -170,83 +171,26 @@ export default function SeguridadPermisos() {
    */
 
   const permisosGlobales = useMemo(() => {
-
+    // Catálogo canónico: cada módulo tiene siempre las cuatro acciones
+    // posibles. Este catálogo solo dibuja las casillas; no concede permisos.
+    const accionesBase = ["ver", "crear", "editar", "eliminar"];
     const resultado = {};
 
-    arraySeguro(permisos).forEach(
-      (permiso) => {
-
-        if (
-          !permiso ||
-          typeof permiso !== "object"
-        ) {
-          return;
-        }
-
-        if (
-          typeof permiso.modulo !==
-            "string" ||
-          typeof permiso.permiso !==
-            "string"
-        ) {
-          return;
-        }
-
-        const modulo =
-          permiso.modulo.trim();
-
-        const nombre =
-          permiso.permiso.trim();
-
-        if (
-          !modulo ||
-          !nombre
-        ) {
-          return;
-        }
-
-        if (!resultado[modulo]) {
-          resultado[modulo] = [];
-        }
-
-        if (
-          !resultado[modulo].includes(
-            nombre
-          )
-        ) {
-          resultado[modulo].push(
-            nombre
-          );
-        }
-
+    arraySeguro(MODULOS_ERP).forEach((item) => {
+      if (item && typeof item.key === "string" && item.key.trim()) {
+        resultado[item.key.trim()] = [...accionesBase];
       }
-    );
+    });
 
-
-    Object.keys(
-      resultado
-    ).forEach(
-      (modulo) => {
-
-        resultado[modulo].sort(
-          (a, b) =>
-            a.localeCompare(
-              b,
-              "es",
-              {
-                sensitivity: "base",
-              }
-            )
-        );
-
+    // Compatibilidad: no ocultar claves antiguas ya guardadas en BD.
+    Object.keys(permisosEmpleado || {}).forEach((modulo) => {
+      if (typeof modulo === "string" && modulo.trim() && !resultado[modulo.trim()]) {
+        resultado[modulo.trim()] = [...accionesBase];
       }
-    );
-
+    });
 
     return resultado;
-
-  }, [permisos]);
-
+  }, [permisosEmpleado]);
 
   /**
    * ============================================================

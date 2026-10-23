@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.empleados.models import Empleado
 from backend.app.seguridad.roles.models import Rol
 
@@ -10,6 +12,11 @@ router = APIRouter(
     prefix="/seguridad/asignar",
     tags=["Seguridad - Asignación"]
 )
+
+
+def _requiere_edicion_seguridad(usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "seguridad", "editar")
+    return usuario
 
 
 # ============================================================
@@ -22,7 +29,8 @@ router = APIRouter(
 def asignar_rol(
     empleado_id: int,
     rol_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_edicion_seguridad),
 ):
     """
     Asigna un rol a un empleado.
@@ -99,7 +107,8 @@ def asignar_rol(
 def asignar_rol_compatibilidad(
     empleado_id: int,
     rol_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    _usuario=Depends(_requiere_edicion_seguridad),
 ):
     """
     Endpoint compatible con versiones anteriores

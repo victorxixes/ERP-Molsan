@@ -1,37 +1,26 @@
 from fastapi import HTTPException
 
+
 def require_perm_modulo(usuario, modulo: str, accion: str):
-    permisos_empleado = usuario.permisos_modulo_dict or {}
+    """
+    Exige el permiso explícito guardado para el empleado.
 
-    # 🔥 FIX: evitar error cuando usuario.rol es None
-    permisos_rol = {}
-    rol = getattr(usuario, "rol", None)
-    if rol and hasattr(rol, "permisos_modulo_dict"):
-        permisos_rol = rol.permisos_modulo_dict or {}
+    Los roles identifican el perfil del empleado, pero no conceden
+    permisos. Tampoco se aplican comodines ni permisos heredados:
+    la configuración individual por módulo es la autoridad.
+    """
+    permisos_empleado = getattr(usuario, "permisos_modulo_dict", None) or {}
+    if not isinstance(permisos_empleado, dict):
+        permisos_empleado = {}
 
-    acciones_empleado = permisos_empleado.get(modulo, [])
-    acciones_rol = permisos_rol.get(modulo, [])
+    acciones = permisos_empleado.get(modulo, [])
+    if not isinstance(acciones, (list, tuple, set)):
+        acciones = []
 
-    acciones_totales = set(acciones_empleado + acciones_rol)
-
-    wildcard_modulo = f"{modulo}.*"
-
-    if wildcard_modulo in permisos_empleado:
-        acciones_totales.update(permisos_empleado[wildcard_modulo])
-
-    if wildcard_modulo in permisos_rol:
-        acciones_totales.update(permisos_rol[wildcard_modulo])
-
-    if "*" in permisos_empleado:
-        acciones_totales.update(permisos_empleado["*"])
-
-    if "*" in permisos_rol:
-        acciones_totales.update(permisos_rol["*"])
-
-    if accion not in acciones_totales:
+    if accion not in acciones:
         raise HTTPException(
             status_code=403,
-            detail=f"No tienes permiso para '{accion}' en el módulo '{modulo}'"
+            detail=f"No tienes permiso para '{accion}' en el módulo '{modulo}'",
         )
 
     return True

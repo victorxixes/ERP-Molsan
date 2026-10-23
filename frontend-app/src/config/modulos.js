@@ -115,6 +115,13 @@ const MODULOS_ERP = [
   },
 
   {
+    key: "herramientas",
+    label: "Herramientas",
+    route: null,
+    icon: "wrench",
+  },
+
+  {
     key: "utilidades",
     label: "Utilidades",
     route: "/herramientas/utilidades",

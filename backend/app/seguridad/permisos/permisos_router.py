@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.seguridad.permisos.models import Permiso
 
 
@@ -26,29 +28,36 @@ router = APIRouter(
 # ============================================================
 
 MODULOS_BASE = [
-    "ctn",
-    "logs",
-    "agenda",
-    "intranet",
-    "maestros",
-    "mensajes",
-    "noticias",
-    "realtime",
-    "auditoria",
-    "dashboard",
-    "empleados",
-    "seguridad",
-    "documentos",
-    "utilidades",
-    "herramientas",
-    "panel-tecnico",
     "expedientes",
+    "provisiones-fondos",
+    "dashboard",
+    "agenda",
+    "empleados",
+    "herramientas",
+    "fichajes",
+    "ctn",
+    "intranet",
+    "mensajes",
+    "informes",
+    "fusiones",
     "notificaciones",
+    "auditoria",
+    "catalogos",
+    "utilidades",
+    "seguridad",
+    "logs",
+    "maestros",
+    "panel-tecnico",
+    "realtime",
+    "notarios",
+    "documentos",
+    "apoderagest",
+    "cancelagest",
     "notargest",
     "encargagest",
-    "fichajes",
+    "notargestweb",
+    "encargagestweb",
 ]
-
 
 PERMISOS_BASE = [
     "ver",
@@ -91,8 +100,10 @@ def _catalogo_base():
 
 @router.get("/")
 def obtener_permisos(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "seguridad", "ver")
     """
     Devuelve todos los permisos almacenados en BD.
 
@@ -155,8 +166,10 @@ def obtener_permisos(
 
 @router.post("/crear-base")
 def crear_permisos_base(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
+    require_perm_modulo(usuario, "seguridad", "editar")
     """
     Crea todos los permisos base que todavía no existan.
 
