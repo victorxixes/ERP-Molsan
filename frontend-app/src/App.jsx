@@ -669,6 +669,12 @@ export default function App() {
             element={<SeguridadAuditoria />}
           />
 
+          {/* Alias compatible con el enlace histórico desde Utilidades. */}
+          <Route
+            path="seguridad/auditoria"
+            element={<SeguridadAuditoria />}
+          />
+
         </Route>
 
 
