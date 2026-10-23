@@ -1543,6 +1543,8 @@ export default function Mensajes({
                 ] && (
 
                   <div
+                    role="status"
+                    aria-live="polite"
                     className="
                       shrink-0
                       px-2
