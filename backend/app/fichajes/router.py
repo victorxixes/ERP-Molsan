@@ -326,7 +326,8 @@ def solicitar_vacaciones(fecha_inicio: date = Form(...), fecha_fin: date = Form(
 
 
 @router.get("/resumen-horas")
-def resumen_horas(anio: int = Query(default_factory=lambda: date.today().year), usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    anio = anio or date.today().year
     require_perm_modulo(usuario, "fichajes", "ver")
     if anio < 2000 or anio > 2100:
         raise HTTPException(status_code=422, detail="Año no válido.")
@@ -334,21 +335,23 @@ def resumen_horas(anio: int = Query(default_factory=lambda: date.today().year), 
     registros = db.query(FichajeMarcaje).filter(FichajeMarcaje.empleado_id == usuario.id,
         FichajeMarcaje.fecha_hora >= datetime.combine(inicio, time.min), FichajeMarcaje.fecha_hora < datetime.combine(fin, time.min)).order_by(FichajeMarcaje.fecha_hora).all()
     pausas = {"PAUSA_CAFE_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
-    jornada_abierta = None; pausa_abierta = None; segundos = 0; incompletos = 0
+    jornada_abierta = None; pausa_abierta = None; pausa_segundos = 0; segundos = 0; incompletos = 0
     for m in registros:
         ts = m.fecha_hora
         if m.tipo == "ENTRADA":
             if jornada_abierta is not None: incompletos += 1
-            jornada_abierta = ts; pausa_abierta = None
+            jornada_abierta = ts; pausa_abierta = None; pausa_segundos = 0
         elif m.tipo in pausas and jornada_abierta is not None:
             if pausa_abierta is None: pausa_abierta = ts
         elif m.tipo == "RETORNO_AUSENCIA" and pausa_abierta is not None:
+            pausa_segundos += max(0, (ts - pausa_abierta).total_seconds())
             pausa_abierta = None
         elif m.tipo == "SALIDA" and jornada_abierta is not None:
-            segundos += max(0, (ts - jornada_abierta).total_seconds())
+            fin_pausa = 0
             if pausa_abierta is not None:
-                segundos -= max(0, (ts - pausa_abierta).total_seconds()); incompletos += 1
-            jornada_abierta = None; pausa_abierta = None
+                fin_pausa = max(0, (ts - pausa_abierta).total_seconds()); incompletos += 1
+            segundos += max(0, (ts - jornada_abierta).total_seconds() - pausa_segundos - fin_pausa)
+            jornada_abierta = None; pausa_abierta = None; pausa_segundos = 0
     if jornada_abierta is not None: incompletos += 1
     return {"anio": anio, "horas_trabajadas": round(max(0, segundos) / 3600, 2), "horas_previstas": None,
             "diferencia_horas": None, "marcajes": len(registros), "jornadas_incompletas": incompletos,
