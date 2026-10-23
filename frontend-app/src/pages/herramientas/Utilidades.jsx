@@ -20,9 +20,21 @@ export default function Utilidades() {
         </div>
       </header>
 
-      <Grupo titulo="Accesos y seguridad" descripcion="Administración centralizada de permisos de empleados y accesos a portales notariales.">
-        <Card icon="🛡️" titulo="Accesos y seguridad de empleados" descripcion="Selecciona un empleado para administrar roles, módulos y permisos desde el centro de seguridad." link="/seguridad" destacado />
+      <Grupo titulo="Empleados y permisos" descripcion="Gestiona las fichas de empleados y administra sus accesos desde el centro de seguridad.">
+        <Card icon="🛡️" titulo="Empleados y permisos" descripcion="Selecciona un empleado para revisar y administrar sus roles, módulos y permisos asignados." link="/seguridad/usuarios" destacado />
+      </Grupo>
+
+      <Grupo titulo="Roles" descripcion="Crea y administra los roles de seguridad que después podrás asignar a los empleados.">
+        <Card icon="🔑" titulo="Gestión de roles" descripcion="Crea roles nuevos, como Colaborador, y administra los roles disponibles en el sistema." link="/seguridad/roles/editor" destacado />
+      </Grupo>
+
+      <Grupo titulo="Módulos y permisos" descripcion="Consulta y configura los módulos disponibles y la matriz de permisos del ERP.">
+        <Card icon="🧩" titulo="Módulos y permisos" descripcion="Administra los módulos del ERP y revisa cómo se conceden los permisos." link="/seguridad/modulos" destacado />
         <Card icon="🔐" titulo="Accesos notariales" descripcion="Busca una notaría y administra por separado sus accesos a NotarGest y EncargaGest, con historial de cambios." link="/herramientas/utilidades/accesos-notariales" />
+      </Grupo>
+
+      <Grupo titulo="Auditoría" descripcion="Consulta por separado el registro de eventos y los cambios registrados en el sistema.">
+        <Card icon="🧾" titulo="Auditoría" descripcion="Consulta los eventos de auditoría disponibles para tu perfil." link="/auditoria" destacado />
       </Grupo>
 
       <Grupo titulo="Administración de empleados" descripcion="Configura visibilidad y asignaciones desde Utilidades, seleccionando el empleado correspondiente.">
@@ -51,8 +63,7 @@ export default function Utilidades() {
         <Card icon="🔁" titulo="Cambiar gestor de expediente" descripcion="Busca un expediente por su número y reasígnalo manualmente a otro gestor, dejando constancia del cambio." link="/herramientas/utilidades/cambiar-gestor" />
       </Grupo>
 
-      <Grupo titulo="Administración, seguridad y supervisión" descripcion="Accesos directos para administrar usuarios y revisar el estado operativo del ERP.">
-        <Card icon="🧾" titulo="Auditoría" descripcion="Consultar los eventos de auditoría disponibles para tu perfil." link="/auditoria" />
+      <Grupo titulo="Administración y supervisión" descripcion="Accesos directos para revisar el estado operativo y técnico del ERP.">
         <Card icon="📜" titulo="Logs del sistema" descripcion="Revisar registros y errores registrados por la aplicación." link="/logs" />
         <Card icon="🖥️" titulo="Panel técnico" descripcion="Acceder a los paneles de supervisión del sistema y tiempo real." link="/paneltecnico" />
         <Card icon="📈" titulo="Informes" descripcion="Consultar informes y estadísticas operativas." link="/informes" />
