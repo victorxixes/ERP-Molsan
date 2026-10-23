@@ -140,3 +140,31 @@ class FichajeFestivoCalendario(Base):
     activo = Column(Integer, nullable=False, default=1)
     creado_por_id = Column(Integer, ForeignKey("empleados.id", ondelete="SET NULL"), nullable=True)
     creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+
+class FichajeMarcajeAuditoria(Base):
+    """Historial inmutable de altas y correcciones administrativas de marcajes."""
+    __tablename__ = "fichajes_marcajes_auditoria"
+
+    id = Column(Integer, primary_key=True, index=True)
+    marcaje_id = Column(Integer, ForeignKey("fichajes_marcajes.id", ondelete="SET NULL"), nullable=True, index=True)
+    empleado_id = Column(Integer, ForeignKey("empleados.id", ondelete="CASCADE"), nullable=False, index=True)
+    actor_id = Column(Integer, ForeignKey("empleados.id", ondelete="SET NULL"), nullable=True, index=True)
+    accion = Column(String(30), nullable=False)
+    datos_anteriores = Column(Text, nullable=True)
+    datos_nuevos = Column(Text, nullable=False)
+    motivo = Column(String(500), nullable=False)
+    creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), index=True)
+
+
+class FichajePeriodoCerrado(Base):
+    """Bloqueo administrativo de un mes procesado para impedir cambios accidentales."""
+    __tablename__ = "fichajes_periodos_cerrados"
+
+    id = Column(Integer, primary_key=True, index=True)
+    anio = Column(Integer, nullable=False, index=True)
+    mes = Column(Integer, nullable=False, index=True)
+    cerrado = Column(Integer, nullable=False, default=1)
+    motivo = Column(String(500), nullable=False)
+    actor_id = Column(Integer, ForeignKey("empleados.id", ondelete="SET NULL"), nullable=True)
+    actualizado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
