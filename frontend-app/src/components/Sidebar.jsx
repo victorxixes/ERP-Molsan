@@ -73,6 +73,13 @@ const iconos = {
     </>
   ),
 
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
+    </>
+  ),
+
   "user-group": (
     <>
       <circle cx="9" cy="8" r="3" />
@@ -623,6 +630,13 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       to: "/agenda",
       label: "Agenda",
       icon: "calendar",
+    },
+
+    {
+      key: "fichajes",
+      to: "/fichajes",
+      label: "Fichajes",
+      icon: "clock",
     },
 
     {
