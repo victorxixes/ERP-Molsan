@@ -15,13 +15,15 @@ from __future__ import annotations
 import sys
 from typing import Any, Callable
 
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi.dependencies.utils import get_dependant
 from fastapi.routing import APIRoute
 from starlette.routing import Mount
 
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
+from backend.app.database import SessionLocal
+from backend.app.seguridad.auditoria.service import registrar_auditoria
 
 
 RUTAS_PUBLICAS_EXACTAS = {
@@ -150,6 +152,21 @@ def _ya_tiene_autenticacion(dependant: Any) -> bool:
     return False
 
 
+def _ya_tiene_auditoria(dependant: Any) -> bool:
+    pendientes = [dependant]
+    visitados: set[int] = set()
+    while pendientes:
+        actual = pendientes.pop()
+        identidad = id(actual)
+        if identidad in visitados:
+            continue
+        visitados.add(identidad)
+        if getattr(getattr(actual, "call", None), "_molsan_audit_guard", False):
+            return True
+        pendientes.extend(getattr(actual, "dependencies", []) or [])
+    return False
+
+
 def _ya_tiene_permiso(dependant: Any, modulo: str, accion: str) -> bool:
     """Busca el permiso sin recursión y sin recorrer dos veces el mismo nodo."""
     esperado = (modulo, accion)
@@ -208,14 +225,67 @@ def _resolver_accion(path: str, methods: set[str] | None) -> str:
     return "ver"
 
 
-def _crear_dependencia_permiso(modulo: str, accion: str) -> Callable[..., Any]:
-    def autorizar_ruta_api(usuario=Depends(get_current_user)):
-        require_perm_modulo(usuario, modulo, accion)
-        return usuario
+def _nombre_actor(usuario: Any) -> str:
+    """Obtiene el login del actor autenticado, nunca del cuerpo de la petición."""
+    for campo in ("usuario", "username", "email"):
+        valor = getattr(usuario, campo, None)
+        if valor:
+            return str(valor).strip()[:100]
+    identificador = getattr(usuario, "id", None) or getattr(usuario, "empleado_id", None)
+    return f"empleado:{identificador}" if identificador is not None else "usuario_autenticado"
 
-    autorizar_ruta_api.__name__ = f"autorizar_{modulo}_{accion}"
-    setattr(autorizar_ruta_api, "_molsan_permiso_guard", (modulo, accion))
-    return autorizar_ruta_api
+
+def _registrar_evento_api(request: Request, usuario: Any, modulo: str, resultado: str, detalle: str = "") -> None:
+    """Audita una petición protegida usando identidad de sesión y una sesión DB independiente."""
+    db = SessionLocal()
+    try:
+        metodos = {"GET": "CONSULTA", "HEAD": "CONSULTA", "POST": "CREAR", "PUT": "EDITAR", "PATCH": "EDITAR", "DELETE": "ELIMINAR"}
+        verbo = metodos.get(request.method.upper(), request.method.upper())
+        ip = request.client.host if request.client else None
+        ruta = str(request.url.path or "")[:300]
+        descripcion = f"{resultado} | {request.method.upper()} {ruta}"
+        if detalle:
+            descripcion += f" | {detalle[:150]}"
+        registrar_auditoria(
+            db=db,
+            usuario=_nombre_actor(usuario),
+            modulo=(modulo or "sin_modulo")[:100],
+            accion=(f"{verbo}_{resultado}" if resultado != "OK" else verbo)[:100],
+            descripcion=descripcion[:500],
+            ip=ip,
+        )
+    except Exception as exc:
+        db.rollback()
+        print(f"[AUDITORIA GLOBAL] No se pudo registrar evento API: {exc!r}", flush=True)
+    finally:
+        db.close()
+
+
+def _crear_dependencia_auditoria(modulo: str, accion: str, comprobar_permiso: bool = True) -> Callable[..., Any]:
+    def auditar_ruta_api(request: Request, usuario=Depends(get_current_user)):
+        if comprobar_permiso:
+            try:
+                require_perm_modulo(usuario, modulo, accion)
+            except Exception as exc:
+                _registrar_evento_api(request, usuario, modulo, "DENEGADO", type(exc).__name__)
+                raise
+        try:
+            yield usuario
+        except Exception as exc:
+            _registrar_evento_api(request, usuario, modulo, "ERROR", type(exc).__name__)
+            raise
+        else:
+            _registrar_evento_api(request, usuario, modulo, "OK")
+
+    auditar_ruta_api.__name__ = f"auditar_{modulo}_{accion}"
+    setattr(auditar_ruta_api, "_molsan_audit_guard", True)
+    if comprobar_permiso:
+        setattr(auditar_ruta_api, "_molsan_permiso_guard", (modulo, accion))
+    return auditar_ruta_api
+
+
+def _crear_dependencia_permiso(modulo: str, accion: str) -> Callable[..., Any]:
+    return _crear_dependencia_auditoria(modulo, accion, comprobar_permiso=True)
 
 
 def proteger_rutas_api(app: Any) -> dict[str, int]:
@@ -275,11 +345,23 @@ def proteger_rutas_api(app: Any) -> dict[str, int]:
         modulo = _resolver_modulo(path)
         if not modulo:
             sin_mapeo.append(path)
+            if not _ya_tiene_auditoria(route.dependant):
+                dependencia_auditoria = get_dependant(
+                    path=getattr(route, "path_format", route.path),
+                    call=_crear_dependencia_auditoria("sin_modulo", _resolver_accion(path, getattr(route, "methods", None)), comprobar_permiso=False),
+                )
+                route.dependant.dependencies.append(dependencia_auditoria)
             continue
 
         accion = _resolver_accion(path, getattr(route, "methods", None))
         if _ya_tiene_permiso(route.dependant, modulo, accion):
             ya_con_permiso += 1
+            if not _ya_tiene_auditoria(route.dependant):
+                dependencia_auditoria = get_dependant(
+                    path=getattr(route, "path_format", route.path),
+                    call=_crear_dependencia_auditoria(modulo, accion, comprobar_permiso=False),
+                )
+                route.dependant.dependencies.append(dependencia_auditoria)
             continue
 
         dependencia_permiso = get_dependant(
