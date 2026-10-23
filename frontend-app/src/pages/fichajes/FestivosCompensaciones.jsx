@@ -8,7 +8,7 @@ const hoy = () => {
 const caja = "rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2.5 text-sm";
 const boton = "rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50";
 
-export default function FestivosCompensaciones({ modo = "empleado" }) {
+export default function FestivosCompensaciones({ modo = "empleado", onUpdated }) {
   const admin = modo === "admin";
   const [resumen, setResumen] = useState({ saldo_dias: 0, saldo_horas: 0, festivos: [], solicitudes: [], movimientos: [], calendario_festivos: [] });
   const [empleados, setEmpleados] = useState([]);
@@ -67,6 +67,7 @@ export default function FestivosCompensaciones({ modo = "empleado" }) {
     try {
       await accion();
       await cargar();
+      if (onUpdated) await onUpdated();
       setObservaciones("");
       setMensaje("Operación guardada correctamente. El saldo y el historial se han actualizado.");
     } catch (e) {
