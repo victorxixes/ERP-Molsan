@@ -6,6 +6,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.empleados.models import Empleado
 from backend.app.maestros.models import Departamento, Seccion, Cargo
+from backend.app.seguridad.permisos.permisos_router import MODULOS_BASE
 from backend.app.seguridad.auditoria.service import (
     obtener_auditoria_empleado
 )
@@ -194,10 +195,19 @@ def obtener_ficha_completa(
     # No completar permisos con una plantilla ni conceder permisos
     # por defecto. La ficha debe reflejar exactamente lo configurado
     # por el administrador en SeguridadUsuarios.
+    # Cada módulo del catálogo se devuelve siempre con sus cuatro
+    # acciones disponibles en la interfaz, pero sin activar ninguna por
+    # defecto. La lista refleja exclusivamente lo guardado para el empleado.
     permisos_finales = {
-        modulo: list(permisos)
-        for modulo, permisos in permisos_personalizados.items()
+        modulo: list(permisos_personalizados.get(modulo, []))
+        for modulo in MODULOS_BASE
     }
+
+    # Conserva claves antiguas o módulos heredados para no ocultar
+    # configuraciones existentes, sin conceder permisos adicionales.
+    for modulo, acciones in permisos_personalizados.items():
+        if modulo not in permisos_finales:
+            permisos_finales[modulo] = list(acciones)
 
     # ========================================================
     # ROL
