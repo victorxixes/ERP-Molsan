@@ -876,10 +876,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     });
   }, [visiblesSecundarios, navigationItems, brandName, modulosFijados]);
 
-  // «Módulos» es el catálogo completo de aplicaciones accesibles para el usuario.
-  // En administración se muestran todos los módulos con ruta; en el resto de perfiles
-  // se respeta la asignación de permisos. Notificaciones se gestiona exclusivamente
-  // desde la campana y no debe aparecer como módulo del desplegable.
+  // «Módulos» muestra las aplicaciones autorizadas que NO estén ya accesibles
+  // desde la barra actual, «Más» o los accesos fijos del espacio de trabajo.
+  // Así el administrador conserva el catálogo completo sin duplicar enlaces.
   const modulosDropdown = useMemo(() => {
     const normalizarClave = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
     if (esPortalNotarialExterno) return [];
@@ -888,6 +887,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     const usuarioAdmin = normalizarClave(empleado?.usuario) === "admin";
     const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario"].some((r) => rol.includes(r));
 
+    // "Módulos" es el catálogo general del ERP: no excluye los accesos
+    // que ya están en la navegación o en el módulo actual.
+    // La deduplicación se hace únicamente dentro del propio catálogo.
     const items = MODULOS_ERP
       .filter((modulo) =>
         Boolean(modulo.route) &&
@@ -908,29 +910,35 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
           clock: "clock",
           settings: "settings",
         })[modulo.icon] || modulo.icon,
-      }));
+      }))
+      .filter((modulo, index, lista) =>
+        lista.findIndex((otro) => otro.key === modulo.key) === index
+      );
 
     // Excepciones operativas que no forman parte del catálogo general.
+    const provisiones = {
+      key: "provisiones-fondos",
+      to: "/provisiones-fondos",
+      label: "Provisiones de fondos",
+      icon: "clipboard",
+    };
     if ((esAdmin || puedeVerModulo("expedientes")) &&
-        !items.some((item) => item.key === "provisiones-fondos")) {
-      items.push({
-        key: "provisiones-fondos",
-        to: "/provisiones-fondos",
-        label: "Provisiones de fondos",
-        icon: "clipboard",
-      });
+        !items.some((item) => item.key === provisiones.key)) {
+      items.push(provisiones);
     }
 
-    if (esAdmin && !items.some((item) => item.key === "control-fichajes")) {
-      items.push({
-        key: "control-fichajes",
-        to: "/control-fichajes",
-        label: "Control de Fichajes",
-        icon: "clock",
-      });
+    const controlFichajes = {
+      key: "control-fichajes",
+      to: "/control-fichajes",
+      label: "Control de Fichajes",
+      icon: "clock",
+    };
+    if (esAdmin &&
+        !items.some((item) => item.key === controlFichajes.key)) {
+      items.push(controlFichajes);
     }
     return items;
-  }, [empleado, esPortalNotarialExterno]);
+  }, [empleado, esPortalNotarialExterno, navigationItems, visiblesPrincipales, visiblesSecundarios, modulosFijados, brandName]);
   const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
   const modulosDropdownRef = useRef(null);
   const modulosDropdownMenuRef = useRef(null);
