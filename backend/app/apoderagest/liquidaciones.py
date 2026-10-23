@@ -221,7 +221,7 @@ def listar_control_apoderados(periodo: str | None = None, db: Session = Depends(
     q = db.query(LiquidacionMensual).join(Empleado, Empleado.id == LiquidacionMensual.empleado_id).filter(Empleado.es_colaborador.is_(True))
     if periodo:
         q = q.filter(LiquidacionMensual.periodo == periodo)
-    return [_dict(x, db, True) for x in q.order_by(LiquidacionMensual.periodo.desc(), LiquidacionMensual.empleado_id).all()
+    return [_dict(x, db, True) for x in q.order_by(LiquidacionMensual.periodo.desc(), LiquidacionMensual.empleado_id).all()]
 
 @router.get("/admin/colaboradores")
 def listar_colaboradores(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
