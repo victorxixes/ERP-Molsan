@@ -699,13 +699,13 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
         <div className="w-full px-4 py-6 lg:px-6">
           <div className="w-full apoderagest notargest-workspace-premium">
             <div className="notargest ng-content">
-    <header className="ag-hero ng-hero-apoderagest">
-      <div className="ag-hero-identidad">
+    <header className="ag-hero molsan-page-header ng-hero-apoderagest">
+      <div className="ag-hero-identidad molsan-page-header__identity">
         <div className="ag-marca ng-marca-notargest" aria-label="NotarGest">NG</div>
         <div>
           <div className="ag-eyebrow">MOLSAN ERP · PREMIUM 2027</div>
-          <h1>NotarGest</h1>
-          <p>Centro de gestión notarial, firmas y seguimiento registral.</p>
+          <h1 className="molsan-page-header__title">NotarGest</h1>
+          <p className="molsan-page-header__description">Centro de gestión notarial, firmas y seguimiento registral.</p>
         </div>
       </div>
       <div className="ag-hero-acciones">
