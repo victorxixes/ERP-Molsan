@@ -34,7 +34,7 @@ export default function Fichajes({ modo = "empleado" }) {
   const [documentos, setDocumentos] = useState([]);
   const [empleados, setEmpleados] = useState([]);
   const [marcajesAdmin, setMarcajesAdmin] = useState([]);
-  const [pestana, setPestana] = useState("calendario");
+  const [pestana, setPestana] = useState(modo === "admin" ? "control" : "calendario");
   const [mes, setMes] = useState(inicioMes(FECHA_HOY));
   const [busqueda, setBusqueda] = useState("");
   const [fechaDesde, setFechaDesde] = useState(fechaISO(new Date(FECHA_HOY.getFullYear(), FECHA_HOY.getMonth(), 1)));
@@ -122,6 +122,7 @@ export default function Fichajes({ modo = "empleado" }) {
 
   const subirDocumento = async (e) => {
     e.preventDefault();
+    const formulario = e.currentTarget;
     if (!archivo) { setError("Selecciona el documento que quieres adjuntar."); return; }
     setGuardando(true); setError(""); setMensaje("");
     try {
@@ -131,7 +132,7 @@ export default function Fichajes({ modo = "empleado" }) {
       data.append("archivo", archivo);
       await axios.post("/fichajes/documentos", data);
       setArchivo(null);
-      e.currentTarget.reset();
+      formulario.reset();
       setMensaje("Documento guardado en tu historial.");
       await recargarEmpleado();
     } catch (err) {
