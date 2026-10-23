@@ -139,6 +139,7 @@ import ApoderaGest
 import NotarGest from "./pages/notargest/NotarGest.jsx";
 import EncargaGest from "./pages/encargagest/EncargaGest.jsx";
 import EncargaGestWorkspace from "./pages/encargagest/EncargaGestWorkspace.jsx";
+import Fichajes from "./pages/fichajes/Fichajes.jsx";
 
 
 /**
@@ -212,15 +213,7 @@ export default function App() {
             }
           />
 
-          {/* Fichajes: acceso provisional hasta desarrollar el módulo horario. */}
-          <Route
-            path="fichajes"
-            element={
-              <RequireAuth>
-                <ModuloPendiente nombre="Fichajes" />
-              </RequireAuth>
-            }
-          />
+
           
           <Route
             path="apoderagest"
@@ -314,6 +307,10 @@ export default function App() {
             path="dashboard"
             element={<Dashboard />}
           />
+
+          {/* Fichaje Molsan: módulo de empleado y control administrativo. */}
+          <Route path="fichajes" element={<Fichajes modo="empleado" />} />
+          <Route path="control-fichajes" element={<Fichajes modo="admin" />} />
 
 
           {/* ==================================================

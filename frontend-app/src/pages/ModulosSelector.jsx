@@ -39,8 +39,8 @@ const MODULOS = {
     estilo: "eg",
   },
   fichajes: {
-    nombre: "Fichajes",
-    descripcion: "Registro de jornada, entradas, salidas y consulta de fichajes de empleados.",
+    nombre: "Fichaje Molsan",
+    descripcion: "Registra tu jornada, pausas, ausencias y consulta tu calendario y justificantes.",
     ruta: "/fichajes",
     siglas: "FI",
     categoria: "CONTROL HORARIO DE EMPLEADOS",
@@ -89,6 +89,17 @@ export default function ModulosSelector() {
     const rol = normalizar(empleado.rol?.nombre || empleado.rol_nombre || empleado.nombre_rol);
     const usuario = normalizar(empleado.usuario);
     const esAdmin = usuario === "admin" || ["admin", "administrador", "administradora", "superadmin"].includes(rol);
+    if (esAdmin && visibles.includes("fichajes")) {
+      disponibles.push({
+        clave: "control-fichajes",
+        nombre: "Control de Fichajes",
+        descripcion: "Supervisión de marcajes de la plantilla y consulta por empleado y periodo.",
+        ruta: "/control-fichajes",
+        siglas: "CF",
+        categoria: "ADMINISTRACIÓN DE JORNADA",
+        estilo: "fi",
+      });
+    }
     if (esAdmin && visibles.includes("notargest")) {
       disponibles.push({ clave: "notargest_notario", nombre: "NotarGest – Notarios", descripcion: "Acceso de soporte al portal de una notaría habilitada.", siglas: "NN", categoria: "SOPORTE A NOTARÍAS", estilo: "ng", portalSoporte: "notargest" });
     }

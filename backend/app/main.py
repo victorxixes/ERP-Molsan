@@ -210,6 +210,7 @@ from backend.app.agenda.router import router as agenda_router
 
 # EMPLEADOS
 from backend.app.empleados.router import router as empleados_router
+from backend.app.fichajes.router import router as fichajes_router
 
 # DEFECTOS
 from backend.app.expedientes.defectos.router import router as defectos_router
@@ -393,6 +394,7 @@ print(
 
 # EMPLEADOS
 app.include_router(empleados_router, prefix="/api")
+app.include_router(fichajes_router, prefix="/api")
 
 # MAESTROS
 app.include_router(maestros_router, prefix="/api")
