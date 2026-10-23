@@ -7,7 +7,7 @@ import unicodedata
 
 import pandas as pd
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
-from sqlalchemy import text
+from sqlalchemy import bindparam, text
 from sqlalchemy.orm import Session
 
 from backend.app.database import engine, get_db
@@ -126,10 +126,10 @@ def _serializar(fila: Any) -> dict[str, Any]:
 def _existentes(db: Session, codigos: list[str]) -> set[str]:
     if not codigos:
         return set()
-    filas = db.execute(
-        text("SELECT oficina FROM public.catalogo_oficinas WHERE oficina = ANY(:codigos)"),
-        {"codigos": codigos},
-    ).all()
+    consulta = text(
+        "SELECT oficina FROM public.catalogo_oficinas WHERE oficina IN :codigos"
+    ).bindparams(bindparam("codigos", expanding=True))
+    filas = db.execute(consulta, {"codigos": codigos}).all()
     return {str(fila[0]).casefold() for fila in filas}
 
 
