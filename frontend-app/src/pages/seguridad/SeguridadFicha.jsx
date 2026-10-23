@@ -304,6 +304,9 @@ export default function SeguridadFicha({
     setNuevoRol,
   ] = useState("");
 
+  const [guardandoRol, setGuardandoRol] = useState(false);
+  const [mensajeRol, setMensajeRol] = useState("");
+
 
   const [
     showModulos,
@@ -1416,28 +1419,37 @@ const permisosGlobales =
         }
 
 
+        if (rolId === rolActualId || guardandoRol) {
+          return;
+        }
+
         try {
+          setGuardandoRol(true);
+          setMensajeRol("");
 
           await asignarRol(
             empleadoIdSeguro,
             rolId
           );
 
-
-          setNuevoRol("");
-
-
           await cargarFicha(
             empleadoIdSeguro
           );
 
+          setNuevoRol("");
+          setMensajeRol("Rol guardado correctamente.");
         } catch (error) {
-
           console.error(
             "Error asignando rol:",
             error
           );
-
+          setMensajeRol(
+            error?.response?.data?.detail ||
+            error?.message ||
+            "No se ha podido guardar el rol. Revisa los permisos y vuelve a intentarlo."
+          );
+        } finally {
+          setGuardandoRol(false);
         }
 
       },
@@ -1445,6 +1457,8 @@ const permisosGlobales =
         empleadoValido,
         empleadoIdSeguro,
         nuevoRol,
+        rolActualId,
+        guardandoRol,
         asignarRol,
         cargarFicha,
       ]
@@ -2231,6 +2245,8 @@ const permisosGlobales =
                   ejecutarAsignarRol
                 }
                 disabled={
+                  !empleadoValido ||
+                  guardandoRol ||
                   idSeguro(nuevoRol) === null ||
                   idSeguro(nuevoRol) === rolActualId
                 }
@@ -2248,10 +2264,19 @@ const permisosGlobales =
                   disabled:opacity-40
                 "
               >
-                {idSeguro(nuevoRol) === rolActualId ? "Rol actual seleccionado" : "Asignar rol"}
+                {guardandoRol ? "Guardando rol…" : "Guardar rol"}
               </button>
 
             </div>
+
+            {mensajeRol && (
+              <p
+                role="status"
+                className={`mt-3 text-sm ${mensajeRol === "Rol guardado correctamente." ? "text-emerald-700" : "text-rose-700"}`}
+              >
+                {mensajeRol}
+              </p>
+            )}
 
           </div>
 
