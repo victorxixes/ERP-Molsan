@@ -890,22 +890,35 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     // «Módulos» completa la navegación: solo muestra entradas del catálogo
     // que no estén ya visibles en la barra ni en los accesos fijados.
     // Así se evita que el administrador vea cada módulo dos veces.
+    // Construir una única lista de identificadores ya visibles. Se compara
+    // por clave, etiqueta y ruta para cubrir las barras personalizadas de cada portal.
     const elementosEnBarra = [
       ...(Array.isArray(navigationItems) ? navigationItems : []),
       ...visiblesPrincipales,
       ...modulosFijados,
     ];
-    const clavesEnBarra = new Set(elementosEnBarra.map((item) =>
-      normalizarClave(item?.key || item?.label)
-    ));
+    const clavesEnBarra = new Set();
+    const rutasEnBarra = new Set();
+    for (const item of elementosEnBarra) {
+      for (const valor of [item?.key, item?.label, item?.to, item?.route]) {
+        const normalizado = normalizarClave(valor);
+        if (normalizado) {
+          if (normalizado.startsWith("/")) rutasEnBarra.add(normalizado.replace(/\\/$/, ""));
+          else clavesEnBarra.add(normalizado);
+        }
+      }
+    }
+    const yaVisible = (modulo) =>
+      clavesEnBarra.has(normalizarClave(modulo.key)) ||
+      clavesEnBarra.has(normalizarClave(modulo.label)) ||
+      rutasEnBarra.has(normalizarClave(modulo.route).replace(/\\/$/, ""));
     const items = MODULOS_ERP
       .filter((modulo) =>
         Boolean(modulo.route) &&
         modulo.key !== "notificaciones" &&
         normalizarClave(modulo.label) !== "notificaciones" &&
         (esAdmin || puedeVerModulo(modulo.key)) &&
-        !clavesEnBarra.has(normalizarClave(modulo.key)) &&
-        !clavesEnBarra.has(normalizarClave(modulo.label))
+        !yaVisible(modulo)
       )
       .map((modulo) => ({
         key: modulo.key,
@@ -932,8 +945,12 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       label: "Provisiones de fondos",
       icon: "clipboard",
     };
+    const provisionesYaVisible = yaVisible(provisiones) ||
+      items.some((item) => item.key === provisiones.key ||
+        normalizarClave(item.label) === normalizarClave(provisiones.label) ||
+        normalizarClave(item.to) === normalizarClave(provisiones.to));
     if ((esAdmin || puedeVerModulo("expedientes")) &&
-        !items.some((item) => item.key === provisiones.key)) {
+        !provisionesYaVisible) {
       items.push(provisiones);
     }
 
@@ -1015,7 +1032,13 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     if (modulosDropdown.length > 0 && !yaTieneModulos) {
       sinFichajes.push({ key: "modulos", label: "Módulos", icon: "database" });
     }
-    return sinFichajes;
+    // El control Módulos se pinta con el mismo patrón visual en todos los portales.
+    return sinFichajes.map((item) =>
+      item?.key === "modulos" ||
+      ["módulos", "modulos"].includes(normalizarModulo(item?.label))
+        ? { ...item, key: "modulos", label: "Módulos", icon: "database" }
+        : item
+    );
   }, [navigationItems, modulosDropdown]);
 
   const mostrarBotonMas = modulosMas.length > 0 &&
@@ -1180,6 +1203,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                   >
                     <NavIcon name={item.icon} />
                     <span>{item.label}</span>
+                    {(item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") && (
+                      <ChevronIcon open={modulosDropdownAbierto} />
+                    )}
                     {(item.badge > 0 || (item.label === "Mensajes" && mensajesNoLeidos > 0)) ? (
                       <span className={item.label === "Mensajes" ? "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold" : "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] text-[10px] font-bold"}>
                         {item.label === "Mensajes" ? mensajesNoLeidos : item.badge}
