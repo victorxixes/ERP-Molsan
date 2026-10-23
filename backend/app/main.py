@@ -763,8 +763,27 @@ def migrar_esquema_expedientes_inicio():
             "crear columna empleados.es_colaborador",
             "ALTER TABLE public.empleados ADD COLUMN IF NOT EXISTS es_colaborador BOOLEAN NOT NULL DEFAULT FALSE",
         )
-        with conexion.begin():
-            LiquidacionMensual.__table__.create(bind=conexion, checkfirst=True)
+        tabla_liquidaciones_creada = False
+        for intento_tabla in range(1, 21):
+            try:
+                with conexion.begin():
+                    conexion.execute(text("SET LOCAL lock_timeout = '3s'"))
+                    conexion.execute(text("SET LOCAL statement_timeout = '40s'"))
+                    LiquidacionMensual.__table__.create(bind=conexion, checkfirst=True)
+                tabla_liquidaciones_creada = True
+                break
+            except Exception as error_tabla:
+                if not es_bloqueo_temporal(error_tabla) or intento_tabla == 20:
+                    raise
+                espera = min(2 * intento_tabla, 5)
+                print(
+                    f"[MIGRACION STARTUP] Bloqueo temporal creando apoderagest_liquidaciones; "
+                    f"reintento {intento_tabla}/20 en {espera}s: {error_tabla!r}",
+                    flush=True,
+                )
+                time.sleep(espera)
+        if not tabla_liquidaciones_creada:
+            raise RuntimeError("No se pudo crear la tabla apoderagest_liquidaciones.")
 
         with conexion.begin():
             resultado = conexion.execute(
