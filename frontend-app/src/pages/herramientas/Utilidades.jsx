@@ -20,8 +20,14 @@ export default function Utilidades() {
         </div>
       </header>
 
-      <Grupo titulo="Accesos y seguridad" descripcion="Gestión restringida de credenciales de portales notariales.">
-        <Card icon="🔐" titulo="Accesos notariales" descripcion="Busca una notaría y administra por separado sus accesos a NotarGest y EncargaGest, con historial de cambios." link="/herramientas/utilidades/accesos-notariales" destacado />
+      <Grupo titulo="Accesos y seguridad" descripcion="Administración centralizada de permisos de empleados y accesos a portales notariales.">
+        <Card icon="🛡️" titulo="Accesos y seguridad de empleados" descripcion="Selecciona un empleado para administrar roles, módulos y permisos desde el centro de seguridad." link="/seguridad" destacado />
+        <Card icon="🔐" titulo="Accesos notariales" descripcion="Busca una notaría y administra por separado sus accesos a NotarGest y EncargaGest, con historial de cambios." link="/herramientas/utilidades/accesos-notariales" />
+      </Grupo>
+
+      <Grupo titulo="Administración de empleados" descripcion="Configura visibilidad y asignaciones desde Utilidades, seleccionando el empleado correspondiente.">
+        <Card icon="📊" titulo="Visibilidad de tablas" descripcion="Configura las columnas de Excel y la visibilidad por actividad para el empleado seleccionado." link="/herramientas/utilidades/visibilidad-tablas" destacado />
+        <Card icon="⚖️" titulo="Asignaciones" descripcion="Administra las reglas de reparto y asignación de expedientes desde un panel centralizado." link="/herramientas/utilidades/asignaciones" destacado />
       </Grupo>
 
       <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
