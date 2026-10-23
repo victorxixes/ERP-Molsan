@@ -1,0 +1,176 @@
+import { useCallback, useEffect, useState } from "react";
+import axios from "../../api/axios";
+
+const hoy = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+const caja = "rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2.5 text-sm";
+const boton = "rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50";
+
+export default function FestivosCompensaciones({ modo = "empleado" }) {
+  const admin = modo === "admin";
+  const [resumen, setResumen] = useState({ saldo_dias: 0, saldo_horas: 0, festivos: [], solicitudes: [], movimientos: [] });
+  const [empleados, setEmpleados] = useState([]);
+  const [festivos, setFestivos] = useState([]);
+  const [solicitudes, setSolicitudes] = useState([]);
+  const [saldos, setSaldos] = useState([]);
+  const [empleadoId, setEmpleadoId] = useState("");
+  const [fecha, setFecha] = useState(hoy());
+  const [horas, setHoras] = useState("8");
+  const [observaciones, setObservaciones] = useState("");
+  const [cantidad, setCantidad] = useState("1");
+  const [unidad, setUnidad] = useState("DIAS");
+  const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState(false);
+  const [mensaje, setMensaje] = useState("");
+  const [error, setError] = useState("");
+
+  const cargar = useCallback(async () => {
+    if (admin) {
+      const [e, f, s, b] = await Promise.all([
+        axios.get("/fichajes/admin/empleados"),
+        axios.get("/fichajes/admin/compensaciones/festivos"),
+        axios.get("/fichajes/admin/compensaciones/solicitudes"),
+        axios.get("/fichajes/admin/compensaciones/saldos"),
+      ]);
+      setEmpleados(Array.isArray(e.data) ? e.data : []);
+      setFestivos(Array.isArray(f.data) ? f.data : []);
+      setSolicitudes(Array.isArray(s.data) ? s.data : []);
+      setSaldos(Array.isArray(b.data) ? b.data : []);
+      if (!empleadoId && e.data?.length) setEmpleadoId(String(e.data[0].id));
+    } else {
+      const r = await axios.get("/fichajes/compensaciones/resumen");
+      setResumen(r.data || {});
+    }
+  }, [admin, empleadoId]);
+
+  useEffect(() => {
+    let vivo = true;
+    setCargando(true); setError("");
+    cargar().catch((e) => { if (vivo) setError(e?.response?.data?.detail || "No se han podido cargar las compensaciones."); })
+      .finally(() => { if (vivo) setCargando(false); });
+    return () => { vivo = false; };
+  }, [cargar]);
+
+  const ejecutar = async (accion) => {
+    setGuardando(true); setError(""); setMensaje("");
+    try {
+      await accion();
+      await cargar();
+      setObservaciones("");
+      setMensaje("Operación guardada correctamente. El saldo y el historial se han actualizado.");
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se ha podido completar la operación.");
+    } finally { setGuardando(false); }
+  };
+
+  const registrarFestivo = (e) => {
+    e.preventDefault();
+    const d = new FormData();
+    d.append("empleado_id", empleadoId); d.append("fecha", fecha);
+    d.append("horas_trabajadas", horas); d.append("observaciones", observaciones);
+    return ejecutar(() => axios.post("/fichajes/admin/compensaciones/festivos", d));
+  };
+  const validarFestivo = (f, estado) => {
+    let cantidadValidar = cantidad;
+    let unidadValidar = unidad;
+    if (estado === "VALIDADO") {
+      const entrada = window.prompt("¿Cuánto tiempo compensable corresponde? Introduce una cantidad positiva (por ejemplo, 1 día o 8 horas).", "1");
+      if (entrada === null) return;
+      cantidadValidar = entrada;
+      const u = window.prompt("Escribe DIAS u HORAS.", "DIAS");
+      if (u === null) return;
+      unidadValidar = u.trim().toUpperCase();
+      if (!["DIAS", "HORAS"].includes(unidadValidar) || !Number.isFinite(Number(cantidadValidar)) || Number(cantidadValidar) <= 0) {
+        setError("Cantidad o unidad no válida."); return;
+      }
+    }
+    const d = new FormData();
+    d.append("estado", estado); d.append("cantidad_compensable", cantidadValidar);
+    d.append("unidad_compensable", unidadValidar); d.append("observaciones", "");
+    return ejecutar(() => axios.patch(`/fichajes/admin/compensaciones/festivos/${f.id}`, d));
+  };
+  const resolverSolicitud = (s, estado) => {
+    const d = new FormData(); d.append("estado", estado); d.append("observaciones", "");
+    return ejecutar(() => axios.patch(`/fichajes/admin/compensaciones/solicitudes/${s.id}`, d));
+  };
+  const solicitar = (e) => {
+    e.preventDefault();
+    const d = new FormData(); d.append("fecha_disfrute", fecha); d.append("cantidad", cantidad);
+    d.append("unidad", unidad); d.append("observaciones", observaciones);
+    return ejecutar(() => axios.post("/fichajes/compensaciones/solicitudes", d));
+  };
+  const fechaBonita = (v) => v ? new Date(`${v}T12:00:00`).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+  const estado = (v) => ({ PENDIENTE: "Pendiente de validar", VALIDADO: "Validado", RECHAZADO: "Rechazado", SOLICITADO: "Pendiente de aprobación", APROBADO: "Aprobada", CONSUMIDO: "Disfrutada" }[v] || v);
+
+  return <section className="space-y-5 p-4 sm:p-6">
+    <header><h2 className="text-xl font-extrabold">Festivos y compensaciones</h2>
+      <p className="mt-1 max-w-3xl text-sm text-[var(--erp-text-soft)]">{admin ? "Valida los festivos trabajados, resuelve solicitudes y consulta el saldo individual. Cada cambio queda auditado." : "Consulta los días u horas generados por festivos trabajados y solicita disfrutarlos en otra fecha. Este saldo es independiente de las vacaciones ordinarias."}</p>
+    </header>
+    {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensaje}</div>}
+    {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</div>}
+    {cargando ? <div className="rounded-xl border p-8 text-sm text-slate-500">Cargando compensaciones…</div> : admin ? <>
+      <form onSubmit={registrarFestivo} className="rounded-2xl border border-blue-100 bg-blue-50/50 p-4">
+        <h3 className="font-bold">Registrar festivo trabajado</h3>
+        <p className="mt-1 text-xs text-slate-600">El registro queda pendiente hasta que administración valide el tiempo compensable. No se genera saldo automáticamente.</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <label className="text-xs font-bold text-slate-600">Empleado<select required value={empleadoId} onChange={e => setEmpleadoId(e.target.value)} className={`mt-1 w-full ${caja}`}><option value="">Selecciona…</option>{empleados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}</select></label>
+          <label className="text-xs font-bold text-slate-600">Fecha del festivo<input required type="date" value={fecha} onChange={e => setFecha(e.target.value)} className={`mt-1 w-full ${caja}`} /></label>
+          <label className="text-xs font-bold text-slate-600">Horas trabajadas<input required type="number" min="0.25" max="24" step="0.25" value={horas} onChange={e => setHoras(e.target.value)} className={`mt-1 w-full ${caja}`} /></label>
+          <label className="text-xs font-bold text-slate-600">Observaciones<input maxLength="500" value={observaciones} onChange={e => setObservaciones(e.target.value)} placeholder="Turno, autorización…" className={`mt-1 w-full ${caja}`} /></label>
+        </div>
+        <button disabled={guardando || !empleadoId} className={`mt-3 ${boton}`}>Registrar para validar</button>
+      </form>
+
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-2xl border p-4"><p className="text-xs font-bold text-slate-500">Festivos pendientes</p><p className="mt-2 text-3xl font-extrabold">{festivos.filter(f => f.estado === "PENDIENTE").length}</p></div>
+        <div className="rounded-2xl border p-4"><p className="text-xs font-bold text-slate-500">Solicitudes pendientes</p><p className="mt-2 text-3xl font-extrabold">{solicitudes.filter(s => s.estado === "SOLICITADO").length}</p></div>
+        <div className="rounded-2xl border p-4"><p className="text-xs font-bold text-slate-500">Empleados con saldo en días</p><p className="mt-2 text-3xl font-extrabold">{saldos.filter(s => s.saldo_dias > 0).length}</p></div>
+        <div className="rounded-2xl border p-4"><p className="text-xs font-bold text-slate-500">Empleados con saldo en horas</p><p className="mt-2 text-3xl font-extrabold">{saldos.filter(s => s.saldo_horas > 0).length}</p></div>
+      </div>
+
+      <div className="overflow-x-auto rounded-2xl border">
+        <h3 className="p-4 font-bold">Festivos trabajados · validación</h3>
+        <table className="w-full min-w-[850px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Fecha</th><th className="p-3">Horas</th><th className="p-3">Estado</th><th className="p-3">Compensación</th><th className="p-3">Acciones</th></tr></thead><tbody>{festivos.map(f => <tr key={f.id} className="border-b last:border-0"><td className="p-3 font-semibold">{f.empleado_nombre}</td><td className="p-3">{fechaBonita(f.fecha)}</td><td className="p-3">{f.horas_trabajadas}</td><td className="p-3">{estado(f.estado)}</td><td className="p-3">{f.cantidad_compensable == null ? "—" : `${f.cantidad_compensable} ${f.unidad_compensable}`}</td><td className="p-3">{f.estado === "PENDIENTE" ? <div className="flex gap-2"><button disabled={guardando} onClick={() => validarFestivo(f, "VALIDADO")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white">Validar</button><button disabled={guardando} onClick={() => validarFestivo(f, "RECHAZADO")} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">Rechazar</button></div> : "Resuelto"}</td></tr>)}{!festivos.length && <tr><td colSpan="6" className="p-8 text-center text-slate-400">No hay festivos registrados.</td></tr>}</tbody></table>
+      </div>
+
+      <div className="overflow-x-auto rounded-2xl border">
+        <h3 className="p-4 font-bold">Solicitudes de disfrute</h3>
+        <table className="w-full min-w-[850px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Fecha de disfrute</th><th className="p-3">Cantidad</th><th className="p-3">Estado</th><th className="p-3">Observaciones</th><th className="p-3">Acciones</th></tr></thead><tbody>{solicitudes.map(s => <tr key={s.id} className="border-b last:border-0"><td className="p-3 font-semibold">{s.empleado_nombre}</td><td className="p-3">{fechaBonita(s.fecha_disfrute)}</td><td className="p-3">{s.cantidad} {s.unidad}</td><td className="p-3">{estado(s.estado)}</td><td className="p-3">{s.observaciones || "—"}</td><td className="p-3">{s.estado === "SOLICITADO" ? <div className="flex gap-2"><button disabled={guardando} onClick={() => resolverSolicitud(s, "APROBADO")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white">Aprobar</button><button disabled={guardando} onClick={() => resolverSolicitud(s, "RECHAZADO")} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">Rechazar</button></div> : "Resuelta"}</td></tr>)}{!solicitudes.length && <tr><td colSpan="6" className="p-8 text-center text-slate-400">No hay solicitudes.</td></tr>}</tbody></table>
+      </div>
+
+      <div className="overflow-x-auto rounded-2xl border">
+        <h3 className="p-4 font-bold">Saldos de compensación por empleado</h3>
+        <table className="w-full min-w-[520px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Días disponibles</th><th className="p-3">Horas disponibles</th></tr></thead><tbody>{saldos.map(s => <tr key={s.empleado_id} className="border-b last:border-0"><td className="p-3 font-semibold">{s.empleado_nombre}</td><td className="p-3">{s.saldo_dias}</td><td className="p-3">{s.saldo_horas}</td></tr>)}</tbody></table>
+      </div>
+    </> : <>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5"><p className="text-sm font-bold text-emerald-900">Saldo disponible · días</p><p className="mt-2 text-4xl font-extrabold text-emerald-900">{Number(resumen.saldo_dias || 0).toLocaleString("es-ES")}</p></div>
+        <div className="rounded-2xl border border-sky-200 bg-sky-50/60 p-5"><p className="text-sm font-bold text-sky-900">Saldo disponible · horas</p><p className="mt-2 text-4xl font-extrabold text-sky-900">{Number(resumen.saldo_horas || 0).toLocaleString("es-ES")}</p></div>
+      </div>
+      <form onSubmit={solicitar} className="rounded-2xl border border-blue-100 bg-blue-50/50 p-4">
+        <h3 className="font-bold">Solicitar un día u horas de compensación</h3>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <label className="text-xs font-bold text-slate-600">Fecha de disfrute<input required type="date" min={hoy()} value={fecha} onChange={e => setFecha(e.target.value)} className={`mt-1 w-full ${caja}`} /></label>
+          <label className="text-xs font-bold text-slate-600">Cantidad<input required type="number" min="0.25" max="100" step="0.25" value={cantidad} onChange={e => setCantidad(e.target.value)} className={`mt-1 w-full ${caja}`} /></label>
+          <label className="text-xs font-bold text-slate-600">Unidad<select value={unidad} onChange={e => setUnidad(e.target.value)} className={`mt-1 w-full ${caja}`}><option value="DIAS">Días</option><option value="HORAS">Horas</option></select></label>
+          <label className="text-xs font-bold text-slate-600">Observaciones<input maxLength="500" value={observaciones} onChange={e => setObservaciones(e.target.value)} placeholder="Motivo opcional…" className={`mt-1 w-full ${caja}`} /></label>
+        </div>
+        <button disabled={guardando} className={`mt-3 ${boton}`}>Enviar solicitud</button>
+      </form>
+      <div className="overflow-x-auto rounded-2xl border">
+        <h3 className="p-4 font-bold">Festivos trabajados</h3>
+        <table className="w-full min-w-[650px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Fecha</th><th className="p-3">Horas</th><th className="p-3">Estado</th><th className="p-3">Saldo generado</th><th className="p-3">Observaciones</th></tr></thead><tbody>{(resumen.festivos || []).map(f => <tr key={f.id} className="border-b last:border-0"><td className="p-3">{fechaBonita(f.fecha)}</td><td className="p-3">{f.horas_trabajadas}</td><td className="p-3">{estado(f.estado)}</td><td className="p-3">{f.cantidad_compensable == null ? "—" : `${f.cantidad_compensable} ${f.unidad_compensable}`}</td><td className="p-3">{f.observaciones || "—"}</td></tr>)}{!(resumen.festivos || []).length && <tr><td colSpan="5" className="p-8 text-center text-slate-400">Aún no hay festivos registrados por administración.</td></tr>}</tbody></table>
+      </div>
+      <div className="overflow-x-auto rounded-2xl border">
+        <h3 className="p-4 font-bold">Solicitudes e historial de disfrute</h3>
+        <table className="w-full min-w-[650px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Fecha</th><th className="p-3">Cantidad</th><th className="p-3">Estado</th><th className="p-3">Observaciones</th></tr></thead><tbody>{(resumen.solicitudes || []).map(s => <tr key={s.id} className="border-b last:border-0"><td className="p-3">{fechaBonita(s.fecha_disfrute)}</td><td className="p-3">{s.cantidad} {s.unidad}</td><td className="p-3">{estado(s.estado)}</td><td className="p-3">{s.observaciones || "—"}</td></tr>)}{!(resumen.solicitudes || []).length && <tr><td colSpan="4" className="p-8 text-center text-slate-400">Todavía no has solicitado compensaciones.</td></tr>}</tbody></table>
+      </div>
+      <div className="overflow-x-auto rounded-2xl border">
+        <h3 className="p-4 font-bold">Libro de movimientos</h3>
+        <table className="w-full min-w-[620px] text-left text-sm"><thead><tr className="border-y bg-slate-50 text-xs uppercase text-slate-500"><th className="p-3">Fecha</th><th className="p-3">Movimiento</th><th className="p-3">Cantidad</th><th className="p-3">Detalle</th></tr></thead><tbody>{(resumen.movimientos || []).map(m => <tr key={m.id} className="border-b last:border-0"><td className="p-3">{fechaBonita(m.fecha)}</td><td className="p-3">{m.tipo === "ABONO" ? "Saldo generado" : m.tipo === "CONSUMO" ? "Compensación utilizada" : "Ajuste"} </td><td className="p-3">{m.tipo === "CONSUMO" ? "−" : "+"}{m.cantidad} {m.unidad}</td><td className="p-3">{m.observaciones || "—"}</td></tr>)}{!(resumen.movimientos || []).length && <tr><td colSpan="4" className="p-8 text-center text-slate-400">Sin movimientos todavía.</td></tr>}</tbody></table>
+      </div>
+    </>}
+  </section>;
+}
