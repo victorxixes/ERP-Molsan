@@ -792,9 +792,9 @@ def resumen_accesos_portales_notarias(
             Notaria.notargest_habilitado.is_(True)
         ).count()
     if puede_encargagest:
-        total_encargagest = db.query(EncargoExternoUsuario).filter(
+        total_encargagest = db.query(func.count(func.distinct(EncargoExternoUsuario.notaria_id))).filter(
             EncargoExternoUsuario.habilitado.is_(True)
-        ).count()
+        ).scalar() or 0
 
     return {
         "notargest_habilitados": total_notargest,
