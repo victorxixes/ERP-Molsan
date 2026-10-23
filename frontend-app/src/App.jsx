@@ -243,11 +243,19 @@ export default function App() {
         {/* Portales externos para notarías: rutas explícitas y separadas. */}
         <Route
           path="notargest-notario"
-          element={<NotarGest />}
+          element={<NotarGest accessMode="external" />}
+        />
+        <Route
+          path="notargest-notarios"
+          element={<NotarGest accessMode="external" />}
         />
         <Route
           path="encargagest-notario"
-          element={<EncargaGest />}
+          element={<EncargaGest accessMode="external" />}
+        />
+        <Route
+          path="encargagest-notarios"
+          element={<EncargaGest accessMode="external" />}
         />
 
         {/* Compatibilidad con enlaces antiguos: cada ruta conserva su portal correcto. */}
