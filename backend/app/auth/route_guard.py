@@ -152,6 +152,21 @@ def _ya_tiene_autenticacion(dependant: Any) -> bool:
     return False
 
 
+def _ya_tiene_auditoria(dependant: Any) -> bool:
+    pendientes = [dependant]
+    visitados: set[int] = set()
+    while pendientes:
+        actual = pendientes.pop()
+        identidad = id(actual)
+        if identidad in visitados:
+            continue
+        visitados.add(identidad)
+        if getattr(getattr(actual, "call", None), "_molsan_audit_guard", False):
+            return True
+        pendientes.extend(getattr(actual, "dependencies", []) or [])
+    return False
+
+
 def _ya_tiene_permiso(dependant: Any, modulo: str, accion: str) -> bool:
     """Busca el permiso sin recursión y sin recorrer dos veces el mismo nodo."""
     esperado = (modulo, accion)
@@ -263,6 +278,7 @@ def _crear_dependencia_auditoria(modulo: str, accion: str, comprobar_permiso: bo
             _registrar_evento_api(request, usuario, modulo, "OK")
 
     auditar_ruta_api.__name__ = f"auditar_{modulo}_{accion}"
+    setattr(auditar_ruta_api, "_molsan_audit_guard", True)
     if comprobar_permiso:
         setattr(auditar_ruta_api, "_molsan_permiso_guard", (modulo, accion))
     return auditar_ruta_api
@@ -329,16 +345,23 @@ def proteger_rutas_api(app: Any) -> dict[str, int]:
         modulo = _resolver_modulo(path)
         if not modulo:
             sin_mapeo.append(path)
-            dependencia_auditoria = get_dependant(
-                path=getattr(route, "path_format", route.path),
-                call=_crear_dependencia_auditoria("sin_modulo", _resolver_accion(path, getattr(route, "methods", None)), comprobar_permiso=False),
-            )
-            route.dependant.dependencies.append(dependencia_auditoria)
+            if not _ya_tiene_auditoria(route.dependant):
+                dependencia_auditoria = get_dependant(
+                    path=getattr(route, "path_format", route.path),
+                    call=_crear_dependencia_auditoria("sin_modulo", _resolver_accion(path, getattr(route, "methods", None)), comprobar_permiso=False),
+                )
+                route.dependant.dependencies.append(dependencia_auditoria)
             continue
 
         accion = _resolver_accion(path, getattr(route, "methods", None))
         if _ya_tiene_permiso(route.dependant, modulo, accion):
             ya_con_permiso += 1
+            if not _ya_tiene_auditoria(route.dependant):
+                dependencia_auditoria = get_dependant(
+                    path=getattr(route, "path_format", route.path),
+                    call=_crear_dependencia_auditoria(modulo, accion, comprobar_permiso=False),
+                )
+                route.dependant.dependencies.append(dependencia_auditoria)
             continue
 
         dependencia_permiso = get_dependant(
