@@ -149,7 +149,9 @@ def crear_marcaje(
         raise HTTPException(status_code=409, detail="Ya consta una entrada sin una salida posterior.")
     if tipo == "SALIDA" and (not ultimo_jornada or ultimo_jornada.tipo != "ENTRADA"):
         raise HTTPException(status_code=409, detail="Para registrar la salida debe existir una entrada previa sin cerrar.")
-    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
+    # AUSENCIA es un registro puntual de ausencia/permiso, no una pausa que bloquee
+    # el resto de los controles: el panel nuevo no tiene un botón de "regreso de ausencia".
+    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO"}
     retornos_por_pausa = {
         "PAUSA_CAFE_INICIO": {"PAUSA_DESAYUNO_FIN", "RETORNO_AUSENCIA"},
         "PAUSA_DESAYUNO_INICIO": {"PAUSA_DESAYUNO_FIN", "RETORNO_AUSENCIA"},
@@ -372,7 +374,7 @@ def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_cu
     inicio, fin = date(anio, 1, 1), date(anio + 1, 1, 1)
     registros = db.query(FichajeMarcaje).filter(FichajeMarcaje.empleado_id == usuario.id,
         FichajeMarcaje.fecha_hora >= datetime.combine(inicio, time.min), FichajeMarcaje.fecha_hora < datetime.combine(fin, time.min)).order_by(FichajeMarcaje.fecha_hora).all()
-    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
+    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO"}
     retornos = {"PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"}
     jornada_abierta = None; pausa_abierta = None; pausa_segundos = 0; segundos = 0; incompletos = 0
     for m in registros:
