@@ -8,6 +8,7 @@ import {
 import { useSeguridad } from "../../hooks/useSeguridad";
 
 import MODULOS_ERP from "../../config/modulos";
+import { editarEmpleado } from "../../api/empleados";
 import "./SeguridadSubpaginasPremium.css";
 
 
@@ -286,6 +287,18 @@ export default function SeguridadFicha({
 
 
   const [
+    guardandoVisibilidad,
+    setGuardandoVisibilidad,
+  ] = useState(false);
+
+
+  const [
+    mensajeVisibilidad,
+    setMensajeVisibilidad,
+  ] = useState("");
+
+
+  const [
     nuevoRol,
     setNuevoRol,
   ] = useState("");
@@ -439,6 +452,31 @@ const PERMISOS_ESTANDAR = [
   "eliminar",
 ];
   
+  const cambiarVisibilidadEmpleado = useCallback(async () => {
+    if (!empleadoValido || empleadoIdSeguro === null || guardandoVisibilidad) return;
+
+    const nuevoValor = empleado?.visible_en_listado === false;
+    try {
+      setGuardandoVisibilidad(true);
+      setMensajeVisibilidad("");
+      await editarEmpleado(empleadoIdSeguro, { visible_en_listado: nuevoValor });
+      await cargarFicha(empleadoIdSeguro);
+      setMensajeVisibilidad(
+        nuevoValor
+          ? "Empleado visible en las tarjetas del módulo Empleados."
+          : "Empleado oculto en las tarjetas del módulo Empleados."
+      );
+    } catch (error) {
+      setMensajeVisibilidad(
+        error?.response?.data?.detail ||
+        "No se ha podido actualizar la visibilidad del empleado."
+      );
+    } finally {
+      setGuardandoVisibilidad(false);
+    }
+  }, [empleadoValido, empleadoIdSeguro, guardandoVisibilidad, empleado?.visible_en_listado, cargarFicha]);
+
+
   const empleadoValido =
     empleado !== null &&
     empleadoIdSeguro !== null &&
@@ -1795,6 +1833,19 @@ const permisosGlobales =
           "
         >
 
+          <button
+            type="button"
+            onClick={cambiarVisibilidadEmpleado}
+            disabled={guardandoVisibilidad}
+            className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${empleado.visible_en_listado === false ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100" : "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100"}`}
+          >
+            {guardandoVisibilidad
+              ? "Guardando…"
+              : empleado.visible_en_listado === false
+                ? "👁️ Mostrar en Empleados"
+                : "🙈 Ocultar de Empleados"}
+          </button>
+
           {empleado.activo ? (
 
             <button
@@ -1847,6 +1898,9 @@ const permisosGlobales =
 
           )}
 
+          {mensajeVisibilidad && (
+            <p className="mt-2 w-full text-sm font-medium text-[var(--erp-text-soft)]" role="status">{mensajeVisibilidad}</p>
+          )}
         </div>
 
       </section>
