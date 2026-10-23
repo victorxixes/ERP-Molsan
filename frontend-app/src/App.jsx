@@ -210,6 +210,16 @@ export default function App() {
               </RequireAuth>
             }
           />
+
+          {/* Fichajes: acceso provisional hasta desarrollar el módulo horario. */}
+          <Route
+            path="fichajes"
+            element={
+              <RequireAuth>
+                <ModuloPendiente nombre="Fichajes" />
+              </RequireAuth>
+            }
+          />
           
           <Route
             path="apoderagest"
