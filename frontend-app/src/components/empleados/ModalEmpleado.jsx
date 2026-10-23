@@ -2689,6 +2689,7 @@ const permisosDisponibles =
 
                         <CampoEditable
                           label="Email empresa"
+                          disabled={!esAdministrador}
                           value={
                             empleadoFormulario.email_empresa
                           }
@@ -2704,6 +2705,7 @@ const permisosDisponibles =
 
                         <CampoEditable
                           label="Extensión"
+                          disabled={!esAdministrador}
                           value={
                             empleadoFormulario.extension
                           }
@@ -2718,6 +2720,7 @@ const permisosDisponibles =
 
                         <CampoEditable
                           label="Usuario"
+                          disabled={!esAdministrador}
                           value={
                             empleadoFormulario.usuario
                           }
@@ -2863,7 +2866,7 @@ const permisosDisponibles =
                                 handleFoto
                               }
                               disabled={
-                                subiendoFoto
+                                subiendoFoto || !esAdministrador
                               }
                               className="hidden"
                             />
@@ -2898,7 +2901,7 @@ const permisosDisponibles =
                 {pestana ===
                   "personales" && (
 
-                  <fieldset disabled={!esAdministrador} className={!esAdministrador ? "space-y-5 [&_input]:cursor-default [&_textarea]:cursor-default [&_button]:hidden" : "space-y-5"}>
+                  <fieldset disabled={!esAdministrador && !esPropiaFicha} className={!esAdministrador && !esPropiaFicha ? "space-y-5 [&_input]:cursor-default [&_textarea]:cursor-default [&_button]:hidden" : "space-y-5"}>
 
                     <section
                       className="
@@ -3084,7 +3087,7 @@ const permisosDisponibles =
                     </section>
 
 
-                    {esAdministrador && <GuardarButton
+                    {(esAdministrador || esPropiaFicha) && <GuardarButton
                       onClick={guardarDatosEmpleado}
                       loading={guardando}
                     />}
