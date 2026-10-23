@@ -160,7 +160,11 @@ export default function Fichajes({ modo = "empleado" }) {
       } else {
         setMensaje(`Marcaje de «${formatearTipo(tipo)}» registrado correctamente a las ${new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}.`);
       }
-      await recargarEmpleado();
+      try {
+        await recargarEmpleado();
+      } catch (actualizacionError) {
+        setError("El marcaje se ha guardado, pero no se pudieron actualizar los datos de pantalla. Recarga la página para comprobarlo.");
+      }
     } catch (e) {
       setError(e?.response?.data?.detail || "No se ha podido registrar el marcaje.");
     } finally { setGuardando(false); }
