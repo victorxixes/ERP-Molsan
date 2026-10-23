@@ -2071,7 +2071,9 @@ const permisosDisponibles =
   // Nunca debe aparecer en la ficha de un empleado estándar, ni siquiera en la propia.
   const pestanasVisibles = esAdministrador
     ? pestanasEmpleado
-    : pestanasEmpleado.filter((item) => ["basicos", "personales"].includes(item.id));
+    : esPropiaFicha
+      ? pestanasEmpleado.filter((item) => ["personales", "laborales"].includes(item.id))
+      : [];
 
   useEffect(() => {
     if (!pestanasVisibles.some((item) => item.id === pestana)) {
