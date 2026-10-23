@@ -2,10 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
 
 const TIPOS = [
-  { value: "ENTRADA", label: "Entrada", icon: "↗", tone: "emerald" },
-  { value: "SALIDA", label: "Salida", icon: "↙", tone: "rose" },
-  { value: "PAUSA_CAFE", label: "Pausa café / desayuno", icon: "☕", tone: "amber" },
-  { value: "AUSENCIA_COMER", label: "Ausencia / comer", icon: "🍽", tone: "sky" },
+  { value: "ENTRADA", label: "Entrada a trabajar", icon: "↗", tone: "emerald" },
+  { value: "PAUSA_CAFE_INICIO", label: "Entrada pausa café / desayuno", icon: "☕", tone: "amber" },
+  { value: "PAUSA_COMIDA_INICIO", label: "Pausa para comer", icon: "🍽️", tone: "sky" },
+  { value: "PAUSA_CIGARRILLO_INICIO", label: "Pausa cigarrillo", icon: "🚬", tone: "amber" },
+  { value: "RETORNO_AUSENCIA", label: "Retorno de pausa / ausencia", icon: "↩", tone: "blue" },
+  { value: "SALIDA", label: "Salida del trabajo", icon: "↙", tone: "rose" },
+  { value: "AUSENCIA", label: "Registrar ausencia", icon: "📅", tone: "violet" },
 ];
 const TIPOS_DOCUMENTO = ["Justificante médico", "Vacaciones", "Ausencia", "Permiso", "Otro"];
 const FECHA_HOY = new Date();
@@ -32,6 +35,9 @@ export default function Fichajes({ modo = "empleado" }) {
   const [perfil, setPerfil] = useState(null);
   const [marcajes, setMarcajes] = useState([]);
   const [documentos, setDocumentos] = useState([]);
+  const [tiposAusencia, setTiposAusencia] = useState([]);
+  const [tipoAusencia, setTipoAusencia] = useState("");
+  const [reloj, setReloj] = useState(new Date());
   const [empleados, setEmpleados] = useState([]);
   const [marcajesAdmin, setMarcajesAdmin] = useState([]);
   const [pestana, setPestana] = useState(modo === "admin" ? "control" : "calendario");
@@ -51,14 +57,14 @@ export default function Fichajes({ modo = "empleado" }) {
 
   const esAdminVista = modo === "admin";
   const recargarEmpleado = useCallback(async () => {
-    const [p, m, d] = await Promise.all([
-      axios.get("/fichajes/mi-perfil"),
-      axios.get("/fichajes/marcajes"),
-      axios.get("/fichajes/documentos"),
+    const [p, m, d, ta] = await Promise.all([
+      axios.get("/fichajes/mi-perfil"), axios.get("/fichajes/marcajes"),
+      axios.get("/fichajes/documentos"), axios.get("/fichajes/catalogo-ausencias"),
     ]);
     setPerfil(p.data);
     setMarcajes(Array.isArray(m.data) ? m.data : []);
     setDocumentos(Array.isArray(d.data) ? d.data : []);
+    setTiposAusencia(Array.isArray(ta.data) ? ta.data : []);
   }, []);
 
   const recargarAdmin = useCallback(async () => {
@@ -105,15 +111,18 @@ export default function Fichajes({ modo = "empleado" }) {
   }, [marcajes]);
 
   const ultimoMarcaje = marcajes[0] || null;
+  useEffect(() => { const timer = window.setInterval(() => setReloj(new Date()), 1000); return () => window.clearInterval(timer); }, []);
   const enviarMarcaje = async (tipo) => {
+    if (tipo === "AUSENCIA" && !tipoAusencia) { setError("Selecciona primero el tipo de ausencia."); return; }
     setGuardando(true); setError(""); setMensaje("");
     try {
       const data = new FormData();
       data.append("tipo", tipo);
       data.append("observaciones", observaciones);
+      if (tipo === "AUSENCIA") data.append("tipo_ausencia", tipoAusencia);
       await axios.post("/fichajes/marcajes", data);
       setObservaciones("");
-      setMensaje(`Marcaje de «${formatearTipo(tipo)}» registrado correctamente.`);
+      setMensaje(`Marcaje de «${formatearTipo(tipo)}» registrado correctamente a las ${new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}.`);
       await recargarEmpleado();
     } catch (e) {
       setError(e?.response?.data?.detail || "No se ha podido registrar el marcaje.");
@@ -175,7 +184,7 @@ export default function Fichajes({ modo = "empleado" }) {
           {!esAdminVista && (
             <section className="rounded-3xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-5 shadow-sm sm:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div><h2 className="text-lg font-bold">Jornada de hoy</h2><p className="mt-1 text-sm text-[var(--erp-text-soft)]">{FECHA_HOY.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p></div>
+                <div><h2 className="text-lg font-bold">Jornada de hoy</h2><p className="mt-1 text-sm text-[var(--erp-text-soft)]">{reloj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p><p className="mt-2 font-mono text-4xl font-extrabold tracking-tight text-blue-800 tabular-nums">{reloj.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p><p className="text-xs text-slate-500">Hora local · reloj en tiempo real</p></div>
                 <div className="rounded-xl bg-slate-50 px-3 py-2 text-sm"><span className="text-slate-500">Último movimiento: </span><strong>{ultimoMarcaje ? formatearTipo(ultimoMarcaje.tipo) : "Sin marcajes hoy"}</strong>{ultimoMarcaje && <span className="ml-2 text-slate-500">{hora(ultimoMarcaje.fecha_hora)}</span>}</div>
               </div>
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -185,6 +194,12 @@ export default function Fichajes({ modo = "empleado" }) {
                   </button>
                 ))}
               </div>
+              <label className="mt-4 block text-xs font-bold text-[var(--erp-text-soft)]">Tipo de ausencia (obligatorio al registrar una ausencia)
+                <select value={tipoAusencia} onChange={(e) => setTipoAusencia(e.target.value)} className="mt-2 w-full rounded-xl border border-[var(--erp-border)] bg-white px-4 py-3 text-sm font-normal text-slate-800">
+                  <option value="">Selecciona una ausencia…</option>
+                  {tiposAusencia.map((x) => <option key={x.id} value={x.nombre}>{x.nombre}{x.requiere_justificante ? " · requiere justificante" : ""}</option>)}
+                </select>
+              </label>
               <label className="mt-4 block text-xs font-bold text-[var(--erp-text-soft)]">Observaciones opcionales
                 <input value={observaciones} onChange={(e) => setObservaciones(e.target.value)} maxLength={500} placeholder="Añadir una nota al marcaje…" className="mt-2 w-full rounded-xl border border-[var(--erp-border)] bg-white px-4 py-3 text-sm font-normal text-slate-800 outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100" />
               </label>
