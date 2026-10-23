@@ -1,7 +1,9 @@
 from datetime import date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
 from io import BytesIO
 from urllib.parse import quote
 import unicodedata
+import json
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
@@ -12,7 +14,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import Base, engine, get_db
 from backend.app.empleados.models import Empleado
-from backend.app.fichajes.models import (FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones, FichajeFestivoTrabajado, FichajeCompensacionMovimiento, FichajeSolicitudCompensacion, FichajeCompensacionAuditoria, FichajeFestivoCalendario)
+from backend.app.fichajes.models import (FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones, FichajeFestivoTrabajado, FichajeCompensacionMovimiento, FichajeSolicitudCompensacion, FichajeCompensacionAuditoria, FichajeFestivoCalendario, FichajeMarcajeAuditoria, FichajePeriodoCerrado, FichajeDocumentoRevision, FichajeSolicitudAusencia)
 
 router = APIRouter(prefix="/fichajes", tags=["Fichaje Molsan"])
 TIPOS_MARCAJE = {"ENTRADA", "SALIDA", "PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_INICIO", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_INICIO", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA", "AUSENCIA"}
@@ -31,7 +33,7 @@ def _migrar_tablas():
             conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
             Base.metadata.create_all(
                 bind=conexion,
-                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__, FichajeTipoAusencia.__table__, FichajeVacaciones.__table__, FichajeBolsaVacaciones.__table__, FichajeFestivoTrabajado.__table__, FichajeCompensacionMovimiento.__table__, FichajeSolicitudCompensacion.__table__, FichajeCompensacionAuditoria.__table__, FichajeFestivoCalendario.__table__],
+                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__, FichajeTipoAusencia.__table__, FichajeVacaciones.__table__, FichajeBolsaVacaciones.__table__, FichajeFestivoTrabajado.__table__, FichajeCompensacionMovimiento.__table__, FichajeSolicitudCompensacion.__table__, FichajeCompensacionAuditoria.__table__, FichajeFestivoCalendario.__table__, FichajeMarcajeAuditoria.__table__, FichajePeriodoCerrado.__table__, FichajeDocumentoRevision.__table__, FichajeSolicitudAusencia.__table__],
                 checkfirst=True,
             )
         from sqlalchemy.orm import Session as _Session
@@ -74,6 +76,42 @@ def _marcaje_dict(m):
         "fecha_hora": m.fecha_hora.isoformat() if m.fecha_hora else None,
         "observaciones": m.observaciones,
     }
+
+
+def _snapshot_marcaje(m):
+    return {
+        "id": m.id,
+        "empleado_id": m.empleado_id,
+        "tipo": m.tipo,
+        "fecha_hora": m.fecha_hora.isoformat() if m.fecha_hora else None,
+        "observaciones": m.observaciones,
+        "creado_por_id": m.creado_por_id,
+    }
+
+
+def _periodo_esta_cerrado(db, fecha_hora):
+    periodo = db.query(FichajePeriodoCerrado).filter(
+        FichajePeriodoCerrado.anio == fecha_hora.year,
+        FichajePeriodoCerrado.mes == fecha_hora.month,
+    ).first()
+    return bool(periodo and periodo.cerrado)
+
+
+def _exigir_periodo_abierto(db, fecha_hora):
+    if _periodo_esta_cerrado(db, fecha_hora):
+        raise HTTPException(status_code=409, detail="El periodo de este marcaje está cerrado. Un administrador autorizado debe reabrir el mes indicando el motivo antes de modificarlo.")
+
+
+def _registrar_auditoria_marcaje(db, marcaje, actor, accion, anterior, nuevo, motivo):
+    db.add(FichajeMarcajeAuditoria(
+        marcaje_id=marcaje.id if marcaje else None,
+        empleado_id=(marcaje.empleado_id if marcaje else nuevo["empleado_id"]),
+        actor_id=actor.id,
+        accion=accion,
+        datos_anteriores=json.dumps(anterior, ensure_ascii=False, default=str) if anterior else None,
+        datos_nuevos=json.dumps(nuevo, ensure_ascii=False, default=str),
+        motivo=motivo.strip()[:500],
+    ))
 
 
 def _documento_dict(d):
@@ -190,7 +228,11 @@ def listar_mis_documentos(
     documentos = db.query(FichajeDocumento).filter(
         FichajeDocumento.empleado_id == usuario.id
     ).order_by(desc(FichajeDocumento.subido_en)).limit(500).all()
-    return [_documento_dict(d) for d in documentos]
+    resultado = []
+    for d in documentos:
+        revision = db.query(FichajeDocumentoRevision).filter(FichajeDocumentoRevision.documento_id == d.id).order_by(desc(FichajeDocumentoRevision.creado_en)).first()
+        resultado.append({**_documento_dict(d), "revision_estado": revision.estado if revision else "PENDIENTE", "revision_motivo": revision.motivo if revision else None})
+    return resultado
 
 
 @router.post("/documentos")
@@ -268,6 +310,9 @@ def admin_marcajes(
     desde: date | None = Query(default=None),
     hasta: date | None = Query(default=None),
     empleado_id: int | None = Query(default=None),
+    tipo: str | None = Query(default=None),
+    estado: str | None = Query(default=None),
+    busqueda: str | None = Query(default=None),
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -280,11 +325,161 @@ def admin_marcajes(
         consulta = consulta.filter(FichajeMarcaje.fecha_hora >= datetime.combine(desde, time.min))
     if hasta:
         consulta = consulta.filter(FichajeMarcaje.fecha_hora < datetime.combine(hasta + timedelta(days=1), time.min))
+    if tipo:
+        consulta = consulta.filter(FichajeMarcaje.tipo == tipo.strip().upper())
+    if busqueda and busqueda.strip():
+        patron = "%" + busqueda.strip()[:100] + "%"
+        consulta = consulta.filter((Empleado.nombre.ilike(patron)) | (Empleado.apellidos.ilike(patron)) | (Empleado.usuario.ilike(patron)) | (FichajeMarcaje.observaciones.ilike(patron)))
     filas = consulta.order_by(desc(FichajeMarcaje.fecha_hora)).limit(5000).all()
+    ids = [m.id for m, _ in filas]
+    auditados = set()
+    if ids:
+        auditados = {row[0] for row in db.query(FichajeMarcajeAuditoria.marcaje_id).filter(FichajeMarcajeAuditoria.marcaje_id.in_(ids)).distinct().all()}
+    resultado = []
+    for m, e in filas:
+        modificado = m.id in auditados
+        if estado == "MODIFICADO" and not modificado:
+            continue
+        if estado == "ORIGINAL" and modificado:
+            continue
+        resultado.append({**_marcaje_dict(m), "empleado_nombre": _nombre_completo(e) or e.usuario,
+                          "creado_por_id": m.creado_por_id, "modificado": modificado,
+                          "periodo_cerrado": _periodo_esta_cerrado(db, m.fecha_hora)})
+    return resultado
+
+
+@router.post("/admin/marcajes")
+def admin_crear_marcaje(
+    empleado_id: int = Form(...),
+    tipo: str = Form(...),
+    fecha_hora: str = Form(...),
+    motivo: str = Form(...),
+    observaciones: str = Form(""),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_perm_modulo(usuario, "fichajes", "crear")
+    _exigir_admin(usuario)
+    motivo = (motivo or "").strip()
+    if len(motivo) < 5:
+        raise HTTPException(status_code=422, detail="Indica un motivo de al menos cinco caracteres para el marcaje añadido.")
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    if not empleado:
+        raise HTTPException(status_code=404, detail="No se encuentra el empleado seleccionado.")
+    tipo = tipo.strip().upper()
+    if tipo not in TIPOS_MARCAJE and tipo != "AUSENCIA_PUNTUAL":
+        raise HTTPException(status_code=422, detail="Tipo de marcaje no válido.")
+    try:
+        instante = datetime.fromisoformat(fecha_hora)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=422, detail="Fecha y hora no válidas.")
+    if instante.tzinfo is None:
+        instante = instante.replace(tzinfo=ZoneInfo("Europe/Madrid"))
+    _exigir_periodo_abierto(db, instante)
+    marcaje = FichajeMarcaje(empleado_id=empleado_id, tipo=tipo, fecha_hora=instante,
+                            observaciones=(observaciones or "").strip()[:500] or None, creado_por_id=usuario.id)
+    db.add(marcaje)
+    db.flush()
+    nuevo = _snapshot_marcaje(marcaje)
+    _registrar_auditoria_marcaje(db, marcaje, usuario, "ALTA_ADMIN", None, nuevo, motivo)
+    db.commit()
+    db.refresh(marcaje)
+    return {**_marcaje_dict(marcaje), "creado_por_id": usuario.id, "modificado": True}
+
+
+@router.patch("/admin/marcajes/{marcaje_id}")
+def admin_editar_marcaje(
+    marcaje_id: int,
+    empleado_id: int = Form(...),
+    tipo: str = Form(...),
+    fecha_hora: str = Form(...),
+    motivo: str = Form(...),
+    observaciones: str = Form(""),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    motivo = (motivo or "").strip()
+    if len(motivo) < 5:
+        raise HTTPException(status_code=422, detail="Indica el motivo de la corrección (mínimo cinco caracteres).")
+    marcaje = db.query(FichajeMarcaje).filter(FichajeMarcaje.id == marcaje_id).with_for_update().first()
+    if not marcaje:
+        raise HTTPException(status_code=404, detail="El marcaje que quieres corregir no existe.")
+    try:
+        nuevo_instante = datetime.fromisoformat(fecha_hora)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=422, detail="Fecha y hora no válidas.")
+    if nuevo_instante.tzinfo is None:
+        nuevo_instante = nuevo_instante.replace(tzinfo=ZoneInfo("Europe/Madrid"))
+    _exigir_periodo_abierto(db, marcaje.fecha_hora)
+    _exigir_periodo_abierto(db, nuevo_instante)
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    if not empleado:
+        raise HTTPException(status_code=404, detail="No se encuentra el empleado seleccionado.")
+    tipo = tipo.strip().upper()
+    if tipo not in TIPOS_MARCAJE and tipo != "AUSENCIA_PUNTUAL":
+        raise HTTPException(status_code=422, detail="Tipo de marcaje no válido.")
+    anterior = _snapshot_marcaje(marcaje)
+    marcaje.empleado_id = empleado_id
+    marcaje.tipo = tipo
+    marcaje.fecha_hora = nuevo_instante
+    marcaje.observaciones = (observaciones or "").strip()[:500] or None
+    nuevo = _snapshot_marcaje(marcaje)
+    _registrar_auditoria_marcaje(db, marcaje, usuario, "CORRECCION_ADMIN", anterior, nuevo, motivo)
+    db.commit()
+    db.refresh(marcaje)
+    return {**_marcaje_dict(marcaje), "creado_por_id": marcaje.creado_por_id, "modificado": True}
+
+
+@router.get("/admin/marcajes/{marcaje_id}/auditoria")
+def admin_auditoria_marcaje(marcaje_id: int, usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    registros = db.query(FichajeMarcajeAuditoria, Empleado).outerjoin(Empleado, Empleado.id == FichajeMarcajeAuditoria.actor_id).filter(
+        FichajeMarcajeAuditoria.marcaje_id == marcaje_id
+    ).order_by(FichajeMarcajeAuditoria.creado_en.desc()).all()
     return [{
-        **_marcaje_dict(m),
-        "empleado_nombre": _nombre_completo(e) or e.usuario,
-    } for m, e in filas]
+        "id": a.id, "marcaje_id": a.marcaje_id, "empleado_id": a.empleado_id,
+        "actor_id": a.actor_id, "actor_nombre": (_nombre_completo(actor) or actor.usuario) if actor else "Usuario eliminado",
+        "accion": a.accion, "datos_anteriores": json.loads(a.datos_anteriores) if a.datos_anteriores else None,
+        "datos_nuevos": json.loads(a.datos_nuevos), "motivo": a.motivo,
+        "creado_en": a.creado_en.isoformat() if a.creado_en else None
+    } for a, actor in registros]
+
+
+@router.get("/admin/periodos")
+def admin_listar_periodos(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    return [{"anio": p.anio, "mes": p.mes, "cerrado": bool(p.cerrado), "motivo": p.motivo,
+             "actualizado_en": p.actualizado_en.isoformat() if p.actualizado_en else None}
+            for p in db.query(FichajePeriodoCerrado).order_by(FichajePeriodoCerrado.anio.desc(), FichajePeriodoCerrado.mes.desc()).all()]
+
+
+@router.post("/admin/periodos")
+def admin_cambiar_periodo(
+    anio: int = Form(...), mes: int = Form(...), cerrado: bool = Form(...), motivo: str = Form(...),
+    usuario=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    if anio < 2000 or anio > 2100 or mes < 1 or mes > 12:
+        raise HTTPException(status_code=422, detail="Mes o año no válidos.")
+    motivo = (motivo or "").strip()
+    if len(motivo) < 5:
+        raise HTTPException(status_code=422, detail="Indica un motivo para cerrar o reabrir el periodo.")
+    periodo = db.query(FichajePeriodoCerrado).filter(FichajePeriodoCerrado.anio == anio, FichajePeriodoCerrado.mes == mes).with_for_update().first()
+    if not periodo:
+        periodo = FichajePeriodoCerrado(anio=anio, mes=mes, cerrado=1 if cerrado else 0, motivo=motivo, actor_id=usuario.id)
+        db.add(periodo)
+    else:
+        periodo.cerrado = 1 if cerrado else 0
+        periodo.motivo = motivo
+        periodo.actor_id = usuario.id
+    db.commit()
+    return {"anio": anio, "mes": mes, "cerrado": bool(cerrado), "motivo": motivo}
+
 
  
 @router.get("/catalogo-ausencias")
@@ -368,39 +563,133 @@ def solicitar_vacaciones(fecha_inicio: date = Form(...), fecha_fin: date = Form(
     return {"id": registro.id, "estado": registro.estado, "dias": registro.dias}
 
 
-@router.get("/resumen-horas")
-def resumen_horas(anio: int | None = Query(default=None), usuario=Depends(get_current_user), db: Session = Depends(get_db)):
-    anio = anio or date.today().year
+@router.get("/solicitudes-ausencia")
+def listar_mis_solicitudes_ausencia(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
     require_perm_modulo(usuario, "fichajes", "ver")
-    if anio < 2000 or anio > 2100:
-        raise HTTPException(status_code=422, detail="Año no válido.")
-    inicio, fin = date(anio, 1, 1), date(anio + 1, 1, 1)
-    registros = db.query(FichajeMarcaje).filter(FichajeMarcaje.empleado_id == usuario.id,
-        FichajeMarcaje.fecha_hora >= datetime.combine(inicio, time.min), FichajeMarcaje.fecha_hora < datetime.combine(fin, time.min)).order_by(FichajeMarcaje.fecha_hora).all()
-    # AUSENCIA es el tipo histórico de pausa con retorno; AUSENCIA_PUNTUAL no resta horas.
-    pausas = {"PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"}
-    retornos = {"PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"}
-    jornada_abierta = None; pausa_abierta = None; pausa_segundos = 0; segundos = 0; incompletos = 0
-    for m in registros:
-        ts = m.fecha_hora
-        if m.tipo == "ENTRADA":
-            if jornada_abierta is not None: incompletos += 1
-            jornada_abierta = ts; pausa_abierta = None; pausa_segundos = 0
-        elif m.tipo in pausas and jornada_abierta is not None:
-            if pausa_abierta is None: pausa_abierta = ts
-        elif m.tipo in retornos and pausa_abierta is not None:
-            pausa_segundos += max(0, (ts - pausa_abierta).total_seconds())
-            pausa_abierta = None
-        elif m.tipo == "SALIDA" and jornada_abierta is not None:
-            fin_pausa = 0
-            if pausa_abierta is not None:
-                fin_pausa = max(0, (ts - pausa_abierta).total_seconds()); incompletos += 1
-            segundos += max(0, (ts - jornada_abierta).total_seconds() - pausa_segundos - fin_pausa)
-            jornada_abierta = None; pausa_abierta = None; pausa_segundos = 0
-    if jornada_abierta is not None: incompletos += 1
-    return {"anio": anio, "horas_trabajadas": round(max(0, segundos) / 3600, 2), "horas_previstas": None,
-            "diferencia_horas": None, "marcajes": len(registros), "jornadas_incompletas": incompletos,
-            "aviso": "Las horas previstas y la diferencia se habilitarán al configurar el calendario laboral individual."}
+    filas = db.query(FichajeSolicitudAusencia).filter(FichajeSolicitudAusencia.empleado_id == usuario.id).order_by(desc(FichajeSolicitudAusencia.creado_en)).limit(500).all()
+    return [{"id": a.id, "fecha_inicio": a.fecha_inicio.isoformat(), "fecha_fin": a.fecha_fin.isoformat(),
+             "tipo_ausencia": a.tipo_ausencia, "observaciones": a.observaciones, "estado": a.estado,
+             "creado_en": a.creado_en.isoformat() if a.creado_en else None, "motivo_resolucion": a.motivo_resolucion}
+            for a in filas]
+
+
+@router.post("/solicitudes-ausencia")
+def crear_solicitud_ausencia(
+    fecha_inicio: date = Form(...), fecha_fin: date = Form(...), tipo_ausencia: str = Form(...),
+    observaciones: str = Form(""), usuario=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    require_perm_modulo(usuario, "fichajes", "crear")
+    if fecha_fin < fecha_inicio:
+        raise HTTPException(status_code=422, detail="La fecha final no puede ser anterior a la inicial.")
+    if (fecha_fin - fecha_inicio).days > 60:
+        raise HTTPException(status_code=422, detail="Una solicitud no puede superar 60 días naturales.")
+    tipo = (tipo_ausencia or "").strip()
+    catalogo = db.query(FichajeTipoAusencia).filter(FichajeTipoAusencia.nombre == tipo, FichajeTipoAusencia.activo == 1).first()
+    if not catalogo:
+        raise HTTPException(status_code=422, detail="Selecciona un tipo de ausencia válido.")
+    solapada = db.query(FichajeSolicitudAusencia).filter(
+        FichajeSolicitudAusencia.empleado_id == usuario.id,
+        FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}),
+        FichajeSolicitudAusencia.fecha_inicio <= fecha_fin,
+        FichajeSolicitudAusencia.fecha_fin >= fecha_inicio,
+    ).first()
+    if solapada:
+        raise HTTPException(status_code=409, detail="Ya existe una solicitud de ausencia pendiente o aprobada en esas fechas.")
+    vacaciones = db.query(FichajeVacaciones).filter(
+        FichajeVacaciones.empleado_id == usuario.id,
+        FichajeVacaciones.estado.in_({"SOLICITADO", "APROBADO"}),
+        FichajeVacaciones.fecha_inicio <= fecha_fin,
+        FichajeVacaciones.fecha_fin >= fecha_inicio,
+    ).first()
+    if vacaciones:
+        raise HTTPException(status_code=409, detail="Ya hay una solicitud de vacaciones pendiente o aprobada en esas fechas.")
+    compensacion = db.query(FichajeSolicitudCompensacion).filter(
+        FichajeSolicitudCompensacion.empleado_id == usuario.id,
+        FichajeSolicitudCompensacion.estado.in_({"SOLICITADO", "APROBADO"}),
+        FichajeSolicitudCompensacion.fecha_disfrute >= fecha_inicio,
+        FichajeSolicitudCompensacion.fecha_disfrute <= fecha_fin,
+    ).first()
+    if compensacion:
+        raise HTTPException(status_code=409, detail="Ya hay una solicitud de compensación pendiente o aprobada en esas fechas.")
+    registro = FichajeSolicitudAusencia(empleado_id=usuario.id, fecha_inicio=fecha_inicio, fecha_fin=fecha_fin,
+        tipo_ausencia=tipo, observaciones=(observaciones or "").strip()[:500] or None, estado="SOLICITADO")
+    db.add(registro)
+    db.commit()
+    db.refresh(registro)
+    return {"id": registro.id, "estado": registro.estado}
+
+
+@router.get("/admin/solicitudes-ausencia")
+def admin_listar_solicitudes_ausencia(
+    estado: str | None = Query(default=None), empleado_id: int | None = Query(default=None),
+    desde: date | None = Query(default=None), hasta: date | None = Query(default=None),
+    usuario=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    consulta = db.query(FichajeSolicitudAusencia, Empleado).join(Empleado, Empleado.id == FichajeSolicitudAusencia.empleado_id)
+    if estado:
+        consulta = consulta.filter(FichajeSolicitudAusencia.estado == estado.strip().upper())
+    if empleado_id:
+        consulta = consulta.filter(FichajeSolicitudAusencia.empleado_id == empleado_id)
+    if desde:
+        consulta = consulta.filter(FichajeSolicitudAusencia.fecha_fin >= desde)
+    if hasta:
+        consulta = consulta.filter(FichajeSolicitudAusencia.fecha_inicio <= hasta)
+    return [{"id": a.id, "empleado_id": a.empleado_id, "empleado_nombre": _nombre_completo(e) or e.usuario,
+             "fecha_inicio": a.fecha_inicio.isoformat(), "fecha_fin": a.fecha_fin.isoformat(), "tipo_ausencia": a.tipo_ausencia,
+             "observaciones": a.observaciones, "estado": a.estado, "creado_en": a.creado_en.isoformat() if a.creado_en else None,
+             "motivo_resolucion": a.motivo_resolucion} for a, e in consulta.order_by(desc(FichajeSolicitudAusencia.creado_en)).limit(2000).all()]
+
+
+@router.patch("/admin/solicitudes-ausencia/{solicitud_id}")
+def admin_resolver_solicitud_ausencia(
+    solicitud_id: int, estado: str = Form(...), motivo: str = Form(...),
+    usuario=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    registro = db.query(FichajeSolicitudAusencia).filter(FichajeSolicitudAusencia.id == solicitud_id).with_for_update().first()
+    if not registro:
+        raise HTTPException(status_code=404, detail="No se encuentra la solicitud de ausencia.")
+    estado = estado.strip().upper()
+    if estado not in {"APROBADO", "RECHAZADO"}:
+        raise HTTPException(status_code=422, detail="Estado de resolución no válido.")
+    motivo = (motivo or "").strip()
+    if len(motivo) < 5:
+        raise HTTPException(status_code=422, detail="Indica el motivo de la resolución (mínimo cinco caracteres).")
+    if estado == "APROBADO":
+        vacaciones = db.query(FichajeVacaciones).filter(
+            FichajeVacaciones.empleado_id == registro.empleado_id,
+            FichajeVacaciones.estado.in_({"SOLICITADO", "APROBADO"}),
+            FichajeVacaciones.fecha_inicio <= registro.fecha_fin,
+            FichajeVacaciones.fecha_fin >= registro.fecha_inicio,
+        ).first()
+        if vacaciones:
+            raise HTTPException(status_code=409, detail="La solicitud se solapa con vacaciones ya aprobadas.")
+        otra = db.query(FichajeSolicitudAusencia).filter(
+            FichajeSolicitudAusencia.id != registro.id,
+            FichajeSolicitudAusencia.empleado_id == registro.empleado_id,
+            FichajeSolicitudAusencia.estado == "APROBADO",
+            FichajeSolicitudAusencia.fecha_inicio <= registro.fecha_fin,
+            FichajeSolicitudAusencia.fecha_fin >= registro.fecha_inicio,
+        ).first()
+        if otra:
+            raise HTTPException(status_code=409, detail="La solicitud se solapa con otra ausencia aprobada.")
+        compensacion = db.query(FichajeSolicitudCompensacion).filter(
+            FichajeSolicitudCompensacion.empleado_id == registro.empleado_id,
+            FichajeSolicitudCompensacion.estado.in_({"SOLICITADO", "APROBADO"}),
+            FichajeSolicitudCompensacion.fecha_disfrute >= registro.fecha_inicio,
+            FichajeSolicitudCompensacion.fecha_disfrute <= registro.fecha_fin,
+        ).first()
+        if compensacion:
+            raise HTTPException(status_code=409, detail="La solicitud se solapa con una compensación pendiente o aprobada.")
+    registro.estado = estado
+    registro.motivo_resolucion = motivo[:500]
+    registro.resuelto_por_id = usuario.id
+    registro.resuelto_en = datetime.now()
+    db.commit()
+    return {"id": registro.id, "estado": registro.estado, "motivo_resolucion": registro.motivo_resolucion}
 
 
 @router.get("/admin/vacaciones")
@@ -471,6 +760,14 @@ def admin_resolver_solicitud_vacaciones(
         ).first()
         if conflicto_compensacion:
             raise HTTPException(status_code=409, detail="No se puede aprobar: hay una solicitud de compensación en esas fechas.")
+        conflicto_ausencia = db.query(FichajeSolicitudAusencia).filter(
+            FichajeSolicitudAusencia.empleado_id == solicitud.empleado_id,
+            FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}),
+            FichajeSolicitudAusencia.fecha_inicio <= solicitud.fecha_fin,
+            FichajeSolicitudAusencia.fecha_fin >= solicitud.fecha_inicio,
+        ).first()
+        if conflicto_ausencia:
+            raise HTTPException(status_code=409, detail="No se puede aprobar: hay una solicitud de ausencia pendiente o aprobada en esas fechas.")
         bolsa = db.query(FichajeBolsaVacaciones).filter(
             FichajeBolsaVacaciones.empleado_id == solicitud.empleado_id,
             FichajeBolsaVacaciones.anio == solicitud.fecha_inicio.year,
@@ -515,10 +812,36 @@ def admin_listar_documentos(
     if hasta:
         consulta = consulta.filter(FichajeDocumento.fecha_documento <= hasta)
     filas = consulta.order_by(desc(FichajeDocumento.subido_en)).limit(2000).all()
-    return [{
-        **_documento_dict(d),
-        "empleado_nombre": _nombre_completo(e) or e.usuario,
-    } for d, e in filas]
+    resultado = []
+    for d, e in filas:
+        revision = db.query(FichajeDocumentoRevision).filter(FichajeDocumentoRevision.documento_id == d.id).order_by(desc(FichajeDocumentoRevision.creado_en)).first()
+        resultado.append({**_documento_dict(d), "empleado_nombre": _nombre_completo(e) or e.usuario, "revision_estado": revision.estado if revision else "PENDIENTE", "revision_motivo": revision.motivo if revision else None})
+    return resultado
+
+
+
+@router.patch("/admin/documentos/{documento_id}/revision")
+def admin_revisar_documento(
+    documento_id: int, estado: str = Form(...), motivo: str = Form(...),
+    usuario=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    documento = db.query(FichajeDocumento).filter(FichajeDocumento.id == documento_id).first()
+    if not documento:
+        raise HTTPException(status_code=404, detail="No se encuentra el justificante.")
+    estado = estado.strip().upper()
+    if estado not in {"APROBADO", "RECHAZADO"}:
+        raise HTTPException(status_code=422, detail="La revisión debe aprobarse o rechazarse.")
+    motivo = (motivo or "").strip()
+    if len(motivo) < 5:
+        raise HTTPException(status_code=422, detail="Indica el motivo de la revisión (mínimo cinco caracteres).")
+    revision = FichajeDocumentoRevision(documento_id=documento_id, estado=estado, motivo=motivo[:500], actor_id=usuario.id)
+    db.add(revision)
+    db.commit()
+    db.refresh(revision)
+    return {"id": revision.id, "documento_id": documento_id, "estado": estado, "motivo": revision.motivo,
+            "creado_en": revision.creado_en.isoformat() if revision.creado_en else None}
 
 
 @router.get("/admin/vacaciones-bolsa")
@@ -677,6 +1000,14 @@ def solicitar_compensacion(fecha_disfrute: date = Form(...), cantidad: float = F
     ).first()
     if vacaciones_duplicadas:
         raise HTTPException(status_code=409, detail="Ya existe una solicitud de vacaciones ordinarias para esa fecha. No se puede reservar también como compensación.")
+    ausencia_duplicada = db.query(FichajeSolicitudAusencia).filter(
+        FichajeSolicitudAusencia.empleado_id == usuario.id,
+        FichajeSolicitudAusencia.fecha_inicio <= fecha_disfrute,
+        FichajeSolicitudAusencia.fecha_fin >= fecha_disfrute,
+        FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}),
+    ).first()
+    if ausencia_duplicada:
+        raise HTTPException(status_code=409, detail="Ya existe una solicitud de ausencia pendiente o aprobada para esa fecha.")
     _procesar_compensaciones_vencidas(db, usuario.id)
     disponible = _saldo_disponible_compensacion(db, usuario.id, unidad)
     if cantidad > disponible + 0.0001:
@@ -802,6 +1133,14 @@ def admin_resolver_solicitud_compensacion(solicitud_id: int, estado: str = Form(
     if estado not in ESTADOS_SOLICITUD: raise HTTPException(status_code=422, detail="El estado debe ser APROBADO o RECHAZADO.")
     anterior = s.estado
     if estado == "APROBADO":
+        vacaciones = db.query(FichajeVacaciones).filter(FichajeVacaciones.empleado_id == s.empleado_id,
+            FichajeVacaciones.estado.in_({"SOLICITADO", "APROBADO"}), FichajeVacaciones.fecha_inicio <= s.fecha_disfrute,
+            FichajeVacaciones.fecha_fin >= s.fecha_disfrute).first()
+        if vacaciones: raise HTTPException(status_code=409, detail="No se puede aprobar: hay vacaciones pendientes o aprobadas en esa fecha.")
+        ausencia = db.query(FichajeSolicitudAusencia).filter(FichajeSolicitudAusencia.empleado_id == s.empleado_id,
+            FichajeSolicitudAusencia.estado.in_({"SOLICITADO", "APROBADO"}), FichajeSolicitudAusencia.fecha_inicio <= s.fecha_disfrute,
+            FichajeSolicitudAusencia.fecha_fin >= s.fecha_disfrute).first()
+        if ausencia: raise HTTPException(status_code=409, detail="No se puede aprobar: hay una ausencia pendiente o aprobada en esa fecha.")
         _procesar_compensaciones_vencidas(db, s.empleado_id)
         disponible_sin_esta = _saldo_compensacion(db, s.empleado_id, s.unidad) - sum(float(x.cantidad) for x in db.query(FichajeSolicitudCompensacion).filter(
             FichajeSolicitudCompensacion.empleado_id == s.empleado_id,
