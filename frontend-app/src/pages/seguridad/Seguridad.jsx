@@ -138,8 +138,8 @@ export default function Seguridad() {
           <p className="mt-0.5 text-sm text-[var(--erp-text-soft)]">Cada función tiene su propia pantalla para evitar formularios y listados duplicados.</p>
         </div>
         <div className="seguridad-accesos-grid">
-          <Acceso to="/seguridad/usuarios" icon="users" title="Empleados y permisos" description="Selecciona empleados y gestiona su acceso según los permisos de tu perfil." />
-          <Acceso to="/seguridad/roles/editor" icon="shield-check" title="Roles" description="Crea, edita y administra los perfiles de seguridad que se asignan a los empleados." />
+          <Acceso to="/seguridad/usuarios" icon="user-group" title="Empleados y permisos" description="Selecciona empleados y gestiona su acceso según los permisos de tu perfil." />
+          <Acceso to="/seguridad/roles/editor" icon="shield" title="Roles" description="Crea, edita y administra los perfiles de seguridad que se asignan a los empleados." />
           <Acceso to="/seguridad/modulos" icon="folder" title="Módulos y permisos" description="Consulta los módulos del ERP y la configuración de acceso disponible." />
           <Acceso to="/auditoria" icon="clipboard-list" title="Auditoría" description="Consulta las operaciones y los eventos registrados en el sistema." />
         </div>
