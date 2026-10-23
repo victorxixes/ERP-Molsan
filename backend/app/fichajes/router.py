@@ -12,6 +12,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import Base, engine, get_db
 from backend.app.empleados.models import Empleado
+from backend.app.agenda.models import Cita
 from backend.app.fichajes.models import (FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones, FichajeFestivoTrabajado, FichajeCompensacionMovimiento, FichajeSolicitudCompensacion, FichajeCompensacionAuditoria, FichajeFestivoCalendario)
 
 router = APIRouter(prefix="/fichajes", tags=["Fichaje Molsan"])
@@ -65,6 +66,34 @@ def _exigir_admin(usuario):
     if not _es_admin(usuario):
         raise HTTPException(status_code=403, detail="Solo administración puede acceder al Control de Fichajes.")
 
+
+
+def _sincronizar_vacaciones_agenda(db, empleado_id: int):
+    """Sincroniza vacaciones aprobadas de colaboradores con la agenda."""
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    prefijo = f"[FICHAJES_VACACIONES:{empleado_id}:"
+    existentes = db.query(Cita).filter(Cita.apoderado_id == empleado_id, Cita.tipo_cita == "Ausencia aprobada · Vacaciones", Cita.observaciones.like(f"%{prefijo}%")).all()
+    aprobadas = db.query(FichajeVacaciones).filter(FichajeVacaciones.empleado_id == empleado_id, FichajeVacaciones.estado == "APROBADO").all() if empleado and empleado.activo and bool(getattr(empleado, "es_colaborador", False)) else []
+    deseadas = {}
+    for solicitud in aprobadas:
+        dia = solicitud.fecha_inicio
+        while dia <= solicitud.fecha_fin:
+            marcador = f"{prefijo}{solicitud.id}]"
+            deseadas[(solicitud.id, dia)] = marcador
+            dia += timedelta(days=1)
+    existentes_por_marcador = {}
+    for cita in existentes:
+        marcador = next((m for m in deseadas.values() if m in (cita.observaciones or "")), None)
+        if marcador and marcador not in existentes_por_marcador:
+            existentes_por_marcador[marcador] = cita
+        else:
+            db.delete(cita)
+    nombre = _nombre_completo(empleado) if empleado else str(empleado_id)
+    for (solicitud_id, dia), marcador in deseadas.items():
+        if marcador in existentes_por_marcador:
+            continue
+        db.add(Cita(fecha=dia, hora_inicio=time(0, 0), hora_fin=time(23, 59), tipo_cita="Ausencia aprobada · Vacaciones", apoderado=nombre, apoderado_id=empleado_id, observaciones=f"{marcador} Vacaciones aprobadas desde Fichaje Molsan."))
+    db.flush()
 
 def _marcaje_dict(m):
     return {
@@ -490,6 +519,8 @@ def admin_resolver_solicitud_vacaciones(
     if observaciones.strip():
         solicitud.observaciones = (solicitud.observaciones or "")
         solicitud.observaciones += (" | " if solicitud.observaciones else "") + observaciones.strip()[:400]
+    db.flush()
+    _sincronizar_vacaciones_agenda(db, solicitud.empleado_id)
     db.commit()
     db.refresh(solicitud)
     return {"id": solicitud.id, "estado": solicitud.estado, "dias": solicitud.dias}
