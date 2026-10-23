@@ -775,6 +775,37 @@ def _normalizar_usuario_portal(valor):
     return "".join(str(valor or "").upper().split()).replace("-", "").replace(".", "")
 
 
+@router.get("/accesos-portales/resumen")
+def resumen_accesos_portales_notarias(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    puede_notargest = _tiene_permiso_portal(usuario, "notargestweb", "ver")
+    puede_encargagest = _tiene_permiso_portal(usuario, "encargagestweb", "ver")
+    if not (puede_notargest or puede_encargagest):
+        raise HTTPException(status_code=403, detail="No tienes permiso para consultar los accesos notariales.")
+
+    total_notargest = None
+    total_encargagest = None
+    if puede_notargest:
+        total_notargest = db.query(Notaria).filter(
+            Notaria.notargest_habilitado.is_(True)
+        ).count()
+    if puede_encargagest:
+        total_encargagest = db.query(EncargoExternoUsuario).filter(
+            EncargoExternoUsuario.habilitado.is_(True)
+        ).count()
+
+    return {
+        "notargest_habilitados": total_notargest,
+        "encargagest_habilitados": total_encargagest,
+        "permisos": {
+            "notargestweb": {"ver": puede_notargest},
+            "encargagestweb": {"ver": puede_encargagest},
+        },
+    }
+
+
 @router.get("/notarias/{notaria_id}/accesos-portales")
 def obtener_accesos_portales_notaria(
     notaria_id: int,
