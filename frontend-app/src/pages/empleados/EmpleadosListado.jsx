@@ -304,7 +304,8 @@ export default function EmpleadosListado({
     setActivo,
   ] = useState(null);
 
-  const [mostrarOcultos, setMostrarOcultos] = useState(false);
+  // En Seguridad (solo accesible a administradores autorizados), mostrar ocultos por defecto.
+  const [mostrarOcultos, setMostrarOcultos] = useState(incluirOcultos);
 
 
   const [
