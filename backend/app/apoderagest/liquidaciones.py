@@ -27,6 +27,11 @@ class LiquidacionMensual(Base):
     estado_relacion = Column(String(30), nullable=False, default="pendiente")
     validado_en = Column(DateTime(timezone=True), nullable=True)
     validado_por_id = Column(Integer, ForeignKey("empleados.id"), nullable=True)
+    historial_validaciones = Column(JSONB, nullable=False, default=list)
+    estado_revision_relacion = Column(String(30), nullable=False, default="pendiente_revision")
+    relacion_revisada_por = Column(Integer, ForeignKey("empleados.id"), nullable=True)
+    relacion_revisada_en = Column(DateTime(timezone=True), nullable=True)
+    observaciones_revision_relacion = Column(String(2000), nullable=True)
     validado_version = Column(Integer, nullable=False, default=1)
     discrepancia = Column(String(2000), nullable=True)
     factura_bytes = Column(LargeBinary, nullable=True)
@@ -53,7 +58,7 @@ def _es_admin(usuario):
     usuario_nombre = str(getattr(usuario, "usuario", "") or "").casefold()
     if usuario_nombre == "admin" or "admin" in rol or "administrador" in rol:
         return True
-    for modulo in ("utilidades", "apoderagest", "seguridad"):
+    for modulo in ("utilidades", "seguridad"):
         try:
             require_perm_modulo(usuario, modulo, "editar")
             return True
@@ -101,6 +106,9 @@ def _dict(item, db, incluir_datos_factura=False):
         "periodo": item.periodo, "expedientes": item.expedientes_json or [],
         "estado_relacion": item.estado_relacion, "validado_en": item.validado_en.isoformat() if item.validado_en else None,
         "validado_por_id": item.validado_por_id, "validado_version": item.validado_version, "discrepancia": item.discrepancia,
+        "historial_validaciones": item.historial_validaciones or [], "estado_revision_relacion": item.estado_revision_relacion,
+        "relacion_revisada_en": item.relacion_revisada_en.isoformat() if item.relacion_revisada_en else None,
+        "observaciones_revision_relacion": item.observaciones_revision_relacion,
         "factura_nombre": item.factura_nombre, "factura_subida_en": item.factura_subida_en.isoformat() if item.factura_subida_en else None,
         "estado_factura": item.estado_factura, "factura_revisada_en": item.factura_revisada_en.isoformat() if item.factura_revisada_en else None,
         "factura_observaciones": item.factura_observaciones,
@@ -153,6 +161,19 @@ def validar_mi_relacion(liquidacion_id: int, discrepancia: str = Form(""), db: S
     item.validado_en = datetime.utcnow()
     item.validado_por_id = usuario.id
     item.validado_version = item.validado_version or 1
+    historial = list(item.historial_validaciones or [])
+    historial.append({
+        "version": item.validado_version,
+        "validado_en": item.validado_en.isoformat(),
+        "validado_por_id": usuario.id,
+        "expedientes": item.expedientes_json or [],
+        "discrepancia": item.discrepancia,
+    })
+    item.historial_validaciones = historial
+    item.estado_revision_relacion = "pendiente_revision"
+    item.relacion_revisada_por = None
+    item.relacion_revisada_en = None
+    item.observaciones_revision_relacion = None
     db.commit()
     db.refresh(item)
     return _dict(item, db)
@@ -214,6 +235,28 @@ def marcar_colaborador(empleado_id: int, es_colaborador: bool, db: Session = Dep
     empleado.es_colaborador = es_colaborador
     db.commit()
     return {"id": empleado.id, "nombre": _nombre(empleado), "es_colaborador": bool(empleado.es_colaborador)}
+
+@router.post("/admin/{liquidacion_id}/relacion/revisar")
+def revisar_relacion(liquidacion_id: int, decision: str = Form(...), observaciones: str = Form(""), db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_admin(usuario)
+    if decision not in {"aceptada", "rechazada", "correccion_solicitada"}:
+        raise HTTPException(status_code=422, detail="Decisión no válida.")
+    item = db.query(LiquidacionMensual).filter_by(id=liquidacion_id).with_for_update().first()
+    if item is None or not item.validado_en:
+        raise HTTPException(status_code=409, detail="El colaborador debe validar primero la relación mensual.")
+    item.estado_revision_relacion = decision
+    item.relacion_revisada_por = usuario.id
+    item.relacion_revisada_en = datetime.utcnow()
+    item.observaciones_revision_relacion = observaciones.strip() or None
+    if decision == "correccion_solicitada":
+        item.estado_relacion = "correccion_solicitada"
+    elif decision == "rechazada":
+        item.estado_relacion = "rechazada"
+    else:
+        item.estado_relacion = "validada"
+    db.commit()
+    db.refresh(item)
+    return _dict(item, db, True)
 
 @router.get("/admin/{liquidacion_id}/factura")
 def descargar_factura(liquidacion_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
