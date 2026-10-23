@@ -192,3 +192,88 @@ No se han modificado tablas ni lógica de negocio. La rama de auditoría contien
 6. Solo después, implementar cambios pequeños y probados; no migrar texto a claves foráneas ni cambiar semillas hasta definir estrategia de datos y reversión.
 
 **Conclusión de esta pasada:** ERP-Molsan ya tiene una central de Catálogos que agrupa mantenedores especializados, además de Maestros generales. La mejora prioritaria no es crear una tabla universal, sino completar la cobertura de accesos y centralizar de forma coherente los mantenedores que ya existen, incorporando solo los candidatos confirmados (por ejemplo, tipos de cita y ciertos tipos documentales/operativos) después de verificar sus reglas y dependencias.
+
+## 7. Segunda pasada: servicios, schemas, llamadas API y permisos
+
+**Método:** lectura estática de routers, modelos, validaciones, cliente API de Maestros y formularios con listas locales. No se ha ejecutado la aplicación ni consultado la base de datos de producción.
+
+### 7.1 Permisos efectivos por operación: mecanismo verificado en código
+
+El control no depende solo de las dependencias declaradas en cada router. main.py registra los routers bajo /api y auth/route_guard.py instala un guard global sobre las rutas FastAPI que empiezan por /api/. Salvo rutas expresamente exceptuadas, el guard agrega autenticación JWT si no existe ya y, cuando reconoce el prefijo, agrega un permiso modular.
+
+permissions.py comprueba la unión de los permisos del empleado y de su rol, incluidos comodines modulo.* y *. Esto confirma el mecanismo, pero no permite afirmar que cada usuario real tenga o no tenga permiso: depende de la configuración guardada para ese usuario/rol y debe probarse con perfiles reales.
+
+| Familia de rutas | Módulo que asigna el guard | GET | POST | PUT/PATCH | DELETE | Observaciones |
+|---|---|---|---|---|---|---|
+| /api/maestros | maestros | ver | normalmente crear | editar | eliminar | CRUD genérico; depende del guard global |
+| /api/entidades-bancarias | maestros | ver | normalmente crear | editar | eliminar | Importaciones clasificadas como editar por sufijo |
+| /api/municipios | maestros | ver | normalmente crear | editar | eliminar | Crear una coincidencia inactiva puede reactivarla |
+| /api/registros-propiedad | maestros | ver | normalmente crear | editar | eliminar | Incluye importación |
+| /api/oficinas-liquidadoras | maestros | ver | normalmente crear | editar | eliminar | Permite consultar inactivas con filtro activo |
+| /api/tipos-carga-hipotecaria | maestros | ver | normalmente crear | editar | eliminar | Las semillas pueden modificar datos durante GET |
+| /api/tipos-concepto-gastos | maestros | ver | normalmente crear | editar | eliminar | Las semillas pueden modificar datos durante GET |
+| /api/acciones-expediente | expedientes | ver | normalmente crear | editar | eliminar | Módulo de permisos distinto de otros catálogos |
+| /api/honorarios-gestoria | utilidades por guard y dependencia explícita | ver si tiene utilidades.ver o expedientes.ver | utilidades.editar en la dependencia explícita | utilidades.editar | confirmar por ruta | Revisar consistencia entre permiso explícito y acción inferida por guard |
+| /api/ctn | ctn en el guard general | ver según ruta | acción inferida por método/sufijo | editar | eliminar | Hay controles adicionales de portal/asociaciones y rol administrador |
+
+Reglas del guard:
+- Para rutas con varios métodos HTTP se aplica la acción más restrictiva: DELETE prevalece, después PUT/PATCH y después POST.
+- POST se clasifica como editar para sufijos definidos en _POST_ES_EDICION (por ejemplo, importar, asociadas, firmar, sincronizar o enviar a notario); los demás POST se clasifican como crear.
+- Las rutas API sin prefijo mapeado siguen requiriendo JWT, pero quedan señaladas en logs sin permiso granular. Hay que revisar el contador sin_mapeo en logs de arranque; la lectura estática no ofrece ese resultado de ejecución.
+- /api/notargest/* y /api/encargagest/* se excluyen del guard general porque validan su propia sesión/JWT.
+- El guard no sustituye permisos de ámbito sobre un expediente concreto ni controles de negocio del servicio.
+
+**Punto a comprobar:** Acciones del expediente está mapeado a expedientes, mientras que los otros mantenedores principales están mapeados a maestros. No cambiar ese reparto sin revisar la matriz de permisos de Seguridad y los usuarios que mantienen cada lista.
+
+### 7.2 Servicios, validaciones y comportamiento sobre datos
+
+- **Maestros generales:** el servicio lista por ID, comprueba duplicados en creación, modifica el nombre y elimina físicamente. La edición no comprueba explícitamente duplicados antes del commit; la restricción única de base de datos podría producir un error de integridad. Los schemas permiten nombre opcional en actualización, aunque el frontend envía un nombre. Antes de ampliar este CRUD, corregir/validar el contrato y estudiar referencias; no reutilizar el borrado físico para nuevos catálogos.
+- **Entidades bancarias:** el esquema limita longitudes, normaliza texto y expone activo; existe vínculo autorreferente entidad_actual_id para sucesiones. El GET estándar lista solo activos. Debe conservarse la identidad histórica y no reemplazar nombres usados en operaciones antiguas.
+- **Municipios:** unicidad compuesta por comunidad autónoma, provincia y municipio; crear una coincidencia inactiva puede reactivarla. “Crear” puede tener efecto de reactivación, que debe probarse y explicarse en interfaz.
+- **Registros y oficinas liquidadoras:** tienen campos de ubicación/contacto y operaciones de importación; antes de deduplicar por nombre hay que revisar variaciones históricas, relaciones de expediente y reglas de importación.
+- **Tipos de carga y conceptos de gastos:** el GET ejecuta una rutina que inserta entradas iniciales ausentes y hace commit. Si un usuario elimina una semilla, una lectura posterior puede volver a crearla; si la desactiva, la semilla solo comprueba existencia, por lo que debe probarse si persiste la desactivación. No cambiar esta rutina hasta definir una migración explícita.
+- **Honorarios:** el schema valida importes decimales, impuesto (IVA/IGIC/EXENTO), porcentaje entre 0 y 100 y calcula el total con redondeo monetario. La función de catálogo inicial conserva tres tarifas históricas y documenta equivalencias anteriores. No modificar tarifas históricas ni eliminar semillas como parte de la reorganización.
+- **Acciones del expediente:** departamento, sección y actividad son texto opcional; el listado filtra por esos campos. No hay evidencia suficiente para convertirlos en claves foráneas sin estudiar el circuito consumidor.
+- **CTN:** mantiene asociaciones entre notarios y permisos de portal, además del catálogo de notarios. Hay controles de acceso por portal y la tabla de asociaciones se crea al inicio con checkfirst; cambios al catálogo no deben alterar asociaciones, historial de firmas o credenciales.
+
+### 7.3 Relaciones con expedientes: comprobado y pendiente
+
+Relaciones estructurales confirmadas en el código leído:
+- Entidad bancaria → entidad sucesora mediante entidad_actual_id autorreferente.
+- Notario/CTN → citas y asociaciones de notarios; hay lógica específica para historial de firmas y acceso a portales.
+- Los campos de operación, documento, firma, idioma, formato y trámite se consumen en pantallas de expediente y envío a notario como opciones/textos.
+- Acciones del expediente guarda departamento/sección/actividad como texto, por lo que la coherencia con los maestros organizativos no está garantizada por claves foráneas en ese modelo.
+
+Relaciones que **no quedan demostradas por esta revisión estática**:
+- Si expedientes/fincas guardan claves foráneas directas a municipios, registros, oficinas liquidadoras, tipos de carga o conceptos de gasto, o si guardan parte de esos valores como texto/copia histórica.
+- Si existen filas históricas huérfanas, nombres duplicados por acentos/abreviaturas, o identificadores que ya no aparecen en listados activos.
+- Si editar/borrar un maestro altera cálculos o expedientes ya guardados.
+
+Para cerrar esta parte hay que inspeccionar modelos de expediente/finca/gastos/provisiones/carpeta digital, migraciones y constraints, y ejecutar consultas de solo lectura en una copia controlada de la base de datos. No se debe inferir ausencia de relaciones solo porque no aparezca una relación ORM en un fragmento.
+
+### 7.4 Llamadas frontend/API y clasificación de destino
+
+- **Central Catálogos:** conservar como punto de entrada. No necesita tabla universal. Debe incluir enlaces a mantenedores existentes que aún no estén representados y mantener agrupación funcional.
+- **Maestros:** mantener departamentos, secciones y cargos; no añadir entidades bancarias, ubicaciones, tarifas, estados de flujo ni tipos documentales operativos. Antes de tocar el CRUD genérico, revisar duplicados, referencias y borrado físico.
+- **Mantenedores especializados:** mantener entidades bancarias, municipios, registros, oficinas liquidadoras, tipos de carga, conceptos de gastos, honorarios y acciones del expediente en sus módulos actuales.
+- **CTN:** mantener notarios y asociaciones dentro del módulo especializado. Puede añadirse enlace desde Catálogos, sin exponer credenciales ni CRUD genérico.
+- **Tipos de cita:** candidato claro para nuevo mantenedor porque ModalNuevaCita.jsx usa una constante local. Diseñarlo solo si el tipo debe cambiarse por usuarios; mantener la regla de negocio que al elegir un tipo distinto de “Firma notarial” limpia notario, tipo de firma y apoderado.
+- **Tipo/subtipo de operación, tipo de documento, firma, idioma, formato y trámite:** candidatos a catálogos específicos compartidos, pero no implementarlos hasta inventariar valores históricos y validaciones/consumidores de Expedientes, NotarGest, ApoderaGest y documentos.
+- **Territorios de provisiones:** no unificar con municipios u otros catálogos hasta comparar semántica, identificadores y uso en cálculos.
+- **Estados, actividades y requisitos de carpeta digital:** mantener bajo control de flujo/documentación; requieren pruebas por fase y tipo de operación antes de abrir su edición.
+
+### 7.5 Plan de preparación y pruebas sin alterar históricos
+
+1. **Inventario de esquema:** exportar de base de pruebas columnas, claves foráneas, índices, restricciones y recuentos de tablas implicadas. Solo lectura; no ejecutar migraciones en producción.
+2. **Perfilado histórico:** detectar duplicados normalizados, valores vacíos, referencias huérfanas y valores usados en expedientes antiguos. Guardar informe reproducible sin corregir automáticamente.
+3. **Matriz de permisos:** probar cada endpoint con usuario sin sesión (401), usuario solo ver (GET permitido y escrituras 403), usuario crear (POST de creación), usuario editar (PUT/importaciones clasificadas como editar) y usuario eliminar (DELETE); comprobar excepciones de honorarios y CTN. Usar usuarios de pruebas y datos sintéticos.
+4. **Pruebas de contrato:** schemas válidos/ inválidos, nombres vacíos, duplicados, longitudes máximas, importaciones con filas inválidas y errores de integridad. Para honorarios, verificar redondeos y tarifas históricas.
+5. **Pruebas de integridad:** crear expediente/finca sintético vinculado a cada maestro que realmente tenga relación; comprobar que desactivar no cambia la etiqueta histórica y que no se permite borrar un dato referenciado si la relación lo exige.
+6. **Pruebas de semillas:** en base de pruebas, eliminar/desactivar una semilla y ejecutar GET para demostrar el comportamiento actual. Decidir a partir del resultado si las semillas pasan a migraciones explícitas o si la reactivación debe ser deliberada.
+7. **Pruebas frontend:** recorrer formularios consumidores, verificar opciones activas, valores guardados, edición de expedientes antiguos y manejo 401/403. Comprobar build frontend y tests backend tras cambios.
+8. **Reversión:** futuras migraciones aditivas y reversibles; conservar IDs/textos históricos, añadir claves foráneas opcionales solo después de mapear valores y no eliminar columnas ni reescribir expedientes en el primer despliegue.
+9. **Criterio de salida:** no cerrar hasta documentar relaciones, tests de permisos y build. La rama de auditoría no sustituye esas comprobaciones ejecutadas.
+
+### 7.6 Estado de esta segunda pasada
+
+Se verificó estáticamente el mecanismo global de autenticación/permisos y se detectaron diferencias entre módulos y riesgos en servicios/semillas. **No se ha probado la autorización en ejecución, inspeccionado una base de datos real/copia de pruebas, ni ejecutado build o suite de tests.** Los permisos efectivos por perfil y las relaciones históricas siguen pendientes de verificación dinámica. No se modificaron datos, tablas ni lógica de negocio en esta fase.
