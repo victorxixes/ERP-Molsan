@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import FichajesResumen from "./FichajesResumen.jsx";
 
 const TIPOS = [
   { value: "ENTRADA", label: "Entrada a trabajar", icon: "↗", tone: "emerald" },
@@ -205,6 +206,8 @@ export default function Fichajes({ modo = "empleado" }) {
               </label>
             </section>
           )}
+
+          {!esAdminVista && <FichajesResumen recargar={recargarEmpleado} />}
 
           <section className="overflow-hidden rounded-3xl border border-[var(--erp-border)] bg-[var(--erp-surface)] shadow-sm">
             <div className="flex flex-wrap gap-2 border-b border-[var(--erp-border)] p-3 sm:p-4">
