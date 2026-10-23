@@ -12,7 +12,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import Base, engine, get_db
 from backend.app.empleados.models import Empleado
-from backend.app.fichajes.models import FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones
+from backend.app.fichajes.models import (FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones, FichajeFestivoTrabajado, FichajeCompensacionMovimiento, FichajeSolicitudCompensacion, FichajeCompensacionAuditoria)
 
 router = APIRouter(prefix="/fichajes", tags=["Fichaje Molsan"])
 TIPOS_MARCAJE = {"ENTRADA", "SALIDA", "PAUSA_CAFE_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "RETORNO_AUSENCIA", "AUSENCIA"}
@@ -31,7 +31,7 @@ def _migrar_tablas():
             conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
             Base.metadata.create_all(
                 bind=conexion,
-                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__, FichajeTipoAusencia.__table__, FichajeVacaciones.__table__, FichajeBolsaVacaciones.__table__],
+                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__, FichajeTipoAusencia.__table__, FichajeVacaciones.__table__, FichajeBolsaVacaciones.__table__, FichajeFestivoTrabajado.__table__, FichajeCompensacionMovimiento.__table__, FichajeSolicitudCompensacion.__table__, FichajeCompensacionAuditoria.__table__],
                 checkfirst=True,
             )
         from sqlalchemy.orm import Session as _Session
@@ -388,3 +388,242 @@ def admin_configurar_bolsa_vacaciones(empleado_id: int = Form(...), anio: int = 
         db.add(bolsa)
     db.commit()
     return {"empleado_id": empleado_id, "anio": anio, "dias_asignados": dias_asignados}
+
+
+# ---------------------------------------------------------------------------
+# Festivos trabajados y bolsa independiente de compensación
+# ---------------------------------------------------------------------------
+UNIDADES_COMPENSACION = {"DIAS", "HORAS"}
+ESTADOS_FESTIVO = {"VALIDADO", "RECHAZADO"}
+ESTADOS_SOLICITUD = {"APROBADO", "RECHAZADO"}
+
+
+def _auditar_compensacion(db, empleado_id, actor_id, entidad, entidad_id, accion,
+                           anterior=None, nuevo=None, detalle=None):
+    db.add(FichajeCompensacionAuditoria(
+        empleado_id=empleado_id, actor_id=actor_id, entidad=entidad,
+        entidad_id=entidad_id, accion=accion, estado_anterior=anterior,
+        estado_nuevo=nuevo, detalle=(detalle or "")[:2000] or None,
+    ))
+
+
+def _saldo_compensacion(db, empleado_id, unidad):
+    movimientos = db.query(FichajeCompensacionMovimiento).filter(
+        FichajeCompensacionMovimiento.empleado_id == empleado_id,
+        FichajeCompensacionMovimiento.unidad == unidad,
+    ).all()
+    saldo = sum(float(m.cantidad) * (-1 if m.tipo == "CONSUMO" else 1) for m in movimientos)
+    return round(saldo, 2)
+
+
+def _movimiento_dict(m):
+    return {"id": m.id, "tipo": m.tipo, "cantidad": float(m.cantidad), "unidad": m.unidad,
+            "fecha": m.fecha.isoformat(), "referencia_tipo": m.referencia_tipo,
+            "referencia_id": m.referencia_id, "observaciones": m.observaciones,
+            "creado_en": m.creado_en.isoformat() if m.creado_en else None}
+
+
+def _festivo_dict(f, nombre=None):
+    return {"id": f.id, "empleado_id": f.empleado_id, "empleado_nombre": nombre,
+            "fecha": f.fecha.isoformat(), "horas_trabajadas": float(f.horas_trabajadas),
+            "estado": f.estado, "observaciones": f.observaciones,
+            "cantidad_compensable": float(f.cantidad_compensable) if f.cantidad_compensable is not None else None,
+            "unidad_compensable": f.unidad_compensable,
+            "creado_en": f.creado_en.isoformat() if f.creado_en else None,
+            "validado_en": f.validado_en.isoformat() if f.validado_en else None}
+
+
+def _solicitud_comp_dict(s, nombre=None):
+    return {"id": s.id, "empleado_id": s.empleado_id, "empleado_nombre": nombre,
+            "fecha_disfrute": s.fecha_disfrute.isoformat(), "cantidad": float(s.cantidad),
+            "unidad": s.unidad, "estado": s.estado, "observaciones": s.observaciones,
+            "creado_en": s.creado_en.isoformat() if s.creado_en else None,
+            "resuelto_en": s.resuelto_en.isoformat() if s.resuelto_en else None}
+
+
+@router.get("/compensaciones/resumen")
+def resumen_mi_compensacion(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    festivos = db.query(FichajeFestivoTrabajado).filter(
+        FichajeFestivoTrabajado.empleado_id == usuario.id
+    ).order_by(desc(FichajeFestivoTrabajado.fecha)).limit(300).all()
+    solicitudes = db.query(FichajeSolicitudCompensacion).filter(
+        FichajeSolicitudCompensacion.empleado_id == usuario.id
+    ).order_by(desc(FichajeSolicitudCompensacion.fecha_disfrute)).limit(300).all()
+    movimientos = db.query(FichajeCompensacionMovimiento).filter(
+        FichajeCompensacionMovimiento.empleado_id == usuario.id
+    ).order_by(desc(FichajeCompensacionMovimiento.creado_en)).limit(500).all()
+    return {
+        "saldo_dias": _saldo_compensacion(db, usuario.id, "DIAS"),
+        "saldo_horas": _saldo_compensacion(db, usuario.id, "HORAS"),
+        "festivos": [_festivo_dict(f) for f in festivos],
+        "solicitudes": [_solicitud_comp_dict(s) for s in solicitudes],
+        "movimientos": [_movimiento_dict(m) for m in movimientos],
+        "vacaciones_ordinarias_separadas": True,
+    }
+
+
+@router.post("/compensaciones/solicitudes")
+def solicitar_compensacion(fecha_disfrute: date = Form(...), cantidad: float = Form(...),
+                            unidad: str = Form("DIAS"), observaciones: str = Form(""),
+                            usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "crear")
+    unidad = (unidad or "").strip().upper()
+    if unidad not in UNIDADES_COMPENSACION or cantidad <= 0 or cantidad > 100:
+        raise HTTPException(status_code=422, detail="Indica una cantidad positiva y una unidad válida (días u horas).")
+    if fecha_disfrute < date.today():
+        raise HTTPException(status_code=422, detail="La fecha de disfrute no puede estar en el pasado.")
+    saldo = _saldo_compensacion(db, usuario.id, unidad)
+    reservadas = sum(float(s.cantidad) for s in db.query(FichajeSolicitudCompensacion).filter(
+        FichajeSolicitudCompensacion.empleado_id == usuario.id,
+        FichajeSolicitudCompensacion.unidad == unidad,
+        FichajeSolicitudCompensacion.estado.in_({"SOLICITADO", "APROBADO"}),
+    ).all())
+    if cantidad > saldo - reservadas + 0.0001:
+        raise HTTPException(status_code=409, detail=f"Saldo insuficiente. Disponible sin reservas: {max(0, saldo - reservadas):g} {unidad.lower()}.")
+    registro = FichajeSolicitudCompensacion(empleado_id=usuario.id, fecha_disfrute=fecha_disfrute,
+        cantidad=cantidad, unidad=unidad, estado="SOLICITADO",
+        observaciones=(observaciones or "").strip()[:500] or None)
+    db.add(registro)
+    db.flush()
+    _auditar_compensacion(db, usuario.id, usuario.id, "SOLICITUD", registro.id,
+                           "CREADA", None, "SOLICITADO", f"{cantidad:g} {unidad}; fecha {fecha_disfrute}")
+    db.commit()
+    db.refresh(registro)
+    return _solicitud_comp_dict(registro)
+
+
+@router.get("/compensaciones/mis-movimientos")
+def mis_movimientos_compensacion(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    filas = db.query(FichajeCompensacionMovimiento).filter(
+        FichajeCompensacionMovimiento.empleado_id == usuario.id
+    ).order_by(desc(FichajeCompensacionMovimiento.creado_en)).limit(500).all()
+    return [_movimiento_dict(m) for m in filas]
+
+
+@router.post("/admin/compensaciones/festivos")
+def admin_registrar_festivo(empleado_id: int = Form(...), fecha: date = Form(...),
+                             horas_trabajadas: float = Form(...), observaciones: str = Form(""),
+                             usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "crear")
+    _exigir_admin(usuario)
+    if horas_trabajadas <= 0 or horas_trabajadas > 24:
+        raise HTTPException(status_code=422, detail="Las horas trabajadas deben estar entre 0 y 24.")
+    if not db.query(Empleado).filter(Empleado.id == empleado_id).first():
+        raise HTTPException(status_code=404, detail="Empleado no encontrado.")
+    existente = db.query(FichajeFestivoTrabajado).filter(
+        FichajeFestivoTrabajado.empleado_id == empleado_id,
+        FichajeFestivoTrabajado.fecha == fecha,
+        FichajeFestivoTrabajado.estado != "RECHAZADO",
+    ).first()
+    if existente:
+        raise HTTPException(status_code=409, detail="Ya existe un registro de festivo para ese empleado y fecha.")
+    f = FichajeFestivoTrabajado(empleado_id=empleado_id, fecha=fecha, horas_trabajadas=horas_trabajadas,
+        estado="PENDIENTE", observaciones=(observaciones or "").strip()[:500] or None, creado_por_id=usuario.id)
+    db.add(f); db.flush()
+    _auditar_compensacion(db, empleado_id, usuario.id, "FESTIVO", f.id, "REGISTRADO",
+                           None, "PENDIENTE", f"{horas_trabajadas:g} horas trabajadas el {fecha}")
+    db.commit(); db.refresh(f)
+    return _festivo_dict(f)
+
+
+@router.get("/admin/compensaciones/festivos")
+def admin_listar_festivos(estado: str | None = Query(default=None),
+                           empleado_id: int | None = Query(default=None),
+                           usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    q = db.query(FichajeFestivoTrabajado, Empleado).join(Empleado, Empleado.id == FichajeFestivoTrabajado.empleado_id)
+    if estado: q = q.filter(FichajeFestivoTrabajado.estado == estado.upper())
+    if empleado_id: q = q.filter(FichajeFestivoTrabajado.empleado_id == empleado_id)
+    return [_festivo_dict(f, _nombre_completo(e) or e.usuario) for f, e in q.order_by(desc(FichajeFestivoTrabajado.fecha)).limit(1000).all()]
+
+
+@router.patch("/admin/compensaciones/festivos/{festivo_id}")
+def admin_validar_festivo(festivo_id: int, estado: str = Form(...),
+                           cantidad_compensable: float = Form(0), unidad_compensable: str = Form("DIAS"),
+                           observaciones: str = Form(""), usuario=Depends(get_current_user),
+                           db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    f = db.query(FichajeFestivoTrabajado).filter(FichajeFestivoTrabajado.id == festivo_id).with_for_update().first()
+    if not f: raise HTTPException(status_code=404, detail="Registro de festivo no encontrado.")
+    if f.estado != "PENDIENTE": raise HTTPException(status_code=409, detail="Este festivo ya se ha resuelto.")
+    estado = estado.strip().upper()
+    if estado not in ESTADOS_FESTIVO: raise HTTPException(status_code=422, detail="El estado debe ser VALIDADO o RECHAZADO.")
+    anterior = f.estado
+    f.estado = estado; f.validado_por_id = usuario.id; f.validado_en = datetime.utcnow()
+    if observaciones.strip(): f.observaciones = (f.observaciones or "") + (" | " if f.observaciones else "") + observaciones.strip()[:400]
+    if estado == "VALIDADO":
+        unidad = (unidad_compensable or "").strip().upper()
+        if unidad not in UNIDADES_COMPENSACION or cantidad_compensable <= 0 or cantidad_compensable > 100:
+            raise HTTPException(status_code=422, detail="Indica una cantidad compensable positiva en días u horas.")
+        f.cantidad_compensable = cantidad_compensable; f.unidad_compensable = unidad
+        db.add(FichajeCompensacionMovimiento(empleado_id=f.empleado_id, tipo="ABONO",
+            cantidad=cantidad_compensable, unidad=unidad, fecha=f.fecha, referencia_tipo="FESTIVO",
+            referencia_id=f.id, observaciones=f"Festivo trabajado {f.fecha}: {float(f.horas_trabajadas):g} horas",
+            creado_por_id=usuario.id))
+    _auditar_compensacion(db, f.empleado_id, usuario.id, "FESTIVO", f.id, "VALIDACION",
+                           anterior, estado, f"{float(cantidad_compensable):g} {unidad_compensable}" if estado == "VALIDADO" else observaciones)
+    db.commit(); db.refresh(f)
+    return _festivo_dict(f)
+
+
+@router.get("/admin/compensaciones/solicitudes")
+def admin_listar_solicitudes_compensacion(estado: str | None = Query(default=None),
+                                           empleado_id: int | None = Query(default=None),
+                                           usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    q = db.query(FichajeSolicitudCompensacion, Empleado).join(Empleado, Empleado.id == FichajeSolicitudCompensacion.empleado_id)
+    if estado: q = q.filter(FichajeSolicitudCompensacion.estado == estado.upper())
+    if empleado_id: q = q.filter(FichajeSolicitudCompensacion.empleado_id == empleado_id)
+    return [_solicitud_comp_dict(s, _nombre_completo(e) or e.usuario) for s, e in q.order_by(desc(FichajeSolicitudCompensacion.fecha_disfrute)).limit(1000).all()]
+
+
+@router.patch("/admin/compensaciones/solicitudes/{solicitud_id}")
+def admin_resolver_solicitud_compensacion(solicitud_id: int, estado: str = Form(...),
+                                           observaciones: str = Form(""), usuario=Depends(get_current_user),
+                                           db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    s = db.query(FichajeSolicitudCompensacion).filter(FichajeSolicitudCompensacion.id == solicitud_id).with_for_update().first()
+    if not s: raise HTTPException(status_code=404, detail="Solicitud no encontrada.")
+    if s.estado != "SOLICITADO": raise HTTPException(status_code=409, detail="Esta solicitud ya se ha resuelto.")
+    estado = estado.strip().upper()
+    if estado not in ESTADOS_SOLICITUD: raise HTTPException(status_code=422, detail="El estado debe ser APROBADO o RECHAZADO.")
+    anterior = s.estado
+    if estado == "APROBADO":
+        saldo = _saldo_compensacion(db, s.empleado_id, s.unidad)
+        otras_reservas = sum(float(x.cantidad) for x in db.query(FichajeSolicitudCompensacion).filter(
+            FichajeSolicitudCompensacion.empleado_id == s.empleado_id,
+            FichajeSolicitudCompensacion.unidad == s.unidad,
+            FichajeSolicitudCompensacion.estado == "SOLICITADO",
+            FichajeSolicitudCompensacion.id != s.id,
+        ).all())
+        if float(s.cantidad) > saldo - otras_reservas + 0.0001:
+            raise HTTPException(status_code=409, detail="No se puede aprobar: el saldo disponible ya está comprometido por otras solicitudes.")
+        db.add(FichajeCompensacionMovimiento(empleado_id=s.empleado_id, tipo="CONSUMO",
+            cantidad=s.cantidad, unidad=s.unidad, fecha=s.fecha_disfrute, referencia_tipo="SOLICITUD",
+            referencia_id=s.id, observaciones=f"Compensación disfrutada/aprobada para {s.fecha_disfrute}",
+            creado_por_id=usuario.id))
+    s.estado = estado; s.resuelto_por_id = usuario.id; s.resuelto_en = datetime.utcnow()
+    if observaciones.strip(): s.observaciones = (s.observaciones or "") + (" | " if s.observaciones else "") + observaciones.strip()[:400]
+    _auditar_compensacion(db, s.empleado_id, usuario.id, "SOLICITUD", s.id, "RESOLUCION",
+                           anterior, estado, observaciones)
+    db.commit(); db.refresh(s)
+    return _solicitud_comp_dict(s)
+
+
+@router.get("/admin/compensaciones/saldos")
+def admin_saldos_compensacion(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    empleados = db.query(Empleado).filter(Empleado.activo.is_(True)).order_by(Empleado.nombre, Empleado.apellidos).all()
+    resultado = []
+    for e in empleados:
+        resultado.append({"empleado_id": e.id, "empleado_nombre": _nombre_completo(e) or e.usuario,
+                          "saldo_dias": _saldo_compensacion(db, e.id, "DIAS"),
+                          "saldo_horas": _saldo_compensacion(db, e.id, "HORAS")})
+    return resultado
