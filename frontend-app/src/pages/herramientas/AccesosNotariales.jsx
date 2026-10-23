@@ -35,11 +35,26 @@ export default function AccesosNotariales() {
     (async () => {
       setCargando(true); setError("");
       try {
-        const r = await fetch(API_BASE + "/ctn/notarias?page=1&page_size=200", { headers: headers(), credentials: "include" });
-        const body = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(mensajeLegible(body?.detail ?? body, "No se ha podido cargar el listado de notarías (HTTP " + r.status + ")."));
-        const lista = Array.isArray(body) ? body : body.items || body.notarias || body.results || [];
-        if (activo) setNotarias(lista);
+        const pageSize = 200;
+        const cargarPagina = async (pagina) => {
+          const r = await fetch(API_BASE + "/ctn/notarias?page=" + pagina + "&page_size=" + pageSize, {
+            headers: headers(), credentials: "include",
+          });
+          const body = await r.json().catch(() => ({}));
+          if (!r.ok) throw new Error(mensajeLegible(body?.detail ?? body, "No se ha podido cargar el listado de notarías (HTTP " + r.status + ")."));
+          const lista = Array.isArray(body) ? body : body.items || body.notarias || body.results || [];
+          return { lista, total: Number(body?.total ?? body?.count ?? lista.length) };
+        };
+        const primera = await cargarPagina(1);
+        let listaCompleta = [...primera.lista];
+        const paginas = Math.ceil(primera.total / pageSize);
+        for (let pagina = 2; pagina <= paginas; pagina += 1) {
+          const resultado = await cargarPagina(pagina);
+          listaCompleta = listaCompleta.concat(resultado.lista);
+        }
+        // Evita duplicados si el catálogo cambia mientras se recorren las páginas.
+        const unicas = Array.from(new Map(listaCompleta.map((n) => [String(n.id), n])).values());
+        if (activo) setNotarias(unicas);
       } catch (e) { if (activo) setError(mensajeLegible(e?.message, "No se ha podido cargar el listado de notarías.")); }
       finally { if (activo) setCargando(false); }
     })();
@@ -48,8 +63,8 @@ export default function AccesosNotariales() {
 
   const resultados = useMemo(() => {
     const q = busqueda.trim().toLocaleLowerCase("es");
-    if (!q) return notarias.slice(0, 100);
-    return notarias.filter(n => [nombre(n), n?.nif, n?.codigo, n?.municipio, n?.provincia].some(v => String(v || "").toLocaleLowerCase("es").includes(q))).slice(0, 100);
+    if (!q) return notarias;
+    return notarias.filter(n => [nombre(n), n?.nif, n?.codigo, n?.municipio, n?.provincia].some(v => String(v || "").toLocaleLowerCase("es").includes(q)));
   }, [notarias, busqueda]);
 
   const abrir = async (n) => {
