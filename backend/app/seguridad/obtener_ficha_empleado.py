@@ -151,6 +151,12 @@ PLANTILLA_PERMISOS = {
         "editar",
         "eliminar",
     ],
+    "fichajes": [
+        "ver",
+        "crear",
+        "editar",
+        "eliminar",
+    ],
 }
 
 
