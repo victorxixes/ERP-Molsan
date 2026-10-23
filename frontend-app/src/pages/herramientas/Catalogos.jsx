@@ -9,6 +9,15 @@ import "../../css/HerramientasPremium.css";
  */
 const CATALOGOS = [
   {
+    icon: "🔗",
+    titulo: "Catálogo ABSIS",
+    descripcion: "Estados de expediente, productos GTG, actividades, operaciones y defectos.",
+    ruta: "/catalogos/absis",
+    grupo: "Integraciones y catálogos técnicos",
+    destacado: true,
+    palabrasClave: "absis GTG estados expedientes producto actividad provision operación subtipo defecto",
+  },
+  {
     icon: "🏦",
     titulo: "Entidades bancarias",
     descripcion: "Entidades, códigos europeos, LEI, categorías y direcciones.",
@@ -84,6 +93,11 @@ const CATALOGOS = [
 ];
 
 const GRUPOS = [
+  {
+    nombre: "Integraciones y catálogos técnicos",
+    descripcion: "Listas de referencia compartidas con sistemas externos e integraciones.",
+    icon: "🔗",
+  },
   {
     nombre: "Entidades y territorio",
     descripcion: "Datos de referencia para entidades y ubicaciones.",
