@@ -2072,7 +2072,7 @@ const permisosDisponibles =
   const pestanasVisibles = esAdministrador
     ? pestanasEmpleado
     : esPropiaFicha
-      ? pestanasEmpleado.filter((item) => ["personales", "laborales"].includes(item.id))
+      ? pestanasEmpleado.filter((item) => ["basicos", "personales", "laborales"].includes(item.id))
       : [];
 
   useEffect(() => {
