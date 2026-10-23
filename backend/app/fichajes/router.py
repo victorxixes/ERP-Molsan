@@ -713,6 +713,31 @@ def admin_listar_documentos(
     return resultado
 
 
+
+@router.patch("/admin/documentos/{documento_id}/revision")
+def admin_revisar_documento(
+    documento_id: int, estado: str = Form(...), motivo: str = Form(...),
+    usuario=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    documento = db.query(FichajeDocumento).filter(FichajeDocumento.id == documento_id).first()
+    if not documento:
+        raise HTTPException(status_code=404, detail="No se encuentra el justificante.")
+    estado = estado.strip().upper()
+    if estado not in {"APROBADO", "RECHAZADO"}:
+        raise HTTPException(status_code=422, detail="La revisión debe aprobarse o rechazarse.")
+    motivo = (motivo or "").strip()
+    if len(motivo) < 5:
+        raise HTTPException(status_code=422, detail="Indica el motivo de la revisión (mínimo cinco caracteres).")
+    revision = FichajeDocumentoRevision(documento_id=documento_id, estado=estado, motivo=motivo[:500], actor_id=usuario.id)
+    db.add(revision)
+    db.commit()
+    db.refresh(revision)
+    return {"id": revision.id, "documento_id": documento_id, "estado": estado, "motivo": revision.motivo,
+            "creado_en": revision.creado_en.isoformat() if revision.creado_en else None}
+
+
 @router.get("/admin/vacaciones-bolsa")
 def admin_listar_bolsas_vacaciones(anio: int | None = Query(default=None),
                                    usuario=Depends(get_current_user), db: Session = Depends(get_db)):
