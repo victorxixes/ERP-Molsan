@@ -45,6 +45,7 @@ export default function Fichajes({ modo = "empleado" }) {
   const [marcajesCalendario, setMarcajesCalendario] = useState([]);
   const [resumenCompensacion, setResumenCompensacion] = useState({ festivos: [], solicitudes: [] });
   const [documentos, setDocumentos] = useState([]);
+  const [solicitudesAusencia, setSolicitudesAusencia] = useState([]);
   const [tiposAusencia, setTiposAusencia] = useState([]);
   const [tipoAusencia, setTipoAusencia] = useState("");
   const [mostrarSelectorAusencia, setMostrarSelectorAusencia] = useState(false);
@@ -74,16 +75,17 @@ export default function Fichajes({ modo = "empleado" }) {
 
   const esAdminVista = modo === "admin";
   const recargarEmpleado = useCallback(async () => {
-    const [p, m, d, ta, fc] = await Promise.all([
+    const [p, m, d, ta, fc, sa] = await Promise.all([
       axios.get("/fichajes/mi-perfil"), axios.get("/fichajes/marcajes"),
       axios.get("/fichajes/documentos"), axios.get("/fichajes/catalogo-ausencias"),
-      axios.get("/fichajes/compensaciones/resumen"),
+      axios.get("/fichajes/compensaciones/resumen"), axios.get("/fichajes/solicitudes-ausencia"),
     ]);
     setPerfil(p.data);
     setMarcajes(Array.isArray(m.data) ? m.data : []);
     setDocumentos(Array.isArray(d.data) ? d.data : []);
     setTiposAusencia(Array.isArray(ta.data) ? ta.data : []);
     setResumenCompensacion(fc.data || { festivos: [], solicitudes: [] });
+    setSolicitudesAusencia(Array.isArray(sa.data) ? sa.data : []);
   }, []);
 
   const recargarAdmin = useCallback(async () => {
@@ -290,9 +292,10 @@ export default function Fichajes({ modo = "empleado" }) {
                     const festivosDia = dia ? (resumenCompensacion.festivos || []).filter((f) => f.fecha === claveDia) : [];
                     const calendarioFestivosDia = dia ? (resumenCompensacion.calendario_festivos || []).filter((f) => f.fecha === claveDia) : [];
                     const solicitudesDia = dia ? (resumenCompensacion.solicitudes || []).filter((s) => s.fecha_disfrute === claveDia && ["SOLICITADO", "APROBADO", "DISFRUTADO"].includes(s.estado)) : [];
+                    const ausenciasDia = dia ? solicitudesAusencia.filter((a) => a.fecha_inicio <= claveDia && a.fecha_fin >= claveDia && ["SOLICITADO", "APROBADO"].includes(a.estado)) : [];
                     const esHoy = dia && claveDia === fechaISO(FECHA_HOY);
                     return <div key={dia ? fechaISO(dia) : "vacio-" + i} className={`min-h-[78px] rounded-xl border p-2 sm:min-h-[105px] ${!dia ? "border-transparent bg-transparent" : esHoy ? "border-blue-300 bg-blue-50/80" : "border-[var(--erp-border)] bg-white"}`}>
-                      {dia && <><div className={`text-sm font-bold ${esHoy ? "text-blue-800" : "text-slate-700"}`}>{dia.getDate()}</div><div className="mt-1 space-y-1">{registros.slice(0, 3).map((m) => <div key={m.id} title={formatearTipo(m.tipo)} className="truncate rounded-md bg-slate-100 px-1.5 py-1 text-[10px] font-semibold text-slate-700 sm:text-xs">{hora(m.fecha_hora)} {formatearTipo(m.tipo)}</div>)}{registros.length > 3 && <p className="text-[10px] text-slate-500">+{registros.length - 3} más</p>}{calendarioFestivosDia.map((f) => <div key={"calendario-festivo-" + f.id} className="truncate rounded-md bg-orange-100 px-1.5 py-1 text-[10px] font-bold text-orange-900" title={f.nombre}>{f.nombre}</div>)}{festivosDia.map((f) => <div key={"festivo-" + f.id} className="truncate rounded-md bg-amber-100 px-1.5 py-1 text-[10px] font-bold text-amber-900" title="Festivo trabajado">{f.estado === "VALIDADO" ? "Festivo validado" : f.estado === "RECHAZADO" ? "Festivo rechazado" : "Festivo pendiente"}</div>)}{solicitudesDia.map((s) => <div key={"comp-" + s.id} className="truncate rounded-md bg-violet-100 px-1.5 py-1 text-[10px] font-bold text-violet-900" title="Compensación">{s.estado === "SOLICITADO" ? "Compensación solicitada" : s.estado === "APROBADO" ? "Compensación aprobada" : "Compensación disfrutada"}</div>)}</div></>}
+                      {dia && <><div className={`text-sm font-bold ${esHoy ? "text-blue-800" : "text-slate-700"}`}>{dia.getDate()}</div><div className="mt-1 space-y-1">{registros.slice(0, 3).map((m) => <div key={m.id} title={formatearTipo(m.tipo)} className="truncate rounded-md bg-slate-100 px-1.5 py-1 text-[10px] font-semibold text-slate-700 sm:text-xs">{hora(m.fecha_hora)} {formatearTipo(m.tipo)}</div>)}{registros.length > 3 && <p className="text-[10px] text-slate-500">+{registros.length - 3} más</p>}{calendarioFestivosDia.map((f) => <div key={"calendario-festivo-" + f.id} className="truncate rounded-md bg-orange-100 px-1.5 py-1 text-[10px] font-bold text-orange-900" title={f.nombre}>{f.nombre}</div>)}{festivosDia.map((f) => <div key={"festivo-" + f.id} className="truncate rounded-md bg-amber-100 px-1.5 py-1 text-[10px] font-bold text-amber-900" title="Festivo trabajado">{f.estado === "VALIDADO" ? "Festivo validado" : f.estado === "RECHAZADO" ? "Festivo rechazado" : "Festivo pendiente"}</div>)}{solicitudesDia.map((s) => <div key={"comp-" + s.id} className="truncate rounded-md bg-violet-100 px-1.5 py-1 text-[10px] font-bold text-violet-900" title="Compensación">{s.estado === "SOLICITADO" ? "Compensación solicitada" : s.estado === "APROBADO" ? "Compensación aprobada" : "Compensación disfrutada"}</div>)}{ausenciasDia.map((a) => <div key={"ausencia-" + a.id} className={"truncate rounded-md px-1.5 py-1 text-[10px] font-bold " + (a.estado === "SOLICITADO" ? "bg-amber-100 text-amber-900" : "bg-rose-100 text-rose-900")} title={a.tipo_ausencia}>{a.estado === "SOLICITADO" ? "Ausencia pendiente" : "Ausencia aprobada"} · {a.tipo_ausencia}</div>)}</div></>}
                     </div>;
                   })}
                 </div>
