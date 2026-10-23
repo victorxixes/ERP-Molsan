@@ -181,3 +181,43 @@
 @media(prefers-reduced-motion:reduce) {
   .ctn-portal-access-panel * { transition-duration:.01ms !important; }
 }
+
+
+/* Acciones de cabecera integradas en la navegación de NotarGest. */
+.molsan-sidebar-header-actions {
+  flex-wrap: nowrap;
+}
+.molsan-sidebar-header-actions .ag-fecha-actual {
+  white-space: nowrap;
+}
+@media (max-width: 980px) {
+  .molsan-sidebar-header-actions {
+    gap: 6px;
+    padding-right: 0;
+  }
+  .molsan-sidebar-header-actions .ag-fecha-actual {
+    padding: 8px 9px;
+    font-size: 10px;
+  }
+  .molsan-sidebar-header-actions .ag-boton-actualizar {
+    min-height: 38px;
+    gap: 6px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+}
+@media (max-width: 760px) {
+  .mol-sidebar-premium .molsan-sidebar-header-actions {
+    order: 3;
+    width: 100%;
+    justify-content: flex-end;
+    padding: 4px 0 2px;
+  }
+  .mol-sidebar-premium .molsan-sidebar-header-actions .ag-fecha-actual {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+  .mol-sidebar-premium .molsan-sidebar-header-actions .ag-boton-actualizar {
+    flex: 0 0 auto;
+  }
+}
