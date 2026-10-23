@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useSeguridad } from "../../hooks/useSeguridad";
 import EmpleadosListado from "../empleados/EmpleadosListado";
 import { API_BASE } from "../../api/config";
+import { editarEmpleado } from "../../api/empleados";
+import ModalEmpleado from "../../components/empleados/ModalEmpleado.jsx";
 import SeguridadModulos from "./SeguridadModulos.jsx";
 import SeguridadPermisos from "./SeguridadPermisos.jsx";
 import "./SeguridadSubpaginasPremium.css";
@@ -29,6 +31,10 @@ export default function SeguridadUsuarios() {
   const [mensajeRol, setMensajeRol] = useState("");
   const [guardandoColaborador, setGuardandoColaborador] = useState(false);
   const [mensajeColaborador, setMensajeColaborador] = useState("");
+  const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
+  const [guardandoVisibilidad, setGuardandoVisibilidad] = useState(false);
+  const [mensajeVisibilidad, setMensajeVisibilidad] = useState("");
+  const [versionListado, setVersionListado] = useState(0);
 
   // ============================================================
   // CARGA INICIAL
@@ -264,6 +270,26 @@ export default function SeguridadUsuarios() {
     }
   };
 
+  const cambiarVisibilidadListado = async () => {
+    if (!empleadoIdSeleccionado || !empleadoBasico || guardandoVisibilidad) return;
+    const nuevoValor = empleadoBasico.visible_en_listado === false;
+    setGuardandoVisibilidad(true);
+    setMensajeVisibilidad("");
+    try {
+      await editarEmpleado(empleadoIdSeleccionado, { visible_en_listado: nuevoValor });
+      setMensajeVisibilidad(nuevoValor
+        ? "Usuario visible de nuevo en los listados."
+        : "Usuario ocultado de los listados. Seguirá disponible en Seguridad.");
+      setVersionListado((v) => v + 1);
+      await cargarTodo();
+      await cargarFicha(empleadoIdSeleccionado);
+    } catch (error) {
+      setMensajeVisibilidad(error?.response?.data?.detail || error?.message || "No se pudo cambiar la visibilidad del usuario.");
+    } finally {
+      setGuardandoVisibilidad(false);
+    }
+  };
+
   const asignarRolSeleccionado = async (rolId) => {
     if (!empleadoIdSeleccionado || !rolId || guardandoRol) return;
     setGuardandoRol(true);
@@ -345,6 +371,7 @@ export default function SeguridadUsuarios() {
 
           <div className="erp-card-body p-0">
             <EmpleadosListado
+              key={versionListado}
               incluirOcultos
               onSeleccionar={(id) => {
                 setEmpleadoIdSeleccionado(id);
@@ -440,6 +467,12 @@ export default function SeguridadUsuarios() {
                     </div>
 
                     <div className="flex flex-wrap gap-2">
+
+                      <button type="button" onClick={() => setMostrarModalEdicion(true)} className="erp-btn erp-btn-primary">Editar datos del usuario</button>
+                      <button type="button" onClick={cambiarVisibilidadListado} disabled={guardandoVisibilidad || loading} className="erp-btn erp-btn-secondary">
+                        {guardandoVisibilidad ? "Guardando…" : empleadoBasico?.visible_en_listado === false ? "Mostrar en listados" : "Ocultar de los listados"}
+                      </button>
+                      {mensajeVisibilidad && <p className="w-full text-sm text-[var(--erp-muted)]" role="status">{mensajeVisibilidad}</p>}
 
                       {empleadoBasicoSeguro.departamento_nombre !== "-" && (
                         <span className="erp-badge erp-badge-neutral">
@@ -1176,6 +1209,14 @@ export default function SeguridadUsuarios() {
 
       </div>
 
+      {mostrarModalEdicion && empleadoIdSeleccionado != null && (
+        <ModalEmpleado
+          open={mostrarModalEdicion}
+          empleadoId={empleadoIdSeleccionado}
+          modoAdministracion
+          onClose={() => { setMostrarModalEdicion(false); setVersionListado((v) => v + 1); cargarTodo(); cargarFicha(empleadoIdSeleccionado); }}
+        />
+      )}
     </div>
   );
 }
