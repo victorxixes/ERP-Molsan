@@ -2106,13 +2106,28 @@ def migrar_catalogo_absis():
             print("[CATÁLOGO ABSIS] Tabla verificada; se conservan sus entradas actuales.", flush=True)
 
 def migrar_visibilidad_empleado():
-    """Añade de forma compatible el control de visibilidad en las tarjetas de empleados."""
+    """Añade el campo solo si falta, evitando bloquear empleados en cada arranque."""
     with engine.begin() as conexion:
-        conexion.execute(text(
-            "ALTER TABLE public.empleados "
-            "ADD COLUMN IF NOT EXISTS visible_en_listado BOOLEAN NOT NULL DEFAULT TRUE"
-        ))
-    print("[EMPLEADOS] Columna visible_en_listado comprobada.", flush=True)
+        # Consultar el catálogo del sistema primero. ADD COLUMN IF NOT EXISTS aún
+        # solicita un bloqueo sobre empleados aunque la columna ya exista.
+        existe = conexion.execute(text("""
+            SELECT EXISTS (
+                SELECT 1
+                FROM pg_attribute
+                WHERE attrelid = 'public.empleados'::regclass
+                  AND attname = 'visible_en_listado'
+                  AND NOT attisdropped
+            )
+        """)).scalar()
+
+        if not existe:
+            conexion.execute(text(
+                "ALTER TABLE public.empleados "
+                "ADD COLUMN visible_en_listado BOOLEAN NOT NULL DEFAULT TRUE"
+            ))
+            print("[EMPLEADOS] Columna visible_en_listado creada.", flush=True)
+        else:
+            print("[EMPLEADOS] Columna visible_en_listado ya existe; no se altera la tabla.", flush=True)
 
 
 # ORDEN DE ARRANQUE
