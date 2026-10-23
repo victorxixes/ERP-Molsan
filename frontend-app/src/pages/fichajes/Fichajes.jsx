@@ -47,6 +47,8 @@ export default function Fichajes({ modo = "empleado" }) {
   const [reloj, setReloj] = useState(new Date());
   const [empleados, setEmpleados] = useState([]);
   const [marcajesAdmin, setMarcajesAdmin] = useState([]);
+  const [vacacionesAdmin, setVacacionesAdmin] = useState([]);
+  const [documentosAdmin, setDocumentosAdmin] = useState([]);
   const [pestana, setPestana] = useState(modo === "admin" ? "control" : "resumen");
   const [mes, setMes] = useState(inicioMes(FECHA_HOY));
   const [busqueda, setBusqueda] = useState("");
@@ -80,12 +82,16 @@ export default function Fichajes({ modo = "empleado" }) {
   }, []);
 
   const recargarAdmin = useCallback(async () => {
-    const [e, m] = await Promise.all([
+    const [e, m, v, d] = await Promise.all([
       axios.get("/fichajes/admin/empleados"),
       axios.get("/fichajes/admin/marcajes", { params: { desde: fechaDesde || undefined, hasta: fechaHasta || undefined, empleado_id: empleadoFiltro || undefined } }),
+      axios.get("/fichajes/admin/vacaciones"),
+      axios.get("/fichajes/admin/documentos", { params: { desde: fechaDesde || undefined, hasta: fechaHasta || undefined, empleado_id: empleadoFiltro || undefined } }),
     ]);
     setEmpleados(Array.isArray(e.data) ? e.data : []);
     setMarcajesAdmin(Array.isArray(m.data) ? m.data : []);
+    setVacacionesAdmin(Array.isArray(v.data) ? v.data : []);
+    setDocumentosAdmin(Array.isArray(d.data) ? d.data : []);
   }, [fechaDesde, fechaHasta, empleadoFiltro]);
 
   useEffect(() => {
@@ -141,6 +147,25 @@ export default function Fichajes({ modo = "empleado" }) {
     } finally { setGuardando(false); }
   };
 
+  const resolverVacaciones = async (solicitud, estado) => {
+    const observacion = window.prompt(
+      estado === "APROBADO" ? "Observaciones de aprobación (opcional):" : "Motivo del rechazo (recomendado):",
+      ""
+    );
+    if (observacion === null) return;
+    setGuardando(true); setError(""); setMensaje("");
+    try {
+      const data = new FormData();
+      data.append("estado", estado);
+      data.append("observaciones", observacion);
+      await axios.patch(`/fichajes/admin/vacaciones/${solicitud.id}`, data);
+      setMensaje(`Solicitud de vacaciones ${estado === "APROBADO" ? "aprobada" : "rechazada"}.`);
+      await recargarAdmin();
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo resolver la solicitud de vacaciones.");
+    } finally { setGuardando(false); }
+  };
+
   const subirDocumento = async (e) => {
     e.preventDefault();
     const formulario = e.currentTarget;
@@ -172,7 +197,7 @@ export default function Fichajes({ modo = "empleado" }) {
   };
 
   const tabs = esAdminVista
-    ? [{ id: "control", label: "Control de marcajes" }, { id: "compensaciones", label: "Festivos y compensaciones" }]
+    ? [{ id: "control", label: "Control de marcajes" }, { id: "solicitudes", label: "Solicitudes de vacaciones" }, { id: "documentosAdmin", label: "Documentos y justificantes" }, { id: "compensaciones", label: "Festivos y compensaciones" }]
     : [{ id: "resumen", label: "Resumen de marcajes" }, { id: "calendario", label: "Calendario mensual" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }, { id: "compensaciones", label: "Festivos y compensaciones" }];
 
   return (
@@ -276,6 +301,36 @@ export default function Fichajes({ modo = "empleado" }) {
             {!esAdminVista && pestana === "compensaciones" && <FestivosCompensaciones modo="empleado" onUpdated={recargarEmpleado} />}
 
             {esAdminVista && pestana === "compensaciones" && <FestivosCompensaciones modo="admin" />}
+
+            {esAdminVista && pestana === "solicitudes" && (
+              <div className="p-4 sm:p-6">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <div><h2 className="text-lg font-extrabold">Solicitudes de vacaciones</h2><p className="text-sm text-[var(--erp-text-soft)]">Revisa, aprueba o rechaza las solicitudes recibidas desde Fichaje Molsan.</p></div>
+                  <div className="rounded-xl bg-amber-50 px-4 py-2 text-sm font-bold text-amber-900">Pendientes: {vacacionesAdmin.filter(v => v.estado === "SOLICITADO").length}</div>
+                </div>
+                <div className="overflow-x-auto rounded-2xl border border-[var(--erp-border)]">
+                  <table className="w-full min-w-[850px] text-left text-sm">
+                    <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Desde</th><th className="p-3">Hasta</th><th className="p-3">Días</th><th className="p-3">Estado</th><th className="p-3">Observaciones</th><th className="p-3">Acciones</th></tr></thead>
+                    <tbody>{vacacionesAdmin.map(v => <tr key={v.id} className="border-b last:border-0">
+                      <td className="p-3 font-semibold">{v.empleado_nombre}</td><td className="p-3">{fechaLarga(v.fecha_inicio)}</td><td className="p-3">{fechaLarga(v.fecha_fin)}</td><td className="p-3">{v.dias}</td><td className="p-3"><span className={v.estado === "SOLICITADO" ? "rounded-lg bg-amber-100 px-2 py-1 text-xs font-bold text-amber-900" : v.estado === "APROBADO" ? "rounded-lg bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-900" : "rounded-lg bg-rose-100 px-2 py-1 text-xs font-bold text-rose-900"}>{v.estado === "SOLICITADO" ? "Pendiente" : v.estado === "APROBADO" ? "Aprobada" : "Rechazada"}</span></td>
+                      <td className="max-w-[220px] p-3 text-slate-500">{v.observaciones || "—"}</td><td className="p-3">{v.estado === "SOLICITADO" ? <div className="flex gap-2"><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "APROBADO")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white disabled:opacity-50">Aprobar</button><button type="button" disabled={guardando} onClick={() => resolverVacaciones(v, "RECHAZADO")} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700 disabled:opacity-50">Rechazar</button></div> : "Resuelta"}</td>
+                    </tr>)}{!vacacionesAdmin.length && <tr><td colSpan="7" className="p-10 text-center text-slate-400">No hay solicitudes de vacaciones registradas.</td></tr>}</tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {esAdminVista && pestana === "documentosAdmin" && (
+              <div className="p-4 sm:p-6">
+                <div className="mb-4"><h2 className="text-lg font-extrabold">Documentos y justificantes</h2><p className="text-sm text-[var(--erp-text-soft)]">Consulta los documentos enviados por los empleados, con filtro de plantilla y fechas del panel de control.</p></div>
+                <div className="overflow-x-auto rounded-2xl border border-[var(--erp-border)]">
+                  <table className="w-full min-w-[800px] text-left text-sm">
+                    <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Tipo</th><th className="p-3">Fecha del documento</th><th className="p-3">Archivo</th><th className="p-3">Subido</th><th className="p-3">Acción</th></tr></thead>
+                    <tbody>{documentosAdmin.map(d => <tr key={d.id} className="border-b last:border-0"><td className="p-3 font-semibold">{d.empleado_nombre}</td><td className="p-3">{d.tipo_justificante}</td><td className="p-3">{fechaLarga(d.fecha_documento)}</td><td className="max-w-[260px] truncate p-3">{d.nombre_archivo}</td><td className="p-3">{d.subido_en ? fechaLarga(d.subido_en) : "—"}</td><td className="p-3"><button type="button" onClick={() => descargar(d)} className="rounded-lg border px-3 py-2 text-xs font-bold hover:bg-slate-50">Descargar</button></td></tr>)}{!documentosAdmin.length && <tr><td colSpan="6" className="p-10 text-center text-slate-400">No hay documentos para los filtros seleccionados.</td></tr>}</tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
             {esAdminVista && pestana === "control" && (
               <div className="p-4 sm:p-6">
