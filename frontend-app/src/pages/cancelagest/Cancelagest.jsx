@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
+import { puedeVerModulo } from "../../utils/permisos";
 import axios from "../../api/axios";
 import "../../css/Cancelagest.css";
 import "../../css/CancelagestUnified.css";
@@ -71,22 +72,33 @@ export default function Cancelagest() {
 
   const navegar = (label) => {
     if (label === "Dashboard") return;
-    const rutas = { Expedientes: "/expedientes", Agenda: "/agenda", Mensajes: "/mensajes", CTN: "/ctn", Intranet: "/intranet", Informes: "/informes" };
+    const rutas = {
+      Expedientes: "/expedientes",
+      Agenda: "/agenda",
+      Empleados: "/empleados",
+      CTN: "/ctn",
+      Intranet: "/intranet",
+      Mensajes: "/mensajes",
+    };
     if (rutas[label]) navigate(rutas[label]);
   };
+
+  // La barra del dashboard de CancelaGest debe aplicar exactamente el mismo
+  // filtrado por permisos que la navegación general del ERP.
+  const navegacionCancelaGest = [
+    { key: "dashboard", label: "Dashboard", icon: "home" },
+    { key: "expedientes", label: "Expedientes", icon: "folder" },
+    { key: "agenda", label: "Agenda", icon: "calendar" },
+    { key: "empleados", label: "Empleados", icon: "user-group" },
+    { key: "ctn", label: "CTN", icon: "globe" },
+    { key: "intranet", label: "Intranet", icon: "folder" },
+    { key: "mensajes", label: "Mensajes", icon: "chat" },
+  ].filter((item) => puedeVerModulo(item.key));
 
   return <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
     <Sidebar
       brandName="CancelaGest"
-      navigationItems={[
-        { key: "dashboard", label: "Dashboard", icon: "home" },
-        { key: "expedientes", label: "Expedientes", icon: "folder" },
-        { key: "agenda", label: "Agenda", icon: "calendar" },
-        { key: "informes", label: "Informes", icon: "chart" },
-        { key: "mensajes", label: "Mensajes", icon: "chat" },
-        { key: "ctn", label: "CTN", icon: "globe" },
-        { key: "intranet", label: "Intranet", icon: "folder" },
-      ]}
+      navigationItems={navegacionCancelaGest}
       activeNavigationItem="Dashboard"
       onNavigationItemClick={navegar}
     />
