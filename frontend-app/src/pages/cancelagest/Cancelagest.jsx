@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
 import { puedeVerModulo } from "../../utils/permisos";
 import axios from "../../api/axios";
 import "../../css/Cancelagest.css";
@@ -70,41 +69,9 @@ export default function Cancelagest() {
   const categorias = datos?.categorias_firma || [];
   const tiempos = datos?.tiempos_circuito || [];
 
-  const navegar = (label) => {
-    if (label === "Dashboard") return;
-    const rutas = {
-      Expedientes: "/expedientes",
-      Agenda: "/agenda",
-      Empleados: "/empleados",
-      CTN: "/ctn",
-      Intranet: "/intranet",
-      Mensajes: "/mensajes",
-      Fichajes: "/fichajes",
-    };
-    if (rutas[label]) navigate(rutas[label]);
-  };
+  const modulosVisibles = MODULOS.filter((modulo) => puedeVerModulo(({"/expedientes":"expedientes","/agenda":"agenda","/informes":"informes","/apoderagest":"apoderagest","/notargest":"notargest","/ctn":"ctn"})[modulo.ruta] || "dashboard"));
 
-  // La barra del dashboard de CancelaGest debe aplicar exactamente el mismo
-  // filtrado por permisos que la navegación general del ERP.
-  const navegacionCancelaGest = [
-    { key: "dashboard", label: "Dashboard", icon: "home" },
-    { key: "expedientes", label: "Expedientes", icon: "folder" },
-    { key: "agenda", label: "Agenda", icon: "calendar" },
-    { key: "empleados", label: "Empleados", icon: "user-group" },
-    { key: "ctn", label: "CTN", icon: "globe" },
-    { key: "intranet", label: "Intranet", icon: "folder" },
-    { key: "mensajes", label: "Mensajes", icon: "chat" },
-    { key: "fichajes", label: "Fichajes", icon: "clock" },
-  ].filter((item) => puedeVerModulo(item.key));
-
-  return <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
-    <Sidebar
-      brandName="CancelaGest"
-      navigationItems={navegacionCancelaGest}
-      activeNavigationItem="Dashboard"
-      onNavigationItemClick={navegar}
-    />
-    <main className="cg-page">
+  return <main className="cg-page">
       <header className="cg-hero">
         <div className="cg-hero-identidad">
           <div className="cg-logo"><img src="/img/logo.jpg" alt="MOLSAN" /></div>
@@ -112,7 +79,6 @@ export default function Cancelagest() {
         </div>
         <div className="cg-hero-acciones">
           <div className="cg-fecha">{fechaActual}</div>
-          <button type="button" className="cg-button-secondary" onClick={() => navigate("/modulos")}>▦ Ir a módulos</button>
           <button type="button" className="cg-button-primary" onClick={cargar} disabled={cargando}>{cargando ? "Actualizando…" : "↻ Actualizar datos"}</button>
         </div>
       </header>
@@ -128,7 +94,7 @@ export default function Cancelagest() {
 
       <section className="cg-section">
         <div className="cg-section-heading"><div><span className="cg-kicker">ACCESOS DIRECTOS</span><h2>Módulos de trabajo</h2><p>Accede a las herramientas principales del ERP sin salir del entorno corporativo.</p></div></div>
-        <div className="cg-module-grid">{MODULOS.map((modulo) => <button type="button" className="cg-module-card" key={modulo.titulo} onClick={() => navigate(modulo.ruta)}>
+        <div className="cg-module-grid">{modulosVisibles.map((modulo) => <button type="button" className="cg-module-card" key={modulo.titulo} onClick={() => navigate(modulo.ruta)}>
           <span className="cg-module-icon">{modulo.icono}</span><span className="cg-module-text"><strong>{modulo.titulo}</strong><small>{modulo.descripcion}</small></span><span className="cg-module-arrow">↗</span>
         </button>)}</div>
       </section>
@@ -154,7 +120,5 @@ export default function Cancelagest() {
         <div className="cg-circuito-nota"><strong>Hitos medidos</strong><span>Firma → presentación tributaria</span><span>Presentación tributaria → presentación en Registro</span><span>Presentación en Registro → inscripción</span><span>Inscripción → cierre</span></div>
       </section>
 
-      <footer className="cg-footer">MOLSAN ERP · PREMIUM 2027 · CancelaGest{ultimaActualizacion ? ` · Actualizado a las ${ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}` : ""}</footer>
-    </main>
-  </div>;
+      <footer className="cg-footer">MOLSAN ERP · PREMIUM 2027 · CancelaGest{ultimaActualizacion ? ` · Actualizado a las ${ultimaActualizacion.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}` : ""}</footer></main>;
 }
