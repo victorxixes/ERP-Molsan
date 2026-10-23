@@ -2095,6 +2095,13 @@ const permisosDisponibles =
     return null;
   }
 
+  // VisibilidadTablas es un diálogo independiente de pantalla completa (z-index 12000).
+  // En modo de administración no debe quedar anidado dentro del modal de empleado,
+  // porque intercepta los clics de sus botones Cerrar y deja el modal exterior abierto.
+  // Renderizarlo directamente y delegar el cierre al listado evita esa superposición.
+  if (modoAdministracion && pestana === "visibilidad-tablas") {
+    return <VisibilidadTablas empleadoId={empleadoId} onClose={onClose} />;
+  }
 
   /* ==========================================================
      RENDER
