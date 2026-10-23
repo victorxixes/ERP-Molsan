@@ -1,5 +1,5 @@
 import MODULOS_ERP from "../config/modulos";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { createPortal } from "react-dom";
 import {
   useMemo,
@@ -421,6 +421,9 @@ const TopNavItem = ({
 export default function Sidebar({ brandName = "CancelaGest", navigationItems = null, activeNavigationItem = "", onNavigationItemClick = null, onNotificationsClick = null, notificationBadge = null, onProfileClick = null, onLogoutClick = null, headerActions = null } = {}) {
 
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  // Los portales de notarios externos mantienen su navegación aislada del ERP interno.
+  const esPortalNotarialExterno = /^\/(?:notargest|encargagest)-notarios(?:\/|$)/i.test(pathname);
 
   const empleado = useAuthStore(
     (s) => s.empleado
@@ -851,24 +854,12 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   // por lo que usamos exactamente las mismas fuentes y no todos los accesos internos.
   const modulosDropdown = useMemo(() => {
     const normalizarClave = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
-    const clavesVisibles = [
-      ...(Array.isArray(empleado?.modulos_visibles_list) ? empleado.modulos_visibles_list : []),
-      ...(Array.isArray(empleado?.modulos_visibles) ? empleado.modulos_visibles : []),
-    ].map(normalizarClave);
-
-    const clavesWorkspace = new Set([
-      "apoderagest",
-      "cancelagest",
-      "notargest",
-      "encargagest",
-      "fichajes",
-    ]);
-
-    const items = MODULOS_ERP
+    // El desplegable «Módulos» muestra el catálogo completo de rutas autorizadas,
+    // no solo los cinco portales de trabajo. Así el menú es común a todo el ERP.
+    const items = esPortalNotarialExterno ? [] : MODULOS_ERP
       .filter((modulo) =>
-        clavesWorkspace.has(normalizarClave(modulo.key)) &&
         Boolean(modulo.route) &&
-        clavesVisibles.includes(normalizarClave(modulo.key))
+        puedeVerModulo(modulo.key)
       )
       .map((modulo) => ({
         key: modulo.key,
@@ -877,10 +868,22 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
         icon: modulo.icon,
       }));
 
+    // Provisiones de fondos se gobierna por el permiso de Expedientes.
+    if (!esPortalNotarialExterno && puedeVerModulo("expedientes") &&
+        !items.some((item) => item.key === "provisiones-fondos")) {
+      items.push({
+        key: "provisiones-fondos",
+        to: "/provisiones-fondos",
+        label: "Provisiones de fondos",
+        icon: "clipboard",
+      });
+    }
+
     const rol = normalizarClave(empleado?.rol?.nombre || empleado?.rol_nombre || empleado?.nombre_rol);
     const usuarioAdmin = normalizarClave(empleado?.usuario) === "admin";
     const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario", "gestor", "manager"].some((r) => rol.includes(r));
-    if (esAdmin && clavesVisibles.includes("fichajes")) {
+    if (!esPortalNotarialExterno && esAdmin && puedeVerModulo("fichajes") &&
+        !items.some((item) => item.key === "control-fichajes")) {
       items.push({
         key: "control-fichajes",
         to: "/control-fichajes",
@@ -889,7 +892,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       });
     }
     return items;
-  }, [empleado]);
+  }, [empleado, esPortalNotarialExterno]);
 
   const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
   const modulosDropdownRef = useRef(null);
@@ -1172,6 +1175,24 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                     badge={modulo.badge || 0}
                   />
                 ))}
+
+            {/* Navegación común del ERP: los módulos autorizados siguen disponibles
+                desde cualquier módulo interno, sin sustituir las pestañas propias
+                de cada espacio de trabajo. Los portales externos quedan aislados. */}
+            {navigationItemsConModulos && !esPortalNotarialExterno && visiblesPrincipales
+              .filter((modulo) => !navigationItemsConModulos.some((item) =>
+                item?.key === modulo.key ||
+                normalizarModulo(item?.label) === normalizarModulo(modulo.label)
+              ))
+              .map((modulo) => (
+                <TopNavItem
+                  key={`erp-${modulo.key}`}
+                  to={modulo.to}
+                  label={modulo.label}
+                  icon={modulo.icon}
+                  badge={modulo.badge || 0}
+                />
+              ))}
 
             {modulosFijados.map((modulo) => (
               <TopNavItem
