@@ -39,6 +39,7 @@ function finMes(fecha) { return new Date(fecha.getFullYear(), fecha.getMonth() +
 export default function Fichajes({ modo = "empleado" }) {
   const [perfil, setPerfil] = useState(null);
   const [marcajes, setMarcajes] = useState([]);
+  const [marcajesCalendario, setMarcajesCalendario] = useState([]);
   const [resumenCompensacion, setResumenCompensacion] = useState({ festivos: [], solicitudes: [] });
   const [documentos, setDocumentos] = useState([]);
   const [tiposAusencia, setTiposAusencia] = useState([]);
@@ -104,6 +105,17 @@ export default function Fichajes({ modo = "empleado" }) {
     return () => { vivo = false; };
   }, [esAdminVista, recargarAdmin, recargarEmpleado]);
 
+  useEffect(() => {
+    if (esAdminVista || pestana !== "calendario") return;
+    let vivo = true;
+    const desde = fechaISO(inicioMes(mes));
+    const hasta = fechaISO(finMes(mes));
+    axios.get("/fichajes/marcajes", { params: { desde, hasta } })
+      .then((r) => { if (vivo) setMarcajesCalendario(Array.isArray(r.data) ? r.data : []); })
+      .catch((e) => { if (vivo) setError(e?.response?.data?.detail || "No se pudieron cargar los marcajes de este mes."); });
+    return () => { vivo = false; };
+  }, [esAdminVista, pestana, mes]);
+
   const marcajesFiltrados = useMemo(() => {
     const q = busqueda.trim().toLocaleLowerCase("es");
     return marcajes.filter((m) => !q || [formatearTipo(m.tipo), m.observaciones, fechaLarga(m.fecha_hora), hora(m.fecha_hora)].some((v) => String(v || "").toLocaleLowerCase("es").includes(q)));
@@ -121,12 +133,12 @@ export default function Fichajes({ modo = "empleado" }) {
 
   const porDia = useMemo(() => {
     const mapa = {};
-    marcajes.forEach((m) => {
+    marcajesCalendario.forEach((m) => {
       const clave = fechaISO(m.fecha_hora);
       (mapa[clave] ||= []).push(m);
     });
     return mapa;
-  }, [marcajes]);
+  }, [marcajesCalendario]);
 
   const ultimoMarcaje = marcajes[0] || null;
   useEffect(() => { const timer = window.setInterval(() => setReloj(new Date()), 1000); return () => window.clearInterval(timer); }, []);
