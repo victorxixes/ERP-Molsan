@@ -2343,6 +2343,7 @@ export default function ExpedientesListado() {
 
         animate-fade-in
       "
+      aria-busy={loading}
     >
 
 
