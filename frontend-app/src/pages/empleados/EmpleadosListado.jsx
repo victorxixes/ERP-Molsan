@@ -284,6 +284,7 @@ const prepararFotoUrl = (
 
 export default function EmpleadosListado({
   onSeleccionar = () => {},
+  incluirOcultos = false,
 }) {
 
   const [
@@ -566,10 +567,13 @@ export default function EmpleadosListado({
     useMemo(
       () =>
         Array.isArray(empleados)
-          ? empleados.filter((empleado) => empleado.visible_en_listado !== false)
+          ? (incluirOcultos
+              ? empleados
+              : empleados.filter((empleado) => empleado.visible_en_listado !== false))
           : [],
       [
         empleados,
+        incluirOcultos,
       ]
     );
 
