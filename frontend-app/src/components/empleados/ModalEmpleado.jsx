@@ -629,7 +629,7 @@ export default function ModalEmpleado({
         setCargando(true);
         setError(null);
         setMensaje(null);
-        setPestana("basicos");
+        setPestana(pestanaInicial || "basicos");
 
         await cargarFicha(
           empleadoId
