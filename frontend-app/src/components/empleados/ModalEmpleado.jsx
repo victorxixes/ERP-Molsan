@@ -427,6 +427,8 @@ export default function ModalEmpleado({
   open = false,
   empleadoId = null,
   onClose,
+  modoAdministracion = false,
+  pestanaInicial = "basicos",
 }) {
 
   /* ==========================================================
@@ -529,7 +531,7 @@ export default function ModalEmpleado({
   const [
     pestana,
     setPestana,
-  ] = useState("basicos");
+  ] = useState(pestanaInicial);
 
   const [
     confirmReset,
@@ -2059,33 +2061,37 @@ const permisosDisponibles =
     { id: "basicos", label: "Datos básicos", icon: "👤" },
     { id: "personales", label: "Datos personales", icon: "🏠" },
     { id: "laborales", label: "Datos laborales", icon: "💼" },
-    { id: "accesos", label: "Accesos", icon: "🔐" },
-    { id: "encargagest", label: "EncargaGest", icon: "🏛️" },
-    { id: "asignaciones", label: "Asignaciones", icon: "⚖️" },
-    { id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "📊" },
     { id: "seguridad", label: "Seguridad", icon: "🛡️" },
     { id: "auditoria", label: "Auditoría", icon: "📋" },
   ];
 
-  // Visibilidad tablas es una herramienta de configuración administrativa.
-  // Nunca debe aparecer en la ficha de un empleado estándar, ni siquiera en la propia.
-  const pestanasVisibles = esAdministrador
-    ? pestanasEmpleado
-    : esPropiaFicha
-      ? pestanasEmpleado.filter((item) => ["basicos", "personales", "laborales"].includes(item.id))
-      : [];
+  // La configuración administrativa se abre desde Utilidades, no desde la ficha.
+  const pestanasAdministracion = [
+    { id: "asignaciones", label: "Asignaciones", icon: "⚖️" },
+    { id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "📊" },
+  ];
+  const pestanasVisibles = modoAdministracion
+    ? (esAdministrador ? pestanasAdministracion.filter((item) => item.id === pestanaInicial) : [])
+    : esAdministrador
+      ? pestanasEmpleado
+      : esPropiaFicha
+        ? pestanasEmpleado.filter((item) => ["basicos", "personales", "laborales"].includes(item.id))
+        : [];
 
   useEffect(() => {
+    const predeterminada = modoAdministracion
+      ? (pestanasVisibles[0]?.id || "basicos")
+      : (pestanasVisibles[0]?.id || "basicos");
     if (!pestanasVisibles.some((item) => item.id === pestana)) {
-      setPestana(pestanasVisibles[0]?.id || "basicos");
+      setPestana(predeterminada);
     }
-  }, [empleadoId, esPropiaFicha, esAdministrador, pestana]);
+  }, [empleadoId, esPropiaFicha, esAdministrador, pestana, modoAdministracion, pestanaInicial]);
 
   /* ==========================================================
      NO RENDER
   ========================================================== */
 
-  if (!open) {
+  if (!open || (modoAdministracion && !esAdministrador)) {
     return null;
   }
 
