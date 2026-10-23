@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 from backend.app.empleados.models import Empleado
 from backend.app.maestros.models import Departamento, Seccion, Cargo
 from backend.app.seguridad.auditoria.service import (
@@ -13,151 +15,6 @@ router = APIRouter(
     prefix="/seguridad",
     tags=["Seguridad - Ficha Completa Empleado"]
 )
-
-
-# ============================================================
-# PLANTILLA PERMISOS SJ-2026
-# ============================================================
-#
-# Catálogo completo de módulos del ERP.
-#
-# IMPORTANTE:
-# Debe coincidir con permisos_router.py
-# ============================================================
-
-PLANTILLA_PERMISOS = {
-    "ctn": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "logs": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "agenda": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "intranet": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "maestros": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "mensajes": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "noticias": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "realtime": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "auditoria": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "dashboard": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "empleados": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "seguridad": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "documentos": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "utilidades": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "herramientas": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "panel-tecnico": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "expedientes": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-
-    "notificaciones": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-    "fichajes": [
-        "ver",
-        "crear",
-        "editar",
-        "eliminar",
-    ],
-}
 
 
 # ============================================================
@@ -241,7 +98,8 @@ def _nombre(objeto):
 )
 def obtener_ficha_completa(
     empleado_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     """
     Devuelve toda la información de seguridad
@@ -249,6 +107,10 @@ def obtener_ficha_completa(
 
     Contrato estable para SeguridadFicha.jsx.
     """
+
+    # La ficha de seguridad contiene datos personales y permisos.
+    # Solo usuarios con permiso explícito de lectura en Seguridad pueden consultarla.
+    require_perm_modulo(usuario, "seguridad", "ver")
 
     # ========================================================
     # EMPLEADO
@@ -327,29 +189,15 @@ def obtener_ficha_completa(
     )
 
     # ========================================================
-    # PERMISOS FINALES
+    # PERMISOS EFECTIVAMENTE GUARDADOS
     # ========================================================
-    #
-    # Primero cargamos toda la plantilla.
-    #
-    # Después sobrescribimos únicamente los módulos que
-    # tengan configuración personalizada.
-    #
-    # Esto garantiza que la ficha SIEMPRE tenga todos
-    # los módulos visibles.
-    # ========================================================
-
+    # No completar permisos con una plantilla ni conceder permisos
+    # por defecto. La ficha debe reflejar exactamente lo configurado
+    # por el administrador en SeguridadUsuarios.
     permisos_finales = {
         modulo: list(permisos)
-        for modulo, permisos
-        in PLANTILLA_PERMISOS.items()
+        for modulo, permisos in permisos_personalizados.items()
     }
-
-    for modulo, permisos in permisos_personalizados.items():
-
-        permisos_finales[modulo] = list(
-            permisos
-        )
 
     # ========================================================
     # ROL
