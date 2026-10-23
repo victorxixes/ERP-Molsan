@@ -74,6 +74,14 @@ const CATALOGOS = [
     grupo: "Catálogos económicos",
   },
   {
+    icon: "🕒",
+    titulo: "Fichajes · Tipos de ausencia",
+    descripcion: "Configura los motivos de ausencia y si cada uno requiere justificante.",
+    ruta: "/catalogos/fichajes",
+    grupo: "Catálogos operativos",
+    destacado: true,
+  },
+  {
     icon: "🗂️",
     titulo: "Maestros generales",
     descripcion: "Acceso al catálogo general de datos maestros del ERP.",
