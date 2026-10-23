@@ -3,6 +3,7 @@ import axios from "../../api/axios";
 import FichajesResumen from "./FichajesResumen.jsx";
 import FestivosCompensaciones from "./FestivosCompensaciones.jsx";
 import ControlFichajesAdmin from "./ControlFichajesAdmin.jsx";
+import SolicitudesAusencia from "./SolicitudesAusencia.jsx";
 
 const TIPOS = [
   { value: "ENTRADA", label: "Entrada a trabajar", icon: "↗", tone: "emerald" },
@@ -51,6 +52,7 @@ export default function Fichajes({ modo = "empleado" }) {
   const [marcajesAdmin, setMarcajesAdmin] = useState([]);
   const [vacacionesAdmin, setVacacionesAdmin] = useState([]);
   const [documentosAdmin, setDocumentosAdmin] = useState([]);
+  const [motivosDocumento, setMotivosDocumento] = useState({});
   const [pestana, setPestana] = useState(modo === "admin" ? "control" : "resumen");
   const [mes, setMes] = useState(inicioMes(FECHA_HOY));
   const [busqueda, setBusqueda] = useState("");
@@ -221,8 +223,8 @@ export default function Fichajes({ modo = "empleado" }) {
   };
 
   const tabs = esAdminVista
-    ? [{ id: "control", label: "Control de marcajes" }, { id: "solicitudes", label: "Solicitudes de vacaciones" }, { id: "documentosAdmin", label: "Documentos y justificantes" }, { id: "compensaciones", label: "Festivos y compensaciones" }]
-    : [{ id: "resumen", label: "Resumen de marcajes" }, { id: "calendario", label: "Calendario mensual" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }, { id: "compensaciones", label: "Festivos y compensaciones" }];
+    ? [{ id: "control", label: "Control de marcajes" }, { id: "solicitudes", label: "Solicitudes de vacaciones" }, { id: "ausenciasAdmin", label: "Solicitudes de ausencias" }, { id: "documentosAdmin", label: "Documentos y justificantes" }, { id: "compensaciones", label: "Festivos y compensaciones" }]
+    : [{ id: "resumen", label: "Resumen de marcajes" }, { id: "calendario", label: "Calendario mensual" }, { id: "documentos", label: "Documentos" }, { id: "personal", label: "Información personal" }, { id: "ausencias", label: "Solicitudes de ausencia" }, { id: "compensaciones", label: "Festivos y compensaciones" }];
 
   return (
     <main className="mx-auto w-full max-w-[1500px] space-y-6 p-4 text-[var(--erp-text)] sm:p-6">
@@ -315,6 +317,10 @@ export default function Fichajes({ modo = "empleado" }) {
                 <div><h2 className="font-bold">Historial de documentos</h2><div className="mt-3 space-y-2">{documentos.map((d) => <div key={d.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--erp-border)] p-3"><div className="min-w-0"><p className="truncate text-sm font-bold">{d.nombre_archivo}</p><p className="mt-1 text-xs text-slate-500">{d.tipo_justificante} · Fecha: {d.fecha_documento} · Subido: {d.subido_en ? fechaLarga(d.subido_en) : "—"}</p></div><button type="button" onClick={() => descargar(d)} className="rounded-lg border px-3 py-2 text-xs font-bold hover:bg-slate-50">Descargar</button></div>)}{documentos.length === 0 && <p className="rounded-xl border border-dashed p-8 text-center text-sm text-slate-400">Todavía no has adjuntado documentos.</p>}</div></div>
               </div>
             )}
+
+            {!esAdminVista && pestana === "ausencias" && <SolicitudesAusencia modo="empleado" />}
+
+            {esAdminVista && pestana === "ausenciasAdmin" && <SolicitudesAusencia modo="admin" empleados={empleados} />}
 
             {!esAdminVista && pestana === "personal" && perfil && (
               <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3 sm:p-6">
