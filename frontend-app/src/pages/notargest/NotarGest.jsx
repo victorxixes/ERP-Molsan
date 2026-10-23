@@ -528,19 +528,7 @@ export default function NotarGest({ accessMode = "auto" } = {}) {
     <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
       <Sidebar
         brandName="NotarGest"
-        navigationItems={accesoERP && esAdminNotarGest && !tokenAdminNotaria ? [] : [
-          { key: "inicio", label: "Dashboard", icon: "layout-dashboard" },
-          { key: "recepcion", label: "Nuevos encargos", icon: "inbox" },
-          { key: "firma", label: "Pendientes de firma", icon: "pen-line" },
-          { key: "copia", label: "Pendientes copias simples", icon: "files" },
-          { key: "factura", label: "Pendientes de factura notarial", icon: "receipt" },
-          { key: "ajd", label: "Pendientes de AJD / ITP", icon: "landmark" },
-          { key: "registro", label: "Pendientes de presentación registral", icon: "folder-check" },
-          { key: "defectos", label: "Expedientes con defectos", icon: "alert-triangle" },
-          { key: "inscripcion", label: "Inscripciones registrales", icon: "book-check" },
-          { key: "cerrada", label: "Escrituras cerradas inscritas", icon: "archive" },
-          { key: "firmas_urgentes", label: "Firmas urgentes", icon: "clock-alert" },
-        ]}
+        navigationItems={[]}
         activeNavigationItem={sidebarVista}
         onNavigationItemClick={navegarSidebar}
         onNotificationsClick={() => setNotificacionesAbiertas(true)}
