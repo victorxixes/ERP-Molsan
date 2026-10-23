@@ -876,25 +876,24 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     });
   }, [visiblesSecundarios, navigationItems, brandName, modulosFijados]);
 
-  // El desplegable «Módulos» replica las aplicaciones de Espacio de trabajo.
-  // Esa página se guía por los módulos visibles asignados a la ficha del empleado,
-  // por lo que usamos exactamente las mismas fuentes y no todos los accesos internos.
+  // «Módulos» es el catálogo completo de aplicaciones accesibles para el usuario.
+  // En administración se muestran todos los módulos con ruta; en el resto de perfiles
+  // se respeta la asignación de permisos. Notificaciones se gestiona exclusivamente
+  // desde la campana y no debe aparecer como módulo del desplegable.
   const modulosDropdown = useMemo(() => {
     const normalizarClave = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
     if (esPortalNotarialExterno) return [];
 
-    // «Módulos» solo contiene accesos excepcionales que no aparecen ya en
-    // la barra principal ni en «Más». Evita duplicar la navegación ordinaria.
-    const yaVisibles = new Set([
-      ...visiblesPrincipales.map((item) => item.key),
-      ...visiblesSecundarios.map((item) => item.key),
-      ...modulosFijados.map((item) => item.key),
-    ]);
+    const rol = normalizarClave(empleado?.rol?.nombre || empleado?.rol_nombre || empleado?.nombre_rol);
+    const usuarioAdmin = normalizarClave(empleado?.usuario) === "admin";
+    const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario"].some((r) => rol.includes(r));
+
     const items = MODULOS_ERP
       .filter((modulo) =>
         Boolean(modulo.route) &&
-        !yaVisibles.has(modulo.key) &&
-        puedeVerModulo(modulo.key)
+        modulo.key !== "notificaciones" &&
+        normalizarClave(modulo.label) !== "notificaciones" &&
+        (esAdmin || puedeVerModulo(modulo.key))
       )
       .map((modulo) => ({
         key: modulo.key,
@@ -911,8 +910,8 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
         })[modulo.icon] || modulo.icon,
       }));
 
-    // Excepciones operativas fuera del catálogo general.
-    if (puedeVerModulo("expedientes") && !yaVisibles.has("provisiones-fondos") &&
+    // Excepciones operativas que no forman parte del catálogo general.
+    if ((esAdmin || puedeVerModulo("expedientes")) &&
         !items.some((item) => item.key === "provisiones-fondos")) {
       items.push({
         key: "provisiones-fondos",
@@ -922,11 +921,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       });
     }
 
-    const rol = normalizarClave(empleado?.rol?.nombre || empleado?.rol_nombre || empleado?.nombre_rol);
-    const usuarioAdmin = normalizarClave(empleado?.usuario) === "admin";
-    const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario", "gestor", "manager"].some((r) => rol.includes(r));
-    if (esAdmin && puedeVerModulo("fichajes") && !yaVisibles.has("control-fichajes") &&
-        !items.some((item) => item.key === "control-fichajes")) {
+    if (esAdmin && !items.some((item) => item.key === "control-fichajes")) {
       items.push({
         key: "control-fichajes",
         to: "/control-fichajes",
@@ -935,7 +930,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       });
     }
     return items;
-  }, [empleado, esPortalNotarialExterno, visiblesPrincipales, visiblesSecundarios, modulosFijados]);
+  }, [empleado, esPortalNotarialExterno]);
   const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
   const modulosDropdownRef = useRef(null);
   const modulosDropdownMenuRef = useRef(null);
