@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from backend.app.database import get_db
 from backend.app.empleados.models import Empleado
 from backend.app.maestros.models import Departamento, Seccion, Cargo
+from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 
 
 router = APIRouter(
@@ -269,7 +271,8 @@ def _copiar_plantilla_permisos():
 )
 def ficha_completa(
     empleado_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     """
     Devuelve la información necesaria para la ficha de
@@ -296,6 +299,14 @@ def ficha_completa(
             status_code=404,
             detail="Empleado no encontrado"
         )
+
+    # Los empleados pueden consultar exclusivamente su propia ficha
+    # sin necesitar el módulo Seguridad ni Empleados. La ficha ajena
+    # sigue requiriendo permiso explícito de lectura en Empleados.
+    id_usuario = getattr(usuario, "id", None) or getattr(usuario, "empleado_id", None)
+    es_ficha_propia = id_usuario is not None and int(id_usuario) == int(empleado_id)
+    if not es_ficha_propia:
+        require_perm_modulo(usuario, "empleados", "ver")
 
     # ========================================================
     # 2. RELACIONES DE MAESTROS
@@ -441,6 +452,20 @@ def ficha_completa(
             or ""
         ),
 
+        "email_personal": (empleado.email_personal or ""),
+        "direccion": (empleado.direccion or ""),
+        "codigo_postal": (empleado.codigo_postal or ""),
+        "poblacion": (empleado.poblacion or ""),
+        "provincia": (empleado.provincia or ""),
+        "fecha_nacimiento": (empleado.fecha_nacimiento or ""),
+        "alergias": (empleado.alergias or ""),
+        "persona_contacto": (empleado.persona_contacto or ""),
+        "telefono_contacto": (empleado.telefono_contacto or ""),
+        "observaciones": (empleado.observaciones or ""),
+        "fecha_alta": (empleado.fecha_alta.isoformat() if getattr(empleado.fecha_alta, "isoformat", None) else empleado.fecha_alta),
+        "fecha_baja": (empleado.fecha_baja.isoformat() if getattr(empleado.fecha_baja, "isoformat", None) else empleado.fecha_baja),
+
+
         "email_empresa": (
             empleado.email_empresa
             or ""
@@ -521,6 +546,20 @@ def ficha_completa(
     # ========================================================
     # 9. RESPUESTA NORMALIZADA
     # ========================================================
+
+    if es_ficha_propia:
+        # Nunca exponer al propio empleado su configuración de permisos,
+        # módulos, rol administrativo ni datos de auditoría.
+        empleado_data.pop("rol_id", None)
+        empleado_data.pop("rol_nombre", None)
+        empleado_data.pop("activo", None)
+        empleado_data.pop("usuario", None)
+        empleado_data.pop("email_empresa", None)
+        empleado_data.pop("extension", None)
+        empleado_data.pop("modulos_visibles_list", None)
+        modulos_visibles = []
+        permisos_finales = {}
+        auditoria = []
 
     return {
 
