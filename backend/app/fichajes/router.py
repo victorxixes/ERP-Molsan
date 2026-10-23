@@ -322,6 +322,14 @@ def solicitar_vacaciones(fecha_inicio: date = Form(...), fecha_fin: date = Form(
     dias = (fecha_fin - fecha_inicio).days + 1
     if dias > 60:
         raise HTTPException(status_code=422, detail="Una solicitud no puede superar 60 días naturales.")
+    compensacion_duplicada = db.query(FichajeSolicitudCompensacion).filter(
+        FichajeSolicitudCompensacion.empleado_id == usuario.id,
+        FichajeSolicitudCompensacion.fecha_disfrute >= fecha_inicio,
+        FichajeSolicitudCompensacion.fecha_disfrute <= fecha_fin,
+        FichajeSolicitudCompensacion.estado.in_({"SOLICITADO", "APROBADO"}),
+    ).first()
+    if compensacion_duplicada:
+        raise HTTPException(status_code=409, detail="Ya existe una solicitud de compensación dentro de ese periodo. No se puede reservar también como vacaciones ordinarias.")
     registro = FichajeVacaciones(empleado_id=usuario.id, fecha_inicio=fecha_inicio, fecha_fin=fecha_fin, dias=dias,
         estado="SOLICITADO", observaciones=(observaciones or "").strip()[:500] or None)
     db.add(registro); db.commit(); db.refresh(registro)
@@ -509,6 +517,14 @@ def solicitar_compensacion(fecha_disfrute: date = Form(...), cantidad: float = F
         raise HTTPException(status_code=422, detail="Indica una cantidad positiva y una unidad válida (días u horas).")
     if fecha_disfrute < date.today():
         raise HTTPException(status_code=422, detail="La fecha de disfrute no puede estar en el pasado.")
+    vacaciones_duplicadas = db.query(FichajeVacaciones).filter(
+        FichajeVacaciones.empleado_id == usuario.id,
+        FichajeVacaciones.fecha_inicio <= fecha_disfrute,
+        FichajeVacaciones.fecha_fin >= fecha_disfrute,
+        FichajeVacaciones.estado.in_({"SOLICITADO", "APROBADO"}),
+    ).first()
+    if vacaciones_duplicadas:
+        raise HTTPException(status_code=409, detail="Ya existe una solicitud de vacaciones ordinarias para esa fecha. No se puede reservar también como compensación.")
     _procesar_compensaciones_vencidas(db, usuario.id)
     disponible = _saldo_disponible_compensacion(db, usuario.id, unidad)
     if cantidad > disponible + 0.0001:
