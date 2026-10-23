@@ -114,7 +114,7 @@ export default function Fichajes({ modo = "empleado" }) {
       .then((r) => { if (vivo) setMarcajesCalendario(Array.isArray(r.data) ? r.data : []); })
       .catch((e) => { if (vivo) setError(e?.response?.data?.detail || "No se pudieron cargar los marcajes de este mes."); });
     return () => { vivo = false; };
-  }, [esAdminVista, pestana, mes]);
+  }, [esAdminVista, pestana, mes, marcajes.length]);
 
   const marcajesFiltrados = useMemo(() => {
     const q = busqueda.trim().toLocaleLowerCase("es");
