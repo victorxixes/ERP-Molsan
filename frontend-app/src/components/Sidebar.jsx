@@ -876,6 +876,25 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     });
   }, [visiblesSecundarios, navigationItems, brandName, modulosFijados]);
 
+  // Deduplicar accesos fijados contra todas las fuentes de navegación.
+  // Antes se renderizaban por separado y una misma ruta podía aparecer dos veces.
+  const modulosFijadosUnicos = useMemo(() => {
+    const yaPintados = [
+      ...(Array.isArray(navigationItems) ? navigationItems : []),
+      ...visiblesPrincipales,
+    ];
+    const claves = new Set(yaPintados.flatMap((item) => [
+      normalizarModulo(item?.key),
+      normalizarModulo(item?.label),
+      normalizarModulo(item?.to || item?.route),
+    ]).filter(Boolean));
+    return modulosFijados.filter((item) => ![
+      normalizarModulo(item?.key),
+      normalizarModulo(item?.label),
+      normalizarModulo(item?.to || item?.route),
+    ].some((clave) => clave && claves.has(clave)));
+  }, [navigationItems, visiblesPrincipales, modulosFijados]);
+
   // «Módulos» muestra las aplicaciones autorizadas que NO estén ya accesibles
   // desde la barra actual, «Más» o los accesos fijos del espacio de trabajo.
   // Así el administrador conserva el catálogo completo sin duplicar enlaces.
@@ -895,7 +914,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     const elementosEnBarra = [
       ...(Array.isArray(navigationItems) ? navigationItems : []),
       ...visiblesPrincipales,
-      ...modulosFijados,
+      ...modulosFijadosUnicos,
     ];
     const clavesEnBarra = new Set();
     const rutasEnBarra = new Set();
@@ -965,7 +984,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       items.push(controlFichajes);
     }
     return items;
-  }, [empleado, esPortalNotarialExterno, navigationItems, visiblesPrincipales, visiblesSecundarios, modulosFijados, brandName]);
+  }, [empleado, esPortalNotarialExterno, navigationItems, visiblesPrincipales, visiblesSecundarios, modulosFijadosUnicos, brandName]);
   const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
   const modulosDropdownRef = useRef(null);
   const modulosDropdownMenuRef = useRef(null);
@@ -1275,7 +1294,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                 />
               ))}
 
-            {modulosFijados.map((modulo) => (
+            {modulosFijadosUnicos.map((modulo) => (
               <TopNavItem
                 key={modulo.key}
                 to={modulo.to}
