@@ -20,12 +20,15 @@ export default function SeguridadUsuarios() {
     asignarRol,
     bloquear,
     desbloquear,
+    actualizarColaboradorApoderaGest,
   } = useSeguridad();
 
   const [empleadoIdSeleccionado, setEmpleadoIdSeleccionado] = useState(null);
   const [pestanaActiva, setPestanaActiva] = useState("resumen");
   const [guardandoRol, setGuardandoRol] = useState(false);
   const [mensajeRol, setMensajeRol] = useState("");
+  const [guardandoColaborador, setGuardandoColaborador] = useState(false);
+  const [mensajeColaborador, setMensajeColaborador] = useState("");
 
   // ============================================================
   // CARGA INICIAL
@@ -242,6 +245,25 @@ export default function SeguridadUsuarios() {
     }).format(fecha);
   }, [fechaSeguridad]);
 
+  const cambiarColaboradorApoderaGest = async () => {
+    if (!empleadoIdSeleccionado || guardandoColaborador || !empleadoBasico) return;
+    const nuevoEstado = !Boolean(empleadoBasico.es_colaborador);
+    setGuardandoColaborador(true);
+    setMensajeColaborador("");
+    try {
+      await actualizarColaboradorApoderaGest(empleadoIdSeleccionado, nuevoEstado);
+      setMensajeColaborador(
+        nuevoEstado
+          ? "Colaborador de ApoderaGest habilitado correctamente."
+          : "Colaborador de ApoderaGest deshabilitado correctamente."
+      );
+    } catch {
+      setMensajeColaborador("No se pudo guardar el cambio. Comprueba tus permisos e inténtalo de nuevo.");
+    } finally {
+      setGuardandoColaborador(false);
+    }
+  };
+
   const asignarRolSeleccionado = async (rolId) => {
     if (!empleadoIdSeleccionado || !rolId || guardandoRol) return;
     setGuardandoRol(true);
@@ -437,15 +459,34 @@ export default function SeguridadUsuarios() {
                         </span>
                       )}
 
-                      <span className={
-                        empleadoBasicoSeguro.es_colaborador
-                          ? "erp-badge erp-badge-success"
-                          : "erp-badge erp-badge-neutral"
-                      }>
-                        {empleadoBasicoSeguro.es_colaborador
-                          ? "Colaborador de ApoderaGest"
-                          : "ApoderaGest: no habilitado"}
-                      </span>
+                      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--erp-border)] bg-[var(--erp-surface)] px-3 py-2">
+                        <span className="text-sm font-semibold text-[var(--erp-text)]">
+                          Colaborador de ApoderaGest
+                        </span>
+                        <span className={empleadoBasicoSeguro.es_colaborador ? "erp-badge erp-badge-success" : "erp-badge erp-badge-neutral"}>
+                          {empleadoBasicoSeguro.es_colaborador ? "Sí" : "No"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={cambiarColaboradorApoderaGest}
+                          disabled={guardandoColaborador || loading}
+                          className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${empleadoBasicoSeguro.es_colaborador
+                            ? "border-[var(--erp-border)] text-[var(--erp-text)] hover:bg-[var(--erp-bg)]"
+                            : "border-[var(--erp-primary)] bg-[var(--erp-primary)] text-white hover:opacity-90"}`}
+                        >
+                          {guardandoColaborador
+                            ? "Guardando…"
+                            : empleadoBasicoSeguro.es_colaborador
+                              ? "Deshabilitar"
+                              : "Habilitar"}
+                        </button>
+                      </div>
+                      {mensajeColaborador && (
+                        <p className="w-full text-sm text-[var(--erp-muted)]" role="status">
+                          {mensajeColaborador}
+                        </p>
+                      )}
+
 
                     </div>
 

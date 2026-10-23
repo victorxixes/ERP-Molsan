@@ -710,6 +710,49 @@ def actualizar_permisos(
 
 
 # =========================================================
+# HABILITAR / DESHABILITAR COLABORADOR DE APODERAGEST
+# =========================================================
+
+@router.put("/{empleado_id}/colaborador-apoderagest")
+def actualizar_colaborador_apoderagest(
+    empleado_id: int,
+    data: dict,
+    db: Session = Depends(get_db),
+    _usuario=Depends(_permiso_seguridad("editar")),
+):
+    """
+    Cambia únicamente la condición de colaborador de ApoderaGest.
+    La operación queda restringida al permiso de edición de Seguridad.
+    """
+    if not isinstance(data, dict) or not isinstance(data.get("es_colaborador"), bool):
+        raise HTTPException(
+            status_code=400,
+            detail="Indica es_colaborador con un valor booleano.",
+        )
+
+    empleado = obtener_empleado(db, empleado_id)
+    if not empleado:
+        raise HTTPException(
+            status_code=404,
+            detail="Empleado no encontrado",
+        )
+
+    empleado.es_colaborador = data["es_colaborador"]
+    try:
+        db.commit()
+        db.refresh(empleado)
+    except Exception:
+        db.rollback()
+        raise
+
+    return {
+        "status": "ok",
+        "empleado_id": empleado.id,
+        "es_colaborador": bool(empleado.es_colaborador),
+    }
+
+
+# =========================================================
 # RESET PASSWORD
 # =========================================================
 
