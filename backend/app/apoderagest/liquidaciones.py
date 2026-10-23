@@ -160,8 +160,8 @@ def validar_mi_relacion(liquidacion_id: int, discrepancia: str = Form(""), db: S
     item.estado_relacion = "validada"
     item.validado_en = datetime.utcnow()
     item.validado_por_id = usuario.id
-    item.validado_version = item.validado_version or 1
     historial = list(item.historial_validaciones or [])
+    item.validado_version = len(historial) + 1
     historial.append({
         "version": item.validado_version,
         "validado_en": item.validado_en.isoformat(),
