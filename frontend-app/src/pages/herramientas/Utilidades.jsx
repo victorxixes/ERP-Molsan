@@ -28,8 +28,7 @@ export default function Utilidades() {
         <Card icon="🔑" titulo="Gestión de roles" descripcion="Crea roles nuevos, como Colaborador, y administra los roles disponibles en el sistema." link="/seguridad/roles/editor" destacado />
       </Grupo>
 
-      <Grupo titulo="Módulos y permisos" descripcion="Consulta y configura los módulos disponibles y la matriz de permisos del ERP.">
-        <Card icon="🧩" titulo="Módulos y permisos" descripcion="Administra los módulos del ERP y revisa cómo se conceden los permisos." link="/seguridad/modulos" destacado />
+      <Grupo titulo="Accesos notariales" descripcion="Administra por separado los accesos de las notarías a NotarGest y EncargaGest, con historial de cambios.">
         <Card icon="🔐" titulo="Accesos notariales" descripcion="Busca una notaría y administra por separado sus accesos a NotarGest y EncargaGest, con historial de cambios." link="/herramientas/utilidades/accesos-notariales" />
       </Grupo>
 
