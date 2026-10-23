@@ -786,6 +786,25 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
 
   /**
+   * El catálogo central es la fuente de verdad para etiquetas, rutas e iconos.
+   * Se conservan los metadatos locales (p. ej. permiso alternativo y contador)
+   * solo para excepciones operativas que no forman parte del catálogo general.
+   */
+  const aplicarCatalogoCentral = (items) => items.map((item) => {
+    const central = MODULOS_ERP.find((modulo) => modulo.key === item.key && modulo.route);
+    if (!central) return item;
+    return {
+      ...item,
+      to: central.route,
+      label: central.label,
+      icon: central.icon,
+    };
+  });
+
+  const navegacionPrincipalCatalogo = aplicarCatalogoCentral(modulosPrincipales);
+  const navegacionSecundariaCatalogo = aplicarCatalogoCentral(modulosSecundarios);
+
+  /**
    * ==========================================================
    * FILTRADO POR PERMISOS
    * ==========================================================
@@ -793,7 +812,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   const visiblesPrincipales = useMemo(
     () =>
-      modulosPrincipales.filter(
+      navegacionPrincipalCatalogo.filter(
         (modulo) =>
           puedeVerModulo(
             modulo.permiso || modulo.key
@@ -808,7 +827,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   const visiblesSecundarios = useMemo(
     () =>
-      modulosSecundarios.filter(
+      navegacionSecundariaCatalogo.filter(
         (modulo) =>
           puedeVerModulo(modulo.permiso || modulo.key)
       ),
