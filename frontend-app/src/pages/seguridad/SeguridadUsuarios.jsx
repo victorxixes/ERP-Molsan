@@ -323,6 +323,7 @@ export default function SeguridadUsuarios() {
 
           <div className="erp-card-body p-0">
             <EmpleadosListado
+              incluirOcultos
               onSeleccionar={(id) => {
                 setEmpleadoIdSeleccionado(id);
               }}
