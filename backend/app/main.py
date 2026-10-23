@@ -76,6 +76,7 @@ from backend.app.expediente_ppad.models import ExpedientePPAD
 from backend.app.expediente_observaciones.models import ExpedienteObservacion
 from backend.app.tipos_concepto_gastos.models import TipoConceptoGastos
 from backend.app.acciones_expediente.models import AccionExpediente
+from backend.app.catalogos_absis.router import router as catalogos_absis_router
 from backend.app.expediente_acciones.models import ExpedienteAccion
 
 
@@ -430,6 +431,7 @@ app.include_router(tipos_concepto_gastos_router, prefix="/api")
 
 # ACCIONES DEL EXPEDIENTE
 app.include_router(acciones_expediente_router, prefix="/api")
+app.include_router(catalogos_absis_router, prefix="/api")
 app.include_router(expediente_acciones_router, prefix="/api")
 
 # HERRAMIENTAS SWAGGER
@@ -1993,6 +1995,82 @@ def instrumentar_inicio_aplicacion():
 
 
 # ============================================================
+def migrar_catalogo_absis():
+    """Crea el almacén del catálogo ABSIS y carga los valores iniciales solo al crearlo."""
+    with engine.begin() as conexion:
+        existe = conexion.execute(
+            text("SELECT to_regclass('public.catalogos_absis')")
+        ).scalar()
+        conexion.execute(text("""
+            CREATE TABLE IF NOT EXISTS public.catalogos_absis (
+                id BIGSERIAL PRIMARY KEY,
+                categoria VARCHAR(100) NOT NULL,
+                valor VARCHAR(300) NOT NULL DEFAULT '',
+                codigo VARCHAR(40),
+                descripcion TEXT NOT NULL DEFAULT '',
+                activo BOOLEAN NOT NULL DEFAULT TRUE,
+                creado_en TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        if not existe:
+            iniciales = [
+                ("Estados expedientes", "", "LIQ", ""),
+                ("Estados expedientes", "", "VIG", ""),
+                ("Estados expedientes", "", "LST", ""),
+                ("Estados expedientes", "", "RTS", ""),
+                ("Estados expedientes", "", "PVA", ""),
+                ("Producto GTG", "Propia entidad", None, ""),
+                ("Producto GTG", "Vinculada otra entidad", None, ""),
+                ("Producto GTG", "Vinculada propia entidad", None, ""),
+                ("Producto GTG", "Hipotecario", None, ""),
+                ("Producto GTG", "Crédito Stock", None, ""),
+                ("Actividad Actual", "Facturación y cierre", None, ""),
+                ("Actividad Actual", "Documentación previa", None, ""),
+                ("Actividad Actual", "Sede Notarial", None, ""),
+                ("Actividad Actual", "Tramitación inscripción", None, ""),
+                ("Actividad Actual", "Liquidación impuestos", None, ""),
+                ("Estado Actividad", "Cerrada", None, ""),
+                ("Estado Actividad", "Abierta", None, ""),
+                ("Estado Actividad", "Reabierta", None, ""),
+                ("Estado Actividad", "Cerrada automáticamente", None, ""),
+                ("Tipo Provision", "Pendiente", None, ""),
+                ("Tipo de operación", "Cancelación sin provisión", None, ""),
+                ("Tipo de operación", "Cancelación con provisión", None, ""),
+                ("Tipo de operación", "Constitución", None, ""),
+                ("Tipo de operación", "Novación", None, ""),
+                ("Tipo de operación", "Subrogación", None, ""),
+                ("Subtipo operación", "Préstamo", None, ""),
+                ("Subtipo operación", "Dictamen", None, ""),
+                ("Subtipo operación", "Crédito abierto", None, ""),
+                ("Tipos de errores de defecto", "", "118", "Anterior a LCI_Falta un documento judicial previo"),
+                ("Tipos de errores de defecto", "", "113", "Anterior a LCI_Defectos relacionados con aspectos de la finca"),
+                ("Tipos de errores de defecto", "", "121", "Anterior a LCI_Falta un documento previo a aportar por el Cliente"),
+                ("Tipos de errores de defecto", "", "112", "Anterior a LCI_Defectos en aspectos relacionados con el cliente"),
+                ("Tipos de errores de defecto", "", "116", "Anterior a LCI_Defectos en documento judicial"),
+                ("Tipos de errores de defecto", "", "126", "LCI_Constitución P.Hipotecario-Defect.falta transparencia (escritura,proyecto,FEIN-ANEXOS)"),
+                ("Tipos de errores de defecto", "", "124", "LCI_Constitución P.Hipotecario-Defect.cláusula préstamo Hip(vencimiento,demora,comisión,tasación)"),
+                ("Tipos de errores de defecto", "", "115", "Anterior a LCI_Defectos relacionados con alguna cláusula de la hipoteca u otra garantía"),
+                ("Tipos de errores de defecto", "", "120", "Anterior a LCI_Falta un documento previo a aportar por la Oficina"),
+                ("Tipos de errores de defecto", "", "123", "LCI_Constitución Préstamo Hipotecario-Defectos relacionados con aspectos de la finca."),
+                ("Tipos de errores de defecto", "", "122", "LCI_Constitución Préstamo Hipotecario-Defectos relacionados con los intervinientes"),
+                ("Tipos de errores de defecto", "", "125", "LCI_Constitución P.Hipotecario-Defect.carácter documental (acta, inscripción CGC, protocolización)"),
+                ("Tipos de errores de defecto", "", "114", "Anterior a LCI_Defectos relacionados con la Ley 1/13, de 14 de mayo (reforma de la ley hipotecaria)"),
+            ]
+            conexion.execute(
+                text("""
+                    INSERT INTO public.catalogos_absis (categoria, valor, codigo, descripcion)
+                    VALUES (:categoria, :valor, :codigo, :descripcion)
+                """),
+                [
+                    {"categoria": categoria, "valor": valor, "codigo": codigo, "descripcion": descripcion}
+                    for categoria, valor, codigo, descripcion in iniciales
+                ],
+            )
+            print(f"[CATÁLOGO ABSIS] Cargadas {len(iniciales)} entradas iniciales.", flush=True)
+        else:
+            print("[CATÁLOGO ABSIS] Tabla verificada; se conservan sus entradas actuales.", flush=True)
+
+
 def migrar_catalogo_honorarios_impuestos():
     """Añade de forma idempotente base e impuesto al catálogo de honorarios."""
     with engine.begin() as conexion:
@@ -2017,5 +2095,6 @@ app.router.on_startup.insert(
     migrar_esquema_expedientes_inicio,
 )
 app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
+app.router.on_startup.insert(2, migrar_catalogo_absis)
 
 instrumentar_inicio_aplicacion()
