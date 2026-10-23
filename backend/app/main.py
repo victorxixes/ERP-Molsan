@@ -2105,6 +2105,16 @@ def migrar_catalogo_absis():
             """))
             print("[CATÁLOGO ABSIS] Tabla verificada; se conservan sus entradas actuales.", flush=True)
 
+def migrar_visibilidad_empleado():
+    """Añade de forma compatible el control de visibilidad en las tarjetas de empleados."""
+    with engine.begin() as conexion:
+        conexion.execute(text(
+            "ALTER TABLE public.empleados "
+            "ADD COLUMN IF NOT EXISTS visible_en_listado BOOLEAN NOT NULL DEFAULT TRUE"
+        ))
+    print("[EMPLEADOS] Columna visible_en_listado comprobada.", flush=True)
+
+
 # ORDEN DE ARRANQUE
 # ============================================================
 
@@ -2115,5 +2125,6 @@ app.router.on_startup.insert(
 )
 app.router.on_startup.insert(1, migrar_catalogo_honorarios_impuestos)
 app.router.on_startup.insert(2, migrar_catalogo_absis)
+app.router.on_startup.insert(3, migrar_visibilidad_empleado)
 
 instrumentar_inicio_aplicacion()

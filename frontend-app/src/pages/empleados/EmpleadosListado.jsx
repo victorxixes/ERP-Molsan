@@ -436,6 +436,9 @@ export default function EmpleadosListado({
                       empleado.activo
                     ),
 
+                  visible_en_listado:
+                    empleado.visible_en_listado !== false,
+
                   departamento_nombre:
                     safeText(
                       empleado.departamento_nombre
@@ -562,10 +565,8 @@ export default function EmpleadosListado({
   const empleadosMemo =
     useMemo(
       () =>
-        Array.isArray(
-          empleados
-        )
-          ? empleados
+        Array.isArray(empleados)
+          ? empleados.filter((empleado) => empleado.visible_en_listado !== false)
           : [],
       [
         empleados,

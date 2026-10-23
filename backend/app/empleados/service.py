@@ -532,6 +532,8 @@ def listar_empleados(
 
         Empleado.activo,
 
+        Empleado.visible_en_listado,
+
         Empleado.foto,
 
         Empleado.departamento_id,
