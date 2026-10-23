@@ -469,16 +469,17 @@ def admin_resolver_solicitud_vacaciones(
             FichajeBolsaVacaciones.empleado_id == solicitud.empleado_id,
             FichajeBolsaVacaciones.anio == solicitud.fecha_inicio.year,
         ).first()
-        if bolsa:
-            comprometidos = sum(v.dias for v in db.query(FichajeVacaciones).filter(
-                FichajeVacaciones.empleado_id == solicitud.empleado_id,
-                FichajeVacaciones.estado == "APROBADO",
-                FichajeVacaciones.id != solicitud.id,
-                FichajeVacaciones.fecha_inicio >= date(solicitud.fecha_inicio.year, 1, 1),
-                FichajeVacaciones.fecha_inicio < date(solicitud.fecha_inicio.year + 1, 1, 1),
-            ).all())
-            if comprometidos + solicitud.dias > bolsa.dias_asignados:
-                raise HTTPException(status_code=409, detail="No se puede aprobar: la solicitud supera el saldo de vacaciones asignado.")
+        if not bolsa:
+            raise HTTPException(status_code=409, detail="No se puede aprobar: administración todavía no ha asignado las vacaciones de este empleado para ese año.")
+        comprometidos = sum(v.dias for v in db.query(FichajeVacaciones).filter(
+            FichajeVacaciones.empleado_id == solicitud.empleado_id,
+            FichajeVacaciones.estado == "APROBADO",
+            FichajeVacaciones.id != solicitud.id,
+            FichajeVacaciones.fecha_inicio >= date(solicitud.fecha_inicio.year, 1, 1),
+            FichajeVacaciones.fecha_inicio < date(solicitud.fecha_inicio.year + 1, 1, 1),
+        ).all())
+        if comprometidos + solicitud.dias > bolsa.dias_asignados:
+            raise HTTPException(status_code=409, detail="No se puede aprobar: la solicitud supera el saldo de vacaciones asignado.")
     solicitud.estado = estado
     if observaciones.strip():
         solicitud.observaciones = (solicitud.observaciones or "")
