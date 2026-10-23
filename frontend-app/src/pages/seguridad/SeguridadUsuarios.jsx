@@ -227,9 +227,7 @@ export default function SeguridadUsuarios() {
       fichaSegura?.fecha_actualizacion_seguridad ??
       fichaSegura?.ultima_actualizacion_seguridad ??
       fichaSegura?.fecha_modificacion_seguridad ??
-      fichaSegura?.updated_at ??
-      fichaSegura?.empleado?.fecha_actualizacion_seguridad ??
-      fichaSegura?.empleado?.updated_at;
+      fichaSegura?.empleado?.fecha_actualizacion_seguridad;
     if (directa) return directa;
     return auditoriaEmpleado[0]?.fecha || null;
   }, [fichaSegura, auditoriaEmpleado]);
