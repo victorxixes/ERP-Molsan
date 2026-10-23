@@ -7,10 +7,10 @@ from datetime import date, datetime
 from io import BytesIO
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
-from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, ForeignKey, LargeBinary, UniqueConstraint, text
+from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, ForeignKey, LargeBinary, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Session
-from backend.app.database import Base, engine, get_db
+from backend.app.database import Base, get_db
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.empleados.models import Empleado
@@ -45,13 +45,6 @@ class LiquidacionMensual(Base):
     creada_en = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
     actualizada_en = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     __table_args__ = (UniqueConstraint("empleado_id", "periodo", name="uq_apoderagest_liquidacion_periodo"),)
-
-@router.on_event("startup")
-def preparar_esquema_liquidaciones():
-    # Migración aditiva e idempotente: no altera los datos de empleados existentes.
-    with engine.begin() as conn:
-        conn.execute(text("ALTER TABLE empleados ADD COLUMN IF NOT EXISTS es_colaborador BOOLEAN NOT NULL DEFAULT FALSE"))
-    Base.metadata.create_all(bind=engine, tables=[LiquidacionMensual.__table__])
 
 def _es_admin(usuario):
     rol = str(getattr(getattr(usuario, "rol", None), "nombre", "") or "").casefold()
