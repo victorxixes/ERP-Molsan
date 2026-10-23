@@ -98,6 +98,8 @@ class Empleado(BaseModel):
 
     activo: Optional[bool] = True
 
+    visible_en_listado: Optional[bool] = True
+
     # =====================================================
     # SEGURIDAD
     # =====================================================
@@ -233,6 +235,8 @@ class EmpleadoUpdate(BaseModel):
     # =====================================================
 
     activo: Optional[bool] = None
+
+    visible_en_listado: Optional[bool] = None
 
     # =====================================================
     # SEGURIDAD
