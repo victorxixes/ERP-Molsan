@@ -2,6 +2,7 @@ from datetime import date, datetime, time, timedelta
 from io import BytesIO
 from urllib.parse import quote
 import unicodedata
+import json
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
@@ -12,7 +13,7 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.permissions import require_perm_modulo
 from backend.app.database import Base, engine, get_db
 from backend.app.empleados.models import Empleado
-from backend.app.fichajes.models import (FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones, FichajeFestivoTrabajado, FichajeCompensacionMovimiento, FichajeSolicitudCompensacion, FichajeCompensacionAuditoria, FichajeFestivoCalendario)
+from backend.app.fichajes.models import (FichajeDocumento, FichajeMarcaje, FichajeTipoAusencia, FichajeVacaciones, FichajeBolsaVacaciones, FichajeFestivoTrabajado, FichajeCompensacionMovimiento, FichajeSolicitudCompensacion, FichajeCompensacionAuditoria, FichajeFestivoCalendario, FichajeMarcajeAuditoria, FichajePeriodoCerrado)
 
 router = APIRouter(prefix="/fichajes", tags=["Fichaje Molsan"])
 TIPOS_MARCAJE = {"ENTRADA", "SALIDA", "PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_INICIO", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_INICIO", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA", "AUSENCIA"}
@@ -31,7 +32,7 @@ def _migrar_tablas():
             conexion.execute(text("SET LOCAL statement_timeout = '8s'"))
             Base.metadata.create_all(
                 bind=conexion,
-                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__, FichajeTipoAusencia.__table__, FichajeVacaciones.__table__, FichajeBolsaVacaciones.__table__, FichajeFestivoTrabajado.__table__, FichajeCompensacionMovimiento.__table__, FichajeSolicitudCompensacion.__table__, FichajeCompensacionAuditoria.__table__, FichajeFestivoCalendario.__table__],
+                tables=[FichajeMarcaje.__table__, FichajeDocumento.__table__, FichajeTipoAusencia.__table__, FichajeVacaciones.__table__, FichajeBolsaVacaciones.__table__, FichajeFestivoTrabajado.__table__, FichajeCompensacionMovimiento.__table__, FichajeSolicitudCompensacion.__table__, FichajeCompensacionAuditoria.__table__, FichajeFestivoCalendario.__table__, FichajeMarcajeAuditoria.__table__, FichajePeriodoCerrado.__table__],
                 checkfirst=True,
             )
         from sqlalchemy.orm import Session as _Session
@@ -74,6 +75,43 @@ def _marcaje_dict(m):
         "fecha_hora": m.fecha_hora.isoformat() if m.fecha_hora else None,
         "observaciones": m.observaciones,
     }
+
+
+
+def _snapshot_marcaje(m):
+    return {
+        "id": m.id,
+        "empleado_id": m.empleado_id,
+        "tipo": m.tipo,
+        "fecha_hora": m.fecha_hora.isoformat() if m.fecha_hora else None,
+        "observaciones": m.observaciones,
+        "creado_por_id": m.creado_por_id,
+    }
+
+
+def _periodo_esta_cerrado(db, fecha_hora):
+    periodo = db.query(FichajePeriodoCerrado).filter(
+        FichajePeriodoCerrado.anio == fecha_hora.year,
+        FichajePeriodoCerrado.mes == fecha_hora.month,
+    ).first()
+    return bool(periodo and periodo.cerrado)
+
+
+def _exigir_periodo_abierto(db, fecha_hora):
+    if _periodo_esta_cerrado(db, fecha_hora):
+        raise HTTPException(status_code=409, detail="El periodo de este marcaje está cerrado. Un administrador autorizado debe reabrir el mes indicando el motivo antes de modificarlo.")
+
+
+def _registrar_auditoria_marcaje(db, marcaje, actor, accion, anterior, nuevo, motivo):
+    db.add(FichajeMarcajeAuditoria(
+        marcaje_id=marcaje.id if marcaje else None,
+        empleado_id=(marcaje.empleado_id if marcaje else nuevo["empleado_id"]),
+        actor_id=actor.id,
+        accion=accion,
+        datos_anteriores=json.dumps(anterior, ensure_ascii=False, default=str) if anterior else None,
+        datos_nuevos=json.dumps(nuevo, ensure_ascii=False, default=str),
+        motivo=motivo.strip()[:500],
+    ))
 
 
 def _documento_dict(d):
@@ -268,6 +306,9 @@ def admin_marcajes(
     desde: date | None = Query(default=None),
     hasta: date | None = Query(default=None),
     empleado_id: int | None = Query(default=None),
+    tipo: str | None = Query(default=None),
+    estado: str | None = Query(default=None),
+    busqueda: str | None = Query(default=None),
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -280,11 +321,157 @@ def admin_marcajes(
         consulta = consulta.filter(FichajeMarcaje.fecha_hora >= datetime.combine(desde, time.min))
     if hasta:
         consulta = consulta.filter(FichajeMarcaje.fecha_hora < datetime.combine(hasta + timedelta(days=1), time.min))
+    if tipo:
+        consulta = consulta.filter(FichajeMarcaje.tipo == tipo.strip().upper())
+    if busqueda and busqueda.strip():
+        patron = "%" + busqueda.strip()[:100] + "%"
+        consulta = consulta.filter((Empleado.nombre.ilike(patron)) | (Empleado.apellidos.ilike(patron)) | (Empleado.usuario.ilike(patron)) | (FichajeMarcaje.observaciones.ilike(patron)))
     filas = consulta.order_by(desc(FichajeMarcaje.fecha_hora)).limit(5000).all()
+    ids = [m.id for m, _ in filas]
+    auditados = set()
+    if ids:
+        auditados = {row[0] for row in db.query(FichajeMarcajeAuditoria.marcaje_id).filter(FichajeMarcajeAuditoria.marcaje_id.in_(ids)).distinct().all()}
+    resultado = []
+    for m, e in filas:
+        modificado = m.id in auditados
+        if estado == "MODIFICADO" and not modificado:
+            continue
+        if estado == "ORIGINAL" and modificado:
+            continue
+        resultado.append({**_marcaje_dict(m), "empleado_nombre": _nombre_completo(e) or e.usuario,
+                          "creado_por_id": m.creado_por_id, "modificado": modificado,
+                          "periodo_cerrado": _periodo_esta_cerrado(db, m.fecha_hora)})
+    return resultado
+
+
+@router.post("/admin/marcajes")
+def admin_crear_marcaje(
+    empleado_id: int = Form(...),
+    tipo: str = Form(...),
+    fecha_hora: str = Form(...),
+    motivo: str = Form(...),
+    observaciones: str = Form(""),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_perm_modulo(usuario, "fichajes", "crear")
+    _exigir_admin(usuario)
+    motivo = (motivo or "").strip()
+    if len(motivo) < 5:
+        raise HTTPException(status_code=422, detail="Indica un motivo de al menos cinco caracteres para el marcaje añadido.")
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    if not empleado:
+        raise HTTPException(status_code=404, detail="No se encuentra el empleado seleccionado.")
+    tipo = tipo.strip().upper()
+    if tipo not in TIPOS_MARCAJE and tipo != "AUSENCIA_PUNTUAL":
+        raise HTTPException(status_code=422, detail="Tipo de marcaje no válido.")
+    try:
+        instante = datetime.fromisoformat(fecha_hora)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=422, detail="Fecha y hora no válidas.")
+    _exigir_periodo_abierto(db, instante)
+    marcaje = FichajeMarcaje(empleado_id=empleado_id, tipo=tipo, fecha_hora=instante,
+                            observaciones=(observaciones or "").strip()[:500] or None, creado_por_id=usuario.id)
+    db.add(marcaje)
+    db.flush()
+    nuevo = _snapshot_marcaje(marcaje)
+    _registrar_auditoria_marcaje(db, marcaje, usuario, "ALTA_ADMIN", None, nuevo, motivo)
+    db.commit()
+    db.refresh(marcaje)
+    return {**_marcaje_dict(marcaje), "creado_por_id": usuario.id, "modificado": True}
+
+
+@router.patch("/admin/marcajes/{marcaje_id}")
+def admin_editar_marcaje(
+    marcaje_id: int,
+    empleado_id: int = Form(...),
+    tipo: str = Form(...),
+    fecha_hora: str = Form(...),
+    motivo: str = Form(...),
+    observaciones: str = Form(""),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    motivo = (motivo or "").strip()
+    if len(motivo) < 5:
+        raise HTTPException(status_code=422, detail="Indica el motivo de la corrección (mínimo cinco caracteres).")
+    marcaje = db.query(FichajeMarcaje).filter(FichajeMarcaje.id == marcaje_id).with_for_update().first()
+    if not marcaje:
+        raise HTTPException(status_code=404, detail="El marcaje que quieres corregir no existe.")
+    try:
+        nuevo_instante = datetime.fromisoformat(fecha_hora)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=422, detail="Fecha y hora no válidas.")
+    _exigir_periodo_abierto(db, marcaje.fecha_hora)
+    _exigir_periodo_abierto(db, nuevo_instante)
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    if not empleado:
+        raise HTTPException(status_code=404, detail="No se encuentra el empleado seleccionado.")
+    tipo = tipo.strip().upper()
+    if tipo not in TIPOS_MARCAJE and tipo != "AUSENCIA_PUNTUAL":
+        raise HTTPException(status_code=422, detail="Tipo de marcaje no válido.")
+    anterior = _snapshot_marcaje(marcaje)
+    marcaje.empleado_id = empleado_id
+    marcaje.tipo = tipo
+    marcaje.fecha_hora = nuevo_instante
+    marcaje.observaciones = (observaciones or "").strip()[:500] or None
+    nuevo = _snapshot_marcaje(marcaje)
+    _registrar_auditoria_marcaje(db, marcaje, usuario, "CORRECCION_ADMIN", anterior, nuevo, motivo)
+    db.commit()
+    db.refresh(marcaje)
+    return {**_marcaje_dict(marcaje), "creado_por_id": marcaje.creado_por_id, "modificado": True}
+
+
+@router.get("/admin/marcajes/{marcaje_id}/auditoria")
+def admin_auditoria_marcaje(marcaje_id: int, usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    registros = db.query(FichajeMarcajeAuditoria, Empleado).outerjoin(Empleado, Empleado.id == FichajeMarcajeAuditoria.actor_id).filter(
+        FichajeMarcajeAuditoria.marcaje_id == marcaje_id
+    ).order_by(FichajeMarcajeAuditoria.creado_en.desc()).all()
     return [{
-        **_marcaje_dict(m),
-        "empleado_nombre": _nombre_completo(e) or e.usuario,
-    } for m, e in filas]
+        "id": a.id, "marcaje_id": a.marcaje_id, "empleado_id": a.empleado_id,
+        "actor_id": a.actor_id, "actor_nombre": (_nombre_completo(actor) or actor.usuario) if actor else "Usuario eliminado",
+        "accion": a.accion, "datos_anteriores": json.loads(a.datos_anteriores) if a.datos_anteriores else None,
+        "datos_nuevos": json.loads(a.datos_nuevos), "motivo": a.motivo,
+        "creado_en": a.creado_en.isoformat() if a.creado_en else None
+    } for a, actor in registros]
+
+
+@router.get("/admin/periodos")
+def admin_listar_periodos(usuario=Depends(get_current_user), db: Session = Depends(get_db)):
+    require_perm_modulo(usuario, "fichajes", "ver")
+    _exigir_admin(usuario)
+    return [{"anio": p.anio, "mes": p.mes, "cerrado": bool(p.cerrado), "motivo": p.motivo,
+             "actualizado_en": p.actualizado_en.isoformat() if p.actualizado_en else None}
+            for p in db.query(FichajePeriodoCerrado).order_by(FichajePeriodoCerrado.anio.desc(), FichajePeriodoCerrado.mes.desc()).all()]
+
+
+@router.post("/admin/periodos")
+def admin_cambiar_periodo(
+    anio: int = Form(...), mes: int = Form(...), cerrado: bool = Form(...), motivo: str = Form(...),
+    usuario=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    require_perm_modulo(usuario, "fichajes", "editar")
+    _exigir_admin(usuario)
+    if anio < 2000 or anio > 2100 or mes < 1 or mes > 12:
+        raise HTTPException(status_code=422, detail="Mes o año no válidos.")
+    motivo = (motivo or "").strip()
+    if len(motivo) < 5:
+        raise HTTPException(status_code=422, detail="Indica un motivo para cerrar o reabrir el periodo.")
+    periodo = db.query(FichajePeriodoCerrado).filter(FichajePeriodoCerrado.anio == anio, FichajePeriodoCerrado.mes == mes).with_for_update().first()
+    if not periodo:
+        periodo = FichajePeriodoCerrado(anio=anio, mes=mes, cerrado=1 if cerrado else 0, motivo=motivo, actor_id=usuario.id)
+        db.add(periodo)
+    else:
+        periodo.cerrado = 1 if cerrado else 0
+        periodo.motivo = motivo
+        periodo.actor_id = usuario.id
+    db.commit()
+    return {"anio": anio, "mes": mes, "cerrado": bool(cerrado), "motivo": motivo}
+
 
  
 @router.get("/catalogo-ausencias")
