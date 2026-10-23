@@ -907,7 +907,7 @@ export default function EmpleadosListado({
 
   return (
 
-    <div className="empleados-listado-premium space-y-5 animate-fade-in">
+    <div className="empleados-listado-premium space-y-5 animate-fade-in" aria-busy={cargando}>
 
       {/* ======================================================
           CABECERA
