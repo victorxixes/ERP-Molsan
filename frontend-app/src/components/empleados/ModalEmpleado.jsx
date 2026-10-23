@@ -518,6 +518,8 @@ export default function ModalEmpleado({
     setResettingPassword,
   ] = useState(false);
 
+  const [guardandoVisibilidadEmpleado, setGuardandoVisibilidadEmpleado] = useState(false);
+
   const [
     error,
     setError,
@@ -1827,6 +1829,28 @@ const permisosDisponibles =
   /* ==========================================================
      RESET PASSWORD
   ========================================================== */
+
+  const cambiarVisibilidadEmpleado = async () => {
+    if (!esAdministrador || !modoAdministracion || !empleadoId || guardandoVisibilidadEmpleado) return;
+
+    const nuevoValor = empleadoEdit.visible_en_listado === false;
+    try {
+      setGuardandoVisibilidadEmpleado(true);
+      setError(null);
+      setMensaje(null);
+      await editarEmpleado(empleadoId, { visible_en_listado: nuevoValor });
+      setEmpleadoEdit((anterior) => ({ ...anterior, visible_en_listado: nuevoValor }));
+      await cargarFicha(empleadoId);
+      setMensaje(nuevoValor
+        ? "El empleado volverá a aparecer en el listado de tarjetas."
+        : "El empleado se ha ocultado del listado de tarjetas.");
+    } catch (err) {
+      setError(obtenerMensajeError(err, "No se ha podido cambiar la visibilidad del empleado."));
+    } finally {
+      setGuardandoVisibilidadEmpleado(false);
+    }
+  };
+
 
   const ejecutarResetPassword =
     async () => {
@@ -4098,6 +4122,35 @@ const permisosDisponibles =
 
                       </div>
 
+
+                      {esAdministrador && modoAdministracion && (
+                        <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                              <h4 className="font-bold text-slate-800">Mostrar empleado en el listado</h4>
+                              <p className="mt-1 text-sm text-slate-600">
+                                {empleadoEdit.visible_en_listado === false
+                                  ? "Este empleado está oculto en las tarjetas del módulo Empleados. Su cuenta y sus datos se mantienen."
+                                  : "Este empleado aparece en las tarjetas del módulo Empleados."}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              role="switch"
+                              aria-checked={empleadoEdit.visible_en_listado !== false}
+                              onClick={cambiarVisibilidadEmpleado}
+                              disabled={guardandoVisibilidadEmpleado}
+                              className={`relative inline-flex h-8 w-16 shrink-0 items-center rounded-full transition-colors disabled:cursor-wait disabled:opacity-60 ${empleadoEdit.visible_en_listado === false ? "bg-slate-400" : "bg-emerald-600"}`}
+                              aria-label={empleadoEdit.visible_en_listado === false ? "Mostrar empleado en el listado" : "Ocultar empleado del listado"}
+                            >
+                              <span className={`inline-block h-6 w-6 transform rounded-full bg-white shadow transition-transform ${empleadoEdit.visible_en_listado === false ? "translate-x-1" : "translate-x-9"}`} />
+                            </button>
+                          </div>
+                          <div className="mt-2 text-xs font-semibold text-slate-600">
+                            {guardandoVisibilidadEmpleado ? "Guardando…" : empleadoEdit.visible_en_listado === false ? "OCULTO" : "VISIBLE"}
+                          </div>
+                        </div>
+                      )}
 
                       <div
                         className="
