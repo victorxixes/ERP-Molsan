@@ -37,6 +37,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
   const [year, setYear] = useState(hoy.getFullYear());
   const [month, setMonth] = useState(hoy.getMonth() + 1);
   const [vista, setVista] = useState("mes");
+  const [fechaAncla, setFechaAncla] = useState(hoy.toLocaleDateString("sv-SE"));
   const [busqueda, setBusqueda] = useState("");
   const [modalidadFiltro, setModalidadFiltro] = useState("todas");
 
@@ -85,6 +86,13 @@ export default function Agenda({ soloApoderado = false } = {}) {
   useEffect(() => {
     cargarMes(year, month);
   }, [year, month, cargarMes]);
+
+  useEffect(() => {
+    setFechaAncla((actual) => {
+      const prefijo = `${year}-${String(month).padStart(2, "0")}`;
+      return String(actual || "").slice(0, 7) === prefijo ? actual : `${prefijo}-01`;
+    });
+  }, [year, month]);
 
   // En ApoderaGest, obtener las citas desde el endpoint autenticado del apoderado.
   // Evita depender del filtrado local de la agenda compartida, que puede ocultar
@@ -194,6 +202,8 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
   const handleDiaClick = useCallback(
     (fecha) => {
+      const fechaTexto = typeof fecha === "string" ? fecha.slice(0, 10) : fecha?.toLocaleDateString("sv-SE");
+      if (fechaTexto) setFechaAncla(fechaTexto);
       abrirCrear(fecha);
     },
     [abrirCrear]
@@ -473,6 +483,13 @@ export default function Agenda({ soloApoderado = false } = {}) {
             →
           </button>
 
+          <button type="button" className="agenda-today-action" onClick={() => {
+            const actual = new Date();
+            setYear(actual.getFullYear());
+            setMonth(actual.getMonth() + 1);
+            setFechaAncla(actual.toLocaleDateString("sv-SE"));
+          }}>Hoy</button>
+
           {esMesActual && (
             <span
               className="
@@ -555,7 +572,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
         {vista === "semana" && (
           <VistaSemana
-            fechaBase={`${year}-${String(month).padStart(2, "0")}-01`}
+            fechaBase={(() => { const [ay, am, ad] = String(fechaAncla).split("-").map(Number); const inicio = new Date(ay, am - 1, ad); inicio.setDate(inicio.getDate() - ((inicio.getDay() + 6) % 7)); return inicio.toLocaleDateString("sv-SE"); })()}
             citas={citasSeguras}
             onCitaClick={handleCitaClick}
             onCrearCita={handleDiaClick}
@@ -564,7 +581,7 @@ export default function Agenda({ soloApoderado = false } = {}) {
 
         {vista === "dia" && (
           <VistaDia
-            fechaDia={new Date(year, month - 1, hoy.getDate())}
+            fechaDia={new Date(`${fechaAncla}T12:00:00`)}
             citas={citasSeguras}
             onCitaClick={handleCitaClick}
             onCrearCita={handleDiaClick}
