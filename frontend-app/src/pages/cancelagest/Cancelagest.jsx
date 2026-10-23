@@ -79,6 +79,7 @@ export default function Cancelagest() {
       CTN: "/ctn",
       Intranet: "/intranet",
       Mensajes: "/mensajes",
+      Fichajes: "/fichajes",
     };
     if (rutas[label]) navigate(rutas[label]);
   };
@@ -93,6 +94,7 @@ export default function Cancelagest() {
     { key: "ctn", label: "CTN", icon: "globe" },
     { key: "intranet", label: "Intranet", icon: "folder" },
     { key: "mensajes", label: "Mensajes", icon: "chat" },
+    { key: "fichajes", label: "Fichajes", icon: "clock" },
   ].filter((item) => puedeVerModulo(item.key));
 
   return <div className="min-h-screen bg-[var(--erp-bg)] text-[var(--erp-text)]">
