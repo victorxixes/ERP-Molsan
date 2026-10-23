@@ -332,18 +332,23 @@ def admin_marcajes(
         consulta = consulta.filter((Empleado.nombre.ilike(patron)) | (Empleado.apellidos.ilike(patron)) | (Empleado.usuario.ilike(patron)) | (FichajeMarcaje.observaciones.ilike(patron)))
     filas = consulta.order_by(desc(FichajeMarcaje.fecha_hora)).limit(5000).all()
     ids = [m.id for m, _ in filas]
-    auditados = set()
+    ultima_accion = {}
     if ids:
-        auditados = {row[0] for row in db.query(FichajeMarcajeAuditoria.marcaje_id).filter(FichajeMarcajeAuditoria.marcaje_id.in_(ids)).distinct().all()}
+        auditorias = db.query(FichajeMarcajeAuditoria.marcaje_id, FichajeMarcajeAuditoria.accion, FichajeMarcajeAuditoria.creado_en).filter(
+            FichajeMarcajeAuditoria.marcaje_id.in_(ids)
+        ).order_by(desc(FichajeMarcajeAuditoria.creado_en)).all()
+        for audit_id, accion, creado_en in auditorias:
+            if audit_id not in ultima_accion:
+                ultima_accion[audit_id] = accion
     resultado = []
     for m, e in filas:
-        modificado = m.id in auditados
+        modificado = m.id in ultima_accion
         if estado == "MODIFICADO" and not modificado:
             continue
         if estado == "ORIGINAL" and modificado:
             continue
         resultado.append({**_marcaje_dict(m), "empleado_nombre": _nombre_completo(e) or e.usuario,
-                          "creado_por_id": m.creado_por_id, "modificado": modificado,
+                          "creado_por_id": m.creado_por_id, "modificado": modificado, "ultima_accion": ultima_accion.get(m.id),
                           "periodo_cerrado": _periodo_esta_cerrado(db, m.fecha_hora)})
     return resultado
 
