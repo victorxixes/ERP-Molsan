@@ -1,5 +1,5 @@
 import MODULOS_ERP from "../config/modulos";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { createPortal } from "react-dom";
 import {
   useMemo,
@@ -421,6 +421,9 @@ const TopNavItem = ({
 export default function Sidebar({ brandName = "CancelaGest", navigationItems = null, activeNavigationItem = "", onNavigationItemClick = null, onNotificationsClick = null, notificationBadge = null, onProfileClick = null, onLogoutClick = null, headerActions = null } = {}) {
 
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  // Los portales de notarios externos mantienen su navegación aislada del ERP interno.
+  const esPortalNotarialExterno = /^\/(?:notargest|encargagest)-notarios(?:\/|$)/i.test(pathname);
 
   const empleado = useAuthStore(
     (s) => s.empleado
@@ -1172,6 +1175,24 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                     badge={modulo.badge || 0}
                   />
                 ))}
+
+            {/* Navegación común del ERP: los módulos autorizados siguen disponibles
+                desde cualquier módulo interno, sin sustituir las pestañas propias
+                de cada espacio de trabajo. Los portales externos quedan aislados. */}
+            {navigationItemsConModulos && !esPortalNotarialExterno && visiblesPrincipales
+              .filter((modulo) => !navigationItemsConModulos.some((item) =>
+                item?.key === modulo.key ||
+                normalizarModulo(item?.label) === normalizarModulo(modulo.label)
+              ))
+              .map((modulo) => (
+                <TopNavItem
+                  key={`erp-${modulo.key}`}
+                  to={modulo.to}
+                  label={modulo.label}
+                  icon={modulo.icon}
+                  badge={modulo.badge || 0}
+                />
+              ))}
 
             {modulosFijados.map((modulo) => (
               <TopNavItem
