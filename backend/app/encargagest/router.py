@@ -530,6 +530,83 @@ class AccesoEncargaGest(BaseModel):
     habilitado: bool = True
 
 
+@router.get("/seleccion/notarias")
+def notarias_habilitadas_para_soporte(usuario=Depends(get_encargagest_actor), db: Session = Depends(get_db)):
+    """Lista únicamente notarías con cuenta externa de EncargaGest habilitada."""
+    if _es_externo(usuario) or not _es_administrador_encargagest(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador ERP puede emular una notaría en EncargaGest.")
+    _autorizar(usuario, "ver")
+    return (
+        db.query(Notaria)
+        .join(EncargoExternoUsuario, EncargoExternoUsuario.notaria_id == Notaria.id)
+        .filter(EncargoExternoUsuario.habilitado.is_(True))
+        .distinct()
+        .order_by(Notaria.apellidos.asc(), Notaria.nombre.asc())
+        .all()
+        and [
+            {
+                "id": n.id,
+                "nombre": " ".join(filter(None, [n.nombre, n.apellidos])).strip() or f"Notaría {n.id}",
+                "nif": n.nif,
+                "municipio": n.municipio,
+                "provincia": n.provincia,
+            }
+            for n in (
+                db.query(Notaria)
+                .join(EncargoExternoUsuario, EncargoExternoUsuario.notaria_id == Notaria.id)
+                .filter(EncargoExternoUsuario.habilitado.is_(True))
+                .distinct()
+                .order_by(Notaria.apellidos.asc(), Notaria.nombre.asc())
+                .all()
+            )
+        ]
+    )
+
+
+@router.post("/seleccion/notaria/{notaria_id}")
+def seleccionar_notaria_soporte_encargagest(
+    notaria_id: int,
+    usuario=Depends(get_encargagest_actor),
+    db: Session = Depends(get_db),
+):
+    """Emite una sesión de portal limitada a una cuenta externa habilitada."""
+    if _es_externo(usuario) or not _es_administrador_encargagest(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador ERP puede emular una notaría en EncargaGest.")
+    _autorizar(usuario, "ver")
+    acceso = (
+        db.query(EncargoExternoUsuario)
+        .filter(
+            EncargoExternoUsuario.notaria_id == notaria_id,
+            EncargoExternoUsuario.habilitado.is_(True),
+        )
+        .order_by(EncargoExternoUsuario.id.asc())
+        .first()
+    )
+    if not acceso:
+        raise HTTPException(status_code=404, detail="La notaría no existe o no tiene EncargaGest habilitado.")
+    notaria = db.query(Notaria).filter(Notaria.id == notaria_id).first()
+    if not notaria:
+        raise HTTPException(status_code=404, detail="No se encuentra la ficha de la notaría.")
+    token = jwt.encode({
+        "tipo": "encargagest",
+        "usuario_id": acceso.id,
+        "notaria_id": notaria.id,
+        "seleccion_admin": True,
+        "empleado_admin_id": usuario.id,
+        "exp": datetime.utcnow() + timedelta(hours=8),
+    }, settings.JWT_SECRET, algorithm=settings.ALGORITHM)
+    return {
+        "token": token,
+        "tipo": "encargagest",
+        "notaria": {
+            "id": notaria.id,
+            "nombre": " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or f"Notaría {notaria.id}",
+            "nif": notaria.nif,
+        },
+        "usuario": acceso.usuario,
+    }
+
+
 @router.post("/login")
 def login_encargagest(datos: LoginEncargaGest, db: Session = Depends(get_db)):
     usuario_norm = _normalizar_usuario(datos.usuario)
