@@ -422,7 +422,7 @@ export default function SeguridadRolEditor() {
 
   return (
 
-    <div className="seguridad-subpagina-premium seguridad-rol-editor-premium space-y-6 animate-fade-in">
+    <div className="erp-page seguridad-subpagina-premium seguridad-rol-editor-premium space-y-6 animate-fade-in">
 
       {/* ======================================================
           CABECERA
@@ -452,19 +452,7 @@ export default function SeguridadRolEditor() {
           <button
             type="button"
             onClick={iniciarCrear}
-            className="
-              inline-flex items-center gap-2
-              px-4 py-2.5
-              rounded-xl
-              bg-[var(--erp-accent)]
-              text-white
-              font-semibold
-              text-sm
-              shadow-sm
-              hover:brightness-105
-              active:scale-[0.98]
-              transition
-            "
+            className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
 
             <span className="text-base">
@@ -513,14 +501,7 @@ export default function SeguridadRolEditor() {
       {error && (
 
         <div
-          className="
-            flex items-center gap-3
-            rounded-xl
-            border border-red-200
-            bg-red-50
-            px-4 py-3
-            text-sm text-red-700
-          "
+          className="erp-btn erp-btn-danger inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
 
           <span className="font-bold">
@@ -545,15 +526,7 @@ export default function SeguridadRolEditor() {
         <section className="erp-card overflow-hidden">
 
           <div
-            className="
-              flex flex-col
-              sm:flex-row
-              sm:items-center
-              sm:justify-between
-              gap-3
-              px-6 py-5
-              border-b border-[var(--erp-border)]
-            "
+            className="erp-btn erp-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold"
           >
 
             <div>
@@ -609,10 +582,7 @@ export default function SeguridadRolEditor() {
               <thead>
 
                 <tr
-                  className="
-                    bg-[var(--erp-surface-soft)]
-                    border-b border-[var(--erp-border)]
-                  "
+                  className="erp-btn erp-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold"
                 >
 
                   <th
@@ -702,29 +672,13 @@ export default function SeguridadRolEditor() {
 
                         <tr
                           key={String(rol.id)}
-                          className="
-                            border-b border-[var(--erp-border)]
-                            last:border-b-0
-                            hover:bg-[var(--erp-surface-soft)]
-                            transition
-                          "
+                          className="erp-btn erp-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold"
                         >
 
                           <td className="px-6 py-4">
 
                             <span
-                              className="
-                                inline-flex
-                                items-center justify-center
-                                min-w-9
-                                px-2.5 py-1
-                                rounded-lg
-                                bg-[var(--erp-surface-soft)]
-                                border border-[var(--erp-border)]
-                                text-xs
-                                font-bold
-                                text-[var(--erp-muted)]
-                              "
+                              className="erp-btn erp-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold"
                             >
                               {String(rol.id)}
                             </span>
@@ -797,20 +751,7 @@ export default function SeguridadRolEditor() {
                                 onClick={() =>
                                   iniciarEditar(rol)
                                 }
-                                className="
-                                  inline-flex
-                                  items-center
-                                  gap-1.5
-                                  px-3 py-2
-                                  rounded-lg
-                                  border border-[var(--erp-border)]
-                                  bg-white
-                                  text-[var(--erp-text)]
-                                  text-xs
-                                  font-semibold
-                                  hover:bg-[var(--erp-surface-soft)]
-                                  transition
-                                "
+                                className="erp-btn erp-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold"
                               >
                                 Editar
                               </button>
@@ -824,22 +765,7 @@ export default function SeguridadRolEditor() {
                                     rol.id
                                   )
                                 }
-                                className="
-                                  inline-flex
-                                  items-center
-                                  gap-1.5
-                                  px-3 py-2
-                                  rounded-lg
-                                  border border-red-200
-                                  bg-red-50
-                                  text-red-600
-                                  text-xs
-                                  font-semibold
-                                  hover:bg-red-100
-                                  disabled:opacity-50
-                                  disabled:cursor-not-allowed
-                                  transition
-                                "
+                                className="erp-btn erp-btn-danger inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 {eliminando
                                   ? "Eliminando..."
@@ -880,10 +806,7 @@ export default function SeguridadRolEditor() {
         <section className="erp-card">
 
           <div
-            className="
-              px-6 py-5
-              border-b border-[var(--erp-border)]
-            "
+            className="erp-btn erp-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold"
           >
 
             <div className="
@@ -974,21 +897,7 @@ export default function SeguridadRolEditor() {
                 }}
                 onKeyDown={manejarKeyDown}
                 placeholder="Ej. Administrador"
-                className="
-                  w-full
-                  px-4 py-3
-                  rounded-xl
-                  border border-[var(--erp-border)]
-                  bg-[var(--erp-input-bg)]
-                  text-[var(--erp-text)]
-                  placeholder:text-[var(--erp-muted)]
-                  outline-none
-                  focus:border-[var(--erp-accent)]
-                  focus:ring-2
-                  focus:ring-[var(--erp-accent-soft)]
-                  disabled:opacity-60
-                  transition
-                "
+                className="erp-btn erp-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold"
               />
 
 
@@ -1005,14 +914,7 @@ export default function SeguridadRolEditor() {
 
 
             <div
-              className="
-                flex
-                flex-wrap
-                gap-3
-                mt-6
-                pt-5
-                border-t border-[var(--erp-border)]
-              "
+              className="erp-btn erp-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold"
             >
 
               <button
@@ -1022,24 +924,7 @@ export default function SeguridadRolEditor() {
                   !nombreRol.trim()
                 }
                 onClick={guardarRol}
-                className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  gap-2
-                  px-5 py-2.5
-                  rounded-xl
-                  bg-[var(--erp-accent)]
-                  text-white
-                  text-sm
-                  font-semibold
-                  shadow-sm
-                  hover:brightness-105
-                  active:scale-[0.98]
-                  disabled:opacity-50
-                  disabled:cursor-not-allowed
-                  transition
-                "
+                className="erp-btn erp-btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
 
                 {guardando ? (
@@ -1074,18 +959,7 @@ export default function SeguridadRolEditor() {
                 type="button"
                 disabled={guardando}
                 onClick={cancelar}
-                className="
-                  px-5 py-2.5
-                  rounded-xl
-                  border border-[var(--erp-border)]
-                  bg-white
-                  text-[var(--erp-text)]
-                  text-sm
-                  font-semibold
-                  hover:bg-[var(--erp-surface-soft)]
-                  disabled:opacity-50
-                  transition
-                "
+                className="erp-btn erp-btn-secondary px-5 py-2.5 text-sm font-semibold disabled:opacity-50"
               >
                 Cancelar
               </button>
