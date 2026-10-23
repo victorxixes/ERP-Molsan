@@ -999,8 +999,6 @@ export default function SeguridadPermisos() {
             flex
             flex-col
             gap-3
-            lg:flex-row
-            lg:items-center
           "
         >
 
@@ -1014,18 +1012,21 @@ export default function SeguridadPermisos() {
             }
             placeholder="Buscar módulo o permiso..."
             className="
+              block
+              h-11
+              w-full
               min-w-0
-              flex-1
               rounded-xl
               border
-              border-[var(--erp-border)]
-              bg-[var(--erp-bg)]
+              border-slate-300
+              bg-white
               px-4
               py-2.5
               text-sm
-              text-[var(--erp-text)]
+              text-slate-800
+              shadow-sm
               outline-none
-              placeholder:text-[var(--erp-text-soft)]
+              placeholder:text-slate-500
               focus:border-[var(--erp-primary)]
               focus:ring-2
               focus:ring-[var(--erp-primary-soft)]
