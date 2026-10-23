@@ -842,6 +842,36 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           }}
         />
       )}
+      {modo === "externo" && (
+        <Sidebar
+          brandName="EncargaGest"
+          navigationItems={[]}
+          headerActions={
+            <>
+              <div className="ag-fecha-actual" aria-label={`Fecha actual: ${fechaActual}`}>
+                <span className="ag-punto-vivo" aria-hidden="true" />
+                <span>{fechaActual}</span>
+              </div>
+              <button
+                type="button"
+                onClick={cargarTodo}
+                disabled={cargando}
+                className="ag-boton-actualizar"
+                aria-live="polite"
+              >
+                <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
+                {cargando ? "Actualizando…" : "Actualizar datos"}
+              </button>
+            </>
+          }
+          onProfileClick={() => {
+            setPerfilAbierto(true);
+            setMensajePasswordPerfil("");
+            setErrorPasswordPerfil("");
+          }}
+          onLogoutClick={salirEncargaGest}
+        />
+      )}
       <div className="ag-fondo-decorativo" aria-hidden="true" />
       <header className="ag-hero eg-hero molsan-page-header">
         <div className="ag-hero-identidad molsan-page-header__identity">
@@ -853,19 +883,20 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           </div>
         </div>
         <div className="ag-hero-acciones">
-          <div className="ag-fecha-actual">
-            <span className="ag-punto-vivo" aria-hidden="true" />
-            <span>{fechaActual}</span>
-          </div>
-          {modo === "externo" && <button type="button" onClick={() => { setPerfilAbierto(true); setMensajePasswordPerfil(""); setErrorPasswordPerfil(""); }} className="eg-secondary">Mi perfil</button>}
-          {modo === "interno" && <button type="button" onClick={irAModulos} className="eg-secondary"><span aria-hidden="true">▦</span> Ir a módulos</button>}
-          <button type="button" onClick={salirEncargaGest} className="eg-secondary">
-            Cerrar sesión
-          </button>
-          <button type="button" onClick={cargarTodo} disabled={cargando} className="ag-boton-actualizar">
-            <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
-            {cargando ? "Actualizando…" : "Actualizar datos"}
-          </button>
+          {modo === "interno" && (
+            <>
+              <div className="ag-fecha-actual">
+                <span className="ag-punto-vivo" aria-hidden="true" />
+                <span>{fechaActual}</span>
+              </div>
+              <button type="button" onClick={irAModulos} className="eg-secondary"><span aria-hidden="true">▦</span> Ir a módulos</button>
+              <button type="button" onClick={salirEncargaGest} className="eg-secondary">Cerrar sesión</button>
+              <button type="button" onClick={cargarTodo} disabled={cargando} className="ag-boton-actualizar">
+                <span className={cargando ? "ag-icono-girando" : ""} aria-hidden="true">↻</span>
+                {cargando ? "Actualizando…" : "Actualizar datos"}
+              </button>
+            </>
+          )}
         </div>
       </header>
 
