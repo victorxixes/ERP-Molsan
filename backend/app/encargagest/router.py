@@ -536,31 +536,24 @@ def notarias_habilitadas_para_soporte(usuario=Depends(get_encargagest_actor), db
     if _es_externo(usuario) or not _es_administrador_encargagest(usuario):
         raise HTTPException(status_code=403, detail="Solo un administrador ERP puede emular una notaría en EncargaGest.")
     _autorizar(usuario, "ver")
-    return (
+    notarias = (
         db.query(Notaria)
         .join(EncargoExternoUsuario, EncargoExternoUsuario.notaria_id == Notaria.id)
         .filter(EncargoExternoUsuario.habilitado.is_(True))
         .distinct()
         .order_by(Notaria.apellidos.asc(), Notaria.nombre.asc())
         .all()
-        and [
-            {
-                "id": n.id,
-                "nombre": " ".join(filter(None, [n.nombre, n.apellidos])).strip() or f"Notaría {n.id}",
-                "nif": n.nif,
-                "municipio": n.municipio,
-                "provincia": n.provincia,
-            }
-            for n in (
-                db.query(Notaria)
-                .join(EncargoExternoUsuario, EncargoExternoUsuario.notaria_id == Notaria.id)
-                .filter(EncargoExternoUsuario.habilitado.is_(True))
-                .distinct()
-                .order_by(Notaria.apellidos.asc(), Notaria.nombre.asc())
-                .all()
-            )
-        ]
     )
+    return [
+        {
+            "id": n.id,
+            "nombre": " ".join(filter(None, [n.nombre, n.apellidos])).strip() or f"Notaría {n.id}",
+            "nif": n.nif,
+            "municipio": n.municipio,
+            "provincia": n.provincia,
+        }
+        for n in notarias
+    ]
 
 
 @router.post("/seleccion/notaria/{notaria_id}")
