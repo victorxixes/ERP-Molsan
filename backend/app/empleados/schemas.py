@@ -100,6 +100,8 @@ class Empleado(BaseModel):
 
     es_colaborador: Optional[bool] = False
 
+    honorarios_valor: Optional[float] = 0
+
     visible_en_listado: Optional[bool] = True
 
     # =====================================================
@@ -239,6 +241,8 @@ class EmpleadoUpdate(BaseModel):
     activo: Optional[bool] = None
 
     es_colaborador: Optional[bool] = None
+
+    honorarios_valor: Optional[float] = None
 
     visible_en_listado: Optional[bool] = None
 
