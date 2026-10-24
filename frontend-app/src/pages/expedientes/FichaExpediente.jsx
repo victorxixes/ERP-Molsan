@@ -5642,6 +5642,7 @@ const cuantiaFincasParaEnvio =
                       <span className="min-w-0 break-words text-xs font-bold text-slate-800">{item.concepto || "PPAD"}</span>
                       <span className="text-xs font-extrabold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
                     </div>
+                    <p className="mt-1 text-[10px] text-slate-600">Realizado por: <strong>{item.usuario_creador || "Usuario no registrado"}</strong>{item.fecha_creacion ? ` · ${formatearFecha(item.fecha_creacion)}` : ""}</p>
                     {item.compensado ? (
                       <p className="mt-1 text-[11px] font-semibold text-emerald-700">✓ PPAD compensado{item.fecha_compensacion ? ` el ${formatearFecha(item.fecha_compensacion)}` : ""}.</p>
                     ) : (
@@ -5681,6 +5682,7 @@ const cuantiaFincasParaEnvio =
                   )}
                   {ppadItems.map((item) => (
                     <article key={item.id} className={`rounded-xl border p-3 ${item.compensado ? "border-emerald-200 bg-emerald-50/40" : "border-amber-200 bg-white"}`}>
+                      <p className="mb-2 text-[10px] text-slate-600">Realizado por: <strong>{item.usuario_creador || "Usuario no registrado"}</strong>{item.fecha_creacion ? ` · ${formatearFecha(item.fecha_creacion)}` : ""}</p>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <div className="min-w-0">
                           <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Concepto</div>
