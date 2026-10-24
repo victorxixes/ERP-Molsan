@@ -235,6 +235,29 @@ def validar_mi_relacion(liquidacion_id: int, discrepancia: str = Form(""), db: S
     db.refresh(item)
     return _dict(item, db)
 
+@router.post("/mi/{liquidacion_id}/justificante")
+def subir_justificante(liquidacion_id: int, archivo: UploadFile = File(...), db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    if not getattr(usuario, "es_colaborador", False):
+        raise HTTPException(status_code=403, detail="Tu ficha no está habilitada como colaborador.")
+    item = db.query(LiquidacionMensual).filter_by(id=liquidacion_id, empleado_id=usuario.id).with_for_update().first()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Relación mensual no encontrada.")
+    if not archivo.filename or not archivo.filename.lower().endswith((".pdf", ".xml", ".jpg", ".jpeg", ".png")):
+        raise HTTPException(status_code=422, detail="Adjunta un justificante PDF, XML, JPG o PNG.")
+    contenido = archivo.file.read(10 * 1024 * 1024 + 1)
+    if not contenido:
+        raise HTTPException(status_code=422, detail="El justificante está vacío.")
+    if len(contenido) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="El justificante no puede superar 10 MB.")
+    item.justificante_bytes = contenido
+    item.justificante_nombre = archivo.filename[:255]
+    item.justificante_tipo = archivo.content_type or "application/octet-stream"
+    item.justificante_subido_en = datetime.utcnow()
+    db.commit()
+    db.refresh(item)
+    return _dict(item, db)
+
+
 @router.post("/mi/{liquidacion_id}/factura")
 def subir_factura(liquidacion_id: int, archivo: UploadFile = File(...), db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     if not getattr(usuario, "es_colaborador", False):
@@ -325,6 +348,16 @@ def descargar_factura(liquidacion_id: int, db: Session = Depends(get_db), usuari
         raise HTTPException(status_code=404, detail="No hay factura adjunta.")
     nombre_seguro = (item.factura_nombre or "factura").replace("\\r", "").replace("\\n", "").replace('"', "'").replace("/", "_").replace("\\\\", "_")
     return StreamingResponse(BytesIO(item.factura_bytes), media_type=item.factura_tipo or "application/octet-stream", headers={"Content-Disposition": f'attachment; filename="{nombre_seguro}"'})
+
+@router.get("/admin/{liquidacion_id}/justificante")
+def descargar_justificante(liquidacion_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_admin(usuario)
+    item = db.query(LiquidacionMensual).filter_by(id=liquidacion_id).first()
+    if item is None or not item.justificante_bytes:
+        raise HTTPException(status_code=404, detail="No hay justificante adjunto.")
+    nombre_seguro = (item.justificante_nombre or "justificante").replace(chr(13), "").replace(chr(10), "").replace(chr(34), chr(39)).replace("/", "_").replace(chr(92), "_")
+    return StreamingResponse(BytesIO(item.justificante_bytes), media_type=item.justificante_tipo or "application/octet-stream", headers={"Content-Disposition": f'attachment; filename="{nombre_seguro}"'})
+
 
 @router.post("/admin/{liquidacion_id}/factura/revisar")
 def revisar_factura(liquidacion_id: int, decision: str = Form(...), observaciones: str = Form(""), db: Session = Depends(get_db), usuario=Depends(get_current_user)):
