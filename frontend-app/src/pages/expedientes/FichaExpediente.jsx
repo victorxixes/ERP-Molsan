@@ -1359,10 +1359,6 @@ export default function FichaExpediente() {
   // MODALES
   // ----------------------------------------------------------
 
-  const [
-    mostrarActividades,
-    setMostrarActividades,
-  ] = useState(false);
 
   const [
     actividadSeleccionada,
@@ -2055,6 +2051,25 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     );
 
 
+  useEffect(() => {
+    if (!expediente) return;
+    const actividadInicial = resolverActividadActual(expediente);
+    const fechaFirma = String(expediente.fecha_firma || "").slice(0, 10);
+    setActividadSeleccionada(actividadInicial);
+    setActividadDraft({
+      ...expediente,
+      ...Object.fromEntries((CAMPOS_ACTIVIDADES[actividadInicial] || []).map((campo) => [campo.key, expediente[campo.key] ?? ""])),
+      apoderado: expediente.apoderado || "Gestoría",
+      fecha_presentacion: expediente.fecha_presentacion || fechaFirma,
+      fecha_recogida_notario_presentacion_telematica: expediente.fecha_recogida_notario_presentacion_telematica || fechaFirma,
+      fecha_presentacion_tributaria: expediente.fecha_presentacion_tributaria || fechaFirma,
+      fecha_liquidacion_tributaria: expediente.fecha_liquidacion_tributaria || fechaFirma,
+      fecha_vencimiento_asiento: expediente.fecha_vencimiento_asiento || sumarDiasNaturales(expediente.fecha_liquidacion_tributaria || fechaFirma, 60),
+      mover_siguiente_actividad: expediente.mover_siguiente_actividad ?? (actividadInicial === "liquidacion-impuestos" || actividadInicial === "tramitacion-inscripcion"),
+    });
+  }, [expediente?.id_expediente, expediente?.actividad_actual]);
+
+
   // ==========================================================
   // DATOS DE ACTIVIDAD SELECCIONADA
   // ==========================================================
@@ -2193,7 +2208,6 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     });
     setErrorActividad("");
     setMensajeActividad("");
-    setMostrarActividades(true);
     if (expediente?.id_expediente) {
       setCargandoEstadoAbsis(true);
       axios.get(`/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/absis`)
@@ -4097,6 +4111,77 @@ const cuantiaFincasParaEnvio =
             "
           >
 
+          {/* ESTADO */}
+
+          <Seccion
+            id="ficha-estado"
+            titulo="Estado"
+            subtitulo="Situación actual del expediente"
+            icono="estado"
+            colapsable
+          >
+            <div
+              className="
+                grid
+                grid-cols-1
+                md:grid-cols-3
+                gap-2
+              "
+            >
+
+              <Dato
+                campo="Estado"
+                valor={
+                  expediente.estado_expediente
+                }
+                estado
+                destaque
+              />
+
+              <Dato
+                campo="Actividad actual"
+                valor={
+                  expediente.actividad_actual
+                }
+                destaque
+              />
+
+              <Dato
+                campo="Estado actividad"
+                valor={
+                  expediente.estado_actividad
+                }
+                estado
+              />
+
+
+              <Dato
+                campo="Oficina"
+                valor={
+                  expediente.oficina
+                }
+                destaque
+              />
+
+              <Dato
+                campo="DAN"
+                valor={
+                  expediente.dan
+                }
+              />
+
+              <Dato
+                campo="Fecha alta"
+                valor={
+                  expediente.fecha_alta
+                }
+                tipo="fecha"
+                destaque
+              />
+
+            </div>
+          </Seccion>
+
             <Seccion
               titulo="Titulares"
               subtitulo="Titulares del expediente"
@@ -4270,9 +4355,6 @@ const cuantiaFincasParaEnvio =
               ➕ Alta defecto
             </button>
 
-            <Boton onClick={abrirActividades} className="!rounded-lg !px-2.5 !py-1.5 !text-[11px] !leading-tight">
-              ⚙️ Ver actividades
-            </Boton>
             <Boton onClick={abrirControlExpediente} className="!rounded-lg !px-2.5 !py-1.5 !text-[11px] !leading-tight">
               {expedienteBloqueado ? "🔒 Control / desbloqueo" : "🔐 Control y bloqueo"}
             </Boton>
@@ -4320,976 +4402,20 @@ const cuantiaFincasParaEnvio =
 
 
       {/* =====================================================
-          CUATRO COLUMNAS PRINCIPALES
+          ACTIVIDADES DEL EXPEDIENTE
       ====================================================== */}
 
-      <div
-        className="
-          grid
-           w-full
-          grid-cols-1
-          gap-3
-          xl:grid-cols-12
-        "
-      >
-
-        {/* ===================================================
-            COLUMNA 1
-        ==================================================== */}
-
-        <div className="min-w-0 space-y-4 xl:col-span-4">
-
-          {/* ESTADO */}
-
-          <Seccion
-            id="ficha-estado"
-            titulo="Estado"
-            subtitulo="Situación actual del expediente"
-            icono="estado"
-            colapsable
-          >
-            <div
-              className="
-                grid
-                grid-cols-1
-                md:grid-cols-3
-                gap-2
-              "
-            >
-
-              <Dato
-                campo="Estado"
-                valor={
-                  expediente.estado_expediente
-                }
-                estado
-                destaque
-              />
-
-              <Dato
-                campo="Actividad actual"
-                valor={
-                  expediente.actividad_actual
-                }
-                destaque
-              />
-
-              <Dato
-                campo="Estado actividad"
-                valor={
-                  expediente.estado_actividad
-                }
-                estado
-              />
-
-
-              <Dato
-                campo="Oficina"
-                valor={
-                  expediente.oficina
-                }
-                destaque
-              />
-
-              <Dato
-                campo="DAN"
-                valor={
-                  expediente.dan
-                }
-              />
-
-              <Dato
-                campo="Fecha alta"
-                valor={
-                  expediente.fecha_alta
-                }
-                tipo="fecha"
-                destaque
-              />
-
-            </div>
-          </Seccion>
-
-
-         
-
-
-          {/* FINCAS Y REGISTROS — SOLO LOS TRES DATOS SOLICITADOS */}
-
-          <Seccion
-            id="ficha-fincas"
-            titulo="Fincas y Registros"
-            subtitulo="Datos registrales del expediente"
-            icono="finca"
-            colapsable
-          >
-            {errorFincas && <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorFincas}</p>}
-            {cargandoFincas && <p className="text-xs text-slate-500">Cargando fincas...</p>}
-            {!cargandoFincas && fincasExpediente.length === 0 && (
-              <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
-                No hay fincas registradas en la tabla de fincas de este expediente.
-              </p>
-            )}
-            <div className="space-y-3">
-              {fincasExpediente.map((finca) => (
-                <article key={finca.id} className="rounded-xl border border-slate-200 bg-white p-3">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-bold text-slate-800">Finca {finca.finca || "—"}</p>
-                      <p className="mt-1 text-xs text-slate-500">{[finca.registro, finca.seccion, finca.poblacion, finca.provincia].filter(Boolean).join(" · ") || "Sin datos registrales"}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <button type="button" onClick={() => abrirSolicitudFusion(finca)} disabled={!finca.registro} title={!finca.registro ? "Completa el registro de la finca para solicitar una fusión" : "Crear solicitud de fusión para este registro"} className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-[11px] font-bold text-violet-700 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50">
-                        <span aria-hidden="true">⇄</span> Fusión
-                      </button>
-                      <button type="button" onClick={() => abrirFincas(finca)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700">Editar</button>
-                      <button type="button" onClick={() => eliminarFinca(finca.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700">Eliminar</button>
-                    </div>
-                  </div>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-                    <div><span className="block text-slate-400">CRU/Idufir</span><strong>{finca.cru_idufir || "—"}</strong></div>
-                    <div><span className="block text-slate-400">Cuantía</span><strong>{finca.cuantia || "—"}</strong></div>
-                    <div><span className="block text-slate-400">Inscripción</span><strong>{finca.inscripcion || "—"}</strong></div>
-                    <div><span className="block text-slate-400">Contrato</span><strong>{finca.contrato || "—"}</strong></div>
-                  </div>
-                </article>
-              ))}
-            </div>
-            <button type="button" onClick={() => abrirFincas()} className="mt-3 w-full rounded-xl border border-blue-100 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100">
-              ＋ Nueva finca
-            </button>
-          </Seccion>
-
-
-
-
-                    {/* ACCIONES */}
-
-          <Seccion
-            id="ficha-acciones"
-            titulo="Acciones"
-            subtitulo="Acciones operativas del expediente"
-            icono="accion"
-            colapsable
-          >
-            <button
-              type="button"
-              onClick={
-                abrirAcciones
-              }
-              className="
-                w-full
-                rounded-xl
-                border
-                border-blue-100
-                bg-blue-50
-                px-4
-                py-3
-                text-xs
-                font-bold
-                text-blue-700
-                transition
-                hover:bg-blue-100
-              "
-            >
-⚡ Gestionar acciones
-            </button>
-
-            {errorAcciones && (
-              <div className="erp-danger mt-3 rounded-xl border px-4 py-3 text-xs">
-                {errorAcciones}
-              </div>
-            )}
-
-            {cargandoAcciones ? (
-              <div className="erp-text-soft mt-3 text-xs">
-                Cargando acciones...
-              </div>
-            ) : accionesExpediente.length > 0 ? (
-              <div className="mt-4 space-y-3">
-                {accionesExpediente.map((relacion) => {
-                  const accion =
-                    relacion.accion ||
-                    relacion.accion_expediente ||
-                    relacion;
-
-                  return (
-                    <div
-                      key={relacion.id}
-                      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <div className="text-sm font-bold text-slate-800">
-                            {accion.descripcion ||
-                              relacion.descripcion ||
-                              "Acción"}
-                          </div>
-
-                          {accion.actividad && (
-                            <div className="mt-1 text-xs text-slate-500">
-                              {accion.actividad}
-                            </div>
-                          )}
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            retirarAccion(relacion.id)
-                          }
-                          className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100"
-                        >
-                          Retirar
-                        </button>
-                      </div>
-
-                      <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                        {relacion.estado && (
-                          <span className="rounded-full bg-slate-100 px-2.5 py-1 font-semibold text-slate-700">
-                            {relacion.estado}
-                          </span>
-                        )}
-                        {relacion.fecha && (
-                          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-slate-600">
-                            {formatearFecha(relacion.fecha)}
-                          </span>
-                        )}
-                      </div>
-
-                      {relacion.observaciones && (
-                        <div className="mt-3 text-xs text-slate-600">
-                          {relacion.observaciones}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="erp-text-soft mt-3 rounded-xl border border-dashed border-slate-200 px-4 py-4 text-xs">
-                Este expediente todavía no tiene acciones asignadas.
-              </div>
-            )}
-          </Seccion>
-
-          {/* OBSERVACIONES */}
-          <Seccion
-            id="ficha-observaciones"
-            titulo="Observaciones"
-            subtitulo="Comentarios, autor y visibilidad"
-            icono="observaciones"
-            colapsable
-            compacto
-          >
-            <div className="space-y-3">
-              {errorObservaciones && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorObservaciones}</p>}
-              {cargandoObservaciones && <p className="text-xs text-slate-500">Cargando observaciones…</p>}
-              {!cargandoObservaciones && observacionesExpediente.length === 0 && (
-                <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
-                  Todavía no hay observaciones añadidas.
-                </p>
-              )}
-
-              {observacionesExpediente.map((observacion) => (
-                <article key={observacion.id} className="rounded-xl border border-slate-200 bg-white p-3">
-                  <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{observacion.comentario}</p>
-                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
-                    <span>{observacion.autor || "Usuario conectado"}</span>
-                    <time dateTime={observacion.fecha}>
-                      {observacion.fecha ? new Date(observacion.fecha).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "Fecha no disponible"}
-                    </time>
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {observacion.visibilidad === "Gestor" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-800">
-                        🔒 Interna · Departamento
-                      </span>
-                    ) : observacion.visibilidad === "Visible notario" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold text-sky-800">
-                        ⚖️ Visible para notario
-                      </span>
-                    ) : observacion.visibilidad === "Visible apoderado" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2 py-1 text-[10px] font-semibold text-violet-800">
-                        👤 Visible para apoderado
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-700">
-                        Visibilidad: {observacion.visibilidad || "No indicada"}
-                      </span>
-                    )}
-                    {observacion.visibilidad === "Gestor" && observacion.empleado_destinatario && (
-                      <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">
-                        Destinatario: {observacion.empleado_destinatario}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-2 flex justify-end gap-2">
-                    <button type="button" onClick={() => editarObservacionExpediente(observacion)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700 hover:bg-blue-100">
-                      Editar
-                    </button>
-                    <button type="button" onClick={() => eliminarObservacionExpediente(observacion.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100">
-                      Desactivar
-                    </button>
-                  </div>
-                </article>
-              ))}
-
-              {mostrarFormularioObservacion ? (
-                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3 space-y-3">
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-semibold text-slate-600">{observacionEditandoId !== null ? "Editar comentario" : "Comentario"}</span>
-                    <textarea value={nuevaObservacion} onChange={(event) => setNuevaObservacion(event.target.value)} rows={4} placeholder="Escribe la observación..." className="w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
-                  </label>
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-semibold text-slate-600">Visibilidad</span>
-                    <select value={visibilidadObservacion} onChange={(event) => setVisibilidadObservacion(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
-                      <option value="Gestor">Departamento interno (Gestor)</option>
-                      <option value="Visible notario">Visible para el notario</option>
-                      <option value="Visible apoderado">Visible para el apoderado</option>
-                    </select>
-                  </label>
-                  {visibilidadObservacion === "Gestor" && (
-                    <label className="block">
-                      <span className="mb-1 block text-xs font-semibold text-slate-600">Empleado destinatario</span>
-                      <select value={destinatarioObservacion} onChange={(event) => setDestinatarioObservacion(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
-                        <option value="">Selecciona un empleado</option>
-                        {empleadosObservaciones.map((empleado) => <option key={empleado.id} value={empleado.id}>{empleado.nombre}</option>)}
-                      </select>
-                    </label>
-                  )}
-                  <div className="flex justify-end gap-2">
-                    <Boton onClick={() => { setMostrarFormularioObservacion(false); setNuevaObservacion(""); setObservacionEditandoId(null); }}>Cancelar</Boton>
-                    <Boton tipo="primary" onClick={agregarObservacionExpediente} disabled={!nuevaObservacion.trim() || guardandoObservacion || (visibilidadObservacion === "Gestor" && !destinatarioObservacion)}>{guardandoObservacion ? "Guardando…" : observacionEditandoId !== null ? "Guardar cambios" : "Guardar observación"}</Boton>
-                  </div>
-                </div>
-              ) : (
-                <Boton tipo="primary" onClick={() => setMostrarFormularioObservacion(true)}>＋ Añadir observación</Boton>
-              )}
-            </div>
-          </Seccion>
-
-        </div>
-
-
-      
-
-       
-
-        {/* ===================================================
-            ZONA DERECHA — PPAD, INFORMACIÓN CREDITICIA Y ENVÍO
-            Se mantiene a la derecha de Fincas, Acciones y Observaciones.
-        ==================================================== */}
-        <div className="min-w-0 xl:col-span-8">
-          <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
-        {/* PPAD */}
-        <div className="min-w-0 space-y-2 xl:col-span-3">
-          {/* PPAD */}
-          <Seccion
-            id="ficha-ppad"
-            titulo="PPAD"
-            subtitulo="Conceptos, importes e imputación"
-            icono="economico"
-            colapsable
-            compacto
-          >
-            <div className="space-y-2">
-              {errorPpad && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorPpad}</p>}
-              {cargandoPpad && <p className="text-xs text-slate-500">Cargando conceptos PPAD…</p>}
-              {ppadItems.length === 0 && !cargandoPpad && !mostrarFormularioPpad && (
-                <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
-                  Todavía no hay conceptos PPAD añadidos.
-                </p>
-              )}
-
-              {ppadItems.map((item) => (
-                <div key={item.id} className={`rounded-lg border p-2 ${item.compensado ? "border-emerald-200 bg-emerald-50/40" : "border-slate-200 bg-white"}`}>
-                  <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3">
-                    <div className="min-w-0">
-                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Concepto</div>
-                      <div className="mt-0.5 break-words text-[11px] leading-tight font-semibold text-slate-800">{item.concepto}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Importe</div>
-                      <div className="mt-0.5 text-[11px] leading-tight font-semibold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Imputable a</div>
-                      <div className="mt-0.5 text-[11px] leading-tight font-semibold text-slate-800">{item.imputable_a || item.imputableA || "Molsan"}</div>
-                    </div>
-                  </div>
-                  <div className="mt-2 grid grid-cols-1 gap-2 border-t border-slate-100 pt-2 text-[10px] sm:grid-cols-2">
-                    <div><span className="font-semibold text-slate-400">Fecha alta: </span><span className="font-semibold text-slate-700">{formatearFecha(item.fecha_creacion)}</span></div>
-                    <div><span className="font-semibold text-slate-400">Fecha compensación: </span><span className={item.compensado ? "font-bold text-emerald-700" : "font-semibold text-slate-500"}>{formatearFecha(item.fecha_compensacion)}</span></div>
-                  </div>
-                  <div className="mt-2 flex flex-wrap items-center justify-end gap-2">
-                    {item.compensado ? (
-                      <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800">✓ COMPENSADO</span>
-                    ) : (
-                      <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad}>
-                        {guardandoPpad ? "Registrando…" : "✓ Compensar"}
-                      </Boton>
-                    )}
-                    {!item.compensado && (
-                      <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>
-                    )}
-                    {(!item.compensado || esAdministradorSesion) && (
-                      <Boton
-                        tipo="danger"
-                        onClick={() => {
-                          const mensaje = item.compensado
-                            ? "Este PPAD ya está compensado. ¿Confirmas que quieres eliminarlo como administrador?"
-                            : "¿Confirmas que quieres eliminar este concepto PPAD?";
-                          if (window.confirm(mensaje)) eliminarPpad(item.id);
-                        }}
-                      >
-                        🗑️ Eliminar
-                      </Boton>
-                    )}
-                  </div>
-                </div>
-              ))}
-
-              {mostrarFormularioPpad && (
-                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3">
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <label className="block sm:col-span-2">
-                      <span className="mb-1 block text-xs font-semibold text-slate-600">Concepto</span>
-                      <input
-                        type="text"
-                        value={ppadForm.concepto}
-                        onChange={(event) => setPpadForm((actual) => ({ ...actual, concepto: event.target.value }))}
-                        placeholder="Introduce el concepto"
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                        autoFocus
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="mb-1 block text-xs font-semibold text-slate-600">Importe (€)</span>
-                      <input
-                        type="text"
-                        inputMode="decimal"
-                        value={ppadForm.importe}
-                        onChange={(event) => setPpadForm((actual) => ({ ...actual, importe: event.target.value }))}
-                        placeholder="0,00"
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="mb-1 block text-xs font-semibold text-slate-600">Imputable a</span>
-                      <select
-                        value={ppadForm.imputableA}
-                        onChange={(event) => setPpadForm((actual) => ({ ...actual, imputableA: event.target.value }))}
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                      >
-                        <option value="Molsan">Molsan</option>
-                        <option value="Externo">Externo</option>
-                      </select>
-                    </label>
-                  </div>
-                  <div className="mt-3 flex flex-wrap justify-end gap-2">
-                    <Boton tipo="secondary" onClick={cancelarPpad}>Cancelar</Boton>
-                    <Boton tipo="primary" onClick={aceptarPpad} disabled={!ppadForm.concepto.trim() || !String(ppadForm.importe).trim() || guardandoPpad}>{guardandoPpad ? "Guardando…" : "Aceptar"}</Boton>
-                  </div>
-                </div>
-              )}
-
-              {!mostrarFormularioPpad && (
-                <Boton tipo="primary" onClick={abrirNuevoPpad}>＋ Añadir concepto PPAD</Boton>
-              )}
-            </div>
-          </Seccion>
-
-        </div>
-
-        {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
-        <div className="min-w-0 w-full xl:col-span-8">
-          {expedienteBloqueado && <section role="alert" className="mx-auto mb-4 w-full rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="text-xs font-black uppercase text-red-700">⛔ Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">{motivoBloqueoExpediente}</h2>{(String(expediente?.estado_expediente||"").trim().toUpperCase()==="LST"||expediente?.liquidado_sin_tramitar)&&<p className="mt-1 text-sm text-red-800">Liquidación sin tramitar · fecha: {formatearFecha(expediente?.fecha_liquidacion_sin_tramitar)}</p>}{expediente?.cambio_gestoria&&<p className="mt-1 text-sm text-red-800">Cambio de gestoría · fecha: {formatearFecha(expediente?.fecha_cambio_gestoria)}</p>}{String(expediente?.estado_expediente||"").trim().toUpperCase().startsWith("RST")&&<p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p>}{expediente?.bloqueo_manual&&<p className="mt-1 text-sm text-red-800">Motivo: {valorVisible(expediente?.motivo_bloqueo)} · fecha: {formatearFecha(expediente?.fecha_bloqueo)}</p>}<p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
-          <div className="flex w-full min-w-0 justify-center">
-          {/* =====================================================
-              FICHA COMPLETA DE ENVÍO A NOTARIO
-              El botón abre el modal para completar y guardar el encargo.
-          ====================================================== */}
-            <section className="w-full max-w-none min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(30,41,59,0.08)]">
-              <div className="flex flex-wrap items-center justify-center gap-3 border-b border-slate-100 bg-white px-4 py-4 text-center sm:px-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">🏛️</div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-sm font-extrabold text-slate-800">Envío a notario</h3>
-                  <p className="mt-0.5 text-[11px] text-slate-500">Encargo al notario, datos de firma y facturación</p>
-                </div>
-                {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
-                  <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">Datos guardados</span>
-                )}
-              </div>
-              <div className="space-y-4 p-4 sm:p-5">
-                {!(expediente.fecha_envio_notario || expediente.fecha_envio) && (
-                  <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">
-                    Todavía no se ha registrado el encargo. Pulsa «Enviar a notario» para completar los datos y guardarlos en el expediente.
-                  </p>
-                )}
-                {(expediente.fecha_envio_notario || expediente.fecha_envio) && <>
-                <div className="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-2">
-                <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    <Dato campo="Fecha de envío" valor={expediente.fecha_envio_notario || expediente.fecha_envio} tipo="fecha" />
-                    <Dato campo="Idioma del documento" valor={expediente.idioma_documento ?? expediente.idioma ?? expediente.lengua_documento} />
-                    <Dato campo="Fecha solicitud PNC" valor={expediente.fecha_solicitud_pnc ?? expediente.fecha_pnc ?? expediente.pnc_fecha_solicitud} tipo="fecha" />
-                    <Dato campo="Número solicitud PNC" valor={expediente.numero_solicitud_pnc ?? expediente.num_solicitud_pnc ?? expediente.pnc_numero_solicitud} />
-                    <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
-                    <Dato campo="NIF notario" valor={expediente.nif_notario} />
-                    <Dato campo="Población notario" valor={expediente.poblacion} />
-                    <Dato campo="Provincia notario" valor={expediente.provincia} />
-                    <Dato campo="Apoderado" valor={expediente.apoderado} />
-                     <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
-                    <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
-                    <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
-                  </div>
-                </div>
-                <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de facturación</p>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    <Dato campo="Nombre" valor={expediente.facturacion_nombre ?? expediente.nombre_facturacion ?? expediente.nombre_cliente_facturacion} />
-                    <Dato campo="Apellidos" valor={expediente.facturacion_apellidos ?? expediente.apellidos_facturacion ?? expediente.apellidos_cliente_facturacion} />
-                    <Dato campo="DNI / NIF de facturación" valor={expediente.facturacion_dni_nif ?? expediente.dni_facturacion ?? expediente.nif_facturacion} />
-                    <Dato campo="Dirección" valor={expediente.facturacion_direccion ?? expediente.direccion_facturacion ?? expediente.direccion_cliente_facturacion} />
-                    <Dato campo="Código postal" valor={expediente.facturacion_codigo_postal ?? expediente.codigo_postal_facturacion ?? expediente.cp_facturacion} />
-                    <Dato campo="Población" valor={expediente.facturacion_poblacion ?? expediente.poblacion_facturacion ?? expediente.municipio_facturacion} />
-                    <Dato campo="Provincia" valor={expediente.facturacion_provincia ?? expediente.provincia_facturacion} />
-                    <Dato campo="Teléfono" valor={expediente.facturacion_telefono ?? expediente.telefono_facturacion ?? expediente.telefono_cliente_facturacion} />
-                    <Dato campo="Email" valor={expediente.facturacion_email ?? expediente.email_facturacion ?? expediente.correo_facturacion} />
-                  </div>
-                </div>
-                </div>
-                <div className="border-t border-slate-100 pt-3">
-                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Tipo de documento y cuantía</p>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
-                    <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite ?? expediente.tipo_tramite_notarial ?? expediente.tramite} />
-                    <Dato
-                      campo="Firma urgente"
-                      valor={
-                        expediente.firma_urgente === true ||
-                        ["true", "1", "si", "sí"].includes(
-                          String(expediente.firma_urgente ?? "").trim().toLowerCase()
-                        )
-                          ? "SÍ · URGENTE"
-                          : "No"
-                      }
-                    />
-                    <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
-                    <Dato campo="Protocolo" valor={expediente.protocolo} />
-                    <Dato
-                      campo="Tipo del documento formalizado"
-                      valor={
-                        Array.isArray(expediente.documentos_escritura) &&
-                        expediente.documentos_escritura.length > 0
-                          ? expediente.documentos_escritura
-                              .map((documento) => documento.tipo_documento || "Documento")
-                              .join(" | ")
-                          : expediente.tipo_documento
-                      }
-                    />
-                    <Dato
-                      campo="Cuantía del documento"
-                      valor={
-                        Array.isArray(expediente.documentos_escritura) &&
-                        expediente.documentos_escritura.length > 0
-                          ? expediente.documentos_escritura
-                              .map((documento) => {
-                                if (documento.cuantia == null || documento.cuantia === "") {
-                                  return "Sin cuantía";
-                                }
-                                return `${Number(documento.cuantia).toLocaleString("es-ES", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })} €`;
-                              })
-                              .join(" | ")
-                          : expediente.cuantia != null
-                            ? `${Number(expediente.cuantia).toLocaleString("es-ES", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })} €`
-                            : null
-                      }
-                    />
-                    <Dato campo="Importe" valor={expediente.importe} tipo="numero" />
-
-                    </div>
-
-                    {(expediente.importe !== null && expediente.importe !== undefined && expediente.importe !== "" || expediente.fecha_envio_notario || expediente.fecha_envio) && (
-                      <section className="mt-4 rounded-xl border border-indigo-100 bg-white p-4">
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                          <div>
-                            <h4 className="text-sm font-extrabold text-slate-800">Resumen Económico</h4>
-                            <p className="mt-1 text-xs text-slate-500">
-                              Importe inicial tomado de Información crediticia. El saldo solo descuenta los gastos cuyo pago está confirmado.
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setErrorGastos("");
-                              setMensajeGastos("");
-                              setMostrarFormularioGasto((actual) => {
-                                const abrir = !actual;
-                                if (abrir) setGastoForm((g) => ({ ...g, nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "", nombre_notario: g.nombre_notario || expediente?.notario || expediente?.nombre_notario || "", pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" ") }));
-                                return abrir;
-                              });
-                            }}
-                            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700"
-                          >
-                            ＋ Registrar gasto
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setErrorComplementoSaldo("");
-                              setMensajeComplementoSaldo("");
-                              setFormComplementoSaldo({ provisionado: String(importeInicialProvision || expediente?.importe || ""), saldo_disponible: String(expediente?.saldo_disponible ?? resumenEconomico.saldoActual ?? ""), importe: "", motivo: "" });
-                              setMostrarModalComplementoSaldo(true);
-                            }}
-                            className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
-                          >
-                            ＋ Solicitar complemento de saldo
-                          </button>
-                        </div>
-
-
-                        {mensajeComplementoSaldo && <div role="status" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">{mensajeComplementoSaldo}</div>}
-                        {mostrarModalComplementoSaldo && (
-                          <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4 sm:p-5">
-                            <div className="mb-4 flex items-start justify-between gap-3">
-                              <div><h5 className="text-sm font-extrabold text-slate-900">Solicitar complemento de saldo</h5><p className="mt-1 text-xs text-slate-600">La solicitud quedará registrada en Utilidades → Complementos de saldo con estado Pendiente.</p></div>
-                              <button type="button" onClick={() => setMostrarModalComplementoSaldo(false)} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600">Cerrar ×</button>
-                            </div>
-                            <form onSubmit={async (event) => {
-                              event.preventDefault(); setErrorComplementoSaldo("");
-                              const numeroExpediente = String(expediente?.id_expediente || id || "").trim();
-                              const importe = Number(String(formComplementoSaldo.importe).replace(",", "."));
-                              const provisionado = Number(String(formComplementoSaldo.provisionado || 0).replace(",", "."));
-                              const saldoDisponible = Number(String(formComplementoSaldo.saldo_disponible || 0).replace(",", "."));
-                              if (!numeroExpediente) { setErrorComplementoSaldo("No se ha podido identificar el expediente."); return; }
-                              if (formComplementoSaldo.importe === "" || !Number.isFinite(importe) || importe <= 0) { setErrorComplementoSaldo("Introduce un saldo a solicitar válido y mayor que cero."); return; }
-                              if (!Number.isFinite(provisionado) || !Number.isFinite(saldoDisponible)) { setErrorComplementoSaldo("No se han podido validar los importes de la provisión."); return; }
-                              if (!String(formComplementoSaldo.motivo || "").trim()) { setErrorComplementoSaldo("Indica el motivo de la solicitud."); return; }
-                              setGuardandoComplementoSaldo(true);
-                              try {
-                                await axios.post("/complementos-saldo", {
-                                  expediente_id: expediente?.id || null, numero_expediente: numeroExpediente,
-                                  fecha_solicitud: new Date().toLocaleDateString("sv-SE"),
-                                  solicitante: expediente?.nombre_solicitante || expediente?.solicitante || expediente?.nombre_titular || "",
-                                  oficina: expediente?.oficina || expediente?.oficina_alta || "",
-                                  provisionado, saldo_disponible: saldoDisponible, importe,
-                                  motivo: formComplementoSaldo.motivo.trim(), observaciones: formComplementoSaldo.motivo.trim(), estado: "Pendiente",
-                                });
-                                setMostrarModalComplementoSaldo(false);
-                                setMensajeComplementoSaldo("Solicitud registrada correctamente. Estado: Pendiente.");
-                                setFormComplementoSaldo({ provisionado: String(importeInicialProvision || expediente?.importe || ""), saldo_disponible: String(expediente?.saldo_disponible ?? resumenEconomico.saldoActual ?? ""), importe: "", motivo: "" });
-                              } catch (error) {
-                                setErrorComplementoSaldo(error?.response?.data?.detail || "No se pudo registrar la solicitud de complemento.");
-                              } finally { setGuardandoComplementoSaldo(false); }
-                            }} className="grid gap-3 sm:grid-cols-2">
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Provisionado (€)</label><input readOnly value={formComplementoSaldo.provisionado} className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600" /></div>
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Saldo disponible (€)</label><input readOnly value={formComplementoSaldo.saldo_disponible} className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600" /></div>
-                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Saldo a solicitar (€)</label><input required min="0.01" step="0.01" type="number" value={formComplementoSaldo.importe} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, importe: e.target.value }))} placeholder="0,00" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" /></div>
-                              <div className="sm:col-span-2"><label className="mb-1 block text-xs font-bold text-slate-600">Motivo</label><textarea required rows={3} value={formComplementoSaldo.motivo} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, motivo: e.target.value }))} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" placeholder="Explica el motivo por el que se solicita el complemento…" /></div>
-                              {errorComplementoSaldo && <p role="alert" className="sm:col-span-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">{errorComplementoSaldo}</p>}
-                              <div className="flex flex-wrap justify-end gap-2 sm:col-span-2"><button type="button" onClick={() => setMostrarModalComplementoSaldo(false)} disabled={guardandoComplementoSaldo} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoComplementoSaldo} className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoComplementoSaldo ? "Guardando…" : "Solicitar complemento"}</button></div>
-                            </form>
-                          </div>
-                        )}
-
-                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                          <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
-                            <p className="text-[11px] font-bold uppercase tracking-wide text-indigo-700">Importe inicial de la provisión</p>
-                            <p className="mt-1 text-2xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? `${importeInicialProvision.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
-                            <p className="mt-1 text-[10px] text-slate-500">Campo Importe · Excel de Absis</p>
-                          </div>
-                          <div className="rounded-xl border border-slate-200 bg-white p-4">
-                            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Saldo real actual</p>
-                            <p className={`mt-1 text-2xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "text-red-700" : "text-emerald-700"}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
-                            <p className="mt-1 text-[10px] text-slate-500">Importe inicial menos pagos confirmados</p>
-                          </div>
-                        </div>
-
-                        <div className="mt-4">
-                          <h5 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-600">Movimientos de la provisión</h5>
-                          {cargandoGastos ? (
-                            <p className="py-3 text-xs text-slate-500">Cargando movimientos económicos…</p>
-                          ) : resumenEconomico.movimientos.length === 0 ? (
-                            <p className="rounded-lg border border-dashed border-slate-200 px-3 py-4 text-center text-xs text-slate-500">Todavía no hay pagos confirmados para mostrar.</p>
-                          ) : (
-                            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-                              <table className="w-full min-w-[980px] table-auto text-left text-sm">
-                                <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-600">
-                                  <tr>
-                                    <th className="w-[190px] px-5 py-4 font-extrabold">N.º documento</th>
-                                    <th className="w-[170px] px-5 py-4 font-extrabold">Fecha de pago</th>
-                                    <th className="px-5 py-4 font-extrabold">Concepto</th>
-                                    <th className="w-[180px] px-5 py-4 text-right font-extrabold">Importe</th>
-                                    <th className="w-[190px] px-5 py-4 text-right font-extrabold">Saldo real</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {resumenEconomico.movimientos.map((movimiento, indice) => (
-                                    <tr key={movimiento.id} className={`border-t border-slate-100 transition-colors hover:bg-indigo-50/40 ${indice % 2 === 1 ? "bg-slate-50/50" : "bg-white"}`}>
-                                      <td className="whitespace-nowrap px-5 py-4 font-extrabold text-indigo-700">{movimiento.numero_documento || `PAG-${String(movimiento.id).padStart(6, "0")}`}</td>
-                                      <td className="whitespace-nowrap px-5 py-4 text-slate-600">{movimiento.fecha ? formatearFecha(movimiento.fecha) : "—"}</td>
-                                      <td className="px-5 py-4 font-semibold text-slate-800">{movimiento.descripcion || movimiento.tipo || "Gasto"}</td>
-                                      <td className="whitespace-nowrap px-5 py-4 text-right font-bold text-red-700">{movimiento.importeMovimiento === 0 ? "0,00 €" : `−${Math.abs(movimiento.importeMovimiento).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</td>
-                                      <td className={`whitespace-nowrap px-5 py-4 text-right text-base font-extrabold ${movimiento.saldoCalculado < 0 ? "text-red-700" : "text-slate-900"}`}>{movimiento.saldoCalculado.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          )}
-                          {!importeInicialDisponible && <p className="mt-2 text-[11px] text-amber-700">El expediente no tiene un Importe inicial válido; revisa la importación de Absis para calcular el saldo.</p>}
-                        </div>
-
-                        {errorGastos && (
-                          <div role="alert" className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
-                            {errorGastos}
-                          </div>
-                        )}
-                        {mensajeGastos && (
-                          <div role="status" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
-                            {mensajeGastos}
-                          </div>
-                        )}
-
-                        {mostrarFormularioGasto && (
-                          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-gasto">
-                            <div className="flex max-h-[94vh] w-full max-w-[96vw] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
-                          <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
-                            <div className="flex items-start justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-4">
-                              <div><h5 id="titulo-modal-gasto" className="text-base font-extrabold text-slate-900">Registrar gasto · Factura y pago</h5><p className="mt-1 text-xs text-slate-500">El registro no ejecuta una transferencia bancaria.</p></div>
-                              <button type="button" aria-label="Cerrar ventana" onClick={() => setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-lg leading-none text-slate-600 hover:bg-slate-100 disabled:opacity-50">×</button>
-                              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-bold text-amber-800">Pago: pendiente</span>
-                            </div>
-                            <div className="min-h-0 flex-1 overflow-y-auto p-5"><div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(360px,0.9fr)]">
-                              <div className="min-w-0">
-                              <div className="space-y-3">
-                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Factura y proveedor</h6>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-indigo-800">Honorarios de gestoría (opcional)</span><select value={honorarioGestoriaId} onChange={(e) => { const idSeleccionado = e.target.value; setHonorarioGestoriaId(idSeleccionado); const tarifa = honorariosCatalogo.find((x) => String(x.id) === idSeleccionado); if (tarifa) { const importeTarifa = Number(tarifa.importe || 0).toFixed(2); setGastoForm((a) => ({ ...a, tipo: "Honorarios de gestoría", descripcion: tarifa.nombre, importe_total_bruto: importeTarifa, importe: importeTarifa, base_exenta_impuestos: "0.00", base_sujeta_impuestos: "", porcentaje_impuesto: "21", tipo_impuesto: "IVA 21%", base_exenta_retencion: "0.00", base_sujeta_retencion: "0.00", porcentaje_retencion: "0", tipo_retencion: "Sin retención" })); } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
-                                <div className="grid gap-3 sm:grid-cols-2">
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Nombre del notario</span><input value={gastoForm.nombre_notario} onChange={(e)=>setGastoForm(a=>({...a,nombre_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                </div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Pagador / razón social</span><input value={gastoForm.pagador} onChange={(e)=>setGastoForm(a=>({...a,pagador:e.target.value}))} placeholder="Nombre de facturación" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                <div className="grid gap-3 sm:grid-cols-2">
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Número de factura</span><input value={gastoForm.numero_factura} onChange={(e)=>setGastoForm(a=>({...a,numero_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de factura *</span><input required type="date" value={gastoForm.fecha_factura} onChange={(e)=>setGastoForm(a=>({...a,fecha_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                </div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de pago / movimiento *</span><input required type="date" value={gastoForm.fecha} onChange={(e)=>setGastoForm(a=>({...a,fecha:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Cuenta bancaria / IBAN</span><input value={gastoForm.cuenta_bancaria} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value.toUpperCase()}))} placeholder="ES… (editable; no se autocompleta)" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Medio de pago</span><select value={gastoForm.medio_pago} onChange={(e)=>setGastoForm(a=>({...a,medio_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Estado</span><select value={gastoForm.estado_pago} onChange={(e)=>setGastoForm(a=>({...a,estado_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Pendiente</option><option>Pagado</option><option>Anulado</option></select></label></div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Documento / URL de factura</span><input type="url" value={gastoForm.documento_url} onChange={(e)=>setGastoForm(a=>({...a,documento_url:e.target.value}))} placeholder="https://…" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                              </div>
-                              </div>
-                              <div className="space-y-3">
-                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Impuestos y retenciones</h6>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-slate-700">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>)}</div>
-                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">IRPF (%)</span><input type="number" min="1" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
-                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
-                              </div>
-                              <aside className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                                <div className="mb-3">
-                                  <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-600">Factura de Carpeta Digital</h6>
-                                  <p className="mt-1 text-[11px] text-slate-500">Factura notarial o registral · PDF</p>
-                                </div>
-                                <label className="mb-3 block">
-                                  <span className="mb-1 block text-xs font-bold text-slate-700">Documento a revisar</span>
-                                  <select value={documentoFacturaSeleccionado} onChange={(e) => { setDocumentoFacturaSeleccionado(e.target.value); setGastoForm(a => ({...a, documento_carpeta_id: e.target.value})); }} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs">
-                                    <option value="">Selecciona una factura PDF…</option>
-                                    {documentosFacturaElegibles.map((doc) => <option key={doc.id} value={String(doc.id)}>{doc.nombre_original || doc.nombre || `Documento ${doc.id}`} · {doc.categoria || doc.categoria_nombre}</option>)}
-                                  </select>
-                                </label>
-                                {cargandoVistaPreviaFactura ? <p className="p-4 text-xs text-slate-500">Cargando PDF…</p> : null}
-                                {errorVistaPreviaFactura ? <p role="alert" className="mb-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">{errorVistaPreviaFactura}</p> : null}
-                                {urlVistaPreviaFactura ? <iframe title="Vista previa de factura" src={urlVistaPreviaFactura} className="h-[58vh] min-h-[360px] w-full rounded-lg border border-slate-200 bg-white" /> : null}
-                                {!urlVistaPreviaFactura && !cargandoVistaPreviaFactura && !errorVistaPreviaFactura ? <p className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-center text-xs text-slate-500">No hay ningún PDF seleccionado. Comprueba que la factura esté en Gestión económica de la Carpeta Digital.</p> : null}
-                              </aside>
-                            </div></div>
-                            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-white px-5 py-4"><button type="button" onClick={()=>setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoGasto || cargandoConceptosGasto} className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoGasto ? "Guardando…" : "Registrar gasto"}</button></div>
-                          </form>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="mt-6 border-t border-slate-100 pt-5">
-                          <h5 className="mb-4 text-sm font-extrabold uppercase tracking-wide text-slate-700">Facturas y gastos registrados</h5>
-                          {cargandoGastos ? (
-                            <p className="py-4 text-sm text-slate-500">Cargando gastos…</p>
-                          ) : gastosExpediente.length === 0 ? (
-                            <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-500">Todavía no hay gastos registrados en este expediente.</p>
-                          ) : (
-                            <ul className="space-y-3">
-                              {gastosExpediente.map((gasto) => (
-                                <li key={gasto.id} className="flex flex-wrap items-center gap-4 rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
-                                  <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-extrabold text-slate-900">{gasto.descripcion || gasto.tipo || "Gasto"}</p>
-                                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-600">
-                                      <span className="font-bold text-indigo-700">{gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`}</span>
-                                      {gasto.tipo && <span>{gasto.tipo}</span>}
-                                      {gasto.fecha && <span>Fecha: {formatearFecha(gasto.fecha)}</span>}
-                                      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${String(gasto.estado_pago || "Pendiente").toLowerCase().includes("pag") || String(gasto.estado_pago || "").toLowerCase().includes("abon") ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{gasto.estado_pago || "Pendiente"}</span>
-                                    </div>
-                                  </div>
-                                  <span className="whitespace-nowrap text-base font-extrabold text-slate-900">
-                                    {gasto.importe_resultante == null && gasto.importe == null ? "—" : `${Number(gasto.importe_resultante ?? gasto.importe).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}
-                                  </span>
-                                  <button type="button" onClick={() => eliminarGastoExpediente(gasto)} className="rounded-lg border border-red-200 px-3 py-2 text-sm font-bold text-red-600 transition hover:bg-red-50">
-                                    Eliminar
-                                  </button>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                          {gastosPendientesResumen.length > 0 && <p className="mt-3 rounded-lg bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">Hay {gastosPendientesResumen.length} gasto(s) pendiente(s) de pago que todavía no descuentan del saldo real.</p>}
-                        </div>
-                      </section>
-                    )}
-                </div>
-                </>}
-                {actividadActual === "documentacion-previa" && (
-                  <div className="flex justify-center border-t border-slate-100 pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setMostrarEnviarNotario(true)}
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2"
-                    >
-                      🏛️ {expediente.fecha_envio_notario || expediente.fecha_envio ? "Revisar / modificar encargo" : "Enviar a notario"}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </section>
-          </div>
-        </div>
-
-  {mostrarCarpetaDigital && (
-        <CarpetaDigitalModal
-          expedienteId={id || expediente?.id_expediente || expediente?.id}
-          onClose={() => setMostrarCarpetaDigital(false)}
-        />
-      )}
-
-
-      <Modal
-        open={mostrarReclamarOficina}
-        onClose={() => !enviandoReclamacion && setMostrarReclamarOficina(false)}
-        titulo="✉️ Reclamar a oficina"
-        subtitulo={`Expediente ${valorVisible(expediente?.id_expediente || id)} · Histórico de correos enviados`}
-        ancho="max-w-5xl"
-        footer={
-          <div className="flex flex-wrap justify-end gap-2">
-            <Boton onClick={() => setMostrarReclamarOficina(false)} disabled={enviandoReclamacion}>Cerrar</Boton>
-            <Boton tipo="primary" onClick={enviarReclamacionOficina} disabled={enviandoReclamacion || !emailReclamacion.destinatario.trim() || !emailReclamacion.asunto.trim() || !emailReclamacion.cuerpo.trim()}>
-              {enviandoReclamacion ? "Enviando…" : "✉️ Enviar email"}
-            </Boton>
-          </div>
-        }
-      >
-        <div className="space-y-5">
-          {errorReclamacion && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorReclamacion}</p>}
-          {mensajeReclamacion && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensajeReclamacion}</p>}
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <CampoFormulario label="De · Email del gestor (responder a)" value={empleadoSesion?.email_empresa || empleadoSesion?.email_personal || ""} onChange={() => {}} />
-            <CampoFormulario label="Para · Email de la oficina" value={emailReclamacion.destinatario} onChange={(v) => setEmailReclamacion((p) => ({ ...p, destinatario: v }))} placeholder="Introduce el email de la oficina" />
-          </div>
-          <CampoFormulario label="Asunto" value={emailReclamacion.asunto} onChange={(v) => setEmailReclamacion((p) => ({ ...p, asunto: v }))} />
-          <CampoFormulario label="Mensaje (editable antes de enviar)" value={emailReclamacion.cuerpo} onChange={(v) => setEmailReclamacion((p) => ({ ...p, cuerpo: v }))} textarea />
-          <section className="overflow-hidden rounded-xl border border-slate-200">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3">
-              <div>
-                <h3 className="text-sm font-bold text-slate-800">Histórico de emails</h3>
-                <p className="text-xs text-slate-500">Registro guardado en el sistema para este expediente.</p>
-              </div>
-              <Boton onClick={cargarHistoricoReclamaciones} disabled={cargandoHistoricoReclamaciones}>{cargandoHistoricoReclamaciones ? "Actualizando…" : "↻ Actualizar"}</Boton>
-            </div>
-            {cargandoHistoricoReclamaciones ? <p className="p-4 text-sm text-slate-500">Cargando histórico…</p> : historicoReclamaciones.length === 0 ? <p className="p-4 text-sm text-slate-500">Todavía no hay correos registrados.</p> : (
-              <div className="max-h-64 overflow-auto">
-                <table className="w-full min-w-[700px] text-left text-xs">
-                  <thead className="sticky top-0 bg-white text-slate-500"><tr><th className="px-3 py-2">Fecha</th><th className="px-3 py-2">Para</th><th className="px-3 py-2">Asunto</th><th className="px-3 py-2">Estado</th><th className="px-3 py-2">Gestor</th></tr></thead>
-                  <tbody>{historicoReclamaciones.map((item) => <tr key={item.id} className="border-t border-slate-100 align-top"><td className="whitespace-nowrap px-3 py-2">{item.creado_en ? new Date(item.creado_en).toLocaleString("es-ES") : "—"}</td><td className="px-3 py-2">{item.destinatario}</td><td className="max-w-xs px-3 py-2">{item.asunto}</td><td className="px-3 py-2"><span className={item.estado === "enviado" ? "font-bold text-emerald-700" : "font-bold text-red-700"}>{item.estado === "enviado" ? "Enviado" : "Error"}</span>{item.detalle && <p className="mt-1 max-w-xs text-[10px] text-slate-500">{item.detalle}</p>}</td><td className="px-3 py-2">{item.enviado_por || "—"}</td></tr>)}</tbody>
-                </table>
-              </div>
-            )}
-          </section>
-          <p className="text-[11px] text-amber-700">El envío requiere que el servidor tenga configuradas las variables SMTP. El historial registra tanto los envíos correctos como los intentos fallidos.</p>
-        </div>
-      </Modal>
-
-
-      {/* CONTROL DE BLOQUEO */}
-      <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="🔐 Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":"💾 Guardar control"}</Boton></div>}>
-        <div className="space-y-4">
-          {estadoLegadoBloqueante&&<p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-900">El estado {expediente?.estado_expediente} mantiene el bloqueo automático. Para desbloquearlo, debe corregirse primero el estado del expediente.</p>}
-          <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.liquidado_sin_tramitar} onChange={e=>setControlExpediente(v=>({...v,liquidado_sin_tramitar:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Liquidado sin tramitar</strong><span className="block text-xs text-slate-500">Bloquea el expediente y genera aviso central.</span>{controlExpediente.liquidado_sin_tramitar&&<input aria-label="Fecha liquidado sin tramitar" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_liquidacion_sin_tramitar||""} onChange={e=>setControlExpediente(v=>({...v,fecha_liquidacion_sin_tramitar:e.target.value}))}/>}</span></label>
-          <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.cambio_gestoria} onChange={e=>setControlExpediente(v=>({...v,cambio_gestoria:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Cambio de gestoría</strong><span className="block text-xs text-slate-500">Bloquea el expediente con aviso específico.</span>{controlExpediente.cambio_gestoria&&<input aria-label="Fecha cambio gestoría" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_cambio_gestoria||""} onChange={e=>setControlExpediente(v=>({...v,fecha_cambio_gestoria:e.target.value}))}/>}</span></label>
-          <div className="rounded-xl border p-4"><label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={!!controlExpediente.bloqueo_manual} onChange={e=>setControlExpediente(v=>({...v,bloqueo_manual:e.target.checked}))}/><span><strong className="block text-sm">Bloqueo manual</strong><span className="block text-xs text-slate-500">Se puede desbloquear desmarcando esta opción.</span></span></label>{controlExpediente.bloqueo_manual&&<div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="text-xs font-bold">Motivo<input className="mt-1 w-full rounded-lg border p-2 text-sm font-normal" value={controlExpediente.motivo_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,motivo_bloqueo:e.target.value}))} placeholder="Motivo del bloqueo"/></label><label className="text-xs font-bold">Fecha<input type="date" className="mt-1 w-full rounded-lg border p-2 text-sm font-normal" value={controlExpediente.fecha_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,fecha_bloqueo:e.target.value}))}/></label></div>}</div>
-          {errorControlExpediente&&<p role="alert" className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{errorControlExpediente}</p>}
-          <p className="text-xs text-slate-500">LST y RST bloquean automáticamente el expediente aunque se desmarquen las opciones.</p>
-        </div>
-      </Modal>
-
-      {/* =====================================================
-          MODAL ACTIVIDADES
-      ====================================================== */}
-
-      <Modal
-        open={
-          mostrarActividades
-        }
-        onClose={() =>
-          setMostrarActividades(false)
-        }
-        titulo="⚙️ Actividades del expediente"
-        subtitulo={
-          actividadSeleccionada === "documentacion-previa"
-            ? ""
-            : `Expediente ${valorVisible(
-                expediente.id_expediente
-              )} · actividad actual: ${valorVisible(
-                expediente.actividad_actual
-              )}`
-        }
-        ancho="max-w-[1200px]"
-        footer={
-          <Boton
-            onClick={() =>
-              setMostrarActividades(false)
-            }
-          >
-            Cerrar
-          </Boton>
-        }
-      >
-
+      <section id="ficha-actividades" className="mb-4 w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
         <div
           className="
-            grid
-            grid-cols-1
-            gap-4
-            lg:grid-cols-[280px_minmax(0,1fr)]
+            flex min-w-0 flex-col gap-3
           "
         >
 
           {/* MENU ACTIVIDADES */}
 
           <div
-            className="
-              space-y-2
-            "
+            className="flex min-w-0 gap-2 overflow-x-auto pb-1"
           >
 
             {ACTIVIDADES_EXPEDIENTES.filter((actividad) => {
@@ -5365,12 +4491,7 @@ const cuantiaFincasParaEnvio =
                       setMensajeActividad("");
                     }}
                     className={`
-                      w-full
-                      rounded-xl
-                      border
-                      p-3
-                      text-left
-                      transition
+                      min-w-[155px] shrink-0 rounded-xl border px-3 py-2 text-left transition
                       ${
                         activa
                           ? "border-blue-300 bg-blue-50 shadow-sm"
@@ -6506,8 +5627,760 @@ const cuantiaFincasParaEnvio =
 
         </div>
 
+
+      <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
+        <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 className="text-xs font-extrabold text-slate-800">⚡ Acciones de {actividadSeleccionadaDef.label}</h3>
+              <p className="text-[10px] text-slate-500">Se muestra únicamente la última acción asignada.</p>
+            </div>
+            <button type="button" onClick={abrirAcciones} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-[11px] font-bold text-blue-700 hover:bg-blue-100">Gestionar acciones</button>
+          </div>
+          {errorAcciones && <p className="mb-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorAcciones}</p>}
+          {cargandoAcciones ? <p className="text-xs text-slate-500">Cargando acciones…</p> : accionesExpediente.length ? (() => {
+            const relacion = accionesExpediente[accionesExpediente.length - 1];
+            const accion = relacion.accion || relacion.accion_expediente || relacion;
+            return <div className="rounded-lg border border-slate-200 bg-white p-3">
+              <p className="text-xs font-bold text-slate-800">{accion.descripcion || relacion.descripcion || "Acción"}</p>
+              {accion.actividad && <p className="mt-1 text-[11px] text-slate-500">{accion.actividad}</p>}
+              <div className="mt-2 flex flex-wrap gap-2 text-[10px] text-slate-500">{relacion.estado && <span className="rounded-full bg-slate-100 px-2 py-1">{relacion.estado}</span>}{relacion.fecha && <span>{formatearFecha(relacion.fecha)}</span>}</div>
+            </div>;
+          })() : <p className="rounded-lg border border-dashed border-slate-200 bg-white p-3 text-xs text-slate-500">No hay acciones asignadas.</p>}
+        </div>
+                  <Seccion
+            id="ficha-ppad"
+            titulo="PPAD"
+            subtitulo="Conceptos, importes e imputación"
+            icono="economico"
+            colapsable
+            compacto
+          >
+            <div className="space-y-2">
+              {errorPpad && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorPpad}</p>}
+              {cargandoPpad && <p className="text-xs text-slate-500">Cargando conceptos PPAD…</p>}
+              {ppadItems.length === 0 && !cargandoPpad && !mostrarFormularioPpad && (
+                <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
+                  Todavía no hay conceptos PPAD añadidos.
+                </p>
+              )}
+
+              {ppadItems.slice(-1).map((item) => (
+                <div key={item.id} className={`rounded-lg border p-2 ${item.compensado ? "border-emerald-200 bg-emerald-50/40" : "border-slate-200 bg-white"}`}>
+                  <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3">
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Concepto</div>
+                      <div className="mt-0.5 break-words text-[11px] leading-tight font-semibold text-slate-800">{item.concepto}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Importe</div>
+                      <div className="mt-0.5 text-[11px] leading-tight font-semibold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Imputable a</div>
+                      <div className="mt-0.5 text-[11px] leading-tight font-semibold text-slate-800">{item.imputable_a || item.imputableA || "Molsan"}</div>
+                    </div>
+                  </div>
+                  <div className="mt-2 grid grid-cols-1 gap-2 border-t border-slate-100 pt-2 text-[10px] sm:grid-cols-2">
+                    <div><span className="font-semibold text-slate-400">Fecha alta: </span><span className="font-semibold text-slate-700">{formatearFecha(item.fecha_creacion)}</span></div>
+                    <div><span className="font-semibold text-slate-400">Fecha compensación: </span><span className={item.compensado ? "font-bold text-emerald-700" : "font-semibold text-slate-500"}>{formatearFecha(item.fecha_compensacion)}</span></div>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center justify-end gap-2">
+                    {item.compensado ? (
+                      <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800">✓ COMPENSADO</span>
+                    ) : (
+                      <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad}>
+                        {guardandoPpad ? "Registrando…" : "✓ Compensar"}
+                      </Boton>
+                    )}
+                    {!item.compensado && (
+                      <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>
+                    )}
+                    {(!item.compensado || esAdministradorSesion) && (
+                      <Boton
+                        tipo="danger"
+                        onClick={() => {
+                          const mensaje = item.compensado
+                            ? "Este PPAD ya está compensado. ¿Confirmas que quieres eliminarlo como administrador?"
+                            : "¿Confirmas que quieres eliminar este concepto PPAD?";
+                          if (window.confirm(mensaje)) eliminarPpad(item.id);
+                        }}
+                      >
+                        🗑️ Eliminar
+                      </Boton>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {mostrarFormularioPpad && (
+                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <label className="block sm:col-span-2">
+                      <span className="mb-1 block text-xs font-semibold text-slate-600">Concepto</span>
+                      <input
+                        type="text"
+                        value={ppadForm.concepto}
+                        onChange={(event) => setPpadForm((actual) => ({ ...actual, concepto: event.target.value }))}
+                        placeholder="Introduce el concepto"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        autoFocus
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1 block text-xs font-semibold text-slate-600">Importe (€)</span>
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={ppadForm.importe}
+                        onChange={(event) => setPpadForm((actual) => ({ ...actual, importe: event.target.value }))}
+                        placeholder="0,00"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1 block text-xs font-semibold text-slate-600">Imputable a</span>
+                      <select
+                        value={ppadForm.imputableA}
+                        onChange={(event) => setPpadForm((actual) => ({ ...actual, imputableA: event.target.value }))}
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                      >
+                        <option value="Molsan">Molsan</option>
+                        <option value="Externo">Externo</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div className="mt-3 flex flex-wrap justify-end gap-2">
+                    <Boton tipo="secondary" onClick={cancelarPpad}>Cancelar</Boton>
+                    <Boton tipo="primary" onClick={aceptarPpad} disabled={!ppadForm.concepto.trim() || !String(ppadForm.importe).trim() || guardandoPpad}>{guardandoPpad ? "Guardando…" : "Aceptar"}</Boton>
+                  </div>
+                </div>
+              )}
+
+              {!mostrarFormularioPpad && (
+                <Boton tipo="primary" onClick={abrirNuevoPpad}>＋ Añadir concepto PPAD</Boton>
+              )}
+            </div>
+          </Seccion>
+      </div>
+      <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
+        {/* FINCAS Y REGISTROS — SOLO LOS TRES DATOS SOLICITADOS */}
+
+          <Seccion
+            id="ficha-fincas"
+            titulo="Fincas y Registros"
+            subtitulo="Datos registrales del expediente"
+            icono="finca"
+            colapsable
+          >
+            {errorFincas && <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorFincas}</p>}
+            {cargandoFincas && <p className="text-xs text-slate-500">Cargando fincas...</p>}
+            {!cargandoFincas && fincasExpediente.length === 0 && (
+              <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
+                No hay fincas registradas en la tabla de fincas de este expediente.
+              </p>
+            )}
+            <div className="space-y-3">
+              {fincasExpediente.map((finca) => (
+                <article key={finca.id} className="rounded-xl border border-slate-200 bg-white p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-bold text-slate-800">Finca {finca.finca || "—"}</p>
+                      <p className="mt-1 text-xs text-slate-500">{[finca.registro, finca.seccion, finca.poblacion, finca.provincia].filter(Boolean).join(" · ") || "Sin datos registrales"}</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button type="button" onClick={() => abrirSolicitudFusion(finca)} disabled={!finca.registro} title={!finca.registro ? "Completa el registro de la finca para solicitar una fusión" : "Crear solicitud de fusión para este registro"} className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-[11px] font-bold text-violet-700 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50">
+                        <span aria-hidden="true">⇄</span> Fusión
+                      </button>
+                      <button type="button" onClick={() => abrirFincas(finca)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700">Editar</button>
+                      <button type="button" onClick={() => eliminarFinca(finca.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700">Eliminar</button>
+                    </div>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+                    <div><span className="block text-slate-400">CRU/Idufir</span><strong>{finca.cru_idufir || "—"}</strong></div>
+                    <div><span className="block text-slate-400">Cuantía</span><strong>{finca.cuantia || "—"}</strong></div>
+                    <div><span className="block text-slate-400">Inscripción</span><strong>{finca.inscripcion || "—"}</strong></div>
+                    <div><span className="block text-slate-400">Contrato</span><strong>{finca.contrato || "—"}</strong></div>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <button type="button" onClick={() => abrirFincas()} className="mt-3 w-full rounded-xl border border-blue-100 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100">
+              ＋ Nueva finca
+            </button>
+          </Seccion>
+        {/* OBSERVACIONES */}
+          <Seccion
+            id="ficha-observaciones"
+            titulo="Observaciones"
+            subtitulo="Comentarios, autor y visibilidad"
+            icono="observaciones"
+            colapsable
+            compacto
+          >
+            <div className="space-y-3">
+              {errorObservaciones && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorObservaciones}</p>}
+              {cargandoObservaciones && <p className="text-xs text-slate-500">Cargando observaciones…</p>}
+              {!cargandoObservaciones && observacionesExpediente.length === 0 && (
+                <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
+                  Todavía no hay observaciones añadidas.
+                </p>
+              )}
+
+              {observacionesExpediente.map((observacion) => (
+                <article key={observacion.id} className="rounded-xl border border-slate-200 bg-white p-3">
+                  <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{observacion.comentario}</p>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+                    <span>{observacion.autor || "Usuario conectado"}</span>
+                    <time dateTime={observacion.fecha}>
+                      {observacion.fecha ? new Date(observacion.fecha).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "Fecha no disponible"}
+                    </time>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {observacion.visibilidad === "Gestor" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-800">
+                        🔒 Interna · Departamento
+                      </span>
+                    ) : observacion.visibilidad === "Visible notario" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold text-sky-800">
+                        ⚖️ Visible para notario
+                      </span>
+                    ) : observacion.visibilidad === "Visible apoderado" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2 py-1 text-[10px] font-semibold text-violet-800">
+                        👤 Visible para apoderado
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-700">
+                        Visibilidad: {observacion.visibilidad || "No indicada"}
+                      </span>
+                    )}
+                    {observacion.visibilidad === "Gestor" && observacion.empleado_destinatario && (
+                      <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">
+                        Destinatario: {observacion.empleado_destinatario}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-2 flex justify-end gap-2">
+                    <button type="button" onClick={() => editarObservacionExpediente(observacion)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700 hover:bg-blue-100">
+                      Editar
+                    </button>
+                    <button type="button" onClick={() => eliminarObservacionExpediente(observacion.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100">
+                      Desactivar
+                    </button>
+                  </div>
+                </article>
+              ))}
+
+              {mostrarFormularioObservacion ? (
+                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3 space-y-3">
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-semibold text-slate-600">{observacionEditandoId !== null ? "Editar comentario" : "Comentario"}</span>
+                    <textarea value={nuevaObservacion} onChange={(event) => setNuevaObservacion(event.target.value)} rows={4} placeholder="Escribe la observación..." className="w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  </label>
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-semibold text-slate-600">Visibilidad</span>
+                    <select value={visibilidadObservacion} onChange={(event) => setVisibilidadObservacion(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                      <option value="Gestor">Departamento interno (Gestor)</option>
+                      <option value="Visible notario">Visible para el notario</option>
+                      <option value="Visible apoderado">Visible para el apoderado</option>
+                    </select>
+                  </label>
+                  {visibilidadObservacion === "Gestor" && (
+                    <label className="block">
+                      <span className="mb-1 block text-xs font-semibold text-slate-600">Empleado destinatario</span>
+                      <select value={destinatarioObservacion} onChange={(event) => setDestinatarioObservacion(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                        <option value="">Selecciona un empleado</option>
+                        {empleadosObservaciones.map((empleado) => <option key={empleado.id} value={empleado.id}>{empleado.nombre}</option>)}
+                      </select>
+                    </label>
+                  )}
+                  <div className="flex justify-end gap-2">
+                    <Boton onClick={() => { setMostrarFormularioObservacion(false); setNuevaObservacion(""); setObservacionEditandoId(null); }}>Cancelar</Boton>
+                    <Boton tipo="primary" onClick={agregarObservacionExpediente} disabled={!nuevaObservacion.trim() || guardandoObservacion || (visibilidadObservacion === "Gestor" && !destinatarioObservacion)}>{guardandoObservacion ? "Guardando…" : observacionEditandoId !== null ? "Guardar cambios" : "Guardar observación"}</Boton>
+                  </div>
+                </div>
+              ) : (
+                <Boton tipo="primary" onClick={() => setMostrarFormularioObservacion(true)}>＋ Añadir observación</Boton>
+              )}
+            </div>
+          </Seccion>
+      </div>
+      </section>
+
+
+
+
+
+      {/* =====================================================
+          CUATRO COLUMNAS PRINCIPALES
+      ====================================================== */}
+
+      <div
+        className="
+          grid
+           w-full
+          grid-cols-1
+          gap-3
+          xl:grid-cols-12
+        "
+      >
+
+        {/* ===================================================
+            COLUMNA 1
+        ==================================================== */}
+
+
+
+
+      
+
+       
+
+        {/* ===================================================
+            ZONA DERECHA — PPAD, INFORMACIÓN CREDITICIA Y ENVÍO
+            Se mantiene a la derecha de Fincas, Acciones y Observaciones.
+        ==================================================== */}
+        <div className="min-w-0 xl:col-span-12">
+          <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
+        {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
+        <div className="min-w-0 w-full xl:col-span-8">
+          {expedienteBloqueado && <section role="alert" className="mx-auto mb-4 w-full rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-sm"><p className="text-xs font-black uppercase text-red-700">⛔ Expediente bloqueado</p><h2 className="mt-1 text-base font-extrabold text-red-900">{motivoBloqueoExpediente}</h2>{(String(expediente?.estado_expediente||"").trim().toUpperCase()==="LST"||expediente?.liquidado_sin_tramitar)&&<p className="mt-1 text-sm text-red-800">Liquidación sin tramitar · fecha: {formatearFecha(expediente?.fecha_liquidacion_sin_tramitar)}</p>}{expediente?.cambio_gestoria&&<p className="mt-1 text-sm text-red-800">Cambio de gestoría · fecha: {formatearFecha(expediente?.fecha_cambio_gestoria)}</p>}{String(expediente?.estado_expediente||"").trim().toUpperCase().startsWith("RST")&&<p className="mt-1 text-sm text-red-800">Estado RST: retención sin tramitar.</p>}{expediente?.bloqueo_manual&&<p className="mt-1 text-sm text-red-800">Motivo: {valorVisible(expediente?.motivo_bloqueo)} · fecha: {formatearFecha(expediente?.fecha_bloqueo)}</p>}<p className="mt-2 text-xs font-semibold text-red-700">Las actividades no se pueden modificar ni avanzar mientras esté bloqueado.</p><button type="button" onClick={abrirControlExpediente} className="mt-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-bold text-red-800">Gestionar bloqueo</button></section>}
+          <div className="flex w-full min-w-0 justify-center">
+          {/* =====================================================
+              FICHA COMPLETA DE ENVÍO A NOTARIO
+              El botón abre el modal para completar y guardar el encargo.
+          ====================================================== */}
+            <section className="w-full max-w-none min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(30,41,59,0.08)]">
+              <div className="flex flex-wrap items-center justify-center gap-3 border-b border-slate-100 bg-white px-4 py-4 text-center sm:px-5">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">🏛️</div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-sm font-extrabold text-slate-800">Envío a notario</h3>
+                  <p className="mt-0.5 text-[11px] text-slate-500">Encargo al notario, datos de firma y facturación</p>
+                </div>
+                {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
+                  <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">Datos guardados</span>
+                )}
+              </div>
+              <div className="space-y-4 p-4 sm:p-5">
+                {!(expediente.fecha_envio_notario || expediente.fecha_envio) && (
+                  <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">
+                    Todavía no se ha registrado el encargo. Pulsa «Enviar a notario» para completar los datos y guardarlos en el expediente.
+                  </p>
+                )}
+                {(expediente.fecha_envio_notario || expediente.fecha_envio) && <>
+                <div className="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-2">
+                <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    <Dato campo="Fecha de envío" valor={expediente.fecha_envio_notario || expediente.fecha_envio} tipo="fecha" />
+                    <Dato campo="Idioma del documento" valor={expediente.idioma_documento ?? expediente.idioma ?? expediente.lengua_documento} />
+                    <Dato campo="Fecha solicitud PNC" valor={expediente.fecha_solicitud_pnc ?? expediente.fecha_pnc ?? expediente.pnc_fecha_solicitud} tipo="fecha" />
+                    <Dato campo="Número solicitud PNC" valor={expediente.numero_solicitud_pnc ?? expediente.num_solicitud_pnc ?? expediente.pnc_numero_solicitud} />
+                    <Dato campo="Notario" valor={expediente.nombre_notario || expediente.notario} />
+                    <Dato campo="NIF notario" valor={expediente.nif_notario} />
+                    <Dato campo="Población notario" valor={expediente.poblacion} />
+                    <Dato campo="Provincia notario" valor={expediente.provincia} />
+                    <Dato campo="Apoderado" valor={expediente.apoderado} />
+                     <Dato campo="Tipo de firma" valor={expediente.tipo_firma} />
+                    <Dato campo="Fecha prevista de firma" valor={expediente.fecha_prevista_firma} tipo="fecha" />
+                    <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
+                  </div>
+                </div>
+                <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de facturación</p>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    <Dato campo="Nombre" valor={expediente.facturacion_nombre ?? expediente.nombre_facturacion ?? expediente.nombre_cliente_facturacion} />
+                    <Dato campo="Apellidos" valor={expediente.facturacion_apellidos ?? expediente.apellidos_facturacion ?? expediente.apellidos_cliente_facturacion} />
+                    <Dato campo="DNI / NIF de facturación" valor={expediente.facturacion_dni_nif ?? expediente.dni_facturacion ?? expediente.nif_facturacion} />
+                    <Dato campo="Dirección" valor={expediente.facturacion_direccion ?? expediente.direccion_facturacion ?? expediente.direccion_cliente_facturacion} />
+                    <Dato campo="Código postal" valor={expediente.facturacion_codigo_postal ?? expediente.codigo_postal_facturacion ?? expediente.cp_facturacion} />
+                    <Dato campo="Población" valor={expediente.facturacion_poblacion ?? expediente.poblacion_facturacion ?? expediente.municipio_facturacion} />
+                    <Dato campo="Provincia" valor={expediente.facturacion_provincia ?? expediente.provincia_facturacion} />
+                    <Dato campo="Teléfono" valor={expediente.facturacion_telefono ?? expediente.telefono_facturacion ?? expediente.telefono_cliente_facturacion} />
+                    <Dato campo="Email" valor={expediente.facturacion_email ?? expediente.email_facturacion ?? expediente.correo_facturacion} />
+                  </div>
+                </div>
+                </div>
+                <div className="border-t border-slate-100 pt-3">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Tipo de documento y cuantía</p>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
+                    <Dato campo="Tipo de trámite" valor={expediente.tipo_tramite ?? expediente.tipo_tramite_notarial ?? expediente.tramite} />
+                    <Dato
+                      campo="Firma urgente"
+                      valor={
+                        expediente.firma_urgente === true ||
+                        ["true", "1", "si", "sí"].includes(
+                          String(expediente.firma_urgente ?? "").trim().toLowerCase()
+                        )
+                          ? "SÍ · URGENTE"
+                          : "No"
+                      }
+                    />
+                    <Dato campo="Fecha de firma" valor={expediente.fecha_firma} tipo="fecha" />
+                    <Dato campo="Protocolo" valor={expediente.protocolo} />
+                    <Dato
+                      campo="Tipo del documento formalizado"
+                      valor={
+                        Array.isArray(expediente.documentos_escritura) &&
+                        expediente.documentos_escritura.length > 0
+                          ? expediente.documentos_escritura
+                              .map((documento) => documento.tipo_documento || "Documento")
+                              .join(" | ")
+                          : expediente.tipo_documento
+                      }
+                    />
+                    <Dato
+                      campo="Cuantía del documento"
+                      valor={
+                        Array.isArray(expediente.documentos_escritura) &&
+                        expediente.documentos_escritura.length > 0
+                          ? expediente.documentos_escritura
+                              .map((documento) => {
+                                if (documento.cuantia == null || documento.cuantia === "") {
+                                  return "Sin cuantía";
+                                }
+                                return `${Number(documento.cuantia).toLocaleString("es-ES", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })} €`;
+                              })
+                              .join(" | ")
+                          : expediente.cuantia != null
+                            ? `${Number(expediente.cuantia).toLocaleString("es-ES", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })} €`
+                            : null
+                      }
+                    />
+                    <Dato campo="Importe" valor={expediente.importe} tipo="numero" />
+
+                    </div>
+
+                    {(expediente.importe !== null && expediente.importe !== undefined && expediente.importe !== "" || expediente.fecha_envio_notario || expediente.fecha_envio) && (
+                      <section className="mt-4 rounded-xl border border-indigo-100 bg-white p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div>
+                            <h4 className="text-sm font-extrabold text-slate-800">Resumen Económico</h4>
+                            <p className="mt-1 text-xs text-slate-500">
+                              Importe inicial tomado de Información crediticia. El saldo solo descuenta los gastos cuyo pago está confirmado.
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setErrorGastos("");
+                              setMensajeGastos("");
+                              setMostrarFormularioGasto((actual) => {
+                                const abrir = !actual;
+                                if (abrir) setGastoForm((g) => ({ ...g, nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "", nombre_notario: g.nombre_notario || expediente?.notario || expediente?.nombre_notario || "", pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" ") }));
+                                return abrir;
+                              });
+                            }}
+                            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700"
+                          >
+                            ＋ Registrar gasto
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setErrorComplementoSaldo("");
+                              setMensajeComplementoSaldo("");
+                              setFormComplementoSaldo({ provisionado: String(importeInicialProvision || expediente?.importe || ""), saldo_disponible: String(expediente?.saldo_disponible ?? resumenEconomico.saldoActual ?? ""), importe: "", motivo: "" });
+                              setMostrarModalComplementoSaldo(true);
+                            }}
+                            className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
+                          >
+                            ＋ Solicitar complemento de saldo
+                          </button>
+                        </div>
+
+
+                        {mensajeComplementoSaldo && <div role="status" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">{mensajeComplementoSaldo}</div>}
+                        {mostrarModalComplementoSaldo && (
+                          <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4 sm:p-5">
+                            <div className="mb-4 flex items-start justify-between gap-3">
+                              <div><h5 className="text-sm font-extrabold text-slate-900">Solicitar complemento de saldo</h5><p className="mt-1 text-xs text-slate-600">La solicitud quedará registrada en Utilidades → Complementos de saldo con estado Pendiente.</p></div>
+                              <button type="button" onClick={() => setMostrarModalComplementoSaldo(false)} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-600">Cerrar ×</button>
+                            </div>
+                            <form onSubmit={async (event) => {
+                              event.preventDefault(); setErrorComplementoSaldo("");
+                              const numeroExpediente = String(expediente?.id_expediente || id || "").trim();
+                              const importe = Number(String(formComplementoSaldo.importe).replace(",", "."));
+                              const provisionado = Number(String(formComplementoSaldo.provisionado || 0).replace(",", "."));
+                              const saldoDisponible = Number(String(formComplementoSaldo.saldo_disponible || 0).replace(",", "."));
+                              if (!numeroExpediente) { setErrorComplementoSaldo("No se ha podido identificar el expediente."); return; }
+                              if (formComplementoSaldo.importe === "" || !Number.isFinite(importe) || importe <= 0) { setErrorComplementoSaldo("Introduce un saldo a solicitar válido y mayor que cero."); return; }
+                              if (!Number.isFinite(provisionado) || !Number.isFinite(saldoDisponible)) { setErrorComplementoSaldo("No se han podido validar los importes de la provisión."); return; }
+                              if (!String(formComplementoSaldo.motivo || "").trim()) { setErrorComplementoSaldo("Indica el motivo de la solicitud."); return; }
+                              setGuardandoComplementoSaldo(true);
+                              try {
+                                await axios.post("/complementos-saldo", {
+                                  expediente_id: expediente?.id || null, numero_expediente: numeroExpediente,
+                                  fecha_solicitud: new Date().toLocaleDateString("sv-SE"),
+                                  solicitante: expediente?.nombre_solicitante || expediente?.solicitante || expediente?.nombre_titular || "",
+                                  oficina: expediente?.oficina || expediente?.oficina_alta || "",
+                                  provisionado, saldo_disponible: saldoDisponible, importe,
+                                  motivo: formComplementoSaldo.motivo.trim(), observaciones: formComplementoSaldo.motivo.trim(), estado: "Pendiente",
+                                });
+                                setMostrarModalComplementoSaldo(false);
+                                setMensajeComplementoSaldo("Solicitud registrada correctamente. Estado: Pendiente.");
+                                setFormComplementoSaldo({ provisionado: String(importeInicialProvision || expediente?.importe || ""), saldo_disponible: String(expediente?.saldo_disponible ?? resumenEconomico.saldoActual ?? ""), importe: "", motivo: "" });
+                              } catch (error) {
+                                setErrorComplementoSaldo(error?.response?.data?.detail || "No se pudo registrar la solicitud de complemento.");
+                              } finally { setGuardandoComplementoSaldo(false); }
+                            }} className="grid gap-3 sm:grid-cols-2">
+                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Provisionado (€)</label><input readOnly value={formComplementoSaldo.provisionado} className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600" /></div>
+                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Saldo disponible (€)</label><input readOnly value={formComplementoSaldo.saldo_disponible} className="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600" /></div>
+                              <div><label className="mb-1 block text-xs font-bold text-slate-600">Saldo a solicitar (€)</label><input required min="0.01" step="0.01" type="number" value={formComplementoSaldo.importe} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, importe: e.target.value }))} placeholder="0,00" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" /></div>
+                              <div className="sm:col-span-2"><label className="mb-1 block text-xs font-bold text-slate-600">Motivo</label><textarea required rows={3} value={formComplementoSaldo.motivo} onChange={(e) => setFormComplementoSaldo((f) => ({ ...f, motivo: e.target.value }))} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm" placeholder="Explica el motivo por el que se solicita el complemento…" /></div>
+                              {errorComplementoSaldo && <p role="alert" className="sm:col-span-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">{errorComplementoSaldo}</p>}
+                              <div className="flex flex-wrap justify-end gap-2 sm:col-span-2"><button type="button" onClick={() => setMostrarModalComplementoSaldo(false)} disabled={guardandoComplementoSaldo} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoComplementoSaldo} className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoComplementoSaldo ? "Guardando…" : "Solicitar complemento"}</button></div>
+                            </form>
+                          </div>
+                        )}
+
+                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                          <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
+                            <p className="text-[11px] font-bold uppercase tracking-wide text-indigo-700">Importe inicial de la provisión</p>
+                            <p className="mt-1 text-2xl font-extrabold tabular-nums text-slate-900">{importeInicialDisponible ? `${importeInicialProvision.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                            <p className="mt-1 text-[10px] text-slate-500">Campo Importe · Excel de Absis</p>
+                          </div>
+                          <div className="rounded-xl border border-slate-200 bg-white p-4">
+                            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Saldo real actual</p>
+                            <p className={`mt-1 text-2xl font-extrabold tabular-nums ${resumenEconomico.saldoActual < 0 ? "text-red-700" : "text-emerald-700"}`}>{importeInicialDisponible ? `${resumenEconomico.saldoActual.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"}</p>
+                            <p className="mt-1 text-[10px] text-slate-500">Importe inicial menos pagos confirmados</p>
+                          </div>
+                        </div>
+
+                        <div className="mt-4">
+                          <h5 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-600">Movimientos de la provisión</h5>
+                          {cargandoGastos ? (
+                            <p className="py-3 text-xs text-slate-500">Cargando movimientos económicos…</p>
+                          ) : resumenEconomico.movimientos.length === 0 ? (
+                            <p className="rounded-lg border border-dashed border-slate-200 px-3 py-4 text-center text-xs text-slate-500">Todavía no hay pagos confirmados para mostrar.</p>
+                          ) : (
+                            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+                              <table className="w-full min-w-[980px] table-auto text-left text-sm">
+                                <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-600">
+                                  <tr>
+                                    <th className="w-[190px] px-5 py-4 font-extrabold">N.º documento</th>
+                                    <th className="w-[170px] px-5 py-4 font-extrabold">Fecha de pago</th>
+                                    <th className="px-5 py-4 font-extrabold">Concepto</th>
+                                    <th className="w-[180px] px-5 py-4 text-right font-extrabold">Importe</th>
+                                    <th className="w-[190px] px-5 py-4 text-right font-extrabold">Saldo real</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {resumenEconomico.movimientos.map((movimiento, indice) => (
+                                    <tr key={movimiento.id} className={`border-t border-slate-100 transition-colors hover:bg-indigo-50/40 ${indice % 2 === 1 ? "bg-slate-50/50" : "bg-white"}`}>
+                                      <td className="whitespace-nowrap px-5 py-4 font-extrabold text-indigo-700">{movimiento.numero_documento || `PAG-${String(movimiento.id).padStart(6, "0")}`}</td>
+                                      <td className="whitespace-nowrap px-5 py-4 text-slate-600">{movimiento.fecha ? formatearFecha(movimiento.fecha) : "—"}</td>
+                                      <td className="px-5 py-4 font-semibold text-slate-800">{movimiento.descripcion || movimiento.tipo || "Gasto"}</td>
+                                      <td className="whitespace-nowrap px-5 py-4 text-right font-bold text-red-700">{movimiento.importeMovimiento === 0 ? "0,00 €" : `−${Math.abs(movimiento.importeMovimiento).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}</td>
+                                      <td className={`whitespace-nowrap px-5 py-4 text-right text-base font-extrabold ${movimiento.saldoCalculado < 0 ? "text-red-700" : "text-slate-900"}`}>{movimiento.saldoCalculado.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                          {!importeInicialDisponible && <p className="mt-2 text-[11px] text-amber-700">El expediente no tiene un Importe inicial válido; revisa la importación de Absis para calcular el saldo.</p>}
+                        </div>
+
+                        {errorGastos && (
+                          <div role="alert" className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                            {errorGastos}
+                          </div>
+                        )}
+                        {mensajeGastos && (
+                          <div role="status" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+                            {mensajeGastos}
+                          </div>
+                        )}
+
+                        {mostrarFormularioGasto && (
+                          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-gasto">
+                            <div className="flex max-h-[94vh] w-full max-w-[96vw] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                          <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
+                            <div className="flex items-start justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-4">
+                              <div><h5 id="titulo-modal-gasto" className="text-base font-extrabold text-slate-900">Registrar gasto · Factura y pago</h5><p className="mt-1 text-xs text-slate-500">El registro no ejecuta una transferencia bancaria.</p></div>
+                              <button type="button" aria-label="Cerrar ventana" onClick={() => setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-lg leading-none text-slate-600 hover:bg-slate-100 disabled:opacity-50">×</button>
+                              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-bold text-amber-800">Pago: pendiente</span>
+                            </div>
+                            <div className="min-h-0 flex-1 overflow-y-auto p-5"><div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(360px,0.9fr)]">
+                              <div className="min-w-0">
+                              <div className="space-y-3">
+                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Factura y proveedor</h6>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-indigo-800">Honorarios de gestoría (opcional)</span><select value={honorarioGestoriaId} onChange={(e) => { const idSeleccionado = e.target.value; setHonorarioGestoriaId(idSeleccionado); const tarifa = honorariosCatalogo.find((x) => String(x.id) === idSeleccionado); if (tarifa) { const importeTarifa = Number(tarifa.importe || 0).toFixed(2); setGastoForm((a) => ({ ...a, tipo: "Honorarios de gestoría", descripcion: tarifa.nombre, importe_total_bruto: importeTarifa, importe: importeTarifa, base_exenta_impuestos: "0.00", base_sujeta_impuestos: "", porcentaje_impuesto: "21", tipo_impuesto: "IVA 21%", base_exenta_retencion: "0.00", base_sujeta_retencion: "0.00", porcentaje_retencion: "0", tipo_retencion: "Sin retención" })); } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
+                                <div className="grid gap-3 sm:grid-cols-2">
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Nombre del notario</span><input value={gastoForm.nombre_notario} onChange={(e)=>setGastoForm(a=>({...a,nombre_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                </div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Pagador / razón social</span><input value={gastoForm.pagador} onChange={(e)=>setGastoForm(a=>({...a,pagador:e.target.value}))} placeholder="Nombre de facturación" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <div className="grid gap-3 sm:grid-cols-2">
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Número de factura</span><input value={gastoForm.numero_factura} onChange={(e)=>setGastoForm(a=>({...a,numero_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de factura *</span><input required type="date" value={gastoForm.fecha_factura} onChange={(e)=>setGastoForm(a=>({...a,fecha_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                </div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de pago / movimiento *</span><input required type="date" value={gastoForm.fecha} onChange={(e)=>setGastoForm(a=>({...a,fecha:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Cuenta bancaria / IBAN</span><input value={gastoForm.cuenta_bancaria} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value.toUpperCase()}))} placeholder="ES… (editable; no se autocompleta)" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Medio de pago</span><select value={gastoForm.medio_pago} onChange={(e)=>setGastoForm(a=>({...a,medio_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Estado</span><select value={gastoForm.estado_pago} onChange={(e)=>setGastoForm(a=>({...a,estado_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Pendiente</option><option>Pagado</option><option>Anulado</option></select></label></div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Documento / URL de factura</span><input type="url" value={gastoForm.documento_url} onChange={(e)=>setGastoForm(a=>({...a,documento_url:e.target.value}))} placeholder="https://…" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                              </div>
+                              </div>
+                              <div className="space-y-3">
+                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Impuestos y retenciones</h6>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-slate-700">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>)}</div>
+                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">IRPF (%)</span><input type="number" min="1" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                              </div>
+                              <aside className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <div className="mb-3">
+                                  <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-600">Factura de Carpeta Digital</h6>
+                                  <p className="mt-1 text-[11px] text-slate-500">Factura notarial o registral · PDF</p>
+                                </div>
+                                <label className="mb-3 block">
+                                  <span className="mb-1 block text-xs font-bold text-slate-700">Documento a revisar</span>
+                                  <select value={documentoFacturaSeleccionado} onChange={(e) => { setDocumentoFacturaSeleccionado(e.target.value); setGastoForm(a => ({...a, documento_carpeta_id: e.target.value})); }} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs">
+                                    <option value="">Selecciona una factura PDF…</option>
+                                    {documentosFacturaElegibles.map((doc) => <option key={doc.id} value={String(doc.id)}>{doc.nombre_original || doc.nombre || `Documento ${doc.id}`} · {doc.categoria || doc.categoria_nombre}</option>)}
+                                  </select>
+                                </label>
+                                {cargandoVistaPreviaFactura ? <p className="p-4 text-xs text-slate-500">Cargando PDF…</p> : null}
+                                {errorVistaPreviaFactura ? <p role="alert" className="mb-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">{errorVistaPreviaFactura}</p> : null}
+                                {urlVistaPreviaFactura ? <iframe title="Vista previa de factura" src={urlVistaPreviaFactura} className="h-[58vh] min-h-[360px] w-full rounded-lg border border-slate-200 bg-white" /> : null}
+                                {!urlVistaPreviaFactura && !cargandoVistaPreviaFactura && !errorVistaPreviaFactura ? <p className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-center text-xs text-slate-500">No hay ningún PDF seleccionado. Comprueba que la factura esté en Gestión económica de la Carpeta Digital.</p> : null}
+                              </aside>
+                            </div></div>
+                            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-white px-5 py-4"><button type="button" onClick={()=>setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoGasto || cargandoConceptosGasto} className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoGasto ? "Guardando…" : "Registrar gasto"}</button></div>
+                          </form>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="mt-6 border-t border-slate-100 pt-5">
+                          <h5 className="mb-4 text-sm font-extrabold uppercase tracking-wide text-slate-700">Facturas y gastos registrados</h5>
+                          {cargandoGastos ? (
+                            <p className="py-4 text-sm text-slate-500">Cargando gastos…</p>
+                          ) : gastosExpediente.length === 0 ? (
+                            <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-500">Todavía no hay gastos registrados en este expediente.</p>
+                          ) : (
+                            <ul className="space-y-3">
+                              {gastosExpediente.map((gasto) => (
+                                <li key={gasto.id} className="flex flex-wrap items-center gap-4 rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-extrabold text-slate-900">{gasto.descripcion || gasto.tipo || "Gasto"}</p>
+                                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-600">
+                                      <span className="font-bold text-indigo-700">{gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`}</span>
+                                      {gasto.tipo && <span>{gasto.tipo}</span>}
+                                      {gasto.fecha && <span>Fecha: {formatearFecha(gasto.fecha)}</span>}
+                                      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${String(gasto.estado_pago || "Pendiente").toLowerCase().includes("pag") || String(gasto.estado_pago || "").toLowerCase().includes("abon") ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{gasto.estado_pago || "Pendiente"}</span>
+                                    </div>
+                                  </div>
+                                  <span className="whitespace-nowrap text-base font-extrabold text-slate-900">
+                                    {gasto.importe_resultante == null && gasto.importe == null ? "—" : `${Number(gasto.importe_resultante ?? gasto.importe).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`}
+                                  </span>
+                                  <button type="button" onClick={() => eliminarGastoExpediente(gasto)} className="rounded-lg border border-red-200 px-3 py-2 text-sm font-bold text-red-600 transition hover:bg-red-50">
+                                    Eliminar
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          {gastosPendientesResumen.length > 0 && <p className="mt-3 rounded-lg bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">Hay {gastosPendientesResumen.length} gasto(s) pendiente(s) de pago que todavía no descuentan del saldo real.</p>}
+                        </div>
+                      </section>
+                    )}
+                </div>
+                </>}
+                {actividadActual === "documentacion-previa" && (
+                  <div className="flex justify-center border-t border-slate-100 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setMostrarEnviarNotario(true)}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2"
+                    >
+                      🏛️ {expediente.fecha_envio_notario || expediente.fecha_envio ? "Revisar / modificar encargo" : "Enviar a notario"}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
+        </div>
+
+  {mostrarCarpetaDigital && (
+        <CarpetaDigitalModal
+          expedienteId={id || expediente?.id_expediente || expediente?.id}
+          onClose={() => setMostrarCarpetaDigital(false)}
+        />
+      )}
+
+
+      <Modal
+        open={mostrarReclamarOficina}
+        onClose={() => !enviandoReclamacion && setMostrarReclamarOficina(false)}
+        titulo="✉️ Reclamar a oficina"
+        subtitulo={`Expediente ${valorVisible(expediente?.id_expediente || id)} · Histórico de correos enviados`}
+        ancho="max-w-5xl"
+        footer={
+          <div className="flex flex-wrap justify-end gap-2">
+            <Boton onClick={() => setMostrarReclamarOficina(false)} disabled={enviandoReclamacion}>Cerrar</Boton>
+            <Boton tipo="primary" onClick={enviarReclamacionOficina} disabled={enviandoReclamacion || !emailReclamacion.destinatario.trim() || !emailReclamacion.asunto.trim() || !emailReclamacion.cuerpo.trim()}>
+              {enviandoReclamacion ? "Enviando…" : "✉️ Enviar email"}
+            </Boton>
+          </div>
+        }
+      >
+        <div className="space-y-5">
+          {errorReclamacion && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorReclamacion}</p>}
+          {mensajeReclamacion && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensajeReclamacion}</p>}
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <CampoFormulario label="De · Email del gestor (responder a)" value={empleadoSesion?.email_empresa || empleadoSesion?.email_personal || ""} onChange={() => {}} />
+            <CampoFormulario label="Para · Email de la oficina" value={emailReclamacion.destinatario} onChange={(v) => setEmailReclamacion((p) => ({ ...p, destinatario: v }))} placeholder="Introduce el email de la oficina" />
+          </div>
+          <CampoFormulario label="Asunto" value={emailReclamacion.asunto} onChange={(v) => setEmailReclamacion((p) => ({ ...p, asunto: v }))} />
+          <CampoFormulario label="Mensaje (editable antes de enviar)" value={emailReclamacion.cuerpo} onChange={(v) => setEmailReclamacion((p) => ({ ...p, cuerpo: v }))} textarea />
+          <section className="overflow-hidden rounded-xl border border-slate-200">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3">
+              <div>
+                <h3 className="text-sm font-bold text-slate-800">Histórico de emails</h3>
+                <p className="text-xs text-slate-500">Registro guardado en el sistema para este expediente.</p>
+              </div>
+              <Boton onClick={cargarHistoricoReclamaciones} disabled={cargandoHistoricoReclamaciones}>{cargandoHistoricoReclamaciones ? "Actualizando…" : "↻ Actualizar"}</Boton>
+            </div>
+            {cargandoHistoricoReclamaciones ? <p className="p-4 text-sm text-slate-500">Cargando histórico…</p> : historicoReclamaciones.length === 0 ? <p className="p-4 text-sm text-slate-500">Todavía no hay correos registrados.</p> : (
+              <div className="max-h-64 overflow-auto">
+                <table className="w-full min-w-[700px] text-left text-xs">
+                  <thead className="sticky top-0 bg-white text-slate-500"><tr><th className="px-3 py-2">Fecha</th><th className="px-3 py-2">Para</th><th className="px-3 py-2">Asunto</th><th className="px-3 py-2">Estado</th><th className="px-3 py-2">Gestor</th></tr></thead>
+                  <tbody>{historicoReclamaciones.map((item) => <tr key={item.id} className="border-t border-slate-100 align-top"><td className="whitespace-nowrap px-3 py-2">{item.creado_en ? new Date(item.creado_en).toLocaleString("es-ES") : "—"}</td><td className="px-3 py-2">{item.destinatario}</td><td className="max-w-xs px-3 py-2">{item.asunto}</td><td className="px-3 py-2"><span className={item.estado === "enviado" ? "font-bold text-emerald-700" : "font-bold text-red-700"}>{item.estado === "enviado" ? "Enviado" : "Error"}</span>{item.detalle && <p className="mt-1 max-w-xs text-[10px] text-slate-500">{item.detalle}</p>}</td><td className="px-3 py-2">{item.enviado_por || "—"}</td></tr>)}</tbody>
+                </table>
+              </div>
+            )}
+          </section>
+          <p className="text-[11px] text-amber-700">El envío requiere que el servidor tenga configuradas las variables SMTP. El historial registra tanto los envíos correctos como los intentos fallidos.</p>
+        </div>
       </Modal>
 
+
+      {/* CONTROL DE BLOQUEO */}
+      <Modal open={mostrarControlExpediente} onClose={()=>!guardandoControlExpediente&&setMostrarControlExpediente(false)} titulo="🔐 Control del expediente" subtitulo={`Expediente ${valorVisible(expediente?.id_expediente)}`} ancho="max-w-[760px]" footer={<div className="flex justify-end gap-2"><Boton onClick={()=>setMostrarControlExpediente(false)} disabled={guardandoControlExpediente}>Cancelar</Boton><Boton tipo="primary" onClick={guardarControlExpediente} disabled={guardandoControlExpediente}>{guardandoControlExpediente?"Guardando…":"💾 Guardar control"}</Boton></div>}>
+        <div className="space-y-4">
+          {estadoLegadoBloqueante&&<p role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-bold text-amber-900">El estado {expediente?.estado_expediente} mantiene el bloqueo automático. Para desbloquearlo, debe corregirse primero el estado del expediente.</p>}
+          <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.liquidado_sin_tramitar} onChange={e=>setControlExpediente(v=>({...v,liquidado_sin_tramitar:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Liquidado sin tramitar</strong><span className="block text-xs text-slate-500">Bloquea el expediente y genera aviso central.</span>{controlExpediente.liquidado_sin_tramitar&&<input aria-label="Fecha liquidado sin tramitar" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_liquidacion_sin_tramitar||""} onChange={e=>setControlExpediente(v=>({...v,fecha_liquidacion_sin_tramitar:e.target.value}))}/>}</span></label>
+          <label className="flex items-start gap-3 rounded-xl border p-4"><input type="checkbox" className="mt-1" checked={!!controlExpediente.cambio_gestoria} onChange={e=>setControlExpediente(v=>({...v,cambio_gestoria:e.target.checked}))}/><span className="flex-1"><strong className="block text-sm">Cambio de gestoría</strong><span className="block text-xs text-slate-500">Bloquea el expediente con aviso específico.</span>{controlExpediente.cambio_gestoria&&<input aria-label="Fecha cambio gestoría" type="date" className="mt-3 w-full rounded-lg border p-2" value={controlExpediente.fecha_cambio_gestoria||""} onChange={e=>setControlExpediente(v=>({...v,fecha_cambio_gestoria:e.target.value}))}/>}</span></label>
+          <div className="rounded-xl border p-4"><label className="flex items-start gap-3"><input type="checkbox" className="mt-1" checked={!!controlExpediente.bloqueo_manual} onChange={e=>setControlExpediente(v=>({...v,bloqueo_manual:e.target.checked}))}/><span><strong className="block text-sm">Bloqueo manual</strong><span className="block text-xs text-slate-500">Se puede desbloquear desmarcando esta opción.</span></span></label>{controlExpediente.bloqueo_manual&&<div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="text-xs font-bold">Motivo<input className="mt-1 w-full rounded-lg border p-2 text-sm font-normal" value={controlExpediente.motivo_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,motivo_bloqueo:e.target.value}))} placeholder="Motivo del bloqueo"/></label><label className="text-xs font-bold">Fecha<input type="date" className="mt-1 w-full rounded-lg border p-2 text-sm font-normal" value={controlExpediente.fecha_bloqueo||""} onChange={e=>setControlExpediente(v=>({...v,fecha_bloqueo:e.target.value}))}/></label></div>}</div>
+          {errorControlExpediente&&<p role="alert" className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{errorControlExpediente}</p>}
+          <p className="text-xs text-slate-500">LST y RST bloquean automáticamente el expediente aunque se desmarquen las opciones.</p>
+        </div>
+      </Modal>
 
       {/* =====================================================
           MODAL DEFECTO
