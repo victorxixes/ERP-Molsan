@@ -4473,7 +4473,7 @@ const cuantiaFincasParaEnvio =
                       setMensajeActividad("");
                     }}
                     className={`
-                      min-w-[155px] shrink-0 rounded-xl border px-3 py-2 text-left transition
+                      flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition
                       ${
                         activa
                           ? "border-blue-300 bg-blue-50 shadow-sm"
@@ -4485,14 +4485,17 @@ const cuantiaFincasParaEnvio =
                     <div
                       className="
                         flex
-                        items-center
-                        gap-3
+                        min-w-0
+                        items-start
+                        gap-2
                       "
                     >
 
                       <span
                         className="
+                          shrink-0
                           text-lg
+                          leading-tight
                         "
                       >
                         {
@@ -4502,7 +4505,12 @@ const cuantiaFincasParaEnvio =
 
                       <span
                         className={`
+                          min-w-0
+                          flex-1
+                          break-words
+                          text-left
                           text-xs
+                          leading-tight
                           font-bold
                           ${
                             activa
@@ -5869,7 +5877,7 @@ const cuantiaFincasParaEnvio =
        
 
         {/* Información complementaria: se oculta visualmente hasta registrar un envío a notario. */}
-        <div className={`min-w-0 xl:col-span-12 ${(expediente.fecha_envio_notario || expediente.fecha_envio) ? "" : "hidden"}`}>
+        <div className={`min-w-0 xl:col-span-12 ${expediente.fecha_envio_notario ? "" : "hidden"}`}>
           <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
         <div className="min-w-0 w-full xl:col-span-8">
