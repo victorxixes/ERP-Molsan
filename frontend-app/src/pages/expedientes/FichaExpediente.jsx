@@ -1376,7 +1376,8 @@ export default function FichaExpediente() {
     "documentacion-previa"
   );
 
-  const [pestanaActividad, setPestanaActividad] = useState("datos");
+  const [pestanaActividad, setPestanaActividad] = useState("documentos");
+  const [mostrarModalDatosActividad, setMostrarModalDatosActividad] = useState(false);
   const [actividadDraft, setActividadDraft] = useState({});
   const [guardandoActividad, setGuardandoActividad] = useState(false);
   const [errorActividad, setErrorActividad] = useState("");
@@ -4546,14 +4547,19 @@ const cuantiaFincasParaEnvio =
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <button type="button" onClick={() => setMostrarEnviarNotario(true)} className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-extrabold text-white shadow-sm transition hover:bg-indigo-700">
-                  🏛️ Enviar a notario
+                {actividadSeleccionada === "documentacion-previa" && (
+                  <button type="button" onClick={() => setMostrarEnviarNotario(true)} className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-extrabold text-white shadow-sm transition hover:bg-indigo-700">
+                    🏛️ Enviar a notario
+                  </button>
+                )}
+                <button type="button" onClick={() => { setPestanaActividad("datos"); setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-800 transition hover:bg-sky-100">
+                  ☷ Datos de actividad
                 </button>
-                <button type="button" onClick={() => { setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-800 transition hover:bg-indigo-100">
+                <button type="button" onClick={() => { setPestanaActividad("datos"); setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-800 transition hover:bg-indigo-100">
                   PPAD
                   {ppadItems.filter((item) => !item.compensado).length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{ppadItems.filter((item) => !item.compensado).length}</span>}
                 </button>
-                <button type="button" onClick={abrirAcciones} className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-100">
+                <button type="button" onClick={() => { setPestanaActividad("datos"); abrirAcciones(); }} className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-100">
                   ⚡ Acciones
                   {accionesExpediente.length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{accionesExpediente.length}</span>}
                 </button>
@@ -4569,10 +4575,7 @@ const cuantiaFincasParaEnvio =
             </div>
 
 
-            <div className="mb-3 grid grid-cols-2 gap-1 rounded-lg border border-slate-200 bg-white p-1">
-              <button type="button" onClick={() => setPestanaActividad("datos")} className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[11px] font-bold leading-tight transition ${pestanaActividad === "datos" ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100" : "text-slate-600 hover:bg-slate-50"}`}>
-                <span>☷</span> Datos de actividad
-              </button>
+            <div className="mb-3 grid grid-cols-1 gap-1 rounded-lg border border-slate-200 bg-white p-1">
               <button type="button" onClick={() => setPestanaActividad("documentos")} className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[11px] font-bold leading-tight transition ${pestanaActividad === "documentos" ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100" : "text-slate-600 hover:bg-slate-50"}`}>
                 <span>📁</span> Carpeta digital y visor
               </button>
@@ -7508,6 +7511,53 @@ const cuantiaFincasParaEnvio =
                 </div>
               </section>
             </>
+          )}
+        </div>
+      </Modal>
+
+      <Modal
+        open={mostrarModalDatosActividad}
+        onClose={() => { setMostrarModalDatosActividad(false); setPestanaActividad("documentos"); }}
+        titulo={`☷ Datos de actividad · ${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"}`}
+        subtitulo={`Expediente ${expediente?.id_expediente || ""}. Solo se muestran los campos propios de esta actividad.`}
+        ancho="max-w-4xl"
+        footer={
+          <div className="flex w-full flex-wrap items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              {errorActividad && <p className="text-xs font-semibold text-red-700">{errorActividad}</p>}
+              {mensajeActividad && <p className="text-xs font-semibold text-emerald-700">{mensajeActividad}</p>}
+            </div>
+            <div className="flex gap-2">
+              <Boton onClick={() => { setMostrarModalDatosActividad(false); setPestanaActividad("documentos"); }}>Cerrar</Boton>
+              <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad}>
+                {guardandoActividad ? "Guardando…" : "💾 Guardar datos"}
+              </Boton>
+            </div>
+          </div>
+        }
+      >
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).map((campo) => {
+            const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
+            const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
+            return (
+              <label key={campo.key} className={`min-w-0 text-xs font-bold text-slate-600 ${campo.multilinea ? "sm:col-span-2 lg:col-span-3" : ""}`}>
+                <span className="mb-1.5 block">{campo.label}</span>
+                {Array.isArray(campo.opciones) ? (
+                  <select value={valor ?? ""} onChange={(event) => cambiar(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800">
+                    <option value="">— Seleccionar —</option>
+                    {campo.opciones.map((opcion) => <option key={String(opcion)} value={typeof opcion === "object" ? opcion.value : opcion}>{typeof opcion === "object" ? opcion.label : opcion}</option>)}
+                  </select>
+                ) : campo.multilinea ? (
+                  <textarea value={valor ?? ""} onChange={(event) => cambiar(event.target.value)} rows={3} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800" />
+                ) : (
+                  <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} value={valor ?? ""} onChange={(event) => cambiar(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800" />
+                )}
+              </label>
+            );
+          })}
+          {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).length && (
+            <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">Esta actividad no tiene campos específicos configurados todavía.</p>
           )}
         </div>
       </Modal>
