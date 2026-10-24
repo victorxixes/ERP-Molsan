@@ -383,7 +383,6 @@ export default function CarpetaDigitalModal({
             <h4 className="max-w-full text-xs font-bold text-slate-800">{etiqueta}</h4>
             <p className="whitespace-nowrap text-[10px] text-slate-500">{totalCategoria} archivo(s)</p>
           </div>
-          <span className={`inline-flex min-w-6 justify-center rounded-full px-1.5 py-0.5 text-[10px] font-extrabold ${totalCategoria ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{totalCategoria}</span>
           <label className={`inline-flex shrink-0 cursor-pointer items-center rounded-md border px-2 py-1 text-[11px] font-bold ${subiendo === categoria ? "border-slate-200 bg-slate-100 text-slate-500" : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"}`}>
             {subiendo === categoria ? "Subiendo…" : "＋ Adjuntar"}
             <input className="hidden" type="file" accept=".pdf,application/pdf" multiple onChange={(event) => subir(event, categoria)} disabled={!!subiendo} />
@@ -433,7 +432,7 @@ export default function CarpetaDigitalModal({
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">▤</span>
         <div className="min-w-0 flex-1"><h4 className="text-sm font-extrabold text-slate-800">Visor de documentos</h4><p className="truncate text-[11px] text-slate-500" title={documentoVistaPrevia?.nombre_original || "Sin documento seleccionado"}>{documentoVistaPrevia?.nombre_original || "Selecciona un archivo de la lista"}</p></div>
         <button type="button" onClick={() => setVisorExpandido((v) => !v)} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={visorExpandido ? "Reducir visor" : "Ampliar visor"}>{visorExpandido ? "Reducir" : "⛶ Ampliar"}</button>
-        <button type="button" onClick={() => { setVisorVisible(false); setVisorExpandido(false); }} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title="Ocultar visor">Ocultar</button>
+        <button type="button" onClick={() => { if (modoActividad) cerrarVisor(); else { setVisorVisible(false); setVisorExpandido(false); } }} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50" title={modoActividad ? "Cerrar visor" : "Ocultar visor"}>{modoActividad ? "✕ Cerrar" : "Ocultar"}</button>
       </header>
       <div className="min-h-0 flex-1 overflow-hidden bg-slate-100 p-2 sm:p-3">
         {cargandoVistaPrevia ? <div className="flex h-full min-h-[300px] items-center justify-center text-sm text-slate-500">Cargando documento…</div> : urlVistaPrevia && documentoVistaPrevia ? (
@@ -663,14 +662,6 @@ export default function CarpetaDigitalModal({
                 </div>
               )}
             </div>
-            <div className="min-h-0 min-w-0 overflow-hidden">
-              {visorVisible ? renderVisor() : (
-                <div className="flex h-full min-h-[260px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white p-5 text-center">
-                  <p className="text-xs text-slate-500">El visor está oculto.</p>
-                  <button type="button" onClick={() => setVisorVisible(true)} className="mt-3 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100">Mostrar visor</button>
-                </div>
-              )}
-            </div>
             {modoActividad && !ocultarPanelEnvioNotario && (
               <aside className="flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-indigo-100 bg-white shadow-sm">
                 <header className="flex items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
@@ -759,6 +750,14 @@ export default function CarpetaDigitalModal({
           </div>
         </section>
       </div>
+
+      {modoActividad && documentoVistaPrevia && (
+        <div className="fixed inset-0 z-[11000] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="Visor de documento">
+          <div className="h-[88vh] max-h-[900px] w-full max-w-6xl">
+            {renderVisor()}
+          </div>
+        </div>
+      )}
 
     </>
   );
