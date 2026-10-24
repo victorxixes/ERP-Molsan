@@ -380,7 +380,7 @@ export default function CarpetaDigitalModal({
     });
     const totalCategoria = porCategoria(categoria).length;
     return (
-      <article key={categoria} className="w-fit max-w-full min-w-0 self-start rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">
+      <article key={categoria} className="w-full max-w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2 py-1.5">
         <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
           <div className="flex min-w-0 flex-wrap items-baseline gap-x-1">
             <h4 className="max-w-full text-xs font-bold text-slate-800">{etiqueta}</h4>
@@ -424,7 +424,7 @@ export default function CarpetaDigitalModal({
           </span>
           <span className="shrink-0 text-xs font-bold text-slate-500">{modoActividad ? "‹" : abierto ? "⌃" : "⌄"}</span>
         </button>
-        {abierto && <div className="space-y-2 border-t border-slate-100 bg-slate-50/50 p-2 sm:p-3">{bloque.categorias.map(renderCategoria)}</div>}
+        {abierto && <div className="grid grid-cols-1 gap-2 border-t border-slate-100 bg-slate-50/50 p-2 sm:grid-cols-2 xl:grid-cols-4 sm:p-3">{bloque.categorias.map(renderCategoria)}</div>}
       </section>
     );
   };
