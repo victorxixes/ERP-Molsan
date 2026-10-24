@@ -535,43 +535,79 @@ export default function CarpetaDigitalModal({
             </section>
 
             <section className="min-h-[250px] min-w-0 w-full overflow-hidden">
-              {modoActividad && actividadId === "documentacion-previa" && Boolean(datosEnvioNotario?.fecha_envio_notario || datosEnvioNotario?.fecha_envio) ? (
+              {modoActividad && actividadId === "documentacion-previa" ? (
                 <div className="flex h-full min-h-[250px] flex-col overflow-y-auto rounded-xl border border-indigo-100 bg-white shadow-sm">
                   <header className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
                     <div className="min-w-0">
                       <h4 className="text-xs font-extrabold text-indigo-950">✉️ Datos de envío a notario</h4>
-                      <p className="text-[10px] text-slate-500">Información registrada en el expediente</p>
+                      <p className="text-[10px] text-slate-500">Resumen del encargo y la facturación del expediente</p>
                     </div>
                     <button type="button" onClick={() => { if (typeof onAbrirEnvioNotario === "function") onAbrirEnvioNotario(); }} className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">✉️ Envío al notario</button>
                   </header>
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-2 p-3 text-[11px] sm:grid-cols-3">
-                    {[
-                      ["Fecha envío", datosEnvioNotario.fecha_envio_notario || datosEnvioNotario.fecha_envio],
-                      ["Notario", datosEnvioNotario.nombre_notario || datosEnvioNotario.notario],
-                      ["NIF notario", datosEnvioNotario.nif_notario],
-                      ["Apoderado", datosEnvioNotario.apoderado],
-                      ["Tipo de firma", datosEnvioNotario.tipo_firma],
-                      ["Tipo documento", datosEnvioNotario.tipo_documento],
-                      ["Fecha prevista firma", datosEnvioNotario.fecha_prevista_firma],
-                      ["Hora prevista", datosEnvioNotario.hora_prevista_firma],
-                      ["Fin previsto", datosEnvioNotario.hora_fin_prevista_firma],
-                      ["Contrato", datosEnvioNotario.contrato],
-                      ["Capital", datosEnvioNotario.capital_documento_notarial || datosEnvioNotario.capital],
-                      ["Importe", datosEnvioNotario.importe],
-                      ["Finca", datosEnvioNotario.finca || datosEnvioNotario.finca_registral || datosEnvioNotario.numero_finca],
-                      ["Tipo operación", datosEnvioNotario.tipo_operacion],
-                      ["Subtipo operación", datosEnvioNotario.subtipo_operacion],
-                      ["Nº solicitud SIA", datosEnvioNotario.numero_solicitud_sia || datosEnvioNotario.n_solicitud_sia],
-                      ["Observaciones", datosEnvioNotario.observaciones],
-                    ].map(([etiqueta, valor]) => (
-                      <div key={etiqueta} className="min-w-0">
-                        <p className="font-bold text-slate-500">{etiqueta}</p>
-                        <p className="break-words font-semibold text-slate-800">{valor ? String(valor) : "—"}</p>
+                  <div className="space-y-3 p-3">
+                    <section>
+                      <h5 className="mb-2 text-[11px] font-extrabold uppercase tracking-wide text-slate-500">Datos de encargo</h5>
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-3 xl:grid-cols-4">
+                        {[
+                          ["Fecha de envío", datosEnvioNotario?.fecha_envio_notario || datosEnvioNotario?.fecha_envio],
+                          ["Tipo de documento", datosEnvioNotario?.tipo_documento],
+                          ["¿Escritura firmada?", datosEnvioNotario?.escritura_firmada === true || datosEnvioNotario?.escritura_firmada === "Sí" ? "Sí" : datosEnvioNotario?.escritura_firmada === false || datosEnvioNotario?.escritura_firmada === "No" ? "No" : datosEnvioNotario?.escritura_firmada],
+                          ["Formato de escritura", datosEnvioNotario?.formato_escritura],
+                          ["Firma urgente", datosEnvioNotario?.firma_urgente === true || ["true", "1", "si", "sí"].includes(String(datosEnvioNotario?.firma_urgente ?? "").toLowerCase()) ? "Sí" : datosEnvioNotario?.firma_urgente === false || ["false", "0", "no"].includes(String(datosEnvioNotario?.firma_urgente ?? "").toLowerCase()) ? "No" : datosEnvioNotario?.firma_urgente],
+                          ["Tipo de trámite", datosEnvioNotario?.tipo_tramite],
+                          ["Notario", datosEnvioNotario?.nombre_notario || datosEnvioNotario?.notario],
+                          ["Fecha prevista de firma", datosEnvioNotario?.fecha_prevista_firma],
+                          ["NIF notario", datosEnvioNotario?.nif_notario],
+                          ["Hora prevista", datosEnvioNotario?.hora_prevista_firma],
+                          ["Apoderado", datosEnvioNotario?.apoderado],
+                          ["Fin previsto", datosEnvioNotario?.hora_fin_prevista_firma],
+                          ["Tipo de firma", datosEnvioNotario?.tipo_firma],
+                          ["Documento 1", Array.isArray(datosEnvioNotario?.documentos_escritura) && datosEnvioNotario.documentos_escritura.length ? datosEnvioNotario.documentos_escritura.map((d) => d?.tipo_documento).filter(Boolean).join(" · ") : datosEnvioNotario?.tipo_documento],
+                          ["Población notario", datosEnvioNotario?.poblacion],
+                          ["Cuantía documento 1", Array.isArray(datosEnvioNotario?.documentos_escritura) && datosEnvioNotario.documentos_escritura.length ? datosEnvioNotario.documentos_escritura.map((d) => d?.cuantia === null || d?.cuantia === undefined || d?.cuantia === "" ? "—" : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(d.cuantia))).join(" · ") : datosEnvioNotario?.cuantia || datosEnvioNotario?.capital_documento_notarial || datosEnvioNotario?.capital],
+                          ["Provincia notario", datosEnvioNotario?.provincia],
+                          ["Tipo de operación", datosEnvioNotario?.tipo_operacion],
+                          ["Importe", datosEnvioNotario?.importe === null || datosEnvioNotario?.importe === undefined || datosEnvioNotario?.importe === "" ? "" : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(datosEnvioNotario.importe))],
+                          ["Contrato", datosEnvioNotario?.contrato],
+                          ["Capital", datosEnvioNotario?.capital_documento_notarial || datosEnvioNotario?.capital],
+                          ["Finca", datosEnvioNotario?.finca || datosEnvioNotario?.finca_registral || datosEnvioNotario?.numero_finca],
+                          ["Subtipo operación", datosEnvioNotario?.subtipo_operacion],
+                          ["Nº solicitud SIA", datosEnvioNotario?.numero_solicitud_sia || datosEnvioNotario?.n_solicitud_sia],
+                          ["Observaciones", datosEnvioNotario?.observaciones],
+                        ].map(([etiqueta, valor]) => (
+                          <div key={etiqueta} className="min-w-0 rounded-md bg-slate-50 px-2 py-1.5">
+                            <p className="text-[9px] font-bold uppercase tracking-wide text-slate-500">{etiqueta}</p>
+                            <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </section>
+                    <section className="border-t border-slate-100 pt-3">
+                      <h5 className="mb-2 text-[11px] font-extrabold uppercase tracking-wide text-slate-500">Facturación</h5>
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                        {[
+                          { titulo: "Identificación", campos: [["Nombre y apellidos", [datosEnvioNotario?.facturacion_nombre, datosEnvioNotario?.facturacion_apellidos].filter(Boolean).join(" ")], ["DNI / NIF", datosEnvioNotario?.facturacion_dni_nif || datosEnvioNotario?.dni_facturacion || datosEnvioNotario?.nif_facturacion]] },
+                          { titulo: "Dirección", campos: [["Dirección", datosEnvioNotario?.facturacion_direccion || datosEnvioNotario?.direccion_facturacion], ["Código postal", datosEnvioNotario?.facturacion_codigo_postal || datosEnvioNotario?.codigo_postal_facturacion], ["Población", datosEnvioNotario?.facturacion_poblacion || datosEnvioNotario?.poblacion_facturacion], ["Provincia", datosEnvioNotario?.facturacion_provincia || datosEnvioNotario?.provincia_facturacion]] },
+                          { titulo: "Contacto", campos: [["Teléfono", datosEnvioNotario?.facturacion_telefono || datosEnvioNotario?.telefono_facturacion], ["Email", datosEnvioNotario?.facturacion_email || datosEnvioNotario?.email_facturacion]] },
+                          { titulo: "Preferencias", campos: [["Idioma del documento", datosEnvioNotario?.idioma_documento || datosEnvioNotario?.idioma || "Catalán"]] },
+                        ].map((grupo) => (
+                          <div key={grupo.titulo} className="rounded-lg border border-slate-100 bg-white p-2">
+                            <h6 className="mb-1.5 text-[10px] font-extrabold text-indigo-700">{grupo.titulo}</h6>
+                            <div className="space-y-1.5">
+                              {grupo.campos.map(([etiqueta, valor]) => (
+                                <div key={etiqueta} className="min-w-0">
+                                  <p className="text-[9px] font-bold text-slate-400">{etiqueta}</p>
+                                  <p className="break-words text-[11px] font-semibold text-slate-700">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
                   </div>
                 </div>
-              ) : visorVisible ? renderVisor() : (
+) : visorVisible ? renderVisor() : (
                 <div className="flex h-full min-h-[250px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white p-5 text-center">
                   <span className="mb-3 text-2xl">▤</span>
                   <p className="text-xs text-slate-500">El visor está oculto.</p>
@@ -614,7 +650,7 @@ export default function CarpetaDigitalModal({
 
           <div
             className={modoActividad
-              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 " + (ocultarPanelEnvioNotario ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(180px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
+              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 " + (ocultarPanelEnvioNotario ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(160px,0.30fr)_minmax(0,1.70fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
               : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}
           >
             <div
