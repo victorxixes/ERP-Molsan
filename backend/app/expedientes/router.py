@@ -272,6 +272,7 @@ def obtener_configuracion_visibilidad(
         ],
         "repositorios": REPOSITORIOS_VISIBILIDAD,
         "configuraciones": _configuraciones_visibilidad(db, objetivo, ambito),
+        "configuraciones_administrativas": _configuraciones_visibilidad(db, objetivo, "administracion"),
     }
 
 
@@ -312,6 +313,22 @@ def guardar_configuracion_visibilidad(
         raise HTTPException(status_code=422, detail="La configuración contiene columnas Excel no reconocidas.")
     if any(not isinstance(item, str) or item not in repositorios_validos for item in repositorios):
         raise HTTPException(status_code=422, detail="La configuración contiene repositorios no reconocidos.")
+
+    # Las preferencias personales solo pueden reducir la selección administrativa,
+    # nunca activar columnas o repositorios que el administrador no haya habilitado.
+    if ambito == "personal":
+        configuracion_admin = next(
+            (item for item in _configuraciones_visibilidad(db, empleado_id, "administracion")
+             if item["actividad_key"] == actividad_key),
+            None,
+        )
+        if configuracion_admin:
+            columnas_admin = set(configuracion_admin.get("excel_columns") or [])
+            repositorios_admin = set(configuracion_admin.get("repositorios") or [])
+            if not set(columnas).issubset(columnas_admin):
+                raise HTTPException(status_code=403, detail="Solo puedes seleccionar columnas habilitadas por el administrador.")
+            if not set(repositorios).issubset(repositorios_admin):
+                raise HTTPException(status_code=403, detail="Solo puedes seleccionar repositorios habilitados por el administrador.")
 
     nombre_tabla = str(datos.get("nombre_tabla") or "").strip()[:200]
     if not nombre_tabla:
