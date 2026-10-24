@@ -4635,6 +4635,8 @@ const cuantiaFincasParaEnvio =
                 modoActividad
                 actividadId={actividadSeleccionada}
                 tipoOperacion={expediente?.tipo_operacion || expediente?.tipoOperacion || expediente?.operacion}
+                datosEnvioNotario={expediente}
+                onAbrirEnvioNotario={() => setMostrarEnviarNotario(true)}
                 onDocumentosChange={
                   actividadSeleccionada === "documentacion-previa"
                     ? actualizarDocumentosCarpetaPrevia
