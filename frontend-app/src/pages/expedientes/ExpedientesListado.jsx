@@ -777,6 +777,8 @@ const ACTIVIDADES_ABSIS = [
 
   "Sede notarial con protocolo",
 
+  "Gestión económica",
+
   "Liquidación de impuestos",
 
   "Tramitación inscripción",
@@ -796,6 +798,7 @@ const ACTIVIDADES_EXPEDIENTES = [
   { key: "documentacion-previa", label: "Documentación previa", icono: "📄", aliases: ["Documentación previa"] },
   { key: "sede-notarial", label: "Sede notarial", icono: "🏛️", aliases: ["Sede notarial", "Sede Notarial"] },
   { key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜", aliases: ["Sede notarial con protocolo", "Sede Notarial con protocolo"] },
+  { key: "gestion-economica", label: "Gestión económica", icono: "💼", aliases: ["Gestión económica", "Gestion economica"] },
   { key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶", aliases: ["Liquidación de impuestos", "Liquidación impuestos", "Liquidacion de impuestos", "Liquidacion impuestos"] },
   { key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢", aliases: ["Tramitación inscripción", "Tramitacion inscripcion"] },
   { key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️", aliases: ["Defectos registrales", "Defectos Registrales"] },
