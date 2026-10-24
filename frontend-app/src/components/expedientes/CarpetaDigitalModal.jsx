@@ -119,6 +119,7 @@ export default function CarpetaDigitalModal({
   const [cargandoVistaPrevia, setCargandoVistaPrevia] = useState(false);
   const [configRepositorios, setConfigRepositorios] = useState(null);
   const [busquedaDocumento, setBusquedaDocumento] = useState("");
+  const [actividadPrincipal, setActividadPrincipal] = useState("documentacion-previa");
 
   useEffect(() => {
     let activo = true;
@@ -411,6 +412,108 @@ export default function CarpetaDigitalModal({
     </aside>
   );
   const otrosCantidad = CATEGORIAS_OTROS.reduce((suma, item) => suma + porCategoria(item.categoria).length, 0);
+
+  if (!modoActividad) {
+    const bloquePrincipal = BLOQUES.find((bloque) => bloque.id === actividadPrincipal);
+    const seleccionOtros = actividadPrincipal === "otros";
+    const cantidadActividad = (bloque) => contarBloque(bloque);
+    const seleccionarActividad = (id) => {
+      setActividadPrincipal(id);
+      if (id !== "otros") {
+        setBloquesAbiertos((prev) => ({ ...prev, [id]: true }));
+      } else {
+        setOtrosAbierto(true);
+      }
+    };
+
+    return (
+      <div
+        className="carpeta-digital-premium panel-modal-premium fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/70 p-2 sm:p-4"
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget) onClose?.();
+        }}
+      >
+        <section role="dialog" aria-modal="true" aria-label="Carpeta digital del expediente" className="flex max-h-[96vh] w-full max-w-[1800px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-2xl">
+          <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 py-3 sm:px-5">
+            <div className="min-w-0">
+              <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Documentación</p>
+              <h2 className="mt-1 text-lg font-bold text-slate-900">Carpeta digital</h2>
+              <p className="text-xs text-slate-500">Expediente {expedienteId || "—"} · {totalArchivos} archivo(s)</p>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <span className="hidden rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600 sm:inline-flex">{BLOQUES.length} actividades + Otros</span>
+              <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕ Cerrar</button>
+            </div>
+          </header>
+
+          {error && <div role="alert" className="mx-3 mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 sm:mx-4">{error}</div>}
+
+          <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto p-3 sm:p-4 lg:grid-cols-[210px_minmax(280px,0.9fr)_minmax(360px,1.25fr)] lg:overflow-hidden">
+            <nav aria-label="Actividades de la carpeta digital" className="min-w-0 space-y-2 lg:overflow-y-auto lg:pr-1">
+              <p className="px-1 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Actividades</p>
+              {BLOQUES.map((bloque) => {
+                const cantidad = cantidadActividad(bloque);
+                const activo = actividadPrincipal === bloque.id;
+                return (
+                  <button key={bloque.id} type="button" onClick={() => seleccionarActividad(bloque.id)} aria-current={activo ? "page" : undefined} className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${activo ? "border-indigo-300 bg-indigo-50 shadow-sm ring-1 ring-indigo-100" : "border-slate-200 bg-white hover:border-indigo-200 hover:bg-slate-50"}`}>
+                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${cantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{cantidad}</span>
+                    <span className="min-w-0 flex-1"><span className={`block text-xs font-extrabold ${activo ? "text-indigo-900" : "text-slate-700"}`}>{bloque.titulo}</span><span className="mt-0.5 block text-[10px] text-slate-500">{bloque.categorias.length} categorías</span></span>
+                    <span className={`text-xs ${activo ? "text-indigo-600" : "text-slate-400"}`}>›</span>
+                  </button>
+                );
+              })}
+              <div className="my-2 border-t border-slate-200" />
+              <button type="button" onClick={() => seleccionarActividad("otros")} aria-current={seleccionOtros ? "page" : undefined} className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${seleccionOtros ? "border-indigo-300 bg-indigo-50 shadow-sm ring-1 ring-indigo-100" : "border-slate-200 bg-white hover:border-indigo-200 hover:bg-slate-50"}`}>
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${otrosCantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{otrosCantidad}</span>
+                <span className="min-w-0 flex-1"><span className={`block text-xs font-extrabold ${seleccionOtros ? "text-indigo-900" : "text-slate-700"}`}>Otros</span><span className="mt-0.5 block text-[10px] text-slate-500">Documentación complementaria</span></span>
+                <span className={`text-xs ${seleccionOtros ? "text-indigo-600" : "text-slate-400"}`}>›</span>
+              </button>
+            </nav>
+
+            <section className="flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white">
+              <div className="border-b border-slate-200 bg-white px-3 py-3 sm:px-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-extrabold text-slate-900">{seleccionOtros ? "Otros" : bloquePrincipal?.titulo}</h3>
+                    <p className="mt-1 text-[11px] leading-4 text-slate-500">{seleccionOtros ? "Documentación complementaria y comunicaciones, separadas del circuito de actividades." : bloquePrincipal?.descripcion}</p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-extrabold text-slate-600">{seleccionOtros ? otrosCantidad : cantidadActividad(bloquePrincipal || BLOQUES[0])} archivo(s)</span>
+                </div>
+                <div className="mt-3 flex items-center gap-2">
+                  <input type="search" value={busquedaDocumento} onChange={(event) => setBusquedaDocumento(event.target.value)} placeholder="Buscar documentos…" aria-label="Buscar documentos por nombre" className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100" />
+                  <button type="button" onClick={() => setVisorVisible((v) => !v)} className="rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50">{visorVisible ? "Ocultar visor" : "Mostrar visor"}</button>
+                </div>
+              </div>
+              <div className="min-h-0 flex-1 space-y-2 overflow-y-auto bg-slate-50/60 p-2 sm:p-3">
+                {cargando ? (
+                  <p className="rounded-xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">Cargando documentos…</p>
+                ) : seleccionOtros ? (
+                  <div className="space-y-2">{CATEGORIAS_OTROS.map(renderCategoria)}</div>
+                ) : bloquePrincipal ? (
+                  <div className="space-y-2">{renderBloque(bloquePrincipal)}</div>
+                ) : null}
+                {!cargando && (seleccionOtros
+                  ? CATEGORIAS_OTROS.every((item) => porCategoria(item.categoria).length === 0)
+                  : bloquePrincipal && contarBloque(bloquePrincipal) === 0) && (
+                  <p className="rounded-lg border border-dashed border-slate-300 bg-white px-3 py-4 text-center text-[11px] text-slate-500">Esta sección todavía no tiene documentos. Puedes adjuntarlos desde cada categoría.</p>
+                )}
+              </div>
+            </section>
+
+            <section className="min-h-[360px] min-w-0 overflow-hidden">
+              {visorVisible ? renderVisor() : (
+                <div className="flex h-full min-h-[260px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white p-5 text-center">
+                  <span className="mb-3 text-2xl">▤</span>
+                  <p className="text-xs text-slate-500">El visor está oculto.</p>
+                  <button type="button" onClick={() => setVisorVisible(true)} className="mt-3 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100">Mostrar visor</button>
+                </div>
+              )}
+            </section>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <>
