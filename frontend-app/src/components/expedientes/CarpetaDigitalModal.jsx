@@ -545,9 +545,11 @@ export default function CarpetaDigitalModal({
                     <button
                       type="button"
                       onClick={() => onAbrirEnvioNotario?.()}
+                      title="Aviso: el formulario sigue siendo editable. La transmisión real a ABSIS está pendiente de integración; abrir o guardar el envío no confirma que ABSIS lo haya recibido."
+                      aria-label="Abrir envío a notario. Aviso: la transmisión real a ABSIS está pendiente de integración."
                       className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                     >
-                      ✉️ Abrir envío a notario
+                      ✉️ Abrir envío a notario <span aria-hidden="true">ⓘ</span>
                     </button>
                   </header>
                   {(() => {
