@@ -249,7 +249,7 @@ def _usuario_es_admin_visibilidad(usuario) -> bool:
 @router.get("/configuracion-visibilidad")
 def obtener_configuracion_visibilidad(
     empleado_id: Optional[int] = Query(None),
-    ambito: str = Query("administracion", pattern="^(administracion|personal|efectiva)$"),
+    ambito: str = Query("administracion", regex="^(administracion|personal|efectiva)$"),
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
