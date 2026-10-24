@@ -4552,14 +4552,14 @@ const cuantiaFincasParaEnvio =
                     🏛️ Enviar a notario
                   </button>
                 )}
-                <button type="button" onClick={() => { setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-800 transition hover:bg-sky-100">
+                <button type="button" onClick={() => { setPestanaActividad("datos"); setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-800 transition hover:bg-sky-100">
                   ☷ Datos de actividad
                 </button>
-                <button type="button" onClick={() => { setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-800 transition hover:bg-indigo-100">
+                <button type="button" onClick={() => { setPestanaActividad("datos"); setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-800 transition hover:bg-indigo-100">
                   PPAD
                   {ppadItems.filter((item) => !item.compensado).length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{ppadItems.filter((item) => !item.compensado).length}</span>}
                 </button>
-                <button type="button" onClick={abrirAcciones} className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-100">
+                <button type="button" onClick={() => { setPestanaActividad("datos"); abrirAcciones(); }} className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-100">
                   ⚡ Acciones
                   {accionesExpediente.length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{accionesExpediente.length}</span>}
                 </button>
@@ -4597,7 +4597,7 @@ const cuantiaFincasParaEnvio =
               </div>
             )}
 
-            {false && pestanaActividad === "datos" && <>
+            {pestanaActividad === "datos" && <>
             {actividadSeleccionada === "documentacion-previa" && (
               <div className="mb-4 space-y-4">
                 <section className="rounded-xl border border-slate-200 bg-white p-4">
@@ -7517,7 +7517,7 @@ const cuantiaFincasParaEnvio =
 
       <Modal
         open={mostrarModalDatosActividad}
-        onClose={() => setMostrarModalDatosActividad(false)}
+        onClose={() => { setMostrarModalDatosActividad(false); setPestanaActividad("documentos"); }}
         titulo={`☷ Datos de actividad · ${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"}`}
         subtitulo={`Expediente ${expediente?.id_expediente || ""}. Solo se muestran los campos propios de esta actividad.`}
         ancho="max-w-4xl"
