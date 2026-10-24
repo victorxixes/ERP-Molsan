@@ -4152,119 +4152,7 @@ const cuantiaFincasParaEnvio =
               </Link>
             </div>
 
-            <div
-              className="
-                flex
-                items-center
-                gap-4
-              "
-            >
-              <div
-                className="
-                  flex
-                  h-10
-                  w-10
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  border
-                  border-blue-100
-                  bg-blue-50
-                  text-xl
-                  text-blue-600
-                "
-              >
-                📁
-              </div>
 
-              <div className="min-w-0">
-
-                <p
-                  className="
-                    text-[9px]
-                    font-bold
-                    uppercase
-                    tracking-[0.12em]
-                    text-slate-400
-                  "
-                >
-                  Ficha de expediente
-                </p>
-
-                <h1
-                  className="
-                    whitespace-nowrap
-                    text-lg
-                    font-bold
-                    leading-none
-                    text-slate-800
-                  "
-                >
-                  {valorVisible(
-                    expediente.id_expediente
-                  )}
-                </h1>
-
-                <p
-                  className="
-                    mt-0.5
-                    text-xs
-                    text-slate-400
-                  "
-                >
-                  Ficha completa del expediente
-                </p>
-                {(() => {
-                  const relacionadosVisibles = [
-                    ...expedientesRelacionados,
-                    ...expedientesManuales
-                      .filter((manual) => !expedientesRelacionados.some(
-                        (relacionado) => String(relacionado.id_expediente) === String(manual.id_expediente)
-                      ))
-                      .map((manual) => ({ ...manual, _manual: true })),
-                  ];
-                  const primerosRelacionados = relacionadosVisibles.slice(0, 2);
-                  return (
-                    <div className="mt-2 flex max-w-full flex-col items-start gap-1.5">
-                      <button
-                        type="button"
-                        onClick={abrirAgregarExpedientes}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100"
-                      >
-                        ➕ Agregar expediente relacionado
-                      </button>
-                      {primerosRelacionados.length > 0 && (
-                        <div className="flex max-w-full flex-wrap items-center gap-1.5">
-                          {primerosRelacionados.map((relacionado) => (
-                            <Link
-                              key={String(relacionado.id_expediente)}
-                              to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`}
-                              className="inline-flex max-w-full items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-blue-200 hover:bg-blue-50"
-                              title={relacionado.actividad_actual || "Abrir expediente relacionado"}
-                            >
-                              <span className="text-blue-700">📁</span>
-                              <span className="truncate">{valorVisible(relacionado.id_expediente)}</span>
-                            </Link>
-                          ))}
-                          {relacionadosVisibles.length > 2 && (
-                            <button
-                              type="button"
-                              onClick={abrirAgregarExpedientes}
-                              className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-800 hover:bg-amber-100"
-                            >
-                              +{relacionadosVisibles.length - 2} más · Ver todos
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
-                {expedienteBloqueado && <span className="mt-2 inline-flex rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-[11px] font-extrabold text-red-800">🔒 EXPEDIENTE BLOQUEADO · {motivoBloqueoExpediente}</span>}
-
-              </div>
-            </div>
           </div>
 
 
@@ -4385,6 +4273,124 @@ const cuantiaFincasParaEnvio =
 
           </div>
 
+            <div
+              className="
+                flex
+                items-center
+                gap-4
+              "
+            >
+              <div
+                className="
+                  flex
+                  h-10
+                  w-10
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  border
+                  border-blue-100
+                  bg-blue-50
+                  text-xl
+                  text-blue-600
+                "
+              >
+                📁
+              </div>
+
+              <div className="min-w-0">
+
+                <p
+                  className="
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-[0.12em]
+                    text-slate-400
+                  "
+                >
+                  Ficha de expediente
+                </p>
+
+                <h1
+                  className="
+                    whitespace-nowrap
+                    text-lg
+                    font-bold
+                    leading-none
+                    text-slate-800
+                  "
+                >
+                  {valorVisible(
+                    expediente.id_expediente
+                  )}
+                </h1>
+
+                <p
+                  className="
+                    mt-0.5
+                    text-xs
+                    text-slate-400
+                  "
+                >
+                  Ficha completa del expediente
+                </p>
+                {(() => {
+                  const relacionadosVisibles = [
+                    ...expedientesRelacionados,
+                    ...expedientesManuales
+                      .filter((manual) => !expedientesRelacionados.some(
+                        (relacionado) => String(relacionado.id_expediente) === String(manual.id_expediente)
+                      ))
+                      .map((manual) => ({ ...manual, _manual: true })),
+                  ];
+                  const primerosRelacionados = relacionadosVisibles.slice(0, 2);
+                  return (
+                    <div className="mt-2 flex max-w-full flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={abrirAgregarExpedientes}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100"
+                      >
+                        ➕ Agregar expediente relacionado
+                      </button>
+                      <div className="inline-flex max-w-full items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-1.5 text-[11px]">
+                        <span className="font-bold text-blue-700">Gestor asignado:</span>
+                        <span className="truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
+                      </div>
+                      {primerosRelacionados.length > 0 && (
+                        <div className="flex max-w-full flex-wrap items-center gap-1.5">
+                          {primerosRelacionados.map((relacionado) => (
+                            <Link
+                              key={String(relacionado.id_expediente)}
+                              to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`}
+                              className="inline-flex max-w-full items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-blue-200 hover:bg-blue-50"
+                              title={relacionado.actividad_actual || "Abrir expediente relacionado"}
+                            >
+                              <span className="text-blue-700">📁</span>
+                              <span className="truncate">{valorVisible(relacionado.id_expediente)}</span>
+                            </Link>
+                          ))}
+                          {relacionadosVisibles.length > 2 && (
+                            <button
+                              type="button"
+                              onClick={abrirAgregarExpedientes}
+                              className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-800 hover:bg-amber-100"
+                            >
+                              +{relacionadosVisibles.length - 2} más · Ver todos
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+                {expedienteBloqueado && <span className="mt-2 inline-flex rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-[11px] font-extrabold text-red-800">🔒 EXPEDIENTE BLOQUEADO · {motivoBloqueoExpediente}</span>}
+
+              </div>
+            </div>
+
           <div className="mt-2 flex flex-wrap items-center gap-1.5">
 
             <button
@@ -4424,10 +4430,6 @@ const cuantiaFincasParaEnvio =
             >
               🔗 Área de clientes
             </button>
-            <div className="inline-flex max-w-full items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-1.5 text-[11px]">
-              <span className="font-bold text-blue-700">Gestor asignado:</span>
-              <span className="truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
-            </div>
             {tieneDefecto && (
               <button
                 type="button"
