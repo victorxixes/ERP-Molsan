@@ -39,7 +39,7 @@ const REPOSITORIOS_INICIALES = {
 const CLASE_INPUT = "w-full rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2.5 text-sm text-[var(--erp-text)] outline-none focus:border-[var(--erp-primary)] focus:ring-2 focus:ring-[var(--erp-primary-soft)]";
 
 export default function VisibilidadTablas({ empleadoId, onClose, ambito = "administracion", modal = true, titulo }) {
-  const [catalogo, setCatalogo] = useState({ columnas_excel: [], repositorios: [], configuraciones: [] });
+  const [catalogo, setCatalogo] = useState({ columnas_excel: [], repositorios: [], configuraciones: [], configuraciones_administrativas: [] });
   const [actividadKey, setActividadKey] = useState(ACTIVIDADES[0].key);
   const [nombreTabla, setNombreTabla] = useState("");
   const [columnas, setColumnas] = useState([]);
@@ -58,6 +58,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
           columnas_excel: data?.columnas_excel || [],
           repositorios: data?.repositorios || [],
           configuraciones: data?.configuraciones || [],
+          configuraciones_administrativas: data?.configuraciones_administrativas || [],
         });
       })
       .catch((e) => {
@@ -72,6 +73,17 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
     [catalogo.configuraciones, actividadKey]
   );
   const actividad = ACTIVIDADES.find((item) => item.key === actividadKey) || ACTIVIDADES[0];
+  const configuracionAdministrativa = catalogo.configuraciones_administrativas.find((item) => item.actividad_key === actividadKey);
+  const columnasVisibles = useMemo(() => {
+    if (ambito !== "personal" || !configuracionAdministrativa) return catalogo.columnas_excel;
+    const permitidas = new Set(configuracionAdministrativa.excel_columns || []);
+    return catalogo.columnas_excel.filter((item) => permitidas.has(item.key));
+  }, [ambito, catalogo.columnas_excel, configuracionAdministrativa]);
+  const repositoriosVisibles = useMemo(() => {
+    if (ambito !== "personal" || !configuracionAdministrativa) return catalogo.repositorios;
+    const permitidos = new Set(configuracionAdministrativa.repositorios || []);
+    return catalogo.repositorios.filter((item) => permitidos.has(item.key));
+  }, [ambito, catalogo.repositorios, configuracionAdministrativa]);
 
   useEffect(() => {
     const columnasPermitidas = new Set(catalogo.columnas_excel.map((item) => item.key));
@@ -92,8 +104,8 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
 
   const columnasFiltradas = useMemo(() => {
     const q = busquedaColumna.trim().toLocaleLowerCase("es");
-    return catalogo.columnas_excel.filter((item) => !q || item.label.toLocaleLowerCase("es").includes(q) || item.key.toLocaleLowerCase("es").includes(q));
-  }, [catalogo.columnas_excel, busquedaColumna]);
+    return columnasVisibles.filter((item) => !q || item.label.toLocaleLowerCase("es").includes(q) || item.key.toLocaleLowerCase("es").includes(q));
+  }, [columnasVisibles, busquedaColumna]);
 
   function alternar(setter, actual, key, checked) {
     setter(checked ? [...actual, key] : actual.filter((item) => item !== key));
@@ -185,7 +197,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
                   ))}
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <button type="button" onClick={() => setColumnas(catalogo.columnas_excel.map((item) => item.key))} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Seleccionar todas</button>
+                  <button type="button" onClick={() => setColumnas(columnasVisibles.map((item) => item.key))} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Seleccionar todas</button>
                   <button type="button" onClick={() => setColumnas([])} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Limpiar selección</button>
                 </div>
                 <div className="mt-4 border-t border-slate-100 pt-3">
@@ -209,7 +221,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
                   <p className="mt-1 text-xs text-slate-500">Selecciona las categorías que se mostrarán en el espacio de esta actividad. Los archivos almacenados no se borran ni se mueven.</p>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                  {catalogo.repositorios.map((item) => (
+                  {repositoriosVisibles.map((item) => (
                     <label key={item.key} className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-xs ${repositorios.includes(item.key) ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)] text-[var(--erp-primary-dark)]" : "border-slate-200 bg-white text-slate-600"}`}>
                       <input type="checkbox" checked={repositorios.includes(item.key)} onChange={(e) => alternar(setRepositorios, repositorios, item.key, e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-[var(--erp-primary)]" />
                       <span>{item.label}</span>
