@@ -2987,6 +2987,10 @@ def avanzar_actividad_expediente(
         ]
         if fincas_incompletas:
             raise HTTPException(status_code=409, detail="Todas las fincas deben tener informados el número de finca y el Registro de la Propiedad.")
+        # La actividad solo se cierra cuando todas las validaciones han pasado.
+        # La fecha de envío a notario es la fecha de fin de Documentación previa.
+        if expediente.fecha_envio_notario:
+            expediente.fecha_fin_actividad = expediente.fecha_envio_notario
         expediente.actividad_actual = "Sede notarial"
 
     elif actual == "sede-notarial":
