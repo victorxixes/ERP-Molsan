@@ -4092,7 +4092,7 @@ const cuantiaFincasParaEnvio =
               grid-cols-1
               gap-2
               md:grid-cols-2
-              xl:grid-cols-4
+              xl:grid-cols-5
             "
           >
 
@@ -4226,6 +4226,27 @@ const cuantiaFincasParaEnvio =
                   campo="NIF notario"
                   valor={expediente.nif_notario}
                 />
+              </div>
+            </Seccion>
+
+            <Seccion
+              titulo="Información crediticia"
+              subtitulo="Resumen económico y contractual"
+              icono="economico"
+              className="h-full"
+              compacto
+              colapsable
+            >
+              <div className="grid grid-cols-2 gap-2">
+                <Dato campo="Contrato" valor={expediente.contrato} compacto />
+                <Dato campo="Capital" valor={expediente.capital} tipo="numero" destaque compacto />
+                <Dato campo="Importe" valor={expediente.importe} tipo="numero" destaque compacto />
+                <Dato campo="Saldo real" valor={expediente.saldo_real} tipo="numero" compacto />
+                <Dato campo="Saldo disponible" valor={expediente.saldo_disponible} tipo="numero" compacto />
+                <Dato campo="Tipo operación" valor={expediente.tipo_operacion} compacto />
+                <Dato campo="Subtipo operación" valor={expediente.subtipo_operacion} compacto />
+                <Dato campo="Nº solicitud SIA" valor={expediente.num_solicitud_sia} compacto />
+                <Dato campo="Finca" valor={expediente.finca} compacto />
               </div>
             </Seccion>
 
