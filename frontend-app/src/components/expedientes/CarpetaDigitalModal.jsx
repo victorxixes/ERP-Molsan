@@ -540,7 +540,7 @@ export default function CarpetaDigitalModal({
                       <h4 className="text-xs font-extrabold text-indigo-950">✉️ Datos de envío a notario</h4>
                       <p className="text-[10px] text-slate-500">Información registrada en el expediente</p>
                     </div>
-                    <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onAbrirEnvioNotario?.(); }} className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">✉️ Envío al notario</button>
+                    <button type="button" onClick={() => onAbrirEnvioNotario?.()} className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">✉️ Envío al notario</button>
                   </header>
                   <div className="grid grid-cols-2 gap-x-3 gap-y-2 p-3 text-[11px] sm:grid-cols-3">
                     {[
@@ -683,7 +683,7 @@ export default function CarpetaDigitalModal({
                     </p>
                   </div>
                   {actividadId === "documentacion-previa" && (
-                    <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onAbrirEnvioNotario?.(); }} className="shrink-0 rounded-lg bg-indigo-600 px-2.5 py-2 text-[10px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                    <button type="button" onClick={() => onAbrirEnvioNotario?.()} className="shrink-0 rounded-lg bg-indigo-600 px-2.5 py-2 text-[10px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
                       ✉️ Envío al notario
                     </button>
                   )}
