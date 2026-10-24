@@ -3268,10 +3268,7 @@ async function descargarPDFCalificacion(defecto) {
   }
 
   function abrirObservaciones() {
-    setComentario(
-      expediente?.observaciones ||
-      ""
-    );
+    setComentario("");
 
     setVisionesComentario({
       notario: false,
@@ -3344,6 +3341,18 @@ async function descargarPDFCalificacion(defecto) {
       );
     } finally {
       setGuardandoObservacion(false);
+    }
+  }
+
+
+  async function validarObservacionInterna(observacion) {
+    if (!numeroExpedienteApi || !observacion?.id) return;
+    setErrorObservaciones("");
+    try {
+      await axios.post(`/expedientes/${encodeURIComponent(numeroExpedienteApi)}/observaciones/${observacion.id}/validar`);
+      await cargarObservacionesExpediente();
+    } catch (err) {
+      setErrorObservaciones(err?.response?.data?.detail || "No se pudo validar la observación.");
     }
   }
 
@@ -5834,95 +5843,34 @@ const cuantiaFincasParaEnvio =
           <Seccion
             id="ficha-observaciones"
             titulo="Observaciones"
-            subtitulo="Comentarios, autor y visibilidad"
+            subtitulo="Última observación · historial y validaciones"
             icono="observaciones"
             colapsable
             compacto
           >
             <div className="space-y-3">
               {errorObservaciones && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorObservaciones}</p>}
-              {cargandoObservaciones && <p className="text-xs text-slate-500">Cargando observaciones…</p>}
-              {!cargandoObservaciones && observacionesExpediente.length === 0 && (
-                <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
-                  Todavía no hay observaciones añadidas.
-                </p>
-              )}
-
-              {observacionesExpediente.map((observacion) => (
-                <article key={observacion.id} className="rounded-xl border border-slate-200 bg-white p-3">
-                  <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{observacion.comentario}</p>
+              {cargandoObservaciones ? (
+                <p className="text-xs text-slate-500">Cargando observaciones…</p>
+              ) : observacionesExpediente[0] ? (
+                <article className="rounded-xl border border-slate-200 bg-white p-3">
+                  <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{observacionesExpediente[0].comentario}</p>
                   <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
-                    <span>{observacion.autor || "Usuario conectado"}</span>
-                    <time dateTime={observacion.fecha}>
-                      {observacion.fecha ? new Date(observacion.fecha).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "Fecha no disponible"}
-                    </time>
+                    <span>{observacionesExpediente[0].autor || "Usuario conectado"} · {observacionesExpediente[0].visibilidad === "Gestor" ? "Interna" : observacionesExpediente[0].visibilidad}</span>
+                    <time dateTime={observacionesExpediente[0].fecha}>{observacionesExpediente[0].fecha ? new Date(observacionesExpediente[0].fecha).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "Fecha no disponible"}</time>
                   </div>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {observacion.visibilidad === "Gestor" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-800">
-                        🔒 Interna · Departamento
-                      </span>
-                    ) : observacion.visibilidad === "Visible notario" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold text-sky-800">
-                        ⚖️ Visible para notario
-                      </span>
-                    ) : observacion.visibilidad === "Visible apoderado" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2 py-1 text-[10px] font-semibold text-violet-800">
-                        👤 Visible para apoderado
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-700">
-                        Visibilidad: {observacion.visibilidad || "No indicada"}
-                      </span>
-                    )}
-                    {observacion.visibilidad === "Gestor" && observacion.empleado_destinatario && (
-                      <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">
-                        Destinatario: {observacion.empleado_destinatario}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-2 flex justify-end gap-2">
-                    <button type="button" onClick={() => editarObservacionExpediente(observacion)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700 hover:bg-blue-100">
-                      Editar
-                    </button>
-                    <button type="button" onClick={() => eliminarObservacionExpediente(observacion.id)} className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700 hover:bg-red-100">
-                      Desactivar
-                    </button>
-                  </div>
-                </article>
-              ))}
-
-              {mostrarFormularioObservacion ? (
-                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3 space-y-3">
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-semibold text-slate-600">{observacionEditandoId !== null ? "Editar comentario" : "Comentario"}</span>
-                    <textarea value={nuevaObservacion} onChange={(event) => setNuevaObservacion(event.target.value)} rows={4} placeholder="Escribe la observación..." className="w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
-                  </label>
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-semibold text-slate-600">Visibilidad</span>
-                    <select value={visibilidadObservacion} onChange={(event) => setVisibilidadObservacion(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
-                      <option value="Gestor">Departamento interno (Gestor)</option>
-                      <option value="Visible notario">Visible para el notario</option>
-                      <option value="Visible apoderado">Visible para el apoderado</option>
-                    </select>
-                  </label>
-                  {visibilidadObservacion === "Gestor" && (
-                    <label className="block">
-                      <span className="mb-1 block text-xs font-semibold text-slate-600">Empleado destinatario</span>
-                      <select value={destinatarioObservacion} onChange={(event) => setDestinatarioObservacion(event.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
-                        <option value="">Selecciona un empleado</option>
-                        {empleadosObservaciones.map((empleado) => <option key={empleado.id} value={empleado.id}>{empleado.nombre}</option>)}
-                      </select>
-                    </label>
+                  {observacionesExpediente[0].visibilidad === "Gestor" && (
+                    <p className={`mt-2 text-[11px] font-semibold ${observacionesExpediente[0].estado_validacion === "Validada" ? "text-emerald-700" : "text-amber-700"}`}>
+                      {observacionesExpediente[0].estado_validacion === "Validada" ? "✓ Validada por el destinatario" : "⏳ Pendiente de validación del destinatario"}
+                    </p>
                   )}
-                  <div className="flex justify-end gap-2">
-                    <Boton onClick={() => { setMostrarFormularioObservacion(false); setNuevaObservacion(""); setObservacionEditandoId(null); }}>Cancelar</Boton>
-                    <Boton tipo="primary" onClick={agregarObservacionExpediente} disabled={!nuevaObservacion.trim() || guardandoObservacion || (visibilidadObservacion === "Gestor" && !destinatarioObservacion)}>{guardandoObservacion ? "Guardando…" : observacionEditandoId !== null ? "Guardar cambios" : "Guardar observación"}</Boton>
-                  </div>
-                </div>
+                </article>
               ) : (
-                <Boton tipo="primary" onClick={() => setMostrarFormularioObservacion(true)}>＋ Añadir observación</Boton>
+                <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">Todavía no hay observaciones añadidas.</p>
               )}
+              <button type="button" onClick={() => { setComentario(""); setErrorObservaciones(""); setMostrarObservaciones(true); }} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100">
+                💬 Ver historial y gestionar observaciones <span className="rounded-full bg-white px-2 py-0.5 text-[10px]">{observacionesExpediente.length}</span>
+              </button>
             </div>
           </Seccion>
       </div>
@@ -7492,6 +7440,38 @@ const cuantiaFincasParaEnvio =
                   ))}
                 </select>
               </label>
+            )}
+          </div>
+
+          <div className="border-t border-slate-200 pt-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h3 className="text-sm font-extrabold text-slate-800">Historial completo</h3>
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-slate-600">{observacionesExpediente.length} observaciones</span>
+            </div>
+            {cargandoObservaciones ? <p className="text-xs text-slate-500">Actualizando historial…</p> : observacionesExpediente.length === 0 ? (
+              <p className="rounded-lg border border-dashed border-slate-200 p-3 text-xs text-slate-500">No hay observaciones guardadas todavía.</p>
+            ) : (
+              <div className="max-h-[42vh] space-y-2 overflow-y-auto pr-1">
+                {observacionesExpediente.map((observacion) => (
+                  <article key={observacion.id} className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="whitespace-pre-wrap break-words text-sm text-slate-700">{observacion.comentario}</p>
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+                      <span>{observacion.autor || "Usuario conectado"} → {observacion.visibilidad === "Gestor" ? (observacion.empleado_destinatario || "Empleado interno") : observacion.visibilidad}</span>
+                      <time>{observacion.fecha ? new Date(observacion.fecha).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : "Fecha no disponible"}</time>
+                    </div>
+                    {observacion.visibilidad === "Gestor" && (
+                      <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                        <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${observacion.estado_validacion === "Validada" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-800"}`}>
+                          {observacion.estado_validacion === "Validada" ? `✓ Validada · ${observacion.validado_en ? new Date(observacion.validado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : ""}` : "⏳ Pendiente de validación"}
+                        </span>
+                        {Number(empleadoSesion?.id) === Number(observacion.empleado_destinatario_id) && observacion.estado_validacion !== "Validada" && (
+                          <button type="button" onClick={() => validarObservacionInterna(observacion)} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100">✓ Validar observación</button>
+                        )}
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
             )}
           </div>
 

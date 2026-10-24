@@ -10,6 +10,7 @@ from backend.app.database import get_db
 from backend.app.expedientes.models import Expediente
 from backend.app.empleados.models import Empleado
 from backend.app.expediente_observaciones.models import ExpedienteObservacion
+from backend.app.notificaciones.router_ws import send_notif_to_user
 
 router = APIRouter(prefix="/expedientes/{expediente_id}/observaciones", tags=["Expedientes - Observaciones"])
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -132,6 +133,9 @@ def _observacion_dict(item, empleado=None, autor=None):
         "autor": " ".join(filter(None, [autor.nombre, autor.apellidos])) if autor else None,
         "fecha": item.fecha.isoformat() if item.fecha else None,
         "activo": item.activo,
+        "estado_validacion": getattr(item, "estado_validacion", "No requiere"),
+        "validado_por_empleado_id": getattr(item, "validado_por_empleado_id", None),
+        "validado_en": item.validado_en.isoformat() if getattr(item, "validado_en", None) else None,
     }
 
 
@@ -153,6 +157,7 @@ def _crear_observacion(db: Session, expediente, usuario, comentario, visibilidad
         empleado_destinatario_id=destinatario_id,
         autor_empleado_id=usuario.id,
         activo=True,
+        estado_validacion="Pendiente" if visibilidad == "Gestor" else "No requiere",
     )
     db.add(item)
     db.flush()
@@ -177,7 +182,7 @@ def listar_observaciones(expediente_id: int, incluir_inactivas: bool = False, db
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Crear observación de expediente")
-def crear_observacion(expediente_id: int, datos: ObservacionCreate, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
+async def crear_observacion(expediente_id: int, datos: ObservacionCreate, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
     expediente = _comprobar_expediente(db, expediente_id)
     if datos.visibilidad == "Gestor":
         destinatario = db.query(Empleado).filter(Empleado.id == datos.empleado_destinatario_id, Empleado.activo.is_(True)).first()
@@ -189,11 +194,18 @@ def crear_observacion(expediente_id: int, datos: ObservacionCreate, db: Session 
     except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo guardar la observación.")
+    if item.visibilidad == "Gestor" and item.empleado_destinatario_id:
+        await send_notif_to_user(item.empleado_destinatario_id, {
+            "tipo": "info", "titulo": "Nueva observación interna",
+            "mensaje": f"{usuario.nombre} ha dirigido una observación al expediente {expediente.id_expediente}.",
+            "expediente_id": expediente.id_expediente, "observacion_id": item.id,
+            "evento": "observacion_pendiente_validacion", "read": False,
+        })
     return _observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), usuario)
 
 
 @router.post("/comentario-ficha", status_code=status.HTTP_201_CREATED, summary="Guardar comentario del modal clásico y sus destinos")
-def guardar_comentario_ficha(expediente_id: int, datos: ObservacionComentarioFicha, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
+async def guardar_comentario_ficha(expediente_id: int, datos: ObservacionComentarioFicha, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
     expediente = _comprobar_expediente(db, expediente_id)
     if "actividad" in datos.visiones:
         if datos.empleado_destinatario_id is None:
@@ -221,6 +233,14 @@ def guardar_comentario_ficha(expediente_id: int, datos: ObservacionComentarioFic
     except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo guardar el comentario y sus destinos.")
+    for item in items:
+        if item.visibilidad == "Gestor" and item.empleado_destinatario_id:
+            await send_notif_to_user(item.empleado_destinatario_id, {
+                "tipo": "info", "titulo": "Nueva observación interna",
+                "mensaje": f"{usuario.nombre} ha dirigido una observación al expediente {expediente.id_expediente}.",
+                "expediente_id": expediente.id_expediente, "observacion_id": item.id,
+                "evento": "observacion_pendiente_validacion", "read": False,
+            })
     return {
         "ok": True,
         "id_expediente": expediente.id_expediente,
@@ -229,6 +249,26 @@ def guardar_comentario_ficha(expediente_id: int, datos: ObservacionComentarioFic
         "observaciones_expediente": datos.comentario,
         "registrado_en_backend": True,
     }
+
+
+@router.post("/{observacion_id}/validar", summary="Validar una observación interna recibida")
+def validar_observacion(expediente_id: int, observacion_id: int, db: Session = Depends(get_db), usuario: Empleado = Depends(obtener_empleado_autenticado)):
+    expediente = _comprobar_expediente(db, expediente_id)
+    item = _obtener_observacion(db, expediente.id, observacion_id)
+    if item.visibilidad != "Gestor" or item.empleado_destinatario_id != usuario.id:
+        raise HTTPException(status_code=403, detail="Solo el empleado destinatario puede validar esta observación interna.")
+    if item.estado_validacion == "Validada":
+        return _observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), _empleado_por_id(db, item.autor_empleado_id))
+    item.estado_validacion = "Validada"
+    item.validado_por_empleado_id = usuario.id
+    item.validado_en = __import__("datetime").datetime.now(__import__("datetime").timezone.utc)
+    try:
+        db.commit()
+        db.refresh(item)
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="No se pudo registrar la validación de la observación.")
+    return _observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), _empleado_por_id(db, item.autor_empleado_id))
 
 
 @router.put("/{observacion_id}", summary="Modificar observación de expediente")

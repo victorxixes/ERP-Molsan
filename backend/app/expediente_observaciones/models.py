@@ -67,6 +67,11 @@ class ExpedienteObservacion(Base):
         server_default="true",
     )
 
+    # Validación explícita del destinatario en observaciones internas.
+    estado_validacion = Column(String(20), nullable=False, default="No requiere", server_default="No requiere")
+    validado_por_empleado_id = Column(Integer, ForeignKey("empleados.id"), nullable=True)
+    validado_en = Column(DateTime(timezone=True), nullable=True)
+
     __table_args__ = (
         Index(
             "ix_expediente_observaciones_expediente_fecha",
