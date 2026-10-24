@@ -84,6 +84,8 @@ class Empleado(Base):
 
     # Habilita el circuito mensual de liquidaciones de ApoderaGest.
     es_colaborador = Column(Boolean, nullable=False, default=False, server_default="false")
+    # Honorario neto por protocolo único firmado por el colaborador.
+    honorarios_valor = Column(Float, nullable=False, default=0, server_default="0")
 
     # Controla la aparición en el listado visual de tarjetas, sin desactivar la cuenta.
     visible_en_listado = Column(
