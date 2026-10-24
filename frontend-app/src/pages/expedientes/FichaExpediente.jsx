@@ -908,8 +908,9 @@ function Seccion({
   className = "",
   colapsable = false,
   compacto = false,
+  colapsadaInicial = false,
 }) {
-  const [abierta, setAbierta] = useState(true);
+  const [abierta, setAbierta] = useState(!colapsadaInicial);
 
   return (
     <section
@@ -932,7 +933,7 @@ function Seccion({
           gap-3
           border-b
           border-slate-100
-          ${compacto ? "px-3 py-2.5" : "px-5 py-4"}
+          ${compacto ? "px-2.5 py-2" : "px-5 py-4"}
         `}
       >
         <div
@@ -3983,10 +3984,10 @@ const cuantiaFincasParaEnvio =
           className="
             grid
             grid-cols-1
-            gap-3
-            p-3
-            sm:p-4
-            xl:grid-cols-[250px_minmax(0,1fr)_auto]
+            gap-2
+            p-2.5
+            sm:p-3
+            xl:grid-cols-[230px_minmax(0,1fr)_auto]
             xl:items-center
           "
         >
@@ -4012,8 +4013,8 @@ const cuantiaFincasParaEnvio =
               <div
                 className="
                   flex
-                  h-12
-                  w-12
+                  h-10
+                  w-10
                   shrink-0
                   items-center
                   justify-center
@@ -4045,7 +4046,7 @@ const cuantiaFincasParaEnvio =
                 <h1
                   className="
                     whitespace-nowrap
-                    text-xl
+                    text-lg
                     font-bold
                     leading-none
                     text-slate-800
@@ -4103,6 +4104,7 @@ const cuantiaFincasParaEnvio =
               className="h-full"
               compacto
               colapsable
+              colapsadaInicial
             >
               <div className="grid grid-cols-2 gap-2">
                 <Dato
@@ -4124,6 +4126,7 @@ const cuantiaFincasParaEnvio =
               className="h-full"
               compacto
               colapsable
+              colapsadaInicial
             >
               <div className="grid grid-cols-2 gap-2">
                 <Dato
@@ -4145,6 +4148,7 @@ const cuantiaFincasParaEnvio =
               className="h-full"
               compacto
               colapsable
+              colapsadaInicial
             >
               <p className="text-xs leading-5 text-slate-500">
                 El sistema buscará otros expedientes cuyo titular tenga el mismo NIF.
@@ -4215,6 +4219,7 @@ const cuantiaFincasParaEnvio =
               className="h-full"
               compacto
               colapsable
+              colapsadaInicial
             >
               <div className="grid grid-cols-1 gap-2">
                 <Dato
@@ -4236,6 +4241,7 @@ const cuantiaFincasParaEnvio =
               className="h-full"
               compacto
               colapsable
+              colapsadaInicial
             >
               <div className="grid grid-cols-2 gap-2">
                 <Dato campo="Contrato" valor={expediente.contrato} compacto />
