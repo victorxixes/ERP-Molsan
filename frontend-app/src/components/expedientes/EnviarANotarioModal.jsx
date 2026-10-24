@@ -761,7 +761,7 @@ export default function EnviarANotarioModal({
                     ["Borradores escrituras", ["Borradores escrituras", "Escrituras/borradores"]],
                     ["Otros", ["Otros"]],
                   ].map(([etiqueta, categorias]) => {
-                    const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim().toLowerCase();
+                    const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
                     const lista = documentosCarpeta.filter((doc) => categorias.some((cat) => normalizar(cat) === normalizar(doc.categoria)));
                     const abierto = repositorioAbierto === etiqueta;
                     return (
