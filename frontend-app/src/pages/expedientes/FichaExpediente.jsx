@@ -1364,6 +1364,9 @@ export default function FichaExpediente() {
   const [pestanaActividad, setPestanaActividad] = useState("documentos");
   const [mostrarControlCalidad, setMostrarControlCalidad] = useState(false);
   const [fasesCalidadColapsadas, setFasesCalidadColapsadas] = useState({});
+  const [complementosSaldoExpediente, setComplementosSaldoExpediente] = useState([]);
+  const [cargandoComplementosExpediente, setCargandoComplementosExpediente] = useState(false);
+  const [errorComplementosExpediente, setErrorComplementosExpediente] = useState("");
   const [mostrarDatosEnvioNotario, setMostrarDatosEnvioNotario] = useState(true);
   const [mostrarResumenEconomico, setMostrarResumenEconomico] = useState(true);
   const [mostrarModalDatosActividad, setMostrarModalDatosActividad] = useState(false);
@@ -3810,6 +3813,30 @@ async function descargarPDFCalificacion(defecto) {
     if (expediente?.id_expediente || id) cargarPpad();
   }, [expediente?.id_expediente, id, cargarPpad]);
 
+  useEffect(() => {
+    let vigente = true;
+    const numero = expediente?.id_expediente || id;
+    if (!numero) {
+      setComplementosSaldoExpediente([]);
+      return undefined;
+    }
+    setCargandoComplementosExpediente(true);
+    setErrorComplementosExpediente("");
+    axios.get("/complementos-saldo", { params: { q: numero } })
+      .then(({ data }) => {
+        if (!vigente) return;
+        const lista = Array.isArray(data) ? data : [];
+        setComplementosSaldoExpediente(lista.filter((item) => String(item.numero_expediente || "").trim() === String(numero).trim()));
+      })
+      .catch((err) => {
+        if (!vigente) return;
+        setErrorComplementosExpediente(err?.response?.data?.detail || "No se pudieron cargar los complementos de saldo de este expediente.");
+        setComplementosSaldoExpediente([]);
+      })
+      .finally(() => { if (vigente) setCargandoComplementosExpediente(false); });
+    return () => { vigente = false; };
+  }, [expediente?.id_expediente, id]);
+
   function abrirNuevoPpad() {
     setPpadEditandoId(null);
     setPpadForm({ concepto: "", importe: "", imputableA: "Molsan" });
@@ -4387,7 +4414,7 @@ const cuantiaFincasParaEnvio =
                                 const completa = pendientes.length === 0;
                                 const actual = fase.key === actividadActual;
                                 return (
-                                  <article key={fase.key} className={`min-w-0 rounded-xl border p-3 ${fase.key === "facturacion-cierre" ? "xl:col-span-3" : ""} ${completa ? "border-emerald-200 bg-emerald-50/40" : actual ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
+                                  <article key={fase.key} className={`min-w-0 rounded-xl border p-3 ${completa ? "border-emerald-200 bg-emerald-50/40" : actual ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
                                     <div className="flex items-center gap-3">
                                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${completa ? "border-emerald-500 bg-emerald-500 text-white" : actual ? "border-blue-500 bg-white text-blue-700" : "border-slate-300 bg-white text-slate-400"}`}>
                                         {completa ? "✓" : actual ? "●" : indice + 1}
@@ -4431,6 +4458,42 @@ const cuantiaFincasParaEnvio =
                                   </article>
                                 );
                               })}
+                              <article className="min-w-0 rounded-xl border border-violet-200 bg-violet-50/40 p-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-violet-300 bg-white text-sm">💶</div>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-bold text-slate-800">PPAD</p>
+                                    <p className="mt-0.5 text-[10px] font-semibold text-violet-700">{cargandoPpad ? "Cargando registros…" : `${ppadItems.length} registro(s) · ${ppadItems.filter((item) => !item.compensado).length} pendiente(s)`}</p>
+                                  </div>
+                                  <button type="button" aria-expanded={!fasesCalidadColapsadas.ppad} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, ppad: !actuales.ppad }))} className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50">{fasesCalidadColapsadas.ppad ? "＋ Mostrar" : "− Ocultar"}</button>
+                                </div>
+                                {!fasesCalidadColapsadas.ppad && <div className="mt-2 space-y-1.5 border-t border-violet-200/70 pt-2">
+                                  {errorPpad && <p role="alert" className="text-[10px] text-red-700">{errorPpad}</p>}
+                                  {!cargandoPpad && !errorPpad && ppadItems.length === 0 && <p className="text-[11px] text-slate-500">No hay registros PPAD en este expediente.</p>}
+                                  {ppadItems.map((item) => <div key={item.id} className="flex items-start justify-between gap-2 text-[11px]">
+                                    <span className="min-w-0 text-slate-700"><strong>{item.concepto || "PPAD"}</strong><span className="block text-[10px] text-slate-500">{item.compensado ? "✓ Compensado" : "◷ Pendiente"}{item.imputable_a || item.imputableA ? ` · ${item.imputable_a || item.imputableA}` : ""}</span></span>
+                                    <span className="shrink-0 font-bold tabular-nums text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
+                                  </div>)}
+                                </div>}
+                              </article>
+                              <article className="min-w-0 rounded-xl border border-amber-200 bg-amber-50/40 p-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-white text-sm">💰</div>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-bold text-slate-800">Complementos de saldo</p>
+                                    <p className="mt-0.5 text-[10px] font-semibold text-amber-800">{cargandoComplementosExpediente ? "Cargando solicitudes…" : `${complementosSaldoExpediente.length} solicitud(es) · ${complementosSaldoExpediente.filter((item) => !["compensado", "cerrado"].includes(String(item.estado || "").toLowerCase())).length} pendiente(s)`}</p>
+                                  </div>
+                                  <button type="button" aria-expanded={!fasesCalidadColapsadas.complementos} onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, complementos: !actuales.complementos }))} className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50">{fasesCalidadColapsadas.complementos ? "＋ Mostrar" : "− Ocultar"}</button>
+                                </div>
+                                {!fasesCalidadColapsadas.complementos && <div className="mt-2 space-y-1.5 border-t border-amber-200/70 pt-2">
+                                  {errorComplementosExpediente && <p role="alert" className="text-[10px] text-red-700">{errorComplementosExpediente}</p>}
+                                  {!cargandoComplementosExpediente && !errorComplementosExpediente && complementosSaldoExpediente.length === 0 && <p className="text-[11px] text-slate-500">No hay solicitudes de complemento para este expediente.</p>}
+                                  {complementosSaldoExpediente.map((item) => <div key={item.id} className="flex items-start justify-between gap-2 text-[11px]">
+                                    <span className="min-w-0 text-slate-700"><strong>{item.motivo || "Complemento de saldo"}</strong><span className="block text-[10px] text-slate-500">{item.fecha_solicitud ? formatearFecha(item.fecha_solicitud) : "Sin fecha"} · {item.estado || "Pendiente"}</span></span>
+                                    <span className="shrink-0 font-bold tabular-nums text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
+                                  </div>)}
+                                </div>}
+                              </article>
                             </div>
                           </>
                         );
