@@ -746,13 +746,12 @@ export default function EnviarANotarioModal({
         {/* CONTENIDO: DOCUMENTACIÓN PREVIA A LA IZQUIERDA + FORMULARIO */}
 
         <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-4 2xl:px-5">
-          <div className="grid grid-cols-1 items-start gap-3 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] xl:gap-3">
+          <div className="grid grid-cols-1 items-start gap-3 xl:grid-cols-[minmax(300px,0.58fr)_minmax(0,1.42fr)] xl:gap-4">
             {/* COLUMNA IZQUIERDA — DOCUMENTACIÓN PREVIA COMPARTIDA CON CARPETA DIGITAL */}
             <aside className="min-w-0">
-              <section className="rounded-2xl border border-indigo-100 bg-white p-3 shadow-sm">
+              <section className="rounded-xl border border-indigo-100 bg-white p-2.5 shadow-sm">
                 <h3 className="text-sm font-extrabold text-slate-900">📂 Documentación previa</h3>
-                <p className="mt-1 text-[11px] text-slate-500">Adjunta y consulta los documentos necesarios para preparar el envío al notario.</p>
-                <p className="mb-2 mt-1 text-[10px] font-semibold text-indigo-700">Los archivos se guardan también en la Carpeta Digital del expediente.</p>
+                <p className="mt-0.5 text-[10px] leading-snug text-slate-500">Documentos necesarios para el envío. También se guardan en la Carpeta Digital.</p>
                 <div className="divide-y divide-slate-100">
                   {[
                     ["Hoja de encargo firmada", ["Hoja de Encargo firmada"]],
@@ -765,13 +764,13 @@ export default function EnviarANotarioModal({
                     const lista = documentosCarpeta.filter((doc) => categorias.some((cat) => normalizar(cat) === normalizar(doc.categoria)));
                     const abierto = repositorioAbierto === etiqueta;
                     return (
-                      <div key={etiqueta} className="py-2">
-                        <div className="flex items-center gap-2">
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-xs font-bold text-slate-800">{etiqueta}</p>
-                            <p className="text-[10px] text-slate-500">{cargandoDocumentosCarpeta ? "Cargando…" : `${lista.length} archivo(s)`}</p>
+                      <div key={etiqueta} className="py-1.5">
+                        <div className="flex min-w-0 items-center gap-1.5">
+                          <div className="flex min-w-0 flex-1 items-baseline gap-x-1.5">
+                            <p className="min-w-0 truncate text-[11px] font-bold text-slate-800" title={etiqueta}>{etiqueta}</p>
+                            <p className="shrink-0 whitespace-nowrap text-[9px] text-slate-500">{cargandoDocumentosCarpeta ? "…" : `${lista.length} archivo(s)`}</p>
                           </div>
-                          <button type="button" onClick={() => setRepositorioAbierto(abierto ? "" : etiqueta)} className="shrink-0 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-[10px] font-extrabold text-indigo-700 hover:bg-indigo-100">{abierto ? "Cerrar" : "Abrir"}</button>
+                          <button type="button" onClick={() => setRepositorioAbierto(abierto ? "" : etiqueta)} className="shrink-0 rounded-md border border-indigo-200 bg-indigo-50 px-2 py-1 text-[10px] font-extrabold text-indigo-700 hover:bg-indigo-100">{abierto ? "Cerrar" : "Abrir"}</button>
                         </div>
                         {abierto && <div className="mt-2 rounded-lg bg-slate-50 px-2.5 py-2">
                           {lista.length ? <ul className="space-y-1">{lista.map((doc) => <li key={doc.id} className="break-words text-[11px] text-slate-700">📄 {doc.nombre_original || doc.nombre || doc.filename || "Documento"}</li>)}</ul> : <p className="text-[10px] text-slate-500">Sin documentos adjuntos.</p>}
