@@ -135,7 +135,6 @@ def _observacion_dict(item, empleado=None, autor=None):
         "activo": item.activo,
         "estado_validacion": getattr(item, "estado_validacion", "No requiere"),
         "validado_por_empleado_id": getattr(item, "validado_por_empleado_id", None),
-        "validado_por": (lambda e: " ".join(filter(None, [e.nombre, e.apellidos])) if e else None)(_empleado_por_id(db, getattr(item, "validado_por_empleado_id", None))),
         "validado_en": item.validado_en.isoformat() if getattr(item, "validado_en", None) else None,
     }
 
