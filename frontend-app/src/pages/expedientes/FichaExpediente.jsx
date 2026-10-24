@@ -4638,34 +4638,28 @@ const cuantiaFincasParaEnvio =
               "
             >
 
-              <div>
-
-                <h3
-                  className="
-                    text-base
-                    font-bold
-                    text-slate-800
-                  "
-                >
-                  {
-                    actividadSeleccionadaDef.icono
-                  }{" "}
-                  {
-                    actividadSeleccionadaDef.label
-                  }
+              <div className="min-w-0 flex-1">
+                <h3 className="text-base font-bold text-slate-800">
+                  {actividadSeleccionadaDef.icono} {actividadSeleccionadaDef.label}
                 </h3>
-
-                <p
-                  className="
-                    mt-1
-                    text-xs
-                    text-slate-400
-                  "
-                >
-                  Campos de esta actividad
-                </p>
-
+                <p className="mt-1 text-xs text-slate-400">Campos de esta actividad</p>
               </div>
+
+              {actividadSeleccionada === "documentacion-previa" && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <button type="button" onClick={() => setMostrarEnviarNotario(true)} className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-extrabold text-white shadow-sm transition hover:bg-indigo-700">
+                    🏛️ Enviar a notario
+                  </button>
+                  <button type="button" onClick={() => { setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-800 transition hover:bg-indigo-100">
+                    PPAD
+                    {ppadItems.filter((item) => !item.compensado).length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{ppadItems.filter((item) => !item.compensado).length}</span>}
+                  </button>
+                  <button type="button" onClick={abrirAcciones} className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-100">
+                    ⚡ Acciones
+                    {accionesExpediente.length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{accionesExpediente.length}</span>}
+                  </button>
+                </div>
+              )}
 
               {actividadSeleccionada !== "documentacion-previa" && actividadSeleccionada ===
                 actividadActual && (
@@ -5678,10 +5672,7 @@ const cuantiaFincasParaEnvio =
 
       <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
       <div className="flex min-w-0 flex-wrap items-center gap-3">
-        <button type="button" onClick={abrirAcciones} className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-100">
-          ⚡ Acciones
-          {accionesExpediente.length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{accionesExpediente.length}</span>}
-        </button>
+
         {cargandoAcciones ? <span className="text-[10px] text-slate-500">Cargando última acción…</span> : accionesExpediente.length > 0 && (() => {
           const relacion = accionesExpediente[accionesExpediente.length - 1];
           const accion = relacion.accion || relacion.accion_expediente || relacion;
@@ -5694,18 +5685,7 @@ const cuantiaFincasParaEnvio =
         {errorAcciones && <p className="w-full text-xs text-red-700">{errorAcciones}</p>}
       </div>
           <div className="flex min-w-0 flex-col items-start gap-2">
-            <button
-              type="button"
-              onClick={() => { setMostrarModalPpad(true); setErrorPpad(""); }}
-              className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-800 transition hover:bg-indigo-100"
-            >
-              <span>PPAD</span>
-              {ppadItems.filter((item) => !item.compensado).length > 0 && (
-                <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white">
-                  {ppadItems.filter((item) => !item.compensado).length}
-                </span>
-              )}
-            </button>
+
             {ppadItems.length > 0 && (
               <div className="w-full space-y-2">
                 {ppadItems.map((item) => (
@@ -5939,10 +5919,8 @@ const cuantiaFincasParaEnvio =
 
        
 
-        {/* ===================================================
-            ZONA DERECHA — PPAD, INFORMACIÓN CREDITICIA Y ENVÍO
-            Se mantiene a la derecha de Fincas, Acciones y Observaciones.
-        ==================================================== */}
+        {/* Información complementaria: solo se muestra cuando existe un envío a notario. */}
+        {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
         <div className="min-w-0 xl:col-span-12">
           <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
@@ -5965,11 +5943,6 @@ const cuantiaFincasParaEnvio =
                 )}
               </div>
               <div className="space-y-4 p-4 sm:p-5">
-                {!(expediente.fecha_envio_notario || expediente.fecha_envio) && (
-                  <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">
-                    Todavía no se ha registrado el encargo. Pulsa «Enviar a notario» para completar los datos y guardarlos en el expediente.
-                  </p>
-                )}
                 {(expediente.fecha_envio_notario || expediente.fecha_envio) && <>
                 <div className="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-2">
                 <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
@@ -6303,21 +6276,11 @@ const cuantiaFincasParaEnvio =
                     )}
                 </div>
                 </>}
-                {actividadActual === "documentacion-previa" && (
-                  <div className="flex justify-center border-t border-slate-100 pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setMostrarEnviarNotario(true)}
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2"
-                    >
-                      🏛️ {expediente.fecha_envio_notario || expediente.fecha_envio ? "Revisar / modificar encargo" : "Enviar a notario"}
-                    </button>
-                  </div>
-                )}
               </div>
             </section>
           </div>
         </div>
+        )}
 
   {mostrarCarpetaDigital && (
         <CarpetaDigitalModal
