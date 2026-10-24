@@ -2053,8 +2053,20 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
 
   useEffect(() => {
     if (!expediente) return;
-    setActividadSeleccionada(resolverActividadActual(expediente));
-    setActividadDraft((actual) => ({ ...actual, ...(expediente || {}) }));
+    const actividadInicial = resolverActividadActual(expediente);
+    const fechaFirma = String(expediente.fecha_firma || "").slice(0, 10);
+    setActividadSeleccionada(actividadInicial);
+    setActividadDraft({
+      ...expediente,
+      ...Object.fromEntries((CAMPOS_ACTIVIDADES[actividadInicial] || []).map((campo) => [campo.key, expediente[campo.key] ?? ""])),
+      apoderado: expediente.apoderado || "Gestoría",
+      fecha_presentacion: expediente.fecha_presentacion || fechaFirma,
+      fecha_recogida_notario_presentacion_telematica: expediente.fecha_recogida_notario_presentacion_telematica || fechaFirma,
+      fecha_presentacion_tributaria: expediente.fecha_presentacion_tributaria || fechaFirma,
+      fecha_liquidacion_tributaria: expediente.fecha_liquidacion_tributaria || fechaFirma,
+      fecha_vencimiento_asiento: expediente.fecha_vencimiento_asiento || sumarDiasNaturales(expediente.fecha_liquidacion_tributaria || fechaFirma, 60),
+      mover_siguiente_actividad: expediente.mover_siguiente_actividad ?? (actividadInicial === "liquidacion-impuestos" || actividadInicial === "tramitacion-inscripcion"),
+    });
   }, [expediente?.id_expediente, expediente?.actividad_actual]);
 
 
@@ -5930,7 +5942,7 @@ const cuantiaFincasParaEnvio =
             ZONA DERECHA — PPAD, INFORMACIÓN CREDITICIA Y ENVÍO
             Se mantiene a la derecha de Fincas, Acciones y Observaciones.
         ==================================================== */}
-        <div className="min-w-0 xl:col-span-8">
+        <div className="min-w-0 xl:col-span-12">
           <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
         <div className="min-w-0 w-full xl:col-span-8">
