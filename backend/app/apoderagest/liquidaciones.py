@@ -42,6 +42,10 @@ class LiquidacionMensual(Base):
     factura_revisada_por = Column(Integer, ForeignKey("empleados.id"), nullable=True)
     factura_revisada_en = Column(DateTime(timezone=True), nullable=True)
     factura_observaciones = Column(String(2000), nullable=True)
+    justificante_bytes = Column(LargeBinary, nullable=True)
+    justificante_nombre = Column(String(255), nullable=True)
+    justificante_tipo = Column(String(150), nullable=True)
+    justificante_subido_en = Column(DateTime(timezone=True), nullable=True)
     creada_en = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
     actualizada_en = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     __table_args__ = (UniqueConstraint("empleado_id", "periodo", name="uq_apoderagest_liquidacion_periodo"),)
@@ -163,6 +167,8 @@ def _dict(item, db, incluir_datos_factura=False):
         "factura_nombre": item.factura_nombre, "factura_subida_en": item.factura_subida_en.isoformat() if item.factura_subida_en else None,
         "estado_factura": item.estado_factura, "factura_revisada_en": item.factura_revisada_en.isoformat() if item.factura_revisada_en else None,
         "factura_observaciones": item.factura_observaciones,
+        "justificante_nombre": item.justificante_nombre,
+        "justificante_subido_en": item.justificante_subido_en.isoformat() if item.justificante_subido_en else None,
     }
     if incluir_datos_factura:
         result["tiene_factura"] = item.factura_bytes is not None
