@@ -396,6 +396,9 @@ def obtener_ficha_completa(
             empleado.activo
         ),
 
+        "es_colaborador": bool(getattr(empleado, "es_colaborador", False)),
+        "honorarios_valor": float(getattr(empleado, "honorarios_valor", 0) or 0),
+
         "modulos_visibles_list": (
             modulos_visibles
         ),

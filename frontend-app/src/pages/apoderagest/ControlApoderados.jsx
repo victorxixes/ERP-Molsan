@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 
-const mesActual = () => new Date().toISOString().slice(0, 7);
+const mesActual = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
+const moverMes = (periodo, delta) => { const [y, m] = periodo.split("-").map(Number); const d = new Date(y, m - 1 + delta, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; };
+const euros = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
 const fecha = (v) => v ? new Date(v).toLocaleDateString("es-ES") : "—";
 const estado = (v) => ({ pendiente: "Pendiente de validar", validada: "Relación validada", sin_factura: "Sin factura", pendiente_revision: "Factura pendiente", aceptada: "Factura aceptada", rechazada: "Factura rechazada", correccion_solicitada: "Corrección solicitada" }[v] || v || "—");
 
@@ -13,24 +15,21 @@ export default function ControlApoderados({ modo = "colaborador" }) {
   const [item, setItem] = useState(null);
   const [items, setItems] = useState([]);
   const [historial, setHistorial] = useState([]);
-  const [colaboradores, setColaboradores] = useState([]);
   const [archivo, setArchivo] = useState(null);
+  const [justificanteArchivo, setJustificanteArchivo] = useState(null);
   const [discrepancia, setDiscrepancia] = useState("");
   const [observaciones, setObservaciones] = useState({});
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [firmasAbiertas, setFirmasAbiertas] = useState(null);
 
   const cargar = useCallback(async () => {
     setCargando(true); setError(""); setMensaje("");
     try {
       if (admin) {
-        const [rel, col] = await Promise.all([
-          axios.get("/apoderagest/liquidaciones/admin", { params: { periodo } }),
-          axios.get("/apoderagest/liquidaciones/admin/colaboradores"),
-        ]);
+        const rel = await axios.get("/apoderagest/liquidaciones/admin", { params: { periodo } });
         setItems(Array.isArray(rel.data) ? rel.data : []);
-        setColaboradores(Array.isArray(col.data) ? col.data : []);
       } else {
         const [res, hist] = await Promise.all([
           axios.get("/apoderagest/liquidaciones/mi", { params: { periodo } }),
@@ -69,12 +68,15 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     finally { setCargando(false); }
   };
 
-  const marcar = async (col, valor) => {
+  const subirJustificante = async () => {
+    if (!item || !justificanteArchivo) return;
+    setCargando(true); setError("");
     try {
-      await axios.patch(`/apoderagest/liquidaciones/admin/colaboradores/${col.id}`, null, { params: { es_colaborador: valor } });
-      setColaboradores((prev) => prev.map((x) => x.id === col.id ? { ...x, es_colaborador: valor } : x));
-      setMensaje(`Ficha de ${col.nombre} actualizada.`);
-    } catch (e) { setError(e?.response?.data?.detail || "No se ha podido actualizar el colaborador."); }
+      const data = new FormData(); data.append("archivo", justificanteArchivo);
+      await axios.post(`/apoderagest/liquidaciones/mi/${item.id}/justificante`, data);
+      setJustificanteArchivo(null); setMensaje("Justificante adjuntado a la liquidación mensual."); await cargar();
+    } catch (e) { setError(e?.response?.data?.detail || "No se ha podido subir el justificante."); }
+    finally { setCargando(false); }
   };
 
   const revisar = async (x, decision) => {
@@ -96,6 +98,14 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     } catch (e) { setError(e?.response?.data?.detail || "No se ha podido guardar la revisión de la relación."); }
   };
 
+  const descargarJustificante = async (x) => {
+    try {
+      const res = await axios.get(`/apoderagest/liquidaciones/admin/${x.id}/justificante`, { responseType: "blob" });
+      const url = URL.createObjectURL(res.data); const a = document.createElement("a");
+      a.href = url; a.download = x.justificante_nombre || "justificante"; a.click(); URL.revokeObjectURL(url);
+    } catch (e) { setError(e?.response?.data?.detail || "No se ha podido descargar el justificante."); }
+  };
+
   const descargar = async (x) => {
     try {
       const res = await axios.get(`/apoderagest/liquidaciones/admin/${x.id}/factura`, { responseType: "blob" });
@@ -111,8 +121,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
           <h1 className="mt-2 text-2xl font-bold text-slate-800">{admin ? "Control Apoderados" : "Mi actividad y liquidaciones"}</h1>
           <p className="mt-2 text-sm text-slate-500">{admin ? "Gestiona colaboradores, relaciones mensuales y revisión de facturas." : "Revisa las firmas reales del mes, valida la relación y presenta tu factura."}</p>
         </div>
-        <div className="flex items-center gap-3"><label className="text-sm font-medium text-slate-600">Periodo <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="ml-2 rounded-xl border border-slate-300 px-3 py-2" /></label>
-        <button onClick={cargar} className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50" disabled={cargando}>↻ Actualizar</button></div>
+        <div className="flex items-center gap-3">{!admin && <label className="text-sm font-medium text-slate-600">Periodo <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="ml-2 rounded-xl border border-slate-300 px-3 py-2" /></label>}<button onClick={cargar} className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50" disabled={cargando}>↻ Actualizar</button></div>
       </div>
     </header>
     {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
@@ -120,24 +129,62 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     {cargando && <p className="animate-pulse text-sm text-slate-500">Cargando información…</p>}
     {admin ? <>
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-bold text-slate-800">Colaboradores habilitados</h2>
-        <p className="mb-4 mt-1 text-sm text-slate-500">Activa el circuito en la ficha de empleado correspondiente; no se crean fichas duplicadas.</p>
-        <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Estado</th><th className="p-3">Colaborador</th></tr></thead><tbody>{colaboradores.map((c) => <tr key={c.id} className="border-b last:border-0"><td className="p-3 font-medium text-slate-800">{c.nombre} <span className="text-slate-400">#{c.id}</span></td><td className="p-3">{c.activo ? "Activo" : "Inactivo"}</td><td className="p-3"><label className="inline-flex items-center gap-2"><input type="checkbox" checked={c.es_colaborador} onChange={(e) => marcar(c, e.target.checked)} /> Habilitado</label></td></tr>)}</tbody></table></div>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-bold text-slate-800">Liquidación mensual de colaboradores</h2>
+            <p className="mt-1 text-sm text-slate-500">Periodo natural completo: del día 1 al último día del mes. Un protocolo cuenta una sola vez por colaborador, notario y número de protocolo.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button type="button" aria-label="Mes anterior" onClick={() => setPeriodo(moverMes(periodo, -1))} className="rounded-xl border border-slate-300 px-3 py-2 font-bold hover:bg-slate-50">←</button>
+            <label className="text-sm font-semibold text-slate-600">Mes
+              <input type="month" value={periodo} onChange={(e) => setPeriodo(e.target.value)} className="ml-2 rounded-xl border border-slate-300 px-3 py-2" />
+            </label>
+            <button type="button" aria-label="Mes siguiente" onClick={() => setPeriodo(moverMes(periodo, 1))} className="rounded-xl border border-slate-300 px-3 py-2 font-bold hover:bg-slate-50">→</button>
+          </div>
+        </div>
+      </section>
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/70 p-5"><p className="text-sm font-semibold text-indigo-700">Protocolos firmados</p><p className="mt-2 text-3xl font-extrabold text-slate-900">{items.reduce((s, x) => s + Number(x.protocolos_firmados ?? x.expedientes?.length ?? 0), 0)}</p><p className="mt-1 text-xs text-slate-500">Protocolos únicos, no número de expedientes</p></div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5"><p className="text-sm font-semibold text-slate-500">Cancelaciones sin provisión</p><p className="mt-2 text-3xl font-extrabold text-slate-900">{items.reduce((s, x) => s + Number(x.cancelaciones_sin_provision || 0), 0)}</p></div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5"><p className="text-sm font-semibold text-slate-500">Cancelaciones con provisión</p><p className="mt-2 text-3xl font-extrabold text-slate-900">{items.reduce((s, x) => s + Number(x.cancelaciones_con_provision || 0), 0)}</p></div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5"><p className="text-sm font-semibold text-slate-500">Facturación neta total</p><p className="mt-2 text-2xl font-extrabold text-slate-900">{euros(items.reduce((s, x) => s + Number(x.base_neta ?? x.honorarios ?? 0), 0))}</p></div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5"><p className="text-sm font-semibold text-slate-500">IVA total (21%)</p><p className="mt-2 text-2xl font-extrabold text-slate-900">{euros(items.reduce((s, x) => s + Number(x.iva || 0), 0))}</p></div>
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5"><p className="text-sm font-semibold text-emerald-800">Total facturación</p><p className="mt-2 text-2xl font-extrabold text-emerald-950">{euros(items.reduce((s, x) => s + Number(x.total ?? (Number(x.base_neta || 0) + Number(x.iva || 0))), 0))}</p></div>
       </section>
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-bold text-slate-800">Relaciones mensuales y facturas</h2>
-        <p className="mb-4 mt-1 text-sm text-slate-500">Se muestran las relaciones guardadas para el periodo seleccionado. La instantánea validada por el colaborador se conserva para auditoría.</p>
-        {items.length === 0 ? <p className="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">Todavía no hay relaciones guardadas para este periodo. El colaborador debe acceder a su liquidación para generar y revisar su relación.</p> : <div className="space-y-4">{items.map((x) => <article key={x.id} className="rounded-2xl border border-slate-200 p-4">
-          <div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="font-bold text-slate-800">{x.colaborador}</h3><p className="text-sm text-slate-500">{x.periodo} · {x.expedientes?.length || 0} firmas · {estado(x.estado_relacion)}</p><p className="mt-1 text-sm text-slate-500">Factura: {estado(x.estado_factura)} {x.factura_nombre ? `· ${x.factura_nombre}` : ""}</p></div>{x.tiene_factura && <button onClick={() => descargar(x)} className="rounded-lg border px-3 py-2 text-sm font-semibold">Descargar factura</button>}</div>
-          <p className="mt-2 text-sm text-slate-600">Revisión de la relación: <strong>{estado(x.estado_revision_relacion)}</strong>{x.observaciones_revision_relacion ? ` · ${x.observaciones_revision_relacion}` : ""}</p>
-          {x.validado_en && <div className="mt-3 rounded-xl border border-indigo-100 bg-indigo-50/50 p-3"><p className="text-sm font-semibold text-slate-800">Revisar relación validada por el colaborador</p><textarea value={observaciones[`rel-${x.id}`] ?? x.observaciones_revision_relacion ?? ""} onChange={(e) => setObservaciones((p) => ({ ...p, [`rel-${x.id}`]: e.target.value }))} placeholder="Observaciones o correcciones para el colaborador…" className="mt-2 min-h-16 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm" /><div className="mt-2 flex flex-wrap gap-2"><button onClick={() => revisarRelacion(x, "aceptada")} className="rounded-xl bg-emerald-700 px-3 py-2 text-sm font-semibold text-white">Aceptar relación</button><button onClick={() => revisarRelacion(x, "correccion_solicitada")} className="rounded-xl border border-amber-300 px-3 py-2 text-sm font-semibold text-amber-800">Solicitar corrección</button><button onClick={() => revisarRelacion(x, "rechazada")} className="rounded-xl border border-red-300 px-3 py-2 text-sm font-semibold text-red-700">Rechazar relación</button></div></div>}
-          <details className="mt-3"><summary className="cursor-pointer text-sm font-semibold text-indigo-700">Ver expedientes incluidos ({x.expedientes?.length || 0})</summary><div className="mt-2 overflow-x-auto"><table className="w-full text-sm"><thead><tr><th className="p-2 text-left">Expediente</th><th className="p-2 text-left">Fecha firma</th><th className="p-2 text-left">Protocolo</th></tr></thead><tbody>{(x.expedientes || []).map((e) => <tr key={e.expediente_id}><td className="p-2">{e.id_expediente}</td><td className="p-2">{fecha(e.fecha_firma)}</td><td className="p-2">{e.protocolo || "—"}</td></tr>)}</tbody></table></div></details>
-          {x.tiene_factura && <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]"><textarea value={observaciones[x.id] ?? x.factura_observaciones ?? ""} onChange={(e) => setObservaciones((p) => ({ ...p, [x.id]: e.target.value }))} placeholder="Observaciones para el colaborador…" className="min-h-20 rounded-xl border border-slate-300 p-3 text-sm" /><div className="flex flex-wrap gap-2"><button onClick={() => revisar(x, "aceptada")} className="rounded-xl bg-emerald-700 px-3 py-2 text-sm font-semibold text-white">Aceptar</button><button onClick={() => revisar(x, "correccion_solicitada")} className="rounded-xl border border-amber-300 px-3 py-2 text-sm font-semibold text-amber-800">Pedir corrección</button><button onClick={() => revisar(x, "rechazada")} className="rounded-xl border border-red-300 px-3 py-2 text-sm font-semibold text-red-700">Rechazar</button></div></div>}
-        </article>)}</div>}
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-800">Relación del mes · {periodo}</h2><p className="mt-1 text-sm text-slate-500">Las firmas se obtienen de la fecha de firma real en FichaExpediente. La factura solo se puede validar tras revisar la relación mensual.</p></div><span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{items.length} colaboradores</span></div>
+        {items.length === 0 ? <p className="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">No hay colaboradores habilitados ni relaciones para este periodo.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[1250px] text-left text-sm">
+          <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <th className="p-3">Colaborador</th><th className="p-3">Cancelaciones sin provisión</th><th className="p-3">Cancelaciones con provisión</th><th className="p-3">Honorarios</th><th className="p-3">Base neta</th><th className="p-3">Total</th><th className="p-3">Ver factura</th><th className="p-3">Justificante</th><th className="p-3">Validar</th><th className="p-3">Ver firmas</th>
+          </tr></thead>
+          <tbody>{items.map((x) => <tr key={x.id} className="border-b last:border-0 hover:bg-slate-50/70">
+            <td className="p-3"><p className="font-bold text-slate-800">{x.colaborador}</p><p className="mt-1 text-xs text-slate-500">{x.protocolos_firmados ?? x.expedientes?.length ?? 0} protocolo(s) · {estado(x.estado_relacion)}</p><p className="mt-1 text-xs text-slate-500">Factura: {estado(x.estado_factura)}</p></td>
+            <td className="p-3 font-semibold">{x.cancelaciones_sin_provision ?? 0}</td><td className="p-3 font-semibold">{x.cancelaciones_con_provision ?? 0}</td>
+            <td className="p-3">{euros(x.honorarios_unitarios)}</td><td className="p-3">{euros(x.base_neta ?? x.honorarios)}</td><td className="p-3 font-bold">{euros(x.total ?? (Number(x.base_neta || 0) + Number(x.iva || 0)))}</td>
+            <td className="p-3">{x.tiene_factura ? <button type="button" onClick={() => descargar(x)} className="rounded-lg border border-indigo-200 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver factura</button> : <span className="text-slate-400">Pendiente</span>}</td>
+            <td className="p-3">{x.justificante_nombre ? <button type="button" onClick={() => descargarJustificante(x)} className="rounded-lg border border-emerald-200 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50">Ver justificante</button> : <span className="text-slate-400">No aportado</span>}</td>
+            <td className="p-3"><div className="flex flex-col gap-2">{x.tiene_factura && <button type="button" onClick={() => revisar(x, "aceptada")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white">Validar factura</button>}<button type="button" onClick={() => revisarRelacion(x, "aceptada")} disabled={!x.validado_en} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold disabled:opacity-40">Validar relación</button>{x.tiene_factura && <button type="button" onClick={() => revisar(x, "rechazada")} className="rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-700">Rechazar factura</button>}</div></td>
+            <td className="p-3"><button type="button" onClick={() => setFirmasAbiertas(x)} className="rounded-lg border border-indigo-200 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver firmas ({x.expedientes?.length || 0})</button></td>
+          </tr>)}</tbody>
+        </table></div>}
       </section>
+      {firmasAbiertas && <div className="fixed inset-0 z-[12000] flex items-center justify-center bg-slate-950/50 p-4" role="dialog" aria-modal="true" aria-label="Listado de firmas">
+        <section className="max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl">
+          <header className="flex items-start justify-between gap-4 border-b border-slate-200 p-5"><div><p className="text-xs font-bold uppercase tracking-widest text-indigo-600">Control Apoderados · {periodo}</p><h2 className="mt-1 text-xl font-bold text-slate-900">Firmas de {firmasAbiertas.colaborador}</h2><p className="mt-1 text-sm text-slate-500">{firmasAbiertas.protocolos_firmados ?? firmasAbiertas.expedientes?.length ?? 0} protocolos únicos · {firmasAbiertas.expedientes?.length || 0} expedientes</p></div><button type="button" onClick={() => setFirmasAbiertas(null)} className="rounded-xl border px-3 py-2 font-semibold">Cerrar ✕</button></header>
+          <div className="max-h-[65vh] overflow-auto p-5">{(firmasAbiertas.expedientes || []).length ? <table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Expediente</th><th className="p-3">Fecha firma</th><th className="p-3">Notario</th><th className="p-3">Protocolo</th><th className="p-3">Operación</th></tr></thead><tbody>{firmasAbiertas.expedientes.map((e) => <tr key={e.expediente_id} className="border-b last:border-0"><td className="p-3 font-semibold">{e.id_expediente}</td><td className="p-3">{fecha(e.fecha_firma)}</td><td className="p-3">{e.notario || "—"}</td><td className="p-3">{e.protocolo || "Sin protocolo"}</td><td className="p-3">{e.tipo_operacion || "—"}</td></tr>)}</tbody></table> : <p className="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">No hay firmas registradas en este periodo.</p>}</div>
+        </section>
+      </div>}
     </> : item ? <>
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/70 p-5"><p className="text-sm font-semibold text-indigo-700">Protocolos firmados</p><p className="mt-2 text-3xl font-extrabold text-slate-900">{item.protocolos_firmados ?? item.expedientes?.length ?? 0}</p><p className="mt-1 text-xs text-slate-500">Un protocolo se cuenta una sola vez por notario</p></div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5"><p className="text-sm font-semibold text-slate-500">Cancelaciones sin provisión</p><p className="mt-2 text-2xl font-extrabold text-slate-900">{item.cancelaciones_sin_provision ?? 0}</p></div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5"><p className="text-sm font-semibold text-slate-500">Cancelaciones con provisión</p><p className="mt-2 text-2xl font-extrabold text-slate-900">{item.cancelaciones_con_provision ?? 0}</p></div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5"><p className="text-sm font-semibold text-slate-500">Honorarios netos</p><p className="mt-2 text-2xl font-extrabold text-slate-900">{euros(item.honorarios)}</p><p className="mt-1 text-xs text-slate-500">{euros(item.honorarios_unitarios)} por protocolo</p></div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5"><p className="text-sm font-semibold text-slate-500">IVA (21%)</p><p className="mt-2 text-2xl font-extrabold text-slate-900">{euros(item.iva)}</p></div>
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5"><p className="text-sm font-semibold text-emerald-800">Total</p><p className="mt-2 text-2xl font-extrabold text-emerald-950">{euros(item.total)}</p></div>
+      </section>
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-800">Relación de expedientes firmados</h2><p className="mt-1 text-sm text-slate-500">Solo se incluyen expedientes cuya fecha de firma real pertenece al mes seleccionado y cuya ficha identifica este colaborador como apoderado.</p></div><span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{item.expedientes?.length || 0} firmas</span></div>
+        <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-800">Relación de expedientes firmados</h2><p className="mt-1 text-sm text-slate-500">Solo se incluyen expedientes cuya fecha de firma real pertenece al mes seleccionado y cuya ficha identifica este colaborador como apoderado.</p></div><span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{item.protocolos_firmados ?? item.expedientes?.length ?? 0} protocolos</span></div>
         {item.expedientes?.length ? <div className="mt-4 overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Expediente</th><th className="p-3">Fecha firma</th><th className="p-3">Protocolo</th><th className="p-3">Notario</th></tr></thead><tbody>{item.expedientes.map((e) => <tr key={e.expediente_id} className="border-b last:border-0"><td className="p-3 font-semibold">{e.id_expediente}</td><td className="p-3">{fecha(e.fecha_firma)}</td><td className="p-3">{e.protocolo || "—"}</td><td className="p-3">{e.notario || "—"}</td></tr>)}</tbody></table></div> : <p className="mt-4 rounded-xl bg-slate-50 p-5 text-sm text-slate-500">No constan firmas reales a tu nombre en este periodo.</p>}
         <div className="mt-5 rounded-xl bg-slate-50 p-4"><p className="font-semibold text-slate-800">Estado: {estado(item.estado_relacion)}</p>{item.validado_en && <p className="mt-1 text-sm text-slate-500">Validada el {fecha(item.validado_en)} · versión {item.validado_version}</p>}
           {item.estado_relacion !== "validada" ? <><label className="mt-4 block text-sm font-medium text-slate-700">Observaciones o discrepancias (opcional)<textarea value={discrepancia} onChange={(e) => setDiscrepancia(e.target.value)} maxLength={2000} className="mt-1 min-h-24 w-full rounded-xl border border-slate-300 bg-white p-3" placeholder="Indica si falta una firma o hay algún dato incorrecto…" /></label><button onClick={validar} disabled={cargando} className="mt-3 rounded-xl bg-indigo-700 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">Validar relación mensual</button></> : <p className="mt-2 text-sm text-emerald-700">Relación validada. Ya puedes presentar la factura del periodo.</p>}
@@ -147,11 +194,16 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         {item.factura_nombre && <p className="mt-3 text-sm">Archivo presentado: <strong>{item.factura_nombre}</strong> · {estado(item.estado_factura)}</p>}
         {item.estado_relacion === "validada" ? <div className="mt-4 flex flex-wrap items-center gap-3"><input type="file" accept=".pdf,.xml,.jpg,.jpeg,.png" onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="max-w-full text-sm" /><button onClick={subir} disabled={!archivo || cargando} className="rounded-xl bg-indigo-700 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">{item.factura_nombre ? "Sustituir factura" : "Enviar factura"}</button></div> : <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">Primero valida la relación de expedientes.</p>}
         {item.factura_observaciones && <p className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Observaciones de Molsan: {item.factura_observaciones}</p>}
+        <div className="mt-5 rounded-xl border border-slate-200 p-4">
+          <h3 className="font-semibold text-slate-800">Justificante</h3>
+          <p className="mt-1 text-sm text-slate-500">{item.justificante_nombre ? `Adjuntado: ${item.justificante_nombre}` : "Adjunta el justificante correspondiente a esta liquidación."} Formatos PDF, XML, JPG o PNG; máximo 10 MB.</p>
+          <div className="mt-3 flex flex-wrap items-center gap-3"><input type="file" accept=".pdf,.xml,.jpg,.jpeg,.png" onChange={(e) => setJustificanteArchivo(e.target.files?.[0] || null)} className="max-w-full text-sm" /><button type="button" onClick={subirJustificante} disabled={!justificanteArchivo || cargando} className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-bold disabled:opacity-50">{item.justificante_nombre ? "Sustituir justificante" : "Subir justificante"}</button></div>
+        </div>
       </section>
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-bold text-slate-800">Histórico de liquidaciones</h2>
         <p className="mb-3 mt-1 text-sm text-slate-500">Consulta el estado de las relaciones y facturas de otros meses.</p>
-        {historial.length ? <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Periodo</th><th className="p-3">Firmas</th><th className="p-3">Relación</th><th className="p-3">Factura</th><th className="p-3">Consulta</th></tr></thead><tbody>{historial.map((h) => <tr key={h.id} className="border-b last:border-0"><td className="p-3 font-semibold">{h.periodo}</td><td className="p-3">{h.expedientes?.length || 0}</td><td className="p-3">{estado(h.estado_relacion)}</td><td className="p-3">{estado(h.estado_factura)}</td><td className="p-3"><button onClick={() => setPeriodo(h.periodo)} className="font-semibold text-indigo-700 hover:underline">Abrir mes</button></td></tr>)}</tbody></table></div> : <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">Todavía no hay otros periodos registrados.</p>}
+        {historial.length ? <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-slate-500"><th className="p-3">Periodo</th><th className="p-3">Firmas</th><th className="p-3">Relación</th><th className="p-3">Factura</th><th className="p-3">Consulta</th></tr></thead><tbody>{historial.map((h) => <tr key={h.id} className="border-b last:border-0"><td className="p-3 font-semibold">{h.periodo}</td><td className="p-3">{h.protocolos_firmados ?? h.expedientes?.length ?? 0}</td><td className="p-3">{estado(h.estado_relacion)}</td><td className="p-3">{estado(h.estado_factura)}</td><td className="p-3"><button onClick={() => setPeriodo(h.periodo)} className="font-semibold text-indigo-700 hover:underline">Abrir mes</button></td></tr>)}</tbody></table></div> : <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">Todavía no hay otros periodos registrados.</p>}
       </section>
     </> : !cargando && <section className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">No se ha podido cargar la relación mensual. Si eres colaborador, solicita que habiliten tu ficha desde Utilidades → Control Apoderados.</section>}
     <div><button onClick={() => navigate(admin ? "/herramientas/utilidades" : "/apoderagest")} className="text-sm font-semibold text-indigo-700 hover:underline">← Volver</button></div>

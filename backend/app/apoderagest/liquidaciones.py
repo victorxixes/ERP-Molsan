@@ -7,7 +7,7 @@ from datetime import date, datetime
 from io import BytesIO
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
-from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, ForeignKey, LargeBinary, UniqueConstraint, and_, func, or_
+from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, ForeignKey, LargeBinary, Float, UniqueConstraint, and_, func, or_
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Session
 from backend.app.database import Base, get_db
@@ -24,6 +24,7 @@ class LiquidacionMensual(Base):
     empleado_id = Column(Integer, ForeignKey("empleados.id"), nullable=False, index=True)
     periodo = Column(String(7), nullable=False, index=True)
     expedientes_json = Column(JSONB, nullable=False, default=list)
+    honorarios_valor = Column(Float, nullable=False, default=0, server_default="0")
     estado_relacion = Column(String(30), nullable=False, default="pendiente")
     validado_en = Column(DateTime(timezone=True), nullable=True)
     validado_por_id = Column(Integer, ForeignKey("empleados.id"), nullable=True)
@@ -42,6 +43,10 @@ class LiquidacionMensual(Base):
     factura_revisada_por = Column(Integer, ForeignKey("empleados.id"), nullable=True)
     factura_revisada_en = Column(DateTime(timezone=True), nullable=True)
     factura_observaciones = Column(String(2000), nullable=True)
+    justificante_bytes = Column(LargeBinary, nullable=True)
+    justificante_nombre = Column(String(255), nullable=True)
+    justificante_tipo = Column(String(150), nullable=True)
+    justificante_subido_en = Column(DateTime(timezone=True), nullable=True)
     creada_en = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
     actualizada_en = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     __table_args__ = (UniqueConstraint("empleado_id", "periodo", name="uq_apoderagest_liquidacion_periodo"),)
@@ -103,14 +108,58 @@ def _relacion_firmas(db, empleado_id, periodo):
         "protocolo": getattr(e, "protocolo", None),
         "tipo_firma": getattr(e, "tipo_firma", None),
         "notario": getattr(e, "nombre_notario", None) or getattr(e, "notario", None),
+        "notario_id": getattr(e, "notario_id", None),
+        "tipo_operacion": getattr(e, "tipo_operacion", None),
+        "id_provision": getattr(e, "id_provision", None),
+        "tipo_provision": getattr(e, "tipo_provision", None),
     } for e in filas]
+
+def _clave_protocolo(expediente):
+    """Un protocolo se liquida una sola vez por colaborador, notario y número."""
+    protocolo = str(expediente.get("protocolo") or "").strip()
+    if not protocolo:
+        # Si falta número de protocolo, no agrupar expedientes distintos por accidente.
+        return ("expediente", expediente.get("expediente_id"))
+    notario = str(expediente.get("notario_id") or expediente.get("notario") or "").strip().casefold()
+    return ("protocolo", notario, protocolo.casefold())
+
+
+def _resumen_liquidacion(honorarios_valor, expedientes):
+    protocolos = {}
+    for expediente in expedientes or []:
+        clave = _clave_protocolo(expediente)
+        grupo = protocolos.setdefault(clave, {"expedientes": [], "con_provision": False, "sin_provision": False})
+        grupo["expedientes"].append(expediente)
+        operacion = str(expediente.get("tipo_operacion") or "").casefold().replace("ó", "o")
+        provision = str(expediente.get("tipo_provision") or "").casefold().replace("ó", "o")
+        tiene_provision = bool(str(expediente.get("id_provision") or "").strip()) or "con provision" in operacion or "con provision" in provision
+        es_sin_provision = "sin provision" in operacion or "sin provision" in provision
+        grupo["con_provision"] = grupo["con_provision"] or (tiene_provision and not es_sin_provision)
+        grupo["sin_provision"] = grupo["sin_provision"] or es_sin_provision
+    protocolos_unicos = list(protocolos.values())
+    valor = float(honorarios_valor or 0)
+    honorarios = round(len(protocolos_unicos) * valor, 2)
+    iva = round(honorarios * 0.21, 2)
+    return {
+        "protocolos_firmados": len(protocolos_unicos),
+        "cancelaciones_sin_provision": sum(1 for p in protocolos_unicos if p["sin_provision"]),
+        "cancelaciones_con_provision": sum(1 for p in protocolos_unicos if p["con_provision"] and not p["sin_provision"]),
+        "honorarios_unitarios": round(valor, 2),
+        "honorarios": honorarios,
+        "base_neta": honorarios,
+        "iva": iva,
+        "total": round(honorarios + iva, 2),
+    }
+
 
 def _dict(item, db, incluir_datos_factura=False):
     empleado = db.query(Empleado).filter(Empleado.id == item.empleado_id).first()
+    expedientes = item.expedientes_json or []
+    resumen = _resumen_liquidacion(item.honorarios_valor, expedientes)
     result = {
         "id": item.id, "empleado_id": item.empleado_id,
         "colaborador": _nombre(empleado) if empleado else str(item.empleado_id),
-        "periodo": item.periodo, "expedientes": item.expedientes_json or [],
+        "periodo": item.periodo, "expedientes": expedientes, "honorarios_valor": float(item.honorarios_valor or 0), **resumen,
         "estado_relacion": item.estado_relacion, "validado_en": item.validado_en.isoformat() if item.validado_en else None,
         "validado_por_id": item.validado_por_id, "validado_version": item.validado_version, "discrepancia": item.discrepancia,
         "historial_validaciones": item.historial_validaciones or [], "estado_revision_relacion": item.estado_revision_relacion,
@@ -119,6 +168,8 @@ def _dict(item, db, incluir_datos_factura=False):
         "factura_nombre": item.factura_nombre, "factura_subida_en": item.factura_subida_en.isoformat() if item.factura_subida_en else None,
         "estado_factura": item.estado_factura, "factura_revisada_en": item.factura_revisada_en.isoformat() if item.factura_revisada_en else None,
         "factura_observaciones": item.factura_observaciones,
+        "justificante_nombre": item.justificante_nombre,
+        "justificante_subido_en": item.justificante_subido_en.isoformat() if item.justificante_subido_en else None,
     }
     if incluir_datos_factura:
         result["tiene_factura"] = item.factura_bytes is not None
@@ -129,12 +180,20 @@ def _obtener_o_crear(db, empleado_id, periodo):
     item = db.query(LiquidacionMensual).filter_by(empleado_id=empleado_id, periodo=periodo).with_for_update().first()
     firmas = _relacion_firmas(db, empleado_id, periodo)
     if item is None:
-        item = LiquidacionMensual(empleado_id=empleado_id, periodo=periodo, expedientes_json=firmas)
+        item = LiquidacionMensual(
+            empleado_id=empleado_id,
+            periodo=periodo,
+            expedientes_json=firmas,
+            honorarios_valor=float(getattr(empleado, "honorarios_valor", 0) or 0),
+        )
         db.add(item)
         db.flush()
-    elif item.estado_relacion != "validada" and item.expedientes_json != firmas:
-        item.expedientes_json = firmas
-        item.validado_version = (item.validado_version or 0) + 1
+    elif item.estado_relacion != "validada":
+        if item.expedientes_json != firmas:
+            item.expedientes_json = firmas
+            item.validado_version = (item.validado_version or 0) + 1
+        # La tarifa sigue la ficha hasta que el colaborador valida la relación.
+        item.honorarios_valor = float(getattr(empleado, "honorarios_valor", 0) or 0)
     # Tras validar, la instantánea no se recalcula silenciosamente.
     db.commit()
     db.refresh(item)
@@ -184,6 +243,29 @@ def validar_mi_relacion(liquidacion_id: int, discrepancia: str = Form(""), db: S
     db.commit()
     db.refresh(item)
     return _dict(item, db)
+
+@router.post("/mi/{liquidacion_id}/justificante")
+def subir_justificante(liquidacion_id: int, archivo: UploadFile = File(...), db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    if not getattr(usuario, "es_colaborador", False):
+        raise HTTPException(status_code=403, detail="Tu ficha no está habilitada como colaborador.")
+    item = db.query(LiquidacionMensual).filter_by(id=liquidacion_id, empleado_id=usuario.id).with_for_update().first()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Relación mensual no encontrada.")
+    if not archivo.filename or not archivo.filename.lower().endswith((".pdf", ".xml", ".jpg", ".jpeg", ".png")):
+        raise HTTPException(status_code=422, detail="Adjunta un justificante PDF, XML, JPG o PNG.")
+    contenido = archivo.file.read(10 * 1024 * 1024 + 1)
+    if not contenido:
+        raise HTTPException(status_code=422, detail="El justificante está vacío.")
+    if len(contenido) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="El justificante no puede superar 10 MB.")
+    item.justificante_bytes = contenido
+    item.justificante_nombre = archivo.filename[:255]
+    item.justificante_tipo = archivo.content_type or "application/octet-stream"
+    item.justificante_subido_en = datetime.utcnow()
+    db.commit()
+    db.refresh(item)
+    return _dict(item, db)
+
 
 @router.post("/mi/{liquidacion_id}/factura")
 def subir_factura(liquidacion_id: int, archivo: UploadFile = File(...), db: Session = Depends(get_db), usuario=Depends(get_current_user)):
@@ -275,6 +357,16 @@ def descargar_factura(liquidacion_id: int, db: Session = Depends(get_db), usuari
         raise HTTPException(status_code=404, detail="No hay factura adjunta.")
     nombre_seguro = (item.factura_nombre or "factura").replace("\\r", "").replace("\\n", "").replace('"', "'").replace("/", "_").replace("\\\\", "_")
     return StreamingResponse(BytesIO(item.factura_bytes), media_type=item.factura_tipo or "application/octet-stream", headers={"Content-Disposition": f'attachment; filename="{nombre_seguro}"'})
+
+@router.get("/admin/{liquidacion_id}/justificante")
+def descargar_justificante(liquidacion_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_admin(usuario)
+    item = db.query(LiquidacionMensual).filter_by(id=liquidacion_id).first()
+    if item is None or not item.justificante_bytes:
+        raise HTTPException(status_code=404, detail="No hay justificante adjunto.")
+    nombre_seguro = (item.justificante_nombre or "justificante").replace(chr(13), "").replace(chr(10), "").replace(chr(34), chr(39)).replace("/", "_").replace(chr(92), "_")
+    return StreamingResponse(BytesIO(item.justificante_bytes), media_type=item.justificante_tipo or "application/octet-stream", headers={"Content-Disposition": f'attachment; filename="{nombre_seguro}"'})
+
 
 @router.post("/admin/{liquidacion_id}/factura/revisar")
 def revisar_factura(liquidacion_id: int, decision: str = Form(...), observaciones: str = Form(""), db: Session = Depends(get_db), usuario=Depends(get_current_user)):

@@ -757,10 +757,32 @@ def migrar_esquema_expedientes_inicio():
                 "Otra instancia mantiene el bloqueo de migración durante más de 60 segundos."
             )
 
-        # Migración de Control Apoderados dentro del mismo bloqueo global.
-        # Evita solicitar un bloqueo exclusivo de empleados en cada arranque:
-        # ADD COLUMN IF NOT EXISTS también bloquea la tabla aunque la columna
-        # ya exista. Solo ejecutamos DDL si falta realmente en el catálogo.
+        # Migración de Control Apoderados: habilitación y tarifa por protocolo.
+        # Solo ejecutar DDL cuando la columna falte evita bloqueos innecesarios en cada arranque.
+        with conexion.begin():
+            existe_honorarios_valor = bool(
+                conexion.execute(
+                    text("""
+                        SELECT EXISTS (
+                            SELECT 1
+                            FROM pg_attribute
+                            WHERE attrelid = 'public.empleados'::regclass
+                              AND attname = 'honorarios_valor'
+                              AND NOT attisdropped
+                        )
+                    """)
+                ).scalar()
+            )
+        if not existe_honorarios_valor:
+            ejecutar_ddl_con_reintentos(
+                "crear columna empleados.honorarios_valor",
+                "ALTER TABLE public.empleados ADD COLUMN honorarios_valor DOUBLE PRECISION NOT NULL DEFAULT 0",
+            )
+            print("[MIGRACION STARTUP] Columna empleados.honorarios_valor creada.", flush=True)
+        else:
+            print("[MIGRACION STARTUP] Columna empleados.honorarios_valor ya existe; se omite DDL.", flush=True)
+
+        # Habilitación del circuito mensual de liquidaciones.
         with conexion.begin():
             existe_es_colaborador = bool(
                 conexion.execute(
@@ -804,6 +826,29 @@ def migrar_esquema_expedientes_inicio():
                 time.sleep(espera)
         if not tabla_liquidaciones_creada:
             raise RuntimeError("No se pudo crear la tabla apoderagest_liquidaciones.")
+
+        # Añadir los campos de justificante a instalaciones que ya tengan la tabla.
+        with conexion.begin():
+            columnas_liquidacion = {
+                fila[0] for fila in conexion.execute(text(
+                    "SELECT column_name FROM information_schema.columns "
+                    "WHERE table_schema = 'public' AND table_name = 'apoderagest_liquidaciones'"
+                )).fetchall()
+            }
+        columnas_justificante = [
+            ("honorarios_valor", "DOUBLE PRECISION NOT NULL DEFAULT 0"),
+            ("justificante_bytes", "BYTEA"),
+            ("justificante_nombre", "VARCHAR(255)"),
+            ("justificante_tipo", "VARCHAR(150)"),
+            ("justificante_subido_en", "TIMESTAMP WITH TIME ZONE"),
+        ]
+        for nombre, tipo_sql in columnas_justificante:
+            if nombre not in columnas_liquidacion:
+                ejecutar_ddl_con_reintentos(
+                    f"crear columna apoderagest_liquidaciones.{nombre}",
+                    f'ALTER TABLE public.apoderagest_liquidaciones ADD COLUMN "{nombre}" {tipo_sql}',
+                )
+                print(f"[MIGRACION STARTUP] Columna apoderagest_liquidaciones.{nombre} creada.", flush=True)
 
         with conexion.begin():
             resultado = conexion.execute(
