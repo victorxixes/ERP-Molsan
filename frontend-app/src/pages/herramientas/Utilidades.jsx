@@ -20,25 +20,16 @@ export default function Utilidades() {
         </div>
       </header>
 
-      <Grupo titulo="Empleados y permisos" descripcion="Gestiona las fichas de empleados y administra sus accesos desde el centro de seguridad.">
+      <Grupo titulo="Empleados y permisos" descripcion="Gestiona empleados, roles, permisos, asignaciones, visibilidad y auditoría desde un único grupo de administración.">
         <Card icon="🛡️" titulo="Empleados y permisos" descripcion="Selecciona un empleado para revisar y administrar sus roles, módulos y permisos asignados." link="/seguridad/usuarios" destacado />
-      </Grupo>
-
-      <Grupo titulo="Roles" descripcion="Crea y administra los roles de seguridad que después podrás asignar a los empleados.">
         <Card icon="🔑" titulo="Gestión de roles" descripcion="Crea roles nuevos, como Colaborador, y administra los roles disponibles en el sistema." link="/seguridad/roles/editor" destacado />
+        <Card icon="🧾" titulo="Auditoría" descripcion="Consulta los eventos de auditoría disponibles para tu perfil." link="/auditoria" destacado />
+        <Card icon="📊" titulo="Visibilidad de tablas" descripcion="Configura las columnas de Excel y la visibilidad por actividad para el empleado seleccionado." link="/herramientas/utilidades/visibilidad-tablas" destacado />
+        <Card icon="⚖️" titulo="Asignaciones" descripcion="Administra las reglas de reparto y asignación de expedientes desde un panel centralizado." link="/herramientas/utilidades/asignaciones" destacado />
       </Grupo>
 
       <Grupo titulo="Accesos notariales" descripcion="Administra por separado los accesos de las notarías a NotarGest y EncargaGest, con historial de cambios.">
         <Card icon="🔐" titulo="Accesos notariales" descripcion="Busca una notaría y administra por separado sus accesos a NotarGest y EncargaGest, con historial de cambios." link="/herramientas/utilidades/accesos-notariales" />
-      </Grupo>
-
-      <Grupo titulo="Auditoría" descripcion="Consulta por separado el registro de eventos y los cambios registrados en el sistema.">
-        <Card icon="🧾" titulo="Auditoría" descripcion="Consulta los eventos de auditoría disponibles para tu perfil." link="/auditoria" destacado />
-      </Grupo>
-
-      <Grupo titulo="Administración de empleados" descripcion="Configura visibilidad y asignaciones desde Utilidades, seleccionando el empleado correspondiente.">
-        <Card icon="📊" titulo="Visibilidad de tablas" descripcion="Configura las columnas de Excel y la visibilidad por actividad para el empleado seleccionado." link="/herramientas/utilidades/visibilidad-tablas" destacado />
-        <Card icon="⚖️" titulo="Asignaciones" descripcion="Administra las reglas de reparto y asignación de expedientes desde un panel centralizado." link="/herramientas/utilidades/asignaciones" destacado />
       </Grupo>
 
       <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
