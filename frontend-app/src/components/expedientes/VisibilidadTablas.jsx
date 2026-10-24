@@ -220,7 +220,7 @@ export default function VisibilidadTablas({ empleadoId, onClose, ambito = "admin
               <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
                 <p className="text-xs text-slate-500">{configuracionActual ? "Esta actividad ya tiene una configuración guardada." : "Se mostrarán valores iniciales hasta que guardes la configuración."}</p>
                 <div className="flex gap-2">
-                  <button type="button" onClick={onClose} className="erp-btn-secondary rounded-xl px-4 py-2.5 text-sm font-bold">Cancelar</button>
+                  {modal && <button type="button" onClick={onClose} className="erp-btn-secondary rounded-xl px-4 py-2.5 text-sm font-bold">Cancelar</button>}
                   <button type="button" disabled={guardando} onClick={guardar} className="erp-btn-primary rounded-xl px-5 py-2.5 text-sm font-extrabold shadow-sm disabled:cursor-wait disabled:opacity-60">{guardando ? "Guardando…" : "Guardar configuración"}</button>
                 </div>
               </footer>
