@@ -70,6 +70,7 @@ import MantenimientoTecnico from "./pages/herramientas/MantenimientoTecnico.jsx"
 import CambiarGestorExpediente from "./pages/herramientas/CambiarGestorExpediente.jsx";
 import ComplementosSaldo from "./pages/herramientas/ComplementosSaldo.jsx";
 import ProcesoAbsis from "./pages/herramientas/ProcesoAbsis.jsx";
+import LecturaCopias from "./pages/herramientas/LecturaCopias.jsx";
 import PPAD from "./pages/herramientas/PPAD.jsx";
 import Verifacti from "./pages/herramientas/Verifacti.jsx";
 
@@ -470,6 +471,11 @@ export default function App() {
           <Route
             path="herramientas/utilidades"
             element={<Utilidades />}
+          />
+
+          <Route
+            path="herramientas/utilidades/lectura-copias"
+            element={<LecturaCopias />}
           />
 
           <Route
