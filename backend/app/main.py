@@ -757,10 +757,32 @@ def migrar_esquema_expedientes_inicio():
                 "Otra instancia mantiene el bloqueo de migración durante más de 60 segundos."
             )
 
-        # Migración de Control Apoderados dentro del mismo bloqueo global.
-        # Evita solicitar un bloqueo exclusivo de empleados en cada arranque:
-        # ADD COLUMN IF NOT EXISTS también bloquea la tabla aunque la columna
-        # ya exista. Solo ejecutamos DDL si falta realmente en el catálogo.
+        # Migración de Control Apoderados: habilitación y tarifa por protocolo.
+        # Solo ejecutar DDL cuando la columna falte evita bloqueos innecesarios en cada arranque.
+        with conexion.begin():
+            existe_honorarios_valor = bool(
+                conexion.execute(
+                    text("""
+                        SELECT EXISTS (
+                            SELECT 1
+                            FROM pg_attribute
+                            WHERE attrelid = 'public.empleados'::regclass
+                              AND attname = 'honorarios_valor'
+                              AND NOT attisdropped
+                        )
+                    """)
+                ).scalar()
+            )
+        if not existe_honorarios_valor:
+            ejecutar_ddl_con_reintentos(
+                "crear columna empleados.honorarios_valor",
+                "ALTER TABLE public.empleados ADD COLUMN honorarios_valor DOUBLE PRECISION NOT NULL DEFAULT 0",
+            )
+            print("[MIGRACION STARTUP] Columna empleados.honorarios_valor creada.", flush=True)
+        else:
+            print("[MIGRACION STARTUP] Columna empleados.honorarios_valor ya existe; se omite DDL.", flush=True)
+
+        # Habilitación del circuito mensual de liquidaciones.
         with conexion.begin():
             existe_es_colaborador = bool(
                 conexion.execute(
