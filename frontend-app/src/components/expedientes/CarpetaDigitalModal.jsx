@@ -793,54 +793,80 @@ export default function CarpetaDigitalModal({
                 </header>
                 <div className="min-h-0 flex-1 overflow-y-auto p-3">
                   {actividadId === "documentacion-previa" ? (
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-1">
+                    <div className="grid grid-cols-1 items-stretch gap-2 xl:grid-cols-2 2xl:grid-cols-4">
                       {[
-                        ["Fecha de envío", datosEnvioNotario?.fecha_envio_notario || datosEnvioNotario?.fecha_envio],
-                        ["¿Escritura firmada?", datosEnvioNotario?.escritura_firmada === true ? "Sí" : datosEnvioNotario?.escritura_firmada === false ? "No" : datosEnvioNotario?.escritura_firmada],
-                        ["Firma urgente", datosEnvioNotario?.firma_urgente ? "Sí" : "No"],
-                        ["Notario", datosEnvioNotario?.nombre_notario || datosEnvioNotario?.notario],
-                        ["NIF notario", datosEnvioNotario?.nif_notario],
-                        ["Apoderado", datosEnvioNotario?.apoderado],
-                        ["Tipo de firma", datosEnvioNotario?.tipo_firma],
-                        ["Población notario", datosEnvioNotario?.poblacion],
-                        ["Provincia notario", datosEnvioNotario?.provincia],
-                        ["Tipo de documento", datosEnvioNotario?.tipo_documento],
-                        ["Formato de escritura", datosEnvioNotario?.formato_escritura],
-                        ["Tipo de trámite", datosEnvioNotario?.tipo_tramite],
-                        ["Fecha prevista de firma", datosEnvioNotario?.fecha_prevista_firma],
-                        ["Hora prevista", datosEnvioNotario?.hora_prevista_firma],
-                        ["Fin previsto", datosEnvioNotario?.hora_fin_prevista_firma],
-                        ["Fecha firma", datosEnvioNotario?.fecha_firma],
-                        ["Protocolo", datosEnvioNotario?.protocolo],
-                        ["Contrato", datosEnvioNotario?.contrato],
-                        ["Capital (€)", datosEnvioNotario?.capital_documento_notarial || datosEnvioNotario?.capital],
-                        ["Importe (€)", datosEnvioNotario?.importe],
-                        ["Finca", datosEnvioNotario?.finca || datosEnvioNotario?.finca_registral || datosEnvioNotario?.numero_finca],
-                        ["Tipo operación", datosEnvioNotario?.tipo_operacion],
-                        ["Subtipo operación", datosEnvioNotario?.subtipo_operacion],
-                        ["Documento 1", datosEnvioNotario?.documentos_escritura?.[0]?.tipo_documento || datosEnvioNotario?.tipo_documento],
-                        ["Cuantía documento 1", datosEnvioNotario?.documentos_escritura?.[0]?.cuantia || datosEnvioNotario?.cuantia],
-                        ["Otros documentos", Array.isArray(datosEnvioNotario?.documentos_escritura) ? datosEnvioNotario.documentos_escritura.slice(1).map((doc) => doc?.tipo_documento).filter(Boolean).join(", ") : ""],
-                        ["Nº solicitud SIA", datosEnvioNotario?.numero_solicitud_sia || datosEnvioNotario?.n_solicitud_sia],
-                        ["Observaciones", datosEnvioNotario?.observaciones],
-                        ["Nombre facturación", datosEnvioNotario?.facturacion_nombre],
-                        ["Apellidos facturación", datosEnvioNotario?.facturacion_apellidos],
-                        ["DNI / NIF facturación", datosEnvioNotario?.facturacion_dni_nif],
-                        ["Dirección facturación", datosEnvioNotario?.facturacion_direccion],
-                        ["Código postal", datosEnvioNotario?.facturacion_codigo_postal],
-                        ["Población facturación", datosEnvioNotario?.facturacion_poblacion],
-                        ["Provincia facturación", datosEnvioNotario?.facturacion_provincia],
-                        ["Teléfono facturación", datosEnvioNotario?.facturacion_telefono],
-                        ["Email facturación", datosEnvioNotario?.facturacion_email],
-                        ["Idioma del documento", datosEnvioNotario?.idioma_documento || datosEnvioNotario?.idioma],
-                      ].map(([etiqueta, valor]) => (
-                        <div key={etiqueta} className="min-w-0 border-b border-slate-100 pb-1.5">
-                          <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                          <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
-                        </div>
+                        {
+                          titulo: "1. Envío al notario",
+                          campos: [
+                            ["Fecha de envío", datosEnvioNotario?.fecha_envio_notario || datosEnvioNotario?.fecha_envio],
+                            ["¿Escritura firmada?", datosEnvioNotario?.escritura_firmada === true ? "Sí" : datosEnvioNotario?.escritura_firmada === false ? "No" : datosEnvioNotario?.escritura_firmada],
+                            ["Firma urgente", datosEnvioNotario?.firma_urgente ? "Sí" : "No"],
+                            ["Tipo de firma", datosEnvioNotario?.tipo_firma],
+                            ["Fecha prevista de firma", datosEnvioNotario?.fecha_prevista_firma],
+                            ["Hora prevista", datosEnvioNotario?.hora_prevista_firma],
+                            ["Fin previsto", datosEnvioNotario?.hora_fin_prevista_firma],
+                            ["Fecha firma", datosEnvioNotario?.fecha_firma],
+                            ["Protocolo", datosEnvioNotario?.protocolo],
+                          ],
+                        },
+                        {
+                          titulo: "2. Tipo de documento",
+                          campos: [
+                            ["Tipo de documento", datosEnvioNotario?.tipo_documento],
+                            ["Formato de escritura", datosEnvioNotario?.formato_escritura],
+                            ["Tipo de trámite", datosEnvioNotario?.tipo_tramite],
+                            ["Tipo operación", datosEnvioNotario?.tipo_operacion],
+                            ["Subtipo operación", datosEnvioNotario?.subtipo_operacion],
+                            ["Documento 1", datosEnvioNotario?.documentos_escritura?.[0]?.tipo_documento || datosEnvioNotario?.tipo_documento],
+                            ["Cuantía documento 1", datosEnvioNotario?.documentos_escritura?.[0]?.cuantia || datosEnvioNotario?.cuantia],
+                            ["Otros documentos", Array.isArray(datosEnvioNotario?.documentos_escritura) ? datosEnvioNotario.documentos_escritura.slice(1).map((doc) => doc?.tipo_documento).filter(Boolean).join(", ") : ""],
+                            ["Contrato", datosEnvioNotario?.contrato],
+                            ["Capital (€)", datosEnvioNotario?.capital_documento_notarial || datosEnvioNotario?.capital],
+                            ["Importe (€)", datosEnvioNotario?.importe],
+                            ["Finca", datosEnvioNotario?.finca || datosEnvioNotario?.finca_registral || datosEnvioNotario?.numero_finca],
+                          ],
+                        },
+                        {
+                          titulo: "3. Datos del notario",
+                          campos: [
+                            ["Notario", datosEnvioNotario?.nombre_notario || datosEnvioNotario?.notario],
+                            ["NIF notario", datosEnvioNotario?.nif_notario],
+                            ["Población notario", datosEnvioNotario?.poblacion],
+                            ["Provincia notario", datosEnvioNotario?.provincia],
+                            ["Apoderado", datosEnvioNotario?.apoderado],
+                          ],
+                        },
+                        {
+                          titulo: "4. Datos de facturación",
+                          campos: [
+                            ["Nombre", datosEnvioNotario?.facturacion_nombre],
+                            ["Apellidos", datosEnvioNotario?.facturacion_apellidos],
+                            ["DNI / NIF", datosEnvioNotario?.facturacion_dni_nif],
+                            ["Dirección", datosEnvioNotario?.facturacion_direccion],
+                            ["Código postal", datosEnvioNotario?.facturacion_codigo_postal],
+                            ["Población", datosEnvioNotario?.facturacion_poblacion],
+                            ["Provincia", datosEnvioNotario?.facturacion_provincia],
+                            ["Teléfono", datosEnvioNotario?.facturacion_telefono],
+                            ["Email", datosEnvioNotario?.facturacion_email],
+                            ["Idioma del documento", datosEnvioNotario?.idioma_documento || datosEnvioNotario?.idioma],
+                            ["Nº solicitud SIA", datosEnvioNotario?.numero_solicitud_sia || datosEnvioNotario?.n_solicitud_sia],
+                            ["Observaciones", datosEnvioNotario?.observaciones],
+                          ],
+                        },
+                      ].map((seccion) => (
+                        <section key={seccion.titulo} className="min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-white">
+                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">{seccion.titulo}</h5>
+                          <div className="space-y-0 px-2.5 py-1.5">
+                            {seccion.campos.map(([etiqueta, valor]) => (
+                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
+                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
+                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </section>
                       ))}
                     </div>
-                  ) : (
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-1">
                       {camposPanelActividad.map((campo) => {
                         const valor = datosPanelActividad?.[campo.key];
