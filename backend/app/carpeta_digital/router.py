@@ -30,6 +30,7 @@ CATEGORIAS = {
     "Justificante de cancelación",
     "Nota simple registral",
     "Escrituras/borradores",
+    "Borradores escrituras y otros",
     # Sede notarial
     "Presentación Registro",
     "Copia simple",
