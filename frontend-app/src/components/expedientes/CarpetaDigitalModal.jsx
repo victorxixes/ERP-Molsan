@@ -111,6 +111,8 @@ export default function CarpetaDigitalModal({
   actividadId,
   tipoOperacion,
   onDocumentosChange,
+  datosEnvioNotario,
+  onAbrirEnvioNotario,
 }) {
   const empleadoSesion = useAuthStore((state) => state.empleado);
   const [documentos, setDocumentos] = useState([]);
@@ -527,9 +529,40 @@ export default function CarpetaDigitalModal({
               </div>
             </section>
 
-            <section className="min-h-[360px] min-w-0 overflow-hidden">
-              {visorVisible ? renderVisor() : (
-                <div className="flex h-full min-h-[260px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white p-5 text-center">
+            <section className="min-h-[250px] min-w-0 overflow-hidden">
+              {modoActividad && actividadId === "documentacion-previa" && datosEnvioNotario ? (
+                <div className="flex h-full min-h-[250px] flex-col overflow-y-auto rounded-xl border border-indigo-100 bg-white shadow-sm">
+                  <header className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
+                    <div className="min-w-0">
+                      <h4 className="text-xs font-extrabold text-indigo-950">✉️ Datos de envío a notario</h4>
+                      <p className="text-[10px] text-slate-500">Información registrada en el expediente</p>
+                    </div>
+                    <button type="button" onClick={onAbrirEnvioNotario} className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-indigo-700">✉️ Envío al notario</button>
+                  </header>
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-2 p-3 text-[11px] sm:grid-cols-3">
+                    {[
+                      ["Fecha envío", datosEnvioNotario.fecha_envio_notario || datosEnvioNotario.fecha_envio],
+                      ["Notario", datosEnvioNotario.nombre_notario || datosEnvioNotario.notario],
+                      ["NIF notario", datosEnvioNotario.nif_notario],
+                      ["Apoderado", datosEnvioNotario.apoderado],
+                      ["Tipo de firma", datosEnvioNotario.tipo_firma],
+                      ["Tipo documento", datosEnvioNotario.tipo_documento],
+                      ["Fecha prevista firma", datosEnvioNotario.fecha_prevista_firma],
+                      ["Hora prevista", datosEnvioNotario.hora_prevista_firma],
+                      ["Fin previsto", datosEnvioNotario.hora_fin_prevista_firma],
+                      ["Contrato", datosEnvioNotario.contrato],
+                      ["Capital", datosEnvioNotario.capital_documento_notarial || datosEnvioNotario.capital],
+                      ["Importe", datosEnvioNotario.importe],
+                    ].map(([etiqueta, valor]) => (
+                      <div key={etiqueta} className="min-w-0">
+                        <p className="font-bold text-slate-500">{etiqueta}</p>
+                        <p className="break-words font-semibold text-slate-800">{valor ? String(valor) : "—"}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : visorVisible ? renderVisor() : (
+                <div className="flex h-full min-h-[250px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white p-5 text-center">
                   <span className="mb-3 text-2xl">▤</span>
                   <p className="text-xs text-slate-500">El visor está oculto.</p>
                   <button type="button" onClick={() => setVisorVisible(true)} className="mt-3 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100">Mostrar visor</button>
@@ -583,7 +616,7 @@ export default function CarpetaDigitalModal({
           )}
 
           <div className={modoActividad
-            ? "grid h-[min(52vh,520px)] min-h-[320px] grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,0.95fr)]"
+            ? "grid h-[min(34vh,340px)] min-h-[250px] grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,0.95fr)]"
             : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}>
             <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
               {!modoActividad && (
