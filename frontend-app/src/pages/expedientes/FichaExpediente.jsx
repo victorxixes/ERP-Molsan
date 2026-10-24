@@ -4133,13 +4133,11 @@ const cuantiaFincasParaEnvio =
       >
         <div
           className="
-            grid
-            grid-cols-1
-            gap-2
+            flex
+            flex-col
+            gap-3
             p-2.5
             sm:p-3
-            xl:grid-cols-[230px_minmax(0,1fr)_auto]
-            xl:items-center
           "
         >
 
