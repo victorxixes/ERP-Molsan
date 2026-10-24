@@ -38,7 +38,7 @@ const REPOSITORIOS_INICIALES = {
 
 const CLASE_INPUT = "w-full rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2.5 text-sm text-[var(--erp-text)] outline-none focus:border-[var(--erp-primary)] focus:ring-2 focus:ring-[var(--erp-primary-soft)]";
 
-export default function VisibilidadTablas({ empleadoId, onClose }) {
+export default function VisibilidadTablas({ empleadoId, onClose, ambito = "administracion", modal = true, titulo }) {
   const [catalogo, setCatalogo] = useState({ columnas_excel: [], repositorios: [], configuraciones: [] });
   const [actividadKey, setActividadKey] = useState(ACTIVIDADES[0].key);
   const [nombreTabla, setNombreTabla] = useState("");
@@ -52,7 +52,7 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
 
   useEffect(() => {
     let activo = true;
-    axios.get("/expedientes/configuracion-visibilidad", { params: { empleado_id: empleadoId } })
+    axios.get("/expedientes/configuracion-visibilidad", { params: { empleado_id: empleadoId, ambito } })
       .then(({ data }) => {
         if (activo) setCatalogo({
           columnas_excel: data?.columnas_excel || [],
@@ -65,7 +65,7 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
       })
       .finally(() => { if (activo) setCargando(false); });
     return () => { activo = false; };
-  }, [empleadoId]);
+  }, [empleadoId, ambito]);
 
   const configuracionActual = useMemo(
     () => catalogo.configuraciones.find((item) => item.actividad_key === actividadKey),
@@ -114,6 +114,7 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
     try {
       const { data } = await axios.put("/expedientes/configuracion-visibilidad", {
         empleado_id: empleadoId,
+        ambito,
         actividad_key: actividadKey,
         nombre_tabla: nombreTabla.trim(),
         excel_columns: columnas,
@@ -135,15 +136,15 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
   }
 
   return (
-    <div className="visibilidad-tablas-premium erp-page fixed inset-0 z-[12000] overflow-y-auto bg-slate-900/40 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="Visibilidad tablas">
-      <div className="mx-auto my-2 max-w-7xl overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] shadow-[var(--erp-shadow-lg)]">
+    <div className={modal ? "visibilidad-tablas-premium erp-page fixed inset-0 z-[12000] overflow-y-auto bg-slate-900/40 p-3 sm:p-6" : "visibilidad-tablas-premium erp-page w-full"} role={modal ? "dialog" : undefined} aria-modal={modal ? "true" : undefined} aria-label={titulo || "Visibilidad tablas"}>
+      <div className={"mx-auto " + (modal ? "my-2 " : "") + "max-w-7xl overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] shadow-[var(--erp-shadow-lg)]"}>
         <header className="flex flex-wrap items-center gap-3 bg-[var(--erp-primary)] px-5 py-4 text-white">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-xl">⚙️</div>
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-extrabold">Visibilidad tablas</h2>
-            <p className="text-xs text-white/85">Empleado ID {empleadoId ?? "actual"} · Columnas de Excel y repositorios de carpeta digital por actividad</p>
+            <h2 className="text-lg font-extrabold">{titulo || (ambito === "personal" ? "Mi visibilidad de tablas" : "Visibilidad tablas")}</h2>
+            <p className="text-xs text-white/85">{ambito === "personal" ? "Personaliza tus preferencias sin modificar la configuración general." : `Empleado ID ${empleadoId ?? "actual"} · Columnas de Excel y repositorios de carpeta digital por actividad`}</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold text-white hover:bg-white/10">Cerrar ✕</button>
+          {modal && <button type="button" onClick={onClose} className="rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold text-white hover:bg-white/10">Cerrar ✕</button>}
         </header>
 
         <div className="space-y-5 p-4 sm:p-6">
