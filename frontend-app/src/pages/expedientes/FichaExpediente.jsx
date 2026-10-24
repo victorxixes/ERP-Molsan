@@ -4247,6 +4247,7 @@ const cuantiaFincasParaEnvio =
                 <Dato campo="Subtipo operación" valor={expediente.subtipo_operacion} compacto />
                 <Dato campo="Nº solicitud SIA" valor={expediente.num_solicitud_sia} compacto />
                 <Dato campo="Finca" valor={expediente.finca} compacto />
+                <Dato campo="Observaciones" valor={expediente.observaciones ?? expediente.Observaciones} compacto />
               </div>
             </Seccion>
 
@@ -4794,59 +4795,6 @@ const cuantiaFincasParaEnvio =
           </Seccion>
 
         </div>
-
- {/* ===================================================
-            INFORMACIÓN CREDITICIA
-        ==================================================== */}
-
-        <div className="min-w-0 xl:col-span-5">
-          <Seccion
-            id="ficha-economica"
-            titulo="Información crediticia"
-            subtitulo="Datos económicos y contractuales"
-            icono="economico"
-            colapsable
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-1.5">
-              {/* Fila 1: Contrato · Capital · Tipo operación · Subtipo · Importe · Saldo disponible */}
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Contrato" valor={expediente.contrato} compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Capital" valor={expediente.capital} tipo="numero" destaque compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Tipo operación" valor={expediente.tipo_operacion} compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Subtipo operación" valor={expediente.subtipo_operacion} compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Importe" valor={expediente.importe} tipo="numero" destaque compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-1">
-                <Dato campo="Saldo disponible" valor={expediente.saldo_disponible} tipo="numero" compacto />
-              </div>
-
-              {/* Fila 2: Nº solicitud SIA · Finca · Observaciones */}
-              <div className="min-w-0 xl:col-span-2">
-                <Dato campo="Nº solicitud SIA" valor={expediente.num_solicitud_sia} compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-2">
-                <Dato campo="Finca" valor={expediente.finca} destaque compacto />
-              </div>
-              <div className="min-w-0 xl:col-span-2">
-                <Dato
-                  campo="Observaciones"
-                  valor={expediente.observaciones ?? expediente.Observaciones}
-                  destaque
-                  compacto
-                />
-              </div>
-            </div>
-          </Seccion>
-        </div>
-
 
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
         <div className="min-w-0 w-full xl:col-span-8">
