@@ -1649,6 +1649,7 @@ const permisosDisponibles =
               fecha_baja: empleadoFormulario.fecha_baja ?? null,
               activo: typeof empleadoFormulario.activo === "boolean" ? empleadoFormulario.activo : null,
               es_colaborador: Boolean(empleadoFormulario.es_colaborador),
+              honorarios_valor: Math.max(0, Number(empleadoFormulario.honorarios_valor || 0)),
               rol_id: convertirNumeroONull(empleadoFormulario.rol_id),
             };
 
@@ -2104,6 +2105,7 @@ const permisosDisponibles =
     { id: "basicos", label: "Datos básicos", icon: "👤" },
     { id: "personales", label: "Datos personales", icon: "🏠" },
     { id: "laborales", label: "Datos laborales", icon: "💼" },
+    ...(esAdministrador && Boolean(empleadoFormulario?.es_colaborador) ? [{ id: "honorarios", label: "Honorarios", icon: "💶" }] : []),
     ...(esAdministrador ? [{ id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "📊" }] : []),
     ...(esPropiaFicha ? [{ id: "mi-visibilidad", label: "Mi visibilidad de tablas", icon: "📊" }] : []),
     { id: "seguridad", label: "Seguridad", icon: "🛡️" },
@@ -3449,6 +3451,24 @@ const permisosDisponibles =
                 {/* =================================================
                     ACCESOS
                 ================================================= */}
+
+                {pestana === "honorarios" && esAdministrador && Boolean(empleadoFormulario.es_colaborador) && (
+                  <section className="space-y-5">
+                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5">
+                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-800">Liquidación mensual · ApoderaGest</p>
+                      <h3 className="mt-1 text-lg font-bold text-slate-900">Honorario por protocolo</h3>
+                      <p className="mt-2 text-sm text-slate-600">Este importe se aplica una sola vez por número de protocolo y notario, aunque el protocolo agrupe varios expedientes del mismo cliente.</p>
+                    </div>
+                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                      <label className="block text-sm font-semibold text-slate-700" htmlFor="honorarios-valor-empleado">Precio / valor de los honorarios (€ netos por protocolo)</label>
+                      <div className="mt-2 flex max-w-sm items-center gap-3">
+                        <input id="honorarios-valor-empleado" type="number" min="0" step="0.01" value={empleadoFormulario.honorarios_valor ?? 0} onChange={(e) => cambiarCampo("honorarios_valor", e.target.value === "" ? 0 : Number(e.target.value))} disabled={!esAdministrador} className="w-full rounded-xl border border-slate-300 px-4 py-3 text-lg font-bold text-slate-900" />
+                        <span className="text-lg font-bold text-slate-500">€</span>
+                      </div>
+                      <p className="mt-3 text-xs text-slate-500">La base neta se calcula con el número de protocolos únicos. El IVA se calcula por separado en Control Apoderados y Mi liquidación.</p>
+                    </section>
+                  </section>
+                )}
 
                 {pestana ===
                   "accesos" && (
