@@ -4273,176 +4273,60 @@ const cuantiaFincasParaEnvio =
 
           </div>
 
-            <div
-              className="
-                flex
-                items-center
-                gap-4
-              "
-            >
-              <div
-                className="
-                  flex
-                  h-10
-                  w-10
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  border
-                  border-blue-100
-                  bg-blue-50
-                  text-xl
-                  text-blue-600
-                "
-              >
-                📁
-              </div>
-
-              <div className="min-w-0">
-
-                <p
-                  className="
-                    text-[9px]
-                    font-bold
-                    uppercase
-                    tracking-[0.12em]
-                    text-slate-400
-                  "
-                >
-                  Ficha de expediente
-                </p>
-
-                <h1
-                  className="
-                    whitespace-nowrap
-                    text-lg
-                    font-bold
-                    leading-none
-                    text-slate-800
-                  "
-                >
-                  {valorVisible(
-                    expediente.id_expediente
-                  )}
-                </h1>
-
-                <p
-                  className="
-                    mt-0.5
-                    text-xs
-                    text-slate-400
-                  "
-                >
-                  Ficha completa del expediente
-                </p>
-                {(() => {
-                  const relacionadosVisibles = [
-                    ...expedientesRelacionados,
-                    ...expedientesManuales
-                      .filter((manual) => !expedientesRelacionados.some(
-                        (relacionado) => String(relacionado.id_expediente) === String(manual.id_expediente)
-                      ))
-                      .map((manual) => ({ ...manual, _manual: true })),
-                  ];
-                  const primerosRelacionados = relacionadosVisibles.slice(0, 2);
-                  return (
-                    <div className="mt-2 flex max-w-full flex-wrap items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={abrirAgregarExpedientes}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100"
-                      >
-                        ➕ Agregar expediente relacionado
-                      </button>
-                      <div className="inline-flex max-w-full items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-1.5 text-[11px]">
-                        <span className="font-bold text-blue-700">Gestor asignado:</span>
-                        <span className="truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
-                      </div>
-                      {primerosRelacionados.length > 0 && (
-                        <div className="flex max-w-full flex-wrap items-center gap-1.5">
-                          {primerosRelacionados.map((relacionado) => (
-                            <Link
-                              key={String(relacionado.id_expediente)}
-                              to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`}
-                              className="inline-flex max-w-full items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-blue-200 hover:bg-blue-50"
-                              title={relacionado.actividad_actual || "Abrir expediente relacionado"}
-                            >
-                              <span className="text-blue-700">📁</span>
-                              <span className="truncate">{valorVisible(relacionado.id_expediente)}</span>
-                            </Link>
-                          ))}
-                          {relacionadosVisibles.length > 2 && (
-                            <button
-                              type="button"
-                              onClick={abrirAgregarExpedientes}
-                              className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-800 hover:bg-amber-100"
-                            >
-                              +{relacionadosVisibles.length - 2} más · Ver todos
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
-                {expedienteBloqueado && <span className="mt-2 inline-flex rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-[11px] font-extrabold text-red-800">🔒 EXPEDIENTE BLOQUEADO · {motivoBloqueoExpediente}</span>}
-
+          {/* Ficha y acciones en una sola línea, debajo de los bloques principales */}
+          <div className="mt-3 flex w-full min-w-0 items-center gap-2 overflow-x-auto rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2">
+            <div className="flex shrink-0 items-center gap-2 pr-2">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-lg text-blue-600">📁</div>
+              <div className="min-w-[150px]">
+                <p className="whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.12em] text-slate-400">Ficha de expediente</p>
+                <h1 className="whitespace-nowrap text-base font-extrabold leading-tight text-slate-800">{valorVisible(expediente.id_expediente)}</h1>
+                <p className="whitespace-nowrap text-[10px] leading-tight text-slate-400">Ficha completa del expediente</p>
               </div>
             </div>
-
-          <div className="mt-2 flex flex-wrap items-center gap-1.5">
-
-            <button
-              type="button"
-              onClick={abrirDefecto}
-              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              title="Registrar un defecto registral"
-            >
-              ➕ Alta defecto
-            </button>
-
-            <Boton onClick={abrirControlExpediente} className="!rounded-lg !px-2.5 !py-1.5 !text-[11px] !leading-tight">
-              {expedienteBloqueado ? "🔒 Control / desbloqueo" : "🔐 Control y bloqueo"}
-            </Boton>
-
-
-            <Boton
-              tipo="primary"
-              onClick={() => setMostrarCarpetaDigital(true)}
-              className="!rounded-lg !px-2.5 !py-1.5 !text-[11px] !leading-tight"
-            >
-              📁 Carpeta digital
-            </Boton>
-
-            <button
-              type="button"
-              onClick={abrirReclamacionOficina}
-              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-1.5 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-300"
-            >
-              ✉️ Reclamar a oficina
-            </button>
-            <button
-              type="button"
-              onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")}
-              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100"
-              title="Pendiente de enlazar con el área de clientes"
-            >
-              🔗 Área de clientes
-            </button>
-            {tieneDefecto && (
-              <button
-                type="button"
-                onClick={abrirDefecto}
-                className="animate-pulse inline-flex items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-1.5 text-[11px] font-bold leading-tight text-red-700 shadow-sm"
-              >
-                ⚠️ DEFECTO REGISTRAL
+            <div className="flex shrink-0 items-center gap-2">
+              <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100">
+                ➕ Agregar expediente relacionado
               </button>
-            )}
-
-            <p className="basis-full text-[10px] leading-3 text-amber-700">Aviso: el enlace al área de clientes está pendiente de configurar.</p>
-
+              <div className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-blue-100 bg-white px-2.5 py-2 text-[11px]">
+                <span className="whitespace-nowrap font-bold text-blue-700">Gestor asignado:</span>
+                <span className="max-w-[190px] truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
+              </div>
+            </div>
+            {(() => {
+              const relacionadosVisibles = [
+                ...expedientesRelacionados,
+                ...expedientesManuales.filter((manual) => !expedientesRelacionados.some(
+                  (relacionado) => String(relacionado.id_expediente) === String(manual.id_expediente)
+                )).map((manual) => ({ ...manual, _manual: true })),
+              ];
+              const primerosRelacionados = relacionadosVisibles.slice(0, 2);
+              return primerosRelacionados.length > 0 ? (
+                <div className="flex shrink-0 items-center gap-1.5 border-r border-slate-200 pr-2">
+                  {primerosRelacionados.map((relacionado) => (
+                    <Link key={String(relacionado.id_expediente)} to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`} className="inline-flex max-w-[130px] shrink-0 items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-2 text-[10px] font-semibold text-slate-700 hover:border-blue-200 hover:bg-blue-50" title={relacionado.actividad_actual || "Abrir expediente relacionado"}>
+                      <span className="text-blue-700">📁</span>
+                      <span className="truncate">{valorVisible(relacionado.id_expediente)}</span>
+                    </Link>
+                  ))}
+                  {relacionadosVisibles.length > 2 && (
+                    <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-2 text-[10px] font-bold text-amber-800 hover:bg-amber-100">
+                      +{relacionadosVisibles.length - 2} más · Ver todos
+                    </button>
+                  )}
+                </div>
+              ) : null;
+            })()}
+            {expedienteBloqueado && <span className="inline-flex shrink-0 items-center rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[10px] font-extrabold text-red-800">🔒 BLOQUEADO · {motivoBloqueoExpediente}</span>}
+            <div className="flex shrink-0 items-center gap-1.5">
+              <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral">➕ Alta defecto</button>
+              <Boton onClick={abrirControlExpediente} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">{expedienteBloqueado ? "🔒 Control / desbloqueo" : "🔐 Control y bloqueo"}</Boton>
+              <Boton tipo="primary" onClick={() => setMostrarCarpetaDigital(true)} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">📁 Carpeta digital</Boton>
+              <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100">✉️ Reclamar a oficina</button>
+              <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes">🔗 Área de clientes</button>
+              {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm">⚠️ DEFECTO REGISTRAL</button>}
+            </div>
           </div>
+          <p className="mt-1 text-[10px] leading-3 text-amber-700">Aviso: el enlace al área de clientes está pendiente de configurar.</p>
         </div>
         </div>
       </section>
