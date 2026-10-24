@@ -836,6 +836,7 @@ def migrar_esquema_expedientes_inicio():
                 )).fetchall()
             }
         columnas_justificante = [
+            ("honorarios_valor", "DOUBLE PRECISION NOT NULL DEFAULT 0"),
             ("justificante_bytes", "BYTEA"),
             ("justificante_nombre", "VARCHAR(255)"),
             ("justificante_tipo", "VARCHAR(150)"),
