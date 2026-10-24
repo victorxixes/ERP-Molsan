@@ -537,44 +537,145 @@ export default function CarpetaDigitalModal({
             <section className="min-h-[250px] min-w-0 w-full overflow-hidden">
               {modoActividad && actividadId === "documentacion-previa" ? (
                 <div className="flex h-full min-h-[250px] flex-col overflow-y-auto rounded-xl border border-indigo-100 bg-white shadow-sm">
-                  <header className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
+                  <header className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-3">
                     <div className="min-w-0">
-                      <h4 className="text-xs font-extrabold text-indigo-950">✉️ Datos de envío a notario</h4>
-                      <p className="text-[10px] text-slate-500">Resumen del expediente y de la operación · 4 columnas</p>
+                      <h4 className="text-sm font-extrabold text-indigo-950">✉️ Datos de envío a notario</h4>
+                      <p className="mt-0.5 text-[11px] text-slate-500">Información sincronizada con el expediente y el modal de envío a notario</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => onAbrirEnvioNotario?.()}
-                      className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                      className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                     >
-                      ✉️ Envío al notario
+                      ✉️ Abrir envío a notario
                     </button>
                   </header>
-                  <div className="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2 xl:grid-cols-4">
-                    {[
-                      ["Fecha de envío", datosEnvioNotario?.fecha_envio_notario || datosEnvioNotario?.fecha_envio || datosEnvioNotario?.fecha_envio_notaria],
-                      ["Notario", datosEnvioNotario?.nombre_notario || datosEnvioNotario?.notario],
-                      ["NIF notario", datosEnvioNotario?.nif_notario || datosEnvioNotario?.notario_nif],
-                      ["Apoderado", datosEnvioNotario?.apoderado || datosEnvioNotario?.apoderado_s],
-                      ["Tipo de firma", datosEnvioNotario?.tipo_firma],
-                      ["Tipo de documento", datosEnvioNotario?.tipo_documento],
-                      ["Fecha prevista de firma", datosEnvioNotario?.fecha_prevista_firma],
-                      ["Hora prevista", datosEnvioNotario?.hora_prevista_firma],
-                      ["Tipo de operación", datosEnvioNotario?.tipo_operacion || datosEnvioNotario?.tipoOperacion || datosEnvioNotario?.operacion],
-                      ["Subtipo operación", datosEnvioNotario?.subtipo_operacion],
-                      ["Contrato", datosEnvioNotario?.contrato],
-                      ["Capital", datosEnvioNotario?.capital_documento_notarial || datosEnvioNotario?.capital],
-                      ["Importe", datosEnvioNotario?.importe === null || datosEnvioNotario?.importe === undefined || datosEnvioNotario?.importe === "" ? "" : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(datosEnvioNotario.importe))],
-                      ["Finca", datosEnvioNotario?.finca || datosEnvioNotario?.finca_registral || datosEnvioNotario?.numero_finca],
-                      ["Nº solicitud SIA", datosEnvioNotario?.numero_solicitud_sia || datosEnvioNotario?.n_solicitud_sia],
-                      ["Observaciones", datosEnvioNotario?.observaciones],
-                    ].map(([etiqueta, valor]) => (
-                      <div key={etiqueta} className="min-w-0 rounded-md bg-slate-50 px-2 py-1.5">
-                        <p className="text-[9px] font-bold uppercase tracking-wide text-slate-500">{etiqueta}</p>
-                        <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                  {(() => {
+                    const d = datosEnvioNotario || {};
+                    const valor = (...claves) => {
+                      for (const clave of claves) {
+                        const v = d?.[clave];
+                        if (v !== undefined && v !== null && v !== "") return v;
+                      }
+                      return "";
+                    };
+                    const moneda = (v) => v === "" || v === null || v === undefined
+                      ? ""
+                      : (Number.isFinite(Number(v)) ? new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v)) : v);
+                    const fecha = (v) => {
+                      if (!v) return "";
+                      const s = String(v);
+                      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+                        const [y, m, dia] = s.split("-");
+                        return `${dia}/${m}/${y}`;
+                      }
+                      return s;
+                    };
+                    const firma = valor("escritura_firmada");
+                    const urgente = valor("firma_urgente");
+                    const secciones = [
+                      {
+                        titulo: "📨 Envío y estado de la firma",
+                        descripcion: "Estado actual y fechas registradas",
+                        campos: [
+                          ["Fecha de envío", fecha(valor("fecha_envio_notario", "fecha_envio", "fecha_envio_notaria"))],
+                          ["¿Escritura firmada?", firma === true || ["sí", "si", "true", "1"].includes(String(firma).toLowerCase()) ? "Sí" : (firma === false || ["no", "false", "0"].includes(String(firma).toLowerCase()) ? "No" : "")],
+                          ["Firma urgente", urgente === true || ["sí", "si", "true", "1"].includes(String(urgente).toLowerCase()) ? "Sí" : (urgente === false || ["no", "false", "0"].includes(String(urgente).toLowerCase()) ? "No" : "")],
+                          ["Fecha de firma", fecha(valor("fecha_firma"))],
+                        ],
+                      },
+                      {
+                        titulo: "🏛️ Notario y apoderado",
+                        descripcion: "Datos de la notaría y responsable de la firma",
+                        campos: [
+                          ["Notario", valor("nombre_notario", "notario")],
+                          ["NIF notario", valor("nif_notario", "notario_nif")],
+                          ["Población notario", valor("poblacion", "poblacion_notario", "municipio_notario")],
+                          ["Provincia notario", valor("provincia", "provincia_notario")],
+                          ["Apoderado", valor("apoderado", "apoderado_s")],
+                        ],
+                      },
+                      {
+                        titulo: "🗓️ Planificación de la firma",
+                        descripcion: "Tipo de firma y planificación horaria",
+                        campos: [
+                          ["Tipo de firma", valor("tipo_firma")],
+                          ["Fecha prevista", fecha(valor("fecha_prevista_firma"))],
+                          ["Hora prevista", valor("hora_prevista_firma")],
+                          ["Fin previsto", valor("hora_fin_prevista_firma", "fin_previsto")],
+                          ["Protocolo", valor("protocolo")],
+                        ],
+                      },
+                      {
+                        titulo: "📄 Operación y documentación",
+                        descripcion: "Características del documento y del trámite",
+                        campos: [
+                          ["Tipo de documento", valor("tipo_documento")],
+                          ["Formato de escritura", valor("formato_escritura")],
+                          ["Tipo de trámite", valor("tipo_tramite")],
+                          ["Tipo de operación", valor("tipo_operacion", "tipoOperacion", "operacion")],
+                          ["Subtipo de operación", valor("subtipo_operacion")],
+                          ["Documento 1", Array.isArray(d.documentos_escritura) ? d.documentos_escritura[0]?.tipo_documento : valor("tipo_documento")],
+                          ["Cuantía documento 1", Array.isArray(d.documentos_escritura) ? moneda(d.documentos_escritura[0]?.cuantia) : moneda(valor("cuantia", "capital_documento_notarial", "capital"))],
+                          ["Otros documentos", Array.isArray(d.documentos_escritura) && d.documentos_escritura.length > 1 ? d.documentos_escritura.slice(1).map(x => x?.tipo_documento).filter(Boolean).join(", ") : valor("otros_documentos")],
+                        ],
+                      },
+                      {
+                        titulo: "💶 Datos económicos y registrales",
+                        descripcion: "Referencias del préstamo, importe y finca",
+                        campos: [
+                          ["Contrato", valor("contrato")],
+                          ["Capital", moneda(valor("capital_documento_notarial", "capital"))],
+                          ["Importe", moneda(valor("importe"))],
+                          ["Finca", valor("finca", "finca_registral", "numero_finca")],
+                        ],
+                      },
+                      {
+                        titulo: "🧾 Datos de facturación",
+                        descripcion: "Datos identificativos y de contacto de facturación",
+                        campos: [
+                          ["Nombre", valor("facturacion_nombre", "nombre_facturacion")],
+                          ["Apellidos", valor("facturacion_apellidos", "apellidos_facturacion")],
+                          ["DNI/NIF", valor("facturacion_dni_nif", "dni_facturacion", "nif_facturacion")],
+                          ["Dirección", valor("facturacion_direccion", "direccion_facturacion")],
+                          ["Código postal", valor("facturacion_codigo_postal", "codigo_postal_facturacion")],
+                          ["Población", valor("facturacion_poblacion", "poblacion_facturacion")],
+                          ["Provincia", valor("facturacion_provincia", "provincia_facturacion")],
+                          ["Teléfono", valor("facturacion_telefono", "telefono_facturacion")],
+                          ["Email", valor("facturacion_email", "email_facturacion")],
+                          ["Idioma del documento", valor("idioma_documento", "idioma")],
+                        ],
+                      },
+                      {
+                        titulo: "📝 Información adicional",
+                        descripcion: "Referencias de solicitud y notas",
+                        campos: [
+                          ["Nº solicitud SIA", valor("numero_solicitud_sia", "n_solicitud_sia", "numero_solicitud_pnc")],
+                          ["Observaciones", valor("observaciones")],
+                        ],
+                      },
+                    ];
+                    return (
+                      <div className="space-y-3 p-3">
+                        {secciones.map((seccion) => (
+                          <section key={seccion.titulo} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+                            <div className="border-b border-slate-100 bg-slate-50 px-3 py-2">
+                              <h5 className="text-xs font-extrabold text-slate-800">{seccion.titulo}</h5>
+                              <p className="mt-0.5 text-[10px] text-slate-500">{seccion.descripcion}</p>
+                            </div>
+                            <div className="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2 xl:grid-cols-3">
+                              {seccion.campos.map(([etiqueta, dato]) => (
+                                <div key={etiqueta} className="min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2">
+                                  <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{etiqueta}</p>
+                                  <p className="mt-0.5 break-words text-xs font-semibold text-slate-800">{dato !== null && dato !== undefined && dato !== "" ? String(dato) : "—"}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </section>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })()}
                 </div>
               ) : visorVisible ? renderVisor() : (
                 <div className="flex h-full min-h-[250px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white p-5 text-center">
