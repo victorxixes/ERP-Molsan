@@ -4259,14 +4259,14 @@ const cuantiaFincasParaEnvio =
               colapsable
               colapsadaInicial
             >
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
                 <Dato campo="Contrato" valor={expediente.contrato} compacto />
                 <Dato campo="Capital" valor={expediente.capital} tipo="numero" destaque compacto />
                 <Dato campo="Importe" valor={expediente.importe} tipo="numero" destaque compacto />
+                <Dato campo="Finca" valor={expediente.finca} compacto />
                 <Dato campo="Tipo operación" valor={expediente.tipo_operacion} compacto />
                 <Dato campo="Subtipo operación" valor={expediente.subtipo_operacion} compacto />
                 <Dato campo="Nº solicitud SIA" valor={expediente.num_solicitud_sia} compacto />
-                <Dato campo="Finca" valor={expediente.finca} compacto />
                 <Dato campo="Observaciones" valor={expediente.observaciones ?? expediente.Observaciones} compacto />
               </div>
             </Seccion>
