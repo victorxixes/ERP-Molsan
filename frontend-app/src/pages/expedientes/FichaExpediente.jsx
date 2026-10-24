@@ -2072,6 +2072,95 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   ]);
 
 
+  useEffect(() => {
+    const nifExpediente = String(expediente?.nif_notario || expediente?.notario_nif || "").trim();
+    const expedienteId = expediente?.id_expediente;
+    if (!nifExpediente || !expedienteId) return undefined;
+
+    const normalizarNif = (valor) => String(valor || "")
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "");
+    const nifBuscado = normalizarNif(nifExpediente);
+    if (!nifBuscado) return undefined;
+
+    let cancelado = false;
+    const vincularDatosCtn = async () => {
+      try {
+        const respuesta = await axios.get("/ctn/notarias", {
+          params: { q: nifExpediente, page: 1, page_size: 200 },
+        });
+        const payload = respuesta?.data;
+        const notarias = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.items)
+            ? payload.items
+            : [];
+        const notariaCtn = notarias.find(
+          (notaria) => normalizarNif(notaria?.nif) === nifBuscado
+        );
+        if (!notariaCtn || cancelado) return;
+
+        const apoderadoCtn = String(notariaCtn.apoderado || notariaCtn.apoderado_s || "").trim();
+        const modalidadCtnOriginal = String(notariaCtn.vc || "").trim();
+        const modalidadNormalizada = modalidadCtnOriginal
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+        let tipoFirmaCtn = "";
+        if (modalidadNormalizada) {
+          if (
+            modalidadNormalizada.includes("videoconferencia") ||
+            modalidadNormalizada.includes("videoconference") ||
+            ["vc", "si", "s", "yes", "true", "1", "video"].includes(modalidadNormalizada)
+          ) {
+            tipoFirmaCtn = "Videoconferencia";
+          } else if (
+            modalidadNormalizada.includes("presencial") ||
+            ["no", "n", "false", "0", "p"].includes(modalidadNormalizada)
+          ) {
+            tipoFirmaCtn = "Presencial";
+          } else {
+            tipoFirmaCtn = modalidadCtnOriginal;
+          }
+        }
+
+        const campos = {};
+        if (apoderadoCtn && apoderadoCtn !== String(expediente?.apoderado || "").trim()) {
+          campos.apoderado = apoderadoCtn;
+        }
+        if (tipoFirmaCtn && tipoFirmaCtn !== String(expediente?.tipo_firma || "").trim()) {
+          campos.tipo_firma = tipoFirmaCtn;
+        }
+        if (!Object.keys(campos).length) return;
+
+        await axios.put(
+          `/expedientes/${encodeURIComponent(expedienteId)}/actividad`,
+          { campos }
+        );
+        if (cancelado) return;
+        setExpediente((actual) => actual && String(actual.id_expediente) === String(expedienteId)
+          ? { ...actual, ...campos }
+          : actual);
+      } catch (errorCtn) {
+        // La ficha sigue disponible si CTN no responde o el usuario no tiene acceso.
+        console.warn("No se pudieron autocompletar los datos del notario desde CTN.", errorCtn);
+      }
+    };
+
+    vincularDatosCtn();
+    return () => {
+      cancelado = true;
+    };
+  }, [
+    expediente?.id_expediente,
+    expediente?.nif_notario,
+    expediente?.notario_nif,
+    expediente?.apoderado,
+    expediente?.tipo_firma,
+  ]);
+
+
   // ==========================================================
   // ACTIVIDAD ACTUAL
   // ==========================================================
@@ -4254,7 +4343,7 @@ const cuantiaFincasParaEnvio =
               colapsable
               colapsadaInicial
             >
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <Dato
                   campo="Nombre notario"
                   valor={expediente.nombre_notario || expediente.notario}
@@ -4262,7 +4351,15 @@ const cuantiaFincasParaEnvio =
                 />
                 <Dato
                   campo="NIF notario"
-                  valor={expediente.nif_notario}
+                  valor={expediente.nif_notario || expediente.notario_nif}
+                />
+                <Dato
+                  campo="Apoderado"
+                  valor={expediente.apoderado}
+                />
+                <Dato
+                  campo="Tipo de Firma"
+                  valor={expediente.tipo_firma || expediente.tipo_firma_notarial}
                 />
               </div>
             </Seccion>
