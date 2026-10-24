@@ -2104,12 +2104,13 @@ const permisosDisponibles =
     { id: "basicos", label: "Datos básicos", icon: "👤" },
     { id: "personales", label: "Datos personales", icon: "🏠" },
     { id: "laborales", label: "Datos laborales", icon: "💼" },
+    ...(esAdministrador ? [{ id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "📊" }] : []),
     ...(esPropiaFicha ? [{ id: "mi-visibilidad", label: "Mi visibilidad de tablas", icon: "📊" }] : []),
     { id: "seguridad", label: "Seguridad", icon: "🛡️" },
     { id: "auditoria", label: "Auditoría", icon: "📋" },
   ];
 
-  // La configuración administrativa se abre desde Utilidades, no desde la ficha.
+  // Las opciones administrativas también están disponibles en la ficha de cada empleado.
   const pestanasAdministracion = [
     { id: "asignaciones", label: "Asignaciones", icon: "⚖️" },
     { id: "visibilidad-tablas", label: "Visibilidad tablas", icon: "📊" },
@@ -2496,7 +2497,7 @@ const permisosDisponibles =
             CONTENIDO
         ==================================================== */}
 
-        {pestana === "visibilidad-tablas" && <div className="p-4 sm:p-6"><div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 p-4"><h3 className="text-sm font-extrabold text-blue-900">Configuración por actividad</h3><p className="mt-1 text-xs text-blue-800">Configura las columnas de Excel y los repositorios de carpeta digital para cada actividad y guarda cada configuración por separado.</p></div><VisibilidadTablas empleadoId={empleadoId} onClose={() => setPestana("basicos")} /></div>}
+        {pestana === "visibilidad-tablas" && <div className="p-4 sm:p-6"><div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 p-4"><h3 className="text-sm font-extrabold text-blue-900">Configuración administrativa por actividad</h3><p className="mt-1 text-xs text-blue-800">Define las columnas de Excel y los repositorios disponibles para este empleado. Esta configuración es independiente de sus preferencias personales.</p></div><VisibilidadTablas empleadoId={empleadoId} ambito="administracion" modal={false} titulo="Visibilidad de tablas del empleado" onClose={() => setPestana("basicos")} /></div>}
 
         <div
           className="

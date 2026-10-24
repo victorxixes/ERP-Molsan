@@ -1385,6 +1385,9 @@ export default function EmpleadosListado({
                     <div className="mt-0.5 text-xs text-[var(--erp-text-soft)]">
                       ID #{empleado.id}
                     </div>
+                    <div className="mt-1 truncate text-xs text-[var(--erp-text-soft)]" title={`Cargo: ${empleado.cargo_nombre || "Sin cargo asignado"}`}>
+                      Cargo: {empleado.cargo_nombre || "Sin cargo asignado"}
+                    </div>
                   </div>
                   <span
                     className={`
