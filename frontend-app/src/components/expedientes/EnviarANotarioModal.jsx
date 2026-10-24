@@ -710,7 +710,7 @@ export default function EnviarANotarioModal({
       }}
     >
       <div
-        className="flex h-[97vh] max-h-[98vh] w-[min(96vw,1500px)] max-w-[1500px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"
+        className="flex h-[97vh] max-h-[98vh] w-[min(98vw,1750px)] max-w-[1750px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"
         onMouseDown={(event) => event.stopPropagation()}
       >
         {/* CABECERA */}
