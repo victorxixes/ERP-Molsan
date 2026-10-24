@@ -79,6 +79,7 @@ def _ppad_dict(item: ExpedientePPAD):
         "concepto": item.concepto,
         "importe": float(item.importe or 0),
         "imputable_a": item.imputable_a,
+        "usuario_creador": item.usuario_creador,
         "fecha_creacion": item.fecha_creacion.isoformat() if item.fecha_creacion else None,
         "fecha_modificacion": item.fecha_modificacion.isoformat() if item.fecha_modificacion else None,
         "compensado": bool(item.compensado),
@@ -110,7 +111,7 @@ def listar_ppad(expediente_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Crear registro PPAD")
-def crear_ppad(expediente_id: int, datos: PPADCreate, db: Session = Depends(get_db)):
+def crear_ppad(expediente_id: int, datos: PPADCreate, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     expediente = _comprobar_expediente(db, expediente_id)
 
     # Evita duplicados al repetir la acción de generación automática.
@@ -133,6 +134,7 @@ def crear_ppad(expediente_id: int, datos: PPADCreate, db: Session = Depends(get_
         concepto=datos.concepto,
         importe=datos.importe,
         imputable_a=datos.imputable_a,
+        usuario_creador=" ".join(parte for parte in (getattr(usuario, "nombre", None), getattr(usuario, "apellidos", None)) if parte) or getattr(usuario, "usuario", None) or str(getattr(usuario, "id", "")),
     )
     db.add(item)
     try:
