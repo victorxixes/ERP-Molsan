@@ -860,6 +860,16 @@ def migrar_esquema_expedientes_inicio():
                 "ON public.expedientes (cliente_id)",
             )
 
+        # Campos de auditoría para PPAD y acciones; migración idempotente.
+        ejecutar_ddl_con_reintentos(
+            "añadir usuario_creador a expediente_ppad",
+            "ALTER TABLE public.expediente_ppad ADD COLUMN IF NOT EXISTS usuario_creador VARCHAR(200)",
+        )
+        ejecutar_ddl_con_reintentos(
+            "añadir usuario_creador a expediente_acciones",
+            "ALTER TABLE public.expediente_acciones ADD COLUMN IF NOT EXISTS usuario_creador VARCHAR(200)",
+        )
+
         print(
             "[MIGRACION STARTUP] Migración de expedientes completada.",
             flush=True,
