@@ -5774,7 +5774,7 @@ const cuantiaFincasParaEnvio =
 
       </div>
       <div className={`mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2 ${mostrarControlCalidad ? "hidden" : ""}`}>
-        {/* FINCAS Y REGISTROS — SOLO LOS TRES DATOS SOLICITADOS */
+        {/* FINCAS Y REGISTROS — SOLO LOS TRES DATOS SOLICITADOS */}
 
           <Seccion
             id="ficha-fincas"
