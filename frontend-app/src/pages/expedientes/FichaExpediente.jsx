@@ -6280,6 +6280,8 @@ const cuantiaFincasParaEnvio =
             </section>
           </div>
         </div>
+        </div>
+        </div>
         )}
 
   {mostrarCarpetaDigital && (
