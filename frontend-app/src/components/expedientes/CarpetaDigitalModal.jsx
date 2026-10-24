@@ -479,7 +479,7 @@ export default function CarpetaDigitalModal({
 
           {error && <div role="alert" className="mx-3 mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 sm:mx-4">{error}</div>}
 
-          <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto p-3 sm:p-4 lg:grid-cols-[210px_minmax(280px,0.9fr)_minmax(360px,1.25fr)] lg:overflow-hidden">
+          <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto p-3 sm:p-4 lg:grid-cols-[190px_minmax(220px,0.72fr)_minmax(320px,1fr)] lg:overflow-hidden">
             <nav aria-label="Actividades de la carpeta digital" className="min-w-0 space-y-2 lg:overflow-y-auto lg:pr-1">
               <p className="px-1 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Actividades</p>
               {BLOQUES.map((bloque) => {
@@ -531,8 +531,8 @@ export default function CarpetaDigitalModal({
               </div>
             </section>
 
-            <section className="min-h-[250px] min-w-0 overflow-hidden">
-              {modoActividad && actividadId === "documentacion-previa" && datosEnvioNotario ? (
+            <section className="min-h-[250px] min-w-0 overflow-hidden lg:max-w-[640px] lg:justify-self-start">
+              {modoActividad && actividadId === "documentacion-previa" && Boolean(datosEnvioNotario?.fecha_envio_notario) ? (
                 <div className="flex h-full min-h-[250px] flex-col overflow-y-auto rounded-xl border border-indigo-100 bg-white shadow-sm">
                   <header className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
                     <div className="min-w-0">
