@@ -4571,18 +4571,21 @@ const cuantiaFincasParaEnvio =
                 <h3 className="text-base font-bold text-slate-800">
                   {actividadSeleccionadaDef.icono} {actividadSeleccionadaDef.label}
                 </h3>
-                <div className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-3">
-                  <div className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">
-                    <Dato campo="Estado actividad" valor={expediente.estado_actividad} estado />
-                  </div>
-                  <div className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">
-                    <Dato campo="Oficina" valor={expediente.oficina} destaque />
-                  </div>
-                  <div className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">
-                    <Dato campo="Fecha alta" valor={expediente.fecha_alta} tipo="fecha" destaque />
-                  </div>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="font-bold text-slate-500">Estado actividad</span>
+                    <span className="font-semibold text-slate-800">{expediente.estado_actividad || "—"}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="font-bold text-slate-500">Oficina</span>
+                    <span className="font-semibold text-slate-800">{expediente.oficina || "—"}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="font-bold text-slate-500">Fecha alta</span>
+                    <span className="font-semibold text-slate-800">{expediente.fecha_alta ? formatearFecha(expediente.fecha_alta) : "—"}</span>
+                  </span>
                 </div>
-                <p className="mt-2 text-xs text-slate-400">Campos de esta actividad</p>
+                <p className="mt-1.5 text-xs text-slate-400">Campos de esta actividad</p>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
