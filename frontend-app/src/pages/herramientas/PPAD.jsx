@@ -186,9 +186,10 @@ function TablaPPAD({ titulo, lista, tipo, busqueda, setBusqueda, compensar, acci
                   <td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums text-slate-800">{euros(item.importe)}</td>
                   {esPendiente && (
                     <td className="whitespace-nowrap px-3 py-3">
-                      <button type="button" onClick={() => compensar(item)} disabled={accionId === item.id} className="rounded-lg bg-emerald-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-emerald-700 disabled:opacity-50">
+                      <button type="button" onClick={() => compensar(item)} disabled={accionId === item.id || !item.fecha_firma} title={!item.fecha_firma ? "Disponible cuando el expediente tenga fecha de firma." : "Registrar compensación"} className="rounded-lg bg-emerald-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-emerald-700 disabled:opacity-50">
                         {accionId === item.id ? "Guardando…" : "✓ Compensar"}
                       </button>
+                      {!item.fecha_firma && <span className="ml-2 text-[10px] text-slate-500">Pendiente de fecha de firma</span>}
                     </td>
                   )}
                 </tr>
