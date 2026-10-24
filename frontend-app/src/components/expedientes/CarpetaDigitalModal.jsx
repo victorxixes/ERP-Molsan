@@ -568,13 +568,13 @@ export default function CarpetaDigitalModal({
               <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕ Cerrar</button>
             </header>
           ) : (
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
               <div>
                 <h3 className="text-sm font-extrabold text-slate-900">Documentos de {bloqueActividad?.titulo || "la actividad"}</h3>
-                <p className="mt-0.5 text-xs text-slate-500">Adjunta a la izquierda y consulta el PDF a la derecha.</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">Adjunta documentos y consulta el visor.</p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{totalCategoriasVisibles} archivo(s) en esta actividad</span>
+                {!modoActividad && <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{totalCategoriasVisibles} archivo(s) en esta actividad</span>}
                 <button type="button" onClick={() => setVisorVisible((v) => !v)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50">
                   {visorVisible ? "Ocultar visor" : "Mostrar visor"}
                 </button>
@@ -583,20 +583,22 @@ export default function CarpetaDigitalModal({
           )}
 
           <div className={modoActividad
-            ? "grid h-[min(72vh,760px)] min-h-[420px] grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)]"
+            ? "grid h-[min(52vh,520px)] min-h-[320px] grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,0.95fr)]"
             : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}>
             <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
-              <div className="mb-2 flex flex-wrap items-center gap-2">
-                <input
-                  type="search"
-                  value={busquedaDocumento}
-                  onChange={(event) => setBusquedaDocumento(event.target.value)}
-                  placeholder="Buscar documento por nombre…"
-                  aria-label="Buscar documento por nombre"
-                  className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
-                />
-                <span className="rounded-lg bg-slate-100 px-3 py-2 text-[11px] font-bold text-slate-600">{totalArchivos} archivo(s)</span>
-              </div>
+              {!modoActividad && (
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <input
+                    type="search"
+                    value={busquedaDocumento}
+                    onChange={(event) => setBusquedaDocumento(event.target.value)}
+                    placeholder="Buscar documento por nombre…"
+                    aria-label="Buscar documento por nombre"
+                    className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                  />
+                  <span className="rounded-lg bg-slate-100 px-3 py-2 text-[11px] font-bold text-slate-600">{totalArchivos} archivo(s)</span>
+                </div>
+              )}
               {error && <div role="alert" className="mb-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</div>}
               {cargando ? (
                 <p className="rounded-xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">Cargando documentos…</p>
