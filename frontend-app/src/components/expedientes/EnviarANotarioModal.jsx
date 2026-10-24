@@ -702,27 +702,11 @@ export default function EnviarANotarioModal({
     <div className={inline ? "w-full min-w-0" : "expediente-operativo-modal fixed inset-0 z-[10050] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-3"} onMouseDown={(event) => { if (!inline && event.target === event.currentTarget && !loading) onClose(); }}>
       <div className={inline ? "flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-sm" : "flex h-[97vh] max-h-[98vh] w-[min(98vw,1750px)] max-w-[1750px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"} onMouseDown={(event) => event.stopPropagation()}>
 
-        {/* CABECERA */}
-
-        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4 sm:px-7">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--erp-primary-soft)] text-xl">
-              🏛️
-            </div>
-
-            <div className="min-w-0">
-              <h2 className="text-lg font-bold text-slate-800 sm:text-xl">
-                Envío a notario
-              </h2>
-              <p className="mt-0.5 text-sm text-slate-500">
-                Expediente{" "}
-                <strong>{expediente.id_expediente}</strong>
-              </p>
-            </div>
+        {!inline && (
+          <div className="flex shrink-0 items-center justify-end border-b border-slate-200 bg-white px-5 py-3 sm:px-7">
+            <button type="button" disabled={loading} onClick={onClose} aria-label="Cerrar modal" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50">✕</button>
           </div>
-
-          {!inline && <button type="button" disabled={loading} onClick={onClose} aria-label="Cerrar modal" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50">✕</button>}
-        </div>
+        )}
 
         {/* CONTENIDO: DOCUMENTACIÓN PREVIA A LA IZQUIERDA + FORMULARIO */}
 
@@ -730,38 +714,6 @@ export default function EnviarANotarioModal({
           <div className="grid grid-cols-1 items-start gap-3 xl:grid-cols-[minmax(300px,0.58fr)_minmax(0,1.42fr)] xl:gap-4">
             {/* COLUMNA IZQUIERDA — DOCUMENTACIÓN PREVIA COMPARTIDA CON CARPETA DIGITAL */}
             <aside className="min-w-0">
-              <section className="rounded-xl border border-indigo-100 bg-white p-2.5 shadow-sm">
-                <h3 className="text-sm font-extrabold text-slate-900">📂 Documentación previa</h3>
-                <p className="mt-0.5 text-[10px] leading-snug text-slate-500">Documentos necesarios para el envío. También se guardan en la Carpeta Digital.</p>
-                <div className="divide-y divide-slate-100">
-                  {[
-                    ["Hoja de encargo firmada", ["Hoja de Encargo firmada"]],
-                    ["Justificante de cancelación", ["Justificante de cancelación"]],
-                    ["Nota simple registral", ["Nota simple registral"]],
-                    ["Borradores escrituras", ["Borradores escrituras", "Escrituras/borradores"]],
-                    ["Otros", ["Otros"]],
-                  ].map(([etiqueta, categorias]) => {
-                    const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
-                    const lista = documentosCarpeta.filter((doc) => categorias.some((cat) => normalizar(cat) === normalizar(doc.categoria)));
-                    const abierto = repositorioAbierto === etiqueta;
-                    return (
-                      <div key={etiqueta} className="py-1.5">
-                        <div className="flex min-w-0 items-center gap-1.5">
-                          <div className="flex min-w-0 flex-1 items-baseline gap-x-1.5">
-                            <p className="min-w-0 truncate text-[11px] font-bold text-slate-800" title={etiqueta}>{etiqueta}</p>
-                            <p className="shrink-0 whitespace-nowrap text-[9px] text-slate-500">{cargandoDocumentosCarpeta ? "…" : `${lista.length} archivo(s)`}</p>
-                          </div>
-                          <button type="button" onClick={() => setRepositorioAbierto(abierto ? "" : etiqueta)} className="shrink-0 rounded-md border border-indigo-200 bg-indigo-50 px-2 py-1 text-[10px] font-extrabold text-indigo-700 hover:bg-indigo-100">{abierto ? "Cerrar" : "Abrir"}</button>
-                        </div>
-                        {abierto && <div className="mt-2 rounded-lg bg-slate-50 px-2.5 py-2">
-                          {lista.length ? <ul className="space-y-1">{lista.map((doc) => <li key={doc.id} className="break-words text-[11px] text-slate-700">📄 {doc.nombre_original || doc.nombre || doc.filename || "Documento"}</li>)}</ul> : <p className="text-[10px] text-slate-500">Sin documentos adjuntos.</p>}
-                        </div>}
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            
               {/* NOTARIO */}
 
               <section className="rounded-xl border border-slate-200 bg-white p-3">
