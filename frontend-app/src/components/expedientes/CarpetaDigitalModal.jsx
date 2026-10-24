@@ -537,7 +537,7 @@ export default function CarpetaDigitalModal({
                       <h4 className="text-xs font-extrabold text-indigo-950">✉️ Datos de envío a notario</h4>
                       <p className="text-[10px] text-slate-500">Información registrada en el expediente</p>
                     </div>
-                    <button type="button" onClick={onAbrirEnvioNotario} className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-indigo-700">✉️ Envío al notario</button>
+                    <button type="button" onClick={() => onAbrirEnvioNotario?.()} className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">✉️ Envío al notario</button>
                   </header>
                   <div className="grid grid-cols-2 gap-x-3 gap-y-2 p-3 text-[11px] sm:grid-cols-3">
                     {[
@@ -553,6 +553,11 @@ export default function CarpetaDigitalModal({
                       ["Contrato", datosEnvioNotario.contrato],
                       ["Capital", datosEnvioNotario.capital_documento_notarial || datosEnvioNotario.capital],
                       ["Importe", datosEnvioNotario.importe],
+                      ["Finca", datosEnvioNotario.finca || datosEnvioNotario.finca_registral || datosEnvioNotario.numero_finca],
+                      ["Tipo operación", datosEnvioNotario.tipo_operacion],
+                      ["Subtipo operación", datosEnvioNotario.subtipo_operacion],
+                      ["Nº solicitud SIA", datosEnvioNotario.numero_solicitud_sia || datosEnvioNotario.n_solicitud_sia],
+                      ["Observaciones", datosEnvioNotario.observaciones],
                     ].map(([etiqueta, valor]) => (
                       <div key={etiqueta} className="min-w-0">
                         <p className="font-bold text-slate-500">{etiqueta}</p>
@@ -616,7 +621,7 @@ export default function CarpetaDigitalModal({
           )}
 
           <div className={modoActividad
-            ? "grid h-[min(34vh,340px)] min-h-[250px] grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,0.95fr)]"
+            ? "grid min-h-[280px] grid-cols-1 gap-2 lg:grid-cols-[minmax(0,0.78fr)_minmax(420px,1.22fr)]"
             : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}>
             <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
               {!modoActividad && (
