@@ -112,6 +112,8 @@ export default function CarpetaDigitalModal({
   tipoOperacion,
   onDocumentosChange,
   datosEnvioNotario,
+  datosPanelActividad,
+  camposPanelActividad = [],
   onAbrirEnvioNotario,
 }) {
   const empleadoSesion = useAuthStore((state) => state.empleado);
@@ -621,7 +623,7 @@ export default function CarpetaDigitalModal({
           )}
 
           <div className={modoActividad
-            ? "grid min-h-[280px] grid-cols-1 gap-2 lg:grid-cols-[minmax(0,0.78fr)_minmax(420px,1.22fr)]"
+            ? "grid min-h-[360px] grid-cols-1 gap-2 lg:grid-cols-[minmax(210px,0.72fr)_minmax(280px,1fr)] 2xl:grid-cols-[minmax(200px,0.68fr)_minmax(260px,0.9fr)_minmax(280px,0.92fr)]"
             : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}>
             <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
               {!modoActividad && (
@@ -666,6 +668,70 @@ export default function CarpetaDigitalModal({
                 </div>
               )}
             </div>
+            {modoActividad && (
+              <aside className="flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-indigo-100 bg-white shadow-sm">
+                <header className="flex items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
+                  <div className="min-w-0">
+                    <h4 className="text-xs font-extrabold text-indigo-950">
+                      {actividadId === "documentacion-previa" ? "✉️ Datos de envío a notario" : `📋 Datos · ${bloqueActividad?.titulo || "Actividad"}`}
+                    </h4>
+                    <p className="text-[10px] text-slate-500">
+                      {actividadId === "documentacion-previa" ? "Resumen de la información del expediente" : "Información específica de esta actividad"}
+                    </p>
+                  </div>
+                  {actividadId === "documentacion-previa" && (
+                    <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onAbrirEnvioNotario?.(); }} className="shrink-0 rounded-lg bg-indigo-600 px-2.5 py-2 text-[10px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                      ✉️ Envío al notario
+                    </button>
+                  )}
+                </header>
+                <div className="min-h-0 flex-1 overflow-y-auto p-3">
+                  {actividadId === "documentacion-previa" ? (
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-1">
+                      {[
+                        ["Fecha envío", datosEnvioNotario?.fecha_envio_notario || datosEnvioNotario?.fecha_envio],
+                        ["Notario", datosEnvioNotario?.nombre_notario || datosEnvioNotario?.notario],
+                        ["NIF notario", datosEnvioNotario?.nif_notario],
+                        ["Apoderado", datosEnvioNotario?.apoderado],
+                        ["Tipo de firma", datosEnvioNotario?.tipo_firma],
+                        ["Tipo documento", datosEnvioNotario?.tipo_documento],
+                        ["Fecha prevista firma", datosEnvioNotario?.fecha_prevista_firma],
+                        ["Hora prevista", datosEnvioNotario?.hora_prevista_firma],
+                        ["Fin previsto", datosEnvioNotario?.hora_fin_prevista_firma],
+                        ["Contrato", datosEnvioNotario?.contrato],
+                        ["Capital", datosEnvioNotario?.capital_documento_notarial || datosEnvioNotario?.capital],
+                        ["Importe", datosEnvioNotario?.importe],
+                        ["Finca", datosEnvioNotario?.finca || datosEnvioNotario?.finca_registral || datosEnvioNotario?.numero_finca],
+                        ["Tipo operación", datosEnvioNotario?.tipo_operacion],
+                        ["Subtipo operación", datosEnvioNotario?.subtipo_operacion],
+                        ["Nº solicitud SIA", datosEnvioNotario?.numero_solicitud_sia || datosEnvioNotario?.n_solicitud_sia],
+                        ["Observaciones", datosEnvioNotario?.observaciones],
+                      ].map(([etiqueta, valor]) => (
+                        <div key={etiqueta} className="min-w-0 border-b border-slate-100 pb-1.5">
+                          <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
+                          <p className="break-words text-[11px] font-semibold text-slate-800">{valor ? String(valor) : "—"}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-1">
+                      {camposPanelActividad.map((campo) => {
+                        const valor = datosPanelActividad?.[campo.key];
+                        return (
+                          <div key={campo.key} className="min-w-0 border-b border-slate-100 pb-1.5">
+                            <p className="text-[10px] font-bold text-slate-500">{campo.label}</p>
+                            <p className="break-words text-[11px] font-semibold text-slate-800">
+                              {valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}
+                            </p>
+                          </div>
+                        );
+                      })}
+                      {camposPanelActividad.length === 0 && <p className="text-xs text-slate-500">Los campos específicos de esta actividad aparecerán aquí.</p>}
+                    </div>
+                  )}
+                </div>
+              </aside>
+            )}
           </div>
         </section>
       </div>
