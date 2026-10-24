@@ -217,6 +217,12 @@ def compensar_ppad(expediente_id: int, ppad_id: int, db: Session = Depends(get_d
             detail="Este PPAD ya está compensado.",
         )
 
+    if not getattr(expediente, "fecha_firma", None):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="No se puede compensar el PPAD hasta que el expediente tenga fecha de firma.",
+        )
+
     from datetime import datetime, timezone
 
     item.compensado = True
