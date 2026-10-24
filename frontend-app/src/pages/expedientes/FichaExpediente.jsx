@@ -2327,11 +2327,34 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setErrorActividad("");
     setMensajeActividad("");
     if (expediente?.id_expediente) {
+      const numeroExpediente = expediente.id_expediente;
       setCargandoEstadoAbsis(true);
-      axios.get(`/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/absis`)
+      axios.get(`/expedientes/${encodeURIComponent(numeroExpediente)}/documentacion-previa/absis`)
         .then((res) => setEstadoDocumentacionAbsis((actual) => ({ ...actual, ...(res?.data || {}) })))
         .catch(() => {})
         .finally(() => setCargandoEstadoAbsis(false));
+
+      // Sincroniza el checklist con los documentos reales de la carpeta digital.
+      // Solo marca los requisitos cuyo documento está localizado; no desmarca
+      // requisitos ya confirmados manualmente si la consulta no devuelve archivos.
+      axios.get(`/expedientes/${encodeURIComponent(numeroExpediente)}/carpeta-digital`)
+        .then((res) => {
+          const documentos = Array.isArray(res?.data) ? res.data : (res?.data?.items || []);
+          const normalizarCategoria = (valor) => normalizarTexto(valor).replace(/[^a-z0-9]/g, "");
+          const categoriasPresentes = documentos.map((doc) => normalizarCategoria(
+            doc?.categoria || doc?.categoria_nombre || doc?.repositorio || doc?.tipo_documento || ""
+          ));
+          const tieneCategoria = (...nombres) => nombres.some((nombre) => categoriasPresentes.includes(normalizarCategoria(nombre)));
+          setEstadoDocumentacionAbsis((actual) => ({
+            ...actual,
+            solicitud_cancelacion_notarial: actual.solicitud_cancelacion_notarial || tieneCategoria("Hoja de Encargo firmada", "Hoja de encargo firmada"),
+            certificado_cancelacion_administrativo: actual.certificado_cancelacion_administrativo || tieneCategoria("Justificante de cancelación"),
+            nota_simple_registral: actual.nota_simple_registral || tieneCategoria("Nota simple registral"),
+          }));
+        })
+        .catch(() => {
+          // La ficha sigue siendo editable aunque la carpeta digital no responda.
+        });
     }
   }
 
