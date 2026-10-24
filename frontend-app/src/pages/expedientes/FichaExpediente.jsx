@@ -4671,11 +4671,11 @@ const cuantiaFincasParaEnvio =
             </div>
 
 
-            <div className="mb-4 grid grid-cols-2 gap-2 rounded-xl border border-slate-200 bg-white p-1">
-              <button type="button" onClick={() => setPestanaActividad("datos")} className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-xs font-bold transition ${pestanaActividad === "datos" ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100" : "text-slate-600 hover:bg-slate-50"}`}>
+            <div className="mb-3 grid grid-cols-2 gap-1 rounded-lg border border-slate-200 bg-white p-1">
+              <button type="button" onClick={() => setPestanaActividad("datos")} className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[11px] font-bold leading-tight transition ${pestanaActividad === "datos" ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100" : "text-slate-600 hover:bg-slate-50"}`}>
                 <span>☷</span> Datos de actividad
               </button>
-              <button type="button" onClick={() => setPestanaActividad("documentos")} className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-xs font-bold transition ${pestanaActividad === "documentos" ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100" : "text-slate-600 hover:bg-slate-50"}`}>
+              <button type="button" onClick={() => setPestanaActividad("documentos")} className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[11px] font-bold leading-tight transition ${pestanaActividad === "documentos" ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100" : "text-slate-600 hover:bg-slate-50"}`}>
                 <span>📁</span> Carpeta digital y visor
               </button>
             </div>
