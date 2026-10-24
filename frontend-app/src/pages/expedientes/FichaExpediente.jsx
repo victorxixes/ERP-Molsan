@@ -4599,7 +4599,7 @@ const cuantiaFincasParaEnvio =
                     🏛️ Enviar a notario
                   </button>
                 )}
-                <button type="button" onClick={() => { setPestanaActividad("datos"); setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-800 transition hover:bg-sky-100">
+                <button type="button" onClick={() => { setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-800 transition hover:bg-sky-100">
                   ☷ Datos de actividad
                 </button>
                 <button type="button" onClick={() => { setPestanaActividad("datos"); setMostrarModalPpad(true); setErrorPpad(""); }} className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-800 transition hover:bg-indigo-100">
@@ -4622,13 +4622,7 @@ const cuantiaFincasParaEnvio =
             </div>
 
 
-            <div className="mb-3 grid grid-cols-1 gap-1 rounded-lg border border-slate-200 bg-white p-1">
-              <button type="button" onClick={() => setPestanaActividad("documentos")} className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[11px] font-bold leading-tight transition ${pestanaActividad === "documentos" ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100" : "text-slate-600 hover:bg-slate-50"}`}>
-                <span>📁</span> Carpeta digital y visor
-              </button>
-            </div>
-
-            {pestanaActividad === "documentos" && (
+            {(
               <div className="mb-4 min-w-0 rounded-xl border border-slate-200 bg-white p-2">
               <CarpetaDigitalModal
                 expedienteId={expediente?.id_expediente || id}
@@ -4648,7 +4642,7 @@ const cuantiaFincasParaEnvio =
               </div>
             )}
 
-            {pestanaActividad === "datos" && <>
+            {false && <>
             {actividadSeleccionada === "documentacion-previa" && (
               <div className="mb-4 space-y-4">
                 <section className="rounded-xl border border-slate-200 bg-white p-4">
@@ -7584,7 +7578,7 @@ const cuantiaFincasParaEnvio =
 
       <Modal
         open={mostrarModalDatosActividad}
-        onClose={() => { setMostrarModalDatosActividad(false); setPestanaActividad("documentos"); }}
+        onClose={() => setMostrarModalDatosActividad(false)}
         titulo={`☷ Datos de actividad · ${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"}`}
         subtitulo={`Expediente ${expediente?.id_expediente || ""}. Solo se muestran los campos propios de esta actividad.`}
         ancho="max-w-4xl"
