@@ -662,14 +662,6 @@ export default function CarpetaDigitalModal({
                 </div>
               )}
             </div>
-            <div className="min-h-0 min-w-0 overflow-hidden">
-              {visorVisible ? renderVisor() : (
-                <div className="flex h-full min-h-[260px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white p-5 text-center">
-                  <p className="text-xs text-slate-500">El visor está oculto.</p>
-                  <button type="button" onClick={() => setVisorVisible(true)} className="mt-3 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100">Mostrar visor</button>
-                </div>
-              )}
-            </div>
             {modoActividad && !ocultarPanelEnvioNotario && (
               <aside className="flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-indigo-100 bg-white shadow-sm">
                 <header className="flex items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
