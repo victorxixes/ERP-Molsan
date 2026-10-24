@@ -933,6 +933,21 @@ export default function EnviarANotarioModal({
                   <CampoTexto label="Capital (€)" value={form.capital} disabled={loading} type="number" onChange={(v) => cambiarCampo("capital", v)} placeholder="0,00" />
                   <CampoTexto label="Tipo de operación" value={form.tipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("tipo_operacion", v)} placeholder="Ej. Cancelación sin provisión" />
                   <CampoTexto label="Subtipo de operación" value={form.subtipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("subtipo_operacion", v)} placeholder="Ej. Crédito abierto" />
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
+                      Idioma del documento
+                      <span className="text-red-500"> *</span>
+                    </label>
+                    <select
+                      value={form.idioma}
+                      disabled={loading}
+                      onChange={(event) => cambiarCampo("idioma", event.target.value)}
+                      className={clasesInput()}
+                    >
+                      <option value="Catalán">Catalán</option>
+                      <option value="Castellano">Castellano</option>
+                    </select>
+                  </div>
                   <CampoTexto label="Importe (€)" value={form.importe} disabled={loading} type="number" onChange={(v) => cambiarCampo("importe", v)} placeholder="0,00" />
                 </div>
 
@@ -1249,31 +1264,6 @@ export default function EnviarANotarioModal({
                     }
                   />
 
-                  {/* IDIOMA DEBAJO DEL EMAIL */}
-
-                  <div className="border-t border-slate-200 pt-4">
-                    <label className="mb-1 block text-xs font-semibold text-slate-700">
-                      Idioma del documento
-                      <span className="text-red-500"> *</span>
-                    </label>
-
-                    <select
-                      value={form.idioma}
-                      disabled={loading}
-                      onChange={(event) =>
-                        cambiarCampo("idioma", event.target.value)
-                      }
-                      className={clasesInput()}
-                    >
-                      <option value="Catalán">Catalán</option>
-                      <option value="Castellano">Castellano</option>
-                    </select>
-
-                    <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
-                      Selecciona el idioma en el que debe
-                      prepararse el documento.
-                    </p>
-                  </div>
                 </div>
               </section>
 
