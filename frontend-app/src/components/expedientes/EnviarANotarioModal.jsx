@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
 import CarpetaDigitalModal from "./CarpetaDigitalModal";
@@ -680,9 +681,9 @@ export default function EnviarANotarioModal({
 
   const notario = form.notario;
 
-  return (
+  return createPortal((
     <div
-      className="expediente-operativo-modal fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-3"
+      className="expediente-operativo-modal fixed inset-0 z-[10050] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-3"
       onMouseDown={(event) => {
         if (
           event.target === event.currentTarget &&
@@ -1451,5 +1452,5 @@ export default function EnviarANotarioModal({
         </div>
       </div>
     </div>
-  );
+  ), document.body);
 }
