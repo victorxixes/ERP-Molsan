@@ -75,6 +75,7 @@ def _fila(item, expediente, gestor, cliente):
     return {
         "id": item.id,
         "expediente_id": expediente.id_expediente,
+        "fecha_firma": _fecha(getattr(expediente, "fecha_firma", None)),
         "documento": f"PPAD-{item.id}",
         "fecha_alta": _fecha(item.fecha_creacion),
         "fecha_compensacion": _fecha(item.fecha_compensacion),
