@@ -4979,6 +4979,16 @@ const cuantiaFincasParaEnvio =
               </div>
             )}
 
+            {mostrarEnviarNotario && (
+              <EnviarANotarioModal
+                expediente={expediente}
+                cuantiaFincas={cuantiaFincasParaEnvio}
+                onClose={() => setMostrarEnviarNotario(false)}
+                onGuardar={guardarEnviarANotario}
+                inline
+              />
+            )}
+
             {false && <>
             {actividadSeleccionada === "documentacion-previa" && (
               <div className="mb-4 space-y-4">
@@ -7747,21 +7757,7 @@ const cuantiaFincasParaEnvio =
         )}
       </Modal>
 
-      {mostrarEnviarNotario && (
-        <EnviarANotarioModal
-          expediente={
-            expediente
-          }
-          cuantiaFincas={cuantiaFincasParaEnvio}
-          onClose={() =>
-            setMostrarEnviarNotario(
-              false
-            )
-          }
-          onGuardar={guardarEnviarANotario}
-          inline
-        />
-      )}
+
 
           </div>
         </div>
