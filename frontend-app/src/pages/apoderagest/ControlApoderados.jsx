@@ -15,7 +15,6 @@ export default function ControlApoderados({ modo = "colaborador" }) {
   const [item, setItem] = useState(null);
   const [items, setItems] = useState([]);
   const [historial, setHistorial] = useState([]);
-  const [colaboradores, setColaboradores] = useState([]);
   const [archivo, setArchivo] = useState(null);
   const [justificanteArchivo, setJustificanteArchivo] = useState(null);
   const [discrepancia, setDiscrepancia] = useState("");
@@ -29,12 +28,8 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     setCargando(true); setError(""); setMensaje("");
     try {
       if (admin) {
-        const [rel, col] = await Promise.all([
-          axios.get("/apoderagest/liquidaciones/admin", { params: { periodo } }),
-          axios.get("/apoderagest/liquidaciones/admin/colaboradores"),
-        ]);
+        const rel = await axios.get("/apoderagest/liquidaciones/admin", { params: { periodo } });
         setItems(Array.isArray(rel.data) ? rel.data : []);
-        setColaboradores(Array.isArray(col.data) ? col.data : []);
       } else {
         const [res, hist] = await Promise.all([
           axios.get("/apoderagest/liquidaciones/mi", { params: { periodo } }),
@@ -82,14 +77,6 @@ export default function ControlApoderados({ modo = "colaborador" }) {
       setJustificanteArchivo(null); setMensaje("Justificante adjuntado a la liquidación mensual."); await cargar();
     } catch (e) { setError(e?.response?.data?.detail || "No se ha podido subir el justificante."); }
     finally { setCargando(false); }
-  };
-
-  const marcar = async (col, valor) => {
-    try {
-      await axios.patch(`/apoderagest/liquidaciones/admin/colaboradores/${col.id}`, null, { params: { es_colaborador: valor } });
-      setColaboradores((prev) => prev.map((x) => x.id === col.id ? { ...x, es_colaborador: valor } : x));
-      setMensaje(`Ficha de ${col.nombre} actualizada.`);
-    } catch (e) { setError(e?.response?.data?.detail || "No se ha podido actualizar el colaborador."); }
   };
 
   const revisar = async (x, decision) => {
@@ -173,7 +160,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
           <tbody>{items.map((x) => <tr key={x.id} className="border-b last:border-0 hover:bg-slate-50/70">
             <td className="p-3"><p className="font-bold text-slate-800">{x.colaborador}</p><p className="mt-1 text-xs text-slate-500">{x.protocolos_firmados ?? x.expedientes?.length ?? 0} protocolo(s) · {estado(x.estado_relacion)}</p><p className="mt-1 text-xs text-slate-500">Factura: {estado(x.estado_factura)}</p></td>
             <td className="p-3 font-semibold">{x.cancelaciones_sin_provision ?? 0}</td><td className="p-3 font-semibold">{x.cancelaciones_con_provision ?? 0}</td>
-            <td className="p-3">{euros(x.honorarios)}</td><td className="p-3">{euros(x.base_neta ?? x.honorarios)}</td><td className="p-3 font-bold">{euros(x.total ?? (Number(x.base_neta || 0) + Number(x.iva || 0)))}</td>
+            <td className="p-3">{euros(x.honorarios_unitarios)}</td><td className="p-3">{euros(x.base_neta ?? x.honorarios)}</td><td className="p-3 font-bold">{euros(x.total ?? (Number(x.base_neta || 0) + Number(x.iva || 0)))}</td>
             <td className="p-3">{x.tiene_factura ? <button type="button" onClick={() => descargar(x)} className="rounded-lg border border-indigo-200 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver factura</button> : <span className="text-slate-400">Pendiente</span>}</td>
             <td className="p-3">{x.justificante_nombre ? <button type="button" onClick={() => descargarJustificante(x)} className="rounded-lg border border-emerald-200 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50">Ver justificante</button> : <span className="text-slate-400">No aportado</span>}</td>
             <td className="p-3"><div className="flex flex-col gap-2">{x.tiene_factura && <button type="button" onClick={() => revisar(x, "aceptada")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white">Validar factura</button>}<button type="button" onClick={() => revisarRelacion(x, "aceptada")} disabled={!x.validado_en} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold disabled:opacity-40">Validar relación</button>{x.tiene_factura && <button type="button" onClick={() => revisar(x, "rechazada")} className="rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-700">Rechazar factura</button>}</div></td>
