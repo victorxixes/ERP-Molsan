@@ -3708,6 +3708,10 @@ async function descargarPDFCalificacion(defecto) {
   async function compensarPpad(item) {
     const numero = expediente?.id_expediente || id;
     if (!numero || !item?.id || item.compensado) return;
+    if (!String(expediente?.fecha_firma || "").slice(0, 10)) {
+      setErrorPpad("No se puede compensar el PPAD hasta que el expediente tenga fecha de firma.");
+      return;
+    }
     const confirmar = window.confirm("¿Confirmas que este PPAD ya está compensado?");
     if (!confirmar) return;
     setGuardandoPpad(true);
@@ -5649,33 +5653,38 @@ const cuantiaFincasParaEnvio =
             </div>;
           })() : <p className="rounded-lg border border-dashed border-slate-200 bg-white p-3 text-xs text-slate-500">No hay acciones asignadas.</p>}
         </div>
-          <div className="flex min-w-0 flex-col items-start gap-2 rounded-xl border border-slate-200 bg-white p-3">
-            <div className="flex w-full flex-wrap items-center justify-between gap-2">
-              <div>
-                <h3 className="text-xs font-extrabold text-slate-800">PPAD</h3>
-                <p className="text-[10px] text-slate-500">Gestión de conceptos y compensaciones</p>
+          <div className="flex min-w-0 flex-col items-start gap-2">
+            <button
+              type="button"
+              onClick={() => { setMostrarModalPpad(true); setErrorPpad(""); }}
+              className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-800 transition hover:bg-indigo-100"
+            >
+              <span>PPAD</span>
+              {ppadItems.filter((item) => !item.compensado).length > 0 && (
+                <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white">
+                  {ppadItems.filter((item) => !item.compensado).length}
+                </span>
+              )}
+            </button>
+            {ppadItems.length > 0 && (
+              <div className="w-full space-y-2">
+                {ppadItems.map((item) => (
+                  <div key={item.id} className={`rounded-lg border px-3 py-2 ${item.compensado ? "border-emerald-200 bg-emerald-50/60" : "border-amber-200 bg-amber-50/70"}`}>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="min-w-0 break-words text-xs font-bold text-slate-800">{item.concepto || "PPAD"}</span>
+                      <span className="text-xs font-extrabold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</span>
+                    </div>
+                    {item.compensado ? (
+                      <p className="mt-1 text-[11px] font-semibold text-emerald-700">✓ PPAD compensado{item.fecha_compensacion ? ` el ${formatearFecha(item.fecha_compensacion)}` : ""}.</p>
+                    ) : (
+                      <p role="status" className="mt-1 text-[11px] font-bold text-amber-800">⚠ PPAD pendiente de compensar.</p>
+                    )}
+                    {!item.compensado && !String(expediente?.fecha_firma || "").slice(0, 10) && (
+                      <p className="mt-1 text-[10px] text-slate-600">La compensación estará disponible cuando el expediente tenga fecha de firma.</p>
+                    )}
+                  </div>
+                ))}
               </div>
-              <button
-                type="button"
-                onClick={() => setMostrarModalPpad(true)}
-                className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-800 transition hover:bg-indigo-100"
-              >
-                <span>PPAD</span>
-                {ppadItems.filter((item) => !item.compensado).length > 0 && (
-                  <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white">
-                    {ppadItems.filter((item) => !item.compensado).length}
-                  </span>
-                )}
-              </button>
-            </div>
-            {cargandoPpad ? (
-              <p className="text-[10px] text-slate-500">Comprobando PPAD pendientes…</p>
-            ) : ppadItems.filter((item) => !item.compensado).length > 0 ? (
-              <p className="text-[11px] font-semibold text-amber-700">
-                ⚠ Hay {ppadItems.filter((item) => !item.compensado).length} PPAD pendientes de compensar.
-              </p>
-            ) : (
-              <p className="text-[11px] font-medium text-emerald-700">✓ Sin PPAD pendientes de compensar.</p>
             )}
           </div>
           {mostrarModalPpad && (
@@ -5726,9 +5735,10 @@ const cuantiaFincasParaEnvio =
                         {item.compensado ? (
                           <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800">✓ COMPENSADO</span>
                         ) : (
-                          <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad}>
+                          <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad || !String(expediente?.fecha_firma || "").slice(0, 10)}>
                             {guardandoPpad ? "Registrando…" : "✓ Compensar"}
                           </Boton>
+                          {!String(expediente?.fecha_firma || "").slice(0, 10) && <span className="text-[10px] text-slate-500">Disponible tras informar la fecha de firma.</span>}
                         )}
                         {!item.compensado && <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>}
                         {(!item.compensado || esAdministradorSesion) && (
