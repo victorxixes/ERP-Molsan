@@ -7,7 +7,7 @@ from datetime import date, datetime
 from io import BytesIO
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
-from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, ForeignKey, LargeBinary, UniqueConstraint, and_, func, or_
+from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, ForeignKey, LargeBinary, Float, UniqueConstraint, and_, func, or_
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Session
 from backend.app.database import Base, get_db
@@ -24,6 +24,7 @@ class LiquidacionMensual(Base):
     empleado_id = Column(Integer, ForeignKey("empleados.id"), nullable=False, index=True)
     periodo = Column(String(7), nullable=False, index=True)
     expedientes_json = Column(JSONB, nullable=False, default=list)
+    honorarios_valor = Column(Float, nullable=False, default=0, server_default="0")
     estado_relacion = Column(String(30), nullable=False, default="pendiente")
     validado_en = Column(DateTime(timezone=True), nullable=True)
     validado_por_id = Column(Integer, ForeignKey("empleados.id"), nullable=True)
@@ -123,20 +124,20 @@ def _clave_protocolo(expediente):
     return ("protocolo", notario, protocolo.casefold())
 
 
-def _resumen_liquidacion(empleado, expedientes):
+def _resumen_liquidacion(honorarios_valor, expedientes):
     protocolos = {}
     for expediente in expedientes or []:
         clave = _clave_protocolo(expediente)
         grupo = protocolos.setdefault(clave, {"expedientes": [], "con_provision": False, "sin_provision": False})
         grupo["expedientes"].append(expediente)
         operacion = str(expediente.get("tipo_operacion") or "").casefold().replace("ó", "o")
-        provision = str(expediente.get("tipo_provision") or "").casefold()
+        provision = str(expediente.get("tipo_provision") or "").casefold().replace("ó", "o")
         tiene_provision = bool(str(expediente.get("id_provision") or "").strip()) or "con provision" in operacion or "con provision" in provision
         es_sin_provision = "sin provision" in operacion or "sin provision" in provision
         grupo["con_provision"] = grupo["con_provision"] or (tiene_provision and not es_sin_provision)
         grupo["sin_provision"] = grupo["sin_provision"] or es_sin_provision
     protocolos_unicos = list(protocolos.values())
-    valor = float(getattr(empleado, "honorarios_valor", 0) or 0)
+    valor = float(honorarios_valor or 0)
     honorarios = round(len(protocolos_unicos) * valor, 2)
     iva = round(honorarios * 0.21, 2)
     return {
@@ -154,11 +155,11 @@ def _resumen_liquidacion(empleado, expedientes):
 def _dict(item, db, incluir_datos_factura=False):
     empleado = db.query(Empleado).filter(Empleado.id == item.empleado_id).first()
     expedientes = item.expedientes_json or []
-    resumen = _resumen_liquidacion(empleado, expedientes)
+    resumen = _resumen_liquidacion(item.honorarios_valor, expedientes)
     result = {
         "id": item.id, "empleado_id": item.empleado_id,
         "colaborador": _nombre(empleado) if empleado else str(item.empleado_id),
-        "periodo": item.periodo, "expedientes": expedientes, **resumen,
+        "periodo": item.periodo, "expedientes": expedientes, "honorarios_valor": float(item.honorarios_valor or 0), **resumen,
         "estado_relacion": item.estado_relacion, "validado_en": item.validado_en.isoformat() if item.validado_en else None,
         "validado_por_id": item.validado_por_id, "validado_version": item.validado_version, "discrepancia": item.discrepancia,
         "historial_validaciones": item.historial_validaciones or [], "estado_revision_relacion": item.estado_revision_relacion,
@@ -179,12 +180,20 @@ def _obtener_o_crear(db, empleado_id, periodo):
     item = db.query(LiquidacionMensual).filter_by(empleado_id=empleado_id, periodo=periodo).with_for_update().first()
     firmas = _relacion_firmas(db, empleado_id, periodo)
     if item is None:
-        item = LiquidacionMensual(empleado_id=empleado_id, periodo=periodo, expedientes_json=firmas)
+        item = LiquidacionMensual(
+            empleado_id=empleado_id,
+            periodo=periodo,
+            expedientes_json=firmas,
+            honorarios_valor=float(getattr(empleado, "honorarios_valor", 0) or 0),
+        )
         db.add(item)
         db.flush()
-    elif item.estado_relacion != "validada" and item.expedientes_json != firmas:
-        item.expedientes_json = firmas
-        item.validado_version = (item.validado_version or 0) + 1
+    elif item.estado_relacion != "validada":
+        if item.expedientes_json != firmas:
+            item.expedientes_json = firmas
+            item.validado_version = (item.validado_version or 0) + 1
+        # La tarifa sigue la ficha hasta que el colaborador valida la relación.
+        item.honorarios_valor = float(getattr(empleado, "honorarios_valor", 0) or 0)
     # Tras validar, la instantánea no se recalcula silenciosamente.
     db.commit()
     db.refresh(item)
