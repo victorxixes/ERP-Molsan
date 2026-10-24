@@ -1363,6 +1363,7 @@ export default function FichaExpediente() {
 
   const [pestanaActividad, setPestanaActividad] = useState("documentos");
   const [mostrarControlCalidad, setMostrarControlCalidad] = useState(false);
+  const [fasesCalidadColapsadas, setFasesCalidadColapsadas] = useState({});
   const [mostrarDatosEnvioNotario, setMostrarDatosEnvioNotario] = useState(true);
   const [mostrarResumenEconomico, setMostrarResumenEconomico] = useState(true);
   const [mostrarModalDatosActividad, setMostrarModalDatosActividad] = useState(false);
@@ -4400,7 +4401,16 @@ const cuantiaFincasParaEnvio =
                                       <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${completa ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
                                         {completa ? "✓ Correcto" : `${pendientes.length} pendiente(s)`}
                                       </span>
+                                      <button
+                                        type="button"
+                                        aria-expanded={!fasesCalidadColapsadas[fase.key]}
+                                        onClick={() => setFasesCalidadColapsadas((actuales) => ({ ...actuales, [fase.key]: !actuales[fase.key] }))}
+                                        className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-600 hover:bg-slate-50"
+                                      >
+                                        {fasesCalidadColapsadas[fase.key] ? "＋ Mostrar" : "− Ocultar"}
+                                      </button>
                                     </div>
+                                    {!fasesCalidadColapsadas[fase.key] && (
                                     <ul className="ml-11 mt-2 space-y-1 border-t border-slate-200/70 pt-2">
                                       {fase.checks.map((check) => (
                                         <li key={check.etiqueta} className="flex items-start gap-2 text-[11px]">
@@ -4417,6 +4427,7 @@ const cuantiaFincasParaEnvio =
                                         </li>
                                       ))}
                                     </ul>
+                                    )}
                                   </article>
                                 );
                               })}
