@@ -633,7 +633,7 @@ def migrar_esquema_expedientes_inicio():
                             left(regexp_replace(a.query, '[[:space:]]+', ' ', 'g'), 500) AS consulta
                         FROM pg_stat_activity a
                         JOIN pg_locks l ON l.pid = a.pid
-                        WHERE l.relation = 'public.expedientes'::regclass
+                        WHERE l.relation IN ('public.expedientes'::regclass, 'public.empleados'::regclass)
                           AND a.pid <> pg_backend_pid()
                         ORDER BY l.granted DESC, a.xact_start NULLS LAST
                         """
@@ -652,7 +652,7 @@ def migrar_esquema_expedientes_inicio():
             )
 
     def liberar_transacciones_inactivas_expedientes() -> None:
-        """Libera solo sesiones antiguas idle-in-transaction que retienen AccessShareLock en expedientes.
+        """Libera solo sesiones antiguas idle-in-transaction que retienen AccessShareLock en las tablas que requieren DDL.
 
         Una transacción de lectura abandonada puede impedir ALTER TABLE durante el despliegue.
         Se limita a sesiones inactivas más de 5 minutos; nunca termina sesiones activas.
@@ -667,7 +667,7 @@ def migrar_esquema_expedientes_inicio():
                             SELECT DISTINCT a.pid
                             FROM pg_stat_activity a
                             JOIN pg_locks l ON l.pid = a.pid
-                            WHERE l.relation = 'public.expedientes'::regclass
+                            WHERE l.relation IN ('public.expedientes'::regclass, 'public.empleados'::regclass)
                               AND l.mode = 'AccessShareLock'
                               AND l.granted = TRUE
                               AND a.pid <> pg_backend_pid()
@@ -688,7 +688,7 @@ def migrar_esquema_expedientes_inicio():
                         )
                     print(
                         f"[MIGRACION STARTUP] Sesión inactiva pid={pid} "
-                        f"terminada={terminado} para liberar el bloqueo de expedientes.",
+                        f"terminada={terminado} para liberar bloqueos de esquema.",
                         flush=True,
                     )
                 except Exception as error_sesion:
@@ -709,10 +709,10 @@ def migrar_esquema_expedientes_inicio():
         # tiempo, pero conceder una ventana de reintentos suficiente para que
         # PostgreSQL libere el bloqueo de tabla.
         max_intentos = 20
-        # Antes del DDL, retirar únicamente transacciones de lectura abandonadas
-        # que llevan más de 5 minutos reteniendo AccessShareLock en expedientes.
-        liberar_transacciones_inactivas_expedientes()
         for intento in range(1, max_intentos + 1):
+            # Repetir la limpieza en cada intento: la transacción que bloquea
+            # empleados puede superar los 5 minutos mientras se reintenta el DDL.
+            liberar_transacciones_inactivas_expedientes()
             try:
                 with conexion.begin():
                     conexion.execute(text("SET LOCAL lock_timeout = '3s'"))
