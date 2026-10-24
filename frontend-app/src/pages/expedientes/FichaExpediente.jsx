@@ -5919,9 +5919,8 @@ const cuantiaFincasParaEnvio =
 
        
 
-        {/* Información complementaria: solo se muestra cuando existe un envío a notario. */}
-        {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
-        <div className="min-w-0 xl:col-span-12">
+        {/* Información complementaria: se oculta visualmente hasta registrar un envío a notario. */}
+        <div className={`min-w-0 xl:col-span-12 ${(expediente.fecha_envio_notario || expediente.fecha_envio) ? "" : "hidden"}`}>
           <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
         <div className="min-w-0 w-full xl:col-span-8">
@@ -6280,8 +6279,6 @@ const cuantiaFincasParaEnvio =
             </section>
           </div>
         </div>
-        </div>
-        )}
  
   {mostrarCarpetaDigital && (
         <CarpetaDigitalModal
