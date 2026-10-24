@@ -497,6 +497,12 @@ export default function App() {
           />
 
           <Route
+            path="catalogos/correspondencia-tipificada"
+            element={<CorrespondenciaTipificada />}
+          />
+
+          {/* Alias para conservar los enlaces antiguos a Correspondencia tipificada. */}
+          <Route
             path="herramientas/utilidades/correspondencia-tipificada"
             element={<CorrespondenciaTipificada />}
           />

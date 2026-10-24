@@ -32,10 +32,6 @@ export default function Utilidades() {
         <Card icon="🔐" titulo="Accesos notariales" descripcion="Busca una notaría y administra por separado sus accesos a NotarGest y EncargaGest, con historial de cambios." link="/herramientas/utilidades/accesos-notariales" />
       </Grupo>
 
-      <Grupo titulo="Catálogos" descripcion="Administra los catálogos y las plantillas reutilizables del ERP.">
-        <Card icon="✉️" titulo="Correspondencia tipificada" descripcion="Crea plantillas de email por proceso y genera mensajes con datos reales de la ficha del expediente." link="/herramientas/utilidades/correspondencia-tipificada" destacado />
-      </Grupo>
-
       <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
         <Card icon="📥" titulo="Importar CTN" descripcion="Importar un Excel con información de notarías." link="/herramientas/importar-ctn" />
         <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." link="/herramientas/importador-absis" destacado />

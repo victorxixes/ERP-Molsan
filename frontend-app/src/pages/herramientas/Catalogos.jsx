@@ -8,6 +8,14 @@ import "../../css/HerramientasPremium.css";
  */
 const CATALOGOS = [
   {
+    icon: "✉️",
+    titulo: "Correspondencia tipificada",
+    descripcion: "Crea plantillas de email por proceso y genera mensajes con datos reales de la ficha del expediente.",
+    ruta: "/catalogos/correspondencia-tipificada",
+    grupo: "Catálogos operativos",
+    destacado: true,
+  },
+  {
     icon: "🔗",
     titulo: "Catálogo ABSIS",
     descripcion: "Estados de expediente, productos GTG, actividades, operaciones y defectos.",
