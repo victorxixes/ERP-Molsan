@@ -819,9 +819,6 @@ export default function CarpetaDigitalModal({
                             ["Subtipo operación", datosEnvioNotario?.subtipo_operacion],
                             ["Documento 1", datosEnvioNotario?.documentos_escritura?.[0]?.tipo_documento || datosEnvioNotario?.tipo_documento],
                             ["Cuantía documento 1", datosEnvioNotario?.documentos_escritura?.[0]?.cuantia || datosEnvioNotario?.cuantia],
-                            ["Otros documentos", Array.isArray(datosEnvioNotario?.documentos_escritura) ? datosEnvioNotario.documentos_escritura.slice(1).map((doc) => doc?.tipo_documento).filter(Boolean).join(", ") : ""],
-                            ["Contrato", datosEnvioNotario?.contrato],
-                            ["Capital (€)", datosEnvioNotario?.capital_documento_notarial || datosEnvioNotario?.capital],
                             ["Importe (€)", datosEnvioNotario?.importe],
                             ["Finca", datosEnvioNotario?.finca || datosEnvioNotario?.finca_registral || datosEnvioNotario?.numero_finca],
                           ],
@@ -849,8 +846,6 @@ export default function CarpetaDigitalModal({
                             ["Teléfono", datosEnvioNotario?.facturacion_telefono],
                             ["Email", datosEnvioNotario?.facturacion_email],
                             ["Idioma del documento", datosEnvioNotario?.idioma_documento || datosEnvioNotario?.idioma],
-                            ["Nº solicitud SIA", datosEnvioNotario?.numero_solicitud_sia || datosEnvioNotario?.n_solicitud_sia],
-                            ["Observaciones", datosEnvioNotario?.observaciones],
                           ],
                         },
                       ].map((seccion) => (
