@@ -6281,9 +6281,8 @@ const cuantiaFincasParaEnvio =
           </div>
         </div>
         </div>
-        </div>
         )}
-
+ 
   {mostrarCarpetaDigital && (
         <CarpetaDigitalModal
           expedienteId={id || expediente?.id_expediente || expediente?.id}
