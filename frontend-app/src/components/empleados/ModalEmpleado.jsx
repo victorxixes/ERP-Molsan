@@ -2086,6 +2086,7 @@ const permisosDisponibles =
     { id: "basicos", label: "Datos básicos", icon: "👤" },
     { id: "personales", label: "Datos personales", icon: "🏠" },
     { id: "laborales", label: "Datos laborales", icon: "💼" },
+    ...(esPropiaFicha ? [{ id: "mi-visibilidad", label: "Mi visibilidad de tablas", icon: "📊" }] : []),
     { id: "seguridad", label: "Seguridad", icon: "🛡️" },
     { id: "auditoria", label: "Auditoría", icon: "📋" },
   ];
@@ -2100,7 +2101,7 @@ const permisosDisponibles =
     : esAdministrador
       ? pestanasEmpleado
       : esPropiaFicha
-        ? pestanasEmpleado.filter((item) => ["basicos", "personales", "laborales"].includes(item.id))
+        ? pestanasEmpleado.filter((item) => ["basicos", "personales", "laborales", "mi-visibilidad"].includes(item.id))
         : [];
 
   useEffect(() => {
@@ -2126,6 +2127,9 @@ const permisosDisponibles =
   // Renderizarlo directamente y delegar el cierre al listado evita esa superposición.
   if (modoAdministracion && pestana === "visibilidad-tablas") {
     return <VisibilidadTablas empleadoId={empleadoId} onClose={onClose} />;
+  }
+  if (!modoAdministracion && esPropiaFicha && pestana === "mi-visibilidad") {
+    return <VisibilidadTablas empleadoId={empleadoId} onClose={() => setPestana("basicos")} ambito="personal" />;
   }
 
   /* ==========================================================
