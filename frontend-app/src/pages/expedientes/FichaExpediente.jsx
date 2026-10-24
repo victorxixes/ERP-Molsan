@@ -4172,7 +4172,7 @@ const cuantiaFincasParaEnvio =
               grid-cols-1
               gap-2
               md:grid-cols-2
-              xl:grid-cols-5
+              xl:grid-cols-12
             "
           >
 
@@ -4180,7 +4180,7 @@ const cuantiaFincasParaEnvio =
               titulo="Titulares"
               subtitulo="Titulares del expediente"
               icono="titular"
-              className="h-full"
+              className="h-full xl:col-span-2"
               compacto
               colapsable
               colapsadaInicial
@@ -4202,7 +4202,7 @@ const cuantiaFincasParaEnvio =
               titulo="Solicitantes"
               subtitulo="Solicitantes del expediente"
               icono="solicitante"
-              className="h-full"
+              className="h-full xl:col-span-2"
               compacto
               colapsable
               colapsadaInicial
@@ -4224,7 +4224,7 @@ const cuantiaFincasParaEnvio =
               titulo="Notario"
               subtitulo="Información del notario asociado"
               icono="notario"
-              className="h-full"
+              className="h-full xl:col-span-3"
               compacto
               colapsable
               colapsadaInicial
@@ -4254,7 +4254,7 @@ const cuantiaFincasParaEnvio =
               titulo="Información crediticia"
               subtitulo="Resumen económico y contractual"
               icono="economico"
-              className="h-full"
+              className="h-full xl:col-span-5"
               compacto
               colapsable
               colapsadaInicial
