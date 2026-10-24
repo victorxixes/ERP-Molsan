@@ -36,6 +36,7 @@ class ExpedienteAccionResponse(BaseModel):
     estado: str
     fecha: Optional[date] = None
     observaciones: Optional[str] = None
+    usuario_creador: Optional[str] = None
     activo: bool
 
     accion: Optional[AccionCatalogoResponse] = None
