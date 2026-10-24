@@ -844,7 +844,7 @@ export default function EnviarANotarioModal({
                   </div>
                 </div>
               </section></div>
-              <div className="min-w-0"><section className="rounded-xl border border-slate-200 bg-white p-3">
+              <div className="min-w-0"><section className="h-full rounded-xl border border-slate-200 bg-white p-3">
                 <TituloSeccion
                   titulo="2. Tipo de documento"
                   descripcion="Selecciona el documento, el formato de escritura y la modalidad de tramitación."
@@ -990,7 +990,7 @@ export default function EnviarANotarioModal({
                 </div>
 
               </section></div>
-              <div className="min-w-0"><section className="rounded-xl border border-slate-200 bg-white p-3">
+              <div className="min-w-0"><section className="h-full rounded-xl border border-slate-200 bg-white p-3">
                 <TituloSeccion
                   titulo="3. Datos del notario"
                   descripcion="Selecciona el notario desde el catálogo CTN."
@@ -1056,7 +1056,7 @@ export default function EnviarANotarioModal({
                   </div>
                 )}
               </section></div>
-              <div className="min-w-0"><section className="rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3">
+              <div className="min-w-0"><section className="h-full rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3">
                 <div className="mb-5 flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--erp-primary-soft)] text-lg">
                     🧾
@@ -1064,7 +1064,7 @@ export default function EnviarANotarioModal({
 
                   <div>
                     <h3 className="text-base font-bold text-slate-800">
-                      Datos de facturación
+                      4. Datos de facturación
                     </h3>
                     <p className="mt-1 text-xs leading-relaxed text-slate-500">
                       Revisa y completa los datos de facturación.
