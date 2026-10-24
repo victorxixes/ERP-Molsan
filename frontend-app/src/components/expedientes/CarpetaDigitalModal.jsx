@@ -335,7 +335,17 @@ export default function CarpetaDigitalModal({
   }
 
   const porCategoria = useCallback(
-    (categoria) => documentos.filter((doc) => doc.categoria === categoria),
+    (categoria) => documentos.filter((doc) => {
+      if (doc.categoria === categoria) return true;
+      // Conserva visibles los archivos subidos con los nombres del repositorio anterior.
+      if (categoria === "Borradores escrituras") {
+        return ["Escrituras/borradores", "Borradores de escrituras", "Borradores de escritura"].includes(doc.categoria);
+      }
+      if (categoria === "Otros") {
+        return doc.categoria === "Borradores escrituras y otros";
+      }
+      return false;
+    }),
     [documentos]
   );
   const bytes = (n) => {
