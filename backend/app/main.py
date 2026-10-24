@@ -827,6 +827,28 @@ def migrar_esquema_expedientes_inicio():
         if not tabla_liquidaciones_creada:
             raise RuntimeError("No se pudo crear la tabla apoderagest_liquidaciones.")
 
+        # Añadir los campos de justificante a instalaciones que ya tengan la tabla.
+        with conexion.begin():
+            columnas_liquidacion = {
+                fila[0] for fila in conexion.execute(text(
+                    "SELECT column_name FROM information_schema.columns "
+                    "WHERE table_schema = 'public' AND table_name = 'apoderagest_liquidaciones'"
+                )).fetchall()
+            }
+        columnas_justificante = [
+            ("justificante_bytes", "BYTEA"),
+            ("justificante_nombre", "VARCHAR(255)"),
+            ("justificante_tipo", "VARCHAR(150)"),
+            ("justificante_subido_en", "TIMESTAMP WITH TIME ZONE"),
+        ]
+        for nombre, tipo_sql in columnas_justificante:
+            if nombre not in columnas_liquidacion:
+                ejecutar_ddl_con_reintentos(
+                    f"crear columna apoderagest_liquidaciones.{nombre}",
+                    f'ALTER TABLE public.apoderagest_liquidaciones ADD COLUMN "{nombre}" {tipo_sql}',
+                )
+                print(f"[MIGRACION STARTUP] Columna apoderagest_liquidaciones.{nombre} creada.", flush=True)
+
         with conexion.begin():
             resultado = conexion.execute(
                 text(
