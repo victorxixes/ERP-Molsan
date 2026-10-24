@@ -5627,8 +5627,6 @@ const cuantiaFincasParaEnvio =
 
         </div>
 
-      </div>
-
 
       <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
         <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
