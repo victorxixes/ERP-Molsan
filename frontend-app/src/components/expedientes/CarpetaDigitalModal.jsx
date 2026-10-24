@@ -575,41 +575,18 @@ export default function CarpetaDigitalModal({
                     const urgente = valor("firma_urgente");
                     const secciones = [
                       {
-                        titulo: "📨 Envío al notario",
-                        descripcion: "Estado y planificación de la firma",
+                        titulo: "📨 Envío y estado de la firma",
+                        descripcion: "Estado actual y fechas registradas",
                         campos: [
                           ["Fecha de envío", fecha(valor("fecha_envio_notario", "fecha_envio", "fecha_envio_notaria"))],
                           ["¿Escritura firmada?", firma === true || ["sí", "si", "true", "1"].includes(String(firma).toLowerCase()) ? "Sí" : (firma === false || ["no", "false", "0"].includes(String(firma).toLowerCase()) ? "No" : "")],
                           ["Firma urgente", urgente === true || ["sí", "si", "true", "1"].includes(String(urgente).toLowerCase()) ? "Sí" : (urgente === false || ["no", "false", "0"].includes(String(urgente).toLowerCase()) ? "No" : "")],
                           ["Fecha de firma", fecha(valor("fecha_firma"))],
-                          ["Tipo de firma", valor("tipo_firma")],
-                          ["Fecha prevista", fecha(valor("fecha_prevista_firma"))],
-                          ["Hora prevista", valor("hora_prevista_firma")],
-                          ["Fin previsto", valor("hora_fin_prevista_firma", "fin_previsto")],
-                          ["Protocolo", valor("protocolo")],
                         ],
                       },
                       {
-                        titulo: "📄 Tipo de documento",
-                        descripcion: "Operación, escritura y cuantías",
-                        campos: [
-                          ["Tipo de documento", valor("tipo_documento")],
-                          ["Formato de escritura", valor("formato_escritura")],
-                          ["Tipo de trámite", valor("tipo_tramite")],
-                          ["Tipo de operación", valor("tipo_operacion", "tipoOperacion", "operacion")],
-                          ["Subtipo de operación", valor("subtipo_operacion")],
-                          ["Documento 1", Array.isArray(d.documentos_escritura) ? d.documentos_escritura[0]?.tipo_documento : valor("tipo_documento")],
-                          ["Cuantía documento 1", Array.isArray(d.documentos_escritura) ? moneda(d.documentos_escritura[0]?.cuantia) : moneda(valor("cuantia", "capital_documento_notarial", "capital"))],
-                          ["Otros documentos", Array.isArray(d.documentos_escritura) && d.documentos_escritura.length > 1 ? d.documentos_escritura.slice(1).map(x => x?.tipo_documento).filter(Boolean).join(", ") : valor("otros_documentos")],
-                          ["Contrato", valor("contrato")],
-                          ["Capital", moneda(valor("capital_documento_notarial", "capital"))],
-                          ["Importe", moneda(valor("importe"))],
-                          ["Finca", valor("finca", "finca_registral", "numero_finca")],
-                        ],
-                      },
-                      {
-                        titulo: "🏛️ Datos del notario",
-                        descripcion: "Notaría y apoderado responsable",
+                        titulo: "🏛️ Notario y apoderado",
+                        descripcion: "Datos de la notaría y responsable de la firma",
                         campos: [
                           ["Notario", valor("nombre_notario", "notario")],
                           ["NIF notario", valor("nif_notario", "notario_nif")],
@@ -619,8 +596,43 @@ export default function CarpetaDigitalModal({
                         ],
                       },
                       {
+                        titulo: "🗓️ Planificación de la firma",
+                        descripcion: "Tipo de firma y planificación horaria",
+                        campos: [
+                          ["Tipo de firma", valor("tipo_firma")],
+                          ["Fecha prevista", fecha(valor("fecha_prevista_firma"))],
+                          ["Hora prevista", valor("hora_prevista_firma")],
+                          ["Fin previsto", valor("hora_fin_prevista_firma", "fin_previsto")],
+                          ["Protocolo", valor("protocolo")],
+                        ],
+                      },
+                      {
+                        titulo: "📄 Operación y documentación",
+                        descripcion: "Características del documento y del trámite",
+                        campos: [
+                          ["Tipo de documento", valor("tipo_documento")],
+                          ["Formato de escritura", valor("formato_escritura")],
+                          ["Tipo de trámite", valor("tipo_tramite")],
+                          ["Tipo de operación", valor("tipo_operacion", "tipoOperacion", "operacion")],
+                          ["Subtipo de operación", valor("subtipo_operacion")],
+                          ["Documento 1", Array.isArray(d.documentos_escritura) ? d.documentos_escritura[0]?.tipo_documento : valor("tipo_documento")],
+                          ["Cuantía documento 1", Array.isArray(d.documentos_escritura) ? moneda(d.documentos_escritura[0]?.cuantia) : moneda(valor("cuantia", "capital_documento_notarial", "capital"))],
+                          ["Otros documentos", Array.isArray(d.documentos_escritura) && d.documentos_escritura.length > 1 ? d.documentos_escritura.slice(1).map(x => x?.tipo_documento).filter(Boolean).join(", ") : valor("otros_documentos")],
+                        ],
+                      },
+                      {
+                        titulo: "💶 Datos económicos y registrales",
+                        descripcion: "Referencias del préstamo, importe y finca",
+                        campos: [
+                          ["Contrato", valor("contrato")],
+                          ["Capital", moneda(valor("capital_documento_notarial", "capital"))],
+                          ["Importe", moneda(valor("importe"))],
+                          ["Finca", valor("finca", "finca_registral", "numero_finca")],
+                        ],
+                      },
+                      {
                         titulo: "🧾 Datos de facturación",
-                        descripcion: "Identificación, contacto y datos adicionales",
+                        descripcion: "Datos identificativos y de contacto de facturación",
                         campos: [
                           ["Nombre", valor("facturacion_nombre", "nombre_facturacion")],
                           ["Apellidos", valor("facturacion_apellidos", "apellidos_facturacion")],
@@ -632,6 +644,12 @@ export default function CarpetaDigitalModal({
                           ["Teléfono", valor("facturacion_telefono", "telefono_facturacion")],
                           ["Email", valor("facturacion_email", "email_facturacion")],
                           ["Idioma del documento", valor("idioma_documento", "idioma")],
+                        ],
+                      },
+                      {
+                        titulo: "📝 Información adicional",
+                        descripcion: "Referencias de solicitud y notas",
+                        campos: [
                           ["Nº solicitud SIA", valor("numero_solicitud_sia", "n_solicitud_sia", "numero_solicitud_pnc")],
                           ["Observaciones", valor("observaciones")],
                         ],
@@ -640,12 +658,12 @@ export default function CarpetaDigitalModal({
                     return (
                       <div className="space-y-3 p-3">
                         {secciones.map((seccion) => (
-                          <section key={seccion.titulo} className="flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white">
+                          <section key={seccion.titulo} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
                             <div className="border-b border-slate-100 bg-slate-50 px-3 py-2">
                               <h5 className="text-xs font-extrabold text-slate-800">{seccion.titulo}</h5>
                               <p className="mt-0.5 text-[10px] text-slate-500">{seccion.descripcion}</p>
                             </div>
-                            <div className="grid grid-cols-1 items-stretch gap-2 p-3 sm:grid-cols-2 xl:grid-cols-4">
+                            <div className="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2 xl:grid-cols-3">
                               {seccion.campos.map(([etiqueta, dato]) => (
                                 <div key={etiqueta} className="min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2">
                                   <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{etiqueta}</p>
