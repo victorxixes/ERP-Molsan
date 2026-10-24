@@ -374,14 +374,14 @@ export default function CarpetaDigitalModal({
     });
     const totalCategoria = porCategoria(categoria).length;
     return (
-      <article key={categoria} className="min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="min-w-0 flex-1">
-            <h4 className="text-xs font-bold text-slate-800">{etiqueta}</h4>
-            <p className="text-[10px] text-slate-500">{totalCategoria} archivo(s)</p>
+      <article key={categoria} className="w-fit max-w-full min-w-0 self-start rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-1">
+            <h4 className="max-w-full text-xs font-bold text-slate-800">{etiqueta}</h4>
+            <p className="whitespace-nowrap text-[10px] text-slate-500">{totalCategoria} archivo(s)</p>
           </div>
-          <span className={`inline-flex min-w-7 justify-center rounded-full px-2 py-1 text-[10px] font-extrabold ${totalCategoria ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{totalCategoria}</span>
-          <label className={`inline-flex cursor-pointer items-center rounded-md border px-2.5 py-1.5 text-[11px] font-bold ${subiendo === categoria ? "border-slate-200 bg-slate-100 text-slate-500" : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"}`}>
+          <span className={`inline-flex min-w-6 justify-center rounded-full px-1.5 py-0.5 text-[10px] font-extrabold ${totalCategoria ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{totalCategoria}</span>
+          <label className={`inline-flex shrink-0 cursor-pointer items-center rounded-md border px-2 py-1 text-[11px] font-bold ${subiendo === categoria ? "border-slate-200 bg-slate-100 text-slate-500" : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"}`}>
             {subiendo === categoria ? "Subiendo…" : "＋ Adjuntar"}
             <input className="hidden" type="file" accept=".pdf,application/pdf" multiple onChange={(event) => subir(event, categoria)} disabled={!!subiendo} />
           </label>
@@ -537,7 +537,7 @@ export default function CarpetaDigitalModal({
                       <h4 className="text-xs font-extrabold text-indigo-950">✉️ Datos de envío a notario</h4>
                       <p className="text-[10px] text-slate-500">Información registrada en el expediente</p>
                     </div>
-                    <button type="button" onClick={() => onAbrirEnvioNotario?.()} className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">✉️ Envío al notario</button>
+                    <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onAbrirEnvioNotario?.(); }} className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">✉️ Envío al notario</button>
                   </header>
                   <div className="grid grid-cols-2 gap-x-3 gap-y-2 p-3 text-[11px] sm:grid-cols-3">
                     {[
