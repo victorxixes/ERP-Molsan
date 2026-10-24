@@ -14,6 +14,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
   const [periodo, setPeriodo] = useState(mesActual());
   const [item, setItem] = useState(null);
   const [items, setItems] = useState([]);
+  const [colaboradores, setColaboradores] = useState([]);
   const [historial, setHistorial] = useState([]);
   const [archivo, setArchivo] = useState(null);
   const [justificanteArchivo, setJustificanteArchivo] = useState(null);
@@ -28,8 +29,12 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     setCargando(true); setError(""); setMensaje("");
     try {
       if (admin) {
-        const rel = await axios.get("/apoderagest/liquidaciones/admin", { params: { periodo } });
+        const [rel, colabs] = await Promise.all([
+          axios.get("/apoderagest/liquidaciones/admin", { params: { periodo } }),
+          axios.get("/apoderagest/liquidaciones/admin/colaboradores"),
+        ]);
         setItems(Array.isArray(rel.data) ? rel.data : []);
+        setColaboradores(Array.isArray(colabs.data) ? colabs.data : []);
       } else {
         const [res, hist] = await Promise.all([
           axios.get("/apoderagest/liquidaciones/mi", { params: { periodo } }),
@@ -77,6 +82,22 @@ export default function ControlApoderados({ modo = "colaborador" }) {
       setJustificanteArchivo(null); setMensaje("Justificante adjuntado a la liquidación mensual."); await cargar();
     } catch (e) { setError(e?.response?.data?.detail || "No se ha podido subir el justificante."); }
     finally { setCargando(false); }
+  };
+
+  const cambiarColaborador = async (empleado, habilitar) => {
+    setCargando(true); setError(""); setMensaje("");
+    try {
+      await axios.patch(`/apoderagest/liquidaciones/admin/colaboradores/${empleado.id}`, null, {
+        params: { es_colaborador: habilitar },
+      });
+      setColaboradores((actuales) => actuales.map((e) =>
+        e.id === empleado.id ? { ...e, es_colaborador: habilitar } : e
+      ));
+      setMensaje(`Se ha ${habilitar ? "habilitado" : "deshabilitado"} a ${empleado.nombre} como colaborador.`);
+      await cargar();
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se ha podido actualizar el permiso de colaborador.");
+    } finally { setCargando(false); }
   };
 
   const revisar = async (x, decision) => {
@@ -129,6 +150,22 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     {cargando && <p className="animate-pulse text-sm text-slate-500">Cargando información…</p>}
     {admin ? <>
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-slate-800">Colaboradores habilitados</h2>
+          <p className="mt-1 text-sm text-slate-500">Activa aquí el acceso a «Mi liquidación» para cada empleado. El cambio se guarda en su ficha y determina quién puede validar firmas y presentar facturas.</p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[560px] text-left text-sm">
+            <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Estado laboral</th><th className="p-3">Acceso a liquidaciones</th></tr></thead>
+            <tbody>{colaboradores.map((e) => <tr key={e.id} className="border-b last:border-0">
+              <td className="p-3 font-semibold text-slate-800">{e.nombre}</td>
+              <td className="p-3">{e.activo ? "Activo" : "Inactivo"}</td>
+              <td className="p-3"><label className="inline-flex items-center gap-2 font-medium"><input type="checkbox" checked={Boolean(e.es_colaborador)} disabled={cargando || !e.activo} onChange={(ev) => cambiarColaborador(e, ev.target.checked)} className="h-4 w-4 rounded border-slate-300" />{e.es_colaborador ? "Habilitado" : "No habilitado"}</label></td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+      </section>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-bold text-slate-800">Liquidación mensual de colaboradores</h2>
@@ -163,7 +200,16 @@ export default function ControlApoderados({ modo = "colaborador" }) {
             <td className="p-3">{euros(x.honorarios_unitarios)}</td><td className="p-3">{euros(x.base_neta ?? x.honorarios)}</td><td className="p-3 font-bold">{euros(x.total ?? (Number(x.base_neta || 0) + Number(x.iva || 0)))}</td>
             <td className="p-3">{x.tiene_factura ? <button type="button" onClick={() => descargar(x)} className="rounded-lg border border-indigo-200 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver factura</button> : <span className="text-slate-400">Pendiente</span>}</td>
             <td className="p-3">{x.justificante_nombre ? <button type="button" onClick={() => descargarJustificante(x)} className="rounded-lg border border-emerald-200 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50">Ver justificante</button> : <span className="text-slate-400">No aportado</span>}</td>
-            <td className="p-3"><div className="flex flex-col gap-2">{x.tiene_factura && <button type="button" onClick={() => revisar(x, "aceptada")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white">Validar factura</button>}<button type="button" onClick={() => revisarRelacion(x, "aceptada")} disabled={!x.validado_en} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold disabled:opacity-40">Validar relación</button>{x.tiene_factura && <button type="button" onClick={() => revisar(x, "rechazada")} className="rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-700">Rechazar factura</button>}</div></td>
+            <td className="p-3"><div className="flex min-w-[190px] flex-col gap-2">
+              <textarea value={observaciones[x.id] || ""} onChange={(ev) => setObservaciones((prev) => ({ ...prev, [x.id]: ev.target.value }))} maxLength={2000} placeholder="Observaciones de factura…" className="min-h-16 rounded-lg border border-slate-300 p-2 text-xs" aria-label={`Observaciones de factura de ${x.colaborador}`} />
+              {x.tiene_factura && <button type="button" onClick={() => revisar(x, "aceptada")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white">Aceptar factura</button>}
+              {x.tiene_factura && <button type="button" onClick={() => revisar(x, "correccion_solicitada")} className="rounded-lg border border-amber-200 px-3 py-2 text-xs font-bold text-amber-800">Solicitar corrección</button>}
+              {x.tiene_factura && <button type="button" onClick={() => revisar(x, "rechazada")} className="rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-700">Rechazar factura</button>}
+              <textarea value={observaciones[`rel-${x.id}`] || ""} onChange={(ev) => setObservaciones((prev) => ({ ...prev, [`rel-${x.id}`]: ev.target.value }))} maxLength={2000} placeholder="Observaciones de relación…" className="min-h-16 rounded-lg border border-slate-300 p-2 text-xs" aria-label={`Observaciones de relación de ${x.colaborador}`} />
+              <button type="button" onClick={() => revisarRelacion(x, "aceptada")} disabled={!x.validado_en} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold disabled:opacity-40">Aceptar relación</button>
+              <button type="button" onClick={() => revisarRelacion(x, "correccion_solicitada")} disabled={!x.validado_en} className="rounded-lg border border-amber-200 px-3 py-2 text-xs font-bold text-amber-800 disabled:opacity-40">Solicitar corrección de relación</button>
+              <button type="button" onClick={() => revisarRelacion(x, "rechazada")} disabled={!x.validado_en} className="rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-700 disabled:opacity-40">Rechazar relación</button>
+            </div></td>
             <td className="p-3"><button type="button" onClick={() => setFirmasAbiertas(x)} className="rounded-lg border border-indigo-200 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver firmas ({x.expedientes?.length || 0})</button></td>
           </tr>)}</tbody>
         </table></div>}

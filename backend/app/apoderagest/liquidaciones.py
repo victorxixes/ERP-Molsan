@@ -177,6 +177,12 @@ def _dict(item, db, incluir_datos_factura=False):
 
 def _obtener_o_crear(db, empleado_id, periodo):
     _periodo(periodo)
+    # Cargar la ficha antes de usar su tarifa. Sin esta consulta, la creación
+    # de la primera liquidación del periodo falla porque "empleado" no existe
+    # en el ámbito de esta función.
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    if empleado is None:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado para la liquidación.")
     item = db.query(LiquidacionMensual).filter_by(empleado_id=empleado_id, periodo=periodo).with_for_update().first()
     firmas = _relacion_firmas(db, empleado_id, periodo)
     if item is None:
