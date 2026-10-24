@@ -428,21 +428,6 @@ const CAMPOS_ACTIVIDADES = {
       label: "Fin actividad",
       tipo: "fecha",
     },
-
-    {
-      key: "sol",
-      label: "SOL",
-    },
-
-    {
-      key: "cs",
-      label: "CS",
-    },
-
-    {
-      key: "ns",
-      label: "NS",
-    },
   ],
 
   "sede-notarial": [
@@ -2191,6 +2176,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     setActividadDraft({
       ...expediente,
       ...Object.fromEntries((CAMPOS_ACTIVIDADES[actividadInicial] || []).map((campo) => [campo.key, expediente[campo.key] ?? ""])),
+      fecha_fin_actividad: expediente.fecha_fin_actividad || expediente.fecha_envio_notario || expediente.fecha_envio || "",
       apoderado: expediente.apoderado || "Gestoría",
       fecha_presentacion: expediente.fecha_presentacion || fechaFirma,
       fecha_recogida_notario_presentacion_telematica: expediente.fecha_recogida_notario_presentacion_telematica || fechaFirma,
@@ -2718,8 +2704,34 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       payload
     );
 
-    await cargarExpediente();
+    const fechaEnvioNotario = String(
+      payload?.fecha_envio_notario ||
+      payload?.fecha_envio ||
+      expediente?.fecha_envio_notario ||
+      expediente?.fecha_envio ||
+      ""
+    ).slice(0, 10);
 
+    // La fecha de fin de Documentación previa se completa automáticamente
+    // con la fecha registrada en el envío a notario.
+    if (fechaEnvioNotario) {
+      await axios.put(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
+        {
+          campos: {
+            fecha_envio_notario: fechaEnvioNotario,
+            fecha_fin_actividad: fechaEnvioNotario,
+          },
+        }
+      );
+      setActividadDraft((actual) => ({
+        ...actual,
+        fecha_envio_notario: fechaEnvioNotario,
+        fecha_fin_actividad: fechaEnvioNotario,
+      }));
+    }
+
+    await cargarExpediente();
     setMostrarEnviarNotario(false);
   }
 
@@ -6929,7 +6941,21 @@ const cuantiaFincasParaEnvio =
               <div key={relacion.id || `${relacion.accion_id || "accion"}-${indice}`} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <p className="min-w-0 flex-1 text-xs font-bold text-slate-800">{accion.descripcion || relacion.descripcion || "Acción"}</p>
-                  
+                  {(relacion.id || relacion.id_accion_expediente || relacion.relacion_id) && (
+                    <button
+                      type="button"
+                      disabled={cargandoAcciones}
+                      onClick={() => {
+                        const relacionId = relacion.id || relacion.id_accion_expediente || relacion.relacion_id;
+                        if (window.confirm(`¿Quieres eliminar la acción «${accion.descripcion || relacion.descripcion || "Acción"}» de este expediente?`)) {
+                          retirarAccion(relacionId);
+                        }
+                      }}
+                      className="shrink-0 rounded-md border border-red-200 px-2 py-1 text-[10px] font-bold text-red-700 hover:bg-red-50 disabled:opacity-50"
+                    >
+                      🗑️ Eliminar
+                    </button>
+                  )}
                 </div>
                 {(accion.actividad || accion.departamento || accion.seccion) && <p className="mt-1 text-[10px] text-slate-500">{[accion.departamento, accion.seccion, accion.actividad].filter(Boolean).join(" · ")}</p>}
                 <div className="mt-1 text-[10px] text-slate-500">{relacion.fecha ? formatearFecha(relacion.fecha) : "Sin fecha registrada"}{relacion.usuario_creador ? ` · Realizada por: ${relacion.usuario_creador}` : ""}</div>
