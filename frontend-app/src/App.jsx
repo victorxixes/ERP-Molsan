@@ -486,6 +486,11 @@ export default function App() {
           />
 
           <Route
+            path="herramientas/utilidades/lectura-cancela-i"
+            element={<LecturaCancelaI />}
+          />
+
+          <Route
             path="herramientas/utilidades/accesos-notariales"
             element={<AccesosNotariales />}
           />
