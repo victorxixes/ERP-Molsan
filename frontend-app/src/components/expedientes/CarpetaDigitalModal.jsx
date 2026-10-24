@@ -650,7 +650,7 @@ export default function CarpetaDigitalModal({
 
           <div
             className={modoActividad
-              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 " + (ocultarPanelEnvioNotario ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(180px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
+              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 " + (ocultarPanelEnvioNotario ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(160px,0.30fr)_minmax(0,1.70fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
               : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}
           >
             <div
