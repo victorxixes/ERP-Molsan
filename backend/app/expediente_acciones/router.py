@@ -10,6 +10,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
+from backend.app.auth.dependencies import get_current_user
 
 from backend.app.expedientes.models import Expediente
 from backend.app.acciones_expediente.models import AccionExpediente
@@ -103,6 +104,7 @@ def relacion_a_dict(relacion, accion=None):
         "estado": relacion.estado,
         "fecha": relacion.fecha,
         "observaciones": relacion.observaciones,
+        "usuario_creador": getattr(relacion, "usuario_creador", None),
         "activo": relacion.activo,
         "accion": accion_a_dict(accion),
     }
@@ -183,6 +185,7 @@ def asignar_accion_expediente(
     id_expediente: str,
     datos: ExpedienteAccionCreate,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     expediente = obtener_expediente_por_identificador(
         db,
@@ -229,6 +232,8 @@ def asignar_accion_expediente(
         existente.estado = datos.estado
         existente.fecha = datos.fecha
         existente.observaciones = datos.observaciones
+        if not getattr(existente, "usuario_creador", None):
+            existente.usuario_creador = " ".join(parte for parte in (getattr(usuario, "nombre", None), getattr(usuario, "apellidos", None)) if parte) or getattr(usuario, "usuario", None) or str(getattr(usuario, "id", ""))
 
         try:
             db.commit()
@@ -248,6 +253,7 @@ def asignar_accion_expediente(
         estado=datos.estado,
         fecha=datos.fecha,
         observaciones=datos.observaciones,
+        usuario_creador=" ".join(parte for parte in (getattr(usuario, "nombre", None), getattr(usuario, "apellidos", None)) if parte) or getattr(usuario, "usuario", None) or str(getattr(usuario, "id", "")),
         activo=True,
     )
 
