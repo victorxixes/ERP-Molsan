@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
-import CarpetaDigitalModal from "./CarpetaDigitalModal";
 import axios from "../../api/axios";
 import "../../css/ModalesOperativosPremium.css";
 
