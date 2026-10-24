@@ -188,7 +188,7 @@ function crearFormularioDesdeExpediente(expediente) {
 function clasesInput(extra = "") {
   return `
     w-full rounded-xl border border-slate-300 bg-white
-    px-3 py-2.5 text-sm text-slate-700 outline-none
+    px-2.5 py-2 text-sm text-slate-700 outline-none
     transition
     focus:border-[var(--erp-primary)]
     focus:ring-2 focus:ring-[var(--erp-primary-soft)]
@@ -210,7 +210,7 @@ function CampoTexto({
 }) {
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+      <label className="mb-1 block text-xs font-semibold text-slate-700">
         {label}
         {required && <span className="text-red-500"> *</span>}
       </label>
@@ -259,7 +259,7 @@ function Resumen({ label, valor }) {
 
 function TituloSeccion({ titulo, descripcion }) {
   return (
-    <div className="mb-4">
+    <div className="mb-3">
       <h3 className="text-sm font-bold text-slate-800">{titulo}</h3>
       {descripcion && (
         <p className="mt-1 text-xs leading-relaxed text-slate-500">
@@ -694,7 +694,7 @@ export default function EnviarANotarioModal({
       }}
     >
       <div
-        className="flex h-[97vh] max-h-[98vh] w-[99vw] max-w-[2200px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"
+        className="flex h-[97vh] max-h-[98vh] w-[min(96vw,1500px)] max-w-[1500px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"
         onMouseDown={(event) => event.stopPropagation()}
       >
         {/* CABECERA */}
@@ -730,7 +730,7 @@ export default function EnviarANotarioModal({
         {/* CONTENIDO: DOCUMENTACIÓN PREVIA A LA IZQUIERDA + FORMULARIO */}
 
         <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-4 2xl:px-5">
-          <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1.25fr)] xl:gap-5 2xl:gap-6">
+          <div className="grid grid-cols-1 items-start gap-3 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] xl:gap-3">
             {/* COLUMNA IZQUIERDA — DOCUMENTACIÓN PREVIA COMPARTIDA CON CARPETA DIGITAL */}
             <aside className="min-w-0">
               <div className="mb-3 rounded-2xl border border-indigo-200 bg-indigo-50/70 px-4 py-3">
@@ -754,11 +754,11 @@ export default function EnviarANotarioModal({
 
             {/* COLUMNA DERECHA — DATOS DEL ENVÍO Y FACTURACIÓN */}
             <div className="min-w-0">
-              <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 xl:gap-4 2xl:gap-6">
+              <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2 lg:gap-3">
             {/* COLUMNA IZQUIERDA — ENVÍO AL NOTARIO */}
 
-            <div className="min-w-0 space-y-6">
-              <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+            <div className="min-w-0 space-y-3">
+              <section className="rounded-xl border border-slate-200 bg-white p-3">
                 <TituloSeccion
                   titulo="1. Envío al notario"
                   descripcion="Indica la fecha en que se envía el expediente al notario. Los datos de solicitud PNC y planificación de firma se gestionan desde ApoderaGest."
@@ -777,7 +777,7 @@ export default function EnviarANotarioModal({
                   </div>
 
                   <div className="min-w-0">
-                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
                       ¿La escritura está firmada?
                     </label>
                     <div className="grid grid-cols-2 gap-2">
@@ -803,7 +803,7 @@ export default function EnviarANotarioModal({
                   </div>
 
                   <div className="min-w-0">
-                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
                       Firma urgente
                     </label>
                     <div className="flex min-h-[42px] items-center rounded-xl border border-slate-200 bg-white px-3 py-2">
@@ -823,7 +823,7 @@ export default function EnviarANotarioModal({
 
               {/* NOTARIO */}
 
-              <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+              <section className="rounded-xl border border-slate-200 bg-white p-3">
                 <TituloSeccion
                   titulo="3. Datos del notario"
                   descripcion="Selecciona el notario desde el catálogo CTN."
@@ -892,13 +892,13 @@ export default function EnviarANotarioModal({
 
               {/* TIPO DE DOCUMENTO Y NUEVOS CAMPOS */}
 
-              <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+              <section className="rounded-xl border border-slate-200 bg-white p-3">
                 <TituloSeccion
                   titulo="4. Tipo de documento"
                   descripcion="Selecciona el documento, el formato de escritura y la modalidad de tramitación."
                 />
 
-                <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-2">
                   <CampoTexto label="Contrato" value={form.contrato} disabled={loading} onChange={(v) => cambiarCampo("contrato", v)} placeholder="N.º de contrato" />
                   <CampoTexto label="Capital (€)" value={form.capital} disabled={loading} type="number" onChange={(v) => cambiarCampo("capital", v)} placeholder="0,00" />
                   <CampoTexto label="Tipo de operación" value={form.tipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("tipo_operacion", v)} placeholder="Ej. Cancelación sin provisión" />
@@ -928,7 +928,7 @@ export default function EnviarANotarioModal({
                         )}
                       </div>
 
-                      <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                      <label className="mb-1 block text-xs font-semibold text-slate-700">
                         Tipo de documento <span className="text-red-500">*</span>
                       </label>
                       <select
@@ -950,7 +950,7 @@ export default function EnviarANotarioModal({
                       </select>
 
                       <div className="mt-3">
-                        <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                        <label className="mb-1 block text-xs font-semibold text-slate-700">
                           Cuantía
                         </label>
                         <input
@@ -983,7 +983,7 @@ export default function EnviarANotarioModal({
                 <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {/* FORMATO DE ESCRITURA */}
                   <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
                       Formato de escritura
                       <span className="text-red-500"> *</span>
                     </label>
@@ -1003,7 +1003,7 @@ export default function EnviarANotarioModal({
 
                   {/* TIPO DE TRÁMITE */}
                   <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
                       Tipo de trámite
                       <span className="text-red-500"> *</span>
                     </label>
@@ -1028,7 +1028,7 @@ export default function EnviarANotarioModal({
             {/* COLUMNA DERECHA — FACTURACIÓN */}
 
             <div className="min-w-0">
-              <section className="rounded-2xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-4 sm:p-5">
+              <section className="rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3">
                 <div className="mb-5 flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--erp-primary-soft)] text-lg">
                     🧾
@@ -1045,7 +1045,7 @@ export default function EnviarANotarioModal({
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <CampoTexto
                     label="Nombre"
                     value={form.facturacion_nombre}
@@ -1103,7 +1103,7 @@ export default function EnviarANotarioModal({
                     />
 
                     <div className="relative min-w-0">
-                      <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                      <label className="mb-1 block text-xs font-semibold text-slate-700">
                         Población
                       </label>
                       <input
@@ -1222,7 +1222,7 @@ export default function EnviarANotarioModal({
                   {/* IDIOMA DEBAJO DEL EMAIL */}
 
                   <div className="border-t border-slate-200 pt-4">
-                    <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
                       Idioma del documento
                       <span className="text-red-500"> *</span>
                     </label>
@@ -1249,7 +1249,7 @@ export default function EnviarANotarioModal({
 
               {/* RESUMEN DE FACTURACIÓN */}
 
-              <section className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+              <section className="mt-5 rounded-xl border border-slate-200 bg-white p-3">
                 <h3 className="mb-3 text-sm font-bold text-slate-800">
                   Resumen de facturación
                 </h3>
@@ -1325,7 +1325,7 @@ export default function EnviarANotarioModal({
 
           {/* RESUMEN GENERAL */}
 
-          <section className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+          <section className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
             <h3 className="mb-4 text-xs font-bold uppercase tracking-wide text-slate-500">
               Resumen del envío
             </h3>
