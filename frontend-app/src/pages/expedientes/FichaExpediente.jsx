@@ -1362,6 +1362,7 @@ export default function FichaExpediente() {
   );
 
   const [pestanaActividad, setPestanaActividad] = useState("documentos");
+  const [mostrarControlCalidad, setMostrarControlCalidad] = useState(false);
   const [mostrarModalDatosActividad, setMostrarModalDatosActividad] = useState(false);
   const [actividadDraft, setActividadDraft] = useState({});
   const [guardandoActividad, setGuardandoActividad] = useState(false);
@@ -4162,6 +4163,268 @@ const cuantiaFincasParaEnvio =
     }
   }
 
+  const renderChecklistCalidad = () => (
+                    <section className="rounded-2xl border border-slate-200 bg-white p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <h3 className="text-sm font-extrabold text-slate-800">Checklist de calidad del expediente</h3>
+                          <p className="mt-1 text-xs text-slate-500">Cada visto se obtiene de los datos guardados y de los documentos encontrados en la carpeta digital. Los requisitos pendientes se muestran para poder corregirlos.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={cargarDocumentosCierre}
+                          disabled={cargandoDocumentosCierre}
+                          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                        >
+                          {cargandoDocumentosCierre ? "Comprobando…" : "↻ Comprobar de nuevo"}
+                        </button>
+                      </div>
+                      {cargandoDocumentosCierre && <p className="mt-3 text-xs text-slate-500">Actualizando datos documentales…</p>}
+                      {errorDocumentosCierre && <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorDocumentosCierre}</p>}
+                      {(() => {
+                        const valor = (...claves) => {
+                          for (const clave of claves) {
+                            const dato = expediente?.[clave] ?? actividadDraft?.[clave];
+                            if (dato !== undefined && dato !== null && String(dato).trim() !== "") return dato;
+                          }
+                          return "";
+                        };
+                        const normalizar = (dato) => String(dato ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+                        const documentos = Array.isArray(documentosCierre) ? documentosCierre : [];
+                        const tieneDoc = (...categorias) => documentos.some((doc) => {
+                          const categoria = normalizar([doc?.categoria, doc?.categoria_nombre, doc?.nombre_categoria, doc?.actividad, doc?.actividad_nombre, doc?.fase].filter(Boolean).join(" "));
+                          const nombre = normalizar([doc?.nombre, doc?.nombre_archivo, doc?.nombre_original, doc?.filename, doc?.titulo].filter(Boolean).join(" "));
+                          return categorias.some((buscado) => {
+                            const objetivo = normalizar(buscado);
+                            return categoria.includes(objetivo) || nombre.includes(objetivo);
+                          });
+                        });
+                        // Para los documentos obligatorios de Documentación previa,
+                        // se exige su categoría exacta y no solo el nombre del fichero.
+                        const tieneDocEnCategoria = (...categorias) => documentos.some((doc) => {
+                          const categoria = normalizar([
+                            doc?.categoria, doc?.categoria_nombre, doc?.nombre_categoria,
+                            doc?.tipo_documento, doc?.metadata?.categoria,
+                          ].filter(Boolean).join(" "));
+                          return categorias.some((buscado) => categoria === normalizar(buscado));
+                        });
+                        const requisito = (etiqueta, ok, detalle) => ({ etiqueta, ok: Boolean(ok), detalle: ok ? "Correcto" : detalle });
+                        const fechaEnvio = valor("fecha_envio_notario", "fecha_envio");
+                        const notario = valor("nombre_notario", "notario", "notario_otorgante");
+                        const fechaFirma = valor("fecha_firma");
+                        const protocolo = valor("protocolo", "numero_protocolo");
+                        const fechaPresentacionTributaria = valor("fecha_presentacion_tributaria");
+                        const tributacion = normalizar(valor("tributacion"));
+                        const esExencionTributaria = ["prescrito", "exento", "renuncia"].some((x) => tributacion === x);
+                        const defectos = Array.isArray(defectosRegistrados) ? defectosRegistrados : [];
+                        const hayDefectosAbiertos = defectos.some((d) => {
+                          const cerrado = Boolean(d?.fecha_cierre_defecto || d?.fecha_cierre || d?.fcierre_defecto || d?.fecha_entrada_subsanacion);
+                          const estado = normalizar(d?.estado || d?.estado_defecto || d?.situacion);
+                          return !cerrado && !["cerrado", "subsanado", "resuelto", "archivado"].some((x) => estado.includes(x));
+                        });
+                        const fases = [
+                          {
+                            key: "documentacion-previa", label: "Documentación previa", icono: "📄",
+                            checks: [
+                              requisito(
+                                "Certificado Saldo «0» erróneo",
+                                Boolean(estadoDocumentacionAbsis.fecha_actualizacion),
+                                "Selecciona Sí o No en Documentación previa y pulsa «Guardar datos para integración»."
+                              ),
+                              requisito("Fecha de envío a notario", Boolean(fechaEnvio), "No consta la fecha de envío en FichaExpediente → Enviar a notario"),
+                              requisito(
+                                "Hoja de encargo firmada · marcada",
+                                Boolean(estadoDocumentacionAbsis.solicitud_cancelacion_notarial),
+                                "Marca «Hoja de Encargo firmada» en Documentación previa y guarda los datos."
+                              ),
+                              requisito(
+                                "Hoja de encargo firmada · documento subido",
+                                tieneDocEnCategoria("Hoja de Encargo firmada"),
+                                "Sube el documento a la categoría «Hoja de encargo firmada» de Carpeta digital y comprueba que se pueda abrir en el visor."
+                              ),
+                              requisito(
+                                "Justificante de cancelación · marcado",
+                                Boolean(estadoDocumentacionAbsis.certificado_cancelacion_administrativo),
+                                "Marca «Justificante de cancelación» en Documentación previa y guarda los datos."
+                              ),
+                              requisito(
+                                "Justificante de cancelación · documento subido",
+                                tieneDocEnCategoria("Justificante de cancelación"),
+                                "Sube el documento a la categoría «Justificante de cancelación» de Carpeta digital y comprueba que se pueda abrir en el visor."
+                              ),
+                              requisito(
+                                "Nota simple registral · marcada",
+                                Boolean(estadoDocumentacionAbsis.nota_simple_registral),
+                                "Marca «Nota simple registral» en Documentación previa y guarda los datos."
+                              ),
+                              requisito(
+                                "Nota simple registral · documento subido",
+                                tieneDocEnCategoria("Nota simple registral"),
+                                "Sube el documento a la categoría «Nota simple registral» de Carpeta digital y comprueba que se pueda abrir en el visor."
+                              ),
+                              requisito("Nombre del notario", Boolean(notario), "No consta el nombre del notario en FichaExpediente → Enviar a notario"),
+                              requisito("NIF del notario", Boolean(valor("nif_notario")), "No consta el NIF del notario en FichaExpediente → Enviar a notario"),
+                            ],
+                          },
+                          {
+                            key: "sede-notarial", label: "Sede notarial", icono: "🏛️",
+                            checks: [
+                              requisito("Notario", Boolean(notario), "Falta seleccionar o indicar el notario en Enviar a notario"),
+                              requisito("Fecha de envío", Boolean(fechaEnvio), "No consta la fecha de envío a notario"),
+                            ],
+                          },
+                          {
+                            key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜",
+                            checks: [
+                              requisito("Apoderado", Boolean(valor("apoderado")), "Selecciona Gestoría o CaixaBank"),
+                              requisito("Fecha firma", Boolean(fechaFirma), "No consta la fecha de firma"),
+                              requisito("Protocolo", Boolean(protocolo), "No consta el número de protocolo"),
+                              requisito("Asiento presentación / Libro diario", Boolean(valor("asiento_presentacion_libro_diario")), "Falta el asiento de presentación o libro diario"),
+                              requisito("Fecha presentación", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación en Registro"),
+                              requisito("Número de entrada", Boolean(valor("numero_entrada")), "Falta el número de entrada"),
+                              requisito("Fecha recogida notario o presentación telemática", Boolean(valor("fecha_recogida_notario_presentacion_telematica")), "Falta la fecha de recogida o presentación telemática"),
+                              requisito("Documento Presentación Registro", tieneDocEnCategoria("Presentación Registro"), "Sube el documento en la categoría «Presentación Registro» de Carpeta digital y comprueba que abre en el visor"),
+                              requisito("Documento Copia simple", tieneDocEnCategoria("Copia simple", "Copia simple de escritura"), "Sube la copia simple en su categoría de Carpeta digital y comprueba que abre en el visor"),
+                            ],
+                          },
+                          {
+                            key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶",
+                            checks: [
+                              requisito("Fecha presentación tributaria", Boolean(valor("fecha_presentacion_tributaria")), "Falta la fecha de presentación tributaria"),
+                              requisito("Fecha liquidación tributaria", Boolean(valor("fecha_liquidacion_tributaria")), "Falta la fecha de liquidación tributaria"),
+                              requisito("Oficina liquidadora / comunidad autónoma", Boolean(valor("oficina_liquidadora")), "Selecciona la oficina liquidadora o comunidad autónoma"),
+                              requisito("Base imponible (€)", valor("base_imponible") !== "" && Number.isFinite(Number(valor("base_imponible"))) && Number(valor("base_imponible")) >= 0, "Indica una base imponible válida en euros"),
+                              requisito("Tributación", Boolean(valor("tributacion")), "Selecciona Prescrito, Exento, Bonificación, Renuncia, AJD o TPO"),
+                              requisito("Impuesto (AJD / ITP)", Boolean(valor("impuesto_ajd_itp")), "Indica el impuesto AJD / ITP"),
+                              requisito("Documento AJD / ITP", tieneDocEnCategoria("AJD / ITP", "AJD/ITP", "AJD - ITP"), "Sube el documento en la categoría «AJD / ITP» de Carpeta digital y comprueba que abre en el visor"),
+                            ],
+                          },
+                          {
+                            key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢",
+                            checks: [
+                              requisito("Fecha presentación", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación en Registro"),
+                              requisito("Fecha vencimiento asiento (+60 días naturales)", Boolean(valor("fecha_vencimiento_asiento", "fecha_vencimiento")), "No consta la fecha de vencimiento del asiento, calculada a 60 días naturales desde la presentación"),
+                              requisito("Vencimiento calculado correctamente (+60 días)", (() => {
+                                const presentacion = valor("fecha_presentacion");
+                                const vencimiento = valor("fecha_vencimiento_asiento", "fecha_vencimiento");
+                                if (!presentacion || !vencimiento) return false;
+                                const fecha = new Date(String(presentacion).slice(0, 10) + "T00:00:00");
+                                fecha.setDate(fecha.getDate() + 60);
+                                return fecha.toISOString().slice(0, 10) === String(vencimiento).slice(0, 10);
+                              })(), "La fecha de vencimiento debe ser exactamente 60 días naturales después de la fecha de presentación"),
+                              requisito("Fecha inscripción", Boolean(valor("fecha_inscripcion")), "Todavía no consta la fecha de inscripción registral"),
+                              requisito("Hoja de inscripción", tieneDocEnCategoria("Hoja de inscripción", "Hoja de Inscripción"), "Sube la hoja de inscripción a su categoría de Carpeta digital y comprueba que abre en el visor"),
+                            ],
+                          },
+                          {
+                            key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️",
+                            checks: [
+                              requisito(
+                                "Control de defectos registrales",
+                                !hayDefectosAbiertos,
+                                hayDefectosAbiertos
+                                  ? "Hay uno o varios defectos abiertos: completa los controles siguientes para documentar su subsanación y cierre."
+                                  : "No hay defectos registrales abiertos; esta fase se considera correcta."
+                              ),
+                              requisito(
+                                "Fecha cierre defecto",
+                                !hayDefectosAbiertos && (!defectos.length || defectos.every((d) => Boolean(d?.fecha_cierre_defecto || d?.fecha_cierre || d?.fcierre_defecto))),
+                                hayDefectosAbiertos
+                                  ? "Hay defectos abiertos. Registra la fecha de cierre cuando se hayan subsanado."
+                                  : "No hay defectos abiertos."
+                              ),
+                              requisito(
+                                "Documento Defecto registral",
+                                !hayDefectosAbiertos || tieneDocEnCategoria("Defecto registral"),
+                                "Sube el documento del defecto en la categoría «Defecto registral» y comprueba que abre en el visor."
+                              ),
+                              requisito(
+                                "Documento Subsanación del defecto",
+                                !hayDefectosAbiertos || tieneDocEnCategoria("Subsanación del defecto"),
+                                "Sube la subsanación en la categoría «Subsanación del defecto» y comprueba que abre en el visor."
+                              ),
+                              requisito(
+                                "Defectos cerrados o subsanados",
+                                !hayDefectosAbiertos,
+                                "Queda algún defecto abierto; subsánalo y registra su cierre."
+                              ),
+                            ],
+                          },
+                          {
+                            key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾",
+                            checks: [
+                              requisito("Fecha de facturación", Boolean(valor("facturacion_fecha")), "Falta la fecha de facturación"),
+                              requisito("Entrega al cliente", Boolean(valor("fecha_entregado_cliente")), "Falta la fecha de entrega al cliente"),
+                              requisito("Fin de actividad", Boolean(valor("fecha_fin_actividad")), "Falta la fecha de cierre de la actividad"),
+                              requisito("Escritura digital final", tieneDoc("Escritura digital final"), "Falta la escritura digital final"),
+                              requisito("Factura notarial", tieneDoc("Factura notarial"), "Falta la factura notarial"),
+                              requisito("Factura registral", tieneDoc("Factura Registral", "Factura registral"), "Falta la factura registral"),
+                            ],
+                          },
+                        ];
+                        const completadas = fases.filter((fase) => fase.checks.every((check) => check.ok)).length;
+                        const totalChecks = fases.reduce((suma, fase) => suma + fase.checks.length, 0);
+                        const checksOk = fases.reduce((suma, fase) => suma + fase.checks.filter((check) => check.ok).length, 0);
+                        const porcentaje = totalChecks ? Math.round((checksOk / totalChecks) * 100) : 0;
+                        return (
+                          <>
+                            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                                <span className="text-xs font-bold text-slate-700">Calidad documental y de datos</span>
+                                <span className="text-xs font-extrabold tabular-nums text-slate-700">{completadas}/7 fases completas · {checksOk}/{totalChecks} comprobaciones</span>
+                              </div>
+                              <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                                <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${porcentaje}%` }} />
+                              </div>
+                              <p className="mt-2 text-[10px] text-slate-500">Una fase solo se marca como completa cuando todos sus requisitos configurados están cumplidos. La falta de datos no se considera correcta por el mero hecho de haber avanzado de actividad.</p>
+                            </div>
+                            <div className="mt-4 space-y-3">
+                              {fases.map((fase, indice) => {
+                                const pendientes = fase.checks.filter((check) => !check.ok);
+                                const completa = pendientes.length === 0;
+                                const actual = fase.key === actividadActual;
+                                return (
+                                  <article key={fase.key} className={`rounded-xl border p-3 ${completa ? "border-emerald-200 bg-emerald-50/40" : actual ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
+                                    <div className="flex items-center gap-3">
+                                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${completa ? "border-emerald-500 bg-emerald-500 text-white" : actual ? "border-blue-500 bg-white text-blue-700" : "border-slate-300 bg-white text-slate-400"}`}>
+                                        {completa ? "✓" : actual ? "●" : indice + 1}
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-xs font-bold text-slate-800">{fase.icono} {fase.label}</p>
+                                        <p className={`mt-0.5 text-[10px] font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
+                                          {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
+                                        </p>
+                                      </div>
+                                      <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${completa ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
+                                        {completa ? "✓ Correcto" : `${pendientes.length} pendiente(s)`}
+                                      </span>
+                                    </div>
+                                    <ul className="ml-11 mt-2 space-y-1 border-t border-slate-200/70 pt-2">
+                                      {fase.checks.map((check) => (
+                                        <li key={check.etiqueta} className="flex items-start gap-2 text-[11px]">
+                                          <span
+                                            aria-label={check.ok ? "Correcto" : "Pendiente"}
+                                            title={check.ok ? "Correcto" : "Pendiente"}
+                                            className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-black ${check.ok ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
+                                          >
+                                            {check.ok ? "✓" : "✕"}
+                                          </span>
+                                          <span className={check.ok ? "text-emerald-800" : "text-red-800"}>
+                                            <strong>{check.etiqueta}:</strong> {check.ok ? "Correcto" : check.detalle}
+                                          </span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </article>
+                                );
+                              })}
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </section>
+  );
+
   return (
     <div
       className="
@@ -4420,12 +4683,25 @@ const cuantiaFincasParaEnvio =
                   actividadActual;
 
                 return (
+                  <>
+                  {actividad.key === "facturacion-cierre" && (
+                    <button
+                      key="control-calidad-expediente"
+                      type="button"
+                      onClick={() => { setMostrarControlCalidad(true); cargarDocumentosCierre(); }}
+                      className={`flex h-[84px] w-[190px] min-w-[190px] shrink-0 flex-col justify-start rounded-xl border px-3 py-2 text-left transition ${mostrarControlCalidad ? "border-violet-300 bg-violet-50 shadow-sm" : "border-violet-200 bg-white hover:bg-violet-50"}`}
+                    >
+                      <span className={`text-xs font-bold ${mostrarControlCalidad ? "text-violet-700" : "text-violet-800"}`}>🛡️ Control de calidad</span>
+                      <span className="mt-2 text-[9px] font-semibold text-slate-500">Revisión independiente</span>
+                    </button>
+                  )}
                   <button
                     key={
                       actividad.key
                     }
                     type="button"
                     onClick={() => {
+                      setMostrarControlCalidad(false);
                       setActividadSeleccionada(actividad.key);
                       if (actividad.key === "defectos-registrales") cargarDocumentosCierre();
                       if (["sede-notarial-protocolo", "liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividad.key)) {
@@ -4549,6 +4825,7 @@ const cuantiaFincasParaEnvio =
                     )}
 
                   </button>
+                  </>
                 );
               }
             )}
@@ -4558,16 +4835,7 @@ const cuantiaFincasParaEnvio =
 
           {/* DETALLE */}
 
-          <div
-            className="
-              min-w-0
-              rounded-2xl
-              border
-              border-slate-200
-              bg-slate-50/70
-              p-4
-            "
-          >
+          <div className={mostrarControlCalidad ? "hidden" : "min-w-0 rounded-2xl border border-slate-200 bg-slate-50/70 p-4"}>
 
             <div
               className="
@@ -5245,265 +5513,7 @@ const cuantiaFincasParaEnvio =
                     )}
                   </div>
                 </section>
-                <section className="rounded-2xl border border-slate-200 bg-white p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <h3 className="text-sm font-extrabold text-slate-800">Checklist de calidad del expediente</h3>
-                      <p className="mt-1 text-xs text-slate-500">Cada visto se obtiene de los datos guardados y de los documentos encontrados en la carpeta digital. Los requisitos pendientes se muestran para poder corregirlos.</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={cargarDocumentosCierre}
-                      disabled={cargandoDocumentosCierre}
-                      className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                    >
-                      {cargandoDocumentosCierre ? "Comprobando…" : "↻ Comprobar de nuevo"}
-                    </button>
-                  </div>
-                  {cargandoDocumentosCierre && <p className="mt-3 text-xs text-slate-500">Actualizando datos documentales…</p>}
-                  {errorDocumentosCierre && <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorDocumentosCierre}</p>}
-                  {(() => {
-                    const valor = (...claves) => {
-                      for (const clave of claves) {
-                        const dato = expediente?.[clave] ?? actividadDraft?.[clave];
-                        if (dato !== undefined && dato !== null && String(dato).trim() !== "") return dato;
-                      }
-                      return "";
-                    };
-                    const normalizar = (dato) => String(dato ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-                    const documentos = Array.isArray(documentosCierre) ? documentosCierre : [];
-                    const tieneDoc = (...categorias) => documentos.some((doc) => {
-                      const categoria = normalizar([doc?.categoria, doc?.categoria_nombre, doc?.nombre_categoria, doc?.actividad, doc?.actividad_nombre, doc?.fase].filter(Boolean).join(" "));
-                      const nombre = normalizar([doc?.nombre, doc?.nombre_archivo, doc?.nombre_original, doc?.filename, doc?.titulo].filter(Boolean).join(" "));
-                      return categorias.some((buscado) => {
-                        const objetivo = normalizar(buscado);
-                        return categoria.includes(objetivo) || nombre.includes(objetivo);
-                      });
-                    });
-                    // Para los documentos obligatorios de Documentación previa,
-                    // se exige su categoría exacta y no solo el nombre del fichero.
-                    const tieneDocEnCategoria = (...categorias) => documentos.some((doc) => {
-                      const categoria = normalizar([
-                        doc?.categoria, doc?.categoria_nombre, doc?.nombre_categoria,
-                        doc?.tipo_documento, doc?.metadata?.categoria,
-                      ].filter(Boolean).join(" "));
-                      return categorias.some((buscado) => categoria === normalizar(buscado));
-                    });
-                    const requisito = (etiqueta, ok, detalle) => ({ etiqueta, ok: Boolean(ok), detalle: ok ? "Correcto" : detalle });
-                    const fechaEnvio = valor("fecha_envio_notario", "fecha_envio");
-                    const notario = valor("nombre_notario", "notario", "notario_otorgante");
-                    const fechaFirma = valor("fecha_firma");
-                    const protocolo = valor("protocolo", "numero_protocolo");
-                    const fechaPresentacionTributaria = valor("fecha_presentacion_tributaria");
-                    const tributacion = normalizar(valor("tributacion"));
-                    const esExencionTributaria = ["prescrito", "exento", "renuncia"].some((x) => tributacion === x);
-                    const defectos = Array.isArray(defectosRegistrados) ? defectosRegistrados : [];
-                    const hayDefectosAbiertos = defectos.some((d) => {
-                      const cerrado = Boolean(d?.fecha_cierre_defecto || d?.fecha_cierre || d?.fcierre_defecto || d?.fecha_entrada_subsanacion);
-                      const estado = normalizar(d?.estado || d?.estado_defecto || d?.situacion);
-                      return !cerrado && !["cerrado", "subsanado", "resuelto", "archivado"].some((x) => estado.includes(x));
-                    });
-                    const fases = [
-                      {
-                        key: "documentacion-previa", label: "Documentación previa", icono: "📄",
-                        checks: [
-                          requisito(
-                            "Certificado Saldo «0» erróneo",
-                            Boolean(estadoDocumentacionAbsis.fecha_actualizacion),
-                            "Selecciona Sí o No en Documentación previa y pulsa «Guardar datos para integración»."
-                          ),
-                          requisito("Fecha de envío a notario", Boolean(fechaEnvio), "No consta la fecha de envío en FichaExpediente → Enviar a notario"),
-                          requisito(
-                            "Hoja de encargo firmada · marcada",
-                            Boolean(estadoDocumentacionAbsis.solicitud_cancelacion_notarial),
-                            "Marca «Hoja de Encargo firmada» en Documentación previa y guarda los datos."
-                          ),
-                          requisito(
-                            "Hoja de encargo firmada · documento subido",
-                            tieneDocEnCategoria("Hoja de Encargo firmada"),
-                            "Sube el documento a la categoría «Hoja de encargo firmada» de Carpeta digital y comprueba que se pueda abrir en el visor."
-                          ),
-                          requisito(
-                            "Justificante de cancelación · marcado",
-                            Boolean(estadoDocumentacionAbsis.certificado_cancelacion_administrativo),
-                            "Marca «Justificante de cancelación» en Documentación previa y guarda los datos."
-                          ),
-                          requisito(
-                            "Justificante de cancelación · documento subido",
-                            tieneDocEnCategoria("Justificante de cancelación"),
-                            "Sube el documento a la categoría «Justificante de cancelación» de Carpeta digital y comprueba que se pueda abrir en el visor."
-                          ),
-                          requisito(
-                            "Nota simple registral · marcada",
-                            Boolean(estadoDocumentacionAbsis.nota_simple_registral),
-                            "Marca «Nota simple registral» en Documentación previa y guarda los datos."
-                          ),
-                          requisito(
-                            "Nota simple registral · documento subido",
-                            tieneDocEnCategoria("Nota simple registral"),
-                            "Sube el documento a la categoría «Nota simple registral» de Carpeta digital y comprueba que se pueda abrir en el visor."
-                          ),
-                          requisito("Nombre del notario", Boolean(notario), "No consta el nombre del notario en FichaExpediente → Enviar a notario"),
-                          requisito("NIF del notario", Boolean(valor("nif_notario")), "No consta el NIF del notario en FichaExpediente → Enviar a notario"),
-                        ],
-                      },
-                      {
-                        key: "sede-notarial", label: "Sede notarial", icono: "🏛️",
-                        checks: [
-                          requisito("Notario", Boolean(notario), "Falta seleccionar o indicar el notario en Enviar a notario"),
-                          requisito("Fecha de envío", Boolean(fechaEnvio), "No consta la fecha de envío a notario"),
-                        ],
-                      },
-                      {
-                        key: "sede-notarial-protocolo", label: "Sede notarial con protocolo", icono: "📜",
-                        checks: [
-                          requisito("Apoderado", Boolean(valor("apoderado")), "Selecciona Gestoría o CaixaBank"),
-                          requisito("Fecha firma", Boolean(fechaFirma), "No consta la fecha de firma"),
-                          requisito("Protocolo", Boolean(protocolo), "No consta el número de protocolo"),
-                          requisito("Asiento presentación / Libro diario", Boolean(valor("asiento_presentacion_libro_diario")), "Falta el asiento de presentación o libro diario"),
-                          requisito("Fecha presentación", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación en Registro"),
-                          requisito("Número de entrada", Boolean(valor("numero_entrada")), "Falta el número de entrada"),
-                          requisito("Fecha recogida notario o presentación telemática", Boolean(valor("fecha_recogida_notario_presentacion_telematica")), "Falta la fecha de recogida o presentación telemática"),
-                          requisito("Documento Presentación Registro", tieneDocEnCategoria("Presentación Registro"), "Sube el documento en la categoría «Presentación Registro» de Carpeta digital y comprueba que abre en el visor"),
-                          requisito("Documento Copia simple", tieneDocEnCategoria("Copia simple", "Copia simple de escritura"), "Sube la copia simple en su categoría de Carpeta digital y comprueba que abre en el visor"),
-                        ],
-                      },
-                      {
-                        key: "liquidacion-impuestos", label: "Liquidación de impuestos", icono: "💶",
-                        checks: [
-                          requisito("Fecha presentación tributaria", Boolean(valor("fecha_presentacion_tributaria")), "Falta la fecha de presentación tributaria"),
-                          requisito("Fecha liquidación tributaria", Boolean(valor("fecha_liquidacion_tributaria")), "Falta la fecha de liquidación tributaria"),
-                          requisito("Oficina liquidadora / comunidad autónoma", Boolean(valor("oficina_liquidadora")), "Selecciona la oficina liquidadora o comunidad autónoma"),
-                          requisito("Base imponible (€)", valor("base_imponible") !== "" && Number.isFinite(Number(valor("base_imponible"))) && Number(valor("base_imponible")) >= 0, "Indica una base imponible válida en euros"),
-                          requisito("Tributación", Boolean(valor("tributacion")), "Selecciona Prescrito, Exento, Bonificación, Renuncia, AJD o TPO"),
-                          requisito("Impuesto (AJD / ITP)", Boolean(valor("impuesto_ajd_itp")), "Indica el impuesto AJD / ITP"),
-                          requisito("Documento AJD / ITP", tieneDocEnCategoria("AJD / ITP", "AJD/ITP", "AJD - ITP"), "Sube el documento en la categoría «AJD / ITP» de Carpeta digital y comprueba que abre en el visor"),
-                        ],
-                      },
-                      {
-                        key: "tramitacion-inscripcion", label: "Tramitación inscripción", icono: "🏢",
-                        checks: [
-                          requisito("Fecha presentación", Boolean(valor("fecha_presentacion")), "Falta la fecha de presentación en Registro"),
-                          requisito("Fecha vencimiento asiento (+60 días naturales)", Boolean(valor("fecha_vencimiento_asiento", "fecha_vencimiento")), "No consta la fecha de vencimiento del asiento, calculada a 60 días naturales desde la presentación"),
-                          requisito("Vencimiento calculado correctamente (+60 días)", (() => {
-                            const presentacion = valor("fecha_presentacion");
-                            const vencimiento = valor("fecha_vencimiento_asiento", "fecha_vencimiento");
-                            if (!presentacion || !vencimiento) return false;
-                            const fecha = new Date(String(presentacion).slice(0, 10) + "T00:00:00");
-                            fecha.setDate(fecha.getDate() + 60);
-                            return fecha.toISOString().slice(0, 10) === String(vencimiento).slice(0, 10);
-                          })(), "La fecha de vencimiento debe ser exactamente 60 días naturales después de la fecha de presentación"),
-                          requisito("Fecha inscripción", Boolean(valor("fecha_inscripcion")), "Todavía no consta la fecha de inscripción registral"),
-                          requisito("Hoja de inscripción", tieneDocEnCategoria("Hoja de inscripción", "Hoja de Inscripción"), "Sube la hoja de inscripción a su categoría de Carpeta digital y comprueba que abre en el visor"),
-                        ],
-                      },
-                      {
-                        key: "defectos-registrales", label: "Defectos registrales", icono: "⚠️",
-                        checks: [
-                          requisito(
-                            "Control de defectos registrales",
-                            !hayDefectosAbiertos,
-                            hayDefectosAbiertos
-                              ? "Hay uno o varios defectos abiertos: completa los controles siguientes para documentar su subsanación y cierre."
-                              : "No hay defectos registrales abiertos; esta fase se considera correcta."
-                          ),
-                          requisito(
-                            "Fecha cierre defecto",
-                            !hayDefectosAbiertos && (!defectos.length || defectos.every((d) => Boolean(d?.fecha_cierre_defecto || d?.fecha_cierre || d?.fcierre_defecto))),
-                            hayDefectosAbiertos
-                              ? "Hay defectos abiertos. Registra la fecha de cierre cuando se hayan subsanado."
-                              : "No hay defectos abiertos."
-                          ),
-                          requisito(
-                            "Documento Defecto registral",
-                            !hayDefectosAbiertos || tieneDocEnCategoria("Defecto registral"),
-                            "Sube el documento del defecto en la categoría «Defecto registral» y comprueba que abre en el visor."
-                          ),
-                          requisito(
-                            "Documento Subsanación del defecto",
-                            !hayDefectosAbiertos || tieneDocEnCategoria("Subsanación del defecto"),
-                            "Sube la subsanación en la categoría «Subsanación del defecto» y comprueba que abre en el visor."
-                          ),
-                          requisito(
-                            "Defectos cerrados o subsanados",
-                            !hayDefectosAbiertos,
-                            "Queda algún defecto abierto; subsánalo y registra su cierre."
-                          ),
-                        ],
-                      },
-                      {
-                        key: "facturacion-cierre", label: "Facturación y cierre", icono: "🧾",
-                        checks: [
-                          requisito("Fecha de facturación", Boolean(valor("facturacion_fecha")), "Falta la fecha de facturación"),
-                          requisito("Entrega al cliente", Boolean(valor("fecha_entregado_cliente")), "Falta la fecha de entrega al cliente"),
-                          requisito("Fin de actividad", Boolean(valor("fecha_fin_actividad")), "Falta la fecha de cierre de la actividad"),
-                          requisito("Escritura digital final", tieneDoc("Escritura digital final"), "Falta la escritura digital final"),
-                          requisito("Factura notarial", tieneDoc("Factura notarial"), "Falta la factura notarial"),
-                          requisito("Factura registral", tieneDoc("Factura Registral", "Factura registral"), "Falta la factura registral"),
-                        ],
-                      },
-                    ];
-                    const completadas = fases.filter((fase) => fase.checks.every((check) => check.ok)).length;
-                    const totalChecks = fases.reduce((suma, fase) => suma + fase.checks.length, 0);
-                    const checksOk = fases.reduce((suma, fase) => suma + fase.checks.filter((check) => check.ok).length, 0);
-                    const porcentaje = totalChecks ? Math.round((checksOk / totalChecks) * 100) : 0;
-                    return (
-                      <>
-                        <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                            <span className="text-xs font-bold text-slate-700">Calidad documental y de datos</span>
-                            <span className="text-xs font-extrabold tabular-nums text-slate-700">{completadas}/7 fases completas · {checksOk}/{totalChecks} comprobaciones</span>
-                          </div>
-                          <div className="h-2 overflow-hidden rounded-full bg-slate-200">
-                            <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${porcentaje}%` }} />
-                          </div>
-                          <p className="mt-2 text-[10px] text-slate-500">Una fase solo se marca como completa cuando todos sus requisitos configurados están cumplidos. La falta de datos no se considera correcta por el mero hecho de haber avanzado de actividad.</p>
-                        </div>
-                        <div className="mt-4 space-y-3">
-                          {fases.map((fase, indice) => {
-                            const pendientes = fase.checks.filter((check) => !check.ok);
-                            const completa = pendientes.length === 0;
-                            const actual = fase.key === actividadActual;
-                            return (
-                              <article key={fase.key} className={`rounded-xl border p-3 ${completa ? "border-emerald-200 bg-emerald-50/40" : actual ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
-                                <div className="flex items-center gap-3">
-                                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${completa ? "border-emerald-500 bg-emerald-500 text-white" : actual ? "border-blue-500 bg-white text-blue-700" : "border-slate-300 bg-white text-slate-400"}`}>
-                                    {completa ? "✓" : actual ? "●" : indice + 1}
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <p className="text-xs font-bold text-slate-800">{fase.icono} {fase.label}</p>
-                                    <p className={`mt-0.5 text-[10px] font-semibold ${completa ? "text-emerald-700" : actual ? "text-blue-700" : "text-amber-700"}`}>
-                                      {completa ? "Control superado" : actual ? "Actividad actual · requiere revisión" : "Con incidencias pendientes"}
-                                    </p>
-                                  </div>
-                                  <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${completa ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800"}`}>
-                                    {completa ? "✓ Correcto" : `${pendientes.length} pendiente(s)`}
-                                  </span>
-                                </div>
-                                <ul className="ml-11 mt-2 space-y-1 border-t border-slate-200/70 pt-2">
-                                  {fase.checks.map((check) => (
-                                    <li key={check.etiqueta} className="flex items-start gap-2 text-[11px]">
-                                      <span
-                                        aria-label={check.ok ? "Correcto" : "Pendiente"}
-                                        title={check.ok ? "Correcto" : "Pendiente"}
-                                        className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-black ${check.ok ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
-                                      >
-                                        {check.ok ? "✓" : "✕"}
-                                      </span>
-                                      <span className={check.ok ? "text-emerald-800" : "text-red-800"}>
-                                        <strong>{check.etiqueta}:</strong> {check.ok ? "Correcto" : check.detalle}
-                                      </span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </article>
-                            );
-                          })}
-                        </div>
-                      </>
-                    );
-                  })()}
-                </section>
+
 
                 <section className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
@@ -5615,6 +5625,8 @@ const cuantiaFincasParaEnvio =
             </>}
 
           </div>
+
+          {mostrarControlCalidad && renderChecklistCalidad()}
 
         </div>
 
