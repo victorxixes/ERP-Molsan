@@ -34,7 +34,8 @@ export default function Utilidades() {
 
       <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
         <Card icon="📥" titulo="Importar CTN" descripcion="Importar un Excel con información de notarías." link="/herramientas/importar-ctn" />
-        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." link="/herramientas/importador-absis" destacado />
+        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." etapa="Carga Pre firma" link="/herramientas/importador-absis" destacado />
+        <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." etapa="Post Firma" link="/herramientas/importador-absis" destacado />
       </Grupo>
 
       <Grupo titulo="Integraciones y comunicaciones" descripcion="Seguimiento de los procesos de intercambio de información con los sistemas de nuestros clientes.">
@@ -113,6 +114,7 @@ function Card({
   link,
   destacado = false,
   enConstruccion = false,
+  etapa = null,
   onClick,
 }) {
   const contenido = (
@@ -136,6 +138,7 @@ function Card({
             )}
           </div>
           <p className="mt-1.5 text-sm leading-5 text-slate-500">{descripcion}</p>
+          {etapa && <p className="mt-3 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700">{etapa}</p>}
           {enConstruccion && (
             <p className="mt-3 text-xs font-medium text-amber-700">
               Próximamente: registro de envíos, respuestas y cambios de estado vía API.
