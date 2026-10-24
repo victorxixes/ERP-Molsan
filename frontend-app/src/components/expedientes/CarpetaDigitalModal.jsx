@@ -531,15 +531,15 @@ export default function CarpetaDigitalModal({
               </div>
             </section>
 
-            <section className="min-h-[250px] min-w-0 overflow-hidden lg:max-w-[640px] lg:justify-self-start">
-              {modoActividad && actividadId === "documentacion-previa" && Boolean(datosEnvioNotario?.fecha_envio_notario) ? (
+            <section className="min-h-[250px] min-w-0 w-full overflow-hidden">
+              {modoActividad && actividadId === "documentacion-previa" && Boolean(datosEnvioNotario?.fecha_envio_notario || datosEnvioNotario?.fecha_envio) ? (
                 <div className="flex h-full min-h-[250px] flex-col overflow-y-auto rounded-xl border border-indigo-100 bg-white shadow-sm">
                   <header className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
                     <div className="min-w-0">
                       <h4 className="text-xs font-extrabold text-indigo-950">✉️ Datos de envío a notario</h4>
                       <p className="text-[10px] text-slate-500">Información registrada en el expediente</p>
                     </div>
-                    <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onAbrirEnvioNotario?.(); }} className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">✉️ Envío al notario</button>
+                    <button type="button" onClick={() => { if (typeof onAbrirEnvioNotario === "function") onAbrirEnvioNotario(); }} className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">✉️ Envío al notario</button>
                   </header>
                   <div className="grid grid-cols-2 gap-x-3 gap-y-2 p-3 text-[11px] sm:grid-cols-3">
                     {[
@@ -598,7 +598,7 @@ export default function CarpetaDigitalModal({
             ? "w-full space-y-3"
             : "flex max-h-[94vh] w-full max-w-[1500px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"}
         >
-          {!modoActividad ? (
+          {!modoActividad && (
             <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
               <div>
                 <p className="text-[10px] font-extrabold uppercase tracking-[.18em] text-indigo-600">MOLSAN ERP · Documentación</p>
@@ -607,25 +607,12 @@ export default function CarpetaDigitalModal({
               </div>
               <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100">✕ Cerrar</button>
             </header>
-          ) : (
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
-              <div>
-                <h3 className="text-sm font-extrabold text-slate-900">Documentos de {bloqueActividad?.titulo || "la actividad"}</h3>
-                <p className="mt-0.5 text-[11px] text-slate-500">Adjunta documentos y consulta el visor.</p>
-              </div>
-              <div className="flex items-center gap-2">
-                {!modoActividad && <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{totalCategoriasVisibles} archivo(s) en esta actividad</span>}
-                <button type="button" onClick={() => setVisorVisible((v) => !v)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50">
-                  {visorVisible ? "Ocultar visor" : "Mostrar visor"}
-                </button>
-              </div>
-            </div>
           )}
 
           <div className={modoActividad
             ? (ocultarPanelEnvioNotario
-              ? "grid min-h-[300px] grid-cols-1 gap-2 lg:grid-cols-[minmax(260px,0.72fr)_minmax(0,1.28fr)]"
-              : "grid min-h-[360px] grid-cols-1 gap-2 lg:grid-cols-[minmax(280px,0.78fr)_minmax(0,1.22fr)]")
+              ? "grid min-h-[300px] grid-cols-1 gap-2 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]"
+              : "grid min-h-[360px] grid-cols-1 gap-2 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]")
             : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}>
             <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
               {!modoActividad && (
