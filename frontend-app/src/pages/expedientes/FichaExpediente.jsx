@@ -4128,10 +4128,6 @@ const cuantiaFincasParaEnvio =
                 >
                   Ficha completa del expediente
                 </p>
-                <div className="mt-2 inline-flex max-w-full items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs">
-                  <span className="font-bold text-blue-700">Gestor asignado:</span>
-                  <span className="truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
-                </div>
                 {expedienteBloqueado && <span className="mt-2 inline-flex rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-[11px] font-extrabold text-red-800">🔒 EXPEDIENTE BLOQUEADO · {motivoBloqueoExpediente}</span>}
 
               </div>
@@ -4309,8 +4305,6 @@ const cuantiaFincasParaEnvio =
                 <Dato campo="Contrato" valor={expediente.contrato} compacto />
                 <Dato campo="Capital" valor={expediente.capital} tipo="numero" destaque compacto />
                 <Dato campo="Importe" valor={expediente.importe} tipo="numero" destaque compacto />
-                <Dato campo="Saldo real" valor={expediente.saldo_real} tipo="numero" compacto />
-                <Dato campo="Saldo disponible" valor={expediente.saldo_disponible} tipo="numero" compacto />
                 <Dato campo="Tipo operación" valor={expediente.tipo_operacion} compacto />
                 <Dato campo="Subtipo operación" valor={expediente.subtipo_operacion} compacto />
                 <Dato campo="Nº solicitud SIA" valor={expediente.num_solicitud_sia} compacto />
@@ -4360,6 +4354,10 @@ const cuantiaFincasParaEnvio =
             >
               🔗 Área de clientes
             </button>
+            <div className="inline-flex max-w-full items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-1.5 text-[11px]">
+              <span className="font-bold text-blue-700">Gestor asignado:</span>
+              <span className="truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
+            </div>
             {tieneDefecto && (
               <button
                 type="button"
