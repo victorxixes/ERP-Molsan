@@ -2734,33 +2734,6 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       payload
     );
 
-    const fechaEnvioNotario = String(
-      payload?.fecha_envio_notario ||
-      payload?.fecha_envio ||
-      expediente?.fecha_envio_notario ||
-      expediente?.fecha_envio ||
-      ""
-    ).slice(0, 10);
-
-    // La fecha de fin de Documentación previa se completa automáticamente
-    // con la fecha registrada en el envío a notario.
-    if (fechaEnvioNotario) {
-      await axios.put(
-        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
-        {
-          campos: {
-            fecha_envio_notario: fechaEnvioNotario,
-            fecha_fin_actividad: fechaEnvioNotario,
-          },
-        }
-      );
-      setActividadDraft((actual) => ({
-        ...actual,
-        fecha_envio_notario: fechaEnvioNotario,
-        fecha_fin_actividad: fechaEnvioNotario,
-      }));
-    }
-
     // Una vez guardados los datos del envío, solicitar el avance de actividad.
     // El backend valida los documentos obligatorios antes de cambiarla.
     const transicion = await axios.post(
@@ -2772,7 +2745,12 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     );
     await cargarExpediente();
     setActividadSeleccionada(resolverActividadActual(transicion?.data || expediente));
-    setActividadDraft((actual) => ({ ...actual, ...(transicion?.data || {}) }));
+    setActividadDraft((actual) => ({
+      ...actual,
+      ...(transicion?.data || {}),
+      fecha_envio_notario: payload?.fecha_envio || actual.fecha_envio_notario || "",
+      fecha_fin_actividad: payload?.fecha_envio || actual.fecha_fin_actividad || "",
+    }));
     setMensajeActividad("Envío a notario guardado y actividad actualizada. La transmisión a ABSIS queda pendiente de la API.");
     setMostrarEnviarNotario(false);
   }
