@@ -41,9 +41,9 @@ export default function Utilidades() {
       <Grupo titulo="Integraciones y comunicaciones" descripcion="Seguimiento de los procesos de intercambio de información con los sistemas de nuestros clientes.">
         <Card icon="🔄" titulo="Proceso de ABSIS" descripcion="Control de expedientes enviados, errores detectados e incidencias, con buscador, acciones y exportación Excel." link="/herramientas/utilidades/proceso-absis" enConstruccion />
         <Card icon="🧾" titulo="Verifacti" descripcion="Acceso al futuro panel de control de Verifacti para consultar la integración y el estado de los registros de facturación." link="/herramientas/utilidades/verifacti" enConstruccion />
-        <Card icon="📄" titulo="Lectura copias" descripcion="Procesamiento de copias por fecha, con progreso y listado de expedientes detectados." enConstruccion />
-        <Card icon="📁" titulo="Lectura Cancela I" descripcion="Módulo para la lectura de información de Cancela I. Pendiente de desarrollo." enConstruccion />
-        <Card icon="🔀" titulo="Cambios de actividad ABSIS" descripcion="Busca expedientes, solicita una nueva actividad y consulta el estado de consolidación." enConstruccion />
+        <Card icon="📄" titulo="Lectura copias" descripcion="Procesamiento de copias por fecha, con progreso y listado de expedientes detectados." link="/herramientas/utilidades/lectura-copias" enConstruccion />
+        <Card icon="📁" titulo="Lectura Cancela I" descripcion="Accede a la pantalla inicial del futuro módulo de lectura de información de Cancela I." link="/herramientas/utilidades/lectura-cancela-i" enConstruccion />
+        <Card icon="🔀" titulo="Cambios de actividad ABSIS" descripcion="Busca expedientes, solicita una nueva actividad y consulta el estado de consolidación." link="/herramientas/utilidades/cambios-actividad-absis" enConstruccion />
       </Grupo>
 
       <Grupo titulo="Control económico" descripcion="Seguimiento de PPAD, complementos de saldo y control económico de apoderados.">
@@ -152,7 +152,7 @@ function Card({
     </>
   );
 
-  const clases = `group relative overflow-hidden rounded-[22px] border bg-white/80 p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 ${enConstruccion && !onClick ? "cursor-default border-amber-200/80 bg-amber-50/30" : "cursor-pointer hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98]"} ${destacado ? "border-blue-200/80 bg-blue-50/50" : ""}`;
+  const clases = `group relative overflow-hidden rounded-[22px] border bg-white/80 p-5 shadow-[0_12px_35px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 ${enConstruccion && !onClick && !link ? "cursor-default border-amber-200/80 bg-amber-50/30" : "cursor-pointer hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(15,23,42,0.11)] active:scale-[0.98]"} ${destacado ? "border-blue-200/80 bg-blue-50/50" : ""}`;
 
   if (enConstruccion && !onClick && !link) {
     return (
