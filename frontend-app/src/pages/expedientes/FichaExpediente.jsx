@@ -4380,13 +4380,13 @@ const cuantiaFincasParaEnvio =
                               </div>
                               <p className="mt-2 text-[10px] text-slate-500">Una fase solo se marca como completa cuando todos sus requisitos configurados están cumplidos. La falta de datos no se considera correcta por el mero hecho de haber avanzado de actividad.</p>
                             </div>
-                            <div className="mt-4 space-y-3">
+                            <div className="mt-4 grid grid-cols-1 items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
                               {fases.map((fase, indice) => {
                                 const pendientes = fase.checks.filter((check) => !check.ok);
                                 const completa = pendientes.length === 0;
                                 const actual = fase.key === actividadActual;
                                 return (
-                                  <article key={fase.key} className={`rounded-xl border p-3 ${completa ? "border-emerald-200 bg-emerald-50/40" : actual ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
+                                  <article key={fase.key} className={`min-w-0 rounded-xl border p-3 ${fase.key === "facturacion-cierre" ? "xl:col-span-3" : ""} ${completa ? "border-emerald-200 bg-emerald-50/40" : actual ? "border-blue-200 bg-blue-50/40" : "border-slate-200 bg-white"}`}>
                                     <div className="flex items-center gap-3">
                                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold ${completa ? "border-emerald-500 bg-emerald-500 text-white" : actual ? "border-blue-500 bg-white text-blue-700" : "border-slate-300 bg-white text-slate-400"}`}>
                                         {completa ? "✓" : actual ? "●" : indice + 1}
