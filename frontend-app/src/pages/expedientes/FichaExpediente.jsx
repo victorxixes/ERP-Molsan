@@ -4602,11 +4602,6 @@ const cuantiaFincasParaEnvio =
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                {actividadSeleccionada === "documentacion-previa" && (
-                  <button type="button" onClick={() => setMostrarEnviarNotario(true)} className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-extrabold text-white shadow-sm transition hover:bg-indigo-700">
-                    🏛️ Enviar a notario
-                  </button>
-                )}
                 <button type="button" onClick={() => { setErrorActividad(""); setMensajeActividad(""); setMostrarModalDatosActividad(true); }} className="inline-flex items-center gap-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-extrabold text-sky-800 transition hover:bg-sky-100">
                   ☷ Datos de actividad
                 </button>
