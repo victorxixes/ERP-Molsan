@@ -90,6 +90,7 @@ ACTIVIDADES_VISIBILIDAD = [
     {"key": "documentacion-previa", "label": "Documentación previa"},
     {"key": "sede-notarial", "label": "Sede notarial"},
     {"key": "sede-notarial-protocolo", "label": "Sede notarial con protocolo"},
+    {"key": "gestion-economica", "label": "Gestión económica"},
     {"key": "liquidacion-impuestos", "label": "Liquidación de impuestos"},
     {"key": "tramitacion-inscripcion", "label": "Tramitación inscripción"},
     {"key": "defectos-registrales", "label": "Defectos registrales"},
@@ -595,6 +596,11 @@ ACTIVIDADES_EXPEDIENTES = [
         ],
     },
     {
+        "key": "gestion-economica",
+        "label": "Gestión económica",
+        "aliases": ["Gestión económica", "Gestion economica"],
+    },
+    {
         "key": "liquidacion-impuestos",
         "label": "Liquidación de impuestos",
         "aliases": [
@@ -703,6 +709,12 @@ def condicion_actividad(clave_actividad: str):
                 actividad.ilike("Sede Notarial con protocolo"),
             ),
             Expediente.fecha_firma.isnot(None),
+        )
+
+    if clave_actividad == "gestion-economica":
+        return or_(
+            actividad.ilike("Gestión económica"),
+            actividad.ilike("Gestion economica"),
         )
 
     if clave_actividad == "liquidacion-impuestos":
