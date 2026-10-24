@@ -1894,6 +1894,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
   const [cargandoPpad, setCargandoPpad] = useState(false);
   const [guardandoPpad, setGuardandoPpad] = useState(false);
   const [errorPpad, setErrorPpad] = useState("");
+  const [mostrarModalPpad, setMostrarModalPpad] = useState(false);
   const [mostrarFormularioPpad, setMostrarFormularioPpad] = useState(false);
   const [ppadEditandoId, setPpadEditandoId] = useState(null);
   const [ppadForm, setPpadForm] = useState({
@@ -5648,120 +5649,131 @@ const cuantiaFincasParaEnvio =
             </div>;
           })() : <p className="rounded-lg border border-dashed border-slate-200 bg-white p-3 text-xs text-slate-500">No hay acciones asignadas.</p>}
         </div>
-                  <Seccion
-            id="ficha-ppad"
-            titulo="PPAD"
-            subtitulo="Conceptos, importes e imputación"
-            icono="economico"
-            colapsable
-            compacto
-          >
-            <div className="space-y-2">
-              {errorPpad && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorPpad}</p>}
-              {cargandoPpad && <p className="text-xs text-slate-500">Cargando conceptos PPAD…</p>}
-              {ppadItems.length === 0 && !cargandoPpad && !mostrarFormularioPpad && (
-                <p className="rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-500">
-                  Todavía no hay conceptos PPAD añadidos.
-                </p>
-              )}
-
-              {ppadItems.slice(-1).map((item) => (
-                <div key={item.id} className={`rounded-lg border p-2 ${item.compensado ? "border-emerald-200 bg-emerald-50/40" : "border-slate-200 bg-white"}`}>
-                  <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3">
-                    <div className="min-w-0">
-                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Concepto</div>
-                      <div className="mt-0.5 break-words text-[11px] leading-tight font-semibold text-slate-800">{item.concepto}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Importe</div>
-                      <div className="mt-0.5 text-[11px] leading-tight font-semibold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Imputable a</div>
-                      <div className="mt-0.5 text-[11px] leading-tight font-semibold text-slate-800">{item.imputable_a || item.imputableA || "Molsan"}</div>
-                    </div>
-                  </div>
-                  <div className="mt-2 grid grid-cols-1 gap-2 border-t border-slate-100 pt-2 text-[10px] sm:grid-cols-2">
-                    <div><span className="font-semibold text-slate-400">Fecha alta: </span><span className="font-semibold text-slate-700">{formatearFecha(item.fecha_creacion)}</span></div>
-                    <div><span className="font-semibold text-slate-400">Fecha compensación: </span><span className={item.compensado ? "font-bold text-emerald-700" : "font-semibold text-slate-500"}>{formatearFecha(item.fecha_compensacion)}</span></div>
-                  </div>
-                  <div className="mt-2 flex flex-wrap items-center justify-end gap-2">
-                    {item.compensado ? (
-                      <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800">✓ COMPENSADO</span>
-                    ) : (
-                      <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad}>
-                        {guardandoPpad ? "Registrando…" : "✓ Compensar"}
-                      </Boton>
-                    )}
-                    {!item.compensado && (
-                      <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>
-                    )}
-                    {(!item.compensado || esAdministradorSesion) && (
-                      <Boton
-                        tipo="danger"
-                        onClick={() => {
-                          const mensaje = item.compensado
-                            ? "Este PPAD ya está compensado. ¿Confirmas que quieres eliminarlo como administrador?"
-                            : "¿Confirmas que quieres eliminar este concepto PPAD?";
-                          if (window.confirm(mensaje)) eliminarPpad(item.id);
-                        }}
-                      >
-                        🗑️ Eliminar
-                      </Boton>
-                    )}
-                  </div>
-                </div>
-              ))}
-
-              {mostrarFormularioPpad && (
-                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3">
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <label className="block sm:col-span-2">
-                      <span className="mb-1 block text-xs font-semibold text-slate-600">Concepto</span>
-                      <input
-                        type="text"
-                        value={ppadForm.concepto}
-                        onChange={(event) => setPpadForm((actual) => ({ ...actual, concepto: event.target.value }))}
-                        placeholder="Introduce el concepto"
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                        autoFocus
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="mb-1 block text-xs font-semibold text-slate-600">Importe (€)</span>
-                      <input
-                        type="text"
-                        inputMode="decimal"
-                        value={ppadForm.importe}
-                        onChange={(event) => setPpadForm((actual) => ({ ...actual, importe: event.target.value }))}
-                        placeholder="0,00"
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="mb-1 block text-xs font-semibold text-slate-600">Imputable a</span>
-                      <select
-                        value={ppadForm.imputableA}
-                        onChange={(event) => setPpadForm((actual) => ({ ...actual, imputableA: event.target.value }))}
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                      >
-                        <option value="Molsan">Molsan</option>
-                        <option value="Externo">Externo</option>
-                      </select>
-                    </label>
-                  </div>
-                  <div className="mt-3 flex flex-wrap justify-end gap-2">
-                    <Boton tipo="secondary" onClick={cancelarPpad}>Cancelar</Boton>
-                    <Boton tipo="primary" onClick={aceptarPpad} disabled={!ppadForm.concepto.trim() || !String(ppadForm.importe).trim() || guardandoPpad}>{guardandoPpad ? "Guardando…" : "Aceptar"}</Boton>
-                  </div>
-                </div>
-              )}
-
-              {!mostrarFormularioPpad && (
-                <Boton tipo="primary" onClick={abrirNuevoPpad}>＋ Añadir concepto PPAD</Boton>
-              )}
+          <div className="flex min-w-0 flex-col items-start gap-2 rounded-xl border border-slate-200 bg-white p-3">
+            <div className="flex w-full flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 className="text-xs font-extrabold text-slate-800">PPAD</h3>
+                <p className="text-[10px] text-slate-500">Gestión de conceptos y compensaciones</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMostrarModalPpad(true)}
+                className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-800 transition hover:bg-indigo-100"
+              >
+                <span>PPAD</span>
+                {ppadItems.filter((item) => !item.compensado).length > 0 && (
+                  <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-extrabold text-white">
+                    {ppadItems.filter((item) => !item.compensado).length}
+                  </span>
+                )}
+              </button>
             </div>
-          </Seccion>
+            {cargandoPpad ? (
+              <p className="text-[10px] text-slate-500">Comprobando PPAD pendientes…</p>
+            ) : ppadItems.filter((item) => !item.compensado).length > 0 ? (
+              <p className="text-[11px] font-semibold text-amber-700">
+                ⚠ Hay {ppadItems.filter((item) => !item.compensado).length} PPAD pendientes de compensar.
+              </p>
+            ) : (
+              <p className="text-[11px] font-medium text-emerald-700">✓ Sin PPAD pendientes de compensar.</p>
+            )}
+          </div>
+          {mostrarModalPpad && (
+            <div
+              className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/50 p-3 backdrop-blur-sm sm:p-6"
+              onMouseDown={(event) => { if (event.target === event.currentTarget) { setMostrarModalPpad(false); cancelarPpad(); } }}
+            >
+              <section
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modal-ppad-titulo"
+                className="my-auto max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl"
+              >
+                <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-white/95 px-4 py-4 backdrop-blur sm:px-6">
+                  <div>
+                    <h3 id="modal-ppad-titulo" className="text-base font-extrabold text-slate-900">PPAD · Conceptos y compensaciones</h3>
+                    <p className="mt-1 text-xs text-slate-500">Historial completo de PPAD de este expediente.</p>
+                  </div>
+                  <button type="button" onClick={() => { setMostrarModalPpad(false); cancelarPpad(); }} aria-label="Cerrar PPAD" className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50">✕ Cerrar</button>
+                </header>
+                <div className="space-y-3 p-4 sm:p-6">
+                  {errorPpad && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{errorPpad}</p>}
+                  {cargandoPpad && <p className="text-xs text-slate-500">Cargando conceptos PPAD…</p>}
+                  {!cargandoPpad && ppadItems.length === 0 && !mostrarFormularioPpad && (
+                    <p className="rounded-xl border border-dashed border-slate-200 px-3 py-5 text-center text-sm text-slate-500">Todavía no hay conceptos PPAD añadidos.</p>
+                  )}
+                  {ppadItems.map((item) => (
+                    <article key={item.id} className={`rounded-xl border p-3 ${item.compensado ? "border-emerald-200 bg-emerald-50/40" : "border-amber-200 bg-white"}`}>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        <div className="min-w-0">
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Concepto</div>
+                          <div className="mt-1 break-words text-sm font-semibold text-slate-800">{item.concepto}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Importe</div>
+                          <div className="mt-1 text-sm font-semibold text-slate-800">{new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(item.importe) || 0)}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Imputable a</div>
+                          <div className="mt-1 text-sm font-semibold text-slate-800">{item.imputable_a || item.imputableA || "Molsan"}</div>
+                        </div>
+                      </div>
+                      <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 text-xs sm:grid-cols-2">
+                        <div><span className="font-semibold text-slate-500">Fecha alta: </span><span className="font-semibold text-slate-700">{formatearFecha(item.fecha_creacion)}</span></div>
+                        <div><span className="font-semibold text-slate-500">Fecha compensación: </span><span className={item.compensado ? "font-bold text-emerald-700" : "font-semibold text-slate-500"}>{formatearFecha(item.fecha_compensacion)}</span></div>
+                      </div>
+                      <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
+                        {item.compensado ? (
+                          <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800">✓ COMPENSADO</span>
+                        ) : (
+                          <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad}>
+                            {guardandoPpad ? "Registrando…" : "✓ Compensar"}
+                          </Boton>
+                        )}
+                        {!item.compensado && <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>}
+                        {(!item.compensado || esAdministradorSesion) && (
+                          <Boton tipo="danger" onClick={() => {
+                            const mensaje = item.compensado
+                              ? "Este PPAD ya está compensado. ¿Confirmas que quieres eliminarlo como administrador?"
+                              : "¿Confirmas que quieres eliminar este concepto PPAD?";
+                            if (window.confirm(mensaje)) eliminarPpad(item.id);
+                          }}>🗑️ Eliminar</Boton>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                  {mostrarFormularioPpad && (
+                    <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-4">
+                      <h4 className="mb-3 text-sm font-extrabold text-slate-800">{ppadEditandoId !== null ? "Editar concepto PPAD" : "Añadir concepto PPAD"}</h4>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <label className="block sm:col-span-2">
+                          <span className="mb-1 block text-xs font-semibold text-slate-600">Concepto</span>
+                          <input type="text" value={ppadForm.concepto} onChange={(event) => setPpadForm((actual) => ({ ...actual, concepto: event.target.value }))} placeholder="Introduce el concepto" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" autoFocus />
+                        </label>
+                        <label className="block">
+                          <span className="mb-1 block text-xs font-semibold text-slate-600">Importe (€)</span>
+                          <input type="text" inputMode="decimal" value={ppadForm.importe} onChange={(event) => setPpadForm((actual) => ({ ...actual, importe: event.target.value }))} placeholder="0,00" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                        </label>
+                        <label className="block">
+                          <span className="mb-1 block text-xs font-semibold text-slate-600">Imputable a</span>
+                          <select value={ppadForm.imputableA} onChange={(event) => setPpadForm((actual) => ({ ...actual, imputableA: event.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                            <option value="Molsan">Molsan</option>
+                            <option value="Externo">Externo</option>
+                          </select>
+                        </label>
+                      </div>
+                      <div className="mt-3 flex flex-wrap justify-end gap-2">
+                        <Boton tipo="secondary" onClick={cancelarPpad}>Cancelar</Boton>
+                        <Boton tipo="primary" onClick={aceptarPpad} disabled={!ppadForm.concepto.trim() || !String(ppadForm.importe).trim() || guardandoPpad}>{guardandoPpad ? "Guardando…" : "Aceptar"}</Boton>
+                      </div>
+                    </div>
+                  )}
+                  {!mostrarFormularioPpad && <div className="flex justify-end"><Boton tipo="primary" onClick={abrirNuevoPpad}>＋ Añadir concepto PPAD</Boton></div>}
+                </div>
+              </section>
+            </div>
+          )}
+
       </div>
       <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
         {/* FINCAS Y REGISTROS — SOLO LOS TRES DATOS SOLICITADOS */}
