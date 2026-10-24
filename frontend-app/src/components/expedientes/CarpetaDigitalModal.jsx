@@ -124,6 +124,9 @@ export default function CarpetaDigitalModal({
   const [subiendo, setSubiendo] = useState("");
   const [bloquesAbiertos, setBloquesAbiertos] = useState({ "documentacion-previa": true });
   const [otrosAbierto, setOtrosAbierto] = useState(false);
+  // En modo actividad, la carpeta puede plegarse horizontalmente hacia la izquierda
+  // para dejar más ancho al panel de datos/envío a notario.
+  const [panelDocumentosVisible, setPanelDocumentosVisible] = useState(true);
 
   // Visor a la derecha: se puede ocultar y ampliar a pantalla casi completa.
   const [visorVisible, setVisorVisible] = useState(true);
@@ -414,12 +417,12 @@ export default function CarpetaDigitalModal({
     const cantidad = contarBloque(bloque);
     return (
       <section key={bloque.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-        <button type="button" onClick={() => setBloquesAbiertos((prev) => ({ ...prev, [bloque.id]: !prev[bloque.id] }))} aria-expanded={abierto} className={`flex w-full items-center justify-between gap-3 px-3 py-3 text-left transition ${abierto ? "bg-slate-50" : "bg-white hover:bg-slate-50"}`}>
+        <button type="button" onClick={() => { if (modoActividad) setPanelDocumentosVisible(false); else setBloquesAbiertos((prev) => ({ ...prev, [bloque.id]: !prev[bloque.id] })); }} aria-expanded={modoActividad ? panelDocumentosVisible : abierto} title={modoActividad ? "Ocultar carpeta digital hacia la izquierda" : abierto ? "Contraer repositorios" : "Mostrar repositorios"} className={`flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition ${abierto ? "bg-slate-50" : "bg-white hover:bg-slate-50"}`}>
           <span className="flex min-w-0 items-center gap-3">
             <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${cantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{cantidad}</span>
             <span className="min-w-0"><span className="block text-sm font-extrabold text-slate-900">{bloque.titulo}</span><span className="block truncate text-[11px] font-normal text-slate-500">{bloque.descripcion}</span></span>
           </span>
-          <span className="shrink-0 text-xs font-bold text-slate-500">{abierto ? "⌃" : "⌄"}</span>
+          <span className="shrink-0 text-xs font-bold text-slate-500">{modoActividad ? "‹" : abierto ? "⌃" : "⌄"}</span>
         </button>
         {abierto && <div className="space-y-2 border-t border-slate-100 bg-slate-50/50 p-2 sm:p-3">{bloque.categorias.map(renderCategoria)}</div>}
       </section>
@@ -609,12 +612,21 @@ export default function CarpetaDigitalModal({
             </header>
           )}
 
-          <div className={modoActividad
-            ? (ocultarPanelEnvioNotario
-              ? "grid min-h-[300px] grid-cols-1 gap-2 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]"
-              : "grid min-h-[360px] grid-cols-1 gap-2 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]")
-            : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}>
-            <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
+          <div
+            className={modoActividad
+              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 " + (ocultarPanelEnvioNotario ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(180px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
+              : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}
+          >
+            <div
+              className={"flex min-h-0 min-w-0 flex-col overflow-hidden transition-[opacity,transform] duration-300 " + (modoActividad && !panelDocumentosVisible && !ocultarPanelEnvioNotario ? "hidden lg:flex" : "")}
+              style={modoActividad ? {
+                minWidth: 0,
+                width: "100%",
+                opacity: panelDocumentosVisible || ocultarPanelEnvioNotario ? 1 : 0,
+                transform: panelDocumentosVisible || ocultarPanelEnvioNotario ? "translateX(0)" : "translateX(-28px)",
+                pointerEvents: panelDocumentosVisible || ocultarPanelEnvioNotario ? "auto" : "none",
+              } : undefined}
+            >
               {!modoActividad && (
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   <input
@@ -660,11 +672,18 @@ export default function CarpetaDigitalModal({
                       {actividadId === "documentacion-previa" ? "Resumen de la información del expediente" : "Información específica de esta actividad"}
                     </p>
                   </div>
-                  {actividadId === "documentacion-previa" && (
-                    <button type="button" onClick={() => onAbrirEnvioNotario?.()} className="shrink-0 rounded-lg bg-indigo-600 px-2.5 py-2 text-[10px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                      ✉️ Envío al notario
-                    </button>
-                  )}
+                  <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                    {modoActividad && !ocultarPanelEnvioNotario && !panelDocumentosVisible && (
+                      <button type="button" onClick={() => setPanelDocumentosVisible(true)} className="rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[10px] font-extrabold text-slate-700 hover:bg-slate-50" title="Mostrar carpeta digital desde la izquierda">
+                        › Carpeta digital
+                      </button>
+                    )}
+                    {actividadId === "documentacion-previa" && (
+                      <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onAbrirEnvioNotario?.(); }} className="shrink-0 rounded-lg bg-indigo-600 px-2.5 py-2 text-[10px] font-extrabold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        ✉️ Envío al notario
+                      </button>
+                    )}
+                  </div>
                 </header>
                 <div className="min-h-0 flex-1 overflow-y-auto p-3">
                   {actividadId === "documentacion-previa" ? (
