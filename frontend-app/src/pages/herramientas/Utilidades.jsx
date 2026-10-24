@@ -46,13 +46,14 @@ export default function Utilidades() {
         <Card icon="🧾" titulo="Verifacti" descripcion="Acceso al futuro panel de control de Verifacti para consultar la integración y el estado de los registros de facturación." link="/herramientas/utilidades/verifacti" enConstruccion />
       </Grupo>
 
-      <Grupo titulo="Control económico" descripcion="Seguimiento de los PPAD pendientes de compensar y de los ya compensados.">
+      <Grupo titulo="Control económico" descripcion="Seguimiento de PPAD, complementos de saldo y control económico de apoderados.">
+        <Card icon="💶" titulo="Complementos de saldo" descripcion="Consultar solicitudes de complemento de saldo, controlar su estado, revisar importes y descargar el listado a Excel." link="/herramientas/utilidades/complementos-saldo" />
+
         <Card icon="🧾" titulo="Control Apoderados" descripcion="Gestiona colaboradores, revisa las relaciones mensuales de firmas reales y valida las facturas recibidas." link="/herramientas/utilidades/control-apoderados" destacado />
         <Card icon="💶" titulo="PPAD" descripcion="Consulta importes pendientes y compensados, revisa cada expediente y descarga los listados a Excel." link="/herramientas/utilidades/ppad" destacado />
       </Grupo>
 
       <Grupo titulo="Gestión de expedientes" descripcion="Acciones manuales y controladas sobre la asignación y el seguimiento de los expedientes.">
-        <Card icon="💶" titulo="Complementos de saldo" descripcion="Consultar solicitudes de complemento de saldo, controlar su estado, revisar importes y descargar el listado a Excel." link="/herramientas/utilidades/complementos-saldo" />
         <Card icon="🔁" titulo="Cambiar gestor de expediente" descripcion="Busca un expediente por su número y reasígnalo manualmente a otro gestor, dejando constancia del cambio." link="/herramientas/utilidades/cambiar-gestor" />
       </Grupo>
 
