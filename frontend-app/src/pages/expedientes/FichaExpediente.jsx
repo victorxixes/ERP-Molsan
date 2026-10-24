@@ -4177,46 +4177,43 @@ const cuantiaFincasParaEnvio =
           >
 
             <Seccion
-              titulo="Titulares"
-              subtitulo="Titulares del expediente"
+              titulo="Titulares y solicitantes"
+              subtitulo="Datos independientes de titulares y solicitantes del expediente"
               icono="titular"
-              className="h-full xl:col-span-2"
+              className="h-full xl:col-span-4"
               compacto
               colapsable
               colapsadaInicial
             >
-              <div className="grid grid-cols-2 gap-2">
-                <Dato
-                  campo="Nombre titular"
-                  valor={expediente.nombre_titular}
-                  destaque
-                />
-                <Dato
-                  campo="NIF titular"
-                  valor={expediente.nif_titular}
-                />
-              </div>
-            </Seccion>
-
-            <Seccion
-              titulo="Solicitantes"
-              subtitulo="Solicitantes del expediente"
-              icono="solicitante"
-              className="h-full xl:col-span-2"
-              compacto
-              colapsable
-              colapsadaInicial
-            >
-              <div className="grid grid-cols-2 gap-2">
-                <Dato
-                  campo="Nombre solicitante"
-                  valor={expediente.nombre_solicitante}
-                  destaque
-                />
-                <Dato
-                  campo="NIF solicitante"
-                  valor={expediente.nif_solicitante}
-                />
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 p-2">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Titulares</p>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <Dato
+                      campo="Nombre titular"
+                      valor={expediente.nombre_titular}
+                      destaque
+                    />
+                    <Dato
+                      campo="NIF titular"
+                      valor={expediente.nif_titular}
+                    />
+                  </div>
+                </div>
+                <div className="min-w-0 rounded-lg border border-slate-100 bg-slate-50/70 p-2">
+                  <p className="mb-2 text-[10px] font-extrabold uppercase tracking-wide text-slate-500">Solicitantes</p>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <Dato
+                      campo="Nombre solicitante"
+                      valor={expediente.nombre_solicitante}
+                      destaque
+                    />
+                    <Dato
+                      campo="NIF solicitante"
+                      valor={expediente.nif_solicitante}
+                    />
+                  </div>
+                </div>
               </div>
             </Seccion>
 
@@ -4224,7 +4221,7 @@ const cuantiaFincasParaEnvio =
               titulo="Notario"
               subtitulo="Información del notario asociado"
               icono="notario"
-              className="h-full xl:col-span-3"
+              className="h-full xl:col-span-4"
               compacto
               colapsable
               colapsadaInicial
@@ -4254,7 +4251,7 @@ const cuantiaFincasParaEnvio =
               titulo="Información crediticia"
               subtitulo="Resumen económico y contractual"
               icono="economico"
-              className="h-full xl:col-span-5"
+              className="h-full xl:col-span-4"
               compacto
               colapsable
               colapsadaInicial
