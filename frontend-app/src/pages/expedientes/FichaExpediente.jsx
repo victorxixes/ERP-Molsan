@@ -5735,10 +5735,12 @@ const cuantiaFincasParaEnvio =
                         {item.compensado ? (
                           <span className="mr-auto rounded-full border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold text-emerald-800">✓ COMPENSADO</span>
                         ) : (
-                          <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad || !String(expediente?.fecha_firma || "").slice(0, 10)}>
-                            {guardandoPpad ? "Registrando…" : "✓ Compensar"}
-                          </Boton>
-                          {!String(expediente?.fecha_firma || "").slice(0, 10) && <span className="text-[10px] text-slate-500">Disponible tras informar la fecha de firma.</span>}
+                          <>
+                            <Boton tipo="primary" onClick={() => compensarPpad(item)} disabled={guardandoPpad || !String(expediente?.fecha_firma || "").slice(0, 10)}>
+                              {guardandoPpad ? "Registrando…" : "✓ Compensar"}
+                            </Boton>
+                            {!String(expediente?.fecha_firma || "").slice(0, 10) && <span className="text-[10px] text-slate-500">Disponible tras informar la fecha de firma.</span>}
+                          </>
                         )}
                         {!item.compensado && <Boton tipo="secondary" onClick={() => editarPpad(item)}>Editar</Boton>}
                         {(!item.compensado || esAdministradorSesion) && (
