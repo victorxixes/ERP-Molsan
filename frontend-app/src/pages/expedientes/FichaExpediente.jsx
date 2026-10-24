@@ -2761,7 +2761,15 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       }));
     }
 
+    // Una vez guardados los datos del envío, solicitar el avance de actividad.
+    // El backend valida los documentos obligatorios antes de cambiarla.
+    const transicion = await axios.post(
+      `/expedientes/${encodeURIComponent(expediente.id_expediente)}/avanzar-actividad`
+    );
     await cargarExpediente();
+    setActividadSeleccionada(resolverActividadActual(transicion?.data || expediente));
+    setActividadDraft((actual) => ({ ...actual, ...(transicion?.data || {}) }));
+    setMensajeActividad("Envío a notario guardado y actividad actualizada. La transmisión a ABSIS queda pendiente de la API.");
     setMostrarEnviarNotario(false);
   }
 
@@ -7768,9 +7776,8 @@ const cuantiaFincasParaEnvio =
               false
             )
           }
-          onGuardar={
-            guardarEnviarANotario
-          }
+          onGuardar={guardarEnviarANotario}
+          inline
         />
       )}
 
