@@ -51,6 +51,9 @@ class ExpedienteAccion(Base):
         index=True,
     )
 
+    # Usuario que registró la acción en el expediente.
+    usuario_creador = Column(String(200), nullable=True)
+
     estado = Column(
         String(50),
         nullable=False,
