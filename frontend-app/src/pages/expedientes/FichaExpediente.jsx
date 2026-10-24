@@ -12,6 +12,16 @@ import "./FichaExpedientePremium.css";
 
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
+function normalizarMunicipio(valor) {
+  return String(valor ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLocaleLowerCase("es");
+}
+
+
 import {
   listarDefectosExpediente,
   listarSubtiposDefecto,
@@ -238,14 +248,6 @@ const ACTIVIDADES_EXPEDIENTES = [
   },
 ];
 
-
-// ============================================================
-// CATÁLOGOS — FINCAS Y REGISTROS
-// ============================================================
-
-const PROVINCIAS_FINCA = [
-"CORUÑA (A)","ALAVA","ALBACETE","ALICANTE/ALACANT","ALMERIA","ASTURIAS","AVILA","BADAJOZ","BALEARS (ILLES)","BARCELONA","BURGOS","CACERES","CADIZ","CANTABRIA","CASTELLON/CASTELLO","CEUTA","CIUDAD REAL","CORDOBA","CUENCA","GIRONA","GRANADA","GUADALAJARA","GUIPUZCOA","HUELVA","HUESCA","JAEN","RIOJA (LA)","PALMAS (LAS)","LEON","LLEIDA","LUGO","MADRID","MALAGA","MELILLA","MURCIA","NAVARRA","OURENSE","PALENCIA","PONTEVEDRA","SALAMANCA","SANTA CRUZ DE TENERIFE","SEGOVIA","SEVILLA","SORIA","TARRAGONA","TERUEL","TOLEDO","VALENCIA/VALENCIA","VALLADOLID","VIZCAYA","ZAMORA","ZARAGOZA"
-];
 
 const ENTIDADES_ORIGINALES_FINCA = [
 "BANCA CÍVICA","Banca Jover, S.A.","BANCAJA","BANCO DE EUROPA","BANCO DE FOMENTO (Cesión de oficinas)","Banco de la Pequeña y Mediana Empresa, S.A.","BANCO DE LAS ISLAS CANARIAS","BANCO DE MURCIA","BANCO DE VALENCIA","BANCO GRANADA JEREZ","BANCO MARE NOSTRUM (BMN)","BANCO ZARAGOZANO","BANCOFAR","BANCOFAR (Cesión de créditos)","BANKIA","BANZANO HIPOTECARIO","BARCLAYS BANK SUCURSAL EN ESPAÑA","BFA","CAIXA D´ESTALVIS SAGRADA FAMILIA","Caixa Estalvis Laietana","CAIXA GIRONA","CAIXA LAIETANA","CAIXA PENEDÈS","CAIXABANK","CAIXALEASING Y FACTORING","Caja Adherida de Sant Joan de les Abadesses","Caja Adherida del Círculo Obrero de Banyoles","CAJA ÁVILA","Caja de Ahorros de La Rioja","Caja de Ahorros de La Seo de Urgell","Caja de Ahorros de Palamós","Caja de Ahorros de Valencia, Castellón y Alicante","Caja de Ahorros de Villarreal","CAJA DE AHORROS MUNICIPAL DE BURGOS","Caja de Ahorros Provincial de Ciudad Real","CAJA DE AHORROS PROVINCIAL DE GUADALAJARA","CAJA DE AHORROS PROVINCIAL SAN FERNANDO DE SEVILLA Y JEREZ","Caja de Ahorros y Monte de Piedad de Alcalá de Henares","Caja de Ahorros y Monte de Piedad de Alcira","Caja de Ahorros y Monte de Piedad de Ampurdán","Caja de Ahorros y Monte de Piedad de Ávila","CAJA DE AHORROS Y MONTE DE PIEDAD DE BARCELONA","Caja de Ahorros y Monte de Piedad de Ceuta","Caja de Ahorros y Monte de Piedad de Játiva","CAJA DE AHORROS Y MONTE DE PIEDAD DE LÉRIDA","CAJA DE AHORROS Y MONTE DE PIEDAD DE NAVARRA","Caja de Ahorros y Monte de Piedad de Segorbe","Caja de Ahorros y Monte de Piedad de Segovia","CAJA DE AHORROS Y MONTE DE PIEDAD MUNICIPAL DE PAMPLONA","CAJA DE AHORROS Y PENSIONES DE BARCELONA","Caja de Ahorros y Préstamos de Carlet","Caja de Ahorros y Socorros y Monte de Piedad de Alberique","Caja de Ahorros y Socorros y Monte de Piedad de Gandía","Caja de Crédito de Granollers","Caja de Crédito Industrial Cooperativo, Sociedad Cooperativa de Crédito Limitada","Caja de Crédito Mediterránea, Cooperativa de Crédito","Caja de Inversión, Sociedad Cooperativa de Crédito Limitada","CAJA DE PENSIONES PARA LA VEJEZ Y DE AHORROS ¿CATALUÑA y BALEARES?","Caja de Previsión Social del Reino de Valencia","CAJA GENERAL DE AHORROS DE CANARIAS","CAJA GRANADA","CAJA INSULAR CANARIAS","CAJA MADRID","CAJA MURCIA","CAJA RIOJA","Caja Rural de Cantabria, Sdad. Coop. Cto. Ltda.","CAJA RURAL DE TALAVERA","Caja Rural Provincial de Barcelona, Sdad. Coop. Catalana Cto. Ltda.","Caja Rural Provincial de Gerona, Sdad. Coop. Cto. Ltda.","Caja Rural Provincial de Madrid, Sdad. Coop. Cto. Ltda.","Caja Rural Provincial de Patencia, Sdad. Coop. Cto. Ltda.","Caja Rural Provincial, Sdad. Coop. de Cto. Agrario Ltda. de Reus","CAJA SEGOVIA","CAJASOL","DEUTSCHE BANK (Cesión de operaciones financieras)","HIPOTECAIXA","ISBANC","MICROBANK DE LA CAIXA - CRITERIA CAIXACORP","MONTE DE PIEDAD Y CAJA DE AHORROS DE HUELVA Y SEVILLA","MONTE DE PIEDAD Y CAJA DE AHORROS SAN FERNANDO DE HUELVA, JEREZ Y SEVILLA","PROMINMO","SA NOSTRA","SERVIHABITAT","Sindicato de Banqueros de Barcelona, S.A."
@@ -1734,11 +1736,43 @@ APODERADOS EN: ALICANTE · BALEARES · CANARIAS · CASTELLON · CATALUÑA · GAL
     entidad_original: "",
   });
 
+  const [municipiosCatalogo, setMunicipiosCatalogo] = useState([]);
+  const [cargandoMunicipiosCatalogo, setCargandoMunicipiosCatalogo] = useState(false);
+  const [municipiosFincaAbierto, setMunicipiosFincaAbierto] = useState(false);
   const [fincasExpediente, setFincasExpediente] = useState([]);
   const [cargandoFincas, setCargandoFincas] = useState(false);
   const [errorFincas, setErrorFincas] = useState("");
   const [fincaEditandoId, setFincaEditandoId] = useState(null);
   const [guardandoFinca, setGuardandoFinca] = useState(false);
+
+  useEffect(() => {
+    let activo = true;
+    async function cargarMunicipiosCatalogo() {
+      setCargandoMunicipiosCatalogo(true);
+      try {
+        const respuesta = await axios.get("/municipios");
+        if (!activo) return;
+        setMunicipiosCatalogo(Array.isArray(respuesta?.data) ? respuesta.data : []);
+      } catch (error) {
+        console.error("No se ha podido cargar el catálogo de municipios para Fincas y Registros.");
+      } finally {
+        if (activo) setCargandoMunicipiosCatalogo(false);
+      }
+    }
+    cargarMunicipiosCatalogo();
+    return () => { activo = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!mostrarFincas || !String(fincaForm.poblacion || "").trim() || !municipiosCatalogo.length) return;
+    const coincidencia = municipiosCatalogo.find((item) =>
+      normalizarMunicipio(item.municipio) === normalizarMunicipio(fincaForm.poblacion)
+    );
+    if (!coincidencia) return;
+    if (fincaForm.poblacion !== coincidencia.municipio || fincaForm.provincia !== coincidencia.provincia) {
+      setFincaForm((actual) => ({ ...actual, poblacion: coincidencia.municipio, provincia: coincidencia.provincia }));
+    }
+  }, [mostrarFincas, municipiosCatalogo, fincaForm.poblacion, fincaForm.provincia]);
 
   const [mostrarFusion, setMostrarFusion] = useState(false);
   const [fincaFusion, setFincaFusion] = useState(null);
@@ -6709,28 +6743,69 @@ const cuantiaFincasParaEnvio =
             }
           />
 
-          <CampoSelect
-            label="Provincia"
-            value={fincaForm.provincia}
-            opciones={PROVINCIAS_FINCA}
-            onChange={(valor) =>
-              setFincaForm((actual) => ({
-                ...actual,
-                provincia: valor,
-              }))
-            }
-          />
+          <div className="relative mt-4 min-w-0">
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Población / municipio</label>
+            <input
+              type="text"
+              value={fincaForm.poblacion ?? ""}
+              autoComplete="off"
+              placeholder={cargandoMunicipiosCatalogo ? "Cargando municipios..." : "Escribe para buscar un municipio"}
+              onFocus={() => setMunicipiosFincaAbierto(true)}
+              onChange={(event) => {
+                const valor = event.target.value;
+                const coincidencia = municipiosCatalogo.find((item) => normalizarMunicipio(item.municipio) === normalizarMunicipio(valor));
+                setFincaForm((actual) => ({ ...actual, poblacion: valor, provincia: coincidencia ? coincidencia.provincia : "" }));
+                setMunicipiosFincaAbierto(true);
+              }}
+              onBlur={() => setTimeout(() => setMunicipiosFincaAbierto(false), 120)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded={municipiosFincaAbierto}
+              aria-label="Población o municipio de la finca"
+            />
+            {municipiosFincaAbierto && String(fincaForm.poblacion || "").trim() && (
+              <div role="listbox" className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl">
+                {municipiosCatalogo.filter((item) =>
+                  normalizarMunicipio(item.municipio).includes(normalizarMunicipio(fincaForm.poblacion)) ||
+                  normalizarMunicipio(item.provincia).includes(normalizarMunicipio(fincaForm.poblacion))
+                ).slice(0, 10).map((item) => (
+                  <button
+                    key={item.id ?? (item.municipio + "-" + item.provincia)}
+                    type="button"
+                    role="option"
+                    aria-selected={normalizarMunicipio(item.municipio) === normalizarMunicipio(fincaForm.poblacion)}
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => {
+                      setFincaForm((actual) => ({ ...actual, poblacion: item.municipio, provincia: item.provincia }));
+                      setMunicipiosFincaAbierto(false);
+                    }}
+                    className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-indigo-50"
+                  >
+                    <span className="font-medium text-slate-800">{item.municipio}</span>
+                    <span className="text-xs text-slate-500">{item.provincia}</span>
+                  </button>
+                ))}
+                {municipiosCatalogo.filter((item) =>
+                  normalizarMunicipio(item.municipio).includes(normalizarMunicipio(fincaForm.poblacion)) ||
+                  normalizarMunicipio(item.provincia).includes(normalizarMunicipio(fincaForm.poblacion))
+                ).length === 0 && <p className="px-3 py-2 text-xs text-slate-500">No se encuentra en el catálogo. Revisa Utilidades → Municipios.</p>}
+              </div>
+            )}
+            <p className="mt-1 text-[11px] text-slate-500">{cargandoMunicipiosCatalogo ? "Cargando catálogo de municipios…" : "Selecciona una población del catálogo para completar automáticamente la provincia."}</p>
+          </div>
 
-          <CampoFormulario
-            label="Población"
-            value={fincaForm.poblacion}
-            onChange={(valor) =>
-              setFincaForm((actual) => ({
-                ...actual,
-                poblacion: valor,
-              }))
-            }
-          />
+          <div className="mt-4 min-w-0">
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Provincia (automática)</label>
+            <input
+              type="text"
+              value={fincaForm.provincia ?? ""}
+              readOnly
+              aria-label="Provincia de la finca, completada automáticamente"
+              placeholder="Se completa al seleccionar la población"
+              className="w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600 outline-none"
+            />
+          </div>
 
           <CampoFormulario
             label="Registro (número - Nombre)"
