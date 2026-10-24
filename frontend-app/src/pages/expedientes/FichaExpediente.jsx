@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { Link, useParams } from "react-router-dom";
 import axios from "../../api/axios";
@@ -1125,7 +1126,7 @@ function Modal({
     return null;
   }
 
-  return (
+  return createPortal((
     <div
       className="
         fixed
@@ -1260,7 +1261,7 @@ function Modal({
         )}
       </div>
     </div>
-  );
+  ), document.body);
 }
 
 
