@@ -782,7 +782,7 @@ export default function EnviarANotarioModal({
 
             {/* CUATRO BLOQUES PRINCIPALES EN UNA SOLA FILA EN ESCRITORIO */}
             <div className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-2 2xl:grid-cols-4">
-              <div className="min-w-0"><section className="rounded-xl border border-slate-200 bg-white p-3">
+              <div className="min-w-0"><section className="h-full rounded-xl border border-slate-200 bg-white p-3">
                 <TituloSeccion
                   titulo="1. Envío al notario"
                   descripcion="Indica la fecha en que se envía el expediente al notario. Los datos de solicitud PNC y planificación de firma se gestionan desde ApoderaGest."
@@ -1056,7 +1056,7 @@ export default function EnviarANotarioModal({
                   </div>
                 )}
               </section></div>
-              <div className="min-w-0"><section className="h-full rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3">
+              <div className="min-w-0"><section className="h-full rounded-xl border border-[var(--erp-primary)]/20 bg-white p-3">
                 <div className="mb-5 flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--erp-primary-soft)] text-lg">
                     🧾
