@@ -103,14 +103,58 @@ def _relacion_firmas(db, empleado_id, periodo):
         "protocolo": getattr(e, "protocolo", None),
         "tipo_firma": getattr(e, "tipo_firma", None),
         "notario": getattr(e, "nombre_notario", None) or getattr(e, "notario", None),
+        "notario_id": getattr(e, "notario_id", None),
+        "tipo_operacion": getattr(e, "tipo_operacion", None),
+        "id_provision": getattr(e, "id_provision", None),
+        "tipo_provision": getattr(e, "tipo_provision", None),
     } for e in filas]
+
+def _clave_protocolo(expediente):
+    """Un protocolo se liquida una sola vez por colaborador, notario y número."""
+    protocolo = str(expediente.get("protocolo") or "").strip()
+    if not protocolo:
+        # Si falta número de protocolo, no agrupar expedientes distintos por accidente.
+        return ("expediente", expediente.get("expediente_id"))
+    notario = str(expediente.get("notario_id") or expediente.get("notario") or "").strip().casefold()
+    return ("protocolo", notario, protocolo.casefold())
+
+
+def _resumen_liquidacion(empleado, expedientes):
+    protocolos = {}
+    for expediente in expedientes or []:
+        clave = _clave_protocolo(expediente)
+        grupo = protocolos.setdefault(clave, {"expedientes": [], "con_provision": False, "sin_provision": False})
+        grupo["expedientes"].append(expediente)
+        operacion = str(expediente.get("tipo_operacion") or "").casefold().replace("ó", "o")
+        provision = str(expediente.get("tipo_provision") or "").casefold()
+        tiene_provision = bool(str(expediente.get("id_provision") or "").strip()) or "con provision" in operacion or "con provision" in provision
+        es_sin_provision = "sin provision" in operacion or "sin provision" in provision
+        grupo["con_provision"] = grupo["con_provision"] or (tiene_provision and not es_sin_provision)
+        grupo["sin_provision"] = grupo["sin_provision"] or es_sin_provision
+    protocolos_unicos = list(protocolos.values())
+    valor = float(getattr(empleado, "honorarios_valor", 0) or 0)
+    honorarios = round(len(protocolos_unicos) * valor, 2)
+    iva = round(honorarios * 0.21, 2)
+    return {
+        "protocolos_firmados": len(protocolos_unicos),
+        "cancelaciones_sin_provision": sum(1 for p in protocolos_unicos if p["sin_provision"]),
+        "cancelaciones_con_provision": sum(1 for p in protocolos_unicos if p["con_provision"] and not p["sin_provision"]),
+        "honorarios_unitarios": round(valor, 2),
+        "honorarios": honorarios,
+        "base_neta": honorarios,
+        "iva": iva,
+        "total": round(honorarios + iva, 2),
+    }
+
 
 def _dict(item, db, incluir_datos_factura=False):
     empleado = db.query(Empleado).filter(Empleado.id == item.empleado_id).first()
+    expedientes = item.expedientes_json or []
+    resumen = _resumen_liquidacion(empleado, expedientes)
     result = {
         "id": item.id, "empleado_id": item.empleado_id,
         "colaborador": _nombre(empleado) if empleado else str(item.empleado_id),
-        "periodo": item.periodo, "expedientes": item.expedientes_json or [],
+        "periodo": item.periodo, "expedientes": expedientes, **resumen,
         "estado_relacion": item.estado_relacion, "validado_en": item.validado_en.isoformat() if item.validado_en else None,
         "validado_por_id": item.validado_por_id, "validado_version": item.validado_version, "discrepancia": item.discrepancia,
         "historial_validaciones": item.historial_validaciones or [], "estado_revision_relacion": item.estado_revision_relacion,
