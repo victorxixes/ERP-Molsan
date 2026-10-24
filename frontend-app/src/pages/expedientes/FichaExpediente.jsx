@@ -1363,6 +1363,8 @@ export default function FichaExpediente() {
 
   const [pestanaActividad, setPestanaActividad] = useState("documentos");
   const [mostrarControlCalidad, setMostrarControlCalidad] = useState(false);
+  const [mostrarDatosEnvioNotario, setMostrarDatosEnvioNotario] = useState(true);
+  const [mostrarResumenEconomico, setMostrarResumenEconomico] = useState(true);
   const [mostrarModalDatosActividad, setMostrarModalDatosActividad] = useState(false);
   const [actividadDraft, setActividadDraft] = useState({});
   const [guardandoActividad, setGuardandoActividad] = useState(false);
@@ -5631,7 +5633,7 @@ const cuantiaFincasParaEnvio =
         </div>
 
 
-      <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
+      <div className={`mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2 ${mostrarControlCalidad ? "hidden" : ""}`}>
       <div className="flex min-w-0 flex-wrap items-center gap-3">
 
         {cargandoAcciones ? <span className="text-[10px] text-slate-500">Cargando última acción…</span> : accionesExpediente.length > 0 && (() => {
@@ -5771,8 +5773,8 @@ const cuantiaFincasParaEnvio =
           )}
 
       </div>
-      <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
-        {/* FINCAS Y REGISTROS — SOLO LOS TRES DATOS SOLICITADOS */}
+      <div className={`mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2 ${mostrarControlCalidad ? "hidden" : ""}`}>
+        {/* FINCAS Y REGISTROS — SOLO LOS TRES DATOS SOLICITADOS */
 
           <Seccion
             id="ficha-fincas"
@@ -5863,13 +5865,14 @@ const cuantiaFincasParaEnvio =
       ====================================================== */}
 
       <div
-        className="
+        className={`
           grid
            w-full
           grid-cols-1
           gap-3
           xl:grid-cols-12
-        "
+          ${mostrarControlCalidad ? "hidden" : ""}
+        `}
       >
 
         {/* ===================================================
@@ -5904,8 +5907,9 @@ const cuantiaFincasParaEnvio =
                 {(expediente.fecha_envio_notario || expediente.fecha_envio) && (
                   <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">Datos guardados</span>
                 )}
+                <button type="button" onClick={() => setMostrarDatosEnvioNotario((actual) => !actual)} aria-expanded={mostrarDatosEnvioNotario} className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">{mostrarDatosEnvioNotario ? "⌃ Ocultar" : "⌄ Expandir"}</button>
               </div>
-              <div className="space-y-4 p-4 sm:p-5">
+              <div className={`space-y-4 p-4 sm:p-5 ${mostrarDatosEnvioNotario ? "" : "hidden"}`}>
                 {(expediente.fecha_envio_notario || expediente.fecha_envio) && <>
                 <div className="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-2">
                 <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
@@ -6006,6 +6010,7 @@ const cuantiaFincasParaEnvio =
                               Importe inicial tomado de Información crediticia. El saldo solo descuenta los gastos cuyo pago está confirmado.
                             </p>
                           </div>
+                          <button type="button" onClick={() => setMostrarResumenEconomico((actual) => !actual)} aria-expanded={mostrarResumenEconomico} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">{mostrarResumenEconomico ? "⌃ Ocultar resumen" : "⌄ Expandir resumen"}</button>
                           <button
                             type="button"
                             onClick={() => {
@@ -6034,7 +6039,7 @@ const cuantiaFincasParaEnvio =
                             ＋ Solicitar complemento de saldo
                           </button>
                         </div>
-
+                        <div className={mostrarResumenEconomico ? "" : "hidden"}>
 
                         {mensajeComplementoSaldo && <div role="status" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">{mensajeComplementoSaldo}</div>}
                         {mostrarModalComplementoSaldo && (
@@ -6234,6 +6239,7 @@ const cuantiaFincasParaEnvio =
                             </ul>
                           )}
                           {gastosPendientesResumen.length > 0 && <p className="mt-3 rounded-lg bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">Hay {gastosPendientesResumen.length} gasto(s) pendiente(s) de pago que todavía no descuentan del saldo real.</p>}
+                        </div>
                         </div>
                       </section>
                     )}
