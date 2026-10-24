@@ -17,6 +17,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
   const [historial, setHistorial] = useState([]);
   const [colaboradores, setColaboradores] = useState([]);
   const [archivo, setArchivo] = useState(null);
+  const [justificanteArchivo, setJustificanteArchivo] = useState(null);
   const [discrepancia, setDiscrepancia] = useState("");
   const [observaciones, setObservaciones] = useState({});
   const [cargando, setCargando] = useState(false);
@@ -72,6 +73,17 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     finally { setCargando(false); }
   };
 
+  const subirJustificante = async () => {
+    if (!item || !justificanteArchivo) return;
+    setCargando(true); setError("");
+    try {
+      const data = new FormData(); data.append("archivo", justificanteArchivo);
+      await axios.post(`/apoderagest/liquidaciones/mi/${item.id}/justificante`, data);
+      setJustificanteArchivo(null); setMensaje("Justificante adjuntado a la liquidación mensual."); await cargar();
+    } catch (e) { setError(e?.response?.data?.detail || "No se ha podido subir el justificante."); }
+    finally { setCargando(false); }
+  };
+
   const marcar = async (col, valor) => {
     try {
       await axios.patch(`/apoderagest/liquidaciones/admin/colaboradores/${col.id}`, null, { params: { es_colaborador: valor } });
@@ -97,6 +109,14 @@ export default function ControlApoderados({ modo = "colaborador" }) {
       setMensaje("Revisión de la relación mensual guardada.");
       await cargar();
     } catch (e) { setError(e?.response?.data?.detail || "No se ha podido guardar la revisión de la relación."); }
+  };
+
+  const descargarJustificante = async (x) => {
+    try {
+      const res = await axios.get(`/apoderagest/liquidaciones/admin/${x.id}/justificante`, { responseType: "blob" });
+      const url = URL.createObjectURL(res.data); const a = document.createElement("a");
+      a.href = url; a.download = x.justificante_nombre || "justificante"; a.click(); URL.revokeObjectURL(url);
+    } catch (e) { setError(e?.response?.data?.detail || "No se ha podido descargar el justificante."); }
   };
 
   const descargar = async (x) => {
@@ -156,7 +176,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
             <td className="p-3 font-semibold">{x.cancelaciones_sin_provision ?? 0}</td><td className="p-3 font-semibold">{x.cancelaciones_con_provision ?? 0}</td>
             <td className="p-3">{euros(x.honorarios)}</td><td className="p-3">{euros(x.base_neta ?? x.honorarios)}</td><td className="p-3 font-bold">{euros(x.total ?? (Number(x.base_neta || 0) + Number(x.iva || 0)))}</td>
             <td className="p-3">{x.tiene_factura ? <button type="button" onClick={() => descargar(x)} className="rounded-lg border border-indigo-200 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver factura</button> : <span className="text-slate-400">Pendiente</span>}</td>
-            <td className="p-3">{x.justificante_nombre ? <span className="font-semibold text-emerald-700">{x.justificante_nombre}</span> : <span className="text-slate-400">No aportado</span>}</td>
+            <td className="p-3">{x.justificante_nombre ? <button type="button" onClick={() => descargarJustificante(x)} className="rounded-lg border border-emerald-200 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50">Ver justificante</button> : <span className="text-slate-400">No aportado</span>}</td>
             <td className="p-3"><div className="flex flex-col gap-2">{x.tiene_factura && <button type="button" onClick={() => revisar(x, "aceptada")} className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white">Validar factura</button>}<button type="button" onClick={() => revisarRelacion(x, "aceptada")} disabled={!x.validado_en} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold disabled:opacity-40">Validar relación</button>{x.tiene_factura && <button type="button" onClick={() => revisar(x, "rechazada")} className="rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-700">Rechazar factura</button>}</div></td>
             <td className="p-3"><button type="button" onClick={() => setFirmasAbiertas(x)} className="rounded-lg border border-indigo-200 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver firmas ({x.expedientes?.length || 0})</button></td>
           </tr>)}</tbody>
@@ -180,6 +200,11 @@ export default function ControlApoderados({ modo = "colaborador" }) {
         {item.factura_nombre && <p className="mt-3 text-sm">Archivo presentado: <strong>{item.factura_nombre}</strong> · {estado(item.estado_factura)}</p>}
         {item.estado_relacion === "validada" ? <div className="mt-4 flex flex-wrap items-center gap-3"><input type="file" accept=".pdf,.xml,.jpg,.jpeg,.png" onChange={(e) => setArchivo(e.target.files?.[0] || null)} className="max-w-full text-sm" /><button onClick={subir} disabled={!archivo || cargando} className="rounded-xl bg-indigo-700 px-5 py-3 text-sm font-bold text-white disabled:opacity-50">{item.factura_nombre ? "Sustituir factura" : "Enviar factura"}</button></div> : <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">Primero valida la relación de expedientes.</p>}
         {item.factura_observaciones && <p className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Observaciones de Molsan: {item.factura_observaciones}</p>}
+        <div className="mt-5 rounded-xl border border-slate-200 p-4">
+          <h3 className="font-semibold text-slate-800">Justificante</h3>
+          <p className="mt-1 text-sm text-slate-500">{item.justificante_nombre ? `Adjuntado: ${item.justificante_nombre}` : "Adjunta el justificante correspondiente a esta liquidación."} Formatos PDF, XML, JPG o PNG; máximo 10 MB.</p>
+          <div className="mt-3 flex flex-wrap items-center gap-3"><input type="file" accept=".pdf,.xml,.jpg,.jpeg,.png" onChange={(e) => setJustificanteArchivo(e.target.files?.[0] || null)} className="max-w-full text-sm" /><button type="button" onClick={subirJustificante} disabled={!justificanteArchivo || cargando} className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-bold disabled:opacity-50">{item.justificante_nombre ? "Sustituir justificante" : "Subir justificante"}</button></div>
+        </div>
       </section>
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-bold text-slate-800">Histórico de liquidaciones</h2>
