@@ -15,7 +15,7 @@ const BLOQUES = [
       { etiqueta: "Hoja de encargo firmada", categoria: "Hoja de Encargo firmada" },
       { etiqueta: "Justificante de cancelación", categoria: "Justificante de cancelación" },
       { etiqueta: "Nota simple registral", categoria: "Nota simple registral" },
-      { etiqueta: "Borradores de escritura", categoria: "Escrituras/borradores" },
+      { etiqueta: "Borradores escrituras y otros", categoria: "Escrituras/borradores" },
     ],
   },
   {
