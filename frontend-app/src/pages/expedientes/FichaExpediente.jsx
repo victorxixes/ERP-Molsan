@@ -7462,7 +7462,7 @@ const cuantiaFincasParaEnvio =
                     {observacion.visibilidad === "Gestor" && (
                       <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                         <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${observacion.estado_validacion === "Validada" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-800"}`}>
-                          {observacion.estado_validacion === "Validada" ? `✓ Validada · ${observacion.validado_en ? new Date(observacion.validado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : ""}` : "⏳ Pendiente de validación"}
+                          {observacion.estado_validacion === "Validada" ? `✓ Validada por ${observacion.validado_por || "empleado destinatario"} · ${observacion.validado_en ? new Date(observacion.validado_en).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" }) : ""}` : "⏳ Pendiente de validación"}
                         </span>
                         {Number(empleadoSesion?.id) === Number(observacion.empleado_destinatario_id) && observacion.estado_validacion !== "Validada" && (
                           <button type="button" onClick={() => validarObservacionInterna(observacion)} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100">✓ Validar observación</button>
