@@ -15,7 +15,8 @@ const BLOQUES = [
       { etiqueta: "Hoja de encargo firmada", categoria: "Hoja de Encargo firmada" },
       { etiqueta: "Justificante de cancelación", categoria: "Justificante de cancelación" },
       { etiqueta: "Nota simple registral", categoria: "Nota simple registral" },
-      { etiqueta: "Borradores escrituras y otros", categoria: "Escrituras/borradores" },
+      { etiqueta: "Borradores escrituras", categoria: "Borradores escrituras" },
+      { etiqueta: "Otros", categoria: "Otros" },
     ],
   },
   {
@@ -25,6 +26,15 @@ const BLOQUES = [
     categorias: [
       { etiqueta: "Presentación Registro", categoria: "Presentación Registro" },
       { etiqueta: "Copia simple", categoria: "Copia simple" },
+    ],
+  },
+  {
+    id: "gestion-economica",
+    titulo: "Gestión económica",
+    descripcion: "Repositorios de documentación económica y complementaria del expediente.",
+    categorias: [
+      { etiqueta: "Borradores escrituras", categoria: "Borradores escrituras" },
+      { etiqueta: "Otros", categoria: "Otros" },
     ],
   },
   {
@@ -155,6 +165,7 @@ export default function CarpetaDigitalModal({
       "Justificante de cancelación": "justificante_cancelacion",
       "Nota simple registral": "nota_simple_registral",
       "Escrituras/borradores": "borradores_escritura",
+      "Borradores escrituras": "borradores_escritura",
       "Presentación Registro": "presentacion_registro_documentos",
       "Copia simple": "copia_simple_documentos",
       "AJD/ITP": "ajd_itp_documentos",
@@ -183,7 +194,13 @@ export default function CarpetaDigitalModal({
     );
     return [{
       ...bloqueAjustado,
-      categorias: categoriasUnicas.filter((item) => configRepositorios.includes(clavePorCategoria[item.categoria]) && !(esCancelacionSinProvision && bloque.id === "sede-notarial" && item.categoria === "Presentación Registro")),
+      categorias: categoriasUnicas.filter((item) => {
+        const repositorioClave = clavePorCategoria[item.categoria];
+        const repositorioNuevoRequerido = ["documentacion-previa", "gestion-economica"].includes(bloque.id)
+          && ["Borradores escrituras", "Otros"].includes(item.categoria);
+        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido)
+          && !(esCancelacionSinProvision && bloque.id === "sede-notarial" && item.categoria === "Presentación Registro");
+      }),
     }];
   }, [modoActividad, bloqueActividad, configRepositorios, esCancelacionSinProvision]);
 
@@ -318,7 +335,17 @@ export default function CarpetaDigitalModal({
   }
 
   const porCategoria = useCallback(
-    (categoria) => documentos.filter((doc) => doc.categoria === categoria),
+    (categoria) => documentos.filter((doc) => {
+      if (doc.categoria === categoria) return true;
+      // Conserva visibles los archivos subidos con los nombres del repositorio anterior.
+      if (categoria === "Borradores escrituras") {
+        return ["Escrituras/borradores", "Borradores de escrituras", "Borradores de escritura"].includes(doc.categoria);
+      }
+      if (categoria === "Otros") {
+        return doc.categoria === "Borradores escrituras y otros";
+      }
+      return false;
+    }),
     [documentos]
   );
   const bytes = (n) => {

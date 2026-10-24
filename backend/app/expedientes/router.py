@@ -102,7 +102,7 @@ REPOSITORIOS_VISIBILIDAD = [
     {"key": "hoja_encargo_firmada", "label": "Hoja de encargo firmada", "categoria": "Hoja de Encargo firmada"},
     {"key": "justificante_cancelacion", "label": "Justificante de cancelación", "categoria": "Justificante de cancelación"},
     {"key": "nota_simple_registral", "label": "Nota simple registral", "categoria": "Nota simple registral"},
-    {"key": "borradores_escritura", "label": "Borradores de escritura", "categoria": "Escrituras/borradores"},
+    {"key": "borradores_escritura", "label": "Borradores escrituras", "categoria": "Borradores escrituras"},
     {"key": "presentacion_registro_documentos", "label": "Presentación Registro", "categoria": "Presentación Registro"},
     {"key": "copia_simple_documentos", "label": "Copia simple", "categoria": "Copia simple"},
     {"key": "ajd_itp_documentos", "label": "AJD / ITP", "categoria": "AJD/ITP"},

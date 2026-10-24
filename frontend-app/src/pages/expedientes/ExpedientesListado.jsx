@@ -606,7 +606,7 @@ const REPOSITORIOS_CARPETA_DIGITAL = [
   { key: "hoja_encargo_firmada", label: "Hoja de encargo firmada" },
   { key: "justificante_cancelacion", label: "Justificante de cancelación" },
   { key: "nota_simple_registral", label: "Nota simple registral" },
-  { key: "borradores_escritura", label: "Borradores de escritura" },
+  { key: "borradores_escritura", label: "Borradores escrituras" },
   { key: "presentacion_registro_documentos", label: "Presentación Registro" },
   { key: "copia_simple_documentos", label: "Copia simple" },
   { key: "ajd_itp_documentos", label: "AJD / ITP" },
@@ -644,7 +644,7 @@ const CATEGORIAS_POR_REPOSITORIO = {
   hoja_encargo_firmada: ["Hoja de Encargo firmada", "Hoja de encargo firmada"],
   justificante_cancelacion: ["Justificante de cancelación"],
   nota_simple_registral: ["Nota simple registral"],
-  borradores_escritura: ["Escrituras/borradores", "Borradores de escrituras", "Borradores de escritura"],
+  borradores_escritura: ["Escrituras/borradores", "Borradores escrituras", "Borradores de escrituras", "Borradores de escritura"],
   presentacion_registro_documentos: ["Presentación Registro", "Presentacion Registro"],
   copia_simple_documentos: ["Copia simple"],
   ajd_itp_documentos: ["AJD/ITP", "AJD / ITP", "AJD ITP"],
@@ -663,7 +663,7 @@ const CATEGORIAS_POR_REPOSITORIO = {
   otros_documentos_economicos: ["Otros documentos económicos", "Otros documentos economicos"],
   otra_documentacion: ["Otra documentación", "Otra documentacion"],
   emails_oficina: ["Mails de la Oficina", "Mails de la oficina", "Emails de oficina"],
-  otros_documentos: ["Otros"],
+  otros_documentos: ["Otros", "Borradores escrituras y otros"],
 };
 
 function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir }) {
