@@ -25,6 +25,10 @@ ACTIVIDADES = (
         "nombre": "Sede notarial con protocolo",
     },
     {
+        "key": "gestion_economica",
+        "nombre": "Gestión económica",
+    },
+    {
         "key": "liquidacion_impuestos",
         "nombre": "Liquidación de impuestos",
     },
@@ -95,6 +99,9 @@ def _actividad_dashboard(
         "sede_notarial_con_protocolo",
     }:
         return "sede_notarial_con_protocolo"
+
+    if valor in {"gestion economica", "gestion_economica"}:
+        return "gestion_economica"
 
     if valor in {
         "liquidacion de impuestos",
