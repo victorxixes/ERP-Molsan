@@ -225,6 +225,12 @@ const ACTIVIDADES_EXPEDIENTES = [
   },
 
   {
+    key: "gestion-economica",
+    label: "Gestión económica",
+    icono: "💼",
+  },
+
+  {
     key: "liquidacion-impuestos",
     label: "Liquidación de impuestos",
     icono: "💶",

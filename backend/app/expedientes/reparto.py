@@ -10,6 +10,7 @@ ACTIVIDADES = {
     "documentacion-previa": "Documentación previa",
     "sede-notarial": "Sede notarial",
     "sede-notarial-protocolo": "Sede notarial con protocolo",
+    "gestion-economica": "Gestión económica",
     "liquidacion-impuestos": "Liquidación de impuestos",
     "tramitacion-inscripcion": "Tramitación inscripción",
     "defectos-registrales": "Defectos registrales",

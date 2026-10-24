@@ -785,6 +785,7 @@ ACTIVIDADES_REPARTO = [
     {"key": "documentacion-previa", "label": "Documentación previa"},
     {"key": "sede-notarial", "label": "Sede notarial"},
     {"key": "sede-notarial-protocolo", "label": "Sede notarial con protocolo"},
+    {"key": "gestion-economica", "label": "Gestión económica"},
     {"key": "liquidacion-impuestos", "label": "Liquidación de impuestos"},
     {"key": "tramitacion-inscripcion", "label": "Tramitación inscripción"},
     {"key": "defectos-registrales", "label": "Defectos registrales"},

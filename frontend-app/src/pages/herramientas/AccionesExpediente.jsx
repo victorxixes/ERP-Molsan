@@ -76,6 +76,7 @@ const ACTIVIDADES = [
   "Documentación previa",
   "Sede notarial sin protocolo",
   "Sede notarial con protocolo",
+  "Gestión económica",
   "Liquidación impuestos",
   "Tramitación inscripción",
   "Defectos Registrales",
