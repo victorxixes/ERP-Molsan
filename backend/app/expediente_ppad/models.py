@@ -54,6 +54,9 @@ class ExpedientePPAD(Base):
         onupdate=func.now(),
     )
 
+    # Usuario que registró originalmente el concepto, para auditoría.
+    usuario_creador = Column(String(200), nullable=True)
+
     # Estado de compensación y fecha en que se confirmó.
     compensado = Column(
         Boolean,
