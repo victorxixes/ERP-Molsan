@@ -10,6 +10,15 @@ import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModa
 import { useAuthStore } from "../../store/authStore";
 import "./FichaExpedientePremium.css";
 
+function normalizarMunicipio(valor) {
+  return String(valor ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLocaleLowerCase("es");
+}
+
 import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpediente, eliminarAccionExpediente } from "../../api/expedienteAcciones";
 
 import {
@@ -1734,11 +1743,43 @@ APODERADOS EN: ALICANTE · BALEARES · CANARIAS · CASTELLON · CATALUÑA · GAL
     entidad_original: "",
   });
 
+  const [municipiosCatalogo, setMunicipiosCatalogo] = useState([]);
+  const [cargandoMunicipiosCatalogo, setCargandoMunicipiosCatalogo] = useState(false);
+  const [municipiosFincaAbierto, setMunicipiosFincaAbierto] = useState(false);
   const [fincasExpediente, setFincasExpediente] = useState([]);
   const [cargandoFincas, setCargandoFincas] = useState(false);
   const [errorFincas, setErrorFincas] = useState("");
   const [fincaEditandoId, setFincaEditandoId] = useState(null);
   const [guardandoFinca, setGuardandoFinca] = useState(false);
+
+  useEffect(() => {
+    let activo = true;
+    async function cargarMunicipiosCatalogo() {
+      setCargandoMunicipiosCatalogo(true);
+      try {
+        const respuesta = await axios.get("/municipios");
+        if (!activo) return;
+        setMunicipiosCatalogo(Array.isArray(respuesta?.data) ? respuesta.data : []);
+      } catch (error) {
+        console.error("No se ha podido cargar el catálogo de municipios para Fincas y Registros.");
+      } finally {
+        if (activo) setCargandoMunicipiosCatalogo(false);
+      }
+    }
+    cargarMunicipiosCatalogo();
+    return () => { activo = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!mostrarFincas || !String(fincaForm.poblacion || "").trim() || !municipiosCatalogo.length) return;
+    const coincidencia = municipiosCatalogo.find((item) =>
+      normalizarMunicipio(item.municipio) === normalizarMunicipio(fincaForm.poblacion)
+    );
+    if (!coincidencia) return;
+    if (fincaForm.poblacion !== coincidencia.municipio || fincaForm.provincia !== coincidencia.provincia) {
+      setFincaForm((actual) => ({ ...actual, poblacion: coincidencia.municipio, provincia: coincidencia.provincia }));
+    }
+  }, [mostrarFincas, municipiosCatalogo, fincaForm.poblacion, fincaForm.provincia]);
 
   const [mostrarFusion, setMostrarFusion] = useState(false);
   const [fincaFusion, setFincaFusion] = useState(null);
@@ -6709,28 +6750,69 @@ const cuantiaFincasParaEnvio =
             }
           />
 
-          <CampoSelect
-            label="Provincia"
-            value={fincaForm.provincia}
-            opciones={PROVINCIAS_FINCA}
-            onChange={(valor) =>
-              setFincaForm((actual) => ({
-                ...actual,
-                provincia: valor,
-              }))
-            }
-          />
+          <div className="relative mt-4 min-w-0">
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Población / municipio</label>
+            <input
+              type="text"
+              value={fincaForm.poblacion ?? ""}
+              autoComplete="off"
+              placeholder={cargandoMunicipiosCatalogo ? "Cargando municipios..." : "Escribe para buscar un municipio"}
+              onFocus={() => setMunicipiosFincaAbierto(true)}
+              onChange={(event) => {
+                const valor = event.target.value;
+                const coincidencia = municipiosCatalogo.find((item) => normalizarMunicipio(item.municipio) === normalizarMunicipio(valor));
+                setFincaForm((actual) => ({ ...actual, poblacion: valor, provincia: coincidencia ? coincidencia.provincia : "" }));
+                setMunicipiosFincaAbierto(true);
+              }}
+              onBlur={() => setTimeout(() => setMunicipiosFincaAbierto(false), 120)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded={municipiosFincaAbierto}
+              aria-label="Población o municipio de la finca"
+            />
+            {municipiosFincaAbierto && String(fincaForm.poblacion || "").trim() && (
+              <div role="listbox" className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl">
+                {municipiosCatalogo.filter((item) =>
+                  normalizarMunicipio(item.municipio).includes(normalizarMunicipio(fincaForm.poblacion)) ||
+                  normalizarMunicipio(item.provincia).includes(normalizarMunicipio(fincaForm.poblacion))
+                ).slice(0, 10).map((item) => (
+                  <button
+                    key={item.id ?? (item.municipio + "-" + item.provincia)}
+                    type="button"
+                    role="option"
+                    aria-selected={normalizarMunicipio(item.municipio) === normalizarMunicipio(fincaForm.poblacion)}
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => {
+                      setFincaForm((actual) => ({ ...actual, poblacion: item.municipio, provincia: item.provincia }));
+                      setMunicipiosFincaAbierto(false);
+                    }}
+                    className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-indigo-50"
+                  >
+                    <span className="font-medium text-slate-800">{item.municipio}</span>
+                    <span className="text-xs text-slate-500">{item.provincia}</span>
+                  </button>
+                ))}
+                {municipiosCatalogo.filter((item) =>
+                  normalizarMunicipio(item.municipio).includes(normalizarMunicipio(fincaForm.poblacion)) ||
+                  normalizarMunicipio(item.provincia).includes(normalizarMunicipio(fincaForm.poblacion))
+                ).length === 0 && <p className="px-3 py-2 text-xs text-slate-500">No se encuentra en el catálogo. Revisa Utilidades → Municipios.</p>}
+              </div>
+            )}
+            <p className="mt-1 text-[11px] text-slate-500">{cargandoMunicipiosCatalogo ? "Cargando catálogo de municipios…" : "Selecciona una población del catálogo para completar automáticamente la provincia."}</p>
+          </div>
 
-          <CampoFormulario
-            label="Población"
-            value={fincaForm.poblacion}
-            onChange={(valor) =>
-              setFincaForm((actual) => ({
-                ...actual,
-                poblacion: valor,
-              }))
-            }
-          />
+          <div className="mt-4 min-w-0">
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Provincia (automática)</label>
+            <input
+              type="text"
+              value={fincaForm.provincia ?? ""}
+              readOnly
+              aria-label="Provincia de la finca, completada automáticamente"
+              placeholder="Se completa al seleccionar la población"
+              className="w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600 outline-none"
+            />
+          </div>
 
           <CampoFormulario
             label="Registro (número - Nombre)"
