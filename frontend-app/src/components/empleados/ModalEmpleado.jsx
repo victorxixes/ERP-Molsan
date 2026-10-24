@@ -1576,7 +1576,10 @@ const permisosDisponibles =
   ].filter((id) => id !== null && id !== undefined && String(id).trim() !== "")
     .map((id) => String(id).trim());
 
-  const esPropiaFicha = idsEmpleadoSesion.some((id) => idsFichaEmpleado.includes(id));
+  const esPropiaFicha = idsEmpleadoSesion.some((id) => idsFichaEmpleado.includes(id)) ||
+    (String(usuarioSesion?.usuario || "").trim().toLocaleLowerCase("es") !== "" &&
+      String(usuarioSesion?.usuario || "").trim().toLocaleLowerCase("es") ===
+      String(empleadoEdit?.usuario || "").trim().toLocaleLowerCase("es"));
 
   const guardarDatosEmpleado =
     async () => {
@@ -2143,9 +2146,6 @@ const permisosDisponibles =
   if (modoAdministracion && pestana === "visibilidad-tablas") {
     return <VisibilidadTablas empleadoId={empleadoId} onClose={onClose} />;
   }
-  if (!modoAdministracion && esPropiaFicha && pestana === "mi-visibilidad") {
-    return <VisibilidadTablas empleadoId={empleadoId} onClose={() => setPestana("basicos")} ambito="personal" />;
-  }
 
   /* ==========================================================
      RENDER
@@ -2509,6 +2509,16 @@ const permisosDisponibles =
           "
         >
 
+          {pestana === "mi-visibilidad" ? (
+            <VisibilidadTablas
+              empleadoId={empleadoId}
+              ambito="personal"
+              modal={false}
+              titulo="Mi visibilidad de tablas"
+            />
+          ) : (
+
+          <>
           {/* ==================================================
               LOADING
           ================================================== */}
@@ -4493,6 +4503,8 @@ const permisosDisponibles =
 
             )}
 
+          </>
+          )}
         </div>
 
 
