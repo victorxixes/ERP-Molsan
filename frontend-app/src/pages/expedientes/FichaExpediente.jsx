@@ -2764,7 +2764,11 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     // Una vez guardados los datos del envío, solicitar el avance de actividad.
     // El backend valida los documentos obligatorios antes de cambiarla.
     const transicion = await axios.post(
-      `/expedientes/${encodeURIComponent(expediente.id_expediente)}/avanzar-actividad`
+      `/expedientes/${encodeURIComponent(expediente.id_expediente)}/avanzar-actividad`,
+      {
+        actividad_destino: "Sede notarial",
+        confirmar_envio_notario: true,
+      }
     );
     await cargarExpediente();
     setActividadSeleccionada(resolverActividadActual(transicion?.data || expediente));
