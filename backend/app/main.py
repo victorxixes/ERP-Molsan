@@ -1847,9 +1847,30 @@ def inicializar_tablas_auxiliares():
             bind=engine,
             checkfirst=True,
         )
+        # Migración idempotente: trazabilidad de recepción y validación interna.
+        with engine.begin() as conexion_observaciones:
+            conexion_observaciones.execute(text(
+                "ALTER TABLE public.expediente_observaciones "
+                "ADD COLUMN IF NOT EXISTS estado_validacion VARCHAR(20) NOT NULL DEFAULT 'No requiere'"
+            ))
+            conexion_observaciones.execute(text(
+                "ALTER TABLE public.expediente_observaciones "
+                "ADD COLUMN IF NOT EXISTS validado_por_empleado_id INTEGER NULL "
+                "REFERENCES public.empleados(id)"
+            ))
+            conexion_observaciones.execute(text(
+                "ALTER TABLE public.expediente_observaciones "
+                "ADD COLUMN IF NOT EXISTS validado_en TIMESTAMP WITH TIME ZONE NULL"
+            ))
+            conexion_observaciones.execute(text(
+                "UPDATE public.expediente_observaciones "
+                "SET estado_validacion = 'Pendiente' "
+                "WHERE visibilidad = 'Gestor' AND empleado_destinatario_id IS NOT NULL "
+                "AND estado_validacion = 'No requiere'"
+            ))
 
         print(
-            "[PPAD/OBSERVACIONES] Tablas disponibles.",
+            "[PPAD/OBSERVACIONES] Tablas y validación interna disponibles.",
             flush=True,
         )
 
