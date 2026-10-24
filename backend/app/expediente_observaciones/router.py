@@ -121,7 +121,7 @@ def _empleado_por_id(db: Session, empleado_id):
     return db.query(Empleado).filter(Empleado.id == empleado_id).first()
 
 
-def _observacion_dict(item, empleado=None, autor=None):
+def _observacion_dict(item, empleado=None, autor=None, validador=None):
     return {
         "id": item.id,
         "expediente_id": item.expediente_id,
@@ -135,6 +135,7 @@ def _observacion_dict(item, empleado=None, autor=None):
         "activo": item.activo,
         "estado_validacion": getattr(item, "estado_validacion", "No requiere"),
         "validado_por_empleado_id": getattr(item, "validado_por_empleado_id", None),
+        "validado_por": " ".join(filter(None, [validador.nombre, validador.apellidos])) if validador else None,
         "validado_en": item.validado_en.isoformat() if getattr(item, "validado_en", None) else None,
     }
 
@@ -177,7 +178,7 @@ def listar_observaciones(expediente_id: int, incluir_inactivas: bool = False, db
         ExpedienteObservacion.empleado_destinatario_id == usuario.id,
     ))
     items = consulta.order_by(ExpedienteObservacion.fecha.desc(), ExpedienteObservacion.id.desc()).all()
-    resultado = [_observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), _empleado_por_id(db, item.autor_empleado_id)) for item in items]
+    resultado = [_observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), _empleado_por_id(db, item.autor_empleado_id), _empleado_por_id(db, getattr(item, "validado_por_empleado_id", None))) for item in items]
     return {"expediente_id": expediente_id, "total": len(resultado), "items": resultado}
 
 
@@ -201,7 +202,7 @@ async def crear_observacion(expediente_id: int, datos: ObservacionCreate, db: Se
             "expediente_id": expediente.id_expediente, "observacion_id": item.id,
             "evento": "observacion_pendiente_validacion", "read": False,
         })
-    return _observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), usuario)
+    return _observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), usuario, _empleado_por_id(db, getattr(item, "validado_por_empleado_id", None)))
 
 
 @router.post("/comentario-ficha", status_code=status.HTTP_201_CREATED, summary="Guardar comentario del modal clásico y sus destinos")
@@ -245,7 +246,7 @@ async def guardar_comentario_ficha(expediente_id: int, datos: ObservacionComenta
         "ok": True,
         "id_expediente": expediente.id_expediente,
         "total_creadas": len(items),
-        "observaciones": [_observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), usuario) for item in items],
+        "observaciones": [_observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), usuario, _empleado_por_id(db, getattr(item, "validado_por_empleado_id", None))) for item in items],
         "observaciones_expediente": datos.comentario,
         "registrado_en_backend": True,
     }
@@ -258,7 +259,7 @@ def validar_observacion(expediente_id: int, observacion_id: int, db: Session = D
     if item.visibilidad != "Gestor" or item.empleado_destinatario_id != usuario.id:
         raise HTTPException(status_code=403, detail="Solo el empleado destinatario puede validar esta observación interna.")
     if item.estado_validacion == "Validada":
-        return _observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), _empleado_por_id(db, item.autor_empleado_id))
+        return _observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), _empleado_por_id(db, item.autor_empleado_id), _empleado_por_id(db, getattr(item, "validado_por_empleado_id", None)))
     item.estado_validacion = "Validada"
     item.validado_por_empleado_id = usuario.id
     item.validado_en = __import__("datetime").datetime.now(__import__("datetime").timezone.utc)
@@ -268,7 +269,7 @@ def validar_observacion(expediente_id: int, observacion_id: int, db: Session = D
     except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo registrar la validación de la observación.")
-    return _observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), _empleado_por_id(db, item.autor_empleado_id))
+    return _observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), _empleado_por_id(db, item.autor_empleado_id), _empleado_por_id(db, getattr(item, "validado_por_empleado_id", None)))
 
 
 @router.put("/{observacion_id}", summary="Modificar observación de expediente")
@@ -297,7 +298,7 @@ def modificar_observacion(expediente_id: int, observacion_id: int, datos: Observ
     except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo modificar la observación.")
-    return _observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), _empleado_por_id(db, item.autor_empleado_id))
+    return _observacion_dict(item, _empleado_por_id(db, item.empleado_destinatario_id), _empleado_por_id(db, item.autor_empleado_id), _empleado_por_id(db, getattr(item, "validado_por_empleado_id", None)))
 
 
 @router.delete("/{observacion_id}", summary="Desactivar observación de expediente")
