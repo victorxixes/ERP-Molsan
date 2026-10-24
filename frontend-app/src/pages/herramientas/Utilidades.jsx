@@ -43,7 +43,7 @@ export default function Utilidades() {
         <Card icon="🧾" titulo="Verifacti" descripcion="Acceso al futuro panel de control de Verifacti para consultar la integración y el estado de los registros de facturación." link="/herramientas/utilidades/verifacti" enConstruccion />
         <Card icon="📄" titulo="Lectura copias" descripcion="Procesamiento de copias por fecha, con progreso y listado de expedientes detectados (pantalla de demostración)." link="/herramientas/utilidades/lectura-copias" destacado />
         <Card icon="📁" titulo="Lectura Cancela I" descripcion="Módulo para la lectura de información de Cancela I. Pendiente de desarrollo." enConstruccion />
-        <Card icon="🔀" titulo="Cambios de actividad ABSIS" descripcion="Módulo para gestionar los cambios de actividad de expedientes procedentes de ABSIS. Pendiente de desarrollo." enConstruccion />
+        <Card icon="🔀" titulo="Cambios de actividad ABSIS" descripcion="Busca expedientes, solicita una nueva actividad y consulta el estado de consolidación (pantalla de demostración)." link="/herramientas/utilidades/cambios-actividad-absis" destacado />
       </Grupo>
 
       <Grupo titulo="Control económico" descripcion="Seguimiento de PPAD, complementos de saldo y control económico de apoderados.">
