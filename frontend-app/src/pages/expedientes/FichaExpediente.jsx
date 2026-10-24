@@ -5577,7 +5577,7 @@ const cuantiaFincasParaEnvio =
           return <div className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2">
             <div className="text-[10px] font-semibold text-slate-500">Última acción</div>
             <div className="text-xs font-bold text-slate-800">{accion.descripcion || relacion.descripcion || "Acción"}</div>
-            <div className="mt-1 flex flex-wrap gap-2 text-[10px] text-slate-500">{relacion.estado && <span>{relacion.estado}</span>}{relacion.fecha && <span>{formatearFecha(relacion.fecha)}</span>}</div>
+            <div className="mt-1 flex flex-wrap gap-2 text-[10px] text-slate-500">{relacion.fecha && <span>{formatearFecha(relacion.fecha)}</span>}{relacion.usuario_creador && <span>Realizada por: {relacion.usuario_creador}</span>}</div>
           </div>;
         })()}
         {errorAcciones && <p className="w-full text-xs text-red-700">{errorAcciones}</p>}
@@ -5648,6 +5648,7 @@ const cuantiaFincasParaEnvio =
                       <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 text-xs sm:grid-cols-2">
                         <div><span className="font-semibold text-slate-500">Fecha alta: </span><span className="font-semibold text-slate-700">{formatearFecha(item.fecha_creacion)}</span></div>
                         <div><span className="font-semibold text-slate-500">Fecha compensación: </span><span className={item.compensado ? "font-bold text-emerald-700" : "font-semibold text-slate-500"}>{formatearFecha(item.fecha_compensacion)}</span></div>
+                        <div className="sm:col-span-2"><span className="font-semibold text-slate-500">Registrado por: </span><span className="font-semibold text-slate-700">{item.usuario_creador || "No disponible en registros anteriores"}</span></div>
                       </div>
                       <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
                         {item.compensado ? (
@@ -6913,10 +6914,10 @@ const cuantiaFincasParaEnvio =
               <div key={relacion.id || `${relacion.accion_id || "accion"}-${indice}`} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <p className="min-w-0 flex-1 text-xs font-bold text-slate-800">{accion.descripcion || relacion.descripcion || "Acción"}</p>
-                  {relacion.estado && <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-600">{relacion.estado}</span>}
+                  
                 </div>
                 {(accion.actividad || accion.departamento || accion.seccion) && <p className="mt-1 text-[10px] text-slate-500">{[accion.departamento, accion.seccion, accion.actividad].filter(Boolean).join(" · ")}</p>}
-                <div className="mt-1 text-[10px] text-slate-500">{relacion.fecha ? formatearFecha(relacion.fecha) : "Sin fecha registrada"}</div>
+                <div className="mt-1 text-[10px] text-slate-500">{relacion.fecha ? formatearFecha(relacion.fecha) : "Sin fecha registrada"}{relacion.usuario_creador ? ` · Realizada por: ${relacion.usuario_creador}` : ""}</div>
                 {relacion.observaciones && <p className="mt-2 whitespace-pre-wrap text-xs text-slate-600">{relacion.observaciones}</p>}
               </div>
             );
