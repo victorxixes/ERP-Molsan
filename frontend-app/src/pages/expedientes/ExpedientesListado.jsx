@@ -663,7 +663,7 @@ const CATEGORIAS_POR_REPOSITORIO = {
   otros_documentos_economicos: ["Otros documentos económicos", "Otros documentos economicos"],
   otra_documentacion: ["Otra documentación", "Otra documentacion"],
   emails_oficina: ["Mails de la Oficina", "Mails de la oficina", "Emails de oficina"],
-  otros_documentos: ["Otros"],
+  otros_documentos: ["Otros", "Borradores escrituras y otros"],
 };
 
 function CeldaRepositorioDigital({ expedienteId, repositorioKey, valor, onAbrir }) {
