@@ -4970,7 +4970,7 @@ const cuantiaFincasParaEnvio =
                 datosPanelActividad={{ ...expediente, ...actividadDraft }}
                 camposPanelActividad={CAMPOS_ACTIVIDADES[actividadSeleccionada] || []}
                 onAbrirEnvioNotario={() => setMostrarEnviarNotario(true)}
-                formularioEnvioNotario={mostrarEnviarNotario ? (
+                formularioEnvioNotario={
                   <EnviarANotarioModal
                     expediente={expediente}
                     cuantiaFincas={cuantiaFincasParaEnvio}
@@ -4978,7 +4978,7 @@ const cuantiaFincasParaEnvio =
                     onGuardar={guardarEnviarANotario}
                     inline
                   />
-                ) : null}
+                }
                 onDocumentosChange={
                   actividadSeleccionada === "documentacion-previa"
                     ? actualizarDocumentosCarpetaPrevia
