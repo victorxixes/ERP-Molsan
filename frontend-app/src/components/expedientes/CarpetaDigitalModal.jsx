@@ -139,7 +139,7 @@ export default function CarpetaDigitalModal({
     let activo = true;
     setConfigRepositorios(null);
     if (!modoActividad || !actividadId) return () => { activo = false; };
-    axios.get("/expedientes/configuracion-visibilidad", { params: { empleado_id: empleadoSesion?.empleado_id ?? empleadoSesion?.id } })
+    axios.get("/expedientes/configuracion-visibilidad", { params: { empleado_id: empleadoSesion?.empleado_id ?? empleadoSesion?.id, ambito: "efectiva" } })
       .then(({ data }) => {
         if (!activo) return;
         const configuracion = (data?.configuraciones || []).find((item) => item.actividad_key === actividadId);

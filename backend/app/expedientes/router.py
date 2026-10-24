@@ -135,7 +135,8 @@ def _asegurar_tabla_visibilidad(db: Session):
             excel_columns JSONB NOT NULL DEFAULT '[]'::jsonb,
             repositorios JSONB NOT NULL DEFAULT '[]'::jsonb,
             actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            CONSTRAINT expediente_visibilidad_config_pkey_emp_actividad PRIMARY KEY (empleado_id, actividad_key)
+            ambito VARCHAR(20) NOT NULL DEFAULT 'administracion',
+            CONSTRAINT expediente_visibilidad_config_pkey_emp_actividad_ambito PRIMARY KEY (empleado_id, actividad_key, ambito)
         )
     """))
     db.execute(text("""
@@ -150,50 +151,100 @@ def _asegurar_tabla_visibilidad(db: Session):
                 ALTER TABLE public.expediente_visibilidad_config
                     ADD COLUMN empleado_id INTEGER NOT NULL DEFAULT 0;
             END IF;
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns
+                WHERE table_schema = 'public'
+                  AND table_name = 'expediente_visibilidad_config'
+                  AND column_name = 'ambito'
+            ) THEN
+                ALTER TABLE public.expediente_visibilidad_config
+                    ADD COLUMN ambito VARCHAR(20) NOT NULL DEFAULT 'administracion';
+            END IF;
             IF EXISTS (
                 SELECT 1 FROM pg_constraint
                 WHERE conrelid = 'public.expediente_visibilidad_config'::regclass
-                  AND conname = 'expediente_visibilidad_config_pkey'
+                  AND conname IN ('expediente_visibilidad_config_pkey', 'expediente_visibilidad_config_pkey_emp_actividad')
             ) THEN
                 ALTER TABLE public.expediente_visibilidad_config
-                    DROP CONSTRAINT expediente_visibilidad_config_pkey;
+                    DROP CONSTRAINT IF EXISTS expediente_visibilidad_config_pkey;
+                ALTER TABLE public.expediente_visibilidad_config
+                    DROP CONSTRAINT IF EXISTS expediente_visibilidad_config_pkey_emp_actividad;
             END IF;
             IF NOT EXISTS (
                 SELECT 1 FROM pg_constraint
                 WHERE conrelid = 'public.expediente_visibilidad_config'::regclass
-                  AND conname = 'expediente_visibilidad_config_pkey_emp_actividad'
+                  AND conname = 'expediente_visibilidad_config_pkey_emp_actividad_ambito'
             ) THEN
                 ALTER TABLE public.expediente_visibilidad_config
-                    ADD CONSTRAINT expediente_visibilidad_config_pkey_emp_actividad
-                    PRIMARY KEY (empleado_id, actividad_key);
+                    ADD CONSTRAINT expediente_visibilidad_config_pkey_emp_actividad_ambito
+                    PRIMARY KEY (empleado_id, actividad_key, ambito);
             END IF;
         END $$;
     """))
     db.commit()
 
 
-def _configuraciones_visibilidad(db: Session, empleado_id: int = 0):
+def _configuraciones_visibilidad(db: Session, empleado_id: int = 0, ambito: str = "administracion"):
+    """Devuelve configuración administrativa, personal o efectiva por actividad."""
     _asegurar_tabla_visibilidad(db)
     filas = db.execute(text("""
         SELECT empleado_id, actividad_key, actividad_label, nombre_tabla,
-               excel_columns, repositorios, actualizado_en
+               excel_columns, repositorios, actualizado_en, ambito
         FROM public.expediente_visibilidad_config
         WHERE empleado_id IN (0, :empleado_id)
-        ORDER BY empleado_id ASC
+          AND ambito IN ('administracion', 'personal')
+        ORDER BY empleado_id ASC, CASE WHEN ambito = 'administracion' THEN 0 ELSE 1 END ASC
     """), {"empleado_id": int(empleado_id or 0)}).mappings().all()
-    # Las filas del empleado prevalecen sobre las filas antiguas globales (empleado_id=0).
+
     por_actividad = {}
+    administracion_por_actividad = {}
     for fila in filas:
-        por_actividad[fila["actividad_key"]] = {
+        es_personal = fila["ambito"] == "personal"
+        if ambito == "administracion" and es_personal:
+            continue
+        # Prioridad administrativa: configuración del empleado antes que la global.
+        clave = fila["actividad_key"]
+        prioridad_admin = 2 if fila["empleado_id"] != 0 else 1
+        if not es_personal:
+            admin_actual = administracion_por_actividad.get(clave)
+            if not admin_actual or admin_actual["_prioridad"] <= prioridad_admin:
+                administracion_por_actividad[clave] = {
+                    "excel_columns": fila["excel_columns"] or [],
+                    "repositorios": fila["repositorios"] or [],
+                    "_prioridad": prioridad_admin,
+                }
+
+        # La configuración personal prevalece sobre la administrativa para ese empleado.
+        actual = por_actividad.get(clave)
+        prioridad = 3 if es_personal else prioridad_admin
+        if actual and actual["_prioridad"] > prioridad:
+            continue
+        por_actividad[clave] = {
             "empleado_id": fila["empleado_id"],
-            "actividad_key": fila["actividad_key"],
+            "actividad_key": clave,
             "actividad_label": fila["actividad_label"],
             "nombre_tabla": fila["nombre_tabla"],
             "excel_columns": fila["excel_columns"] or [],
             "repositorios": fila["repositorios"] or [],
             "actualizado_en": fila["actualizado_en"].isoformat() if fila["actualizado_en"] else None,
+            "ambito": fila["ambito"],
+            "_prioridad": prioridad,
         }
-    return list(por_actividad.values())
+
+    resultado = []
+    for clave, item in por_actividad.items():
+        # Si el administrador retira una opción después de que el empleado haya
+        # personalizado su vista, la preferencia personal se limita automáticamente.
+        if item["ambito"] == "personal" and ambito in {"personal", "efectiva"}:
+            base_admin = administracion_por_actividad.get(clave)
+            if base_admin:
+                columnas_admin = set(base_admin["excel_columns"])
+                repositorios_admin = set(base_admin["repositorios"])
+                item["excel_columns"] = [key for key in item["excel_columns"] if key in columnas_admin]
+                item["repositorios"] = [key for key in item["repositorios"] if key in repositorios_admin]
+        item.pop("_prioridad", None)
+        resultado.append(item)
+    return resultado
 
 
 def _usuario_es_admin_visibilidad(usuario) -> bool:
@@ -216,17 +267,21 @@ def _usuario_es_admin_visibilidad(usuario) -> bool:
 @router.get("/configuracion-visibilidad")
 def obtener_configuracion_visibilidad(
     empleado_id: Optional[int] = Query(None),
+    ambito: str = Query("administracion", regex="^(administracion|personal|efectiva)$"),
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    """Catálogo de columnas Excel y repositorios más configuración guardada por actividad."""
-    if (
-        empleado_id is not None
-        and int(empleado_id) != int(usuario.id)
-        and not _usuario_es_admin_visibilidad(usuario)
-    ):
+    """Catálogo de columnas, repositorios y configuración del ámbito solicitado."""
+    id_empleado_sesion = int(getattr(usuario, "empleado_id", None) or usuario.id)
+    objetivo = int(empleado_id if empleado_id is not None else id_empleado_sesion)
+    es_admin = _usuario_es_admin_visibilidad(usuario)
+
+    if ambito == "personal" and objetivo != id_empleado_sesion:
+        raise HTTPException(status_code=403, detail="Solo puedes consultar tu propia configuración personal.")
+    if objetivo != id_empleado_sesion and not es_admin:
         from backend.app.auth.permissions import require_perm_modulo
         require_perm_modulo(usuario, "seguridad", "editar")
+
     return {
         "actividades": ACTIVIDADES_VISIBILIDAD,
         "columnas_excel": [
@@ -234,7 +289,8 @@ def obtener_configuracion_visibilidad(
             for cabecera, atributo in COLUMNAS_EXCEL
         ],
         "repositorios": REPOSITORIOS_VISIBILIDAD,
-        "configuraciones": _configuraciones_visibilidad(db, int(empleado_id if empleado_id is not None else usuario.id)),
+        "configuraciones": _configuraciones_visibilidad(db, objetivo, ambito),
+        "configuraciones_administrativas": _configuraciones_visibilidad(db, objetivo, "administracion"),
     }
 
 
@@ -246,12 +302,20 @@ def guardar_configuracion_visibilidad(
 ):
     from backend.app.auth.permissions import require_perm_modulo
     es_admin = _usuario_es_admin_visibilidad(usuario)
-    if not es_admin:
-        require_perm_modulo(usuario, "seguridad", "editar")
+    id_empleado_sesion = int(getattr(usuario, "empleado_id", None) or usuario.id)
+    ambito = str(datos.get("ambito") or "administracion").strip().lower()
+    if ambito not in {"administracion", "personal"}:
+        raise HTTPException(status_code=422, detail="Ámbito de configuración no válido.")
 
-    empleado_id = int(datos.get("empleado_id") or usuario.id)
-    if empleado_id != int(usuario.id) and not es_admin:
-        require_perm_modulo(usuario, "seguridad", "editar")
+    empleado_id = int(datos.get("empleado_id") or id_empleado_sesion)
+    if ambito == "personal":
+        if empleado_id != id_empleado_sesion:
+            raise HTTPException(status_code=403, detail="Solo puedes guardar tu propia configuración personal.")
+    else:
+        if not es_admin:
+            require_perm_modulo(usuario, "seguridad", "editar")
+        if empleado_id == 0 and not es_admin:
+            raise HTTPException(status_code=403, detail="No puedes modificar la configuración general.")
     actividad_key = str(datos.get("actividad_key") or "").strip()
     actividad = next((item for item in ACTIVIDADES_VISIBILIDAD if item["key"] == actividad_key), None)
     if not actividad:
@@ -268,6 +332,22 @@ def guardar_configuracion_visibilidad(
     if any(not isinstance(item, str) or item not in repositorios_validos for item in repositorios):
         raise HTTPException(status_code=422, detail="La configuración contiene repositorios no reconocidos.")
 
+    # Las preferencias personales solo pueden reducir la selección administrativa,
+    # nunca activar columnas o repositorios que el administrador no haya habilitado.
+    if ambito == "personal":
+        configuracion_admin = next(
+            (item for item in _configuraciones_visibilidad(db, empleado_id, "administracion")
+             if item["actividad_key"] == actividad_key),
+            None,
+        )
+        if configuracion_admin:
+            columnas_admin = set(configuracion_admin.get("excel_columns") or [])
+            repositorios_admin = set(configuracion_admin.get("repositorios") or [])
+            if not set(columnas).issubset(columnas_admin):
+                raise HTTPException(status_code=403, detail="Solo puedes seleccionar columnas habilitadas por el administrador.")
+            if not set(repositorios).issubset(repositorios_admin):
+                raise HTTPException(status_code=403, detail="Solo puedes seleccionar repositorios habilitados por el administrador.")
+
     nombre_tabla = str(datos.get("nombre_tabla") or "").strip()[:200]
     if not nombre_tabla:
         raise HTTPException(status_code=422, detail="Indica el nombre de la tabla Excel.")
@@ -279,11 +359,11 @@ def guardar_configuracion_visibilidad(
         _asegurar_tabla_visibilidad(db)
         db.execute(text("""
             INSERT INTO public.expediente_visibilidad_config
-                (empleado_id, actividad_key, actividad_label, nombre_tabla, excel_columns, repositorios, actualizado_en)
+                (empleado_id, actividad_key, actividad_label, nombre_tabla, excel_columns, repositorios, actualizado_en, ambito)
             VALUES
                 (:empleado_id, :actividad_key, :actividad_label, :nombre_tabla,
-                 CAST(:excel_columns AS jsonb), CAST(:repositorios AS jsonb), CURRENT_TIMESTAMP)
-            ON CONFLICT (empleado_id, actividad_key) DO UPDATE SET
+                 CAST(:excel_columns AS jsonb), CAST(:repositorios AS jsonb), CURRENT_TIMESTAMP, :ambito)
+            ON CONFLICT (empleado_id, actividad_key, ambito) DO UPDATE SET
                 actividad_label = EXCLUDED.actividad_label,
                 nombre_tabla = EXCLUDED.nombre_tabla,
                 excel_columns = EXCLUDED.excel_columns,
@@ -291,6 +371,7 @@ def guardar_configuracion_visibilidad(
                 actualizado_en = CURRENT_TIMESTAMP
         """), {
             "empleado_id": empleado_id,
+            "ambito": ambito,
             "actividad_key": actividad_key,
             "actividad_label": actividad["label"],
             "nombre_tabla": nombre_tabla,
@@ -306,6 +387,7 @@ def guardar_configuracion_visibilidad(
     return {
         "ok": True,
         "empleado_id": empleado_id,
+        "ambito": ambito,
         "actividad_key": actividad_key,
         "actividad_label": actividad["label"],
         "nombre_tabla": nombre_tabla,
@@ -2004,9 +2086,12 @@ def exportar_excel_expedientes(
                     FROM public.expediente_visibilidad_config
                     WHERE actividad_key = :actividad_key
                       AND empleado_id IN (0, :empleado_id)
-                    ORDER BY empleado_id DESC
+                    ORDER BY
+                      CASE WHEN empleado_id = :empleado_id AND ambito = 'personal' THEN 3
+                           WHEN empleado_id = :empleado_id AND ambito = 'administracion' THEN 2
+                           ELSE 1 END DESC
                     LIMIT 1
-                """), {"actividad_key": clave, "empleado_id": int(usuario.id)}).mappings().first()
+                """), {"actividad_key": clave, "empleado_id": int(getattr(usuario, "empleado_id", None) or usuario.id)}).mappings().first()
                 if fila_config is not None:
                     nombre_hoja_excel = str(fila_config["nombre_tabla"] or "Expedientes")
                     configuracion = fila_config["excel_columns"] or []

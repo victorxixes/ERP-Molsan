@@ -1083,7 +1083,7 @@ export default function ExpedientesListado() {
     let vigente = true;
     const empleadoId = empleadoSesion?.empleado_id ?? empleadoSesion?.id;
     if (!empleadoId) return () => { vigente = false; };
-    axios.get("/expedientes/configuracion-visibilidad", { params: { empleado_id: empleadoId } })
+    axios.get("/expedientes/configuracion-visibilidad", { params: { empleado_id: empleadoId, ambito: "efectiva" } })
       .then(({ data }) => {
         if (vigente) setConfiguracionesVisibilidad(Array.isArray(data?.configuraciones) ? data.configuraciones : []);
       })

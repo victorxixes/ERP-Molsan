@@ -38,8 +38,8 @@ const REPOSITORIOS_INICIALES = {
 
 const CLASE_INPUT = "w-full rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2.5 text-sm text-[var(--erp-text)] outline-none focus:border-[var(--erp-primary)] focus:ring-2 focus:ring-[var(--erp-primary-soft)]";
 
-export default function VisibilidadTablas({ empleadoId, onClose }) {
-  const [catalogo, setCatalogo] = useState({ columnas_excel: [], repositorios: [], configuraciones: [] });
+export default function VisibilidadTablas({ empleadoId, onClose, ambito = "administracion", modal = true, titulo }) {
+  const [catalogo, setCatalogo] = useState({ columnas_excel: [], repositorios: [], configuraciones: [], configuraciones_administrativas: [] });
   const [actividadKey, setActividadKey] = useState(ACTIVIDADES[0].key);
   const [nombreTabla, setNombreTabla] = useState("");
   const [columnas, setColumnas] = useState([]);
@@ -52,12 +52,13 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
 
   useEffect(() => {
     let activo = true;
-    axios.get("/expedientes/configuracion-visibilidad", { params: { empleado_id: empleadoId } })
+    axios.get("/expedientes/configuracion-visibilidad", { params: { empleado_id: empleadoId, ambito } })
       .then(({ data }) => {
         if (activo) setCatalogo({
           columnas_excel: data?.columnas_excel || [],
           repositorios: data?.repositorios || [],
           configuraciones: data?.configuraciones || [],
+          configuraciones_administrativas: data?.configuraciones_administrativas || [],
         });
       })
       .catch((e) => {
@@ -65,13 +66,24 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
       })
       .finally(() => { if (activo) setCargando(false); });
     return () => { activo = false; };
-  }, [empleadoId]);
+  }, [empleadoId, ambito]);
 
   const configuracionActual = useMemo(
     () => catalogo.configuraciones.find((item) => item.actividad_key === actividadKey),
     [catalogo.configuraciones, actividadKey]
   );
   const actividad = ACTIVIDADES.find((item) => item.key === actividadKey) || ACTIVIDADES[0];
+  const configuracionAdministrativa = catalogo.configuraciones_administrativas.find((item) => item.actividad_key === actividadKey);
+  const columnasVisibles = useMemo(() => {
+    if (ambito !== "personal" || !configuracionAdministrativa) return catalogo.columnas_excel;
+    const permitidas = new Set(configuracionAdministrativa.excel_columns || []);
+    return catalogo.columnas_excel.filter((item) => permitidas.has(item.key));
+  }, [ambito, catalogo.columnas_excel, configuracionAdministrativa]);
+  const repositoriosVisibles = useMemo(() => {
+    if (ambito !== "personal" || !configuracionAdministrativa) return catalogo.repositorios;
+    const permitidos = new Set(configuracionAdministrativa.repositorios || []);
+    return catalogo.repositorios.filter((item) => permitidos.has(item.key));
+  }, [ambito, catalogo.repositorios, configuracionAdministrativa]);
 
   useEffect(() => {
     const columnasPermitidas = new Set(catalogo.columnas_excel.map((item) => item.key));
@@ -92,8 +104,8 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
 
   const columnasFiltradas = useMemo(() => {
     const q = busquedaColumna.trim().toLocaleLowerCase("es");
-    return catalogo.columnas_excel.filter((item) => !q || item.label.toLocaleLowerCase("es").includes(q) || item.key.toLocaleLowerCase("es").includes(q));
-  }, [catalogo.columnas_excel, busquedaColumna]);
+    return columnasVisibles.filter((item) => !q || item.label.toLocaleLowerCase("es").includes(q) || item.key.toLocaleLowerCase("es").includes(q));
+  }, [columnasVisibles, busquedaColumna]);
 
   function alternar(setter, actual, key, checked) {
     setter(checked ? [...actual, key] : actual.filter((item) => item !== key));
@@ -114,6 +126,7 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
     try {
       const { data } = await axios.put("/expedientes/configuracion-visibilidad", {
         empleado_id: empleadoId,
+        ambito,
         actividad_key: actividadKey,
         nombre_tabla: nombreTabla.trim(),
         excel_columns: columnas,
@@ -135,15 +148,15 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
   }
 
   return (
-    <div className="visibilidad-tablas-premium erp-page fixed inset-0 z-[12000] overflow-y-auto bg-slate-900/40 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="Visibilidad tablas">
-      <div className="mx-auto my-2 max-w-7xl overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] shadow-[var(--erp-shadow-lg)]">
+    <div className={modal ? "visibilidad-tablas-premium erp-page fixed inset-0 z-[12000] overflow-y-auto bg-slate-900/40 p-3 sm:p-6" : "visibilidad-tablas-premium erp-page w-full"} role={modal ? "dialog" : undefined} aria-modal={modal ? "true" : undefined} aria-label={titulo || "Visibilidad tablas"}>
+      <div className={"mx-auto " + (modal ? "my-2 " : "") + "max-w-7xl overflow-hidden rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-bg)] shadow-[var(--erp-shadow-lg)]"}>
         <header className="flex flex-wrap items-center gap-3 bg-[var(--erp-primary)] px-5 py-4 text-white">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-xl">⚙️</div>
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-extrabold">Visibilidad tablas</h2>
-            <p className="text-xs text-white/85">Empleado ID {empleadoId ?? "actual"} · Columnas de Excel y repositorios de carpeta digital por actividad</p>
+            <h2 className="text-lg font-extrabold">{titulo || (ambito === "personal" ? "Mi visibilidad de tablas" : "Visibilidad tablas")}</h2>
+            <p className="text-xs text-white/85">{ambito === "personal" ? "Personaliza tus preferencias sin modificar la configuración general." : `Empleado ID ${empleadoId ?? "actual"} · Columnas de Excel y repositorios de carpeta digital por actividad`}</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold text-white hover:bg-white/10">Cerrar ✕</button>
+          {modal && <button type="button" onClick={onClose} className="rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold text-white hover:bg-white/10">Cerrar ✕</button>}
         </header>
 
         <div className="space-y-5 p-4 sm:p-6">
@@ -184,7 +197,7 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
                   ))}
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <button type="button" onClick={() => setColumnas(catalogo.columnas_excel.map((item) => item.key))} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Seleccionar todas</button>
+                  <button type="button" onClick={() => setColumnas(columnasVisibles.map((item) => item.key))} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Seleccionar todas</button>
                   <button type="button" onClick={() => setColumnas([])} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">Limpiar selección</button>
                 </div>
                 <div className="mt-4 border-t border-slate-100 pt-3">
@@ -208,7 +221,7 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
                   <p className="mt-1 text-xs text-slate-500">Selecciona las categorías que se mostrarán en el espacio de esta actividad. Los archivos almacenados no se borran ni se mueven.</p>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                  {catalogo.repositorios.map((item) => (
+                  {repositoriosVisibles.map((item) => (
                     <label key={item.key} className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-xs ${repositorios.includes(item.key) ? "border-[var(--erp-primary)] bg-[var(--erp-primary-soft)] text-[var(--erp-primary-dark)]" : "border-slate-200 bg-white text-slate-600"}`}>
                       <input type="checkbox" checked={repositorios.includes(item.key)} onChange={(e) => alternar(setRepositorios, repositorios, item.key, e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-[var(--erp-primary)]" />
                       <span>{item.label}</span>
@@ -219,7 +232,7 @@ export default function VisibilidadTablas({ empleadoId, onClose }) {
               <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
                 <p className="text-xs text-slate-500">{configuracionActual ? "Esta actividad ya tiene una configuración guardada." : "Se mostrarán valores iniciales hasta que guardes la configuración."}</p>
                 <div className="flex gap-2">
-                  <button type="button" onClick={onClose} className="erp-btn-secondary rounded-xl px-4 py-2.5 text-sm font-bold">Cancelar</button>
+                  {modal && <button type="button" onClick={onClose} className="erp-btn-secondary rounded-xl px-4 py-2.5 text-sm font-bold">Cancelar</button>}
                   <button type="button" disabled={guardando} onClick={guardar} className="erp-btn-primary rounded-xl px-5 py-2.5 text-sm font-extrabold shadow-sm disabled:cursor-wait disabled:opacity-60">{guardando ? "Guardando…" : "Guardar configuración"}</button>
                 </div>
               </footer>
