@@ -2677,9 +2677,21 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/actividad`,
         { campos }
       );
+      // Documentación previa guarda también el checklist de documentos para la
+      // futura integración ABSIS. Este endpoint solo persiste datos en el ERP.
+      if (actividadSeleccionada === "documentacion-previa") {
+        await axios.put(
+          `/expedientes/${encodeURIComponent(expediente.id_expediente)}/documentacion-previa/absis`,
+          estadoDocumentacionAbsis
+        );
+      }
       await cargarExpediente();
       setActividadDraft((actual) => ({ ...actual, ...(response?.data || {}) }));
-      setMensajeActividad("Los datos de la actividad se han guardado.");
+      setMensajeActividad(
+        actividadSeleccionada === "documentacion-previa"
+          ? "Datos de actividad y checklist guardados en el ERP. La integración con la API de ABSIS sigue pendiente."
+          : "Los datos de la actividad se han guardado."
+      );
     } catch (err) {
       const detail = err?.response?.data?.detail;
       setErrorActividad(
@@ -7560,6 +7572,45 @@ const cuantiaFincasParaEnvio =
             <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">Esta actividad no tiene campos específicos configurados todavía.</p>
           )}
         </div>
+        {actividadSeleccionada === "documentacion-previa" && (
+          <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
+            <div>
+              <h3 className="text-sm font-extrabold text-slate-800">Documentación previa · datos para integración</h3>
+              <p className="mt-1 text-xs text-slate-600">Estos datos forman parte del contenido funcional de la actividad y sirven para definir la futura comunicación con el sistema del cliente.</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-lg border border-slate-200 bg-white p-3">
+                <span className="block text-xs font-bold text-slate-600">Fecha envío a notario</span>
+                <p className="mt-1 text-sm font-semibold text-slate-800">{formatearFecha(expediente?.fecha_envio_notario || expediente?.fecha_envio)}</p>
+                <p className="mt-1 text-[11px] text-slate-500">Dato vinculado al envío guardado en «Enviar a notario».</p>
+              </div>
+              <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
+                <input type="checkbox" checked={!estadoDocumentacionAbsis.certificado_saldo_cero_erroneo} onChange={(e) => setEstadoDocumentacionAbsis((actual) => ({ ...actual, certificado_saldo_cero_erroneo: !e.target.checked }))} disabled={registrandoSolicitudIntegracion} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
+                <span><strong className="block">Certificado correcto</strong><span className="text-xs text-slate-500">Confirma que el certificado de saldo cero es correcto.</span></span>
+              </label>
+              {[
+                ["solicitud_cancelacion_notarial", "Hoja de encargo firmada"],
+                ["certificado_cancelacion_administrativo", "Justificante de cancelación"],
+                ["nota_simple_registral", "Nota simple registral"],
+              ].map(([key, label]) => (
+                <label key={key} className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
+                  <input type="checkbox" checked={!!estadoDocumentacionAbsis[key]} onChange={(e) => setEstadoDocumentacionAbsis((actual) => ({ ...actual, [key]: e.target.checked }))} disabled={registrandoSolicitudIntegracion} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
+                  <span>{label}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
+              <div className="min-w-0">
+                <p className="text-sm font-extrabold text-amber-900">Envío al ABSIS</p>
+                <p className="mt-1 text-xs text-amber-800">Estado: {estadoDocumentacionAbsis.enviado_a_absis ? "Enviado" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "Solicitud registrada localmente; pendiente de integración" : "Pendiente de integración"}</p>
+                <p className="mt-1 text-xs text-amber-800">Aviso: la conexión con la API del cliente está pendiente de implementar. Registrar la solicitud no transmite datos a ABSIS.</p>
+              </div>
+              <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis || expedienteBloqueado}>
+                {registrandoSolicitudIntegracion ? "Registrando…" : "✉️ Registrar envío a ABSIS"}
+              </Boton>
+            </div>
+          </section>
+        )}
       </Modal>
 
       {mostrarEnviarNotario && (
