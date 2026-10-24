@@ -886,6 +886,13 @@ const COLUMNAS_LIQUIDACION_IMPUESTOS = [
   "impuesto_ajd_itp",
 ];
 
+const COLUMNAS_GESTION_ECONOMICA = [
+  ...COLUMNAS_BASE_ACTIVIDAD,
+  "finca",
+  "subtipo_operacion",
+  "num_solicitud_sia",
+];
+
 const COLUMNAS_TRAMITACION_INSCRIPCION = [
   ...COLUMNAS_BASE_ACTIVIDAD,
   "ultima_accion",
@@ -924,6 +931,7 @@ const COLUMNAS_POR_ACTIVIDAD = {
   "documentacion-previa": COLUMNAS_DOCUMENTACION_PREVIA,
   "sede-notarial": COLUMNAS_SEDE_NOTARIAL,
   "sede-notarial-protocolo": COLUMNAS_SEDE_NOTARIAL_PROTOCOLO,
+  "gestion-economica": COLUMNAS_GESTION_ECONOMICA,
   "liquidacion-impuestos": COLUMNAS_LIQUIDACION_IMPUESTOS,
   "tramitacion-inscripcion": COLUMNAS_TRAMITACION_INSCRIPCION,
   "defectos-registrales": COLUMNAS_DEFECTOS_REGISTRALES,
