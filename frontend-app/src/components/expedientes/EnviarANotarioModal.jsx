@@ -274,6 +274,7 @@ export default function EnviarANotarioModal({
   cuantiaFincas = "",
   onClose,
   onGuardar,
+  inline = false,
 }) {
   const [form, setForm] = useState(() =>
     crearFormularioDesdeExpediente({
@@ -697,22 +698,10 @@ export default function EnviarANotarioModal({
 
   const notario = form.notario;
 
-  return createPortal((
-    <div
-      className="expediente-operativo-modal fixed inset-0 z-[10050] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-3"
-      onMouseDown={(event) => {
-        if (
-          event.target === event.currentTarget &&
-          !loading
-        ) {
-          onClose();
-        }
-      }}
-    >
-      <div
-        className="flex h-[97vh] max-h-[98vh] w-[min(98vw,1750px)] max-w-[1750px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"
-        onMouseDown={(event) => event.stopPropagation()}
-      >
+  const contenido = (
+    <div className={inline ? "w-full min-w-0" : "expediente-operativo-modal fixed inset-0 z-[10050] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-3"} onMouseDown={(event) => { if (!inline && event.target === event.currentTarget && !loading) onClose(); }}>
+      <div className={inline ? "flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-sm" : "flex h-[97vh] max-h-[98vh] w-[min(98vw,1750px)] max-w-[1750px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-800 shadow-2xl"} onMouseDown={(event) => event.stopPropagation()}>
+
         {/* CABECERA */}
 
         <div className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4 sm:px-7">
@@ -732,20 +721,12 @@ export default function EnviarANotarioModal({
             </div>
           </div>
 
-          <button
-            type="button"
-            disabled={loading}
-            onClick={onClose}
-            aria-label="Cerrar modal"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50"
-          >
-            ✕
-          </button>
+          {!inline && <button type="button" disabled={loading} onClick={onClose} aria-label="Cerrar modal" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50">✕</button>}
         </div>
 
         {/* CONTENIDO: DOCUMENTACIÓN PREVIA A LA IZQUIERDA + FORMULARIO */}
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-4 2xl:px-5">
+        <div className={inline ? "min-h-0 w-full px-3 py-4 sm:px-4" : "min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-4 2xl:px-5"}>
           <div className="grid grid-cols-1 items-start gap-3 xl:grid-cols-[minmax(300px,0.58fr)_minmax(0,1.42fr)] xl:gap-4">
             {/* COLUMNA IZQUIERDA — DOCUMENTACIÓN PREVIA COMPARTIDA CON CARPETA DIGITAL */}
             <aside className="min-w-0">
@@ -1443,14 +1424,7 @@ export default function EnviarANotarioModal({
           </p>
 
           <div className="flex flex-col-reverse gap-3 sm:flex-row">
-            <button
-              type="button"
-              disabled={loading}
-              onClick={onClose}
-              className="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
-            >
-              Cancelar
-            </button>
+            {!inline && <button type="button" disabled={loading} onClick={onClose} className="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50">Cancelar</button>}
 
             <button
               type="button"
@@ -1473,5 +1447,7 @@ export default function EnviarANotarioModal({
         </div>
       </div>
     </div>
-  ), document.body);
+  );
+
+  return inline ? contenido : createPortal(contenido, document.body);
 }

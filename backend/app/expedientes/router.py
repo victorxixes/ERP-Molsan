@@ -2890,6 +2890,9 @@ def registrar_envio_absis_documentacion_previa(
 
 class AvanzarActividadRequest(BaseModel):
     actividad_destino: Optional[str] = None
+    # Permite que el propio flujo «Enviar a notario» confirme el avance
+    # sin depender de una segunda confirmación separada de ABSIS.
+    confirmar_envio_notario: bool = False
 
 
 def _valor_no_vacio(valor):
@@ -2956,15 +2959,20 @@ def avanzar_actividad_expediente(
     actual = resolver_actividad(expediente.actividad_actual)
     destino_solicitado = (datos.actividad_destino if datos else None)
     destino = resolver_actividad(destino_solicitado) if destino_solicitado else None
+    confirmar_envio_notario = bool(datos and datos.confirmar_envio_notario)
+    if confirmar_envio_notario and destino != "sede-notarial":
+        raise HTTPException(status_code=400, detail="La confirmación de envío a notario solo permite avanzar a Sede notarial.")
     categorias = _categorias_documentales(db, id_expediente)
 
     if actual == "documentacion-previa":
         if destino not in (None, "sede-notarial"):
             raise HTTPException(status_code=409, detail="Desde Documentación previa solo se puede pasar a Sede notarial.")
         if not envio_notario_guardado(expediente):
-            raise HTTPException(status_code=409, detail="Primero debes completar y guardar el modal «Enviar a notario».")
+            raise HTTPException(status_code=409, detail="Primero debes completar y guardar los datos de «Enviar a notario».")
         estado_absis = leer_estado_absis(db, id_expediente)
-        if not estado_absis.get("mover_siguiente_actividad", False):
+        # El botón Enviar a notario ya confirma el avance dentro del mismo flujo.
+        # Se mantiene la confirmación separada para los avances manuales habituales.
+        if not estado_absis.get("mover_siguiente_actividad", False) and not confirmar_envio_notario:
             raise HTTPException(status_code=409, detail="Confirma Sí en «Mover el expediente a la siguiente actividad» antes de avanzar.")
         pendientes = documentos_pendientes_documentacion_previa(db, id_expediente)
         if pendientes:
@@ -2979,6 +2987,10 @@ def avanzar_actividad_expediente(
         ]
         if fincas_incompletas:
             raise HTTPException(status_code=409, detail="Todas las fincas deben tener informados el número de finca y el Registro de la Propiedad.")
+        # La actividad solo se cierra cuando todas las validaciones han pasado.
+        # La fecha de envío a notario es la fecha de fin de Documentación previa.
+        if expediente.fecha_envio_notario:
+            expediente.fecha_fin_actividad = expediente.fecha_envio_notario
         expediente.actividad_actual = "Sede notarial"
 
     elif actual == "sede-notarial":
