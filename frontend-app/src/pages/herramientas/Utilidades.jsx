@@ -68,8 +68,10 @@ export default function Utilidades() {
       <Grupo titulo="Módulos de trabajo" descripcion="Accesos directos a los módulos operativos del ERP.">
         <Card icon="⚡" titulo="ApoderaGest" descripcion="Gestionar encargos y actividad de apoderados." link="/apoderagest" />
         <Card icon="📁" titulo="CancelaGest" descripcion="Acceder al módulo de gestión de cancelaciones." link="/cancelagest" />
-        <Card icon="🌐" titulo="NotarGest" descripcion="Acceder al módulo de trabajo notarial." link="/notargest" />
-        <Card icon="📋" titulo="EncargaGest" descripcion="Gestionar encargos de cancelación recibidos." link="/encargagest" />
+        <Card icon="🌐" titulo="NotarGest" descripcion="Acceder al módulo de trabajo notarial interno." link="/notargest" />
+        <Card icon="📋" titulo="EncargaGest" descripcion="Gestionar encargos de cancelación recibidos desde el ERP." link="/encargagest" />
+        <Card icon="🏛️" titulo="NotarGest · Notarios" descripcion="Acceso externo de las notarías colaboradoras a NotarGest." link="/notargest-notario" />
+        <Card icon="📨" titulo="EncargaGest · Notarios" descripcion="Portal externo para que las notarías envíen encargos, aporten documentación y consulten su seguimiento." link="/encargagest-notario" />
       </Grupo>
 
       <Grupo titulo="Intranet y administración" descripcion="Publicación de información y herramientas de soporte integradas en el ERP.">
