@@ -14,6 +14,7 @@ export default function ControlApoderados({ modo = "colaborador" }) {
   const [periodo, setPeriodo] = useState(mesActual());
   const [item, setItem] = useState(null);
   const [items, setItems] = useState([]);
+  const [colaboradores, setColaboradores] = useState([]);
   const [historial, setHistorial] = useState([]);
   const [archivo, setArchivo] = useState(null);
   const [justificanteArchivo, setJustificanteArchivo] = useState(null);
@@ -28,8 +29,12 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     setCargando(true); setError(""); setMensaje("");
     try {
       if (admin) {
-        const rel = await axios.get("/apoderagest/liquidaciones/admin", { params: { periodo } });
+        const [rel, colabs] = await Promise.all([
+          axios.get("/apoderagest/liquidaciones/admin", { params: { periodo } }),
+          axios.get("/apoderagest/liquidaciones/admin/colaboradores"),
+        ]);
         setItems(Array.isArray(rel.data) ? rel.data : []);
+        setColaboradores(Array.isArray(colabs.data) ? colabs.data : []);
       } else {
         const [res, hist] = await Promise.all([
           axios.get("/apoderagest/liquidaciones/mi", { params: { periodo } }),
@@ -77,6 +82,22 @@ export default function ControlApoderados({ modo = "colaborador" }) {
       setJustificanteArchivo(null); setMensaje("Justificante adjuntado a la liquidación mensual."); await cargar();
     } catch (e) { setError(e?.response?.data?.detail || "No se ha podido subir el justificante."); }
     finally { setCargando(false); }
+  };
+
+  const cambiarColaborador = async (empleado, habilitar) => {
+    setCargando(true); setError(""); setMensaje("");
+    try {
+      await axios.patch(`/apoderagest/liquidaciones/admin/colaboradores/${empleado.id}`, null, {
+        params: { es_colaborador: habilitar },
+      });
+      setColaboradores((actuales) => actuales.map((e) =>
+        e.id === empleado.id ? { ...e, es_colaborador: habilitar } : e
+      ));
+      setMensaje(`Se ha ${habilitar ? "habilitado" : "deshabilitado"} a ${empleado.nombre} como colaborador.`);
+      await cargar();
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se ha podido actualizar el permiso de colaborador.");
+    } finally { setCargando(false); }
   };
 
   const revisar = async (x, decision) => {
@@ -128,6 +149,22 @@ export default function ControlApoderados({ modo = "colaborador" }) {
     {mensaje && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{mensaje}</div>}
     {cargando && <p className="animate-pulse text-sm text-slate-500">Cargando información…</p>}
     {admin ? <>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-slate-800">Colaboradores habilitados</h2>
+          <p className="mt-1 text-sm text-slate-500">Activa aquí el acceso a «Mi liquidación» para cada empleado. El cambio se guarda en su ficha y determina quién puede validar firmas y presentar facturas.</p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[560px] text-left text-sm">
+            <thead><tr className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><th className="p-3">Empleado</th><th className="p-3">Estado laboral</th><th className="p-3">Acceso a liquidaciones</th></tr></thead>
+            <tbody>{colaboradores.map((e) => <tr key={e.id} className="border-b last:border-0">
+              <td className="p-3 font-semibold text-slate-800">{e.nombre}</td>
+              <td className="p-3">{e.activo ? "Activo" : "Inactivo"}</td>
+              <td className="p-3"><label className="inline-flex items-center gap-2 font-medium"><input type="checkbox" checked={Boolean(e.es_colaborador)} disabled={cargando || !e.activo} onChange={(ev) => cambiarColaborador(e, ev.target.checked)} className="h-4 w-4 rounded border-slate-300" />{e.es_colaborador ? "Habilitado" : "No habilitado"}</label></td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+      </section>
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
