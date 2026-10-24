@@ -115,6 +115,7 @@ export default function CarpetaDigitalModal({
   datosPanelActividad,
   camposPanelActividad = [],
   onAbrirEnvioNotario,
+  formularioEnvioNotario = null,
   ocultarPanelEnvioNotario = false,
 }) {
   const empleadoSesion = useAuthStore((state) => state.empleado);
@@ -535,7 +536,7 @@ export default function CarpetaDigitalModal({
             </section>
 
             <section className="min-h-[250px] min-w-0 w-full overflow-hidden">
-              {modoActividad && actividadId === "documentacion-previa" ? (
+              {modoActividad && actividadId === "documentacion-previa" && false ? (
                 <div className="flex h-full min-h-[250px] flex-col overflow-y-auto rounded-xl border border-indigo-100 bg-white shadow-sm">
                   <header className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-3">
                     <div className="min-w-0">
@@ -794,7 +795,7 @@ export default function CarpetaDigitalModal({
                   </div>
                 </header>
                 <div className="min-h-0 flex-1 overflow-y-auto p-3">
-                  {actividadId === "documentacion-previa" ? (
+                  {actividadId === "documentacion-previa" && formularioEnvioNotario ? formularioEnvioNotario : (actividadId === "documentacion-previa" ? (
                     <div className="grid grid-cols-1 items-stretch gap-3 xl:grid-cols-2 2xl:grid-cols-2">
                       {[
                         {
@@ -874,7 +875,7 @@ export default function CarpetaDigitalModal({
                       })}
                       {camposPanelActividad.length === 0 && <p className="text-xs text-slate-500">Los campos específicos de esta actividad aparecerán aquí.</p>}
                     </div>
-                  )}
+                  ))}
                 </div>
               </aside>
             )}
