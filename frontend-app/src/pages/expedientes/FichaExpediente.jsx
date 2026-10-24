@@ -7528,7 +7528,7 @@ const cuantiaFincasParaEnvio =
               {mensajeActividad && <p className="text-xs font-semibold text-emerald-700">{mensajeActividad}</p>}
             </div>
             <div className="flex gap-2">
-              <Boton onClick={() => setMostrarModalDatosActividad(false)}>Cerrar</Boton>
+              <Boton onClick={() => { setMostrarModalDatosActividad(false); setPestanaActividad("documentos"); }}>Cerrar</Boton>
               <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad}>
                 {guardandoActividad ? "Guardando…" : "💾 Guardar datos"}
               </Boton>
