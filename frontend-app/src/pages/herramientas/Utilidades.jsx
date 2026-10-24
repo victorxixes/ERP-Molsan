@@ -32,13 +32,16 @@ export default function Utilidades() {
         <Card icon="🔐" titulo="Accesos notariales" descripcion="Busca una notaría y administra por separado sus accesos a NotarGest y EncargaGest, con historial de cambios." link="/herramientas/utilidades/accesos-notariales" />
       </Grupo>
 
+      <Grupo titulo="Catálogos" descripcion="Administra los catálogos y las plantillas reutilizables del ERP.">
+        <Card icon="✉️" titulo="Correspondencia tipificada" descripcion="Crea plantillas de email por proceso y genera mensajes con datos reales de la ficha del expediente." link="/herramientas/utilidades/correspondencia-tipificada" destacado />
+      </Grupo>
+
       <Grupo titulo="Importaciones y datos" descripcion="Carga información desde los ficheros de trabajo autorizados.">
         <Card icon="📥" titulo="Importar CTN" descripcion="Importar un Excel con información de notarías." link="/herramientas/importar-ctn" />
         <Card icon="📦" titulo="Importador ABSIS" descripcion="Importar expedientes desde el Excel matriz ABSIS." link="/herramientas/importador-absis" destacado />
       </Grupo>
 
       <Grupo titulo="Integraciones y comunicaciones" descripcion="Seguimiento de los procesos de intercambio de información con los sistemas de nuestros clientes.">
-        <Card icon="✉️" titulo="Correspondencia tipificada" descripcion="Crea plantillas de email por proceso y genera mensajes con datos reales de la ficha del expediente." link="/herramientas/utilidades/correspondencia-tipificada" destacado />
         <Card icon="🔄" titulo="Proceso de ABSIS" descripcion="Control de expedientes enviados, errores detectados e incidencias, con buscador, acciones y exportación Excel." link="/herramientas/utilidades/proceso-absis" destacado />
         <Card icon="🧾" titulo="Verifacti" descripcion="Acceso al futuro panel de control de Verifacti para consultar la integración y el estado de los registros de facturación." link="/herramientas/utilidades/verifacti" enConstruccion />
       </Grupo>
