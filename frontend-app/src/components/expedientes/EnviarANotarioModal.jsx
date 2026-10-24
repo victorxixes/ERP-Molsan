@@ -748,6 +748,7 @@ export default function EnviarANotarioModal({
                 expedienteId={expediente.id_expediente}
                 modoActividad
                 actividadId="documentacion-previa"
+                ocultarPanelEnvioNotario
               />
             </aside>
 
