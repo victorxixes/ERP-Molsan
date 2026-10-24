@@ -44,6 +44,9 @@ export default function Utilidades() {
       <Grupo titulo="Integraciones y comunicaciones" descripcion="Seguimiento de los procesos de intercambio de información con los sistemas de nuestros clientes.">
         <Card icon="🔄" titulo="Proceso de ABSIS" descripcion="Control de expedientes enviados, errores detectados e incidencias, con buscador, acciones y exportación Excel." link="/herramientas/utilidades/proceso-absis" destacado />
         <Card icon="🧾" titulo="Verifacti" descripcion="Acceso al futuro panel de control de Verifacti para consultar la integración y el estado de los registros de facturación." link="/herramientas/utilidades/verifacti" enConstruccion />
+        <Card icon="📄" titulo="Lectura copias" descripcion="Módulo para gestionar la lectura e integración de copias. Pendiente de desarrollo." enConstruccion />
+        <Card icon="📁" titulo="Lectura Cancela I" descripcion="Módulo para la lectura de información de Cancela I. Pendiente de desarrollo." enConstruccion />
+        <Card icon="🔀" titulo="Cambios de actividad ABSIS" descripcion="Módulo para gestionar los cambios de actividad de expedientes procedentes de ABSIS. Pendiente de desarrollo." enConstruccion />
       </Grupo>
 
       <Grupo titulo="Control económico" descripcion="Seguimiento de PPAD, complementos de saldo y control económico de apoderados.">
