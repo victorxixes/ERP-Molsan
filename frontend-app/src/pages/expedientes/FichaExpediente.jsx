@@ -5633,7 +5633,8 @@ const cuantiaFincasParaEnvio =
         </div>
 
 
-      <div className="mt-3 flex min-w-0 flex-wrap items-center gap-3">
+      <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2">
+      <div className="flex min-w-0 flex-wrap items-center gap-3">
         <button type="button" onClick={abrirAcciones} className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-100">
           ⚡ Acciones
           {accionesExpediente.length > 0 && <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 py-0.5 text-[10px] font-extrabold text-white">{accionesExpediente.length}</span>}
