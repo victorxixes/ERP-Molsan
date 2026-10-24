@@ -1558,10 +1558,25 @@ const permisosDisponibles =
      GUARDAR DATOS EMPLEADO
   ========================================================== */
 
-  const idSesionEmpleado = usuarioSesion?.empleado_id ?? usuarioSesion?.id;
-  const esPropiaFicha = empleadoId !== null && empleadoId !== undefined &&
-    String(idSesionEmpleado ?? "") !== "" &&
-    String(idSesionEmpleado) === String(empleadoId);
+  // La ficha puede exponer el identificador del empleado en el objeto cargado
+  // aunque la ruta/modal reciba otro alias. Comparamos solo identificadores
+  // de empleado disponibles y evitamos mostrar preferencias personales en fichas ajenas.
+  const idsEmpleadoSesion = [
+    usuarioSesion?.empleado_id,
+    usuarioSesion?.empleado?.empleado_id,
+    usuarioSesion?.empleado?.id,
+    usuarioSesion?.id,
+  ].filter((id) => id !== null && id !== undefined && String(id).trim() !== "")
+    .map((id) => String(id).trim());
+
+  const idsFichaEmpleado = [
+    empleadoEdit?.empleado_id,
+    empleadoEdit?.id,
+    empleadoId,
+  ].filter((id) => id !== null && id !== undefined && String(id).trim() !== "")
+    .map((id) => String(id).trim());
+
+  const esPropiaFicha = idsEmpleadoSesion.some((id) => idsFichaEmpleado.includes(id));
 
   const guardarDatosEmpleado =
     async () => {
