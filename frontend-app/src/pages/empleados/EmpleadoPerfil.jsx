@@ -19,6 +19,7 @@ import {
 } from "../../api/maestros";
 
 import "../../css/ComponentesAccesoPremium.css";
+import VisibilidadTablas from "../../components/expedientes/VisibilidadTablas";
 
 /* ============================================================
    EMPLEADO PERFIL
@@ -1008,6 +1009,11 @@ export default function EmpleadoPerfil({
               "Auditoría",
               "🛡️",
             ],
+            [
+              "visibilidad",
+              "Mi visibilidad de tablas",
+              "📊",
+            ],
           ].map(
             ([
               key,
@@ -1054,6 +1060,15 @@ export default function EmpleadoPerfil({
 
       </div>
 
+
+      {tab === "visibilidad" && (
+        <VisibilidadTablas
+          empleadoId={idNum}
+          ambito="personal"
+          modal={false}
+          titulo="Mi visibilidad de tablas"
+        />
+      )}
 
       {/* ======================================================
           DATOS BÁSICOS
