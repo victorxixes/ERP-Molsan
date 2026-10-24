@@ -71,6 +71,7 @@ import CambiarGestorExpediente from "./pages/herramientas/CambiarGestorExpedient
 import ComplementosSaldo from "./pages/herramientas/ComplementosSaldo.jsx";
 import ProcesoAbsis from "./pages/herramientas/ProcesoAbsis.jsx";
 import LecturaCopias from "./pages/herramientas/LecturaCopias.jsx";
+import CambiosActividadAbsis from "./pages/herramientas/CambiosActividadAbsis.jsx";
 import PPAD from "./pages/herramientas/PPAD.jsx";
 import Verifacti from "./pages/herramientas/Verifacti.jsx";
 
@@ -476,6 +477,11 @@ export default function App() {
           <Route
             path="herramientas/utilidades/lectura-copias"
             element={<LecturaCopias />}
+          />
+
+          <Route
+            path="herramientas/utilidades/cambios-actividad-absis"
+            element={<CambiosActividadAbsis />}
           />
 
           <Route
