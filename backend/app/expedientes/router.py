@@ -197,18 +197,26 @@ def _configuraciones_visibilidad(db: Session, empleado_id: int = 0, ambito: str 
     """), {"empleado_id": int(empleado_id or 0)}).mappings().all()
 
     por_actividad = {}
+    administracion_por_actividad = {}
     for fila in filas:
         es_personal = fila["ambito"] == "personal"
         if ambito == "administracion" and es_personal:
             continue
-        if ambito == "personal" and es_personal is False and fila["empleado_id"] == 0:
-            # La configuración global solo sirve de base si no hay configuración del empleado.
-            pass
-        # El orden de prioridad es: configuración personal, configuración administrativa
-        # del empleado y, finalmente, configuración administrativa global (empleado_id=0).
+        # Prioridad administrativa: configuración del empleado antes que la global.
         clave = fila["actividad_key"]
+        prioridad_admin = 2 if fila["empleado_id"] != 0 else 1
+        if not es_personal:
+            admin_actual = administracion_por_actividad.get(clave)
+            if not admin_actual or admin_actual["_prioridad"] <= prioridad_admin:
+                administracion_por_actividad[clave] = {
+                    "excel_columns": fila["excel_columns"] or [],
+                    "repositorios": fila["repositorios"] or [],
+                    "_prioridad": prioridad_admin,
+                }
+
+        # La configuración personal prevalece sobre la administrativa para ese empleado.
         actual = por_actividad.get(clave)
-        prioridad = 3 if es_personal else (2 if fila["empleado_id"] != 0 else 1)
+        prioridad = 3 if es_personal else prioridad_admin
         if actual and actual["_prioridad"] > prioridad:
             continue
         por_actividad[clave] = {
@@ -222,8 +230,18 @@ def _configuraciones_visibilidad(db: Session, empleado_id: int = 0, ambito: str 
             "ambito": fila["ambito"],
             "_prioridad": prioridad,
         }
+
     resultado = []
-    for item in por_actividad.values():
+    for clave, item in por_actividad.items():
+        # Si el administrador retira una opción después de que el empleado haya
+        # personalizado su vista, la preferencia personal se limita automáticamente.
+        if item["ambito"] == "personal" and ambito in {"personal", "efectiva"}:
+            base_admin = administracion_por_actividad.get(clave)
+            if base_admin:
+                columnas_admin = set(base_admin["excel_columns"])
+                repositorios_admin = set(base_admin["repositorios"])
+                item["excel_columns"] = [key for key in item["excel_columns"] if key in columnas_admin]
+                item["repositorios"] = [key for key in item["repositorios"] if key in repositorios_admin]
         item.pop("_prioridad", None)
         resultado.append(item)
     return resultado
