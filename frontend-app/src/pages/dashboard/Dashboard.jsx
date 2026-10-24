@@ -31,6 +31,12 @@ const ACTIVIDADES = [
     icono: "✍️",
   },
   {
+    key: "gestion_economica",
+    nombre: "Gestión económica",
+    descripcion: "Revisión y gestión de los datos económicos del expediente",
+    icono: "💼",
+  },
+  {
     key: "liquidacion_impuestos",
     nombre: "Liquidación de impuestos",
     descripcion: "Presentación y liquidación tributaria",
