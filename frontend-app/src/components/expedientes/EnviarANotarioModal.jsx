@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import AutocompleteNotario from "../agenda/AutocompleteNotario";
-import CarpetaDigitalModal from "./CarpetaDigitalModal";
 import axios from "../../api/axios";
 import "../../css/ModalesOperativosPremium.css";
 
@@ -312,6 +311,10 @@ export default function EnviarANotarioModal({
     return [{ id: 1, tipo_documento: inicial.tipo_documento || "", cuantia: cuantiaInicial }];
   });
 
+  const [documentosCarpeta, setDocumentosCarpeta] = useState([]);
+  const [cargandoDocumentosCarpeta, setCargandoDocumentosCarpeta] = useState(false);
+  const [repositorioAbierto, setRepositorioAbierto] = useState("");
+
   const [municipios, setMunicipios] = useState([]);
   const [municipiosAbierto, setMunicipiosAbierto] = useState(false);
   const [municipiosLoading, setMunicipiosLoading] = useState(false);
@@ -321,6 +324,19 @@ export default function EnviarANotarioModal({
   const [error, setError] = useState("");
 
   // ==========================================================
+  useEffect(() => {
+    let activo = true;
+    if (!expediente?.id_expediente) return () => { activo = false; };
+    setCargandoDocumentosCarpeta(true);
+    axios.get("/expedientes/" + encodeURIComponent(expediente.id_expediente) + "/carpeta-digital")
+      .then(({ data }) => {
+        if (activo) setDocumentosCarpeta(Array.isArray(data) ? data : data?.items || []);
+      })
+      .catch(() => { if (activo) setDocumentosCarpeta([]); })
+      .finally(() => { if (activo) setCargandoDocumentosCarpeta(false); });
+    return () => { activo = false; };
+  }, [expediente?.id_expediente]);
+
   // CARGAR TIPOS DE DOCUMENTO
   // ==========================================================
 
@@ -733,23 +749,38 @@ export default function EnviarANotarioModal({
           <div className="grid grid-cols-1 items-start gap-3 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] xl:gap-3">
             {/* COLUMNA IZQUIERDA — DOCUMENTACIÓN PREVIA COMPARTIDA CON CARPETA DIGITAL */}
             <aside className="min-w-0">
-              <div className="mb-3 rounded-2xl border border-indigo-200 bg-indigo-50/70 px-4 py-3">
-                <div className="flex items-start gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-lg shadow-sm">📂</span>
-                  <div className="min-w-0">
-                    <h3 className="text-sm font-extrabold text-slate-900">Documentación previa</h3>
-                    <p className="mt-1 text-xs leading-relaxed text-slate-600">Adjunta y consulta los documentos necesarios para preparar el envío al notario.</p>
-                    <p className="mt-1 text-[11px] font-semibold text-indigo-700">Los archivos se guardan también en la Carpeta Digital del expediente.</p>
-                  </div>
+              <section className="rounded-2xl border border-indigo-100 bg-white p-3 shadow-sm">
+                <h3 className="text-sm font-extrabold text-slate-900">📂 Documentación previa</h3>
+                <p className="mt-1 text-[11px] text-slate-500">Adjunta y consulta los documentos necesarios para preparar el envío al notario.</p>
+                <p className="mb-2 mt-1 text-[10px] font-semibold text-indigo-700">Los archivos se guardan también en la Carpeta Digital del expediente.</p>
+                <div className="divide-y divide-slate-100">
+                  {[
+                    ["Hoja de encargo firmada", ["Hoja de Encargo firmada"]],
+                    ["Justificante de cancelación", ["Justificante de cancelación"]],
+                    ["Nota simple registral", ["Nota simple registral"]],
+                    ["Borradores escrituras", ["Borradores escrituras", "Escrituras/borradores"]],
+                    ["Otros", ["Otros"]],
+                  ].map(([etiqueta, categorias]) => {
+                    const normalizar = (v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+                    const lista = documentosCarpeta.filter((doc) => categorias.some((cat) => normalizar(cat) === normalizar(doc.categoria)));
+                    const abierto = repositorioAbierto === etiqueta;
+                    return (
+                      <div key={etiqueta} className="py-2">
+                        <div className="flex items-center gap-2">
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-xs font-bold text-slate-800">{etiqueta}</p>
+                            <p className="text-[10px] text-slate-500">{cargandoDocumentosCarpeta ? "Cargando…" : `${lista.length} archivo(s)`}</p>
+                          </div>
+                          <button type="button" onClick={() => setRepositorioAbierto(abierto ? "" : etiqueta)} className="shrink-0 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-[10px] font-extrabold text-indigo-700 hover:bg-indigo-100">{abierto ? "Cerrar" : "Abrir"}</button>
+                        </div>
+                        {abierto && <div className="mt-2 rounded-lg bg-slate-50 px-2.5 py-2">
+                          {lista.length ? <ul className="space-y-1">{lista.map((doc) => <li key={doc.id} className="break-words text-[11px] text-slate-700">📄 {doc.nombre_original || doc.nombre || doc.filename || "Documento"}</li>)}</ul> : <p className="text-[10px] text-slate-500">Sin documentos adjuntos.</p>}
+                        </div>}
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
-
-              <CarpetaDigitalModal
-                expedienteId={expediente.id_expediente}
-                modoActividad
-                actividadId="documentacion-previa"
-                ocultarPanelEnvioNotario
-              />
+              </section>
             </aside>
 
             {/* COLUMNA DERECHA — DATOS DEL ENVÍO Y FACTURACIÓN */}
