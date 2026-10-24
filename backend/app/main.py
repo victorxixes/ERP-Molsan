@@ -672,7 +672,10 @@ def migrar_esquema_expedientes_inicio():
                               AND l.granted = TRUE
                               AND a.pid <> pg_backend_pid()
                               AND a.state = 'idle in transaction'
-                              AND a.xact_start < now() - interval '5 minutes'
+                              AND a.xact_start < now() - CASE
+                                  WHEN l.relation = 'public.empleados'::regclass THEN interval '2 minutes'
+                                  ELSE interval '5 minutes'
+                              END
                             """
                         )
                     ).fetchall()
