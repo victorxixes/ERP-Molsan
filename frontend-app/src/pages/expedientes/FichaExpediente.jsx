@@ -7940,10 +7940,10 @@ const cuantiaFincasParaEnvio =
                 </label>
               </div>
             ) : actividadSeleccionada === "sede-notarial-protocolo" ? (
-              <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
+              <div className="grid w-full min-w-0 grid-cols-2 items-start gap-3">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">Datos de la actividad</h4>
-                  <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="grid min-w-0 grid-cols-1 gap-3">
                     {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "tipo_gestoria", "fecha_firma", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
                       const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
                         ? (actividadDraft[campo.key] ?? "")
