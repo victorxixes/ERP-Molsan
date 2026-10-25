@@ -499,7 +499,7 @@
 
 
 /* Ajuste estructural robusto del formulario de contrato */
-.eg-contrato-layout { display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr); gap:14px; align-items:start; }
+
 .eg-contrato-layout > :nth-child(1) { grid-column:1 / -1; }
 .eg-contrato-layout > :nth-child(2) { grid-column:2; grid-row:2; }
 .eg-contrato-layout > :nth-child(3) { grid-column:2; grid-row:3; margin-top:0; }
