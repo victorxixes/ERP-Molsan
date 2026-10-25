@@ -127,3 +127,138 @@
     max-width: 100%;
   }
 }
+
+
+/* ============================================================
+   Auditoría de selectores reales — segunda pasada de unificación
+   Los selectores se corresponden con las clases usadas actualmente
+   por los módulos. Solo cambia presentación, nunca comportamiento.
+   ============================================================ */
+
+/* Portales profesionales: misma superficie y jerarquía de tarjetas. */
+:where(.notargest .ng-contador, .notargest .ng-tarea, .notargest .ng-acceso,
+       .notargest .ng-panel, .apoderagest .ag-kpi, .apoderagest .ag-panel,
+       .encargagest .eg-kpi, .encargagest .eg-panel,
+       .encargagest .eg-directorio-card, .encargagest .eg-modal-section) {
+  color: var(--molsan-text, #17243a);
+  background: #fff;
+  border: 1px solid var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+:where(.notargest .ng-cabecera, .apoderagest .ag-hero, .encargagest .eg-hero) {
+  color: var(--molsan-text, #17243a);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+:where(.apoderagest .ag-panel-cabecera, .encargagest .eg-panel-head,
+       .notargest .ng-panel-titulo) {
+  color: var(--molsan-text, #17243a);
+  background: var(--molsan-surface-soft, #f7f9fc);
+  border-color: var(--molsan-border-light, #e8edf4);
+}
+:where(.notargest .ng-contador, .notargest .ng-tarea, .notargest .ng-acceso,
+       .apoderagest .ag-kpi, .apoderagest .ag-panel,
+       .encargagest .eg-kpi, .encargagest .eg-panel):hover {
+  transform: none;
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+
+/* CTN: listado y ficha comparten cabeceras, paneles y campos. */
+:where(.ctn-listado-page .ctn-listado-header, .ctn-detalle-page .ctn-detalle-header) {
+  color: var(--molsan-text, #17243a);
+  background: #fff;
+  border: 1px solid var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+:where(.ctn-detalle-page .ctn-detalle-stat, .ctn-detalle-page .ctn-detalle-panel,
+       .ctn-detalle-page .ctn-detalle-info-card, .ctn-listado-page .ctn-panel,
+       .ctn-listado-page .dashboard-card) {
+  color: var(--molsan-text, #17243a);
+  background: #fff;
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+
+/* Expedientes, ficha y provisiones. */
+:where(.expedientes-page .erp-card, .expedientes-page .expediente-card,
+       .ficha-expediente-premium .erp-card, .provisiones-fondos-page .pf-card,
+       .provisiones-fondos-page .erp-card) {
+  color: var(--molsan-text, #17243a);
+  background: #fff;
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+:where(.expedientes-page .molsan-page-header, .ficha-expediente-premium .molsan-page-header,
+       .provisiones-fondos-page > header) {
+  background: #fff;
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+
+/* Dashboard de CancelaGest: clase real de los indicadores y paneles. */
+:where(.dashboard-cancelagest .dashboard-kpi, .dashboard-cancelagest .erp-card,
+       .cg-unified-workspace .erp-card, .cg-unified-workspace .dashboard-card) {
+  color: var(--molsan-text, #17243a);
+  background-color: #fff;
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+
+/* Herramientas: se elimina la franja decorativa distinta de cada pantalla. */
+:where(.catalogos-premium-page > header, .utilidades-premium-page > header) {
+  color: var(--molsan-text, #17243a);
+  background: #fff;
+  border: 1px solid var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+:where(.catalogos-premium-page > header > div:first-child,
+       .utilidades-premium-page > header > div:first-child) {
+  display: none;
+}
+
+/* Formularios y tablas: controles uniformes sin tocar checkboxes ni radios. */
+:where(.notargest, .apoderagest, .encargagest, .ctn-listado-page,
+       .ctn-detalle-page, .expedientes-page, .ficha-expediente-premium,
+       .provisiones-fondos-page, .dashboard-cancelagest,
+       .catalogos-premium-page, .utilidades-premium-page)
+:is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+    select, textarea) {
+  font-family: inherit;
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-control, 9px);
+  box-shadow: none;
+}
+:where(.notargest, .apoderagest, .encargagest, .ctn-listado-page,
+       .ctn-detalle-page, .expedientes-page, .ficha-expediente-premium,
+       .provisiones-fondos-page, .dashboard-cancelagest,
+       .catalogos-premium-page, .utilidades-premium-page)
+:is(input, select, textarea, button, a):focus-visible {
+  outline-color: var(--molsan-primary, #3156b3);
+  outline-offset: 2px;
+}
+:where(.notargest, .apoderagest, .encargagest, .ctn-listado-page,
+       .ctn-detalle-page, .expedientes-page, .provisiones-fondos-page,
+       .dashboard-cancelagest, .catalogos-premium-page, .utilidades-premium-page)
+table :is(th, td) {
+  border-color: var(--molsan-border-light, #e8edf4);
+}
+
+@media (max-width: 760px) {
+  :where(.notargest, .apoderagest, .encargagest) {
+    padding: 14px !important;
+    overflow-x: clip;
+  }
+  :where(.notargest .ng-contadores, .apoderagest .ag-grid-kpi) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
