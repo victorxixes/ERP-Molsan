@@ -213,38 +213,11 @@
 @media(max-width:560px){.notargest .ng-dashboard-kpis{grid-template-columns:1fr}.notargest .ng-dashboard-grafico{padding:13px}.notargest .ng-media-row>div:first-child{align-items:flex-start;flex-direction:column;gap:3px}.notargest .ng-media-row small{text-align:left}}
 
 
-/* NotarGest: bandejas operativas en panel lateral; el dashboard queda para analítica */
-/* El espacio del sidebar se gestiona dentro del portal, sin desplazar la página. */
-.notargest .ng-bandejas-sidebar{position:fixed;z-index:35;left:14px;top:92px;bottom:14px;width:274px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;padding:13px;background:rgba(248,250,255,.97);border:1px solid #e1e8f3;border-radius:17px;box-shadow:0 12px 30px rgba(31,48,79,.07);backdrop-filter:blur(14px)}
-.notargest .ng-bandejas-heading{display:flex;flex-direction:column;gap:5px;padding:5px 7px 11px;border-bottom:1px solid #e5ebf4;margin-bottom:3px}
-.notargest .ng-bandejas-heading>strong{color:#253650;font-size:14px;font-weight:850}
-.notargest .ng-bandeja-link{display:flex;align-items:center;gap:9px;width:100%;min-width:0;padding:10px 8px;text-align:left;color:#52617a;background:rgba(255,255,255,.86);border:1px solid #e7edf5;border-radius:11px;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
-.notargest .ng-bandeja-link:hover{background:#fff;border-color:#c8d5fa;transform:translateX(2px)}
-.notargest .ng-bandeja-link.activa{background:#edf2ff;border-color:#cdd9ff}
-.notargest .ng-bandeja-icono{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;color:#3558c4;background:#edf2ff;border:1px solid #e0e8ff;border-radius:9px;font-size:15px;font-weight:850}
-.notargest .ng-bandeja-texto{display:flex;flex:1;flex-direction:column;gap:3px;min-width:0}
-.notargest .ng-bandeja-texto strong{color:#2c3c58;font-size:10px;font-weight:800;line-height:1.35}
-.notargest .ng-bandeja-texto small{color:#8995a8;font-size:9px;line-height:1.35}
-.notargest .ng-bandeja-numero{display:grid;place-items:center;flex:0 0 27px;min-width:27px;height:27px;padding:0 5px;color:#64718a;background:#f2f5fa;border:1px solid #e8edf5;border-radius:8px;font-size:11px;font-weight:850}
-.notargest .ng-bandeja-link.con-pendientes .ng-bandeja-numero{color:#3154c5;background:#edf2ff;border-color:#dce5ff}
-.notargest .ng-bandeja-flecha{color:#9aa6b8;font-size:21px;line-height:1}
-.notargest .ng-bandeja-link:focus-visible{outline:3px solid rgba(61,103,231,.3);outline-offset:2px}
-@media(max-width:1150px){.notargest .ng-bandejas-sidebar{position:static;bottom:auto;left:auto;top:auto;width:auto;max-height:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:0 0 17px;padding:10px}.notargest .ng-bandejas-heading{grid-column:1/-1}.notargest .ng-bandeja-link{min-height:70px}}
-@media(max-width:600px){.notargest .ng-bandejas-sidebar{grid-template-columns:1fr}.notargest .ng-bandejas-heading{grid-column:auto}.notargest .ng-bandeja-link{min-height:64px}}
+/* Navegación operativa horizontal: se conserva el foco accesible y el ancho del shell. */
+.notargest .ng-bandeja-link:focus-visible { outline: 3px solid rgba(49, 86, 179, .30); outline-offset: 2px; }
+.notargest { margin-left: 0 !important; width: 100% !important; max-width: none !important; }
 
-
-/* Ajuste de navegación: las bandejas de NotarGest van arriba, como la navegación de ApoderaGest */
-.notargest{margin-left:0!important;width:100%!important;max-width:none!important}
-.notargest .ng-bandejas-sidebar{position:relative!important;inset:auto!important;z-index:2;width:100%!important;max-height:none!important;overflow:visible!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px!important;margin:0 0 20px!important;padding:12px!important;border-radius:16px}
-.notargest .ng-bandejas-heading{grid-column:1/-1;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding:3px 5px 10px;margin:0 0 2px}
-.notargest .ng-bandeja-link{min-height:66px;padding:9px 10px}
-.notargest .ng-bandeja-texto strong{font-size:10px}
-.notargest .ng-bandeja-texto small{font-size:9px}
-@media(max-width:1000px){.notargest .ng-bandejas-sidebar{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
-@media(max-width:600px){.notargest .ng-bandejas-sidebar{grid-template-columns:1fr!important}.notargest .ng-bandejas-heading{align-items:flex-start;flex-direction:column}}
-
-
-/* NotarGest · sidebar operativo con el estilo de navegación de ApoderaGest */
+/* /* NotarGest · sidebar operativo con el estilo de navegación de ApoderaGest */
 .notargest .ng-bandejas-sidebar{
   position:relative!important;inset:auto!important;z-index:2;width:100%!important;
   max-height:none!important;overflow-x:auto!important;overflow-y:hidden!important;
