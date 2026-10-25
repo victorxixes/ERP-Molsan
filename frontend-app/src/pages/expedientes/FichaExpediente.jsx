@@ -2675,7 +2675,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
             ? "Gestoría"
             : "Gestoría";
         const valorPorDefecto = key === "tipo_gestoria"
-          ? (expediente?.gestoria || gestoriaPorDefecto)
+          ? (expediente?.tipo_gestoria || gestoriaPorDefecto)
           : (key === "apoderado" ? (expediente?.apoderado || "") : (expediente?.[key] ?? ""));
         campos[key] = Object.prototype.hasOwnProperty.call(actividadDraft, key)
           ? (actividadDraft[key] ?? "")
@@ -7813,7 +7813,7 @@ const cuantiaFincasParaEnvio =
                   const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
                     ? (actividadDraft[campo.key] ?? "")
                     : (campo.key === "gestoria"
-                      ? (apoderadoActual.includes("oficina") ? gestoriaPorDefecto : (expediente?.gestoria || gestoriaPorDefecto))
+                      ? (apoderadoActual.includes("oficina") ? gestoriaPorDefecto : (expediente?.tipo_gestoria || gestoriaPorDefecto))
                       : (expediente?.[campo.key] ?? ""));
                   const cambiar = (nuevoValor) => setActividadDraft((actual) => {
                     const siguiente = { ...actual, [campo.key]: nuevoValor };
