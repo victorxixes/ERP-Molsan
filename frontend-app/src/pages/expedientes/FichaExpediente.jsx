@@ -7614,7 +7614,7 @@ const cuantiaFincasParaEnvio =
 
       <Modal
         open={mostrarModalDatosActividad}
-        onClose={() => setMostrarModalDatosActividad(false)}
+        onClose={setMostrarModalDatosActividad}
         titulo={`☷ Datos de actividad · ${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"}`}
         subtitulo={`Expediente ${expediente?.id_expediente || ""}. Solo se muestran los campos propios de esta actividad.`}
         ancho="max-w-4xl"
