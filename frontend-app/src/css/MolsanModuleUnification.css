@@ -500,3 +500,117 @@ table :is(th, td) {
   outline-color: rgba(49, 86, 179, .42);
   outline-offset: 2px;
 }
+
+
+/* Normalización de las últimas raíces con fondos y estilos de marca propios.
+   Las hojas locales conservan layout, responsive y estados funcionales;
+   el aspecto de la superficie exterior se decide aquí. */
+:where(
+  .cg-page,
+  .notargest,
+  .apoderagest.notargest,
+  .encargagest,
+  .expedientes-page,
+  .agenda-premium-page,
+  .ctn-detalle-page,
+  .empleados-premium-page,
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .molsan-intranet-page,
+  .logs-premium-page,
+  .maestros-premium-page,
+  .notificaciones-premium-page
+) {
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+
+:where(.cg-page, .notargest, .apoderagest.notargest, .encargagest, .expedientes-page, .agenda-premium-page, .ctn-detalle-page) {
+  background: var(--molsan-page-bg, #f4f7fb) !important;
+  border-color: var(--molsan-border, #dce4ef) !important;
+  border-radius: var(--molsan-radius-card, 14px) !important;
+  box-shadow: none !important;
+}
+
+:where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-cabecera, .ag-hero, .eg-hero) {
+  color: var(--molsan-text, #17243a);
+  background: transparent !important;
+  border-color: var(--molsan-border, #dce4ef);
+  box-shadow: none !important;
+}
+
+:where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .ag-card, .eg-panel, .eg-kpi, .eg-directorio-card) {
+  color: var(--molsan-text, #17243a) !important;
+  background: var(--molsan-surface, #fff) !important;
+  border-color: var(--molsan-border, #dce4ef) !important;
+  border-radius: var(--molsan-radius-card, 14px) !important;
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
+}
+
+:where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-contador, .ng-acceso, .eg-kpi, .ag-kpi) :is(strong, span, small) {
+  color: var(--molsan-text, #17243a);
+}
+
+:where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
+  :is(.erp-card, .erp-card-soft, .molsan-panel, .molsan-page-header) {
+  background: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+}
+
+:where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
+  :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  color: var(--molsan-text, #17243a);
+  background-color: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-control, 9px);
+  box-shadow: none;
+}
+
+:where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
+  :is(th, thead) {
+  color: var(--molsan-text-secondary, #526176);
+  background-color: var(--molsan-surface-soft, #f7f9fc);
+  border-color: var(--molsan-border-light, #e8edf4);
+}
+
+:where(.expedientes-page, .agenda-premium-page, .ctn-detalle-page, .cg-page, .notargest, .apoderagest.notargest, .encargagest)
+  tbody tr:hover {
+  background-color: var(--molsan-primary-soft, #edf3ff);
+}
+
+:where(.cg-page, .notargest, .apoderagest.notargest, .encargagest) :is(.cg-button-primary, .ng-login-submit, .eg-button-primary, .ag-button-primary) {
+  background: var(--molsan-primary, #3156b3) !important;
+  border-color: var(--molsan-primary, #3156b3) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+:where(.empleados-listado-premium, .empleados-premium-page, .empleado-ficha-premium, .empleado-editar-premium)
+  :is(.erp-card, section.erp-card, .rounded-2xl.border) {
+  background-color: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+}
+
+:where(.empleados-listado-premium, .empleados-premium-page, .empleado-ficha-premium, .empleado-editar-premium)
+  :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  color: var(--molsan-text, #17243a) !important;
+  background: var(--molsan-surface, #fff) !important;
+  border-color: var(--molsan-border, #dce4ef) !important;
+  border-radius: var(--molsan-radius-control, 9px);
+  box-shadow: none;
+}
+
+:where(.empleados-listado-premium, .empleados-premium-page, .empleado-ficha-premium) :is(th, thead th) {
+  color: var(--molsan-text-secondary, #526176) !important;
+  background: var(--molsan-surface-soft, #f7f9fc) !important;
+  border-color: var(--molsan-border-light, #e8edf4) !important;
+}
+
+:where(.empleados-listado-premium, .empleados-premium-page, .empleado-ficha-premium) tbody tr:hover {
+  background: var(--molsan-primary-soft, #edf3ff) !important;
+}
