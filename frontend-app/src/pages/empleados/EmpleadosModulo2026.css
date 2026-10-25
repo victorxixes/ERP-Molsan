@@ -9,7 +9,7 @@
 .empleados-premium-page > section.erp-card {
   border: 1px solid var(--molsan-border, #dce4ef);
   border-radius: 1.25rem;
-  background: var(--erp-surface, rgba(255, 255, 255, .92));
+  background: var(--molsan-surface, rgba(255, 255, 255, .92));
   box-shadow: 0 12px 32px rgba(15, 23, 42, .055);
 }
 
@@ -17,7 +17,7 @@
 .empleados-premium-page select,
 .empleados-premium-page textarea {
   max-width: 100%;
-  border-color: var(--erp-border, #dbe2ea);
+  border-color: var(--molsan-border, #dbe2ea);
   border-radius: .75rem;
   transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
 }
