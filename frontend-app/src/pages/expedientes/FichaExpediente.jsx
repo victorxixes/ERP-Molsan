@@ -7799,6 +7799,9 @@ const cuantiaFincasParaEnvio =
                     </label>
                   );
                 })}
+                <p className="sm:col-span-2 lg:col-span-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-xs text-sky-800">
+                  Cuando el notario suba la hoja de presentación en PDF desde NotarGest, estos datos deberán extraerse del documento y proponerse aquí para su revisión antes de guardarlos. La lectura y extracción automática del PDF está pendiente de implementar.
+                </p>
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
