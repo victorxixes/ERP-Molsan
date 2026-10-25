@@ -25,9 +25,9 @@
 select, textarea) {
   max-width: 100%;
   color: var(--cg-text);
-  background-color: #fff;
+  background-color: var(--molsan-surface, #fff);
   border: 1px solid var(--cg-border-strong, #c4d0df);
-  border-radius: 8px;
+  border-radius: var(--molsan-radius-control, 9px);
   box-shadow: none;
   transition: border-color .16s ease, box-shadow .16s ease;
 }
@@ -49,16 +49,18 @@ select, textarea) {
 
 .cg-unified-workspace :is(input, select, textarea):disabled {
   color: #94a3b8;
-  background: #f1f5f9;
+  background: var(--molsan-surface-soft, #f7f9fc);
   cursor: not-allowed;
 }
 
-.cg-unified-workspace table {
+ .cg-unified-workspace table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   color: var(--cg-text);
   font-size: 12px;
+  border-color: var(--cg-border);
+  font-variant-numeric: tabular-nums;
 }
 
 .cg-unified-workspace table :is(th, td) {
@@ -69,8 +71,8 @@ select, textarea) {
 }
 
 .cg-unified-workspace table th {
-  color: #52617a;
-  background: #f6f8fc;
+  color: var(--molsan-text-secondary, #526176);
+  background: var(--molsan-surface-soft, #f7f9fc);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: .025em;
@@ -90,7 +92,7 @@ select, textarea) {
 }
 
 .cg-unified-workspace table tbody tr:hover {
-  background-color: #f7f9fd;
+  background-color: var(--molsan-surface-soft, #f7f9fc);
 }
 
 .cg-unified-workspace table tbody tr:last-child td {
@@ -332,16 +334,6 @@ select, textarea) {
   outline-offset: 2px;
 }
 
-/* Tablas de módulos antiguos: encabezados, líneas y hover consistentes. */
-.cg-unified-workspace table {
-  border-color: var(--cg-border);
-  font-variant-numeric: tabular-nums;
-}
-
-.cg-unified-workspace table :is(th, td) {
-  border-bottom-color: var(--cg-border-light);
-}
-
 .cg-unified-workspace table thead th {
   color: #52617a;
   background-color: #f6f8fc;
@@ -351,7 +343,7 @@ select, textarea) {
 }
 
 .cg-unified-workspace table tbody tr:hover > td {
-  background-color: #f7f9fd;
+  background-color: var(--molsan-surface-soft, #f7f9fc);
 }
 
 /* Enlaces operativos mantienen la paleta corporativa sin cambiar destinos. */
