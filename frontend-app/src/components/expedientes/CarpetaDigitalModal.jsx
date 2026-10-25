@@ -855,6 +855,7 @@ export default function CarpetaDigitalModal({
                             ["NIF notario", datosEnvioNotario?.nif_notario],
                             ["Población notario", datosEnvioNotario?.poblacion],
                             ["Provincia notario", datosEnvioNotario?.provincia],
+                            ["Apoderado", datosEnvioNotario?.apoderado],
                           ],
                         },
                         {
@@ -893,6 +894,7 @@ export default function CarpetaDigitalModal({
                           <h5 className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">Datos notariales y de presentación</h5>
                           <div className="grid min-w-0 grid-cols-1 gap-x-4 px-3 py-1.5 sm:grid-cols-2">
                             {[
+                              // En este bloque de integración no se muestra Apoderado.
                               ["Notario", datosPanelActividad?.nombre_notario || datosPanelActividad?.notario],
                               ["NIF notario", datosPanelActividad?.nif_notario || datosPanelActividad?.notario_nif],
                               ["Fecha firma", datosPanelActividad?.fecha_firma],
