@@ -981,11 +981,11 @@ export default function CarpetaDigitalModal({
                         ].map((seccion) => (
                           <section key={seccion.titulo} className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
                             <h5 className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">{seccion.titulo}</h5>
-                            <div className="space-y-0 px-3 py-1.5">
+                            <div className="grid min-w-0 grid-cols-1 gap-1.5 px-3 py-2 sm:grid-cols-2 2xl:grid-cols-3">
                               {seccion.campos.map(([etiqueta, valor]) => (
-                                <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
-                                  <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                  <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                                <div key={etiqueta} className="flex min-w-0 items-baseline gap-2 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5">
+                                  <span className="shrink-0 text-[10px] font-bold text-slate-500">{etiqueta}</span>
+                                  <span className="min-w-0 break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</span>
                                 </div>
                               ))}
                             </div>
