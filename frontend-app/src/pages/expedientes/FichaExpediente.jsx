@@ -7896,10 +7896,10 @@ const cuantiaFincasParaEnvio =
                 />
                 <p className="mt-1 text-[11px] text-slate-500">Se propone la fecha de envío registrada; puedes modificarla y guardarla con «Guardar datos para ABSIS».</p>
               </label>
-              <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
-                <input type="checkbox" checked={!estadoDocumentacionAbsis.certificado_saldo_cero_erroneo} onChange={(e) => setEstadoDocumentacionAbsis((actual) => ({ ...actual, certificado_saldo_cero_erroneo: !e.target.checked }))} disabled={registrandoSolicitudIntegracion} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
-                <span><strong className="block">Certificado correcto</strong><span className="text-xs text-slate-500">Confirma que el certificado de saldo cero es correcto.</span></span>
-              </label>
+              <div className="rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
+                <strong className="block">Certificado correcto</strong>
+                <p className="mt-1 text-xs text-slate-500">Confirma que el certificado de saldo cero es correcto. Este dato se muestra como información y no requiere marcar una casilla.</p>
+              </div>
               {[
                 ["solicitud_cancelacion_notarial", "Hoja de encargo firmada"],
                 ["certificado_cancelacion_administrativo", "Justificante de cancelación"],
