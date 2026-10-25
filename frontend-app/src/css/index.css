@@ -2,6 +2,7 @@
    ERP SJ‑2026 — Importación de estilos
    ============================================================ */
 
+@import "tailwindcss";
 @import "./variables.css";
 @import "./base.css";
 @import "./layout.css";
@@ -12,11 +13,7 @@
 @import "./modals.css";
 @import "./animations.css";
 @import "./erp-theme.css";
-
-/* Tailwind */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@config "../../tailwind.config.js";
 
 /* ============================================================
    ERP SJ‑2026 — Componentes personalizados
@@ -31,13 +28,13 @@
 /* Título */
 .seg-title {
   @apply text-lg font-semibold mb-1;
-  color: var(--sj-azul); /* ✔ Tailwind-safe */
+  color: var(--sj-azul);
 }
 
 /* Descripción */
 .seg-desc {
   @apply text-sm mb-1;
-  color: var(--sj-azul-claro); /* ✔ Tailwind-safe */
+  color: var(--sj-azul-claro);
 }
 
 /* Root ocupa toda la pantalla */
