@@ -7970,6 +7970,23 @@ const cuantiaFincasParaEnvio =
                   </p>
                 </section>
               </div>
+            ) : actividadSeleccionada === "gestion-economica" ? (
+              <div className="space-y-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-2 text-sm font-extrabold text-slate-800">Líneas de pago · datos para ABSIS</h4>
+                  <p className="text-xs leading-relaxed text-slate-600">
+                    La información económica debe prepararse a partir de las líneas de pago del expediente. El dato de documento que corresponde comunicar es <strong>Tipo de documento</strong>. La conexión con ABSIS continúa pendiente; guardar aquí no realiza ningún envío externo.
+                  </p>
+                </section>
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Carpeta digital · Gestión económica</h4>
+                  <RepositorioDocumentosInline
+                    expedienteId={expediente?.id_expediente || expediente?.id || id}
+                    categorias={["Factura notarial", "Factura registral", "Factura impuestos", "Honorarios gestoría", "Otros"]}
+                    titulo="Documentación de las líneas de pago"
+                  />
+                </section>
+              </div>
             ) : actividadSeleccionada === "facturacion-cierre" ? (
               <div className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -8028,7 +8045,7 @@ const cuantiaFincasParaEnvio =
                     </div>
                   );
                 })}
-                {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key) && !(actividadSeleccionada === "defectos-registrales" && ["tiene_defectos_abiertos", "tipo_error", "falta_defecto", "descripcion_error", "fcierre_defecto"].includes(campo.key))).length && (
+                {actividadSeleccionada !== "gestion-economica" && !(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key) && !(actividadSeleccionada === "defectos-registrales" && ["tiene_defectos_abiertos", "tipo_error", "falta_defecto", "descripcion_error", "fcierre_defecto"].includes(campo.key))).length && (
                   <p className="text-sm text-slate-500">Esta actividad no tiene campos específicos configurados.</p>
                 )}
               </div>
