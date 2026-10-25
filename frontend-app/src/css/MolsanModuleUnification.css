@@ -606,3 +606,33 @@ table :is(th, td) {
 :where(.empleados-listado-premium, .empleados-premium-page, .empleado-ficha-premium) tbody tr:hover {
   background: var(--molsan-primary-soft, #edf3ff) !important;
 }
+
+
+/* Controles y tablas de NotarGest: presentación centralizada tras retirar
+   las reglas visuales repetidas de su hoja local. */
+.notargest .ng-tabla th {
+  color: var(--molsan-text-secondary, #526176) !important;
+  background: var(--molsan-surface-soft, #f7f9fc) !important;
+  border-bottom-color: var(--molsan-border, #dce4ef) !important;
+}
+.notargest .ng-tabla td {
+  border-color: var(--molsan-border-light, #e8edf4) !important;
+}
+.notargest .ng-tabla tbody tr:hover td {
+  background: var(--molsan-primary-soft, #edf3ff) !important;
+}
+.notargest :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
+  color: var(--molsan-text, #17243a) !important;
+  background-color: var(--molsan-surface, #fff) !important;
+  border-color: var(--molsan-border-strong, #c4d0df) !important;
+  border-radius: var(--molsan-radius-control, 9px) !important;
+  box-shadow: none;
+}
+.notargest :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid rgba(49, 86, 179, .42) !important;
+  outline-offset: 2px;
+}
+.notargest :is(.ng-contador, .ng-tarea, .ng-acceso):hover {
+  transform: none !important;
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
+}
