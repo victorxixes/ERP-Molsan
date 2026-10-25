@@ -7918,7 +7918,23 @@ const cuantiaFincasParaEnvio =
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
-                  const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key];
+                  const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
+                  if (actividadSeleccionada === "liquidacion-impuestos") {
+                    const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
+                    return (
+                      <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
+                        <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                        {Array.isArray(campo.opciones) ? (
+                          <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800">
+                            <option value="">— Seleccionar —</option>
+                            {campo.opciones.map((opcion) => <option key={String(opcion)} value={typeof opcion === "object" ? opcion.value : opcion}>{typeof opcion === "object" ? opcion.label : opcion}</option>)}
+                          </select>
+                        ) : (
+                          <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} step={campo.tipo === "numero" ? "0.01" : undefined} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                        )}
+                      </label>
+                    );
+                  }
                   return (
                     <div key={campo.key} className={`min-w-0 rounded-lg border border-slate-200 bg-white p-3 ${campo.multilinea ? "sm:col-span-2 lg:col-span-3" : ""}`}>
                       <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
