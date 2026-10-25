@@ -8103,6 +8103,8 @@ const cuantiaFincasParaEnvio =
             </>
           )}
         </section>
+        </section>
+        )}
       </Modal>
 
 
