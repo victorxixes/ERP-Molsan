@@ -551,13 +551,13 @@ const CAMPOS_ACTIVIDADES = {
 
   "defectos-registrales": [
     {
-      key: "documento_defecto",
-      label: "Documento",
+      key: "tipo_documento",
+      label: "Tipo documento",
     },
     {
       key: "motivos_defecto",
       label: "Motivos del defecto",
-      multilinea: true,
+      catalogo: "motivos-defecto",
     },
     {
       key: "fecha_notificacion_registro",
@@ -5370,6 +5370,17 @@ const cuantiaFincasParaEnvio =
             )}
 
             {actividadSeleccionada === "tramitacion-inscripcion" && (
+              <section className="mb-3 rounded-2xl border border-indigo-100 bg-white p-3 sm:p-4">
+                <h3 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h3>
+                <RepositorioDocumentosInline
+                  expedienteId={expediente?.id_expediente || expediente?.id || id}
+                  categorias={["Hoja de inscripción"]}
+                  titulo="Repositorios digitales · Tramitación inscripción"
+                />
+              </section>
+            )}
+
+            {actividadSeleccionada === "tramitacion-inscripcion" && (
               <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <h3 className="text-sm font-extrabold text-slate-800">Datos vinculados de Enviar a notario</h3>
@@ -5420,7 +5431,9 @@ const cuantiaFincasParaEnvio =
                 "
               >
 
-              {camposActividad.map((campo) => {
+              {camposActividad
+                .filter((campo) => actividadSeleccionada !== "defectos-registrales" || !["tipo_documento", "motivos_defecto", "fecha_notificacion_registro", "fecha_vencimiento_presentacion_registro", "observaciones_defecto_registral"].includes(campo.key))
+                .map((campo) => {
                 const esComun = CAMPOS_COMUNES_ACTIVIDAD.some((item) => item.key === campo.key);
                 const valorActual = actividadDraft[campo.key] ?? expediente?.[campo.key] ?? "";
                 if (esComun || campo.key === "fecha_envio") {
@@ -5529,6 +5542,44 @@ const cuantiaFincasParaEnvio =
                   <Boton tipo="primary" onClick={() => registrarSolicitudIntegracionPendiente("sede-notarial-protocolo")} disabled={guardandoActividad || registrandoSolicitudIntegracion}>
                     {registrandoSolicitudIntegracion ? "Registrando…" : "📨 Registrar solicitud pendiente"}
                   </Boton>
+                </div>
+              </section>
+            )}
+
+            {actividadSeleccionada === "defectos-registrales" && (
+              <section className="mt-3 rounded-2xl border border-amber-200 bg-amber-50/30 p-4">
+                <div className="mb-3">
+                  <h3 className="text-sm font-extrabold text-slate-800">Defectos registrales · datos para integración</h3>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
+                </div>
+                <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Tipo documento</span>
+                    <input type="text" value={String(actividadDraft.tipo_documento ?? expediente?.tipo_documento ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, tipo_documento: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" placeholder="Tipo documento" />
+                  </label>
+                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Motivos del defecto</span>
+                    <select value={String(actividadDraft.motivos_defecto ?? expediente?.motivos_defecto ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, motivos_defecto: event.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400">
+                      <option value="">Seleccionar motivo del catálogo de defectos…</option>
+                      {MOTIVOS_DEFECTO.map((motivo) => {
+                        const value = `${motivo.codigo}.${motivo.texto}`;
+                        return <option key={motivo.codigo} value={value}>{value}</option>;
+                      })}
+                    </select>
+                  </label>
+                  {[
+                    { key: "fecha_notificacion_registro", label: "Fecha notificación Registro" },
+                    { key: "fecha_vencimiento_presentacion_registro", label: "Fecha vencimiento presentación Registro" },
+                  ].map((campo) => (
+                    <label key={campo.key} className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                      <span className="mb-1.5 block text-[11px] font-bold text-slate-600">{campo.label}</span>
+                      <input type="date" value={String(actividadDraft[campo.key] ?? expediente?.[campo.key] ?? "").slice(0, 10)} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
+                    </label>
+                  ))}
+                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3 sm:col-span-2">
+                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Observaciones</span>
+                    <textarea rows={3} value={String(actividadDraft.observaciones_defecto_registral ?? expediente?.observaciones_defecto_registral ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, observaciones_defecto_registral: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
+                  </label>
                 </div>
               </section>
             )}
