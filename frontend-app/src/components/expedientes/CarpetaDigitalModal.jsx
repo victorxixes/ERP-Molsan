@@ -375,20 +375,26 @@ export default function CarpetaDigitalModal({
   }
 
   const porCategoria = useCallback(
-    (categoria) => documentos.filter((doc) => {
-      if (doc.categoria === categoria) return true;
-      // Conserva visibles los archivos subidos con los nombres del repositorio anterior.
-      if (categoria === "Hoja de presentación Tacio") {
-        return ["Hoja de presentación", "Hoja de presentacion", "Hoja de presentacion Tacio"].includes(doc.categoria);
-      }
-      if (categoria === "Borradores escrituras") {
-        return ["Escrituras/borradores", "Borradores de escrituras", "Borradores de escritura"].includes(doc.categoria);
-      }
-      if (categoria === "Otros") {
-        return doc.categoria === "Borradores escrituras y otros";
-      }
-      return false;
-    }),
+    (categoria) => {
+      const normalizarCategoria = (valor) => normalizar(valor).replace(/\\s+/g, " ").trim();
+      const categoriaNormalizada = normalizarCategoria(categoria);
+      return documentos.filter((doc) => {
+        const categoriaDocumento = normalizarCategoria(doc.categoria || doc.categoria_nombre || doc.tipo_documento);
+        // Los nombres de categoría no deben depender de mayúsculas, minúsculas o tildes.
+        if (categoriaDocumento === categoriaNormalizada) return true;
+        // Conserva visibles los archivos subidos con los nombres del repositorio anterior.
+        if (categoriaNormalizada === "hoja de presentacion tacio") {
+          return ["hoja de presentacion", "hoja de presentacion tacio"].includes(categoriaDocumento);
+        }
+        if (categoriaNormalizada === "borradores escrituras") {
+          return ["escrituras/borradores", "borradores de escrituras", "borradores de escritura"].includes(categoriaDocumento);
+        }
+        if (categoriaNormalizada === "otros") {
+          return categoriaDocumento === "borradores escrituras y otros";
+        }
+        return false;
+      });
+    },
     [documentos]
   );
   const bytes = (n) => {
