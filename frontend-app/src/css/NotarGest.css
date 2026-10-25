@@ -217,7 +217,7 @@
 .notargest .ng-bandeja-link:focus-visible { outline: 3px solid rgba(49, 86, 179, .30); outline-offset: 2px; }
 .notargest { margin-left: 0 !important; width: 100% !important; max-width: none !important; }
 
-/* /* NotarGest · sidebar operativo con el estilo de navegación de ApoderaGest */
+/* NotarGest · sidebar operativo con el estilo de navegación de ApoderaGest */
 .notargest .ng-bandejas-sidebar{
   position:relative!important;inset:auto!important;z-index:2;width:100%!important;
   max-height:none!important;overflow-x:auto!important;overflow-y:hidden!important;
@@ -934,7 +934,7 @@
   .notargest .ng-cabecera { align-items: flex-start; flex-wrap: wrap; gap: 12px; }
 }
 
-/* /* Revisión integral 2026: contenedor del espacio de trabajo del portal. */
+/* Revisión integral 2026: contenedor del espacio de trabajo del portal. */
 .notargest-workspace-premium {
   width: 100%;
   min-width: 0;
