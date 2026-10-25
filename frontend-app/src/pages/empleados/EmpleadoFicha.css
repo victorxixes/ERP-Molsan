@@ -2,8 +2,8 @@
    Estilos aislados: no modifica otras fichas ni componentes compartidos. */
 .empleado-ficha-premium {
   --ef-line: var(--molsan-border, #dce4ef);
-  --ef-surface: var(--erp-surface, rgba(255, 255, 255, .82));
-  --ef-soft: var(--erp-surface-soft, rgba(248, 250, 252, .76));
+  --ef-surface: var(--molsan-surface, rgba(255, 255, 255, .82));
+  --ef-soft: var(--molsan-surface-soft, rgba(248, 250, 252, .76));
   padding-bottom: 1.25rem;
 }
 .empleado-ficha-premium > section {
