@@ -34,6 +34,7 @@ CATEGORIAS = {
     "Borradores escrituras y otros",
     # Sede notarial
     "Presentación Registro",
+    "Hoja de presentación",
     "Copia simple",
     # Liquidación impuestos
     "AJD/ITP",
@@ -42,7 +43,6 @@ CATEGORIAS = {
     "Factura notarial",
     "Factura Registral",
     "Honorarios gestoría",
-    "Otros pagos",
     # Defectos registrales
     "Defecto registral",
     "Subsanación del defecto",
@@ -58,7 +58,6 @@ CATEGORIAS = {
     "Mails de la oficina",
     "Borradores de escrituras",
     "Factura impuestos",
-    "Otros documentos económicos",
     "Documento de inscripción",
     "Expediente digital completo",
 }
