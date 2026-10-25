@@ -6206,7 +6206,7 @@ const cuantiaFincasParaEnvio =
                 <button type="button" onClick={() => setMostrarDatosEnvioNotario((actual) => !actual)} aria-expanded={mostrarDatosEnvioNotario} className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">{mostrarDatosEnvioNotario ? "⌃ Ocultar" : "⌄ Expandir"}</button>
               </div>
               <div className={`space-y-4 p-4 sm:p-5 ${mostrarDatosEnvioNotario ? "" : "hidden"}`}>
-                {(expediente.fecha_envio_notario || expediente.fecha_envio) && <>
+                <>
                 <div className="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-2">
                 <div className="hidden min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
@@ -6540,7 +6540,7 @@ const cuantiaFincasParaEnvio =
                       </section>
                     )}
                 </div>
-                </>}
+                </>
               </div>
             </section>
           </div>
