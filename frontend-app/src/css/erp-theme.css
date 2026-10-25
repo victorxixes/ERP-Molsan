@@ -35,7 +35,7 @@
   --erp-primary-dark: var(--molsan-primary-hover, #274694);
   --erp-primary-light: var(--molsan-primary-hover, #274694);
   --erp-primary-soft: var(--molsan-primary-soft, #edf3ff);
-  --erp-primary-hover: var(--molsan-primary-soft, #edf3ff);
+  --erp-primary-hover: var(--molsan-primary-hover, #274694);
 
   --erp-text: var(--molsan-text, #17243a);
   --erp-text-soft: var(--molsan-text-muted, #64748b);
