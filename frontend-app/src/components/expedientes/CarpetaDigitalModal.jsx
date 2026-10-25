@@ -8,14 +8,16 @@ import "../../css/ModalesHerramientasPremium.css";
 const BLOQUES = [
   {
     id: "documentacion-previa",
-    titulo: "Documentación previa",
-    descripcion: "Documentación del banco y requisitos anteriores a la firma.",
+    titulo: "Documentación general y previa",
+    descripcion: "Documentación general y requisitos anteriores a la firma.",
     categorias: [
       { etiqueta: "Documentos ABSIS", categoria: "Documentos Absis" },
       { etiqueta: "Hoja de encargo firmada", categoria: "Hoja de Encargo firmada" },
       { etiqueta: "Justificante de cancelación", categoria: "Justificante de cancelación" },
       { etiqueta: "Nota simple registral", categoria: "Nota simple registral" },
       { etiqueta: "Borradores escrituras", categoria: "Borradores escrituras" },
+      { etiqueta: "Otra documentación", categoria: "Otra documentación" },
+      { etiqueta: "Emails de oficina", categoria: "Mails de la Oficina" },
       { etiqueta: "Otros", categoria: "Otros" },
     ],
   },
@@ -31,11 +33,13 @@ const BLOQUES = [
   {
     id: "gestion-economica",
     titulo: "Gestión económica",
-    descripcion: "Repositorios de documentación económica y complementaria del expediente.",
+    descripcion: "Facturas, honorarios y documentación económica complementaria.",
     categorias: [
       { etiqueta: "Factura notarial", categoria: "Factura notarial" },
       { etiqueta: "Factura registral", categoria: "Factura registral" },
       { etiqueta: "Factura impuestos", categoria: "Factura impuestos" },
+      { etiqueta: "Honorarios de gestoría", categoria: "Honorarios gestoría" },
+      { etiqueta: "Otros", categoria: "Otros" },
     ],
   },
   {
@@ -64,25 +68,15 @@ const BLOQUES = [
   },
   {
     id: "facturacion-cierre",
-    titulo: "Facturación y cierre",
-    descripcion: "Escritura final, facturas y justificantes para completar y cerrar el expediente.",
+    titulo: "Cierre del expediente",
+    descripcion: "Acceso a todos los repositorios digitales del expediente y recopilación final.",
     categorias: [
-      { etiqueta: "Escritura digital final", categoria: "Escritura digital final" },
-      { etiqueta: "Documento de inscripción (archivo anterior)", categoria: "Documento de inscripción" },
-      { etiqueta: "Expediente digital completo (archivo anterior)", categoria: "Expediente digital completo" },
-      { etiqueta: "Factura notarial", categoria: "Factura notarial" },
-      { etiqueta: "Factura registral", categoria: "Factura Registral" },
-      { etiqueta: "Factura impuestos (categoría anterior)", categoria: "Factura impuestos" },
-      { etiqueta: "Honorarios de gestoría", categoria: "Honorarios gestoría" },
+      { etiqueta: "Expediente digital completo", categoria: "Expediente digital completo" },
     ],
   },
 ];
 
-const CATEGORIAS_OTROS = [
-  { etiqueta: "Otra documentación", categoria: "Otra documentación" },
-  { etiqueta: "Emails de oficina", categoria: "Mails de la Oficina" },
-  { etiqueta: "Otros", categoria: "Otros" },
-];
+const CATEGORIAS_OTROS = [];
 
 const BASE = (id) => "/expedientes/" + encodeURIComponent(id) + "/carpeta-digital";
 
@@ -171,7 +165,7 @@ export default function CarpetaDigitalModal({
     const bloqueAjustado = bloque.id === "documentacion-previa"
       ? {
           ...bloque,
-          titulo: "Documentación previa",
+          titulo: "Documentación general y previa",
           descripcion: "Documentos requeridos para esta actividad.",
           categorias: [
             { etiqueta: "Hoja de encargo firmada", categoria: "Hoja de Encargo firmada" },
@@ -230,8 +224,13 @@ export default function CarpetaDigitalModal({
       ...bloqueAjustado,
       categorias: categoriasUnicas.filter((item) => {
         const repositorioClave = clavePorCategoria[item.categoria];
-        const repositorioNuevoRequerido = ["documentacion-previa", "gestion-economica"].includes(bloque.id)
-          && ["Borradores escrituras", "Otros"].includes(item.categoria);
+        const repositorioNuevoRequerido = (
+          bloque.id === "documentacion-previa"
+          && ["Borradores escrituras", "Otra documentación", "Mails de la Oficina", "Otros"].includes(item.categoria)
+        ) || (
+          bloque.id === "gestion-economica"
+          && ["Honorarios gestoría", "Otros"].includes(item.categoria)
+        );
         const repositoriosSedeProtocolo = bloque.id === "sede-notarial"
           && normalizar(actividadId).includes("protocolo")
           && ["Hoja de presentación", "Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
