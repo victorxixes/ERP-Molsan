@@ -931,11 +931,27 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       clavesEnBarra.has(normalizarClave(modulo.key)) ||
       clavesEnBarra.has(normalizarClave(modulo.label)) ||
       rutasEnBarra.has(normalizarClave(modulo.route).replace(/\/$/, ""));
+    // El selector «Módulos» contiene únicamente espacios de trabajo,
+    // no herramientas sueltas ni enlaces internos que ya pertenecen a esos espacios.
+    const espaciosTrabajo = new Set([
+      "apoderagest",
+      "cancelagest",
+      "notargest",
+      "encargagest",
+    ]);
+    const marcaActual = normalizarClave(brandName);
+    const claveEspacioActual = ({
+      "apoderagest": "apoderagest",
+      "cancelagest": "cancelagest",
+      "notargest": "notargest",
+      "encargagest": "encargagest",
+    })[marcaActual];
+
     const items = MODULOS_ERP
       .filter((modulo) =>
         Boolean(modulo.route) &&
-        modulo.key !== "notificaciones" &&
-        normalizarClave(modulo.label) !== "notificaciones" &&
+        espaciosTrabajo.has(modulo.key) &&
+        modulo.key !== claveEspacioActual &&
         (esAdmin || puedeVerModulo(modulo.key)) &&
         !yaVisible(modulo)
       )
@@ -957,32 +973,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
         lista.findIndex((otro) => otro.key === modulo.key) === index
       );
 
-    // Excepciones operativas que no forman parte del catálogo general.
-    const provisiones = {
-      key: "provisiones-fondos",
-      to: "/provisiones-fondos",
-      label: "Provisiones de fondos",
-      icon: "clipboard",
-    };
-    const provisionesYaVisible = yaVisible(provisiones) ||
-      items.some((item) => item.key === provisiones.key ||
-        normalizarClave(item.label) === normalizarClave(provisiones.label) ||
-        normalizarClave(item.to) === normalizarClave(provisiones.to));
-    if ((esAdmin || puedeVerModulo("expedientes")) &&
-        !provisionesYaVisible) {
-      items.push(provisiones);
-    }
-
-    const controlFichajes = {
-      key: "control-fichajes",
-      to: "/control-fichajes",
-      label: "Control de Fichajes",
-      icon: "clock",
-    };
-    if (esAdmin &&
-        !items.some((item) => item.key === controlFichajes.key)) {
-      items.push(controlFichajes);
-    }
     return items;
   }, [empleado, esPortalNotarialExterno, navigationItems, visiblesPrincipales, visiblesSecundarios, modulosFijadosUnicos, brandName]);
   const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
@@ -1040,12 +1030,24 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   // para evitar que aparezca como botón independiente.
   const navigationItemsConModulos = useMemo(() => {
     if (!Array.isArray(navigationItems)) return null;
-    const sinFichajes = navigationItems.filter((item) =>
-      item?.key !== "fichajes" &&
-      normalizarModulo(item?.label) !== "fichajes" &&
-      item?.key !== "modulos" &&
-      !["módulos", "modulos"].includes(normalizarModulo(item?.label))
-    );
+    const clavesNavegacion = new Set();
+    const sinFichajes = navigationItems.filter((item) => {
+      if (
+        item?.key === "fichajes" ||
+        normalizarModulo(item?.label) === "fichajes" ||
+        item?.key === "modulos" ||
+        ["módulos", "modulos"].includes(normalizarModulo(item?.label))
+      ) return false;
+
+      const identificadores = [
+        normalizarModulo(item?.key),
+        normalizarModulo(item?.label),
+        normalizarModulo(item?.to || item?.route),
+      ].filter(Boolean);
+      if (identificadores.some((clave) => clavesNavegacion.has(clave))) return false;
+      identificadores.forEach((clave) => clavesNavegacion.add(clave));
+      return true;
+    });
     // «Módulos» debe ser siempre el último botón de la barra, no quedar
     // intercalado entre pestañas propias y accesos comunes del ERP.
     if (modulosDropdown.length > 0) {
