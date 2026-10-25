@@ -6,18 +6,15 @@
 .table-sj {
   width: 100%;
   border-collapse: collapse;
-  border-radius: var(--sj-radius);
+  border-radius: var(--molsan-radius-card, 14px);
   overflow: hidden;
   border: 1px solid var(--erp-border);
   background: var(--erp-surface);
   color: var(--erp-text);
-  animation: fadeInSJ 0.35s ease-out;
-  transition: box-shadow 0.25s ease;
+  transition: border-color var(--molsan-transition-fast, 150ms ease);
 }
 
-.table-sj:hover {
-  box-shadow: 0 8px 24px rgba(36, 50, 74, 0.10);
-}
+
 
 
 /* ============================================================
@@ -25,16 +22,16 @@
    ============================================================ */
 
 .table-sj thead {
-  background-color: var(--erp-primary);
-  color: #ffffff;
-  font-weight: 600;
-  letter-spacing: 0.2px;
+  background-color: var(--molsan-surface-soft, #f7f9fc);
+  color: var(--molsan-text-secondary, #526176);
+  font-weight: 700;
+  letter-spacing: normal;
 }
 
 .table-sj th {
-  color: #ffffff;
-  font-weight: 600;
-  background-color: var(--erp-primary);
+  color: var(--molsan-text-secondary, #526176);
+  font-weight: 700;
+  background-color: var(--molsan-surface-soft, #f7f9fc);
 }
 
 
