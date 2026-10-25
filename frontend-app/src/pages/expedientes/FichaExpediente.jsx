@@ -5999,11 +5999,11 @@ const cuantiaFincasParaEnvio =
 
             </>}
 
-          </section>
+          </div>
 
           {mostrarControlCalidad && renderChecklistCalidad()}
 
-        </div>
+        </section>
 
 
       <div className={`mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2 ${mostrarControlCalidad ? "hidden" : ""}`}>
