@@ -21,7 +21,6 @@
   border: 1px solid var(--molsan-border, #dce4ef);
 }
 
- .modal-sj:hover { transform: none; box-shadow: var(--molsan-shadow-popover, 0 18px 45px rgba(15, 23, 42, .14)); }
 
 .modal-sj-header {
   font-weight: 600;
