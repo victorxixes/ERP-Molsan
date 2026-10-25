@@ -844,7 +844,11 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     ]
   );
 
-  const normalizarModulo = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
+  const normalizarModulo = (valor) => String(valor || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLocaleLowerCase("es");
 
   // Accesos directos que deben permanecer visibles en cada módulo.
   // El filtrado de visiblesSecundarios conserva los permisos del empleado.
@@ -869,9 +873,11 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       if (normalizarModulo(modulo.label) === normalizarModulo(brandName)) return false;
       if (clavesFijadas.has(modulo.key)) return false;
 
+      const rutaModulo = normalizarModulo(modulo.to || modulo.route).replace(/\/$/, "");
       return !elementosEnBarra.some((item) =>
-        item?.key === modulo.key ||
-        normalizarModulo(item?.label) === normalizarModulo(modulo.label)
+        normalizarModulo(item?.key) === normalizarModulo(modulo.key) ||
+        normalizarModulo(item?.label) === normalizarModulo(modulo.label) ||
+        normalizarModulo(item?.to || item?.route).replace(/\/$/, "") === rutaModulo
       );
     });
   }, [visiblesSecundarios, navigationItems, brandName, modulosFijados]);
@@ -901,10 +907,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   const modulosDropdown = useMemo(() => {
     const normalizarClave = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
     if (esPortalNotarialExterno) return [];
-
-    const rol = normalizarClave(empleado?.rol?.nombre || empleado?.rol_nombre || empleado?.nombre_rol);
-    const usuarioAdmin = normalizarClave(empleado?.usuario) === "admin";
-    const esAdmin = usuarioAdmin || ["admin", "administrador", "administradora", "superadmin", "superusuario"].some((r) => rol.includes(r));
 
     // «Módulos» completa la navegación: solo muestra entradas del catálogo
     // que no estén ya visibles en la barra ni en los accesos fijados.
@@ -952,7 +954,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
         Boolean(modulo.route) &&
         espaciosTrabajo.has(modulo.key) &&
         modulo.key !== claveEspacioActual &&
-        (esAdmin || puedeVerModulo(modulo.key)) &&
+        puedeVerModulo(modulo.key) &&
         !yaVisible(modulo)
       )
       .map((modulo) => ({
@@ -1271,20 +1273,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                     badge={modulo.badge || 0}
                   />
                 ))}
-
-            {/* Navegación común del ERP: los módulos autorizados siguen disponibles
-                desde cualquier módulo interno, sin sustituir las pestañas propias
-                de cada espacio de trabajo. Los portales externos quedan aislados. */}
-            {!navigationItemsConModulos && !esPortalNotarialExterno && visiblesPrincipales
-              .map((modulo) => (
-                <TopNavItem
-                  key={`erp-${modulo.key}`}
-                  to={modulo.to}
-                  label={modulo.label}
-                  icon={modulo.icon}
-                  badge={modulo.badge || 0}
-                />
-              ))}
 
             {!navigationItemsConModulos && modulosFijadosUnicos.map((modulo) => (
               <TopNavItem
