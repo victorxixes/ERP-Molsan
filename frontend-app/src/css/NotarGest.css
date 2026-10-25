@@ -547,15 +547,15 @@
 .ng-admin-notarias .ng-control-titulos h2{margin:5px 0;color:var(--molsan-text,#17243a);font-size:clamp(24px,2.5vw,32px);font-weight:800;letter-spacing:-.8px;line-height:1.15}
 .ng-admin-notarias .ng-control-titulos p{margin:0;color:var(--molsan-text-muted,#64748b);font-size:13px;line-height:1.65}
 .ng-admin-notarias .ng-control-acciones{display:flex;flex-direction:column;align-items:flex-end;gap:10px;max-width:100%}
-.ng-admin-notarias .ng-control-fecha{display:flex;align-items:center;gap:8px;color:var(--molsan-text-muted,#64748b);font-size:11px;font-weight:750;text-transform:capitalize}
-.ng-admin-notarias .ng-control-punto{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#10b981;box-shadow:0 0 0 4px #d1fae5}
+
+
 .ng-admin-notarias .ng-control-botones{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
-.ng-admin-notarias .ng-control-secundario,.ng-admin-notarias .ng-control-primario,.ng-admin-notarias .ng-control-salir{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 15px;border-radius:var(--molsan-radius-control,9px);font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer;transition:border-color .16s ease,background-color .16s ease,box-shadow .16s ease}
-.ng-admin-notarias .ng-control-secundario{color:var(--molsan-primary,#3156b3);background:var(--molsan-surface,#fff);border:1px solid var(--molsan-border,#dce4ef)}
-.ng-admin-notarias .ng-control-salir{color:#a33a48;background:var(--molsan-surface,#fff);border:1px solid #f0d8dc}
-.ng-admin-notarias .ng-control-secundario:hover,.ng-admin-notarias .ng-control-primario:hover,.ng-admin-notarias .ng-control-salir:hover{transform:none;box-shadow:none}
-.ng-admin-notarias .ng-control-primario:disabled{opacity:.6;cursor:wait;transform:none}
-@media(max-width:1050px){.ng-admin-notarias .ng-control-hero{align-items:flex-start}.ng-admin-notarias .ng-control-acciones{align-items:flex-start}.ng-admin-notarias .ng-control-fecha{justify-content:flex-start}}
+
+
+
+
+
+@media(max-width:1050px){.ng-admin-notarias .ng-control-hero{align-items:flex-start}.ng-admin-notarias .ng-control-acciones{align-items:flex-start}}
 @media(max-width:700px){
   .ng-admin-notarias{margin:12px 10px 20px!important;padding:14px!important}
   .ng-admin-notarias .ng-control-hero{align-items:flex-start;gap:16px;padding-bottom:18px}
@@ -586,16 +586,20 @@
 .ng-admin-notarias .ng-control-hero{padding:8px 4px 26px;gap:22px}
 .ng-admin-notarias .ng-control-logo{box-shadow:var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06))}
 .ng-admin-notarias .ng-control-titulos h2{letter-spacing:-1.35px}
-.ng-admin-notarias .ng-control-fecha{padding:9px 12px;background:var(--molsan-surface,#fff);border:1px solid var(--molsan-border,#dce4ef);border-radius:var(--molsan-radius-control,9px)}
+
 .ng-admin-notarias .ng-control-botones{gap:9px}
-.ng-admin-notarias .ng-control-secundario,.ng-admin-notarias .ng-control-primario,.ng-admin-notarias .ng-control-salir{
+.ng-admin-notarias .ng-control-secundario{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 15px;
-  border-radius:12px;font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer;
-  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+  border:1px solid var(--molsan-border,#dce4ef);border-radius:var(--molsan-radius-control,9px);
+  color:var(--molsan-primary,#3156b3);background:var(--molsan-surface,#fff);
+  font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer;
+  transition:border-color var(--molsan-transition-fast,150ms ease),background-color var(--molsan-transition-fast,150ms ease);
 }
-.ng-admin-notarias .ng-control-secundario{color:#3154c5;background:rgba(255,255,255,.84);border:1px solid #dfe6f1}
-.ng-admin-notarias .ng-control-primario{color:#fff;background:var(--molsan-primary,#3156b3);border:1px solid var(--molsan-primary,#3156b3);box-shadow:none}
-.ng-admin-notarias .ng-control-salir{color:#a33a48;background:rgba(255,255,255,.72);border:1px solid #f0d8dc}
+.ng-admin-notarias .ng-control-secundario:hover{background:var(--molsan-primary-soft,#edf3ff);border-color:var(--molsan-primary,#3156b3)}
+
+
+
+
 
 
 .ng-admin-notarias .ng-admin-kpis{
