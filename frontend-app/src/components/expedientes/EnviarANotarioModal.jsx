@@ -934,17 +934,7 @@ export default function EnviarANotarioModal({
                     </div>
                   ))}
 
-                  <button
-                    type="button"
-                    disabled={loading || loadingTipos}
-                    onClick={() => setDocumentosEscritura((actuales) => [...actuales, { id: Date.now(), tipo_documento: "", cuantia: "" }])}
-                    className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-primary)]/30 bg-[var(--erp-primary-soft)] px-4 py-2.5 text-sm font-bold text-[var(--erp-primary)] transition hover:opacity-80 disabled:opacity-50"
-                  >
-                    <span className="text-lg leading-none">+</span> Añadir otro documento y cuantía
-                  </button>
-                </div>
-
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {/* FORMATO DE ESCRITURA */}
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-700">
@@ -985,6 +975,18 @@ export default function EnviarANotarioModal({
                     </select>
                   </div>
                 </div>
+
+
+                  <button
+                    type="button"
+                    disabled={loading || loadingTipos}
+                    onClick={() => setDocumentosEscritura((actuales) => [...actuales, { id: Date.now(), tipo_documento: "", cuantia: "" }])}
+                    className="inline-flex items-center gap-2 rounded-xl border border-[var(--erp-primary)]/30 bg-[var(--erp-primary-soft)] px-4 py-2.5 text-sm font-bold text-[var(--erp-primary)] transition hover:opacity-80 disabled:opacity-50"
+                  >
+                    <span className="text-lg leading-none">+</span> Añadir otro documento y cuantía
+                  </button>
+                </div>
+
 
               </section>
             </div>
@@ -1186,77 +1188,7 @@ export default function EnviarANotarioModal({
                 </div>
               </section>
 
-              {/* RESUMEN DE FACTURACIÓN */}
 
-              <section className="mt-5 rounded-xl border border-slate-200 bg-white p-3">
-                <h3 className="mb-3 text-sm font-bold text-slate-800">
-                  Resumen de facturación
-                </h3>
-
-                <div className="space-y-2 text-sm text-slate-600">
-                  <p className="break-words">
-                    <strong className="text-slate-700">
-                      Nombre:
-                    </strong>{" "}
-                    {`${form.facturacion_nombre} ${form.facturacion_apellidos}`.trim() ||
-                      "—"}
-                  </p>
-
-                  <p className="break-words">
-                    <strong className="text-slate-700">
-                      DNI / NIF:
-                    </strong>{" "}
-                    {form.facturacion_dni_nif || "—"}
-                  </p>
-
-                  <p className="break-words">
-                    <strong className="text-slate-700">
-                      Dirección:
-                    </strong>{" "}
-                    {form.facturacion_direccion || "—"}
-                  </p>
-
-                  <p className="break-words">
-                    <strong className="text-slate-700">
-                      Código postal y población:
-                    </strong>{" "}
-                    {[
-                      form.facturacion_codigo_postal,
-                      form.facturacion_poblacion,
-                    ]
-                      .filter(Boolean)
-                      .join(" ") || "—"}
-                  </p>
-
-                  <p className="break-words">
-                    <strong className="text-slate-700">
-                      Provincia:
-                    </strong>{" "}
-                    {form.facturacion_provincia || "—"}
-                  </p>
-
-                  <p className="break-words">
-                    <strong className="text-slate-700">
-                      Teléfono:
-                    </strong>{" "}
-                    {form.facturacion_telefono || "—"}
-                  </p>
-
-                  <p className="break-words">
-                    <strong className="text-slate-700">
-                      Email:
-                    </strong>{" "}
-                    {form.facturacion_email || "—"}
-                  </p>
-
-                  <p className="break-words">
-                    <strong className="text-slate-700">
-                      Idioma:
-                    </strong>{" "}
-                    {form.idioma}
-                  </p>
-                </div>
-              </section>
             </div>
               </div>
             </div>
