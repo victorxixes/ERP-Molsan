@@ -16,7 +16,7 @@ import { obtenerCatalogoAcciones, obtenerAccionesExpediente, asignarAccionExpedi
 function normalizarMunicipio(valor) {
   return String(valor ?? "")
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+                  .replace(/[\u0300-\u036f]/g, "")
     .trim()
     .replace(/\s+/g, " ")
     .toLocaleLowerCase("es");
