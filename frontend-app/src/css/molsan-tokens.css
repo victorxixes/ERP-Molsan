@@ -1,22 +1,22 @@
 /* MOLSAN ERP · tokens visuales únicos compartidos */
 :root {
   --molsan-font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --molsan-font-size-xs: 11px;
+  --molsan-font-size-xs: 12px;
   --molsan-font-size-sm: 12px;
-  --molsan-font-size-md: 13px;
+  --molsan-font-size-md: 14px;
   --molsan-font-size-lg: 16px;
-  --molsan-font-size-title: 22px;
+  --molsan-font-size-title: 24px;
   --molsan-space-1: 4px;
   --molsan-space-2: 8px;
   --molsan-space-3: 12px;
   --molsan-space-4: 16px;
   --molsan-space-5: 20px;
   --molsan-space-6: 24px;
-  --molsan-control-height: 36px;
-  --molsan-control-height-compact: 30px;
-  --molsan-radius-control: 8px;
-  --molsan-radius-card: 12px;
-  --molsan-radius-dialog: 14px;
+  --molsan-control-height: 38px;
+  --molsan-control-height-compact: 32px;
+  --molsan-radius-control: 9px;
+  --molsan-radius-card: 14px;
+  --molsan-radius-dialog: 16px;
   --molsan-primary: var(--erp-primary, #3156b3);
   --molsan-primary-hover: var(--erp-primary-dark, #274694);
   --molsan-primary-soft: var(--erp-primary-soft, #edf3ff);
