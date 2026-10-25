@@ -17,10 +17,6 @@
   --sj-amarillo: var(--molsan-warning, #b7791f);
   --sj-amarillo-claro: #f3d27a;
 
-  /* Gradientes corporativos */
-  --sj-gradient-azul: linear-gradient(135deg, var(--molsan-primary, #3156b3), var(--molsan-primary-hover, #274694));
-  --sj-gradient-blanco: linear-gradient(135deg, var(--molsan-surface, #fff), var(--molsan-surface-soft, #f7f9fc));
-
   /* Tipografía */
   --sj-font: var(--molsan-font-family, Inter, system-ui, sans-serif);
 
@@ -31,12 +27,6 @@
 
   --sj-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
   --sj-shadow-lg: var(--molsan-shadow-popover, 0 18px 45px rgba(15, 23, 42, .14));
-  --sj-shadow-blue: 0 8px 24px rgba(49, 86, 179, .12);
-
-  /* Glass UI */
-  --sj-glass-bg: var(--molsan-surface, #fff);
-  --sj-glass-border: var(--molsan-border, #dce4ef);
-
   /* Espaciado */
   --sj-gap: 24px;
   --sj-gap-sm: 14px;
