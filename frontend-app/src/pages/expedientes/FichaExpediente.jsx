@@ -2667,11 +2667,12 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
             ? (actividadDraft.apoderado ?? "")
             : (expediente?.apoderado ?? "")
         ).toLowerCase();
-        const gestoriaPorDefecto = expediente?.apoderado_empleado_id
-          || (apoderadoTexto.includes("oficina") && apoderadoTexto.includes("caixabank"))
-          ? "Gestoría"
-          : (apoderadoTexto.includes("oficina") && apoderadoTexto.includes("otra entidad"))
-            ? "Otra entidad"
+        const esOficinaOtraEntidad = apoderadoTexto.includes("oficina") && apoderadoTexto.includes("otra entidad");
+        const esOficinaCaixaBank = apoderadoTexto.includes("oficina") && apoderadoTexto.includes("caixabank");
+        const gestoriaPorDefecto = esOficinaOtraEntidad
+          ? "Otra entidad"
+          : (expediente?.apoderado_empleado_id || esOficinaCaixaBank)
+            ? "Gestoría"
             : "Gestoría";
         const valorPorDefecto = key === "gestoria"
           ? (expediente?.gestoria || gestoriaPorDefecto)
@@ -7802,16 +7803,17 @@ const cuantiaFincasParaEnvio =
                       ? (actividadDraft.apoderado ?? "")
                       : (expediente?.apoderado ?? "")
                   ).toLowerCase();
-                  const gestoriaPorDefecto = expediente?.apoderado_empleado_id
-                    || (apoderadoActual.includes("oficina") && apoderadoActual.includes("caixabank"))
-                    ? "Gestoría"
-                    : (apoderadoActual.includes("oficina") && apoderadoActual.includes("otra entidad"))
-                      ? "Otra entidad"
+                  const esOficinaOtraEntidad = apoderadoActual.includes("oficina") && apoderadoActual.includes("otra entidad");
+                  const esOficinaCaixaBank = apoderadoActual.includes("oficina") && apoderadoActual.includes("caixabank");
+                  const gestoriaPorDefecto = esOficinaOtraEntidad
+                    ? "Otra entidad"
+                    : (expediente?.apoderado_empleado_id || esOficinaCaixaBank)
+                      ? "Gestoría"
                       : "Gestoría";
                   const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
                     ? (actividadDraft[campo.key] ?? "")
                     : (campo.key === "gestoria"
-                      ? (expediente?.gestoria || gestoriaPorDefecto)
+                      ? (apoderadoActual.includes("oficina") ? gestoriaPorDefecto : (expediente?.gestoria || gestoriaPorDefecto))
                       : (expediente?.[campo.key] ?? ""));
                   const cambiar = (nuevoValor) => setActividadDraft((actual) => {
                     const siguiente = { ...actual, [campo.key]: nuevoValor };
