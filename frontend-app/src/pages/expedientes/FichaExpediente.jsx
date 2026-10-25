@@ -4916,7 +4916,7 @@ const cuantiaFincasParaEnvio =
 
 
             {(
-              <div className={actividadSeleccionada === "sede-notarial" ? "mb-4 grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : "mb-4 min-w-0"}>
+              <div className={actividadSeleccionada === "sede-notarial" ? "mb-4 grid min-w-0 grid-cols-1 items-start gap-3 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.42fr)]" : "mb-4 min-w-0"}>
                 <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-2">
               <CarpetaDigitalModal
                 expedienteId={expediente?.id_expediente || id}
