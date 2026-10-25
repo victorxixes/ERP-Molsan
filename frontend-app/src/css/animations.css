@@ -85,66 +85,8 @@
   100% { transform: rotate(0deg); }
 }
 
-/* ============================================================
-   ERP SJ‑2026 — Activación automática global
-   ============================================================ */
-
-/* Cards */
-.card-sj {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-.card-sj:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
-}
-
-/* Botones */
-.btn-sj {
-  transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-}
-.btn-sj:hover {
-  transform: none;
-}
-
-/* Tablas */
-.table-sj {
-  transition: box-shadow 0.25s ease;
-}
-.table-sj:hover {
-  box-shadow: 0 8px 24px rgba(31, 58, 95, 0.28);
-}
-
-/* Pestañas */
-.tab-sj {
-  transition: transform 0.25s ease;
-}
-.tab-sj:hover {
-  transform: translateX(6px);
-}
-
-/* Inputs */
-.input-sj {
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
-}
-.input-sj:hover {
-  transform: none;
-}
-
-/* Modales */
-.modal-sj {
-  transition: box-shadow 0.25s ease;
-}
-.modal-sj:hover {
-  box-shadow: 0 0 14px rgba(31, 58, 95, 0.40);
-}
-
-/* Grids */
-.grid-sj > * {
-  transition: box-shadow 0.18s ease, border-color 0.18s ease;
-}
-.grid-sj > *:hover {
-  transform: none;
-}
+/* Las reglas de componentes (cards, tablas, botones, pestañas, campos y modales)
+   se mantienen en sus hojas propias para evitar redefiniciones y conflictos. */
 
 /* Accesibilidad: respeta la preferencia del sistema para reducir movimiento. */
 @media (prefers-reduced-motion: reduce) {
