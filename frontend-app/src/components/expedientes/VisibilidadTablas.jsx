@@ -28,7 +28,7 @@ const COLUMNAS_INICIALES = {
 const REPOSITORIOS_INICIALES = {
   "documentacion-previa": ["documentos_absis", "hoja_encargo_firmada", "justificante_cancelacion", "nota_simple_registral", "borradores_escritura", "otros_documentos"],
   "sede-notarial": ["borradores_escritura", "presentacion_registro_documentos", "copia_simple_documentos"],
-  "sede-notarial-protocolo": ["borradores_escritura", "presentacion_registro_documentos", "copia_simple_documentos"],
+  "sede-notarial-protocolo": ["borradores_escritura", "presentacion_registro_documentos", "hoja_presentacion_tacio_documentos", "copia_simple_documentos"],
   "gestion-economica": ["borradores_escritura", "otros_documentos"],
   "liquidacion-impuestos": ["ajd_itp_documentos", "otros_impuestos_documentos"],
   "tramitacion-inscripcion": ["hoja_inscripcion_documentos", "documento_inscripcion_documentos"],
