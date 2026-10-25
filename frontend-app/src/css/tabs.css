@@ -21,13 +21,9 @@
 .tab-sj:hover {
   background-color: var(--molsan-primary-soft, #edf3ff);
   color: var(--molsan-primary, #3156b3);
-  transform: none;
-  box-shadow: none;
 }
 
 .tab-sj.active {
   background-color: var(--molsan-primary, #3156b3);
   color: white;
-  box-shadow: none;
-  transform: none;
 }
