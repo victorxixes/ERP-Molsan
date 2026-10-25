@@ -5245,6 +5245,7 @@ const cuantiaFincasParaEnvio =
                       </section>
                     )}
                 </div>
+              </div>
               )}
                 {actividadSeleccionada === "sede-notarial" && (
                   <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
