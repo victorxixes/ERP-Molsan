@@ -24,7 +24,6 @@ import App from "./App";
 // Capa de armonización general.
 import "./css/MolsanRedesign2027.css";
 // Última capa: neutraliza diferencias visuales propias de los módulos.
-import "./css/MolsanModuleUnification.css";
 
 // ============================================================
 // Root — Inicialización del ERP SJ-2026
