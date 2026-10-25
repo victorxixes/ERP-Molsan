@@ -9,19 +9,19 @@
 }
 .molsan-intranet-page article {
   border-color: var(--molsan-border, rgba(148, 163, 184, .28));
-  border-radius: 1.15rem;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .045);
-  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  transition: border-color .16s ease, box-shadow .16s ease;
 }
 .molsan-intranet-page article:hover {
-  border-color: color-mix(in srgb, var(--molsan-primary, #3156b3) 28%, var(--molsan-border, #dbe2ea));
-  box-shadow: 0 12px 28px rgba(15, 23, 42, .075);
+  border-color: var(--molsan-border, #dce4ef);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
 .molsan-intranet-page input:not([type="checkbox"]):not([type="radio"]),
 .molsan-intranet-page select,
 .molsan-intranet-page textarea {
   max-width: 100%;
-  border-radius: .75rem;
+  border-radius: var(--molsan-radius-control, 9px);
   transition: border-color .16s ease, box-shadow .16s ease;
 }
 .molsan-intranet-page input:focus-visible,
