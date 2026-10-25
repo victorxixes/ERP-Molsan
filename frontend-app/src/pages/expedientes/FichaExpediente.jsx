@@ -7828,7 +7828,7 @@ const cuantiaFincasParaEnvio =
                 </label>
               </div>
             ) : actividadSeleccionada === "sede-notarial-protocolo" ? (
-              <div className="grid items-start gap-4 lg:grid-cols-2">
+              <div className="grid items-start gap-4">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                   <h4 className="text-sm font-extrabold text-slate-800">Sede notarial · datos para integración</h4>
                   <p className="mb-3 mt-1 text-xs text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
@@ -7849,20 +7849,6 @@ const cuantiaFincasParaEnvio =
                   <p className="mt-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-xs text-sky-800">
                     La extracción automática de estos datos desde la hoja de presentación PDF subida en NotarGest está pendiente de implementar; por ahora puedes introducirlos y guardarlos aquí.
                   </p>
-                </section>
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                  <h4 className="mb-3 text-xs font-extrabold uppercase tracking-[0.1em] text-indigo-700">Datos de facturación</h4>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
-                    <Dato campo="Nombre" valor={expediente.facturacion_nombre ?? expediente.nombre_facturacion ?? expediente.nombre_cliente_facturacion} />
-                    <Dato campo="Apellidos" valor={expediente.facturacion_apellidos ?? expediente.apellidos_facturacion ?? expediente.apellidos_cliente_facturacion} />
-                    <Dato campo="DNI / NIF de facturación" valor={expediente.facturacion_dni_nif ?? expediente.dni_facturacion ?? expediente.nif_facturacion} />
-                    <Dato campo="Dirección" valor={expediente.facturacion_direccion ?? expediente.direccion_facturacion ?? expediente.direccion_cliente_facturacion} />
-                    <Dato campo="Código postal" valor={expediente.facturacion_codigo_postal ?? expediente.codigo_postal_facturacion ?? expediente.cp_facturacion} />
-                    <Dato campo="Población" valor={expediente.facturacion_poblacion ?? expediente.poblacion_facturacion ?? expediente.municipio_facturacion} />
-                    <Dato campo="Provincia" valor={expediente.facturacion_provincia ?? expediente.provincia_facturacion} />
-                    <Dato campo="Teléfono" valor={expediente.facturacion_telefono ?? expediente.telefono_facturacion ?? expediente.telefono_cliente_facturacion} />
-                    <Dato campo="Email" valor={expediente.facturacion_email ?? expediente.email_facturacion ?? expediente.correo_facturacion} />
-                  </div>
                 </section>
               </div>
             ) : (
