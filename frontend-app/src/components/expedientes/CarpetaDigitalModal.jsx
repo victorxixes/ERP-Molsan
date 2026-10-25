@@ -863,7 +863,7 @@ export default function CarpetaDigitalModal({
                       ))}
                     </div>
                   ) : (
-                    actividadId === "sede-notarial-protocolo" ? (
+                    String(actividadId || "").includes("protocolo") ? (
                       <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
                         <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
                           <h5 className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">Datos notariales y de presentación</h5>
@@ -873,11 +873,11 @@ export default function CarpetaDigitalModal({
                               ["NIF notario", datosPanelActividad?.nif_notario || datosPanelActividad?.notario_nif],
                               ["Fecha firma", datosPanelActividad?.fecha_firma],
                               ["Protocolo", datosPanelActividad?.protocolo],
-                              ["Asiento presentación", datosPanelActividad?.asiento_presentacion],
-                              ["Libro diario", datosPanelActividad?.libro_diario],
+                              ["Asiento presentación", datosPanelActividad?.asiento_presentacion || datosPanelActividad?.asiento_presentacion_libro_diario],
+                              ["Libro diario", datosPanelActividad?.libro_diario || datosPanelActividad?.asiento_presentacion_libro_diario],
                               ["Fecha presentación", datosPanelActividad?.fecha_presentacion],
                               ["Número de entrada", datosPanelActividad?.numero_entrada],
-                              ["Fecha recogida notario o presentación telemática", datosPanelActividad?.fecha_recogida_notario_presentacion_telematica],
+                              ["Fecha recogida notario o presentación telemática", datosPanelActividad?.fecha_recogida_notario_presentacion_telematica || datosPanelActividad?.fecha_recogida_notario_o_presentacion_telematica],
                             ].map(([etiqueta, valor]) => (
                               <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
                                 <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
