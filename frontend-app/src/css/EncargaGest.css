@@ -135,7 +135,7 @@
   top: 0; left: 0; right: 0;
   height: 2px;
   content: "";
-  background: linear-gradient(90deg, transparent, #416df0 28%, #83a1ff 70%, transparent);
+  background: linear-gradient(90deg, transparent, var(--molsan-primary, #3156b3) 28%, var(--molsan-primary-hover, #274694) 70%, transparent);
 }
 .eg-modal-brand {
   display: grid;
