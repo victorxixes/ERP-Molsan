@@ -7961,7 +7961,7 @@ const cuantiaFincasParaEnvio =
               </label>
             );
           })}
-          {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).length && actividadSeleccionada !== "sede-notarial-protocolo" && actividadSeleccionada !== "sede-notarial" && (
+          {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).length && actividadSeleccionada !== "sede-notarial-protocolo" && actividadSeleccionada !== "sede-notarial" && actividadSeleccionada !== "gestion-economica" && (
             <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">Esta actividad no tiene campos específicos configurados todavía.</p>
           )}
           </div>
@@ -8047,6 +8047,7 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : actividadSeleccionada === "gestion-economica" ? (
               <div className="space-y-3">
+                <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">Esta actividad no tiene campos específicos configurados todavía.</p>
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                   <h4 className="mb-2 text-sm font-extrabold text-slate-800">Líneas de pago · datos para ABSIS</h4>
                   <p className="text-xs leading-relaxed text-slate-600">
