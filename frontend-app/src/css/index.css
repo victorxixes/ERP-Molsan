@@ -37,10 +37,6 @@
   color: var(--sj-azul-claro);
 }
 
-/* Root ocupa toda la pantalla */
-#root {
-  min-height: 100vh;
-}
 
 /* ============================================================
    ERP SJ‑2026 — Animaciones corporativas
