@@ -135,19 +135,7 @@
    por los módulos. Solo cambia presentación, nunca comportamiento.
    ============================================================ */
 
-/* Portales profesionales: misma superficie y jerarquía de tarjetas. */
-:where(.notargest .ng-contador, .notargest .ng-tarea, .notargest .ng-acceso,
-       .notargest .ng-panel, .apoderagest .ag-kpi, .apoderagest .ag-panel,
-       .encargagest .eg-kpi, .encargagest .eg-panel,
-       .encargagest .eg-directorio-card, .encargagest .eg-modal-section) {
-  color: var(--molsan-text, #17243a);
-  background: #fff;
-  border: 1px solid var(--molsan-border, #dce4ef);
-  border-radius: var(--molsan-radius-card, 14px);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
+/* Las superficies de los portales se normalizan en el bloque canónico inferior. */
 :where(.notargest .ng-cabecera, .apoderagest .ag-hero, .encargagest .eg-hero) {
   color: var(--molsan-text, #17243a);
   background: transparent;
@@ -536,12 +524,14 @@ table :is(th, td) {
   box-shadow: none !important;
 }
 
-:where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .ag-card, .eg-panel, .eg-kpi, .eg-directorio-card) {
+:where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .ag-card, .eg-panel, .eg-kpi, .eg-directorio-card, .eg-modal-section) {
   color: var(--molsan-text, #17243a) !important;
   background: var(--molsan-surface, #fff) !important;
   border-color: var(--molsan-border, #dce4ef) !important;
   border-radius: var(--molsan-radius-card, 14px) !important;
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 :where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-contador, .ng-acceso, .eg-kpi, .ag-kpi) :is(strong, span, small) {
