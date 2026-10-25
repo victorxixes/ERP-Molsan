@@ -1032,7 +1032,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
         item?.key === "fichajes" ||
         normalizarModulo(item?.label) === "fichajes" ||
         item?.key === "modulos" ||
-        ["módulos", "modulos"].includes(normalizarModulo(item?.label))
+        ["módulos", "modulos", "espacios de trabajo"].includes(normalizarModulo(item?.label))
       ) return false;
 
       const identificadores = [
@@ -1044,7 +1044,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       identificadores.forEach((clave) => clavesNavegacion.add(clave));
       return true;
     });
-    // «Módulos» debe ser siempre el último botón de la barra, no quedar
+    // «Espacios de trabajo» debe ser siempre el último botón de la barra, no quedar
     // intercalado entre pestañas propias y accesos comunes del ERP.
     if (modulosDropdown.length > 0) {
       sinFichajes.push({ key: "modulos", label: "Espacios de trabajo", icon: "database" });
