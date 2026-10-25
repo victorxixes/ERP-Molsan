@@ -696,19 +696,19 @@
 .ng-admin-notarias .ng-admin-estado-ok{color:#087c5b;background:#e4f8ef;border:1px solid #c9efdf}
 .ng-admin-notarias .ng-admin-estado-alerta{color:#a33a48;background:#fff0f1;border:1px solid #f7d6da}
 .ng-admin-notarias .ng-admin-resumen{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,.8fr));gap:9px;margin:16px 0}
-.ng-admin-notarias .ng-admin-resumen-principal,.ng-admin-notarias .ng-admin-resumen-secundario{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:5px;min-width:0;padding:13px;border-radius:14px;border:1px solid #e4eaf5;background:rgba(248,250,255,.86)}
-.ng-admin-notarias .ng-admin-resumen-principal{background:linear-gradient(145deg,#edf2ff,#f5f7ff);border-color:#dbe5ff}
-.ng-admin-notarias .ng-admin-resumen-principal>span,.ng-admin-notarias .ng-admin-resumen-secundario>span{color:#6c7c95;font-size:10px;font-weight:800;line-height:1.35}
-.ng-admin-notarias .ng-admin-resumen-principal>strong{color:#3154c5;font-size:31px;font-weight:900;line-height:1}
-.ng-admin-notarias .ng-admin-resumen-principal>small{color:#8491a7;font-size:9px;line-height:1.4}
-.ng-admin-notarias .ng-admin-resumen-secundario>strong{color:#263956;font-size:25px;font-weight:850;line-height:1}
+.ng-admin-notarias .ng-admin-resumen-principal,.ng-admin-notarias .ng-admin-resumen-secundario{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:5px;min-width:0;padding:13px;border-radius:var(--molsan-radius-card,14px);border:1px solid var(--molsan-border,#dce4ef);background:var(--molsan-surface-soft,#f7f9fc)}
+.ng-admin-notarias .ng-admin-resumen-principal{background:var(--molsan-primary-soft,#edf3ff);border-color:var(--molsan-border,#dce4ef)}
+.ng-admin-notarias .ng-admin-resumen-principal>span,.ng-admin-notarias .ng-admin-resumen-secundario>span{color:var(--molsan-text-secondary,#526176);font-size:10px;font-weight:800;line-height:1.35}
+.ng-admin-notarias .ng-admin-resumen-principal>strong{color:var(--molsan-primary,#3156b3);font-size:31px;font-weight:900;line-height:1}
+.ng-admin-notarias .ng-admin-resumen-principal>small{color:var(--molsan-text-muted,#64748b);font-size:9px;line-height:1.4}
+.ng-admin-notarias .ng-admin-resumen-secundario>strong{color:var(--molsan-text,#17243a);font-size:25px;font-weight:850;line-height:1}
 .ng-admin-notarias .ng-admin-resumen-secundario.es-urgente{background:#fff1f2;border-color:#f5d0d4}
 .ng-admin-notarias .ng-admin-resumen-secundario.es-urgente>strong,.ng-admin-notarias .ng-admin-resumen-secundario.es-defecto>strong{color:#c62835}
 .ng-admin-notarias .ng-admin-circuitos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 16px}
-.ng-admin-notarias .ng-admin-circuito{min-width:0;padding:12px;border:1px solid rgba(226,233,245,.92);border-radius:14px;background:rgba(250,251,255,.7)}
+.ng-admin-notarias .ng-admin-circuito{min-width:0;padding:12px;border:1px solid var(--molsan-border,#dce4ef);border-radius:var(--molsan-radius-card,14px);background:var(--molsan-surface,#fff)}
 .ng-admin-notarias .ng-admin-circuito-titulo{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.ng-admin-notarias .ng-admin-circuito-titulo h4{margin:0;color:#394c69;font-size:10px;font-weight:850;letter-spacing:.35px;text-transform:uppercase}
-.ng-admin-notarias .ng-admin-circuito-icono{display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;border-radius:8px;color:#3154c5;background:#e8eeff;font-size:9px;font-weight:900}
+.ng-admin-notarias .ng-admin-circuito-titulo h4{margin:0;color:var(--molsan-text-secondary,#526176);font-size:10px;font-weight:850;letter-spacing:.35px;text-transform:uppercase}
+.ng-admin-notarias .ng-admin-circuito-icono{display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;border-radius:var(--molsan-radius-control,9px);color:var(--molsan-primary,#3156b3);background:var(--molsan-primary-soft,#edf3ff);font-size:9px;font-weight:900}
 .ng-admin-notarias .ng-admin-circuito-icono-fiscal{color:#0b8060;background:#e0f7ed}
 .ng-admin-notarias .ng-admin-metricas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
 .ng-admin-notarias .ng-admin-metricas>div{display:flex;align-items:center;justify-content:space-between;gap:5px;min-width:0;padding:8px 9px;border-radius:var(--molsan-radius-control,9px);background:var(--molsan-surface-soft,#f7f9fc);border:1px solid var(--molsan-border-light,#e8edf4)}
