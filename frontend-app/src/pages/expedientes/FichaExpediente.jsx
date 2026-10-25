@@ -4916,7 +4916,8 @@ const cuantiaFincasParaEnvio =
 
 
             {(
-              <div className="mb-4 min-w-0 rounded-xl border border-slate-200 bg-white p-2">
+              <div className={actividadSeleccionada === "sede-notarial" ? "mb-4 grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : "mb-4 min-w-0"}>
+                <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-2">
               <CarpetaDigitalModal
                 expedienteId={expediente?.id_expediente || id}
                 modoActividad
@@ -4941,68 +4942,9 @@ const cuantiaFincasParaEnvio =
                     : undefined
                 }
               />
-              </div>
-            )}
-
-
-            {false && <>
-            {actividadSeleccionada === "documentacion-previa" && (
-              <div className="mb-4 space-y-4">
-                <section className="rounded-xl border border-slate-200 bg-white p-4">
-                  <div className="mb-3">
-                    <h4 className="text-sm font-extrabold text-slate-800">Preparación de datos para la futura integración ABSIS</h4>
-                    <p className="mt-1 text-xs text-slate-500">Los datos se guardan en el ERP. Esta pantalla no transmite información a ABSIS.</p>
-                  </div>
-                  {cargandoEstadoAbsis ? <p className="text-xs text-slate-500">Cargando estado de ABSIS…</p> : null}
-                  <div className="grid gap-3 md:grid-cols-2">
-                    <label className="rounded-lg border border-slate-200 p-3">
-                      <span className="mb-2 block text-xs font-bold text-slate-700">Certificado Saldo «0» erróneo</span>
-                      <select value={estadoDocumentacionAbsis.certificado_saldo_cero_erroneo ? "si" : "no"} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, certificado_saldo_cero_erroneo: e.target.value === "si" }))} disabled={registrandoSolicitudIntegracion} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
-                        <option value="no">No</option><option value="si">Sí</option>
-                      </select>
-                    </label>
-                    <div className="rounded-lg border border-slate-200 p-3">
-                      <span className="mb-1 block text-xs font-bold text-slate-700">Fecha envío a notario</span>
-                      <p className="text-sm font-semibold text-slate-800">{expediente?.fecha_envio_notario || expediente?.fecha_envio ? new Date(expediente.fecha_envio_notario || expediente.fecha_envio).toLocaleDateString("es-ES") : "Pendiente de envío"}</p>
-                      <p className="mt-1 text-[11px] text-slate-500">Vinculada al envío guardado en Enviar a notario.</p>
-                    </div>
-                  </div>
-                  <div className="mt-3 space-y-2">
-                    <p className="text-xs font-bold text-slate-700">Documentos que incluirá la futura solicitud</p>
-                    {[
-                      ["solicitud_cancelacion_notarial", "Hoja de Encargo firmada"],
-                      ["certificado_cancelacion_administrativo", "Justificante de cancelación"],
-                      ["nota_simple_registral", "Nota simple registral"],
-                    ].map(([key, label]) => (
-                      <label key={key} className="flex items-center gap-3 rounded-lg border border-slate-100 px-3 py-2 text-sm text-slate-700">
-                        <input type="checkbox" checked={!!estadoDocumentacionAbsis[key]} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, [key]: e.target.checked }))} disabled={registrandoSolicitudIntegracion} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
-                        <span className="flex-1">{label}</span>
-                      </label>
-                    ))}
-                  </div>
-                  <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50/40 p-3">
-                    <span className="mb-2 block text-xs font-extrabold text-slate-700">Solicitar avance al completar la futura integración</span>
-                    <div className="flex gap-4">
-                      <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: true }))} disabled={registrandoSolicitudIntegracion} />Sí</label>
-                      <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: false }))} disabled={registrandoSolicitudIntegracion} />No</label>
-                    </div>
-                    <p className="mt-2 text-[11px] text-slate-500">Registrar la solicitud no envía nada ni avanza el expediente. El avance se valida por separado.</p>
-                  </div>
-                  <div className="mt-4 flex flex-wrap justify-end gap-2">
-                    <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : "💾 Guardar datos para integración"}</Boton>
-                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : "📨 Registrar solicitud pendiente"}</Boton>
-                  </div>
-                  {estadoDocumentacionAbsis.solicitud_registrada_localmente && <p className="mt-2 text-right text-xs font-semibold text-amber-700">Pendiente de API externa; todavía no transmitida a ABSIS.</p>}
-                </section>
-              </div>
-            )}
-
-            </>}
-
-
-
-            {actividadSeleccionada === "sede-notarial" && (
-              <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
+                </div>
+                {actividadSeleccionada === "sede-notarial" && (
+                  <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <h3 className="text-sm font-extrabold text-slate-800">Datos de Sede notarial</h3>
                   <span className="text-[11px] font-medium text-slate-500">Información del envío y del documento</span>
@@ -5073,7 +5015,69 @@ const cuantiaFincasParaEnvio =
                   </article>
                 </div>
               </section>
+            
+                )}
+              </div>
             )}
+
+
+            {false && <>
+            {actividadSeleccionada === "documentacion-previa" && (
+              <div className="mb-4 space-y-4">
+                <section className="rounded-xl border border-slate-200 bg-white p-4">
+                  <div className="mb-3">
+                    <h4 className="text-sm font-extrabold text-slate-800">Preparación de datos para la futura integración ABSIS</h4>
+                    <p className="mt-1 text-xs text-slate-500">Los datos se guardan en el ERP. Esta pantalla no transmite información a ABSIS.</p>
+                  </div>
+                  {cargandoEstadoAbsis ? <p className="text-xs text-slate-500">Cargando estado de ABSIS…</p> : null}
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="rounded-lg border border-slate-200 p-3">
+                      <span className="mb-2 block text-xs font-bold text-slate-700">Certificado Saldo «0» erróneo</span>
+                      <select value={estadoDocumentacionAbsis.certificado_saldo_cero_erroneo ? "si" : "no"} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, certificado_saldo_cero_erroneo: e.target.value === "si" }))} disabled={registrandoSolicitudIntegracion} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                        <option value="no">No</option><option value="si">Sí</option>
+                      </select>
+                    </label>
+                    <div className="rounded-lg border border-slate-200 p-3">
+                      <span className="mb-1 block text-xs font-bold text-slate-700">Fecha envío a notario</span>
+                      <p className="text-sm font-semibold text-slate-800">{expediente?.fecha_envio_notario || expediente?.fecha_envio ? new Date(expediente.fecha_envio_notario || expediente.fecha_envio).toLocaleDateString("es-ES") : "Pendiente de envío"}</p>
+                      <p className="mt-1 text-[11px] text-slate-500">Vinculada al envío guardado en Enviar a notario.</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <p className="text-xs font-bold text-slate-700">Documentos que incluirá la futura solicitud</p>
+                    {[
+                      ["solicitud_cancelacion_notarial", "Hoja de Encargo firmada"],
+                      ["certificado_cancelacion_administrativo", "Justificante de cancelación"],
+                      ["nota_simple_registral", "Nota simple registral"],
+                    ].map(([key, label]) => (
+                      <label key={key} className="flex items-center gap-3 rounded-lg border border-slate-100 px-3 py-2 text-sm text-slate-700">
+                        <input type="checkbox" checked={!!estadoDocumentacionAbsis[key]} onChange={(e) => setEstadoDocumentacionAbsis((a) => ({ ...a, [key]: e.target.checked }))} disabled={registrandoSolicitudIntegracion} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
+                        <span className="flex-1">{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50/40 p-3">
+                    <span className="mb-2 block text-xs font-extrabold text-slate-700">Solicitar avance al completar la futura integración</span>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: true }))} disabled={registrandoSolicitudIntegracion} />Sí</label>
+                      <label className="flex items-center gap-2 text-sm"><input type="radio" name="moverActividadPrevia" checked={!estadoDocumentacionAbsis.mover_siguiente_actividad} onChange={() => setEstadoDocumentacionAbsis((a) => ({ ...a, mover_siguiente_actividad: false }))} disabled={registrandoSolicitudIntegracion} />No</label>
+                    </div>
+                    <p className="mt-2 text-[11px] text-slate-500">Registrar la solicitud no envía nada ni avanza el expediente. El avance se valida por separado.</p>
+                  </div>
+                  <div className="mt-4 flex flex-wrap justify-end gap-2">
+                    <Boton onClick={() => guardarEstadoAbsis(false)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Guardando…" : "💾 Guardar datos para integración"}</Boton>
+                    <Boton tipo="primary" onClick={() => guardarEstadoAbsis(true)} disabled={registrandoSolicitudIntegracion || cargandoEstadoAbsis}>{registrandoSolicitudIntegracion ? "Registrando…" : estadoDocumentacionAbsis.solicitud_registrada_localmente ? "✓ Solicitud pendiente registrada" : "📨 Registrar solicitud pendiente"}</Boton>
+                  </div>
+                  {estadoDocumentacionAbsis.solicitud_registrada_localmente && <p className="mt-2 text-right text-xs font-semibold text-amber-700">Pendiente de API externa; todavía no transmitida a ABSIS.</p>}
+                </section>
+              </div>
+            )}
+
+            </>}
+
+
+
+
 
             {false && <>
             {actividadSeleccionada === "defectos-registrales" && (
