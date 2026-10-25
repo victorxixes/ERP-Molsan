@@ -32,7 +32,7 @@
   transition: background-color .16s ease;
 }
 .maestros-premium-page tbody tr:nth-child(even) {
-  background: color-mix(in srgb, var(--erp-surface-soft, #f8fafc) 42%, transparent);
+  background: color-mix(in srgb, var(--molsan-surface-soft, #f8fafc) 42%, transparent);
 }
 .maestros-premium-page tbody tr:hover {
   background: color-mix(in srgb, var(--molsan-primary, #3156b3) 7%, transparent);
