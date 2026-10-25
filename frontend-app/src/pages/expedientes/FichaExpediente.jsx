@@ -7099,7 +7099,7 @@ const cuantiaFincasParaEnvio =
         onClose={() => { if (!guardandoFusion) setMostrarFusion(false); }}
         titulo="⇄ Solicitud de fusión"
         subtitulo={`Expediente ${expediente?.id_expediente || id} · Registro ${fincaFusion?.registro || "—"}`}
-        ancho={actividadSeleccionada === "liquidacion-impuestos" ? "max-w-7xl" : "max-w-4xl"}
+        ancho={["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) ? "max-w-7xl" : "max-w-4xl"}
         footer={
           <>
             <Boton onClick={() => setMostrarFusion(false)} disabled={guardandoFusion}>Cancelar</Boton>
@@ -8058,6 +8058,56 @@ const cuantiaFincasParaEnvio =
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
                     <Dato campo="Nombre" valor={expediente?.facturacion_nombre ?? expediente?.nombre_facturacion ?? expediente?.nombre_cliente_facturacion} />
                     <Dato campo="Apellidos" valor={expediente?.facturacion_apellidos ?? expediente?.apellidos_facturacion ?? expediente?.apellidos_cliente_facturacion} />
+                    <Dato campo="DNI / NIF de facturación" valor={expediente?.facturacion_dni_nif ?? expediente?.dni_facturacion ?? expediente?.nif_facturacion} />
+                    <Dato campo="Dirección" valor={expediente?.facturacion_direccion ?? expediente?.direccion_facturacion ?? expediente?.direccion_cliente_facturacion} />
+                    <Dato campo="Código postal" valor={expediente?.facturacion_codigo_postal ?? expediente?.codigo_postal_facturacion ?? expediente?.cp_facturacion} />
+                    <Dato campo="Población" valor={expediente?.facturacion_poblacion ?? expediente?.poblacion_facturacion ?? expediente?.municipio_facturacion} />
+                    <Dato campo="Provincia" valor={expediente?.facturacion_provincia ?? expediente?.provincia_facturacion} />
+                    <Dato campo="Teléfono" valor={expediente?.facturacion_telefono ?? expediente?.telefono_facturacion ?? expediente?.telefono_cliente_facturacion} />
+                    <Dato campo="Email" valor={expediente?.facturacion_email ?? expediente?.email_facturacion ?? expediente?.correo_facturacion} />
+                  </div>
+                </section>
+              </div>
+            ) : actividadSeleccionada === "tramitacion-inscripcion" ? (
+              <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Tramitación inscripción</h4>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                    {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
+                      const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
+                      const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
+                      return (
+                        <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-slate-50/60 p-2.5">
+                          <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                          {Array.isArray(campo.opciones) ? (
+                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-normal text-slate-800">
+                              <option value="">— Seleccionar —</option>
+                              {campo.opciones.map((opcion) => <option key={String(opcion)} value={typeof opcion === "object" ? opcion.value : opcion}>{typeof opcion === "object" ? opcion.label : opcion}</option>)}
+                            </select>
+                          ) : (
+                            <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} step={campo.tipo === "numero" ? "0.01" : undefined} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-normal text-slate-800" />
+                          )}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </section>
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Datos notariales y de presentación</h4>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                    <Dato campo="Notario" valor={expediente?.nombre_notario ?? expediente?.notario} />
+                    <Dato campo="NIF notario" valor={expediente?.nif_notario ?? expediente?.notario_nif} />
+                    <Dato campo="Tipo de escritura" valor={expediente?.tipo_escritura ?? expediente?.tipo_documento ?? (Array.isArray(expediente?.documentos_escritura) ? expediente.documentos_escritura.map((documento) => documento?.tipo_documento).filter(Boolean).join(" · ") : "")} />
+                    <Dato campo="Formato de escritura" valor={expediente?.formato_escritura ?? expediente?.formato_escritura_notarial} />
+                    <Dato campo="Fecha firma" valor={expediente?.fecha_firma ?? expediente?.fecha_real_firma} tipo="fecha" />
+                    <Dato campo="Protocolo" valor={expediente?.protocolo ?? expediente?.numero_protocolo} />
+                  </div>
+                </section>
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Datos de facturación</h4>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                    <Dato campo="Nombre" valor={expediente?.facturacion_nombre ?? expediente?.nombre_facturacion ?? expediente?.nombre_cliente_facturacion} />
+                    <Dato campo="Apellidos" valor={expediente?.facturacion_apellidos ?? expediente?.apellidos_facturacion ?? expediente?.nombre_cliente_facturacion} />
                     <Dato campo="DNI / NIF de facturación" valor={expediente?.facturacion_dni_nif ?? expediente?.dni_facturacion ?? expediente?.nif_facturacion} />
                     <Dato campo="Dirección" valor={expediente?.facturacion_direccion ?? expediente?.direccion_facturacion ?? expediente?.direccion_cliente_facturacion} />
                     <Dato campo="Código postal" valor={expediente?.facturacion_codigo_postal ?? expediente?.codigo_postal_facturacion ?? expediente?.cp_facturacion} />
