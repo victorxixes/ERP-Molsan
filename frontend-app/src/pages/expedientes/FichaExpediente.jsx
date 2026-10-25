@@ -8070,8 +8070,8 @@ const cuantiaFincasParaEnvio =
                 </section>
               </div>
             ) : actividadSeleccionada === "tramitacion-inscripcion" ? (
-              <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-3">
-                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+              <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 xl:col-span-2">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Tramitación inscripción</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
