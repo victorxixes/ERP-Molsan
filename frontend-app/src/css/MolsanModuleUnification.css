@@ -637,3 +637,31 @@ table :is(th, td) {
   transform: none !important;
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
 }
+
+
+/* Acabado común para acciones y cabeceras de panel de los portales. */
+:where(.encargagest) .eg-button-primary {
+  border-radius: var(--molsan-radius-control, 9px) !important;
+}
+.encargagest .eg-panel-head :is(h2, h3) {
+  color: var(--molsan-text, #17243a) !important;
+}
+.encargagest .eg-panel-head p {
+  color: var(--molsan-text-muted, #64748b) !important;
+}
+
+/* Diálogos de los portales: superficie y radio comunes; cada módulo conserva
+   sus medidas, contenido, desplazamiento y comportamiento. */
+:where(.notargest) .ng-modal,
+:where(.encargagest) .eg-modal-form,
+:where(.encargagest) .eg-modal-perfil,
+:where(.apoderagest) .ag-visor-modal,
+:where(.apoderagest) .ag-resumen-modal {
+  color: var(--molsan-text, #17243a);
+  background: var(--molsan-surface, #fff) !important;
+  border: 1px solid var(--molsan-border, #dce4ef) !important;
+  border-radius: var(--molsan-radius-dialog, 16px) !important;
+  box-shadow: 0 16px 44px rgba(25, 42, 70, .16) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
