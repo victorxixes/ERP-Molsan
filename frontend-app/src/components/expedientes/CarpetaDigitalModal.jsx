@@ -896,7 +896,7 @@ export default function CarpetaDigitalModal({
                     </div>
                   ) : (
                     String(actividadId || "").includes("protocolo") ? (
-                      <div className="min-w-0 space-y-3">
+                      <div className="grid w-full min-w-0 grid-cols-2 items-start gap-3">
                         <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
                           <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos notariales y de presentación</h5>
                           <div className="space-y-0 px-2.5 py-1.5">
