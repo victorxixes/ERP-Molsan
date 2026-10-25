@@ -7681,7 +7681,12 @@ const cuantiaFincasParaEnvio =
           </div>
         }
       >
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="rounded-xl border border-slate-200 bg-white p-4">
+          <div className="mb-3">
+            <h3 className="text-sm font-extrabold text-slate-800">Campos de la actividad</h3>
+            <p className="mt-1 text-xs text-slate-500">Completa y revisa los datos específicos de esta fase del expediente.</p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).map((campo) => {
             const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
             const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
@@ -7704,16 +7709,8 @@ const cuantiaFincasParaEnvio =
           {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).length && (
             <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">Esta actividad no tiene campos específicos configurados todavía.</p>
           )}
-        </div>
-        {actividadSeleccionada === "sede-notarial" && (
-          <section className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
-            <p className="text-sm font-extrabold text-amber-900">Aviso para informática · Integración ABSIS</p>
-            <p className="mt-1 text-sm text-amber-800">
-              Los campos específicos de esta actividad que se deberán preparar para el envío a ABSIS son: Notario, NIF de notario y Fecha de firma. Informática deberá confirmar la correspondencia de estos tres datos con el formato y los nombres de campo exigidos por ABSIS.
-            </p>
-            <p className="mt-1 text-xs text-amber-800">La conexión con ABSIS todavía no está activa. Guardar los datos en el ERP no realiza ningún envío externo.</p>
-          </section>
-        )}
+          </div>
+        </section>
         {actividadSeleccionada === "documentacion-previa" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
@@ -7753,6 +7750,31 @@ const cuantiaFincasParaEnvio =
             </div>
           </section>
         )}
+        <section className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
+          <p className="text-sm font-extrabold text-amber-900">Aviso para informática · Integración de datos</p>
+          {actividadSeleccionada === "sede-notarial" ? (
+            <>
+              <p className="mt-1 text-sm text-amber-800">
+                Para la futura comunicación con ABSIS, informática deberá mapear los campos Notario, NIF de notario y Fecha de firma con los nombres y formatos exigidos por ABSIS.
+              </p>
+              <p className="mt-1 text-xs text-amber-800">La conexión con ABSIS todavía no está activa. Guardar los datos en el ERP no realiza ningún envío externo.</p>
+            </>
+          ) : actividadSeleccionada === "documentacion-previa" ? (
+            <>
+              <p className="mt-1 text-sm text-amber-800">
+                Informática deberá revisar el mapeo de las fechas de inicio y fin de actividad y de los datos de documentación que se muestran en este modal antes de activar cualquier intercambio externo.
+              </p>
+              <p className="mt-1 text-xs text-amber-800">El registro de datos en el ERP no implica por sí mismo una transmisión a sistemas externos.</p>
+            </>
+          ) : (
+            <>
+              <p className="mt-1 text-sm text-amber-800">
+                Informática deberá confirmar los campos y formatos que correspondan a esta actividad antes de configurar su integración con sistemas externos.
+              </p>
+              <p className="mt-1 text-xs text-amber-800">Este aviso es informativo: guardar los datos en el ERP no realiza ningún envío externo.</p>
+            </>
+          )}
+        </section>
       </Modal>
 
 
