@@ -614,11 +614,13 @@ const CAMPOS_ACTIVIDADES = {
 const CAMPOS_INTEGRACION_SEDE_PROTOCOLO = [
   { key: "nombre_notario", label: "Notario" },
   { key: "nif_notario", label: "NIF notario" },
-  { key: "apoderado", label: "Apoderado", opciones: ["Gestoría", "CaixaBank"] },
+  { key: "apoderado", label: "Apoderado" },
+  { key: "gestoria", label: "Gestoría", opciones: ["Gestoría", "Otra entidad"] },
   { key: "tipo_firma", label: "Tipo firma" },
   { key: "fecha_firma", label: "Fecha firma", tipo: "fecha" },
   { key: "protocolo", label: "Protocolo" },
-  { key: "asiento_presentacion_libro_diario", label: "Asiento presentación / Libro diario" },
+  { key: "asiento_presentacion", label: "Asiento presentación" },
+  { key: "libro_diario", label: "Libro diario" },
   { key: "fecha_presentacion", label: "Fecha presentación", tipo: "fecha" },
   { key: "numero_entrada", label: "Número de entrada" },
   { key: "fecha_recogida_notario_presentacion_telematica", label: "Fecha recogida notario o presentación telemática", tipo: "fecha" },
@@ -2655,14 +2657,28 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     }
     if (actividadSeleccionada === "sede-notarial-protocolo") {
       for (const key of [
-        "nombre_notario", "nif_notario", "apoderado", "tipo_firma",
-        "fecha_firma", "protocolo", "asiento_presentacion_libro_diario",
+        "nombre_notario", "nif_notario", "apoderado", "gestoria", "tipo_firma",
+        "fecha_firma", "protocolo", "asiento_presentacion", "libro_diario",
         "fecha_presentacion", "numero_entrada",
         "fecha_recogida_notario_presentacion_telematica",
       ]) {
+        const apoderadoTexto = String(
+          Object.prototype.hasOwnProperty.call(actividadDraft, "apoderado")
+            ? (actividadDraft.apoderado ?? "")
+            : (expediente?.apoderado ?? "")
+        ).toLowerCase();
+        const gestoriaPorDefecto = expediente?.apoderado_empleado_id
+          || (apoderadoTexto.includes("oficina") && apoderadoTexto.includes("caixabank"))
+          ? "Gestoría"
+          : (apoderadoTexto.includes("oficina") && apoderadoTexto.includes("otra entidad"))
+            ? "Otra entidad"
+            : "Gestoría";
+        const valorPorDefecto = key === "gestoria"
+          ? (expediente?.gestoria || gestoriaPorDefecto)
+          : (key === "apoderado" ? (expediente?.apoderado || "") : (expediente?.[key] ?? ""));
         campos[key] = Object.prototype.hasOwnProperty.call(actividadDraft, key)
           ? (actividadDraft[key] ?? "")
-          : (expediente?.[key] ?? (key === "apoderado" ? "Gestoría" : ""));
+          : valorPorDefecto;
       }
     }
     if (!Object.keys(campos).length) {
@@ -7781,10 +7797,35 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "sede-notarial-protocolo" ? (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.map((campo) => {
+                  const apoderadoActual = String(
+                    Object.prototype.hasOwnProperty.call(actividadDraft, "apoderado")
+                      ? (actividadDraft.apoderado ?? "")
+                      : (expediente?.apoderado ?? "")
+                  ).toLowerCase();
+                  const gestoriaPorDefecto = expediente?.apoderado_empleado_id
+                    || (apoderadoActual.includes("oficina") && apoderadoActual.includes("caixabank"))
+                    ? "Gestoría"
+                    : (apoderadoActual.includes("oficina") && apoderadoActual.includes("otra entidad"))
+                      ? "Otra entidad"
+                      : "Gestoría";
                   const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
                     ? (actividadDraft[campo.key] ?? "")
-                    : (expediente?.[campo.key] ?? (campo.key === "apoderado" ? "Gestoría" : ""));
-                  const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
+                    : (campo.key === "gestoria"
+                      ? (expediente?.gestoria || gestoriaPorDefecto)
+                      : (expediente?.[campo.key] ?? ""));
+                  const cambiar = (nuevoValor) => setActividadDraft((actual) => {
+                    const siguiente = { ...actual, [campo.key]: nuevoValor };
+                    if (campo.key === "apoderado") {
+                      const texto = String(nuevoValor || "").toLowerCase();
+                      const esEmpleado = Boolean(expediente?.apoderado_empleado_id);
+                      siguiente.gestoria = esEmpleado
+                        ? "Gestoría"
+                        : (texto.includes("oficina") && texto.includes("otra entidad"))
+                          ? "Otra entidad"
+                          : "Gestoría";
+                    }
+                    return siguiente;
+                  });
                   return (
                     <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
                       <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
