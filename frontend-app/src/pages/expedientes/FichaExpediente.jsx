@@ -1392,6 +1392,7 @@ export default function FichaExpediente() {
   const [errorComplementosExpediente, setErrorComplementosExpediente] = useState("");
   const [mostrarDatosEnvioNotario, setMostrarDatosEnvioNotario] = useState(true);
   const [mostrarResumenEconomico, setMostrarResumenEconomico] = useState(true);
+  const [mostrarPanelEconomicoPago, setMostrarPanelEconomicoPago] = useState(false);
   const [mostrarModalDatosActividad, setMostrarModalDatosActividad] = useState(false);
   const [actividadDraft, setActividadDraft] = useState({});
   const [guardandoActividad, setGuardandoActividad] = useState(false);
@@ -5121,6 +5122,7 @@ const cuantiaFincasParaEnvio =
                         // El formulario existente está dentro del resumen económico plegable.
                         // Abrimos ese contenedor antes de mostrar el formulario para que no
                         // quede oculto dentro de un ancestro con display:none.
+                        setMostrarPanelEconomicoPago(true);
                         setMostrarResumenEconomico(true);
                         setErrorGastos("");
                         setMensajeGastos("");
@@ -6181,7 +6183,7 @@ const cuantiaFincasParaEnvio =
        
 
         {/* Información complementaria: se oculta visualmente hasta registrar un envío a notario. */}
-        <div className={`min-w-0 xl:col-span-12 ${expediente.fecha_envio_notario ? "" : "hidden"}`}>
+        <div className={`min-w-0 xl:col-span-12 ${actividadSeleccionada === "gestion-economica" && mostrarPanelEconomicoPago ? "" : "hidden"}`}>
           <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-8">
         {/* ENVÍO A NOTARIO: CENTRADO DEBAJO DE PPAD E INFORMACIÓN CREDITICIA */}
         <div className="min-w-0 w-full xl:col-span-8">
@@ -6192,7 +6194,7 @@ const cuantiaFincasParaEnvio =
               El botón abre el modal para completar y guardar el encargo.
           ====================================================== */}
             <section className="w-full max-w-none min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(30,41,59,0.08)]">
-              <div className="flex flex-wrap items-center justify-center gap-3 border-b border-slate-100 bg-white px-4 py-4 text-center sm:px-5">
+              <div className="hidden flex-wrap items-center justify-center gap-3 border-b border-slate-100 bg-white px-4 py-4 text-center sm:px-5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-indigo-100 bg-white text-xl shadow-sm">🏛️</div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-extrabold text-slate-800">Envío a notario</h3>
@@ -6206,7 +6208,7 @@ const cuantiaFincasParaEnvio =
               <div className={`space-y-4 p-4 sm:p-5 ${mostrarDatosEnvioNotario ? "" : "hidden"}`}>
                 {(expediente.fecha_envio_notario || expediente.fecha_envio) && <>
                 <div className="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-2">
-                <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
+                <div className="hidden min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos del envío</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Fecha de envío" valor={expediente.fecha_envio_notario || expediente.fecha_envio} tipo="fecha" />
@@ -6223,7 +6225,7 @@ const cuantiaFincasParaEnvio =
                     <Dato campo="Hora prevista de firma" valor={expediente.hora_prevista_firma} />
                   </div>
                 </div>
-                <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
+                <div className="hidden min-w-0 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Datos de facturación</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Nombre" valor={expediente.facturacion_nombre ?? expediente.nombre_facturacion ?? expediente.nombre_cliente_facturacion} />
@@ -6238,7 +6240,7 @@ const cuantiaFincasParaEnvio =
                   </div>
                 </div>
                 </div>
-                <div className="border-t border-slate-100 pt-3">
+                <div className="hidden border-t border-slate-100 pt-3">
                   <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-700">Tipo de documento y cuantía</p>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     <Dato campo="Formato de escritura" valor={expediente.formato_escritura ?? expediente.formato_escritura_notarial} />
@@ -6295,7 +6297,7 @@ const cuantiaFincasParaEnvio =
 
                     </div>
 
-                    {(actividadSeleccionada === "gestion-economica" || expediente.importe !== null && expediente.importe !== undefined && expediente.importe !== "" || expediente.fecha_envio_notario || expediente.fecha_envio) && (
+                    {actividadSeleccionada === "gestion-economica" && mostrarPanelEconomicoPago && (
                       <section className="mt-4 rounded-xl border border-indigo-100 bg-white p-4">
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div>
