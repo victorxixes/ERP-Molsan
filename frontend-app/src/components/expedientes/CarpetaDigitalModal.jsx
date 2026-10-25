@@ -864,6 +864,7 @@ export default function CarpetaDigitalModal({
                     </div>
                   ) : (
                     actividadId === "gestion-economica" ? (
+                      <>
                       <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                         {[
                           {
@@ -914,6 +915,7 @@ export default function CarpetaDigitalModal({
                           💶 Pagar
                         </button>
                       </div>
+                      </>
                     ) : (
                       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-1">
                         {camposPanelActividad.map((campo) => {
