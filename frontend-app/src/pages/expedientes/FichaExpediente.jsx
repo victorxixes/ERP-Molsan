@@ -7806,7 +7806,7 @@ const cuantiaFincasParaEnvio =
           </div>
         </section>
         )}
-        {actividadSeleccionada !== "documentacion-previa" && actividadSeleccionada !== "sede-notarial-protocolo" && (
+        {actividadSeleccionada !== "documentacion-previa" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
               <h3 className="text-sm font-extrabold text-slate-800">{ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración</h3>
@@ -7830,7 +7830,7 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "sede-notarial-protocolo" ? (
               <div className="grid items-start gap-4 lg:grid-cols-2">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                  <h4 className="text-sm font-extrabold text-slate-800">Sede notarial con protocolo · datos para integración</h4>
+                  <h4 className="text-sm font-extrabold text-slate-800">Sede notarial · datos para integración</h4>
                   <p className="mb-3 mt-1 text-xs text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
                     {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "fecha_firma", "protocolo", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
@@ -7959,7 +7959,14 @@ const cuantiaFincasParaEnvio =
         )}
         <section className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
           <p className="text-sm font-extrabold text-amber-900">Aviso para informática · Integración de datos</p>
-          {actividadSeleccionada === "sede-notarial" ? (
+          {actividadSeleccionada === "sede-notarial-protocolo" ? (
+            <>
+              <p className="mt-1 text-sm text-amber-800">
+                Para la futura comunicación con ABSIS, informática deberá mapear los campos Notario, NIF de notario y Fecha de firma con los nombres y formatos exigidos por ABSIS.
+              </p>
+              <p className="mt-1 text-xs text-amber-800">La conexión con ABSIS todavía no está activa. Guardar los datos en el ERP no realiza ningún envío externo.</p>
+            </>
+          ) : actividadSeleccionada === "sede-notarial" ? (
             <>
               <p className="mt-1 text-sm text-amber-800">
                 Para la futura comunicación con ABSIS, informática deberá mapear los campos Notario, NIF de notario y Fecha de firma con los nombres y formatos exigidos por ABSIS.
