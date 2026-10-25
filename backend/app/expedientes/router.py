@@ -87,14 +87,14 @@ router = APIRouter(
 # ============================================================
 
 ACTIVIDADES_VISIBILIDAD = [
-    {"key": "documentacion-previa", "label": "Documentación previa"},
+    {"key": "documentacion-previa", "label": "Documentación general y previa"},
     {"key": "sede-notarial", "label": "Sede notarial"},
     {"key": "sede-notarial-protocolo", "label": "Sede notarial con protocolo"},
     {"key": "gestion-economica", "label": "Gestión económica"},
     {"key": "liquidacion-impuestos", "label": "Liquidación de impuestos"},
     {"key": "tramitacion-inscripcion", "label": "Tramitación inscripción"},
     {"key": "defectos-registrales", "label": "Defectos registrales"},
-    {"key": "facturacion-cierre", "label": "Facturación y cierre"},
+    {"key": "facturacion-cierre", "label": "Cierre del expediente"},
 ]
 
 REPOSITORIOS_VISIBILIDAD = [
@@ -103,7 +103,6 @@ REPOSITORIOS_VISIBILIDAD = [
     {"key": "justificante_cancelacion", "label": "Justificante de cancelación", "categoria": "Justificante de cancelación"},
     {"key": "nota_simple_registral", "label": "Nota simple registral", "categoria": "Nota simple registral"},
     {"key": "borradores_escritura", "label": "Borradores escrituras", "categoria": "Borradores escrituras"},
-    {"key": "presentacion_registro_documentos", "label": "Presentación Registro", "categoria": "Presentación Registro"},
     {"key": "hoja_presentacion_documentos", "label": "Hoja de presentación", "categoria": "Hoja de presentación"},
     {"key": "copia_simple_documentos", "label": "Copia simple", "categoria": "Copia simple"},
     {"key": "ajd_itp_documentos", "label": "AJD / ITP", "categoria": "AJD/ITP"},
@@ -111,8 +110,6 @@ REPOSITORIOS_VISIBILIDAD = [
     {"key": "hoja_inscripcion_documentos", "label": "Hoja de inscripción", "categoria": "Hoja de Inscripción"},
     {"key": "defecto_registral", "label": "Defecto registral", "categoria": "Defecto registral"},
     {"key": "subsanacion_defecto", "label": "Subsanación del defecto", "categoria": "Subsanación del defecto"},
-    {"key": "escritura_digital_final_documentos", "label": "Escritura digital final", "categoria": "Escritura digital final"},
-    {"key": "documento_inscripcion_documentos", "label": "Documento de inscripción", "categoria": "Documento de inscripción"},
     {"key": "expediente_digital_completo_documentos", "label": "Expediente digital completo", "categoria": "Expediente digital completo"},
     {"key": "factura_notarial_documentos", "label": "Factura notarial", "categoria": "Factura notarial"},
     {"key": "factura_registral_documentos", "label": "Factura registral", "categoria": "Factura Registral"},
