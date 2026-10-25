@@ -4,7 +4,7 @@
    ============================================================ */
 
 .dashboard-cancelagest {
-  --dashboard-cg-primary: var(--erp-primary, #3156b3);
+  --dashboard-cg-primary: var(--molsan-primary, #3156b3);
   --dashboard-cg-primary-dark: var(--molsan-primary-hover, #274694);
   min-width: 0;
 }
@@ -52,7 +52,7 @@
 
 .dashboard-cancelagest .ag-hero h1 {
   margin: 5px 0 4px;
-  color: var(--erp-text-strong, #17233a);
+  color: var(--molsan-text-strong, #17233a);
   font-size: clamp(26px, 3vw, 36px);
   font-weight: 820;
   letter-spacing: -1.3px;
@@ -93,7 +93,7 @@
   width: 7px;
   height: 7px;
   flex: 0 0 7px;
-  background: var(--erp-primary, #3156b3);
+  background: var(--molsan-primary, #3156b3);
   border-radius: 50%;
   box-shadow: 0 0 0 4px rgba(49, 86, 179, .1);
 }
@@ -153,17 +153,17 @@
 /* Refinamiento Dashboard · jerarquía compacta, tokens compartidos y accesibilidad */
 .dashboard-cancelagest {
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
-  color: var(--molsan-text, var(--erp-text, #17243a));
+  color: var(--molsan-text, var(--molsan-text, #17243a));
 }
 
 .dashboard-cancelagest .dashboard-header {
   padding: 0 0 18px;
   margin: 0 0 22px;
-  border-bottom: 1px solid var(--molsan-border, var(--erp-border, #dce4ef));
+  border-bottom: 1px solid var(--molsan-border, var(--molsan-border, #dce4ef));
 }
 
 .dashboard-cancelagest .ag-marca {
-  background: var(--molsan-primary, var(--erp-primary, #3156b3));
+  background: var(--molsan-primary, var(--molsan-primary, #3156b3));
   border: 0;
   border-radius: 12px;
   box-shadow: none;
@@ -201,8 +201,8 @@
 .dashboard-cancelagest .ag-boton-actualizar {
   min-height: 38px;
   border-radius: var(--molsan-radius-control, 8px);
-  background: var(--molsan-primary, var(--erp-primary, #3156b3));
-  border-color: var(--molsan-primary, var(--erp-primary, #3156b3));
+  background: var(--molsan-primary, var(--molsan-primary, #3156b3));
+  border-color: var(--molsan-primary, var(--molsan-primary, #3156b3));
   box-shadow: none;
   transition: background var(--molsan-transition-fast, 150ms ease), box-shadow var(--molsan-transition-fast, 150ms ease);
 }
@@ -220,7 +220,7 @@
 
 .dashboard-cancelagest .dashboard-kpi {
   position: relative;
-  border: 1px solid var(--molsan-border, var(--erp-border, #dce4ef));
+  border: 1px solid var(--molsan-border, var(--molsan-border, #dce4ef));
   border-radius: var(--molsan-radius-card, 12px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
   transition: border-color var(--molsan-transition-fast, 150ms ease), box-shadow var(--molsan-transition-fast, 150ms ease);
@@ -242,7 +242,7 @@
 
 .dashboard-cancelagest .erp-card {
   border-radius: var(--molsan-radius-card, 12px);
-  border-color: var(--molsan-border, var(--erp-border, #dce4ef));
+  border-color: var(--molsan-border, var(--molsan-border, #dce4ef));
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
 
@@ -309,7 +309,7 @@
 .dashboard-cancelagest .dashboard-time-panel td { vertical-align: middle; }
 .dashboard-cancelagest .dashboard-activity-panel { padding: 0; }
 .dashboard-cancelagest .dashboard-activity-panel > div > div { padding: 13px 16px; }
-.dashboard-cancelagest .dashboard-activity-panel > div > div + div { border-top: 1px solid var(--molsan-border, var(--erp-border, #dce4ef)); }
+.dashboard-cancelagest .dashboard-activity-panel > div > div + div { border-top: 1px solid var(--molsan-border, var(--molsan-border, #dce4ef)); }
 @media (max-width: 640px) {
   .dashboard-cancelagest .dashboard-signatures-wrap .dashboard-kpi { min-height: 0; }
   .dashboard-cancelagest .dashboard-signatures-wrap .erp-card { padding: 14px; }
