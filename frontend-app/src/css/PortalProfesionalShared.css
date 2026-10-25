@@ -1923,10 +1923,7 @@
   outline: 2px solid rgb(49 86 179 / 58%);
   outline-offset: 2px;
 }
-.apoderagest :is(.ag-panel, .ag-card, .ag-kpi, .eg-panel, .eg-kpi, .ng-panel, .ng-tarea, .ng-contador) {
-  border-color: var(--molsan-border, #dce4ef);
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
-}
+/* Cards y paneles compartidos: definidos en MolsanModuleUnification.css. */
 .apoderagest :is(table, .ag-tabla, .eg-tabla, .ng-tabla) {
   font-variant-numeric: tabular-nums;
 }
