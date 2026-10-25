@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "npm audit --json > /tmp/npm-audit-report.json || true; node -e \"const r=require('/tmp/npm-audit-report.json'); console.log('AUDIT_SUMMARY', JSON.stringify(r.metadata?.vulnerabilities || {})); for (const [name,v] of Object.entries(r.vulnerabilities || {})) console.log('AUDIT_VULN', JSON.stringify({name,severity:v.severity,isDirect:v.isDirect,range:v.range,via:v.via,fixAvailable:v.fixAvailable,nodes:v.nodes}));\"",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "audit:security": "npm audit --json"
   },
   "dependencies": {
     "react": "^18.2.0",
