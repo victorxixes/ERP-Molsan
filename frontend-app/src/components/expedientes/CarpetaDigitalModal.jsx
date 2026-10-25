@@ -861,7 +861,7 @@ export default function CarpetaDigitalModal({
                       ))}
                     </div>
                   ) : (
-                    {actividadId === "gestion-economica" ? (
+                    actividadId === "gestion-economica" ? (
                       <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
                         {[
                           {
@@ -922,7 +922,7 @@ export default function CarpetaDigitalModal({
                         })}
                         {camposPanelActividad.length === 0 && <p className="text-xs text-slate-500">Los campos específicos de esta actividad aparecerán aquí.</p>}
                       </div>
-                    )}
+                    )
                   ))}
                 </div>
               </aside>
