@@ -7618,7 +7618,20 @@ const cuantiaFincasParaEnvio =
         titulo="Datos de actividad"
         subtitulo="Solo se muestran los campos propios de esta actividad."
         ancho="max-w-4xl"
-
+        footer={
+          <div className="flex w-full flex-wrap items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              {errorActividad && <p className="text-xs font-semibold text-red-700">{errorActividad}</p>}
+              {mensajeActividad && <p className="text-xs font-semibold text-emerald-700">{mensajeActividad}</p>}
+            </div>
+            <div className="flex gap-2">
+              <Boton onClick={() => { setMostrarModalDatosActividad(false); setPestanaActividad("documentos"); }}>Cerrar</Boton>
+              <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad}>
+                {guardandoActividad ? "Guardando…" : "💾 Guardar datos"}
+              </Boton>
+            </div>
+          </div>
+        }
       >
         <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
@@ -7821,18 +7834,6 @@ const cuantiaFincasParaEnvio =
             </>
           )}
         </section>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
-          <div className="min-w-0 flex-1">
-            {errorActividad && <p className="text-xs font-semibold text-red-700">{errorActividad}</p>}
-            {mensajeActividad && <p className="text-xs font-semibold text-emerald-700">{mensajeActividad}</p>}
-          </div>
-          <div className="flex gap-2">
-            <Boton onClick={() => { setMostrarModalDatosActividad(false); setPestanaActividad("documentos"); }}>Cerrar</Boton>
-            <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad}>
-              {guardandoActividad ? "Guardando…" : "💾 Guardar datos"}
-            </Boton>
-          </div>
-        </div>
 
       </Modal>
 
