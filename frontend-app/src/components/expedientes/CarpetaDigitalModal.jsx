@@ -165,11 +165,22 @@ export default function CarpetaDigitalModal({
   const esCancelacionSinProvision = normalizar(tipoOperacion) === "cancelacion-sin-provision";
   const bloquesVisibles = useMemo(() => {
     if (!modoActividad) return BLOQUES;
-    // En modo actividad se muestra solo el circuito y los repositorios configurados.
+    // En Documentación previa se muestran los dos repositorios digitales compartidos
+    // con la carpeta del expediente, sin duplicar ni almacenar archivos en el modal.
     const bloque = bloqueActividad || BLOQUES[0];
-    const bloqueAjustado = esCancelacionSinProvision && bloque.id === "sede-notarial"
-      ? { ...bloque, categorias: bloque.categorias.filter((item) => item.categoria !== "Presentación Registro") }
-      : bloque;
+    const bloqueAjustado = bloque.id === "documentacion-previa"
+      ? {
+          ...bloque,
+          titulo: "Repositorios digitales · Hoja de presentación Tacio y Copia simple",
+          descripcion: "",
+          categorias: [
+            { etiqueta: "Hoja de presentación Tacio", categoria: "Hoja de presentación Tacio" },
+            { etiqueta: "Copia simple", categoria: "Copia simple" },
+          ],
+        }
+      : esCancelacionSinProvision && bloque.id === "sede-notarial"
+        ? { ...bloque, categorias: bloque.categorias.filter((item) => item.categoria !== "Presentación Registro") }
+        : bloque;
     if (!Array.isArray(configRepositorios)) return [bloqueAjustado];
     const clavePorCategoria = {
       "Documentos Absis": "documentos_absis",
@@ -212,7 +223,8 @@ export default function CarpetaDigitalModal({
         const repositorioNuevoRequerido = ["documentacion-previa", "gestion-economica"].includes(bloque.id)
           && ["Borradores escrituras", "Otros"].includes(item.categoria);
         const repositorioSedeProtocolo = String(actividadId || "").includes("protocolo") && ["Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
-        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || repositorioSedeProtocolo)
+        const repositorioDocumentacionPrevia = bloque.id === "documentacion-previa" && ["Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
+        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || repositorioSedeProtocolo || repositorioDocumentacionPrevia)
           && !(esCancelacionSinProvision && bloque.id === "sede-notarial" && item.categoria === "Presentación Registro");
       }),
     }];
@@ -412,7 +424,7 @@ export default function CarpetaDigitalModal({
             ))}
           </ul>
         ) : totalCategoria === 0 ? (
-          <p className="mt-2 text-[10px] text-slate-400">{busquedaDocumento ? "Sin coincidencias con la búsqueda." : "Sin documentos adjuntos."}</p>
+          <p className="mt-2 text-[10px] text-slate-400">{busquedaDocumento ? "Sin coincidencias con la búsqueda." : "No hay ficheros en este repositorio del expediente."}</p>
         ) : null}
       </article>
     );
