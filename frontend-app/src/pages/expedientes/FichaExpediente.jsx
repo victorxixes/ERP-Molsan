@@ -2221,7 +2221,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       fecha_recogida_notario_presentacion_telematica: expediente.fecha_recogida_notario_presentacion_telematica || fechaFirma,
       fecha_presentacion_tributaria: expediente.fecha_presentacion_tributaria || fechaFirma,
       fecha_liquidacion_tributaria: expediente.fecha_liquidacion_tributaria || fechaFirma,
-      fecha_vencimiento_asiento: expediente.fecha_vencimiento_asiento || sumarDiasNaturales(expediente.fecha_liquidacion_tributaria || fechaFirma, 60),
+      fecha_vencimiento_asiento: expediente.fecha_vencimiento_asiento || sumarDiasNaturales(expediente.fecha_presentacion || fechaFirma, 60),
       mover_siguiente_actividad: expediente.mover_siguiente_actividad ?? (actividadInicial === "liquidacion-impuestos" || actividadInicial === "tramitacion-inscripcion"),
     });
   }, [expediente?.id_expediente, expediente?.actividad_actual]);
@@ -2358,7 +2358,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         expediente?.fecha_liquidacion_tributaria || fechaFirma,
       fecha_vencimiento_asiento:
         expediente?.fecha_vencimiento_asiento ||
-        sumarDiasNaturales(expediente?.fecha_liquidacion_tributaria || fechaFirma, 60),
+        sumarDiasNaturales(expediente?.fecha_presentacion || fechaFirma, 60),
       mover_siguiente_actividad:
         expediente?.mover_siguiente_actividad ??
         (actividadActual === "liquidacion-impuestos" || actividadActual === "tramitacion-inscripcion"),
@@ -2785,6 +2785,41 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       setErrorActividad("Esta actividad no tiene campos editables disponibles en el expediente.");
       return;
     }
+
+    // Validaciones cronológicas del modal: la firma debe producirse antes
+    // de la presentación registral y la inscripción no puede precederla.
+    const fechaFirmaValidar = String(campos.fecha_firma ?? actividadDraft.fecha_firma ?? "").slice(0, 10);
+    const fechaPresentacionValidar = String(campos.fecha_presentacion ?? actividadDraft.fecha_presentacion ?? "").slice(0, 10);
+    const fechaInscripcionValidar = String(campos.fecha_inscripcion ?? actividadDraft.fecha_inscripcion ?? "").slice(0, 10);
+    const fechaVencimientoValidar = String(campos.fecha_vencimiento_asiento ?? actividadDraft.fecha_vencimiento_asiento ?? "").slice(0, 10);
+
+    if (
+      actividadSeleccionada === "sede-notarial-protocolo" &&
+      fechaFirmaValidar && fechaPresentacionValidar &&
+      fechaFirmaValidar > fechaPresentacionValidar
+    ) {
+      setErrorActividad("La fecha de firma no puede ser posterior a la fecha de presentación.");
+      return;
+    }
+
+    if (
+      actividadSeleccionada === "tramitacion-inscripcion" &&
+      fechaPresentacionValidar && fechaVencimientoValidar &&
+      fechaVencimientoValidar < fechaPresentacionValidar
+    ) {
+      setErrorActividad("La fecha de vencimiento del asiento no puede ser anterior a la fecha de presentación.");
+      return;
+    }
+
+    if (
+      actividadSeleccionada === "tramitacion-inscripcion" &&
+      fechaPresentacionValidar && fechaInscripcionValidar &&
+      fechaInscripcionValidar < fechaPresentacionValidar
+    ) {
+      setErrorActividad("La fecha de inscripción no puede ser anterior a la fecha de presentación.");
+      return;
+    }
+
     setGuardandoActividad(true);
     setErrorActividad("");
     setMensajeActividad("");
@@ -7866,7 +7901,7 @@ const cuantiaFincasParaEnvio =
           </div>
         </section>
         )}
-        {actividadSeleccionada !== "documentacion-previa" && actividadSeleccionada !== "tramitacion-inscripcion" && (
+        {actividadSeleccionada !== "documentacion-previa" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
               <h3 className="text-sm font-extrabold text-slate-800">{actividadSeleccionada === "sede-notarial-protocolo" ? "Sede notarial · datos para integración" : `${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración`}</h3>
@@ -7919,7 +7954,7 @@ const cuantiaFincasParaEnvio =
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                   const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
-                  if (actividadSeleccionada === "liquidacion-impuestos") {
+                  if (["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada)) {
                     const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
                     return (
                       <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
