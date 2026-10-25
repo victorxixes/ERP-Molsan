@@ -700,17 +700,17 @@ export default function EnviarANotarioModal({
           <div className="grid grid-cols-1 items-start gap-3">
             {/* COLUMNA DERECHA — DATOS DEL ENVÍO Y FACTURACIÓN */}
             <div className="min-w-0">
-              <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2 lg:gap-3">
-            {/* COLUMNA IZQUIERDA — ENVÍO AL NOTARIO */}
+              <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2 xl:grid-cols-4 xl:gap-3">
+            {/* BLOQUES EN UNA FILA EN PANTALLAS GRANDES; SE ADAPTAN A 2 O 1 COLUMNA */}
 
             <div className="contents">
-              <section className="rounded-xl border border-slate-200 bg-white p-3 lg:col-start-1 lg:row-start-1">
+              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                 <TituloSeccion
                   titulo="Envío al notario"
                   descripcion="Indica la fecha en que se envía el expediente al notario. Los datos de solicitud PNC y planificación de firma se gestionan desde ApoderaGest."
                 />
 
-                <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-3">
+                <div className="grid grid-cols-1 items-start gap-3">
                   <div className="min-w-0">
                     <CampoTexto
                       label="Fecha de envío"
@@ -770,7 +770,7 @@ export default function EnviarANotarioModal({
               {/* DATOS DEL NOTARIO */}
               {/* NOTARIO */}
 
-              <section className="rounded-xl border border-slate-200 bg-white p-3 lg:col-start-1 lg:row-start-2">
+              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                 <TituloSeccion
                   titulo="Datos del notario"
                   descripcion="Selecciona el notario desde el catálogo CTN."
@@ -796,7 +796,7 @@ export default function EnviarANotarioModal({
                 )}
 
                 {notario && (
-                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="mt-4 grid grid-cols-1 gap-3">
                     <CampoTexto
                       label="Apoderado"
                       value={notario.apoderado || ""}
@@ -837,13 +837,13 @@ export default function EnviarANotarioModal({
                 )}
               </section>              {/* TIPO DE DOCUMENTO Y NUEVOS CAMPOS */}
 
-              <section className="rounded-xl border border-slate-200 bg-white p-3 lg:col-start-2 lg:row-start-1">
+              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                 <TituloSeccion
                   titulo="Tipo de documento"
                   descripcion="Selecciona el documento, el formato de escritura y la modalidad de tramitación."
                 />
 
-                <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-2">
+                <div className="mb-3 grid grid-cols-1 gap-3">
                   <CampoTexto label="Contrato" value={form.contrato} disabled={loading} onChange={(v) => cambiarCampo("contrato", v)} placeholder="N.º de contrato" />
                   <CampoTexto label="Capital (€)" value={form.capital} disabled={loading} type="number" onChange={(v) => cambiarCampo("capital", v)} placeholder="0,00" />
                   <CampoTexto label="Tipo de operación" value={form.tipo_operacion} disabled={loading} onChange={(v) => cambiarCampo("tipo_operacion", v)} placeholder="Ej. Cancelación sin provisión" />
@@ -930,7 +930,7 @@ export default function EnviarANotarioModal({
                     </div>
                   ))}
 
-                                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                  <div className="mt-4 grid grid-cols-1 gap-3">
                   {/* FORMATO DE ESCRITURA */}
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-700">
@@ -989,9 +989,9 @@ export default function EnviarANotarioModal({
 
             </div>
 
-            {/* SEGUNDA FILA — FACTURACIÓN, debajo de Tipo de documento */}
+            {/* DATOS DE FACTURACIÓN — CUARTO BLOQUE */}
 
-            <div className="min-w-0 lg:col-start-2 lg:row-start-2">
+            <div className="min-w-0">
               <section className="rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3">
                 <div className="mb-5 flex items-start gap-3">
                   <div>
@@ -1005,7 +1005,7 @@ export default function EnviarANotarioModal({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3">
                   <CampoTexto
                     label="Nombre"
                     value={form.facturacion_nombre}
@@ -1048,7 +1048,7 @@ export default function EnviarANotarioModal({
                     }
                   />
 
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-3">
                     <CampoTexto
                       label="Código postal"
                       value={form.facturacion_codigo_postal}
