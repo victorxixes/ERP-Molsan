@@ -462,19 +462,9 @@ const CAMPOS_ACTIVIDADES = {
     },
 
     {
-      key: "tipo_firma",
-      label: "Tipo firma",
-    },
-
-    {
       key: "fecha_firma",
       label: "Fecha firma",
       tipo: "fecha",
-    },
-
-    {
-      key: "protocolo",
-      label: "Protocolo",
     },
 
     {
