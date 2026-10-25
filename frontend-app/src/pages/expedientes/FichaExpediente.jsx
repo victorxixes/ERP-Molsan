@@ -1454,6 +1454,24 @@ export default function FichaExpediente() {
     if (actividadSeleccionada === "facturacion-cierre") cargarDocumentosCierre();
   }, [actividadSeleccionada, cargarDocumentosCierre]);
 
+  // Mantiene visibles en Documentación previa los archivos que ya están guardados
+  // en la carpeta digital, incluso antes de abrir el repositorio manualmente.
+  useEffect(() => {
+    const numero = expediente?.id_expediente || id;
+    if (actividadSeleccionada !== "documentacion-previa" || !numero) return;
+    let activo = true;
+    axios.get(`/expedientes/${encodeURIComponent(numero)}/carpeta-digital`)
+      .then((respuesta) => {
+        if (!activo) return;
+        const lista = Array.isArray(respuesta.data) ? respuesta.data : respuesta.data?.items || [];
+        setDocumentosCarpetaPrevia(lista);
+      })
+      .catch(() => {
+        // No bloquea la ficha si el repositorio no responde temporalmente.
+      });
+    return () => { activo = false; };
+  }, [actividadSeleccionada, expediente?.id_expediente, id]);
+
   const [
     mostrarDefecto,
     setMostrarDefecto,
@@ -8070,20 +8088,44 @@ const cuantiaFincasParaEnvio =
                 <p className="mt-1 text-[11px] text-slate-500">Confirma si el certificado de saldo cero es correcto. Por defecto: NO.</p>
               </label>
               {[
-                ["Hoja de encargo firmada", "Repositorio de Hoja de encargo firmada"],
-                ["Justificante de cancelación", "Repositorio de Justificante de cancelación"],
-                ["Nota simple registral", "Repositorio de Nota simple registral"],
-              ].map(([categoria, label]) => (
-                <div key={categoria} className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
-                  <div className="min-w-0">
-                    <span className="block font-semibold">{categoria}</span>
-                    <span className="mt-1 block text-[11px] text-slate-500">Repositorio de documentos del expediente</span>
+                ["Hoja de encargo firmada", "Hoja de Encargo firmada"],
+                ["Justificante de cancelación", "Justificante de cancelación"],
+                ["Nota simple registral", "Nota simple registral"],
+              ].map(([categoria, categoriaRepositorio]) => {
+                const normalizarCategoriaDocumento = (valor) => String(valor || "")
+                  .normalize("NFD")
+                  .replace(/[\\u0300-\\u036f]/g, "")
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]/g, "");
+                const categoriaNormalizada = normalizarCategoriaDocumento(categoriaRepositorio);
+                const documentosVinculados = documentosCarpetaPrevia.filter((documento) =>
+                  normalizarCategoriaDocumento(
+                    documento?.categoria || documento?.categoria_nombre || documento?.repositorio || documento?.tipo_documento
+                  ) === categoriaNormalizada
+                );
+                return (
+                  <div key={categoria} className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
+                    <div className="min-w-0 flex-1">
+                      <span className="block font-semibold">{categoria}</span>
+                      {documentosVinculados.length ? (
+                        <div className="mt-1 space-y-1">
+                          {documentosVinculados.map((documento) => (
+                            <p key={documento.id || documento.nombre_original} className="break-words text-[11px] font-semibold text-emerald-700">
+                              ✓ {documento.nombre_original || documento.nombre || "Documento guardado"}
+                            </p>
+                          ))}
+                          <p className="text-[10px] text-slate-500">{documentosVinculados.length} documento(s) encontrado(s) en la carpeta digital</p>
+                        </div>
+                      ) : (
+                        <span className="mt-1 block text-[11px] text-amber-700">No hay ningún documento guardado en esta categoría.</span>
+                      )}
+                    </div>
+                    <Boton onClick={() => setMostrarRepositoriosDocumentacionPrevia(true)} disabled={registrandoSolicitudIntegracion || expedienteBloqueado}>
+                      Abrir repositorio
+                    </Boton>
                   </div>
-                  <Boton onClick={() => setMostrarRepositoriosDocumentacionPrevia(true)} disabled={registrandoSolicitudIntegracion || expedienteBloqueado}>
-                    Abrir repositorio
-                  </Boton>
-                </div>
-              ))}
+                );
+              })}
             </div>
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
               <div className="min-w-0">
