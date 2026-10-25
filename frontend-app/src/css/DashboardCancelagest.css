@@ -32,10 +32,10 @@
   height: 62px;
   place-items: center;
   color: #fff;
-  background: linear-gradient(145deg, #4268c5, #274694);
-  border: 1px solid rgba(255, 255, 255, .7);
-  border-radius: 16px;
-  box-shadow: 0 8px 22px rgba(49, 86, 179, .2);
+  background: linear-gradient(145deg, var(--molsan-primary, #3156b3), var(--molsan-primary-hover, #274694));
+  border: 1px solid var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: none;
   font-size: 20px;
   font-weight: 850;
   letter-spacing: -1px;
@@ -43,7 +43,7 @@
 
 .dashboard-cancelagest .ag-eyebrow {
   display: block;
-  color: #63769b;
+  color: var(--molsan-primary, #3156b3);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 1.65px;
@@ -52,7 +52,7 @@
 
 .dashboard-cancelagest .ag-hero h1 {
   margin: 5px 0 4px;
-  color: var(--molsan-text-strong, #17233a);
+  color: var(--molsan-text, #17243a);
   font-size: clamp(26px, 3vw, 36px);
   font-weight: 820;
   letter-spacing: -1.3px;
@@ -81,9 +81,9 @@
   gap: 8px;
   padding: 10px 13px;
   color: var(--molsan-text-muted, #64748b);
-  background: rgba(255, 255, 255, .8);
+  background: var(--molsan-surface, #fff);
   border: 1px solid var(--molsan-border, #dce4ef);
-  border-radius: 10px;
+  border-radius: var(--molsan-radius-control, 9px);
   font-size: 11px;
   font-weight: 650;
   text-transform: capitalize;
@@ -108,7 +108,7 @@
   color: #fff;
   background: linear-gradient(135deg, var(--dashboard-cg-primary), var(--dashboard-cg-primary-dark));
   border: 1px solid var(--dashboard-cg-primary);
-  border-radius: 10px;
+  border-radius: var(--molsan-radius-control, 9px);
   font-size: 12px;
   font-weight: 750;
   cursor: pointer;
@@ -237,7 +237,7 @@
 }
 
 .dashboard-cancelagest .dashboard-kpi__icon {
-  border-radius: 10px;
+  border-radius: var(--molsan-radius-control, 9px);
 }
 
 .dashboard-cancelagest .erp-card {
