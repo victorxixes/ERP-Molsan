@@ -5,16 +5,16 @@
 }
 .molsan-intranet-page > section,
 .molsan-intranet-page > div:not(.pointer-events-none) {
-  border-color: var(--erp-border, rgba(148, 163, 184, .28));
+  border-color: var(--molsan-border, rgba(148, 163, 184, .28));
 }
 .molsan-intranet-page article {
-  border-color: var(--erp-border, rgba(148, 163, 184, .28));
+  border-color: var(--molsan-border, rgba(148, 163, 184, .28));
   border-radius: 1.15rem;
   box-shadow: 0 8px 24px rgba(15, 23, 42, .045);
   transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }
 .molsan-intranet-page article:hover {
-  border-color: color-mix(in srgb, var(--molsan-primary, #3156b3) 28%, var(--erp-border, #dbe2ea));
+  border-color: color-mix(in srgb, var(--molsan-primary, #3156b3) 28%, var(--molsan-border, #dbe2ea));
   box-shadow: 0 12px 28px rgba(15, 23, 42, .075);
 }
 .molsan-intranet-page input:not([type="checkbox"]):not([type="radio"]),
