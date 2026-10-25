@@ -1,15 +1,15 @@
 /* MOLSAN ERP Premium 2027 · layout, portales e intranet */
 .mol-sidebar-premium { isolation:isolate; }
 .mol-sidebar-premium a,.mol-sidebar-premium button { transition:background-color .16s ease,color .16s ease,border-color .16s ease; }
-.mol-sidebar-premium nav { min-width:0; max-width:100%; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:var(--erp-border,#dce4ef) transparent; }
-.mol-sidebar-premium a:focus-visible,.mol-sidebar-premium button:focus-visible,.portal-login-premium input:focus-visible,.portal-login-premium button:focus-visible,.portal-access-tabs-premium button:focus-visible,.sidebar-perfil-modal-premium button:focus-visible,.sidebar-perfil-modal-premium input:focus-visible,.sidebar-perfil-modal-premium select:focus-visible { outline:2px solid var(--erp-primary,#4169e1); outline-offset:2px; }
+.mol-sidebar-premium nav { min-width:0; max-width:100%; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:var(--molsan-border,#dce4ef) transparent; }
+.mol-sidebar-premium a:focus-visible,.mol-sidebar-premium button:focus-visible,.portal-login-premium input:focus-visible,.portal-login-premium button:focus-visible,.portal-access-tabs-premium button:focus-visible,.sidebar-perfil-modal-premium button:focus-visible,.sidebar-perfil-modal-premium input:focus-visible,.sidebar-perfil-modal-premium select:focus-visible { outline:2px solid var(--molsan-primary,#3156b3); outline-offset:2px; }
 .portal-login-premium { min-height:100dvh; }
 .portal-login-premium input,.portal-login-premium button { max-width:100%; }
 .portal-access-tabs-premium { min-width:0; }
 .portal-access-tabs-premium [role=tablist] { display:flex; flex-wrap:wrap; gap:.5rem; }
 .intranet-documentos-table-premium { min-width:0; }
 .intranet-documentos-table-premium table { width:100%; border-collapse:separate; border-spacing:0; }
-.intranet-documentos-table-premium th { background:var(--erp-surface-soft,#f5f7fb); }
+.intranet-documentos-table-premium th { background:var(--molsan-surface-soft,#f7f9fc); }
 .intranet-documentos-table-premium td,.intranet-documentos-table-premium th { overflow-wrap:anywhere; }
 .intranet-noticias-feed-premium { min-width:0; }
 .intranet-noticias-feed-premium img { max-width:100%; }
@@ -24,10 +24,11 @@
   position: relative;
   z-index: 50;
   color: var(--molsan-text, #17243a);
-  background: rgba(255,255,255,.96);
+  background: var(--molsan-surface, #fff);
   border-bottom: 1px solid var(--molsan-border, #dce4ef);
-  box-shadow: 0 3px 12px rgba(22, 36, 58, .035);
-  backdrop-filter: blur(14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 .mol-sidebar-premium > div {
   min-width: 0;
@@ -50,7 +51,7 @@
 .mol-sidebar-premium nav a:hover,
 .mol-sidebar-premium nav button:hover {
   color: var(--molsan-primary, #3156b3);
-  background: #f3f6fc;
+  background: var(--molsan-surface-soft, #f7f9fc);
 }
 .mol-sidebar-premium button:focus-visible,
 .mol-sidebar-premium a:focus-visible {
@@ -64,16 +65,14 @@
 }
 .portal-login-premium {
   color: var(--molsan-text, #17243a);
-  background:
-    radial-gradient(ellipse at 12% 0%, rgba(49,86,179,.12), transparent 42%),
-    var(--molsan-page-bg, #f3f6fb);
+  background: var(--molsan-page-bg, #f4f7fb);
 }
 .portal-login-premium [role="form"],
 .portal-login-premium form {
   border: 1px solid var(--molsan-border, #dce4ef);
-  border-radius: 16px;
-  background: rgba(255,255,255,.96);
-  box-shadow: 0 12px 36px rgba(25,42,70,.08);
+  border-radius: var(--molsan-radius-dialog, 16px);
+  background: var(--molsan-surface, #fff);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
 @media (max-width: 760px) {
   .mol-sidebar-premium nav a,
