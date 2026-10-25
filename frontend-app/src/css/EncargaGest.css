@@ -179,7 +179,6 @@
   flex: 0 0 auto;
   padding: 13px 24px 0;
 }
-.eg-modal-contexto .eg-field,
 .eg-modal-contexto label { max-width: 100%; }
 .eg-modal-notaria {
   display: flex;
@@ -385,8 +384,6 @@
 
 
 
-.eg-file-preview-link.is-active>span:last-child { color:#3155c5; font-weight:850; }
-.eg-file-preview-link.is-active>span:first-child { color:#fff; background:#4268df; }
 
 
 
