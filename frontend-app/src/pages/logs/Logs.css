@@ -9,7 +9,7 @@
   border-color: var(--logs-line);
 }
 .logs-premium-page > section:first-child {
-  background: var(--erp-surface, rgba(255,255,255,.84));
+  background: var(--molsan-surface, rgba(255,255,255,.84));
   border-radius: 1.2rem;
   box-shadow: 0 12px 34px rgba(15, 23, 42, .055);
 }
