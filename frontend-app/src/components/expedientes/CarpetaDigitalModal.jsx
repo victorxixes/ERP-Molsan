@@ -895,10 +895,10 @@ export default function CarpetaDigitalModal({
                       ))}
                     </div>
                   ) : (
-                    (actividadId === "liquidacion-impuestos" || actividadId === "tramitacion-inscripcion") ? (
+                    (["liquidacion-impuestos", "tramitacion-inscripcion", "defectos-registrales", "facturacion-cierre"].includes(actividadId)) ? (
                       <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-3">
                         <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">📋 Datos · {bloqueActividad?.titulo || (actividadId === "liquidacion-impuestos" ? "Liquidación de impuestos" : "Tramitación inscripción")}</h5>
+                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">📋 Datos · {bloqueActividad?.titulo || ({ "liquidacion-impuestos": "Liquidación de impuestos", "tramitacion-inscripcion": "Tramitación inscripción", "defectos-registrales": "Defectos registrales", "facturacion-cierre": "Cierre del expediente" }[actividadId] || "Datos de actividad")}</h5>
                           <div className="grid min-w-0 grid-cols-1 gap-1.5 px-2.5 py-2 sm:grid-cols-2 xl:grid-cols-1">
                             {camposPanelActividad
                               .filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key))
