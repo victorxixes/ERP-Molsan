@@ -8107,7 +8107,7 @@ const cuantiaFincasParaEnvio =
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">Datos de facturación</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
                     <Dato campo="Nombre" valor={expediente?.facturacion_nombre ?? expediente?.nombre_facturacion ?? expediente?.nombre_cliente_facturacion} />
-                    <Dato campo="Apellidos" valor={expediente?.facturacion_apellidos ?? expediente?.apellidos_facturacion ?? expediente?.nombre_cliente_facturacion} />
+                    <Dato campo="Apellidos" valor={expediente?.facturacion_apellidos ?? expediente?.apellidos_facturacion ?? expediente?.apellidos_cliente_facturacion} />
                     <Dato campo="DNI / NIF de facturación" valor={expediente?.facturacion_dni_nif ?? expediente?.dni_facturacion ?? expediente?.nif_facturacion} />
                     <Dato campo="Dirección" valor={expediente?.facturacion_direccion ?? expediente?.direccion_facturacion ?? expediente?.direccion_cliente_facturacion} />
                     <Dato campo="Código postal" valor={expediente?.facturacion_codigo_postal ?? expediente?.codigo_postal_facturacion ?? expediente?.cp_facturacion} />
