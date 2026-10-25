@@ -6391,7 +6391,7 @@ const cuantiaFincasParaEnvio =
                           </div>
                         )}
 
-                        {mostrarFormularioGasto && (
+                        {mostrarFormularioGasto && createPortal((
                           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-gasto">
                             <div className="flex max-h-[94vh] w-full max-w-[96vw] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
                           <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
@@ -6454,7 +6454,7 @@ const cuantiaFincasParaEnvio =
                           </form>
                             </div>
                           </div>
-                        )}
+                        ), document.body)}
 
                         <div className="mt-6 border-t border-slate-100 pt-5">
                           <h5 className="mb-4 text-sm font-extrabold uppercase tracking-wide text-slate-700">Facturas y gastos registrados</h5>
