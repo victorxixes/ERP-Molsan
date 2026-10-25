@@ -1524,6 +1524,7 @@ export default function FichaExpediente() {
     mostrarCarpetaDigital,
     setMostrarCarpetaDigital,
   ] = useState(false);
+  const [mostrarRepositoriosDocumentacionPrevia, setMostrarRepositoriosDocumentacionPrevia] = useState(false);
   const [mostrarReclamarOficina, setMostrarReclamarOficina] = useState(false);
   const [emailReclamacion, setEmailReclamacion] = useState({ destinatario: "", asunto: "", cuerpo: "" });
   const [historicoReclamaciones, setHistoricoReclamaciones] = useState([]);
@@ -6392,6 +6393,15 @@ const cuantiaFincasParaEnvio =
           onClose={() => setMostrarCarpetaDigital(false)}
         />
       )}
+      {mostrarRepositoriosDocumentacionPrevia && (
+        <CarpetaDigitalModal
+          expedienteId={id || expediente?.id_expediente || expediente?.id}
+          modoActividad
+          actividadId="documentacion-previa"
+          onClose={() => setMostrarRepositoriosDocumentacionPrevia(false)}
+          onDocumentosChange={actualizarDocumentosCarpetaPrevia}
+        />
+      )}
 
 
       <Modal
@@ -7929,7 +7939,7 @@ const cuantiaFincasParaEnvio =
                     <span className="block font-semibold">{categoria}</span>
                     <span className="mt-1 block text-[11px] text-slate-500">Repositorio de documentos del expediente</span>
                   </div>
-                  <Boton onClick={() => setMostrarCarpetaDigital(true)} disabled={registrandoSolicitudIntegracion || expedienteBloqueado}>
+                  <Boton onClick={() => setMostrarRepositoriosDocumentacionPrevia(true)} disabled={registrandoSolicitudIntegracion || expedienteBloqueado}>
                     Abrir repositorio
                   </Boton>
                 </div>
