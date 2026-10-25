@@ -6,7 +6,7 @@
   max-width: 1500px;
   margin: 0 auto;
   padding: var(--sj-gap);
-  animation: fadeInSJ 0.35s ease-out;
+
 }
 
 .section-sj {
@@ -16,12 +16,11 @@
 .grid-sj {
   display: grid;
   gap: var(--sj-gap);
-  transition: transform 0.25s ease;
+
 }
 
-.grid-sj > *:hover {
-  transform: translateY(-4px);
-}
+/* Los elementos de la cuadrícula no se desplazan al pasar el cursor. */
+.grid-sj > *:hover { transform: none; }
 
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
