@@ -5999,7 +5999,7 @@ const cuantiaFincasParaEnvio =
 
             </>}
 
-          </div>
+          </section>
 
           {mostrarControlCalidad && renderChecklistCalidad()}
 
