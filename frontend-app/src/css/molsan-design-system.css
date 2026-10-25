@@ -405,7 +405,7 @@
   .notargest .ng-panel,
   .encargagest .eg-panel,
   .cg-page .cg-panel {
-    border-radius: 12px;
+    border-radius: var(--molsan-radius-card, 14px);
   }
 
   .apoderagest .ag-panel-cabecera,
@@ -421,7 +421,7 @@
 .molsan-intranet-page > header {
   border: 1px solid var(--molsan-border);
   border-radius: var(--molsan-radius-panel);
-  background: linear-gradient(115deg, #fff 0%, #f7f9fd 70%, #f1f5fb 100%);
+  background: var(--molsan-surface);
   box-shadow: var(--molsan-shadow-panel);
 }
 
@@ -473,7 +473,7 @@
 
   .molsan-intranet-page > header,
   .molsan-intranet-page > section {
-    border-radius: 12px;
+    border-radius: var(--molsan-radius-card, 14px);
   }
 }
 
@@ -588,7 +588,7 @@
   .ctn-modal-panel {
     width: 100%;
     max-height: calc(100dvh - 16px);
-    border-radius: 12px;
+    border-radius: var(--molsan-radius-card, 14px);
   }
   .ctn-modal-header {
     padding: 16px;
