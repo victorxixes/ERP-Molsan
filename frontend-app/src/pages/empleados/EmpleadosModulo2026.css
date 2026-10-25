@@ -8,9 +8,9 @@
 
 .empleados-premium-page > section.erp-card {
   border: 1px solid var(--molsan-border, #dce4ef);
-  border-radius: 1.25rem;
-  background: var(--molsan-surface, rgba(255, 255, 255, .92));
-  box-shadow: 0 12px 32px rgba(15, 23, 42, .055);
+  border-radius: var(--molsan-radius-card, 14px);
+  background: var(--molsan-surface, #fff);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
 
 .empleados-premium-page input:not([type="checkbox"]):not([type="radio"]),
@@ -18,7 +18,7 @@
 .empleados-premium-page textarea {
   max-width: 100%;
   border-color: var(--molsan-border, #dbe2ea);
-  border-radius: .75rem;
+  border-radius: var(--molsan-radius-control, 9px);
   transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
 }
 
