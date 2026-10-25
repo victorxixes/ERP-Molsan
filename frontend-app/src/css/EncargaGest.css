@@ -542,7 +542,7 @@
 
 
 /* Carpeta digital en columna independiente, junto a la ficha Datos del encargo */
-.eg-modal-layout { grid-template-columns:minmax(300px,.82fr) minmax(0,1.18fr); align-items:start; }
+
 .eg-modal-datos { grid-column:2; grid-row:1; display:flex; flex-direction:column; min-width:0; }
 .eg-modal-datos > .eg-modal-field-grid { display:flex; flex-direction:column; min-width:0; }
 
