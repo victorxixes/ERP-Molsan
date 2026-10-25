@@ -7813,12 +7813,13 @@ const cuantiaFincasParaEnvio =
             ) : actividadSeleccionada === "sede-notarial-protocolo" ? (
               <div className="grid items-start gap-4 lg:grid-cols-2">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                  <h4 className="mb-3 text-xs font-extrabold uppercase tracking-[0.1em] text-indigo-700">Datos notariales y de presentación</h4>
+                  <h4 className="text-sm font-extrabold text-slate-800">Sede notarial con protocolo · datos para integración</h4>
+                  <p className="mb-3 mt-1 text-xs text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
                     {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "fecha_firma", "protocolo", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
                       const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
                         ? (actividadDraft[campo.key] ?? "")
-                        : (expediente?.[campo.key] ?? "");
+                        : (expediente?.[campo.key] ?? (campo.key === "nombre_notario" ? "Francisco Javier Cilveti Bayona" : campo.key === "nif_notario" ? "05287294P" : ""));
                       const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
                       return (
                         <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-slate-50/50 p-3">
