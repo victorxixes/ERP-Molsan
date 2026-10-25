@@ -3554,12 +3554,25 @@ def actualizar_control_bloqueo(
     id_expediente: str,
     datos: ControlBloqueoRequest,
     db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
 ):
     expediente = db.query(Expediente).filter(
         Expediente.id_expediente == str(id_expediente)
     ).first()
     if expediente is None:
         raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    # Solo un administrador puede retirar un bloqueo efectivo ya existente.
+    estado_actual = str(getattr(expediente, "estado_expediente", "") or "").strip().upper()
+    bloqueo_actual = bool(motivo_bloqueo_expediente(expediente))
+    bloqueo_solicitado = bool(
+        datos.liquidado_sin_tramitar
+        or datos.cambio_gestoria
+        or datos.bloqueo_manual
+        or estado_actual.startswith(("LST", "RST"))
+    )
+    if bloqueo_actual and not bloqueo_solicitado and not _usuario_es_admin_visibilidad(usuario):
+        raise HTTPException(status_code=403, detail="Solo un administrador puede desbloquear un expediente.")
 
     if datos.liquidado_sin_tramitar and not datos.fecha_liquidacion_sin_tramitar and not str(expediente.estado_expediente or "").strip().upper().startswith("LST"):
         raise HTTPException(status_code=422, detail="Indica la fecha de liquidación sin tramitar.")
