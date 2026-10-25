@@ -723,17 +723,17 @@ export default function CarpetaDigitalModal({
 
           <div
             className={modoActividad
-              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 " + (ocultarPanelEnvioNotario ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(190px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
+              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 " + (ocultarPanelEnvioNotario || actividadId === "sede-notarial" ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(190px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
               : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}
           >
             <div
-              className={"flex min-h-0 min-w-0 flex-col overflow-hidden transition-[opacity,transform] duration-300 " + (modoActividad && !panelDocumentosVisible && !ocultarPanelEnvioNotario ? "hidden lg:flex" : "")}
+              className={"flex min-h-0 min-w-0 flex-col overflow-hidden transition-[opacity,transform] duration-300 " + (modoActividad && !panelDocumentosVisible && !ocultarPanelEnvioNotario && actividadId !== "sede-notarial" ? "hidden lg:flex" : "")}
               style={modoActividad ? {
                 minWidth: 0,
                 width: "100%",
-                opacity: panelDocumentosVisible || ocultarPanelEnvioNotario ? 1 : 0,
-                transform: panelDocumentosVisible || ocultarPanelEnvioNotario ? "translateX(0)" : "translateX(-28px)",
-                pointerEvents: panelDocumentosVisible || ocultarPanelEnvioNotario ? "auto" : "none",
+                opacity: panelDocumentosVisible || ocultarPanelEnvioNotario || actividadId === "sede-notarial" ? 1 : 0,
+                transform: panelDocumentosVisible || ocultarPanelEnvioNotario || actividadId === "sede-notarial" ? "translateX(0)" : "translateX(-28px)",
+                pointerEvents: panelDocumentosVisible || ocultarPanelEnvioNotario || actividadId === "sede-notarial" ? "auto" : "none",
               } : undefined}
             >
               {!modoActividad && (
@@ -770,7 +770,7 @@ export default function CarpetaDigitalModal({
                 </div>
               )}
             </div>
-            {modoActividad && !ocultarPanelEnvioNotario && (
+            {modoActividad && !ocultarPanelEnvioNotario && actividadId !== "sede-notarial" && (
               <aside className="flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-indigo-100 bg-white shadow-sm">
                 <header className="flex items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
                   <div className="min-w-0">
