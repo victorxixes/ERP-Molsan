@@ -551,33 +551,29 @@ const CAMPOS_ACTIVIDADES = {
 
   "defectos-registrales": [
     {
-      key: "tiene_defectos_abiertos",
-      label: "Defectos abiertos",
-      estado: true,
+      key: "documento_defecto",
+      label: "Documento",
     },
-
     {
-      key: "tipo_error",
-      label: "Tipo error",
-    },
-
-    {
-      key: "falta_defecto",
-      label: "Falta / defecto",
-    },
-
-    {
-      key: "descripcion_error",
-      label: "Descripción del defecto",
+      key: "motivos_defecto",
+      label: "Motivos del defecto",
       multilinea: true,
     },
-
     {
-      key: "fcierre_defecto",
-      label: "Fecha cierre defecto",
+      key: "fecha_notificacion_registro",
+      label: "Fecha notificación Registro",
       tipo: "fecha",
     },
-
+    {
+      key: "fecha_vencimiento_presentacion_registro",
+      label: "Fecha vencimiento presentación Registro",
+      tipo: "fecha",
+    },
+    {
+      key: "observaciones_defecto_registral",
+      label: "Observaciones",
+      multilinea: true,
+    },
   ],
 
   "facturacion-cierre": [
@@ -8068,6 +8064,15 @@ const cuantiaFincasParaEnvio =
                       );
                     })}
                   </div>
+                </section>
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
+                  <RepositorioDocumentosInline
+                    expedienteId={expediente?.id_expediente || expediente?.id || id}
+                    categorias={["Hoja de inscripción"]}
+                    titulo="Repositorios digitales · Hoja de inscripción"
+                    onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
+                  />
                 </section>
               </div>
             ) : null}
