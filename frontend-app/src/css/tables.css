@@ -11,7 +11,6 @@
   border: 1px solid var(--erp-border);
   background: var(--erp-surface);
   color: var(--erp-text);
-  transition: border-color var(--molsan-transition-fast, 150ms ease);
 }
 
 
