@@ -209,7 +209,8 @@ export default function CarpetaDigitalModal({
         const repositorioClave = clavePorCategoria[item.categoria];
         const repositorioNuevoRequerido = ["documentacion-previa", "gestion-economica"].includes(bloque.id)
           && ["Borradores escrituras", "Otros"].includes(item.categoria);
-        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido)
+        const copiaSimpleSedeProtocolo = String(actividadId || "").includes("protocolo") && item.categoria === "Copia simple";
+        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || copiaSimpleSedeProtocolo)
           && !(esCancelacionSinProvision && bloque.id === "sede-notarial" && item.categoria === "Presentación Registro");
       }),
     }];
