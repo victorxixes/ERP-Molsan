@@ -7972,6 +7972,7 @@ const cuantiaFincasParaEnvio =
               <p className="mt-1 text-xs text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
             </div>
             {actividadSeleccionada === "documentacion-previa" ? (
+              <>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="block rounded-lg border border-slate-200 bg-white p-3">
                   <span className="block text-xs font-bold text-slate-600">Fecha de envío a notario</span>
@@ -7995,6 +7996,7 @@ const cuantiaFincasParaEnvio =
                   onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
                 />
               </section>
+              </>
             ) : actividadSeleccionada === "sede-notarial" ? (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="block rounded-lg border border-slate-200 bg-white p-3">
