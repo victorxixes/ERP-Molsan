@@ -2,7 +2,7 @@
 .empleado-editar-premium {
   border: 1px solid var(--molsan-border, #dce4ef);
   border-radius: 1.2rem;
-  background: var(--erp-surface, rgba(255, 255, 255, .84));
+  background: var(--molsan-surface, rgba(255, 255, 255, .84));
   box-shadow: 0 10px 30px rgba(15, 23, 42, .055);
   backdrop-filter: blur(14px);
 }
