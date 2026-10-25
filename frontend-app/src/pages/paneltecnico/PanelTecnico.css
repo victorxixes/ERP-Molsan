@@ -8,13 +8,13 @@
   border: 1px solid var(--molsan-border, #dce4ef);
   border-radius: 1.15rem;
   padding: clamp(1rem, 2vw, 1.5rem);
-  background: var(--erp-surface, rgba(255,255,255,.82));
+  background: var(--molsan-surface, rgba(255,255,255,.82));
   box-shadow: 0 9px 28px rgba(15, 23, 42, .045);
   backdrop-filter: blur(12px);
 }
 .panel-tecnico-premium > section:not(:first-child) > div:first-child {
   padding-bottom: .85rem;
-  border-bottom: 1px solid var(--erp-border, rgba(148, 163, 184, .2));
+  border-bottom: 1px solid var(--molsan-border, rgba(148, 163, 184, .2));
 }
 .panel-tecnico-premium h2,
 .panel-tecnico-premium h3 {
