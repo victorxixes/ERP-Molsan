@@ -6227,7 +6227,7 @@ const cuantiaFincasParaEnvio =
             </div>
           </Seccion>
       </div>
-      </section>
+      </div>
 
 
 
