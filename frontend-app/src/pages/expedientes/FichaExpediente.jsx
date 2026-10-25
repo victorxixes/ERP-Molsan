@@ -8160,6 +8160,7 @@ const cuantiaFincasParaEnvio =
                     <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Observaciones</span>
                     <textarea rows={3} value={String(actividadDraft.observaciones_defecto_registral ?? expediente?.observaciones_defecto_registral ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, observaciones_defecto_registral: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
                   </label>
+                </div>
                 </section>
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                 <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
@@ -8169,7 +8170,8 @@ const cuantiaFincasParaEnvio =
                   titulo="Repositorios digitales · Defecto registral"
                   onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
                 />
-              </section>
+                </section>
+              </div>
             ) : null}
         <section className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
           <p className="text-sm font-extrabold text-amber-900">Aviso para informática · Integración de datos</p>
