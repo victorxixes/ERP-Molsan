@@ -8201,6 +8201,7 @@ const cuantiaFincasParaEnvio =
               <p className="mt-1 text-xs text-amber-800">Este aviso es informativo: guardar los datos en el ERP no realiza ningún envío externo.</p>
             </>
           )}
+          </section>
         </section>
         )}
       </Modal>
