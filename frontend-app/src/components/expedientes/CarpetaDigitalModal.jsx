@@ -775,7 +775,7 @@ export default function CarpetaDigitalModal({
                 <header className="flex items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
                   <div className="min-w-0">
                     <h4 className="text-xs font-extrabold text-indigo-950">
-                      {actividadId === "documentacion-previa" ? "✉️ Datos de envío a notario" : `📋 Datos · ${bloqueActividad?.titulo || "Actividad"}`}
+                      {actividadId === "documentacion-previa" ? "✉️ Datos de envío a notario" : String(actividadId || "").includes("protocolo") ? "📋 Datos · Sede notarial con protocolo" : `📋 Datos · ${bloqueActividad?.titulo || "Actividad"}`}
                     </h4>
                     <p className="text-[10px] text-slate-500">
                       {actividadId === "documentacion-previa" ? "Resumen de la información del expediente" : "Información específica de esta actividad"}
