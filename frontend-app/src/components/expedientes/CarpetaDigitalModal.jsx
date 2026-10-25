@@ -913,6 +913,8 @@ export default function CarpetaDigitalModal({
                               // En este bloque de integración no se muestra Apoderado.
                               ["Notario", datosPanelActividad?.nombre_notario || datosPanelActividad?.notario],
                               ["NIF notario", datosPanelActividad?.nif_notario || datosPanelActividad?.notario_nif],
+                              ["Tipo de firma", datosEnvioNotario?.tipo_firma || datosPanelActividad?.tipo_firma],
+                              ["Formato de escritura", datosEnvioNotario?.formato_escritura || datosPanelActividad?.formato_escritura],
                               ["Fecha firma", datosPanelActividad?.fecha_firma],
                               ["Protocolo", datosPanelActividad?.protocolo],
                               ["Asiento presentación", datosPanelActividad?.asiento_presentacion || datosPanelActividad?.asiento_presentacion_libro_diario],
