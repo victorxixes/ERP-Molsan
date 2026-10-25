@@ -7976,13 +7976,28 @@ const cuantiaFincasParaEnvio =
           </div>
         </section>
         )}
-        {actividadSeleccionada !== "documentacion-previa" && (
+        {(
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
               <h3 className="text-sm font-extrabold text-slate-800">{actividadSeleccionada === "sede-notarial-protocolo" ? "Sede notarial con protocolo · datos para integración" : `${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración`}</h3>
               <p className="mt-1 text-xs text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
             </div>
-            {actividadSeleccionada === "sede-notarial" ? (
+            {actividadSeleccionada === "documentacion-previa" ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <label className="block rounded-lg border border-slate-200 bg-white p-3">
+                  <span className="block text-xs font-bold text-slate-600">Fecha de envío a notario</span>
+                  <input type="date" value={Object.prototype.hasOwnProperty.call(actividadDraft, "fecha_envio_notario") ? String(actividadDraft.fecha_envio_notario ?? "").slice(0, 10) : String(expediente?.fecha_envio_notario || expediente?.fecha_envio || "").slice(0, 10)} onChange={(event) => setActividadDraft((actual) => ({ ...actual, fecha_envio_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                </label>
+                <label className="block rounded-lg border border-slate-200 bg-white p-3">
+                  <span className="block text-xs font-bold text-slate-600">Notario</span>
+                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nombre_notario") ? String(actividadDraft.nombre_notario ?? "") : String(expediente?.nombre_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nombre_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="Nombre del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                </label>
+                <label className="block rounded-lg border border-slate-200 bg-white p-3">
+                  <span className="block text-xs font-bold text-slate-600">NIF de notario</span>
+                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nif_notario") ? String(actividadDraft.nif_notario ?? "") : String(expediente?.nif_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nif_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="NIF del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                </label>
+              </div>
+            ) : actividadSeleccionada === "sede-notarial" ? (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="block rounded-lg border border-slate-200 bg-white p-3">
                   <span className="block text-xs font-bold text-slate-600">Fecha de envío</span>
@@ -8186,7 +8201,6 @@ const cuantiaFincasParaEnvio =
               <p className="mt-1 text-xs text-amber-800">Este aviso es informativo: guardar los datos en el ERP no realiza ningún envío externo.</p>
             </>
           )}
-        </section>
         </section>
         )}
       </Modal>
