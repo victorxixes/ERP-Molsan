@@ -5583,15 +5583,8 @@ const cuantiaFincasParaEnvio =
                     <textarea rows={3} value={String(actividadDraft.observaciones_defecto_registral ?? expediente?.observaciones_defecto_registral ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, observaciones_defecto_registral: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
                   </label>
                 </div>
-              </section>
-            )}
-
-            {actividadSeleccionada === "defectos-registrales" && (
-              <section className="mt-3 rounded-2xl border border-amber-200 bg-amber-50/30 p-4">
-                <div className="mb-3">
-                  <h3 className="text-sm font-extrabold text-slate-800">Carpeta digital de defectos</h3>
-                  <p className="mt-1 text-xs text-slate-500">Dos categorías separadas para la calificación registral y la documentación de subsanación.</p>
-                </div>
+                <div className="mt-4 border-t border-amber-200 pt-4">
+                  <h3 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h3>
                 <div className="grid gap-3 md:grid-cols-2">
                   {[
                     {
