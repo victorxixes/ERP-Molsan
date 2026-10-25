@@ -2185,13 +2185,11 @@ body {
   transform: none;
 }
 
+/* Una única sombra compartida: se conserva estable también en hover. */
 .card-sj,
 .erp-card,
 .table-sj,
-.modal-sj {
-  box-shadow: var(--molsan-shadow-card);
-}
-
+.modal-sj,
 .card-sj:hover,
 .erp-card:hover,
 .table-sj:hover,
