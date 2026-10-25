@@ -19,8 +19,6 @@ import "./css/molsan-tokens.css";
 import "./css/molsan-design-system.css";
 import "./css/molsan-tables.css";
 import "./css/molsan-controls.css";
-import "./css/molsan-overlays.css";
-import "./css/molsan-motion.css";
 // Componentes y módulos funcionales.
 import App from "./App";
 // Capa final de diseño: se carga después de los estilos de módulos para unificar el acabado.
