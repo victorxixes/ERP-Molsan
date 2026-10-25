@@ -703,7 +703,10 @@ function resolverActividadActual(
 // ESTADO BADGE
 // ============================================================
 
-function RepositorioDocumentosInline({ expedienteId, categorias, titulo = "Repositorio digital" }) {
+function RepositorioDocumentosInline({ expedienteId, categorias = [], titulo = "Repositorio digital" }) {
+  const categoriasClave = categorias.join("|");
+  const normalizarCategoriaRepositorio = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
+  const categoriasNormalizadas = categoriasClave.split("|").map(normalizarCategoriaRepositorio);
   const [documentos, setDocumentos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -719,7 +722,7 @@ function RepositorioDocumentosInline({ expedienteId, categorias, titulo = "Repos
       .then(({ data }) => {
         if (!activo) return;
         const lista = Array.isArray(data) ? data : data?.items || [];
-        setDocumentos(lista.filter((doc) => categoriasClave.split("|").includes(String(doc.categoria || "").trim())));
+        setDocumentos(lista.filter((doc) => categoriasNormalizadas.includes(normalizarCategoriaRepositorio(doc.categoria || doc.categoria_nombre || doc.tipo_documento))));
       })
       .catch((e) => {
         if (activo) setError(e?.response?.data?.detail || "No se pudieron cargar los documentos del repositorio.");
@@ -5339,7 +5342,8 @@ const cuantiaFincasParaEnvio =
             )}
 
             {actividadSeleccionada !== "documentacion-previa" &&
-              actividadSeleccionada !== "sede-notarial" && (
+              actividadSeleccionada !== "sede-notarial" &&
+              actividadSeleccionada !== "tramitacion-inscripcion" && (
               <div
                 className="
                   grid
@@ -5581,40 +5585,6 @@ const cuantiaFincasParaEnvio =
               </section>
             )}
 
-            {actividadSeleccionada === "tramitacion-inscripcion" && (
-              <section className="mt-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-4">
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <p className="text-xs font-extrabold text-slate-700">Hoja de inscripción</p>
-                    <p className="mt-1 text-sm text-slate-600">
-                      {actividadDraft?.escritura_simple_cancelacion || expediente?.escritura_simple_cancelacion
-                        ? "Hay una referencia guardada al documento de inscripción."
-                        : "Pendiente de que se incorpore la hoja de inscripción a la carpeta digital."}
-                    </p>
-                    <p className="mt-1 text-[11px] text-slate-500">La subida y vinculación automática desde Notargest requiere conectar la integración documental.</p>
-                    <button type="button" onClick={() => setMostrarCarpetaDigital(true)} className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-50">
-                      📁 Abrir carpeta digital
-                    </button>
-                  </div>
-                  <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <p className="mb-2 text-xs font-extrabold text-slate-700">Solicitar avance al completar la futura integración</p>
-                    <div className="flex gap-5">
-                      <label className="flex items-center gap-2 text-sm text-slate-700">
-                        <input type="radio" name="moverActividadInscripcion" checked={actividadDraft.mover_siguiente_actividad !== false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: true }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> Sí
-                      </label>
-                      <label className="flex items-center gap-2 text-sm text-slate-700">
-                        <input type="radio" name="moverActividadInscripcion" checked={actividadDraft.mover_siguiente_actividad === false} onChange={() => setActividadDraft((actual) => ({ ...actual, mover_siguiente_actividad: false }))} disabled={guardandoActividad || registrandoSolicitudIntegracion} /> No
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-3 flex justify-end">
-                  <Boton tipo="primary" onClick={() => registrarSolicitudIntegracionPendiente("tramitacion-inscripcion")} disabled={guardandoActividad || registrandoSolicitudIntegracion}>
-                    {registrandoSolicitudIntegracion ? "Registrando…" : "📨 Registrar solicitud pendiente"}
-                  </Boton>
-                </div>
-              </section>
-            )}
 
             {actividadSeleccionada === "facturacion-cierre" && (
               <div className="mt-4 space-y-4">
