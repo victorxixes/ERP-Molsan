@@ -5119,7 +5119,9 @@ const cuantiaFincasParaEnvio =
                       camposPanelActividad={CAMPOS_ACTIVIDADES[actividadSeleccionada] || []}
                       onAbrirEnvioNotario={() => setMostrarEnviarNotario(true)}
                       onPagar={() => {
-                        // El formulario existente está dentro del resumen económico plegable.
+                        // Cambiar a Gestión económica monta el resumen y el formulario existentes.
+                        setActividadSeleccionada("gestion-economica");
+                        // Abrimos el resumen económico antes de mostrar el formulario.
                         // Abrimos ese contenedor antes de mostrar el formulario para que no
                         // quede oculto dentro de un ancestro con display:none.
                         setMostrarPanelEconomicoPago(true);
@@ -5550,39 +5552,6 @@ const cuantiaFincasParaEnvio =
 
             {actividadSeleccionada === "defectos-registrales" && (
               <section className="mt-3 rounded-2xl border border-amber-200 bg-amber-50/30 p-4">
-                <div className="mb-3">
-                  <h3 className="text-sm font-extrabold text-slate-800">Defectos registrales · datos para integración</h3>
-                  <p className="mt-1 text-xs leading-relaxed text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
-                </div>
-                <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
-                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Tipo documento</span>
-                    <input type="text" value={String(actividadDraft.tipo_documento ?? expediente?.tipo_documento ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, tipo_documento: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" placeholder="Tipo documento" />
-                  </label>
-                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Motivos del defecto</span>
-                    <select value={String(actividadDraft.motivos_defecto ?? expediente?.motivos_defecto ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, motivos_defecto: event.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400">
-                      <option value="">Seleccionar motivo del catálogo de defectos…</option>
-                      {MOTIVOS_DEFECTO.map((motivo) => {
-                        const value = `${motivo.codigo}.${motivo.texto}`;
-                        return <option key={motivo.codigo} value={value}>{value}</option>;
-                      })}
-                    </select>
-                  </label>
-                  {[
-                    { key: "fecha_notificacion_registro", label: "Fecha notificación Registro" },
-                    { key: "fecha_vencimiento_presentacion_registro", label: "Fecha vencimiento presentación Registro" },
-                  ].map((campo) => (
-                    <label key={campo.key} className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                      <span className="mb-1.5 block text-[11px] font-bold text-slate-600">{campo.label}</span>
-                      <input type="date" value={String(actividadDraft[campo.key] ?? expediente?.[campo.key] ?? "").slice(0, 10)} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
-                    </label>
-                  ))}
-                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3 sm:col-span-2">
-                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Observaciones</span>
-                    <textarea rows={3} value={String(actividadDraft.observaciones_defecto_registral ?? expediente?.observaciones_defecto_registral ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, observaciones_defecto_registral: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
-                  </label>
-                </div>
                 <div className="mt-4 border-t border-amber-200 pt-4">
                   <h3 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h3>
                 <div className="grid gap-3 md:grid-cols-2">
@@ -8157,7 +8126,42 @@ const cuantiaFincasParaEnvio =
                 </section>
               </div>
             ) : actividadSeleccionada === "defectos-registrales" ? (
-              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+              <div className="space-y-3">
+                <section className="rounded-2xl border border-amber-200 bg-amber-50/30 p-4">
+                  <div className="mb-3">
+                    <h3 className="text-sm font-extrabold text-slate-800">Defectos registrales · datos para integración</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
+                  </div>
+                <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Tipo documento</span>
+                    <input type="text" value={String(actividadDraft.tipo_documento ?? expediente?.tipo_documento ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, tipo_documento: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" placeholder="Tipo documento" />
+                  </label>
+                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Motivos del defecto</span>
+                    <select value={String(actividadDraft.motivos_defecto ?? expediente?.motivos_defecto ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, motivos_defecto: event.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400">
+                      <option value="">Seleccionar motivo del catálogo de defectos…</option>
+                      {MOTIVOS_DEFECTO.map((motivo) => {
+                        const value = `${motivo.codigo}.${motivo.texto}`;
+                        return <option key={motivo.codigo} value={value}>{value}</option>;
+                      })}
+                    </select>
+                  </label>
+                  {[
+                    { key: "fecha_notificacion_registro", label: "Fecha notificación Registro" },
+                    { key: "fecha_vencimiento_presentacion_registro", label: "Fecha vencimiento presentación Registro" },
+                  ].map((campo) => (
+                    <label key={campo.key} className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                      <span className="mb-1.5 block text-[11px] font-bold text-slate-600">{campo.label}</span>
+                      <input type="date" value={String(actividadDraft[campo.key] ?? expediente?.[campo.key] ?? "").slice(0, 10)} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
+                    </label>
+                  ))}
+                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3 sm:col-span-2">
+                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Observaciones</span>
+                    <textarea rows={3} value={String(actividadDraft.observaciones_defecto_registral ?? expediente?.observaciones_defecto_registral ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, observaciones_defecto_registral: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
+                  </label>
+                </section>
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                 <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id_expediente || expediente?.id || id}
