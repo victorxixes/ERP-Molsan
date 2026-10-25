@@ -1916,7 +1916,6 @@
 @media (max-width: 760px) {
   .apoderagest {
     padding: 14px;
-    border-radius: 16px;
   }
   .apoderagest :is(table, .ag-tabla, .eg-tabla, .ng-tabla) {
     max-width: 100%;
