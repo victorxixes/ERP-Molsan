@@ -178,9 +178,18 @@ export default function CarpetaDigitalModal({
             { etiqueta: "Copia simple", categoria: "Copia simple" },
           ],
         }
-      : esCancelacionSinProvision && bloque.id === "sede-notarial"
-        ? { ...bloque, categorias: bloque.categorias.filter((item) => item.categoria !== "Presentación Registro") }
-        : bloque;
+      : bloque.id === "facturacion-cierre"
+        ? {
+            ...bloque,
+            titulo: "Repositorios digitales · Expediente digital completo",
+            descripcion: "",
+            categorias: [
+              { etiqueta: "Expediente digital completo", categoria: "Expediente digital completo" },
+            ],
+          }
+        : esCancelacionSinProvision && bloque.id === "sede-notarial"
+          ? { ...bloque, categorias: bloque.categorias.filter((item) => item.categoria !== "Presentación Registro") }
+          : bloque;
     if (!Array.isArray(configRepositorios)) return [bloqueAjustado];
     const clavePorCategoria = {
       "Documentos Absis": "documentos_absis",
@@ -224,7 +233,8 @@ export default function CarpetaDigitalModal({
           && ["Borradores escrituras", "Otros"].includes(item.categoria);
         const repositorioSedeProtocolo = String(actividadId || "").includes("protocolo") && ["Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
         const repositorioDocumentacionPrevia = bloque.id === "documentacion-previa" && ["Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
-        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || repositorioSedeProtocolo || repositorioDocumentacionPrevia)
+        const repositorioCierreExpediente = bloque.id === "facturacion-cierre" && item.categoria === "Expediente digital completo";
+        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || repositorioSedeProtocolo || repositorioDocumentacionPrevia || repositorioCierreExpediente)
           && !(esCancelacionSinProvision && bloque.id === "sede-notarial" && item.categoria === "Presentación Registro");
       }),
     }];
