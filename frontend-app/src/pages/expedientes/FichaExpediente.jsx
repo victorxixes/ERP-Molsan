@@ -1337,7 +1337,7 @@ export default function FichaExpediente() {
   const [controlExpediente, setControlExpediente] = useState({ liquidado_sin_tramitar:false, fecha_liquidacion_sin_tramitar:"", cambio_gestoria:false, fecha_cambio_gestoria:"", bloqueo_manual:false, motivo_bloqueo:"", fecha_bloqueo:new Date().toLocaleDateString("sv-SE") });
   const [mensajeActividad, setMensajeActividad] = useState("");
   const [estadoDocumentacionAbsis, setEstadoDocumentacionAbsis] = useState({
-    certificado_saldo_cero_erroneo: false,
+    certificado_saldo_cero_erroneo: true,
     solicitud_cancelacion_notarial: false,
     certificado_cancelacion_administrativo: false,
     nota_simple_registral: false,
@@ -2295,7 +2295,14 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       const numeroExpediente = expediente.id_expediente;
       setCargandoEstadoAbsis(true);
       axios.get(`/expedientes/${encodeURIComponent(numeroExpediente)}/documentacion-previa/absis`)
-        .then((res) => setEstadoDocumentacionAbsis((actual) => ({ ...actual, ...(res?.data || {}) })))
+        .then((res) => setEstadoDocumentacionAbsis((actual) => ({
+          ...actual,
+          ...(res?.data || {}),
+          // Si nunca se ha guardado el estado, el selector empieza en NO.
+          certificado_saldo_cero_erroneo: res?.data?.fecha_actualizacion
+            ? Boolean(res.data.certificado_saldo_cero_erroneo)
+            : true,
+        })))
         .catch(() => {})
         .finally(() => setCargandoEstadoAbsis(false));
 
