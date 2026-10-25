@@ -5109,49 +5109,50 @@ const cuantiaFincasParaEnvio =
 
 
             {(
-              <div className={actividadSeleccionada === "sede-notarial" ? "mb-4 grid min-w-0 grid-cols-1 items-start gap-3 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.42fr)]" : "mb-4 min-w-0"}>
-                <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-2">
-              <CarpetaDigitalModal
-                expedienteId={expediente?.id_expediente || id}
-                modoActividad
-                ocultarPanelEnvioNotario={actividadSeleccionada === "sede-notarial"}
-                actividadId={actividadSeleccionada}
-                tipoOperacion={expediente?.tipo_operacion || expediente?.tipoOperacion || expediente?.operacion}
-                datosEnvioNotario={expediente}
-                datosPanelActividad={{ ...expediente, ...actividadDraft }}
-                camposPanelActividad={CAMPOS_ACTIVIDADES[actividadSeleccionada] || []}
-                onAbrirEnvioNotario={() => setMostrarEnviarNotario(true)}
-                onPagar={() => {
-                  // El formulario existente está dentro del resumen económico plegable.
-                  // Abrimos ese contenedor antes de mostrar el formulario para que no
-                  // quede oculto dentro de un ancestro con display:none.
-                  setMostrarResumenEconomico(true);
-                  setErrorGastos("");
-                  setMensajeGastos("");
-                  setGastoForm((g) => ({
-                    ...g,
-                    nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "",
-                    nombre_notario: g.nombre_notario || expediente?.notario || expediente?.nombre_notario || "",
-                    pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" "),
-                  }));
-                  setMostrarFormularioGasto(true);
-                }}
-                formularioEnvioNotario={
-                  <EnviarANotarioModal
-                    expediente={expediente}
-                    cuantiaFincas={cuantiaFincasParaEnvio}
-                    onClose={() => setMostrarEnviarNotario(false)}
-                    onGuardar={guardarEnviarANotario}
-                    inline
-                  />
-                }
-                onDocumentosChange={
-                  actividadSeleccionada === "documentacion-previa"
-                    ? actualizarDocumentosCarpetaPrevia
-                    : undefined
-                }
-              />
-                </div>
+              <div className="mb-4 min-w-0">
+                {actividadSeleccionada !== "sede-notarial" && (
+                  <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-2">
+                    <CarpetaDigitalModal
+                      expedienteId={expediente?.id_expediente || id}
+                      modoActividad
+                      actividadId={actividadSeleccionada}
+                      tipoOperacion={expediente?.tipo_operacion || expediente?.tipoOperacion || expediente?.operacion}
+                      datosEnvioNotario={expediente}
+                      datosPanelActividad={{ ...expediente, ...actividadDraft }}
+                      camposPanelActividad={CAMPOS_ACTIVIDADES[actividadSeleccionada] || []}
+                      onAbrirEnvioNotario={() => setMostrarEnviarNotario(true)}
+                      onPagar={() => {
+                        // El formulario existente está dentro del resumen económico plegable.
+                        // Abrimos ese contenedor antes de mostrar el formulario para que no
+                        // quede oculto dentro de un ancestro con display:none.
+                        setMostrarResumenEconomico(true);
+                        setErrorGastos("");
+                        setMensajeGastos("");
+                        setGastoForm((g) => ({
+                          ...g,
+                          nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "",
+                          nombre_notario: g.nombre_notario || expediente?.notario || expediente?.nombre_notario || "",
+                          pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" "),
+                        }));
+                        setMostrarFormularioGasto(true);
+                      }}
+                      formularioEnvioNotario={
+                        <EnviarANotarioModal
+                          expediente={expediente}
+                          cuantiaFincas={cuantiaFincasParaEnvio}
+                          onClose={() => setMostrarEnviarNotario(false)}
+                          onGuardar={guardarEnviarANotario}
+                          inline
+                        />
+                      }
+                      onDocumentosChange={
+                        actividadSeleccionada === "documentacion-previa"
+                          ? actualizarDocumentosCarpetaPrevia
+                          : undefined
+                      }
+                    />
+                  </div>
+                )}
 
                 {actividadSeleccionada === "sede-notarial" && (
                   <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
