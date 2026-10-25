@@ -432,6 +432,16 @@ const CAMPOS_ACTIVIDADES = {
 
   "sede-notarial": [
     {
+      key: "fecha_inicio_actividad",
+      label: "Inicio actividad",
+      tipo: "fecha",
+    },
+    {
+      key: "fecha_fin_actividad",
+      label: "Fin actividad",
+      tipo: "fecha",
+    },
+    {
       key: "nombre_notario",
       label: "Notario",
     },
