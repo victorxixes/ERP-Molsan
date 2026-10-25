@@ -24,7 +24,8 @@ const BLOQUES = [
     titulo: "Sede notarial",
     descripcion: "Documentos preparados, firmados o recibidos en la fase notarial.",
     categorias: [
-      { etiqueta: "Presentación Registro", categoria: "Presentación Registro" },
+      { etiqueta: "Hoja de presentación", categoria: "Hoja de presentación Tacio" },
+      { etiqueta: "Copia simple", categoria: "Copia simple" },
     ],
   },
   {
@@ -372,6 +373,9 @@ export default function CarpetaDigitalModal({
     (categoria) => documentos.filter((doc) => {
       if (doc.categoria === categoria) return true;
       // Conserva visibles los archivos subidos con los nombres del repositorio anterior.
+      if (categoria === "Hoja de presentación Tacio") {
+        return ["Hoja de presentación", "Hoja de presentacion", "Hoja de presentacion Tacio"].includes(doc.categoria);
+      }
       if (categoria === "Borradores escrituras") {
         return ["Escrituras/borradores", "Borradores de escrituras", "Borradores de escritura"].includes(doc.categoria);
       }
@@ -988,7 +992,9 @@ export default function CarpetaDigitalModal({
                       </>
                     ) : (
                       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-1">
-                        {camposPanelActividad.map((campo) => {
+                        {camposPanelActividad
+                          .filter((campo) => !(normalizar(actividadId).includes("sede-notarial") && normalizar(actividadId).includes("protocolo") && normalizar(campo.label) === "tipo-firma"))
+                          .map((campo) => {
                           const valor = datosPanelActividad?.[campo.key];
                           return (
                             <div key={campo.key} className="min-w-0 border-b border-slate-100 pb-1.5">
