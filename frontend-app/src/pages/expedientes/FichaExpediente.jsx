@@ -615,7 +615,7 @@ const CAMPOS_INTEGRACION_SEDE_PROTOCOLO = [
   { key: "nombre_notario", label: "Notario" },
   { key: "nif_notario", label: "NIF notario" },
   { key: "apoderado", label: "Apoderado" },
-  { key: "gestoria", label: "Gestoría", opciones: ["Gestoría", "Otra entidad"] },
+  { key: "tipo_gestoria", label: "Gestoría", opciones: ["Gestoría", "Otra entidad"] },
   { key: "tipo_firma", label: "Tipo firma" },
   { key: "fecha_firma", label: "Fecha firma", tipo: "fecha" },
   { key: "protocolo", label: "Protocolo" },
@@ -2657,7 +2657,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     }
     if (actividadSeleccionada === "sede-notarial-protocolo") {
       for (const key of [
-        "nombre_notario", "nif_notario", "apoderado", "gestoria", "tipo_firma",
+        "nombre_notario", "nif_notario", "apoderado", "tipo_gestoria", "tipo_firma",
         "fecha_firma", "protocolo", "asiento_presentacion", "libro_diario",
         "fecha_presentacion", "numero_entrada",
         "fecha_recogida_notario_presentacion_telematica",
@@ -2674,7 +2674,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
           : (expediente?.apoderado_empleado_id || esOficinaCaixaBank)
             ? "Gestoría"
             : "Gestoría";
-        const valorPorDefecto = key === "gestoria"
+        const valorPorDefecto = key === "tipo_gestoria"
           ? (expediente?.gestoria || gestoriaPorDefecto)
           : (key === "apoderado" ? (expediente?.apoderado || "") : (expediente?.[key] ?? ""));
         campos[key] = Object.prototype.hasOwnProperty.call(actividadDraft, key)
