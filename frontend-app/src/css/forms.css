@@ -7,10 +7,10 @@
 .textarea-sj {
   width: 100%;
   padding: 10px 14px;
-  min-height: 42px;
-  border: 1px solid var(--sj-gris-azulado);
-  border-radius: var(--sj-radius);
-  background: var(--sj-blanco);
+  min-height: var(--molsan-control-height, 38px);
+  border: 1px solid var(--molsan-border-strong, #c4d0df);
+  border-radius: var(--molsan-radius-control, 9px);
+  background: var(--molsan-surface, #fff);
   transition: box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
@@ -26,21 +26,21 @@
 .textarea-sj:focus {
   border-color: var(--sj-azul);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(31, 58, 95, 0.25);
+  box-shadow: 0 0 0 3px rgba(49, 86, 179, .13);
 }
 
 .input-sj.error,
 .select-sj.error,
 .textarea-sj.error {
-  border-color: #d32f2f;
-  box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.25);
+  border-color: var(--molsan-danger, #c43d4b);
+  box-shadow: 0 0 0 3px rgba(196, 61, 75, .12);
 }
 
 .input-sj.success,
 .select-sj.success,
 .textarea-sj.success {
-  border-color: #2e7d32;
-  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.25);
+  border-color: var(--molsan-success, #16845b);
+  box-shadow: 0 0 0 3px rgba(22, 132, 91, .12);
 }
 
 .input-sj:disabled,
@@ -48,14 +48,14 @@
 .textarea-sj:disabled {
   opacity: 0.55;
   cursor: not-allowed;
-  background: #f1f4f8;
+  background: var(--molsan-surface-soft, #f7f9fc);
 }
 
 .label-sj {
   font-weight: 600;
   margin-bottom: 6px;
   display: block;
-  color: var(--sj-azul);
+  color: var(--molsan-primary, #3156b3);
   letter-spacing: 0.2px;
 }
 
