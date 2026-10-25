@@ -4,14 +4,14 @@ import axios from "../../api/axios";
 import "../../css/ComponentesOperativosPremium.css";
 
 const ACTIVIDADES = [
-  { key: "documentacion-previa", label: "Documentación previa" },
+  { key: "documentacion-previa", label: "Documentación general y previa" },
   { key: "sede-notarial", label: "Sede notarial" },
   { key: "sede-notarial-protocolo", label: "Sede notarial con protocolo" },
   { key: "gestion-economica", label: "Gestión económica" },
   { key: "liquidacion-impuestos", label: "Liquidación de impuestos" },
   { key: "tramitacion-inscripcion", label: "Tramitación inscripción" },
   { key: "defectos-registrales", label: "Defectos registrales" },
-  { key: "facturacion-cierre", label: "Facturación y cierre" },
+  { key: "facturacion-cierre", label: "Cierre del expediente" },
 ];
 
 const COLUMNAS_INICIALES = {
@@ -26,14 +26,14 @@ const COLUMNAS_INICIALES = {
 };
 
 const REPOSITORIOS_INICIALES = {
-  "documentacion-previa": ["documentos_absis", "hoja_encargo_firmada", "justificante_cancelacion", "nota_simple_registral", "borradores_escritura", "otros_documentos"],
-  "sede-notarial": ["borradores_escritura", "presentacion_registro_documentos", "copia_simple_documentos"],
-  "sede-notarial-protocolo": ["borradores_escritura", "presentacion_registro_documentos", "hoja_presentacion_documentos", "copia_simple_documentos"],
-  "gestion-economica": ["borradores_escritura", "otros_documentos"],
+  "documentacion-previa": ["documentos_absis", "hoja_encargo_firmada", "justificante_cancelacion", "nota_simple_registral", "borradores_escritura", "otra_documentacion", "emails_oficina", "otros_documentos"],
+  "sede-notarial": [],
+  "sede-notarial-protocolo": ["hoja_presentacion_documentos", "copia_simple_documentos"],
+  "gestion-economica": ["factura_notarial_documentos", "factura_registral_documentos", "factura_impuestos_documentos", "honorarios_gestoria_documentos", "otros_documentos"],
   "liquidacion-impuestos": ["ajd_itp_documentos", "otros_impuestos_documentos"],
-  "tramitacion-inscripcion": ["hoja_inscripcion_documentos", "documento_inscripcion_documentos"],
+  "tramitacion-inscripcion": ["hoja_inscripcion_documentos"],
   "defectos-registrales": ["defecto_registral", "subsanacion_defecto"],
-  "facturacion-cierre": ["escritura_digital_final_documentos", "documento_inscripcion_documentos", "expediente_digital_completo_documentos", "factura_notarial_documentos", "factura_registral_documentos", "factura_impuestos_documentos", "honorarios_gestoria_documentos"],
+  "facturacion-cierre": ["expediente_digital_completo_documentos"],
 };
 
 const CLASE_INPUT = "w-full rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2.5 text-sm text-[var(--erp-text)] outline-none focus:border-[var(--erp-primary)] focus:ring-2 focus:ring-[var(--erp-primary-soft)]";
