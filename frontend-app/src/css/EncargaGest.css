@@ -739,7 +739,7 @@
 .encargagest .eg-directorio-card { min-width:0; padding:15px; border:1px solid #e3eaf5; border-radius:15px; background:rgba(255,255,255,.9); transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease; }
 .encargagest .eg-directorio-card:hover { transform:translateY(-1px); border-color:#b8cbf4; box-shadow:0 8px 20px rgba(35,67,130,.07); }
 .encargagest .eg-directorio-card-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
-.encargagest .eg-directorio-avatar { display:grid; place-items:center; width:36px; height:36px; border-radius:11px; color:#315ac3; background:linear-gradient(145deg,#edf3ff,#dce7ff); font-size:11px; font-weight:900; }
+.encargagest .eg-directorio-avatar { display:grid; place-items:center; width:36px; height:36px; border-radius:11px; color:#315ac3; background:linear-gradient(145deg,var(--molsan-primary-soft, #edf3ff),#dce7ff); font-size:11px; font-weight:900; }
 .encargagest .eg-directorio-estado { padding:5px 8px; border:1px solid #e3e8f0; border-radius:999px; color:#78859a; background:#f8fafc; font-size:9px; font-weight:900; white-space:nowrap; }
 .encargagest .eg-directorio-estado.is-enabled { border-color:#bce8d3; color:#16774c; background:#effcf5; }
 .encargagest .eg-directorio-card h3 { margin-top:12px; color:#263751; font-size:13px; font-weight:850; line-height:1.45; overflow-wrap:anywhere; }
