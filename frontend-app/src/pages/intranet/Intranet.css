@@ -1,7 +1,7 @@
 /* MOLSAN ERP PREMIUM 2027 · Intranet
    Adaptación visual acotada: conserva estructura y lógica funcional. */
 .molsan-intranet-page {
-  color: var(--erp-text, #172033);
+  color: var(--molsan-text, #17243a);
 }
 .molsan-intranet-page > section,
 .molsan-intranet-page > div:not(.pointer-events-none) {
@@ -14,7 +14,7 @@
   transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }
 .molsan-intranet-page article:hover {
-  border-color: color-mix(in srgb, var(--erp-primary, #2563eb) 28%, var(--erp-border, #dbe2ea));
+  border-color: color-mix(in srgb, var(--molsan-primary, #3156b3) 28%, var(--erp-border, #dbe2ea));
   box-shadow: 0 12px 28px rgba(15, 23, 42, .075);
 }
 .molsan-intranet-page input:not([type="checkbox"]):not([type="radio"]),
@@ -28,7 +28,7 @@
 .molsan-intranet-page select:focus-visible,
 .molsan-intranet-page textarea:focus-visible,
 .molsan-intranet-page button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--erp-primary, #2563eb) 32%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #3156b3) 32%, transparent);
   outline-offset: 2px;
 }
 .molsan-intranet-page table {
