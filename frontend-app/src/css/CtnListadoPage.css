@@ -1262,8 +1262,8 @@
 }
 
 .ctn-btn-primary:hover:not(:disabled) {
-  background: #254795;
-  border-color: #254795;
+  background: var(--molsan-primary-hover, #274694);
+  border-color: var(--molsan-primary-hover, #274694);
 }
 
 .ctn-btn-secondary {
@@ -1389,7 +1389,7 @@
 }
 
 .ctn-ficha-pestana:hover {
-  color: #254795;
+  color: var(--molsan-primary-hover, #274694);
   background: #f3f7ff;
   border-color: #b8c9e8;
 }
