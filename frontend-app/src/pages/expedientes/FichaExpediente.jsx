@@ -5659,6 +5659,7 @@ const cuantiaFincasParaEnvio =
                     );
                   })}
                 </div>
+                </div>
               </section>
             )}
 
