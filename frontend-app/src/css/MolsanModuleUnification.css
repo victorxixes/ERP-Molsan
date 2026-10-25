@@ -1,0 +1,129 @@
+/* MOLSAN ERP PREMIUM 2027
+   Capa común para neutralizar estilos visuales particulares de los módulos.
+   Conserva sus hojas existentes únicamente para estructura, distribución y comportamiento.
+   No modifica lógica, rutas, permisos ni datos.
+*/
+:root {
+  --molsan-page-bg: #f3f6fb;
+  --molsan-surface: #ffffff;
+  --molsan-surface-soft: #f7f9fc;
+  --molsan-border: #dce4ef;
+  --molsan-border-light: #e8edf4;
+  --molsan-text: #17243a;
+  --molsan-text-secondary: #526176;
+  --molsan-text-muted: #64748b;
+  --molsan-radius-control: 9px;
+  --molsan-radius-card: 14px;
+  --molsan-radius-dialog: 16px;
+  --molsan-shadow-card: 0 4px 14px rgba(36, 50, 74, .06);
+}
+:where(
+  .notargest, .apoderagest, .encargagest,
+  .ctn-listado-page, .ctn-detalle-page,
+  .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .provisiones-fondos-page, .provisiones-fondos-premium,
+  .dashboard-cancelagest, .cg-page, .cg-unified-workspace,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .seguridad-premium-page, .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+  .molsan-intranet-page, .informes-premium-page, .fusiones-page,
+  .empleados-premium-page, .empleado-ficha-premium, .empleado-editar-premium,
+  .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .fichajes-premium-page, .fichaje-molsan-page
+) {
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+  color: var(--molsan-text, #17243a);
+}
+:where(.notargest, .apoderagest, .encargagest) {
+  background: var(--molsan-page-bg) !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+:where(
+  .notargest .ng-panel, .notargest .ng-contador, .notargest .ng-acceso,
+  .apoderagest .ag-panel, .apoderagest .ag-card,
+  .encargagest .eg-kpi, .encargagest .eg-directorio-card,
+  .ctn-listado-page .ctn-panel, .ctn-detalle-header,
+  .expedientes-page__header, .expedientes-page .expediente-card,
+  .provisiones-fondos-page > header, .provisiones-fondos-page .pf-card,
+  .dashboard-cancelagest .ag-card, .cg-page .cg-card,
+  .catalogos-premium-page > header, .utilidades-premium-page > header,
+  .seguridad-subpagina-premium .erp-page-header,
+  .seguridad-usuarios-premium .erp-page-header,
+  .molsan-intranet-page article
+) {
+  color: var(--molsan-text, #17243a);
+  background: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+:where(
+  .notargest .ng-panel-titulo, .apoderagest .ag-panel-header,
+  .encargagest .eg-card-header, .ctn-listado-header,
+  .ctn-detalle-header, .expedientes-page__header,
+  .catalogos-premium-page > header, .utilidades-premium-page > header,
+  .seguridad-subpagina-premium .erp-page-header,
+  .seguridad-usuarios-premium .erp-page-header
+) {
+  background: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #dce4ef);
+  box-shadow: none;
+}
+:where(
+  .notargest button, .apoderagest button, .encargagest button,
+  .ctn-listado-page button, .ctn-detalle-page button,
+  .expedientes-page button, .provisiones-fondos-page button,
+  .dashboard-cancelagest button, .cg-page button,
+  .catalogos-premium-page button, .utilidades-premium-page button,
+  .seguridad-premium-page button, .molsan-intranet-page button
+) {
+  font-family: inherit;
+  border-radius: var(--molsan-radius-control, 9px);
+}
+:where(
+  .notargest input, .notargest select, .notargest textarea,
+  .apoderagest input, .apoderagest select, .apoderagest textarea,
+  .encargagest input, .encargagest select, .encargagest textarea,
+  .ctn-listado-page input, .ctn-listado-page select, .ctn-listado-page textarea,
+  .ctn-detalle-page input, .ctn-detalle-page select, .ctn-detalle-page textarea,
+  .expedientes-page input, .expedientes-page select, .expedientes-page textarea,
+  .provisiones-fondos-page input, .provisiones-fondos-page select, .provisiones-fondos-page textarea,
+  .cg-page input, .cg-page select, .cg-page textarea,
+  .catalogos-premium-page input, .catalogos-premium-page select, .catalogos-premium-page textarea,
+  .utilidades-premium-page input, .utilidades-premium-page select, .utilidades-premium-page textarea
+) {
+  font-family: inherit;
+  border-radius: var(--molsan-radius-control, 9px);
+}
+:where(
+  .notargest .ng-panel, .notargest .ng-contador, .notargest .ng-acceso,
+  .encargagest .eg-kpi, .encargagest .eg-directorio-card,
+  .ctn-listado-page .ctn-panel, .expedientes-page__header,
+  .provisiones-fondos-page .pf-card, .molsan-intranet-page article
+):hover {
+  transform: none;
+}
+:where(
+  .notargest table, .apoderagest table, .encargagest table,
+  .ctn-listado-page table, .ctn-detalle-page table,
+  .expedientes-page table, .provisiones-fondos-page table,
+  .dashboard-cancelagest table, .cg-page table,
+  .catalogos-premium-page table, .utilidades-premium-page table
+) {
+  border-color: var(--molsan-border-light, #e8edf4);
+}
+@media (max-width: 760px) {
+  :where(
+    .notargest, .apoderagest, .encargagest, .ctn-listado-page,
+    .ctn-detalle-page, .expedientes-page, .provisiones-fondos-page,
+    .dashboard-cancelagest, .cg-page, .catalogos-premium-page,
+    .utilidades-premium-page, .seguridad-premium-page,
+    .molsan-intranet-page, .fichajes-premium-page, .fichaje-molsan-page
+  ) {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
