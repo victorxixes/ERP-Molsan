@@ -7681,29 +7681,27 @@ const cuantiaFincasParaEnvio =
           </div>
         }
       >
-        {actividadSeleccionada === "sede-notarial" && (
-          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {[
-              { key: "fecha_inicio_actividad", label: "Inicio actividad" },
-              { key: "fecha_fin_actividad", label: "Fin actividad" },
-            ].map((campo) => {
-              const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
-              return (
-                <label key={campo.key} className="min-w-0 text-xs font-bold text-slate-600">
-                  <span className="mb-1.5 block">{campo.label}</span>
-                  <input type="date" value={valor ?? ""} onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800" />
-                </label>
-              );
-            })}
-          </div>
-        )}
+        <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {[
+            { key: "fecha_inicio_actividad", label: "Inicio actividad" },
+            { key: "fecha_fin_actividad", label: "Fin actividad" },
+          ].map((campo) => {
+            const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
+            return (
+              <label key={campo.key} className="min-w-0 text-xs font-bold text-slate-600">
+                <span className="mb-1.5 block">{campo.label}</span>
+                <input type="date" value={valor ?? ""} onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800" />
+              </label>
+            );
+          })}
+        </div>
         <section className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="mb-3">
             <h3 className="text-sm font-extrabold text-slate-800">Campos de la actividad</h3>
             <p className="mt-1 text-xs text-slate-500">Completa y revisa los datos específicos de esta fase del expediente.</p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).map((campo) => {
+          {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
             const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
             const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
             return (
@@ -7727,25 +7725,25 @@ const cuantiaFincasParaEnvio =
           )}
           </div>
         </section>
-        {actividadSeleccionada === "sede-notarial" && (
+        {actividadSeleccionada !== "documentacion-previa" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
-              <h3 className="text-sm font-extrabold text-slate-800">Sede notarial · datos para integración</h3>
-              <p className="mt-1 text-xs text-slate-600">Estos datos preparan la futura comunicación de la actividad con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
+              <h3 className="text-sm font-extrabold text-slate-800">{ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración</h3>
+              <p className="mt-1 text-xs text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-slate-200 bg-white p-3">
-                <span className="block text-xs font-bold text-slate-600">Notario</span>
-                <p className="mt-1 text-sm font-semibold text-slate-800">{actividadDraft?.nombre_notario ?? expediente?.nombre_notario ?? "—"}</p>
-              </div>
-              <div className="rounded-lg border border-slate-200 bg-white p-3">
-                <span className="block text-xs font-bold text-slate-600">NIF de notario</span>
-                <p className="mt-1 text-sm font-semibold text-slate-800">{actividadDraft?.nif_notario ?? expediente?.nif_notario ?? "—"}</p>
-              </div>
-              <div className="rounded-lg border border-slate-200 bg-white p-3 sm:col-span-2">
-                <span className="block text-xs font-bold text-slate-600">Fecha de firma</span>
-                <p className="mt-1 text-sm font-semibold text-slate-800">{formatearFecha(actividadDraft?.fecha_firma ?? expediente?.fecha_firma)}</p>
-              </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
+                const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key];
+                return (
+                  <div key={campo.key} className={`min-w-0 rounded-lg border border-slate-200 bg-white p-3 ${campo.multilinea ? "sm:col-span-2 lg:col-span-3" : ""}`}>
+                    <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                    <p className="mt-1 whitespace-pre-wrap break-words text-sm font-semibold text-slate-800">{valor == null || valor === "" ? "—" : campo.tipo === "fecha" ? formatearFecha(valor) : String(valor)}</p>
+                  </div>
+                );
+              })}
+              {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).length && (
+                <p className="text-sm text-slate-500">Esta actividad no tiene campos específicos configurados.</p>
+              )}
             </div>
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
               <div className="min-w-0">
