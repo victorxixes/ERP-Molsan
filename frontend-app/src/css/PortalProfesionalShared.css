@@ -1050,12 +1050,12 @@
 .ag-encargo-detalle-cabecera strong{color:#172b4d;font-size:14px}
 .ag-encargo-detalle-cabecera small{color:#64748b;font-size:12px}
 .ag-encargo-detalle-cabecera>span:last-child{color:#3658a5;font-size:12px;font-weight:800;white-space:nowrap}
-.ag-encargo-resumen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px 14px;border-top:1px solid #e8edf4}
+.ag-encargo-resumen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px 14px;border-top:1px solid var(--molsan-border-light, #e8edf4)}
 .ag-encargo-paneles{display:grid;gap:12px;padding:0 14px 14px}
 .ag-encargo-subpanel{min-width:0;padding:14px;border:1px solid #e4eaf2;border-radius:12px;background:#fbfcfe}
 .ag-encargo-subpanel h4{margin:0 0 12px;color:#1e355b;font-size:13px;font-weight:850}
 .ag-encargo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.ag-detalle-campo{display:flex;min-width:0;flex-direction:column;gap:4px;padding:9px 10px;border:1px solid #e8edf4;border-radius:9px;background:#fff}
+.ag-detalle-campo{display:flex;min-width:0;flex-direction:column;gap:4px;padding:9px 10px;border:1px solid var(--molsan-border-light, #e8edf4);border-radius:9px;background:#fff}
 .ag-detalle-campo>span{color:#718096;font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.035em}
 .ag-detalle-campo>strong{overflow-wrap:anywhere;color:#26364d;font-size:12px;font-weight:650;white-space:pre-wrap}
 .ag-finca-registro{margin-top:10px;padding:12px;border:1px solid #dbe5f2;border-radius:10px;background:#fff}
@@ -1066,7 +1066,7 @@
 .ag-documentos-apoderado li>span{display:grid;min-width:0;gap:4px}
 .ag-documentos-apoderado strong{color:#26364d;font-size:12px}
 .ag-documentos-apoderado small,.ag-observaciones-apoderado small{color:#77849a;font-size:11px}
-.ag-documentos-apoderado button{flex-shrink:0;padding:7px 10px;border:1px solid #cbd8ed;border-radius:8px;background:#edf3ff;color:#2d4e91;font-size:11px;font-weight:800;cursor:pointer}
+.ag-documentos-apoderado button{flex-shrink:0;padding:7px 10px;border:1px solid #cbd8ed;border-radius:8px;background:var(--molsan-primary-soft, #edf3ff);color:#2d4e91;font-size:11px;font-weight:800;cursor:pointer}
 .ag-observaciones-apoderado li{padding:12px;border-left:3px solid #6886c5;border-radius:7px;background:#fff}
 .ag-observaciones-apoderado p{margin:0 0 6px;color:#334155;font-size:12px;white-space:pre-wrap}
 .ag-firmar-panel>p{margin:-4px 0 12px;color:#64748b;font-size:12px}
@@ -1173,7 +1173,7 @@
 .ag-carpetas-apoderado{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
 .ag-carpeta-apoderado{min-width:0;padding:12px;border:1px solid #e1e8f4;border-radius:13px;background:linear-gradient(145deg,#fff,#f8faff);box-shadow:0 4px 14px rgba(31,51,86,.035)}
 .ag-carpeta-apoderado-cabecera{display:flex;align-items:center;gap:10px;margin-bottom:9px}
-.ag-carpeta-apoderado-icono{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border:1px solid #dbe5fa;border-radius:10px;background:#edf3ff;color:#4265c7;font-size:19px}
+.ag-carpeta-apoderado-icono{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border:1px solid #dbe5fa;border-radius:10px;background:var(--molsan-primary-soft, #edf3ff);color:#4265c7;font-size:19px}
 .ag-carpeta-apoderado-cabecera>div{display:grid;gap:3px;min-width:0}
 .ag-carpeta-apoderado-cabecera strong{color:#263752;font-size:12px;font-weight:850}
 .ag-carpeta-apoderado-cabecera small{color:#77859a;font-size:10px}
