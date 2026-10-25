@@ -845,7 +845,6 @@ export default function CarpetaDigitalModal({
                             ["NIF notario", datosEnvioNotario?.nif_notario],
                             ["Población notario", datosEnvioNotario?.poblacion],
                             ["Provincia notario", datosEnvioNotario?.provincia],
-                            ["Apoderado", datosEnvioNotario?.apoderado],
                           ],
                         },
                         {
