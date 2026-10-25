@@ -4973,6 +4973,10 @@ const cuantiaFincasParaEnvio =
                 camposPanelActividad={CAMPOS_ACTIVIDADES[actividadSeleccionada] || []}
                 onAbrirEnvioNotario={() => setMostrarEnviarNotario(true)}
                 onPagar={() => {
+                  // El formulario existente está dentro del resumen económico plegable.
+                  // Abrimos ese contenedor antes de mostrar el formulario para que no
+                  // quede oculto dentro de un ancestro con display:none.
+                  setMostrarResumenEconomico(true);
                   setErrorGastos("");
                   setMensajeGastos("");
                   setGastoForm((g) => ({
