@@ -7917,7 +7917,7 @@ const cuantiaFincasParaEnvio =
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                   
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
-                    {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "apoderado", "tipo_gestoria", "tipo_firma", "fecha_firma", "protocolo", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
+                    {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "tipo_gestoria", "tipo_firma", "fecha_firma", "protocolo", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
                       const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
                         ? (actividadDraft[campo.key] ?? "")
                         : (expediente?.[campo.key] ?? "");
