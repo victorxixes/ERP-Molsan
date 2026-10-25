@@ -63,7 +63,7 @@
 .notargest .ng-pie{color:#9aa4b5;font-size:9px;letter-spacing:.3px}
 .notargest button:focus-visible,.notargest input:focus-visible{outline:3px solid rgba(61,103,231,.35);outline-offset:2px}
 .notargest.ng-login-shell{min-height:100vh;width:100%;max-width:none;margin:0;padding:24px;border:0;border-radius:0}
-.notargest .ng-login{width:min(100%,440px);padding:32px;background:rgba(255,255,255,.92);border:1px solid rgba(224,231,241,.95);border-radius:22px;box-shadow:0 20px 60px rgba(31,48,79,.10);backdrop-filter:blur(14px)}
+.notargest .ng-login{width:min(100%,440px);padding:32px;background:var(--molsan-surface,#fff);border:1px solid var(--molsan-border,#dce4ef);border-radius:var(--molsan-radius-dialog,16px);box-shadow:var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06));backdrop-filter:none;-webkit-backdrop-filter:none}
 .notargest .ng-login h1{color:#15243d;font-size:30px;font-weight:820;letter-spacing:-1px}
 .notargest .ng-login label{color:#52617a;font-size:12px;font-weight:750}
 .notargest .ng-login input{min-height:42px;border:1px solid #e0e7f1;border-radius:11px;background:#f8faff;color:#293852}
@@ -313,7 +313,7 @@
 /* NotarGest · navegación larga y modales de campana/perfil */
 .notargest .ng-marca-notargest{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:14px;background:linear-gradient(145deg,#4778f4,#2449c8);color:#fff;font-size:17px;font-weight:900;letter-spacing:-.04em;box-shadow:0 5px 14px rgba(49,94,232,.22)}
 .notargest .ng-hero-apoderagest{margin:0 0 16px;padding:clamp(16px,2vw,26px);border:1px solid var(--erp-border);border-radius:16px;background:var(--erp-surface);box-shadow:0 4px 14px rgba(25,45,80,.045)}
-.ng-modal-overlay{position:fixed;inset:0;z-index:1200;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:7vh 16px 24px;background:rgba(15,23,42,.48);backdrop-filter:blur(4px)}
+.ng-modal-overlay{position:fixed;inset:0;z-index:1200;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:7vh 16px 24px;background:rgba(15,23,42,.48);backdrop-filter:none;-webkit-backdrop-filter:none}
 .ng-modal{width:min(100%,760px);max-height:86vh;overflow:hidden;display:flex;flex-direction:column;border:1px solid #e0e7f2;border-radius:18px;background:#fff;box-shadow:0 24px 70px rgba(15,23,42,.24)}
 .ng-modal>header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px;border-bottom:1px solid #e8edf5;background:#fbfcff}
 .ng-modal>header h2{margin:4px 0;color:#1d2c46;font-size:20px;font-weight:850;letter-spacing:-.45px}
