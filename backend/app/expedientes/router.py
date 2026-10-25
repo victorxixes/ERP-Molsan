@@ -104,6 +104,7 @@ REPOSITORIOS_VISIBILIDAD = [
     {"key": "nota_simple_registral", "label": "Nota simple registral", "categoria": "Nota simple registral"},
     {"key": "borradores_escritura", "label": "Borradores escrituras", "categoria": "Borradores escrituras"},
     {"key": "presentacion_registro_documentos", "label": "Presentación Registro", "categoria": "Presentación Registro"},
+    {"key": "hoja_presentacion_tacio_documentos", "label": "Hoja de presentación Tacio", "categoria": "Hoja de presentación Tacio"},
     {"key": "copia_simple_documentos", "label": "Copia simple", "categoria": "Copia simple"},
     {"key": "ajd_itp_documentos", "label": "AJD / ITP", "categoria": "AJD/ITP"},
     {"key": "otros_impuestos_documentos", "label": "Otros impuestos", "categoria": "Otros impuestos"},
