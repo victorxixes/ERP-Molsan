@@ -116,6 +116,7 @@ export default function CarpetaDigitalModal({
   datosPanelActividad,
   camposPanelActividad = [],
   onAbrirEnvioNotario,
+  onPagar,
   formularioEnvioNotario = null,
   ocultarPanelEnvioNotario = false,
 }) {
@@ -863,8 +864,23 @@ export default function CarpetaDigitalModal({
                     </div>
                   ) : (
                     actividadId === "gestion-economica" ? (
-                      <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
+                      <div className="grid min-w-0 grid-cols-1 items-start gap-3">
                         {[
+                          {
+                            titulo: "Datos de facturación",
+                            campos: [
+                              ["Contrato", datosPanelActividad?.contrato],
+                              ["Capital (€)", datosPanelActividad?.capital],
+                              ["Tipo de operación", datosPanelActividad?.tipo_operacion || datosPanelActividad?.tipoOperacion || datosPanelActividad?.operacion],
+                              ["Subtipo de operación", datosPanelActividad?.subtipo_operacion],
+                              ["Idioma del documento", datosPanelActividad?.idioma_documento || datosPanelActividad?.idioma],
+                              ["Importe (€)", datosPanelActividad?.importe],
+                              ["Documento 1 · Tipo de documento", datosPanelActividad?.documentos_escritura?.[0]?.tipo_documento || datosPanelActividad?.tipo_documento],
+                              ["Documento 1 · Cuantía (€)", datosPanelActividad?.documentos_escritura?.[0]?.cuantia_documento ?? datosPanelActividad?.documentos_escritura?.[0]?.cuantia ?? datosPanelActividad?.cuantia_documento ?? datosPanelActividad?.cuantia ?? datosPanelActividad?.capital],
+                              ["Formato de escritura", datosPanelActividad?.formato_escritura],
+                              ["Tipo de trámite", datosPanelActividad?.tipo_tramite],
+                            ],
+                          },
                           {
                             titulo: "Tipo de documento",
                             campos: [
@@ -907,6 +923,11 @@ export default function CarpetaDigitalModal({
                             </div>
                           </section>
                         ))}
+                      </div>
+                      <div className="mt-3 flex justify-end border-t border-slate-100 pt-3">
+                        <button type="button" onClick={() => onPagar?.()} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                          💶 Pagar
+                        </button>
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-1">
