@@ -5090,6 +5090,7 @@ const cuantiaFincasParaEnvio =
               <CarpetaDigitalModal
                 expedienteId={expediente?.id_expediente || id}
                 modoActividad
+                ocultarPanelEnvioNotario={actividadSeleccionada === "sede-notarial"}
                 actividadId={actividadSeleccionada}
                 tipoOperacion={expediente?.tipo_operacion || expediente?.tipoOperacion || expediente?.operacion}
                 datosEnvioNotario={expediente}
