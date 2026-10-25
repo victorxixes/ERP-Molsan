@@ -1184,6 +1184,7 @@ function InformeCitasApoderados() {
 
     <div
       className="
+        informes-premium-page
         min-h-screen
         bg-gradient-to-br
         from-[#eef5fb]
