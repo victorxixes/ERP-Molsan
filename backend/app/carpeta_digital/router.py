@@ -32,6 +32,9 @@ CATEGORIAS = {
     "Escrituras/borradores",
     "Borradores escrituras",
     "Borradores escrituras y otros",
+    "Otra documentación",
+    "Mails de la Oficina",
+    "Otros",
     # Sede notarial
     "Presentación Registro",
     "Hoja de presentación",
@@ -42,6 +45,7 @@ CATEGORIAS = {
     # Gestión económica
     "Factura notarial",
     "Factura Registral",
+    "Factura impuestos",
     "Honorarios gestoría",
     # Defectos registrales
     "Defecto registral",
