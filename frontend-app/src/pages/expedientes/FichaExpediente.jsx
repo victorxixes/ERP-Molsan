@@ -4972,6 +4972,17 @@ const cuantiaFincasParaEnvio =
                 datosPanelActividad={{ ...expediente, ...actividadDraft }}
                 camposPanelActividad={CAMPOS_ACTIVIDADES[actividadSeleccionada] || []}
                 onAbrirEnvioNotario={() => setMostrarEnviarNotario(true)}
+                onPagar={() => {
+                  setErrorGastos("");
+                  setMensajeGastos("");
+                  setGastoForm((g) => ({
+                    ...g,
+                    nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "",
+                    nombre_notario: g.nombre_notario || expediente?.notario || expediente?.nombre_notario || "",
+                    pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" "),
+                  }));
+                  setMostrarFormularioGasto(true);
+                }}
                 formularioEnvioNotario={
                   <EnviarANotarioModal
                     expediente={expediente}
