@@ -7764,6 +7764,7 @@ const cuantiaFincasParaEnvio =
           </div>
         }
       >
+        {actividadSeleccionada !== "liquidacion-impuestos" && (
         <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
             { key: "fecha_inicio_actividad", label: "Inicio actividad" },
@@ -7778,7 +7779,8 @@ const cuantiaFincasParaEnvio =
             );
           })}
         </div>
-        {actividadSeleccionada !== "sede-notarial-protocolo" && (
+        )}
+        {actividadSeleccionada !== "sede-notarial-protocolo" && actividadSeleccionada !== "liquidacion-impuestos" && (
         <section className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
@@ -7865,6 +7867,17 @@ const cuantiaFincasParaEnvio =
                   <p className="text-sm text-slate-500">Esta actividad no tiene campos específicos configurados.</p>
                 )}
               </div>
+            )}
+            {actividadSeleccionada === "liquidacion-impuestos" && (
+              <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-white p-3">
+                <div className="min-w-0">
+                  <h4 className="text-sm font-extrabold text-slate-800">📁 Repositorio AJD / ITP</h4>
+                  <p className="mt-1 text-xs text-slate-500">Adjunta y consulta los justificantes de liquidación tributaria en la carpeta digital del expediente.</p>
+                </div>
+                <button type="button" onClick={() => setMostrarCarpetaDigital(true)} disabled={expedienteBloqueado} className="shrink-0 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50">
+                  📂 Abrir repositorio AJD / ITP
+                </button>
+              </section>
             )}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
               <div className="min-w-0">
