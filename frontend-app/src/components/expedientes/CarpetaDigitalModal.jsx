@@ -25,6 +25,7 @@ const BLOQUES = [
     descripcion: "Documentos preparados, firmados o recibidos en la fase notarial.",
     categorias: [
       { etiqueta: "Presentación Registro", categoria: "Presentación Registro" },
+      { etiqueta: "Hoja de presentación Tacio", categoria: "Hoja de presentación Tacio" },
       { etiqueta: "Copia simple", categoria: "Copia simple" },
     ],
   },
@@ -178,6 +179,7 @@ export default function CarpetaDigitalModal({
       "Escrituras/borradores": "borradores_escritura",
       "Borradores escrituras": "borradores_escritura",
       "Presentación Registro": "presentacion_registro_documentos",
+      "Hoja de presentación Tacio": "hoja_presentacion_tacio_documentos",
       "Copia simple": "copia_simple_documentos",
       "AJD/ITP": "ajd_itp_documentos",
       "Otros impuestos": "otros_impuestos_documentos",
@@ -209,8 +211,8 @@ export default function CarpetaDigitalModal({
         const repositorioClave = clavePorCategoria[item.categoria];
         const repositorioNuevoRequerido = ["documentacion-previa", "gestion-economica"].includes(bloque.id)
           && ["Borradores escrituras", "Otros"].includes(item.categoria);
-        const copiaSimpleSedeProtocolo = String(actividadId || "").includes("protocolo") && item.categoria === "Copia simple";
-        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || copiaSimpleSedeProtocolo)
+        const repositorioSedeProtocolo = String(actividadId || "").includes("protocolo") && ["Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
+        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || repositorioSedeProtocolo)
           && !(esCancelacionSinProvision && bloque.id === "sede-notarial" && item.categoria === "Presentación Registro");
       }),
     }];
