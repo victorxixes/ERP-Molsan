@@ -5128,6 +5128,78 @@ const cuantiaFincasParaEnvio =
               />
                 </div>
 
+                {actividadSeleccionada === "sede-notarial" && (
+                  <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-sm font-extrabold text-slate-800">Datos de Sede notarial</h3>
+                  <span className="text-[11px] font-medium text-slate-500">Información del envío y del documento</span>
+                </div>
+
+                <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
+                  <article className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                    <h4 className="mb-3 border-b border-slate-100 pb-2 text-xs font-extrabold text-slate-800">Datos del notario</h4>
+                    <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                      <Dato campo="Fecha envío" valor={expediente?.fecha_envio_notario || expediente?.fecha_envio} tipo="fecha" />
+                      <Dato campo="Apoderado" valor={expediente?.apoderado} />
+                      <Dato campo="Notario" valor={expediente?.nombre_notario ?? expediente?.notario} />
+                      <Dato campo="NIF notario" valor={expediente?.nif_notario} />
+                      <Dato campo="Población" valor={expediente?.poblacion} />
+                      <Dato campo="Provincia" valor={expediente?.provincia} />
+                      <Dato campo="Tipo firma" valor={expediente?.tipo_firma ?? expediente?.tipo_firma_notarial} />
+                      <Dato campo="N.º solicitud PNC" valor={expediente?.numero_solicitud_pnc ?? expediente?.num_solicitud_pnc ?? expediente?.pnc_numero_solicitud} />
+                      <Dato campo="Fecha solicitud PNC" valor={expediente?.fecha_solicitud_pnc ?? expediente?.fecha_pnc ?? expediente?.pnc_fecha_solicitud} tipo="fecha" />
+                      <Dato campo="Fecha prevista de firma" valor={expediente?.fecha_prevista_firma} tipo="fecha" />
+                      <Dato campo="Hora de inicio" valor={expediente?.hora_prevista_firma ?? expediente?.hora_inicio_firma} />
+                      <Dato campo="Hora de fin" valor={expediente?.hora_fin_prevista_firma} />
+                    </div>
+                  </article>
+
+                  <article className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                    <h4 className="mb-3 border-b border-slate-100 pb-2 text-xs font-extrabold text-slate-800">Datos del documento</h4>
+                    <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                      <Dato campo="Título" valor={expediente?.titulo ?? expediente?.titulo_documento ?? expediente?.titulo_escritura} />
+                      <Dato
+                        campo="Tipo de documento"
+                        valor={
+                          Array.isArray(expediente?.documentos_escritura) && expediente.documentos_escritura.length
+                            ? expediente.documentos_escritura.map((documento) => documento?.tipo_documento).filter(Boolean).join(" · ")
+                            : expediente?.tipo_documento
+                        }
+                      />
+                      <Dato campo="Tipo de operación" valor={expediente?.tipo_operacion ?? expediente?.subtipo_operacion} />
+                      <Dato campo="Idioma del documento" valor={expediente?.idioma_documento ?? expediente?.idioma ?? expediente?.lengua_documento} />
+                      <Dato campo="Importe (€)" valor={expediente?.importe} />
+                      <Dato campo="Formato de escritura" valor={expediente?.formato_escritura ?? expediente?.formato_escritura_notarial} />
+                      <Dato campo="Tipo de trámite" valor={expediente?.tipo_tramite ?? expediente?.tipo_tramite_notarial ?? expediente?.tramite} />
+                    </div>
+
+                    <div className="mt-3 rounded-lg border border-slate-100 bg-slate-50/70 p-3">
+                      <h5 className="mb-2 text-[11px] font-extrabold text-slate-700">Fincas y Registros</h5>
+                      {cargandoFincas ? (
+                        <p className="text-xs text-slate-500">Cargando fincas y registros…</p>
+                      ) : fincasExpediente.length === 0 ? (
+                        <p className="text-xs text-slate-500">No hay fincas ni registros vinculados a este expediente.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {fincasExpediente.map((finca, indice) => (
+                            <div key={finca.id || `${finca.finca || finca.numero_finca || "finca"}-${indice}`} className="rounded-lg border border-slate-200 bg-white p-2.5">
+                              <p className="text-[11px] font-bold text-slate-800">Finca {finca.finca || finca.numero_finca || "—"}</p>
+                              <div className="mt-2 grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                                <Dato campo="Registro" valor={finca.registro} />
+                                <Dato campo="Capital (€)" valor={finca.capital ?? finca.capital_prestamo} />
+                                <Dato campo="Sección" valor={finca.seccion} />
+                                <Dato campo="CRU / IDUFIR" valor={finca.cru_idufir} />
+                                <Dato campo="Población" valor={finca.poblacion} />
+                                <Dato campo="Provincia" valor={finca.provincia} />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                </div>
+              </section>
             
                 )}
               </div>
