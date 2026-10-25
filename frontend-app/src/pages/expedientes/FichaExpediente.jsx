@@ -7921,17 +7921,6 @@ const cuantiaFincasParaEnvio =
           </div>
         }
       >
-        {actividadSeleccionada === "documentacion-previa" && (
-          <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
-            <h3 className="mb-3 text-sm font-extrabold text-slate-800">Documentación previa · Repositorios digitales</h3>
-            <RepositorioDocumentosInline
-              expedienteId={expediente?.id_expediente || expediente?.id || id}
-              categorias={["Documentos Absis", "Hoja de Encargo firmada", "Justificante de cancelación", "Nota simple registral", "Borradores escrituras", "Otra documentación", "Mails de la Oficina", "Otros"]}
-              titulo="Documentación general y previa"
-              onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
-            />
-          </section>
-        )}
         {!["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) && (
         <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
@@ -7997,6 +7986,15 @@ const cuantiaFincasParaEnvio =
                   <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nif_notario") ? String(actividadDraft.nif_notario ?? "") : String(expediente?.nif_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nif_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="NIF del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
                 </label>
               </div>
+              <section className="mt-3 rounded-xl border border-slate-200 bg-white p-4">
+                <h4 className="mb-3 text-sm font-extrabold text-slate-800">📁 Repositorios digitales</h4>
+                <RepositorioDocumentosInline
+                  expedienteId={expediente?.id_expediente || expediente?.id || id}
+                  categorias={["Hoja de Encargo firmada", "Justificante de cancelación", "Nota simple registral"]}
+                  titulo="Repositorios digitales"
+                  onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
+                />
+              </section>
             ) : actividadSeleccionada === "sede-notarial" ? (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="block rounded-lg border border-slate-200 bg-white p-3">
