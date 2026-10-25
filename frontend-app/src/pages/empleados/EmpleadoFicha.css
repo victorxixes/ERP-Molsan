@@ -2,21 +2,21 @@
    Estilos aislados: no modifica otras fichas ni componentes compartidos. */
 .empleado-ficha-premium {
   --ef-line: var(--molsan-border, #dce4ef);
-  --ef-surface: var(--molsan-surface, rgba(255, 255, 255, .82));
-  --ef-soft: var(--molsan-surface-soft, rgba(248, 250, 252, .76));
+  --ef-surface: var(--molsan-surface, #fff);
+  --ef-soft: var(--molsan-surface-soft, #f7f9fc);
   padding-bottom: 1.25rem;
 }
 .empleado-ficha-premium > section {
   border: 1px solid var(--ef-line);
-  border-radius: 1.15rem;
+  border-radius: var(--molsan-radius-card, 14px);
   background: var(--ef-surface);
-  box-shadow: 0 8px 26px rgba(15, 23, 42, .045);
-  backdrop-filter: blur(14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  backdrop-filter: none;
   transition: border-color .18s ease, box-shadow .18s ease;
 }
 .empleado-ficha-premium > section:hover {
-  border-color: color-mix(in srgb, var(--molsan-primary, #3156b3) 24%, var(--ef-line));
-  box-shadow: 0 12px 30px rgba(15, 23, 42, .065);
+  border-color: var(--molsan-border, #dce4ef);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
 }
 .empleado-ficha-premium h2 {
   letter-spacing: -.018em;
