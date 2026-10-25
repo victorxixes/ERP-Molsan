@@ -42,7 +42,7 @@
 .notargest .ng-filtros label{color:#75829a;font-size:11px}
 .notargest .ng-filtros input{min-height:40px;padding:9px 13px;color:#293852;background:#f8faff;border:1px solid #e3e9f3;border-radius:11px;font:inherit;font-size:11px}
 .notargest .ng-filtros input:focus{outline:none;border-color:#9bb3ff;box-shadow:0 0 0 3px rgba(61,103,231,.09)}
-.notargest .ng-tabla-contenedor{width:100%;overflow:auto;scrollbar-color:#ccd5e5 transparent;scrollbar-width:thin}
+.notargest .ng-tabla-contenedor{width:100%;max-width:100%;overflow:auto;scrollbar-color:#ccd5e5 transparent;scrollbar-width:thin}
 .notargest .ng-tabla{min-width:760px;border-collapse:separate;border-spacing:0;text-align:left;font-size:inherit}
 .notargest .ng-tabla th{padding:13px 15px;color:#77849a;background:#f8faff;border-bottom:1px solid #e6ebf3;font-size:9px;font-weight:850;letter-spacing:.75px;white-space:nowrap}
 .notargest .ng-tabla td{padding:14px 15px;color:#53617a;border-top:0;border-bottom:1px solid #edf0f6;font-size:11px;line-height:1.5;vertical-align:middle}
@@ -804,10 +804,6 @@
 
 /* Tokens y superficie de NotarGest centralizados en la regla raíz. */
 /* Reglas locales de estructura y responsive; la apariencia la define el sistema común. */
-.notargest .ng-tabla-contenedor {
-  max-width: 100%;
-  overflow-x: auto;
-}
 .notargest :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
   max-width: 100%;
   min-width: 0;
