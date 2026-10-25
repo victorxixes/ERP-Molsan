@@ -13,8 +13,6 @@
 }
 
 .card-sj:hover {
-  transform: none;
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
   border-color: var(--molsan-border-strong, #c4d0df);
 }
 
