@@ -398,7 +398,7 @@ table :is(th, td) {
   background-color: var(--molsan-primary-soft, #edf3ff);
 }
 
-:where(.notargest, .apoderagest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .ag-card, .eg-panel, .eg-kpi, .eg-directorio-card) {
+:where(.notargest, .apoderagest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .ag-card, .eg-panel, .eg-kpi, .eg-card, .eg-directorio-card, .eg-modal-section) {
   background-color: var(--molsan-surface, #fff) !important;
   border-color: var(--molsan-border, #dce4ef) !important;
   border-radius: var(--molsan-radius-card, 14px) !important;
@@ -412,6 +412,12 @@ table :is(th, td) {
   background-color: var(--molsan-surface-soft, #f7f9fc) !important;
   border-color: var(--molsan-border-light, #e8edf4) !important;
   box-shadow: none !important;
+}
+:where(.notargest, .apoderagest, .encargagest) :is(.ng-cabecera h1, .ag-hero h1, .eg-hero h1) {
+  color: var(--molsan-text, #17243a) !important;
+}
+:where(.notargest, .apoderagest, .encargagest) :is(.ng-cabecera p, .ag-hero p, .eg-hero p) {
+  color: var(--molsan-text-muted, #64748b) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
