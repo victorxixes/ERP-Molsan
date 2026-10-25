@@ -6235,6 +6235,7 @@ const cuantiaFincasParaEnvio =
           CUATRO COLUMNAS PRINCIPALES
       ====================================================== */}
 
+      {!mostrarControlCalidad && (
       <div
         className={`
           grid
