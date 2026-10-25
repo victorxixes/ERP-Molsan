@@ -2,11 +2,7 @@
    ERP SJ-2026 — Base global premium
    ============================================================ */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* Tailwind Preflight centraliza el reset global de margen, padding y box-sizing. */
 
 
 /* ============================================================
@@ -20,17 +16,7 @@ html {
 }
 
 
-/* ============================================================
-   ESTILO GLOBAL DEL BODY
-   ============================================================ */
-
-body {
-  background-color: var(--erp-bg);
-  color: var(--erp-text);
-  font-family: var(--sj-font);
-  line-height: 1.6;
-}
-
+/* El lienzo, la tipografía y el color globales se definen en MolsanRedesign2027.css. */
 
 /* ============================================================
    SELECCIÓN DE TEXTO CORPORATIVA
@@ -82,7 +68,7 @@ a:hover {
 button {
   font-family: inherit;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: none;
 }
 
 button:active {
