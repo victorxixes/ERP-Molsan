@@ -24,7 +24,7 @@ const BLOQUES = [
     titulo: "Sede notarial",
     descripcion: "Documentos preparados, firmados o recibidos en la fase notarial.",
     categorias: [
-      { etiqueta: "Hoja de presentación", categoria: "Hoja de presentación Tacio" },
+      { etiqueta: "Hoja de presentación", categoria: "Hoja de presentación" },
       { etiqueta: "Copia simple", categoria: "Copia simple" },
     ],
   },
@@ -35,7 +35,7 @@ const BLOQUES = [
     categorias: [
       { etiqueta: "Factura notarial", categoria: "Factura notarial" },
       { etiqueta: "Factura registral", categoria: "Factura registral" },
-      { etiqueta: "Factura impuestos y Otros pagos", categoria: "Factura impuestos y Otros pagos" },
+      { etiqueta: "Factura impuestos", categoria: "Factura impuestos" },
     ],
   },
   {
@@ -74,8 +74,6 @@ const BLOQUES = [
       { etiqueta: "Factura registral", categoria: "Factura Registral" },
       { etiqueta: "Factura impuestos (categoría anterior)", categoria: "Factura impuestos" },
       { etiqueta: "Honorarios de gestoría", categoria: "Honorarios gestoría" },
-      { etiqueta: "Otros pagos", categoria: "Otros pagos" },
-      { etiqueta: "Otros documentos económicos (categoría anterior)", categoria: "Otros documentos económicos" },
     ],
   },
 ];
@@ -204,7 +202,7 @@ export default function CarpetaDigitalModal({
       "Escrituras/borradores": "borradores_escritura",
       "Borradores escrituras": "borradores_escritura",
       "Presentación Registro": "presentacion_registro_documentos",
-      "Hoja de presentación Tacio": "hoja_presentacion_tacio_documentos",
+      "Hoja de presentación": "hoja_presentacion_documentos",
       "Copia simple": "copia_simple_documentos",
       "AJD/ITP": "ajd_itp_documentos",
       "Otros impuestos": "otros_impuestos_documentos",
@@ -218,8 +216,6 @@ export default function CarpetaDigitalModal({
       "Factura Registral": "factura_registral_documentos",
       "Factura impuestos": "factura_impuestos_documentos",
       "Honorarios gestoría": "honorarios_gestoria_documentos",
-      "Otros pagos": "otros_pagos_documentos",
-      "Otros documentos económicos": "otros_documentos_economicos",
       "Otra documentación": "otra_documentacion",
       "Mails de la Oficina": "emails_oficina",
       "Otros": "otros_documentos",
@@ -238,7 +234,7 @@ export default function CarpetaDigitalModal({
           && ["Borradores escrituras", "Otros"].includes(item.categoria);
         const repositoriosSedeProtocolo = bloque.id === "sede-notarial"
           && normalizar(actividadId).includes("protocolo")
-          && ["Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
+          && ["Hoja de presentación", "Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
         const repositorioCierreExpediente = bloque.id === "facturacion-cierre" && item.categoria === "Expediente digital completo";
         return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || repositoriosSedeProtocolo || repositorioCierreExpediente)
           && !(bloque.id === "documentacion-previa" && item.categoria === "Presentación Registro")
@@ -386,7 +382,7 @@ export default function CarpetaDigitalModal({
         // Los nombres de categoría no deben depender de mayúsculas, minúsculas o tildes.
         if (categoriaDocumento === categoriaNormalizada) return true;
         // Conserva visibles los archivos subidos con los nombres del repositorio anterior.
-        if (categoriaNormalizada === "hoja de presentacion tacio") {
+        if (categoriaNormalizada === "hoja de presentacion") {
           return ["hoja de presentacion", "hoja de presentacion tacio"].includes(categoriaDocumento);
         }
         if (categoriaNormalizada === "borradores escrituras") {
