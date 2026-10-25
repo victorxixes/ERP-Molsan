@@ -794,7 +794,7 @@ export default function CarpetaDigitalModal({
               ) : (
                 <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
                   {bloquesVisibles.map(renderBloque)}
-                  {!modoActividad && (
+                  {!modoActividad && CATEGORIAS_OTROS.length > 0 && (
                     <section className="overflow-hidden rounded-xl border border-slate-200 bg-white">
                       <button type="button" onClick={() => setOtrosAbierto((v) => !v)} aria-expanded={otrosAbierto} className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left hover:bg-slate-50">
                         <span className="flex min-w-0 items-center gap-3">
