@@ -176,8 +176,8 @@ export default function CarpetaDigitalModal({
       : bloque.id === "facturacion-cierre"
         ? {
             ...bloque,
-            titulo: "Carpeta digital · Todos los repositorios",
-            descripcion: "Todos los repositorios disponibles para el expediente.",
+            titulo: "Cierre del expediente",
+            descripcion: "Incluye todos los repositorios digitales y el expediente digital completo."
             categorias: [...BLOQUES.flatMap((item) => item.categorias), ...CATEGORIAS_OTROS]
               .filter((item, index, lista) => lista.findIndex((otro) => otro.categoria === item.categoria) === index),
           }
@@ -208,6 +208,7 @@ export default function CarpetaDigitalModal({
       "Expediente digital completo": "expediente_digital_completo_documentos",
       "Factura notarial": "factura_notarial_documentos",
       "Factura Registral": "factura_registral_documentos",
+      "Factura registral": "factura_registral_documentos",
       "Factura impuestos": "factura_impuestos_documentos",
       "Honorarios gestoría": "honorarios_gestoria_documentos",
       "Otra documentación": "otra_documentacion",
