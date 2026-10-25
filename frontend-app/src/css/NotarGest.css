@@ -7,7 +7,7 @@
 .ng-workflow{display:flex;flex-direction:column;align-items:flex-start;gap:14px}.ng-workflow-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;width:100%}.ng-workflow-form label{display:flex;flex-direction:column;gap:6px;min-width:190px;flex:1}.ng-workflow-form input{min-height:40px;padding:9px 12px;border:1px solid rgba(148,163,184,.35);border-radius:10px;background:rgba(255,255,255,.72);color:#172033}.ng-workflow .ng-login-submit{width:auto;max-width:100%;padding:11px 18px}.ng-workflow p{margin:0}@media(max-width:700px){.ng-workflow-form{align-items:stretch;flex-direction:column}.ng-workflow .ng-login-submit{width:100%}}
 
 /* NotarGest · identidad visual unificada con ApoderaGest Glass Luxe */
-.apoderagest.notargest{--ag-ink:#17243a;--ag-muted:#748198;--ag-line:#e4eaf2;--ag-panel:rgba(255,255,255,.88);position:relative;isolation:isolate;width:100%;max-width:none;min-width:0;margin:0;padding:clamp(16px,2.2vw,30px);overflow:hidden;color:var(--ag-ink);background:var(--molsan-page-bg,#f4f7fb);border:1px solid var(--molsan-border,#dce4ef);border-radius:var(--molsan-radius-card,14px);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.apoderagest.notargest{--ag-ink:var(--molsan-text,#17243a);--ag-muted:var(--molsan-text-muted,#64748b);--ag-line:var(--molsan-border,#dce4ef);--ag-panel:var(--molsan-surface,#fff);--ag-blue:var(--molsan-primary,#3156b3);--ag-blue-dark:var(--molsan-primary-hover,#274694);position:relative;isolation:isolate;width:100%;max-width:none;min-width:0;margin:0;padding:clamp(16px,2.2vw,30px);overflow:hidden;color:var(--ag-ink);background:var(--molsan-page-bg,#f4f7fb);border:1px solid var(--molsan-border,#dce4ef);border-radius:var(--molsan-radius-card,14px);font-family:var(--molsan-font-family,Inter,ui-sans-serif,system-ui,sans-serif)}
 .apoderagest.notargest *,.apoderagest.notargest *:before,.apoderagest.notargest *:after{box-sizing:border-box}
 .notargest .ng-cabecera{padding:10px 4px 26px;margin:0 0 8px;gap:24px;flex-wrap:wrap}
 .notargest .ng-sobrelinea{color:#63769b;font-size:10px;font-weight:800;letter-spacing:1.65px;line-height:1.5}
@@ -378,7 +378,7 @@
 
 /* Botón de navegación de firmas urgentes: también se aplica al Sidebar compartido */
 .ng-boton-firmas-urgentes{border-color:#fecaca!important;background:#fff1f2!important;color:#b91c1c!important;font-weight:850!important}
-@keyframes ng-alerta-firma-urgente{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.15);filter:brightness(1)}50%{box-shadow:0 0 0 5px rgba(220,38,38,.15);filter:brightness(.93)}}
+
 .ng-boton-firmas-urgentes.ng-urgencias-activas{animation:ng-alerta-firma-urgente 1s ease-in-out infinite}
 
 
