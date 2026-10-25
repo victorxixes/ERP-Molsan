@@ -7615,8 +7615,8 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarModalDatosActividad}
         onClose={setMostrarModalDatosActividad}
-        titulo={"☷ Datos de actividad · " + (ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad")}
-        subtitulo={"Expediente " + (expediente?.id_expediente || "") + ". Solo se muestran los campos propios de esta actividad."}
+        titulo="Datos de actividad"
+        subtitulo="Solo se muestran los campos propios de esta actividad."
         ancho="max-w-4xl"
         footer={
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
