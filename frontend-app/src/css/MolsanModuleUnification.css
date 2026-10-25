@@ -262,3 +262,45 @@ table :is(th, td) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* Último cierre de brechas detectadas en páginas con raíz propia. */
+:where(.informes-premium-page, .molsan-intranet-page, .seguridad-premium-page,
+       .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+       .seguridad-auditoria-premium, .seguridad-ficha-premium,
+       .seguridad-roles-premium, .seguridad-permisos-premium,
+       .seguridad-modulos-premium, .seguridad-logs-premium,
+       .seguridad-resumen-premium, .seguridad-rol-editor-premium,
+       .empleados-listado-premium, .empleado-ficha-premium,
+       .empleado-editar-premium, .panel-tecnico-premium) {
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+:where(.informes-premium-page, .molsan-intranet-page, .seguridad-premium-page) {
+  background: var(--molsan-page-bg, #f3f6fb) !important;
+}
+:where(.informes-premium-page, .molsan-intranet-page, .seguridad-premium-page,
+       .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+       .seguridad-auditoria-premium, .seguridad-ficha-premium,
+       .seguridad-roles-premium, .seguridad-permisos-premium,
+       .seguridad-modulos-premium, .seguridad-logs-premium,
+       .seguridad-resumen-premium, .seguridad-rol-editor-premium,
+       .empleados-listado-premium, .empleado-ficha-premium,
+       .empleado-editar-premium, .panel-tecnico-premium)
+:is(.erp-card, .erp-panel, .erp-surface, [data-molsan-surface="card"]) {
+  color: var(--molsan-text, #17243a);
+  background: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
+}
+:where(.informes-premium-page, .molsan-intranet-page, .seguridad-premium-page,
+       .seguridad-subpagina-premium, .seguridad-usuarios-premium,
+       .empleados-listado-premium, .empleado-ficha-premium,
+       .empleado-editar-premium, .panel-tecnico-premium)
+:is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+    select, textarea) {
+  font-family: inherit;
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-control, 9px);
+}
