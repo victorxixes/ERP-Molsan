@@ -863,6 +863,52 @@ export default function CarpetaDigitalModal({
                       ))}
                     </div>
                   ) : (
+                    actividadId === "sede-notarial-protocolo" ? (
+                      <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
+                        <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                          <h5 className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">Datos notariales y de presentación</h5>
+                          <div className="grid min-w-0 grid-cols-1 gap-x-4 px-3 py-1.5 sm:grid-cols-2">
+                            {[
+                              ["Notario", datosPanelActividad?.nombre_notario || datosPanelActividad?.notario],
+                              ["NIF notario", datosPanelActividad?.nif_notario || datosPanelActividad?.notario_nif],
+                              ["Fecha firma", datosPanelActividad?.fecha_firma],
+                              ["Protocolo", datosPanelActividad?.protocolo],
+                              ["Asiento presentación", datosPanelActividad?.asiento_presentacion],
+                              ["Libro diario", datosPanelActividad?.libro_diario],
+                              ["Fecha presentación", datosPanelActividad?.fecha_presentacion],
+                              ["Número de entrada", datosPanelActividad?.numero_entrada],
+                              ["Fecha recogida notario o presentación telemática", datosPanelActividad?.fecha_recogida_notario_presentacion_telematica],
+                            ].map(([etiqueta, valor]) => (
+                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
+                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
+                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </section>
+                        <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                          <h5 className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">Datos de facturación</h5>
+                          <div className="grid min-w-0 grid-cols-1 gap-x-4 px-3 py-1.5 sm:grid-cols-2">
+                            {[
+                              ["Nombre", datosPanelActividad?.facturacion_nombre || datosPanelActividad?.nombre_facturacion || datosPanelActividad?.nombre_cliente_facturacion],
+                              ["Apellidos", datosPanelActividad?.facturacion_apellidos || datosPanelActividad?.apellidos_facturacion],
+                              ["DNI / NIF de facturación", datosPanelActividad?.facturacion_dni_nif || datosPanelActividad?.dni_facturacion || datosPanelActividad?.nif_facturacion],
+                              ["Dirección", datosPanelActividad?.facturacion_direccion || datosPanelActividad?.direccion_facturacion || datosPanelActividad?.direccion_cliente_facturacion],
+                              ["Código postal", datosPanelActividad?.facturacion_codigo_postal || datosPanelActividad?.codigo_postal_facturacion || datosPanelActividad?.cp_facturacion],
+                              ["Población", datosPanelActividad?.facturacion_poblacion || datosPanelActividad?.poblacion_facturacion || datosPanelActividad?.municipio_facturacion],
+                              ["Provincia", datosPanelActividad?.facturacion_provincia || datosPanelActividad?.provincia_facturacion],
+                              ["Teléfono", datosPanelActividad?.facturacion_telefono || datosPanelActividad?.telefono_facturacion || datosPanelActividad?.telefono_cliente_facturacion],
+                              ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion || datosPanelActividad?.correo_facturacion],
+                            ].map(([etiqueta, valor]) => (
+                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
+                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
+                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </section>
+                      </div>
+                    ) : (
                     actividadId === "gestion-economica" ? (
                       <>
                       <div className="grid min-w-0 grid-cols-1 items-start gap-3">
