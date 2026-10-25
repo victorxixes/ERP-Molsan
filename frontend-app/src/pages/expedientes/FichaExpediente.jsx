@@ -592,16 +592,6 @@ const CAMPOS_ACTIVIDADES = {
 
   "facturacion-cierre": [
     {
-      key: "facturacion_fecha",
-      label: "Fecha facturación",
-      tipo: "fecha",
-    },
-    {
-      key: "fecha_entregado_cliente",
-      label: "Fecha entregado cliente",
-      tipo: "fecha",
-    },
-    {
       key: "fecha_fin_actividad",
       label: "Fin actividad",
       tipo: "fecha",
@@ -7949,6 +7939,37 @@ const cuantiaFincasParaEnvio =
                     La extracción automática de estos datos desde la hoja de presentación PDF subida en NotarGest está pendiente de implementar; por ahora puedes introducirlos y guardarlos aquí.
                   </p>
                 </section>
+              </div>
+            ) : actividadSeleccionada === "facturacion-cierre" ? (
+              <div className="space-y-4">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {[
+                    { key: "fecha_presentacion", label: "Fecha presentación" },
+                    { key: "fecha_vencimiento_asiento", label: "Fecha vencimiento asiento" },
+                    { key: "fecha_inscripcion", label: "Fecha inscripción" },
+                  ].map((campo) => {
+                    const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
+                      ? actividadDraft[campo.key]
+                      : expediente?.[campo.key] ?? "";
+                    return (
+                      <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
+                        <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                        <input
+                          type="date"
+                          value={String(valor ?? "").slice(0, 10)}
+                          onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
+                          disabled={guardandoActividad || expedienteBloqueado}
+                          className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800"
+                        />
+                      </label>
+                    );
+                  })}
+                </div>
+                <RepositorioDocumentosInline
+                  expedienteId={expediente?.id || id}
+                  categorias={["Expediente digital completo"]}
+                  titulo="Repositorios digitales · Expediente digital completo"
+                />
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
