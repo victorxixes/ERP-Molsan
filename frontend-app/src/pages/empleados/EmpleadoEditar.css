@@ -1,11 +1,6 @@
 /* MOLSAN ERP PREMIUM 2027 · Edición de empleado */
-.empleado-editar-premium {
-  border: 1px solid var(--molsan-border, #dce4ef);
-  border-radius: 1.2rem;
-  background: var(--molsan-surface, rgba(255, 255, 255, .84));
-  box-shadow: 0 10px 30px rgba(15, 23, 42, .055);
-  backdrop-filter: blur(14px);
-}
+/* El contenedor raíz utiliza el lienzo común; aquí solo se declaran ajustes locales. */
+.empleado-editar-premium { min-width: 0; }
 .empleado-editar-premium h2 {
   letter-spacing: -.025em;
 }
