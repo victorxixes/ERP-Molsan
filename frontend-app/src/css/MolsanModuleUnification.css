@@ -304,3 +304,156 @@ table :is(th, td) {
   border-color: var(--molsan-border, #dce4ef);
   border-radius: var(--molsan-radius-control, 9px);
 }
+
+
+/* ============================================================
+   Capa canónica final · cobertura de módulos reales
+   Los CSS locales pueden seguir definiendo estructura y estados
+   funcionales; la identidad visual común se define aquí.
+   ============================================================ */
+
+:where(
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .seguridad-usuarios-premium,
+  .ctn-listado-page,
+  .ctn-detalle-page,
+  .expedientes-page,
+  .ficha-expediente-premium,
+  .provisiones-fondos-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .fichajes-premium-page,
+  .informes-premium-page,
+  .fusiones-page
+) {
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+  color: var(--molsan-text, #17243a);
+}
+
+:where(
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .seguridad-usuarios-premium,
+  .ctn-listado-page,
+  .ctn-detalle-page,
+  .expedientes-page,
+  .ficha-expediente-premium,
+  .provisiones-fondos-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .fichajes-premium-page,
+  .informes-premium-page,
+  .fusiones-page
+) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  color: var(--molsan-text, #17243a);
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-control, 9px);
+  box-shadow: none;
+}
+
+:where(
+  .empleados-listado-premium,
+  .empleado-ficha-premium,
+  .empleado-editar-premium,
+  .seguridad-usuarios-premium,
+  .ctn-listado-page,
+  .ctn-detalle-page,
+  .expedientes-page,
+  .ficha-expediente-premium,
+  .provisiones-fondos-page,
+  .catalogos-premium-page,
+  .utilidades-premium-page,
+  .fichajes-premium-page,
+  .informes-premium-page,
+  .fusiones-page
+) :is(input, select, textarea, button, a):focus-visible {
+  outline-color: rgba(49, 86, 179, .42);
+  outline-offset: 2px;
+}
+
+:where(
+  .catalogos-premium-page,
+  .utilidades-premium-page
+) > header {
+  color: var(--molsan-text, #17243a) !important;
+  background: var(--molsan-surface, #fff) !important;
+  border: 1px solid var(--molsan-border, #dce4ef) !important;
+  border-radius: var(--molsan-radius-card, 14px) !important;
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+:where(.catalogos-premium-page, .utilidades-premium-page) > header > div:first-child {
+  display: none !important;
+}
+
+:where(.empleados-listado-premium, .seguridad-usuarios-premium) .erp-card,
+:where(.empleados-listado-premium, .seguridad-usuarios-premium) .erp-page-header,
+:where(.fusiones-page) .erp-card,
+:where(.informes-premium-page) .erp-card {
+  color: var(--molsan-text, #17243a);
+  background-color: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+}
+
+:where(.empleados-listado-premium, .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page)
+  :is(th, thead) {
+  color: var(--molsan-text-secondary, #526176);
+  background-color: var(--molsan-surface-soft, #f7f9fc);
+  border-color: var(--molsan-border-light, #e8edf4);
+}
+
+:where(.empleados-listado-premium, .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page)
+  tbody tr:hover {
+  background-color: var(--molsan-primary-soft, #edf3ff);
+}
+
+:where(.notargest, .apoderagest, .encargagest) :is(.ng-panel, .ng-contador, .ng-tarea, .ng-acceso, .ag-panel, .ag-kpi, .ag-card, .eg-panel, .eg-kpi, .eg-directorio-card) {
+  background-color: var(--molsan-surface, #fff) !important;
+  border-color: var(--molsan-border, #dce4ef) !important;
+  border-radius: var(--molsan-radius-card, 14px) !important;
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+:where(.notargest, .apoderagest, .encargagest) :is(.ng-panel-titulo, .ag-panel-header, .ag-panel-cabecera, .eg-card-header, .eg-panel-head) {
+  color: var(--molsan-text, #17243a) !important;
+  background-color: var(--molsan-surface-soft, #f7f9fc) !important;
+  border-color: var(--molsan-border-light, #e8edf4) !important;
+  box-shadow: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+    .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page,
+    .expedientes-page, .ficha-expediente-premium, .provisiones-fondos-page,
+    .catalogos-premium-page, .utilidades-premium-page, .fichajes-premium-page,
+    .informes-premium-page, .fusiones-page, .notargest, .apoderagest, .encargagest
+  ) *,
+  :where(
+    .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+    .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page,
+    .expedientes-page, .ficha-expediente-premium, .provisiones-fondos-page,
+    .catalogos-premium-page, .utilidades-premium-page, .fichajes-premium-page,
+    .informes-premium-page, .fusiones-page, .notargest, .apoderagest, .encargagest
+  ) *::before,
+  :where(
+    .empleados-listado-premium, .empleado-ficha-premium, .empleado-editar-premium,
+    .seguridad-usuarios-premium, .ctn-listado-page, .ctn-detalle-page,
+    .expedientes-page, .ficha-expediente-premium, .provisiones-fondos-page,
+    .catalogos-premium-page, .utilidades-premium-page, .fichajes-premium-page,
+    .informes-premium-page, .fusiones-page, .notargest, .apoderagest, .encargagest
+  ) *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
