@@ -700,13 +700,13 @@ export default function EnviarANotarioModal({
           <div className="grid grid-cols-1 items-start gap-3">
             {/* COLUMNA DERECHA — DATOS DEL ENVÍO Y FACTURACIÓN */}
             <div className="min-w-0">
-              <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-3 lg:gap-3">
+              <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2 lg:gap-3">
             {/* COLUMNA IZQUIERDA — ENVÍO AL NOTARIO */}
 
             <div className="contents">
-              <section className="rounded-xl border border-slate-200 bg-white p-3">
+              <section className="rounded-xl border border-slate-200 bg-white p-3 lg:col-start-1 lg:row-start-1">
                 <TituloSeccion
-                  titulo="1. Envío al notario"
+                  titulo="Envío al notario"
                   descripcion="Indica la fecha en que se envía el expediente al notario. Los datos de solicitud PNC y planificación de firma se gestionan desde ApoderaGest."
                 />
 
@@ -770,9 +770,9 @@ export default function EnviarANotarioModal({
               {/* DATOS DEL NOTARIO */}
               {/* NOTARIO */}
 
-              <section className="rounded-xl border border-slate-200 bg-white p-3">
+              <section className="rounded-xl border border-slate-200 bg-white p-3 lg:col-start-1 lg:row-start-2">
                 <TituloSeccion
-                  titulo="3. Datos del notario"
+                  titulo="Datos del notario"
                   descripcion="Selecciona el notario desde el catálogo CTN."
                 />
 
@@ -837,9 +837,9 @@ export default function EnviarANotarioModal({
                 )}
               </section>              {/* TIPO DE DOCUMENTO Y NUEVOS CAMPOS */}
 
-              <section className="rounded-xl border border-slate-200 bg-white p-3">
+              <section className="rounded-xl border border-slate-200 bg-white p-3 lg:col-start-2 lg:row-start-1">
                 <TituloSeccion
-                  titulo="2. Tipo de documento"
+                  titulo="Tipo de documento"
                   descripcion="Selecciona el documento, el formato de escritura y la modalidad de tramitación."
                 />
 
@@ -989,9 +989,9 @@ export default function EnviarANotarioModal({
 
             </div>
 
-            {/* SEGUNDA FILA — FACTURACIÓN, alineada bajo los bloques 1 y 3 */}
+            {/* SEGUNDA FILA — FACTURACIÓN, debajo de Tipo de documento */}
 
-            <div className="min-w-0 lg:col-span-2">
+            <div className="min-w-0 lg:col-start-2 lg:row-start-2">
               <section className="rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3">
                 <div className="mb-5 flex items-start gap-3">
                   <div>
