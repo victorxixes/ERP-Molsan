@@ -4,13 +4,13 @@
    ============================================================ */
 
 .fusiones-page {
-  color: var(--erp-text);
+  color: var(--molsan-text, #17243a);
 }
 
 .fusiones-panel {
-  border: 1px solid var(--erp-border);
+  border: 1px solid var(--molsan-border, #dce4ef);
   border-radius: 14px;
-  background: var(--erp-surface);
+  background: var(--molsan-surface, #fff);
   box-shadow: 0 2px 8px rgba(31, 58, 95, 0.05);
 }
 
@@ -20,18 +20,18 @@
   min-height: 48px;
   padding: 12px 18px;
   color: #fff;
-  background: var(--erp-primary);
+  background: var(--molsan-primary, #3156b3);
   font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
 
 .fusiones-panel-title--dark {
-  background: var(--erp-text);
+  background: var(--molsan-text, #17243a);
 }
 
 .fusiones-panel-title--secondary {
-  background: var(--erp-primary-dark, var(--erp-primary));
+  background: var(--molsan-primary-hover, #274694);
 }
 
 .fusiones-status-row {
@@ -41,9 +41,9 @@
   justify-content: space-between;
   gap: 12px;
   padding: 11px 16px;
-  border-top: 1px solid var(--erp-border);
-  color: var(--erp-text);
-  background: var(--erp-surface);
+  border-top: 1px solid var(--molsan-border, #dce4ef);
+  color: var(--molsan-text, #17243a);
+  background: var(--molsan-surface, #fff);
   text-align: left;
   font-size: 0.8125rem;
   transition: background-color 0.15s ease, color 0.15s ease;
@@ -51,7 +51,7 @@
 
 .fusiones-status-row:hover,
 .fusiones-status-row.is-active {
-  background: var(--erp-primary-soft);
+  background: var(--molsan-primary-soft, #edf3ff);
   color: var(--erp-primary-dark);
 }
 
@@ -62,14 +62,14 @@
   border-radius: 999px;
   padding: 3px 8px;
   color: #fff;
-  background: var(--count-color, var(--erp-primary));
+  background: var(--count-color, var(--molsan-primary, #3156b3));
   font-size: 0.7rem;
   font-weight: 700;
   line-height: 1.2;
 }
 
 .fusiones-form {
-  color: var(--erp-text);
+  color: var(--molsan-text, #17243a);
 }
 
 .fusiones-filter-row {
@@ -85,21 +85,21 @@
   max-width: 340px;
   min-height: 38px;
   padding: 8px 11px;
-  border: 1px solid var(--erp-border);
+  border: 1px solid var(--molsan-border, #dce4ef);
   border-radius: 8px;
-  background: var(--erp-surface);
-  color: var(--erp-text);
+  background: var(--molsan-surface, #fff);
+  color: var(--molsan-text, #17243a);
   font-size: 0.8125rem;
 }
 
 .fusiones-input:focus {
   outline: none;
-  border-color: var(--erp-primary);
-  box-shadow: 0 0 0 3px var(--erp-primary-soft);
+  border-color: var(--molsan-primary, #3156b3);
+  box-shadow: 0 0 0 3px var(--molsan-primary-soft, #edf3ff);
 }
 
 .fusiones-form-actions {
-  border-top: 1px dotted var(--erp-border);
+  border-top: 1px dotted var(--molsan-border, #dce4ef);
 }
 
 .fusiones-search-button,
@@ -117,11 +117,11 @@
 
 .fusiones-search-button {
   color: #fff;
-  background: var(--erp-primary);
+  background: var(--molsan-primary, #3156b3);
 }
 
 .fusiones-search-button:hover {
-  background: var(--erp-primary-dark, var(--erp-primary));
+  background: var(--molsan-primary-hover, #274694);
 }
 
 .fusiones-refresh-button {
@@ -155,23 +155,23 @@
 }
 
 .fusiones-table-row {
-  border-bottom: 1px solid var(--erp-border);
-  background: var(--erp-surface);
+  border-bottom: 1px solid var(--molsan-border, #dce4ef);
+  background: var(--molsan-surface, #fff);
   transition: background-color 0.15s ease;
 }
 
 .fusiones-table-row:hover {
-  background: var(--erp-primary-soft);
+  background: var(--molsan-primary-soft, #edf3ff);
 }
 
 .fusiones-empty {
-  color: var(--erp-text-soft);
+  color: var(--molsan-text-muted, #64748b);
 }
 
 .fusiones-footer {
-  border-top: 1px solid var(--erp-border);
-  background: var(--erp-surface-soft);
-  color: var(--erp-text-soft);
+  border-top: 1px solid var(--molsan-border, #dce4ef);
+  background: var(--molsan-surface-soft, #f7f9fc);
+  color: var(--molsan-text-muted, #64748b);
 }
 
 @media (max-width: 640px) {
