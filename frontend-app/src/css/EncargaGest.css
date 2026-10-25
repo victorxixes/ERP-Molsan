@@ -7,10 +7,7 @@
   --ag-blue-dark: #2448bd;
   min-height: 100vh;
   overflow: visible;
-  background:
-    radial-gradient(ellipse at 0% 0%, rgba(91, 140, 255, .10), transparent 34%),
-    radial-gradient(ellipse at 100% 10%, rgba(129, 140, 248, .09), transparent 30%),
-    linear-gradient(145deg, #f7f9fd 0%, #f1f5fb 55%, #f8faff 100%);
+  background: var(--molsan-page-bg, #f4f7fb);
 }
 .encargagest .eg-hero { padding-top: 8px; }
 .encargagest .eg-marca {
