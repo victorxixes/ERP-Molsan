@@ -59,8 +59,24 @@ def _nombre_completo(empleado):
 def _es_admin(usuario):
     rol = getattr(getattr(usuario, "rol", None), "nombre", "") or ""
     rol_norm = unicodedata.normalize("NFD", str(rol)).encode("ascii", "ignore").decode().lower()
+    rol_norm = " ".join(rol_norm.replace("_", " ").replace("-", " ").split())
     usuario_norm = str(getattr(usuario, "usuario", "") or "").strip().lower()
-    return usuario_norm == "admin" or any(p in rol_norm for p in ("admin", "superuser", "superusuario", "gestor", "manager"))
+    roles_administradores = {
+        "admin",
+        "administrador",
+        "administradora",
+        "superadmin",
+        "super admin",
+        "superadministrador",
+        "super administradora",
+        "superuser",
+        "super usuario",
+        "superusuario",
+        "administrador general",
+    }
+    # No se debe conceder administración por coincidencias parciales como
+    # "gestor" o "manager": los roles operativos no son administradores.
+    return usuario_norm == "admin" or rol_norm in roles_administradores
 
 
 def _exigir_admin(usuario):

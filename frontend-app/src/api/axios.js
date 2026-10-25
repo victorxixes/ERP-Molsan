@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "../store/authStore";
+import { API_BASE } from "./config";
 
 /**
  * ============================================================
@@ -17,8 +18,7 @@ import { useAuthStore } from "../store/authStore";
 
 const instance = axios.create({
 
-  baseURL:
-    import.meta.env.VITE_API_URL,
+  baseURL: API_BASE,
 
   withCredentials: false,
 

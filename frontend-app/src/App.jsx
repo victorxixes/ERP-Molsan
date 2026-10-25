@@ -3,6 +3,7 @@
 // ============================================================
 
 import { Routes, Route, Navigate } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import { useAuthStore } from "./store/authStore";
 
 /* AUTH */
@@ -12,139 +13,134 @@ import RequireAuth from "./components/auth/RequireAuth";
 import Layout from "./layout/Layout";
 
 /* LOGIN */
-import LoginPage from "./pages/LoginPage";
+const LoginPage = lazy(() => import("./pages/LoginPage"));
 
 /* MODULOS */
-import ModulosSelector from "./pages/ModulosSelector";
+const ModulosSelector = lazy(() => import("./pages/ModulosSelector"));
 
-import ModuloPendiente from "./pages/ModuloPendiente";
+const ModuloPendiente = lazy(() => import("./pages/ModuloPendiente"));
 
 /* DASHBOARD */
-import Dashboard from "./pages/dashboard/Dashboard.jsx";
-import Cancelagest from "./pages/cancelagest/Cancelagest.jsx";
+const Dashboard = lazy(() => import("./pages/dashboard/Dashboard.jsx"));
+const Cancelagest = lazy(() => import("./pages/cancelagest/Cancelagest.jsx"));
 
 /* AGENDA */
-import Agenda from "./pages/agenda/Agenda.jsx";
-import VistaDia from "./pages/agenda/VistaDia.jsx";
-import VistaSemana from "./pages/agenda/VistaSemana.jsx";
-import VistaMes from "./pages/agenda/VistaMes.jsx";
+const Agenda = lazy(() => import("./pages/agenda/Agenda.jsx"));
+const VistaDia = lazy(() => import("./pages/agenda/VistaDia.jsx"));
+const VistaSemana = lazy(() => import("./pages/agenda/VistaSemana.jsx"));
+const VistaMes = lazy(() => import("./pages/agenda/VistaMes.jsx"));
 
 /* EXPEDIENTES */
-import ExpedientesListado from "./pages/expedientes/ExpedientesListado.jsx";
-import FichaExpediente from "./pages/expedientes/FichaExpediente.jsx";
-import ProvisionesFondosPage from "./pages/provisiones/ProvisionesFondosPage.jsx";
+const ExpedientesListado = lazy(() => import("./pages/expedientes/ExpedientesListado.jsx"));
+const FichaExpediente = lazy(() => import("./pages/expedientes/FichaExpediente.jsx"));
+const ProvisionesFondosPage = lazy(() => import("./pages/provisiones/ProvisionesFondosPage.jsx"));
 
 /* CTN */
-import Ctn from "./pages/ctn/Ctn.jsx";
-import CtnDetallePage from "./pages/ctn/CtnDetallePage.jsx";
-import CtnListadoPage from "./pages/ctn/CtnListadoPage.jsx";
+const Ctn = lazy(() => import("./pages/ctn/Ctn.jsx"));
+const CtnDetallePage = lazy(() => import("./pages/ctn/CtnDetallePage.jsx"));
+const CtnListadoPage = lazy(() => import("./pages/ctn/CtnListadoPage.jsx"));
 
 /* EMPLEADOS */
-import EmpleadosModulo2026 from "./pages/empleados/EmpleadosModulo2026.jsx";
-import EmpleadosListado from "./pages/empleados/EmpleadosListado.jsx";
-import EmpleadoFicha from "./pages/empleados/EmpleadoFicha.jsx";
-import EmpleadoEditar from "./pages/empleados/EmpleadoEditar.jsx";
+const EmpleadosModulo2026 = lazy(() => import("./pages/empleados/EmpleadosModulo2026.jsx"));
+const EmpleadosListado = lazy(() => import("./pages/empleados/EmpleadosListado.jsx"));
+const EmpleadoFicha = lazy(() => import("./pages/empleados/EmpleadoFicha.jsx"));
+const EmpleadoEditar = lazy(() => import("./pages/empleados/EmpleadoEditar.jsx"));
 
 /* INTRANET */
-import Intranet from "./pages/intranet/Intranet.jsx";
+const Intranet = lazy(() => import("./pages/intranet/Intranet.jsx"));
 
 /* MENSAJES */
-import Mensajes from "./pages/mensajes/Mensajes.jsx";
+const Mensajes = lazy(() => import("./pages/mensajes/Mensajes.jsx"));
 
 /* HERRAMIENTAS */
-import Herramientas from "./pages/herramientas/Herramientas.jsx";
-import ImportarCTN from "./pages/herramientas/ImportarCTN.jsx";
-import ImportadorAbsis from "./pages/herramientas/importador_absis";
-import Utilidades from "./pages/herramientas/Utilidades.jsx";
-import AdministracionEmpleadoConfig from "./pages/herramientas/AdministracionEmpleadoConfig.jsx";
-import AccesosNotariales from "./pages/herramientas/AccesosNotariales.jsx";
-import Catalogos from "./pages/herramientas/Catalogos.jsx";
-import CatalogoAbsis from "./pages/herramientas/CatalogoAbsis.jsx";
-import CatalogoOficinas from "./pages/herramientas/CatalogoOficinas.jsx";
-import CorrespondenciaTipificada from "./pages/herramientas/CorrespondenciaTipificada.jsx";
-import HonorariosGestoria from "./pages/herramientas/HonorariosGestoria.jsx";
-import CrearNoticia from "./pages/herramientas/CrearNoticia.jsx";
-import SubirDocumento from "./pages/herramientas/SubirDocumento.jsx";
-import Informes from "./pages/informes/Informes.jsx";
-import MantenimientoTecnico from "./pages/herramientas/MantenimientoTecnico.jsx";
-import CambiarGestorExpediente from "./pages/herramientas/CambiarGestorExpediente.jsx";
-import ComplementosSaldo from "./pages/herramientas/ComplementosSaldo.jsx";
-import ProcesoAbsis from "./pages/herramientas/ProcesoAbsis.jsx";
-import LecturaCopias from "./pages/herramientas/LecturaCopias.jsx";
-import CambiosActividadAbsis from "./pages/herramientas/CambiosActividadAbsis.jsx";
-import LecturaCancelaI from "./pages/herramientas/LecturaCancelaI.jsx";
-import PPAD from "./pages/herramientas/PPAD.jsx";
-import Verifacti from "./pages/herramientas/Verifacti.jsx";
+const Herramientas = lazy(() => import("./pages/herramientas/Herramientas.jsx"));
+const ImportarCTN = lazy(() => import("./pages/herramientas/ImportarCTN.jsx"));
+const ImportadorAbsis = lazy(() => import("./pages/herramientas/importador_absis"));
+const Utilidades = lazy(() => import("./pages/herramientas/Utilidades.jsx"));
+const AdministracionEmpleadoConfig = lazy(() => import("./pages/herramientas/AdministracionEmpleadoConfig.jsx"));
+const AccesosNotariales = lazy(() => import("./pages/herramientas/AccesosNotariales.jsx"));
+const Catalogos = lazy(() => import("./pages/herramientas/Catalogos.jsx"));
+const CatalogoAbsis = lazy(() => import("./pages/herramientas/CatalogoAbsis.jsx"));
+const CatalogoOficinas = lazy(() => import("./pages/herramientas/CatalogoOficinas.jsx"));
+const CorrespondenciaTipificada = lazy(() => import("./pages/herramientas/CorrespondenciaTipificada.jsx"));
+const HonorariosGestoria = lazy(() => import("./pages/herramientas/HonorariosGestoria.jsx"));
+const CrearNoticia = lazy(() => import("./pages/herramientas/CrearNoticia.jsx"));
+const SubirDocumento = lazy(() => import("./pages/herramientas/SubirDocumento.jsx"));
+const Informes = lazy(() => import("./pages/informes/Informes.jsx"));
+const MantenimientoTecnico = lazy(() => import("./pages/herramientas/MantenimientoTecnico.jsx"));
+const CambiarGestorExpediente = lazy(() => import("./pages/herramientas/CambiarGestorExpediente.jsx"));
+const ComplementosSaldo = lazy(() => import("./pages/herramientas/ComplementosSaldo.jsx"));
+const ProcesoAbsis = lazy(() => import("./pages/herramientas/ProcesoAbsis.jsx"));
+const LecturaCopias = lazy(() => import("./pages/herramientas/LecturaCopias.jsx"));
+const CambiosActividadAbsis = lazy(() => import("./pages/herramientas/CambiosActividadAbsis.jsx"));
+const LecturaCancelaI = lazy(() => import("./pages/herramientas/LecturaCancelaI.jsx"));
+const PPAD = lazy(() => import("./pages/herramientas/PPAD.jsx"));
+const Verifacti = lazy(() => import("./pages/herramientas/Verifacti.jsx"));
 
 /* LOGS */
-import Logs from "./pages/logs/Logs.jsx";
+const Logs = lazy(() => import("./pages/logs/Logs.jsx"));
 
 /* NOTIFICACIONES */
-import Notificaciones from "./pages/notificaciones/Notificaciones.jsx";
+const Notificaciones = lazy(() => import("./pages/notificaciones/Notificaciones.jsx"));
 
 /* MUNICIPIOS */
-import Municipios from "./pages/herramientas/Municipios.jsx";
+const Municipios = lazy(() => import("./pages/herramientas/Municipios.jsx"));
 
 /* ENTIDADES BANCARIAS */
-import EntidadesBancarias from "./pages/herramientas/EntidadesBancarias.jsx";
+const EntidadesBancarias = lazy(() => import("./pages/herramientas/EntidadesBancarias.jsx"));
 
 /* REGISTROS DE LA PROPIEDAD */
-import RegistrosPropiedad from "./pages/herramientas/RegistrosPropiedad.jsx";
+const RegistrosPropiedad = lazy(() => import("./pages/herramientas/RegistrosPropiedad.jsx"));
 
 /* OFICINAS LIQUIDADORAS */
-import OficinasLiquidadoras
-  from "./pages/herramientas/OficinasLiquidadoras.jsx";
+const OficinasLiquidadoras = lazy(() => import("./pages/herramientas/OficinasLiquidadoras.jsx"));
 
 /* ACCIONES DEL EXPEDIENTE */
-import AccionesExpediente
-  from "./pages/herramientas/AccionesExpediente.jsx";
+const AccionesExpediente = lazy(() => import("./pages/herramientas/AccionesExpediente.jsx"));
 
 /* PANEL TÉCNICO */
-import PanelTecnico from "./pages/paneltecnico/PanelTecnico.jsx";
-import MonitorSistema from "./pages/paneltecnico/MonitorSistema.jsx";
-import MonitorRealtime from "./pages/paneltecnico/MonitorRealtime.jsx";
-import AuditoriaAvanzada from "./pages/paneltecnico/AuditoriaAvanzada.jsx";
-import LogsAvanzados from "./pages/paneltecnico/LogsAvanzados.jsx";
+const PanelTecnico = lazy(() => import("./pages/paneltecnico/PanelTecnico.jsx"));
+const MonitorSistema = lazy(() => import("./pages/paneltecnico/MonitorSistema.jsx"));
+const MonitorRealtime = lazy(() => import("./pages/paneltecnico/MonitorRealtime.jsx"));
+const AuditoriaAvanzada = lazy(() => import("./pages/paneltecnico/AuditoriaAvanzada.jsx"));
+const LogsAvanzados = lazy(() => import("./pages/paneltecnico/LogsAvanzados.jsx"));
 
 /* SEGURIDAD */
-import Seguridad from "./pages/seguridad/Seguridad.jsx";
-import SeguridadUsuarios from "./pages/seguridad/SeguridadUsuarios.jsx";
-import SeguridadRoles from "./pages/seguridad/SeguridadRoles.jsx";
-import SeguridadModulos from "./pages/seguridad/SeguridadModulos.jsx";
-import SeguridadPermisos from "./pages/seguridad/SeguridadPermisos.jsx";
-import SeguridadFicha from "./pages/seguridad/SeguridadFicha.jsx";
-import SeguridadLogs from "./pages/seguridad/SeguridadLogs.jsx";
-import SeguridadRolEditor from "./pages/seguridad/SeguridadRolEditor.jsx";
+const Seguridad = lazy(() => import("./pages/seguridad/Seguridad.jsx"));
+const SeguridadUsuarios = lazy(() => import("./pages/seguridad/SeguridadUsuarios.jsx"));
+const SeguridadRoles = lazy(() => import("./pages/seguridad/SeguridadRoles.jsx"));
+const SeguridadModulos = lazy(() => import("./pages/seguridad/SeguridadModulos.jsx"));
+const SeguridadPermisos = lazy(() => import("./pages/seguridad/SeguridadPermisos.jsx"));
+const SeguridadFicha = lazy(() => import("./pages/seguridad/SeguridadFicha.jsx"));
+const SeguridadLogs = lazy(() => import("./pages/seguridad/SeguridadLogs.jsx"));
+const SeguridadRolEditor = lazy(() => import("./pages/seguridad/SeguridadRolEditor.jsx"));
 
 /* AUDITORÍA */
-import SeguridadAuditoria from "./pages/seguridad/SeguridadAuditoria.jsx";
+const SeguridadAuditoria = lazy(() => import("./pages/seguridad/SeguridadAuditoria.jsx"));
 
 /* MAESTROS */
-import Maestros from "./pages/maestros/Maestros.jsx";
+const Maestros = lazy(() => import("./pages/maestros/Maestros.jsx"));
 
 /* FUSIONES */
-import Fusiones from "./pages/fusiones/Fusiones";
+const Fusiones = lazy(() => import("./pages/fusiones/Fusiones"));
 
 /* REAL TIME */
 import RealtimeGlobal from "./components/realtime/RealtimeGlobal";
 
 /* TIPOS DE CARGA HIPOTECARIA */
-import TiposCargaHipotecaria
-  from "./pages/herramientas/TiposCargaHipotecaria.jsx";
+const TiposCargaHipotecaria = lazy(() => import("./pages/herramientas/TiposCargaHipotecaria.jsx"));
 
 /* TIPOS DE CONCEPTOS DE GASTOS */
-import TiposConceptoGastos
-  from "./pages/herramientas/TiposConceptoGastos.jsx";
+const TiposConceptoGastos = lazy(() => import("./pages/herramientas/TiposConceptoGastos.jsx"));
 
 /* APODERAGEST */
-import ApoderaGest 
-  from "./pages/apoderagest/ApoderaGest.jsx";
-import NotarGest from "./pages/notargest/NotarGest.jsx";
-import EncargaGest from "./pages/encargagest/EncargaGest.jsx";
-import EncargaGestWorkspace from "./pages/encargagest/EncargaGestWorkspace.jsx";
-import Fichajes from "./pages/fichajes/Fichajes.jsx";
-import CatalogoFichajes from "./pages/herramientas/CatalogoFichajes.jsx";
-import ControlApoderados from "./pages/apoderagest/ControlApoderados.jsx";
+const ApoderaGest = lazy(() => import("./pages/apoderagest/ApoderaGest.jsx"));
+const NotarGest = lazy(() => import("./pages/notargest/NotarGest.jsx"));
+const EncargaGest = lazy(() => import("./pages/encargagest/EncargaGest.jsx"));
+const EncargaGestWorkspace = lazy(() => import("./pages/encargagest/EncargaGestWorkspace.jsx"));
+const Fichajes = lazy(() => import("./pages/fichajes/Fichajes.jsx"));
+const CatalogoFichajes = lazy(() => import("./pages/herramientas/CatalogoFichajes.jsx"));
+const ControlApoderados = lazy(() => import("./pages/apoderagest/ControlApoderados.jsx"));
 
 
 /**
@@ -194,6 +190,7 @@ export default function App() {
 
       {empleado && token ? <RealtimeGlobal /> : null}
 
+      <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center p-8 text-sm font-semibold text-slate-500">Cargando módulo…</div>}>
       <Routes>
 
         {/* ====================================================
@@ -727,6 +724,7 @@ export default function App() {
         />
 
       </Routes>
+      </Suspense>
 
     </div>
 
