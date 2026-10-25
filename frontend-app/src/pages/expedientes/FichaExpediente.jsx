@@ -7681,15 +7681,6 @@ const cuantiaFincasParaEnvio =
           </div>
         }
       >
-        {actividadSeleccionada === "sede-notarial" && (
-          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 p-4">
-            <p className="text-sm font-extrabold text-amber-900">Aviso para informática · Integración ABSIS</p>
-            <p className="mt-1 text-sm text-amber-800">
-              En la actividad Sede notarial, los datos previstos para esta comunicación son: Notario, NIF de notario y Fecha de firma. Verificar su correspondencia con los campos y el formato exigidos por ABSIS al implementar la conexión.
-            </p>
-            <p className="mt-1 text-xs text-amber-800">La conexión con ABSIS todavía no está activa; guardar estos datos no realiza ningún envío externo.</p>
-          </div>
-        )}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).map((campo) => {
             const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
@@ -7714,6 +7705,15 @@ const cuantiaFincasParaEnvio =
             <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">Esta actividad no tiene campos específicos configurados todavía.</p>
           )}
         </div>
+        {actividadSeleccionada === "sede-notarial" && (
+          <section className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
+            <p className="text-sm font-extrabold text-amber-900">Aviso para informática · Integración ABSIS</p>
+            <p className="mt-1 text-sm text-amber-800">
+              Los campos específicos de esta actividad que se deberán preparar para el envío a ABSIS son: Notario, NIF de notario y Fecha de firma. Informática deberá confirmar la correspondencia de estos tres datos con el formato y los nombres de campo exigidos por ABSIS.
+            </p>
+            <p className="mt-1 text-xs text-amber-800">La conexión con ABSIS todavía no está activa. Guardar los datos en el ERP no realiza ningún envío externo.</p>
+          </section>
+        )}
         {actividadSeleccionada === "documentacion-previa" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
