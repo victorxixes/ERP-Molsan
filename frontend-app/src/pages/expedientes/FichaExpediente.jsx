@@ -432,16 +432,6 @@ const CAMPOS_ACTIVIDADES = {
 
   "sede-notarial": [
     {
-      key: "fecha_inicio_actividad",
-      label: "Inicio actividad",
-      tipo: "fecha",
-    },
-    {
-      key: "fecha_fin_actividad",
-      label: "Fin actividad",
-      tipo: "fecha",
-    },
-    {
       key: "nombre_notario",
       label: "Notario",
     },
@@ -7691,6 +7681,22 @@ const cuantiaFincasParaEnvio =
           </div>
         }
       >
+        {actividadSeleccionada === "sede-notarial" && (
+          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {[
+              { key: "fecha_inicio_actividad", label: "Inicio actividad" },
+              { key: "fecha_fin_actividad", label: "Fin actividad" },
+            ].map((campo) => {
+              const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
+              return (
+                <label key={campo.key} className="min-w-0 text-xs font-bold text-slate-600">
+                  <span className="mb-1.5 block">{campo.label}</span>
+                  <input type="date" value={valor ?? ""} onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-800" />
+                </label>
+              );
+            })}
+          </div>
+        )}
         <section className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="mb-3">
             <h3 className="text-sm font-extrabold text-slate-800">Campos de la actividad</h3>
@@ -7721,6 +7727,38 @@ const cuantiaFincasParaEnvio =
           )}
           </div>
         </section>
+        {actividadSeleccionada === "sede-notarial" && (
+          <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
+            <div>
+              <h3 className="text-sm font-extrabold text-slate-800">Sede notarial · datos para integración</h3>
+              <p className="mt-1 text-xs text-slate-600">Estos datos preparan la futura comunicación de la actividad con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-lg border border-slate-200 bg-white p-3">
+                <span className="block text-xs font-bold text-slate-600">Notario</span>
+                <p className="mt-1 text-sm font-semibold text-slate-800">{actividadDraft?.nombre_notario ?? expediente?.nombre_notario ?? "—"}</p>
+              </div>
+              <div className="rounded-lg border border-slate-200 bg-white p-3">
+                <span className="block text-xs font-bold text-slate-600">NIF de notario</span>
+                <p className="mt-1 text-sm font-semibold text-slate-800">{actividadDraft?.nif_notario ?? expediente?.nif_notario ?? "—"}</p>
+              </div>
+              <div className="rounded-lg border border-slate-200 bg-white p-3 sm:col-span-2">
+                <span className="block text-xs font-bold text-slate-600">Fecha de firma</span>
+                <p className="mt-1 text-sm font-semibold text-slate-800">{formatearFecha(actividadDraft?.fecha_firma ?? expediente?.fecha_firma)}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
+              <div className="min-w-0">
+                <p className="text-sm font-extrabold text-amber-900">Envío al ABSIS</p>
+                <p className="mt-1 text-xs text-amber-800">Estado: Pendiente de integración</p>
+                <p className="mt-1 text-xs text-amber-800">Aviso: la conexión con la API del cliente está pendiente de implementar. Guardar los datos no transmite la información a ABSIS.</p>
+              </div>
+              <Boton tipo="primary" onClick={guardarCamposActividad} disabled={guardandoActividad || expedienteBloqueado}>
+                {guardandoActividad ? "Guardando…" : "✉️ Guardar datos para ABSIS"}
+              </Boton>
+            </div>
+          </section>
+        )}
         {actividadSeleccionada === "documentacion-previa" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
