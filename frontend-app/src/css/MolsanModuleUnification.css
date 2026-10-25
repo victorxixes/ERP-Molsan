@@ -457,3 +457,46 @@ table :is(th, td) {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Cobertura ampliada: agenda, registros, maestros, notificaciones y panel técnico. */
+:where(
+  .agenda-premium-page,
+  .logs-premium-page,
+  .maestros-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium
+) {
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
+}
+
+:where(
+  .agenda-premium-page,
+  .logs-premium-page,
+  .maestros-premium-page,
+  .notificaciones-premium-page,
+  .panel-tecnico-premium
+) :is(.erp-card, .agenda-upcoming-card, .agenda-list-table-wrap, .logs-panel, .maestros-panel) {
+  color: var(--molsan-text, #17243a);
+  background-color: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-card, 14px);
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:where(.agenda-premium-page, .logs-premium-page, .maestros-premium-page, .notificaciones-premium-page, .panel-tecnico-premium)
+  :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  color: var(--molsan-text, #17243a);
+  background-color: var(--molsan-surface, #fff);
+  border-color: var(--molsan-border, #dce4ef);
+  border-radius: var(--molsan-radius-control, 9px);
+}
+
+:where(.agenda-premium-page, .logs-premium-page, .maestros-premium-page, .notificaciones-premium-page, .panel-tecnico-premium)
+  :is(input, select, textarea, button, a):focus-visible {
+  outline-color: rgba(49, 86, 179, .42);
+  outline-offset: 2px;
+}
