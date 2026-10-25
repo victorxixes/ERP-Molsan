@@ -33,9 +33,22 @@
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
   color: var(--molsan-text, #17243a);
 }
-:where(.notargest, .apoderagest, .encargagest) {
-  background: var(--molsan-page-bg) !important;
-  border-color: transparent !important;
+/* Una sola regla de lienzo: los módulos comparten el mismo fondo exterior. */
+:where(
+  .notargest, .apoderagest, .encargagest, .cg-page, .cg-unified-workspace,
+  .expedientes-page, .expedientes-listado-premium, .ficha-expediente-premium,
+  .agenda-premium-page, .ctn-listado-page, .ctn-detalle-page,
+  .catalogos-premium-page, .utilidades-premium-page,
+  .empleados-premium-page, .empleados-listado-premium, .empleado-ficha-premium,
+  .empleado-editar-premium, .seguridad-premium-page, .seguridad-subpagina-premium,
+  .seguridad-usuarios-premium, .molsan-intranet-page, .informes-premium-page,
+  .fusiones-page, .panel-tecnico-premium, .panel-tecnico-submodulo-premium,
+  .fichajes-premium-page, .fichaje-molsan-page, .provisiones-fondos-page,
+  .provisiones-fondos-premium, .dashboard-cancelagest, .logs-premium-page,
+  .maestros-premium-page, .notificaciones-premium-page
+) {
+  background: var(--molsan-page-bg, #f4f7fb) !important;
+  border: 0 !important;
   border-radius: 0 !important;
   box-shadow: none !important;
 }
@@ -514,13 +527,6 @@ table :is(th, td) {
 ) {
   color: var(--molsan-text, #17243a);
   font-family: var(--molsan-font-family, Inter, system-ui, sans-serif);
-}
-
-:where(.cg-page, .notargest, .apoderagest.notargest, .encargagest, .expedientes-page, .agenda-premium-page, .ctn-detalle-page) {
-  background: var(--molsan-page-bg, #f4f7fb) !important;
-  border-color: var(--molsan-border, #dce4ef) !important;
-  border-radius: var(--molsan-radius-card, 14px) !important;
-  box-shadow: none !important;
 }
 
 :where(.notargest, .apoderagest.notargest, .encargagest) :is(.ng-cabecera, .ag-hero, .eg-hero) {
