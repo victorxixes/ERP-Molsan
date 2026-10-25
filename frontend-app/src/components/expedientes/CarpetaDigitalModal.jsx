@@ -33,8 +33,9 @@ const BLOQUES = [
     titulo: "Gestión económica",
     descripcion: "Repositorios de documentación económica y complementaria del expediente.",
     categorias: [
-      { etiqueta: "Borradores escrituras", categoria: "Borradores escrituras" },
-      { etiqueta: "Otros", categoria: "Otros" },
+      { etiqueta: "Factura notarial", categoria: "Factura notarial" },
+      { etiqueta: "Factura registral", categoria: "Factura registral" },
+      { etiqueta: "Factura impuestos y Otros pagos", categoria: "Factura impuestos y Otros pagos" },
     ],
   },
   {
