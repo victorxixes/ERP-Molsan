@@ -703,7 +703,7 @@ function resolverActividadActual(
 // ESTADO BADGE
 // ============================================================
 
-function RepositorioAJDITP({ expedienteId }) {
+function RepositorioDocumentosInline({ expedienteId, categorias, titulo = "Repositorio digital" }) {
   const [documentos, setDocumentos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -719,14 +719,14 @@ function RepositorioAJDITP({ expedienteId }) {
       .then(({ data }) => {
         if (!activo) return;
         const lista = Array.isArray(data) ? data : data?.items || [];
-        setDocumentos(lista.filter((doc) => ["AJD/ITP", "AJD / ITP"].includes(String(doc.categoria || "").trim())));
+        setDocumentos(lista.filter((doc) => categorias.some((categoria) => categoria === String(doc.categoria || "").trim())));
       })
       .catch((e) => {
-        if (activo) setError(e?.response?.data?.detail || "No se pudieron cargar los documentos AJD / ITP.");
+        if (activo) setError(e?.response?.data?.detail || "No se pudieron cargar los documentos del repositorio.");
       })
       .finally(() => { if (activo) setCargando(false); });
     return () => { activo = false; };
-  }, [expedienteId]);
+  }, [expedienteId, categorias]);
 
   async function abrirDocumento(doc, descargar = false) {
     try {
@@ -753,7 +753,7 @@ function RepositorioAJDITP({ expedienteId }) {
   return (
     <section className="rounded-xl border border-emerald-200 bg-white p-3">
       <div className="mb-2 flex flex-wrap items-center gap-2">
-        <h4 className="text-sm font-extrabold text-slate-800">📁 Repositorio AJD / ITP</h4>
+        <h4 className="text-sm font-extrabold text-slate-800">📁 {titulo}</h4>
         <span className="text-xs text-slate-500">{documentos.length} archivo(s)</span>
       </div>
       {cargando ? <p className="text-xs text-slate-500">Cargando documentos…</p> :
@@ -767,7 +767,7 @@ function RepositorioAJDITP({ expedienteId }) {
               </li>
             ))}
           </ul>
-        ) : <p className="text-xs text-slate-500">No hay ficheros en el repositorio AJD / ITP de este expediente.</p>}
+        ) : <p className="text-xs text-slate-500">No hay ficheros en este repositorio del expediente.</p>}
       {error && <p role="alert" className="mt-2 text-xs font-semibold text-red-700">{error}</p>}
     </section>
   );
@@ -7917,6 +7917,11 @@ const cuantiaFincasParaEnvio =
                       );
                     })}
                   </div>
+                  <RepositorioDocumentosInline
+                    expedienteId={expediente?.id || id}
+                    categorias={["Hoja de presentación Tacio", "Copia simple"]}
+                    titulo="Repositorios digitales · Hoja de presentación Tacio y Copia simple"
+                  />
                   <p className="mt-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-xs text-sky-800">
                     La extracción automática de estos datos desde la hoja de presentación PDF subida en NotarGest está pendiente de implementar; por ahora puedes introducirlos y guardarlos aquí.
                   </p>
@@ -7939,7 +7944,11 @@ const cuantiaFincasParaEnvio =
               </div>
             )}
             {actividadSeleccionada === "liquidacion-impuestos" && (
-              <RepositorioAJDITP expedienteId={expediente?.id || id} />
+              <RepositorioDocumentosInline
+                expedienteId={expediente?.id || id}
+                categorias={["AJD/ITP", "AJD / ITP"]}
+                titulo="Repositorio AJD / ITP"
+              />
             )}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
               <div className="min-w-0">
