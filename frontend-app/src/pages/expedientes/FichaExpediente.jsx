@@ -685,7 +685,7 @@ function resolverActividadActual(
 
 function RepositorioDocumentosInline({ expedienteId, categorias = [], titulo = "Repositorio digital", onAbrirRepositorio }) {
   const categoriasClave = categorias.join("|");
-  const normalizarCategoriaRepositorio = (valor) => String(valor || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim().toLocaleLowerCase("es");
+  const normalizarCategoriaRepositorio = (valor) => String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLocaleLowerCase("es");
   const categoriasNormalizadas = categorias.map(normalizarCategoriaRepositorio);
   const [documentos, setDocumentos] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -8103,7 +8103,7 @@ const cuantiaFincasParaEnvio =
               ].map(([categoria, categoriaRepositorio]) => {
                 const normalizarCategoriaDocumento = (valor) => String(valor || "")
                   .normalize("NFD")
-                  .replace(/[\\u0300-\\u036f]/g, "")
+                  .replace(/[\u0300-\u036f]/g, "")
                   .toLowerCase()
                   .replace(/[^a-z0-9]/g, "");
                 const categoriaNormalizada = normalizarCategoriaDocumento(categoriaRepositorio);
