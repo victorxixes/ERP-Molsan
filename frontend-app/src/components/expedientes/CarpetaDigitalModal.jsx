@@ -978,7 +978,7 @@ export default function CarpetaDigitalModal({
                         {camposPanelActividad.length === 0 && <p className="text-xs text-slate-500">Los campos específicos de esta actividad aparecerán aquí.</p>}
                       </div>
                     )
-                  ))}
+                  )))}
                 </div>
               </aside>
             )}
