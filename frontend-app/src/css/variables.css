@@ -4,38 +4,38 @@
 
 :root {
   /* Colores corporativos principales */
-  --sj-azul: #1F3A5F;
-  --sj-azul-claro: #6A7A8C;
-  --sj-gris-azulado: #E5EAF0;
-  --sj-blanco: #ffffff;
+  --sj-azul: var(--molsan-primary, #3156b3);
+  --sj-azul-claro: var(--molsan-text-muted, #64748b);
+  --sj-gris-azulado: var(--molsan-border-light, #e8edf4);
+  --sj-blanco: var(--molsan-surface, #fff);
 
   /* Colores auxiliares */
-  --sj-verde: #2e7d32;
-  --sj-verde-claro: #4caf50;
-  --sj-rojo: #d32f2f;
-  --sj-rojo-claro: #ef5350;
-  --sj-amarillo: #fbc02d;
-  --sj-amarillo-claro: #ffeb3b;
+  --sj-verde: var(--molsan-success, #16845b);
+  --sj-verde-claro: #2ca878;
+  --sj-rojo: var(--molsan-danger, #c43d4b);
+  --sj-rojo-claro: #e45b68;
+  --sj-amarillo: var(--molsan-warning, #b7791f);
+  --sj-amarillo-claro: #f3d27a;
 
   /* Gradientes corporativos */
-  --sj-gradient-azul: linear-gradient(135deg, #1F3A5F, #6A7A8C);
-  --sj-gradient-blanco: linear-gradient(135deg, #ffffff, #f5f7fa);
+  --sj-gradient-azul: linear-gradient(135deg, var(--molsan-primary, #3156b3), var(--molsan-primary-hover, #274694));
+  --sj-gradient-blanco: linear-gradient(135deg, var(--molsan-surface, #fff), var(--molsan-surface-soft, #f7f9fc));
 
   /* Tipografía */
-  --sj-font: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --sj-font: var(--molsan-font-family, Inter, system-ui, sans-serif);
 
   /* Bordes y sombras premium */
-  --sj-radius: 14px;
-  --sj-radius-sm: 10px;
-  --sj-radius-lg: 20px;
+  --sj-radius: var(--molsan-radius-card, 14px);
+  --sj-radius-sm: var(--molsan-radius-control, 9px);
+  --sj-radius-lg: var(--molsan-radius-dialog, 16px);
 
-  --sj-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  --sj-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.18);
-  --sj-shadow-blue: 0 8px 24px rgba(31, 58, 95, 0.25);
+  --sj-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  --sj-shadow-lg: var(--molsan-shadow-popover, 0 18px 45px rgba(15, 23, 42, .14));
+  --sj-shadow-blue: 0 8px 24px rgba(49, 86, 179, .12);
 
   /* Glass UI */
-  --sj-glass-bg: rgba(255, 255, 255, 0.12);
-  --sj-glass-border: rgba(255, 255, 255, 0.22);
+  --sj-glass-bg: var(--molsan-surface, #fff);
+  --sj-glass-border: var(--molsan-border, #dce4ef);
 
   /* Espaciado */
   --sj-gap: 24px;
