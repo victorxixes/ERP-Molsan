@@ -7800,7 +7800,7 @@ const cuantiaFincasParaEnvio =
               </label>
             );
           })}
-          {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).length && actividadSeleccionada !== "sede-notarial-protocolo" && (
+          {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).length && actividadSeleccionada !== "sede-notarial-protocolo" && actividadSeleccionada !== "sede-notarial" && (
             <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">Esta actividad no tiene campos específicos configurados todavía.</p>
           )}
           </div>
