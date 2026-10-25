@@ -1448,7 +1448,7 @@
 
 :is(.expedientes-page, .ctn-listado-page) > .molsan-page-header h1 {
   margin: 5px 0 4px;
-  color: var(--erp-text-strong, #17233a);
+  color: var(--molsan-text, #17233a);
   font-size: clamp(26px, 3vw, 36px);
   font-weight: 820;
   letter-spacing: -1.3px;
@@ -1458,7 +1458,7 @@
 :is(.expedientes-page, .ctn-listado-page) > .molsan-page-header p:not(.molsan-page-header__eyebrow):not(.expedientes-page__eyebrow):not(.ctn-listado-header-eyebrow) {
   max-width: 650px;
   margin: 0;
-  color: var(--erp-text-soft, #64748b);
+  color: var(--molsan-text-muted, #64748b);
   font-size: 13px;
   line-height: 1.65;
 }
@@ -1543,7 +1543,7 @@
 
 :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero h1 {
   margin: 5px 0 4px;
-  color: var(--erp-text-strong, #17233a);
+  color: var(--molsan-text, #17233a);
   font-size: clamp(26px, 3vw, 36px);
   font-weight: 820;
   letter-spacing: -1.3px;
@@ -1553,7 +1553,7 @@
 :is(.apoderagest, .notargest, .encargagest, .notargest-workspace-premium, .encargagest-workspace-premium) .ag-hero p {
   max-width: 650px;
   margin: 0;
-  color: var(--erp-text-soft, #64748b);
+  color: var(--molsan-text-muted, #64748b);
   font-size: 13px;
   line-height: 1.65;
 }
