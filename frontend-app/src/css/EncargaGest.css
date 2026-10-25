@@ -801,7 +801,7 @@
   .encargagest { padding: 14px; }
 }
 
-/* /* Robustez final del perfil CTN en EncargaGest: viewport móvil y contenido largo. */
+/* Robustez final del perfil CTN en EncargaGest: viewport móvil y contenido largo. */
 .encargagest .eg-modal-perfil {
   max-height: calc(100dvh - 24px);
   overflow-x: hidden;
