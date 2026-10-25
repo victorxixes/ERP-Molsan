@@ -911,7 +911,7 @@ export default function CarpetaDigitalModal({
                     ) : (
                     actividadId === "gestion-economica" ? (
                       <>
-                      <div className="grid min-w-0 grid-cols-1 items-start gap-3">
+                      <div className="grid min-w-0 grid-cols-1 items-start gap-3 lg:grid-cols-2">
                         {[
                           {
                             titulo: "Datos de facturación",
