@@ -245,7 +245,7 @@ export default function CarpetaDigitalModal({
           && !(esCancelacionSinProvision && bloque.id === "sede-notarial" && item.categoria === "Presentación Registro");
       }),
     }];
-  }, [modoActividad, bloqueActividad, configRepositorios, esCancelacionSinProvision]);
+  }, [modoActividad, actividadId, bloqueActividad, configRepositorios, esCancelacionSinProvision]);
 
   useEffect(() => {
     if (!bloqueActividad) return;
