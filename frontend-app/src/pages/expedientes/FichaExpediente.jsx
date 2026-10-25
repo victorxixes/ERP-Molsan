@@ -2510,7 +2510,7 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         } else if (key === "fecha_envio_notario") {
           campos[key] = expediente?.fecha_envio_notario || expediente?.fecha_envio || "";
         } else {
-          campos[key] = expediente?.[key] || (key === "nombre_notario" ? "José Manuel Jiménez Santoveña" : key === "nif_notario" ? "00399701F" : "");
+          campos[key] = expediente?.[key] ?? "";
         }
       }
     }
