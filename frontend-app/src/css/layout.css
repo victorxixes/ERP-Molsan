@@ -19,8 +19,6 @@
 
 }
 
-/* Los elementos de la cuadrícula no se desplazan al pasar el cursor. */
-.grid-sj > *:hover { transform: none; }
 
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
