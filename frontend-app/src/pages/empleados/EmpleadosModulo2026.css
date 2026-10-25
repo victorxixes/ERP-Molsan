@@ -2,12 +2,12 @@
    Estilos acotados al listado de empleados. Sin cambios de lógica. */
 
 .empleados-premium-page {
-  --empleados-accent: var(--erp-primary, #2563eb);
-  color: var(--erp-text, #172033);
+  --empleados-accent: var(--molsan-primary, #3156b3);
+  color: var(--molsan-text, #17243a);
 }
 
 .empleados-premium-page > section.erp-card {
-  border: 1px solid var(--erp-border, rgba(148, 163, 184, .24));
+  border: 1px solid var(--molsan-border, #dce4ef);
   border-radius: 1.25rem;
   background: var(--erp-surface, rgba(255, 255, 255, .92));
   box-shadow: 0 12px 32px rgba(15, 23, 42, .055);
@@ -43,8 +43,8 @@
 }
 
 .empleados-premium-page thead th {
-  background: var(--erp-surface-soft, #f5f7fb);
-  color: var(--erp-text-soft, #64748b);
+  background: var(--molsan-surface-soft, #f7f9fc);
+  color: var(--molsan-text-muted, #64748b);
   font-size: .7rem;
   font-weight: 750;
   letter-spacing: .055em;
@@ -62,7 +62,7 @@
 
 .empleados-premium-page th,
 .empleados-premium-page td {
-  border-bottom-color: var(--erp-border, #e2e8f0);
+  border-bottom-color: var(--molsan-border, #dce4ef);
 }
 
 .empleados-premium-page button {
@@ -75,7 +75,7 @@
 }
 
 .empleados-premium-page .rounded-2xl.border {
-  border-color: var(--erp-border, rgba(148, 163, 184, .24));
+  border-color: var(--molsan-border, #dce4ef);
 }
 
 @media (max-width: 768px) {
