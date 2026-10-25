@@ -96,8 +96,8 @@
 
 
 
-@media(max-width:1050px){}
-@media(max-width:620px){}
+
+
 
 /* Comentarios de NotarGest dirigidos a un gestor */
 .notargest .ng-comentario-form{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(220px,1fr);gap:13px;align-items:end;margin:16px 0 20px;padding:16px;background:#f8faff;border:1px solid #e5ebf5;border-radius:14px}
@@ -192,7 +192,7 @@
 
 
 .notargest .ng-hero-premium .ng-cabecera-acciones .ng-boton-secundario{min-height:41px}
-@media(max-width:700px){}
+
 
 
 /* Dashboard analítico NotarGest: firmas reales y medias por etapa */
@@ -760,9 +760,7 @@
 
 
 
-@media(max-width:760px){
-  
-}
+
 
 
 /* Visión Molsan: bloques interactivos y modal de expedientes */
