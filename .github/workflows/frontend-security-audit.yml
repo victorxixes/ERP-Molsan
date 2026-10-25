@@ -1,0 +1,38 @@
+name: Frontend dependency security audit
+
+on:
+  pull_request:
+    paths:
+      - "frontend-app/package.json"
+      - ".github/workflows/frontend-security-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Create temporary dependency lock
+        run: npm install --package-lock-only --ignore-scripts --no-audit
+      - name: Run npm audit and print advisories
+        run: |
+          npm audit --json > npm-audit-report.json || true
+          node -e "const r=require('./npm-audit-report.json'); console.log('SUMMARY', JSON.stringify(r.metadata?.vulnerabilities || {})); for (const [name,v] of Object.entries(r.vulnerabilities || {})) console.log(JSON.stringify({name,severity:v.severity,isDirect:v.isDirect,range:v.range,via:v.via,fixAvailable:v.fixAvailable,nodes:v.nodes}));"
+      - name: Upload complete audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-npm-audit-report
+          path: frontend-app/npm-audit-report.json
+          if-no-files-found: warn
