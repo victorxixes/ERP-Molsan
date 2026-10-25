@@ -895,7 +895,7 @@
   min-width: 0;
 }
 .notargest-workspace-premium :is(button, a, input, select, textarea):focus-visible {
-  outline: 2px solid var(--ng-primary, #3156b3);
+  outline: 2px solid var(--ng-primary, var(--molsan-primary, #3156b3));
   outline-offset: 2px;
 }
 .notargest-workspace-premium :is(td, th, p, strong, small, code) {
