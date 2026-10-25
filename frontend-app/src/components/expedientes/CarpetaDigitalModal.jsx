@@ -167,6 +167,9 @@ export default function CarpetaDigitalModal({
     // En Documentación previa se muestran los dos repositorios digitales compartidos
     // con la carpeta del expediente, sin duplicar ni almacenar archivos en el modal.
     const bloque = bloqueActividad || BLOQUES[0];
+    // La actividad «Sede notarial» no tiene carpeta digital propia.
+    // «Sede notarial con protocolo» conserva sus repositorios específicos.
+    if (bloque.id === "sede-notarial" && !normalizar(actividadId).includes("protocolo")) return [];
     const bloqueAjustado = bloque.id === "documentacion-previa"
       ? {
           ...bloque,
@@ -767,7 +770,7 @@ export default function CarpetaDigitalModal({
               : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}
           >
             <div
-              className={"flex min-h-0 min-w-0 flex-col overflow-hidden transition-[opacity,transform] duration-300 " + (modoActividad && (actividadId === "sede-notarial" || (!panelDocumentosVisible && !ocultarPanelEnvioNotario)) ? "hidden lg:flex" : "")}
+              className={"flex min-h-0 min-w-0 flex-col overflow-hidden transition-[opacity,transform] duration-300 " + (modoActividad && ((normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo")) || (!panelDocumentosVisible && !ocultarPanelEnvioNotario)) ? "hidden lg:flex" : "")}
               style={modoActividad ? {
                 minWidth: 0,
                 width: "100%",
