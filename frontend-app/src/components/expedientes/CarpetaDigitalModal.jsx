@@ -861,20 +861,68 @@ export default function CarpetaDigitalModal({
                       ))}
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-1">
-                      {camposPanelActividad.map((campo) => {
-                        const valor = datosPanelActividad?.[campo.key];
-                        return (
-                          <div key={campo.key} className="min-w-0 border-b border-slate-100 pb-1.5">
-                            <p className="text-[10px] font-bold text-slate-500">{campo.label}</p>
-                            <p className="break-words text-[11px] font-semibold text-slate-800">
-                              {valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}
-                            </p>
-                          </div>
-                        );
-                      })}
-                      {camposPanelActividad.length === 0 && <p className="text-xs text-slate-500">Los campos específicos de esta actividad aparecerán aquí.</p>}
-                    </div>
+                    {actividadId === "gestion-economica" ? (
+                      <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
+                        {[
+                          {
+                            titulo: "Tipo de documento",
+                            campos: [
+                              ["Contrato", datosPanelActividad?.contrato],
+                              ["Capital (€)", datosPanelActividad?.capital],
+                              ["Tipo de operación", datosPanelActividad?.tipo_operacion || datosPanelActividad?.tipoOperacion || datosPanelActividad?.operacion],
+                              ["Subtipo de operación", datosPanelActividad?.subtipo_operacion],
+                              ["Idioma del documento", datosPanelActividad?.idioma_documento || datosPanelActividad?.idioma],
+                              ["Importe (€)", datosPanelActividad?.importe],
+                              ["Documento 1 · Tipo de documento", datosPanelActividad?.documentos_escritura?.[0]?.tipo_documento || datosPanelActividad?.tipo_documento],
+                              ["Documento 1 · Cuantía (€)", datosPanelActividad?.documentos_escritura?.[0]?.cuantia_documento ?? datosPanelActividad?.documentos_escritura?.[0]?.cuantia ?? datosPanelActividad?.cuantia_documento ?? datosPanelActividad?.cuantia ?? datosPanelActividad?.capital],
+                              ["Formato de escritura", datosPanelActividad?.formato_escritura],
+                              ["Tipo de trámite", datosPanelActividad?.tipo_tramite],
+                            ],
+                          },
+                          {
+                            titulo: "Datos de facturación",
+                            campos: [
+                              ["Nombre", datosPanelActividad?.facturacion_nombre],
+                              ["Apellidos", datosPanelActividad?.facturacion_apellidos],
+                              ["DNI / NIF de facturación", datosPanelActividad?.facturacion_dni_nif || datosPanelActividad?.dni_facturacion || datosPanelActividad?.nif_facturacion],
+                              ["Dirección", datosPanelActividad?.facturacion_direccion || datosPanelActividad?.direccion_facturacion],
+                              ["Código postal", datosPanelActividad?.facturacion_codigo_postal || datosPanelActividad?.codigo_postal_facturacion],
+                              ["Población", datosPanelActividad?.facturacion_poblacion || datosPanelActividad?.poblacion_facturacion],
+                              ["Provincia", datosPanelActividad?.facturacion_provincia || datosPanelActividad?.provincia_facturacion],
+                              ["Teléfono", datosPanelActividad?.facturacion_telefono || datosPanelActividad?.telefono_facturacion],
+                              ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion],
+                            ],
+                          },
+                        ].map((seccion) => (
+                          <section key={seccion.titulo} className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                            <h5 className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">{seccion.titulo}</h5>
+                            <div className="space-y-0 px-3 py-1.5">
+                              {seccion.campos.map(([etiqueta, valor]) => (
+                                <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
+                                  <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
+                                  <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </section>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-1">
+                        {camposPanelActividad.map((campo) => {
+                          const valor = datosPanelActividad?.[campo.key];
+                          return (
+                            <div key={campo.key} className="min-w-0 border-b border-slate-100 pb-1.5">
+                              <p className="text-[10px] font-bold text-slate-500">{campo.label}</p>
+                              <p className="break-words text-[11px] font-semibold text-slate-800">
+                                {valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}
+                              </p>
+                            </div>
+                          );
+                        })}
+                        {camposPanelActividad.length === 0 && <p className="text-xs text-slate-500">Los campos específicos de esta actividad aparecerán aquí.</p>}
+                      </div>
+                    )}
                   ))}
                 </div>
               </aside>
