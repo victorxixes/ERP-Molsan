@@ -2736,6 +2736,24 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         campos[campo.key] = actividadDraft[campo.key] ?? "";
       }
     }
+    if (actividadSeleccionada === "documentacion-previa") {
+      // Estos campos se editan en el bloque de integración y también deben
+      // persistirse con el botón general del modal.
+      for (const key of ["fecha_envio_notario"]) {
+        campos[key] = Object.prototype.hasOwnProperty.call(actividadDraft, key)
+          ? (actividadDraft[key] ?? "")
+          : (expediente?.[key] ?? "");
+      }
+    }
+    if (actividadSeleccionada === "sede-notarial") {
+      // Sede notarial no tiene campos en CAMPOS_ACTIVIDADES: sus datos
+      // editables viven en el bloque de integración del modal.
+      for (const key of ["fecha_envio_notario", "nombre_notario", "nif_notario"]) {
+        campos[key] = Object.prototype.hasOwnProperty.call(actividadDraft, key)
+          ? (actividadDraft[key] ?? "")
+          : (expediente?.[key] ?? "");
+      }
+    }
     if (actividadSeleccionada === "sede-notarial-protocolo") {
       for (const key of [
         "nombre_notario", "nif_notario", "apoderado", "tipo_gestoria", "tipo_firma",
