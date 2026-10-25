@@ -703,6 +703,76 @@ function resolverActividadActual(
 // ESTADO BADGE
 // ============================================================
 
+function RepositorioAJDITP({ expedienteId }) {
+  const [documentos, setDocumentos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let activo = true;
+    if (!expedienteId) {
+      setDocumentos([]);
+      setCargando(false);
+      return () => { activo = false; };
+    }
+    axios.get(`/expedientes/${encodeURIComponent(expedienteId)}/carpeta-digital`)
+      .then(({ data }) => {
+        if (!activo) return;
+        const lista = Array.isArray(data) ? data : data?.items || [];
+        setDocumentos(lista.filter((doc) => ["AJD/ITP", "AJD / ITP"].includes(String(doc.categoria || "").trim())));
+      })
+      .catch((e) => {
+        if (activo) setError(e?.response?.data?.detail || "No se pudieron cargar los documentos AJD / ITP.");
+      })
+      .finally(() => { if (activo) setCargando(false); });
+    return () => { activo = false; };
+  }, [expedienteId]);
+
+  async function abrirDocumento(doc, descargar = false) {
+    try {
+      setError("");
+      const res = await axios.get(`/expedientes/${encodeURIComponent(expedienteId)}/carpeta-digital/${doc.id}/descargar`, { responseType: "blob" });
+      const url = URL.createObjectURL(res.data instanceof Blob ? res.data : new Blob([res.data]));
+      if (descargar) {
+        const enlace = document.createElement("a");
+        enlace.href = url;
+        enlace.download = doc.nombre_original || "documento";
+        document.body.appendChild(enlace);
+        enlace.click();
+        enlace.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+      } else {
+        window.open(url, "_blank", "noopener,noreferrer");
+        window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+      }
+    } catch (e) {
+      setError(e?.response?.data?.detail || "No se pudo abrir el documento.");
+    }
+  }
+
+  return (
+    <section className="rounded-xl border border-emerald-200 bg-white p-3">
+      <div className="mb-2 flex flex-wrap items-center gap-2">
+        <h4 className="text-sm font-extrabold text-slate-800">📁 Repositorio AJD / ITP</h4>
+        <span className="text-xs text-slate-500">{documentos.length} archivo(s)</span>
+      </div>
+      {cargando ? <p className="text-xs text-slate-500">Cargando documentos…</p> :
+        documentos.length ? (
+          <ul className="divide-y divide-slate-100">
+            {documentos.map((doc) => (
+              <li key={doc.id} className="flex min-w-0 flex-wrap items-center gap-2 py-2">
+                <span className="min-w-0 flex-1 truncate text-xs font-semibold text-slate-700" title={doc.nombre_original}>{doc.nombre_original || "Documento sin nombre"}</span>
+                <button type="button" onClick={() => abrirDocumento(doc)} className="rounded-md px-2 py-1 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver</button>
+                <button type="button" onClick={() => abrirDocumento(doc, true)} className="rounded-md px-2 py-1 text-xs font-bold text-slate-600 hover:bg-slate-100">↓ Descargar</button>
+              </li>
+            ))}
+          </ul>
+        ) : <p className="text-xs text-slate-500">No hay ficheros en el repositorio AJD / ITP de este expediente.</p>}
+      {error && <p role="alert" className="mt-2 text-xs font-semibold text-red-700">{error}</p>}
+    </section>
+  );
+}
+
 function EstadoBadge({
   valor,
 }) {
@@ -7869,15 +7939,7 @@ const cuantiaFincasParaEnvio =
               </div>
             )}
             {actividadSeleccionada === "liquidacion-impuestos" && (
-              <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-white p-3">
-                <div className="min-w-0">
-                  <h4 className="text-sm font-extrabold text-slate-800">📁 Repositorio AJD / ITP</h4>
-                  <p className="mt-1 text-xs text-slate-500">Adjunta y consulta los justificantes de liquidación tributaria en la carpeta digital del expediente.</p>
-                </div>
-                <button type="button" onClick={() => setMostrarCarpetaDigital(true)} disabled={expedienteBloqueado} className="shrink-0 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50">
-                  📂 Abrir repositorio AJD / ITP
-                </button>
-              </section>
+              <RepositorioAJDITP expedienteId={expediente?.id || id} />
             )}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
               <div className="min-w-0">
