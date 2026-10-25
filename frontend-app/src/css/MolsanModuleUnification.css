@@ -222,11 +222,6 @@
   border-radius: var(--molsan-radius-card, 14px);
   box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
 }
-:where(.catalogos-premium-page > header > div:first-child,
-       .utilidades-premium-page > header > div:first-child) {
-  display: none;
-}
-
 /* Formularios y tablas: controles uniformes sin tocar checkboxes ni radios. */
 :where(.notargest, .apoderagest, .encargagest, .ctn-listado-page,
        .ctn-detalle-page, .expedientes-page, .ficha-expediente-premium,
