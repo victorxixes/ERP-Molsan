@@ -529,7 +529,7 @@ def migrar_esquema_expedientes_inicio():
         ("asiento_presentacion_libro_diario", "VARCHAR(300)"),
         ("asiento_presentacion", "VARCHAR(200)"),
         ("libro_diario", "VARCHAR(200)"),
-        ("gestoria", "VARCHAR(100)"),
+        ("tipo_gestoria", "VARCHAR(100)"),
         ("fecha_presentacion", "DATE"),
         ("numero_entrada", "VARCHAR(200)"),
         ("fecha_recogida_notario_presentacion_telematica", "DATE"),
