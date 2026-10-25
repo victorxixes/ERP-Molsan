@@ -432,61 +432,17 @@ const CAMPOS_ACTIVIDADES = {
 
   "sede-notarial": [
     {
-      key: "fecha_envio",
-      label: "Fecha envío",
-      tipo: "fecha",
+      key: "nombre_notario",
+      label: "Notario",
     },
-
     {
-      key: "apoderado",
-      label: "Apoderado",
+      key: "nif_notario",
+      label: "NIF de notario",
     },
-
-    {
-      key: "tipo_documento",
-      label: "Tipo documento",
-    },
-
-    {
-      key: "poblacion",
-      label: "Población",
-    },
-
-    {
-      key: "provincia",
-      label: "Provincia",
-    },
-
-    {
-      key: "tipo_firma",
-      label: "Tipo firma",
-    },
-
-    {
-      key: "fecha_prevista_firma",
-      label: "Fecha prevista firma",
-      tipo: "fecha",
-    },
-
     {
       key: "fecha_firma",
-      label: "Fecha firma",
+      label: "Fecha de firma",
       tipo: "fecha",
-    },
-
-    {
-      key: "sol",
-      label: "SOL",
-    },
-
-    {
-      key: "cs",
-      label: "CS",
-    },
-
-    {
-      key: "ns",
-      label: "NS",
     },
   ],
 
@@ -7725,6 +7681,15 @@ const cuantiaFincasParaEnvio =
           </div>
         }
       >
+        {actividadSeleccionada === "sede-notarial" && (
+          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 p-4">
+            <p className="text-sm font-extrabold text-amber-900">Aviso para informática · Integración ABSIS</p>
+            <p className="mt-1 text-sm text-amber-800">
+              En la actividad Sede notarial, los datos previstos para esta comunicación son: Notario, NIF de notario y Fecha de firma. Verificar su correspondencia con los campos y el formato exigidos por ABSIS al implementar la conexión.
+            </p>
+            <p className="mt-1 text-xs text-amber-800">La conexión con ABSIS todavía no está activa; guardar estos datos no realiza ningún envío externo.</p>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).map((campo) => {
             const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
