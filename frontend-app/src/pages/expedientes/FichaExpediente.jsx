@@ -611,6 +611,19 @@ const CAMPOS_ACTIVIDADES = {
 
 
 // ============================================================
+const CAMPOS_INTEGRACION_SEDE_PROTOCOLO = [
+  { key: "nombre_notario", label: "Notario" },
+  { key: "nif_notario", label: "NIF notario" },
+  { key: "apoderado", label: "Apoderado", opciones: ["Gestoría", "CaixaBank"] },
+  { key: "tipo_firma", label: "Tipo firma" },
+  { key: "fecha_firma", label: "Fecha firma", tipo: "fecha" },
+  { key: "protocolo", label: "Protocolo" },
+  { key: "asiento_presentacion_libro_diario", label: "Asiento presentación / Libro diario" },
+  { key: "fecha_presentacion", label: "Fecha presentación", tipo: "fecha" },
+  { key: "numero_entrada", label: "Número de entrada" },
+  { key: "fecha_recogida_notario_presentacion_telematica", label: "Fecha recogida notario o presentación telemática", tipo: "fecha" },
+];
+
 // RESOLVER ACTIVIDAD
 // ============================================================
 
@@ -2638,6 +2651,18 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     for (const campo of camposEspecificos) {
       if (Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)) {
         campos[campo.key] = actividadDraft[campo.key] ?? "";
+      }
+    }
+    if (actividadSeleccionada === "sede-notarial-protocolo") {
+      for (const key of [
+        "nombre_notario", "nif_notario", "apoderado", "tipo_firma",
+        "fecha_firma", "protocolo", "asiento_presentacion_libro_diario",
+        "fecha_presentacion", "numero_entrada",
+        "fecha_recogida_notario_presentacion_telematica",
+      ]) {
+        campos[key] = Object.prototype.hasOwnProperty.call(actividadDraft, key)
+          ? (actividadDraft[key] ?? "")
+          : (expediente?.[key] ?? (key === "apoderado" ? "Gestoría" : ""));
       }
     }
     if (!Object.keys(campos).length) {
@@ -7704,6 +7729,7 @@ const cuantiaFincasParaEnvio =
             );
           })}
         </div>
+        {actividadSeleccionada !== "sede-notarial-protocolo" && (
         <section className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
@@ -7730,6 +7756,7 @@ const cuantiaFincasParaEnvio =
           )}
           </div>
         </section>
+        )}
         {actividadSeleccionada !== "documentacion-previa" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
@@ -7750,6 +7777,28 @@ const cuantiaFincasParaEnvio =
                   <span className="block text-xs font-bold text-slate-600">NIF de notario</span>
                   <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nif_notario") ? String(actividadDraft.nif_notario ?? "") : String(expediente?.nif_notario || "00399701F")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nif_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="NIF del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
                 </label>
+              </div>
+            ) : actividadSeleccionada === "sede-notarial-protocolo" ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.map((campo) => {
+                  const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
+                    ? (actividadDraft[campo.key] ?? "")
+                    : (expediente?.[campo.key] ?? (campo.key === "apoderado" ? "Gestoría" : ""));
+                  const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
+                  return (
+                    <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
+                      <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                      {Array.isArray(campo.opciones) ? (
+                        <select value={valor} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800">
+                          <option value="">— Seleccionar —</option>
+                          {campo.opciones.map((opcion) => <option key={opcion} value={opcion}>{opcion}</option>)}
+                        </select>
+                      ) : (
+                        <input type={campo.tipo === "fecha" ? "date" : "text"} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} placeholder={campo.label} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                      )}
+                    </label>
+                  );
+                })}
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
