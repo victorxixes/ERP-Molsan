@@ -201,6 +201,8 @@ export default function CarpetaDigitalModal({
       "Escrituras/borradores": "borradores_escritura",
       "Borradores escrituras": "borradores_escritura",
       "Presentación Registro": "presentacion_registro_documentos",
+      "Hoja de presentación Tacio": "hoja_presentacion_tacio_documentos",
+      "Copia simple": "copia_simple_documentos",
       "AJD/ITP": "ajd_itp_documentos",
       "Otros impuestos": "otros_impuestos_documentos",
       "Hoja de Inscripción": "hoja_inscripcion_documentos",
@@ -231,8 +233,11 @@ export default function CarpetaDigitalModal({
         const repositorioClave = clavePorCategoria[item.categoria];
         const repositorioNuevoRequerido = ["documentacion-previa", "gestion-economica"].includes(bloque.id)
           && ["Borradores escrituras", "Otros"].includes(item.categoria);
+        const repositoriosSedeProtocolo = bloque.id === "sede-notarial"
+          && normalizar(actividadId).includes("protocolo")
+          && ["Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
         const repositorioCierreExpediente = bloque.id === "facturacion-cierre" && item.categoria === "Expediente digital completo";
-        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || repositorioCierreExpediente)
+        return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || repositoriosSedeProtocolo || repositorioCierreExpediente)
           && !(bloque.id === "documentacion-previa" && item.categoria === "Presentación Registro")
           && !(esCancelacionSinProvision && bloque.id === "sede-notarial" && item.categoria === "Presentación Registro");
       }),
