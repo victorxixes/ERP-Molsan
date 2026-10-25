@@ -1,12 +1,12 @@
 /* MOLSAN ERP PREMIUM 2027 · Catálogos y Utilidades
    Identidad visual coherente para las dos centrales de herramientas. */
 :is(.catalogos-premium-page, .utilidades-premium-page) {
-  --tools-primary: var(--erp-primary, #3156b3);
-  --tools-primary-dark: var(--erp-primary-dark, #274694);
-  --tools-soft: var(--erp-primary-soft, #edf3ff);
+  --tools-primary: var(--molsan-primary, #3156b3);
+  --tools-primary-dark: var(--molsan-primary-hover, #274694);
+  --tools-soft: var(--molsan-primary-soft, #edf3ff);
   --tools-border: var(--molsan-border, #dce4ef);
   --tools-text: var(--molsan-text, #17243a);
-  --tools-muted: var(--erp-text-soft, #64748b);
+  --tools-muted: var(--molsan-text-muted, #64748b);
   min-width: 0;
   color: var(--tools-text);
 }
