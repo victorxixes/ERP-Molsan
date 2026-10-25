@@ -901,14 +901,14 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     ].some((clave) => clave && claves.has(clave)));
   }, [navigationItems, visiblesPrincipales, modulosFijados]);
 
-  // «Módulos» muestra las aplicaciones autorizadas que NO estén ya accesibles
+  // «Espacios de trabajo» muestra las aplicaciones autorizadas que NO estén ya accesibles
   // desde la barra actual, «Más» o los accesos fijos del espacio de trabajo.
   // Así el administrador conserva el catálogo completo sin duplicar enlaces.
   const modulosDropdown = useMemo(() => {
     const normalizarClave = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
     if (esPortalNotarialExterno) return [];
 
-    // «Módulos» completa la navegación: solo muestra entradas del catálogo
+    // «Espacios de trabajo» completa la navegación: solo muestra entradas del catálogo
     // que no estén ya visibles en la barra ni en los accesos fijados.
     // Así se evita que el administrador vea cada módulo dos veces.
     // Construir una única lista de identificadores ya visibles. Se compara
@@ -933,14 +933,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       clavesEnBarra.has(normalizarClave(modulo.key)) ||
       clavesEnBarra.has(normalizarClave(modulo.label)) ||
       rutasEnBarra.has(normalizarClave(modulo.route).replace(/\/$/, ""));
-    // El selector «Módulos» contiene únicamente espacios de trabajo,
-    // no herramientas sueltas ni enlaces internos que ya pertenecen a esos espacios.
-    const espaciosTrabajo = new Set([
-      "apoderagest",
-      "cancelagest",
-      "notargest",
-      "encargagest",
-    ]);
+    // «Espacios de trabajo» reúne todos los módulos con ruta del catálogo
+    // que el usuario puede abrir y que aún no aparecen en la navegación actual.
+    // Así se incluyen los accesos secundarios sin duplicar enlaces ni saltarse permisos.
     const marcaActual = normalizarClave(brandName);
     const claveEspacioActual = ({
       "apoderagest": "apoderagest",
@@ -952,7 +947,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     const items = MODULOS_ERP
       .filter((modulo) =>
         Boolean(modulo.route) &&
-        espaciosTrabajo.has(modulo.key) &&
         modulo.key !== claveEspacioActual &&
         puedeVerModulo(modulo.key) &&
         !yaVisible(modulo)
@@ -1028,7 +1022,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     };
   }, [modulosDropdownAbierto]);
 
-  // En barras de navegación específicas también agrupamos Fichajes bajo «Módulos»
+  // En barras de navegación específicas también agrupamos Fichajes bajo «Espacios de trabajo»
   // para evitar que aparezca como botón independiente.
   const navigationItemsConModulos = useMemo(() => {
     if (!Array.isArray(navigationItems)) return null;
@@ -1038,7 +1032,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
         item?.key === "fichajes" ||
         normalizarModulo(item?.label) === "fichajes" ||
         item?.key === "modulos" ||
-        ["módulos", "modulos"].includes(normalizarModulo(item?.label))
+        ["módulos", "modulos", "espacios de trabajo"].includes(normalizarModulo(item?.label))
       ) return false;
 
       const identificadores = [
@@ -1050,10 +1044,10 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       identificadores.forEach((clave) => clavesNavegacion.add(clave));
       return true;
     });
-    // «Módulos» debe ser siempre el último botón de la barra, no quedar
+    // «Espacios de trabajo» debe ser siempre el último botón de la barra, no quedar
     // intercalado entre pestañas propias y accesos comunes del ERP.
     if (modulosDropdown.length > 0) {
-      sinFichajes.push({ key: "modulos", label: "Módulos", icon: "database" });
+      sinFichajes.push({ key: "modulos", label: "Espacios de trabajo", icon: "database" });
     }
     return sinFichajes;
   }, [navigationItems, modulosDropdown]);
@@ -1301,7 +1295,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                     `}
                   >
                     <NavIcon name="folder" />
-                    <span>Módulos</span>
+                    <span>Espacios de trabajo</span>
                     <ChevronIcon open={modulosDropdownAbierto} />
                   </button>
                 </div>
