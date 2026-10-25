@@ -52,7 +52,7 @@
 .fusiones-status-row:hover,
 .fusiones-status-row.is-active {
   background: var(--molsan-primary-soft, #edf3ff);
-  color: var(--erp-primary-dark);
+  color: var(--molsan-primary-hover);
 }
 
 .fusiones-count {
