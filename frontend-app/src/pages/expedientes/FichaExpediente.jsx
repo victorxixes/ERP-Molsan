@@ -7904,7 +7904,7 @@ const cuantiaFincasParaEnvio =
         {actividadSeleccionada !== "documentacion-previa" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
-              <h3 className="text-sm font-extrabold text-slate-800">{actividadSeleccionada === "sede-notarial-protocolo" ? "Sede notarial · datos para integración" : `${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración`}</h3>
+              <h3 className="text-sm font-extrabold text-slate-800">{actividadSeleccionada === "sede-notarial-protocolo" ? "Sede notarial con protocolo · datos para integración" : `${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración`}</h3>
               <p className="mt-1 text-xs text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
             </div>
             {actividadSeleccionada === "sede-notarial" ? (
@@ -7915,11 +7915,11 @@ const cuantiaFincasParaEnvio =
                 </label>
                 <label className="block rounded-lg border border-slate-200 bg-white p-3">
                   <span className="block text-xs font-bold text-slate-600">Notario</span>
-                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nombre_notario") ? String(actividadDraft.nombre_notario ?? "") : String(expediente?.nombre_notario || "José Manuel Jiménez Santoveña")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nombre_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="Nombre del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nombre_notario") ? String(actividadDraft.nombre_notario ?? "") : String(expediente?.nombre_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nombre_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="Nombre del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
                 </label>
                 <label className="block rounded-lg border border-slate-200 bg-white p-3">
                   <span className="block text-xs font-bold text-slate-600">NIF de notario</span>
-                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nif_notario") ? String(actividadDraft.nif_notario ?? "") : String(expediente?.nif_notario || "00399701F")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nif_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="NIF del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nif_notario") ? String(actividadDraft.nif_notario ?? "") : String(expediente?.nif_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nif_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="NIF del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
                 </label>
               </div>
             ) : actividadSeleccionada === "sede-notarial-protocolo" ? (
@@ -7927,10 +7927,10 @@ const cuantiaFincasParaEnvio =
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                   
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
-                    {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "fecha_firma", "protocolo", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
+                    {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "apoderado", "tipo_gestoria", "tipo_firma", "fecha_firma", "protocolo", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
                       const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
                         ? (actividadDraft[campo.key] ?? "")
-                        : (expediente?.[campo.key] ?? (campo.key === "nombre_notario" ? "Francisco Javier Cilveti Bayona" : campo.key === "nif_notario" ? "05287294P" : ""));
+                        : (expediente?.[campo.key] ?? "");
                       const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
                       return (
                         <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-slate-50/50 p-3">
