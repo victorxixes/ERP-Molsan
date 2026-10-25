@@ -7940,9 +7940,9 @@ const cuantiaFincasParaEnvio =
                 </label>
               </div>
             ) : actividadSeleccionada === "sede-notarial-protocolo" ? (
-              <div className="grid items-start gap-4">
+              <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                  
+                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Datos de la actividad</h4>
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
                     {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "tipo_gestoria", "fecha_firma", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
                       const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
@@ -7957,14 +7957,14 @@ const cuantiaFincasParaEnvio =
                       );
                     })}
                   </div>
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
-                    <RepositorioDocumentosInline
-                      expedienteId={expediente?.id_expediente || expediente?.id || id}
-                      categorias={["Copia simple", "Hoja de presentación"]}
-                      onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
-                    />
-                  </div>
+                </section>
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
+                  <RepositorioDocumentosInline
+                    expedienteId={expediente?.id_expediente || expediente?.id || id}
+                    categorias={["Copia simple", "Hoja de presentación"]}
+                    onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
+                  />
                   <p className="mt-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-xs text-sky-800">
                     La extracción automática de estos datos desde la hoja de presentación PDF subida en NotarGest está pendiente de implementar; por ahora puedes introducirlos y guardarlos aquí.
                   </p>
