@@ -905,18 +905,19 @@ export default function CarpetaDigitalModal({
                     </div>
                   ) : (
                     String(actividadId || "").includes("protocolo") ? (
-                      <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
+                      <div className="min-w-0 space-y-3">
                         <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                          <h5 className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">Datos notariales y de presentación</h5>
-                          <div className="grid min-w-0 grid-cols-1 gap-x-4 px-3 py-1.5 sm:grid-cols-2">
+                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos notariales y de presentación</h5>
+                          <div className="space-y-0 px-2.5 py-1.5">
                             {[
-                              // En este bloque de integración no se muestra Apoderado.
-                              ["Notario", datosPanelActividad?.nombre_notario || datosPanelActividad?.notario],
-                              ["NIF notario", datosPanelActividad?.nif_notario || datosPanelActividad?.notario_nif],
-                              ["Tipo de firma", datosEnvioNotario?.tipo_firma || datosPanelActividad?.tipo_firma],
+                              // Los datos se leen del envío a notario y se muestran en el formato común de actividad.
+                              ["Notario", datosEnvioNotario?.nombre_notario || datosEnvioNotario?.notario?.nombre || datosPanelActividad?.nombre_notario || datosPanelActividad?.notario],
+                              ["NIF notario", datosEnvioNotario?.nif_notario || datosEnvioNotario?.notario?.nif || datosPanelActividad?.nif_notario || datosPanelActividad?.notario_nif],
+                              ["Tipo de escritura", datosEnvioNotario?.tipo_escritura || datosEnvioNotario?.tipo_documento || datosPanelActividad?.tipo_escritura || datosPanelActividad?.tipo_documento],
+                              ["Tipo de firma", datosEnvioNotario?.tipo_firma || datosEnvioNotario?.notario?.tipo_firma || datosPanelActividad?.tipo_firma],
                               ["Formato de escritura", datosEnvioNotario?.formato_escritura || datosPanelActividad?.formato_escritura],
-                              ["Fecha firma", datosPanelActividad?.fecha_firma],
-                              ["Protocolo", datosPanelActividad?.protocolo],
+                              ["Fecha firma", datosEnvioNotario?.fecha_firma || datosPanelActividad?.fecha_firma],
+                              ["Protocolo", datosEnvioNotario?.protocolo || datosPanelActividad?.protocolo],
                               ["Asiento presentación", datosPanelActividad?.asiento_presentacion || datosPanelActividad?.asiento_presentacion_libro_diario],
                               ["Libro diario", datosPanelActividad?.libro_diario || datosPanelActividad?.asiento_presentacion_libro_diario],
                               ["Fecha presentación", datosPanelActividad?.fecha_presentacion],
@@ -931,18 +932,18 @@ export default function CarpetaDigitalModal({
                           </div>
                         </section>
                         <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                          <h5 className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-extrabold text-slate-800">Datos de facturación</h5>
-                          <div className="grid min-w-0 grid-cols-1 gap-x-4 px-3 py-1.5 sm:grid-cols-2">
+                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos de facturación</h5>
+                          <div className="space-y-0 px-2.5 py-1.5">
                             {[
                               ["Nombre", datosPanelActividad?.facturacion_nombre || datosPanelActividad?.nombre_facturacion || datosPanelActividad?.nombre_cliente_facturacion],
                               ["Apellidos", datosPanelActividad?.facturacion_apellidos || datosPanelActividad?.apellidos_facturacion],
                               ["DNI / NIF de facturación", datosPanelActividad?.facturacion_dni_nif || datosPanelActividad?.dni_facturacion || datosPanelActividad?.nif_facturacion],
-                              ["Dirección", datosPanelActividad?.facturacion_direccion || datosPanelActividad?.direccion_facturacion || datosPanelActividad?.direccion_cliente_facturacion],
-                              ["Código postal", datosPanelActividad?.facturacion_codigo_postal || datosPanelActividad?.codigo_postal_facturacion || datosPanelActividad?.cp_facturacion],
-                              ["Población", datosPanelActividad?.facturacion_poblacion || datosPanelActividad?.poblacion_facturacion || datosPanelActividad?.municipio_facturacion],
+                              ["Dirección", datosPanelActividad?.facturacion_direccion || datosPanelActividad?.direccion_facturacion],
+                              ["Código postal", datosPanelActividad?.facturacion_codigo_postal || datosPanelActividad?.codigo_postal_facturacion],
+                              ["Población", datosPanelActividad?.facturacion_poblacion || datosPanelActividad?.poblacion_facturacion],
                               ["Provincia", datosPanelActividad?.facturacion_provincia || datosPanelActividad?.provincia_facturacion],
-                              ["Teléfono", datosPanelActividad?.facturacion_telefono || datosPanelActividad?.telefono_facturacion || datosPanelActividad?.telefono_cliente_facturacion],
-                              ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion || datosPanelActividad?.correo_facturacion],
+                              ["Teléfono", datosPanelActividad?.facturacion_telefono || datosPanelActividad?.telefono_facturacion],
+                              ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion],
                             ].map(([etiqueta, valor]) => (
                               <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
                                 <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
