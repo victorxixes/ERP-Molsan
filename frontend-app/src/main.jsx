@@ -66,7 +66,7 @@ function Root() {
   }, []);
 
   return (
-    <div className="animate-fade-in min-h-screen bg-sj-gradient-blanco">
+    <div className="min-h-screen">
       <BrowserRouter>
         <App />
       </BrowserRouter>
