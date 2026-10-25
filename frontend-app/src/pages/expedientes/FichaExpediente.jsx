@@ -683,16 +683,18 @@ function resolverActividadActual(
 // ESTADO BADGE
 // ============================================================
 
-function RepositorioDocumentosInline({ expedienteId, categorias = [], titulo = "Repositorio digital" }) {
+function RepositorioDocumentosInline({ expedienteId, categorias = [], titulo = "Repositorio digital", onAbrirRepositorio }) {
   const categoriasClave = categorias.join("|");
-  const normalizarCategoriaRepositorio = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
-  const categoriasNormalizadas = categoriasClave.split("|").map(normalizarCategoriaRepositorio);
+  const normalizarCategoriaRepositorio = (valor) => String(valor || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim().toLocaleLowerCase("es");
+  const categoriasNormalizadas = categorias.map(normalizarCategoriaRepositorio);
   const [documentos, setDocumentos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let activo = true;
+    setCargando(true);
+    setError("");
     if (!expedienteId) {
       setDocumentos([]);
       setCargando(false);
@@ -702,10 +704,14 @@ function RepositorioDocumentosInline({ expedienteId, categorias = [], titulo = "
       .then(({ data }) => {
         if (!activo) return;
         const lista = Array.isArray(data) ? data : data?.items || [];
-        setDocumentos(lista.filter((doc) => categoriasNormalizadas.includes(normalizarCategoriaRepositorio(doc.categoria || doc.categoria_nombre || doc.tipo_documento))));
+        setDocumentos(lista);
       })
       .catch((e) => {
-        if (activo) setError(e?.response?.data?.detail || "No se pudieron cargar los documentos del repositorio.");
+        if (activo) {
+          setDocumentos([]);
+          const detalle = e?.response?.data?.detail;
+          setError(typeof detalle === "string" && !/no existe el expediente/i.test(detalle) ? detalle : "");
+        }
       })
       .finally(() => { if (activo) setCargando(false); });
     return () => { activo = false; };
@@ -734,23 +740,33 @@ function RepositorioDocumentosInline({ expedienteId, categorias = [], titulo = "
   }
 
   return (
-    <section className="rounded-xl border border-emerald-200 bg-white p-3">
-      <div className="mb-2 flex flex-wrap items-center gap-2">
-        <h4 className="text-sm font-extrabold text-slate-800">📁 {titulo}</h4>
-        <span className="text-xs text-slate-500">{documentos.length} archivo(s)</span>
-      </div>
-      {cargando ? <p className="text-xs text-slate-500">Cargando documentos…</p> :
-        documentos.length ? (
-          <ul className="divide-y divide-slate-100">
-            {documentos.map((doc) => (
-              <li key={doc.id} className="flex min-w-0 flex-wrap items-center gap-2 py-2">
-                <span className="min-w-0 flex-1 truncate text-xs font-semibold text-slate-700" title={doc.nombre_original}>{doc.nombre_original || "Documento sin nombre"}</span>
-                <button type="button" onClick={() => abrirDocumento(doc)} className="rounded-md px-2 py-1 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver</button>
-                <button type="button" onClick={() => abrirDocumento(doc, true)} className="rounded-md px-2 py-1 text-xs font-bold text-slate-600 hover:bg-slate-100">↓ Descargar</button>
-              </li>
-            ))}
-          </ul>
-        ) : <p className="text-xs text-slate-500">No hay ficheros en este repositorio del expediente.</p>}
+    <section className="space-y-2">
+      {categorias.map((categoria, indice) => {
+        const categoriaNormalizada = categoriasNormalizadas[indice];
+        const documentosCategoria = documentos.filter((doc) =>
+          normalizarCategoriaRepositorio(doc.categoria || doc.categoria_nombre || doc.tipo_documento) === categoriaNormalizada
+        );
+        return (
+          <div key={categoria} className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
+            <div className="min-w-0 flex-1">
+              <span className="block font-semibold">{categoria}</span>
+              {cargando ? <span className="mt-1 block text-[11px] text-slate-500">Cargando documentos…</span> :
+                documentosCategoria.length ? (
+                  <div className="mt-1 space-y-1">
+                    {documentosCategoria.map((doc) => (
+                      <div key={doc.id} className="flex flex-wrap items-center gap-2">
+                        <span className="min-w-0 flex-1 break-words text-[11px] font-semibold text-emerald-700">✓ {doc.nombre_original || doc.nombre || "Documento guardado"}</span>
+                        <button type="button" onClick={() => abrirDocumento(doc)} className="rounded-md px-2 py-1 text-xs font-bold text-indigo-700 hover:bg-indigo-50">Ver</button>
+                      </div>
+                    ))}
+                    <p className="text-[10px] text-slate-500">{documentosCategoria.length} documento(s) encontrado(s) en la carpeta digital</p>
+                  </div>
+                ) : <span className="mt-1 block text-[11px] text-amber-700">No hay ningún documento guardado en esta categoría.</span>}
+            </div>
+            <button type="button" onClick={onAbrirRepositorio} className="shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100">Abrir repositorio</button>
+          </div>
+        );
+      })}
       {error && <p role="alert" className="mt-2 text-xs font-semibold text-red-700">{error}</p>}
     </section>
   );
@@ -7927,7 +7943,7 @@ const cuantiaFincasParaEnvio =
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                   
                   <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
-                    {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "tipo_gestoria", "tipo_firma", "fecha_firma", "protocolo", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
+                    {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "tipo_gestoria", "fecha_firma", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
                       const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
                         ? (actividadDraft[campo.key] ?? "")
                         : (expediente?.[campo.key] ?? "");
@@ -7940,11 +7956,14 @@ const cuantiaFincasParaEnvio =
                       );
                     })}
                   </div>
-                  <RepositorioDocumentosInline
-                    expedienteId={expediente?.id || id}
-                    categorias={["Hoja de presentación Tacio", "Copia simple"]}
-                    titulo="Repositorios digitales · Hoja de presentación Tacio y Copia simple"
-                  />
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
+                    <RepositorioDocumentosInline
+                      expedienteId={expediente?.id_expediente || expediente?.id || id}
+                      categorias={["Copia simple", "Hoja de presentación"]}
+                      onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
+                    />
+                  </div>
                   <p className="mt-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-xs text-sky-800">
                     La extracción automática de estos datos desde la hoja de presentación PDF subida en NotarGest está pendiente de implementar; por ahora puedes introducirlos y guardarlos aquí.
                   </p>
