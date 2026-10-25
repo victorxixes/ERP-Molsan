@@ -116,7 +116,7 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  background: linear-gradient(135deg, #fff 0%, #f8faff 100%);
+  background: var(--molsan-surface, #fff);
 }
 
 .expedientes-page .molsan-page-header__identity {
