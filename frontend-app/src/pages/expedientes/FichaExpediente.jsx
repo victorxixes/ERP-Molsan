@@ -7866,7 +7866,7 @@ const cuantiaFincasParaEnvio =
         {actividadSeleccionada !== "sede-notarial-protocolo" && !["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) && (
         <section className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
+          {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key) && !(actividadSeleccionada === "defectos-registrales" && ["tiene_defectos_abiertos", "tipo_error", "falta_defecto", "descripcion_error", "fcierre_defecto"].includes(campo.key))).map((campo) => {
             const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
             const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
             return (
@@ -7973,7 +7973,7 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
+                {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key) && !(actividadSeleccionada === "defectos-registrales" && ["tiene_defectos_abiertos", "tipo_error", "falta_defecto", "descripcion_error", "fcierre_defecto"].includes(campo.key))).map((campo) => {
                   const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
                   if (["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada)) {
                     const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
@@ -7998,7 +7998,7 @@ const cuantiaFincasParaEnvio =
                     </div>
                   );
                 })}
-                {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).length && (
+                {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key) && !(actividadSeleccionada === "defectos-registrales" && ["tiene_defectos_abiertos", "tipo_error", "falta_defecto", "descripcion_error", "fcierre_defecto"].includes(campo.key))).length && (
                   <p className="text-sm text-slate-500">Esta actividad no tiene campos específicos configurados.</p>
                 )}
               </div>
