@@ -180,15 +180,17 @@ export default function CarpetaDigitalModal({
       : bloque.id === "facturacion-cierre"
         ? {
             ...bloque,
-            titulo: "Repositorios digitales · Expediente digital completo",
-            descripcion: "",
-            categorias: [
-              { etiqueta: "Expediente digital completo", categoria: "Expediente digital completo" },
-            ],
+            titulo: "Carpeta digital · Todos los repositorios",
+            descripcion: "Todos los repositorios disponibles para el expediente.",
+            categorias: [...BLOQUES.flatMap((item) => item.categorias), ...CATEGORIAS_OTROS]
+              .filter((item, index, lista) => lista.findIndex((otro) => otro.categoria === item.categoria) === index),
           }
         : esCancelacionSinProvision && bloque.id === "sede-notarial"
           ? { ...bloque, categorias: bloque.categorias.filter((item) => item.categoria !== "Presentación Registro") }
           : bloque;
+    // Cierre del expediente muestra todos los repositorios solo en la carpeta digital.
+    // El panel "Datos de actividad" y su repositorio permanecen sin cambios.
+    if (bloque.id === "facturacion-cierre") return [bloqueAjustado];
     if (!Array.isArray(configRepositorios)) return [bloqueAjustado];
     const clavePorCategoria = {
       "Documentos Absis": "documentos_absis",
