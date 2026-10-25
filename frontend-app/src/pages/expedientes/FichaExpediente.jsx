@@ -2415,6 +2415,11 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         campos[campo.key] = actividadDraft[campo.key] ?? "";
       }
     }
+    // La fecha de envío a notario también se puede corregir desde el bloque
+    // de integración de Documentación previa.
+    if (actividadSeleccionada === "documentacion-previa" && Object.prototype.hasOwnProperty.call(actividadDraft, "fecha_envio_notario")) {
+      campos.fecha_envio_notario = actividadDraft.fecha_envio_notario ?? "";
+    }
     if (!Object.keys(campos).length) {
       setErrorActividad("No hay campos de esta actividad disponibles para registrar la solicitud.");
       return;
@@ -7766,11 +7771,19 @@ const cuantiaFincasParaEnvio =
               <p className="mt-1 text-xs text-slate-600">Estos datos forman parte del contenido funcional de la actividad y sirven para definir la futura comunicación con el sistema del cliente.</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-slate-200 bg-white p-3">
+              <label className="block rounded-lg border border-slate-200 bg-white p-3">
                 <span className="block text-xs font-bold text-slate-600">Fecha envío a notario</span>
-                <p className="mt-1 text-sm font-semibold text-slate-800">{formatearFecha(expediente?.fecha_envio_notario || expediente?.fecha_envio)}</p>
-                <p className="mt-1 text-[11px] text-slate-500">Dato vinculado al envío guardado en «Enviar a notario».</p>
-              </div>
+                <input
+                  type="date"
+                  value={Object.prototype.hasOwnProperty.call(actividadDraft, "fecha_envio_notario")
+                    ? String(actividadDraft.fecha_envio_notario ?? "").slice(0, 10)
+                    : String(expediente?.fecha_envio_notario || expediente?.fecha_envio || "").slice(0, 10)}
+                  onChange={(event) => setActividadDraft((actual) => ({ ...actual, fecha_envio_notario: event.target.value }))}
+                  disabled={registrandoSolicitudIntegracion || expedienteBloqueado}
+                  className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800"
+                />
+                <p className="mt-1 text-[11px] text-slate-500">Se propone la fecha de envío registrada; puedes modificarla y guardarla con «Guardar datos para ABSIS».</p>
+              </label>
               <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
                 <input type="checkbox" checked={!estadoDocumentacionAbsis.certificado_saldo_cero_erroneo} onChange={(e) => setEstadoDocumentacionAbsis((actual) => ({ ...actual, certificado_saldo_cero_erroneo: !e.target.checked }))} disabled={registrandoSolicitudIntegracion} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
                 <span><strong className="block">Certificado correcto</strong><span className="text-xs text-slate-500">Confirma que el certificado de saldo cero es correcto.</span></span>
