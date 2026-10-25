@@ -8071,7 +8071,7 @@ const cuantiaFincasParaEnvio =
                 </section>
               </div>
             ) : null}
-        <section className={`mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4 ${actividadSeleccionada === "tramitacion-inscripcion" ? "hidden" : ""}`}>
+        <section className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
           <p className="text-sm font-extrabold text-amber-900">Aviso para informática · Integración de datos</p>
           {actividadSeleccionada === "sede-notarial-protocolo" ? (
             <>
