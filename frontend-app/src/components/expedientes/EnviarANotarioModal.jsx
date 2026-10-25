@@ -697,79 +697,7 @@ export default function EnviarANotarioModal({
         {/* CONTENIDO: DOCUMENTACIÓN PREVIA A LA IZQUIERDA + FORMULARIO */}
 
         <div className={inline ? "min-h-0 w-full px-3 py-4 sm:px-4" : "min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-4 2xl:px-5"}>
-          <div className="grid grid-cols-1 items-start gap-3 xl:grid-cols-[minmax(300px,0.58fr)_minmax(0,1.42fr)] xl:gap-4">
-            {/* COLUMNA IZQUIERDA — DOCUMENTACIÓN PREVIA COMPARTIDA CON CARPETA DIGITAL */}
-            <aside className="min-w-0">
-              {/* NOTARIO */}
-
-              <section className="rounded-xl border border-slate-200 bg-white p-3">
-                <TituloSeccion
-                  titulo="3. Datos del notario"
-                  descripcion="Selecciona el notario desde el catálogo CTN."
-                />
-
-                <AutocompleteNotario
-                  value={notario}
-                  disabled={loading}
-                  onSelect={seleccionarNotario}
-                />
-
-                {notario && (
-                  <div className="mt-2 flex justify-end">
-                    <button
-                      type="button"
-                      disabled={loading}
-                      onClick={() => seleccionarNotario(null)}
-                      className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      ✕ Quitar notario y buscar otro
-                    </button>
-                  </div>
-                )}
-
-                {notario && (
-                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <CampoTexto
-                      label="Apoderado"
-                      value={notario.apoderado || ""}
-                      disabled={loading}
-                      onChange={(v) => cambiarDatoNotario("apoderado", v)}
-                    />
-
-                    <CampoTexto
-                      label="Tipo de firma"
-                      value={notario.tipo_firma || ""}
-                      disabled={loading}
-                      onChange={(v) => cambiarDatoNotario("tipo_firma", v)}
-                    />
-
-                    <CampoTexto
-                      label="NIF notario"
-                      value={notario.nif || ""}
-                      disabled={loading}
-                      onChange={(v) => cambiarDatoNotario("nif", v)}
-                    />
-
-                    <CampoTexto
-                      label="Población notario"
-                      value={notario.municipio || ""}
-                      disabled={loading}
-                      onChange={(v) => cambiarDatoNotario("municipio", v)}
-                    />
-
-                    <div className="sm:col-span-2">
-                      <CampoTexto
-                        label="Provincia notario"
-                        value={notario.provincia || ""}
-                        disabled={loading}
-                        onChange={(v) => cambiarDatoNotario("provincia", v)}
-                      />
-                    </div>
-                  </div>
-                )}
-              </section>
-            </aside>
-
+          <div className="grid grid-cols-1 items-start gap-3">
             {/* COLUMNA DERECHA — DATOS DEL ENVÍO Y FACTURACIÓN */}
             <div className="min-w-0">
               <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2 lg:gap-3">
@@ -989,6 +917,76 @@ export default function EnviarANotarioModal({
 
 
               </section>
+
+              {/* DATOS DEL NOTARIO */}
+              {/* NOTARIO */}
+
+              <section className="rounded-xl border border-slate-200 bg-white p-3">
+                <TituloSeccion
+                  titulo="3. Datos del notario"
+                  descripcion="Selecciona el notario desde el catálogo CTN."
+                />
+
+                <AutocompleteNotario
+                  value={notario}
+                  disabled={loading}
+                  onSelect={seleccionarNotario}
+                />
+
+                {notario && (
+                  <div className="mt-2 flex justify-end">
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={() => seleccionarNotario(null)}
+                      className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      ✕ Quitar notario y buscar otro
+                    </button>
+                  </div>
+                )}
+
+                {notario && (
+                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <CampoTexto
+                      label="Apoderado"
+                      value={notario.apoderado || ""}
+                      disabled={loading}
+                      onChange={(v) => cambiarDatoNotario("apoderado", v)}
+                    />
+
+                    <CampoTexto
+                      label="Tipo de firma"
+                      value={notario.tipo_firma || ""}
+                      disabled={loading}
+                      onChange={(v) => cambiarDatoNotario("tipo_firma", v)}
+                    />
+
+                    <CampoTexto
+                      label="NIF notario"
+                      value={notario.nif || ""}
+                      disabled={loading}
+                      onChange={(v) => cambiarDatoNotario("nif", v)}
+                    />
+
+                    <CampoTexto
+                      label="Población notario"
+                      value={notario.municipio || ""}
+                      disabled={loading}
+                      onChange={(v) => cambiarDatoNotario("municipio", v)}
+                    />
+
+                    <div className="sm:col-span-2">
+                      <CampoTexto
+                        label="Provincia notario"
+                        value={notario.provincia || ""}
+                        disabled={loading}
+                        onChange={(v) => cambiarDatoNotario("provincia", v)}
+                      />
+                    </div>
+                  </div>
+                )}
+              </section>
             </div>
 
             {/* COLUMNA DERECHA — FACTURACIÓN */}
@@ -996,10 +994,6 @@ export default function EnviarANotarioModal({
             <div className="min-w-0">
               <section className="rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3">
                 <div className="mb-5 flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--erp-primary-soft)] text-lg">
-                    🧾
-                  </div>
-
                   <div>
                     <h3 className="text-base font-bold text-slate-800">
                       Datos de facturación
