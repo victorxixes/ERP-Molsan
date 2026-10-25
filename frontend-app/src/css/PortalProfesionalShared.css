@@ -1385,7 +1385,7 @@
 .ag-carpeta-apoderado>summary::-webkit-details-marker{display:none}
 .ag-carpeta-apoderado>summary::after{content:"＋";margin-left:auto;color:#6378a5;font-weight:800}
 .ag-carpeta-apoderado[open]>summary::after{content:"−"}
-@media(min-width:901px){}
+
 @media(max-width:900px){.ag-ficha-paneles .ag-ficha-archivo,.ag-ficha-paneles .ag-ficha-registral{grid-column:1/-1!important}.ag-visor-inline-contenido{height:340px}}
 
 /* Mantener los tres bloques iniciales en paralelo; Carpeta digital y Registro quedan debajo */
@@ -1433,9 +1433,7 @@
   .ag-aceptar-resumen{grid-template-columns:repeat(4,minmax(0,1fr))}
   .ag-aceptar-campo>span{white-space:normal}
 }
-@media(max-width:700px){
-  
-}
+
 @media(max-width:460px){
   
   .ag-encargo-detalle-cabecera{gap:8px;padding:10px}
