@@ -7702,10 +7702,6 @@ const cuantiaFincasParaEnvio =
           })}
         </div>
         <section className="rounded-xl border border-slate-200 bg-white p-4">
-          <div className="mb-3">
-            <h3 className="text-sm font-extrabold text-slate-800">Campos de la actividad</h3>
-            <p className="mt-1 text-xs text-slate-500">Completa y revisa los datos específicos de esta fase del expediente.</p>
-          </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
             const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
