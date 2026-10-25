@@ -752,13 +752,13 @@ export default function CarpetaDigitalModal({
               : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}
           >
             <div
-              className={"flex min-h-0 min-w-0 flex-col overflow-hidden transition-[opacity,transform] duration-300 " + (modoActividad && !panelDocumentosVisible && !ocultarPanelEnvioNotario && actividadId !== "sede-notarial" ? "hidden lg:flex" : "")}
+              className={"flex min-h-0 min-w-0 flex-col overflow-hidden transition-[opacity,transform] duration-300 " + (modoActividad && (actividadId === "sede-notarial" || (!panelDocumentosVisible && !ocultarPanelEnvioNotario)) ? "hidden lg:flex" : "")}
               style={modoActividad ? {
                 minWidth: 0,
                 width: "100%",
-                opacity: panelDocumentosVisible || ocultarPanelEnvioNotario || actividadId === "sede-notarial" ? 1 : 0,
-                transform: panelDocumentosVisible || ocultarPanelEnvioNotario || actividadId === "sede-notarial" ? "translateX(0)" : "translateX(-28px)",
-                pointerEvents: panelDocumentosVisible || ocultarPanelEnvioNotario || actividadId === "sede-notarial" ? "auto" : "none",
+                opacity: panelDocumentosVisible || ocultarPanelEnvioNotario ? 1 : 0,
+                transform: panelDocumentosVisible || ocultarPanelEnvioNotario ? "translateX(0)" : "translateX(-28px)",
+                pointerEvents: panelDocumentosVisible || ocultarPanelEnvioNotario ? "auto" : "none",
               } : undefined}
             >
               {!modoActividad && (
@@ -795,12 +795,12 @@ export default function CarpetaDigitalModal({
                 </div>
               )}
             </div>
-            {modoActividad && !ocultarPanelEnvioNotario && actividadId !== "sede-notarial" && (
+            {modoActividad && !ocultarPanelEnvioNotario && (
               <aside className="flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-indigo-100 bg-white shadow-sm">
                 <header className="flex items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-2">
                   <div className="min-w-0">
                     <h4 className="text-xs font-extrabold text-indigo-950">
-                      {actividadId === "documentacion-previa" ? "✉️ Datos de envío a notario" : String(actividadId || "").includes("protocolo") ? "📋 Datos · Sede notarial con protocolo" : `📋 Datos · ${bloqueActividad?.titulo || "Actividad"}`}
+                      {actividadId === "documentacion-previa" || actividadId === "sede-notarial" ? "✉️ Envío al notario" : String(actividadId || "").includes("protocolo") ? "📋 Datos · Sede notarial con protocolo" : `📋 Datos · ${bloqueActividad?.titulo || "Actividad"}`}
                     </h4>
                     <p className="text-[10px] text-slate-500">
                       {actividadId === "documentacion-previa" ? "Resumen de la información del expediente" : "Información específica de esta actividad"}
@@ -820,7 +820,7 @@ export default function CarpetaDigitalModal({
                   </div>
                 </header>
                 <div className="min-h-0 flex-1 overflow-y-auto p-3">
-                  {actividadId === "documentacion-previa" && formularioEnvioNotario ? formularioEnvioNotario : (actividadId === "documentacion-previa" ? (
+                  {(actividadId === "documentacion-previa" || actividadId === "sede-notarial") && formularioEnvioNotario ? formularioEnvioNotario : ((actividadId === "documentacion-previa" || actividadId === "sede-notarial") ? (
                     <div className="grid grid-cols-1 items-stretch gap-3 xl:grid-cols-2 2xl:grid-cols-2">
                       {[
                         {
