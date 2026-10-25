@@ -1,7 +1,7 @@
 /* MOLSAN ERP PREMIUM 2027 · Logs del sistema */
 .logs-premium-page {
-  --logs-line: var(--erp-border, rgba(148, 163, 184, .24));
-  color: var(--erp-text, #172033);
+  --logs-line: var(--molsan-border, #dce4ef);
+  color: var(--molsan-text, #17243a);
   min-width: 0;
 }
 .logs-premium-page > section,
@@ -24,7 +24,7 @@
 .logs-premium-page input:focus-visible,
 .logs-premium-page select:focus-visible,
 .logs-premium-page button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--erp-primary, #2563eb) 34%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #3156b3) 34%, transparent);
   outline-offset: 2px;
 }
 .logs-premium-page table thead {
@@ -36,7 +36,7 @@
   transition: background-color .16s ease;
 }
 .logs-premium-page table tbody tr:hover {
-  background: color-mix(in srgb, var(--erp-primary, #2563eb) 6%, transparent);
+  background: color-mix(in srgb, var(--molsan-primary, #3156b3) 6%, transparent);
 }
 .logs-premium-page pre,
 .logs-premium-page code {
