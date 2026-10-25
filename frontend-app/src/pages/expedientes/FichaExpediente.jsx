@@ -7796,55 +7796,41 @@ const cuantiaFincasParaEnvio =
                 </label>
               </div>
             ) : actividadSeleccionada === "sede-notarial-protocolo" ? (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.map((campo) => {
-                  const apoderadoActual = String(
-                    Object.prototype.hasOwnProperty.call(actividadDraft, "apoderado")
-                      ? (actividadDraft.apoderado ?? "")
-                      : (expediente?.apoderado ?? "")
-                  ).toLowerCase();
-                  const esOficinaOtraEntidad = apoderadoActual.includes("oficina") && apoderadoActual.includes("otra entidad");
-                  const esOficinaCaixaBank = apoderadoActual.includes("oficina") && apoderadoActual.includes("caixabank");
-                  const gestoriaPorDefecto = esOficinaOtraEntidad
-                    ? "Otra entidad"
-                    : (expediente?.apoderado_empleado_id || esOficinaCaixaBank)
-                      ? "Gestoría"
-                      : "Gestoría";
-                  const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
-                    ? (actividadDraft[campo.key] ?? "")
-                    : (campo.key === "gestoria"
-                      ? (apoderadoActual.includes("oficina") ? gestoriaPorDefecto : (expediente?.tipo_gestoria || gestoriaPorDefecto))
-                      : (expediente?.[campo.key] ?? ""));
-                  const cambiar = (nuevoValor) => setActividadDraft((actual) => {
-                    const siguiente = { ...actual, [campo.key]: nuevoValor };
-                    if (campo.key === "apoderado") {
-                      const texto = String(nuevoValor || "").toLowerCase();
-                      const esEmpleado = Boolean(expediente?.apoderado_empleado_id);
-                      siguiente.gestoria = esEmpleado
-                        ? "Gestoría"
-                        : (texto.includes("oficina") && texto.includes("otra entidad"))
-                          ? "Otra entidad"
-                          : "Gestoría";
-                    }
-                    return siguiente;
-                  });
-                  return (
-                    <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
-                      <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
-                      {Array.isArray(campo.opciones) ? (
-                        <select value={valor} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800">
-                          <option value="">— Seleccionar —</option>
-                          {campo.opciones.map((opcion) => <option key={opcion} value={opcion}>{opcion}</option>)}
-                        </select>
-                      ) : (
-                        <input type={campo.tipo === "fecha" ? "date" : "text"} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} placeholder={campo.label} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
-                      )}
-                    </label>
-                  );
-                })}
-                <p className="sm:col-span-2 lg:col-span-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-xs text-sky-800">
-                  Cuando el notario suba la hoja de presentación en PDF desde NotarGest, estos datos deberán extraerse del documento y proponerse aquí para su revisión antes de guardarlos. La lectura y extracción automática del PDF está pendiente de implementar.
-                </p>
+              <div className="grid items-start gap-4 lg:grid-cols-2">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-3 text-xs font-extrabold uppercase tracking-[0.1em] text-indigo-700">Datos notariales y de presentación</h4>
+                  <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+                    {CAMPOS_INTEGRACION_SEDE_PROTOCOLO.filter((campo) => ["nombre_notario", "nif_notario", "fecha_firma", "protocolo", "asiento_presentacion", "libro_diario", "fecha_presentacion", "numero_entrada", "fecha_recogida_notario_presentacion_telematica"].includes(campo.key)).map((campo) => {
+                      const valor = Object.prototype.hasOwnProperty.call(actividadDraft, campo.key)
+                        ? (actividadDraft[campo.key] ?? "")
+                        : (expediente?.[campo.key] ?? "");
+                      const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
+                      return (
+                        <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-slate-50/50 p-3">
+                          <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                          <input type={campo.tipo === "fecha" ? "date" : "text"} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} placeholder={campo.label} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-xs text-sky-800">
+                    La extracción automática de estos datos desde la hoja de presentación PDF subida en NotarGest está pendiente de implementar; por ahora puedes introducirlos y guardarlos aquí.
+                  </p>
+                </section>
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-3 text-xs font-extrabold uppercase tracking-[0.1em] text-indigo-700">Datos de facturación</h4>
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                    <Dato campo="Nombre" valor={expediente.facturacion_nombre ?? expediente.nombre_facturacion ?? expediente.nombre_cliente_facturacion} />
+                    <Dato campo="Apellidos" valor={expediente.facturacion_apellidos ?? expediente.apellidos_facturacion ?? expediente.apellidos_cliente_facturacion} />
+                    <Dato campo="DNI / NIF de facturación" valor={expediente.facturacion_dni_nif ?? expediente.dni_facturacion ?? expediente.nif_facturacion} />
+                    <Dato campo="Dirección" valor={expediente.facturacion_direccion ?? expediente.direccion_facturacion ?? expediente.direccion_cliente_facturacion} />
+                    <Dato campo="Código postal" valor={expediente.facturacion_codigo_postal ?? expediente.codigo_postal_facturacion ?? expediente.cp_facturacion} />
+                    <Dato campo="Población" valor={expediente.facturacion_poblacion ?? expediente.poblacion_facturacion ?? expediente.municipio_facturacion} />
+                    <Dato campo="Provincia" valor={expediente.facturacion_provincia ?? expediente.provincia_facturacion} />
+                    <Dato campo="Teléfono" valor={expediente.facturacion_telefono ?? expediente.telefono_facturacion ?? expediente.telefono_cliente_facturacion} />
+                    <Dato campo="Email" valor={expediente.facturacion_email ?? expediente.email_facturacion ?? expediente.correo_facturacion} />
+                  </div>
+                </section>
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
