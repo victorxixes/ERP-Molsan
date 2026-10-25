@@ -1596,6 +1596,12 @@
 
 :root {
   color-scheme: light;
+  font-family: var(--molsan-font-family);
+  font-size: var(--molsan-font-size-md);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   --molsan-page-gutter: clamp(12px, 1.5vw, 24px);
   --molsan-panel-padding: clamp(12px, 1.35vw, 20px);
 }
@@ -1831,14 +1837,7 @@
    Solo presentación: no altera rutas, estado, permisos ni API.
    ============================================================ */
 
-:root {
-  color-scheme: light;
-  font-family: var(--molsan-font-family);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* Tipografía global consolidada en el único bloque :root superior. */
 
 html, body, #root {
   min-height: 100%;
@@ -2442,14 +2441,7 @@ body {
    Solo normaliza presentación; no altera datos, permisos, rutas ni eventos.
    ======================================================================== */
 
-:root {
-  color-scheme: light;
-  font-family: var(--molsan-font-family);
-  font-size: var(--molsan-font-size-md);
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* La configuración global de fuente se mantiene en el bloque :root canónico. */
 
 #root {
   min-height: 100vh;
