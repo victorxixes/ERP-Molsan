@@ -21,117 +21,47 @@
    ============================================================ */
 
 :root {
+  /* Compatibilidad: las variables antiguas apuntan al sistema MOLSAN canónico. */
+  --erp-bg: var(--molsan-page-bg, #f4f7fb);
+  --erp-surface: var(--molsan-surface, #fff);
+  --erp-surface-soft: var(--molsan-surface-soft, #f7f9fc);
+  --erp-surface-hover: var(--molsan-primary-soft, #edf3ff);
 
-  /* ----------------------------------------------------------
-     FONDOS
-     ---------------------------------------------------------- */
+  --erp-border: var(--molsan-border, #dce4ef);
+  --erp-border-light: var(--molsan-border-light, #e8edf4);
+  --erp-border-strong: var(--molsan-border-strong, #c4d0df);
 
-  --erp-bg: #eef3f9;
+  --erp-primary: var(--molsan-primary, #3156b3);
+  --erp-primary-dark: var(--molsan-primary-hover, #274694);
+  --erp-primary-light: var(--molsan-primary-hover, #274694);
+  --erp-primary-soft: var(--molsan-primary-soft, #edf3ff);
+  --erp-primary-hover: var(--molsan-primary-soft, #edf3ff);
 
-  --erp-surface: #ffffff;
+  --erp-text: var(--molsan-text, #17243a);
+  --erp-text-soft: var(--molsan-text-muted, #64748b);
+  --erp-text-muted: var(--molsan-text-muted, #64748b);
+  --erp-text-strong: var(--molsan-text, #17243a);
 
-  --erp-surface-soft: #f6f8fc;
-
-  --erp-surface-hover: #f1f5fb;
-
-
-  /* ----------------------------------------------------------
-     BORDES
-     ---------------------------------------------------------- */
-
-  --erp-border: #d7e0ec;
-
-  --erp-border-light: #e6ebf2;
-
-  --erp-border-strong: #c4d0df;
-
-
-  /* ----------------------------------------------------------
-     AZUL CORPORATIVO
-     ---------------------------------------------------------- */
-
-  --erp-primary: #3156b3;
-
-  --erp-primary-dark: #274694;
-
-  --erp-primary-light: #4268c5;
-
-  --erp-primary-soft: #edf3ff;
-
-  --erp-primary-hover: #e3ebff;
-
-
-  /* ----------------------------------------------------------
-     TEXTOS
-     ---------------------------------------------------------- */
-
-  --erp-text: #24324a;
-
-  --erp-text-soft: #64748b;
-
-  --erp-text-muted: #94a3b8;
-
-  --erp-text-strong: #17233a;
-
-
-  /* ----------------------------------------------------------
-     ESTADOS
-     ---------------------------------------------------------- */
-
-  --erp-success: #198754;
-
+  --erp-success: var(--molsan-success, #16845b);
   --erp-success-soft: #eaf8f0;
-
-  --erp-warning: #d97706;
-
+  --erp-warning: var(--molsan-warning, #b7791f);
   --erp-warning-soft: #fff7e8;
-
-  --erp-danger: #dc3545;
-
+  --erp-danger: var(--molsan-danger, #c43d4b);
   --erp-danger-soft: #fff0f1;
+  --erp-info: var(--molsan-primary, #3156b3);
+  --erp-info-soft: var(--molsan-primary-soft, #edf3ff);
 
-  --erp-info: #2563eb;
+  --erp-shadow-xs: 0 1px 2px rgba(36, 50, 74, .04);
+  --erp-shadow-sm: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06));
+  --erp-shadow-md: 0 10px 25px rgba(36, 50, 74, .08);
+  --erp-shadow-lg: 0 18px 45px rgba(36, 50, 74, .12);
 
-  --erp-info-soft: #eff6ff;
+  --erp-radius-sm: var(--molsan-radius-control, 9px);
+  --erp-radius-md: var(--molsan-radius-card, 14px);
+  --erp-radius-lg: var(--molsan-radius-card, 14px);
+  --erp-radius-xl: var(--molsan-radius-dialog, 16px);
 
-
-  /* ----------------------------------------------------------
-     SOMBRAS
-     ---------------------------------------------------------- */
-
-  --erp-shadow-xs:
-    0 1px 2px rgba(15, 23, 42, 0.04);
-
-  --erp-shadow-sm:
-    0 4px 12px rgba(15, 23, 42, 0.06);
-
-  --erp-shadow-md:
-    0 10px 25px rgba(15, 23, 42, 0.08);
-
-  --erp-shadow-lg:
-    0 18px 45px rgba(15, 23, 42, 0.12);
-
-
-  /* ----------------------------------------------------------
-     RADIOS
-     ---------------------------------------------------------- */
-
-  --erp-radius-sm: 8px;
-
-  --erp-radius-md: 12px;
-
-  --erp-radius-lg: 16px;
-
-  --erp-radius-xl: 20px;
-
-
-  /* ----------------------------------------------------------
-     TRANSICIONES
-     ---------------------------------------------------------- */
-
-  --erp-transition:
-    all 0.2s ease;
-
+  --erp-transition: var(--molsan-transition-normal, 180ms ease);
 }
 
 
