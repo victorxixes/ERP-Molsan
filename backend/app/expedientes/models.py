@@ -92,6 +92,7 @@ class Expediente(Base):
     asiento_presentacion_libro_diario = Column(String(300), nullable=True)  # Compatibilidad con datos anteriores
     asiento_presentacion = Column(String(200), nullable=True)
     libro_diario = Column(String(200), nullable=True)
+    tipo_gestoria = Column(String(100), nullable=True)
     fecha_presentacion = Column(Date, nullable=True)
     numero_entrada = Column(String(200), nullable=True)
     fecha_recogida_notario_presentacion_telematica = Column(Date, nullable=True)
