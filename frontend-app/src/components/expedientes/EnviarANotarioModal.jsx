@@ -767,7 +767,75 @@ export default function EnviarANotarioModal({
                 </div>
               </section>
 
-              {/* TIPO DE DOCUMENTO Y NUEVOS CAMPOS */}
+              {/* DATOS DEL NOTARIO */}
+              {/* NOTARIO */}
+
+              <section className="rounded-xl border border-slate-200 bg-white p-3">
+                <TituloSeccion
+                  titulo="3. Datos del notario"
+                  descripcion="Selecciona el notario desde el catálogo CTN."
+                />
+
+                <AutocompleteNotario
+                  value={notario}
+                  disabled={loading}
+                  onSelect={seleccionarNotario}
+                />
+
+                {notario && (
+                  <div className="mt-2 flex justify-end">
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={() => seleccionarNotario(null)}
+                      className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      ✕ Quitar notario y buscar otro
+                    </button>
+                  </div>
+                )}
+
+                {notario && (
+                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <CampoTexto
+                      label="Apoderado"
+                      value={notario.apoderado || ""}
+                      disabled={loading}
+                      onChange={(v) => cambiarDatoNotario("apoderado", v)}
+                    />
+
+                    <CampoTexto
+                      label="Tipo de firma"
+                      value={notario.tipo_firma || ""}
+                      disabled={loading}
+                      onChange={(v) => cambiarDatoNotario("tipo_firma", v)}
+                    />
+
+                    <CampoTexto
+                      label="NIF notario"
+                      value={notario.nif || ""}
+                      disabled={loading}
+                      onChange={(v) => cambiarDatoNotario("nif", v)}
+                    />
+
+                    <CampoTexto
+                      label="Población notario"
+                      value={notario.municipio || ""}
+                      disabled={loading}
+                      onChange={(v) => cambiarDatoNotario("municipio", v)}
+                    />
+
+                    <div className="sm:col-span-2">
+                      <CampoTexto
+                        label="Provincia notario"
+                        value={notario.provincia || ""}
+                        disabled={loading}
+                        onChange={(v) => cambiarDatoNotario("provincia", v)}
+                      />
+                    </div>
+                  </div>
+                )}
+              </section>              {/* TIPO DE DOCUMENTO Y NUEVOS CAMPOS */}
 
               <section className="rounded-xl border border-slate-200 bg-white p-3">
                 <TituloSeccion
@@ -918,78 +986,10 @@ export default function EnviarANotarioModal({
 
               </section>
 
-              {/* DATOS DEL NOTARIO */}
-              {/* NOTARIO */}
 
-              <section className="rounded-xl border border-slate-200 bg-white p-3">
-                <TituloSeccion
-                  titulo="3. Datos del notario"
-                  descripcion="Selecciona el notario desde el catálogo CTN."
-                />
-
-                <AutocompleteNotario
-                  value={notario}
-                  disabled={loading}
-                  onSelect={seleccionarNotario}
-                />
-
-                {notario && (
-                  <div className="mt-2 flex justify-end">
-                    <button
-                      type="button"
-                      disabled={loading}
-                      onClick={() => seleccionarNotario(null)}
-                      className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      ✕ Quitar notario y buscar otro
-                    </button>
-                  </div>
-                )}
-
-                {notario && (
-                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <CampoTexto
-                      label="Apoderado"
-                      value={notario.apoderado || ""}
-                      disabled={loading}
-                      onChange={(v) => cambiarDatoNotario("apoderado", v)}
-                    />
-
-                    <CampoTexto
-                      label="Tipo de firma"
-                      value={notario.tipo_firma || ""}
-                      disabled={loading}
-                      onChange={(v) => cambiarDatoNotario("tipo_firma", v)}
-                    />
-
-                    <CampoTexto
-                      label="NIF notario"
-                      value={notario.nif || ""}
-                      disabled={loading}
-                      onChange={(v) => cambiarDatoNotario("nif", v)}
-                    />
-
-                    <CampoTexto
-                      label="Población notario"
-                      value={notario.municipio || ""}
-                      disabled={loading}
-                      onChange={(v) => cambiarDatoNotario("municipio", v)}
-                    />
-
-                    <div className="sm:col-span-2">
-                      <CampoTexto
-                        label="Provincia notario"
-                        value={notario.provincia || ""}
-                        disabled={loading}
-                        onChange={(v) => cambiarDatoNotario("provincia", v)}
-                      />
-                    </div>
-                  </div>
-                )}
-              </section>
             </div>
 
-            {/* SEGUNDA FILA — FACTURACIÓN, alineada bajo los bloques 1 y 2 */}
+            {/* SEGUNDA FILA — FACTURACIÓN, alineada bajo los bloques 1 y 3 */}
 
             <div className="min-w-0 lg:col-span-2">
               <section className="rounded-xl border border-[var(--erp-primary)]/20 bg-slate-50/70 p-3">
