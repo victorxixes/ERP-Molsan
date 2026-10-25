@@ -7834,7 +7834,7 @@ const cuantiaFincasParaEnvio =
           </div>
         }
       >
-        {actividadSeleccionada !== "liquidacion-impuestos" && (
+        {!["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) && (
         <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
             { key: "fecha_inicio_actividad", label: "Inicio actividad" },
@@ -7850,7 +7850,7 @@ const cuantiaFincasParaEnvio =
           })}
         </div>
         )}
-        {actividadSeleccionada !== "sede-notarial-protocolo" && actividadSeleccionada !== "liquidacion-impuestos" && (
+        {actividadSeleccionada !== "sede-notarial-protocolo" && !["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) && (
         <section className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
@@ -7878,7 +7878,7 @@ const cuantiaFincasParaEnvio =
           </div>
         </section>
         )}
-        {actividadSeleccionada !== "documentacion-previa" && (
+        {actividadSeleccionada !== "documentacion-previa" && actividadSeleccionada !== "tramitacion-inscripcion" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
               <h3 className="text-sm font-extrabold text-slate-800">{actividadSeleccionada === "sede-notarial-protocolo" ? "Sede notarial · datos para integración" : `${ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración`}</h3>
@@ -7962,6 +7962,15 @@ const cuantiaFincasParaEnvio =
             </div>
           </section>
         )}
+        {actividadSeleccionada === "tramitacion-inscripcion" && (
+          <section className="mt-5 rounded-xl border border-indigo-100 bg-white p-4">
+            <RepositorioDocumentosInline
+              expedienteId={expediente?.id || id}
+              categorias={["Hoja de Inscripción", "Hoja de inscripción"]}
+              titulo="Repositorio Hoja de inscripción"
+            />
+          </section>
+        )}
         {actividadSeleccionada === "documentacion-previa" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
@@ -8026,7 +8035,7 @@ const cuantiaFincasParaEnvio =
             </div>
           </section>
         )}
-        <section className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
+        <section className={`mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4 ${actividadSeleccionada === "tramitacion-inscripcion" ? "hidden" : ""}`}>
           <p className="text-sm font-extrabold text-amber-900">Aviso para informática · Integración de datos</p>
           {actividadSeleccionada === "sede-notarial-protocolo" ? (
             <>
