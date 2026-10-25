@@ -719,14 +719,14 @@ function RepositorioDocumentosInline({ expedienteId, categorias, titulo = "Repos
       .then(({ data }) => {
         if (!activo) return;
         const lista = Array.isArray(data) ? data : data?.items || [];
-        setDocumentos(lista.filter((doc) => categorias.some((categoria) => categoria === String(doc.categoria || "").trim())));
+        setDocumentos(lista.filter((doc) => categoriasClave.split("|").includes(String(doc.categoria || "").trim())));
       })
       .catch((e) => {
         if (activo) setError(e?.response?.data?.detail || "No se pudieron cargar los documentos del repositorio.");
       })
       .finally(() => { if (activo) setCargando(false); });
     return () => { activo = false; };
-  }, [expedienteId, categorias]);
+  }, [expedienteId, categoriasClave]);
 
   async function abrirDocumento(doc, descargar = false) {
     try {
