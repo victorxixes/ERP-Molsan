@@ -5,7 +5,7 @@
 
 .dashboard-cancelagest {
   --dashboard-cg-primary: var(--erp-primary, #3156b3);
-  --dashboard-cg-primary-dark: var(--erp-primary-dark, #274694);
+  --dashboard-cg-primary-dark: var(--molsan-primary-hover, #274694);
   min-width: 0;
 }
 
@@ -62,7 +62,7 @@
 .dashboard-cancelagest .ag-hero p {
   max-width: 650px;
   margin: 0;
-  color: var(--erp-text-soft, #64748b);
+  color: var(--molsan-text-muted, #64748b);
   font-size: 13px;
   line-height: 1.65;
 }
@@ -80,9 +80,9 @@
   align-items: center;
   gap: 8px;
   padding: 10px 13px;
-  color: var(--erp-text-soft, #64748b);
+  color: var(--molsan-text-muted, #64748b);
   background: rgba(255, 255, 255, .8);
-  border: 1px solid var(--erp-border, #d7e0ec);
+  border: 1px solid var(--molsan-border, #dce4ef);
   border-radius: 10px;
   font-size: 11px;
   font-weight: 650;
@@ -170,7 +170,7 @@
 }
 
 .dashboard-cancelagest .ag-eyebrow {
-  color: var(--molsan-text-muted, var(--erp-text-soft, #64748b));
+  color: var(--molsan-text-muted, var(--molsan-text-muted, #64748b));
   font-size: 10px;
   letter-spacing: 1.35px;
 }
@@ -208,7 +208,7 @@
 }
 
 .dashboard-cancelagest .ag-boton-actualizar:hover:not(:disabled) {
-  background: var(--molsan-primary-hover, var(--erp-primary-dark, #274694));
+  background: var(--molsan-primary-hover, var(--molsan-primary-hover, #274694));
   box-shadow: 0 3px 10px rgba(36, 50, 74, .12);
   transform: none;
 }
