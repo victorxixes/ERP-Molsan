@@ -6248,7 +6248,7 @@ const cuantiaFincasParaEnvio =
 
                     </div>
 
-                    {(expediente.importe !== null && expediente.importe !== undefined && expediente.importe !== "" || expediente.fecha_envio_notario || expediente.fecha_envio) && (
+                    {(actividadSeleccionada === "gestion-economica" || expediente.importe !== null && expediente.importe !== undefined && expediente.importe !== "" || expediente.fecha_envio_notario || expediente.fecha_envio) && (
                       <section className="mt-4 rounded-xl border border-indigo-100 bg-white p-4">
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div>
