@@ -7785,7 +7785,7 @@ const cuantiaFincasParaEnvio =
           </div>
         </section>
         )}
-        {actividadSeleccionada !== "documentacion-previa" && (
+        {actividadSeleccionada !== "documentacion-previa" && actividadSeleccionada !== "sede-notarial-protocolo" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
               <h3 className="text-sm font-extrabold text-slate-800">{ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración</h3>
