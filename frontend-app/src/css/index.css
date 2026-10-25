@@ -19,24 +19,6 @@
    ERP SJ‑2026 — Componentes personalizados
    ============================================================ */
 
-/* Tarjeta de seguridad */
-.seg-card {
-  @apply bg-white border border-white/20 rounded-xl p-4 shadow-lg
-         hover:shadow-xl transition cursor-pointer;
-}
-
-/* Título */
-.seg-title {
-  @apply text-lg font-semibold mb-1;
-  color: var(--sj-azul);
-}
-
-/* Descripción */
-.seg-desc {
-  @apply text-sm mb-1;
-  color: var(--sj-azul-claro);
-}
-
 
 /* ============================================================
    ERP SJ‑2026 — Animaciones corporativas
