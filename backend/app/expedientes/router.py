@@ -3087,7 +3087,7 @@ CAMPOS_EDITABLES_ACTIVIDAD = {
     for campo in {
         "fecha_inicio_actividad", "fecha_fin_actividad",
         "ultima_accion", "fecha_ultima_accion", "sol", "cs", "ns",
-        "fecha_envio_notario", "fecha_envio", "apoderado", "observaciones",
+        "fecha_envio_notario", "fecha_envio", "nombre_notario", "nif_notario", "apoderado", "observaciones",
         "tipo_documento", "poblacion", "provincia", "tipo_firma",
         "fecha_prevista_firma", "fecha_firma", "protocolo",
         "asiento_presentacion_libro_diario", "fecha_presentacion",
