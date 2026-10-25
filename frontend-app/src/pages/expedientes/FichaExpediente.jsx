@@ -7921,6 +7921,17 @@ const cuantiaFincasParaEnvio =
           </div>
         }
       >
+        {actividadSeleccionada === "documentacion-previa" && (
+          <section className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
+            <h3 className="mb-3 text-sm font-extrabold text-slate-800">Documentación previa · Repositorios digitales</h3>
+            <RepositorioDocumentosInline
+              expedienteId={expediente?.id_expediente || expediente?.id || id}
+              categorias={["Documentos Absis", "Hoja de Encargo firmada", "Justificante de cancelación", "Nota simple registral", "Borradores escrituras", "Otra documentación", "Mails de la Oficina", "Otros"]}
+              titulo="Documentación general y previa"
+              onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
+            />
+          </section>
+        )}
         {!["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) && (
         <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[
@@ -8089,8 +8100,15 @@ const cuantiaFincasParaEnvio =
                     })}
                   </div>
                 </section>
-                
-                
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
+                  <RepositorioDocumentosInline
+                    expedienteId={expediente?.id_expediente || expediente?.id || id}
+                    categorias={["AJD/ITP"]}
+                    titulo="Repositorios digitales · AJD/ITP"
+                    onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
+                  />
+                </section>
               </div>
             ) : actividadSeleccionada === "tramitacion-inscripcion" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
@@ -8126,6 +8144,16 @@ const cuantiaFincasParaEnvio =
                   />
                 </section>
               </div>
+            ) : actividadSeleccionada === "defectos-registrales" ? (
+              <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
+                <RepositorioDocumentosInline
+                  expedienteId={expediente?.id_expediente || expediente?.id || id}
+                  categorias={["Defecto registral"]}
+                  titulo="Repositorios digitales · Defecto registral"
+                  onAbrirRepositorio={() => setMostrarRepositoriosDocumentacionPrevia(true)}
+                />
+              </section>
             ) : null}
         <section className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
           <p className="text-sm font-extrabold text-amber-900">Aviso para informática · Integración de datos</p>
