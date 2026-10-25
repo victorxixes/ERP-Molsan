@@ -430,21 +430,8 @@ const CAMPOS_ACTIVIDADES = {
     },
   ],
 
-  "sede-notarial": [
-    {
-      key: "nombre_notario",
-      label: "Notario",
-    },
-    {
-      key: "nif_notario",
-      label: "NIF de notario",
-    },
-    {
-      key: "fecha_firma",
-      label: "Fecha de firma",
-      tipo: "fecha",
-    },
-  ],
+  // Los datos de Sede notarial se editan en el bloque de integración para evitar duplicados.
+  "sede-notarial": [],
 
   "sede-notarial-protocolo": [
     {
@@ -2419,6 +2406,17 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
     // de integración de Documentación previa.
     if (actividadSeleccionada === "documentacion-previa" && Object.prototype.hasOwnProperty.call(actividadDraft, "fecha_envio_notario")) {
       campos.fecha_envio_notario = actividadDraft.fecha_envio_notario ?? "";
+    }
+    if (actividadSeleccionada === "sede-notarial") {
+      for (const key of ["fecha_envio_notario", "nombre_notario", "nif_notario"]) {
+        if (Object.prototype.hasOwnProperty.call(actividadDraft, key)) {
+          campos[key] = actividadDraft[key] ?? "";
+        } else if (key === "fecha_envio_notario") {
+          campos[key] = expediente?.fecha_envio_notario || expediente?.fecha_envio || "";
+        } else {
+          campos[key] = expediente?.[key] ?? "";
+        }
+      }
     }
     if (!Object.keys(campos).length) {
       setErrorActividad("No hay campos de esta actividad disponibles para registrar la solicitud.");
@@ -7738,20 +7736,37 @@ const cuantiaFincasParaEnvio =
               <h3 className="text-sm font-extrabold text-slate-800">{ACTIVIDADES_EXPEDIENTES.find((item) => item.key === actividadSeleccionada)?.label || "Actividad"} · datos para integración</h3>
               <p className="mt-1 text-xs text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
-                const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key];
-                return (
-                  <div key={campo.key} className={`min-w-0 rounded-lg border border-slate-200 bg-white p-3 ${campo.multilinea ? "sm:col-span-2 lg:col-span-3" : ""}`}>
-                    <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
-                    <p className="mt-1 whitespace-pre-wrap break-words text-sm font-semibold text-slate-800">{valor == null || valor === "" ? "—" : campo.tipo === "fecha" ? formatearFecha(valor) : String(valor)}</p>
-                  </div>
-                );
-              })}
-              {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).length && (
-                <p className="text-sm text-slate-500">Esta actividad no tiene campos específicos configurados.</p>
-              )}
-            </div>
+            {actividadSeleccionada === "sede-notarial" ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <label className="block rounded-lg border border-slate-200 bg-white p-3">
+                  <span className="block text-xs font-bold text-slate-600">Fecha de envío</span>
+                  <input type="date" value={Object.prototype.hasOwnProperty.call(actividadDraft, "fecha_envio_notario") ? String(actividadDraft.fecha_envio_notario ?? "").slice(0, 10) : String(expediente?.fecha_envio_notario || expediente?.fecha_envio || "").slice(0, 10)} onChange={(event) => setActividadDraft((actual) => ({ ...actual, fecha_envio_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                </label>
+                <label className="block rounded-lg border border-slate-200 bg-white p-3">
+                  <span className="block text-xs font-bold text-slate-600">Notario</span>
+                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nombre_notario") ? String(actividadDraft.nombre_notario ?? "") : String(expediente?.nombre_notario ?? "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nombre_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="Nombre del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                </label>
+                <label className="block rounded-lg border border-slate-200 bg-white p-3">
+                  <span className="block text-xs font-bold text-slate-600">NIF de notario</span>
+                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nif_notario") ? String(actividadDraft.nif_notario ?? "") : String(expediente?.nif_notario ?? "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nif_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="NIF del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
+                </label>
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
+                  const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key];
+                  return (
+                    <div key={campo.key} className={`min-w-0 rounded-lg border border-slate-200 bg-white p-3 ${campo.multilinea ? "sm:col-span-2 lg:col-span-3" : ""}`}>
+                      <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                      <p className="mt-1 whitespace-pre-wrap break-words text-sm font-semibold text-slate-800">{valor == null || valor === "" ? "—" : campo.tipo === "fecha" ? formatearFecha(valor) : String(valor)}</p>
+                    </div>
+                  );
+                })}
+                {!(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).length && (
+                  <p className="text-sm text-slate-500">Esta actividad no tiene campos específicos configurados.</p>
+                )}
+              </div>
+            )}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
               <div className="min-w-0">
                 <p className="text-sm font-extrabold text-amber-900">Envío al ABSIS</p>
