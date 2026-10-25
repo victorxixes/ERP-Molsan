@@ -1088,16 +1088,16 @@
 /* Visor integrado de documentos en Encargos */
 .ag-visor-overlay{position:fixed;inset:0;z-index:1500;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(15,23,42,.48);backdrop-filter:none;-webkit-backdrop-filter:none}
 .ag-visor-modal{display:flex;flex-direction:column;width:min(1180px,96vw);height:min(850px,92vh);overflow:hidden}
-.ag-visor-cabecera{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border-bottom:1px solid #e1e8f1;background:#fff}
+.ag-visor-cabecera{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border-bottom:1px solid var(--molsan-border-light,#e8edf4);background:var(--molsan-surface-soft,#f7f9fc)}
 .ag-visor-titulo{display:flex;align-items:center;gap:12px;min-width:0}
-.ag-visor-icono{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border-radius:12px;background:#edf3ff;color:#31579d;font-size:23px}
+.ag-visor-icono{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border-radius:var(--molsan-radius-control,9px);background:var(--molsan-primary-soft,#edf3ff);color:var(--molsan-primary,#3156b3);font-size:23px}
 .ag-visor-titulo>div{display:grid;gap:4px;min-width:0}
-.ag-visor-titulo strong{color:#1c2d49;font-size:14px}
-.ag-visor-titulo small{overflow:hidden;color:#748198;font-size:11px;text-overflow:ellipsis;white-space:nowrap}
+.ag-visor-titulo strong{color:var(--molsan-text,#17243a);font-size:14px}
+.ag-visor-titulo small{overflow:hidden;color:var(--molsan-text-muted,#64748b);font-size:11px;text-overflow:ellipsis;white-space:nowrap}
 .ag-visor-acciones{display:flex;align-items:center;gap:8px}
-.ag-visor-acciones button,.ag-visor-estado button{padding:9px 13px;border:1px solid #d5dfed;border-radius:9px;background:#f4f7fc;color:#2c4c83;font-size:12px;font-weight:800;cursor:pointer}
+.ag-visor-acciones button,.ag-visor-estado button{padding:9px 13px;border:1px solid var(--molsan-border,#dce4ef);border-radius:var(--molsan-radius-control,9px);background:var(--molsan-surface-soft,#f7f9fc);color:var(--molsan-text-secondary,#526176);font-size:12px;font-weight:800;cursor:pointer}
 .ag-visor-acciones .ag-visor-cerrar{width:38px;height:38px;padding:0;background:#fff;color:#65748b;font-size:25px}
-.ag-visor-contenido{display:flex;flex:1;min-height:0;align-items:stretch;justify-content:center;overflow:auto;background:#e9eef5}
+.ag-visor-contenido{display:flex;flex:1;min-height:0;align-items:stretch;justify-content:center;overflow:auto;background:var(--molsan-surface-soft,#f7f9fc)}
 .ag-visor-pdf{display:block;width:100%;height:100%;min-height:500px;border:0;background:#fff}
 .ag-visor-imagen-contenedor{display:flex;align-items:center;justify-content:center;width:100%;padding:24px;overflow:auto}
 .ag-visor-imagen{display:block;max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 8px 30px rgba(20,35,60,.18)}
@@ -1834,15 +1834,15 @@
 }
 .ag-resumen-modal-cabecera{
   display:flex;align-items:flex-start;justify-content:space-between;gap:18px;
-  padding:22px 24px 18px;border-bottom:1px solid #e3eaf3;background:rgba(255,255,255,.96);
+  padding:22px 24px 18px;border-bottom:1px solid var(--molsan-border-light,#e8edf4);background:var(--molsan-surface-soft,#f7f9fc);
 }
-.ag-resumen-modal-cabecera h2{margin:5px 0 4px;color:#1a2c49;font-size:22px;font-weight:850;letter-spacing:-.5px}
-.ag-resumen-modal-cabecera p{margin:0;color:#74839a;font-size:12px}
+.ag-resumen-modal-cabecera h2{margin:5px 0 4px;color:var(--molsan-text,#17243a);font-size:22px;font-weight:850;letter-spacing:-.5px}
+.ag-resumen-modal-cabecera p{margin:0;color:var(--molsan-text-muted,#64748b);font-size:12px}
 .ag-resumen-modal-cerrar{
   display:grid;place-items:center;flex:0 0 auto;width:38px;height:38px;border:1px solid #dce5ef;
-  border-radius:12px;background:#fff;color:#53647b;font-size:17px;cursor:pointer;
+  border-radius:var(--molsan-radius-control,9px);background:var(--molsan-surface,#fff);color:var(--molsan-text-secondary,#526176);font-size:17px;cursor:pointer;
 }
-.ag-resumen-modal-cerrar:hover{background:#edf3f9}
+.ag-resumen-modal-cerrar:hover{background:var(--molsan-primary-soft,#edf3ff)}
 .ag-resumen-modal-cuerpo{min-height:120px;overflow:auto;padding:18px 22px 22px}
 .ag-resumen-tabla-wrap{width:100%;overflow:auto;border:1px solid #e1e8f1;border-radius:13px;background:#fff}
 .ag-resumen-tabla{width:100%;min-width:1120px;border-collapse:separate;border-spacing:0;font-size:12px}
