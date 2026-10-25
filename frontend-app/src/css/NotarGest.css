@@ -778,9 +778,9 @@
   gap:11px!important;margin:0!important;
 }
 .ng-admin-notarias .ng-admin-kpis-global article{
-  min-height:105px;padding:15px 14px!important;border-radius:15px!important;
-  background:rgba(255,255,255,.83)!important;
-  box-shadow:0 6px 18px rgba(31,48,79,.04),inset 0 1px 0 rgba(255,255,255,.95)!important;
+  min-height:105px;padding:15px 14px!important;border-radius:var(--molsan-radius-card,14px)!important;
+  background:var(--molsan-surface,#fff)!important;
+  box-shadow:var(--molsan-shadow-card,0 4px 14px rgba(36,50,74,.06))!important;
 }
 .ng-admin-notarias .ng-admin-kpis-global article::before{width:3px;border-radius:var(--molsan-radius-card,14px) 0 0 var(--molsan-radius-card,14px)}
 .ng-admin-notarias .ng-admin-kpis-global article span{font-size:10px;line-height:1.45}
