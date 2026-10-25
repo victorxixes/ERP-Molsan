@@ -1856,9 +1856,7 @@ body {
 .erp-app-shell {
   min-height: 100vh;
   color: var(--molsan-text);
-  background:
-    radial-gradient(ellipse at 12% 0%, rgba(59, 103, 190, .055), transparent 36%),
-    var(--molsan-page-bg);
+  background: var(--molsan-page-bg);
 }
 
 .erp-main-content {
@@ -2847,25 +2845,7 @@ body {
    Contenido antes mantenido en MolsanModuleUnification.css.
    ============================================================ */
 
-/* MOLSAN ERP PREMIUM 2027
-   Capa común para neutralizar estilos visuales particulares de los módulos.
-   Conserva sus hojas existentes únicamente para estructura, distribución y comportamiento.
-   No modifica lógica, rutas, permisos ni datos.
-*/
-:root {
-  --molsan-page-bg: #f3f6fb;
-  --molsan-surface: #ffffff;
-  --molsan-surface-soft: #f7f9fc;
-  --molsan-border: #dce4ef;
-  --molsan-border-light: #e8edf4;
-  --molsan-text: #17243a;
-  --molsan-text-secondary: #526176;
-  --molsan-text-muted: #64748b;
-  --molsan-radius-control: 9px;
-  --molsan-radius-card: 14px;
-  --molsan-radius-dialog: 16px;
-  --molsan-shadow-card: 0 4px 14px rgba(36, 50, 74, .06);
-}
+/* Los tokens visuales se definen exclusivamente en molsan-tokens.css. */
 :where(
   .notargest, .apoderagest, .encargagest,
   .ctn-listado-page, .ctn-detalle-page,
