@@ -161,13 +161,6 @@
   background: var(--molsan-surface-soft, #f7f9fc);
   border-color: var(--molsan-border-light, #e8edf4);
 }
-:where(.notargest .ng-contador, .notargest .ng-tarea, .notargest .ng-acceso,
-       .apoderagest .ag-kpi, .apoderagest .ag-panel,
-       .encargagest .eg-kpi, .encargagest .eg-panel):hover {
-  transform: none;
-  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36,50,74,.06));
-}
-
 /* CTN: listado y ficha comparten cabeceras, paneles y campos. */
 :where(.ctn-listado-page .ctn-listado-header, .ctn-detalle-page .ctn-detalle-header) {
   color: var(--molsan-text, #17243a);
@@ -664,4 +657,13 @@ table :is(th, td) {
   box-shadow: 0 16px 44px rgba(25, 42, 70, .16) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+}
+
+
+/* Sin saltos ni sombras adicionales al pasar el cursor: interacción homogénea. */
+.notargest :is(.ng-contador, .ng-tarea, .ng-acceso):hover,
+.apoderagest :is(.ag-kpi, .ag-panel):hover,
+.encargagest :is(.eg-kpi, .eg-panel, .eg-card):hover {
+  transform: none !important;
+  box-shadow: var(--molsan-shadow-card, 0 4px 14px rgba(36, 50, 74, .06)) !important;
 }
