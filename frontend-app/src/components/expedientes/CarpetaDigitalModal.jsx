@@ -177,7 +177,7 @@ export default function CarpetaDigitalModal({
         ? {
             ...bloque,
             titulo: "Cierre del expediente",
-            descripcion: "Incluye todos los repositorios digitales y el expediente digital completo."
+            descripcion: "Incluye todos los repositorios digitales y el expediente digital completo.",
             categorias: [...BLOQUES.flatMap((item) => item.categorias), ...CATEGORIAS_OTROS]
               .filter((item, index, lista) => lista.findIndex((otro) => otro.categoria === item.categoria) === index),
           }
