@@ -766,11 +766,11 @@ export default function CarpetaDigitalModal({
 
           <div
             className={modoActividad
-              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 " + (ocultarPanelEnvioNotario || actividadId === "sede-notarial" ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(190px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
+              ? "grid min-h-[300px] grid-cols-1 gap-2 transition-[grid-template-columns] duration-300 " + (ocultarPanelEnvioNotario || (normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo")) ? "lg:grid-cols-[minmax(0,1fr)]" : panelDocumentosVisible ? "lg:grid-cols-[minmax(190px,0.38fr)_minmax(0,1.62fr)]" : "lg:grid-cols-[0_minmax(0,1fr)]")
               : "grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]"}
           >
             <div
-              className={"flex min-h-0 min-w-0 flex-col overflow-hidden transition-[opacity,transform] duration-300 " + (modoActividad && ((normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo")) || (!panelDocumentosVisible && !ocultarPanelEnvioNotario)) ? "hidden lg:flex" : "")}
+              className={"flex min-h-0 min-w-0 flex-col overflow-hidden transition-[opacity,transform] duration-300 " + (modoActividad && normalizar(actividadId).includes("sede-notarial") && !normalizar(actividadId).includes("protocolo") ? "hidden" : modoActividad && !panelDocumentosVisible && !ocultarPanelEnvioNotario ? "hidden lg:flex" : "")}
               style={modoActividad ? {
                 minWidth: 0,
                 width: "100%",
