@@ -7893,31 +7893,6 @@ const cuantiaFincasParaEnvio =
           </div>
         </section>
         )}
-        {actividadSeleccionada === "documentacion-previa" && (
-          <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/40 p-4">
-            <div>
-              <h3 className="text-sm font-extrabold text-slate-800">Documentos vinculados a la carpeta digital</h3>
-              <p className="mt-1 text-xs text-slate-600">Sube los ficheros desde la carpeta digital del expediente. Los documentos guardados en estas categorías serán los mismos que se consultan desde aquí.</p>
-            </div>
-            <div className="grid grid-cols-1 gap-3">
-              {[
-                ["Hoja de encargo firmada", "Hoja de Encargo firmada"],
-                ["Justificante de cancelación", "Justificante de cancelación"],
-                ["Nota simple registral", "Nota simple registral"],
-              ].map(([titulo, categoria]) => (
-                <div key={categoria} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3">
-                  <div className="min-w-0">
-                    <span className="block text-sm font-bold text-slate-800">{titulo}</span>
-                    <span className="mt-1 block text-xs text-slate-500">Repositorio de documentos del expediente</span>
-                  </div>
-                  <Boton onClick={() => { setMostrarModalDatosActividad(false); setMostrarRepositoriosDocumentacionPrevia(true); }}>
-                    Abrir repositorio
-                  </Boton>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
         {actividadSeleccionada !== "documentacion-previa" && (
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
