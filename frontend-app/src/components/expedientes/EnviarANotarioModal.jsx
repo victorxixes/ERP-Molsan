@@ -242,20 +242,6 @@ function CampoAutomatico({ label, valor }) {
   );
 }
 
-function Resumen({ label, valor }) {
-  return (
-    <div className="min-w-0">
-      <div className="text-[11px] uppercase tracking-wide text-slate-400">
-        {label}
-      </div>
-
-      <div className="mt-0.5 break-words text-sm font-semibold text-slate-700">
-        {valor || "—"}
-      </div>
-    </div>
-  );
-}
-
 function TituloSeccion({ titulo, descripcion }) {
   return (
     <div className="mb-3">
@@ -1275,85 +1261,6 @@ export default function EnviarANotarioModal({
               </div>
             </div>
           </div>
-
-          {/* RESUMEN GENERAL */}
-
-          <section className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-wide text-slate-500">
-              Resumen del envío
-            </h3>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Resumen
-                label="Expediente"
-                valor={expediente.id_expediente}
-              />
-
-              <Resumen
-                label="Notario"
-                valor={
-                  `${notario?.nombre || ""} ${
-                    notario?.apellidos || ""
-                  }`.trim()
-                }
-              />
-
-              <Resumen
-                label="NIF notario"
-                valor={notario?.nif}
-              />
-
-              <Resumen
-                label="Notario otorgante (firma real)"
-                valor={obtenerValor(expediente, "notario_otorgante") || "Pendiente de confirmar firma"}
-              />
-
-              <Resumen
-                label="Tipo del documento formalizado"
-                valor={documentosEscritura.map((documento) => documento.tipo_documento).filter(Boolean).join(" · ") || form.tipo_documento}
-              />
-
-              <Resumen
-                label="Cuantía del documento"
-                valor={documentosEscritura.map((documento) => {
-                  if (documento.cuantia === null || documento.cuantia === undefined || documento.cuantia === "") return "Sin cuantía";
-                  return `${Number(documento.cuantia).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
-                }).join(" · ") || String(cuantiaFincas !== "" && cuantiaFincas !== null && cuantiaFincas !== undefined
-                  ? cuantiaFincas
-                  : (expediente?.cuantia ?? expediente?.finca_cuantia ?? "—"))}
-              />
-
-              <Resumen
-                label="Formato de escritura"
-                valor={form.formato_escritura}
-              />
-
-              <Resumen
-                label="Tipo de trámite"
-                valor={form.tipo_tramite}
-              />
-
-              <Resumen
-                label="Fecha de envío"
-                valor={formatearFecha(form.fecha_envio)}
-              />
-
-              <Resumen
-                label="Modalidad de firma"
-                valor={notario?.tipo_firma}
-              />
-
-              <Resumen
-                label="Idioma"
-                valor={form.idioma}
-              />
-
-              <Resumen
-                label="Escritura firmada"
-                valor={form.escritura_firmada}
-              />
-            </div>
-          </section>
 
           {/* ERROR */}
 
