@@ -646,6 +646,7 @@ const CATEGORIAS_POR_REPOSITORIO = {
   nota_simple_registral: ["Nota simple registral"],
   borradores_escritura: ["Escrituras/borradores", "Borradores escrituras", "Borradores de escrituras", "Borradores de escritura"],
   presentacion_registro_documentos: ["Presentación Registro", "Presentacion Registro"],
+  hoja_presentacion_tacio_documentos: ["Hoja de presentación Tacio", "Hoja de presentacion Tacio"],
   copia_simple_documentos: ["Copia simple"],
   ajd_itp_documentos: ["AJD/ITP", "AJD / ITP", "AJD ITP"],
   otros_impuestos_documentos: ["Otros impuestos"],
