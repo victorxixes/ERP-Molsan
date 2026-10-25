@@ -25,7 +25,7 @@ const BLOQUES = [
     descripcion: "Documentos preparados, firmados o recibidos en la fase notarial.",
     categorias: [
       { etiqueta: "Presentación Registro", categoria: "Presentación Registro" },
-      { etiqueta: "Hoja de presentación Tacio", categoria: "Hoja de presentación Tacio" },
+      { etiqueta: "Hoja de presentación", categoria: "Hoja de presentación" },
       { etiqueta: "Copia simple", categoria: "Copia simple" },
     ],
   },
@@ -171,10 +171,10 @@ export default function CarpetaDigitalModal({
     const bloqueAjustado = bloque.id === "documentacion-previa"
       ? {
           ...bloque,
-          titulo: "Repositorios digitales · Hoja de presentación Tacio y Copia simple",
+          titulo: "Repositorios digitales · Hoja de presentación y Copia simple",
           descripcion: "",
           categorias: [
-            { etiqueta: "Hoja de presentación Tacio", categoria: "Hoja de presentación Tacio" },
+            { etiqueta: "Hoja de presentación", categoria: "Hoja de presentación" },
             { etiqueta: "Copia simple", categoria: "Copia simple" },
           ],
         }
@@ -199,6 +199,7 @@ export default function CarpetaDigitalModal({
       "Escrituras/borradores": "borradores_escritura",
       "Borradores escrituras": "borradores_escritura",
       "Presentación Registro": "presentacion_registro_documentos",
+      "Hoja de presentación": "hoja_presentacion_tacio_documentos",
       "Hoja de presentación Tacio": "hoja_presentacion_tacio_documentos",
       "Copia simple": "copia_simple_documentos",
       "AJD/ITP": "ajd_itp_documentos",
@@ -231,10 +232,11 @@ export default function CarpetaDigitalModal({
         const repositorioClave = clavePorCategoria[item.categoria];
         const repositorioNuevoRequerido = ["documentacion-previa", "gestion-economica"].includes(bloque.id)
           && ["Borradores escrituras", "Otros"].includes(item.categoria);
-        const repositorioSedeProtocolo = String(actividadId || "").includes("protocolo") && ["Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
-        const repositorioDocumentacionPrevia = bloque.id === "documentacion-previa" && ["Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
+        const repositorioSedeProtocolo = String(actividadId || "").includes("protocolo") && ["Hoja de presentación", "Hoja de presentación Tacio", "Copia simple"].includes(item.categoria);
+        const repositorioDocumentacionPrevia = bloque.id === "documentacion-previa" && ["Hoja de presentación", "Copia simple"].includes(item.categoria);
         const repositorioCierreExpediente = bloque.id === "facturacion-cierre" && item.categoria === "Expediente digital completo";
         return (configRepositorios.includes(repositorioClave) || repositorioNuevoRequerido || repositorioSedeProtocolo || repositorioDocumentacionPrevia || repositorioCierreExpediente)
+          && !(bloque.id === "documentacion-previa" && item.categoria === "Presentación Registro")
           && !(esCancelacionSinProvision && bloque.id === "sede-notarial" && item.categoria === "Presentación Registro");
       }),
     }];
@@ -373,6 +375,8 @@ export default function CarpetaDigitalModal({
   const porCategoria = useCallback(
     (categoria) => documentos.filter((doc) => {
       if (doc.categoria === categoria) return true;
+      // Compatibilidad con archivos ya guardados bajo el nombre histórico «Hoja de presentación Tacio».
+      if (categoria === "Hoja de presentación" && doc.categoria === "Hoja de presentación Tacio") return true;
       // Conserva visibles los archivos subidos con los nombres del repositorio anterior.
       if (categoria === "Borradores escrituras") {
         return ["Escrituras/borradores", "Borradores de escrituras", "Borradores de escritura"].includes(doc.categoria);
