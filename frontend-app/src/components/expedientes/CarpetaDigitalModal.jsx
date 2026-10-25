@@ -536,12 +536,7 @@ export default function CarpetaDigitalModal({
                   </button>
                 );
               })}
-              <div className="my-2 border-t border-slate-200" />
-              <button type="button" onClick={() => seleccionarActividad("otros")} aria-current={seleccionOtros ? "page" : undefined} className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${seleccionOtros ? "border-indigo-300 bg-indigo-50 shadow-sm ring-1 ring-indigo-100" : "border-slate-200 bg-white hover:border-indigo-200 hover:bg-slate-50"}`}>
-                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black ${otrosCantidad ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{otrosCantidad}</span>
-                <span className="min-w-0 flex-1"><span className={`block text-xs font-extrabold ${seleccionOtros ? "text-indigo-900" : "text-slate-700"}`}>Otros</span><span className="mt-0.5 block text-[10px] text-slate-500">Documentación complementaria</span></span>
-                <span className={`text-xs ${seleccionOtros ? "text-indigo-600" : "text-slate-400"}`}>›</span>
-              </button>
+
             </nav>
 
             <section className="flex min-h-[360px] min-w-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white">
