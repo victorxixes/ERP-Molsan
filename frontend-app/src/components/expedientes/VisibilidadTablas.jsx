@@ -28,12 +28,12 @@ const COLUMNAS_INICIALES = {
 const REPOSITORIOS_INICIALES = {
   "documentacion-previa": ["documentos_absis", "hoja_encargo_firmada", "justificante_cancelacion", "nota_simple_registral", "borradores_escritura", "otros_documentos"],
   "sede-notarial": ["borradores_escritura", "presentacion_registro_documentos", "copia_simple_documentos"],
-  "sede-notarial-protocolo": ["borradores_escritura", "presentacion_registro_documentos", "hoja_presentacion_tacio_documentos", "copia_simple_documentos"],
+  "sede-notarial-protocolo": ["borradores_escritura", "presentacion_registro_documentos", "hoja_presentacion_documentos", "copia_simple_documentos"],
   "gestion-economica": ["borradores_escritura", "otros_documentos"],
   "liquidacion-impuestos": ["ajd_itp_documentos", "otros_impuestos_documentos"],
   "tramitacion-inscripcion": ["hoja_inscripcion_documentos", "documento_inscripcion_documentos"],
   "defectos-registrales": ["defecto_registral", "subsanacion_defecto"],
-  "facturacion-cierre": ["escritura_digital_final_documentos", "documento_inscripcion_documentos", "expediente_digital_completo_documentos", "factura_notarial_documentos", "factura_registral_documentos", "factura_impuestos_documentos", "honorarios_gestoria_documentos", "otros_pagos_documentos"],
+  "facturacion-cierre": ["escritura_digital_final_documentos", "documento_inscripcion_documentos", "expediente_digital_completo_documentos", "factura_notarial_documentos", "factura_registral_documentos", "factura_impuestos_documentos", "honorarios_gestoria_documentos"],
 };
 
 const CLASE_INPUT = "w-full rounded-xl border border-[var(--erp-border)] bg-white px-3 py-2.5 text-sm text-[var(--erp-text)] outline-none focus:border-[var(--erp-primary)] focus:ring-2 focus:ring-[var(--erp-primary-soft)]";
