@@ -2287,7 +2287,7 @@ body {
 :is(.ctn-listado-page) .ctn-listado-header,
 :is(.expedientes-listado-premium) .expedientes-header {
   color: var(--molsan-text);
-  background: rgba(255,255,255,.96);
+  background: var(--molsan-surface);
   border: 1px solid var(--molsan-border);
   border-radius: var(--molsan-radius-card);
   box-shadow: var(--molsan-shadow-card);
