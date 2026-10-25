@@ -895,7 +895,66 @@ export default function CarpetaDigitalModal({
                       ))}
                     </div>
                   ) : (
-                    String(actividadId || "").includes("protocolo") ? (
+                    (actividadId === "liquidacion-impuestos" || actividadId === "tramitacion-inscripcion") ? (
+                      <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-3">
+                        <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">📋 Datos · {bloqueActividad?.titulo || (actividadId === "liquidacion-impuestos" ? "Liquidación de impuestos" : "Tramitación inscripción")}</h5>
+                          <div className="grid min-w-0 grid-cols-1 gap-1.5 px-2.5 py-2 sm:grid-cols-2 xl:grid-cols-1">
+                            {camposPanelActividad
+                              .filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key))
+                              .map((campo) => {
+                                const valor = datosPanelActividad?.[campo.key];
+                                return (
+                                  <div key={campo.key} className="min-w-0 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5">
+                                    <p className="text-[10px] font-bold text-slate-500">{campo.label}</p>
+                                    <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                                  </div>
+                                );
+                              })}
+                            {camposPanelActividad.filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).length === 0 && <p className="text-xs text-slate-500">Los campos específicos de esta actividad aparecerán aquí.</p>}
+                          </div>
+                        </section>
+                        <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos notariales y de presentación</h5>
+                          <div className="space-y-0 px-2.5 py-1.5">
+                            {[
+                              ["Notario", datosEnvioNotario?.nombre_notario || datosEnvioNotario?.notario?.nombre || datosPanelActividad?.nombre_notario || datosPanelActividad?.notario],
+                              ["NIF notario", datosEnvioNotario?.nif_notario || datosEnvioNotario?.notario?.nif || datosPanelActividad?.nif_notario || datosPanelActividad?.notario_nif],
+                              ["Tipo de escritura", datosEnvioNotario?.tipo_escritura || datosEnvioNotario?.tipo_documento || datosPanelActividad?.tipo_escritura || datosPanelActividad?.tipo_documento],
+                              ["Formato de escritura", datosEnvioNotario?.formato_escritura || datosPanelActividad?.formato_escritura || datosPanelActividad?.formato_escritura_notarial],
+                              ["Fecha firma", datosEnvioNotario?.fecha_firma || datosEnvioNotario?.fecha_real_firma || datosPanelActividad?.fecha_firma || datosPanelActividad?.fecha_real_firma],
+                              ["Protocolo", datosEnvioNotario?.protocolo || datosPanelActividad?.protocolo || datosPanelActividad?.numero_protocolo],
+                            ].map(([etiqueta, valor]) => (
+                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
+                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
+                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </section>
+                        <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                          <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos de facturación</h5>
+                          <div className="space-y-0 px-2.5 py-1.5">
+                            {[
+                              ["Nombre", datosPanelActividad?.facturacion_nombre || datosPanelActividad?.nombre_facturacion || datosPanelActividad?.nombre_cliente_facturacion],
+                              ["Apellidos", datosPanelActividad?.facturacion_apellidos || datosPanelActividad?.apellidos_facturacion || datosPanelActividad?.apellidos_cliente_facturacion],
+                              ["DNI / NIF de facturación", datosPanelActividad?.facturacion_dni_nif || datosPanelActividad?.dni_facturacion || datosPanelActividad?.nif_facturacion],
+                              ["Dirección", datosPanelActividad?.facturacion_direccion || datosPanelActividad?.direccion_facturacion || datosPanelActividad?.direccion_cliente_facturacion],
+                              ["Código postal", datosPanelActividad?.facturacion_codigo_postal || datosPanelActividad?.codigo_postal_facturacion || datosPanelActividad?.cp_facturacion],
+                              ["Población", datosPanelActividad?.facturacion_poblacion || datosPanelActividad?.poblacion_facturacion || datosPanelActividad?.municipio_facturacion],
+                              ["Provincia", datosPanelActividad?.facturacion_provincia || datosPanelActividad?.provincia_facturacion],
+                              ["Teléfono", datosPanelActividad?.facturacion_telefono || datosPanelActividad?.telefono_facturacion || datosPanelActividad?.telefono_cliente_facturacion],
+                              ["Email", datosPanelActividad?.facturacion_email || datosPanelActividad?.email_facturacion || datosPanelActividad?.correo_facturacion],
+                            ].map(([etiqueta, valor]) => (
+                              <div key={etiqueta} className="min-w-0 border-b border-slate-100 py-1.5 last:border-b-0">
+                                <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
+                                <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </section>
+                      </div>
+                    ) : String(actividadId || "").includes("protocolo") ? (
                       <div className="grid w-full min-w-0 grid-cols-2 items-start gap-3">
                         <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
                           <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">Datos notariales y de presentación</h5>
