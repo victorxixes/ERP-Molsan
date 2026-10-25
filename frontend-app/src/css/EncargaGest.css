@@ -1,12 +1,15 @@
 /* EncargaGest · MOLSAN ERP Premium 2027 / Glass Luxe */
 .encargagest {
-  --ag-muted: #748198;
-  --ag-line: #e4eaf2;
-  --ag-panel: rgba(255, 255, 255, .88);
-  --ag-blue: #315ee8;
-  --ag-blue-dark: #2448bd;
+  --ag-muted: var(--molsan-text-muted, #64748b);
+  --ag-line: var(--molsan-border, #dce4ef);
+  --ag-panel: var(--molsan-surface, #fff);
+  --ag-blue: var(--molsan-primary, #3156b3);
+  --ag-blue-dark: var(--molsan-primary-hover, #274694);
   min-height: 100vh;
+  min-width: 0;
   overflow: visible;
+  color: var(--molsan-text, #17243a);
+  font-family: var(--molsan-font-family, Inter, ui-sans-serif, system-ui, sans-serif);
   background: var(--molsan-page-bg, #f4f7fb);
 }
 .encargagest .eg-hero { padding-top: 8px; }
@@ -840,14 +843,7 @@
 }
 
 
-/* MOLSAN ERP PREMIUM 2027 — EncargaGest alineado con los portales */
-.encargagest {
-  --ag-blue: #3156b3;
-  --ag-blue-dark: #274694;
-  color: #24324a;
-}
-
-
+/* Los ajustes responsive se mantienen; los colores se definen mediante tokens compartidos. */
 @media (max-width: 760px) {
   .encargagest {
     padding: 14px;
