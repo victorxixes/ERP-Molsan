@@ -7896,19 +7896,36 @@ const cuantiaFincasParaEnvio =
                 />
                 <p className="mt-1 text-[11px] text-slate-500">Se propone la fecha de envío registrada; puedes modificarla y guardarla con «Guardar datos para ABSIS».</p>
               </label>
-              <div className="rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
-                <strong className="block">Certificado correcto</strong>
-                <p className="mt-1 text-xs text-slate-500">Confirma que el certificado de saldo cero es correcto. Este dato se muestra como información y no requiere marcar una casilla.</p>
-              </div>
+              <label className="block rounded-lg border border-slate-200 bg-white p-3">
+                <span className="block text-xs font-bold text-slate-600">Certificado correcto</span>
+                <select
+                  value={estadoDocumentacionAbsis.certificado_saldo_cero_erroneo ? "NO" : "SI"}
+                  onChange={(event) => setEstadoDocumentacionAbsis((actual) => ({
+                    ...actual,
+                    certificado_saldo_cero_erroneo: event.target.value === "NO",
+                  }))}
+                  disabled={registrandoSolicitudIntegracion}
+                  className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800"
+                >
+                  <option value="NO">NO</option>
+                  <option value="SI">SI</option>
+                </select>
+                <p className="mt-1 text-[11px] text-slate-500">Confirma si el certificado de saldo cero es correcto. Por defecto: NO.</p>
+              </label>
               {[
-                ["solicitud_cancelacion_notarial", "Hoja de encargo firmada"],
-                ["certificado_cancelacion_administrativo", "Justificante de cancelación"],
-                ["nota_simple_registral", "Nota simple registral"],
-              ].map(([key, label]) => (
-                <label key={key} className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
-                  <input type="checkbox" checked={!!estadoDocumentacionAbsis[key]} onChange={(e) => setEstadoDocumentacionAbsis((actual) => ({ ...actual, [key]: e.target.checked }))} disabled={registrandoSolicitudIntegracion} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
-                  <span>{label}</span>
-                </label>
+                ["Hoja de encargo firmada", "Repositorio de Hoja de encargo firmada"],
+                ["Justificante de cancelación", "Repositorio de Justificante de cancelación"],
+                ["Nota simple registral", "Repositorio de Nota simple registral"],
+              ].map(([categoria, label]) => (
+                <div key={categoria} className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
+                  <div className="min-w-0">
+                    <span className="block font-semibold">{categoria}</span>
+                    <span className="mt-1 block text-[11px] text-slate-500">Repositorio de documentos del expediente</span>
+                  </div>
+                  <Boton onClick={() => setMostrarCarpetaDigital(true)} disabled={registrandoSolicitudIntegracion || expedienteBloqueado}>
+                    Abrir repositorio
+                  </Boton>
+                </div>
               ))}
             </div>
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
