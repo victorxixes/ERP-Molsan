@@ -1,7 +1,7 @@
 /* MOLSAN ERP PREMIUM 2027 · Ficha de empleado
    Estilos aislados: no modifica otras fichas ni componentes compartidos. */
 .empleado-ficha-premium {
-  --ef-line: var(--erp-border, rgba(148, 163, 184, .22));
+  --ef-line: var(--molsan-border, #dce4ef);
   --ef-surface: var(--erp-surface, rgba(255, 255, 255, .82));
   --ef-soft: var(--erp-surface-soft, rgba(248, 250, 252, .76));
   padding-bottom: 1.25rem;
@@ -15,7 +15,7 @@
   transition: border-color .18s ease, box-shadow .18s ease;
 }
 .empleado-ficha-premium > section:hover {
-  border-color: color-mix(in srgb, var(--erp-primary, #2563eb) 24%, var(--ef-line));
+  border-color: color-mix(in srgb, var(--molsan-primary, #3156b3) 24%, var(--ef-line));
   box-shadow: 0 12px 30px rgba(15, 23, 42, .065);
 }
 .empleado-ficha-premium h2 {
@@ -29,7 +29,7 @@
   box-shadow: 0 4px 12px rgba(37, 99, 235, .12);
 }
 .empleado-ficha-premium button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--erp-primary, #2563eb) 40%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--molsan-primary, #3156b3) 40%, transparent);
   outline-offset: 3px;
 }
 .empleado-ficha-premium table thead {
@@ -41,7 +41,7 @@
   background: color-mix(in srgb, var(--ef-soft) 48%, transparent);
 }
 .empleado-ficha-premium tbody tr:hover {
-  background: color-mix(in srgb, var(--erp-primary, #2563eb) 7%, transparent);
+  background: color-mix(in srgb, var(--molsan-primary, #3156b3) 7%, transparent);
 }
 @media (max-width: 640px) {
   .empleado-ficha-premium > section {
