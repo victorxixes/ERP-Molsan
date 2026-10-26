@@ -313,16 +313,23 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
   };
   const calcular = async (i) => {
     const g = form.garantias[i];
-    if (!g.entidad.trim()) { setError("Indica la entidad bancaria antes de calcular."); return; }
+    if (!String(g.entidad || "").trim()) { setError("Indica la entidad bancaria antes de calcular."); return; }
+    const capital = Number(String(g.capital || "").replace(",", "."));
+    if (!Number.isFinite(capital) || capital <= 0) { setError("Introduce un capital del préstamo válido y mayor que 0 € antes de calcular."); return; }
+
     try {
-      const entidadSeleccionada = entidadesBancarias.find((e) => String(e.nombre || "").trim().toLocaleLowerCase("es") === String(g.entidad || "").trim().toLocaleLowerCase("es"));
+      const normalizar = (valor) => normalizarCatalogo(valor);
+      const entidadSeleccionada = entidadesBancarias.find((e) => normalizar(e.nombre) === normalizar(g.entidad));
       const entidadActual = entidadSeleccionada?.entidad_actual_id
         ? entidadesBancarias.find((e) => Number(e.id) === Number(entidadSeleccionada.entidad_actual_id))
         : null;
-      const esCaixaBank = /caixabank/i.test(String(entidadActual?.nombre || ""));
-      const honorarioAplicable = esCaixaBank
-        ? catalogoHonorarios.find((h) => /honorarios de gestoría\s*[—-]\s*caixabank/i.test(String(h.nombre || "")))
-        : catalogoHonorarios.find((h) => /honorarios de gestoría\s*[—-]\s*otra entidad/i.test(String(h.nombre || "")));
+      const nombreEntidadActual = entidadActual?.nombre || entidadSeleccionada?.entidad_actual || entidadSeleccionada?.nombre || g.entidad;
+      const esCaixaBank = normalizar(nombreEntidadActual).includes("caixabank");
+      const honorarioAplicable = catalogoHonorarios.find((h) => {
+        const nombre = normalizar(h.nombre);
+        return nombre.includes("honorarios de gestoria") &&
+          (esCaixaBank ? nombre.endsWith("caixabank") : nombre.endsWith("otra entidad"));
+      });
 
       if (!honorarioAplicable) {
         const nombreHonorario = esCaixaBank ? "Honorarios de gestoría — CaixaBank" : "Honorarios de gestoría — Otra entidad";
@@ -330,25 +337,56 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
         return;
       }
 
-      const r = await axios.post("/expedientes/provisiones/tarifas/calcular", { tipo: "provision", entidad: g.entidad, territorio: g.territorio || "Península", capital: Number(g.capital || 0) });
-      const t = r.data?.tarifa || {};
+      // El catálogo económico es la fuente maestra de los tramos de capital.
+      // No dependemos exclusivamente de que exista una tarifa duplicada en la tabla antigua.
       const conceptoNotaria = conceptosImportes.find((x) => x.codigo === "notaria" && x.activo !== false);
       const conceptoRegistro = conceptosImportes.find((x) => x.codigo === "registro" && x.activo !== false);
       const conceptoImpuestos = conceptosImportes.find((x) => x.codigo === "impuestos" && x.activo !== false);
-      const notaria = g.tipo_carga === "Hipotecaria" ? Number(t.suplidos || conceptoNotaria?.importe_previsto || 0) : 0;
-      const registro = Number(t.gastos_registro || conceptoRegistro?.importe_previsto || 0);
-      // Los honorarios siempre proceden del catálogo central. La elección
-      // se hace según la columna «Entidad actual» del catálogo bancario.
-      const gestion = Number(honorarioAplicable.importe ?? (
-        Number(honorarioAplicable.base_imponible || 0) *
-        (1 + (String(honorarioAplicable.tipo_impuesto || "IVA").toUpperCase() === "EXENTO" ? 0 : Number(honorarioAplicable.porcentaje_impuesto || 0)) / 100)
-      ));
+      const reglas = conceptoNotaria?.reglas || {};
+      const tramos = esCaixaBank ? reglas.tramos_caixabank : reglas.tramos_entidad_ajena;
+      const tramo = Array.isArray(tramos) ? tramos.find((t) => {
+        const desde = Number(String(t.desde ?? "").replace(",", "."));
+        const hasta = Number(String(t.hasta ?? "").replace(",", "."));
+        return Number.isFinite(desde) && Number.isFinite(hasta) && capital >= desde && capital <= hasta;
+      }) : null;
+
+      let tarifaApi = null;
+      try {
+        const r = await axios.post("/expedientes/provisiones/tarifas/calcular", {
+          tipo: "provision", entidad: g.entidad, territorio: g.territorio || "Península", capital
+        });
+        tarifaApi = r.data?.tarifa || null;
+      } catch (e) {
+        // Si no hay tarifa antigua, continuamos con los tramos del catálogo económico.
+        if (e.response?.status !== 404) throw e;
+      }
+
+      if (!tramo && !tarifaApi) {
+        setError(`No hay un tramo configurado para ${dinero(capital)} y ${esCaixaBank ? "CaixaBank" : "otra entidad"}. Revisa Catálogos → Tabla Provisiones de fondos.`);
+        return;
+      }
+
+      const notaria = g.tipo_carga === "Hipotecaria"
+        ? Number(tramo?.notaria ?? tarifaApi?.suplidos ?? conceptoNotaria?.importe_previsto ?? 0)
+        : 0;
+      const registro = Number(tramo?.registro ?? tarifaApi?.gastos_registro ?? conceptoRegistro?.importe_previsto ?? 0);
+      const directo = honorarioAplicable.importe;
+      const base = Number(honorarioAplicable.base_imponible ?? honorarioAplicable.importe_base ?? honorarioAplicable.importe_honorarios ?? honorarioAplicable.precio ?? 0);
+      const porcentaje = String(honorarioAplicable.tipo_impuesto || "IVA").toUpperCase() === "EXENTO" ? 0 : Number(honorarioAplicable.porcentaje_impuesto || 0);
+      const gestion = directo !== null && directo !== undefined && directo !== "" && Number.isFinite(Number(directo))
+        ? Number(directo)
+        : base * (1 + porcentaje / 100);
       const impuestos = Number(g.ajd || (conceptoImpuestos?.modo === "previsto" ? conceptoImpuestos.importe_previsto : 0) || 0);
-      const nuevoTotal = notaria + impuestos + registro + gestion + otros;
-      setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, notaria: String(notaria), ajd: String(impuestos), registro: String(registro), gestion: String(gestion), total: nuevoTotal.toFixed(2) } : x) }));
-      setAviso(`Tarifa aplicada. Honorarios de gestoría tomados del catálogo central: ${honorarioAplicable.nombre}.`);
+      const nuevoTotal = notaria + impuestos + registro + gestion;
+      setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? {
+        ...x, notaria: String(notaria), ajd: String(impuestos), registro: String(registro),
+        gestion: String(gestion), total: nuevoTotal.toFixed(2)
+      } : x) }));
+      setAviso(`Cálculo aplicado desde ${tramo ? "Catálogos → Tabla Provisiones de fondos" : "el tarifario de provisiones"}. Honorarios de gestoría: ${honorarioAplicable.nombre}.`);
       setError("");
-    } catch (e) { setError(e.response?.data?.detail || "No hay tarifa activa para esa entidad y capital. Puedes introducir los importes manualmente."); }
+    } catch (e) {
+      setError(e.response?.data?.detail || "No se ha podido calcular. Comprueba la entidad, el capital y los honorarios configurados.");
+    }
   };
   const guardar = async (e) => {
     e.preventDefault(); setGuardando(true); setError(""); setAviso("");
