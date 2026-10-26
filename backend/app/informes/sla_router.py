@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import get_current_user
 from backend.app.database import get_db
-from backend.app.expedientes.models import Expediente
+from backend.app.expedientes.models import Expediente\nfrom backend.app.expedientes.reparto import ids_expedientes_visibles
 
 router = APIRouter(prefix="/informes-sla", tags=["Informes SLA"], dependencies=[Depends(get_current_user)])
 
@@ -57,7 +57,7 @@ def clasificar(exp):
     operacion = normalizar(getattr(exp, "tipo_operacion", None))
     producto = normalizar(getattr(exp, "producto_gtg", None))
     sin_provision = "sin provision" in operacion
-    es_propia = producto in {"propia entidad", "vinculada propia entidad"}
+    es_propia = producto in {"propia entidad", "vinculada propia entidad", "vinculado propia entidad"}
     if sin_provision:
         return {"grupo": "Sin provisión", "entidad": "Propia entidad", "sla_global": 40, "excluido_global": False}
     excluido = any(x in producto for x in EXCLUIDOS_GLOBAL)
@@ -121,7 +121,11 @@ def guardar_fechas_actividad(id_expediente: str, actividad_key: str, datos: Fech
 @router.get("")
 def informe_sla(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     asegurar_tabla(db)
-    expedientes = db.query(Expediente).order_by(Expediente.id_expediente.asc()).all()
+    consulta = db.query(Expediente)
+    ids_visibles = ids_expedientes_visibles(db, usuario)
+    if ids_visibles is not None:
+        consulta = consulta.filter(Expediente.id.in_(ids_visibles))
+    expedientes = consulta.order_by(Expediente.id_expediente.asc()).all()
     fechas = db.execute(text("""
         SELECT id_expediente, actividad_key, fecha_inicio, fecha_fin
         FROM public.expediente_sla_actividad
