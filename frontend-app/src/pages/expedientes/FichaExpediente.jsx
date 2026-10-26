@@ -624,6 +624,14 @@ function resolverActividadActual(
 
   if (
     actividad.includes(
+      "gestion economica"
+    )
+  ) {
+    return "gestion-economica";
+  }
+
+  if (
+    actividad.includes(
       "defectos registrales"
     )
   ) {
@@ -4815,10 +4823,6 @@ const cuantiaFincasParaEnvio =
               <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold text-blue-700 transition hover:bg-blue-100">
                 ➕ Agregar expediente relacionado
               </button>
-              <div className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-blue-100 bg-white px-2.5 py-2 text-[11px]">
-                <span className="whitespace-nowrap font-bold text-blue-700">Gestor asignado:</span>
-                <span className="max-w-[190px] truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
-              </div>
             </div>
             {(() => {
               const relacionadosVisibles = [
@@ -4851,6 +4855,16 @@ const cuantiaFincasParaEnvio =
               <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100">✉️ Reclamar a oficina</button>
               <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes">🔗 Área de clientes</button>
               {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm">⚠️ DEFECTO REGISTRAL</button>}
+            </div>
+            <div className="ml-auto flex shrink-0 items-center gap-2">
+              <div className="inline-flex max-w-[260px] items-center gap-1.5 rounded-lg border border-blue-100 bg-white px-2.5 py-2 text-[11px]">
+                <span className="whitespace-nowrap font-bold text-blue-700">Gestor asignado:</span>
+                <span className="truncate font-semibold text-slate-700">{expediente.gestor_asignado_nombre || "Pendiente de asignación"}</span>
+              </div>
+              <div className="inline-flex max-w-[300px] items-center gap-1.5 rounded-lg border border-emerald-100 bg-emerald-50 px-2.5 py-2 text-[11px]" title="Actividad actual del expediente">
+                <span className="whitespace-nowrap font-bold text-emerald-800">Actividad actual:</span>
+                <span className="truncate font-semibold text-emerald-900">{ACTIVIDADES_EXPEDIENTES.find((actividad) => actividad.key === actividadActual)?.label || "Documentación previa"}</span>
+              </div>
             </div>
           </div>
           <p className="mt-1 text-[10px] leading-3 text-amber-700">Aviso: el enlace al área de clientes está pendiente de configurar.</p>
