@@ -140,7 +140,7 @@ function ConfiguracionConceptosProvisiones() {
     const clave = tipo === "caixabank" ? "tramos_caixabank" : "tramos_entidad_ajena";
     cambiar(codigo, "reglas", { ...(draft.reglas || {}), [clave]: (draft.reglas?.[clave] || []).filter((_, i) => i !== indice) });
   };
-  const guardarConcepto = async (item) => {
+  const guardarConcepto = async (item, tipoGuardado = "configuracion") => {
     const draft = borradores[item.codigo] || {};
     setGuardando(item.codigo); setMensaje(""); setErrorConfig("");
     try {
@@ -151,7 +151,7 @@ function ConfiguracionConceptosProvisiones() {
         reglas: draft.reglas || {},
         activo: draft.activo !== false,
       });
-      setMensaje(item.nombre + ": configuración guardada.");
+      setMensaje(tipoGuardado === "plantilla" ? "Plantilla de la hoja de provisión guardada correctamente." : item.nombre + ": configuración guardada.");
       await cargar();
     } catch (e) { setErrorConfig(e.response?.data?.detail || "No se pudo guardar " + item.nombre + "."); }
     finally { setGuardando(""); }
@@ -214,7 +214,7 @@ function ConfiguracionConceptosProvisiones() {
             {renderTabla(item, draft, "caixabank")}
             {renderTabla(item, draft, "ajena")}
             <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
-              <div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="font-bold text-slate-900">Plantilla de la hoja de provisión</h3><p className="mb-3 mt-1 text-xs text-slate-500">Configuración guardada en el catálogo y aplicada a los PDF nuevos, tanto independientes como vinculados a expedientes.</p></div><button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={boton + " bg-emerald-600 text-white hover:bg-emerald-700"}>{guardando === item.codigo ? "Guardando plantilla…" : "Guardar plantilla"}</button></div>
+              <div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="font-bold text-slate-900">Plantilla de la hoja de provisión</h3><p className="mb-3 mt-1 text-xs text-slate-500">Configuración guardada en el catálogo y aplicada a los PDF nuevos, tanto independientes como vinculados a expedientes.</p></div><button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item, "plantilla")} className={boton + " bg-emerald-600 text-white hover:bg-emerald-700"}>{guardando === item.codigo ? "Guardando plantilla…" : "Guardar plantilla"}</button></div>
               <div className="grid gap-3 md:grid-cols-2">
                 <label className={label}>Nombre corporativo<input className={input} value={draft.reglas?.plantilla_pdf?.nombre_empresa ?? "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L."} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), nombre_empresa: e.target.value } })} /></label>
                 <label className={label}>CIF<input className={input} value={draft.reglas?.plantilla_pdf?.cif ?? ""} placeholder="CIF de la empresa" onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), cif: e.target.value } })} /></label>
