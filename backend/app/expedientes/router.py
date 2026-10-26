@@ -3643,16 +3643,18 @@ def generar_documento_factura_honorarios(
                 9: f"Protocolo: {protocolo}",
                 10: f"Fecha de firma: {fecha_firma}",
             }
-            valores_fila = {
-                6: numero_expediente,
-                7: documento_cliente,
-                8: notario,
-                9: protocolo,
-                10: fecha_firma,
-            }
-            for indice, texto in valores_fila.items():
-                if len(tabla.rows) > indice and len(tabla.rows[indice].cells) > 2:
-                    poner_en_celda(tabla.rows[indice].cells[2], texto)
+            # En el modelo oficial, el área de valores de estas cinco etiquetas
+            # está fusionada verticalmente en una única celda: insertar todas las
+            # líneas juntas evita que un dato sobrescriba al anterior.
+            if len(tabla.rows) > 6 and len(tabla.rows[6].cells) > 2:
+                valores_expediente = "\\n".join([
+                    numero_expediente,
+                    documento_cliente,
+                    notario,
+                    protocolo,
+                    fecha_firma,
+                ])
+                poner_en_celda(tabla.rows[6].cells[2], valores_expediente)
             if len(tabla.rows) > 13:
                 poner_en_celda(tabla.rows[13].cells[3], euros(base))
             if len(tabla.rows) > 14:
