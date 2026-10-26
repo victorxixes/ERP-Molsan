@@ -5,7 +5,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import Column, DateTime, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, String, Text, ForeignKey, text
 from sqlalchemy.orm import Session
 
 from backend.app.database import Base, get_db
@@ -25,6 +25,10 @@ class EmailReclamacion(Base):
     destinatario = Column(String(320), nullable=False)
     asunto = Column(String(1000), nullable=False)
     cuerpo = Column(Text, nullable=False)
+    cc = Column(String(1000), nullable=True)
+    categoria = Column(String(120), nullable=True)
+    plantilla_id = Column(Integer, nullable=True)
+    plantilla_nombre = Column(String(180), nullable=True)
     estado = Column(String(40), nullable=False, default="pendiente")
     detalle = Column(Text, nullable=True)
     enviado_por_id = Column(Integer, nullable=True)
@@ -34,8 +38,23 @@ class EmailReclamacion(Base):
 
 class ReclamacionEnviar(BaseModel):
     destinatario: str
+    cc: str = ""
     asunto: str
     cuerpo: str
+    categoria: str = ""
+    plantilla_id: int | None = None
+    plantilla_nombre: str = ""
+
+
+def _asegurar_columnas_historico(db: Session):
+    for sentencia in (
+        "ALTER TABLE expediente_reclamaciones_email ADD COLUMN IF NOT EXISTS cc VARCHAR(1000)",
+        "ALTER TABLE expediente_reclamaciones_email ADD COLUMN IF NOT EXISTS categoria VARCHAR(120)",
+        "ALTER TABLE expediente_reclamaciones_email ADD COLUMN IF NOT EXISTS plantilla_id INTEGER",
+        "ALTER TABLE expediente_reclamaciones_email ADD COLUMN IF NOT EXISTS plantilla_nombre VARCHAR(180)",
+    ):
+        db.execute(text(sentencia))
+    db.commit()
 
 
 def _texto(valor):
@@ -48,6 +67,7 @@ def historico_reclamaciones(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
+    _asegurar_columnas_historico(db)
     expediente = db.query(Expediente).filter(Expediente.id_expediente == id_expediente).first()
     if not expediente:
         raise HTTPException(status_code=404, detail="Expediente no encontrado")
@@ -65,6 +85,10 @@ def historico_reclamaciones(
         "destinatario": fila.destinatario,
         "asunto": fila.asunto,
         "cuerpo": fila.cuerpo,
+        "cc": fila.cc,
+        "categoria": fila.categoria,
+        "plantilla_id": fila.plantilla_id,
+        "plantilla_nombre": fila.plantilla_nombre,
         "estado": fila.estado,
         "detalle": fila.detalle,
         "enviado_por": fila.enviado_por,
@@ -79,6 +103,7 @@ def enviar_reclamacion(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
+    _asegurar_columnas_historico(db)
     expediente = db.query(Expediente).filter(Expediente.id_expediente == id_expediente).first()
     if not expediente:
         raise HTTPException(status_code=404, detail="Expediente no encontrado")
@@ -86,6 +111,7 @@ def enviar_reclamacion(
     destinatario = _texto(datos.destinatario)
     asunto = _texto(datos.asunto)
     cuerpo = _texto(datos.cuerpo)
+    cc = _texto(datos.cc)
     if not destinatario or "@" not in destinatario:
         raise HTTPException(status_code=400, detail="Introduce un email válido de la oficina")
     if not asunto or not cuerpo:
@@ -101,6 +127,10 @@ def enviar_reclamacion(
         destinatario=destinatario,
         asunto=asunto,
         cuerpo=cuerpo,
+        cc=cc or None,
+        categoria=_texto(datos.categoria) or None,
+        plantilla_id=datos.plantilla_id,
+        plantilla_nombre=_texto(datos.plantilla_nombre) or None,
         estado="error",
         enviado_por_id=getattr(usuario, "id", None),
         enviado_por=nombre or _texto(getattr(usuario, "usuario", "")),
@@ -125,6 +155,8 @@ def enviar_reclamacion(
     if remitente and remitente.lower() != from_email.lower():
         mensaje["Reply-To"] = remitente
     mensaje["To"] = destinatario
+    if cc:
+        mensaje["Cc"] = cc
     mensaje.set_content(cuerpo)
 
     try:
