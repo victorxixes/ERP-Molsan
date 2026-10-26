@@ -8010,7 +8010,7 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : actividadSeleccionada === "gestion-economica" ? (
               <div className="space-y-3">
-                <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">Esta actividad no tiene campos específicos configurados todavía.</p>
+                <p className="rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-500">Esta actividad no tiene campos específicos configurados todavía.</p>
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                   <h4 className="mb-2 text-sm font-extrabold text-slate-800">Líneas de pago · datos para ABSIS</h4>
                   <p className="text-xs leading-relaxed text-slate-600">
@@ -8027,8 +8027,10 @@ const cuantiaFincasParaEnvio =
                 </section>
               </div>
             ) : actividadSeleccionada === "facturacion-cierre" ? (
-              <div className="space-y-4">
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid min-w-0 grid-cols-1 items-start gap-3">
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <h4 className="mb-3 text-sm font-extrabold text-slate-800">Datos de la actividad</h4>
+                <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {[
                     { key: "fecha_presentacion", label: "Fecha presentación" },
                     { key: "fecha_vencimiento_asiento", label: "Fecha vencimiento asiento" },
@@ -8051,17 +8053,21 @@ const cuantiaFincasParaEnvio =
                     );
                   })}
                 </div>
+                </section>
+                <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
                 <RepositorioDocumentosInline
                   expedienteId={expediente?.id || id}
                   categorias={["Expediente digital completo"]}
                   titulo="Repositorios digitales · Expediente digital completo"
                 />
+                </section>
               </div>
             ) : actividadSeleccionada === "liquidacion-impuestos" ? (
               <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 xl:col-span-2">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Liquidación de impuestos</h4>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
                       const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
@@ -8069,12 +8075,12 @@ const cuantiaFincasParaEnvio =
                         <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
                           <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
                           {Array.isArray(campo.opciones) ? (
-                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-normal text-slate-800">
+                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800">
                               <option value="">— Seleccionar —</option>
                               {campo.opciones.map((opcion) => <option key={String(opcion)} value={typeof opcion === "object" ? opcion.value : opcion}>{typeof opcion === "object" ? opcion.label : opcion}</option>)}
                             </select>
                           ) : (
-                            <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} step={campo.tipo === "numero" ? "0.01" : undefined} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-normal text-slate-800" />
+                            <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} step={campo.tipo === "numero" ? "0.01" : undefined} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
                           )}
                         </label>
                       );
@@ -8095,7 +8101,7 @@ const cuantiaFincasParaEnvio =
               <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 xl:col-span-2">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Tramitación inscripción</h4>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
                       const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
@@ -8103,12 +8109,12 @@ const cuantiaFincasParaEnvio =
                         <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
                           <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
                           {Array.isArray(campo.opciones) ? (
-                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-normal text-slate-800">
+                            <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800">
                               <option value="">— Seleccionar —</option>
                               {campo.opciones.map((opcion) => <option key={String(opcion)} value={typeof opcion === "object" ? opcion.value : opcion}>{typeof opcion === "object" ? opcion.label : opcion}</option>)}
                             </select>
                           ) : (
-                            <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} step={campo.tipo === "numero" ? "0.01" : undefined} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-normal text-slate-800" />
+                            <input type={campo.tipo === "fecha" ? "date" : campo.tipo === "numero" ? "number" : "text"} step={campo.tipo === "numero" ? "0.01" : undefined} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
                           )}
                         </label>
                       );
@@ -8127,18 +8133,18 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : actividadSeleccionada === "defectos-registrales" ? (
               <div className="space-y-3">
-                <section className="rounded-2xl border border-amber-200 bg-amber-50/30 p-4">
+                <section className="rounded-xl border border-slate-200 bg-white p-3">
                   <div className="mb-3">
                     <h3 className="text-sm font-extrabold text-slate-800">Defectos registrales · datos para integración</h3>
                     <p className="mt-1 text-xs leading-relaxed text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
                   </div>
                 <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
-                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Tipo documento</span>
-                    <input type="text" value={String(actividadDraft.tipo_documento ?? expediente?.tipo_documento ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, tipo_documento: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" placeholder="Tipo documento" />
+                  <label className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
+                    <span className="block text-xs font-bold text-slate-600">Tipo documento</span>
+                    <input type="text" value={String(actividadDraft.tipo_documento ?? expediente?.tipo_documento ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, tipo_documento: event.target.value }))} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" placeholder="Tipo documento" />
                   </label>
-                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Motivos del defecto</span>
+                  <label className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
+                    <span className="block text-xs font-bold text-slate-600">Motivos del defecto</span>
                     <select value={String(actividadDraft.motivos_defecto ?? expediente?.motivos_defecto ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, motivos_defecto: event.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400">
                       <option value="">Seleccionar motivo del catálogo de defectos…</option>
                       {MOTIVOS_DEFECTO.map((motivo) => {
@@ -8151,14 +8157,14 @@ const cuantiaFincasParaEnvio =
                     { key: "fecha_notificacion_registro", label: "Fecha notificación Registro" },
                     { key: "fecha_vencimiento_presentacion_registro", label: "Fecha vencimiento presentación Registro" },
                   ].map((campo) => (
-                    <label key={campo.key} className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                      <span className="mb-1.5 block text-[11px] font-bold text-slate-600">{campo.label}</span>
-                      <input type="date" value={String(actividadDraft[campo.key] ?? expediente?.[campo.key] ?? "").slice(0, 10)} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
+                    <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
+                      <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                      <input type="date" value={String(actividadDraft[campo.key] ?? expediente?.[campo.key] ?? "").slice(0, 10)} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
                     </label>
                   ))}
                   <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3 sm:col-span-2">
-                    <span className="mb-1.5 block text-[11px] font-bold text-slate-600">Observaciones</span>
-                    <textarea rows={3} value={String(actividadDraft.observaciones_defecto_registral ?? expediente?.observaciones_defecto_registral ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, observaciones_defecto_registral: event.target.value }))} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
+                    <span className="block text-xs font-bold text-slate-600">Observaciones</span>
+                    <textarea rows={3} value={String(actividadDraft.observaciones_defecto_registral ?? expediente?.observaciones_defecto_registral ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, observaciones_defecto_registral: event.target.value }))} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
                   </label>
                 </div>
                 </section>
