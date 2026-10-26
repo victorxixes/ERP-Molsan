@@ -109,6 +109,7 @@ export default function CarpetaDigitalModal({
   camposPanelActividad = [],
   onAbrirEnvioNotario,
   onPagar,
+  formularioPago = null,
   formularioEnvioNotario = null,
   ocultarPanelEnvioNotario = false,
 }) {
@@ -1142,6 +1143,7 @@ export default function CarpetaDigitalModal({
                           💶 Pagar
                         </button>
                       </div>
+                      {formularioPago}
                       </>
                     ) : (
                       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-1">
