@@ -83,10 +83,11 @@ const importeHonorario = (h) => {
   return base * (1 + impuesto / 100);
 };
 const honorarioGestoriaPorEntidad = (catalogo, tipo) => {
-  const patron = tipo === "caixabank"
-    ? /honorarios de gestoría\\s*[—-]\\s*caixabank/i
-    : /honorarios de gestoría\\s*[—-]\\s*otra entidad/i;
-  return catalogo.find((h) => patron.test(String(h.nombre || ""))) || null;
+  const sufijo = tipo === "caixabank" ? "caixabank" : "otra entidad";
+  return catalogo.find((h) => {
+    const nombre = normalizarCatalogo(h.nombre);
+    return nombre.includes("honorarios de gestoria") && nombre.endsWith(sufijo);
+  }) || null;
 };
 
 function ConfiguracionConceptosProvisiones() {
@@ -196,20 +197,26 @@ function ConfiguracionConceptosProvisiones() {
     {errorConfig && <div role="alert" className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{errorConfig}</div>}
     {mensaje && <div role="status" className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{mensaje}</div>}
     {cargando ? <p className="py-4 text-sm text-slate-500">Cargando conceptos…</p> : <div className="space-y-3">
-      {items.map((item) => {
+      {items.filter((item) => item.codigo === "notaria" || item.codigo === "impuestos").map((item) => {
         const draft = borradores[item.codigo] || {};
-        return <div key={item.codigo} className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 md:grid-cols-[1.2fr_1fr_1.4fr_auto] md:items-end">
-          <div><p className="font-semibold text-slate-800">{item.nombre}</p><p className="mt-1 text-xs text-slate-500">{item.codigo === "gestion" ? "Fuente: catálogo central de Honorarios Gestoría." : item.codigo === "impuestos" ? "Puede marcarse como calculado o introducir una previsión." : "Importe estimativo configurable, sin tarifa inventada."}</p></div>
-          {item.codigo === "gestion" ? <div className="rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-900 md:col-span-2">Se obtiene del catálogo central según «Entidad actual» del banco. No se modifica aquí.</div> : <div><label className="mb-1 block text-xs font-semibold text-slate-600">Tratamiento</label><select className={input} value={draft.modo || "previsto"} onChange={(e) => cambiar(item.codigo, "modo", e.target.value)}><option value="previsto">Importe previsto</option>{item.codigo === "impuestos" && <option value="calculado">Calculado (pendiente de regla fiscal)</option>}</select>{draft.modo === "previsto" && <><label className="mb-1 mt-2 block text-xs font-semibold text-slate-600">Importe previsto (€)</label><input className={input} type="number" min="0" step="0.01" value={draft.importe_previsto ?? ""} onChange={(e) => cambiar(item.codigo, "importe_previsto", e.target.value)} placeholder="Introduce el importe" /></>}</div>}
-          <div><label className="mb-1 block text-xs font-semibold text-slate-600">Descripción / criterio</label><textarea className={input + " min-h-16 resize-y"} value={draft.descripcion || ""} onChange={(e) => cambiar(item.codigo, "descripcion", e.target.value)} disabled={item.codigo === "gestion"} /></div>
-          {item.codigo === "notaria" && <div className="md:col-span-4 rounded-xl border border-indigo-200 bg-indigo-50/40 p-4">
-            <div><p className="font-semibold text-slate-900">Tramos de provisión por capital</p><p className="mt-1 text-xs text-slate-600">Los 17 rangos facilitados por Molsan están cargados en ambas tablas. Edita cualquier tramo, elimina los que no procedan o añade otros. Las tablas se guardan con el botón «Guardar» del concepto Notaría.</p></div>
+        if (item.codigo === "notaria") {
+          return <div key={item.codigo} className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div><p className="font-semibold text-slate-900">Tramos de provisión por capital</p><p className="mt-1 max-w-3xl text-xs text-slate-600">Configuración maestra del catálogo económico. Aquí se editan los importes de Notaría y Registro por tramo; los honorarios se leen del catálogo central de Honorarios Gestoría. La plantilla para confeccionar provisiones está en el módulo operativo.</p></div>
+              <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={boton + " bg-blue-600 text-white hover:bg-blue-700"}>{guardando === item.codigo ? "Guardando…" : "Guardar tablas"}</button>
+            </div>
             {renderTabla(item, draft, "caixabank")}
             {renderTabla(item, draft, "ajena")}
-            <p className="mt-3 text-xs text-slate-500">La selección automática de tarifa en el cálculo de provisiones es una fase separada. Estos cambios configuran las tablas sin recalcular expedientes históricos.</p>
-          </div>}
-          {item.codigo === "impuestos" && <div className="md:col-span-4 rounded-xl border border-amber-200 bg-amber-50/60 p-3"><p className="text-sm font-semibold text-slate-800">Reglas iniciales de impuestos</p><p className="mt-1 text-xs text-slate-600">La condición resolutoria se configura al 1,5 % como criterio inicial indicado por Molsan. Los importes por provincia son manuales y no se inventan ni se aplican automáticamente hasta validar cada supuesto.</p><div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><label className={label}>Condición resolutoria · porcentaje<input className={input} type="number" min="0" step="0.01" value={draft.reglas?.porcentaje_condicion_resolutoria ?? 1.5} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), porcentaje_condicion_resolutoria: e.target.value === "" ? "" : Number(e.target.value) })} /></label>{["Gipuzkoa", "Álava", "Bizkaia"].map((provincia) => <label key={provincia} className={label}>Hipoteca · {provincia} (€)<input className={input} type="number" min="0" step="0.01" placeholder="Por definir" value={draft.reglas?.importes_hipoteca_provincia?.[provincia] ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), importes_hipoteca_provincia: { ...(draft.reglas?.importes_hipoteca_provincia || {}), [provincia]: e.target.value } })} /></label>)}</div><p className="mt-2 text-xs text-slate-500">Vitoria-Gasteiz queda cubierta por Álava. Estos importes son configuraciones de provisión, no una confirmación de la cuota tributaria legal.</p></div>}
-          {item.codigo === "gestion" ? <span className="text-xs font-semibold text-emerald-700">Catálogo central</span> : <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={boton + " bg-blue-600 text-white hover:bg-blue-700"}>{guardando === item.codigo ? "Guardando…" : "Guardar"}</button>}
+          </div>;
+        }
+        return <div key={item.codigo} className="rounded-xl border border-slate-200 bg-white p-4">
+          <div className="grid gap-3 md:grid-cols-[1.2fr_1fr_1.4fr_auto] md:items-end">
+            <div><p className="font-semibold text-slate-800">{item.nombre}</p><p className="mt-1 text-xs text-slate-500">Reglas fiscales de referencia. Los importes territoriales solo se aplican cuando la regla correspondiente encaja con la operación.</p></div>
+            <div><label className="mb-1 block text-xs font-semibold text-slate-600">Tratamiento</label><select className={input} value={draft.modo || "calculado"} onChange={(e) => cambiar(item.codigo, "modo", e.target.value)}><option value="previsto">Importe previsto</option><option value="calculado">Calculado (pendiente de regla fiscal)</option></select>{draft.modo === "previsto" && <><label className="mb-1 mt-2 block text-xs font-semibold text-slate-600">Importe previsto (€)</label><input className={input} type="number" min="0" step="0.01" value={draft.importe_previsto ?? ""} onChange={(e) => cambiar(item.codigo, "importe_previsto", e.target.value)} placeholder="Introduce el importe" /></>}</div>
+            <div><label className="mb-1 block text-xs font-semibold text-slate-600">Descripción / criterio</label><textarea className={input + " min-h-16 resize-y"} value={draft.descripcion || ""} onChange={(e) => cambiar(item.codigo, "descripcion", e.target.value)} /></div>
+            <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={boton + " bg-blue-600 text-white hover:bg-blue-700"}>{guardando === item.codigo ? "Guardando…" : "Guardar reglas fiscales"}</button>
+          </div>
+          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50/60 p-3"><p className="text-sm font-semibold text-slate-800">Reglas iniciales de impuestos</p><p className="mt-1 text-xs text-slate-600">La condición resolutoria se configura al 1,5 % como criterio inicial indicado por Molsan. Los importes por provincia son manuales y no se inventan ni se aplican automáticamente hasta validar cada supuesto.</p><div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><label className={label}>Condición resolutoria · porcentaje<input className={input} type="number" min="0" step="0.01" value={draft.reglas?.porcentaje_condicion_resolutoria ?? 1.5} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), porcentaje_condicion_resolutoria: e.target.value === "" ? "" : Number(e.target.value) })} /></label>{["Gipuzkoa", "Álava", "Bizkaia"].map((provincia) => <label key={provincia} className={label}>Hipoteca · {provincia} (€)<input className={input} type="number" min="0" step="0.01" placeholder="Por definir" value={draft.reglas?.importes_hipoteca_provincia?.[provincia] ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), importes_hipoteca_provincia: { ...(draft.reglas?.importes_hipoteca_provincia || {}), [provincia]: e.target.value } })} /></label>)}</div><p className="mt-2 text-xs text-slate-500">Vitoria-Gasteiz queda cubierta por Álava. Estos importes son configuraciones de provisión, no una confirmación de la cuota tributaria legal.</p></div>
         </div>;
       })}
     </div>}
@@ -392,7 +399,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{String(error)}</div>}
     {aviso && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{aviso}</div>}
 
-    <ConfiguracionConceptosProvisiones />
+    
 
     <form onSubmit={guardar} className="space-y-5">
       <div className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2">
