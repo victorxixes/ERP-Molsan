@@ -8,6 +8,7 @@ import { obtenerExpediente, obtenerListadoExpedientes, enviarExpedienteANotario 
 
 import EnviarANotarioModal from "../../components/expedientes/EnviarANotarioModal";
 import CarpetaDigitalModal from "../../components/expedientes/CarpetaDigitalModal";
+import TraspasoSaldoPanel from "../../components/expedientes/TraspasoSaldoPanel";
 import { useAuthStore } from "../../store/authStore";
 import "./FichaExpedientePremium.css";
 
@@ -6120,6 +6121,10 @@ const cuantiaFincasParaEnvio =
       
 
        
+
+        <div className={`min-w-0 xl:col-span-12 ${actividadSeleccionada === "gestion-economica" ? "" : "hidden"}`}>
+          <TraspasoSaldoPanel expediente={expediente} visible={actividadSeleccionada === "gestion-economica"} />
+        </div>
 
         {/* Información complementaria: se oculta visualmente hasta registrar un envío a notario. */}
         <div className={`min-w-0 xl:col-span-12 ${actividadSeleccionada === "gestion-economica" && mostrarPanelEconomicoPago ? "" : "hidden"}`}>
