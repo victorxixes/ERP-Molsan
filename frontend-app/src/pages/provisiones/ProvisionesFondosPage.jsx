@@ -11,7 +11,10 @@ const label = "block text-xs font-semibold uppercase tracking-wide text-slate-50
 const boton = "inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50";
 
 function Campo({ titulo, valor, onChange, tipo = "text", requerido = false, placeholder = "", disabled = false, listId }) {
-  return <label className={label}>{titulo}<input className={`${input} ${disabled ? "cursor-not-allowed bg-slate-100 text-slate-500" : ""}`} type={tipo === "number" ? "text" : tipo} inputMode={tipo === "number" ? "decimal" : undefined} value={valor ?? ""} onChange={(e) => onChange(e.target.value)} required={requerido} placeholder={placeholder} disabled={disabled} list={listId} autoComplete={listId ? "off" : undefined} /></label>;
+  const [enfocado, setEnfocado] = useState(false);
+  const esMoneda = tipo === "number";
+  const mostrar = esMoneda && !enfocado && valor !== "" && valor != null && Number.isFinite(Number(valor)) ? dinero(valor) : (valor ?? "");
+  return <label className={label}>{titulo}<input className={`${input} ${disabled ? "cursor-not-allowed bg-slate-100 text-slate-500" : ""}`} type={tipo === "number" ? "text" : tipo} inputMode={tipo === "number" ? "decimal" : undefined} value={mostrar} onFocus={() => setEnfocado(true)} onBlur={() => setEnfocado(false)} onChange={(e) => onChange(e.target.value.replace(/€/g, "").replace(/\s/g, "").replace(",", "."))} required={requerido} placeholder={placeholder} disabled={disabled} list={listId} autoComplete={listId ? "off" : undefined} /></label>;
 }
 
 function normalizarCatalogo(valor) {
