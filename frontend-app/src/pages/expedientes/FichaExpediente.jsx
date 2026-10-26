@@ -8004,6 +8004,31 @@ const cuantiaFincasParaEnvio =
           </div>
         </section>
         )}
+        {["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) && (
+          <section className="mb-4 rounded-xl border border-indigo-200 bg-indigo-50/40 p-4">
+            <h3 className="mb-3 text-sm font-extrabold text-slate-800">Fechas de actividad</h3>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {[
+                { key: "fecha_inicio_actividad", label: "Inicio actividad" },
+                { key: "fecha_fin_actividad", label: "Fin actividad" },
+              ].map((campo) => {
+                const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
+                return (
+                  <label key={campo.key} className="block rounded-lg border border-slate-200 bg-white p-3">
+                    <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
+                    <input
+                      type="date"
+                      value={String(valor ?? "").slice(0, 10)}
+                      onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))}
+                      disabled={guardandoActividad || expedienteBloqueado}
+                      className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800"
+                    />
+                  </label>
+                );
+              })}
+            </div>
+          </section>
+        )}
         {(
           <section className="mt-5 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
             <div>
