@@ -916,9 +916,19 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   ].filter((item) => puedeVerModulo(item.key));
   const crearListaDropdown = (tipo) => {
     if (esPortalNotarialExterno) return [];
+    // Utilidades y Catálogos deben vivir exclusivamente en el desplegable Técnicos,
+    // aunque el layout que invoca Sidebar todavía los incluya en navigationItems.
+    const navigationItemsSinTecnicos = (Array.isArray(navigationItems) ? navigationItems : []).filter((item) => {
+      const clave = normalizarModulo(item?.key);
+      const etiqueta = normalizarModulo(item?.label);
+      const ruta = String(item?.to || item?.route || "").replace(/\/$/, "").toLocaleLowerCase("es");
+      return !["utilidades", "catalogos"].includes(clave) &&
+        !["utilidades", "catalogos"].includes(etiqueta) &&
+        !["/herramientas/utilidades", "/catalogos"].includes(ruta);
+    });
     const visibles = [
-      ...(Array.isArray(navigationItems) ? navigationItems : []),
-      ...visiblesPrincipales,
+      ...navigationItemsSinTecnicos,
+      ...visiblesPrincipales.filter((item) => !["utilidades", "catalogos"].includes(normalizarModulo(item?.key))),
       ...modulosFijadosUnicos,
       ...accesosDirectosUtilidades,
     ];
@@ -1011,7 +1021,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     if (!Array.isArray(navigationItems)) return null;
     const clavesNavegacion = new Set();
     const sinDuplicados = navigationItems.filter((item) => {
-      if (item?.key === "modulos" || item?.key === "notificaciones" || normalizarModulo(item?.label) === "notificaciones" || ["modulos", "espacios", "espacios de trabajo", "tecnicos", "modulos mas tecnicos"].includes(normalizarModulo(item?.label))) return false;
+      if (item?.key === "modulos" || item?.key === "notificaciones" || ["utilidades", "catalogos"].includes(normalizarModulo(item?.key)) || ["/herramientas/utilidades", "/catalogos"].includes(String(item?.to || item?.route || "").replace(/\/$/, "").toLocaleLowerCase("es")) || ["utilidades", "catalogos", "notificaciones"].includes(normalizarModulo(item?.label)) || ["modulos", "espacios", "espacios de trabajo", "tecnicos", "modulos mas tecnicos"].includes(normalizarModulo(item?.label))) return false;
       const identificadores = [normalizarModulo(item?.key), normalizarModulo(item?.label), normalizarModulo(item?.to || item?.route)].filter(Boolean);
       if (identificadores.some((clave) => clavesNavegacion.has(clave))) return false;
       identificadores.forEach((clave) => clavesNavegacion.add(clave));
