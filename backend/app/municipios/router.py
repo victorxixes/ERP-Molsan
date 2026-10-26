@@ -311,6 +311,10 @@ def crear_municipio(
             nuevo
         )
 
+    except HTTPException:
+        db.rollback()
+        raise
+
     except Exception as exc:
 
         db.rollback()
