@@ -53,6 +53,7 @@ class ConceptoImporteProvision(Base):
     modo = Column(String(20), nullable=False, default="previsto", server_default="previsto")
     importe_previsto = Column(Numeric(14, 2), nullable=True)
     descripcion = Column(Text, nullable=True)
+    reglas = Column(JSON, nullable=False, default=dict, server_default="{}")
     activo = Column(Boolean, nullable=False, default=True, server_default="true")
     creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     actualizado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())

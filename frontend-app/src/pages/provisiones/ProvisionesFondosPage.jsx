@@ -62,7 +62,7 @@ function ConfiguracionConceptosProvisiones() {
       const r = await axios.get("/expedientes/provisiones/conceptos-importes");
       const lista = r.data?.items || [];
       setItems(lista);
-      setBorradores(Object.fromEntries(lista.map((x) => [x.codigo, { modo: x.modo === "calculado" ? "calculado" : "previsto", importe_previsto: x.importe_previsto == null ? "" : String(x.importe_previsto), descripcion: x.descripcion || "", activo: x.activo !== false }])));
+      setBorradores(Object.fromEntries(lista.map((x) => [x.codigo, { modo: x.modo === "calculado" ? "calculado" : "previsto", importe_previsto: x.importe_previsto == null ? "" : String(x.importe_previsto), descripcion: x.descripcion || "", reglas: { porcentaje_condicion_resolutoria: 1.5, importes_hipoteca_provincia: { Gipuzkoa: "", Álava: "", Bizkaia: "" }, ...(x.reglas || {}) }, activo: x.activo !== false }])));
       setErrorConfig("");
     } catch (e) { setErrorConfig(e.response?.data?.detail || "No se pudo cargar la configuración de conceptos."); }
     finally { setCargando(false); }
@@ -77,6 +77,7 @@ function ConfiguracionConceptosProvisiones() {
         modo: draft.modo,
         importe_previsto: draft.modo === "previsto" ? Number(draft.importe_previsto || 0) : null,
         descripcion: draft.descripcion || "",
+        reglas: draft.reglas || {},
         activo: draft.activo !== false,
       });
       setMensaje(`${item.nombre}: configuración guardada.`);
@@ -94,6 +95,7 @@ function ConfiguracionConceptosProvisiones() {
           <div><p className="font-semibold text-slate-800">{item.nombre}</p><p className="mt-1 text-xs text-slate-500">{item.codigo === "gestion" ? "Fuente: catálogo central de Honorarios Gestoría." : item.codigo === "impuestos" ? "Puede marcarse como calculado o introducir una previsión." : "Importe estimativo configurable, sin tarifa inventada."}</p></div>
           {item.codigo === "gestion" ? <div className="rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-900 md:col-span-2">Se obtiene del catálogo central según «Entidad actual» del banco. No se modifica aquí.</div> : <div><label className="mb-1 block text-xs font-semibold text-slate-600">Tratamiento</label><select className={input} value={draft.modo || "previsto"} onChange={(e) => cambiar(item.codigo, "modo", e.target.value)}><option value="previsto">Importe previsto</option>{item.codigo === "impuestos" && <option value="calculado">Calculado (pendiente de regla fiscal)</option>}</select>{draft.modo === "previsto" && <><label className="mb-1 mt-2 block text-xs font-semibold text-slate-600">Importe previsto (€)</label><input className={input} type="number" min="0" step="0.01" value={draft.importe_previsto ?? ""} onChange={(e) => cambiar(item.codigo, "importe_previsto", e.target.value)} placeholder="Introduce el importe" /></>}</div>}
           <div><label className="mb-1 block text-xs font-semibold text-slate-600">Descripción / criterio</label><textarea className={`${input} min-h-16 resize-y`} value={draft.descripcion || ""} onChange={(e) => cambiar(item.codigo, "descripcion", e.target.value)} disabled={item.codigo === "gestion"} /></div>
+          {item.codigo === "impuestos" && <div className="md:col-span-4 rounded-xl border border-amber-200 bg-amber-50/60 p-3"><p className="text-sm font-semibold text-slate-800">Reglas iniciales de impuestos</p><p className="mt-1 text-xs text-slate-600">La condición resolutoria se configura al 1,5 % como criterio inicial indicado por Molsan. Los importes por provincia son manuales y no se inventan ni se aplican automáticamente hasta validar cada supuesto.</p><div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><label className={label}>Condición resolutoria · porcentaje<input className={input} type="number" min="0" step="0.01" value={draft.reglas?.porcentaje_condicion_resolutoria ?? 1.5} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), porcentaje_condicion_resolutoria: e.target.value === "" ? "" : Number(e.target.value) })} /></label>{["Gipuzkoa", "Álava", "Bizkaia"].map((provincia) => <label key={provincia} className={label}>Hipoteca · {provincia} (€)<input className={input} type="number" min="0" step="0.01" placeholder="Por definir" value={draft.reglas?.importes_hipoteca_provincia?.[provincia] ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), importes_hipoteca_provincia: { ...(draft.reglas?.importes_hipoteca_provincia || {}), [provincia]: e.target.value } })} /></label>)}</div><p className="mt-2 text-xs text-slate-500">Vitoria-Gasteiz queda cubierta por Álava. Estos importes son configuraciones de provisión, no una confirmación de la cuota tributaria legal.</p></div>}
           {item.codigo === "gestion" ? <span className="text-xs font-semibold text-emerald-700">Catálogo central</span> : <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={`${boton} bg-blue-600 text-white hover:bg-blue-700`}>{guardando === item.codigo ? "Guardando…" : "Guardar"}</button>}
         </div>;
       })}
@@ -101,7 +103,7 @@ function ConfiguracionConceptosProvisiones() {
   </Seccion>;
 }
 
-export default function ProvisionesFondosPage() {
+export default function ProvisionesFondosPage({ modoCatalogo = false }) {
   const [form, setForm] = useState(nuevoFormulario);
   const [items, setItems] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -250,6 +252,8 @@ export default function ProvisionesFondosPage() {
     } catch (e) { setError(e.response?.data?.detail || "No se pudo generar el PDF."); }
   };
   const filtrados = items.filter((x) => [x.numero, x.cliente?.nombre, x.cliente?.nif, x.cliente?.poblacion].some((v) => String(v || "").toLowerCase().includes(busqueda.toLowerCase())));
+
+  if (modoCatalogo) return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6"><header className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-5 py-5 shadow-sm"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">MOLSAN ERP PREMIUM 2027 · CATÁLOGOS ECONÓMICOS</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800">Tabla Provisiones de fondos</h1><p className="mt-1 max-w-3xl text-sm text-slate-500">Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla.</p></header><ConfiguracionConceptosProvisiones /></main>;
 
   return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6">
     <header className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-4 py-4 shadow-sm backdrop-blur-xl sm:px-5">

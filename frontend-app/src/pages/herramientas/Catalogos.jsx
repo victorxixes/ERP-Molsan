@@ -68,6 +68,14 @@ const CATALOGOS = [
     destacado: true,
   },
   {
+    icon: "🧾",
+    titulo: "Tabla Provisiones de fondos",
+    descripcion: "Configura importes de referencia y criterios iniciales de impuestos por operación y territorio.",
+    ruta: "/catalogos/provisiones-fondos",
+    grupo: "Catálogos económicos",
+    destacado: true,
+  },
+  {
     icon: "💶",
     titulo: "Honorarios de gestoría",
     descripcion: "Tarifas con base imponible, IVA o IGIC y total calculado.",

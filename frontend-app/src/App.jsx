@@ -365,6 +365,11 @@ export default function App() {
             element={<ProvisionesFondosPage />}
           />
 
+          <Route
+            path="catalogos/provisiones-fondos"
+            element={<ProvisionesFondosPage modoCatalogo />}
+          />
+
           <Route path="herramientas/utilidades/visibilidad-tablas" element={<AdministracionEmpleadoConfig seccion="visibilidad-tablas" />} />
           <Route path="herramientas/utilidades/asignaciones" element={<AdministracionEmpleadoConfig seccion="asignaciones" />} />
           <Route path="herramientas/utilidades/complementos-saldo" element={<ComplementosSaldo />} />

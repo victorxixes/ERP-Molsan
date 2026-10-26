@@ -1000,6 +1000,7 @@ def inicializar_tablas_auxiliares():
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS otros_gastos_base NUMERIC(14,2) NOT NULL DEFAULT 0"))
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS ajustes_motivo TEXT"))
             conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS ajustes_auditoria JSON NOT NULL DEFAULT '[]'"))
+            conn.execute(text("ALTER TABLE provisiones_conceptos_importes ADD COLUMN IF NOT EXISTS reglas JSON NOT NULL DEFAULT '{}'"))
             conn.execute(text("UPDATE provisiones_operaciones SET gastos_registro_base = gastos_registro WHERE gastos_registro_base = 0"))
             conn.execute(text("UPDATE provisiones_operaciones SET suplidos_base = suplidos WHERE suplidos_base = 0"))
             conn.execute(text("UPDATE provisiones_operaciones SET otros_gastos_base = otros_gastos WHERE otros_gastos_base = 0"))
