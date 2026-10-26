@@ -107,7 +107,7 @@ export default function MensajeriaSolicitudes() {
   const [seleccionada, setSeleccionada] = useState(null);
   const [comunicaciones, setComunicaciones] = useState([]);
   const [mensajeChat, setMensajeChat] = useState("");
-  const [form, setForm] = useState({ fecha_solicitada: "", prioridad: "Normal", descripcion: "", expediente_id: "", contacto_origen: "", contacto_destino: "", telefono_destino: "", servicio_id: "" });
+  const [form, setForm] = useState({ fecha_solicitada: "", prioridad: "Normal", descripcion: "", expediente_id: "", contacto_origen: "", contacto_destino: "", telefono_recogida: "", telefono_entrega: "", telefono_destino: "", servicio_id: "" });
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
@@ -163,7 +163,7 @@ export default function MensajeriaSolicitudes() {
         servicio_id: form.servicio_id ? Number(form.servicio_id) : null,
       };
       await axios.post("/mensajeria/mis-solicitudes", payload);
-      setForm({ fecha_solicitada: "", prioridad: "Normal", descripcion: "", expediente_id: "", contacto_origen: "", contacto_destino: "", telefono_destino: "", servicio_id: "" });
+      setForm({ fecha_solicitada: "", prioridad: "Normal", descripcion: "", expediente_id: "", contacto_origen: "", contacto_destino: "", telefono_recogida: "", telefono_entrega: "", telefono_destino: "", servicio_id: "" });
       setOrigen(nuevaUbicacion()); setDestino(nuevaUbicacion());
       setAviso("Encargo creado y enviado a Mensajería Gestión.");
       await cargar();
@@ -200,7 +200,8 @@ export default function MensajeriaSolicitudes() {
           <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Prioridad<select className={inputClass + " mt-1.5"} value={form.prioridad} onChange={(e) => setForm({ ...form, prioridad: e.target.value })}><option>Normal</option><option>Alta</option></select></label>
           <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Contacto de origen<input className={inputClass + " mt-1.5"} value={form.contacto_origen} onChange={(e) => setForm({ ...form, contacto_origen: e.target.value })} /></label>
           <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Contacto de destino<input className={inputClass + " mt-1.5"} value={form.contacto_destino} onChange={(e) => setForm({ ...form, contacto_destino: e.target.value })} /></label>
-          <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Teléfono de destino<input className={inputClass + " mt-1.5"} value={form.telefono_destino} onChange={(e) => setForm({ ...form, telefono_destino: e.target.value })} /></label>
+          <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Teléfono de recogida<input className={inputClass + " mt-1.5"} value={form.telefono_recogida} onChange={(e) => setForm({ ...form, telefono_recogida: e.target.value })} placeholder="Teléfono de contacto en origen" /></label>
+          <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Teléfono de entrega<input className={inputClass + " mt-1.5"} value={form.telefono_entrega} onChange={(e) => setForm({ ...form, telefono_entrega: e.target.value })} placeholder="Teléfono de contacto en destino" /></label>
           <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Expediente relacionado<input className={inputClass + " mt-1.5"} value={form.expediente_id} onChange={(e) => setForm({ ...form, expediente_id: e.target.value })} placeholder="Opcional" /></label>
         </div>
         <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Servicio<select className={inputClass + " mt-1.5"} value={form.servicio_id} onChange={(e) => setForm({ ...form, servicio_id: e.target.value })}><option value="">Sin especificar</option>{servicios.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}</select></label>
