@@ -3520,7 +3520,7 @@ def generar_documento_factura_honorarios(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
-    """Rellena el DOCX oficial asociado al concepto de gasto ID 6 y conserva logo/QR."""
+    """Rellena el DOCX oficial del concepto «honorarios gestoría» y conserva logo/QR."""
     from docx import Document
     from backend.app.tipos_concepto_gastos.models import TipoConceptoGastos
     from backend.app.tipos_concepto_gastos.router import garantizar_catalogo_inicial
@@ -3564,10 +3564,10 @@ def generar_documento_factura_honorarios(
     db.commit()
     plantilla = db.execute(text("""
         SELECT nombre_archivo, contenido
-        FROM plantilla_factura_concepto_gasto WHERE concepto_gasto_id = 6
-    """)).mappings().first()
+        FROM plantilla_factura_concepto_gasto WHERE concepto_gasto_id = :concepto_id
+    """), {"concepto_id": concepto.id}).mappings().first()
     if not plantilla or not plantilla["contenido"]:
-        raise HTTPException(status_code=404, detail="Falta cargar la plantilla Word en Tipos de Concepto de Gastos → ID 6 «honorarios gestoría».")
+        raise HTTPException(status_code=404, detail="Falta cargar la plantilla Word en Catálogos → Tipos de Concepto de Gastos → honorarios gestoría.")
 
     expediente = db.query(Expediente).filter(Expediente.id_expediente == str(id_expediente)).first()
     if expediente is None:
