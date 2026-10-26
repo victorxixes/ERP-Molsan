@@ -249,7 +249,7 @@ export default function TiposConceptoGastos() {
       setErrorPlantillaFactura("");
     } catch (err) {
       setPlantillaFactura(null);
-      setErrorPlantillaFactura(err?.response?.data?.detail || "No se pudo comprobar la plantilla vinculada al concepto ID 6.");
+      setErrorPlantillaFactura(err?.response?.data?.detail || "No se pudo comprobar la plantilla vinculada al concepto «honorarios gestoría».");
     }
   }
 
@@ -266,7 +266,7 @@ export default function TiposConceptoGastos() {
       });
       setPlantillaFactura({ plantilla_cargada: true, factura_nombre: data.factura_nombre, factura_tipo: data.factura_tipo, concepto_gasto_id: data.concepto_gasto_id, concepto_gasto: data.concepto_gasto });
       setArchivoPlantillaFactura(null);
-      setMensajePlantillaFactura("Plantilla guardada y vinculada al concepto ID 6 «honorarios gestoría».");
+      setMensajePlantillaFactura("Plantilla guardada y vinculada al concepto «honorarios gestoría».");
     } catch (err) {
       setErrorPlantillaFactura(err?.response?.data?.detail || "No se pudo guardar la plantilla Word.");
     } finally {
@@ -933,7 +933,7 @@ export default function TiposConceptoGastos() {
               <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">{plantillaFactura?.plantilla_cargada ? "Sustituir plantilla oficial (.docx)" : "Cargar plantilla oficial (.docx)"}</span>
               <input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e) => setArchivoPlantillaFactura(e.target.files?.[0] || null)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" />
             </label>
-            <button type="button" onClick={subirPlantillaFactura} disabled={!archivoPlantillaFactura || subiendoPlantillaFactura} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-50">{subiendoPlantillaFactura ? "Guardando…" : "Vincular plantilla al ID 6"}</button>
+            <button type="button" onClick={subirPlantillaFactura} disabled={!archivoPlantillaFactura || subiendoPlantillaFactura} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-50">{subiendoPlantillaFactura ? "Guardando…" : "Vincular plantilla a honorarios gestoría"}</button>
           </div>
         </section>
 
