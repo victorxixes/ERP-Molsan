@@ -25,7 +25,7 @@ const MODULOS_ERP = [
 
   {
     key: "provisiones-fondos",
-    label: "Provisiones de fondos",
+    label: "Provisiones",
     route: "/provisiones-fondos",
     icon: "clipboard",
   },
