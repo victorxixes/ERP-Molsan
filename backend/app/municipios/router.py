@@ -412,6 +412,8 @@ def importar_codigos_postales_nacionales(db: Session = Depends(get_db)):
     codigos_por_municipio = {}
     filas_fuente = 0
     filas_invalidas = 0
+    municipios_no_encontrados = 0
+    municipios_ambiguos = 0
     for fila in lector:
         filas_fuente += 1
         cp = str(fila.get("codigo_postal") or "").strip()
@@ -424,7 +426,11 @@ def importar_codigos_postales_nacionales(db: Session = Depends(get_db)):
         candidatas = por_nombre.get(clave_nombre, [])
         provincias_validas = {clave_territorial(p) for p in PROVINCIAS_INE[ine[:2]]}
         candidatas = [m for m in candidatas if clave_territorial(m.provincia) in provincias_validas]
-        if len(candidatas) != 1:
+        if not candidatas:
+            municipios_no_encontrados += 1
+            continue
+        if len(candidatas) > 1:
+            municipios_ambiguos += 1
             continue
         municipio = candidatas[0]
         codigos_por_municipio.setdefault(municipio.id, {"municipio": municipio, "codigos": set()})["codigos"].add(cp)
@@ -461,6 +467,8 @@ def importar_codigos_postales_nacionales(db: Session = Depends(get_db)):
         "fuente": "Dataset de códigos postales derivado de datos abiertos del INE",
         "filas_fuente": filas_fuente,
         "filas_invalidas": filas_invalidas,
+        "municipios_no_encontrados_en_catalogo": municipios_no_encontrados,
+        "coincidencias_ambiguas_omitidas": municipios_ambiguos,
         "municipios_con_coincidencia": len(codigos_por_municipio),
         "municipios_actualizados": municipios_actualizados,
         "relaciones_nuevas": relaciones_nuevas,
