@@ -513,6 +513,8 @@ def contexto_expediente_correspondencia(
 # ============================================================
 
 def _asegurar_configuracion_firma(db: Session):
+    # La tabla antigua se mantiene para conservar el pie corporativo y poder
+    # migrar una plantilla que se hubiese subido antes de separar ambos flujos.
     db.execute(text("""
         CREATE TABLE IF NOT EXISTS correspondencia_configuracion (
             id INTEGER PRIMARY KEY,
@@ -526,10 +528,42 @@ def _asegurar_configuracion_firma(db: Session):
     """))
     db.execute(text("""
         INSERT INTO correspondencia_configuracion (id, firma_pie)
-        VALUES (1, '')
-        ON CONFLICT (id) DO NOTHING
+        VALUES (1, '') ON CONFLICT (id) DO NOTHING
     """))
     db.commit()
+
+
+def _asegurar_plantilla_factura_concepto(db: Session):
+    from backend.app.tipos_concepto_gastos.models import TipoConceptoGastos
+    from backend.app.tipos_concepto_gastos.router import garantizar_catalogo_inicial
+
+    garantizar_catalogo_inicial(db)
+    concepto = db.query(TipoConceptoGastos).filter(TipoConceptoGastos.id == 6).first()
+    if not concepto or " ".join((concepto.nombre or "").strip().lower().split()) != "honorarios gestoría":
+        raise HTTPException(
+            status_code=409,
+            detail="No se puede asociar la plantilla: el concepto ID 6 debe ser «honorarios gestoría». Revisa el catálogo antes de continuar."
+        )
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS plantilla_factura_concepto_gasto (
+            concepto_gasto_id INTEGER PRIMARY KEY,
+            nombre_archivo VARCHAR(255) NOT NULL,
+            tipo_archivo VARCHAR(160) NOT NULL DEFAULT 'application/octet-stream',
+            contenido BYTEA NOT NULL,
+            actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    # Migración transparente de la plantilla subida en la pantalla antigua.
+    db.execute(text("""
+        INSERT INTO plantilla_factura_concepto_gasto
+            (concepto_gasto_id, nombre_archivo, tipo_archivo, contenido)
+        SELECT 6, factura_nombre, COALESCE(factura_tipo, 'application/octet-stream'), factura_contenido
+        FROM correspondencia_configuracion
+        WHERE id = 1 AND factura_contenido IS NOT NULL AND factura_nombre IS NOT NULL
+        ON CONFLICT (concepto_gasto_id) DO NOTHING
+    """))
+    db.commit()
+    return concepto
 
 
 class FirmaCorrespondenciaRequest(BaseModel):
@@ -544,7 +578,7 @@ def obtener_firma_correspondencia(
     require_perm_modulo(usuario, "utilidades", "ver")
     _asegurar_configuracion_firma(db)
     fila = db.execute(text("""
-        SELECT firma_pie, factura_nombre, factura_tipo, actualizado_en
+        SELECT firma_pie, actualizado_en
         FROM correspondencia_configuracion WHERE id = 1
     """)).mappings().first()
     nombre_empleado = " ".join(filter(None, [
@@ -564,8 +598,9 @@ def obtener_firma_correspondencia(
     return {
         "firma_pie": fila["firma_pie"] or "",
         "firma_personal": firma_personal,
-        "factura_nombre": fila["factura_nombre"],
-        "factura_tipo": fila["factura_tipo"],
+        "nombre_empleado": nombre_empleado,
+        "departamento": departamento,
+        "cargo": cargo,
         "actualizado_en": fila["actualizado_en"].isoformat() if fila.get("actualizado_en") else None,
     }
 
@@ -587,51 +622,55 @@ def guardar_firma_correspondencia(
     return {"ok": True, "firma_pie": (datos.firma_pie or "").strip()}
 
 
-@router.post("/correspondencia/firma/factura")
+@router.post("/conceptos-gastos/6/plantilla-factura")
+@router.post("/correspondencia/firma/factura", include_in_schema=False)
 async def subir_plantilla_factura_honorarios(
     fichero: UploadFile = File(...),
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
     require_perm_modulo(usuario, "utilidades", "editar")
-    nombre = (fichero.filename or "plantilla-factura").replace("\\", "/").split("/")[-1].strip()
+    nombre = (fichero.filename or "plantilla-factura.docx").replace("\\", "/").split("/")[-1].strip()
     extension = nombre.rsplit(".", 1)[-1].lower() if "." in nombre else ""
-    extensiones_permitidas = {"pdf", "doc", "docx", "png", "jpg", "jpeg"}
-    if extension not in extensiones_permitidas:
-        raise HTTPException(status_code=400, detail="Formato no permitido. Sube un PDF, DOC/DOCX o imagen.")
+    if extension != "docx":
+        raise HTTPException(status_code=400, detail="La plantilla oficial de factura debe ser un documento Word .docx para poder rellenarla conservando su formato y QR.")
     contenido = await fichero.read()
     if not contenido:
         raise HTTPException(status_code=400, detail="El archivo está vacío.")
     if len(contenido) > 10 * 1024 * 1024:
         raise HTTPException(status_code=413, detail="El archivo supera el límite de 10 MB.")
-    tipo = (fichero.content_type or "application/octet-stream")[:160]
-    _asegurar_configuracion_firma(db)
+    concepto = _asegurar_plantilla_factura_concepto(db)
     db.execute(text("""
-        UPDATE correspondencia_configuracion
-        SET factura_nombre = :nombre, factura_tipo = :tipo,
-            factura_contenido = :contenido, actualizado_en = CURRENT_TIMESTAMP
-        WHERE id = 1
-    """), {"nombre": nombre, "tipo": tipo, "contenido": contenido})
+        INSERT INTO plantilla_factura_concepto_gasto
+            (concepto_gasto_id, nombre_archivo, tipo_archivo, contenido, actualizado_en)
+        VALUES (6, :nombre, :tipo, :contenido, CURRENT_TIMESTAMP)
+        ON CONFLICT (concepto_gasto_id) DO UPDATE SET
+            nombre_archivo = EXCLUDED.nombre_archivo,
+            tipo_archivo = EXCLUDED.tipo_archivo,
+            contenido = EXCLUDED.contenido,
+            actualizado_en = CURRENT_TIMESTAMP
+    """), {"nombre": nombre, "tipo": fichero.content_type or "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "contenido": contenido})
     db.commit()
-    return {"ok": True, "factura_nombre": nombre, "factura_tipo": tipo}
+    return {"ok": True, "concepto_gasto_id": concepto.id, "concepto_gasto": concepto.nombre, "factura_nombre": nombre, "factura_tipo": fichero.content_type or "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
 
 
-@router.get("/correspondencia/firma/factura")
+@router.get("/conceptos-gastos/6/plantilla-factura")
+@router.get("/correspondencia/firma/factura", include_in_schema=False)
 def descargar_plantilla_factura_honorarios(
     db: Session = Depends(get_db),
     usuario=Depends(get_current_user),
 ):
     require_perm_modulo(usuario, "utilidades", "ver")
-    _asegurar_configuracion_firma(db)
+    _asegurar_plantilla_factura_concepto(db)
     fila = db.execute(text("""
-        SELECT factura_nombre, factura_tipo, factura_contenido
-        FROM correspondencia_configuracion WHERE id = 1
+        SELECT nombre_archivo, tipo_archivo, contenido
+        FROM plantilla_factura_concepto_gasto WHERE concepto_gasto_id = 6
     """)).mappings().first()
-    if not fila or not fila["factura_contenido"]:
-        raise HTTPException(status_code=404, detail="Todavía no hay una plantilla de factura cargada.")
-    nombre = (fila["factura_nombre"] or "plantilla-factura").replace('"', "")
+    if not fila or not fila["contenido"]:
+        raise HTTPException(status_code=404, detail="El concepto ID 6 («honorarios gestoría») todavía no tiene una plantilla Word cargada.")
+    nombre = (fila["nombre_archivo"] or "plantilla-factura.docx").replace('"', "")
     return Response(
-        content=bytes(fila["factura_contenido"]),
-        media_type=fila["factura_tipo"] or "application/octet-stream",
+        content=bytes(fila["contenido"]),
+        media_type=fila["tipo_archivo"] or "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         headers={"Content-Disposition": f'attachment; filename="{nombre}"'},
     )
