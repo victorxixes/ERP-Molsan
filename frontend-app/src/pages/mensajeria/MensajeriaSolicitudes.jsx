@@ -53,7 +53,7 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
     </label>
     {valor.tipo !== "Otros" && <>
       <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">{valor.tipo === "Notaria" ? "Buscar notario / notaría (CTN)" : "Buscar Registro de la Propiedad"}
-        <input className={inputClass + " mt-1.5"} value={busqueda || valor.busqueda} onChange={(e) => { setBusqueda(e.target.value); cambiar("busqueda", e.target.value); cambiar("referencia_id", ""); }} placeholder={valor.tipo === "Notaria" ? "Nombre, apellidos, NIF, código o población…" : "Nombre del registro, registrador o población…"} />
+        <input className={inputClass + " mt-1.5"} value={busqueda || valor.busqueda} onChange={(e) => { const texto = e.target.value; setBusqueda(texto); onChange({ ...valor, busqueda: texto, referencia_id: "" }); }} placeholder={valor.tipo === "Notaria" ? "Nombre, apellidos, NIF, código o población…" : "Nombre del registro, registrador o población…"} />
       </label>
       {busqueda && <div className="max-h-44 overflow-y-auto rounded-xl border border-slate-200 bg-white">{filtradas.map((item) => <button type="button" key={item.id} onClick={() => elegir(item)} className="block w-full border-b border-slate-100 px-3 py-2.5 text-left text-sm last:border-b-0 hover:bg-blue-50"><span className="block font-semibold text-slate-800">{valor.tipo === "Notaria" ? (item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" ")) : item.registro_propiedad}</span><span className="block text-xs text-slate-500">{[item.direccion, item.cp || item.codigo_postal, item.municipio || item.poblacion, item.provincia].filter(Boolean).join(" · ") || "Sin dirección en el catálogo"}</span></button>)}{!filtradas.length && <p className="p-3 text-sm text-slate-500">No hay coincidencias en el catálogo.</p>}</div>}
       {valor.referencia_id && <p className="text-xs font-semibold text-emerald-700">✓ Datos cargados desde el catálogo. Puedes revisar la dirección.</p>}
@@ -66,7 +66,7 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
         <input className={inputClass + " mt-1.5"} value={valor.codigo_postal} onChange={(e) => cambiar("codigo_postal", e.target.value)} />
       </label>
       <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Población
-        <input className={inputClass + " mt-1.5"} value={valor.poblacion} onChange={(e) => cambiar("poblacion", e.target.value)} list={`municipios-${titulo.replace(/[^a-z]/gi, "").toLowerCase()}`} placeholder="Busca un municipio…" />
+        <input className={inputClass + " mt-1.5"} value={valor.poblacion} onChange={(e) => { const poblacion = e.target.value; const coincidencias = municipios.filter((m) => m.municipio.toLocaleLowerCase("es") === poblacion.trim().toLocaleLowerCase("es")); onChange({ ...valor, poblacion, ...(valor.tipo === "Otros" && coincidencias.length === 1 ? { provincia: coincidencias[0].provincia } : {}) }); }} list={`municipios-${titulo.replace(/[^a-z]/gi, "").toLowerCase()}`} placeholder="Busca un municipio…" />
         <datalist id={`municipios-${titulo.replace(/[^a-z]/gi, "").toLowerCase()}`}>{municipiosFiltrados.map((m) => <option key={m.id} value={m.municipio}>{m.provincia}</option>)}</datalist>
       </label>
       <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Provincia
