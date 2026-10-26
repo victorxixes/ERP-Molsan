@@ -539,11 +539,15 @@ def _asegurar_plantilla_factura_concepto(db: Session):
     from backend.app.tipos_concepto_gastos.router import garantizar_catalogo_inicial
 
     garantizar_catalogo_inicial(db)
-    concepto = db.query(TipoConceptoGastos).filter(TipoConceptoGastos.id == 6).first()
-    if not concepto or " ".join((concepto.nombre or "").strip().lower().split()) != "honorarios gestoría":
+    # Resolver el concepto por su nombre canónico, no por un ID asumido:
+    # las bases de datos existentes pueden tener otro orden de inserción.
+    concepto = db.query(TipoConceptoGastos).filter(
+        func.lower(func.trim(TipoConceptoGastos.nombre)) == "honorarios gestoría"
+    ).order_by(TipoConceptoGastos.id.asc()).first()
+    if not concepto:
         raise HTTPException(
             status_code=409,
-            detail="No se puede asociar la plantilla: el concepto ID 6 debe ser «honorarios gestoría». Revisa el catálogo antes de continuar."
+            detail="No existe el concepto «honorarios gestoría» en Tipos de Concepto de Gastos. Créalo o corrige su nombre antes de continuar."
         )
     db.execute(text("""
         CREATE TABLE IF NOT EXISTS plantilla_factura_concepto_gasto (
@@ -558,11 +562,11 @@ def _asegurar_plantilla_factura_concepto(db: Session):
     db.execute(text("""
         INSERT INTO plantilla_factura_concepto_gasto
             (concepto_gasto_id, nombre_archivo, tipo_archivo, contenido)
-        SELECT 6, factura_nombre, COALESCE(factura_tipo, 'application/octet-stream'), factura_contenido
+        SELECT :concepto_id, factura_nombre, COALESCE(factura_tipo, 'application/octet-stream'), factura_contenido
         FROM correspondencia_configuracion
         WHERE id = 1 AND factura_contenido IS NOT NULL AND factura_nombre IS NOT NULL
         ON CONFLICT (concepto_gasto_id) DO NOTHING
-    """))
+    """), {"concepto_id": concepto.id})
     db.commit()
     return concepto
 
@@ -644,13 +648,13 @@ async def subir_plantilla_factura_honorarios(
     db.execute(text("""
         INSERT INTO plantilla_factura_concepto_gasto
             (concepto_gasto_id, nombre_archivo, tipo_archivo, contenido, actualizado_en)
-        VALUES (6, :nombre, :tipo, :contenido, CURRENT_TIMESTAMP)
+        VALUES (:concepto_id, :nombre, :tipo, :contenido, CURRENT_TIMESTAMP)
         ON CONFLICT (concepto_gasto_id) DO UPDATE SET
             nombre_archivo = EXCLUDED.nombre_archivo,
             tipo_archivo = EXCLUDED.tipo_archivo,
             contenido = EXCLUDED.contenido,
             actualizado_en = CURRENT_TIMESTAMP
-    """), {"nombre": nombre, "tipo": fichero.content_type or "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "contenido": contenido})
+    """), {"concepto_id": concepto.id, "nombre": nombre, "tipo": fichero.content_type or "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "contenido": contenido})
     db.commit()
     return {"ok": True, "concepto_gasto_id": concepto.id, "concepto_gasto": concepto.nombre, "factura_nombre": nombre, "factura_tipo": fichero.content_type or "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
 
@@ -664,8 +668,8 @@ def estado_plantilla_factura_honorarios(
     concepto = _asegurar_plantilla_factura_concepto(db)
     fila = db.execute(text("""
         SELECT nombre_archivo, tipo_archivo, actualizado_en
-        FROM plantilla_factura_concepto_gasto WHERE concepto_gasto_id = 6
-    """)).mappings().first()
+        FROM plantilla_factura_concepto_gasto WHERE concepto_gasto_id = :concepto_id
+    """), {"concepto_id": concepto.id}).mappings().first()
     return {
         "concepto_gasto_id": concepto.id,
         "concepto_gasto": concepto.nombre,
@@ -686,10 +690,10 @@ def descargar_plantilla_factura_honorarios(
     _asegurar_plantilla_factura_concepto(db)
     fila = db.execute(text("""
         SELECT nombre_archivo, tipo_archivo, contenido
-        FROM plantilla_factura_concepto_gasto WHERE concepto_gasto_id = 6
-    """)).mappings().first()
+        FROM plantilla_factura_concepto_gasto WHERE concepto_gasto_id = :concepto_id
+    """), {"concepto_id": concepto.id}).mappings().first()
     if not fila or not fila["contenido"]:
-        raise HTTPException(status_code=404, detail="El concepto ID 6 («honorarios gestoría») todavía no tiene una plantilla Word cargada.")
+        raise HTTPException(status_code=404, detail="El concepto «honorarios gestoría» todavía no tiene una plantilla Word cargada.")
     nombre = (fila["nombre_archivo"] or "plantilla-factura.docx").replace('"', "")
     return Response(
         content=bytes(fila["contenido"]),
