@@ -3386,7 +3386,9 @@ export default function Informes() {
         <InformeCitasApoderados />
       ) : apartadoActivo === "firmas" ? (
         <InformeFirmas />
-      ) : apartadoActivo === "sla" ? (\n        <InformeSLA />\n      ) : apartadoActivo === "notarios" ? (
+      ) : apartadoActivo === "sla" ? (
+        <InformeSLA />
+      ) : apartadoActivo === "notarios" ? (
         <InformeNotarios />
       ) : (
         <ApartadoInformePendiente apartado={apartadoSeleccionado} />
