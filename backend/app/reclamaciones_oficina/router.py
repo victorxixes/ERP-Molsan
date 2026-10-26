@@ -118,12 +118,19 @@ def enviar_reclamacion(
         raise HTTPException(status_code=400, detail="El asunto y el cuerpo son obligatorios")
 
     nombre = " ".join(filter(None, [_texto(getattr(usuario, "nombre", "")), _texto(getattr(usuario, "apellidos", ""))]))
-    remitente = _texto(getattr(usuario, "email_empresa", "")) or _texto(getattr(usuario, "email_personal", ""))
+    # El remitente visible y real debe ser el email de empresa de la FichaEmpleado.
+    # No sustituirlo silenciosamente por el correo personal ni por el remitente genérico SMTP.
+    remitente = _texto(getattr(usuario, "email_empresa", ""))
+    if not remitente or "@" not in remitente:
+        raise HTTPException(
+            status_code=400,
+            detail="El empleado no tiene un Email de empresa válido en FichaEmpleado > Datos básicos. Complétalo antes de enviar.",
+        )
 
     registro = EmailReclamacion(
         expediente_id=expediente.id,
         id_expediente=expediente.id_expediente,
-        remitente=remitente or os.getenv("SMTP_FROM", ""),
+        remitente=remitente,
         destinatario=destinatario,
         asunto=asunto,
         cuerpo=cuerpo,
@@ -142,10 +149,12 @@ def enviar_reclamacion(
     port = int(os.getenv("SMTP_PORT", "587"))
     smtp_user = os.getenv("SMTP_USER", "").strip()
     smtp_password = os.getenv("SMTP_PASSWORD", "")
-    from_email = os.getenv("SMTP_FROM", "").strip() or remitente
+    # El encabezado From del email enviado coincide con el email de empresa del empleado.
+    # SMTP_FROM deja de sobreescribir el remitente empresarial mostrado en el ERP.
+    from_email = remitente
 
-    if not host or not from_email:
-        registro.detalle = "Envío no realizado: faltan SMTP_HOST o SMTP_FROM en las variables de entorno del backend."
+    if not host:
+        registro.detalle = "Envío no realizado: falta SMTP_HOST en las variables de entorno del backend."
         db.commit()
         raise HTTPException(status_code=503, detail=registro.detalle)
 
