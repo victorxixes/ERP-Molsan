@@ -164,11 +164,13 @@ function ConfiguracionConceptosProvisiones() {
     const honorariosEtiqueta = caixabank ? "Honorarios" : "Gestión";
     const honorarioSeleccionado = honorarioGestoriaPorEntidad(catalogoHonorarios, tipo);
     const importe = importeHonorario(honorarioSeleccionado);
+    const tablaAbierta = borradores[item.codigo]?.reglas?.tablas_abiertas?.[tipo] !== false;
     return <div className="mt-4 rounded-xl border border-slate-200 bg-white p-3">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div><h3 className="font-bold text-slate-900">{titulo}</h3><p className="mt-1 text-xs text-slate-500">{tramos.length} tramos · capital, notaría y registro editables; {honorariosEtiqueta.toLowerCase()} enlazada al catálogo.</p></div>
-        <button type="button" onClick={() => agregarTramo(item.codigo, tipo)} className={boton + " bg-indigo-600 text-white hover:bg-indigo-700"}>＋ Añadir tramo</button>
+        <div className="flex flex-wrap gap-2"><button type="button" onClick={() => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), tablas_abiertas: { ...(draft.reglas?.tablas_abiertas || {}), [tipo]: !tablaAbierta } })} className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700">{tablaAbierta ? "− Ocultar tabla" : "+ Expandir tabla"}</button>{tablaAbierta && <button type="button" onClick={() => agregarTramo(item.codigo, tipo)} className={boton + " bg-indigo-600 text-white hover:bg-indigo-700"}>＋ Añadir tramo</button>}</div>
       </div>
+      {tablaAbierta && <>
       <div className="mb-3 rounded-lg border border-blue-100 bg-blue-50/60 px-3 py-2">
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Concepto enlazado automáticamente al catálogo Honorarios Gestoría</p>
         <p className="mt-1 font-semibold text-slate-800">{honorarioSeleccionado?.nombre || (caixabank ? "Honorarios de gestoría — CaixaBank" : "Honorarios de gestoría — Otra entidad")}</p>
@@ -194,6 +196,7 @@ function ConfiguracionConceptosProvisiones() {
         </table>
       </div>
       <p className="mt-2 text-xs text-slate-500">El total se calcula con Notaría + Registro + el importe del concepto enlazado a toda la tabla. Si el catálogo no devuelve un importe reconocible, se muestra «Pendiente de catálogo» y no se inventa un total.</p>
+      </>}
     </div>;
   };
   return <Seccion titulo="Configuración de conceptos e importes" detalle="Tablas editables de provisiones por capital. Los importes de Notaría y Registro se guardan por tramo; Honorarios y Gestión se enlazan al catálogo central. El total se calcula automáticamente cuando el catálogo proporciona el importe.">
@@ -205,11 +208,28 @@ function ConfiguracionConceptosProvisiones() {
         if (item.codigo === "notaria") {
           return <div key={item.codigo} className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div><p className="font-semibold text-slate-900">Tramos de provisión por capital</p><p className="mt-1 max-w-3xl text-xs text-slate-600">Configuración maestra del catálogo económico. Aquí se editan los importes de Notaría y Registro por tramo; los honorarios se leen del catálogo central de Honorarios Gestoría. La plantilla para confeccionar provisiones está en el módulo operativo.</p></div>
+              <div><p className="font-semibold text-slate-900">Tramos de provisión por capital</p><p className="mt-1 max-w-3xl text-xs text-slate-600">Configuración maestra del catálogo económico y plantilla corporativa de los PDF de provisiones. Los cambios de plantilla se aplican a los nuevos documentos.</p></div>
               <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={boton + " bg-blue-600 text-white hover:bg-blue-700"}>{guardando === item.codigo ? "Guardando…" : "Guardar tablas"}</button>
             </div>
             {renderTabla(item, draft, "caixabank")}
             {renderTabla(item, draft, "ajena")}
+            <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
+              <h3 className="font-bold text-slate-900">Plantilla de la hoja de provisión</h3><p className="mb-3 mt-1 text-xs text-slate-500">Configuración guardada en el catálogo y aplicada a los PDF nuevos, tanto independientes como vinculados a expedientes.</p>
+              <div className="grid gap-3 md:grid-cols-2">
+                <label className={label}>Nombre corporativo<input className={input} value={draft.reglas?.plantilla_pdf?.nombre_empresa ?? "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L."} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), nombre_empresa: e.target.value } })} /></label>
+                <label className={label}>CIF<input className={input} value={draft.reglas?.plantilla_pdf?.cif ?? ""} placeholder="CIF de la empresa" onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), cif: e.target.value } })} /></label>
+                <label className={label}>Dirección corporativa<input className={input} value={draft.reglas?.plantilla_pdf?.direccion ?? ""} placeholder="Dirección" onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), direccion: e.target.value } })} /></label>
+                <label className={label}>Teléfono y correo<input className={input} value={draft.reglas?.plantilla_pdf?.contacto ?? ""} placeholder="Teléfono · email" onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), contacto: e.target.value } })} /></label>
+              </div>
+              <label className={label}>Aviso legal<textarea rows={3} className={input + " resize-y"} value={draft.reglas?.plantilla_pdf?.aviso_legal ?? "En el supuesto de que todos los gastos, hasta su inscripción registral, fueran superiores a los informados, según norma 3.7.20 Cancelaciones solicitaremos un complemento de saldo. Rogamos tengan en cuenta esta información."} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), aviso_legal: e.target.value } })} /></label>
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <label className={label}>Texto de estimación<textarea rows={2} className={input + " resize-y"} value={draft.reglas?.plantilla_pdf?.texto_estimacion ?? "La presente provisión es estimativa y podrá ajustarse a los gastos efectivamente devengados."} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), texto_estimacion: e.target.value } })} /></label>
+                <label className={label}>Pie corporativo<textarea rows={2} className={input + " resize-y"} value={draft.reglas?.plantilla_pdf?.pie_corporativo ?? "Documento emitido por ERP-Molsan."} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), pie_corporativo: e.target.value } })} /></label>
+                <label className="flex items-center gap-2 text-sm font-medium text-slate-700"><input type="checkbox" checked={draft.reglas?.plantilla_pdf?.mostrar_aviso_legal !== false} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), mostrar_aviso_legal: e.target.checked } })} /> Mostrar aviso legal</label>
+                <label className="flex items-center gap-2 text-sm font-medium text-slate-700"><input type="checkbox" checked={draft.reglas?.plantilla_pdf?.mostrar_firma !== false} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), mostrar_firma: e.target.checked } })} /> Mostrar firma del cliente</label>
+              </div>
+              <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50/50 p-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Vista previa</p><div className="mt-3 border-b-2 border-slate-200 pb-3"><p className="text-lg font-extrabold text-[#15325b]">{draft.reglas?.plantilla_pdf?.nombre_empresa || "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L."}</p><p className="text-xs text-slate-600">{[draft.reglas?.plantilla_pdf?.cif, draft.reglas?.plantilla_pdf?.direccion, draft.reglas?.plantilla_pdf?.contacto].filter(Boolean).join(" · ") || "Completa los datos corporativos."}</p><p className="mt-2 font-semibold text-slate-800">PROVISIÓN ESTIMATIVA DE FONDOS</p></div><p className="mt-3 text-xs text-slate-600">{draft.reglas?.plantilla_pdf?.mostrar_aviso_legal === false ? "Aviso legal oculto" : (draft.reglas?.plantilla_pdf?.aviso_legal || "Aviso legal pendiente")}</p></div>
+            </div>
           </div>;
         }
         return <div key={item.codigo} className="rounded-xl border border-slate-200 bg-white p-4">
