@@ -8290,11 +8290,24 @@ const cuantiaFincasParaEnvio =
               </div>
             ) : actividadSeleccionada === "gestion-economica" ? (
               <div className="space-y-3">
-                <p className="rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-500">Esta actividad no tiene campos específicos configurados todavía.</p>
+                <section className="min-w-0 rounded-xl border border-sky-200 bg-sky-50/70 p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-800" aria-hidden="true">⇧</span>
+                    <div>
+                      <h4 className="text-sm font-extrabold text-sky-950">Información económica para enviar a ABSIS</h4>
+                      <p className="mt-1 text-xs leading-relaxed text-sky-900">
+                        <strong>Los pagos realizados del expediente son los que deben comunicarse a ABSIS.</strong> Cada línea debe incluir el ID de pago, la fecha de pago, el tipo de documento, la base imponible, el impuesto y el importe total. Los gastos pendientes de pago se conservan en el libro contable, pero no deben comunicarse como pagos realizados.
+                      </p>
+                      <p className="mt-2 text-xs leading-relaxed text-sky-800">
+                        <strong>Estado de integración:</strong> este bloque define los datos que debe recoger el envío. La conexión automática con ABSIS sigue pendiente de activación; guardar o confirmar un pago en el ERP no acredita por sí solo que ABSIS lo haya recibido.
+                      </p>
+                    </div>
+                  </div>
+                </section>
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                  <h4 className="mb-2 text-sm font-extrabold text-slate-800">Líneas de pago · datos para ABSIS</h4>
+                  <h4 className="mb-2 text-sm font-extrabold text-slate-800">Campos de cada línea económica</h4>
                   <p className="text-xs leading-relaxed text-slate-600">
-                    La información económica debe prepararse a partir de las líneas de pago del expediente. El dato de documento que corresponde comunicar es <strong>Tipo de documento</strong>. La conexión con ABSIS continúa pendiente; guardar aquí no realiza ningún envío externo.
+                    El libro de movimientos de la ficha del expediente es la referencia para preparar la información contable. El campo <strong>Tipo de documento</strong> debe conservarse en cada movimiento junto con su identificador y desglose fiscal.
                   </p>
                 </section>
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
