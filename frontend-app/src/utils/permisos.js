@@ -67,6 +67,24 @@ export function puedeVerModulo(modulo) {
       .trim()
       .toLowerCase();
 
+  // La cuenta técnica admin (rol_id=0) y los roles administrativos
+  // deben poder descubrir los módulos desde «Espacios de trabajo».
+  // La visibilidad configurada sigue aplicándose al resto de usuarios.
+  const rol = String(empleado.rol?.nombre || empleado.rol_nombre || empleado.rol || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+  const usuario = String(empleado.usuario || "").trim().toLowerCase();
+  const esAdministrador =
+    Number(empleado.rol_id ?? empleado.rol?.id) === 0 ||
+    usuario === "admin" ||
+    /(^|\\s)(admin|administrador|administradora|superadmin|superusuario|superuser|root)(\\s|$)/.test(rol);
+
+  if (esAdministrador) {
+    return true;
+  }
+
   const modulos = [
     ...(Array.isArray(empleado.modulos_visibles_list) ? empleado.modulos_visibles_list : []),
     ...(Array.isArray(empleado.modulos_visibles) ? empleado.modulos_visibles : []),
