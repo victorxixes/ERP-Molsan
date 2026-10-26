@@ -210,14 +210,16 @@ const MODULOS_ERP = [
   },
   {
     key: "notargestweb",
-    label: "NotarGestWeb",
-    route: null,
+    label: "NotarGest Notarios",
+    route: "/notargest-notarios",
+    permiso: "notargest",
     icon: "landmark",
   },
   {
     key: "encargagestweb",
-    label: "EncargaGestWeb",
-    route: null,
+    label: "EncargaGest Notarios",
+    route: "/encargagest-notarios",
+    permiso: "encargagest",
     icon: "clipboard-list",
   },
 ];

@@ -920,8 +920,14 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   // Separamos las aplicaciones propias de espacios de trabajo de los módulos técnicos.
   const CLAVES_ESPACIOS_TRABAJO = new Set([
     "apoderagest", "cancelagest", "notargest", "encargagest",
-    "mensajeria", "mensajeria-gestion", "fichajes",
+    "mensajeria-gestion", "notargestweb", "encargagestweb",
   ]);
+
+  // Accesos frecuentes junto a Utilidades; no forman parte del desplegable de espacios.
+  const accesosDirectosUtilidades = [
+    { key: "fichajes", to: "/fichajes", label: "Fichaje Molsan", icon: "clock", directRoute: true },
+    { key: "mensajeria", to: "/mensajeria", label: "Mensajería", icon: "truck", directRoute: true },
+  ].filter((item) => puedeVerModulo(item.key));
   const crearListaDropdown = (tipo) => {
     if (esPortalNotarialExterno) return [];
     const visibles = [
@@ -936,7 +942,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     ]).filter(Boolean));
     const rutaActual = rutaNormalizada(pathname);
     return MODULOS_ERP.filter((modulo) => {
-      if (!modulo.route || modulo.key === "notificaciones" || !puedeVerModulo(modulo.key)) return false;
+      if (!modulo.route || modulo.key === "notificaciones" || !puedeVerModulo(modulo.permiso || modulo.key)) return false;
       const esEspacio = CLAVES_ESPACIOS_TRABAJO.has(modulo.key);
       if (tipo === "espacios" ? !esEspacio : esEspacio) return false;
       const ruta = rutaNormalizada(modulo.route);
@@ -1015,16 +1021,26 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     if (!Array.isArray(navigationItems)) return null;
     const clavesNavegacion = new Set();
     const sinDuplicados = navigationItems.filter((item) => {
-      if (item?.key === "fichajes" || normalizarModulo(item?.label) === "fichajes" ||
-          item?.key === "modulos" || item?.key === "notificaciones" || normalizarModulo(item?.label) === "notificaciones" || ["modulos", "espacios de trabajo", "modulos mas tecnicos"].includes(normalizarModulo(item?.label))) return false;
+      if (item?.key === "modulos" || item?.key === "notificaciones" || normalizarModulo(item?.label) === "notificaciones" || ["modulos", "espacios de trabajo", "modulos mas tecnicos"].includes(normalizarModulo(item?.label))) return false;
       const identificadores = [normalizarModulo(item?.key), normalizarModulo(item?.label), normalizarModulo(item?.to || item?.route)].filter(Boolean);
       if (identificadores.some((clave) => clavesNavegacion.has(clave))) return false;
       identificadores.forEach((clave) => clavesNavegacion.add(clave));
       return true;
     });
+    const directos = accesosDirectosUtilidades.filter((item) => {
+      const ruta = item.to.replace(/\/$/, "").toLocaleLowerCase("es");
+      return !sinDuplicados.some((existente) =>
+        normalizarModulo(existente?.key) === normalizarModulo(item.key) ||
+        String(existente?.to || existente?.route || "").replace(/\/$/, "").toLocaleLowerCase("es") === ruta
+      );
+    });
+    const indiceUtilidades = sinDuplicados.findIndex((item) =>
+      normalizarModulo(item?.key) === "utilidades" || normalizarModulo(item?.label) === "utilidades"
+    );
+    sinDuplicados.splice(indiceUtilidades >= 0 ? indiceUtilidades + 1 : sinDuplicados.length, 0, ...directos);
     sinDuplicados.push(...crearBotonesDropdown());
     return sinDuplicados;
-  }, [navigationItems, espaciosTrabajoDropdown, modulosTecnicosDropdown]);
+  }, [navigationItems, espaciosTrabajoDropdown, modulosTecnicosDropdown, empleado]);
 
   const mostrarBotonMas = modulosMas.length > 0 &&
     !["apoderagest", "notargest", "encargagest"].includes(normalizarModulo(brandName));
@@ -1165,10 +1181,14 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                   return (
                     <div key={item.key} className="relative flex-shrink-0" ref={(elemento) => { if (esMenu) menuSidebarBotonesRef.current[item.menu] = elemento; }}>
                       <button type="button"
-                        onClick={() => esMenu ? setMenuSidebarAbierto((actual) => actual === item.menu ? null : item.menu) : onNavigationItemClick?.(item.label)}
+                        onClick={() => {
+                          if (esMenu) setMenuSidebarAbierto((actual) => actual === item.menu ? null : item.menu);
+                          else if (item.directRoute) navigate(item.to);
+                          else onNavigationItemClick?.(item.label);
+                        }}
                         aria-haspopup={esMenu ? "menu" : undefined} aria-expanded={esMenu ? abierto : undefined}
                         aria-current={activeNavigationItem === item.label ? "page" : undefined}
-                        className={`flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0 ${brandName === "NotarGest" ? "px-3 py-2 rounded-full text-[12px]" : "px-2.5 py-1.5 rounded-lg text-[12px]"} ${activeNavigationItem === item.label ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm" : abierto ? "bg-transparent text-[var(--erp-text)] border-[var(--erp-primary)]" : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"} ${item.attention ? "ng-boton-firmas-urgentes ng-urgencias-activas" : ""}`}>
+                        className={`flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0 ${brandName === "NotarGest" ? "px-3 py-2 rounded-full text-[12px]" : "px-2.5 py-1.5 rounded-lg text-[12px]"} ${(item.directRoute && pathname.replace(/\/$/, "") === item.to) || activeNavigationItem === item.label ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm" : abierto ? "bg-transparent text-[var(--erp-text)] border-[var(--erp-primary)]" : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"} ${item.attention ? "ng-boton-firmas-urgentes ng-urgencias-activas" : ""}`}>
                         <NavIcon name={item.icon} /><span>{item.label}</span>
                         {esMenu && <ChevronIcon open={abierto} />}
                         {(item.badge > 0 || (item.label === "Mensajes" && mensajesNoLeidos > 0)) ? <span className={item.label === "Mensajes" ? "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold" : "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] text-[10px] font-bold"}>{item.label === "Mensajes" ? mensajesNoLeidos : item.badge}</span> : null}
@@ -1184,6 +1204,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               : visiblesPrincipales.map((modulo) => <TopNavItem key={modulo.key} to={modulo.to} label={modulo.label} icon={modulo.icon} badge={modulo.badge || 0} />)}
 
             {!navigationItemsConModulos && modulosFijadosUnicos.map((modulo) => <TopNavItem key={modulo.key} to={modulo.to} label={modulo.label} icon={modulo.icon} badge={modulo.badge || 0} />)}
+            {!navigationItemsConModulos && accesosDirectosUtilidades
+              .filter((item) => ![...visiblesPrincipales, ...modulosFijadosUnicos].some((visible) => visible.key === item.key || visible.to === item.to))
+              .map((item) => <TopNavItem key={item.key} to={item.to} label={item.label} icon={item.icon} />)}
 
             {!navigationItems && crearBotonesDropdown().map((item) => {
               const items = item.menu === "espacios" ? espaciosTrabajoDropdown : modulosTecnicosDropdown;
