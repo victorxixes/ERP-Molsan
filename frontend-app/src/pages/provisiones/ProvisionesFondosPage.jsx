@@ -6,7 +6,7 @@ const hoy = () => new Date().toISOString().slice(0, 10);
 const dinero = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
 const TIPOS_CARGA = ["Hipotecaria", "Administrativa", "Judicial", "Bienes muebles", "Otras"];
 const TERRITORIOS = ["Península", "Canarias"];
-const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "Hipotecaria", territorio: "Península", notaria: "0", ajd: "0", registro: "0", gestion: "0", otros_gastos: "0", total: "0" });
+const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "Hipotecaria", adquisicion_vivienda_habitual: "", territorio: "Península", notaria: "0", ajd: "0", registro: "0", gestion: "0", otros_gastos: "0", total: "0" });
 const nuevoFormulario = () => ({ id: null, fecha: hoy(), cliente: { nombre: "", nif: "", direccion: "", cp: "", poblacion: "", provincia: "", telefono: "", email: "" }, oficina: { numero: "", contacto: "", email: "" }, garantias: [vaciaGarantia()], observaciones: "" });
 const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
 const label = "block text-xs font-semibold uppercase tracking-wide text-slate-500";
@@ -169,6 +169,13 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
 
   const cambiarCliente = (campo, valor) => setForm((f) => ({ ...f, cliente: { ...f.cliente, [campo]: valor } }));
   const cambiarOficina = (campo, valor) => setForm((f) => ({ ...f, oficina: { ...f.oficina, [campo]: valor } }));
+  const importeHipotecaProvincia = (provincia) => {
+    const concepto = conceptosImportes.find((x) => x.codigo === "impuestos" && x.activo !== false);
+    const importes = concepto?.reglas?.importes_hipoteca_provincia || {};
+    const clave = String(provincia || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es");
+    const entrada = Object.entries(importes).find(([nombre]) => nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es") === clave);
+    return entrada && entrada[1] !== "" && entrada[1] != null && Number.isFinite(Number(entrada[1])) ? Number(entrada[1]) : null;
+  };
   const cambiarGarantia = (i, campo, valor) => setForm((f) => ({ ...f, garantias: f.garantias.map((g, n) => {
     if (n !== i) return g;
     const cambios = { [campo]: valor };
@@ -311,11 +318,35 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
               <Campo titulo="N.º finca registral" valor={g.finca} onChange={(v) => cambiarGarantia(i, "finca", v)} />
               <Campo titulo="CRU / IDUFIR" valor={g.cru_idufir} onChange={(v) => cambiarGarantia(i, "cru_idufir", v)} />
               <AutocompleteCatalogo titulo="Registro de la Propiedad" valor={g.registro_propiedad} opciones={catalogoRegistros} etiqueta={(r) => r.registro_propiedad} detalle={(r) => [r.poblacion, r.provincia].filter(Boolean).join(" · ")} placeholder="Busca un registro…" onChange={(v) => cambiarGarantia(i, "registro_propiedad", v)} onSelect={(r) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, registro_propiedad: r.registro_propiedad, poblacion: r.poblacion || x.poblacion, provincia: r.provincia || x.provincia } : x) }))} />
-              <AutocompleteCatalogo titulo="Población" valor={g.poblacion} opciones={catalogoMunicipios} etiqueta={(m) => m.municipio} detalle={(m) => m.provincia} placeholder="Busca una población…" onChange={(v) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, poblacion: v, provincia: "" } : x) }))} onSelect={(m) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, poblacion: m.municipio, provincia: m.provincia } : x) }))} />
+              <AutocompleteCatalogo titulo="Población" valor={g.poblacion} opciones={catalogoMunicipios} etiqueta={(m) => m.municipio} detalle={(m) => m.provincia} placeholder="Busca una población…" onChange={(v) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, poblacion: v, provincia: "", ajd: x.adquisicion_vivienda_habitual === "no" ? "0" : x.ajd } : x) }))} onSelect={(m) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
+                if (n !== i) return x;
+                const importeTerritorial = x.tipo_carga === "Hipotecaria" && x.adquisicion_vivienda_habitual === "no" ? importeHipotecaProvincia(m.provincia) : null;
+                return { ...x, poblacion: m.municipio, provincia: m.provincia, ...(importeTerritorial !== null ? { ajd: String(importeTerritorial) } : {}) };
+              }) }))} />
               <AutocompleteCatalogo titulo="Provincia" valor={g.provincia} opciones={[...new Set(catalogoMunicipios.map((m) => m.provincia).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))} etiqueta={(p) => p} placeholder="Busca una provincia…" onChange={(v) => cambiarGarantia(i, "provincia", v)} onSelect={(p) => cambiarGarantia(i, "provincia", p)} />
               <Campo titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} requerido listId="catalogo-tipos-carga" placeholder="Escribe para buscar el tipo…" />
+              {g.tipo_carga === "Hipotecaria" && <label className={label}>¿La hipoteca se constituyó para adquirir la vivienda habitual?
+                <select className={input} value={g.adquisicion_vivienda_habitual ?? ""} onChange={(e) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
+                  if (n !== i) return x;
+                  const respuesta = e.target.value;
+                  const importeTerritorial = respuesta === "no" ? importeHipotecaProvincia(x.provincia) : null;
+                  return { ...x, adquisicion_vivienda_habitual: respuesta, ...(importeTerritorial !== null ? { ajd: String(importeTerritorial) } : {}) };
+                }) }))} required>
+                <option value="">Selecciona una respuesta…</option><option value="si">Sí, para adquirir la vivienda habitual</option><option value="no">No, para otra finalidad</option>
+              </select>
+              </label>}
               <Selector titulo="Territorio" valor={g.territorio} onChange={(v) => cambiarGarantia(i, "territorio", v)} opciones={TERRITORIOS} requerido />
             </div>
+            {g.tipo_carga === "Hipotecaria" && ["gipuzkoa", "alava", "bizkaia"].includes(String(g.provincia || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es")) && <div role="status" className="mb-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900">
+              <strong>Regla territorial detectada: {g.provincia}.</strong>{" "}
+              {g.adquisicion_vivienda_habitual === "" || g.adquisicion_vivienda_habitual == null
+                ? "Responde primero si la hipoteca se constituyó para adquirir la vivienda habitual."
+                : g.adquisicion_vivienda_habitual === "si"
+                  ? "Al tratarse de una hipoteca constituida para adquirir la vivienda habitual, no se aplica el importe territorial configurado por esta regla."
+                  : importeHipotecaProvincia(g.provincia) === null
+                    ? "No hay importe configurado para " + g.provincia + " en Catálogos → Tabla Provisiones de fondos. Introduce el impuesto manualmente."
+                    : "Como la hipoteca no se constituyó para adquirir la vivienda habitual, se propone " + dinero(importeHipotecaProvincia(g.provincia)) + " según la tabla configurada. El importe se refleja en AJD / impuestos y puedes revisarlo antes de guardar."}
+            </div>}
             {g.tipo_carga !== "Hipotecaria" && <div role="note" className="mb-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900"><strong>Atención:</strong> en cargas administrativas, judiciales, bienes muebles u otras (por ejemplo, embargos) no se debe presupuestar gasto notarial. Añade en Observaciones una nota indicando la carga que debe cancelarse. El importe de Notaría queda a 0 €.</div>}
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
               <Campo titulo="Notaría (€)" tipo="number" valor={g.notaria} onChange={(v) => cambiarGarantia(i, "notaria", v)} disabled={g.tipo_carga !== "Hipotecaria"} />
