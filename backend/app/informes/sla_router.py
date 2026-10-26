@@ -11,7 +11,8 @@ from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import get_current_user
 from backend.app.database import get_db
-from backend.app.expedientes.models import Expediente\nfrom backend.app.expedientes.reparto import ids_expedientes_visibles
+from backend.app.expedientes.models import Expediente
+from backend.app.expedientes.reparto import ids_expedientes_visibles
 
 router = APIRouter(prefix="/informes-sla", tags=["Informes SLA"], dependencies=[Depends(get_current_user)])
 
