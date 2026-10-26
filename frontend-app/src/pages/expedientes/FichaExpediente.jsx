@@ -6596,7 +6596,7 @@ const cuantiaFincasParaEnvio =
             {plantillaEmailId && <p className="text-xs text-slate-500 md:col-span-2">Plantilla: {plantillaSeleccionadaEmail?.nombre || "—"}. Revisa los marcadores [[FALTA: …]] si algún dato no existe en la ficha.</p>}
           </section>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <CampoFormulario label="De · Remitente del servidor" value={empleadoSesion?.email_empresa || empleadoSesion?.email_personal || "Remitente SMTP de ERP"} onChange={() => {}} />
+            <CampoFormulario label="De · Email de empresa (FichaEmpleado)" value={empleadoSesion?.email_empresa || "Falta email de empresa en la ficha del empleado"} onChange={() => {}} />
             <CampoFormulario label="Para · Destinatario" value={emailReclamacion.destinatario} onChange={(v) => setEmailReclamacion((p) => ({ ...p, destinatario: v }))} placeholder="Email del destinatario" />
             <CampoFormulario label="CC · Copia (opcional)" value={emailReclamacion.cc} onChange={(v) => setEmailReclamacion((p) => ({ ...p, cc: v }))} placeholder="Email en copia, si procede" />
           </div>
