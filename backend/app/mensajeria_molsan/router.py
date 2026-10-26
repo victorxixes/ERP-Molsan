@@ -83,6 +83,9 @@ def _ensure_tables(db: Session):
             mensaje TEXT NOT NULL, creado_en TIMESTAMP NOT NULL DEFAULT NOW()
         )
     """))
+    # Añadir los dos teléfonos sin borrar datos de solicitudes existentes.
+    db.execute(text("ALTER TABLE mensajeria_solicitudes ADD COLUMN IF NOT EXISTS telefono_recogida VARCHAR(80)"))
+    db.execute(text("ALTER TABLE mensajeria_solicitudes ADD COLUMN IF NOT EXISTS telefono_entrega VARCHAR(80)"))
     db.commit()
 
 
@@ -121,6 +124,8 @@ class SolicitudIn(BaseModel):
     expediente_id: str | None = None
     contacto_origen: str | None = None
     contacto_destino: str | None = None
+    telefono_recogida: str | None = None
+    telefono_entrega: str | None = None
     telefono_destino: str | None = None
     servicio_id: int | None = None
     responsable: str | None = None
@@ -225,8 +230,8 @@ def crear_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=De
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     result = db.execute(text("""
         INSERT INTO mensajeria_solicitudes
-        (referencia,solicitante_id,solicitante_nombre,origen,destino,fecha_solicitada,prioridad,descripcion,expediente_id,contacto_origen,contacto_destino,telefono_destino,servicio_id,responsable,estado,estado_proveedor,incidencia,coste_previsto)
-        VALUES (:referencia,:solicitante_id,:solicitante_nombre,:origen,:destino,:fecha_solicitada,:prioridad,:descripcion,:expediente_id,:contacto_origen,:contacto_destino,:telefono_destino,:servicio_id,:responsable,:estado,:estado_proveedor,:incidencia,:coste_previsto)
+        (referencia,solicitante_id,solicitante_nombre,origen,destino,fecha_solicitada,prioridad,descripcion,expediente_id,contacto_origen,contacto_destino,telefono_recogida,telefono_entrega,telefono_destino,servicio_id,responsable,estado,estado_proveedor,incidencia,coste_previsto)
+        VALUES (:referencia,:solicitante_id,:solicitante_nombre,:origen,:destino,:fecha_solicitada,:prioridad,:descripcion,:expediente_id,:contacto_origen,:contacto_destino,:telefono_recogida,:telefono_entrega,:telefono_destino,:servicio_id,:responsable,:estado,:estado_proveedor,:incidencia,:coste_previsto)
         RETURNING *
     """), {"referencia": None, **payload})
     row = _dict(result.fetchone())
@@ -245,7 +250,7 @@ def actualizar_solicitud(solicitud_id: int, data: SolicitudIn, db: Session = Dep
         UPDATE mensajeria_solicitudes SET solicitante_id=:solicitante_id,solicitante_nombre=:solicitante_nombre,
         origen=:origen,destino=:destino,fecha_solicitada=:fecha_solicitada,prioridad=:prioridad,descripcion=:descripcion,
         expediente_id=:expediente_id,contacto_origen=:contacto_origen,contacto_destino=:contacto_destino,
-        telefono_destino=:telefono_destino,servicio_id=:servicio_id,responsable=:responsable,estado=:estado,
+        telefono_recogida=:telefono_recogida,telefono_entrega=:telefono_entrega,telefono_destino=:telefono_destino,servicio_id=:servicio_id,responsable=:responsable,estado=:estado,
         estado_proveedor=:estado_proveedor,incidencia=:incidencia,coste_previsto=:coste_previsto,actualizado_en=NOW()
         WHERE id=:id RETURNING *
     """), payload)
@@ -372,8 +377,8 @@ def crear_mi_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario
     })
     result = db.execute(text("""
         INSERT INTO mensajeria_solicitudes
-        (referencia,solicitante_id,solicitante_nombre,origen,destino,fecha_solicitada,prioridad,descripcion,expediente_id,contacto_origen,contacto_destino,telefono_destino,servicio_id,responsable,estado,estado_proveedor,incidencia,coste_previsto)
-        VALUES (NULL,:solicitante_id,:solicitante_nombre,:origen,:destino,:fecha_solicitada,:prioridad,:descripcion,:expediente_id,:contacto_origen,:contacto_destino,:telefono_destino,:servicio_id,:responsable,:estado,:estado_proveedor,:incidencia,:coste_previsto)
+        (referencia,solicitante_id,solicitante_nombre,origen,destino,fecha_solicitada,prioridad,descripcion,expediente_id,contacto_origen,contacto_destino,telefono_recogida,telefono_entrega,telefono_destino,servicio_id,responsable,estado,estado_proveedor,incidencia,coste_previsto)
+        VALUES (NULL,:solicitante_id,:solicitante_nombre,:origen,:destino,:fecha_solicitada,:prioridad,:descripcion,:expediente_id,:contacto_origen,:contacto_destino,:telefono_recogida,:telefono_entrega,:telefono_destino,:servicio_id,:responsable,:estado,:estado_proveedor,:incidencia,:coste_previsto)
         RETURNING *
     """), payload)
     row = _dict(result.fetchone())
