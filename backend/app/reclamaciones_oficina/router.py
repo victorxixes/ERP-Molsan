@@ -127,6 +127,37 @@ def enviar_reclamacion(
             detail="El empleado no tiene un Email de empresa válido en FichaEmpleado > Datos básicos. Complétalo antes de enviar.",
         )
 
+    # Firma automática: datos personales del empleado + pie corporativo configurado en Catálogos.
+    try:
+        db.execute(text("""
+            CREATE TABLE IF NOT EXISTS correspondencia_configuracion (
+                id INTEGER PRIMARY KEY,
+                firma_pie TEXT NOT NULL DEFAULT '',
+                factura_nombre VARCHAR(255),
+                factura_tipo VARCHAR(160),
+                factura_contenido BYTEA,
+                actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT correspondencia_configuracion_unica CHECK (id = 1)
+            )
+        """))
+        db.execute(text("""
+            INSERT INTO correspondencia_configuracion (id, firma_pie)
+            VALUES (1, '') ON CONFLICT (id) DO NOTHING
+        """))
+        config_firma = db.execute(text("""
+            SELECT firma_pie, factura_nombre, factura_tipo, factura_contenido
+            FROM correspondencia_configuracion WHERE id = 1
+        """)).mappings().first()
+        departamento = db.execute(text("SELECT nombre FROM departamentos WHERE id = :id"), {"id": getattr(usuario, "departamento_id", None)}).scalar() if getattr(usuario, "departamento_id", None) else ""
+        cargo = db.execute(text("SELECT nombre FROM cargos WHERE id = :id"), {"id": getattr(usuario, "cargo_id", None)}).scalar() if getattr(usuario, "cargo_id", None) else ""
+        lineas_personales = [nombre, " · ".join(x for x in [departamento or "", cargo or ""] if x)]
+        firma_personal = "\\n".join(x for x in lineas_personales if x)
+        firma_pie = (config_firma["firma_pie"] or "").strip() if config_firma else ""
+        cuerpo = "\\n\\n".join(x for x in [cuerpo, firma_personal, firma_pie] if x)
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="No se pudo preparar la firma corporativa del email.")
+
     registro = EmailReclamacion(
         expediente_id=expediente.id,
         id_expediente=expediente.id_expediente,
@@ -167,6 +198,14 @@ def enviar_reclamacion(
     if cc:
         mensaje["Cc"] = cc
     mensaje.set_content(cuerpo)
+    # La plantilla de factura solo se adjunta a correos identificados explícitamente como honorarios/factura.
+    etiqueta_email = " ".join([_texto(datos.categoria), _texto(datos.plantilla_nombre)]).lower()
+    if config_firma and config_firma.get("factura_contenido") and any(p in etiqueta_email for p in ("honorario", "factura de honorarios")):
+        nombre_archivo = (config_firma.get("factura_nombre") or "plantilla-factura").replace('"', "")
+        tipo_archivo = (config_firma.get("factura_tipo") or "application/octet-stream").split("/", 1)
+        maintype = tipo_archivo[0] if len(tipo_archivo) == 2 else "application"
+        subtype = tipo_archivo[1] if len(tipo_archivo) == 2 else "octet-stream"
+        mensaje.add_attachment(bytes(config_firma["factura_contenido"]), maintype=maintype, subtype=subtype, filename=nombre_archivo)
 
     try:
         with smtplib.SMTP(host, port, timeout=25) as servidor:
