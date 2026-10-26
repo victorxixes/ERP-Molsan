@@ -247,7 +247,7 @@ export default function CatalogoAbsis() {
             <div className="border-b border-slate-200 px-6 py-5"><h2 id="absis-modal-titulo" className="text-lg font-bold text-slate-900">{editando ? "Editar entrada" : "Añadir entrada"} · {categoria}</h2><p className="mt-1 text-sm text-slate-500">Elige la lista y rellena los datos. El código es opcional.</p></div>
             <div className="grid gap-4 p-6 sm:grid-cols-2">
               <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2">Lista
-                <select value={formulario.categoria} onChange={(e) => setFormulario((f) => ({ ...f, categoria: e.target.value }))} className="rounded-xl border border-slate-200 px-3 py-2.5" required>{CATEGORIAS.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+                <select value={formulario.categoria} onChange={(e) => setFormulario((f) => ({ ...f, categoria: e.target.value }))} className="rounded-xl border border-slate-200 px-3 py-2.5" required>{categorias.map((item) => <option key={item} value={item}>{item}</option>)}</select>
               </label>
               <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">Código
                 <input value={formulario.codigo} onChange={(e) => setFormulario((f) => ({ ...f, codigo: e.target.value }))} maxLength={40} className="rounded-xl border border-slate-200 px-3 py-2.5" placeholder="Ej. 118" />
