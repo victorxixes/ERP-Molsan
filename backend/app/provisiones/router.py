@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 from decimal import Decimal
 from io import BytesIO
+from pathlib import Path
 from uuid import uuid4
 import unicodedata
 from typing import List, Literal, Optional
@@ -16,7 +17,7 @@ from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether, Image as PDFImage
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import get_current_user
@@ -653,6 +654,23 @@ def _p(texto: object, style: ParagraphStyle) -> Paragraph:
 
 
 
+
+def _logo_pdf():
+    """Devuelve el logo corporativo si está disponible en el despliegue."""
+    candidatos = [
+        Path(__file__).resolve().parents[3] / "frontend-app" / "public" / "img" / "logo.jpg",
+        Path(__file__).resolve().parents[2] / "static" / "img" / "logo.jpg",
+    ]
+    for ruta in candidatos:
+        try:
+            if ruta.is_file():
+                imagen = PDFImage(str(ruta), width=38*mm, height=18*mm, kind="proportional")
+                imagen.hAlign = "LEFT"
+                return imagen
+        except Exception:
+            continue
+    return None
+
 def _plantilla_pdf_provision(db: Session) -> dict:
     """Lee la plantilla editable guardada en el concepto notaria del catálogo."""
     defaults = {
@@ -703,7 +721,8 @@ def generar_documento_provision(id_expediente: str, provision_id: int, db: Sessi
     cabecera = [escape(str(plantilla.get("nombre_empresa") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L."))]
     datos_corporativos = [plantilla.get("cif"), plantilla.get("direccion"), plantilla.get("contacto")]
     linea_corporativa = " · ".join(escape(str(x)) for x in datos_corporativos if x)
-    story = [
+    logo = _logo_pdf()
+    story = ([logo, Spacer(1, 2*mm)] if logo else []) + [
         Paragraph(cabecera[0], styles["TituloMolsan"]),
         Paragraph("PROVISIÓN DE FONDOS" if item.tipo == "provision" else "PRESUPUESTO DE CANCELACIÓN HIPOTECARIA", styles["Heading2"]),
         Paragraph(f"Expediente: <b>{escape(str(expediente.id_expediente))}</b> &nbsp;&nbsp; Fecha: <b>{item.fecha.strftime('%d/%m/%Y') if item.fecha else '—'}</b> &nbsp;&nbsp; Estado: <b>{escape(item.estado.upper())}</b>", styles["SubtituloMolsan"]),
@@ -947,7 +966,8 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
     plantilla = _plantilla_pdf_provision(db)
     datos_corporativos = [plantilla.get("cif"), plantilla.get("direccion"), plantilla.get("contacto")]
     linea_corporativa = " · ".join(escape(str(x)) for x in datos_corporativos if x)
-    story = [
+    logo = _logo_pdf()
+    story = ([logo, Spacer(1, 2*mm)] if logo else []) + [
         Paragraph(escape(str(plantilla.get("nombre_empresa") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.")), styles["TituloInd"]),
         Paragraph("PROVISIÓN ESTIMATIVA DE FONDOS", styles["Heading2"]),
         Paragraph(f"Número: <b>{escape(str(item.numero))}</b> &nbsp;&nbsp;&nbsp; Fecha de petición: <b>{item.fecha.strftime('%d/%m/%Y') if item.fecha else '—'}</b>", styles["TextoInd"]),
