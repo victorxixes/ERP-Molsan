@@ -444,7 +444,6 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
 
       <Seccion titulo="3. Datos de la garantía y cálculo" detalle="Añade una línea por cada préstamo o garantía. Puedes calcular con el tarifario disponible o introducir los importes manualmente.">
         <datalist id="catalogo-entidades-bancarias">{entidadesBancarias.map((e) => <option key={e.id || e.nombre} value={e.nombre} />)}</datalist>
-        <datalist id="catalogo-tipos-carga">{TIPOS_CARGA.map((tipo) => <option key={tipo} value={tipo} />)}</datalist>
         <div className="space-y-4">
           {form.garantias.map((g, i) => <div key={i} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
             <div className="mb-4 flex items-center justify-between"><h3 className="text-sm font-bold text-slate-800">Garantía {i + 1}</h3>{form.garantias.length > 1 && <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: f.garantias.filter((_, n) => n !== i) }))} className="text-xs font-semibold text-red-600 hover:text-red-800">Eliminar</button>}</div>
