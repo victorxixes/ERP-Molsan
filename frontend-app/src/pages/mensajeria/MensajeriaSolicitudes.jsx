@@ -6,7 +6,7 @@ import "../../css/HerramientasPremium.css";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
 const estadoColor = (estado) => estado === "Entregada" ? "bg-emerald-50 text-emerald-700" : estado === "Incidencia" ? "bg-rose-50 text-rose-700" : estado === "Cancelada" ? "bg-slate-100 text-slate-600" : "bg-blue-50 text-blue-700";
-const nuevaUbicacion = () => ({ tipo: "Otros", busqueda: "", referencia_id: "", direccion: "", codigo_postal: "", poblacion: "", provincia: "", mapa: "" });
+const nuevaUbicacion = () => ({ tipo: "Otros", busqueda: "", referencia_id: "", direccion: "", codigo_postal: "", poblacion: "", provincia: "", contacto: "", telefono: "", mapa: "" });
 const textoDireccion = (u) => [u.direccion, u.codigo_postal, u.poblacion, u.provincia].filter(Boolean).join(", ");
 const mensajeError = (error, fallback) => {
   const detalle = error?.response?.data?.detail;
@@ -44,10 +44,11 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
   }, [opciones, busqueda, valor.tipo]);
 
   const cambiar = (campo, dato) => onChange({ ...valor, [campo]: dato });
+  const telefonoCatalogo = (item) => item.telefono || item.telefono_contacto || item.telefono_fijo || item.telefono_oficina || item.telefono_notaria || item.telefono_registro || item.telefono1 || item.telefono_1 || "";
   const elegir = (item) => {
     if (!item) return;
     const siguiente = valor.tipo === "Notaria"
-      ? { ...valor, referencia_id: String(item.id), busqueda: [item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" "), item.nif ? `NIF ${item.nif}` : ""].filter(Boolean).join(" · "), direccion: item.direccion || "", codigo_postal: item.cp || item.codigo_postal || "", poblacion: item.municipio || item.poblacion || "", provincia: item.provincia || "" }
+      ? { ...valor, referencia_id: String(item.id), busqueda: [item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" "), item.nif ? `NIF ${item.nif}` : ""].filter(Boolean).join(" · "), direccion: item.direccion || "", codigo_postal: item.cp || item.codigo_postal || "", poblacion: item.municipio || item.poblacion || "", provincia: item.provincia || "", contacto: valor.contacto || (item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" ") || item.nombre_registrador || item.registrador || item.registro_propiedad || ""), telefono: telefonoCatalogo(item) || valor.telefono }
       : { ...valor, referencia_id: String(item.id), busqueda: item.registro_propiedad || "", direccion: item.direccion || "", codigo_postal: item.codigo_postal || "", poblacion: item.poblacion || "", provincia: item.provincia || "" };
     onChange(siguiente);
     setBusqueda("");
@@ -88,6 +89,13 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
       </label>
       <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Provincia
         <input className={inputClass + " mt-1.5"} value={valor.provincia} onChange={(e) => cambiar("provincia", e.target.value)} />
+      </label>
+    </div>
+      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Contacto
+        <input className={inputClass + " mt-1.5"} value={valor.contacto} onChange={(e) => cambiar("contacto", e.target.value)} placeholder="Persona de contacto" />
+      </label>
+      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Teléfono
+        <input className={inputClass + " mt-1.5"} value={valor.telefono} onChange={(e) => cambiar("telefono", e.target.value)} placeholder="Teléfono de contacto" />
       </label>
     </div>
     {urlMapa(valor) && <iframe title={`Mapa de ${titulo}`} src={`https://maps.google.com/maps?q=${encodeURIComponent(textoDireccion(valor))}&output=embed`} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="h-44 w-full rounded-xl border border-slate-200" />}
@@ -154,6 +162,10 @@ export default function MensajeriaSolicitudes() {
     try {
       const payload = {
         ...form,
+        contacto_origen: origen.contacto || null,
+        contacto_destino: destino.contacto || null,
+        telefono_recogida: origen.telefono || null,
+        telefono_entrega: destino.telefono || null,
         // Pydantic espera una fecha ISO o null; la cadena vacía provoca HTTP 422.
         fecha_solicitada: form.fecha_solicitada || null,
         origen: `[${origen.tipo}] ${origen.busqueda ? origen.busqueda + " — " : ""}${textoDireccion(origen)}`,
@@ -198,10 +210,6 @@ export default function MensajeriaSolicitudes() {
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Fecha deseada<input className={inputClass + " mt-1.5"} type="date" value={form.fecha_solicitada} onChange={(e) => setForm({ ...form, fecha_solicitada: e.target.value })} /></label>
           <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Prioridad<select className={inputClass + " mt-1.5"} value={form.prioridad} onChange={(e) => setForm({ ...form, prioridad: e.target.value })}><option>Normal</option><option>Alta</option></select></label>
-          <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Contacto de origen<input className={inputClass + " mt-1.5"} value={form.contacto_origen} onChange={(e) => setForm({ ...form, contacto_origen: e.target.value })} /></label>
-          <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Contacto de destino<input className={inputClass + " mt-1.5"} value={form.contacto_destino} onChange={(e) => setForm({ ...form, contacto_destino: e.target.value })} /></label>
-          <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Teléfono de recogida<input className={inputClass + " mt-1.5"} value={form.telefono_recogida} onChange={(e) => setForm({ ...form, telefono_recogida: e.target.value })} placeholder="Teléfono de contacto en origen" /></label>
-          <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Teléfono de entrega<input className={inputClass + " mt-1.5"} value={form.telefono_entrega} onChange={(e) => setForm({ ...form, telefono_entrega: e.target.value })} placeholder="Teléfono de contacto en destino" /></label>
           <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Expediente relacionado<input className={inputClass + " mt-1.5"} value={form.expediente_id} onChange={(e) => setForm({ ...form, expediente_id: e.target.value })} placeholder="Opcional" /></label>
         </div>
         <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Servicio<select className={inputClass + " mt-1.5"} value={form.servicio_id} onChange={(e) => setForm({ ...form, servicio_id: e.target.value })}><option value="">Sin especificar</option>{servicios.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}</select></label>
