@@ -465,7 +465,8 @@ app.include_router(utilidades_router, prefix="/api")
 app.include_router(complementos_saldo_router, prefix="/api")
 app.include_router(proceso_absis_router, prefix="/api")
 app.include_router(informes_router, prefix="/api")
-app.include_router(informes_firmas_notarios_router, prefix="/api")\napp.include_router(informes_sla_router, prefix="/api")
+app.include_router(informes_firmas_notarios_router, prefix="/api")
+app.include_router(informes_sla_router, prefix="/api")
 app.include_router(router_absis, prefix="/api")
 
 # TIPOS DE CARGA HIPOTECARIA
