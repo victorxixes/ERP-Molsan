@@ -3531,6 +3531,17 @@ def generar_documento_factura_honorarios(
         raise HTTPException(status_code=409, detail="El concepto ID 6 debe ser «honorarios gestoría». No se ha generado la factura.")
 
     db.execute(text("""
+        CREATE TABLE IF NOT EXISTS correspondencia_configuracion (
+            id INTEGER PRIMARY KEY,
+            firma_pie TEXT NOT NULL DEFAULT '',
+            factura_nombre VARCHAR(255),
+            factura_tipo VARCHAR(160),
+            factura_contenido BYTEA,
+            actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT correspondencia_configuracion_unica CHECK (id = 1)
+        )
+    """))
+    db.execute(text("""
         CREATE TABLE IF NOT EXISTS plantilla_factura_concepto_gasto (
             concepto_gasto_id INTEGER PRIMARY KEY,
             nombre_archivo VARCHAR(255) NOT NULL,
@@ -3632,9 +3643,16 @@ def generar_documento_factura_honorarios(
                 9: f"Protocolo: {protocolo}",
                 10: f"Fecha de firma: {fecha_firma}",
             }
-            for indice, texto in datos_fila.items():
-                if len(tabla.rows) > indice:
-                    poner_en_celda(tabla.rows[indice].cells[0], texto)
+            valores_fila = {
+                6: numero_expediente,
+                7: documento_cliente,
+                8: notario,
+                9: protocolo,
+                10: fecha_firma,
+            }
+            for indice, texto in valores_fila.items():
+                if len(tabla.rows) > indice and len(tabla.rows[indice].cells) > 2:
+                    poner_en_celda(tabla.rows[indice].cells[2], texto)
             if len(tabla.rows) > 13:
                 poner_en_celda(tabla.rows[13].cells[3], euros(base))
             if len(tabla.rows) > 14:
