@@ -1016,7 +1016,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     const clavesNavegacion = new Set();
     const sinDuplicados = navigationItems.filter((item) => {
       if (item?.key === "fichajes" || normalizarModulo(item?.label) === "fichajes" ||
-          item?.key === "modulos" || ["modulos", "espacios de trabajo", "modulos mas tecnicos"].includes(normalizarModulo(item?.label))) return false;
+          item?.key === "modulos" || item?.key === "notificaciones" || normalizarModulo(item?.label) === "notificaciones" || ["modulos", "espacios de trabajo", "modulos mas tecnicos"].includes(normalizarModulo(item?.label))) return false;
       const identificadores = [normalizarModulo(item?.key), normalizarModulo(item?.label), normalizarModulo(item?.to || item?.route)].filter(Boolean);
       if (identificadores.some((clave) => clavesNavegacion.has(clave))) return false;
       identificadores.forEach((clave) => clavesNavegacion.add(clave));
