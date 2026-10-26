@@ -97,6 +97,20 @@ export default function ModulosSelector() {
     const disponibles = Object.keys(MODULOS)
       .filter((clave) => visibles.includes(clave) && !(esAdmin && clave === "fichajes"))
       .map((clave) => ({ clave, ...MODULOS[clave] }));
+    // Mensajería Gestión es el espacio administrativo de este módulo:
+    // debe aparecer a los administradores aunque no figure en sus módulos
+    // personales visibles de la ficha de empleado.
+    if (esAdmin && !disponibles.some((modulo) => modulo.clave === "mensajeria-gestion")) {
+      disponibles.push({
+        clave: "mensajeria-gestion",
+        nombre: "Mensajería Gestión",
+        descripcion: "Administra solicitudes, pedidos, incidencias, albaranes y facturas de mensajería.",
+        ruta: "/mensajeria-gestion",
+        siglas: "MG",
+        categoria: "GESTIÓN DE MENSAJERÍA",
+        estilo: "mg",
+      });
+    }
     if (esAdmin && visibles.includes("fichajes")) {
       disponibles.push({
         clave: "control-fichajes",
