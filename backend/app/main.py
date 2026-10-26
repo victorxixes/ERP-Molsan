@@ -343,6 +343,7 @@ from backend.app.apoderagest.liquidaciones import router as liquidaciones_apoder
 
 # ENCARGAGEST
 from backend.app.encargagest.router import router as encargagest_router
+from backend.app.mensajeria_molsan.router import router as mensajeria_molsan_router
 
 
 # ============================================================
@@ -491,6 +492,7 @@ app.include_router(provisiones_router, prefix="/api/expedientes")
 app.include_router(apoderagest_router, prefix="/api")
 app.include_router(liquidaciones_apoderagest_router, prefix="/api")
 app.include_router(encargagest_router, prefix="/api")
+app.include_router(mensajeria_molsan_router, prefix="/api")
 
 # ============================================================
 # MIGRACIÓN DE ESQUEMA DE EXPEDIENTES
