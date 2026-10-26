@@ -154,6 +154,8 @@ export default function MensajeriaSolicitudes() {
     try {
       const payload = {
         ...form,
+        // Pydantic espera una fecha ISO o null; la cadena vacía provoca HTTP 422.
+        fecha_solicitada: form.fecha_solicitada || null,
         origen: `[${origen.tipo}] ${origen.busqueda ? origen.busqueda + " — " : ""}${textoDireccion(origen)}`,
         destino: `[${destino.tipo}] ${destino.busqueda ? destino.busqueda + " — " : ""}${textoDireccion(destino)}`,
         solicitante_nombre: [empleado?.nombre, empleado?.apellidos].filter(Boolean).join(" ") || "Empleado",
