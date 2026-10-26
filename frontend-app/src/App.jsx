@@ -140,6 +140,7 @@ const NotarGest = lazy(() => import("./pages/notargest/NotarGest.jsx"));
 const EncargaGest = lazy(() => import("./pages/encargagest/EncargaGest.jsx"));
 const EncargaGestWorkspace = lazy(() => import("./pages/encargagest/EncargaGestWorkspace.jsx"));
 const Fichajes = lazy(() => import("./pages/fichajes/Fichajes.jsx"));
+const MensajeriaMolsan = lazy(() => import("./pages/mensajeria/MensajeriaMolsan.jsx"));
 const CatalogoFichajes = lazy(() => import("./pages/herramientas/CatalogoFichajes.jsx"));
 const ControlApoderados = lazy(() => import("./pages/apoderagest/ControlApoderados.jsx"));
 
@@ -313,6 +314,7 @@ export default function App() {
           {/* Fichaje Molsan: módulo de empleado y control administrativo. */}
           <Route path="fichajes" element={<Fichajes modo="empleado" />} />
           <Route path="control-fichajes" element={<Fichajes modo="admin" />} />
+          <Route path="mensajeria" element={<MensajeriaMolsan />} />
           <Route path="apoderagest/liquidaciones" element={<ControlApoderados modo="colaborador" />} />
           <Route path="herramientas/utilidades/control-apoderados" element={<ControlApoderados modo="admin" />} />
 
@@ -511,6 +513,7 @@ export default function App() {
             path="catalogos/fichajes"
             element={<CatalogoFichajes />}
           />
+          <Route path="catalogos/mensajeria-servicios" element={<MensajeriaMolsan vistaCatalogo />} />
 
           <Route
             path="catalogos/firmas-email"
