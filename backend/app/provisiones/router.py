@@ -656,20 +656,45 @@ def _p(texto: object, style: ParagraphStyle) -> Paragraph:
 
 
 def _logo_pdf():
-    """Devuelve el logo corporativo si está disponible en el despliegue."""
+    """Localiza el logo real de Molsan en las rutas posibles del despliegue."""
+    base = Path(__file__).resolve()
     candidatos = [
-        Path(__file__).resolve().parents[3] / "frontend-app" / "public" / "img" / "logo.jpg",
-        Path(__file__).resolve().parents[2] / "static" / "img" / "logo.jpg",
+        base.parents[3] / "frontend-app" / "public" / "img" / "logo.jpg",
+        base.parents[2] / "static" / "img" / "logo.jpg",
+        base.parents[1] / "static" / "img" / "logo.jpg",
+        base.parents[2] / "frontend-app" / "public" / "img" / "logo.jpg",
     ]
     for ruta in candidatos:
         try:
-            if ruta.is_file():
-                imagen = PDFImage(str(ruta), width=38*mm, height=18*mm, kind="proportional")
+            if ruta.is_file() and ruta.stat().st_size > 0:
+                imagen = PDFImage(str(ruta), width=34*mm, height=21*mm, kind="proportional")
                 imagen.hAlign = "LEFT"
                 return imagen
         except Exception:
             continue
     return None
+
+
+def _tabla_cabecera_pdf(logo, nombre: str, linea: str, estilo_titulo, estilo_datos, ancho=176*mm):
+    """Cabecera corporativa en dos columnas, con alineación y márgenes constantes."""
+    bloque_datos = [Paragraph(escape(nombre), estilo_titulo)]
+    if linea:
+        bloque_datos.append(Paragraph(linea, estilo_datos))
+    if logo:
+        filas = [[logo, bloque_datos]]
+        tabla = Table(filas, colWidths=[39*mm, ancho-39*mm], hAlign="LEFT")
+    else:
+        filas = [[bloque_datos]]
+        tabla = Table(filas, colWidths=[ancho], hAlign="LEFT")
+    tabla.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("ALIGN", (0, 0), (0, -1), "LEFT"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+        ("TOPPADDING", (0, 0), (-1, -1), 0),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+    ]))
+    return tabla
 
 def _plantilla_pdf_provision(db: Session) -> dict:
     """Lee la plantilla editable guardada en el concepto notaria del catálogo."""
@@ -718,18 +743,18 @@ def generar_documento_provision(id_expediente: str, provision_id: int, db: Sessi
     styles.add(ParagraphStyle(name="CeldaDerecha", parent=styles["BodyText"], fontName="Helvetica", fontSize=7.8, leading=10, alignment=TA_RIGHT))
     styles.add(ParagraphStyle(name="Total", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=11, leading=14, alignment=TA_RIGHT, textColor=colors.HexColor("#15325b")))
     plantilla = _plantilla_pdf_provision(db)
-    cabecera = [escape(str(plantilla.get("nombre_empresa") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L."))]
+    nombre_empresa = str(plantilla.get("nombre_empresa") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.")
     datos_corporativos = [plantilla.get("cif"), plantilla.get("direccion"), plantilla.get("contacto")]
     linea_corporativa = " · ".join(escape(str(x)) for x in datos_corporativos if x)
     logo = _logo_pdf()
-    story = ([logo, Spacer(1, 2*mm)] if logo else []) + [
-        Paragraph(cabecera[0], styles["TituloMolsan"]),
+    cabecera_pdf = _tabla_cabecera_pdf(logo, nombre_empresa, linea_corporativa, styles["TituloMolsan"], styles["SubtituloMolsan"])
+    story = [
+        cabecera_pdf,
+        Spacer(1, 3*mm),
         Paragraph("PROVISIÓN DE FONDOS" if item.tipo == "provision" else "PRESUPUESTO DE CANCELACIÓN HIPOTECARIA", styles["Heading2"]),
         Paragraph(f"Expediente: <b>{escape(str(expediente.id_expediente))}</b> &nbsp;&nbsp; Fecha: <b>{item.fecha.strftime('%d/%m/%Y') if item.fecha else '—'}</b> &nbsp;&nbsp; Estado: <b>{escape(item.estado.upper())}</b>", styles["SubtituloMolsan"]),
         Spacer(1, 3*mm),
     ]
-    if linea_corporativa:
-        story.insert(1, Paragraph(linea_corporativa, styles["SubtituloMolsan"]))
     if getattr(expediente, "nombre_titular", None): story.append(Paragraph(f"Titular: <b>{escape(str(expediente.nombre_titular))}</b>", styles["Normal"]))
     if getattr(expediente, "nif_titular", None): story.append(Paragraph(f"NIF titular: {escape(str(expediente.nif_titular))}", styles["Normal"]))
     if getattr(expediente, "oficina", None): story.append(Paragraph(f"Oficina: {escape(str(expediente.oficina))}", styles["Normal"]))
@@ -967,15 +992,16 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
     datos_corporativos = [plantilla.get("cif"), plantilla.get("direccion"), plantilla.get("contacto")]
     linea_corporativa = " · ".join(escape(str(x)) for x in datos_corporativos if x)
     logo = _logo_pdf()
-    story = ([logo, Spacer(1, 2*mm)] if logo else []) + [
-        Paragraph(escape(str(plantilla.get("nombre_empresa") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.")), styles["TituloInd"]),
+    nombre_empresa = str(plantilla.get("nombre_empresa") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.")
+    cabecera_pdf = _tabla_cabecera_pdf(logo, nombre_empresa, linea_corporativa, styles["TituloInd"], styles["TextoInd"])
+    story = [
+        cabecera_pdf,
+        Spacer(1, 3*mm),
         Paragraph("PROVISIÓN ESTIMATIVA DE FONDOS", styles["Heading2"]),
         Paragraph(f"Número: <b>{escape(str(item.numero))}</b> &nbsp;&nbsp;&nbsp; Fecha de petición: <b>{item.fecha.strftime('%d/%m/%Y') if item.fecha else '—'}</b>", styles["TextoInd"]),
         Spacer(1, 4*mm),
         Paragraph("DATOS DEL CLIENTE", styles["Heading3"]),
     ]
-    if linea_corporativa:
-        story.insert(1, Paragraph(linea_corporativa, styles["TextoInd"]))
     cli = data["cliente"]
     cliente_rows = [
         [_p("Cliente", styles["EtiquetaInd"]), _p(cli.get("nombre"), styles["CeldaIndBold"]), _p("NIF / CIF", styles["EtiquetaInd"]), _p(cli.get("nif"), styles["CeldaInd"])],
