@@ -221,6 +221,44 @@ function ConfiguracionConceptosProvisiones() {
                 <label className={label}>Dirección corporativa<input className={input} value={draft.reglas?.plantilla_pdf?.direccion ?? ""} placeholder="Dirección" onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), direccion: e.target.value } })} /></label>
                 <label className={label}>Teléfono y correo<input className={input} value={draft.reglas?.plantilla_pdf?.contacto ?? ""} placeholder="Teléfono · email" onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), contacto: e.target.value } })} /></label>
               </div>
+              <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+                <h4 className="font-semibold text-slate-900">2. Datos de la oficina de origen</h4>
+                <p className="mt-1 mb-3 text-xs text-slate-500">Campos en blanco de la plantilla. No están vinculados al catálogo de oficinas.</p>
+                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                  {[
+                    ["numero", "Número de oficina"],
+                    ["nombre", "Nombre de la oficina"],
+                    ["direccion", "Dirección"],
+                    ["poblacion", "Población"],
+                    ["codigo_postal", "Código postal"],
+                    ["provincia", "Provincia"],
+                    ["dan", "DAN"],
+                    ["dt", "DT"],
+                    ["contacto", "Contacto"],
+                    ["email", "Email persona de contacto"],
+                    ["telefono", "Teléfono"],
+                  ].map(([campo, titulo]) => (
+                    <label key={campo} className={label}>{titulo}
+                      <input
+                        className={input}
+                        type={campo === "email" ? "email" : "text"}
+                        value={draft.reglas?.plantilla_pdf?.oficina_origen?.[campo] ?? ""}
+                        placeholder=""
+                        onChange={(e) => cambiar(item.codigo, "reglas", {
+                          ...(draft.reglas || {}),
+                          plantilla_pdf: {
+                            ...(draft.reglas?.plantilla_pdf || {}),
+                            oficina_origen: {
+                              ...(draft.reglas?.plantilla_pdf?.oficina_origen || {}),
+                              [campo]: e.target.value,
+                            },
+                          },
+                        })}
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
               <label className={label}>Aviso legal<textarea rows={3} className={input + " resize-y"} value={draft.reglas?.plantilla_pdf?.aviso_legal ?? "En el supuesto de que todos los gastos, hasta su inscripción registral, fueran superiores a los informados, según norma 3.7.20 Cancelaciones solicitaremos un complemento de saldo. Rogamos tengan en cuenta esta información."} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), aviso_legal: e.target.value } })} /></label>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
                 <label className={label}>Texto de estimación<textarea rows={2} className={input + " resize-y"} value={draft.reglas?.plantilla_pdf?.texto_estimacion ?? "La presente provisión es estimativa y podrá ajustarse a los gastos efectivamente devengados."} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), plantilla_pdf: { ...(draft.reglas?.plantilla_pdf || {}), texto_estimacion: e.target.value } })} /></label>
