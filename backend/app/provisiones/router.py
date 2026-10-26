@@ -414,6 +414,7 @@ class ConceptoImporteProvisionInput(BaseModel):
     modo: Literal["previsto", "calculado"] = "previsto"
     importe_previsto: Optional[Decimal] = Field(None, ge=0, max_digits=14, decimal_places=2)
     descripcion: Optional[str] = Field(None, max_length=1000)
+    reglas: Optional[dict] = None
     activo: bool = True
 
     @root_validator
@@ -441,6 +442,7 @@ def _concepto_importe_dict(item: ConceptoImporteProvision) -> dict:
         "modo": item.modo,
         "importe_previsto": float(item.importe_previsto) if item.importe_previsto is not None else None,
         "descripcion": item.descripcion or "",
+        "reglas": item.reglas or {},
         "activo": bool(item.activo),
         "solo_catalogo": item.codigo == "gestion",
     }
@@ -475,6 +477,9 @@ def actualizar_concepto_importe_provision(codigo: str, datos: ConceptoImportePro
     item.modo = datos.modo
     item.importe_previsto = datos.importe_previsto
     item.descripcion = (datos.descripcion or "").strip() or None
+    if datos.reglas is not None:
+        # Solo se admiten reglas declarativas configuradas; no se ejecutan fórmulas arbitrarias.
+        item.reglas = datos.reglas
     item.activo = datos.activo
     try:
         db.commit()
