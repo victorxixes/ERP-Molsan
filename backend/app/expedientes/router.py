@@ -3628,7 +3628,7 @@ def generar_documento_factura_honorarios(
                 poner_en_celda(tabla.rows[1].cells[0], numero_factura)
                 poner_en_celda(tabla.rows[1].cells[1], fecha_factura)
             if len(tabla.rows) > 4:
-                poner_en_celda(tabla.rows[4].cells[0], f"{cliente or '—'}\\nNIF/CIF: {documento_cliente}")
+                poner_en_celda(tabla.rows[4].cells[0], f"{cliente or '—'}\nNIF/CIF: {documento_cliente}")
 
         # Tabla 2: concepto, importes y datos de expediente.
         if len(documento.tables) > 2:
