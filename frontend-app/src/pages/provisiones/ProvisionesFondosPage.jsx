@@ -476,8 +476,19 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
           <Campo titulo="Teléfono" valor={form.cliente.telefono} onChange={(v) => cambiarCliente("telefono", v)} />
           <Campo titulo="Email" tipo="email" valor={form.cliente.email} onChange={(v) => cambiarCliente("email", v)} />
           <div className="sm:col-span-2"><Campo titulo="Dirección" valor={form.cliente.direccion} onChange={(v) => cambiarCliente("direccion", v)} /></div>
-          <Campo titulo="Código postal" valor={form.cliente.cp} onChange={(v) => cambiarCliente("cp", v)} />
-          <AutocompleteCatalogo titulo="Población" valor={form.cliente.poblacion} opciones={catalogoMunicipios} etiqueta={(m) => m.municipio} detalle={(m) => m.provincia} placeholder="Busca una población…" onChange={(v) => setForm((f) => ({ ...f, cliente: { ...f.cliente, poblacion: v, provincia: "" } }))} onSelect={(m) => setForm((f) => ({ ...f, cliente: { ...f.cliente, poblacion: m.municipio, provincia: m.provincia } }))} />
+          <Campo titulo="Código postal" valor={form.cliente.cp} onChange={(v) => {
+            const cp = String(v || "").trim();
+            const coincidencias = catalogoMunicipios.filter((m) => (m.codigos_postales || []).includes(cp));
+            setForm((actual) => ({
+              ...actual,
+              cliente: {
+                ...actual.cliente,
+                cp: v,
+                ...(coincidencias.length === 1 ? { poblacion: coincidencias[0].municipio, provincia: coincidencias[0].provincia } : {}),
+              },
+            }));
+          }} />
+          <AutocompleteCatalogo titulo="Población" valor={form.cliente.poblacion} opciones={catalogoMunicipios} etiqueta={(m) => m.municipio} detalle={(m) => m.provincia} placeholder="Busca una población…" onChange={(v) => setForm((f) => ({ ...f, cliente: { ...f.cliente, poblacion: v, provincia: "" } }))} onSelect={(m) => setForm((f) => ({ ...f, cliente: { ...f.cliente, poblacion: m.municipio, provincia: m.provincia, cp: m.codigo_postal_principal || (m.codigos_postales || [])[0] || f.cliente.cp } }))} />
           <AutocompleteCatalogo titulo="Provincia" valor={form.cliente.provincia} opciones={[...new Set(catalogoMunicipios.map((m) => m.provincia).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))} etiqueta={(p) => p} placeholder="Busca una provincia…" onChange={(v) => cambiarCliente("provincia", v)} onSelect={(p) => cambiarCliente("provincia", p)} />
           <Campo titulo="Fecha de provisión" tipo="date" valor={form.fecha} onChange={(v) => setForm((f) => ({ ...f, fecha: v }))} requerido />
         </div>
