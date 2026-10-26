@@ -159,6 +159,16 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
   const [guardandoEdicion, setGuardandoEdicion] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [form, setForm] = useState({ ...NUEVO_ENCARGO });
+  const [catalogoMunicipiosRegistro, setCatalogoMunicipiosRegistro] = useState([]);
+  useEffect(() => {
+    let activo = true;
+    axios.get("/municipios")
+      .then(({ data }) => {
+        if (activo) setCatalogoMunicipiosRegistro(Array.isArray(data) ? data.filter((item) => item.activo !== false) : []);
+      })
+      .catch(() => { if (activo) setCatalogoMunicipiosRegistro([]); });
+    return () => { activo = false; };
+  }, []);
   const [archivosSolicitud, setArchivosSolicitud] = useState({});
   const [categoriaDocumento, setCategoriaDocumento] = useState("Otros");
   const [detalleContratoIndex, setDetalleContratoIndex] = useState(0);
@@ -1133,6 +1143,9 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
           onMouseDown={(e) => { if (e.target === e.currentTarget && !guardando) setModalNuevo(false); }}
         >
           <form onSubmit={crearEncargo} className="eg-modal-form">
+            <datalist id="eg-catalogo-municipios-registro">
+              {catalogoMunicipiosRegistro.map((item) => <option key={item.id} value={item.municipio}>{item.provincia}</option>)}
+            </datalist>
             <header className="eg-modal-header">
               <div className="eg-modal-brand">EG</div>
               <div className="eg-modal-heading">
@@ -1206,7 +1219,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                             <Campo etiqueta="Inscripción"><input maxLength={100} value={finca.numero_inscripcion ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "numero_inscripcion", e.target.value)} placeholder="Inscripción registral" className={inputClass} /></Campo>
                             <Campo etiqueta="Sección"><input maxLength={100} value={finca.seccion ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "seccion", e.target.value)} placeholder="Sección registral" className={inputClass} /></Campo>
                             <Campo etiqueta="Capital inscrito en el registro (€)"><input type="number" min="0" step="0.01" value={finca.capital_inscrito ?? ""} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "capital_inscrito", e.target.value)} placeholder="0,00" className={inputClass} /></Campo>
-                            <Campo etiqueta="Municipio del registro"><input maxLength={200} value={finca.municipio_registro} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "municipio_registro", e.target.value)} placeholder="Municipio" className={inputClass} /></Campo>
+                            <Campo etiqueta="Municipio del registro"><input maxLength={200} list="eg-catalogo-municipios-registro" value={finca.municipio_registro} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "municipio_registro", e.target.value)} placeholder="Busca un municipio…" autoComplete="off" className={inputClass} /></Campo>
                             <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFinca(indiceContrato, indiceFinca, "registro_propiedad", e.target.value)} placeholder="Registro de la Propiedad" className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => quitarFinca(indiceContrato, indiceFinca)} className="mb-0.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">×</button>}</div>
                           </div>
                         ))}
@@ -1300,7 +1313,7 @@ export default function EncargaGest({ accessMode = "auto" } = {}) {
                         <Campo etiqueta="Inscripción"><input maxLength={100} value={finca.numero_inscripcion} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "numero_inscripcion", e.target.value)} placeholder="Inscripción registral" className={inputClass} /></Campo>
                         <Campo etiqueta="Sección"><input maxLength={100} value={finca.seccion ?? ""} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "seccion", e.target.value)} placeholder="Sección registral" className={inputClass} /></Campo>
                         <Campo etiqueta="Capital inscrito (€)"><input type="number" min="0" step="0.01" value={finca.capital_inscrito ?? ""} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "capital_inscrito", e.target.value)} className={inputClass} /></Campo>
-                        <Campo etiqueta="Municipio del registro"><input maxLength={200} value={finca.municipio_registro} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "municipio_registro", e.target.value)} className={inputClass} /></Campo>
+                        <datalist id="eg-catalogo-municipios-registro-edicion">{catalogoMunicipiosRegistro.map((item) => <option key={item.id} value={item.municipio}>{item.provincia}</option>)}</datalist><Campo etiqueta="Municipio del registro"><input maxLength={200} list="eg-catalogo-municipios-registro-edicion" value={finca.municipio_registro} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "municipio_registro", e.target.value)} placeholder="Busca un municipio…" autoComplete="off" className={inputClass} /></Campo>
                         <div className="flex items-end gap-2"><div className="min-w-0 flex-1"><Campo etiqueta="Registro de la Propiedad"><input maxLength={200} value={finca.registro_propiedad} onChange={(e) => cambiarFincaEdicion(contratoIndex, fincaIndex, "registro_propiedad", e.target.value)} className={inputClass} /></Campo></div>{contrato.fincas.length > 1 && <button type="button" onClick={() => setEditForm((actual) => ({ ...actual, contratos: actual.contratos.map((c, i) => i !== contratoIndex ? c : { ...c, fincas: c.fincas.filter((_, j) => j !== fincaIndex) }) }))} className="mb-0.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700">×</button>}</div>
                       </div>
                     ))}
