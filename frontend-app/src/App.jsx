@@ -63,6 +63,7 @@ const Catalogos = lazy(() => import("./pages/herramientas/Catalogos.jsx"));
 const CatalogoAbsis = lazy(() => import("./pages/herramientas/CatalogoAbsis.jsx"));
 const CatalogoOficinas = lazy(() => import("./pages/herramientas/CatalogoOficinas.jsx"));
 const CorrespondenciaTipificada = lazy(() => import("./pages/herramientas/CorrespondenciaTipificada.jsx"));
+const FirmasEmail = lazy(() => import("./pages/herramientas/FirmasEmail.jsx"));
 const HonorariosGestoria = lazy(() => import("./pages/herramientas/HonorariosGestoria.jsx"));
 const CrearNoticia = lazy(() => import("./pages/herramientas/CrearNoticia.jsx"));
 const SubirDocumento = lazy(() => import("./pages/herramientas/SubirDocumento.jsx"));
@@ -509,6 +510,11 @@ export default function App() {
           <Route
             path="catalogos/fichajes"
             element={<CatalogoFichajes />}
+          />
+
+          <Route
+            path="catalogos/firmas-email"
+            element={<FirmasEmail />}
           />
 
           <Route
