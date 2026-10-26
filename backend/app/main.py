@@ -988,6 +988,11 @@ def inicializar_tablas_auxiliares():
         HonorarioGestoria.__table__.create(bind=engine, checkfirst=True)
         print("[HONORARIOS GESTORIA] Catálogo disponible.", flush=True)
 
+        # Catálogo configurable de importes estimativos de Provisiones.
+        from backend.app.provisiones.models import ConceptoImporteProvision
+        ConceptoImporteProvision.__table__.create(bind=engine, checkfirst=True)
+        print("[PROVISIONES] Tabla de conceptos e importes disponible.", flush=True)
+
         ExpedienteAccion.__table__.create(
             bind=engine,
             checkfirst=True,
