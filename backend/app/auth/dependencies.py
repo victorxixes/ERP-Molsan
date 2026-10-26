@@ -106,10 +106,12 @@ def obtener_usuario_actual(
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Token inválido")
     except Exception as e:
-        print(f"ERROR AUTENTICACIÓN: {e}", flush=True)
+        # Un fallo temporal de base de datos no significa que el JWT sea inválido.
+        # No devolver 401 evita que Axios borre la sesión por saturación del pool.
+        print(f"ERROR AUTENTICACIÓN / BASE DE DATOS: {e}", flush=True)
         raise HTTPException(
-            status_code=401,
-            detail="No se pudo validar el usuario",
+            status_code=503,
+            detail="El servicio de autenticación no está disponible temporalmente. Inténtalo de nuevo.",
         )
 
 
@@ -157,8 +159,10 @@ def get_current_user(
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Token inválido")
     except Exception as e:
-        print(f"ERROR AUTENTICACIÓN: {e}", flush=True)
+        # Un fallo temporal de base de datos no significa que el JWT sea inválido.
+        # No devolver 401 evita que Axios borre la sesión por saturación del pool.
+        print(f"ERROR AUTENTICACIÓN / BASE DE DATOS: {e}", flush=True)
         raise HTTPException(
-            status_code=401,
-            detail="No se pudo validar el usuario",
+            status_code=503,
+            detail="El servicio de autenticación no está disponible temporalmente. Inténtalo de nuevo.",
         )
