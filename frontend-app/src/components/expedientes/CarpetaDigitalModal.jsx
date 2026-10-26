@@ -113,6 +113,7 @@ export default function CarpetaDigitalModal({
   ocultarPanelEnvioNotario = false,
 }) {
   const empleadoSesion = useAuthStore((state) => state.empleado);
+  const [expedienteDatos, setExpedienteDatos] = useState(null);
   const [documentos, setDocumentos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -151,6 +152,20 @@ export default function CarpetaDigitalModal({
       });
     return () => { activo = false; };
   }, [modoActividad, actividadId, empleadoSesion?.empleado_id, empleadoSesion?.id]);
+
+  useEffect(() => {
+    let activo = true;
+    setExpedienteDatos(null);
+    if (!expedienteId) return () => { activo = false; };
+    axios.get(`/expedientes/${encodeURIComponent(expedienteId)}`)
+      .then(({ data }) => {
+        if (activo) setExpedienteDatos(data?.expediente || data?.item || data || null);
+      })
+      .catch(() => {
+        if (activo) setExpedienteDatos(null);
+      });
+    return () => { activo = false; };
+  }, [expedienteId]);
 
   const bloqueActividad = useMemo(() => resolverBloque(actividadId), [actividadId]);
   const esCancelacionSinProvision = normalizar(tipoOperacion) === "cancelacion-sin-provision";
@@ -904,9 +919,12 @@ export default function CarpetaDigitalModal({
                               { key: "fecha_inicio_actividad", label: "Inicio actividad" },
                               { key: "fecha_fin_actividad", label: "Fin actividad" },
                             ].map((campo) => {
-                              const valor = datosPanelActividad?.[campo.key] ?? bloqueActividad?.[campo.key];
+                              const valor = datosPanelActividad?.[campo.key]
+                                ?? expedienteDatos?.[campo.key]
+                                ?? expedienteDatos?.expediente?.[campo.key]
+                                ?? null;
                               return (
-                                <div key={campo.key} className="min-w-0 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5">
+                                <div key={campo.key} className="min-w-0 rounded-md border border-indigo-200 bg-indigo-50/40 px-2 py-1.5">
                                   <p className="text-[10px] font-bold text-slate-500">{campo.label}</p>
                                   <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
                                 </div>
