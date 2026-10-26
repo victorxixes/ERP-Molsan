@@ -2606,6 +2606,12 @@ const APARTADOS_INFORMES = [
     icono: "✍️",
   },
   {
+    key: "sla",
+    titulo: "Informe SLA’s",
+    descripcion: "Control de plazos por actividad y grupo de cancelación.",
+    icono: "⏱️",
+  },
+  {
     key: "facturacion",
     titulo: "Informes de facturación",
     descripcion: "Resumen de importes, facturas y estados.",
@@ -3170,6 +3176,96 @@ function InformeNotarios() {
 }
 
 
+function InformeSLA() {
+  const [datos, setDatos] = useState({ items: [], actividades: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [grupo, setGrupo] = useState("todos");
+  const [busqueda, setBusqueda] = useState("");
+  const [expandido, setExpandido] = useState("");
+  const [recarga, setRecarga] = useState(0);
+
+  useEffect(() => {
+    let activo = true;
+    setLoading(true);
+    setError("");
+    axios.get(\`\${API_BASE}/informes-sla\`)
+      .then(({ data }) => { if (activo) setDatos({ items: data?.items || [], actividades: data?.actividades || [] }); })
+      .catch((e) => { if (activo) setError(e?.response?.data?.detail || "No se ha podido cargar el Informe SLA."); })
+      .finally(() => { if (activo) setLoading(false); });
+    return () => { activo = false; };
+  }, [recarga]);
+
+  const items = (datos.items || []).filter((item) => {
+    const coincideGrupo = grupo === "todos" || (grupo === "con-provision" && item.grupo === "Con provisión") || (grupo === "sin-provision" && item.grupo === "Sin provisión");
+    const q = normalizarInformeSLA(busqueda);
+    const texto = normalizarInformeSLA(\`\${item.id_expediente || ""} \${item.titular || ""} \${item.tipo_operacion || ""} \${item.producto_gtg || ""}\`);
+    return coincideGrupo && (!q || texto.includes(q));
+  });
+  const actividadesPlanas = items.flatMap((item) => (item.actividades || []).map((actividad) => ({ ...actividad, id_expediente: item.id_expediente, titular: item.titular, grupo: item.grupo, entidad: item.entidad })));
+  const conObjetivo = actividadesPlanas.filter((a) => a.objetivo_dias != null && a.dias != null);
+  const dentro = conObjetivo.filter((a) => a.estado === "Dentro de plazo").length;
+  const fuera = actividadesPlanas.filter((a) => a.estado === "Fuera de plazo").length;
+  const cumplimiento = conObjetivo.length ? Math.round((dentro / conObjetivo.length) * 100) : null;
+  const globalesEvaluables = items.filter((x) => !x.excluido_global && x.dias_global != null);
+  const globalesDentro = globalesEvaluables.filter((x) => x.estado_global === "Dentro de plazo").length;
+  const mediaGlobal = globalesEvaluables.length ? globalesEvaluables.reduce((s, x) => s + Number(x.dias_global || 0), 0) / globalesEvaluables.length : null;
+
+  const resumenActividades = (datos.actividades || []).map((actividad) => {
+    const filas = actividadesPlanas.filter((a) => a.actividad_key === actividad.key);
+    const medidas = filas.filter((a) => a.dias != null);
+    const conObjetivoActividad = medidas.filter((a) => a.objetivo_dias != null);
+    const cumplen = conObjetivoActividad.filter((a) => a.estado === "Dentro de plazo").length;
+    const incumplen = conObjetivoActividad.filter((a) => a.estado === "Fuera de plazo").length;
+    return { ...actividad, total: filas.length, medidas: medidas.length, media: medidas.length ? medidas.reduce((s, a) => s + Number(a.dias), 0) / medidas.length : null, cumplen, incumplen };
+  });
+
+  const exportar = () => {
+    const encabezados = ["Expediente","Titular","Grupo","Entidad","Actividad","Inicio","Fin","Días","Objetivo SLA","Estado"];
+    const filas = actividadesPlanas.map((a) => [a.id_expediente,a.titular,a.grupo,a.entidad,a.actividad,a.fecha_inicio,a.fecha_fin,a.dias,a.objetivo_dias,a.estado]);
+    const csv = [encabezados, ...filas].map((fila) => fila.map((v) => \`"\${String(v ?? "").replace(/"/g, '""')}"\`).join(";")).join("\\r\\n");
+    descargarBlobInforme(new Blob(["\\ufeff", csv], { type: "text/csv;charset=utf-8;" }), "informe_sla.csv");
+  };
+
+  return (
+    <section className="space-y-5">
+      <header className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-[0_10px_35px_rgba(55,85,120,0.09)] backdrop-blur-xl md:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">⏱️</span><div><h2 className="text-xl font-bold text-slate-800">Informe SLA’s</h2><p className="mt-1 text-sm text-slate-500">Control de duración y cumplimiento por actividad, grupo de cancelación y entidad.</p></div></div>
+          <button type="button" onClick={() => setRecarga((v) => v + 1)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">↻ Actualizar datos</button>
+        </div>
+      </header>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <InformeKpi icono="📁" titulo="Expedientes" valor={numeroInforme(items.length)} subtitulo="Según el grupo y la búsqueda" />
+        <InformeKpi icono="⏱️" titulo="Duración global media" valor={mediaGlobal == null ? "—" : \`\${numeroInforme(mediaGlobal, 1)} días\`} subtitulo={\`\${numeroInforme(globalesDentro)} dentro de plazo de \${numeroInforme(globalesEvaluables.length)} evaluables\`} />
+        <InformeKpi icono="⚠️" titulo="Actividades fuera de plazo" valor={numeroInforme(fuera)} subtitulo={cumplimiento == null ? "Sin datos suficientes para calcular cumplimiento" : \`\${cumplimiento}% de cumplimiento en actividades con objetivo\`} />
+      </div>
+      <section className="rounded-2xl border border-white/80 bg-white/75 p-5 shadow-sm backdrop-blur-xl">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.5fr)]">
+          <CampoFiltroInforme label="¿Qué expediente necesitas?" value={busqueda} onChange={setBusqueda} placeholder="Número de expediente, titular, operación o producto GTG" />
+          <SelectFiltroInforme label="Grupo de cancelación" value={grupo} onChange={setGrupo}>
+            <option value="todos">Todos los grupos</option><option value="con-provision">Cancelaciones con provisión</option><option value="sin-provision">Cancelaciones sin provisión</option>
+          </SelectFiltroInforme>
+        </div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-slate-500">{numeroInforme(items.length)} expedientes · días naturales. Los expedientes Hipotecario y Crédito Stock quedan excluidos del SLA global.</p><button type="button" onClick={exportar} disabled={actividadesPlanas.length === 0} className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">📊 Exportar Excel (CSV)</button></div>
+      </section>
+      <AvisoInforme error={error} />
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="border-b border-slate-200/80 px-5 py-4"><h3 className="font-bold text-slate-800">SLA global por circuito</h3><p className="mt-1 text-xs text-slate-500">Desde el inicio registrado de la primera actividad hasta el fin de Cierre del expediente. Gestión económica utiliza el objetivo global como referencia propia.</p></div>
+        {loading ? <PanelEstadoInforme loading /> : items.length === 0 ? <PanelEstadoInforme vacio textoVacio="No hay expedientes que coincidan con los filtros." /> : <div className="max-h-[520px] overflow-auto"><table className="w-full min-w-[1050px] text-sm"><thead className="sticky top-0 bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{["Expediente","Titular","Grupo","Entidad","Días globales","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{items.map((item) => <Fragment key={item.id}><tr className="border-t border-slate-100 hover:bg-blue-50/40"><td className="px-4 py-3 font-semibold text-blue-700">{item.id_expediente || "—"}</td><td className="px-4 py-3">{item.titular || "—"}</td><td className="px-4 py-3">{item.grupo}</td><td className="px-4 py-3">{item.entidad}</td><td className="px-4 py-3 text-right">{item.dias_global == null ? "—" : numeroInforme(item.dias_global)}</td><td className="px-4 py-3 text-right">{item.excluido_global ? "Excluido" : \`\${item.objetivo_global} días\`}</td><td className="px-4 py-3"><span className={\`rounded-full px-2.5 py-1 text-xs font-bold \${item.estado_global === "Dentro de plazo" ? "bg-emerald-50 text-emerald-700" : item.estado_global === "Fuera de plazo" ? "bg-rose-50 text-rose-700" : item.estado_global === "Excluido" ? "bg-slate-100 text-slate-500" : "bg-amber-50 text-amber-700"}\`}>{item.estado_global}</span><button type="button" onClick={() => setExpandido((v) => v === String(item.id) ? "" : String(item.id))} className="ml-3 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700">{expandido === String(item.id) ? "Ocultar actividades" : "Ver actividades"}</button></td></tr>{expandido === String(item.id) && <tr><td colSpan={7} className="bg-slate-50/70 px-4 py-4"><div className="overflow-x-auto rounded-xl border border-slate-200 bg-white"><table className="w-full min-w-[950px] text-xs"><thead className="bg-slate-50 text-left text-slate-600"><tr>{["Actividad","Inicio","Fin","Duración","Objetivo","Estado"].map((x) => <th key={x} className="whitespace-nowrap px-3 py-2.5">{x}</th>)}</tr></thead><tbody>{item.actividades.map((a) => <tr key={a.actividad_key} className="border-t border-slate-100"><td className="px-3 py-2.5 font-semibold">{a.actividad}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_inicio)}</td><td className="px-3 py-2.5">{fechaInformeVisible(a.fecha_fin)}</td><td className="px-3 py-2.5">{a.dias == null ? "—" : \`\${a.dias} días\`}</td><td className="px-3 py-2.5">{a.objetivo_dias == null ? "Sin objetivo" : \`\${a.objetivo_dias} días\`}</td><td className="px-3 py-2.5">{a.estado}</td></tr>)}</tbody></table></div></td></tr>}</Fragment>)}</tbody></table></div>}
+      </section>
+      <section className="overflow-hidden rounded-2xl border border-white/80 bg-white/75 shadow-sm backdrop-blur-xl">
+        <div className="border-b border-slate-200/80 px-5 py-4"><h3 className="font-bold text-slate-800">Expedientes por actividad</h3><p className="mt-1 text-xs text-slate-500">Medias, objetivos y número de incumplimientos por actividad para los expedientes filtrados.</p></div>
+        {loading ? <PanelEstadoInforme loading /> : <div className="overflow-x-auto"><table className="w-full min-w-[800px] text-sm"><thead className="bg-blue-50 text-left text-xs uppercase tracking-wide text-blue-800/80"><tr>{["Actividad","Objetivo","Con fechas","Duración media","Dentro de plazo","Fuera de plazo"].map((x) => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead><tbody>{resumenActividades.map((a) => <tr key={a.key} className="border-t border-slate-100"><td className="px-4 py-3 font-semibold">{a.label}</td><td className="px-4 py-3">{a.objetivo === "global" ? "40 / 70 días según grupo" : a.objetivo == null ? "Sin objetivo SLA" : \`\${a.objetivo} días\`}</td><td className="px-4 py-3 text-right">{numeroInforme(a.medidas)}</td><td className="px-4 py-3 text-right">{a.media == null ? "—" : \`\${numeroInforme(a.media, 1)} días\`}</td><td className="px-4 py-3 text-right text-emerald-700">{numeroInforme(a.cumplen)}</td><td className="px-4 py-3 text-right text-rose-700">{numeroInforme(a.incumplen)}</td></tr>)}</tbody></table></div>}
+      </section>
+    </section>
+  );
+}
+
+function normalizarInformeSLA(valor) {
+  return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
 function ApartadoInformePendiente({ apartado }) {
   const detalle = {
     firmas: {
@@ -3290,7 +3386,7 @@ export default function Informes() {
         <InformeCitasApoderados />
       ) : apartadoActivo === "firmas" ? (
         <InformeFirmas />
-      ) : apartadoActivo === "notarios" ? (
+      ) : apartadoActivo === "sla" ? (\n        <InformeSLA />\n      ) : apartadoActivo === "notarios" ? (
         <InformeNotarios />
       ) : (
         <ApartadoInformePendiente apartado={apartadoSeleccionado} />
