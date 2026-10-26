@@ -897,6 +897,25 @@ export default function CarpetaDigitalModal({
                   ) : (
                     (["liquidacion-impuestos", "tramitacion-inscripcion", "defectos-registrales", "facturacion-cierre"].includes(actividadId)) ? (
                       <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-3">
+                        {["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadId) && (
+                          <section className="col-span-full min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                            <div className="grid grid-cols-1 gap-2 px-2.5 py-2 sm:grid-cols-2">
+                              {[
+                                ["Inicio actividad", "fecha_inicio_actividad"],
+                                ["Fin actividad", "fecha_fin_actividad"],
+                              ].map(([etiqueta, clave]) => (
+                                <div key={clave} className="min-w-0 rounded-md border border-slate-100 bg-slate-50/60 px-2.5 py-2">
+                                  <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
+                                  <p className="break-words text-[11px] font-semibold text-slate-800">
+                                    {datosPanelActividad?.[clave] !== null && datosPanelActividad?.[clave] !== undefined && datosPanelActividad?.[clave] !== ""
+                                      ? String(datosPanelActividad[clave])
+                                      : "—"}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </section>
+                        )}
                         <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
                           <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">📋 Datos · {bloqueActividad?.titulo || ({ "liquidacion-impuestos": "Liquidación de impuestos", "tramitacion-inscripcion": "Tramitación inscripción", "defectos-registrales": "Defectos registrales", "facturacion-cierre": "Cierre del expediente" }[actividadId] || "Datos de actividad")}</h5>
                           <div className="grid min-w-0 grid-cols-1 gap-1.5 px-2.5 py-2 sm:grid-cols-2 xl:grid-cols-1">
