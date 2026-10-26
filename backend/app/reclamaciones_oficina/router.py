@@ -151,9 +151,9 @@ def enviar_reclamacion(
         departamento = db.execute(text("SELECT nombre FROM departamentos WHERE id = :id"), {"id": getattr(usuario, "departamento_id", None)}).scalar() if getattr(usuario, "departamento_id", None) else ""
         cargo = db.execute(text("SELECT nombre FROM cargos WHERE id = :id"), {"id": getattr(usuario, "cargo_id", None)}).scalar() if getattr(usuario, "cargo_id", None) else ""
         lineas_personales = [nombre, " · ".join(x for x in [departamento or "", cargo or ""] if x)]
-        firma_personal = "\\n".join(x for x in lineas_personales if x)
+        firma_personal = "\n".join(x for x in lineas_personales if x)
         firma_pie = (config_firma["firma_pie"] or "").strip() if config_firma else ""
-        cuerpo = "\\n\\n".join(x for x in [cuerpo, firma_personal, firma_pie] if x)
+        cuerpo = "\n\n".join(x for x in [cuerpo, firma_personal, firma_pie] if x)
     except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo preparar la firma corporativa del email.")
