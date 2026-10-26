@@ -30,6 +30,10 @@ async function respuesta(response) {
 export default function CatalogoAbsis() {
   const token = useAuthStore((state) => state.token);
   const [filas, setFilas] = useState([]);
+  const [categorias, setCategorias] = useState(CATEGORIAS);
+  const [modalNuevaLista, setModalNuevaLista] = useState(false);
+  const [nombreNuevaLista, setNombreNuevaLista] = useState("");
+  const [creandoLista, setCreandoLista] = useState(false);
   const [categoria, setCategoria] = useState(CATEGORIAS[0]);
   const [busqueda, setBusqueda] = useState("");
   const [formulario, setFormulario] = useState(VACIO);
@@ -59,11 +63,53 @@ export default function CatalogoAbsis() {
     }
   }, [token]);
 
-  useEffect(() => { cargar(); }, [cargar]);
+  const cargarCategorias = useCallback(async () => {
+    try {
+      const data = await respuesta(await fetch(`${API_URL}/categorias`, {
+        headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      }));
+      if (Array.isArray(data)) {
+        setCategorias([...new Set([...CATEGORIAS, ...data])].sort((a, b) => a.localeCompare(b, "es")));
+      }
+    } catch (e) {
+      // Se mantienen las categorías conocidas si el endpoint no está disponible.
+      console.warn("No se han podido cargar las listas ABSIS", e);
+    }
+  }, [token]);
+
+  useEffect(() => { cargar(); cargarCategorias(); }, [cargar, cargarCategorias]);
 
   const visibles = filas.filter((fila) => fila.categoria === categoria && [
     fila.codigo, fila.valor, fila.descripcion
   ].some((dato) => String(dato || "").toLocaleLowerCase("es").includes(busqueda.trim().toLocaleLowerCase("es"))));
+
+  async function crearLista(event) {
+    event.preventDefault();
+    const nombre = nombreNuevaLista.trim();
+    if (!nombre) return;
+    setCreandoLista(true);
+    setError("");
+    setMensaje("");
+    try {
+      const data = await respuesta(await fetch(`${API_URL}/categorias`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ categoria: nombre }),
+      }));
+      const actualizadas = [...new Set([...categorias, data.categoria])].sort((a, b) => a.localeCompare(b, "es"));
+      setCategorias(actualizadas);
+      setCategoria(data.categoria);
+      setBusqueda("");
+      setNombreNuevaLista("");
+      setModalNuevaLista(false);
+      setMensaje(`Lista «${data.categoria}» creada. Ya puedes añadirle entradas.`);
+      await cargar();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setCreandoLista(false);
+    }
+  }
 
   function abrirNuevo() {
     setEditando(null);
@@ -136,8 +182,9 @@ export default function CatalogoAbsis() {
         <label className="mb-2 block text-sm font-semibold text-slate-700" htmlFor="absis-categoria">Lista que quieres gestionar</label>
         <div className="flex flex-col gap-3 sm:flex-row">
           <select id="absis-categoria" value={categoria} onChange={(e) => { setCategoria(e.target.value); setBusqueda(""); setMensaje(""); }} className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm focus:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-100">
-            {CATEGORIAS.map((item) => <option key={item} value={item}>{item}</option>)}
+            {categorias.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
+          <button type="button" onClick={() => { setNombreNuevaLista(""); setError(""); setModalNuevaLista(true); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-white px-4 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 focus:outline-none focus:ring-4 focus:ring-indigo-100">+ Crear lista</button>
           <button type="button" onClick={abrirNuevo} className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200">
             <span aria-hidden="true" className="text-lg leading-none">+</span> Añadir entrada
           </button>
@@ -172,6 +219,27 @@ export default function CatalogoAbsis() {
           </table></div>
         }
       </section>
+
+      {modalNuevaLista && <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/50 p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget && !creandoLista) setModalNuevaLista(false); }}>
+        <section role="dialog" aria-modal="true" aria-labelledby="absis-nueva-lista-titulo" className="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
+          <form onSubmit={crearLista}>
+            <div className="border-b border-slate-200 px-6 py-5">
+              <h2 id="absis-nueva-lista-titulo" className="text-lg font-bold text-slate-900">Crear nueva lista ABSIS</h2>
+              <p className="mt-1 text-sm text-slate-500">Ponle un nombre único. Después podrás añadir todos los valores que necesites.</p>
+            </div>
+            <div className="space-y-3 p-6">
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">Nombre de la lista
+                <input autoFocus value={nombreNuevaLista} onChange={(e) => setNombreNuevaLista(e.target.value)} maxLength={100} required placeholder="Ej. TIPOFACTURA" className="rounded-xl border border-slate-200 px-3 py-2.5 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100" />
+              </label>
+              {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+            </div>
+            <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">
+              <button type="button" disabled={creandoLista} onClick={() => setModalNuevaLista(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Cancelar</button>
+              <button type="submit" disabled={creandoLista || !nombreNuevaLista.trim()} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{creandoLista ? "Creando…" : "Crear lista"}</button>
+            </div>
+          </form>
+        </section>
+      </div>}
 
       {modal && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/50 p-4" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModal(false); }}>
         <section role="dialog" aria-modal="true" aria-labelledby="absis-modal-titulo" className="my-auto w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
