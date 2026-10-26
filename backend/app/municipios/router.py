@@ -417,7 +417,7 @@ def importar_codigos_postales_nacionales(db: Session = Depends(get_db)):
         cp = str(fila.get("codigo_postal") or "").strip()
         ine = str(fila.get("municipio_id") or "").strip().zfill(5)
         nombre = str(fila.get("municipio_nombre") or "").strip()
-        if not re.fullmatch(r"\\d{5}", cp) or not re.fullmatch(r"\\d{5}", ine) or ine[:2] not in PROVINCIAS_INE or not nombre:
+        if not re.fullmatch(r"\d{5}", cp) or not re.fullmatch(r"\\d{5}", ine) or ine[:2] not in PROVINCIAS_INE or not nombre:
             filas_invalidas += 1
             continue
         clave_nombre = clave_territorial(nombre)
@@ -441,13 +441,14 @@ def importar_codigos_postales_nacionales(db: Session = Depends(get_db)):
             for cp in sorted(codigos):
                 if cp in existentes:
                     continue
-                registro = MunicipioCodigoPostal(
-                    codigo_postal=cp,
-                    principal=(principal_existente is None and not hubo_cambio and cp == min(codigos)),
-                )
+                registro = MunicipioCodigoPostal(codigo_postal=cp, principal=False)
                 municipio.codigos_postales.append(registro)
                 relaciones_nuevas += 1
                 hubo_cambio = True
+            if principal_existente is None and (existentes or codigos):
+                principal_nuevo = min(set(existentes.keys()) | codigos)
+                for registro in municipio.codigos_postales:
+                    registro.principal = registro.codigo_postal == principal_nuevo
             if hubo_cambio:
                 municipios_actualizados += 1
         db.commit()
