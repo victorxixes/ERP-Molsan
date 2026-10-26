@@ -5292,7 +5292,7 @@ const cuantiaFincasParaEnvio =
 
             {false && <>
             {actividadSeleccionada === "defectos-registrales" && (
-              <section className="mb-3 rounded-2xl border border-amber-200 bg-amber-50/30 p-3 sm:p-4">
+              <section className="mb-3 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-3 sm:p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <h3 className="text-sm font-extrabold text-slate-800">Datos vinculados de Enviar a notario</h3>
                   <span className="text-[11px] font-medium text-slate-500">Datos enlazados a la ficha del expediente</span>
@@ -7903,7 +7903,7 @@ const cuantiaFincasParaEnvio =
         </div>
         )}
         {actividadSeleccionada !== "sede-notarial-protocolo" && !["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadSeleccionada) && (
-        <section className="rounded-xl border border-slate-200 bg-white p-4">
+        <section className={`rounded-2xl p-3 sm:p-4 ${["gestion-economica", "defectos-registrales", "facturacion-cierre"].includes(actividadSeleccionada) ? "border border-indigo-100 bg-indigo-50/30" : "rounded-xl border border-slate-200 bg-white"}`}>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key) && !(actividadSeleccionada === "defectos-registrales" && ["tiene_defectos_abiertos", "tipo_error", "falta_defecto", "descripcion_error", "fcierre_defecto", "tipo_documento", "motivos_defecto", "fecha_notificacion_registro", "fecha_vencimiento_presentacion_registro", "observaciones_defecto_registral"].includes(campo.key))).map((campo) => {
             const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
@@ -7988,7 +7988,7 @@ const cuantiaFincasParaEnvio =
                         : (expediente?.[campo.key] ?? "");
                       const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
                       return (
-                        <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-slate-50/50 p-3">
+                        <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
                           <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
                           <input type={campo.tipo === "fecha" ? "date" : "text"} value={campo.tipo === "fecha" ? String(valor).slice(0, 10) : String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} placeholder={campo.label} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
                         </label>
@@ -8061,12 +8061,12 @@ const cuantiaFincasParaEnvio =
               <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 xl:col-span-2">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Liquidación de impuestos</h4>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
                       const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
                       return (
-                        <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-slate-50/60 p-2.5">
+                        <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
                           <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
                           {Array.isArray(campo.opciones) ? (
                             <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-normal text-slate-800">
@@ -8095,12 +8095,12 @@ const cuantiaFincasParaEnvio =
               <div className="grid min-w-0 grid-cols-1 items-start gap-3 xl:grid-cols-2">
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 xl:col-span-2">
                   <h4 className="mb-3 text-sm font-extrabold text-slate-800">📋 Datos · Tramitación inscripción</h4>
-                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                  <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
                     {(CAMPOS_ACTIVIDADES[actividadSeleccionada] || []).filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key)).map((campo) => {
                       const valor = actividadDraft?.[campo.key] ?? expediente?.[campo.key] ?? "";
                       const cambiar = (nuevoValor) => setActividadDraft((actual) => ({ ...actual, [campo.key]: nuevoValor }));
                       return (
-                        <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-slate-50/60 p-2.5">
+                        <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
                           <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
                           {Array.isArray(campo.opciones) ? (
                             <select value={String(valor)} onChange={(event) => cambiar(event.target.value)} disabled={guardandoActividad || expedienteBloqueado} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-normal text-slate-800">
