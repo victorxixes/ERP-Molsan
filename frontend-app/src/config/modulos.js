@@ -53,8 +53,16 @@ const MODULOS_ERP = [
 
   {
     key: "fichajes",
-    label: "Fichaje Molsan",
+    label: "Fichajes",
     route: "/fichajes",
+    icon: "clock",
+  },
+
+  {
+    key: "control-fichajes",
+    label: "Gestión de fichajes",
+    route: "/control-fichajes",
+    permiso: "fichajes",
     icon: "clock",
   },
 

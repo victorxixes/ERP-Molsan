@@ -920,12 +920,12 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   // Separamos las aplicaciones propias de espacios de trabajo de los módulos técnicos.
   const CLAVES_ESPACIOS_TRABAJO = new Set([
     "apoderagest", "cancelagest", "notargest", "encargagest",
-    "mensajeria-gestion", "notargestweb", "encargagestweb",
+    "mensajeria-gestion", "notargestweb", "encargagestweb", "control-fichajes",
   ]);
 
   // Accesos frecuentes junto a Utilidades; no forman parte del desplegable de espacios.
   const accesosDirectosUtilidades = [
-    { key: "fichajes", to: "/fichajes", label: "Fichaje Molsan", icon: "clock", directRoute: true },
+    { key: "fichajes", to: "/fichajes", label: "Fichajes", icon: "clock", directRoute: true },
     { key: "mensajeria", to: "/mensajeria", label: "Mensajería", icon: "truck", directRoute: true },
   ].filter((item) => puedeVerModulo(item.key));
   const crearListaDropdown = (tipo) => {
@@ -944,6 +944,8 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     return MODULOS_ERP.filter((modulo) => {
       if (!modulo.route || modulo.key === "notificaciones" || !puedeVerModulo(modulo.permiso || modulo.key)) return false;
       const esEspacio = CLAVES_ESPACIOS_TRABAJO.has(modulo.key);
+      // Fichajes es un acceso directo junto a Utilidades; solo su gestión administrativa va en Espacios de trabajo.
+      if (modulo.key === "fichajes") return false;
       if (tipo === "espacios" ? !esEspacio : esEspacio) return false;
       const ruta = rutaNormalizada(modulo.route);
       if (rutaActual === ruta || rutaActual.startsWith(`${ruta}/`)) return false;
