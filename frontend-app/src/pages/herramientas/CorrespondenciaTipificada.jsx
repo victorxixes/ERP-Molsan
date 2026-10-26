@@ -228,16 +228,23 @@ export default function CorrespondenciaTipificada() {
   const cuerpoFinal = insertarCampos(plantilla.cuerpo, contexto);
   const hayFaltantes = !expedienteContexto || faltantes.length > 0;
 
-  function abrirCorreo() {
+  async function abrirCorreo() {
     if (hayFaltantes) {
       setError("Carga un expediente y completa los campos obligatorios antes de preparar el correo.");
       return;
     }
-    const url = "mailto:" + encodeURIComponent(destinatarioFinal) +
-      "?subject=" + encodeURIComponent(asuntoFinal) +
-      (ccFinal ? "&cc=" + encodeURIComponent(ccFinal) : "") +
-      "&body=" + encodeURIComponent(cuerpoFinal);
-    window.location.href = url;
+    try {
+      const { data } = await axios.get("/utilidades/correspondencia/firma");
+      const bloquesFirma = [data.firma_personal, data.firma_pie].filter((x) => String(x || "").trim());
+      const cuerpoConFirma = [cuerpoFinal, ...bloquesFirma].filter((x) => String(x || "").trim()).join("\\n\\n");
+      const url = "mailto:" + encodeURIComponent(destinatarioFinal) +
+        "?subject=" + encodeURIComponent(asuntoFinal) +
+        (ccFinal ? "&cc=" + encodeURIComponent(ccFinal) : "") +
+        "&body=" + encodeURIComponent(cuerpoConFirma);
+      window.location.href = url;
+    } catch (err) {
+      setError(err?.response?.data?.detail || "No se pudo cargar la firma corporativa. No se ha abierto el correo.");
+    }
   }
 
   return (
