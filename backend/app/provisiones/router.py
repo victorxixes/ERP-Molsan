@@ -780,7 +780,12 @@ def _independiente_dict(item: ProvisionIndependiente) -> dict:
             "poblacion": item.cliente_poblacion, "provincia": item.cliente_provincia,
             "telefono": item.cliente_telefono, "email": item.cliente_email,
         },
-        "oficina": {"numero": item.oficina_numero, "contacto": item.oficina_contacto, "email": item.oficina_email},
+        "oficina": {
+            **((item.datos or {}).get("oficina", {}) if isinstance((item.datos or {}).get("oficina", {}), dict) else {}),
+            "numero": item.oficina_numero or ((item.datos or {}).get("oficina", {}) or {}).get("numero"),
+            "contacto": item.oficina_contacto or ((item.datos or {}).get("oficina", {}) or {}).get("contacto"),
+            "email": item.oficina_email or ((item.datos or {}).get("oficina", {}) or {}).get("email"),
+        },
         "garantias": (item.datos or {}).get("garantias", []),
         "observaciones": (item.datos or {}).get("observaciones", ""),
         "importe_total": float(item.importe_total or 0),
@@ -815,7 +820,22 @@ def _guardar_independiente(item: ProvisionIndependiente, datos: ProvisionIndepen
     item.oficina_numero = oficina.get("numero") or None
     item.oficina_contacto = oficina.get("contacto") or None
     item.oficina_email = oficina.get("email") or None
-    item.datos = {"garantias": garantias, "observaciones": (datos.observaciones or "").strip()}
+    item.datos = {
+        "oficina": {
+            "numero": str(oficina.get("numero") or "").strip(),
+            "nombre": str(oficina.get("nombre") or "").strip(),
+            "direccion": str(oficina.get("direccion") or "").strip(),
+            "poblacion": str(oficina.get("poblacion") or "").strip(),
+            "cp": str(oficina.get("cp") or "").strip(),
+            "provincia": str(oficina.get("provincia") or "").strip(),
+            "dan": str(oficina.get("dan") or "").strip(),
+            "dt": str(oficina.get("dt") or "").strip(),
+            "contacto": str(oficina.get("contacto") or "").strip(),
+            "email": str(oficina.get("email") or "").strip(),
+        },
+        "garantias": garantias,
+        "observaciones": (datos.observaciones or "").strip(),
+    }
     item.importe_total = total.quantize(Decimal("0.01"))
     item.creado_por_id = item.creado_por_id or getattr(usuario, "id", None)
 
@@ -885,32 +905,99 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
         raise HTTPException(status_code=404, detail="Provisión no encontrada.")
     data = _independiente_dict(item)
     buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=17*mm, leftMargin=17*mm, topMargin=16*mm, bottomMargin=17*mm, title=f"Provisión {item.numero}", author="ERP-Molsan")
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=17*mm, leftMargin=17*mm, topMargin=15*mm, bottomMargin=17*mm, title=f"Provisión {item.numero}", author="ERP-Molsan")
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name="TituloInd", parent=styles["Title"], fontName="Helvetica-Bold", fontSize=17, leading=21, textColor=colors.HexColor("#15325b")))
-    styles.add(ParagraphStyle(name="TextoInd", parent=styles["Normal"], fontSize=9, leading=13))
-    story = [Paragraph("MOLSAN GESTION Y TRAMITACION, S.L.", styles["TituloInd"]), Paragraph("PROVISIÓN ESTIMATIVA DE FONDOS", styles["Heading2"]), Paragraph(f"Número: <b>{escape(item.numero)}</b> &nbsp;&nbsp; Fecha: <b>{item.fecha.strftime('%d/%m/%Y')}</b>", styles["TextoInd"]), Spacer(1, 5*mm)]
-    story.append(Paragraph("<b>DATOS DEL CLIENTE</b>", styles["Heading3"]))
+    styles.add(ParagraphStyle(name="TituloInd", parent=styles["Title"], fontName="Helvetica-Bold", fontSize=17, leading=21, textColor=colors.HexColor("#15325b"), spaceAfter=2*mm))
+    styles.add(ParagraphStyle(name="TextoInd", parent=styles["Normal"], fontName="Helvetica", fontSize=8.5, leading=11))
+    styles.add(ParagraphStyle(name="EtiquetaInd", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=7.5, leading=9, textColor=colors.HexColor("#58677c")))
+    styles.add(ParagraphStyle(name="CeldaInd", parent=styles["Normal"], fontName="Helvetica", fontSize=7.2, leading=9))
+    styles.add(ParagraphStyle(name="CeldaIndBold", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=7.2, leading=9))
+    styles.add(ParagraphStyle(name="TotalInd", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=12, leading=15, alignment=TA_RIGHT, textColor=colors.HexColor("#15325b")))
+    story = [
+        Paragraph("MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.", styles["TituloInd"]),
+        Paragraph("PROVISIÓN ESTIMATIVA DE FONDOS", styles["Heading2"]),
+        Paragraph(f"Número: <b>{escape(str(item.numero))}</b> &nbsp;&nbsp;&nbsp; Fecha de petición: <b>{item.fecha.strftime('%d/%m/%Y') if item.fecha else '—'}</b>", styles["TextoInd"]),
+        Spacer(1, 4*mm),
+        Paragraph("DATOS DEL CLIENTE", styles["Heading3"]),
+    ]
     cli = data["cliente"]
-    story.append(Paragraph(escape(" · ".join(str(x) for x in [cli.get("nombre"), cli.get("nif"), cli.get("direccion"), cli.get("cp"), cli.get("poblacion"), cli.get("provincia"), cli.get("telefono"), cli.get("email")] if x)), styles["TextoInd"]))
-    story.append(Spacer(1, 3*mm))
+    cliente_rows = [
+        [_p("Cliente", styles["EtiquetaInd"]), _p(cli.get("nombre"), styles["CeldaIndBold"]), _p("NIF / CIF", styles["EtiquetaInd"]), _p(cli.get("nif"), styles["CeldaInd"])],
+        [_p("Dirección", styles["EtiquetaInd"]), _p(cli.get("direccion"), styles["CeldaInd"]), _p("Código postal", styles["EtiquetaInd"]), _p(cli.get("cp"), styles["CeldaInd"])],
+        [_p("Población", styles["EtiquetaInd"]), _p(cli.get("poblacion"), styles["CeldaInd"]), _p("Provincia", styles["EtiquetaInd"]), _p(cli.get("provincia"), styles["CeldaInd"])],
+        [_p("Teléfono", styles["EtiquetaInd"]), _p(cli.get("telefono"), styles["CeldaInd"]), _p("Email", styles["EtiquetaInd"]), _p(cli.get("email"), styles["CeldaInd"])],
+    ]
+    tabla_cliente = Table(cliente_rows, colWidths=[23*mm, 64*mm, 24*mm, 48*mm])
+    tabla_cliente.setStyle(TableStyle([
+        ("GRID", (0,0), (-1,-1), 0.35, colors.HexColor("#d5deea")),
+        ("BACKGROUND", (0,0), (0,-1), colors.HexColor("#f3f6fa")),
+        ("BACKGROUND", (2,0), (2,-1), colors.HexColor("#f3f6fa")),
+        ("VALIGN", (0,0), (-1,-1), "TOP"),
+        ("LEFTPADDING", (0,0), (-1,-1), 5), ("RIGHTPADDING", (0,0), (-1,-1), 5),
+        ("TOPPADDING", (0,0), (-1,-1), 5), ("BOTTOMPADDING", (0,0), (-1,-1), 5),
+    ]))
+    story.extend([tabla_cliente, Spacer(1, 4*mm), Paragraph("DATOS DE LA OFICINA DE ORIGEN", styles["Heading3"])])
     off = data["oficina"]
-    story.append(Paragraph("<b>OFICINA DE ORIGEN</b>", styles["Heading3"]))
-    story.append(Paragraph(escape(" · ".join(str(x) for x in [off.get("numero"), off.get("contacto"), off.get("email")] if x) or "—"), styles["TextoInd"]))
-    story.append(Spacer(1, 4*mm))
-    rows = [[_p("Entidad", styles["TextoInd"]), _p("Territorio", styles["TextoInd"]), _p("Tipo de carga", styles["TextoInd"]), _p("Capital", styles["TextoInd"]), _p("Finca / Registro", styles["TextoInd"]), _p("Notaría", styles["TextoInd"]), _p("AJD", styles["TextoInd"]), _p("Registro", styles["TextoInd"]), _p("Gestión", styles["TextoInd"]), _p("Otros", styles["TextoInd"]), _p("Total", styles["TextoInd"])]]
+    oficina_rows = [
+        [_p("Número de oficina", styles["EtiquetaInd"]), _p(off.get("numero"), styles["CeldaIndBold"]), _p("Nombre", styles["EtiquetaInd"]), _p(off.get("nombre"), styles["CeldaInd"])],
+        [_p("Dirección", styles["EtiquetaInd"]), _p(off.get("direccion"), styles["CeldaInd"]), _p("Población", styles["EtiquetaInd"]), _p(off.get("poblacion"), styles["CeldaInd"])],
+        [_p("Código postal", styles["EtiquetaInd"]), _p(off.get("cp"), styles["CeldaInd"]), _p("Provincia", styles["EtiquetaInd"]), _p(off.get("provincia"), styles["CeldaInd"])],
+        [_p("DAN", styles["EtiquetaInd"]), _p(off.get("dan"), styles["CeldaInd"]), _p("DT", styles["EtiquetaInd"]), _p(off.get("dt"), styles["CeldaInd"])],
+        [_p("Contacto", styles["EtiquetaInd"]), _p(off.get("contacto"), styles["CeldaInd"]), _p("Email", styles["EtiquetaInd"]), _p(off.get("email"), styles["CeldaInd"])],
+    ]
+    tabla_oficina = Table(oficina_rows, colWidths=[23*mm, 64*mm, 24*mm, 48*mm])
+    tabla_oficina.setStyle(TableStyle([
+        ("GRID", (0,0), (-1,-1), 0.35, colors.HexColor("#d5deea")),
+        ("BACKGROUND", (0,0), (0,-1), colors.HexColor("#f3f6fa")),
+        ("BACKGROUND", (2,0), (2,-1), colors.HexColor("#f3f6fa")),
+        ("VALIGN", (0,0), (-1,-1), "TOP"),
+        ("LEFTPADDING", (0,0), (-1,-1), 5), ("RIGHTPADDING", (0,0), (-1,-1), 5),
+        ("TOPPADDING", (0,0), (-1,-1), 5), ("BOTTOMPADDING", (0,0), (-1,-1), 5),
+    ]))
+    story.extend([tabla_oficina, Spacer(1, 5*mm), Paragraph("DESGLOSE DE LA PROVISIÓN", styles["Heading3"])])
+    rows = [[_p("ENTIDAD / CARGA", styles["CeldaIndBold"]), _p("CUANTÍA", styles["CeldaIndBold"]), _p("NOTARÍA", styles["CeldaIndBold"]), _p("AJD", styles["CeldaIndBold"]), _p("REGISTRO", styles["CeldaIndBold"]), _p("GESTIÓN", styles["CeldaIndBold"]), _p("TOTAL", styles["CeldaIndBold"])]]
     for g in data["garantias"]:
-        rows.append([_p(g.get("entidad"), styles["TextoInd"]), _p(g.get("territorio", "Península"), styles["TextoInd"]), _p(g.get("tipo_carga", "Hipotecaria"), styles["TextoInd"]), _p(_euros(g.get("capital", 0)), styles["TextoInd"]), _p(" / ".join(str(x) for x in [g.get("finca"), g.get("registro_propiedad"), g.get("poblacion")] if x), styles["TextoInd"]), _p(_euros(g.get("notaria", 0)), styles["TextoInd"]), _p(_euros(g.get("ajd", 0)), styles["TextoInd"]), _p(_euros(g.get("registro", 0)), styles["TextoInd"]), _p(_euros(g.get("gestion", 0)), styles["TextoInd"]), _p(_euros(g.get("otros_gastos", 0)), styles["TextoInd"]), _p(_euros(g.get("total", 0)), styles["TextoInd"])])
-    table = Table(rows, colWidths=[19*mm, 15*mm, 18*mm, 14*mm, 25*mm, 12*mm, 12*mm, 13*mm, 13*mm, 12*mm, 15*mm], repeatRows=1)
-    table.setStyle(TableStyle([("BACKGROUND",(0,0),(-1,0),colors.HexColor("#eaf0f8")),("GRID",(0,0),(-1,-1),0.35,colors.HexColor("#cdd6e2")),("VALIGN",(0,0),(-1,-1),"TOP"),("FONTSIZE",(0,0),(-1,-1),7),("LEFTPADDING",(0,0),(-1,-1),3),("RIGHTPADDING",(0,0),(-1,-1),3),("TOPPADDING",(0,0),(-1,-1),4),("BOTTOMPADDING",(0,0),(-1,-1),4)]))
-    story.extend([table, Spacer(1, 4*mm), Paragraph(f"IMPORTE TOTAL ESTIMADO: <b>{_euros(item.importe_total)}</b>", styles["Heading2"])])
+        entidad_carga = f"{escape(str(g.get('entidad') or '—'))}<br/><font size='6'>Carga: {escape(str(g.get('tipo_carga') or '—'))}</font>"
+        rows.append([
+            Paragraph(entidad_carga, styles["CeldaInd"]),
+            _p(_euros(g.get("capital", 0)), styles["CeldaInd"]),
+            _p(_euros(g.get("notaria", 0)), styles["CeldaInd"]),
+            _p(_euros(g.get("ajd", 0)), styles["CeldaInd"]),
+            _p(_euros(g.get("registro", 0)), styles["CeldaInd"]),
+            _p(_euros(g.get("gestion", 0)), styles["CeldaInd"]),
+            _p(_euros(g.get("total", 0)), styles["CeldaIndBold"]),
+        ])
+    tabla = Table(rows, colWidths=[42*mm, 25*mm, 21*mm, 18*mm, 22*mm, 22*mm, 29*mm], repeatRows=1, hAlign="LEFT")
+    tabla.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#eaf0f8")),
+        ("GRID", (0,0), (-1,-1), 0.4, colors.HexColor("#cdd6e2")),
+        ("VALIGN", (0,0), (-1,-1), "TOP"), ("ALIGN", (1,1), (-1,-1), "RIGHT"),
+        ("LEFTPADDING", (0,0), (-1,-1), 4), ("RIGHTPADDING", (0,0), (-1,-1), 4),
+        ("TOPPADDING", (0,0), (-1,-1), 6), ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+    ]))
+    story.extend([tabla, Spacer(1, 5*mm), Paragraph(f"IMPORTE TOTAL ESTIMADO: {_euros(item.importe_total)}", styles["TotalInd"])])
+    entidades = " ".join(str(g.get("entidad") or "") for g in data["garantias"]).casefold()
+    if "caixabank" in entidades or "caixa bank" in entidades:
+        story.extend([Spacer(1, 3*mm), Paragraph("<b>Información bancaria:</b> la posible comisión de CaixaBank (100 € + IVA) es ajena a esta provisión y no está incluida en el importe total estimado.", styles["TextoInd"])])
     if data.get("observaciones"):
-        story.extend([Spacer(1, 3*mm), Paragraph("<b>Observaciones:</b> " + escape(data["observaciones"]), styles["TextoInd"])])
-    story.extend([Spacer(1, 7*mm), Paragraph("La presente provisión es estimativa y podrá ajustarse a los gastos efectivamente devengados.", styles["TextoInd"]), Spacer(1, 15*mm), Paragraph("Firma del cliente: __________________________________________", styles["TextoInd"])])
-    doc.build(story)
+        story.extend([Spacer(1, 3*mm), Paragraph("<b>Observaciones:</b> " + escape(data["observaciones"]).replace("\\n", "<br/>"), styles["TextoInd"])])
+    story.extend([Spacer(1, 5*mm), Paragraph("La presente provisión es estimativa y podrá ajustarse a los gastos efectivamente devengados.", styles["TextoInd"]), Spacer(1, 12*mm), Paragraph("Firma del cliente: __________________________________________", styles["TextoInd"])])
+    def pie(canvas, documento):
+        canvas.saveState()
+        canvas.setStrokeColor(colors.HexColor("#d7dfeb"))
+        canvas.line(17*mm, 13*mm, A4[0]-17*mm, 13*mm)
+        canvas.setFont("Helvetica", 7.5)
+        canvas.setFillColor(colors.HexColor("#58677c"))
+        canvas.drawString(17*mm, 8.5*mm, f"ERP-Molsan · {item.numero}")
+        canvas.drawRightString(A4[0]-17*mm, 8.5*mm, f"Página {documento.page}")
+        canvas.restoreState()
+    try:
+        doc.build(story, onFirstPage=pie, onLaterPages=pie)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"No se pudo generar el PDF: {str(exc)[:250]}") from exc
     buffer.seek(0)
-    return StreamingResponse(buffer, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="{item.numero}.pdf"', "Cache-Control": "no-store"})
-
+    filename = "".join(c for c in str(item.numero) if c.isalnum() or c in "-_") or f"provision-{item.id}"
+    return StreamingResponse(buffer, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="{filename}.pdf"', "Cache-Control": "no-store"})
 
 
 @router.on_event("startup")
