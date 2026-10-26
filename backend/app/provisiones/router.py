@@ -1032,9 +1032,6 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
         ("TOPPADDING", (0,0), (-1,-1), 6), ("BOTTOMPADDING", (0,0), (-1,-1), 6),
     ]))
     story.extend([tabla, Spacer(1, 5*mm), Paragraph(f"IMPORTE TOTAL ESTIMADO: {_euros(item.importe_total)}", styles["TotalInd"])])
-    entidades = " ".join(str(g.get("entidad") or "") for g in data["garantias"]).casefold()
-    if "caixabank" in entidades or "caixa bank" in entidades:
-
     if data.get("observaciones"):
         story.extend([Spacer(1, 3*mm), Paragraph("<b>Observaciones:</b> " + escape(data["observaciones"]).replace("\\n", "<br/>"), styles["TextoInd"])])
     story.append(Spacer(1, 5*mm))
