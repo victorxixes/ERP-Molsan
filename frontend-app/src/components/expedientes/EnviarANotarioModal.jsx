@@ -1054,12 +1054,21 @@ export default function EnviarANotarioModal({
                       value={form.facturacion_codigo_postal}
                       disabled={loading}
                       autoComplete="postal-code"
-                      onChange={(v) =>
-                        cambiarCampo(
-                          "facturacion_codigo_postal",
-                          v
-                        )
-                      }
+                      onChange={(v) => {
+                        const cp = String(v || "").trim();
+                        const coincidencias = municipios.filter((item) =>
+                          (item.codigos_postales || []).includes(cp)
+                        );
+                        setForm((actual) => ({
+                          ...actual,
+                          facturacion_codigo_postal: v,
+                          ...(coincidencias.length === 1 ? {
+                            facturacion_poblacion: coincidencias[0].municipio,
+                            facturacion_provincia: coincidencias[0].provincia,
+                          } : {}),
+                        }));
+                        setError("");
+                      }}
                     />
 
                     <div className="relative min-w-0">
@@ -1118,6 +1127,7 @@ export default function EnviarANotarioModal({
                                     ...actual,
                                     facturacion_poblacion: item.municipio,
                                     facturacion_provincia: item.provincia,
+                                    facturacion_codigo_postal: item.codigo_postal_principal || (item.codigos_postales || [])[0] || actual.facturacion_codigo_postal,
                                   }));
                                   setMunicipiosAbierto(false);
                                   setError("");
