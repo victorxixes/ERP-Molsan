@@ -917,116 +917,83 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     ].some((clave) => clave && claves.has(clave)));
   }, [navigationItems, visiblesPrincipales, modulosFijados]);
 
-  // «Espacios de trabajo» muestra las aplicaciones autorizadas que NO estén ya accesibles
-  // desde la barra actual, «Más» o los accesos fijos del espacio de trabajo.
-  // Así el administrador conserva el catálogo completo sin duplicar enlaces.
-  const modulosDropdown = useMemo(() => {
-    const normalizarClave = (valor) => String(valor || "").trim().toLocaleLowerCase("es");
+  // Separamos las aplicaciones propias de espacios de trabajo de los módulos técnicos.
+  const CLAVES_ESPACIOS_TRABAJO = new Set([
+    "apoderagest", "cancelagest", "notargest", "encargagest",
+    "mensajeria", "mensajeria-gestion", "fichajes",
+  ]);
+  const crearListaDropdown = (tipo) => {
     if (esPortalNotarialExterno) return [];
-
-    // «Espacios de trabajo» completa la navegación: solo muestra entradas del catálogo
-    // que no estén ya visibles en la barra ni en los accesos fijados.
-    // Así se evita que el administrador vea cada módulo dos veces.
-    // Construir una única lista de identificadores ya visibles. Se compara
-    // por clave, etiqueta y ruta para cubrir las barras personalizadas de cada portal.
-    const elementosEnBarra = [
+    const visibles = [
       ...(Array.isArray(navigationItems) ? navigationItems : []),
       ...visiblesPrincipales,
       ...modulosFijadosUnicos,
     ];
-    const clavesEnBarra = new Set();
-    const rutasEnBarra = new Set();
-    for (const item of elementosEnBarra) {
-      for (const valor of [item?.key, item?.label, item?.to, item?.route]) {
-        const normalizado = normalizarClave(valor);
-        if (normalizado) {
-          if (normalizado.startsWith("/")) rutasEnBarra.add(normalizado.replace(/\/$/, ""));
-          else clavesEnBarra.add(normalizado);
-        }
-      }
-    }
-    const yaVisible = (modulo) =>
-      clavesEnBarra.has(normalizarClave(modulo.key)) ||
-      clavesEnBarra.has(normalizarClave(modulo.label)) ||
-      rutasEnBarra.has(normalizarClave(modulo.route).replace(/\/$/, ""));
-    // «Espacios de trabajo» reúne todos los módulos con ruta del catálogo
-    // que el usuario puede abrir y que aún no aparecen en la navegación actual.
-    // Así se incluyen los accesos secundarios sin duplicar enlaces ni saltarse permisos.
-    const marcaActual = normalizarClave(brandName);
-    const claveEspacioActual = ({
-      "apoderagest": "apoderagest",
-      "cancelagest": "cancelagest",
-      "notargest": "notargest",
-      "encargagest": "encargagest",
-    })[marcaActual];
+    const rutaNormalizada = (ruta) => String(ruta || "").split("?")[0].replace(/\/$/, "").toLocaleLowerCase("es");
+    const rutasVisibles = new Set(visibles.map((item) => rutaNormalizada(item?.to || item?.route)).filter(Boolean));
+    const clavesVisibles = new Set(visibles.flatMap((item) => [
+      normalizarModulo(item?.key), normalizarModulo(item?.label),
+    ]).filter(Boolean));
+    const rutaActual = rutaNormalizada(pathname);
+    return MODULOS_ERP.filter((modulo) => {
+      if (!modulo.route || modulo.key === "notificaciones" || !puedeVerModulo(modulo.key)) return false;
+      const esEspacio = CLAVES_ESPACIOS_TRABAJO.has(modulo.key);
+      if (tipo === "espacios" ? !esEspacio : esEspacio) return false;
+      const ruta = rutaNormalizada(modulo.route);
+      if (rutaActual === ruta || rutaActual.startsWith(`${ruta}/`)) return false;
+      if (rutasVisibles.has(ruta) || clavesVisibles.has(normalizarModulo(modulo.key)) ||
+          clavesVisibles.has(normalizarModulo(modulo.label))) return false;
+      return true;
+    }).map((modulo) => ({
+      key: modulo.key, to: modulo.route, label: modulo.label,
+      icon: ({
+        "user-group": "user-group", "file-check": "folder", briefcase: "activity",
+        landmark: "globe", "clipboard-list": "clipboard", clock: "clock",
+        settings: "settings", package: "truck", wrench: "settings",
+      })[modulo.icon] || modulo.icon,
+    })).filter((modulo, index, lista) => lista.findIndex((otro) => otro.key === modulo.key) === index);
+  };
 
-    const items = MODULOS_ERP
-      .filter((modulo) =>
-        Boolean(modulo.route) &&
-        modulo.key !== claveEspacioActual &&
-        puedeVerModulo(modulo.key) &&
-        !yaVisible(modulo)
-      )
-      .map((modulo) => ({
-        key: modulo.key,
-        to: modulo.route,
-        label: modulo.label,
-        icon: ({
-          "user-group": "user-group",
-          "file-check": "folder",
-          briefcase: "activity",
-          landmark: "globe",
-          "clipboard-list": "clipboard",
-          clock: "clock",
-          settings: "settings",
-        })[modulo.icon] || modulo.icon,
-      }))
-      .filter((modulo, index, lista) =>
-        lista.findIndex((otro) => otro.key === modulo.key) === index
-      );
-
-    return items;
-  }, [empleado, esPortalNotarialExterno, navigationItems, visiblesPrincipales, visiblesSecundarios, modulosFijadosUnicos, brandName]);
-  const [modulosDropdownAbierto, setModulosDropdownAbierto] = useState(false);
-  const modulosDropdownRef = useRef(null);
-  const modulosDropdownMenuRef = useRef(null);
-  const [modulosDropdownPosicion, setModulosDropdownPosicion] = useState(null);
+  const espaciosTrabajoDropdown = useMemo(
+    () => crearListaDropdown("espacios"),
+    [empleado, esPortalNotarialExterno, navigationItems, visiblesPrincipales, modulosFijadosUnicos, pathname]
+  );
+  const modulosTecnicosDropdown = useMemo(
+    () => crearListaDropdown("tecnicos"),
+    [empleado, esPortalNotarialExterno, navigationItems, visiblesPrincipales, modulosFijadosUnicos, pathname]
+  );
+  const [menuSidebarAbierto, setMenuSidebarAbierto] = useState(null);
+  const [menuSidebarPosicion, setMenuSidebarPosicion] = useState(null);
+  const menuSidebarBotonesRef = useRef({});
+  const menuSidebarMenuRef = useRef(null);
 
   useEffect(() => {
     const cerrarFuera = (event) => {
-      const dentroDelBoton = modulosDropdownRef.current?.contains(event.target);
-      const dentroDelMenu = modulosDropdownMenuRef.current?.contains(event.target);
-      if (!dentroDelBoton && !dentroDelMenu) {
-        setModulosDropdownAbierto(false);
-      }
+      if (!menuSidebarBotonesRef.current[menuSidebarAbierto]?.contains(event.target) &&
+          !menuSidebarMenuRef.current?.contains(event.target)) setMenuSidebarAbierto(null);
     };
     document.addEventListener("mousedown", cerrarFuera);
     return () => document.removeEventListener("mousedown", cerrarFuera);
-  }, []);
+  }, [menuSidebarAbierto]);
 
-  // El desplegable se renderiza en document.body para que el scroll
-  // horizontal de la navegación no lo recorte ni lo deje dentro de la barra.
   useEffect(() => {
-    if (!modulosDropdownAbierto) {
-      setModulosDropdownPosicion(null);
+    if (!menuSidebarAbierto) {
+      setMenuSidebarPosicion(null);
       return undefined;
     }
-
     const actualizarPosicion = () => {
-      const boton = modulosDropdownRef.current?.querySelector("button");
+      const boton = menuSidebarBotonesRef.current[menuSidebarAbierto]?.querySelector("button");
       if (!boton) return;
       const rect = boton.getBoundingClientRect();
-      const ancho = Math.min(240, window.innerWidth - 24);
-      const altoEstimado = Math.min(380, window.innerHeight - 24);
-      const left = Math.max(12, Math.min(rect.right - ancho, window.innerWidth - ancho - 12));
-      const top = Math.max(12, Math.min(rect.bottom + 8, window.innerHeight - altoEstimado - 12));
-      setModulosDropdownPosicion({ top, left, ancho });
+      const ancho = Math.min(260, window.innerWidth - 24);
+      const alto = Math.min(380, window.innerHeight - 24);
+      setMenuSidebarPosicion({
+        top: Math.max(12, Math.min(rect.bottom + 8, window.innerHeight - alto - 12)),
+        left: Math.max(12, Math.min(rect.right - ancho, window.innerWidth - ancho - 12)),
+        ancho,
+      });
     };
-
-    const cerrarConEscape = (event) => {
-      if (event.key === "Escape") setModulosDropdownAbierto(false);
-    };
-
+    const cerrarConEscape = (event) => { if (event.key === "Escape") setMenuSidebarAbierto(null); };
     actualizarPosicion();
     window.addEventListener("resize", actualizarPosicion);
     window.addEventListener("scroll", actualizarPosicion, true);
@@ -1036,37 +1003,28 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       window.removeEventListener("scroll", actualizarPosicion, true);
       document.removeEventListener("keydown", cerrarConEscape);
     };
-  }, [modulosDropdownAbierto]);
+  }, [menuSidebarAbierto]);
 
-  // En barras de navegación específicas también agrupamos Fichajes bajo «Espacios de trabajo»
-  // para evitar que aparezca como botón independiente.
+  const menuSidebarItems = menuSidebarAbierto === "espacios" ? espaciosTrabajoDropdown : modulosTecnicosDropdown;
+  const crearBotonesDropdown = () => ([
+    ...(espaciosTrabajoDropdown.length ? [{ key: "espacios-trabajo", label: "Espacios de trabajo", icon: "folder", menu: "espacios" }] : []),
+    ...(modulosTecnicosDropdown.length ? [{ key: "modulos-tecnicos", label: "Módulos más técnicos", icon: "settings", menu: "tecnicos" }] : []),
+  ]);
+
   const navigationItemsConModulos = useMemo(() => {
     if (!Array.isArray(navigationItems)) return null;
     const clavesNavegacion = new Set();
-    const sinFichajes = navigationItems.filter((item) => {
-      if (
-        item?.key === "fichajes" ||
-        normalizarModulo(item?.label) === "fichajes" ||
-        item?.key === "modulos" ||
-        ["módulos", "modulos", "espacios de trabajo"].includes(normalizarModulo(item?.label))
-      ) return false;
-
-      const identificadores = [
-        normalizarModulo(item?.key),
-        normalizarModulo(item?.label),
-        normalizarModulo(item?.to || item?.route),
-      ].filter(Boolean);
+    const sinDuplicados = navigationItems.filter((item) => {
+      if (item?.key === "fichajes" || normalizarModulo(item?.label) === "fichajes" ||
+          item?.key === "modulos" || item?.key === "notificaciones" || normalizarModulo(item?.label) === "notificaciones" || ["modulos", "espacios de trabajo", "modulos mas tecnicos"].includes(normalizarModulo(item?.label))) return false;
+      const identificadores = [normalizarModulo(item?.key), normalizarModulo(item?.label), normalizarModulo(item?.to || item?.route)].filter(Boolean);
       if (identificadores.some((clave) => clavesNavegacion.has(clave))) return false;
       identificadores.forEach((clave) => clavesNavegacion.add(clave));
       return true;
     });
-    // «Espacios de trabajo» debe ser siempre el último botón de la barra, no quedar
-    // intercalado entre pestañas propias y accesos comunes del ERP.
-    if (modulosDropdown.length > 0) {
-      sinFichajes.push({ key: "modulos", label: "Espacios de trabajo", icon: "database" });
-    }
-    return sinFichajes;
-  }, [navigationItems, modulosDropdown]);
+    sinDuplicados.push(...crearBotonesDropdown());
+    return sinDuplicados;
+  }, [navigationItems, espaciosTrabajoDropdown, modulosTecnicosDropdown]);
 
   const mostrarBotonMas = modulosMas.length > 0 &&
     !["apoderagest", "notargest", "encargagest"].includes(normalizarModulo(brandName));
@@ -1201,155 +1159,46 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                 ================================================== */}
 
             {navigationItemsConModulos
-              ? navigationItemsConModulos.map((item) => (
-                  <div
-                    key={item.key}
-                    className="relative flex-shrink-0"
-                    ref={item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos" ? modulosDropdownRef : undefined}
-                  >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") {
-                        setModulosDropdownAbierto((abierto) => !abierto);
-                        return;
-                      }
-                      onNavigationItemClick?.(item.label);
-                    }}
-                    aria-haspopup={(item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") ? "menu" : undefined}
-                    aria-expanded={(item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") ? modulosDropdownAbierto : undefined}
-                    aria-current={activeNavigationItem === item.label ? "page" : undefined}
-                    className={`
-                      flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0
-                      ${brandName === "NotarGest" ? "px-3 py-2 rounded-full text-[12px]" : "px-2.5 py-1.5 rounded-lg text-[12px]"}
-                      ${activeNavigationItem === item.label
-                        ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm"
-                        : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"}
-                      ${item.attention ? " ng-boton-firmas-urgentes ng-urgencias-activas" : ""}
-                    `}
-                  >
-                    <NavIcon name={item.icon} />
-                    <span>{item.label}</span>
-                    {(item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") && (
-                      <ChevronIcon open={modulosDropdownAbierto} />
-                    )}
-                    {(item.badge > 0 || (item.label === "Mensajes" && mensajesNoLeidos > 0)) ? (
-                      <span className={item.label === "Mensajes" ? "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold" : "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] text-[10px] font-bold"}>
-                        {item.label === "Mensajes" ? mensajesNoLeidos : item.badge}
-                      </span>
-                    ) : null}
-                  </button>
-                  {(item.key === "modulos" || normalizarModulo(item.label) === "módulos" || normalizarModulo(item.label) === "modulos") && modulosDropdownAbierto && modulosDropdownPosicion && createPortal(
-                    <div
-                      ref={modulosDropdownMenuRef}
-                      role="menu"
-                      style={{
-                        position: "fixed",
-                        top: modulosDropdownPosicion.top,
-                        left: modulosDropdownPosicion.left,
-                        width: modulosDropdownPosicion.ancho,
-                        zIndex: 9999,
-                      }}
-                      className="max-h-[min(70vh,380px)] overflow-y-auto rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl"
-                    >
-                      {modulosDropdown.map((modulo) => (
-                        <NavLink
-                          key={modulo.key}
-                          to={modulo.to}
-                          onClick={() => setModulosDropdownAbierto(false)}
-                          role="menuitem"
-                          className={({ isActive }) => `
-                            flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition
-                            ${isActive
-                              ? "bg-[var(--erp-primary)] text-white"
-                              : "text-[var(--erp-text)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}
-                          `}
-                        >
-                          <NavIcon name={modulo.icon} />
-                          <span>{modulo.label}</span>
-                        </NavLink>
-                      ))}
-                    </div>,
-                    document.body
-                  )}
-                  </div>
-                ))
-              : visiblesPrincipales.map((modulo) => (
-                  <TopNavItem
-                    key={modulo.key}
-                    to={modulo.to}
-                    label={modulo.label}
-                    icon={modulo.icon}
-                    badge={modulo.badge || 0}
-                  />
-                ))}
+              ? navigationItemsConModulos.map((item) => {
+                  const esMenu = item.menu === "espacios" || item.menu === "tecnicos";
+                  const abierto = esMenu && menuSidebarAbierto === item.menu;
+                  return (
+                    <div key={item.key} className="relative flex-shrink-0" ref={(elemento) => { if (esMenu) menuSidebarBotonesRef.current[item.menu] = elemento; }}>
+                      <button type="button"
+                        onClick={() => esMenu ? setMenuSidebarAbierto((actual) => actual === item.menu ? null : item.menu) : onNavigationItemClick?.(item.label)}
+                        aria-haspopup={esMenu ? "menu" : undefined} aria-expanded={esMenu ? abierto : undefined}
+                        aria-current={activeNavigationItem === item.label ? "page" : undefined}
+                        className={`flex items-center gap-1.5 whitespace-nowrap font-medium transition-all duration-200 border flex-shrink-0 ${brandName === "NotarGest" ? "px-3 py-2 rounded-full text-[12px]" : "px-2.5 py-1.5 rounded-lg text-[12px]"} ${activeNavigationItem === item.label ? "bg-[var(--erp-primary)] text-white border-[var(--erp-primary)] shadow-sm" : abierto ? "bg-transparent text-[var(--erp-text)] border-[var(--erp-primary)]" : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"} ${item.attention ? "ng-boton-firmas-urgentes ng-urgencias-activas" : ""}`}>
+                        <NavIcon name={item.icon} /><span>{item.label}</span>
+                        {esMenu && <ChevronIcon open={abierto} />}
+                        {(item.badge > 0 || (item.label === "Mensajes" && mensajesNoLeidos > 0)) ? <span className={item.label === "Mensajes" ? "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold" : "min-w-[19px] h-[19px] px-1 flex items-center justify-center rounded-full bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] text-[10px] font-bold"}>{item.label === "Mensajes" ? mensajesNoLeidos : item.badge}</span> : null}
+                      </button>
+                      {abierto && menuSidebarPosicion && createPortal(
+                        <div ref={menuSidebarMenuRef} role="menu" style={{ position: "fixed", top: menuSidebarPosicion.top, left: menuSidebarPosicion.left, width: menuSidebarPosicion.ancho, zIndex: 9999 }} className="max-h-[min(70vh,380px)] overflow-y-auto rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl">
+                          {menuSidebarItems.map((modulo) => <NavLink key={modulo.key} to={modulo.to} onClick={() => setMenuSidebarAbierto(null)} role="menuitem" className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition ${isActive ? "bg-[var(--erp-primary)] text-white" : "text-[var(--erp-text)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}`}><NavIcon name={modulo.icon} /><span>{modulo.label}</span></NavLink>)}
+                        </div>, document.body
+                      )}
+                    </div>
+                  );
+                })
+              : visiblesPrincipales.map((modulo) => <TopNavItem key={modulo.key} to={modulo.to} label={modulo.label} icon={modulo.icon} badge={modulo.badge || 0} />)}
 
-            {!navigationItemsConModulos && modulosFijadosUnicos.map((modulo) => (
-              <TopNavItem
-                key={modulo.key}
-                to={modulo.to}
-                label={modulo.label}
-                icon={modulo.icon}
-                badge={modulo.badge || 0}
-              />
-            ))}
+            {!navigationItemsConModulos && modulosFijadosUnicos.map((modulo) => <TopNavItem key={modulo.key} to={modulo.to} label={modulo.label} icon={modulo.icon} badge={modulo.badge || 0} />)}
 
-            {modulosDropdown.length > 0 && !navigationItems && (
-              <>
-                <div className="relative flex-shrink-0" ref={modulosDropdownRef}>
-                  <button
-                    type="button"
-                    onClick={() => setModulosDropdownAbierto((abierto) => !abierto)}
-                    aria-haspopup="menu"
-                    aria-expanded={modulosDropdownAbierto}
-                    className={`
-                      flex items-center gap-2 px-3 py-2 rounded-xl whitespace-nowrap text-sm font-medium
-                      transition-all duration-200 border
-                      ${modulosDropdownAbierto || modulosDropdown.some((m) => window.location.pathname.startsWith(m.to))
-                        ? "bg-[var(--erp-primary-soft)] text-[var(--erp-primary)] border-[var(--erp-primary)]"
-                        : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"}
-                    `}
-                  >
-                    <NavIcon name="folder" />
-                    <span>Espacios de trabajo</span>
-                    <ChevronIcon open={modulosDropdownAbierto} />
-                  </button>
-                </div>
-                {modulosDropdownAbierto && modulosDropdownPosicion && createPortal(
-                  <div
-                    ref={modulosDropdownMenuRef}
-                    role="menu"
-                    style={{
-                      position: "fixed",
-                      top: modulosDropdownPosicion.top,
-                      left: modulosDropdownPosicion.left,
-                      width: Math.max(205, modulosDropdownPosicion.ancho),
-                      zIndex: 9999,
-                    }}
-                    className="max-h-[min(70vh,380px)] overflow-y-auto rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl"
-                  >
-                    {modulosDropdown.map((modulo) => (
-                      <NavLink
-                        key={modulo.key}
-                        to={modulo.to}
-                        onClick={() => setModulosDropdownAbierto(false)}
-                        role="menuitem"
-                        className={({ isActive }) => `
-                          flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition
-                          ${isActive
-                            ? "bg-[var(--erp-primary)] text-white"
-                            : "text-[var(--erp-text)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}
-                        `}
-                      >
-                        <NavIcon name={modulo.icon} />
-                        <span>{modulo.label}</span>
-                      </NavLink>
-                    ))}
-                  </div>,
-                  document.body
-                )}
-              </>
-            )}
+            {!navigationItems && crearBotonesDropdown().map((item) => {
+              const items = item.menu === "espacios" ? espaciosTrabajoDropdown : modulosTecnicosDropdown;
+              const abierto = menuSidebarAbierto === item.menu;
+              return <div key={item.key} className="relative flex-shrink-0" ref={(elemento) => { menuSidebarBotonesRef.current[item.menu] = elemento; }}>
+                <button type="button" onClick={() => setMenuSidebarAbierto((actual) => actual === item.menu ? null : item.menu)} aria-haspopup="menu" aria-expanded={abierto}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl whitespace-nowrap text-sm font-medium transition-all duration-200 border ${abierto ? "bg-transparent text-[var(--erp-text)] border-[var(--erp-primary)]" : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"}`}>
+                  <NavIcon name={item.icon} /><span>{item.label}</span><ChevronIcon open={abierto} />
+                </button>
+                {abierto && menuSidebarPosicion && createPortal(<div ref={menuSidebarMenuRef} role="menu" style={{ position: "fixed", top: menuSidebarPosicion.top, left: menuSidebarPosicion.left, width: menuSidebarPosicion.ancho, zIndex: 9999 }} className="max-h-[min(70vh,380px)] overflow-y-auto rounded-2xl border border-[var(--erp-border)] bg-[var(--erp-surface)] p-2 shadow-2xl">
+                  {items.map((modulo) => <NavLink key={modulo.key} to={modulo.to} onClick={() => setMenuSidebarAbierto(null)} role="menuitem" className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition ${isActive ? "bg-[var(--erp-primary)] text-white" : "text-[var(--erp-text)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)]"}`}><NavIcon name={modulo.icon} /><span>{modulo.label}</span></NavLink>)}
+                </div>, document.body)}
+              </div>;
+            })}
+
 
           </nav>
 

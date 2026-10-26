@@ -108,13 +108,6 @@ const MODULOS_ERP = [
   },
 
   {
-    key: "notificaciones",
-    label: "Notificaciones",
-    route: "/notificaciones",
-    icon: "bell",
-  },
-
-  {
     key: "auditoria",
     label: "Auditoría",
     route: "/auditoria",
