@@ -293,10 +293,13 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
 
     if tarifa:
         honorarios_base = _dinero(tarifa.honorarios)
-        honorarios = Decimal("0.00") if datos.condonar_honorarios else honorarios_base
-        suplidos = _dinero(tarifa.suplidos)
-        gastos_registro = _dinero(tarifa.gastos_registro)
-        otros_gastos = _dinero(tarifa.otros_gastos)
+        # Solo se admiten importes distintos a la tarifa cuando el usuario
+        # deja constancia expresa del motivo del ajuste.
+        con_ajuste = bool((datos.ajustes_motivo or "").strip())
+        honorarios = Decimal("0.00") if datos.condonar_honorarios else (_dinero(datos.honorarios) if con_ajuste else honorarios_base)
+        suplidos = _dinero(datos.suplidos) if con_ajuste else _dinero(tarifa.suplidos)
+        gastos_registro = _dinero(datos.gastos_registro) if con_ajuste else _dinero(tarifa.gastos_registro)
+        otros_gastos = _dinero(datos.otros_gastos) if con_ajuste else _dinero(tarifa.otros_gastos)
         tarifa_id = tarifa.id
     else:
         honorarios_base = _dinero(datos.honorarios_base if datos.honorarios_base else datos.honorarios)
