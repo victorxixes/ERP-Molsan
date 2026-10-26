@@ -38,6 +38,7 @@ MODULOS_BASE = [
     "ctn",
     "intranet",
     "mensajes",
+    "mensajeria",
     "informes",
     "fusiones",
     "notificaciones",
