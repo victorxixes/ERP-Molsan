@@ -1,4 +1,8 @@
+import csv
+import io
 import re
+import unicodedata
+import urllib.request
 from typing import List, Optional
 
 from fastapi import (
@@ -76,6 +80,49 @@ class MunicipioResponse(MunicipioBase):
     class Config:
         orm_mode = True
         from_attributes = True
+
+
+
+
+URL_DATASET_CODIGOS_POSTALES = (
+    "https://raw.githubusercontent.com/regi-es/"
+    "ds-codigos-postales-ine-es/master/data/codigos_postales_municipios.csv"
+)
+
+PROVINCIAS_INE = {
+    "01": ["Álava", "Araba"], "02": ["Albacete"],
+    "03": ["Alicante", "Alacant"], "04": ["Almería"],
+    "05": ["Ávila"], "06": ["Badajoz"],
+    "07": ["Illes Balears", "Baleares", "Islas Baleares"],
+    "08": ["Barcelona"], "09": ["Burgos"], "10": ["Cáceres"],
+    "11": ["Cádiz"], "12": ["Castellón", "Castelló"],
+    "13": ["Ciudad Real"], "14": ["Córdoba"],
+    "15": ["A Coruña", "La Coruña"], "16": ["Cuenca"],
+    "17": ["Girona", "Gerona"], "18": ["Granada"],
+    "19": ["Guadalajara"], "20": ["Gipuzkoa", "Guipúzcoa"],
+    "21": ["Huelva"], "22": ["Huesca"], "23": ["Jaén"],
+    "24": ["León"], "25": ["Lleida", "Lérida"],
+    "26": ["La Rioja", "Rioja"], "27": ["Lugo"],
+    "28": ["Madrid"], "29": ["Málaga"], "30": ["Murcia"],
+    "31": ["Navarra"], "32": ["Ourense", "Orense"],
+    "33": ["Asturias"], "34": ["Palencia"],
+    "35": ["Las Palmas"], "36": ["Pontevedra"],
+    "37": ["Salamanca"], "38": ["Santa Cruz de Tenerife"],
+    "39": ["Cantabria"], "40": ["Segovia"], "41": ["Sevilla"],
+    "42": ["Soria"], "43": ["Tarragona"], "44": ["Teruel"],
+    "45": ["Toledo"], "46": ["Valencia", "València"],
+    "47": ["Valladolid"], "48": ["Bizkaia", "Vizcaya"],
+    "49": ["Zamora"], "50": ["Zaragoza"],
+    "51": ["Ceuta"], "52": ["Melilla"],
+}
+
+
+def clave_territorial(valor):
+    texto = unicodedata.normalize("NFKD", str(valor or "").casefold())
+    texto = "".join(caracter for caracter in texto if not unicodedata.combining(caracter))
+    palabras = re.findall(r"[a-z0-9]+", texto)
+    palabras = [palabra for palabra in palabras if palabra not in {"la", "el", "los", "las", "de", "del", "l", "d"}]
+    return " ".join(sorted(palabras))
 
 
 # ============================================================
@@ -327,6 +374,97 @@ def crear_municipio(
         )
 
     return serializar_municipio(nuevo)
+
+
+# ============================================================
+# POST /api/municipios/importar-codigos-postales
+# Carga masiva desde la relación pública derivada de datos abiertos del INE.
+# No crea ni renombra municipios: solo enlaza códigos a registros existentes.
+# ============================================================
+
+@router.post("/importar-codigos-postales")
+def importar_codigos_postales_nacionales(db: Session = Depends(get_db)):
+    try:
+        solicitud = urllib.request.Request(
+            URL_DATASET_CODIGOS_POSTALES,
+            headers={"User-Agent": "MOLSAN-ERP/2027", "Accept": "text/csv"},
+        )
+        with urllib.request.urlopen(solicitud, timeout=45) as respuesta:
+            contenido = respuesta.read(25 * 1024 * 1024 + 1)
+        if len(contenido) > 25 * 1024 * 1024:
+            raise HTTPException(status_code=502, detail="El fichero de códigos postales supera el tamaño permitido.")
+        texto_csv = contenido.decode("utf-8-sig")
+        lector = csv.DictReader(io.StringIO(texto_csv))
+        columnas = {str(nombre or "").strip().lower() for nombre in (lector.fieldnames or [])}
+        if not {"codigo_postal", "municipio_id", "municipio_nombre"}.issubset(columnas):
+            raise HTTPException(status_code=502, detail="El fichero de códigos postales no tiene el formato esperado.")
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"No se pudo descargar el catálogo nacional de códigos postales: {exc}") from exc
+
+    registros = db.query(Municipio).filter(Municipio.activo.is_(True)).all()
+    por_nombre = {}
+    for registro in registros:
+        clave = clave_territorial(registro.municipio)
+        por_nombre.setdefault(clave, []).append(registro)
+
+    codigos_por_municipio = {}
+    filas_fuente = 0
+    filas_invalidas = 0
+    for fila in lector:
+        filas_fuente += 1
+        cp = str(fila.get("codigo_postal") or "").strip()
+        ine = str(fila.get("municipio_id") or "").strip().zfill(5)
+        nombre = str(fila.get("municipio_nombre") or "").strip()
+        if not re.fullmatch(r"\\d{5}", cp) or not re.fullmatch(r"\\d{5}", ine) or ine[:2] not in PROVINCIAS_INE or not nombre:
+            filas_invalidas += 1
+            continue
+        clave_nombre = clave_territorial(nombre)
+        candidatas = por_nombre.get(clave_nombre, [])
+        provincias_validas = {clave_territorial(p) for p in PROVINCIAS_INE[ine[:2]]}
+        candidatas = [m for m in candidatas if clave_territorial(m.provincia) in provincias_validas]
+        if len(candidatas) != 1:
+            continue
+        municipio = candidatas[0]
+        codigos_por_municipio.setdefault(municipio.id, {"municipio": municipio, "codigos": set()})["codigos"].add(cp)
+
+    relaciones_nuevas = 0
+    municipios_actualizados = 0
+    try:
+        for datos in codigos_por_municipio.values():
+            municipio = datos["municipio"]
+            codigos = datos["codigos"]
+            existentes = {registro.codigo_postal: registro for registro in municipio.codigos_postales}
+            principal_existente = next((registro.codigo_postal for registro in existentes.values() if registro.principal), None)
+            hubo_cambio = False
+            for cp in sorted(codigos):
+                if cp in existentes:
+                    continue
+                registro = MunicipioCodigoPostal(
+                    codigo_postal=cp,
+                    principal=(principal_existente is None and not hubo_cambio and cp == min(codigos)),
+                )
+                municipio.codigos_postales.append(registro)
+                relaciones_nuevas += 1
+                hubo_cambio = True
+            if hubo_cambio:
+                municipios_actualizados += 1
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudieron guardar los códigos postales: {exc}") from exc
+
+    return {
+        "ok": True,
+        "fuente": "Dataset de códigos postales derivado de datos abiertos del INE",
+        "filas_fuente": filas_fuente,
+        "filas_invalidas": filas_invalidas,
+        "municipios_con_coincidencia": len(codigos_por_municipio),
+        "municipios_actualizados": municipios_actualizados,
+        "relaciones_nuevas": relaciones_nuevas,
+        "nota": "Se conservaron los códigos postales principales ya definidos. Solo se añadieron códigos para municipios existentes con coincidencia inequívoca de nombre y provincia.",
+    }
 
 
 # ============================================================
