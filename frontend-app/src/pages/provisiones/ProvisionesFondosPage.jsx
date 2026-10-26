@@ -72,7 +72,6 @@ const clonarTramos = (tipo) => TRAMOS_BASE.map((t) => ({
   desde: String(t.desde), hasta: String(t.hasta),
   notaria: String(tipo === "caixabank" ? t.notariaCaixa : t.notariaAjena),
   registro: String(tipo === "caixabank" ? t.registroCaixa : t.registroAjena),
-  honorario_id: "",
 }));
 const importeHonorario = (h) => {
   const n = Number(h?.importe ?? h?.importe_base ?? h?.base_imponible ?? h?.importe_honorarios ?? h?.precio ?? h?.total);
@@ -97,8 +96,8 @@ function ConfiguracionConceptosProvisiones() {
       setItems(lista);
       setBorradores(Object.fromEntries(lista.map((x) => {
         const reglas = { porcentaje_condicion_resolutoria: 1.5, importes_hipoteca_provincia: { Gipuzkoa: "", Álava: "", Bizkaia: "" }, tramos: [], ...(x.reglas || {}) };
-        if (!Array.isArray(reglas.tramos_caixabank) || reglas.tramos_caixabank.length === 0) reglas.tramos_caixabank = clonarTramos("caixabank");
-        if (!Array.isArray(reglas.tramos_entidad_ajena) || reglas.tramos_entidad_ajena.length === 0) reglas.tramos_entidad_ajena = clonarTramos("ajena");
+        if (!Array.isArray(reglas.tramos_caixabank)) reglas.tramos_caixabank = clonarTramos("caixabank");
+        if (!Array.isArray(reglas.tramos_entidad_ajena)) reglas.tramos_entidad_ajena = clonarTramos("ajena");
         return [x.codigo, { modo: x.modo === "calculado" ? "calculado" : "previsto", importe_previsto: x.importe_previsto == null ? "" : String(x.importe_previsto), descripcion: x.descripcion || "", reglas, activo: x.activo !== false }];
       })));
       setErrorConfig("");
@@ -148,10 +147,22 @@ function ConfiguracionConceptosProvisiones() {
     const tramos = draft.reglas?.[clave] || [];
     const titulo = caixabank ? "CAIXABANK" : "ENTIDAD AJENA";
     const honorariosEtiqueta = caixabank ? "Honorarios" : "Gestión";
+    const claveHonorario = caixabank ? "honorario_caixabank_id" : "honorario_entidad_ajena_id";
+    const honorarioSeleccionado = catalogoHonorarios.find((h) => String(h.id ?? h.codigo ?? h.nombre) === String(draft.reglas?.[claveHonorario] ?? ""));
+    const importe = importeHonorario(honorarioSeleccionado);
     return <div className="mt-4 rounded-xl border border-slate-200 bg-white p-3">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div><h3 className="font-bold text-slate-900">{titulo}</h3><p className="mt-1 text-xs text-slate-500">{tramos.length} tramos · capital, notaría y registro editables; {honorariosEtiqueta.toLowerCase()} enlazada al catálogo.</p></div>
         <button type="button" onClick={() => agregarTramo(item.codigo, tipo)} className={boton + " bg-indigo-600 text-white hover:bg-indigo-700"}>＋ Añadir tramo</button>
+      </div>
+      <div className="mb-3 grid gap-2 sm:grid-cols-[minmax(260px,1fr)_auto] sm:items-end">
+        <label className={label}>{honorariosEtiqueta} · catálogo central
+          <select className={input} value={draft.reglas?.[claveHonorario] ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), [claveHonorario]: e.target.value })}>
+            <option value="">Seleccionar {honorariosEtiqueta.toLowerCase()}…</option>
+            {catalogoHonorarios.map((h) => <option key={h.id ?? h.codigo ?? h.nombre} value={h.id ?? h.codigo ?? h.nombre}>{h.nombre || h.concepto || h.codigo || "Honorario " + h.id}{importeHonorario(h) == null ? "" : " · " + dinero(importeHonorario(h))}</option>)}
+          </select>
+        </label>
+        <p className="text-sm font-semibold text-slate-700">{importe == null ? "Importe del catálogo pendiente" : honorariosEtiqueta + ": " + dinero(importe)}</p>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1000px] border-collapse text-left text-xs">
@@ -161,20 +172,18 @@ function ConfiguracionConceptosProvisiones() {
           <tbody>{tramos.map((tramo, indice) => {
             const claveEdicion = tipo + "-" + indice;
             const editando = Boolean(tramosEditando[claveEdicion]);
-            const honorario = catalogoHonorarios.find((h) => String(h.id ?? h.codigo ?? h.nombre) === String(tramo.honorario_id));
-            const importe = importeHonorario(honorario);
             const subtotal = Number(tramo.notaria || 0) + Number(tramo.registro || 0) + (importe ?? 0);
             const campos = [["desde", "Principal desde (€)"], ["hasta", "Principal hasta (€)"], ["notaria", "Notaría (€)"], ["registro", "Registro (€)"]];
             return <tr key={claveEdicion} className="border-b border-slate-100">
               {campos.map(([campo, etiqueta]) => <td key={campo} className="p-2">{editando ? <input aria-label={etiqueta} className="w-36 rounded-lg border border-slate-200 px-2 py-1.5 text-sm" type="number" min="0" step="0.01" value={tramo[campo] ?? ""} onChange={(e) => cambiarTramo(item.codigo, tipo, indice, campo, e.target.value)} /> : <span>{tramo[campo] === "" || tramo[campo] == null ? "—" : dinero(tramo[campo])}</span>}</td>)}
-              <td className="p-2">{editando ? <select aria-label={honorariosEtiqueta + " del catálogo"} className="w-56 rounded-lg border border-slate-200 px-2 py-1.5 text-sm" value={tramo.honorario_id ?? ""} onChange={(e) => cambiarTramo(item.codigo, tipo, indice, "honorario_id", e.target.value)}><option value="">Seleccionar del catálogo…</option>{catalogoHonorarios.map((h) => <option key={h.id ?? h.codigo ?? h.nombre} value={h.id ?? h.codigo ?? h.nombre}>{h.nombre || h.concepto || h.codigo || "Honorario " + h.id}</option>)}</select> : <span>{honorario?.nombre || honorario?.concepto || honorario?.codigo || "Sin enlazar"}</span>}</td>
+              <td className="p-2">{importe == null ? <span className="text-slate-400">Pendiente de catálogo</span> : dinero(importe)}</td>
               <td className="p-2 font-semibold">{importe == null ? <span className="text-slate-400">Pendiente de catálogo</span> : dinero(subtotal)}</td>
               <td className="p-2"><div className="flex gap-1"><button type="button" onClick={() => setTramosEditando((prev) => ({ ...prev, [claveEdicion]: !prev[claveEdicion] }))} className="rounded-lg border border-slate-200 px-2 py-1.5 font-semibold text-blue-700">{editando ? "Terminar" : "Editar"}</button><button type="button" onClick={() => eliminarTramo(item.codigo, tipo, indice)} className="rounded-lg border border-red-200 px-2 py-1.5 font-semibold text-red-600">Eliminar</button></div></td>
             </tr>;
           })}</tbody>
         </table>
       </div>
-      <p className="mt-2 text-xs text-slate-500">El total se calcula con Notaría + Registro + el importe del concepto enlazado. Si el catálogo no devuelve un importe reconocible, se muestra «Pendiente de catálogo» y no se inventa un total.</p>
+      <p className="mt-2 text-xs text-slate-500">El total se calcula con Notaría + Registro + el importe del concepto enlazado a toda la tabla. Si el catálogo no devuelve un importe reconocible, se muestra «Pendiente de catálogo» y no se inventa un total.</p>
     </div>;
   };
   return <Seccion titulo="Configuración de conceptos e importes" detalle="Tablas editables de provisiones por capital. Los importes de Notaría y Registro se guardan por tramo; Honorarios y Gestión se enlazan al catálogo central. El total se calcula automáticamente cuando el catálogo proporciona el importe.">
