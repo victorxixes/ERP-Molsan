@@ -88,15 +88,15 @@ export default function ModulosSelector() {
       ...(Array.isArray(empleado.modulos_visibles) ? empleado.modulos_visibles : []),
     ].map(normalizar);
 
-    // La ficha del empleado decide qué aplicaciones aparecen.
-    // El rol no debe ocultar módulos asignados y los permisos por acción
-    // se siguen aplicando dentro del módulo/API, de forma independiente.
-    const disponibles = Object.keys(MODULOS)
-      .filter((clave) => visibles.includes(clave))
-      .map((clave) => ({ clave, ...MODULOS[clave] }));
     const rol = normalizar(empleado.rol?.nombre || empleado.rol_nombre || empleado.nombre_rol);
     const usuario = normalizar(empleado.usuario);
     const esAdmin = usuario === "admin" || ["admin", "administrador", "administradora", "superadmin", "superusuario", "gestor", "manager"].some((r) => rol.includes(r));
+
+    // El administrador gestiona los fichajes de la plantilla desde Control
+    // de Fichajes; no necesita la tarjeta de marcaje personal en este panel.
+    const disponibles = Object.keys(MODULOS)
+      .filter((clave) => visibles.includes(clave) && !(esAdmin && clave === "fichajes"))
+      .map((clave) => ({ clave, ...MODULOS[clave] }));
     if (esAdmin && visibles.includes("fichajes")) {
       disponibles.push({
         clave: "control-fichajes",
