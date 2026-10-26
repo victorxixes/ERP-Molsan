@@ -135,6 +135,10 @@ export default function CarpetaDigitalModal({
   const [busquedaDocumento, setBusquedaDocumento] = useState("");
   const [actividadPrincipal, setActividadPrincipal] = useState("documentacion-previa");
   const [datosExpedienteFechas, setDatosExpedienteFechas] = useState(null);
+  const [fechasSlaActividad, setFechasSlaActividad] = useState({ fecha_inicio: "", fecha_fin: "" });
+  const [guardandoFechasSla, setGuardandoFechasSla] = useState(false);
+  const [errorFechasSla, setErrorFechasSla] = useState("");
+  const [mensajeFechasSla, setMensajeFechasSla] = useState("");
 
   // Las fechas pertenecen a la ficha del expediente; este modal se abre desde
   // el listado sin recibir esos datos como props, por eso se cargan aquí.
@@ -186,6 +190,38 @@ export default function CarpetaDigitalModal({
       });
     return () => { activo = false; };
   }, [expedienteId]);
+
+  useEffect(() => {
+    let activo = true;
+    setFechasSlaActividad({ fecha_inicio: "", fecha_fin: "" });
+    setErrorFechasSla("");
+    setMensajeFechasSla("");
+    if (!modoActividad || !expedienteId || !actividadId) return () => { activo = false; };
+    axios.get(`/informes-sla/fechas/${encodeURIComponent(expedienteId)}/${encodeURIComponent(actividadId)}`)
+      .then(({ data }) => {
+        if (activo) setFechasSlaActividad({ fecha_inicio: String(data?.fecha_inicio || "").slice(0, 10), fecha_fin: String(data?.fecha_fin || "").slice(0, 10) });
+      })
+      .catch((e) => { if (activo) setErrorFechasSla(e?.response?.data?.detail || "No se pudieron cargar las fechas SLA de esta actividad."); });
+    return () => { activo = false; };
+  }, [expedienteId, modoActividad, actividadId]);
+
+  const guardarFechasSlaActividad = async () => {
+    if (!expedienteId || !actividadId || guardandoFechasSla) return;
+    setGuardandoFechasSla(true);
+    setErrorFechasSla("");
+    setMensajeFechasSla("");
+    try {
+      await axios.put(`/informes-sla/fechas/${encodeURIComponent(expedienteId)}/${encodeURIComponent(actividadId)}`, {
+        fecha_inicio: fechasSlaActividad.fecha_inicio || null,
+        fecha_fin: fechasSlaActividad.fecha_fin || null,
+      });
+      setMensajeFechasSla("Fechas de actividad guardadas.");
+    } catch (e) {
+      setErrorFechasSla(e?.response?.data?.detail || "No se pudieron guardar las fechas SLA.");
+    } finally {
+      setGuardandoFechasSla(false);
+    }
+  };
 
   const bloqueActividad = useMemo(() => resolverBloque(actividadId), [actividadId]);
   const esCancelacionSinProvision = normalizar(tipoOperacion) === "cancelacion-sin-provision";
