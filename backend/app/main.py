@@ -2176,6 +2176,16 @@ def migrar_catalogo_absis():
                 ("Estados expedientes", "LST", None, ""),
                 ("Estados expedientes", "RTS", None, ""),
                 ("Estados expedientes", "PVA", None, ""),
+                ("ESTADO", "PAGADO", None, ""),
+                ("ESTADO", "ANULADO", None, ""),
+                ("ESTADO", "PAG_RETRO", None, ""),
+                ("ESTADO", "PTE_CONS", None, ""),
+                ("ESTADO", "PAG_DENEGADO", None, ""),
+                ("ESTADO", "ENTREGADA", None, ""),
+                ("ESTADO", "PTE_RESP_FAC", None, ""),
+                ("ESTADOJUSTIFICANTE", "Justificado", None, ""),
+                ("ESTADOJUSTIFICANTE", "Pte. Justificar", None, ""),
+                ("ESTADOJUSTIFICANTE", "Pte. validación", None, ""),
                 ("Producto GTG", "Propia entidad", None, ""),
                 ("Producto GTG", "Vinculada otra entidad", None, ""),
                 ("Producto GTG", "Vinculada propia entidad", None, ""),
@@ -2245,7 +2255,34 @@ def migrar_catalogo_absis():
                     WHERE categoria = 'Tipo Provision' AND valor = 'P'
                 )
             """))
-            print("[CATÁLOGO ABSIS] Tabla verificada; se conservan sus entradas actuales.", flush=True)
+            # Añade las listas de estado ABSIS de forma idempotente también en
+            # instalaciones existentes; conserva todas las entradas configuradas.
+            estados_absis = [
+                ("ESTADO", "PAGADO"),
+                ("ESTADO", "ANULADO"),
+                ("ESTADO", "PAG_RETRO"),
+                ("ESTADO", "PTE_CONS"),
+                ("ESTADO", "PAG_DENEGADO"),
+                ("ESTADO", "ENTREGADA"),
+                ("ESTADO", "PTE_RESP_FAC"),
+                ("ESTADOJUSTIFICANTE", "Justificado"),
+                ("ESTADOJUSTIFICANTE", "Pte. Justificar"),
+                ("ESTADOJUSTIFICANTE", "Pte. validación"),
+            ]
+            for categoria_absis, valor_absis in estados_absis:
+                conexion.execute(text("""
+                    INSERT INTO public.catalogos_absis
+                        (categoria, valor, codigo, descripcion, activo)
+                    SELECT :categoria, :valor, NULL, '', TRUE
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM public.catalogos_absis
+                        WHERE categoria = :categoria
+                          AND LOWER(TRIM(valor)) = LOWER(TRIM(:valor))
+                          AND codigo IS NULL
+                    )
+                """), {"categoria": categoria_absis, "valor": valor_absis})
+            print("[CATÁLOGO ABSIS] Tabla verificada; listas ESTADO y ESTADOJUSTIFICANTE verificadas sin duplicados.", flush=True)
 
 def migrar_visibilidad_empleado():
     """Añade el campo solo si falta, evitando bloquear empleados en cada arranque."""
