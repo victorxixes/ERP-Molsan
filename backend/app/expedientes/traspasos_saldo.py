@@ -307,9 +307,6 @@ def verificar_traspaso_saldo(
     if fila["estado"] != "pendiente_verificacion":
         raise HTTPException(status_code=409, detail="El traspaso ya no está pendiente de verificación.")
     receptor = db.query(Expediente).filter(Expediente.id == fila["receptor_id"]).with_for_update().first()
-    origenes = db.query(Expediente).join(
-        text("public.expediente_traspasos_saldo_origenes"),
-    ) if False else []
     if not receptor:
         raise HTTPException(status_code=404, detail="No se encuentra el expediente receptor.")
     _visible(db, usuario, [receptor])
