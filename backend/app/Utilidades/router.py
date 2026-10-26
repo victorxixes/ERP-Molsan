@@ -534,6 +534,7 @@ def _asegurar_configuracion_firma(db: Session):
 
 
 def _asegurar_plantilla_factura_concepto(db: Session):
+    _asegurar_configuracion_firma(db)
     from backend.app.tipos_concepto_gastos.models import TipoConceptoGastos
     from backend.app.tipos_concepto_gastos.router import garantizar_catalogo_inicial
 
