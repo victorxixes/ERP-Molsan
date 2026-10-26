@@ -100,6 +100,13 @@ class ProvisionOperacion(Base):
     suplidos = Column(Numeric(14, 2), nullable=False, default=0)
     gastos_registro = Column(Numeric(14, 2), nullable=False, default=0)
     otros_gastos = Column(Numeric(14, 2), nullable=False, default=0)
+    notaria = Column(Numeric(14, 2), nullable=False, default=0, server_default="0")
+    impuestos = Column(Numeric(14, 2), nullable=False, default=0, server_default="0")
+    gastos_registro_base = Column(Numeric(14, 2), nullable=False, default=0, server_default="0")
+    suplidos_base = Column(Numeric(14, 2), nullable=False, default=0, server_default="0")
+    otros_gastos_base = Column(Numeric(14, 2), nullable=False, default=0, server_default="0")
+    ajustes_motivo = Column(Text, nullable=True)
+    ajustes_auditoria = Column(JSON, nullable=False, default=list, server_default="[]")
     condonar_honorarios = Column(Boolean, nullable=False, default=False, server_default="false")
     importe_manual = Column(Numeric(14, 2), nullable=True)
     total = Column(Numeric(14, 2), nullable=False, default=0)
@@ -109,7 +116,7 @@ class ProvisionOperacion(Base):
 
     __table_args__ = (
         CheckConstraint("capital >= 0", name="ck_provisiones_operaciones_capital"),
-        CheckConstraint("honorarios >= 0 AND honorarios_base >= 0 AND suplidos >= 0 AND gastos_registro >= 0 AND otros_gastos >= 0", name="ck_provisiones_operaciones_importes"),
+        CheckConstraint("honorarios >= 0 AND honorarios_base >= 0 AND suplidos >= 0 AND gastos_registro >= 0 AND otros_gastos >= 0 AND notaria >= 0 AND impuestos >= 0 AND gastos_registro_base >= 0 AND suplidos_base >= 0 AND otros_gastos_base >= 0", name="ck_provisiones_operaciones_importes"),
         CheckConstraint("importe_manual IS NULL OR importe_manual >= 0", name="ck_provisiones_operaciones_importe_manual"),
     )
 
