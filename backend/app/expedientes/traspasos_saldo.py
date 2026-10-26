@@ -261,6 +261,13 @@ def crear_traspaso_saldo(
         raise HTTPException(status_code=400, detail="Los expedientes deben compartir el mismo código VincCanc (VINCCANC) para considerarse relacionados.")
     if any(e.liquidado_sin_tramitar for e in origenes):
         raise HTTPException(status_code=409, detail="Uno de los expedientes de origen ya está liquidado sin tramitar.")
+    receptor_activo = db.execute(text("""
+        SELECT id, estado FROM public.expediente_traspasos_saldo
+        WHERE receptor_id=:rid AND estado IN ('pendiente_verificacion', 'pendiente_email')
+        ORDER BY id DESC LIMIT 1
+    """), {"rid": receptor.id}).mappings().first()
+    if receptor_activo:
+        raise HTTPException(status_code=409, detail="El expediente receptor ya tiene un traspaso agrupado pendiente (#" + str(receptor_activo["id"]) + "). Continúa esa operación en lugar de crear otra.")
     existente = db.execute(text("""
         SELECT o.origen_numero, t.id, t.estado
         FROM public.expediente_traspasos_saldo_origenes o
