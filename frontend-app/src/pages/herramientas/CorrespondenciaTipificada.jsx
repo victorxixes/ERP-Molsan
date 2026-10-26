@@ -22,6 +22,7 @@ const CATEGORIAS = [
   "Liquidación e impuestos",
   "Inscripción registral",
   "Provisión de fondos",
+  "Honorarios y facturación",
   "Cierre de expediente",
   "Avisos y reclamaciones",
 ];
