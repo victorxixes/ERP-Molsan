@@ -35,6 +35,8 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
   const [q, setQ] = useState("");
   const [form, setForm] = useState({});
   const [guardando, setGuardando] = useState(false);
+  const [comunicaciones, setComunicaciones] = useState([]);
+  const [mensajeChat, setMensajeChat] = useState("");
 
   const cargar = useCallback(async () => {
     setCargando(true); setError("");
@@ -48,6 +50,20 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
     finally { setCargando(false); }
   }, []);
   useEffect(() => { cargar(); }, [cargar]);
+
+  useEffect(() => {
+    if (modal === "solicitud" && editing) {
+      axios.get(`/mensajeria/solicitudes/${editing}/comunicaciones`).then((r) => setComunicaciones(r.data || [])).catch(() => setComunicaciones([]));
+    } else { setComunicaciones([]); setMensajeChat(""); }
+  }, [modal, editing]);
+
+  const enviarComunicacion = async (e) => {
+    e.preventDefault(); if (!editing || !mensajeChat.trim()) return;
+    setGuardando(true); setError("");
+    try { const r = await axios.post(`/mensajeria/solicitudes/${editing}/comunicaciones`, { mensaje: mensajeChat.trim() }); setComunicaciones((old) => [...old, r.data]); setMensajeChat(""); setMensaje("Mensaje enviado."); }
+    catch (e) { setError(e?.response?.data?.detail || "No se pudo enviar el mensaje."); }
+    finally { setGuardando(false); }
+  };
 
   const lista = useMemo(() => {
     const src = tab === "solicitudes" || tab === "control" ? solicitudes : tab === "albaranes" ? albaranes : facturas;
@@ -130,6 +146,8 @@ export default function MensajeriaMolsan({ vistaCatalogo = false, vistaGestion =
       {modal==="albaran" && <><Field label="Número interno" name="numero_interno" /><Field label="Número de albarán proveedor" name="numero_proveedor" /><Field label="Proveedor" name="proveedor" /><Field label="Fecha" name="fecha" type="date" /><Field label="Solicitud relacionada" name="solicitud_id" options={solicitudes.map(s=>({value:String(s.id),label:s.referencia+" · "+s.destino}))} /><Field label="Servicio" name="servicio_id" options={servicios.map(s=>({value:String(s.id),label:s.nombre}))} /><Field label="Importe (€)" name="importe" type="number" /><Field label="Fecha de entrega" name="fecha_entrega" type="date" /><Field label="Documento / enlace" name="documento_url" placeholder="URL del documento" full /><Field label="Observaciones" name="observaciones" type="textarea" full /><label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={!!form.entregado} onChange={e=>change("entregado",e.target.checked)} /> Entrega confirmada</label></>}
       {modal==="factura" && <><Field label="Proveedor" name="proveedor" required /><Field label="Número de factura" name="numero" required /><Field label="Fecha de emisión" name="fecha_emision" type="date" /><Field label="Fecha de vencimiento" name="fecha_vencimiento" type="date" /><Field label="Base imponible (€)" name="base_imponible" type="number" /><Field label="Tipo de impuesto" name="tipo_impuesto" options={["IVA","IGIC","Exento","Pendiente"].map(v=>({value:v,label:v}))} /><Field label="Impuestos (€)" name="importe_impuesto" type="number" /><Field label="Total (€)" name="total" type="number" /><Field label="Estado de revisión" name="estado_revision" options={["Pendiente de revisión","Revisada","Con discrepancias","Rechazada"].map(v=>({value:v,label:v}))} /><Field label="Estado de pago" name="estado_pago" options={["Pendiente de pago","Programada","Pagada","Disputada"].map(v=>({value:v,label:v}))} /><Field label="Fecha de pago" name="fecha_pago" type="date" /><Field label="Albaranes asociados" name="albaran_ids" options={albaranes.map(a=>({value:String(a.id),label:(a.numero_proveedor||a.numero_interno||"Albarán "+a.id)+" · "+money(a.importe)}))} /><Field label="Documento / enlace" name="documento_url" placeholder="URL del documento" full /><Field label="Observaciones" name="observaciones" type="textarea" full /></>}
       <div className="flex justify-end gap-3 border-t border-slate-100 pt-4 md:col-span-2"><button type="button" onClick={()=>setModal("")} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600">Cancelar</button><button disabled={guardando} className="rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50">{guardando?"Guardando…":"Guardar"}</button></div>
-      </form></div></div>}
+      </form>
+      {modal === "solicitud" && editing && <section className="mt-5 border-t border-slate-100 pt-5"><h3 className="font-bold text-slate-800">Comunicación con el empleado</h3><p className="mt-1 text-xs text-slate-500">Los mensajes se comparten con el empleado que creó esta solicitud.</p><div className="mt-3 max-h-56 space-y-2 overflow-y-auto rounded-xl bg-slate-50 p-3">{comunicaciones.map((m)=><div key={m.id} className={`rounded-xl border p-3 ${m.autor_tipo==="empleado"?"border-blue-100 bg-blue-50":"border-slate-200 bg-white"}`}><div className="flex justify-between gap-2 text-xs"><b>{m.autor_nombre}</b><span className="text-slate-500">{m.creado_en?new Date(m.creado_en).toLocaleString("es-ES"):""}</span></div><p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">{m.mensaje}</p></div>)}{!comunicaciones.length&&<p className="text-sm text-slate-500">Todavía no hay mensajes en esta solicitud.</p>}</div><form onSubmit={enviarComunicacion} className="mt-3 flex flex-col gap-2 sm:flex-row"><textarea className={inputClass+" min-h-12"} value={mensajeChat} onChange={e=>setMensajeChat(e.target.value)} placeholder="Escribe una actualización o respuesta al empleado…" required rows="2"/><button disabled={guardando||!mensajeChat.trim()} className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">Enviar mensaje</button></form></section>}
+      </div></div>}
   </main>;
 }
