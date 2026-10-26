@@ -1811,6 +1811,50 @@ def listado_expedientes(
         expediente_a_dict(expediente)
         for expediente in items_db
     ]
+
+    # Marca expedientes cuyo DNI/NIF de solicitante aparece en cualquier otro
+    # expediente, aunque el duplicado esté en otra página o fuera de los filtros.
+    def normalizar_nif_solicitante(valor):
+        return (
+            str(valor or "")
+            .strip()
+            .upper()
+            .replace(" ", "")
+            .replace("-", "")
+            .replace(".", "")
+        )
+
+    nifs_pagina = {
+        normalizar_nif_solicitante(item.get("nif_solicitante"))
+        for item in items
+    } - {""}
+    if nifs_pagina:
+        nif_normalizado_db = func.replace(
+            func.replace(
+                func.replace(func.upper(func.trim(Expediente.nif_solicitante)), " ", ""),
+                "-", "",
+            ),
+            ".", "",
+        )
+        nifs_repetidos = {
+            nif
+            for (nif,) in (
+                db.query(nif_normalizado_db)
+                .filter(nif_normalizado_db.in_(nifs_pagina), nif_normalizado_db != "")
+                .group_by(nif_normalizado_db)
+                .having(func.count(Expediente.id) > 1)
+                .all()
+            )
+        }
+        for item in items:
+            item["solicitante_dni_repetido"] = (
+                normalizar_nif_solicitante(item.get("nif_solicitante"))
+                in nifs_repetidos
+            )
+    else:
+        for item in items:
+            item["solicitante_dni_repetido"] = False
+
     items = agregar_resumen_carpeta_digital(db, items)
 
     return {
