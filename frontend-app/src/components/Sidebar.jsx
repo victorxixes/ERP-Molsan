@@ -706,6 +706,13 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     },
 
     {
+      key: "mensajeria",
+      to: "/mensajeria",
+      label: "Mensajería Molsan",
+      icon: "truck",
+    },
+
+    {
       key: "informes",
       to: "/informes",
       label: "Informes",
