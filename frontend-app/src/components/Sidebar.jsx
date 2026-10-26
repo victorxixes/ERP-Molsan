@@ -1183,7 +1183,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                       <button type="button"
                         onClick={() => {
                           if (esMenu) setMenuSidebarAbierto((actual) => actual === item.menu ? null : item.menu);
-                          else if (item.directRoute) return;
+                          else if (item.directRoute) navigate(item.to);
                           else onNavigationItemClick?.(item.label);
                         }}
                         aria-haspopup={esMenu ? "menu" : undefined} aria-expanded={esMenu ? abierto : undefined}
@@ -1204,6 +1204,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
               : visiblesPrincipales.map((modulo) => <TopNavItem key={modulo.key} to={modulo.to} label={modulo.label} icon={modulo.icon} badge={modulo.badge || 0} />)}
 
             {!navigationItemsConModulos && modulosFijadosUnicos.map((modulo) => <TopNavItem key={modulo.key} to={modulo.to} label={modulo.label} icon={modulo.icon} badge={modulo.badge || 0} />)}
+            {!navigationItemsConModulos && accesosDirectosUtilidades
+              .filter((item) => ![...visiblesPrincipales, ...modulosFijadosUnicos].some((visible) => visible.key === item.key || visible.to === item.to))
+              .map((item) => <TopNavItem key={item.key} to={item.to} label={item.label} icon={item.icon} />)}
 
             {!navigationItems && crearBotonesDropdown().map((item) => {
               const items = item.menu === "espacios" ? espaciosTrabajoDropdown : modulosTecnicosDropdown;
