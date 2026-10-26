@@ -10,7 +10,7 @@ const CATALOGOS = [
   {
     icon: "🖋️",
     titulo: "Firmas y plantillas de email",
-    descripcion: "Configura la firma corporativa automática y conserva la plantilla de factura de honorarios.",
+    descripcion: "Configura el pie corporativo y la firma automática vinculada a la ficha del empleado.",
     ruta: "/catalogos/firmas-email",
     grupo: "Catálogos operativos",
     destacado: true,
