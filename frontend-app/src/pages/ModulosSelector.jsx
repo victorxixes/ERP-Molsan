@@ -88,9 +88,24 @@ export default function ModulosSelector() {
       ...(Array.isArray(empleado.modulos_visibles) ? empleado.modulos_visibles : []),
     ].map(normalizar);
 
-    const rol = normalizar(empleado.rol?.nombre || empleado.rol_nombre || empleado.nombre_rol);
+    // La sesión puede exponer el rol como texto, como objeto o mediante
+    // indicadores booleanos. El saludo "Hola, admin" también puede proceder
+    // del nombre mostrado, aunque el campo usuario tenga otro valor.
+    const rol = normalizar(
+      empleado.rol?.nombre ||
+      empleado.rol_nombre ||
+      empleado.nombre_rol ||
+      empleado.role?.name ||
+      (typeof empleado.rol === "string" ? empleado.rol : "")
+    );
     const usuario = normalizar(empleado.usuario);
-    const esAdmin = usuario === "admin" || ["admin", "administrador", "administradora", "superadmin", "superusuario", "gestor", "manager"].some((r) => rol.includes(r));
+    const nombre = normalizar(empleado.nombre);
+    const esAdmin =
+      empleado.es_admin === true ||
+      empleado.is_admin === true ||
+      usuario === "admin" ||
+      nombre === "admin" ||
+      ["admin", "administrador", "administradora", "superadmin", "superusuario", "gestor", "manager"].some((r) => rol.includes(r));
 
     // El administrador gestiona los fichajes de la plantilla desde Control
     // de Fichajes; no necesita la tarjeta de marcaje personal en este panel.
