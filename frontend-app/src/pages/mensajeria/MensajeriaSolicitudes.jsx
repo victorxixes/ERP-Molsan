@@ -49,7 +49,7 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
     if (!item) return;
     const siguiente = valor.tipo === "Notaria"
       ? { ...valor, referencia_id: String(item.id), busqueda: [item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" "), item.nif ? `NIF ${item.nif}` : ""].filter(Boolean).join(" · "), direccion: item.direccion || "", codigo_postal: item.cp || item.codigo_postal || "", poblacion: item.municipio || item.poblacion || "", provincia: item.provincia || "", contacto: (item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" ") || item.nombre_registrador || item.registrador || item.registro_propiedad || ""), telefono: telefonoCatalogo(item) }
-      : { ...valor, referencia_id: String(item.id), busqueda: item.registro_propiedad || "", direccion: item.direccion || "", codigo_postal: item.codigo_postal || "", poblacion: item.poblacion || "", provincia: item.provincia || "" };
+      : { ...valor, referencia_id: String(item.id), busqueda: item.registro_propiedad || "", direccion: item.direccion || "", codigo_postal: item.codigo_postal || "", poblacion: item.poblacion || "", provincia: item.provincia || "", contacto: (item.nombre_completo || [item.nombre, item.apellidos].filter(Boolean).join(" ") || item.nombre_registrador || item.registrador || ""), telefono: telefonoCatalogo(item) };
     onChange(siguiente);
     setBusqueda("");
   };
