@@ -97,6 +97,12 @@ async def realtime_ws(websocket: WebSocket):
         except HTTPException:
             puede_mensajes = False
 
+        # La sesión solo se necesita para autenticar y leer el empleado.
+        # No mantengas una conexión PostgreSQL abierta durante toda la vida
+        # del WebSocket: puede quedar obsoleta y fallar al cerrarse la conexión
+        # SSL o durante un reinicio de la base de datos.
+        db.close()
+
         era_primera = await realtime_manager.connect(
             websocket,
             usuario_id=usuario_id,
