@@ -680,13 +680,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       icon: "fusion",
     },
 
-    {
-      key: "catalogos",
-      to: "/catalogos",
-      label: "Catálogos",
-      icon: "database",
-    },
-
   ];
 
 
@@ -717,13 +710,6 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       to: "/informes",
       label: "Informes",
       icon: "chart",
-    },
-
-    {
-      key: "utilidades",
-      to: "/herramientas/utilidades",
-      label: "Utilidades",
-      icon: "cog",
     },
 
     {
@@ -870,7 +856,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   // El filtrado de visiblesSecundarios conserva los permisos del empleado.
   const modulosFijados = useMemo(() => {
     const accesosPorMarca = {
-      cancelagest: ["utilidades", "provisiones-fondos"],
+      cancelagest: ["provisiones-fondos"],
       apoderagest: ["cancelagest"],
     };
     const claves = accesosPorMarca[normalizarModulo(brandName)] || [];
