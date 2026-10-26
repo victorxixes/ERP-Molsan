@@ -652,6 +652,27 @@ def _p(texto: object, style: ParagraphStyle) -> Paragraph:
     return Paragraph(value, style)
 
 
+
+def _plantilla_pdf_provision(db: Session) -> dict:
+    """Lee la plantilla editable guardada en el concepto notaria del catálogo."""
+    defaults = {
+        "nombre_empresa": "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.",
+        "cif": "", "direccion": "", "contacto": "",
+        "aviso_legal": "En el supuesto de que todos los gastos, hasta su inscripción registral, fueran superiores a los informados, según norma 3.7.20 Cancelaciones solicitaremos un complemento de saldo. Rogamos tengan en cuenta esta información.",
+        "texto_estimacion": "La presente provisión es estimativa y podrá ajustarse a los gastos efectivamente devengados.",
+        "pie_corporativo": "Documento emitido por ERP-Molsan.",
+        "mostrar_aviso_legal": True, "mostrar_firma": True,
+    }
+    try:
+        concepto = db.query(ConceptoImporteProvision).filter(ConceptoImporteProvision.codigo == "notaria").first()
+        reglas = concepto.reglas if concepto and isinstance(concepto.reglas, dict) else {}
+        guardada = reglas.get("plantilla_pdf", {}) if isinstance(reglas, dict) else {}
+        if isinstance(guardada, dict):
+            defaults.update({k: v for k, v in guardada.items() if k in defaults})
+    except Exception:
+        db.rollback()
+    return defaults
+
 def _euros(valor: object) -> str:
     try:
         numero = Decimal(str(valor or 0))
@@ -678,12 +699,18 @@ def generar_documento_provision(id_expediente: str, provision_id: int, db: Sessi
     styles.add(ParagraphStyle(name="Celda", parent=styles["BodyText"], fontName="Helvetica", fontSize=7.8, leading=10))
     styles.add(ParagraphStyle(name="CeldaDerecha", parent=styles["BodyText"], fontName="Helvetica", fontSize=7.8, leading=10, alignment=TA_RIGHT))
     styles.add(ParagraphStyle(name="Total", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=11, leading=14, alignment=TA_RIGHT, textColor=colors.HexColor("#15325b")))
+    plantilla = _plantilla_pdf_provision(db)
+    cabecera = [escape(str(plantilla.get("nombre_empresa") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L."))]
+    datos_corporativos = [plantilla.get("cif"), plantilla.get("direccion"), plantilla.get("contacto")]
+    linea_corporativa = " · ".join(escape(str(x)) for x in datos_corporativos if x)
     story = [
-        Paragraph("MOLSAN", styles["TituloMolsan"]),
+        Paragraph(cabecera[0], styles["TituloMolsan"]),
         Paragraph("PROVISIÓN DE FONDOS" if item.tipo == "provision" else "PRESUPUESTO DE CANCELACIÓN HIPOTECARIA", styles["Heading2"]),
         Paragraph(f"Expediente: <b>{escape(str(expediente.id_expediente))}</b> &nbsp;&nbsp; Fecha: <b>{item.fecha.strftime('%d/%m/%Y') if item.fecha else '—'}</b> &nbsp;&nbsp; Estado: <b>{escape(item.estado.upper())}</b>", styles["SubtituloMolsan"]),
         Spacer(1, 3*mm),
     ]
+    if linea_corporativa:
+        story.insert(1, Paragraph(linea_corporativa, styles["SubtituloMolsan"]))
     if getattr(expediente, "nombre_titular", None): story.append(Paragraph(f"Titular: <b>{escape(str(expediente.nombre_titular))}</b>", styles["Normal"]))
     if getattr(expediente, "nif_titular", None): story.append(Paragraph(f"NIF titular: {escape(str(expediente.nif_titular))}", styles["Normal"]))
     if getattr(expediente, "oficina", None): story.append(Paragraph(f"Oficina: {escape(str(expediente.oficina))}", styles["Normal"]))
@@ -726,7 +753,10 @@ def generar_documento_provision(id_expediente: str, provision_id: int, db: Sessi
     if item.observaciones:
         story.append(Paragraph(f"Observaciones: {escape(item.observaciones)}", styles["Normal"]))
         story.append(Spacer(1, 5*mm))
-    story.append(Paragraph("Documento interno de cálculo y previsión de fondos. No constituye por sí mismo una factura ni acredita pagos o gastos efectivamente satisfechos. Revise los importes y los requisitos del Registro antes de cursar la operación.", styles["SubtituloMolsan"]))
+    if plantilla.get("mostrar_aviso_legal", True) and plantilla.get("aviso_legal"):
+        story.append(Paragraph(escape(str(plantilla["aviso_legal"])), styles["SubtituloMolsan"]))
+    if plantilla.get("texto_estimacion"):
+        story.append(Paragraph(escape(str(plantilla["texto_estimacion"])), styles["SubtituloMolsan"]))
 
     def pie(canvas, documento):
         canvas.saveState()
@@ -734,7 +764,8 @@ def generar_documento_provision(id_expediente: str, provision_id: int, db: Sessi
         canvas.line(17*mm, 13*mm, A4[0]-17*mm, 13*mm)
         canvas.setFont("Helvetica", 7.5)
         canvas.setFillColor(colors.HexColor("#58677c"))
-        canvas.drawString(17*mm, 8.5*mm, f"ERP-Molsan · Expediente {expediente.id_expediente}")
+        texto_pie = str(plantilla.get("pie_corporativo") or "ERP-Molsan")
+        canvas.drawString(17*mm, 8.5*mm, f"{texto_pie} · Expediente {expediente.id_expediente}"[:110])
         canvas.drawRightString(A4[0]-17*mm, 8.5*mm, f"Página {documento.page}")
         canvas.restoreState()
 
@@ -913,13 +944,18 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
     styles.add(ParagraphStyle(name="CeldaInd", parent=styles["Normal"], fontName="Helvetica", fontSize=7.2, leading=9))
     styles.add(ParagraphStyle(name="CeldaIndBold", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=7.2, leading=9))
     styles.add(ParagraphStyle(name="TotalInd", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=12, leading=15, alignment=TA_RIGHT, textColor=colors.HexColor("#15325b")))
+    plantilla = _plantilla_pdf_provision(db)
+    datos_corporativos = [plantilla.get("cif"), plantilla.get("direccion"), plantilla.get("contacto")]
+    linea_corporativa = " · ".join(escape(str(x)) for x in datos_corporativos if x)
     story = [
-        Paragraph("MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.", styles["TituloInd"]),
+        Paragraph(escape(str(plantilla.get("nombre_empresa") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.")), styles["TituloInd"]),
         Paragraph("PROVISIÓN ESTIMATIVA DE FONDOS", styles["Heading2"]),
         Paragraph(f"Número: <b>{escape(str(item.numero))}</b> &nbsp;&nbsp;&nbsp; Fecha de petición: <b>{item.fecha.strftime('%d/%m/%Y') if item.fecha else '—'}</b>", styles["TextoInd"]),
         Spacer(1, 4*mm),
         Paragraph("DATOS DEL CLIENTE", styles["Heading3"]),
     ]
+    if linea_corporativa:
+        story.insert(1, Paragraph(linea_corporativa, styles["TextoInd"]))
     cli = data["cliente"]
     cliente_rows = [
         [_p("Cliente", styles["EtiquetaInd"]), _p(cli.get("nombre"), styles["CeldaIndBold"]), _p("NIF / CIF", styles["EtiquetaInd"]), _p(cli.get("nif"), styles["CeldaInd"])],
@@ -981,14 +1017,21 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
         story.extend([Spacer(1, 3*mm), Paragraph("<b>Información bancaria:</b> la posible comisión de CaixaBank (100 € + IVA) es ajena a esta provisión y no está incluida en el importe total estimado.", styles["TextoInd"])])
     if data.get("observaciones"):
         story.extend([Spacer(1, 3*mm), Paragraph("<b>Observaciones:</b> " + escape(data["observaciones"]).replace("\\n", "<br/>"), styles["TextoInd"])])
-    story.extend([Spacer(1, 5*mm), Paragraph("La presente provisión es estimativa y podrá ajustarse a los gastos efectivamente devengados.", styles["TextoInd"]), Spacer(1, 12*mm), Paragraph("Firma del cliente: __________________________________________", styles["TextoInd"])])
+    story.append(Spacer(1, 5*mm))
+    if plantilla.get("mostrar_aviso_legal", True) and plantilla.get("aviso_legal"):
+        story.append(Paragraph(escape(str(plantilla["aviso_legal"])), styles["TextoInd"]))
+    if plantilla.get("texto_estimacion"):
+        story.append(Paragraph(escape(str(plantilla["texto_estimacion"])), styles["TextoInd"]))
+    if plantilla.get("mostrar_firma", True):
+        story.extend([Spacer(1, 12*mm), Paragraph("Firma del cliente: __________________________________________", styles["TextoInd"])])
     def pie(canvas, documento):
         canvas.saveState()
         canvas.setStrokeColor(colors.HexColor("#d7dfeb"))
         canvas.line(17*mm, 13*mm, A4[0]-17*mm, 13*mm)
         canvas.setFont("Helvetica", 7.5)
         canvas.setFillColor(colors.HexColor("#58677c"))
-        canvas.drawString(17*mm, 8.5*mm, f"ERP-Molsan · {item.numero}")
+        texto_pie = str(plantilla.get("pie_corporativo") or "ERP-Molsan")
+        canvas.drawString(17*mm, 8.5*mm, f"{texto_pie} · {item.numero}"[:110])
         canvas.drawRightString(A4[0]-17*mm, 8.5*mm, f"Página {documento.page}")
         canvas.restoreState()
     try:
