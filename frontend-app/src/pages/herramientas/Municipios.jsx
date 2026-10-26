@@ -437,7 +437,8 @@ export default function Municipios() {
               [
                 municipio.ccaa,
                 municipio.provincia,
-                municipio.municipio
+                municipio.municipio,
+                ...(municipio.codigos_postales || [])
               ]
                 .filter(Boolean)
                 .some(
@@ -769,7 +770,18 @@ export default function Municipios() {
                   datos.provincia.trim(),
 
                 municipio:
-                  datos.municipio.trim()
+                  datos.municipio.trim(),
+                codigos_postales: (datos.codigos_postales_texto || "")
+                  .split(/[;,\\s]+/)
+                  .map((cp) => cp.trim())
+                  .filter(Boolean),
+                codigo_postal_principal: (datos.codigos_postales_texto || "")
+                  .split(/[;,\\s]+/)
+                  .map((cp) => cp.trim())
+                  .filter(Boolean)
+                  .includes(datos.codigo_postal_principal)
+                    ? datos.codigo_postal_principal
+                    : ((datos.codigos_postales_texto || "").split(/[;,\\s]+/).map((cp) => cp.trim()).filter(Boolean)[0] || null)
               })
           }
         );
@@ -2164,6 +2176,9 @@ export default function Municipios() {
                     Municipio
                   </th>
 
+                  <th className="px-5 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Códigos postales
+                  </th>
 
                   <th
                     className="
@@ -2240,6 +2255,14 @@ export default function Municipios() {
                         {municipio.municipio}
                       </td>
 
+                      <td className="px-5 py-3.5 text-sm text-slate-600">
+                        {(municipio.codigos_postales || []).length ? (
+                          <span title={"Códigos: " + municipio.codigos_postales.join(", ")}>
+                            <strong>{municipio.codigo_postal_principal || municipio.codigos_postales[0]}</strong>
+                            {(municipio.codigos_postales.length > 1) && <span className="ml-2 text-xs text-slate-400">+{municipio.codigos_postales.length - 1}</span>}
+                          </span>
+                        ) : <span className="text-slate-400">Sin asignar</span>}
+                      </td>
 
                       <td
                         className="
@@ -3106,6 +3129,14 @@ function ModalMunicipio({
 
       municipio:
         municipio?.municipio ||
+        "",
+
+      codigos_postales_texto:
+        (municipio?.codigos_postales || []).join(", "),
+
+      codigo_postal_principal:
+        municipio?.codigo_postal_principal ||
+        municipio?.codigos_postales?.[0] ||
         ""
     });
 
@@ -3130,9 +3161,22 @@ function ModalMunicipio({
 
     e.preventDefault();
 
-    onGuardar(
-      formulario
-    );
+    const codigos = (formulario.codigos_postales_texto || "")
+      .split(/[;,\\s]+/)
+      .map((cp) => cp.trim())
+      .filter(Boolean);
+    const invalidos = codigos.filter((cp) => !/^\\d{5}$/.test(cp));
+    if (invalidos.length) {
+      window.alert("Cada código postal debe tener exactamente 5 dígitos. Revisa: " + invalidos.join(", "));
+      return;
+    }
+    onGuardar({
+      ...formulario,
+      codigos_postales: codigos,
+      codigo_postal_principal: codigos.includes(formulario.codigo_postal_principal)
+        ? formulario.codigo_postal_principal
+        : (codigos[0] || null),
+    });
 
   }
 
@@ -3413,6 +3457,40 @@ function ModalMunicipio({
                 "
               />
 
+            </div>
+
+            {/* CÓDIGOS POSTALES */}
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                Códigos postales
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={formulario.codigos_postales_texto}
+                onChange={(e) => {
+                  const texto = e.target.value;
+                  const codigos = texto.split(/[;,\\s]+/).map((cp) => cp.trim()).filter(Boolean);
+                  cambiarCampo("codigos_postales_texto", texto);
+                  if (!codigos.includes(formulario.codigo_postal_principal)) {
+                    cambiarCampo("codigo_postal_principal", codigos[0] || "");
+                  }
+                }}
+                placeholder="Ej. 08001, 08002, 08003"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+              />
+              <p className="mt-1 text-xs text-slate-500">Introduce códigos de 5 dígitos separados por comas o espacios. Se guardan como texto para conservar ceros iniciales.</p>
+              <label className="mb-1.5 mt-3 block text-sm font-semibold text-slate-700">
+                Código postal principal
+              </label>
+              <select
+                value={formulario.codigo_postal_principal}
+                onChange={(e) => cambiarCampo("codigo_postal_principal", e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+              >
+                <option value="">Sin código postal principal</option>
+                {(formulario.codigos_postales_texto || "").split(/[;,\\s]+/).map((cp) => cp.trim()).filter((cp, i, lista) => cp && lista.indexOf(cp) === i && /^\\d{5}$/.test(cp)).map((cp) => <option key={cp} value={cp}>{cp}</option>)}
+              </select>
             </div>
 
           </div>
