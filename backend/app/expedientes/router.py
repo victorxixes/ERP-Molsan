@@ -3526,9 +3526,11 @@ def generar_documento_factura_honorarios(
     from backend.app.tipos_concepto_gastos.router import garantizar_catalogo_inicial
 
     garantizar_catalogo_inicial(db)
-    concepto = db.query(TipoConceptoGastos).filter(TipoConceptoGastos.id == 6).first()
-    if not concepto or " ".join((concepto.nombre or "").strip().lower().split()) != "honorarios gestoría":
-        raise HTTPException(status_code=409, detail="El concepto ID 6 debe ser «honorarios gestoría». No se ha generado la factura.")
+    concepto = db.query(TipoConceptoGastos).filter(
+        func.lower(func.trim(TipoConceptoGastos.nombre)) == "honorarios gestoría"
+    ).order_by(TipoConceptoGastos.id.asc()).first()
+    if not concepto:
+        raise HTTPException(status_code=409, detail="No existe el concepto «honorarios gestoría» en Tipos de Concepto de Gastos. No se ha generado la factura.")
 
     db.execute(text("""
         CREATE TABLE IF NOT EXISTS correspondencia_configuracion (
@@ -3554,11 +3556,11 @@ def generar_documento_factura_honorarios(
     db.execute(text("""
         INSERT INTO plantilla_factura_concepto_gasto
             (concepto_gasto_id, nombre_archivo, tipo_archivo, contenido)
-        SELECT 6, factura_nombre, COALESCE(factura_tipo, 'application/octet-stream'), factura_contenido
+        SELECT :concepto_id, factura_nombre, COALESCE(factura_tipo, 'application/octet-stream'), factura_contenido
         FROM correspondencia_configuracion
         WHERE id = 1 AND factura_contenido IS NOT NULL AND factura_nombre IS NOT NULL
         ON CONFLICT (concepto_gasto_id) DO NOTHING
-    """))
+    """), {"concepto_id": concepto.id})
     db.commit()
     plantilla = db.execute(text("""
         SELECT nombre_archivo, contenido
