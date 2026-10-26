@@ -81,11 +81,16 @@ const importeHonorario = (h) => {
   return base * (1 + impuesto / 100);
 };
 const honorarioGestoriaPorEntidad = (catalogo, tipo) => {
-  const sufijo = tipo === "caixabank" ? "caixabank" : "otra entidad";
-  return catalogo.find((h) => {
-    const nombre = normalizarCatalogo(h.nombre);
-    return nombre.includes("honorarios de gestoria") && nombre.endsWith(sufijo);
-  }) || null;
+  const nombres = catalogo.map((h) => ({ h, nombre: normalizarCatalogo(h.nombre) }));
+  if (tipo === "caixabank") {
+    return nombres.find(({ nombre }) =>
+      nombre.includes("honorario") && nombre.includes("gestoria") && nombre.includes("caixabank")
+    )?.h || null;
+  }
+  return nombres.find(({ nombre }) =>
+    nombre.includes("honorario") && nombre.includes("gestoria") &&
+    (nombre.includes("otra entidad") || nombre.includes("otras entidades") || nombre.includes("entidad ajena"))
+  )?.h || null;
 };
 
 function ConfiguracionConceptosProvisiones() {
@@ -341,8 +346,19 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     if (!Number.isFinite(capital) || capital <= 0) { setError("Introduce un capital del préstamo válido y mayor que 0 €."); return; }
 
     const normalizar = normalizarCatalogo;
-    const banco = entidadesBancarias.find((e) => normalizar(e.nombre) === normalizar(g.entidad));
-    if (!banco) { setError("Selecciona una entidad bancaria existente en el catálogo Entidades bancarias."); return; }
+    const entidadEscrita = normalizar(g.entidad);
+    const coincidenciasBanco = entidadesBancarias.filter((e) => normalizar(e.nombre) === entidadEscrita);
+    const coincidenciasParciales = coincidenciasBanco.length ? coincidenciasBanco : entidadesBancarias.filter((e) => {
+      const nombre = normalizar(e.nombre);
+      return nombre.startsWith(entidadEscrita) || entidadEscrita.startsWith(nombre);
+    });
+    const banco = coincidenciasParciales.length === 1 ? coincidenciasParciales[0] : null;
+    if (!banco) {
+      setError(coincidenciasParciales.length > 1
+        ? "Hay varias entidades que coinciden con ese texto. Escribe el nombre completo de la entidad bancaria del catálogo."
+        : "Selecciona una entidad bancaria existente en el catálogo Entidades bancarias.");
+      return;
+    }
     const entidadActual = entidadesBancarias.find((e) => banco.entidad_actual_id != null && String(e.id) === String(banco.entidad_actual_id));
     const actualNombre = entidadActual?.nombre || (typeof banco.entidad_actual === "string" ? banco.entidad_actual : "") || banco.nombre;
     const esCaixaBank = normalizar(actualNombre).includes("caixabank");
@@ -376,8 +392,15 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     const gestion = gestionCalculada == null ? Number(g.gestion || 0) : gestionCalculada;
     let impuestos = Number(g.ajd || 0);
     if (esCondicionResolutoria) {
-      const porcentaje = Number(conceptoImpuestos?.reglas?.porcentaje_condicion_resolutoria ?? 1.5);
-      impuestos = Math.round(capital * porcentaje) / 100;
+      const porcentajeConfigurado = conceptoImpuestos?.reglas?.porcentaje_condicion_resolutoria;
+      const porcentaje = porcentajeConfigurado == null || String(porcentajeConfigurado).trim() === ""
+        ? 1.5
+        : Number(porcentajeConfigurado);
+      if (!Number.isFinite(porcentaje) || porcentaje < 0) {
+        setError("El porcentaje de impuestos para condición resolutoria no es válido. Revisa Catálogos económicos → Provisiones de fondos.");
+        return;
+      }
+      impuestos = Math.round((capital * porcentaje / 100) * 100) / 100;
     } else if (g.tipo_carga && !normalizar(g.tipo_carga).includes("hipotec")) {
       // Para otras cargas no se presupone un impuesto específico.
       impuestos = Number(g.ajd || 0);
