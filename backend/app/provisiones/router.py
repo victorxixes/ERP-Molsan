@@ -269,7 +269,7 @@ def _comprobar_tarifas_sin_solapamiento(db: Session, data: TarifaInput, omit_id:
             raise HTTPException(status_code=409, detail=f"El tramo se solapa con la tarifa activa #{tarifa.id} de {tarifa.entidad}. Corrige los límites para evitar tarifas ambiguas.")
 
 
-def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionProvisionInput) -> ProvisionOperacion:
+def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionProvisionInput, usuario=None) -> ProvisionOperacion:
     entidad = datos.entidad.strip()
     capital = _dinero(datos.capital)
     tarifa = None
@@ -333,8 +333,18 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
         ("suplidos", _dinero(tarifa.suplidos) if tarifa else _dinero(datos.suplidos), suplidos),
         ("otros_gastos", _dinero(tarifa.otros_gastos) if tarifa else _dinero(datos.otros_gastos), otros_gastos),
     ):
+        if codigo == "honorarios" and datos.condonar_honorarios:
+            continue
         if base != efectivo:
-            auditoria.append({"concepto": codigo, "importe_base": str(base), "importe_efectivo": str(efectivo), "diferencia": str((efectivo-base).quantize(Decimal("0.01")))})
+            auditoria.append({
+                "concepto": codigo,
+                "importe_base": str(base),
+                "importe_efectivo": str(efectivo),
+                "diferencia": str((efectivo-base).quantize(Decimal("0.01"))),
+                "fecha": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
+                "usuario_id": getattr(usuario, "id", None) if not isinstance(usuario, dict) else usuario.get("id"),
+                "motivo": (datos.ajustes_motivo or "").strip(),
+            })
     if auditoria and not (datos.ajustes_motivo or "").strip():
         raise HTTPException(status_code=422, detail="Indica el motivo de los ajustes manuales de la provisión.")
     operacion = ProvisionOperacion(
@@ -386,7 +396,7 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
     return operacion
 
 
-def _reemplazar_operaciones(db: Session, provision: ProvisionFondo, datos: ProvisionInput) -> None:
+def _reemplazar_operaciones(db: Session, provision: ProvisionFondo, datos: ProvisionInput, usuario=None) -> None:
     anteriores = db.query(ProvisionOperacion).filter(ProvisionOperacion.provision_id == provision.id).all()
     for anterior in anteriores:
         db.query(ProvisionOperacionFinca).filter(ProvisionOperacionFinca.operacion_id == anterior.id).delete(synchronize_session=False)
@@ -394,7 +404,7 @@ def _reemplazar_operaciones(db: Session, provision: ProvisionFondo, datos: Provi
     db.flush()
     total = Decimal("0.00")
     for operacion_data in datos.operaciones:
-        op = _crear_operacion(db, provision, operacion_data)
+        op = _crear_operacion(db, provision, operacion_data, usuario)
         total += Decimal(str(op.total or 0))
     provision.importe_total = total.quantize(Decimal("0.01"))
 
@@ -579,7 +589,7 @@ def crear_provision(id_expediente: str, datos: ProvisionInput, db: Session = Dep
     db.add(item)
     try:
         db.flush()
-        _reemplazar_operaciones(db, item, datos)
+        _reemplazar_operaciones(db, item, datos, usuario)
         db.commit()
         db.refresh(item)
     except HTTPException:
