@@ -1034,7 +1034,7 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
     story.extend([tabla, Spacer(1, 5*mm), Paragraph(f"IMPORTE TOTAL ESTIMADO: {_euros(item.importe_total)}", styles["TotalInd"])])
     entidades = " ".join(str(g.get("entidad") or "") for g in data["garantias"]).casefold()
     if "caixabank" in entidades or "caixa bank" in entidades:
-        story.extend([Spacer(1, 3*mm), Paragraph("<b>Información bancaria:</b> la posible comisión de CaixaBank (100 € + IVA) es ajena a esta provisión y no está incluida en el importe total estimado.", styles["TextoInd"])])
+
     if data.get("observaciones"):
         story.extend([Spacer(1, 3*mm), Paragraph("<b>Observaciones:</b> " + escape(data["observaciones"]).replace("\\n", "<br/>"), styles["TextoInd"])])
     story.append(Spacer(1, 5*mm))
