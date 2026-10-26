@@ -934,6 +934,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       ...(Array.isArray(navigationItems) ? navigationItems : []),
       ...visiblesPrincipales,
       ...modulosFijadosUnicos,
+      ...accesosDirectosUtilidades,
     ];
     const rutaNormalizada = (ruta) => String(ruta || "").split("?")[0].replace(/\/$/, "").toLocaleLowerCase("es");
     const rutasVisibles = new Set(visibles.map((item) => rutaNormalizada(item?.to || item?.route)).filter(Boolean));
@@ -945,12 +946,14 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       if (!modulo.route || modulo.key === "notificaciones" || !puedeVerModulo(modulo.permiso || modulo.key)) return false;
       const esEspacio = CLAVES_ESPACIOS_TRABAJO.has(modulo.key);
       // Fichajes es un acceso directo junto a Utilidades; solo su gestión administrativa va en Espacios de trabajo.
-      if (modulo.key === "fichajes") return false;
+      if (modulo.key === "fichajes" || modulo.key === "mensajeria") return false;
       if (tipo === "espacios" ? !esEspacio : esEspacio) return false;
       const ruta = rutaNormalizada(modulo.route);
       if (rutaActual === ruta || rutaActual.startsWith(`${ruta}/`)) return false;
-      if (rutasVisibles.has(ruta) || clavesVisibles.has(normalizarModulo(modulo.key)) ||
-          clavesVisibles.has(normalizarModulo(modulo.label))) return false;
+      const siempreEnTecnicos = new Set(["utilidades", "catalogos", "provisiones-fondos"]);
+      if (!(tipo === "tecnicos" && siempreEnTecnicos.has(modulo.key)) &&
+          (rutasVisibles.has(ruta) || clavesVisibles.has(normalizarModulo(modulo.key)) ||
+          clavesVisibles.has(normalizarModulo(modulo.label)))) return false;
       return true;
     }).map((modulo) => ({
       key: modulo.key, to: modulo.route, label: modulo.label,
