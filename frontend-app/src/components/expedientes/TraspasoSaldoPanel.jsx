@@ -167,21 +167,15 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
   };
 
   if (!visible) return null;
-  if (contexto && contexto.habilitado === false) return null;
-
-  const hayTraspasosDisponibles = candidatos.length > 1 || (contexto?.operaciones || []).length > 0;
-
   return (
     <>
-      {hayTraspasosDisponibles && (
-        <button
+      <button
           type="button"
           onClick={() => setAbierto(true)}
           className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-white px-3 py-2 text-xs font-extrabold text-indigo-800 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50"
         >
           <span aria-hidden="true">⇄</span> Gestionar traspaso
-        </button>
-      )}
+      </button>
 
       {abierto && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center overflow-y-auto bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) setAbierto(false); }}>
@@ -200,6 +194,16 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
             {error && <div role="alert" className="mb-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800">{error}</div>}
             {mensaje && <div role="status" className="mb-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs font-semibold text-emerald-800">{mensaje}</div>}
             <div className="space-y-4">
+          {contexto?.habilitado === false && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">
+              {contexto.motivo || "Este expediente no cumple los requisitos para gestionar traspasos de saldo."}
+            </div>
+          )}
+          {contexto?.habilitado !== false && !cargando && candidatos.length < 2 && !(contexto?.operaciones || []).length && (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs leading-5 text-slate-700">
+              No se han encontrado otros expedientes relacionados disponibles para traspasar saldo. Comprueba que los expedientes compartan el mismo VINCCANC y sean de tipo «Cancelación con provisión».
+            </div>
+          )}
           {!contexto?.expediente?.vinccanc && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">
               Este expediente no tiene código VincCanc (VINCCANC). El sistema necesita ese identificador común para confirmar que los expedientes pertenecen al mismo grupo; no permite crear relaciones por aproximación.
