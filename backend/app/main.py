@@ -66,7 +66,7 @@ from backend.app.ctn.models import Notaria
 from backend.app.agenda.models import Cita
 from backend.app.empleados.models import Empleado
 from backend.app.mensajes.models import Mensaje
-from backend.app.municipios.models import Municipio
+from backend.app.municipios.models import Municipio, MunicipioCodigoPostal
 from backend.app.entidades_bancarias.models import EntidadBancaria
 from backend.app.registros_propiedad.models import RegistroPropiedad
 from backend.app.carpeta_digital.models import DocumentoCarpetaDigital
@@ -987,6 +987,10 @@ def inicializar_tablas_auxiliares():
     try:
         HonorarioGestoria.__table__.create(bind=engine, checkfirst=True)
         print("[HONORARIOS GESTORIA] Catálogo disponible.", flush=True)
+
+        # Relación de códigos postales por municipio; creación idempotente.
+        MunicipioCodigoPostal.__table__.create(bind=engine, checkfirst=True)
+        print("[MUNICIPIOS] Tabla de códigos postales disponible.", flush=True)
 
         # Catálogo configurable de importes estimativos de Provisiones.
         from backend.app.provisiones.models import ConceptoImporteProvision
