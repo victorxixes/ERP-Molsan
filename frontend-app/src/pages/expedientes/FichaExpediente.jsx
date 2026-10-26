@@ -1496,6 +1496,7 @@ export default function FichaExpediente() {
 
   // Gastos vinculados al expediente y al documento formalizado.
   const [mostrarFormularioGasto, setMostrarFormularioGasto] = useState(false);
+  const [origenFormularioGasto, setOrigenFormularioGasto] = useState("economico");
   const [gastosExpediente, setGastosExpediente] = useState([]);
   const [cargandoGastos, setCargandoGastos] = useState(false);
   const [guardandoGasto, setGuardandoGasto] = useState(false);
@@ -5198,13 +5199,7 @@ const cuantiaFincasParaEnvio =
                       camposPanelActividad={CAMPOS_ACTIVIDADES[actividadSeleccionada] || []}
                       onAbrirEnvioNotario={() => setMostrarEnviarNotario(true)}
                       onPagar={() => {
-                        // Cambiar a Gestión económica monta el resumen y el formulario existentes.
-                        setActividadSeleccionada("gestion-economica");
-                        // Abrimos el resumen económico antes de mostrar el formulario.
-                        // Abrimos ese contenedor antes de mostrar el formulario para que no
-                        // quede oculto dentro de un ancestro con display:none.
-                        setMostrarPanelEconomicoPago(true);
-                        setMostrarResumenEconomico(true);
+                        setOrigenFormularioGasto("pagar");
                         setErrorGastos("");
                         setMensajeGastos("");
                         setGastoForm((g) => ({
@@ -5214,7 +5209,77 @@ const cuantiaFincasParaEnvio =
                           pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" "),
                         }));
                         setMostrarFormularioGasto(true);
+                      }}..g,
+                          nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "",
+                          nombre_notario: g.nombre_notario || expediente?.notario || expediente?.nombre_notario || "",
+                          pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" "),
+                        }));
+                        setMostrarFormularioGasto(true);
                       }}
+                      formularioPago={mostrarFormularioGasto && origenFormularioGasto === "pagar" ? (
+                          <div className="mt-4 rounded-2xl border border-indigo-200 bg-indigo-50/40 p-3 sm:p-4">
+                            <div className="mx-auto flex w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                          <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
+                            <div className="flex items-start justify-between gap-3 border-b border-slate-200 bg-slate-50 px-5 py-4">
+                              <div><h5 id="titulo-modal-gasto" className="text-base font-extrabold text-slate-900">Registrar gasto · Factura y pago</h5><p className="mt-1 text-xs text-slate-500">El registro no ejecuta una transferencia bancaria.</p></div>
+                              <button type="button" aria-label="Cerrar ventana" onClick={() => setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-lg leading-none text-slate-600 hover:bg-slate-100 disabled:opacity-50">×</button>
+                              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-bold text-amber-800">Pago: pendiente</span>
+                            </div>
+                            <div className="min-h-0 flex-1 overflow-y-auto p-5"><div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(360px,0.9fr)]">
+                              <div className="min-w-0">
+                              <div className="space-y-3">
+                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Factura y proveedor</h6>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-indigo-800">Honorarios de gestoría (opcional)</span><select value={honorarioGestoriaId} onChange={(e) => { const idSeleccionado = e.target.value; setHonorarioGestoriaId(idSeleccionado); const tarifa = honorariosCatalogo.find((x) => String(x.id) === idSeleccionado); if (tarifa) { const importeTarifa = Number(tarifa.importe || 0).toFixed(2); setGastoForm((a) => ({ ...a, tipo: "Honorarios de gestoría", descripcion: tarifa.nombre, importe_total_bruto: importeTarifa, importe: importeTarifa, base_exenta_impuestos: "0.00", base_sujeta_impuestos: "", porcentaje_impuesto: "21", tipo_impuesto: "IVA 21%", base_exenta_retencion: "0.00", base_sujeta_retencion: "0.00", porcentaje_retencion: "0", tipo_retencion: "Sin retención" })); } }} className="w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm"><option value="">No aplicar una tarifa de honorarios</option>{honorariosCatalogo.filter((x) => x.activo).map((x) => <option key={x.id} value={String(x.id)}>{x.nombre} · {Number(x.importe || 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</option>)}</select><span className="mt-1 block text-[11px] text-slate-500">Al elegir una tarifa, se rellena automáticamente el importe total con el precio configurado.</span></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Concepto del gasto *</span><select required value={gastoForm.tipo} onChange={(e) => setGastoForm((a) => ({...a, tipo:e.target.value, descripcion:a.descripcion || e.target.options[e.target.selectedIndex]?.text || e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">{cargandoConceptosGasto ? "Cargando catálogo…" : "Selecciona un concepto"}</option>{conceptosGasto.map((c) => <option key={String(c.value)} value={String(c.value)}>{c.label}</option>)}{!conceptosGasto.some((c) => String(c.value) === "Honorarios de gestoría") && <option value="Honorarios de gestoría">Honorarios de gestoría</option>}</select></label>
+                                <div className="grid gap-3 sm:grid-cols-2">
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">NIF/CIF/NIE notario</span><input value={gastoForm.nif_notario} onChange={(e)=>setGastoForm(a=>({...a,nif_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Nombre del notario</span><input value={gastoForm.nombre_notario} onChange={(e)=>setGastoForm(a=>({...a,nombre_notario:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                </div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Pagador / razón social</span><input value={gastoForm.pagador} onChange={(e)=>setGastoForm(a=>({...a,pagador:e.target.value}))} placeholder="Nombre de facturación" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <div className="grid gap-3 sm:grid-cols-2">
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Número de factura</span><input value={gastoForm.numero_factura} onChange={(e)=>setGastoForm(a=>({...a,numero_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                  <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de factura *</span><input required type="date" value={gastoForm.fecha_factura} onChange={(e)=>setGastoForm(a=>({...a,fecha_factura:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                </div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Fecha de pago / movimiento *</span><input required type="date" value={gastoForm.fecha} onChange={(e)=>setGastoForm(a=>({...a,fecha:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Cuenta bancaria / IBAN</span><input value={gastoForm.cuenta_bancaria} onChange={(e)=>setGastoForm(a=>({...a,cuenta_bancaria:e.target.value.toUpperCase()}))} placeholder="ES… (editable; no se autocompleta)" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Medio de pago</span><select value={gastoForm.medio_pago} onChange={(e)=>setGastoForm(a=>({...a,medio_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Transferencia</option><option>Cheque</option><option>Tarjeta</option><option>Efectivo</option><option>Otro</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Estado</span><select value={gastoForm.estado_pago} onChange={(e)=>setGastoForm(a=>({...a,estado_pago:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Pendiente</option><option>Pagado</option><option>Anulado</option></select></label></div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Documento / URL de factura</span><input type="url" value={gastoForm.documento_url} onChange={(e)=>setGastoForm(a=>({...a,documento_url:e.target.value}))} placeholder="https://…" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                              </div>
+                              </div>
+                              <div className="space-y-3">
+                                <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Impuestos y retenciones</h6>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tramo de impuesto</span><select value={gastoForm.tramo_impuesto} onChange={(e)=>setGastoForm(a=>({...a,tramo_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","General","Reducido","Super reducido","Único"].map(x=><option key={x}>{x}</option>)}</select></label>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Tipo impositivo</span><select value={gastoForm.tipo_impuesto} onChange={(e)=>{const v=e.target.value;setGastoForm(a=>({...a,tipo_impuesto:v,porcentaje_impuesto:v==="IVA 21%"?"21":v==="IGIC 5%"?"5":v==="IGIC 6,50%"?"6.5":v==="IGIC 7%"?"7":"0"}))}} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">{["Exento","IVA 21%","IGIC 5%","IGIC 6,50%","IGIC 7%"].map(x=><option key={x}>{x}</option>)}</select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Porcentaje (%)</span><input type="number" min="0" max="100" step="0.01" value={gastoForm.porcentaje_impuesto} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_impuesto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="grid gap-3 sm:grid-cols-2">{[["Base exenta (€)","base_exenta_impuestos"],["Base sujeta (€)","base_sujeta_impuestos"]].map(([label,key])=><label key={key} className="block"><span className="mb-1 block text-xs font-bold text-slate-700">{label}</span><input type="number" min="0" step="0.01" value={gastoForm[key]} onChange={(e)=>setGastoForm(a=>({...a,[key]:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>)}</div>
+                                <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs"><div className="flex justify-between"><span>Impuesto calculado</span><strong>{impuestoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div></div>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base exenta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_exenta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_exenta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Base sujeta retención (€)</span><input type="number" min="0" step="0.01" value={gastoForm.base_sujeta_retencion} onChange={(e)=>setGastoForm(a=>({...a,base_sujeta_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="grid gap-3 sm:grid-cols-2"><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Retención</span><select value={gastoForm.tipo_retencion} onChange={(e)=>setGastoForm(a=>({...a,tipo_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>IRPF profesionales</option><option>Sin retención</option></select></label><label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">IRPF (%)</span><input type="number" min="1" max="21" step="0.01" value={gastoForm.porcentaje_retencion} onChange={(e)=>setGastoForm(a=>({...a,porcentaje_retencion:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4"><div className="flex justify-between text-xs text-slate-600"><span>Retención calculada</span><strong>{retencionCalculadaGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><div className="mt-2 flex items-end justify-between gap-3"><span className="text-xs font-bold text-indigo-900">Resultado calculado</span><strong className="text-2xl text-indigo-950">{resultadoCalculadoGasto.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})} €</strong></div><label className="mt-3 block"><span className="mb-1 block text-xs font-bold text-slate-700">Total bruto de factura (€) *</span><input required type="number" min="0" step="0.01" value={gastoForm.importe_total_bruto} onChange={(e)=>setGastoForm(a=>({...a,importe_total_bruto:e.target.value}))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label></div>
+                                <label className="block"><span className="mb-1 block text-xs font-bold text-slate-700">Descripción *</span><input required value={gastoForm.descripcion} onChange={(e)=>setGastoForm(a=>({...a,descripcion:e.target.value}))} placeholder="Concepto detallado de la factura" className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" /></label>
+                              </div>
+                              <aside className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                <div className="mb-3">
+                                  <h6 className="text-xs font-extrabold uppercase tracking-wide text-slate-600">Factura de Carpeta Digital</h6>
+                                  <p className="mt-1 text-[11px] text-slate-500">Factura notarial o registral · PDF</p>
+                                </div>
+                                <label className="mb-3 block">
+                                  <span className="mb-1 block text-xs font-bold text-slate-700">Documento a revisar</span>
+                                  <select value={documentoFacturaSeleccionado} onChange={(e) => { setDocumentoFacturaSeleccionado(e.target.value); setGastoForm(a => ({...a, documento_carpeta_id: e.target.value})); }} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs">
+                                    <option value="">Selecciona una factura PDF…</option>
+                                    {documentosFacturaElegibles.map((doc) => <option key={doc.id} value={String(doc.id)}>{doc.nombre_original || doc.nombre || `Documento ${doc.id}`} · {doc.categoria || doc.categoria_nombre}</option>)}
+                                  </select>
+                                </label>
+                                {cargandoVistaPreviaFactura ? <p className="p-4 text-xs text-slate-500">Cargando PDF…</p> : null}
+                                {errorVistaPreviaFactura ? <p role="alert" className="mb-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">{errorVistaPreviaFactura}</p> : null}
+                                {urlVistaPreviaFactura ? <iframe title="Vista previa de factura" src={urlVistaPreviaFactura} className="h-[58vh] min-h-[360px] w-full rounded-lg border border-slate-200 bg-white" /> : null}
+                                {!urlVistaPreviaFactura && !cargandoVistaPreviaFactura && !errorVistaPreviaFactura ? <p className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-center text-xs text-slate-500">No hay ningún PDF seleccionado. Comprueba que la factura esté en Gestión económica de la Carpeta Digital.</p> : null}
+                              </aside>
+                            </div></div>
+                            <div className="flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-white px-5 py-4"><button type="button" onClick={()=>setMostrarFormularioGasto(false)} disabled={guardandoGasto} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600">Cancelar</button><button type="submit" disabled={guardandoGasto || cargandoConceptosGasto} className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{guardandoGasto ? "Guardando…" : "Registrar gasto"}</button></div>
+                          </form>
+                            </div>
+                          </div>
+                        ) : null}
                       formularioEnvioNotario={
                         <EnviarANotarioModal
                           expediente={expediente}
@@ -6329,6 +6394,7 @@ const cuantiaFincasParaEnvio =
                             onClick={() => {
                               setErrorGastos("");
                               setMensajeGastos("");
+                              setOrigenFormularioGasto("economico");
                               setMostrarFormularioGasto((actual) => {
                                 const abrir = !actual;
                                 if (abrir) setGastoForm((g) => ({ ...g, nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "", nombre_notario: g.nombre_notario || expediente?.notario || expediente?.nombre_notario || "", pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" ") }));
@@ -6457,7 +6523,7 @@ const cuantiaFincasParaEnvio =
                           </div>
                         )}
 
-                        {mostrarFormularioGasto && createPortal((
+                        {mostrarFormularioGasto && origenFormularioGasto === "economico" && createPortal((
                           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-gasto">
                             <div className="flex max-h-[94vh] w-full max-w-[96vw] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
                           <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
