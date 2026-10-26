@@ -3647,7 +3647,7 @@ def generar_documento_factura_honorarios(
             # está fusionada verticalmente en una única celda: insertar todas las
             # líneas juntas evita que un dato sobrescriba al anterior.
             if len(tabla.rows) > 6 and len(tabla.rows[6].cells) > 2:
-                valores_expediente = "\\n".join([
+                valores_expediente = "\n".join([
                     numero_expediente,
                     documento_cliente,
                     notario,
