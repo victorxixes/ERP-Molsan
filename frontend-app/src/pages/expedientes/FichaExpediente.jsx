@@ -5202,6 +5202,7 @@ const cuantiaFincasParaEnvio =
                         setOrigenFormularioGasto("pagar");
                         setErrorGastos("");
                         setMensajeGastos("");
+                        cargarGastosExpediente();
                         setGastoForm((g) => ({
                           ...g,
                           nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "",
@@ -5210,7 +5211,9 @@ const cuantiaFincasParaEnvio =
                         }));
                         setMostrarFormularioGasto(true);
                       }}
-                      formularioPago={mostrarFormularioGasto && origenFormularioGasto === "pagar" ? (
+                      formularioPago={origenFormularioGasto === "pagar" ? (
+                        <>
+                        {mostrarFormularioGasto && (
                           <div className="mt-4 rounded-2xl border border-indigo-200 bg-indigo-50/40 p-3 sm:p-4">
                             <div className="mx-auto flex w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                           <form onSubmit={guardarGastoExpediente} className="flex min-h-0 flex-col overflow-hidden">
@@ -5295,7 +5298,57 @@ const cuantiaFincasParaEnvio =
                           </form>
                             </div>
                           </div>
-                        ) : null}
+                        )}
+                        <section className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                          <div className="border-b border-slate-200 bg-slate-50 px-4 py-3">
+                            <h5 className="text-sm font-extrabold text-slate-800">Línea contable · Pagos y facturas del expediente</h5>
+                            <p className="mt-1 text-xs text-slate-500">Registro persistente de los gastos guardados, con su identificador y desglose fiscal.</p>
+                          </div>
+                          {cargandoGastos ? (
+                            <p className="p-4 text-sm text-slate-500">Cargando líneas contables…</p>
+                          ) : gastosExpediente.length === 0 ? (
+                            <p className="p-4 text-sm text-slate-500">Todavía no hay líneas contables guardadas para este expediente.</p>
+                          ) : (
+                            <div className="overflow-x-auto">
+                              <table className="w-full min-w-[760px] text-left text-xs">
+                                <thead className="bg-white text-[10px] uppercase tracking-wide text-slate-500">
+                                  <tr>
+                                    <th className="px-3 py-3 font-bold">ID de pago</th>
+                                    <th className="px-3 py-3 font-bold">Fecha de pago</th>
+                                    <th className="px-3 py-3 font-bold">Tipo de documento</th>
+                                    <th className="px-3 py-3 text-right font-bold">Base</th>
+                                    <th className="px-3 py-3 text-right font-bold">Impuesto</th>
+                                    <th className="px-3 py-3 text-right font-bold">Total</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                  {gastosExpediente.map((gasto) => {
+                                    const fmt = (valor) => Number(valor ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                    const base = numeroDecimalGasto(gasto.base_sujeta_impuestos) + numeroDecimalGasto(gasto.base_exenta_impuestos);
+                                    const impuesto = numeroDecimalGasto(gasto.importe_impuesto);
+                                    const total = gasto.importe_total_bruto ?? (base + impuesto);
+                                    return (
+                                      <tr key={gasto.id} className="text-slate-700">
+                                        <td className="whitespace-nowrap px-3 py-3 font-extrabold text-indigo-700">{gasto.numero_documento || `PAG-${String(gasto.id).padStart(6, "0")}`}</td>
+                                        <td className="whitespace-nowrap px-3 py-3">{formatearFecha(gasto.fecha || gasto.fecha_factura)}</td>
+                                        <td className="px-3 py-3"><span className="font-semibold">{gasto.tipo || "Documento"}</span>{gasto.descripcion ? <span className="mt-1 block text-slate-500">{gasto.descripcion}</span> : null}{gasto.tipo_impuesto ? <span className="mt-1 block text-[10px] text-slate-400">{gasto.tipo_impuesto}</span> : null}</td>
+                                        <td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmt(base)} €</td>
+                                        <td className="whitespace-nowrap px-3 py-3 text-right tabular-nums">{fmt(impuesto)} €</td>
+                                        <td className="whitespace-nowrap px-3 py-3 text-right font-extrabold tabular-nums">{fmt(total)} €</td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                          {errorGastos && <p role="alert" className="border-t border-red-100 bg-red-50 px-4 py-2 text-xs text-red-700">{errorGastos}</p>}
+                          <div className="flex justify-end border-t border-slate-100 px-4 py-3">
+                            <button type="button" onClick={cargarGastosExpediente} disabled={cargandoGastos} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50">{cargandoGastos ? "Actualizando…" : "Actualizar líneas contables"}</button>
+                          </div>
+                        </section>
+                        </>
+                      ) : null}
                       formularioEnvioNotario={
                         <EnviarANotarioModal
                           expediente={expediente}
