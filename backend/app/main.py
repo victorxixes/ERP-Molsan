@@ -476,6 +476,9 @@ app.include_router(tipos_carga_hipotecaria_router, prefix="/api")
 
 # EXPEDIENTES
 # Las rutas específicas deben registrarse antes de /{id_expediente} del router general.
+# Provisiones se registra primero porque sus rutas independientes usan el prefijo
+# /api/expedientes y no deben interpretarse como un identificador de expediente.
+app.include_router(provisiones_router, prefix="/api/expedientes")
 app.include_router(auditoria_vinculaciones_router, prefix="/api")
 app.include_router(expedientes_router, prefix="/api")
 app.include_router(traspasos_saldo_router, prefix="/api")
@@ -488,10 +491,8 @@ app.include_router(utilidades_ppad_router, prefix="/api")
 # OBSERVACIONES
 app.include_router(expediente_observaciones_router, prefix="/api")
 
-# Provisiones: el router aporta rutas relativas a /{id_expediente}/provisiones
-app.include_router(provisiones_router, prefix="/api/expedientes")
-
 #
+
 app.include_router(apoderagest_router, prefix="/api")
 app.include_router(liquidaciones_apoderagest_router, prefix="/api")
 app.include_router(encargagest_router, prefix="/api")
