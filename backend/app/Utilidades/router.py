@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import text, func
 from pydantic import BaseModel
@@ -506,3 +506,117 @@ def contexto_expediente_correspondencia(
         "gestoria.nombre": valor(expediente, "nombre_gestoria") or valor(expediente, "gestoria") or "Gestoría MOLSAN",
     }
     return {"numero_expediente": expediente.id_expediente, "contexto": contexto}
+
+
+# ============================================================
+# FIRMA CORPORATIVA Y PLANTILLA DE FACTURA DE HONORARIOS
+# ============================================================
+
+def _asegurar_configuracion_firma(db: Session):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS correspondencia_configuracion (
+            id INTEGER PRIMARY KEY,
+            firma_pie TEXT NOT NULL DEFAULT '',
+            factura_nombre VARCHAR(255),
+            factura_tipo VARCHAR(160),
+            factura_contenido BYTEA,
+            actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT correspondencia_configuracion_unica CHECK (id = 1)
+        )
+    """))
+    db.execute(text("""
+        INSERT INTO correspondencia_configuracion (id, firma_pie)
+        VALUES (1, '')
+        ON CONFLICT (id) DO NOTHING
+    """))
+    db.commit()
+
+
+class FirmaCorrespondenciaRequest(BaseModel):
+    firma_pie: str = ""
+
+
+@router.get("/correspondencia/firma")
+def obtener_firma_correspondencia(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "ver")
+    _asegurar_configuracion_firma(db)
+    fila = db.execute(text("""
+        SELECT firma_pie, factura_nombre, factura_tipo, actualizado_en
+        FROM correspondencia_configuracion WHERE id = 1
+    """)).mappings().first()
+    return {
+        "firma_pie": fila["firma_pie"] or "",
+        "factura_nombre": fila["factura_nombre"],
+        "factura_tipo": fila["factura_tipo"],
+        "actualizado_en": fila["actualizado_en"].isoformat() if fila.get("actualizado_en") else None,
+    }
+
+
+@router.put("/correspondencia/firma")
+def guardar_firma_correspondencia(
+    datos: FirmaCorrespondenciaRequest,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    _asegurar_configuracion_firma(db)
+    db.execute(text("""
+        UPDATE correspondencia_configuracion
+        SET firma_pie = :firma_pie, actualizado_en = CURRENT_TIMESTAMP
+        WHERE id = 1
+    """), {"firma_pie": (datos.firma_pie or "").strip()})
+    db.commit()
+    return {"ok": True, "firma_pie": (datos.firma_pie or "").strip()}
+
+
+@router.post("/correspondencia/firma/factura")
+async def subir_plantilla_factura_honorarios(
+    fichero: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "editar")
+    nombre = (fichero.filename or "plantilla-factura").replace("\\", "/").split("/")[-1].strip()
+    extension = nombre.rsplit(".", 1)[-1].lower() if "." in nombre else ""
+    extensiones_permitidas = {"pdf", "doc", "docx", "png", "jpg", "jpeg"}
+    if extension not in extensiones_permitidas:
+        raise HTTPException(status_code=400, detail="Formato no permitido. Sube un PDF, DOC/DOCX o imagen.")
+    contenido = await fichero.read()
+    if not contenido:
+        raise HTTPException(status_code=400, detail="El archivo está vacío.")
+    if len(contenido) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="El archivo supera el límite de 10 MB.")
+    tipo = (fichero.content_type or "application/octet-stream")[:160]
+    _asegurar_configuracion_firma(db)
+    db.execute(text("""
+        UPDATE correspondencia_configuracion
+        SET factura_nombre = :nombre, factura_tipo = :tipo,
+            factura_contenido = :contenido, actualizado_en = CURRENT_TIMESTAMP
+        WHERE id = 1
+    """), {"nombre": nombre, "tipo": tipo, "contenido": contenido})
+    db.commit()
+    return {"ok": True, "factura_nombre": nombre, "factura_tipo": tipo}
+
+
+@router.get("/correspondencia/firma/factura")
+def descargar_plantilla_factura_honorarios(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "ver")
+    _asegurar_configuracion_firma(db)
+    fila = db.execute(text("""
+        SELECT factura_nombre, factura_tipo, factura_contenido
+        FROM correspondencia_configuracion WHERE id = 1
+    """)).mappings().first()
+    if not fila or not fila["factura_contenido"]:
+        raise HTTPException(status_code=404, detail="Todavía no hay una plantilla de factura cargada.")
+    nombre = (fila["factura_nombre"] or "plantilla-factura").replace('"', "")
+    return Response(
+        content=bytes(fila["factura_contenido"]),
+        media_type=fila["factura_tipo"] or "application/octet-stream",
+        headers={"Content-Disposition": f'attachment; filename="{nombre}"'},
+    )
