@@ -801,7 +801,7 @@ export default function Municipios() {
                 municipio: datos.municipio.trim(),
                 codigos_postales: datos.codigos_postales || [],
                 codigo_postal_principal: datos.codigo_postal_principal || null
-              })              })
+              })
           }
         );
 
