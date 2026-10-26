@@ -406,6 +406,9 @@ def crear_proveedor(data: ProveedorMensajeriaIn, db: Session = Depends(get_db), 
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     try:
+        cantidad = db.execute(text("SELECT COUNT(*) FROM mensajeria_proveedores")).scalar() or 0
+        if cantidad >= 2:
+            raise HTTPException(status_code=409, detail="El catálogo admite como máximo dos empresas de mensajería.")
         if payload.get("principal"):
             db.execute(text("UPDATE mensajeria_proveedores SET principal=FALSE"))
         result = db.execute(text("""INSERT INTO mensajeria_proveedores
