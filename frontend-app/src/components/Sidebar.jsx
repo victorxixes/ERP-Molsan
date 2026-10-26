@@ -171,6 +171,15 @@ const iconos = {
     </>
   ),
 
+  truck: (
+    <>
+      <path d="M3 6h11v11H3z" />
+      <path d="M14 10h4l3 3v4h-7z" />
+      <circle cx="7" cy="19" r="1.7" />
+      <circle cx="18" cy="19" r="1.7" />
+    </>
+  ),
+
   database: (
     <>
       <ellipse
