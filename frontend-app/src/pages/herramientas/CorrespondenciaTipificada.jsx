@@ -65,6 +65,7 @@ export default function CorrespondenciaTipificada() {
   const [guardando, setGuardando] = useState(false);
   const [cargandoExpediente, setCargandoExpediente] = useState(false);
   const [mostrarVistaPrevia, setMostrarVistaPrevia] = useState(false);
+  const [vistaFicha, setVistaFicha] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
 
@@ -129,6 +130,7 @@ export default function CorrespondenciaTipificada() {
   const faltantes = useMemo(() => camposUsados.filter((clave) => !String(contexto[clave] ?? "").trim()), [camposUsados, contexto]);
 
   function nuevaPlantilla() {
+    setVistaFicha(true);
     setPlantilla({ ...PLANTILLA_VACIA });
     setPlantillaId(null);
     setMostrarVistaPrevia(false);
@@ -137,6 +139,7 @@ export default function CorrespondenciaTipificada() {
   }
 
   function editarPlantilla(item) {
+    setVistaFicha(true);
     setPlantilla({
       nombre: item.nombre || "",
       categoria: item.categoria || "General",
@@ -202,7 +205,10 @@ export default function CorrespondenciaTipificada() {
     setMensaje("");
     try {
       await axios.delete("/utilidades/correspondencia/plantillas/" + plantillaId);
-      nuevaPlantilla();
+      setVistaFicha(false);
+      setPlantilla({ ...PLANTILLA_VACIA });
+      setPlantillaId(null);
+      setMostrarVistaPrevia(false);
       await cargar();
       setMensaje("Plantilla eliminada.");
     } catch (err) {
@@ -242,7 +248,7 @@ export default function CorrespondenciaTipificada() {
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 text-2xl">✉️</div>
             <div>
-              <Link to="/herramientas/utilidades" className="text-xs font-bold text-blue-600 hover:text-blue-700">← Volver a Utilidades</Link>
+              <Link to="/herramientas/catalogos" className="text-xs font-bold text-blue-600 hover:text-blue-700">← Volver a Catálogos</Link>
               <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">Correspondencia tipificada</h1>
               <p className="mt-1 text-sm text-slate-500">Plantillas reutilizables con campos vinculados a los expedientes.</p>
             </div>
@@ -254,6 +260,35 @@ export default function CorrespondenciaTipificada() {
       {error && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div>}
       {mensaje && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{mensaje}</div>}
 
+      {!vistaFicha ? (
+        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div><h2 className="text-lg font-bold text-slate-800">Plantillas creadas</h2><p className="mt-1 text-sm text-slate-500">Consulta y administra los modelos de correspondencia del ERP.</p></div>
+            <span className="inline-flex w-fit items-center rounded-full bg-blue-50 px-3 py-1.5 text-sm font-bold text-blue-700">{plantillas.length} plantillas</span>
+          </div>
+          <div className="grid grid-cols-1 gap-3 border-b border-slate-100 p-4 md:grid-cols-[minmax(0,1fr)_240px]">
+            <input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por nombre, asunto o tipología…" className={inputClass} />
+            <select value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)} className={inputClass}><option value="Todas">Todas las tipologías</option>{CATEGORIAS.map((cat) => <option key={cat} value={cat}>{cat}</option>)}</select>
+          </div>
+          {cargando ? <p className="p-8 text-center text-sm text-slate-400">Cargando plantillas…</p> : plantillasFiltradas.length === 0 ? (
+            <div className="p-10 text-center"><div className="text-3xl">✉️</div><h3 className="mt-3 font-bold text-slate-800">{plantillas.length ? "No hay plantillas que coincidan" : "Todavía no hay plantillas creadas"}</h3><p className="mt-1 text-sm text-slate-500">{plantillas.length ? "Prueba con otra búsqueda o categoría." : "Pulsa «Nueva plantilla» para crear el primer modelo de correspondencia."}</p>{!plantillas.length && <button type="button" onClick={nuevaPlantilla} className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700">＋ Nueva plantilla</button>}</div>
+          ) : (
+            <div className="overflow-x-auto"><table className="w-full min-w-[820px] border-collapse text-left text-sm">
+              <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3 font-bold">Nombre de la plantilla</th><th className="px-5 py-3 font-bold">Tipología / proceso</th><th className="px-5 py-3 font-bold">Asunto</th><th className="px-5 py-3 font-bold">Estado</th><th className="px-5 py-3 text-right font-bold">Acciones</th></tr></thead>
+              <tbody className="divide-y divide-slate-100">{plantillasFiltradas.map((item) => <tr key={item.id} className="transition hover:bg-blue-50/40">
+                <td className="px-5 py-4"><span className="block font-bold text-slate-800">{item.nombre || "Sin nombre"}</span><span className="mt-1 block text-xs text-slate-400">Modelo de correo reutilizable</span></td>
+                <td className="px-5 py-4 text-slate-600">{item.categoria || "General"}</td>
+                <td className="max-w-[280px] px-5 py-4 text-slate-600"><span className="block truncate" title={item.asunto || ""}>{item.asunto || "Sin asunto"}</span></td>
+                <td className="px-5 py-4"><span className={"inline-flex rounded-full px-2.5 py-1 text-xs font-bold " + (item.activo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500")}>{item.activo ? "Activa" : "Inactiva"}</span></td>
+                <td className="px-5 py-4 text-right"><button type="button" onClick={() => editarPlantilla(item)} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-100">↗ Acceder a la ficha</button></td>
+              </tr>)}</tbody>
+            </table></div>
+          )}
+          <div className="border-t border-slate-100 bg-slate-50/70 px-5 py-3 text-xs text-slate-500">Las plantillas inactivas se conservan en el catálogo y se identifican claramente.</div>
+        </section>
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wide text-slate-400">Catálogo de correspondencia</p><h2 className="mt-1 text-xl font-bold text-slate-800">{plantillaId ? "Ficha de plantilla" : "Nueva plantilla"}</h2></div><button type="button" onClick={() => { setVistaFicha(false); setMostrarVistaPrevia(false); setError(""); setMensaje(""); }} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">← Volver al catálogo</button></div>
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
         <aside className="space-y-4">
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -373,6 +408,8 @@ export default function CorrespondenciaTipificada() {
           )}
         </main>
       </div>
+        </>
+      )}
     </div>
   );
 }
