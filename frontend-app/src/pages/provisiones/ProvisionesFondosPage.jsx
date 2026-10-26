@@ -459,6 +459,10 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
         return;
       }
       impuestos = Math.round((capital * porcentaje / 100) * 100) / 100;
+    } else if (esHipoteca && g.adquisicion_vivienda_habitual === "no") {
+      // Para hipotecas destinadas a otra finalidad, aplicar el importe territorial guardado en el catálogo de provisiones.
+      const importeTerritorial = importeHipotecaProvincia(g.provincia);
+      impuestos = importeTerritorial !== null ? importeTerritorial : Number(g.ajd || 0);
     } else if (g.tipo_carga && !normalizar(g.tipo_carga).includes("hipotec")) {
       // Para otras cargas no se presupone un impuesto específico.
       impuestos = Number(g.ajd || 0);
