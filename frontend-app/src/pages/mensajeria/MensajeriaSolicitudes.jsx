@@ -8,6 +8,22 @@ const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2
 const estadoColor = (estado) => estado === "Entregada" ? "bg-emerald-50 text-emerald-700" : estado === "Incidencia" ? "bg-rose-50 text-rose-700" : estado === "Cancelada" ? "bg-slate-100 text-slate-600" : "bg-blue-50 text-blue-700";
 const nuevaUbicacion = () => ({ tipo: "Otros", busqueda: "", referencia_id: "", direccion: "", codigo_postal: "", poblacion: "", provincia: "", mapa: "" });
 const textoDireccion = (u) => [u.direccion, u.codigo_postal, u.poblacion, u.provincia].filter(Boolean).join(", ");
+const mensajeError = (error, fallback) => {
+  const detalle = error?.response?.data?.detail;
+  if (typeof detalle === "string") return detalle;
+  if (Array.isArray(detalle)) {
+    return detalle.map((item) => {
+      const campo = Array.isArray(item?.loc) ? item.loc.filter((x) => x !== "body").join(" · ") : "";
+      const mensaje = item?.msg || item?.message || "Dato no válido";
+      return campo ? `${campo}: ${mensaje}` : mensaje;
+    }).join(" | ");
+  }
+  if (detalle && typeof detalle === "object") {
+    return detalle.msg || detalle.message || fallback;
+  }
+  return fallback;
+};
+
 const urlMapa = (u) => {
   const destino = textoDireccion(u);
   return destino ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destino)}` : "";
@@ -103,7 +119,7 @@ export default function MensajeriaSolicitudes() {
       const [s, c] = await Promise.all([axios.get("/mensajeria/mis-solicitudes"), axios.get("/mensajeria/servicios")]);
       setSolicitudes(s.data || []);
       setServicios((c.data || []).filter((item) => item.activo));
-    } catch (e) { setError(e?.response?.data?.detail || "No se pudieron cargar tus solicitudes."); }
+    } catch (e) { setError(mensajeError(e, "No se pudieron cargar tus solicitudes.")); }
     finally { setCargando(false); }
   }, []);
   useEffect(() => { cargar(); }, [cargar]);
@@ -149,7 +165,7 @@ export default function MensajeriaSolicitudes() {
       setOrigen(nuevaUbicacion()); setDestino(nuevaUbicacion());
       setAviso("Encargo creado y enviado a Mensajería Gestión.");
       await cargar();
-    } catch (e) { setError(e?.response?.data?.detail || "No se pudo enviar la solicitud."); }
+    } catch (e) { setError(mensajeError(e, "No se pudo enviar la solicitud.")); }
     finally { setGuardando(false); }
   };
 
@@ -159,7 +175,7 @@ export default function MensajeriaSolicitudes() {
     try {
       const r = await axios.post(`/mensajeria/solicitudes/${seleccionada.id}/comunicaciones`, { mensaje: mensajeChat.trim() });
       setComunicaciones((old) => [...old, r.data]); setMensajeChat(""); setAviso("Mensaje enviado a Mensajería Gestión.");
-    } catch (e) { setError(e?.response?.data?.detail || "No se pudo enviar el mensaje."); }
+    } catch (e) { setError(mensajeError(e, "No se pudo enviar el mensaje.")); }
     finally { setGuardando(false); }
   };
 
