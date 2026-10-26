@@ -90,11 +90,10 @@ function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, munic
       <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Provincia
         <input className={inputClass + " mt-1.5"} value={valor.provincia} onChange={(e) => cambiar("provincia", e.target.value)} />
       </label>
-    </div>
-      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Contacto
+      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Contacto de {titulo.toLowerCase()}
         <input className={inputClass + " mt-1.5"} value={valor.contacto} onChange={(e) => cambiar("contacto", e.target.value)} placeholder="Persona de contacto" />
       </label>
-      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Teléfono
+      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Teléfono de {titulo.toLowerCase()}
         <input className={inputClass + " mt-1.5"} value={valor.telefono} onChange={(e) => cambiar("telefono", e.target.value)} placeholder="Teléfono de contacto" />
       </label>
     </div>
