@@ -48,6 +48,59 @@ function Seccion({ titulo, detalle, children }) {
   return <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="mb-4"><h2 className="text-base font-bold text-slate-900">{titulo}</h2>{detalle && <p className="mt-1 text-xs text-slate-500">{detalle}</p>}</div>{children}</section>;
 }
 
+
+function ConfiguracionConceptosProvisiones() {
+  const [items, setItems] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [errorConfig, setErrorConfig] = useState("");
+  const [borradores, setBorradores] = useState({});
+  const cargar = useCallback(async () => {
+    setCargando(true);
+    try {
+      const r = await axios.get("/expedientes/provisiones/conceptos-importes");
+      const lista = r.data?.items || [];
+      setItems(lista);
+      setBorradores(Object.fromEntries(lista.map((x) => [x.codigo, { modo: x.modo === "calculado" ? "calculado" : "previsto", importe_previsto: x.importe_previsto == null ? "" : String(x.importe_previsto), descripcion: x.descripcion || "", activo: x.activo !== false }])));
+      setErrorConfig("");
+    } catch (e) { setErrorConfig(e.response?.data?.detail || "No se pudo cargar la configuración de conceptos."); }
+    finally { setCargando(false); }
+  }, []);
+  useEffect(() => { cargar(); }, [cargar]);
+  const cambiar = (codigo, campo, valor) => setBorradores((prev) => ({ ...prev, [codigo]: { ...prev[codigo], [campo]: valor } }));
+  const guardarConcepto = async (item) => {
+    const draft = borradores[item.codigo] || {};
+    setGuardando(item.codigo); setMensaje(""); setErrorConfig("");
+    try {
+      await axios.put(`/expedientes/provisiones/conceptos-importes/${item.codigo}`, {
+        modo: draft.modo,
+        importe_previsto: draft.modo === "previsto" ? Number(draft.importe_previsto || 0) : null,
+        descripcion: draft.descripcion || "",
+        activo: draft.activo !== false,
+      });
+      setMensaje(`${item.nombre}: configuración guardada.`);
+      await cargar();
+    } catch (e) { setErrorConfig(e.response?.data?.detail || `No se pudo guardar ${item.nombre}.`); }
+    finally { setGuardando(""); }
+  };
+  return <Seccion titulo="Configuración de conceptos e importes" detalle="Define los importes previstos de Notaría y Registro, el tratamiento de Impuestos y consulta el origen de los honorarios. Los importes de ejemplo no se precargan: los valores los debe introducir Molsan.">
+    {errorConfig && <div role="alert" className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{errorConfig}</div>}
+    {mensaje && <div role="status" className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{mensaje}</div>}
+    {cargando ? <p className="py-4 text-sm text-slate-500">Cargando conceptos…</p> : <div className="space-y-3">
+      {items.map((item) => {
+        const draft = borradores[item.codigo] || {};
+        return <div key={item.codigo} className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 md:grid-cols-[1.2fr_1fr_1.4fr_auto] md:items-end">
+          <div><p className="font-semibold text-slate-800">{item.nombre}</p><p className="mt-1 text-xs text-slate-500">{item.codigo === "gestion" ? "Fuente: catálogo central de Honorarios Gestoría." : item.codigo === "impuestos" ? "Puede marcarse como calculado o introducir una previsión." : "Importe estimativo configurable, sin tarifa inventada."}</p></div>
+          {item.codigo === "gestion" ? <div className="rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-900 md:col-span-2">Se obtiene del catálogo central según «Entidad actual» del banco. No se modifica aquí.</div> : <div><label className="mb-1 block text-xs font-semibold text-slate-600">Tratamiento</label><select className={input} value={draft.modo || "previsto"} onChange={(e) => cambiar(item.codigo, "modo", e.target.value)}><option value="previsto">Importe previsto</option>{item.codigo === "impuestos" && <option value="calculado">Calculado (pendiente de regla fiscal)</option>}</select>{draft.modo === "previsto" && <><label className="mb-1 mt-2 block text-xs font-semibold text-slate-600">Importe previsto (€)</label><input className={input} type="number" min="0" step="0.01" value={draft.importe_previsto ?? ""} onChange={(e) => cambiar(item.codigo, "importe_previsto", e.target.value)} placeholder="Introduce el importe" /></>}</div>}
+          <div><label className="mb-1 block text-xs font-semibold text-slate-600">Descripción / criterio</label><textarea className={`${input} min-h-16 resize-y`} value={draft.descripcion || ""} onChange={(e) => cambiar(item.codigo, "descripcion", e.target.value)} disabled={item.codigo === "gestion"} /></div>
+          {item.codigo === "gestion" ? <span className="text-xs font-semibold text-emerald-700">Catálogo central</span> : <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={`${boton} bg-blue-600 text-white hover:bg-blue-700`}>{guardando === item.codigo ? "Guardando…" : "Guardar"}</button>}
+        </div>;
+      })}
+    </div>}
+  </Seccion>;
+}
+
 export default function ProvisionesFondosPage() {
   const [form, setForm] = useState(nuevoFormulario);
   const [items, setItems] = useState([]);
@@ -206,6 +259,8 @@ export default function ProvisionesFondosPage() {
 
     {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{String(error)}</div>}
     {aviso && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{aviso}</div>}
+
+    <ConfiguracionConceptosProvisiones />
 
     <form onSubmit={guardar} className="space-y-5">
       <div className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2">
