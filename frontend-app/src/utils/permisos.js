@@ -72,7 +72,15 @@ export function puedeVerModulo(modulo) {
     ...(Array.isArray(empleado.modulos_visibles) ? empleado.modulos_visibles : []),
   ].map(normalizar);
 
-  return modulos.includes(normalizar(modulo));
+  // Compatibilidad con asignaciones guardadas por etiqueta visible
+  // en vez de por la clave técnica del módulo.
+  const alias = {
+    "mensajeria molsan": "mensajeria",
+  };
+  const modulosCanonicos = modulos.map((item) => alias[item] || item);
+  const moduloCanonico = alias[normalizar(modulo)] || normalizar(modulo);
+
+  return modulosCanonicos.includes(moduloCanonico);
 }
 
 
