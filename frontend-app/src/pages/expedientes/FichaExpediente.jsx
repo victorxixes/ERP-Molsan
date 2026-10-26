@@ -1619,7 +1619,13 @@ export default function FichaExpediente() {
   ] = useState(false);
   const [mostrarRepositoriosDocumentacionPrevia, setMostrarRepositoriosDocumentacionPrevia] = useState(false);
   const [mostrarReclamarOficina, setMostrarReclamarOficina] = useState(false);
-  const [emailReclamacion, setEmailReclamacion] = useState({ destinatario: "", asunto: "", cuerpo: "" });
+  const [emailReclamacion, setEmailReclamacion] = useState({ destinatario: "", cc: "", asunto: "", cuerpo: "" });
+  const [categoriasEmail] = useState(["General", "Documentación", "Firma y notaría", "Defectos registrales", "Liquidación e impuestos", "Inscripción registral", "Provisión de fondos", "Cierre de expediente", "Avisos y reclamaciones"]);
+  const [plantillasEmail, setPlantillasEmail] = useState([]);
+  const [categoriaEmail, setCategoriaEmail] = useState("");
+  const [plantillaEmailId, setPlantillaEmailId] = useState("");
+  const [contextoEmail, setContextoEmail] = useState({});
+  const [cargandoPlantillasEmail, setCargandoPlantillasEmail] = useState(false);
   const [historicoReclamaciones, setHistoricoReclamaciones] = useState([]);
   const [cargandoHistoricoReclamaciones, setCargandoHistoricoReclamaciones] = useState(false);
   const [enviandoReclamacion, setEnviandoReclamacion] = useState(false);
@@ -1686,13 +1692,46 @@ APODERADOS EN: ALICANTE · BALEARES · CANARIAS · CASTELLON · CATALUÑA · GAL
     }
   }, [expediente?.id_expediente, id]);
 
-  const abrirReclamacionOficina = useCallback(() => {
+  const abrirReclamacionOficina = useCallback(async () => {
     setErrorReclamacion("");
     setMensajeReclamacion("");
-    setEmailReclamacion(crearPlantillaReclamacionOficina());
+    setEmailReclamacion({ destinatario: "", cc: "", asunto: "", cuerpo: "" });
+    setCategoriaEmail("");
+    setPlantillaEmailId("");
+    setContextoEmail({});
     setMostrarReclamarOficina(true);
     cargarHistoricoReclamaciones();
-  }, [crearPlantillaReclamacionOficina, cargarHistoricoReclamaciones]);
+    setCargandoPlantillasEmail(true);
+    try {
+      const numero = expediente?.id_expediente || id;
+      const [plantillasRes, contextoRes] = await Promise.all([
+        axios.get("/utilidades/correspondencia/plantillas"),
+        axios.get("/utilidades/correspondencia/expediente", { params: { numero_expediente: numero } }),
+      ]);
+      setPlantillasEmail(Array.isArray(plantillasRes.data) ? plantillasRes.data.filter((p) => p.activo !== false) : []);
+      setContextoEmail(contextoRes.data?.contexto || {});
+    } catch (error) {
+      setErrorReclamacion(error?.response?.data?.detail || "No se pudieron cargar las plantillas o los datos del expediente. Comprueba el acceso a Correspondencia tipificada.");
+    } finally {
+      setCargandoPlantillasEmail(false);
+    }
+  }, [expediente?.id_expediente, id, cargarHistoricoReclamaciones]);
+
+  const seleccionarPlantillaEmail = useCallback((plantillaId) => {
+    setPlantillaEmailId(String(plantillaId || ""));
+    const plantilla = plantillasEmail.find((item) => String(item.id) === String(plantillaId));
+    if (!plantilla) return;
+    const sustituir = (texto) => String(texto || "").replace(/\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g, (_match, clave) => {
+      const valor = contextoEmail[clave];
+      return valor === undefined || valor === null || String(valor).trim() === "" ? "[[FALTA: " + clave + "]]" : String(valor);
+    });
+    setEmailReclamacion({ destinatario: sustituir(plantilla.destinatario), cc: sustituir(plantilla.cc), asunto: sustituir(plantilla.asunto), cuerpo: sustituir(plantilla.cuerpo) });
+    setErrorReclamacion("");
+    setMensajeReclamacion("");
+  }, [plantillasEmail, contextoEmail]);
+
+  const plantillasCategoriaEmail = plantillasEmail.filter((plantilla) => !categoriaEmail || plantilla.categoria === categoriaEmail);
+  const plantillaSeleccionadaEmail = plantillasEmail.find((plantilla) => String(plantilla.id) === String(plantillaEmailId));
 
   const enviarReclamacionOficina = useCallback(async () => {
     const numero = expediente?.id_expediente || id;
@@ -1701,7 +1740,7 @@ APODERADOS EN: ALICANTE · BALEARES · CANARIAS · CASTELLON · CATALUÑA · GAL
     setErrorReclamacion("");
     setMensajeReclamacion("");
     try {
-      const respuesta = await axios.post(`/expedientes/${encodeURIComponent(numero)}/reclamaciones-oficina/enviar`, emailReclamacion);
+      const respuesta = await axios.post(`/expedientes/${encodeURIComponent(numero)}/reclamaciones-oficina/enviar`, { ...emailReclamacion, categoria: categoriaEmail, plantilla_id: plantillaSeleccionadaEmail?.id || null, plantilla_nombre: plantillaSeleccionadaEmail?.nombre || "" });
       setMensajeReclamacion(respuesta.data?.mensaje || "Email enviado correctamente.");
       await cargarHistoricoReclamaciones();
     } catch (error) {
@@ -1710,7 +1749,7 @@ APODERADOS EN: ALICANTE · BALEARES · CANARIAS · CASTELLON · CATALUÑA · GAL
     } finally {
       setEnviandoReclamacion(false);
     }
-  }, [expediente?.id_expediente, id, emailReclamacion, cargarHistoricoReclamaciones]);
+  }, [expediente?.id_expediente, id, emailReclamacion, categoriaEmail, plantillaSeleccionadaEmail, cargarHistoricoReclamaciones]);
 
   const [
     mostrarAcciones,
@@ -4852,7 +4891,7 @@ const cuantiaFincasParaEnvio =
             <div className="flex shrink-0 items-center gap-1.5">
               <button type="button" onClick={abrirDefecto} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-blue-700 shadow-sm transition hover:bg-blue-100" title="Registrar un defecto registral">➕ Alta defecto</button>
               <Boton onClick={abrirControlExpediente} className="!shrink-0 !rounded-lg !px-2.5 !py-2 !text-[11px] !leading-tight">{expedienteBloqueado ? "🔒 Control / desbloqueo" : "🔐 Control y bloqueo"}</Boton>
-              <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100">✉️ Reclamar a oficina</button>
+              <button type="button" onClick={abrirReclamacionOficina} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-amber-800 shadow-sm transition hover:bg-amber-100">✉️ Emails</button>
               <button type="button" onClick={() => window.alert("Pendiente: enlazar este botón con la dirección real del área de clientes.")} className="inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] font-bold leading-tight text-slate-600 shadow-sm transition hover:bg-slate-100" title="Pendiente de enlazar con el área de clientes">🔗 Área de clientes</button>
               {tieneDefecto && <button type="button" onClick={abrirDefecto} className="animate-pulse inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-2.5 py-2 text-[11px] font-bold leading-tight text-red-700 shadow-sm">⚠️ DEFECTO REGISTRAL</button>}
             </div>
@@ -6524,13 +6563,13 @@ const cuantiaFincasParaEnvio =
       <Modal
         open={mostrarReclamarOficina}
         onClose={() => !enviandoReclamacion && setMostrarReclamarOficina(false)}
-        titulo="✉️ Reclamar a oficina"
-        subtitulo={`Expediente ${valorVisible(expediente?.id_expediente || id)} · Histórico de correos enviados`}
+        titulo="✉️ Emails del expediente"
+        subtitulo={`Expediente ${valorVisible(expediente?.id_expediente || id)} · Correspondencia tipificada e histórico`}
         ancho="max-w-5xl"
         footer={
           <div className="flex flex-wrap justify-end gap-2">
             <Boton onClick={() => setMostrarReclamarOficina(false)} disabled={enviandoReclamacion}>Cerrar</Boton>
-            <Boton tipo="primary" onClick={enviarReclamacionOficina} disabled={enviandoReclamacion || !emailReclamacion.destinatario.trim() || !emailReclamacion.asunto.trim() || !emailReclamacion.cuerpo.trim()}>
+            <Boton tipo="primary" onClick={enviarReclamacionOficina} disabled={enviandoReclamacion || !emailReclamacion.destinatario.trim() || !emailReclamacion.asunto.trim() || !emailReclamacion.cuerpo.trim() || /\[\[FALTA:/.test(emailReclamacion.destinatario + emailReclamacion.cc + emailReclamacion.asunto + emailReclamacion.cuerpo)}>
               {enviandoReclamacion ? "Enviando…" : "✉️ Enviar email"}
             </Boton>
           </div>
@@ -6539,9 +6578,27 @@ const cuantiaFincasParaEnvio =
         <div className="space-y-5">
           {errorReclamacion && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorReclamacion}</p>}
           {mensajeReclamacion && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{mensajeReclamacion}</p>}
+          <section className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">1 · Tipo de email</label>
+              <select value={categoriaEmail} onChange={(e) => { setCategoriaEmail(e.target.value); setPlantillaEmailId(""); setEmailReclamacion({ destinatario: "", cc: "", asunto: "", cuerpo: "" }); }} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700">
+                <option value="">Todas las categorías</option>
+                {categoriasEmail.map((categoria) => <option key={categoria} value={categoria}>{categoria}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">2 · Plantilla guardada</label>
+              <select value={plantillaEmailId} onChange={(e) => seleccionarPlantillaEmail(e.target.value)} disabled={cargandoPlantillasEmail || plantillasCategoriaEmail.length === 0} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700">
+                <option value="">{cargandoPlantillasEmail ? "Cargando plantillas…" : plantillasCategoriaEmail.length ? "Selecciona una plantilla…" : "No hay plantillas activas para esta categoría"}</option>
+                {plantillasCategoriaEmail.map((plantilla) => <option key={plantilla.id} value={plantilla.id}>{plantilla.nombre} · {plantilla.asunto || "Sin asunto"}</option>)}
+              </select>
+            </div>
+            {plantillaEmailId && <p className="text-xs text-slate-500 md:col-span-2">Plantilla: {plantillaSeleccionadaEmail?.nombre || "—"}. Revisa los marcadores [[FALTA: …]] si algún dato no existe en la ficha.</p>}
+          </section>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <CampoFormulario label="De · Email del gestor (responder a)" value={empleadoSesion?.email_empresa || empleadoSesion?.email_personal || ""} onChange={() => {}} />
-            <CampoFormulario label="Para · Email de la oficina" value={emailReclamacion.destinatario} onChange={(v) => setEmailReclamacion((p) => ({ ...p, destinatario: v }))} placeholder="Introduce el email de la oficina" />
+            <CampoFormulario label="De · Remitente del servidor" value={empleadoSesion?.email_empresa || empleadoSesion?.email_personal || "Remitente SMTP de ERP"} onChange={() => {}} />
+            <CampoFormulario label="Para · Destinatario" value={emailReclamacion.destinatario} onChange={(v) => setEmailReclamacion((p) => ({ ...p, destinatario: v }))} placeholder="Email del destinatario" />
+            <CampoFormulario label="CC · Copia (opcional)" value={emailReclamacion.cc} onChange={(v) => setEmailReclamacion((p) => ({ ...p, cc: v }))} placeholder="Email en copia, si procede" />
           </div>
           <CampoFormulario label="Asunto" value={emailReclamacion.asunto} onChange={(v) => setEmailReclamacion((p) => ({ ...p, asunto: v }))} />
           <CampoFormulario label="Mensaje (editable antes de enviar)" value={emailReclamacion.cuerpo} onChange={(v) => setEmailReclamacion((p) => ({ ...p, cuerpo: v }))} textarea />
@@ -6556,8 +6613,8 @@ const cuantiaFincasParaEnvio =
             {cargandoHistoricoReclamaciones ? <p className="p-4 text-sm text-slate-500">Cargando histórico…</p> : historicoReclamaciones.length === 0 ? <p className="p-4 text-sm text-slate-500">Todavía no hay correos registrados.</p> : (
               <div className="max-h-64 overflow-auto">
                 <table className="w-full min-w-[700px] text-left text-xs">
-                  <thead className="sticky top-0 bg-white text-slate-500"><tr><th className="px-3 py-2">Fecha</th><th className="px-3 py-2">Para</th><th className="px-3 py-2">Asunto</th><th className="px-3 py-2">Estado</th><th className="px-3 py-2">Gestor</th></tr></thead>
-                  <tbody>{historicoReclamaciones.map((item) => <tr key={item.id} className="border-t border-slate-100 align-top"><td className="whitespace-nowrap px-3 py-2">{item.creado_en ? new Date(item.creado_en).toLocaleString("es-ES") : "—"}</td><td className="px-3 py-2">{item.destinatario}</td><td className="max-w-xs px-3 py-2">{item.asunto}</td><td className="px-3 py-2"><span className={item.estado === "enviado" ? "font-bold text-emerald-700" : "font-bold text-red-700"}>{item.estado === "enviado" ? "Enviado" : "Error"}</span>{item.detalle && <p className="mt-1 max-w-xs text-[10px] text-slate-500">{item.detalle}</p>}</td><td className="px-3 py-2">{item.enviado_por || "—"}</td></tr>)}</tbody>
+                  <thead className="sticky top-0 bg-white text-slate-500"><tr><th className="px-3 py-2">Fecha</th><th className="px-3 py-2">Tipo / plantilla</th><th className="px-3 py-2">Para</th><th className="px-3 py-2">Asunto</th><th className="px-3 py-2">Estado</th><th className="px-3 py-2">Gestor</th></tr></thead>
+                  <tbody>{historicoReclamaciones.map((item) => <tr key={item.id} className="border-t border-slate-100 align-top"><td className="whitespace-nowrap px-3 py-2">{item.creado_en ? new Date(item.creado_en).toLocaleString("es-ES") : "—"}</td><td className="px-3 py-2">{item.categoria || "—"}<p className="text-slate-400">{item.plantilla_nombre || "Plantilla manual/anterior"}</p></td><td className="px-3 py-2">{item.destinatario}{item.cc && <p className="text-slate-400">CC: {item.cc}</p>}</td><td className="max-w-xs px-3 py-2">{item.asunto}</td><td className="px-3 py-2"><span className={item.estado === "enviado" ? "font-bold text-emerald-700" : "font-bold text-red-700"}>{item.estado === "enviado" ? "Enviado" : "Error"}</span>{item.detalle && <p className="mt-1 max-w-xs text-[10px] text-slate-500">{item.detalle}</p>}</td><td className="px-3 py-2">{item.enviado_por || "—"}</td></tr>)}</tbody>
                 </table>
               </div>
             )}
