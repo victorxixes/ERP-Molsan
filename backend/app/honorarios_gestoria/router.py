@@ -103,7 +103,7 @@ class HonorarioResponse(HonorarioPayload):
 
 
 def asegurar_catalogo_inicial(db: Session):
-    """Restaura y mantiene las tres tarifas históricas de honorarios."""
+    """Crea las tarifas históricas si faltan, sin sobrescribir el catálogo editable."""
     tarifas = [
         {
             "nombre": "Honorarios de gestoría — CaixaBank",
@@ -130,35 +130,50 @@ def asegurar_catalogo_inicial(db: Session):
             "legacy": "Cancelaciones sin provisión",
         },
     ]
+    cambios = False
     for tarifa in tarifas:
         honorario = (
             db.query(HonorarioGestoria)
             .filter(HonorarioGestoria.nombre == tarifa["nombre"])
             .first()
         )
-        if honorario is None:
-            honorario = (
-                db.query(HonorarioGestoria)
-                .filter(HonorarioGestoria.nombre == tarifa["legacy"])
-                .first()
-            )
+        if honorario is not None:
+            # El usuario puede editar base, impuesto, importe y estado activo
+            # desde el catálogo; una consulta GET no debe revertir esos cambios.
+            continue
+
+        legado = (
+            db.query(HonorarioGestoria)
+            .filter(HonorarioGestoria.nombre == tarifa["legacy"])
+            .first()
+        )
+        if legado is not None:
+            # Renombramos tarifas antiguas sin tocar sus valores configurados.
+            legado.nombre = tarifa["nombre"]
+            cambios = True
+            continue
+
         impuesto = (
             tarifa["base"] * tarifa["porcentaje"] / Decimal("100")
         ).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        if honorario is None:
-            honorario = HonorarioGestoria(nombre=tarifa["nombre"])
-            db.add(honorario)
-        honorario.nombre = tarifa["nombre"]
-        honorario.descripcion = tarifa["descripcion"]
-        honorario.base_imponible = tarifa["base"]
-        honorario.tipo_impuesto = tarifa["tipo"]
-        honorario.porcentaje_impuesto = tarifa["porcentaje"]
-        honorario.importe = tarifa["base"] + impuesto
-        honorario.activo = True
-    try:
-        db.commit()
-    except Exception:
-        db.rollback()
+        db.add(
+            HonorarioGestoria(
+                nombre=tarifa["nombre"],
+                descripcion=tarifa["descripcion"],
+                base_imponible=tarifa["base"],
+                tipo_impuesto=tarifa["tipo"],
+                porcentaje_impuesto=tarifa["porcentaje"],
+                importe=tarifa["base"] + impuesto,
+                activo=True,
+            )
+        )
+        cambios = True
+
+    if cambios:
+        try:
+            db.commit()
+        except Exception:
+            db.rollback()
 
 
 @router.get("", response_model=list[HonorarioResponse], dependencies=[Depends(_autorizar_honorarios_ver)])
