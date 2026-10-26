@@ -15,6 +15,32 @@ const boton = "inline-flex items-center justify-center rounded-xl px-4 py-2.5 te
 function Campo({ titulo, valor, onChange, tipo = "text", requerido = false, placeholder = "", disabled = false, listId }) {
   return <label className={label}>{titulo}<input className={`${input} ${disabled ? "cursor-not-allowed bg-slate-100 text-slate-500" : ""}`} type={tipo} value={valor ?? ""} onChange={(e) => onChange(e.target.value)} required={requerido} placeholder={placeholder} disabled={disabled} list={listId} autoComplete={listId ? "off" : undefined} /></label>;
 }
+
+function normalizarCatalogo(valor) {
+  return String(valor ?? "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim().replace(/\\s+/g, " ").toLocaleLowerCase("es");
+}
+function AutocompleteCatalogo({ titulo, valor, opciones, etiqueta, detalle, onChange, onSelect, placeholder = "Escribe para buscar…", disabled = false }) {
+  const [abierto, setAbierto] = useState(false);
+  const consulta = normalizarCatalogo(valor);
+  const filtradas = opciones.filter((op) => {
+    const texto = typeof etiqueta === "function" ? etiqueta(op) : String(op ?? "");
+    const apoyo = detalle ? detalle(op) : "";
+    return !consulta || normalizarCatalogo(texto).includes(consulta) || normalizarCatalogo(apoyo).includes(consulta);
+  }).slice(0, 12);
+  return <div className="relative min-w-0">
+    <label className={label}>{titulo}<input className={input} value={valor ?? ""} disabled={disabled} autoComplete="off" placeholder={placeholder} role="combobox" aria-autocomplete="list" aria-expanded={abierto} onFocus={() => setAbierto(true)} onChange={(e) => { onChange(e.target.value); setAbierto(true); }} onBlur={() => setTimeout(() => setAbierto(false), 120)} /></label>
+    {abierto && !disabled && consulta && <div role="listbox" className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl">
+      {filtradas.map((op, idx) => {
+        const texto = typeof etiqueta === "function" ? etiqueta(op) : String(op ?? "");
+        const apoyo = detalle ? detalle(op) : "";
+        return <button key={op?.id ?? texto + idx} type="button" role="option" onMouseDown={(e) => e.preventDefault()} onClick={() => { onSelect(op); setAbierto(false); }} className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-indigo-50">
+          <span className="font-medium text-slate-800">{texto}</span>{apoyo && <span className="text-xs text-slate-500">{apoyo}</span>}
+        </button>;
+      })}
+      {!filtradas.length && <p className="px-3 py-2 text-xs text-slate-500">No hay coincidencias en el catálogo. Revisa Utilidades → Catálogos.</p>}
+    </div>}
+  </div>;
+}
 function Selector({ titulo, valor, onChange, opciones, requerido = false }) {
   return <label className={label}>{titulo}<select className={input} value={valor ?? ""} onChange={(e) => onChange(e.target.value)} required={requerido}><option value="">Seleccionar…</option>{opciones.map((op) => <option key={typeof op === "string" ? op : op.nombre} value={typeof op === "string" ? op : op.nombre}>{typeof op === "string" ? op : op.nombre}</option>)}</select></label>;
 }
@@ -32,6 +58,23 @@ export default function ProvisionesFondosPage() {
   const [busqueda, setBusqueda] = useState("");
   const [entidadesBancarias, setEntidadesBancarias] = useState([]);
   const [catalogoHonorarios, setCatalogoHonorarios] = useState([]);
+  const [catalogoMunicipios, setCatalogoMunicipios] = useState([]);
+  const [catalogoRegistros, setCatalogoRegistros] = useState([]);
+
+  useEffect(() => {
+    let activo = true;
+    Promise.all([
+      axios.get("/municipios"),
+      axios.get("/expedientes/provisiones/tarifas/catalogo-registros"),
+    ]).then(([municipios, registros]) => {
+      if (!activo) return;
+      setCatalogoMunicipios(Array.isArray(municipios.data) ? municipios.data.filter((m) => m.activo !== false) : []);
+      setCatalogoRegistros(Array.isArray(registros.data) ? registros.data : []);
+    }).catch(() => {
+      if (activo) { setCatalogoMunicipios([]); setCatalogoRegistros([]); }
+    });
+    return () => { activo = false; };
+  }, []);
 
   useEffect(() => {
     let activa = true;
@@ -172,8 +215,8 @@ export default function ProvisionesFondosPage() {
           <Campo titulo="Email" tipo="email" valor={form.cliente.email} onChange={(v) => cambiarCliente("email", v)} />
           <div className="sm:col-span-2"><Campo titulo="Dirección" valor={form.cliente.direccion} onChange={(v) => cambiarCliente("direccion", v)} /></div>
           <Campo titulo="Código postal" valor={form.cliente.cp} onChange={(v) => cambiarCliente("cp", v)} />
-          <Campo titulo="Población" valor={form.cliente.poblacion} onChange={(v) => cambiarCliente("poblacion", v)} />
-          <Campo titulo="Provincia" valor={form.cliente.provincia} onChange={(v) => cambiarCliente("provincia", v)} />
+          <AutocompleteCatalogo titulo="Población" valor={form.cliente.poblacion} opciones={catalogoMunicipios} etiqueta={(m) => m.municipio} detalle={(m) => m.provincia} placeholder="Busca una población…" onChange={(v) => setForm((f) => ({ ...f, cliente: { ...f.cliente, poblacion: v, provincia: "" } }))} onSelect={(m) => setForm((f) => ({ ...f, cliente: { ...f.cliente, poblacion: m.municipio, provincia: m.provincia } }))} />
+          <AutocompleteCatalogo titulo="Provincia" valor={form.cliente.provincia} opciones={[...new Set(catalogoMunicipios.map((m) => m.provincia).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))} etiqueta={(p) => p} placeholder="Busca una provincia…" onChange={(v) => cambiarCliente("provincia", v)} onSelect={(p) => cambiarCliente("provincia", p)} />
           <Campo titulo="Fecha de provisión" tipo="date" valor={form.fecha} onChange={(v) => setForm((f) => ({ ...f, fecha: v }))} requerido />
         </div>
       </Seccion>
@@ -198,9 +241,9 @@ export default function ProvisionesFondosPage() {
               <Campo titulo="Capital del préstamo (€)" tipo="number" valor={g.capital} onChange={(v) => cambiarGarantia(i, "capital", v)} />
               <Campo titulo="N.º finca registral" valor={g.finca} onChange={(v) => cambiarGarantia(i, "finca", v)} />
               <Campo titulo="CRU / IDUFIR" valor={g.cru_idufir} onChange={(v) => cambiarGarantia(i, "cru_idufir", v)} />
-              <Campo titulo="Registro de la Propiedad" valor={g.registro_propiedad} onChange={(v) => cambiarGarantia(i, "registro_propiedad", v)} />
-              <Campo titulo="Población" valor={g.poblacion} onChange={(v) => cambiarGarantia(i, "poblacion", v)} />
-              <Campo titulo="Provincia" valor={g.provincia} onChange={(v) => cambiarGarantia(i, "provincia", v)} />
+              <AutocompleteCatalogo titulo="Registro de la Propiedad" valor={g.registro_propiedad} opciones={catalogoRegistros} etiqueta={(r) => r.registro_propiedad} detalle={(r) => [r.poblacion, r.provincia].filter(Boolean).join(" · ")} placeholder="Busca un registro…" onChange={(v) => cambiarGarantia(i, "registro_propiedad", v)} onSelect={(r) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, registro_propiedad: r.registro_propiedad, poblacion: r.poblacion || x.poblacion, provincia: r.provincia || x.provincia } : x) }))} />
+              <AutocompleteCatalogo titulo="Población" valor={g.poblacion} opciones={catalogoMunicipios} etiqueta={(m) => m.municipio} detalle={(m) => m.provincia} placeholder="Busca una población…" onChange={(v) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, poblacion: v, provincia: "" } : x) }))} onSelect={(m) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, poblacion: m.municipio, provincia: m.provincia } : x) }))} />
+              <AutocompleteCatalogo titulo="Provincia" valor={g.provincia} opciones={[...new Set(catalogoMunicipios.map((m) => m.provincia).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))} etiqueta={(p) => p} placeholder="Busca una provincia…" onChange={(v) => cambiarGarantia(i, "provincia", v)} onSelect={(p) => cambiarGarantia(i, "provincia", p)} />
               <Campo titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} requerido listId="catalogo-tipos-carga" placeholder="Escribe para buscar el tipo…" />
               <Selector titulo="Territorio" valor={g.territorio} onChange={(v) => cambiarGarantia(i, "territorio", v)} opciones={TERRITORIOS} requerido />
             </div>
