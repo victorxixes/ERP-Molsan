@@ -654,6 +654,27 @@ async def subir_plantilla_factura_honorarios(
     return {"ok": True, "concepto_gasto_id": concepto.id, "concepto_gasto": concepto.nombre, "factura_nombre": nombre, "factura_tipo": fichero.content_type or "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
 
 
+@router.get("/conceptos-gastos/6/plantilla-factura/estado")
+def estado_plantilla_factura_honorarios(
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "utilidades", "ver")
+    concepto = _asegurar_plantilla_factura_concepto(db)
+    fila = db.execute(text("""
+        SELECT nombre_archivo, tipo_archivo, actualizado_en
+        FROM plantilla_factura_concepto_gasto WHERE concepto_gasto_id = 6
+    """)).mappings().first()
+    return {
+        "concepto_gasto_id": concepto.id,
+        "concepto_gasto": concepto.nombre,
+        "plantilla_cargada": bool(fila),
+        "factura_nombre": fila["nombre_archivo"] if fila else None,
+        "factura_tipo": fila["tipo_archivo"] if fila else None,
+        "actualizado_en": fila["actualizado_en"].isoformat() if fila and fila.get("actualizado_en") else None,
+    }
+
+
 @router.get("/conceptos-gastos/6/plantilla-factura")
 @router.get("/correspondencia/firma/factura", include_in_schema=False)
 def descargar_plantilla_factura_honorarios(
