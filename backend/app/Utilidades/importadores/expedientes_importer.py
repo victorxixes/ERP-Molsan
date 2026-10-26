@@ -957,58 +957,49 @@ def importar_excel_expedientes(
             # SOLICITANTE
             # ------------------------------------------------
 
-            exp.nombre_solicitante = obtener_valor(
-                row,
-                "NOMBRESOLICITANTE",
-            )
+            valor = obtener_valor(row, "NOMBRESOLICITANTE")
+            if valor is not None:
+                exp.nombre_solicitante = valor
 
-            exp.nif_solicitante = obtener_valor(
-                row,
-                "NIFSOLICITANTE",
-            )
+            valor = obtener_valor(row, "NIFSOLICITANTE")
+            if valor is not None:
+                exp.nif_solicitante = valor
 
             # ------------------------------------------------
             # TITULAR
             # ------------------------------------------------
 
-            exp.nombre_titular = obtener_valor(
-                row,
-                "NOMBRETITULAR",
-            )
+            valor = obtener_valor(row, "NOMBRETITULAR")
+            if valor is not None:
+                exp.nombre_titular = valor
 
-            exp.nif_titular = obtener_valor(
-                row,
-                "NIFTITULAR",
-            )
+            valor = obtener_valor(row, "NIFTITULAR")
+            if valor is not None:
+                exp.nif_titular = valor
 
             # ------------------------------------------------
             # APODERADO
             # ------------------------------------------------
 
-            exp.apoderado = obtener_valor(
-                row,
-                "APODERADO",
-            )
+            valor = obtener_valor(row, "APODERADO")
+            if valor is not None:
+                exp.apoderado = valor
 
             # ------------------------------------------------
             # NOTARIO
             # ------------------------------------------------
 
-            exp.nombre_notario = obtener_valor(
-                row,
-                "NOMBRENOTARIO",
-            )
+            valor = obtener_valor(row, "NOMBRENOTARIO")
+            if valor is not None:
+                exp.nombre_notario = valor
 
-            exp.nif_notario = obtener_valor(
-                row,
-                "NIFNOTARIO",
-            )
+            valor = obtener_valor(row, "NIFNOTARIO")
+            if valor is not None:
+                exp.nif_notario = valor
 
-            exp.notario = obtener_valor(
-                row,
-                "NOTARIO",
-                "NOMBRENOTARIO",
-            )
+            valor = obtener_valor(row, "NOTARIO", "NOMBRENOTARIO")
+            if valor is not None:
+                exp.notario = valor
 
             # Campos de firma/documento que ABSIS pueda aportar. Solo se
             # actualizan si vienen informados para no borrar datos operativos.
@@ -1053,71 +1044,53 @@ def importar_excel_expedientes(
             # ECONÓMICOS
             # ------------------------------------------------
 
-            exp.capital = convertir_numero(
-                obtener_valor(
-                    row,
-                    "CAPITAL",
-                )
-            )
+            valor = convertir_numero(obtener_valor(row, "CAPITAL"))
+            if valor is not None:
+                exp.capital = valor
 
-            exp.importe = convertir_numero(
-                obtener_valor(
-                    row,
-                    "IMPORTE",
-                )
-            )
+            valor = convertir_numero(obtener_valor(row, "IMPORTE"))
+            if valor is not None:
+                exp.importe = valor
 
-            exp.saldo_real = convertir_numero(
-                obtener_valor(
-                    row,
-                    "SALDOREAL",
-                )
-            )
+            valor = convertir_numero(obtener_valor(row, "SALDOREAL"))
+            if valor is not None:
+                exp.saldo_real = valor
 
-            exp.saldo_disponible = convertir_numero(
-                obtener_valor(
-                    row,
-                    "SALDODISPONIBLE",
-                )
-            )
+            valor = convertir_numero(obtener_valor(row, "SALDODISPONIBLE"))
+            if valor is not None:
+                exp.saldo_disponible = valor
 
             # ------------------------------------------------
             # PROVISIÓN
             # ------------------------------------------------
 
-            exp.id_provision = obtener_valor(
-                row,
-                "IDPROVISION",
-            )
+            valor = obtener_valor(row, "IDPROVISION")
+            if valor is not None:
+                exp.id_provision = valor
 
-            exp.tipo_provision = obtener_valor(
-                row,
-                "TIPOPROVISION",
-            )
+            valor = obtener_valor(row, "TIPOPROVISION")
+            if valor is not None:
+                exp.tipo_provision = valor
 
             # ------------------------------------------------
             # OPERACIÓN
             # ------------------------------------------------
 
-            exp.contrato = obtener_valor(
-                row,
-                "CONTRATO",
-            )
+            valor = obtener_valor(row, "CONTRATO")
+            if valor is not None:
+                exp.contrato = valor
 
-            exp.num_solicitud_sia = obtener_valor(
-                row,
-                "NUMSOLICITUDSIA",
-            )
+            valor = obtener_valor(row, "NUMSOLICITUDSIA")
+            if valor is not None:
+                exp.num_solicitud_sia = valor
 
-            exp.tipo_operacion = obtener_valor(
-                row,
-                "TIPOOPERACION",
-            )
+            valor = obtener_valor(row, "TIPOOPERACION")
+            if valor is not None:
+                exp.tipo_operacion = valor
 
-            exp.subtipo_operacion = obtener_valor(
-                row,
-                "SUBTIPOOPERACION",
-            )
+            valor = obtener_valor(row, "SUBTIPOOPERACION")
+            if valor is not None:
+                exp.subtipo_operacion = valor
 
             exp.vinccanc = obtener_valor(
                 row,
@@ -1172,10 +1145,9 @@ def importar_excel_expedientes(
             # FINCA
             # ------------------------------------------------
 
-            exp.finca = obtener_valor(
-                row,
-                "FINCA",
-            )
+            valor = obtener_valor(row, "FINCA")
+            if valor is not None:
+                exp.finca = valor
 
             # Crear/actualizar el vínculo finca-registro si ABSIS aporta
             # columnas registrales explícitas; nunca borrar fincas existentes.
