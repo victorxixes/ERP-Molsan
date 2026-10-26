@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useAuthStore } from "./authStore";
 import axios from "../api/axios";
 
 const API = import.meta.env.VITE_API_URL;
@@ -1094,6 +1095,13 @@ export const useSeguridadStore =
           permisos
         );
 
+        const sesion = useAuthStore.getState();
+        if (Number(sesion.empleado?.id) === Number(empleadoId)) {
+          sesion.actualizarEmpleadoSesion({
+            permisos_modulo: permisos,
+            permisos_modulo_dict: permisos,
+          });
+        }
 
         await get().cargarFicha(
           empleadoId
@@ -1134,6 +1142,13 @@ export const useSeguridadStore =
           modulos
         );
 
+        const sesion = useAuthStore.getState();
+        if (Number(sesion.empleado?.id) === Number(empleadoId)) {
+          sesion.actualizarEmpleadoSesion({
+            modulos_visibles_list: modulos,
+            modulos_visibles: modulos,
+          });
+        }
 
         await get().cargarFicha(
           empleadoId
