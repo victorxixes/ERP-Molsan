@@ -5209,12 +5209,6 @@ const cuantiaFincasParaEnvio =
                           pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" "),
                         }));
                         setMostrarFormularioGasto(true);
-                      }}..g,
-                          nif_notario: g.nif_notario || expediente?.nif_notario || expediente?.notario_nif || "",
-                          nombre_notario: g.nombre_notario || expediente?.notario || expediente?.nombre_notario || "",
-                          pagador: g.pagador || [expediente?.facturacion_nombre, expediente?.facturacion_apellidos].filter(Boolean).join(" "),
-                        }));
-                        setMostrarFormularioGasto(true);
                       }}
                       formularioPago={mostrarFormularioGasto && origenFormularioGasto === "pagar" ? (
                           <div className="mt-4 rounded-2xl border border-indigo-200 bg-indigo-50/40 p-3 sm:p-4">
