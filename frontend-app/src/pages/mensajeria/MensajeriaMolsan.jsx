@@ -18,9 +18,9 @@ const initialFactura = { proveedor: "", numero: "", fecha_emision: "", fecha_ven
 const clean = (obj) => Object.fromEntries(Object.entries(obj).map(([k,v]) => [k, v === "" ? null : v]));
 const money = (v) => v == null || v === "" ? "—" : new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v));
 
-export default function MensajeriaMolsan() {
+export default function MensajeriaMolsan({ vistaCatalogo = false }) {
   const empleado = useAuthStore((s) => s.empleado);
-  const [tab, setTab] = useState("solicitudes");
+  const [tab, setTab] = useState(vistaCatalogo ? "control" : "solicitudes");
   const [solicitudes, setSolicitudes] = useState([]);
   const [servicios, setServicios] = useState([]);
   const [albaranes, setAlbaranes] = useState([]);
