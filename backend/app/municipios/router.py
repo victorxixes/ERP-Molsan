@@ -1,4 +1,5 @@
-from typing import List
+import re
+from typing import List, Optional
 
 from fastapi import (
     APIRouter,
@@ -11,7 +12,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
-from backend.app.municipios.models import Municipio
+from backend.app.municipios.models import Municipio, MunicipioCodigoPostal
 from backend.app.Utilidades.importadores.municipios_importer import (
     importar_excel_municipios,
 )
@@ -52,6 +53,10 @@ class MunicipioBase(BaseModel):
         max_length=200,
     )
 
+    # Optional para que clientes antiguos no borren los CP al editar.
+    codigos_postales: Optional[List[str]] = None
+    codigo_postal_principal: Optional[str] = None
+
 
 class MunicipioCreate(MunicipioBase):
     pass
@@ -65,6 +70,8 @@ class MunicipioResponse(MunicipioBase):
 
     id: int
     activo: bool
+    codigos_postales: List[str] = Field(default_factory=list)
+    codigo_postal_principal: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -83,6 +90,57 @@ def limpiar_texto(valor: str) -> str:
     return " ".join(
         str(valor).strip().split()
     )
+
+
+def validar_codigos_postales(valores, principal=None):
+    """Normaliza códigos postales sin convertirlos a número."""
+    codigos = []
+    for valor in valores or []:
+        cp = str(valor).strip()
+        if not re.fullmatch(r"\\d{5}", cp):
+            raise HTTPException(
+                status_code=400,
+                detail=f"El código postal '{cp}' debe contener exactamente 5 dígitos.",
+            )
+        if cp not in codigos:
+            codigos.append(cp)
+    cp_principal = str(principal).strip() if principal else (codigos[0] if codigos else None)
+    if cp_principal and cp_principal not in codigos:
+        raise HTTPException(
+            status_code=400,
+            detail="El código postal principal debe estar incluido en la lista de códigos postales.",
+        )
+    return codigos, cp_principal
+
+
+def sincronizar_codigos_postales(municipio, valores, principal=None):
+    codigos, cp_principal = validar_codigos_postales(valores, principal)
+    existentes = {registro.codigo_postal: registro for registro in municipio.codigos_postales}
+    for registro in list(municipio.codigos_postales):
+        if registro.codigo_postal not in codigos:
+            municipio.codigos_postales.remove(registro)
+    for cp in codigos:
+        registro = existentes.get(cp)
+        if registro is None:
+            registro = MunicipioCodigoPostal(codigo_postal=cp, principal=(cp == cp_principal))
+            municipio.codigos_postales.append(registro)
+        else:
+            registro.principal = cp == cp_principal
+    if not codigos:
+        municipio.codigos_postales.clear()
+
+
+def serializar_municipio(municipio):
+    codigos = sorted(municipio.codigos_postales, key=lambda item: (not item.principal, item.codigo_postal))
+    return {
+        "id": municipio.id,
+        "ccaa": municipio.ccaa,
+        "provincia": municipio.provincia,
+        "municipio": municipio.municipio,
+        "activo": municipio.activo,
+        "codigos_postales": [item.codigo_postal for item in codigos],
+        "codigo_postal_principal": next((item.codigo_postal for item in codigos if item.principal), None),
+    }
 
 
 # ============================================================
@@ -116,7 +174,7 @@ def listar_municipios(
             "ccaa": municipio.ccaa,
             "provincia": municipio.provincia,
             "municipio": municipio.municipio,
-            "activo": municipio.activo,
+            **serializar_municipio(municipio),
         }
         for municipio in municipios
     ]
@@ -216,7 +274,7 @@ def crear_municipio(
                     ),
                 )
 
-            return existente
+            return serializar_municipio(existente)
 
         raise HTTPException(
             status_code=409,
@@ -243,6 +301,9 @@ def crear_municipio(
         db.add(
             nuevo
         )
+        db.flush()
+        if datos.codigos_postales is not None:
+            sincronizar_codigos_postales(nuevo, datos.codigos_postales, datos.codigo_postal_principal)
 
         db.commit()
 
@@ -261,7 +322,7 @@ def crear_municipio(
             ),
         )
 
-    return nuevo
+    return serializar_municipio(nuevo)
 
 
 # ============================================================
@@ -458,6 +519,13 @@ def actualizar_municipio(
     municipio_actual.provincia = provincia
     municipio_actual.municipio = municipio_nombre
     municipio_actual.activo = True
+    # Los clientes antiguos omiten estos campos; en ese caso se conservan los CP existentes.
+    if datos.codigos_postales is not None:
+        sincronizar_codigos_postales(
+            municipio_actual,
+            datos.codigos_postales,
+            datos.codigo_postal_principal,
+        )
 
     try:
 
@@ -478,7 +546,7 @@ def actualizar_municipio(
             ),
         )
 
-    return municipio_actual
+    return serializar_municipio(municipio_actual)
 
 
 # ============================================================
