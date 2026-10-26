@@ -232,6 +232,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
   const [entidadesBancarias, setEntidadesBancarias] = useState([]);
   const [catalogoHonorarios, setCatalogoHonorarios] = useState([]);
   const [catalogoMunicipios, setCatalogoMunicipios] = useState([]);
+  const [catalogoOficinas, setCatalogoOficinas] = useState([]);
   const [catalogoRegistros, setCatalogoRegistros] = useState([]);
   const [tiposCarga, setTiposCarga] = useState([]);
   const [conceptosImportes, setConceptosImportes] = useState([]);
@@ -290,6 +291,27 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
 
   const cambiarCliente = (campo, valor) => setForm((f) => ({ ...f, cliente: { ...f.cliente, [campo]: valor } }));
   const cambiarOficina = (campo, valor) => setForm((f) => ({ ...f, oficina: { ...f.oficina, [campo]: valor } }));
+  const buscarOficinas = (valor) => {
+    cambiarOficina("numero", valor);
+    if (!String(valor || "").trim()) { setCatalogoOficinas([]); return; }
+    axios.get("/oficinas-catalogo", { params: { q: String(valor).trim(), limit: 50 } })
+      .then((r) => setCatalogoOficinas(Array.isArray(r.data?.items) ? r.data.items : []))
+      .catch(() => setCatalogoOficinas([]));
+  };
+  const seleccionarOficina = (oficina) => setForm((f) => ({
+    ...f,
+    oficina: {
+      ...f.oficina,
+      numero: oficina.oficina || "",
+      nombre: oficina.nombre || "",
+      direccion: oficina.direccion || "",
+      poblacion: oficina.poblacion || "",
+      cp: oficina.cod_postal || "",
+      provincia: oficina.provincia || "",
+      dan: oficina.dan || "",
+      dt: oficina.dt || "",
+    },
+  }));
   const importeHipotecaProvincia = (provincia) => {
     const concepto = conceptosImportes.find((x) => x.codigo === "impuestos" && x.activo !== false);
     const importes = concepto?.reglas?.importes_hipoteca_provincia || {};
@@ -390,7 +412,12 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     try {
       const r = await axios.get(`/expedientes/provisiones-independientes/${form.id}/documento`, { responseType: "blob" });
       const url = URL.createObjectURL(new Blob([r.data], { type: "application/pdf" }));
-      window.open(url, "_blank", "noopener,noreferrer");
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = String(form.numero || ("provision-" + form.id)) + ".pdf";
+      document.body.appendChild(enlace);
+      enlace.click();
+      enlace.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60000);
     } catch (e) { setError(e.response?.data?.detail || "No se pudo generar el PDF."); }
   };
@@ -434,8 +461,15 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
       </Seccion>
 
       <Seccion titulo="2. Datos de la oficina de origen" detalle="Oficina que solicita o tramita la provisión.">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Campo titulo="Número de oficina" valor={form.oficina.numero} onChange={(v) => cambiarOficina("numero", v)} />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <AutocompleteCatalogo titulo="Número de oficina" valor={form.oficina.numero} opciones={catalogoOficinas} etiqueta={(o) => o.oficina} detalle={(o) => o.nombre} placeholder="Introduce el número de oficina…" onChange={buscarOficinas} onSelect={seleccionarOficina} />
+          <Campo titulo="Nombre de la oficina" valor={form.oficina.nombre || ""} onChange={(v) => cambiarOficina("nombre", v)} disabled />
+          <Campo titulo="Dirección" valor={form.oficina.direccion || ""} onChange={(v) => cambiarOficina("direccion", v)} disabled />
+          <Campo titulo="Población" valor={form.oficina.poblacion || ""} onChange={(v) => cambiarOficina("poblacion", v)} disabled />
+          <Campo titulo="Código postal" valor={form.oficina.cp || ""} onChange={(v) => cambiarOficina("cp", v)} disabled />
+          <Campo titulo="Provincia" valor={form.oficina.provincia || ""} onChange={(v) => cambiarOficina("provincia", v)} disabled />
+          <Campo titulo="DAN" valor={form.oficina.dan || ""} onChange={(v) => cambiarOficina("dan", v)} disabled />
+          <Campo titulo="DT" valor={form.oficina.dt || ""} onChange={(v) => cambiarOficina("dt", v)} disabled />
           <Campo titulo="Contacto" valor={form.oficina.contacto} onChange={(v) => cambiarOficina("contacto", v)} />
           <Campo titulo="Email" tipo="email" valor={form.oficina.email} onChange={(v) => cambiarOficina("email", v)} />
         </div>
