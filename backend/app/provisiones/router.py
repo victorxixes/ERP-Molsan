@@ -31,6 +31,7 @@ from backend.app.provisiones.models import (
     ProvisionOperacionFinca,
     TarifaProvision,
     ProvisionIndependiente,
+    ConceptoImporteProvision,
 )
 
 router = APIRouter(
@@ -88,6 +89,9 @@ class OperacionProvisionInput(BaseModel):
     suplidos: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
     gastos_registro: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
     otros_gastos: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
+    notaria: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
+    impuestos: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
+    ajustes_motivo: Optional[str] = Field(None, max_length=1000)
     condonar_honorarios: bool = False
     importe_manual: Optional[Decimal] = Field(None, ge=0, max_digits=14, decimal_places=2)
     observaciones: Optional[str] = None
@@ -207,6 +211,13 @@ def _operacion_dict(db: Session, item: ProvisionOperacion) -> dict:
         "suplidos": float(item.suplidos or 0),
         "gastos_registro": float(item.gastos_registro or 0),
         "otros_gastos": float(item.otros_gastos or 0),
+        "notaria": float(getattr(item, "notaria", 0) or 0),
+        "impuestos": float(getattr(item, "impuestos", 0) or 0),
+        "gastos_registro_base": float(getattr(item, "gastos_registro_base", item.gastos_registro) or 0),
+        "suplidos_base": float(getattr(item, "suplidos_base", item.suplidos) or 0),
+        "otros_gastos_base": float(getattr(item, "otros_gastos_base", item.otros_gastos) or 0),
+        "ajustes_motivo": getattr(item, "ajustes_motivo", None),
+        "ajustes_auditoria": getattr(item, "ajustes_auditoria", []) or [],
         "condonar_honorarios": bool(item.condonar_honorarios),
         "importe_manual": float(item.importe_manual) if item.importe_manual is not None else None,
         "total": float(item.total or 0),
@@ -258,7 +269,7 @@ def _comprobar_tarifas_sin_solapamiento(db: Session, data: TarifaInput, omit_id:
             raise HTTPException(status_code=409, detail=f"El tramo se solapa con la tarifa activa #{tarifa.id} de {tarifa.entidad}. Corrige los límites para evitar tarifas ambiguas.")
 
 
-def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionProvisionInput) -> ProvisionOperacion:
+def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionProvisionInput, usuario=None) -> ProvisionOperacion:
     entidad = datos.entidad.strip()
     capital = _dinero(datos.capital)
     tarifa = None
@@ -282,10 +293,13 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
 
     if tarifa:
         honorarios_base = _dinero(tarifa.honorarios)
-        honorarios = Decimal("0.00") if datos.condonar_honorarios else honorarios_base
-        suplidos = _dinero(tarifa.suplidos)
-        gastos_registro = _dinero(tarifa.gastos_registro)
-        otros_gastos = _dinero(tarifa.otros_gastos)
+        # Solo se admiten importes distintos a la tarifa cuando el usuario
+        # deja constancia expresa del motivo del ajuste.
+        con_ajuste = bool((datos.ajustes_motivo or "").strip())
+        honorarios = Decimal("0.00") if datos.condonar_honorarios else (_dinero(datos.honorarios) if con_ajuste else honorarios_base)
+        suplidos = _dinero(datos.suplidos) if con_ajuste else _dinero(tarifa.suplidos)
+        gastos_registro = _dinero(datos.gastos_registro) if con_ajuste else _dinero(tarifa.gastos_registro)
+        otros_gastos = _dinero(datos.otros_gastos) if con_ajuste else _dinero(tarifa.otros_gastos)
         tarifa_id = tarifa.id
     else:
         honorarios_base = _dinero(datos.honorarios_base if datos.honorarios_base else datos.honorarios)
@@ -295,8 +309,44 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
         otros_gastos = _dinero(datos.otros_gastos)
         tarifa_id = None
 
+    # Los importes configurados son una referencia inicial para operaciones nuevas.
+    # No se recalculan operaciones históricas cuando cambia el catálogo general.
+    def importe_configurado(codigo: str) -> Decimal:
+        item = db.query(ConceptoImporteProvision).filter(
+            ConceptoImporteProvision.codigo == codigo,
+            ConceptoImporteProvision.activo.is_(True),
+        ).first()
+        return _dinero(item.importe_previsto) if item and item.modo == "previsto" and item.importe_previsto is not None else Decimal("0.00")
+
+    notaria_base = importe_configurado("notaria")
+    impuestos_base = importe_configurado("impuestos")
+    notaria = _dinero(datos.notaria) if datos.notaria else notaria_base
+    impuestos = _dinero(datos.impuestos) if datos.impuestos else impuestos_base
     importe_manual = _dinero(datos.importe_manual) if datos.importe_manual is not None else None
-    total = importe_manual if importe_manual is not None else (honorarios + suplidos + gastos_registro + otros_gastos).quantize(Decimal("0.01"))
+    total = importe_manual if importe_manual is not None else (honorarios + suplidos + gastos_registro + otros_gastos + notaria + impuestos).quantize(Decimal("0.01"))
+    auditoria = []
+    for codigo, base, efectivo in (
+        ("honorarios", honorarios_base, honorarios),
+        ("notaria", notaria_base, notaria),
+        ("registro", _dinero(tarifa.gastos_registro) if tarifa else _dinero(datos.gastos_registro), gastos_registro),
+        ("impuestos", impuestos_base, impuestos),
+        ("suplidos", _dinero(tarifa.suplidos) if tarifa else _dinero(datos.suplidos), suplidos),
+        ("otros_gastos", _dinero(tarifa.otros_gastos) if tarifa else _dinero(datos.otros_gastos), otros_gastos),
+    ):
+        if codigo == "honorarios" and datos.condonar_honorarios:
+            continue
+        if base != efectivo:
+            auditoria.append({
+                "concepto": codigo,
+                "importe_base": str(base),
+                "importe_efectivo": str(efectivo),
+                "diferencia": str((efectivo-base).quantize(Decimal("0.01"))),
+                "fecha": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
+                "usuario_id": getattr(usuario, "id", None) if not isinstance(usuario, dict) else usuario.get("id"),
+                "motivo": (datos.ajustes_motivo or "").strip(),
+            })
+    if auditoria and not (datos.ajustes_motivo or "").strip():
+        raise HTTPException(status_code=422, detail="Indica el motivo de los ajustes manuales de la provisión.")
     operacion = ProvisionOperacion(
         provision_id=provision.id,
         entidad=entidad,
@@ -309,6 +359,13 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
         suplidos=suplidos,
         gastos_registro=gastos_registro,
         otros_gastos=otros_gastos,
+        notaria=notaria,
+        impuestos=impuestos,
+        gastos_registro_base=_dinero(tarifa.gastos_registro) if tarifa else _dinero(datos.gastos_registro),
+        suplidos_base=_dinero(tarifa.suplidos) if tarifa else _dinero(datos.suplidos),
+        otros_gastos_base=_dinero(tarifa.otros_gastos) if tarifa else _dinero(datos.otros_gastos),
+        ajustes_motivo=(datos.ajustes_motivo or "").strip() or None,
+        ajustes_auditoria=auditoria,
         condonar_honorarios=bool(datos.condonar_honorarios),
         importe_manual=importe_manual,
         total=total,
@@ -339,7 +396,7 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
     return operacion
 
 
-def _reemplazar_operaciones(db: Session, provision: ProvisionFondo, datos: ProvisionInput) -> None:
+def _reemplazar_operaciones(db: Session, provision: ProvisionFondo, datos: ProvisionInput, usuario=None) -> None:
     anteriores = db.query(ProvisionOperacion).filter(ProvisionOperacion.provision_id == provision.id).all()
     for anterior in anteriores:
         db.query(ProvisionOperacionFinca).filter(ProvisionOperacionFinca.operacion_id == anterior.id).delete(synchronize_session=False)
@@ -347,9 +404,85 @@ def _reemplazar_operaciones(db: Session, provision: ProvisionFondo, datos: Provi
     db.flush()
     total = Decimal("0.00")
     for operacion_data in datos.operaciones:
-        op = _crear_operacion(db, provision, operacion_data)
+        op = _crear_operacion(db, provision, operacion_data, usuario)
         total += Decimal(str(op.total or 0))
     provision.importe_total = total.quantize(Decimal("0.01"))
+
+
+
+class ConceptoImporteProvisionInput(BaseModel):
+    modo: Literal["previsto", "calculado"] = "previsto"
+    importe_previsto: Optional[Decimal] = Field(None, ge=0, max_digits=14, decimal_places=2)
+    descripcion: Optional[str] = Field(None, max_length=1000)
+    activo: bool = True
+
+    @root_validator
+    def validar_modo(cls, values):
+        if values.get("modo") == "previsto" and values.get("importe_previsto") is None:
+            raise ValueError("Indica el importe previsto para este concepto.")
+        if values.get("modo") == "calculado":
+            values["importe_previsto"] = None
+        return values
+
+
+_CONCEPTOS_PROVISION_DEFAULT = [
+    ("notaria", "Notaría", "previsto", "Importe previsto de los gastos notariales."),
+    ("registro", "Registro de la Propiedad", "previsto", "Importe previsto de los gastos registrales."),
+    ("gestion", "Honorarios de gestoría", "catalogo", "Importe procedente del catálogo central de Honorarios Gestoría; no se duplica aquí."),
+    ("impuestos", "Impuestos", "calculado", "Importe calculado o previsto cuando corresponda. El cálculo fiscal debe definirse según la operación."),
+]
+
+
+def _concepto_importe_dict(item: ConceptoImporteProvision) -> dict:
+    return {
+        "id": item.id,
+        "codigo": item.codigo,
+        "nombre": item.nombre,
+        "modo": item.modo,
+        "importe_previsto": float(item.importe_previsto) if item.importe_previsto is not None else None,
+        "descripcion": item.descripcion or "",
+        "activo": bool(item.activo),
+        "solo_catalogo": item.codigo == "gestion",
+    }
+
+
+@router.get("/provisiones/conceptos-importes", summary="Consultar conceptos económicos de Provisiones")
+def listar_conceptos_importes_provisiones(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "expedientes", "ver")
+    try:
+        existentes = {x.codigo: x for x in db.query(ConceptoImporteProvision).all()}
+        for codigo, nombre, modo, descripcion in _CONCEPTOS_PROVISION_DEFAULT:
+            if codigo not in existentes:
+                item = ConceptoImporteProvision(codigo=codigo, nombre=nombre, modo=modo, descripcion=descripcion, activo=True)
+                db.add(item)
+        db.commit()
+        items = db.query(ConceptoImporteProvision).order_by(ConceptoImporteProvision.id).all()
+        return {"items": [_concepto_importe_dict(x) for x in items]}
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudo cargar el catálogo de conceptos: {str(exc)[:250]}") from exc
+
+
+@router.put("/provisiones/conceptos-importes/{codigo}", summary="Actualizar importe configurable de un concepto")
+def actualizar_concepto_importe_provision(codigo: str, datos: ConceptoImporteProvisionInput, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "expedientes", "editar")
+    require_perm_modulo(usuario, "seguridad", "editar")
+    item = db.query(ConceptoImporteProvision).filter(ConceptoImporteProvision.codigo == codigo).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Concepto de provisiones no encontrado.")
+    if codigo == "gestion":
+        raise HTTPException(status_code=422, detail="Los honorarios de gestoría se gestionan exclusivamente desde el catálogo central de Honorarios Gestoría.")
+    item.modo = datos.modo
+    item.importe_previsto = datos.importe_previsto
+    item.descripcion = (datos.descripcion or "").strip() or None
+    item.activo = datos.activo
+    try:
+        db.commit()
+        db.refresh(item)
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudo actualizar el concepto: {str(exc)[:250]}") from exc
+    return _concepto_importe_dict(item)
 
 
 @router.get("/provisiones/tarifas/catalogo-registros", summary="Catálogo de Registros de la Propiedad para Provisiones")
@@ -456,7 +589,7 @@ def crear_provision(id_expediente: str, datos: ProvisionInput, db: Session = Dep
     db.add(item)
     try:
         db.flush()
-        _reemplazar_operaciones(db, item, datos)
+        _reemplazar_operaciones(db, item, datos, usuario)
         db.commit()
         db.refresh(item)
     except HTTPException:

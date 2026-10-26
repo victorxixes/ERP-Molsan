@@ -988,6 +988,23 @@ def inicializar_tablas_auxiliares():
         HonorarioGestoria.__table__.create(bind=engine, checkfirst=True)
         print("[HONORARIOS GESTORIA] Catálogo disponible.", flush=True)
 
+        # Catálogo configurable de importes estimativos de Provisiones.
+        from backend.app.provisiones.models import ConceptoImporteProvision
+        ConceptoImporteProvision.__table__.create(bind=engine, checkfirst=True)
+        # Migración compatible con instalaciones que ya tienen operaciones guardadas.
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS notaria NUMERIC(14,2) NOT NULL DEFAULT 0"))
+            conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS impuestos NUMERIC(14,2) NOT NULL DEFAULT 0"))
+            conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS gastos_registro_base NUMERIC(14,2) NOT NULL DEFAULT 0"))
+            conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS suplidos_base NUMERIC(14,2) NOT NULL DEFAULT 0"))
+            conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS otros_gastos_base NUMERIC(14,2) NOT NULL DEFAULT 0"))
+            conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS ajustes_motivo TEXT"))
+            conn.execute(text("ALTER TABLE provisiones_operaciones ADD COLUMN IF NOT EXISTS ajustes_auditoria JSON NOT NULL DEFAULT '[]'"))
+            conn.execute(text("UPDATE provisiones_operaciones SET gastos_registro_base = gastos_registro WHERE gastos_registro_base = 0"))
+            conn.execute(text("UPDATE provisiones_operaciones SET suplidos_base = suplidos WHERE suplidos_base = 0"))
+            conn.execute(text("UPDATE provisiones_operaciones SET otros_gastos_base = otros_gastos WHERE otros_gastos_base = 0"))
+        print("[PROVISIONES] Tabla de conceptos e importes disponible; migración de operaciones comprobada.", flush=True)
+
         ExpedienteAccion.__table__.create(
             bind=engine,
             checkfirst=True,
