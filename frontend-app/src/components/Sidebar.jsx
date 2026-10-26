@@ -964,12 +964,12 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   );
   const [menuSidebarAbierto, setMenuSidebarAbierto] = useState(null);
   const [menuSidebarPosicion, setMenuSidebarPosicion] = useState(null);
-  const menuSidebarBotonRef = useRef(null);
+  const menuSidebarBotonesRef = useRef({});
   const menuSidebarMenuRef = useRef(null);
 
   useEffect(() => {
     const cerrarFuera = (event) => {
-      if (!menuSidebarBotonRef.current?.contains(event.target) &&
+      if (!menuSidebarBotonesRef.current[menuSidebarAbierto]?.contains(event.target) &&
           !menuSidebarMenuRef.current?.contains(event.target)) setMenuSidebarAbierto(null);
     };
     document.addEventListener("mousedown", cerrarFuera);
@@ -982,7 +982,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       return undefined;
     }
     const actualizarPosicion = () => {
-      const boton = menuSidebarBotonRef.current?.querySelector("button");
+      const boton = menuSidebarBotonesRef.current[menuSidebarAbierto]?.querySelector("button");
       if (!boton) return;
       const rect = boton.getBoundingClientRect();
       const ancho = Math.min(260, window.innerWidth - 24);
@@ -1163,7 +1163,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
                   const esMenu = item.menu === "espacios" || item.menu === "tecnicos";
                   const abierto = esMenu && menuSidebarAbierto === item.menu;
                   return (
-                    <div key={item.key} className="relative flex-shrink-0" ref={abierto ? menuSidebarBotonRef : undefined}>
+                    <div key={item.key} className="relative flex-shrink-0" ref={(elemento) => { if (esMenu) menuSidebarBotonesRef.current[item.menu] = elemento; }}>
                       <button type="button"
                         onClick={() => esMenu ? setMenuSidebarAbierto((actual) => actual === item.menu ? null : item.menu) : onNavigationItemClick?.(item.label)}
                         aria-haspopup={esMenu ? "menu" : undefined} aria-expanded={esMenu ? abierto : undefined}
@@ -1188,7 +1188,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
             {!navigationItems && crearBotonesDropdown().map((item) => {
               const items = item.menu === "espacios" ? espaciosTrabajoDropdown : modulosTecnicosDropdown;
               const abierto = menuSidebarAbierto === item.menu;
-              return <div key={item.key} className="relative flex-shrink-0" ref={abierto ? menuSidebarBotonRef : undefined}>
+              return <div key={item.key} className="relative flex-shrink-0" ref={(elemento) => { menuSidebarBotonesRef.current[item.menu] = elemento; }}>
                 <button type="button" onClick={() => setMenuSidebarAbierto((actual) => actual === item.menu ? null : item.menu)} aria-haspopup="menu" aria-expanded={abierto}
                   className={`flex items-center gap-2 px-3 py-2 rounded-xl whitespace-nowrap text-sm font-medium transition-all duration-200 border ${abierto ? "bg-transparent text-[var(--erp-text)] border-[var(--erp-primary)]" : "bg-white text-[var(--erp-text)] border-[var(--erp-border)] hover:bg-[var(--erp-primary-soft)] hover:text-[var(--erp-primary)] hover:border-[var(--erp-primary)]"}`}>
                   <NavIcon name={item.icon} /><span>{item.label}</span><ChevronIcon open={abierto} />
