@@ -176,7 +176,11 @@ def contexto_traspasos_saldo(
             .order_by(Expediente.id_expediente.asc())
             .all()
         )
-    _visible(db, usuario, relacionados or [actual])
+    ids_visibles = ids_expedientes_visibles(db, usuario)
+    if ids_visibles is not None:
+        relacionados = [e for e in relacionados if e.id in ids_visibles]
+    elif not relacionados:
+        relacionados = [actual]
 
     candidatos = []
     for exp in relacionados:
