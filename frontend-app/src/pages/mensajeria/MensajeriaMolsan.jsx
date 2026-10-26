@@ -66,7 +66,8 @@ export default function MensajeriaMolsan({ vistaCatalogo = false }) {
     try {
       const type = modal;
       const endpoint = type === "solicitud" ? "solicitudes" : type === "servicio" ? "servicios" : type === "albaran" ? "albaranes" : "facturas";
-      const payload = { ...form };\n      Object.keys(payload).forEach((k) => { if (payload[k] === "") payload[k] = null; });
+      const payload = { ...form };
+      Object.keys(payload).forEach((k) => { if (payload[k] === "") payload[k] = null; });
       ["servicio_id","solicitud_id","solicitante_id"].forEach((k) => { if (payload[k] === "") payload[k] = null; else if (payload[k] != null) payload[k] = Number(payload[k]); });
       ["tarifa_base","suplemento","porcentaje_impuesto","coste_previsto","importe","base_imponible","importe_impuesto","total"].forEach((k) => { if (payload[k] === "") payload[k] = null; });
       const url = editing ? `/mensajeria/${endpoint}/${editing}` : `/mensajeria/${endpoint}`;
