@@ -557,7 +557,7 @@ def obtener_firma_correspondencia(
         departamento = db.execute(text("SELECT nombre FROM departamentos WHERE id = :id"), {"id": usuario.departamento_id}).scalar() or ""
     if getattr(usuario, "cargo_id", None):
         cargo = db.execute(text("SELECT nombre FROM cargos WHERE id = :id"), {"id": usuario.cargo_id}).scalar() or ""
-    firma_personal = "\\n".join(x for x in [
+    firma_personal = "\n".join(x for x in [
         nombre_empleado,
         " · ".join(x for x in [departamento, cargo] if x),
     ] if x)
