@@ -81,9 +81,16 @@ const MODULOS_ERP = [
 
   {
     key: "mensajeria",
-    label: "Mensajería Molsan",
+    label: "Mensajería",
     route: "/mensajeria",
     icon: "truck",
+  },
+
+  {
+    key: "mensajeria-gestion",
+    label: "Mensajería Gestión",
+    route: "/mensajeria-gestion",
+    icon: "package",
   },
 
   {
