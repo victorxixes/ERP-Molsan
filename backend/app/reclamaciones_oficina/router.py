@@ -145,7 +145,7 @@ def enviar_reclamacion(
             VALUES (1, '') ON CONFLICT (id) DO NOTHING
         """))
         config_firma = db.execute(text("""
-            SELECT firma_pie, factura_nombre, factura_tipo, factura_contenido
+            SELECT firma_pie
             FROM correspondencia_configuracion WHERE id = 1
         """)).mappings().first()
         departamento = db.execute(text("SELECT nombre FROM departamentos WHERE id = :id"), {"id": getattr(usuario, "departamento_id", None)}).scalar() if getattr(usuario, "departamento_id", None) else ""
@@ -198,14 +198,8 @@ def enviar_reclamacion(
     if cc:
         mensaje["Cc"] = cc
     mensaje.set_content(cuerpo)
-    # La plantilla de factura solo se adjunta a correos identificados explícitamente como honorarios/factura.
-    etiqueta_email = " ".join([_texto(datos.categoria), _texto(datos.plantilla_nombre)]).lower()
-    if config_firma and config_firma.get("factura_contenido") and any(p in etiqueta_email for p in ("honorario", "factura de honorarios")):
-        nombre_archivo = (config_firma.get("factura_nombre") or "plantilla-factura").replace('"', "")
-        tipo_archivo = (config_firma.get("factura_tipo") or "application/octet-stream").split("/", 1)
-        maintype = tipo_archivo[0] if len(tipo_archivo) == 2 else "application"
-        subtype = tipo_archivo[1] if len(tipo_archivo) == 2 else "octet-stream"
-        mensaje.add_attachment(bytes(config_firma["factura_contenido"]), maintype=maintype, subtype=subtype, filename=nombre_archivo)
+    # La plantilla de factura de honorarios nunca se adjunta a correos.
+    # Se gestiona exclusivamente desde el flujo «Factura de honorario» de FichaExpediente.
 
     try:
         with smtplib.SMTP(host, port, timeout=25) as servidor:
