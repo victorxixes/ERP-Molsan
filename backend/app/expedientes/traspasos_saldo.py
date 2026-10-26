@@ -122,7 +122,10 @@ def _serializar_operacion(db, fila):
         "importe_receptor_anterior": fila["importe_receptor_anterior"],
         "importe_receptor_actualizado": fila["importe_receptor_actualizado"],
         "email_destinatario": fila["email_destinatario"],
+        "email_asunto": fila["email_asunto"],
+        "email_cuerpo": fila["email_cuerpo"],
         "email_estado": fila["email_estado"],
+        "verificado_por": fila["verificado_por"],
         "creado_en": fila["creado_en"].isoformat() if fila["creado_en"] else None,
         "verificado_en": fila["verificado_en"].isoformat() if fila["verificado_en"] else None,
         "email_enviado_en": fila["email_enviado_en"].isoformat() if fila["email_enviado_en"] else None,
@@ -151,6 +154,12 @@ class VerificarTraspaso(BaseModel):
 
 class CancelarTraspaso(BaseModel):
     motivo: str = Field(min_length=3, max_length=1000)
+
+
+class ActualizarEmailTraspaso(BaseModel):
+    destinatario: str = Field(min_length=3, max_length=320)
+    asunto: str = Field(min_length=3, max_length=1000)
+    cuerpo: str = Field(min_length=5)
 
 
 @router.get("/{id_expediente}/traspasos-saldo/contexto")
@@ -320,7 +329,19 @@ def verificar_traspaso_saldo(
     receptor = db.query(Expediente).filter(Expediente.id == fila["receptor_id"]).with_for_update().first()
     if not receptor:
         raise HTTPException(status_code=404, detail="No se encuentra el expediente receptor.")
-    _visible(db, usuario, [receptor])
+    origen_rows = db.execute(text("""
+        SELECT origen_id FROM public.expediente_traspasos_saldo_origenes
+        WHERE traspaso_id=:id AND activo=TRUE
+    """), {"id": traspaso_id}).mappings().all()
+    origenes = db.query(Expediente).filter(Expediente.id.in_([r["origen_id"] for r in origen_rows])).with_for_update().all()
+    if not origenes or len(origenes) != len(origen_rows):
+        raise HTTPException(status_code=409, detail="Falta un expediente de origen en el traspaso.")
+    _visible(db, usuario, [receptor, *origenes])
+    if any(not _es_cancelacion_con_provision(e) or e.liquidado_sin_tramitar for e in origenes):
+        raise HTTPException(status_code=409, detail="Algún expediente de origen ya no cumple los requisitos o ya está liquidado.")
+    vinculo = str(getattr(receptor, "vinccanc", "") or "").strip()
+    if not vinculo or any(str(getattr(e, "vinccanc", "") or "").strip() != vinculo for e in origenes):
+        raise HTTPException(status_code=409, detail="Los expedientes ya no comparten el mismo VINCCANC.")
     faltan = _firma_protocolo_ok(receptor)
     if faltan:
         raise HTTPException(status_code=409, detail="Traspaso bloqueado: al expediente receptor le falta " + " y ".join(faltan) + ".")
@@ -347,6 +368,36 @@ def verificar_traspaso_saldo(
     })
     db.commit()
     return {"ok": True, "estado": "pendiente_email", "importe_anterior": anterior, "importe_actualizado": receptor.importe, "mensaje": "Importe del receptor actualizado manualmente y verificación registrada. Falta enviar el email al cliente."}
+
+
+@router.put("/traspasos-saldo/{traspaso_id}/email")
+def actualizar_email_traspaso(
+    traspaso_id: int,
+    datos: ActualizarEmailTraspaso,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    _asegurar_tablas(db)
+    fila = db.execute(text("SELECT * FROM public.expediente_traspasos_saldo WHERE id=:id FOR UPDATE"), {"id": traspaso_id}).mappings().first()
+    if not fila:
+        raise HTTPException(status_code=404, detail="Traspaso no encontrado.")
+    if fila["estado"] != "pendiente_email":
+        raise HTTPException(status_code=409, detail="Solo se puede editar el email mientras el traspaso esté pendiente de comunicación.")
+    destinatario = datos.destinatario.strip()
+    if "@" not in destinatario:
+        raise HTTPException(status_code=400, detail="Introduce un email válido del cliente.")
+    receptor = db.query(Expediente).filter(Expediente.id == fila["receptor_id"]).first()
+    origen_rows = db.execute(text("SELECT origen_id FROM public.expediente_traspasos_saldo_origenes WHERE traspaso_id=:id AND activo=TRUE"), {"id": traspaso_id}).mappings().all()
+    origenes = db.query(Expediente).filter(Expediente.id.in_([r["origen_id"] for r in origen_rows])).all()
+    _visible(db, usuario, [e for e in [receptor, *origenes] if e])
+    db.execute(text("""
+        UPDATE public.expediente_traspasos_saldo
+        SET email_destinatario=:destinatario, email_asunto=:asunto, email_cuerpo=:cuerpo,
+            email_estado='pendiente'
+        WHERE id=:id
+    """), {"destinatario": destinatario, "asunto": datos.asunto.strip(), "cuerpo": datos.cuerpo.strip(), "id": traspaso_id})
+    db.commit()
+    return {"ok": True, "mensaje": "Datos del email actualizados.", "estado": "pendiente_email"}
 
 
 @router.post("/traspasos-saldo/{traspaso_id}/enviar-email")
