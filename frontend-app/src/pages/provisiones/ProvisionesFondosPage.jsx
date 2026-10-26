@@ -17,7 +17,7 @@ function Campo({ titulo, valor, onChange, tipo = "text", requerido = false, plac
 }
 
 function normalizarCatalogo(valor) {
-  return String(valor ?? "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim().replace(/\\s+/g, " ").toLocaleLowerCase("es");
+  return String(valor ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().replace(/\s+/g, " ").toLocaleLowerCase("es");
 }
 function AutocompleteCatalogo({ titulo, valor, opciones, etiqueta, detalle, onChange, onSelect, placeholder = "Escribe para buscar…", disabled = false }) {
   const [abierto, setAbierto] = useState(false);
