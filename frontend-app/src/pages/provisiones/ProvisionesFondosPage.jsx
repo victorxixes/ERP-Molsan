@@ -4,7 +4,7 @@ import "./ProvisionesFondosPage.css";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
 const dinero = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
-const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "Hipotecaria", adquisicion_vivienda_habitual: "", notaria: "0", ajd: "0", registro: "0", gestion: "0", total: "0" });
+const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "prestamo hipotecario", condicion_resolutoria: "no", adquisicion_vivienda_habitual: "", notaria: "0", ajd: "0", registro: "0", gestion: "0", total: "0" });
 const nuevoFormulario = () => ({ id: null, fecha: hoy(), cliente: { nombre: "", nif: "", direccion: "", cp: "", poblacion: "", provincia: "", telefono: "", email: "" }, oficina: { numero: "", contacto: "", email: "" }, garantias: [vaciaGarantia()], observaciones: "" });
 const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
 const label = "block text-xs font-semibold uppercase tracking-wide text-slate-500";
@@ -340,7 +340,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     }
 
     const tipoCargaNormalizado = normalizar(g.tipo_carga);
-    const esCondicionResolutoria = tipoCargaNormalizado.includes("condicion resolutoria");
+    const esCondicionResolutoria = tipoCargaNormalizado.includes("condicion resolutoria") || g.condicion_resolutoria === "si";
     const esHipoteca = tipoCargaNormalizado.includes("hipotec") || tipoCargaNormalizado.includes("prestamo hipotecario") || tipoCargaNormalizado.includes("préstamo hipotecario");
     const notaria = esHipoteca ? Number(tramo.notaria || 0) : 0;
     const registro = Number(tramo.registro || 0);
@@ -456,6 +456,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
               }) }))} />
               <AutocompleteCatalogo titulo="Provincia" valor={g.provincia} opciones={[...new Set(catalogoMunicipios.map((m) => m.provincia).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))} etiqueta={(p) => p} placeholder="Busca una provincia…" onChange={(v) => cambiarGarantia(i, "provincia", v)} onSelect={(p) => cambiarGarantia(i, "provincia", p)} />
               <Selector titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} opciones={tiposCarga} requerido />
+              <Selector titulo="¿Es una condición resolutoria?" valor={g.condicion_resolutoria || (normalizarCatalogo(g.tipo_carga).includes("condicion resolutoria") ? "si" : "no")} onChange={(v) => cambiarGarantia(i, "condicion_resolutoria", v)} opciones={[{ nombre: "no" }, { nombre: "si" }]} requerido />
               {normalizarCatalogo(g.tipo_carga).includes("hipotec") && <label className={label}>¿La hipoteca se constituyó para adquirir la vivienda habitual?
                 <select className={input} value={g.adquisicion_vivienda_habitual ?? ""} onChange={(e) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
                   if (n !== i) return x;
@@ -467,7 +468,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
               </select>
               </label>}
             </div>
-            {g.tipo_carga === "Hipotecaria" && ["gipuzkoa", "alava", "bizkaia"].includes(String(g.provincia || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es")) && <div role="status" className="mb-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900">
+            {normalizarCatalogo(g.tipo_carga).includes("hipotec") && ["gipuzkoa", "alava", "bizkaia"].includes(String(g.provincia || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es")) && <div role="status" className="mb-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900">
               <strong>Regla territorial detectada: {g.provincia}.</strong>{" "}
               {g.adquisicion_vivienda_habitual === "" || g.adquisicion_vivienda_habitual == null
                 ? "Responde primero si la hipoteca se constituyó para adquirir la vivienda habitual."
@@ -479,7 +480,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
             </div>}
             {!normalizarCatalogo(g.tipo_carga).includes("hipotec") && <div role="note" className="mb-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900"><strong>Atención:</strong> en cargas administrativas, judiciales, bienes muebles u otras (por ejemplo, embargos) no se debe presupuestar gasto notarial. Añade en Observaciones una nota indicando la carga que debe cancelarse. El importe de Notaría queda a 0 €.</div>}
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-              <Campo titulo="Notaría (€)" tipo="number" valor={g.notaria} onChange={(v) => cambiarGarantia(i, "notaria", v)} disabled={g.tipo_carga !== "Hipotecaria"} />
+              <Campo titulo="Notaría (€)" tipo="number" valor={g.notaria} onChange={(v) => cambiarGarantia(i, "notaria", v)} disabled={!normalizarCatalogo(g.tipo_carga).includes("hipotec")} />
               <Campo titulo="AJD / impuestos (€)" tipo="number" valor={g.ajd} onChange={(v) => cambiarGarantia(i, "ajd", v)} />
               <Campo titulo="Registro (€)" tipo="number" valor={g.registro} onChange={(v) => cambiarGarantia(i, "registro", v)} />
               <Campo titulo="Gestión (€)" tipo="number" valor={g.gestion} onChange={(v) => cambiarGarantia(i, "gestion", v)} />
