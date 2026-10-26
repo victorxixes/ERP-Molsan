@@ -6,7 +6,7 @@ const hoy = () => new Date().toISOString().slice(0, 10);
 const dinero = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
 const TIPOS_CARGA = ["Hipotecaria", "Administrativa", "Judicial", "Bienes muebles", "Otras"];
 const TERRITORIOS = ["Península", "Canarias"];
-const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "Hipotecaria", adquisicion_vivienda_habitual: "", territorio: "Península", notaria: "0", ajd: "0", registro: "0", gestion: "0", otros_gastos: "0", total: "0" });
+const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "Hipotecaria", adquisicion_vivienda_habitual: "", territorio: "Península", notaria: "0", ajd: "0", registro: "0", gestion: "0", total: "0" });
 const nuevoFormulario = () => ({ id: null, fecha: hoy(), cliente: { nombre: "", nif: "", direccion: "", cp: "", poblacion: "", provincia: "", telefono: "", email: "" }, oficina: { numero: "", contacto: "", email: "" }, garantias: [vaciaGarantia()], observaciones: "" });
 const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
 const label = "block text-xs font-semibold uppercase tracking-wide text-slate-500";
@@ -301,7 +301,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     const cambios = { [campo]: valor };
     if (campo === "tipo_carga" && valor !== "Hipotecaria") {
       cambios.notaria = "0";
-      cambios.total = ["ajd", "registro", "gestion", "otros_gastos"].reduce((s, k) => s + Number(g[k] || 0), 0).toFixed(2);
+      cambios.total = ["ajd", "registro", "gestion"].reduce((s, k) => s + Number(g[k] || 0), 0).toFixed(2);
     }
     return { ...g, ...cambios };
   }) }));
@@ -343,10 +343,9 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
         Number(honorarioAplicable.base_imponible || 0) *
         (1 + (String(honorarioAplicable.tipo_impuesto || "IVA").toUpperCase() === "EXENTO" ? 0 : Number(honorarioAplicable.porcentaje_impuesto || 0)) / 100)
       ));
-      const otros = Number(t.otros_gastos || 0);
       const impuestos = Number(g.ajd || (conceptoImpuestos?.modo === "previsto" ? conceptoImpuestos.importe_previsto : 0) || 0);
       const nuevoTotal = notaria + impuestos + registro + gestion + otros;
-      setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, notaria: String(notaria), ajd: String(impuestos), registro: String(registro), gestion: String(gestion), otros_gastos: String(otros), total: nuevoTotal.toFixed(2) } : x) }));
+      setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, notaria: String(notaria), ajd: String(impuestos), registro: String(registro), gestion: String(gestion), total: nuevoTotal.toFixed(2) } : x) }));
       setAviso(`Tarifa aplicada. Honorarios de gestoría tomados del catálogo central: ${honorarioAplicable.nombre}.`);
       setError("");
     } catch (e) { setError(e.response?.data?.detail || "No hay tarifa activa para esa entidad y capital. Puedes introducir los importes manualmente."); }
@@ -358,8 +357,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
       const ajd = Number(g.ajd || 0);
       const registro = Number(g.registro || 0);
       const gestion = Number(g.gestion || 0);
-      const otros_gastos = Number(g.otros_gastos || 0);
-      return { ...g, capital: Number(g.capital || 0), notaria, ajd, registro, gestion, otros_gastos, total: notaria + ajd + registro + gestion + otros_gastos };
+      return { ...g, capital: Number(g.capital || 0), notaria, ajd, registro, gestion, total: notaria + ajd + registro + gestion };
     }), observaciones: form.observaciones };
     try {
       const r = form.id ? await axios.put(`/expedientes/provisiones-independientes/${form.id}`, payload) : await axios.post("/expedientes/provisiones-independientes", payload);
@@ -473,11 +471,10 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
               <Campo titulo="AJD / impuestos (€)" tipo="number" valor={g.ajd} onChange={(v) => cambiarGarantia(i, "ajd", v)} />
               <Campo titulo="Registro (€)" tipo="number" valor={g.registro} onChange={(v) => cambiarGarantia(i, "registro", v)} />
               <Campo titulo="Gestión (€)" tipo="number" valor={g.gestion} onChange={(v) => cambiarGarantia(i, "gestion", v)} />
-              <Campo titulo="Otros gastos (€)" tipo="number" valor={g.otros_gastos} onChange={(v) => cambiarGarantia(i, "otros_gastos", v)} />
             </div>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <button type="button" onClick={() => calcular(i)} className={`${boton} border border-blue-200 bg-white text-blue-800 hover:bg-blue-50`}>Calcular con tarifario</button>
-              <div className="text-right"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total de la garantía</p><p className="text-lg font-bold text-slate-900">{dinero(Number(g.total || 0) || ["notaria", "ajd", "registro", "gestion", "otros_gastos"].reduce((s, k) => s + Number(g[k] || 0), 0))}</p><button type="button" onClick={() => cambiarGarantia(i, "total", ["notaria", "ajd", "registro", "gestion", "otros_gastos"].reduce((s, k) => s + Number(g[k] || 0), 0).toFixed(2))} className="mt-1 text-xs font-semibold text-blue-700 underline">Actualizar total desde conceptos</button></div>
+              <div className="text-right"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total de la garantía</p><p className="text-lg font-bold text-slate-900">{dinero(Number(g.total || 0) || ["notaria", "ajd", "registro", "gestion"].reduce((s, k) => s + Number(g[k] || 0), 0))}</p><button type="button" onClick={() => cambiarGarantia(i, "total", ["notaria", "ajd", "registro", "gestion"].reduce((s, k) => s + Number(g[k] || 0), 0).toFixed(2))} className="mt-1 text-xs font-semibold text-blue-700 underline">Actualizar total desde conceptos</button></div>
             </div>
           </div>)}
           <button type="button" onClick={() => setForm((f) => ({ ...f, garantias: [...f.garantias, vaciaGarantia()] }))} className={`${boton} border border-dashed border-slate-300 bg-white text-slate-700 hover:bg-slate-50`}>＋ Añadir otra garantía / préstamo</button>
@@ -487,7 +484,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
       <Seccion titulo="4. Observaciones" ><textarea className={`${input} min-h-24 resize-y`} value={form.observaciones} onChange={(e) => setForm((f) => ({ ...f, observaciones: e.target.value }))} placeholder="Si se trata de un embargo u otra carga no hipotecaria, indica aquí qué carga debe cancelarse y cualquier detalle relevante. No se presupuestará gasto notarial para esas cargas." /></Seccion>
 
       <div className="sticky bottom-3 z-10 flex flex-col items-stretch justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg backdrop-blur sm:flex-row sm:items-center">
-        <div><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Importe total estimado</p><p className="text-2xl font-bold text-slate-950">{dinero(form.garantias.reduce((s, g) => s + (Number(g.total || 0) || ["notaria", "ajd", "registro", "gestion", "otros_gastos"].reduce((a, k) => a + Number(g[k] || 0), 0)), 0))}</p></div>
+        <div><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Importe total estimado</p><p className="text-2xl font-bold text-slate-950">{dinero(form.garantias.reduce((s, g) => s + (Number(g.total || 0) || ["notaria", "ajd", "registro", "gestion"].reduce((a, k) => a + Number(g[k] || 0), 0)), 0))}</p></div>
         <div className="flex flex-wrap gap-2"><button type="button" onClick={nueva} className={`${boton} border border-slate-300 text-slate-700 hover:bg-slate-50`}>Nueva / limpiar</button><button type="button" onClick={pdf} disabled={!form.id} className={`${boton} border border-blue-200 text-blue-800 hover:bg-blue-50`}>Generar PDF</button><button type="submit" disabled={guardando} className={`${boton} bg-slate-950 text-white hover:bg-slate-800`}>{guardando ? "Guardando…" : form.id ? "Guardar cambios" : "Guardar provisión"}</button></div>
       </div>
     </form>
