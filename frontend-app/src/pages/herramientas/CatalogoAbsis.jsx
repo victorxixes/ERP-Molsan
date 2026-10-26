@@ -6,6 +6,8 @@ const API_URL = `${API_BASE}/catalogos-absis`;
 
 const CATEGORIAS = [
   "Estados expedientes",
+  "ESTADO",
+  "ESTADOJUSTIFICANTE",
   "Producto GTG",
   "Actividad Actual",
   "Estado Actividad",
