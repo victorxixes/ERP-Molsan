@@ -4849,7 +4849,7 @@ const cuantiaFincasParaEnvio =
           </div>
 
           {/* Ficha y acciones en una sola línea, debajo de los bloques principales */}
-          <div className="mt-3 flex w-full min-w-0 items-center gap-2 overflow-x-auto rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2">
+          <div className="mt-3 flex w-full min-w-0 flex-wrap items-center gap-2 overflow-x-hidden rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2">
             <div className="flex shrink-0 items-center gap-2 pr-2">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-lg text-blue-600">📁</div>
               <div className="min-w-[150px]">
@@ -4871,17 +4871,18 @@ const cuantiaFincasParaEnvio =
                 )).map((manual) => ({ ...manual, _manual: true })),
               ];
               const primerosRelacionados = relacionadosVisibles.slice(0, 2);
-              return primerosRelacionados.length > 0 ? (
-                <div className="flex shrink-0 items-center gap-1.5 border-r border-slate-200 pr-2">
+              return relacionadosVisibles.length > 0 ? (
+                <div className="order-last flex basis-full min-w-0 items-center gap-1.5 border-t border-slate-200 pt-2">
+                  <span className="mr-1 shrink-0 text-[9px] font-bold uppercase tracking-wide text-slate-400">Relacionados</span>
                   {primerosRelacionados.map((relacionado) => (
-                    <Link key={String(relacionado.id_expediente)} to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`} className="inline-flex max-w-[130px] shrink-0 items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-2 text-[10px] font-semibold text-slate-700 hover:border-blue-200 hover:bg-blue-50" title={relacionado.actividad_actual || "Abrir expediente relacionado"}>
-                      <span className="text-blue-700">📁</span>
+                    <Link key={String(relacionado.id_expediente)} to={`/expedientes/${encodeURIComponent(relacionado.id_expediente)}`} className="inline-flex max-w-[180px] min-w-0 shrink items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50" title={relacionado.actividad_actual || "Abrir expediente relacionado"}>
+                      <span className="shrink-0 text-blue-700">📁</span>
                       <span className="truncate">{valorVisible(relacionado.id_expediente)}</span>
                     </Link>
                   ))}
                   {relacionadosVisibles.length > 2 && (
-                    <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-2 text-[10px] font-bold text-amber-800 hover:bg-amber-100">
-                      +{relacionadosVisibles.length - 2} más · Ver todos
+                    <button type="button" onClick={abrirAgregarExpedientes} className="inline-flex shrink-0 items-center rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[10px] font-bold text-amber-800 transition hover:bg-amber-100">
+                      +{relacionadosVisibles.length - 2} · Ver más
                     </button>
                   )}
                 </div>
