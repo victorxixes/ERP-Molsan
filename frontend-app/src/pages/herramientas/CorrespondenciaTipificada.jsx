@@ -237,7 +237,7 @@ export default function CorrespondenciaTipificada() {
     try {
       const { data } = await axios.get("/utilidades/correspondencia/firma");
       const bloquesFirma = [data.firma_personal, data.firma_pie].filter((x) => String(x || "").trim());
-      const cuerpoConFirma = [cuerpoFinal, ...bloquesFirma].filter((x) => String(x || "").trim()).join("\\n\\n");
+      const cuerpoConFirma = [cuerpoFinal, ...bloquesFirma].filter((x) => String(x || "").trim()).join("\n\n");
       const url = "mailto:" + encodeURIComponent(destinatarioFinal) +
         "?subject=" + encodeURIComponent(asuntoFinal) +
         (ccFinal ? "&cc=" + encodeURIComponent(ccFinal) : "") +
