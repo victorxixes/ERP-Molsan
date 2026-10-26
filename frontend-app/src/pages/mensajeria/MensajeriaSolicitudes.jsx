@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "../../api/axios";
+import { listarNotarios } from "../../api/notarios";
 import { useAuthStore } from "../../store/authStore";
 import "../../css/HerramientasPremium.css";
 
@@ -110,12 +111,12 @@ export default function MensajeriaSolicitudes() {
   useEffect(() => {
     let activo = true;
     Promise.allSettled([
-      axios.get("/ctn/notarias", { params: { page: 1, page_size: 200 } }),
+      listarNotarios(),
       axios.get("/registros-propiedad"),
       axios.get("/municipios"),
     ]).then(([n, r, m]) => {
       if (!activo) return;
-      if (n.status === "fulfilled") setNotarias(n.value.data?.items || (Array.isArray(n.value.data) ? n.value.data : []));
+      if (n.status === "fulfilled") setNotarias(Array.isArray(n.value.data) ? n.value.data : (n.value.data?.items || []));
       if (r.status === "fulfilled") setRegistros(Array.isArray(r.value.data) ? r.value.data.filter((x) => x.activo !== false) : []);
       if (m.status === "fulfilled") setMunicipios(Array.isArray(m.value.data) ? m.value.data.filter((x) => x.activo !== false) : []);
     });
