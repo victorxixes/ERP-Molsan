@@ -328,8 +328,13 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     const conceptoRegistro = conceptosImportes.find((x) => x.codigo === "registro" && x.activo !== false);
     const conceptoImpuestos = conceptosImportes.find((x) => x.codigo === "impuestos" && x.activo !== false);
     const reglas = conceptoNotaria?.reglas || {};
-    const tramos = esCaixaBank ? reglas.tramos_caixabank : reglas.tramos_entidad_ajena;
-    const tramo = (Array.isArray(tramos) ? tramos : []).find((t) => {
+    const tramosConfigurados = esCaixaBank ? reglas.tramos_caixabank : reglas.tramos_entidad_ajena;
+    // Los tramos iniciales que muestra el catálogo son también la configuración por defecto
+    // hasta que el administrador los personalice y guarde.
+    const tramos = Array.isArray(tramosConfigurados) && tramosConfigurados.length
+      ? tramosConfigurados
+      : clonarTramos(esCaixaBank ? "caixabank" : "ajena");
+    const tramo = tramos.find((t) => {
       const desde = Number(String(t.desde ?? "").replace(",", "."));
       const hasta = Number(String(t.hasta ?? "").replace(",", "."));
       return Number.isFinite(desde) && Number.isFinite(hasta) && capital >= desde && capital <= hasta;
@@ -451,7 +456,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
               <AutocompleteCatalogo titulo="Registro de la Propiedad" valor={g.registro_propiedad} opciones={catalogoRegistros} etiqueta={(r) => r.registro_propiedad} detalle={(r) => [r.poblacion, r.provincia].filter(Boolean).join(" · ")} placeholder="Busca un registro…" onChange={(v) => cambiarGarantia(i, "registro_propiedad", v)} onSelect={(r) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, registro_propiedad: r.registro_propiedad, poblacion: r.poblacion || x.poblacion, provincia: r.provincia || x.provincia } : x) }))} />
               <AutocompleteCatalogo titulo="Población" valor={g.poblacion} opciones={catalogoMunicipios} etiqueta={(m) => m.municipio} detalle={(m) => m.provincia} placeholder="Busca una población…" onChange={(v) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, poblacion: v, provincia: "", ajd: x.adquisicion_vivienda_habitual === "no" ? "0" : x.ajd } : x) }))} onSelect={(m) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
                 if (n !== i) return x;
-                const importeTerritorial = x.tipo_carga === "Hipotecaria" && x.adquisicion_vivienda_habitual === "no" ? importeHipotecaProvincia(m.provincia) : null;
+                const importeTerritorial = normalizarCatalogo(x.tipo_carga).includes("hipotec") && x.adquisicion_vivienda_habitual === "no" ? importeHipotecaProvincia(m.provincia) : null;
                 return { ...x, poblacion: m.municipio, provincia: m.provincia, ...(importeTerritorial !== null ? { ajd: String(importeTerritorial) } : {}) };
               }) }))} />
               <AutocompleteCatalogo titulo="Provincia" valor={g.provincia} opciones={[...new Set(catalogoMunicipios.map((m) => m.provincia).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))} etiqueta={(p) => p} placeholder="Busca una provincia…" onChange={(v) => cambiarGarantia(i, "provincia", v)} onSelect={(p) => cambiarGarantia(i, "provincia", p)} />
