@@ -6082,6 +6082,9 @@ const cuantiaFincasParaEnvio =
               </section>
             </div>
           )}
+          <div className={`flex flex-wrap items-center gap-2 ${actividadSeleccionada === "gestion-economica" ? "" : "hidden"}`}>
+            <TraspasoSaldoPanel expediente={expediente} visible={actividadSeleccionada === "gestion-economica"} />
+          </div>
 
       </div>
       <div className={`mt-3 grid min-w-0 grid-cols-1 gap-3 xl:grid-cols-2 ${mostrarControlCalidad ? "hidden" : ""}`}>
@@ -6196,10 +6199,6 @@ const cuantiaFincasParaEnvio =
       
 
        
-
-        <div className={`min-w-0 xl:col-span-12 ${actividadSeleccionada === "gestion-economica" ? "" : "hidden"}`}>
-          <TraspasoSaldoPanel expediente={expediente} visible={actividadSeleccionada === "gestion-economica"} />
-        </div>
 
         {/* Información complementaria: se oculta visualmente hasta registrar un envío a notario. */}
         <div className={`min-w-0 xl:col-span-12 ${actividadSeleccionada === "gestion-economica" && mostrarPanelEconomicoPago ? "" : "hidden"}`}>
