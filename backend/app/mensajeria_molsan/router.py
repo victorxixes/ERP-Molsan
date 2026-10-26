@@ -444,12 +444,29 @@ def actualizar_proveedor(proveedor_id: int, data: ProveedorMensajeriaIn, db: Ses
         raise HTTPException(status_code=409, detail="No se pudo actualizar el proveedor.") from exc
 
 
+def _puede_ver_toda_mensajeria(usuario):
+    rol_obj = getattr(usuario, "rol", None)
+    rol = str(getattr(rol_obj, "nombre", getattr(usuario, "rol_nombre", "")) or "").strip().lower()
+    usuario_nombre = str(getattr(usuario, "usuario", "") or "").strip().lower()
+    return usuario_nombre == "admin" or any(token in rol for token in ("admin", "mensaj", "gestor", "responsable", "superusuario", "superuser"))
+
+
+def _comprobar_acceso_solicitud(solicitud, usuario):
+    usuario_id = getattr(usuario, "id", None)
+    if usuario_id is not None and usuario_id == solicitud.solicitante_id:
+        return
+    if not _puede_ver_toda_mensajeria(usuario):
+        raise HTTPException(status_code=403, detail="Solo puedes consultar la comunicación de tus propias solicitudes.")
+
+
 @router.get("/solicitudes/{solicitud_id}/comunicaciones")
 def listar_comunicaciones(solicitud_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _ensure_tables(db)
     existe = db.execute(text("SELECT id FROM mensajeria_solicitudes WHERE id=:id"), {"id": solicitud_id}).fetchone()
     if not existe:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada.")
+    solicitud = db.execute(text("SELECT id,solicitante_id FROM mensajeria_solicitudes WHERE id=:id"), {"id": solicitud_id}).fetchone()
+    _comprobar_acceso_solicitud(solicitud, usuario)
     return _rows(db, """SELECT id,solicitud_id,autor_id,autor_nombre,autor_tipo,mensaje,creado_en
         FROM mensajeria_comunicaciones WHERE solicitud_id=:id ORDER BY creado_en,id""", {"id": solicitud_id})
 
@@ -464,6 +481,7 @@ def crear_comunicacion(solicitud_id: int, data: ComunicacionIn, db: Session = De
     solicitud = db.execute(text("SELECT id,solicitante_id FROM mensajeria_solicitudes WHERE id=:id"), {"id": solicitud_id}).fetchone()
     if not solicitud:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada.")
+    _comprobar_acceso_solicitud(solicitud, usuario)
     usuario_id = getattr(usuario, "id", None)
     nombre = " ".join(filter(None, [getattr(usuario, "nombre", ""), getattr(usuario, "apellidos", "")])).strip()
     rol = str(getattr(getattr(usuario, "rol", None), "nombre", getattr(usuario, "rol_nombre", "")) or "").lower()
