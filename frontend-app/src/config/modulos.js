@@ -80,6 +80,13 @@ const MODULOS_ERP = [
   },
 
   {
+    key: "mensajeria",
+    label: "Mensajería Molsan",
+    route: "/mensajeria",
+    icon: "truck",
+  },
+
+  {
     key: "informes",
     label: "Informes",
     route: "/informes",
