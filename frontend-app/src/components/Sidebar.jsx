@@ -974,7 +974,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     };
     document.addEventListener("mousedown", cerrarFuera);
     return () => document.removeEventListener("mousedown", cerrarFuera);
-  }, []);
+  }, [menuSidebarAbierto]);
 
   useEffect(() => {
     if (!menuSidebarAbierto) {
