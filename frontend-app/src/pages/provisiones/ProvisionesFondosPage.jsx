@@ -49,6 +49,35 @@ function Seccion({ titulo, detalle, children }) {
 }
 
 
+const TRAMOS_BASE = [
+  { desde: 0, hasta: 40000, notariaCaixa: 263, notariaAjena: 438, registroCaixa: 426, registroAjena: 426 },
+  { desde: 40000.01, hasta: 70000, notariaCaixa: 296, notariaAjena: 471, registroCaixa: 444, registroAjena: 444 },
+  { desde: 70000.01, hasta: 90000, notariaCaixa: 305, notariaAjena: 480, registroCaixa: 456, registroAjena: 456 },
+  { desde: 90000.01, hasta: 110000, notariaCaixa: 320, notariaAjena: 495, registroCaixa: 474, registroAjena: 474 },
+  { desde: 110000.01, hasta: 130000, notariaCaixa: 341, notariaAjena: 516, registroCaixa: 492, registroAjena: 492 },
+  { desde: 130000.01, hasta: 250000, notariaCaixa: 380, notariaAjena: 555, registroCaixa: 516, registroAjena: 516 },
+  { desde: 250000.01, hasta: 400000, notariaCaixa: 416, notariaAjena: 591, registroCaixa: 547, registroAjena: 547 },
+  { desde: 400000.01, hasta: 600000, notariaCaixa: 509, notariaAjena: 684, registroCaixa: 601, registroAjena: 601 },
+  { desde: 600000.01, hasta: 1000000, notariaCaixa: 539, notariaAjena: 714, registroCaixa: 619, registroAjena: 619 },
+  { desde: 1000000.01, hasta: 1500000, notariaCaixa: 552, notariaAjena: 727, registroCaixa: 624, registroAjena: 624 },
+  { desde: 1500000.01, hasta: 2000000, notariaCaixa: 611, notariaAjena: 786, registroCaixa: 631, registroAjena: 631 },
+  { desde: 2000000.01, hasta: 2500000, notariaCaixa: 672, notariaAjena: 847, registroCaixa: 698, registroAjena: 698 },
+  { desde: 2500000.01, hasta: 3000000, notariaCaixa: 685, notariaAjena: 860, registroCaixa: 720, registroAjena: 720 },
+  { desde: 3000000.01, hasta: 3500000, notariaCaixa: 702, notariaAjena: 877, registroCaixa: 730, registroAjena: 730 },
+  { desde: 3500000.01, hasta: 4000000, notariaCaixa: 736, notariaAjena: 911, registroCaixa: 760, registroAjena: 760 },
+  { desde: 4000000.01, hasta: 5000000, notariaCaixa: 795, notariaAjena: 970, registroCaixa: 790, registroAjena: 790 },
+  { desde: 5000000.01, hasta: 6000000, notariaCaixa: 812, notariaAjena: 987, registroCaixa: 801, registroAjena: 801 },
+];
+const clonarTramos = (tipo) => TRAMOS_BASE.map((t) => ({
+  desde: String(t.desde), hasta: String(t.hasta),
+  notaria: String(tipo === "caixabank" ? t.notariaCaixa : t.notariaAjena),
+  registro: String(tipo === "caixabank" ? t.registroCaixa : t.registroAjena),
+}));
+const importeHonorario = (h) => {
+  const n = Number(h?.importe ?? h?.importe_base ?? h?.base_imponible ?? h?.importe_honorarios ?? h?.precio ?? h?.total);
+  return Number.isFinite(n) ? n : null;
+};
+
 function ConfiguracionConceptosProvisiones() {
   const [items, setItems] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -57,6 +86,7 @@ function ConfiguracionConceptosProvisiones() {
   const [errorConfig, setErrorConfig] = useState("");
   const [borradores, setBorradores] = useState({});
   const [catalogoHonorarios, setCatalogoHonorarios] = useState([]);
+  const [tramosEditando, setTramosEditando] = useState({});
   useEffect(() => { axios.get("/honorarios-gestoria?activos=true").then((r) => setCatalogoHonorarios(Array.isArray(r.data) ? r.data.filter((h) => h.activo !== false) : [])).catch(() => setCatalogoHonorarios([])); }, []);
   const cargar = useCallback(async () => {
     setCargando(true);
@@ -64,30 +94,99 @@ function ConfiguracionConceptosProvisiones() {
       const r = await axios.get("/expedientes/provisiones/conceptos-importes");
       const lista = r.data?.items || [];
       setItems(lista);
-      setBorradores(Object.fromEntries(lista.map((x) => [x.codigo, { modo: x.modo === "calculado" ? "calculado" : "previsto", importe_previsto: x.importe_previsto == null ? "" : String(x.importe_previsto), descripcion: x.descripcion || "", reglas: { porcentaje_condicion_resolutoria: 1.5, importes_hipoteca_provincia: { Gipuzkoa: "", Álava: "", Bizkaia: "" }, tramos: [], ...(x.reglas || {}) }, activo: x.activo !== false }])));
+      setBorradores(Object.fromEntries(lista.map((x) => {
+        const reglas = { porcentaje_condicion_resolutoria: 1.5, importes_hipoteca_provincia: { Gipuzkoa: "", Álava: "", Bizkaia: "" }, tramos: [], ...(x.reglas || {}) };
+        if (!Array.isArray(reglas.tramos_caixabank)) reglas.tramos_caixabank = clonarTramos("caixabank");
+        if (!Array.isArray(reglas.tramos_entidad_ajena)) reglas.tramos_entidad_ajena = clonarTramos("ajena");
+        return [x.codigo, { modo: x.modo === "calculado" ? "calculado" : "previsto", importe_previsto: x.importe_previsto == null ? "" : String(x.importe_previsto), descripcion: x.descripcion || "", reglas, activo: x.activo !== false }];
+      })));
       setErrorConfig("");
     } catch (e) { setErrorConfig(e.response?.data?.detail || "No se pudo cargar la configuración de conceptos."); }
     finally { setCargando(false); }
   }, []);
   useEffect(() => { cargar(); }, [cargar]);
   const cambiar = (codigo, campo, valor) => setBorradores((prev) => ({ ...prev, [codigo]: { ...prev[codigo], [campo]: valor } }));
+  const cambiarTramo = (codigo, tipo, indice, campo, valor) => {
+    const draft = borradores[codigo] || {};
+    const clave = tipo === "caixabank" ? "tramos_caixabank" : "tramos_entidad_ajena";
+    const tramos = draft.reglas?.[clave] || [];
+    cambiar(codigo, "reglas", { ...(draft.reglas || {}), [clave]: tramos.map((t, i) => i === indice ? { ...t, [campo]: valor } : t) });
+  };
+  const agregarTramo = (codigo, tipo) => {
+    const draft = borradores[codigo] || {};
+    const clave = tipo === "caixabank" ? "tramos_caixabank" : "tramos_entidad_ajena";
+    const tramos = draft.reglas?.[clave] || [];
+    cambiar(codigo, "reglas", { ...(draft.reglas || {}), [clave]: [...tramos, { desde: "", hasta: "", notaria: "", registro: "", honorario_id: "" }] });
+    setTramosEditando((prev) => ({ ...prev, [tipo + "-" + tramos.length]: true }));
+  };
+  const eliminarTramo = (codigo, tipo, indice) => {
+    if (!window.confirm("¿Quieres eliminar este tramo? La eliminación se aplicará al guardar la configuración.")) return;
+    const draft = borradores[codigo] || {};
+    const clave = tipo === "caixabank" ? "tramos_caixabank" : "tramos_entidad_ajena";
+    cambiar(codigo, "reglas", { ...(draft.reglas || {}), [clave]: (draft.reglas?.[clave] || []).filter((_, i) => i !== indice) });
+  };
   const guardarConcepto = async (item) => {
     const draft = borradores[item.codigo] || {};
     setGuardando(item.codigo); setMensaje(""); setErrorConfig("");
     try {
-      await axios.put(`/expedientes/provisiones/conceptos-importes/${item.codigo}`, {
+      await axios.put("/expedientes/provisiones/conceptos-importes/" + item.codigo, {
         modo: draft.modo,
         importe_previsto: draft.modo === "previsto" ? Number(draft.importe_previsto || 0) : null,
         descripcion: draft.descripcion || "",
         reglas: draft.reglas || {},
         activo: draft.activo !== false,
       });
-      setMensaje(`${item.nombre}: configuración guardada.`);
+      setMensaje(item.nombre + ": configuración guardada.");
       await cargar();
-    } catch (e) { setErrorConfig(e.response?.data?.detail || `No se pudo guardar ${item.nombre}.`); }
+    } catch (e) { setErrorConfig(e.response?.data?.detail || "No se pudo guardar " + item.nombre + "."); }
     finally { setGuardando(""); }
   };
-  return <Seccion titulo="Configuración de conceptos e importes" detalle="Define los importes previstos de Notaría y Registro, el tratamiento de Impuestos y consulta el origen de los honorarios. Los importes de ejemplo no se precargan: los valores los debe introducir Molsan.">
+  const renderTabla = (item, draft, tipo) => {
+    const caixabank = tipo === "caixabank";
+    const clave = caixabank ? "tramos_caixabank" : "tramos_entidad_ajena";
+    const tramos = draft.reglas?.[clave] || [];
+    const titulo = caixabank ? "CAIXABANK" : "ENTIDAD AJENA";
+    const honorariosEtiqueta = caixabank ? "Honorarios" : "Gestión";
+    const claveHonorario = caixabank ? "honorario_caixabank_id" : "honorario_entidad_ajena_id";
+    const honorarioSeleccionado = catalogoHonorarios.find((h) => String(h.id ?? h.codigo ?? h.nombre) === String(draft.reglas?.[claveHonorario] ?? ""));
+    const importe = importeHonorario(honorarioSeleccionado);
+    return <div className="mt-4 rounded-xl border border-slate-200 bg-white p-3">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div><h3 className="font-bold text-slate-900">{titulo}</h3><p className="mt-1 text-xs text-slate-500">{tramos.length} tramos · capital, notaría y registro editables; {honorariosEtiqueta.toLowerCase()} enlazada al catálogo.</p></div>
+        <button type="button" onClick={() => agregarTramo(item.codigo, tipo)} className={boton + " bg-indigo-600 text-white hover:bg-indigo-700"}>＋ Añadir tramo</button>
+      </div>
+      <div className="mb-3 grid gap-2 sm:grid-cols-[minmax(260px,1fr)_auto] sm:items-end">
+        <label className={label}>{honorariosEtiqueta} · catálogo central
+          <select className={input} value={draft.reglas?.[claveHonorario] ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), [claveHonorario]: e.target.value })}>
+            <option value="">Seleccionar {honorariosEtiqueta.toLowerCase()}…</option>
+            {catalogoHonorarios.map((h) => <option key={h.id ?? h.codigo ?? h.nombre} value={h.id ?? h.codigo ?? h.nombre}>{h.nombre || h.concepto || h.codigo || "Honorario " + h.id}{importeHonorario(h) == null ? "" : " · " + dinero(importeHonorario(h))}</option>)}
+          </select>
+        </label>
+        <p className="text-sm font-semibold text-slate-700">{importe == null ? "Importe del catálogo pendiente" : honorariosEtiqueta + ": " + dinero(importe)}</p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[1000px] border-collapse text-left text-xs">
+          <thead><tr className="border-b border-slate-200 bg-slate-50 text-slate-600">
+            <th className="p-2">Principal desde (€)</th><th className="p-2">Principal hasta (€)</th><th className="p-2">Notaría (€)</th><th className="p-2">Registro (€)</th><th className="p-2">{honorariosEtiqueta} · catálogo</th><th className="p-2">Total (€)</th><th className="p-2">Acciones</th>
+          </tr></thead>
+          <tbody>{tramos.map((tramo, indice) => {
+            const claveEdicion = tipo + "-" + indice;
+            const editando = Boolean(tramosEditando[claveEdicion]);
+            const subtotal = Number(tramo.notaria || 0) + Number(tramo.registro || 0) + (importe ?? 0);
+            const campos = [["desde", "Principal desde (€)"], ["hasta", "Principal hasta (€)"], ["notaria", "Notaría (€)"], ["registro", "Registro (€)"]];
+            return <tr key={claveEdicion} className="border-b border-slate-100">
+              {campos.map(([campo, etiqueta]) => <td key={campo} className="p-2">{editando ? <input aria-label={etiqueta} className="w-36 rounded-lg border border-slate-200 px-2 py-1.5 text-sm" type="number" min="0" step="0.01" value={tramo[campo] ?? ""} onChange={(e) => cambiarTramo(item.codigo, tipo, indice, campo, e.target.value)} /> : <span>{tramo[campo] === "" || tramo[campo] == null ? "—" : dinero(tramo[campo])}</span>}</td>)}
+              <td className="p-2">{importe == null ? <span className="text-slate-400">Pendiente de catálogo</span> : dinero(importe)}</td>
+              <td className="p-2 font-semibold">{importe == null ? <span className="text-slate-400">Pendiente de catálogo</span> : dinero(subtotal)}</td>
+              <td className="p-2"><div className="flex gap-1"><button type="button" onClick={() => setTramosEditando((prev) => ({ ...prev, [claveEdicion]: !prev[claveEdicion] }))} className="rounded-lg border border-slate-200 px-2 py-1.5 font-semibold text-blue-700">{editando ? "Terminar" : "Editar"}</button><button type="button" onClick={() => eliminarTramo(item.codigo, tipo, indice)} className="rounded-lg border border-red-200 px-2 py-1.5 font-semibold text-red-600">Eliminar</button></div></td>
+            </tr>;
+          })}</tbody>
+        </table>
+      </div>
+      <p className="mt-2 text-xs text-slate-500">El total se calcula con Notaría + Registro + el importe del concepto enlazado a toda la tabla. Si el catálogo no devuelve un importe reconocible, se muestra «Pendiente de catálogo» y no se inventa un total.</p>
+    </div>;
+  };
+  return <Seccion titulo="Configuración de conceptos e importes" detalle="Tablas editables de provisiones por capital. Los importes de Notaría y Registro se guardan por tramo; Honorarios y Gestión se enlazan al catálogo central. El total se calcula automáticamente cuando el catálogo proporciona el importe.">
     {errorConfig && <div role="alert" className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{errorConfig}</div>}
     {mensaje && <div role="status" className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{mensaje}</div>}
     {cargando ? <p className="py-4 text-sm text-slate-500">Cargando conceptos…</p> : <div className="space-y-3">
@@ -96,24 +195,15 @@ function ConfiguracionConceptosProvisiones() {
         return <div key={item.codigo} className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 md:grid-cols-[1.2fr_1fr_1.4fr_auto] md:items-end">
           <div><p className="font-semibold text-slate-800">{item.nombre}</p><p className="mt-1 text-xs text-slate-500">{item.codigo === "gestion" ? "Fuente: catálogo central de Honorarios Gestoría." : item.codigo === "impuestos" ? "Puede marcarse como calculado o introducir una previsión." : "Importe estimativo configurable, sin tarifa inventada."}</p></div>
           {item.codigo === "gestion" ? <div className="rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-900 md:col-span-2">Se obtiene del catálogo central según «Entidad actual» del banco. No se modifica aquí.</div> : <div><label className="mb-1 block text-xs font-semibold text-slate-600">Tratamiento</label><select className={input} value={draft.modo || "previsto"} onChange={(e) => cambiar(item.codigo, "modo", e.target.value)}><option value="previsto">Importe previsto</option>{item.codigo === "impuestos" && <option value="calculado">Calculado (pendiente de regla fiscal)</option>}</select>{draft.modo === "previsto" && <><label className="mb-1 mt-2 block text-xs font-semibold text-slate-600">Importe previsto (€)</label><input className={input} type="number" min="0" step="0.01" value={draft.importe_previsto ?? ""} onChange={(e) => cambiar(item.codigo, "importe_previsto", e.target.value)} placeholder="Introduce el importe" /></>}</div>}
-          <div><label className="mb-1 block text-xs font-semibold text-slate-600">Descripción / criterio</label><textarea className={`${input} min-h-16 resize-y`} value={draft.descripcion || ""} onChange={(e) => cambiar(item.codigo, "descripcion", e.target.value)} disabled={item.codigo === "gestion"} /></div>
+          <div><label className="mb-1 block text-xs font-semibold text-slate-600">Descripción / criterio</label><textarea className={input + " min-h-16 resize-y"} value={draft.descripcion || ""} onChange={(e) => cambiar(item.codigo, "descripcion", e.target.value)} disabled={item.codigo === "gestion"} /></div>
           {item.codigo === "notaria" && <div className="md:col-span-4 rounded-xl border border-indigo-200 bg-indigo-50/40 p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2"><div><p className="font-semibold text-slate-900">Tramos de provisión por capital</p><p className="mt-1 text-xs text-slate-600">Configura los límites y los importes. La tarifa notarial distingue CaixaBank y filiales de otras entidades. Los honorarios se seleccionan del catálogo central.</p></div>
-            <button type="button" onClick={() => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), tramos: [...(draft.reglas?.tramos || []), { desde: "", hasta: "", notaria_caixabank: "", notaria_otra_entidad: "", registro: "", ajd: "", honorario_id: "" }] })} className={`${boton} bg-indigo-600 text-white hover:bg-indigo-700`}>＋ Añadir tramo</button></div>
-            <div className="mt-3 space-y-3">
-              {(draft.reglas?.tramos || []).map((tramo, indice) => <div key={indice} className="rounded-xl border border-indigo-100 bg-white p-3">
-                <div className="mb-3 flex items-center justify-between"><span className="text-sm font-bold text-slate-800">Tramo {indice + 1}</span><button type="button" onClick={() => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), tramos: draft.reglas.tramos.filter((_, i) => i !== indice) })} className="text-xs font-semibold text-red-600 hover:underline">Eliminar tramo</button></div>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  {[[ "desde", "Desde capital (€)" ], [ "hasta", "Hasta capital (€)" ], [ "notaria_caixabank", "Notaría CaixaBank y filiales (€)" ], [ "notaria_otra_entidad", "Notaría otras entidades (€)" ], [ "registro", "Gastos registro (€)" ], [ "ajd", "AJD (€)" ]].map(([campo, titulo]) => <label key={campo} className={label}>{titulo}<input className={input} type="number" min="0" step="0.01" value={tramo[campo] ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), tramos: draft.reglas.tramos.map((t, i) => i === indice ? { ...t, [campo]: e.target.value } : t) })} placeholder="Introduce importe" /></label>)}
-                  <label className={label}>Honorarios · catálogo central<select className={input} value={tramo.honorario_id ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), tramos: draft.reglas.tramos.map((t, i) => i === indice ? { ...t, honorario_id: e.target.value } : t) })}><option value="">Seleccionar honorario…</option>{catalogoHonorarios.map((h) => <option key={h.id ?? h.codigo ?? h.nombre} value={h.id ?? h.codigo ?? h.nombre}>{h.nombre || h.concepto || h.codigo || `Honorario ${h.id}`}</option>)}</select></label>
-                </div>
-              </div>)}
-              {!(draft.reglas?.tramos || []).length && <p className="rounded-lg border border-dashed border-indigo-200 px-3 py-4 text-center text-sm text-slate-500">Todavía no hay tramos. Pulsa «Añadir tramo» para crear el primero.</p>}
-            </div>
-            <p className="mt-3 text-xs text-slate-500">Antes de guardar, comprueba que los tramos no se solapen. No se precargan importes. Esta configuración guarda los tramos; la aplicación automática al cálculo de cada provisión se conectará en el siguiente paso.</p>
+            <div><p className="font-semibold text-slate-900">Tramos de provisión por capital</p><p className="mt-1 text-xs text-slate-600">Los 17 rangos facilitados por Molsan están cargados en ambas tablas. Edita cualquier tramo, elimina los que no procedan o añade otros. Las tablas se guardan con el botón «Guardar» del concepto Notaría.</p></div>
+            {renderTabla(item, draft, "caixabank")}
+            {renderTabla(item, draft, "ajena")}
+            <p className="mt-3 text-xs text-slate-500">La selección automática de tarifa en el cálculo de provisiones es una fase separada. Estos cambios configuran las tablas sin recalcular expedientes históricos.</p>
           </div>}
           {item.codigo === "impuestos" && <div className="md:col-span-4 rounded-xl border border-amber-200 bg-amber-50/60 p-3"><p className="text-sm font-semibold text-slate-800">Reglas iniciales de impuestos</p><p className="mt-1 text-xs text-slate-600">La condición resolutoria se configura al 1,5 % como criterio inicial indicado por Molsan. Los importes por provincia son manuales y no se inventan ni se aplican automáticamente hasta validar cada supuesto.</p><div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><label className={label}>Condición resolutoria · porcentaje<input className={input} type="number" min="0" step="0.01" value={draft.reglas?.porcentaje_condicion_resolutoria ?? 1.5} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), porcentaje_condicion_resolutoria: e.target.value === "" ? "" : Number(e.target.value) })} /></label>{["Gipuzkoa", "Álava", "Bizkaia"].map((provincia) => <label key={provincia} className={label}>Hipoteca · {provincia} (€)<input className={input} type="number" min="0" step="0.01" placeholder="Por definir" value={draft.reglas?.importes_hipoteca_provincia?.[provincia] ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), importes_hipoteca_provincia: { ...(draft.reglas?.importes_hipoteca_provincia || {}), [provincia]: e.target.value } })} /></label>)}</div><p className="mt-2 text-xs text-slate-500">Vitoria-Gasteiz queda cubierta por Álava. Estos importes son configuraciones de provisión, no una confirmación de la cuota tributaria legal.</p></div>}
-          {item.codigo === "gestion" ? <span className="text-xs font-semibold text-emerald-700">Catálogo central</span> : <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={`${boton} bg-blue-600 text-white hover:bg-blue-700`}>{guardando === item.codigo ? "Guardando…" : "Guardar"}</button>}
+          {item.codigo === "gestion" ? <span className="text-xs font-semibold text-emerald-700">Catálogo central</span> : <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={boton + " bg-blue-600 text-white hover:bg-blue-700"}>{guardando === item.codigo ? "Guardando…" : "Guardar"}</button>}
         </div>;
       })}
     </div>}
