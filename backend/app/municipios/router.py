@@ -419,7 +419,7 @@ def importar_codigos_postales_nacionales(db: Session = Depends(get_db)):
         cp = str(fila.get("codigo_postal") or "").strip()
         ine = str(fila.get("municipio_id") or "").strip().zfill(5)
         nombre = str(fila.get("municipio_nombre") or "").strip()
-        if not re.fullmatch(r"\d{5}", cp) or not re.fullmatch(r"\\d{5}", ine) or ine[:2] not in PROVINCIAS_INE or not nombre:
+        if not re.fullmatch(r"\d{5}", cp) or not re.fullmatch(r"\d{5}", ine) or ine[:2] not in PROVINCIAS_INE or not nombre:
             filas_invalidas += 1
             continue
         clave_nombre = clave_territorial(nombre)
