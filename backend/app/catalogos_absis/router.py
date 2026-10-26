@@ -27,6 +27,57 @@ def serializar(fila):
     }
 
 
+class NuevaCategoria(BaseModel):
+    categoria: str = Field(min_length=1, max_length=100)
+
+
+def asegurar_tabla_categorias(db: Session):
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS public.catalogos_absis_categorias (
+            id BIGSERIAL PRIMARY KEY,
+            categoria VARCHAR(100) NOT NULL UNIQUE,
+            creado_en TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    db.commit()
+
+
+@router.get("/categorias")
+def listar_categorias(db: Session = Depends(get_db)):
+    asegurar_tabla_categorias(db)
+    filas = db.execute(text("""
+        SELECT categoria FROM public.catalogos_absis_categorias
+        UNION
+        SELECT DISTINCT categoria FROM public.catalogos_absis
+        ORDER BY categoria
+    """)).scalars().all()
+    return filas
+
+
+@router.post("/categorias")
+def crear_categoria(datos: NuevaCategoria, db: Session = Depends(get_db)):
+    asegurar_tabla_categorias(db)
+    categoria = datos.categoria.strip()
+    if not categoria:
+        raise HTTPException(status_code=400, detail="El nombre de la lista es obligatorio.")
+    existente = db.execute(text("""
+        SELECT categoria FROM public.catalogos_absis_categorias
+        WHERE LOWER(categoria) = LOWER(:categoria)
+        UNION
+        SELECT categoria FROM public.catalogos_absis
+        WHERE LOWER(categoria) = LOWER(:categoria)
+        LIMIT 1
+    """), {"categoria": categoria}).first()
+    if existente:
+        raise HTTPException(status_code=409, detail="Ya existe una lista con ese nombre.")
+    db.execute(text("""
+        INSERT INTO public.catalogos_absis_categorias (categoria)
+        VALUES (:categoria)
+    """), {"categoria": categoria})
+    db.commit()
+    return {"categoria": categoria}
+
+
 @router.get("")
 def listar_catalogo(categoria: str | None = None, db: Session = Depends(get_db)):
     consulta = """
