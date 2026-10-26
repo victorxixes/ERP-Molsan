@@ -64,7 +64,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
     if (!receptor) return;
     setDestinatario(receptor.email_cliente || "");
     setImporteReceptor(receptor.importe === null || receptor.importe === undefined ? "" : String(receptor.importe));
-    const origenes = seleccionados.map((item) => item.numero).join(", ");
+    const origenes = seleccionados.map((item) => `${item.numero} (saldo disponible de referencia: ${item.saldo_disponible ?? "no indicado"} €)`).join(", ");
     setAsunto(`Actualización de saldo · expediente ${receptor.numero}`);
     setCuerpo(
       `Estimado/a cliente:\n\nLe informamos de la actualización del importe del expediente ${receptor.numero}, tras verificar la operación comunicada.\n\nExpedientes relacionados de origen: ${origenes || "pendiente de confirmar"}.\nImporte actualizado del expediente receptor: ${importeReceptor !== "" ? importeReceptor : (receptor.importe ?? "pendiente de indicar")} €.\n\nQuedamos a su disposición para cualquier aclaración.\n\nAtentamente,\nMolsan`
@@ -103,7 +103,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
         importe_receptor: Number(String(importeReceptor).replace(",", ".")),
         destinatario,
         asunto,
-        cuerpo: cuerpo.replace(/Importe actualizado del expediente receptor:.*(?=\\n|$)/, `Importe actualizado del expediente receptor: ${importeReceptor} €`),
+        cuerpo: cuerpo.replace(/Importe actualizado del expediente receptor:.*(?=\n|$)/, `Importe actualizado del expediente receptor: ${importeReceptor} €`),
       });
       setMensaje(respuesta.data.mensaje || "Importe verificado.");
       await cargar();
