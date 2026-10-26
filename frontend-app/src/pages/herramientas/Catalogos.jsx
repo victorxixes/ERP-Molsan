@@ -96,6 +96,7 @@ const CATALOGOS = [
     ruta: "/catalogos/mensajeria-servicios",
     grupo: "Catálogos económicos",
     destacado: true,
+    avisoConstruccion: true,
   },
   {
     icon: "🕒",
@@ -166,6 +167,16 @@ export default function Catalogos() {
                     <div className="min-w-0 flex-1">
                       <h3 className="text-base font-semibold text-slate-800">{item.titulo}</h3>
                       <p className="mt-1.5 text-sm leading-5 text-slate-500">{item.descripcion}</p>
+                      {item.avisoConstruccion && (
+                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                          <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-800">
+                            En construcción
+                          </span>
+                          <span className="text-xs font-medium text-slate-500">
+                            Acceso disponible
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <span className="text-slate-300 transition-all group-hover:translate-x-1 group-hover:text-blue-500">→</span>
                   </div>
