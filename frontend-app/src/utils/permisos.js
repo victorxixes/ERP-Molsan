@@ -94,6 +94,7 @@ export function puedeVerModulo(modulo) {
   // en vez de por la clave técnica del módulo.
   const alias = {
     "mensajeria molsan": "mensajeria",
+    "mensajeria gestion": "mensajeria-gestion",
   };
   const modulosCanonicos = modulos.map((item) => alias[item] || item);
   const moduloCanonico = alias[normalizar(modulo)] || normalizar(modulo);
