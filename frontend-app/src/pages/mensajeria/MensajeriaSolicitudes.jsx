@@ -28,6 +28,17 @@ const urlMapa = (u) => {
   const destino = textoDireccion(u);
   return destino ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destino)}` : "";
 };
+const desglosarUbicacion = (valor) => {
+  const texto = String(valor || "").trim();
+  const coincidencia = texto.match(/^\[([^\]]+)\]\s*(.*)$/);
+  const contenido = coincidencia?.[2] || texto || "Ubicación pendiente";
+  const partes = contenido.split(" — ");
+  return {
+    tipo: coincidencia?.[1] || "Ubicación",
+    nombre: partes.length > 1 ? partes.slice(0, -1).join(" — ") : "",
+    direccion: partes.length > 1 ? partes[partes.length - 1] : contenido,
+  };
+};
 
 function SelectorUbicacion({ titulo, valor, onChange, notarias, registros, municipios }) {
   const [busqueda, setBusqueda] = useState("");
@@ -217,7 +228,39 @@ export default function MensajeriaSolicitudes() {
       </form>
       <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-100 p-5"><h2 className="text-lg font-bold text-slate-800">Mis encargos</h2><p className="mt-1 text-sm text-slate-500">El sistema genera automáticamente un ID único para cada encargo.</p></div>
-        {cargando ? <p className="p-5 text-sm text-slate-500">Cargando encargos…</p> : !solicitudes.length ? <p className="p-8 text-center text-sm text-slate-500">Todavía no has creado encargos de mensajería.</p> : <div className="divide-y divide-slate-100">{solicitudes.map((s) => <button key={s.id} onClick={() => abrirSeguimiento(s)} className="block w-full p-5 text-left transition hover:bg-slate-50"><div className="flex flex-wrap items-center justify-between gap-2"><span className="font-bold text-blue-700">ID encargo: {s.referencia}</span><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${estadoColor(s.estado)}`}>{s.estado}</span></div><p className="mt-2 text-sm font-semibold text-slate-800">{s.origen} → {s.destino}</p><p className="mt-1 text-xs text-slate-500">Fecha solicitada: {s.fecha_solicitada || "Sin fecha"} · Prioridad: {s.prioridad}</p><p className="mt-2 text-xs font-semibold text-blue-700">Ver estado y comunicación →</p></button>)}</div>}
+        {cargando ? <p className="p-5 text-sm text-slate-500">Cargando encargos…</p> : !solicitudes.length ? <p className="p-8 text-center text-sm text-slate-500">Todavía no has creado encargos de mensajería.</p> : <div className="divide-y divide-slate-100">{solicitudes.map((s) => {
+          const origenFicha = desglosarUbicacion(s.origen);
+          const destinoFicha = desglosarUbicacion(s.destino);
+          return <button key={s.id} onClick={() => abrirSeguimiento(s)} className="group block w-full border-b border-slate-100 p-4 text-left transition last:border-b-0 hover:bg-slate-50/80 sm:p-5">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition group-hover:border-blue-200 group-hover:shadow-md sm:p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Encargo de mensajería</p><h3 className="mt-1 text-base font-extrabold tracking-tight text-slate-800">{s.referencia || `Encargo #${s.id}`}</h3></div>
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${estadoColor(s.estado)}`}><span className="h-1.5 w-1.5 rounded-full bg-current" />{s.estado || "Pendiente"}</span>
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3.5">
+                  <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Origen · Recogida</p>
+                  <p className="mt-1.5 text-sm font-bold leading-snug text-slate-800">{origenFicha.nombre || origenFicha.tipo}</p>
+                  {origenFicha.nombre && <p className="mt-1 text-[11px] font-semibold text-slate-500">{origenFicha.tipo}</p>}
+                  <p className="mt-2 text-xs leading-relaxed text-slate-600">{origenFicha.direccion}</p>
+                </div>
+                <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3.5">
+                  <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Destino · Entrega</p>
+                  <p className="mt-1.5 text-sm font-bold leading-snug text-slate-800">{destinoFicha.nombre || destinoFicha.tipo}</p>
+                  {destinoFicha.nombre && <p className="mt-1 text-[11px] font-semibold text-slate-500">{destinoFicha.tipo}</p>}
+                  <p className="mt-2 text-xs leading-relaxed text-slate-600">{destinoFicha.direccion}</p>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-blue-50/70 px-3.5 py-2.5 text-xs">
+                <span className="text-slate-600"><span className="font-bold text-slate-700">Fecha solicitada:</span> {s.fecha_solicitada ? new Date(s.fecha_solicitada).toLocaleDateString("es-ES") : "Sin fecha"}</span>
+                <span className="text-slate-600"><span className="font-bold text-slate-700">Prioridad:</span> {s.prioridad || "Normal"}</span>
+              </div>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <span className="text-xs font-bold text-blue-700">Ver estado y comunicación</span><span className="flex h-8 w-8 items-center justify-center rounded-full border border-blue-100 text-blue-700 transition group-hover:bg-blue-700 group-hover:text-white">→</span>
+              </div>
+            </div>
+          </button>;
+        })}</div>}
       </section>
     </section>
     {seleccionada && <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/50 p-4" role="dialog" aria-modal="true"><section className="my-auto max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-7"><div className="flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wider text-indigo-600">Seguimiento del encargo</p><h2 className="mt-1 text-xl font-bold text-slate-800">ID encargo: {seleccionada.referencia}</h2><p className="mt-1 text-sm text-slate-500">{seleccionada.origen} → {seleccionada.destino}</p></div><button onClick={() => setSeleccionada(null)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm">Cerrar</button></div><div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm"><b>Estado:</b> <span className={`ml-2 rounded-full px-2.5 py-1 text-xs font-bold ${estadoColor(seleccionada.estado)}`}>{seleccionada.estado}</span><p className="mt-3"><b>Seguimiento del proveedor:</b> {seleccionada.estado_proveedor || "Todavía sin actualización"}</p>{seleccionada.incidencia && <p className="mt-2 text-rose-700"><b>Incidencia:</b> {seleccionada.incidencia}</p>}<p className="mt-2"><b>Instrucciones:</b> {seleccionada.descripcion || "—"}</p></div><h3 className="mt-5 font-bold text-slate-800">Comunicación con Mensajería Gestión</h3><div className="mt-3 max-h-56 space-y-2 overflow-y-auto rounded-xl bg-slate-50 p-3">{comunicaciones.map((m) => <div key={m.id} className={`rounded-xl border p-3 ${m.autor_tipo === "empleado" ? "border-blue-100 bg-blue-50" : "border-slate-200 bg-white"}`}><div className="flex justify-between gap-2 text-xs"><b>{m.autor_nombre}</b><span className="text-slate-500">{m.creado_en ? new Date(m.creado_en).toLocaleString("es-ES") : ""}</span></div><p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">{m.mensaje}</p></div>)}{!comunicaciones.length && <p className="text-sm text-slate-500">Todavía no hay mensajes. Puedes escribir a la responsable debajo.</p>}</div><form onSubmit={enviarMensaje} className="mt-3 space-y-2"><textarea className={inputClass} rows="3" value={mensajeChat} onChange={(e) => setMensajeChat(e.target.value)} placeholder="Escribe una consulta o aporta información adicional…" required /><button disabled={guardando || !mensajeChat.trim()} className="rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">Enviar mensaje</button></form></section></div>}
