@@ -134,6 +134,26 @@ export default function CarpetaDigitalModal({
   const [configRepositorios, setConfigRepositorios] = useState(null);
   const [busquedaDocumento, setBusquedaDocumento] = useState("");
   const [actividadPrincipal, setActividadPrincipal] = useState("documentacion-previa");
+  const [datosExpedienteFechas, setDatosExpedienteFechas] = useState(null);
+
+  // Las fechas pertenecen a la ficha del expediente; este modal se abre desde
+  // el listado sin recibir esos datos como props, por eso se cargan aquí.
+  useEffect(() => {
+    let activo = true;
+    setDatosExpedienteFechas(null);
+    if (!expedienteId || !modoActividad || !["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadId)) {
+      return () => { activo = false; };
+    }
+    axios.get(`/expedientes/${encodeURIComponent(expedienteId)}`)
+      .then(({ data }) => {
+        if (!activo) return;
+        setDatosExpedienteFechas(data?.expediente || data?.item || data || null);
+      })
+      .catch(() => {
+        if (activo) setDatosExpedienteFechas(null);
+      });
+    return () => { activo = false; };
+  }, [expedienteId, modoActividad, actividadId]);
 
   useEffect(() => {
     let activo = true;
@@ -920,8 +940,8 @@ export default function CarpetaDigitalModal({
                               { key: "fecha_fin_actividad", label: "Fin actividad" },
                             ].map((campo) => {
                               const valor = datosPanelActividad?.[campo.key]
-                                ?? expedienteDatos?.[campo.key]
-                                ?? expedienteDatos?.expediente?.[campo.key]
+                                ?? datosExpedienteFechas?.[campo.key]
+                                ?? datosExpedienteFechas?.expediente?.[campo.key]
                                 ?? null;
                               return (
                                 <div key={campo.key} className="min-w-0 rounded-md border border-indigo-200 bg-indigo-50/40 px-2 py-1.5">
