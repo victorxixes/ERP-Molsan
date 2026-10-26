@@ -31,12 +31,26 @@ export default function ProvisionesFondosPage() {
   const [aviso, setAviso] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [entidadesBancarias, setEntidadesBancarias] = useState([]);
+  const [catalogoHonorarios, setCatalogoHonorarios] = useState([]);
 
   useEffect(() => {
     let activa = true;
-    axios.get("/entidades-bancarias").then((r) => {
-      if (activa) setEntidadesBancarias(Array.isArray(r.data) ? r.data.filter((e) => e.activo !== false) : []);
-    }).catch(() => { if (activa) setEntidadesBancarias([]); });
+    Promise.all([
+      axios.get("/entidades-bancarias"),
+      axios.get("/honorarios-gestoria?activos=true"),
+    ]).then(([bancos, honorarios]) => {
+      if (!activa) return;
+      setEntidadesBancarias(Array.isArray(bancos.data) ? bancos.data.filter((e) => e.activo !== false) : []);
+      setCatalogoHonorarios(Array.isArray(honorarios.data) ? honorarios.data.filter((h) => h.activo !== false) : []);
+    }).catch(() => {
+      if (activa) {
+        // Se mantienen disponibles los bancos aunque el catálogo de honorarios no responda.
+        axios.get("/entidades-bancarias").then((r) => {
+          if (activa) setEntidadesBancarias(Array.isArray(r.data) ? r.data.filter((e) => e.activo !== false) : []);
+        }).catch(() => { if (activa) setEntidadesBancarias([]); });
+        setCatalogoHonorarios([]);
+      }
+    });
     return () => { activa = false; };
   }, []);
 
@@ -72,15 +86,33 @@ export default function ProvisionesFondosPage() {
     const g = form.garantias[i];
     if (!g.entidad.trim()) { setError("Indica la entidad bancaria antes de calcular."); return; }
     try {
+      const entidadSeleccionada = entidadesBancarias.find((e) => String(e.nombre || "").trim().toLocaleLowerCase("es") === String(g.entidad || "").trim().toLocaleLowerCase("es"));
+      const entidadActual = entidadSeleccionada?.entidad_actual_id
+        ? entidadesBancarias.find((e) => Number(e.id) === Number(entidadSeleccionada.entidad_actual_id))
+        : null;
+      const esCaixaBank = /caixabank/i.test(String(entidadActual?.nombre || ""));
+      const honorarioCaixaBank = esCaixaBank
+        ? catalogoHonorarios.find((h) => /honorarios de gestoría\s*[—-]\s*caixabank/i.test(String(h.nombre || "")))
+        : null;
+
+      if (esCaixaBank && !honorarioCaixaBank) {
+        setError("La entidad seleccionada pertenece actualmente a CaixaBank, pero no se ha encontrado un honorario activo «Honorarios de gestoría — CaixaBank» en el catálogo de Honorarios Gestoría. Revisa el catálogo y vuelve a calcular.");
+        return;
+      }
+
       const r = await axios.post("/expedientes/provisiones/tarifas/calcular", { tipo: "provision", entidad: g.entidad, territorio: g.territorio || "Península", capital: Number(g.capital || 0) });
       const t = r.data?.tarifa || {};
       const notaria = g.tipo_carga === "Hipotecaria" ? Number(t.suplidos || 0) : 0;
       const registro = Number(t.gastos_registro || 0);
-      const gestion = Number(r.data?.honorarios || t.honorarios || 0);
+      // Si el catálogo identifica CaixaBank como entidad actual, los honorarios
+      // proceden del catálogo económico central, no de una tarifa duplicada.
+      const gestion = esCaixaBank
+        ? Number(honorarioCaixaBank.importe ?? (Number(honorarioCaixaBank.base_imponible || 0) * (1 + (String(honorarioCaixaBank.tipo_impuesto || "IVA").toUpperCase() === "EXENTO" ? 0 : Number(honorarioCaixaBank.porcentaje_impuesto || 0)) / 100)))
+        : Number(r.data?.honorarios || t.honorarios || 0);
       const otros = Number(t.otros_gastos || 0);
       const nuevoTotal = notaria + Number(g.ajd || 0) + registro + gestion + otros;
       setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, notaria: String(notaria), registro: String(registro), gestion: String(gestion), otros_gastos: String(otros), total: nuevoTotal.toFixed(2) } : x) }));
-      setAviso("Tarifa aplicada. Revisa los conceptos y el total estimado.");
+      setAviso(esCaixaBank ? "Tarifa aplicada. Los honorarios de gestoría se han tomado del catálogo central de Honorarios Gestoría para CaixaBank." : "Tarifa aplicada. Revisa los conceptos y el total estimado.");
       setError("");
     } catch (e) { setError(e.response?.data?.detail || "No hay tarifa activa para esa entidad y capital. Puedes introducir los importes manualmente."); }
   };
