@@ -35,10 +35,9 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
       setContexto(respuesta.data || null);
       setReceptorNumero((actual) => actual || numeroActual);
       const operaciones = respuesta.data?.operaciones || [];
-      setOperacionActiva((actual) => {
-        if (actual && operaciones.some((item) => item.id === actual.id)) return operaciones.find((item) => item.id === actual.id);
-        return operaciones.find((item) => ["pendiente_verificacion", "pendiente_email"].includes(item.estado)) || null;
-      });
+      const pendiente = operaciones.find((item) => ["pendiente_verificacion", "pendiente_email"].includes(item.estado)) || null;
+      setOperacionActiva(pendiente);
+      if (pendiente?.receptor_numero) setReceptorNumero(pendiente.receptor_numero);
     } catch (e) {
       setError(errorApi(e));
     } finally {
@@ -104,7 +103,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
         importe_receptor: Number(String(importeReceptor).replace(",", ".")),
         destinatario,
         asunto,
-        cuerpo,
+        cuerpo: cuerpo.replace(/Importe actualizado del expediente receptor:.*(?=\\n|$)/, `Importe actualizado del expediente receptor: ${importeReceptor} €`),
       });
       setMensaje(respuesta.data.mensaje || "Importe verificado.");
       await cargar();
@@ -189,7 +188,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
                   </div>
                   <p className="mt-1 text-xs text-slate-600">Orígenes: {op.origenes.map((item) => item.numero).join(", ") || "—"} · Importe receptor verificado: {euros(op.importe_receptor_actualizado)}</p>
                   {op.email_estado === "enviado" && <p className="mt-1 text-xs font-semibold text-emerald-700">Email enviado · {fecha(op.email_enviado_en)}</p>}
-                  {op.estado === "pendiente_verificacion" && <button type="button" disabled={guardando} onClick={() => { setOperacionActiva(op); setAbierto(true); }} className="mt-2 rounded-lg border border-amber-200 px-3 py-1.5 text-xs font-bold text-amber-800">Continuar verificación</button>}
+                  {op.estado === "pendiente_verificacion" && <button type="button" disabled={guardando} onClick={() => { setOperacionActiva(op); setReceptorNumero(op.receptor_numero); setAbierto(true); }} className="mt-2 rounded-lg border border-amber-200 px-3 py-1.5 text-xs font-bold text-amber-800">Continuar verificación</button>}
                   {op.estado === "pendiente_email" && <button type="button" disabled={guardando} onClick={() => { setOperacionActiva(op); setAbierto(true); }} className="mt-2 rounded-lg border border-indigo-200 px-3 py-1.5 text-xs font-bold text-indigo-800">Continuar comunicación</button>}
                 </article>
               ))}
