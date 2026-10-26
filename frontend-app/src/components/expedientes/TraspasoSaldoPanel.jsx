@@ -38,6 +38,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
       const pendiente = operaciones.find((item) => ["pendiente_verificacion", "pendiente_email"].includes(item.estado)) || null;
       setOperacionActiva(pendiente);
       if (pendiente?.receptor_numero) setReceptorNumero(pendiente.receptor_numero);
+      if (pendiente?.origenes?.length) setOrigenesSeleccionados(pendiente.origenes.map((item) => item.numero));
     } catch (e) {
       setError(errorApi(e));
     } finally {
