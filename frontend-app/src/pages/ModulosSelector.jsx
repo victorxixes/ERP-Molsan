@@ -38,6 +38,14 @@ const MODULOS = {
     categoria: "PORTAL DE ENCARGOS EXTERNOS",
     estilo: "eg",
   },
+  "mensajeria-gestion": {
+    nombre: "Mensajería Gestión",
+    descripcion: "Solicitudes, pedidos al proveedor, incidencias, albaranes y facturas de mensajería.",
+    ruta: "/mensajeria-gestion",
+    siglas: "MG",
+    categoria: "GESTIÓN DE MENSAJERÍA",
+    estilo: "mg",
+  },
   fichajes: {
     nombre: "Fichaje Molsan",
     descripcion: "Registra tu jornada, pausas, ausencias y consulta tu calendario y justificantes.",
