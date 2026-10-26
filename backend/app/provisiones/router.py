@@ -89,6 +89,9 @@ class OperacionProvisionInput(BaseModel):
     suplidos: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
     gastos_registro: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
     otros_gastos: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
+    notaria: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
+    impuestos: Decimal = Field(Decimal("0.00"), ge=0, max_digits=14, decimal_places=2)
+    ajustes_motivo: Optional[str] = Field(None, max_length=1000)
     condonar_honorarios: bool = False
     importe_manual: Optional[Decimal] = Field(None, ge=0, max_digits=14, decimal_places=2)
     observaciones: Optional[str] = None
@@ -208,6 +211,13 @@ def _operacion_dict(db: Session, item: ProvisionOperacion) -> dict:
         "suplidos": float(item.suplidos or 0),
         "gastos_registro": float(item.gastos_registro or 0),
         "otros_gastos": float(item.otros_gastos or 0),
+        "notaria": float(getattr(item, "notaria", 0) or 0),
+        "impuestos": float(getattr(item, "impuestos", 0) or 0),
+        "gastos_registro_base": float(getattr(item, "gastos_registro_base", item.gastos_registro) or 0),
+        "suplidos_base": float(getattr(item, "suplidos_base", item.suplidos) or 0),
+        "otros_gastos_base": float(getattr(item, "otros_gastos_base", item.otros_gastos) or 0),
+        "ajustes_motivo": getattr(item, "ajustes_motivo", None),
+        "ajustes_auditoria": getattr(item, "ajustes_auditoria", []) or [],
         "condonar_honorarios": bool(item.condonar_honorarios),
         "importe_manual": float(item.importe_manual) if item.importe_manual is not None else None,
         "total": float(item.total or 0),
@@ -296,8 +306,34 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
         otros_gastos = _dinero(datos.otros_gastos)
         tarifa_id = None
 
+    # Los importes configurados son una referencia inicial para operaciones nuevas.
+    # No se recalculan operaciones históricas cuando cambia el catálogo general.
+    def importe_configurado(codigo: str) -> Decimal:
+        item = db.query(ConceptoImporteProvision).filter(
+            ConceptoImporteProvision.codigo == codigo,
+            ConceptoImporteProvision.activo.is_(True),
+        ).first()
+        return _dinero(item.importe_previsto) if item and item.modo == "previsto" and item.importe_previsto is not None else Decimal("0.00")
+
+    notaria_base = importe_configurado("notaria")
+    impuestos_base = importe_configurado("impuestos")
+    notaria = _dinero(datos.notaria) if datos.notaria else notaria_base
+    impuestos = _dinero(datos.impuestos) if datos.impuestos else impuestos_base
     importe_manual = _dinero(datos.importe_manual) if datos.importe_manual is not None else None
-    total = importe_manual if importe_manual is not None else (honorarios + suplidos + gastos_registro + otros_gastos).quantize(Decimal("0.01"))
+    total = importe_manual if importe_manual is not None else (honorarios + suplidos + gastos_registro + otros_gastos + notaria + impuestos).quantize(Decimal("0.01"))
+    auditoria = []
+    for codigo, base, efectivo in (
+        ("honorarios", honorarios_base, honorarios),
+        ("notaria", notaria_base, notaria),
+        ("registro", _dinero(tarifa.gastos_registro) if tarifa else _dinero(datos.gastos_registro), gastos_registro),
+        ("impuestos", impuestos_base, impuestos),
+        ("suplidos", _dinero(tarifa.suplidos) if tarifa else _dinero(datos.suplidos), suplidos),
+        ("otros_gastos", _dinero(tarifa.otros_gastos) if tarifa else _dinero(datos.otros_gastos), otros_gastos),
+    ):
+        if base != efectivo:
+            auditoria.append({"concepto": codigo, "importe_base": str(base), "importe_efectivo": str(efectivo), "diferencia": str((efectivo-base).quantize(Decimal("0.01")))})
+    if auditoria and not (datos.ajustes_motivo or "").strip():
+        raise HTTPException(status_code=422, detail="Indica el motivo de los ajustes manuales de la provisión.")
     operacion = ProvisionOperacion(
         provision_id=provision.id,
         entidad=entidad,
@@ -310,6 +346,13 @@ def _crear_operacion(db: Session, provision: ProvisionFondo, datos: OperacionPro
         suplidos=suplidos,
         gastos_registro=gastos_registro,
         otros_gastos=otros_gastos,
+        notaria=notaria,
+        impuestos=impuestos,
+        gastos_registro_base=_dinero(tarifa.gastos_registro) if tarifa else _dinero(datos.gastos_registro),
+        suplidos_base=_dinero(tarifa.suplidos) if tarifa else _dinero(datos.suplidos),
+        otros_gastos_base=_dinero(tarifa.otros_gastos) if tarifa else _dinero(datos.otros_gastos),
+        ajustes_motivo=(datos.ajustes_motivo or "").strip() or None,
+        ajustes_auditoria=auditoria,
         condonar_honorarios=bool(datos.condonar_honorarios),
         importe_manual=importe_manual,
         total=total,
