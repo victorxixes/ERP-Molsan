@@ -97,7 +97,7 @@ def validar_codigos_postales(valores, principal=None):
     codigos = []
     for valor in valores or []:
         cp = str(valor).strip()
-        if not re.fullmatch(r"\\d{5}", cp):
+        if not re.fullmatch(r"\d{5}", cp):
             raise HTTPException(
                 status_code=400,
                 detail=f"El código postal '{cp}' debe contener exactamente 5 dígitos.",
@@ -169,13 +169,7 @@ def listar_municipios(
     )
 
     return [
-        {
-            "id": municipio.id,
-            "ccaa": municipio.ccaa,
-            "provincia": municipio.provincia,
-            "municipio": municipio.municipio,
-            **serializar_municipio(municipio),
-        }
+        serializar_municipio(municipio)
         for municipio in municipios
     ]
 
@@ -253,6 +247,12 @@ def crear_municipio(
         if not existente.activo:
 
             existente.activo = True
+            if datos.codigos_postales is not None:
+                sincronizar_codigos_postales(
+                    existente,
+                    datos.codigos_postales,
+                    datos.codigo_postal_principal,
+                )
 
             try:
 
