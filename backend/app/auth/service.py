@@ -66,6 +66,8 @@ def serializar_empleado(empleado: Empleado):
         "nombre": empleado.nombre,
         "apellidos": empleado.apellidos,
         "usuario": empleado.usuario,
+        "email_empresa": empleado.email_empresa,
+        "email_personal": empleado.email_personal,
         "foto": empleado.foto,
         "activo": empleado.activo,
 
