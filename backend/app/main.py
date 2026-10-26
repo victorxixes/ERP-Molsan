@@ -162,6 +162,8 @@ def servir_fotografia_empleado(
 # IMPORTAR ROUTERS
 # ============================================================
 
+from backend.app.informes.sla_router import router as informes_sla_router
+
 from backend.app.auth.router import router as auth_router
 
 from backend.app.expedientes.defectos.migracion_router import (
