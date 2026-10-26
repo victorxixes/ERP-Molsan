@@ -967,7 +967,7 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
             _p(_euros(g.get("gestion", 0)), styles["CeldaInd"]),
             _p(_euros(g.get("total", 0)), styles["CeldaIndBold"]),
         ])
-    tabla = Table(rows, colWidths=[42*mm, 25*mm, 21*mm, 18*mm, 22*mm, 22*mm, 29*mm], repeatRows=1, hAlign="LEFT")
+    tabla = Table(rows, colWidths=[39*mm, 24*mm, 20*mm, 17*mm, 21*mm, 21*mm, 27*mm], repeatRows=1, hAlign="LEFT")
     tabla.setStyle(TableStyle([
         ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#eaf0f8")),
         ("GRID", (0,0), (-1,-1), 0.4, colors.HexColor("#cdd6e2")),
