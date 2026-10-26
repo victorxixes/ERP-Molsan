@@ -135,6 +135,10 @@ export default function CarpetaDigitalModal({
   const [busquedaDocumento, setBusquedaDocumento] = useState("");
   const [actividadPrincipal, setActividadPrincipal] = useState("documentacion-previa");
   const [datosExpedienteFechas, setDatosExpedienteFechas] = useState(null);
+  const [fechasSlaActividad, setFechasSlaActividad] = useState({ fecha_inicio: "", fecha_fin: "" });
+  const [guardandoFechasSla, setGuardandoFechasSla] = useState(false);
+  const [errorFechasSla, setErrorFechasSla] = useState("");
+  const [mensajeFechasSla, setMensajeFechasSla] = useState("");
 
   // Las fechas pertenecen a la ficha del expediente; este modal se abre desde
   // el listado sin recibir esos datos como props, por eso se cargan aquí.
@@ -186,6 +190,38 @@ export default function CarpetaDigitalModal({
       });
     return () => { activo = false; };
   }, [expedienteId]);
+
+  useEffect(() => {
+    let activo = true;
+    setFechasSlaActividad({ fecha_inicio: "", fecha_fin: "" });
+    setErrorFechasSla("");
+    setMensajeFechasSla("");
+    if (!modoActividad || !expedienteId || !actividadId) return () => { activo = false; };
+    axios.get(`/informes-sla/fechas/${encodeURIComponent(expedienteId)}/${encodeURIComponent(actividadId)}`)
+      .then(({ data }) => {
+        if (activo) setFechasSlaActividad({ fecha_inicio: String(data?.fecha_inicio || "").slice(0, 10), fecha_fin: String(data?.fecha_fin || "").slice(0, 10) });
+      })
+      .catch((e) => { if (activo) setErrorFechasSla(e?.response?.data?.detail || "No se pudieron cargar las fechas SLA de esta actividad."); });
+    return () => { activo = false; };
+  }, [expedienteId, modoActividad, actividadId]);
+
+  const guardarFechasSlaActividad = async () => {
+    if (!expedienteId || !actividadId || guardandoFechasSla) return;
+    setGuardandoFechasSla(true);
+    setErrorFechasSla("");
+    setMensajeFechasSla("");
+    try {
+      await axios.put(`/informes-sla/fechas/${encodeURIComponent(expedienteId)}/${encodeURIComponent(actividadId)}`, {
+        fecha_inicio: fechasSlaActividad.fecha_inicio || null,
+        fecha_fin: fechasSlaActividad.fecha_fin || null,
+      });
+      setMensajeFechasSla("Fechas de actividad guardadas.");
+    } catch (e) {
+      setErrorFechasSla(e?.response?.data?.detail || "No se pudieron guardar las fechas SLA.");
+    } finally {
+      setGuardandoFechasSla(false);
+    }
+  };
 
   const bloqueActividad = useMemo(() => resolverBloque(actividadId), [actividadId]);
   const esCancelacionSinProvision = normalizar(tipoOperacion) === "cancelacion-sin-provision";
@@ -605,6 +641,20 @@ export default function CarpetaDigitalModal({
             </section>
 
             <section className="min-h-[250px] min-w-0 w-full overflow-hidden">
+              {modoActividad && (
+                <section className="mb-3 rounded-xl border border-blue-200 bg-white p-3 shadow-sm">
+                  <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                    <div><h4 className="text-xs font-extrabold text-slate-800">⏱️ Control SLA · {bloqueActividad?.titulo || actividadId}</h4><p className="mt-0.5 text-[10px] text-slate-500">Fechas propias de esta actividad; no se comparten con las demás fases.</p></div>
+                    <button type="button" onClick={guardarFechasSlaActividad} disabled={guardandoFechasSla} className="rounded-lg bg-blue-600 px-3 py-2 text-[11px] font-bold text-white hover:bg-blue-700 disabled:opacity-50">{guardandoFechasSla ? "Guardando…" : "Guardar fechas"}</button>
+                  </div>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <label className="block text-[10px] font-bold text-slate-500">Inicio actividad<input type="date" value={fechasSlaActividad.fecha_inicio} disabled={guardandoFechasSla} onChange={(e) => setFechasSlaActividad((v) => ({ ...v, fecha_inicio: e.target.value, fecha_fin: v.fecha_fin && e.target.value && v.fecha_fin < e.target.value ? "" : v.fecha_fin }))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-normal text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /></label>
+                    <label className="block text-[10px] font-bold text-slate-500">Fin actividad<input type="date" min={fechasSlaActividad.fecha_inicio || undefined} value={fechasSlaActividad.fecha_fin} disabled={guardandoFechasSla} onChange={(e) => setFechasSlaActividad((v) => ({ ...v, fecha_fin: e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-normal text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /></label>
+                  </div>
+                  {errorFechasSla && <p role="alert" className="mt-2 rounded-lg bg-rose-50 px-2.5 py-2 text-[11px] text-rose-700">{errorFechasSla}</p>}
+                  {mensajeFechasSla && <p role="status" className="mt-2 rounded-lg bg-emerald-50 px-2.5 py-2 text-[11px] text-emerald-700">{mensajeFechasSla}</p>}
+                </section>
+              )}
               {modoActividad && actividadId === "documentacion-previa" && false ? (
                 <div className="flex h-full min-h-[250px] flex-col overflow-y-auto rounded-xl border border-indigo-100 bg-white shadow-sm">
                   <header className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-3">
