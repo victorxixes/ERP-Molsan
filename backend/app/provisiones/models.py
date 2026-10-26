@@ -42,6 +42,28 @@ class TarifaProvision(Base):
     )
 
 
+
+class ConceptoImporteProvision(Base):
+    """Configuración editable de importes estimativos usados por Provisiones."""
+    __tablename__ = "provisiones_conceptos_importes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    codigo = Column(String(40), nullable=False, unique=True, index=True)
+    nombre = Column(String(120), nullable=False)
+    modo = Column(String(20), nullable=False, default="previsto", server_default="previsto")
+    importe_previsto = Column(Numeric(14, 2), nullable=True)
+    descripcion = Column(Text, nullable=True)
+    activo = Column(Boolean, nullable=False, default=True, server_default="true")
+    creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    actualizado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        CheckConstraint("codigo IN ('notaria', 'registro', 'gestion', 'impuestos')", name="ck_provisiones_concepto_codigo"),
+        CheckConstraint("modo IN ('previsto', 'calculado', 'catalogo')", name="ck_provisiones_concepto_modo"),
+        CheckConstraint("importe_previsto IS NULL OR importe_previsto >= 0", name="ck_provisiones_concepto_importe"),
+    )
+
+
 class ProvisionFondo(Base):
     __tablename__ = "provisiones_fondo"
 
