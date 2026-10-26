@@ -2846,9 +2846,24 @@ export default function ExpedientesListado() {
                                 <button type="button" onClick={() => setCarpetaDigitalSeleccionada({ expedienteId: expediente.id_expediente || expediente.id, actividadId: actividadSeleccionada })} className="rounded-lg border px-2 py-1 text-xs font-semibold" style={{ borderColor: "var(--erp-border)", color: "var(--erp-primary)" }}>📂 {expediente[columna.key]}</button>
                               ) : null
                             ) : columna.key === "id_expediente" ? (
-                              <Link to={`/expedientes/${encodeURIComponent(expediente.id_expediente || expediente.id || "")}`} className="font-extrabold text-[var(--erp-primary)] underline-offset-2 hover:underline" title={`Abrir ficha del expediente ${expediente.id_expediente || expediente.id || ""}`}>
-                                {formatearValor(expediente[columna.key], columna.tipo)}
-                              </Link>
+                              <span className="inline-flex items-center gap-2">
+                                {expediente.solicitante_dni_repetido && (
+                                  <span
+                                    className="inline-flex shrink-0 items-center justify-center"
+                                    title={`DNI/NIF del solicitante compartido con otro expediente: ${expediente.nif_solicitante || ""}`}
+                                    aria-label="El DNI/NIF del solicitante aparece en varios expedientes"
+                                    role="img"
+                                  >
+                                    <svg aria-hidden="true" viewBox="0 0 20 20" width="16" height="16" fill="none">
+                                      <circle cx="10" cy="10" r="6.8" stroke="currentColor" strokeWidth="2.2" />
+                                      <circle cx="10" cy="10" r="3.1" stroke="currentColor" strokeWidth="1.2" opacity=".55" />
+                                    </svg>
+                                  </span>
+                                )}
+                                <Link to={`/expedientes/${encodeURIComponent(expediente.id_expediente || expediente.id || "")}`} className="font-extrabold text-[var(--erp-primary)] underline-offset-2 hover:underline" title={`Abrir ficha del expediente ${expediente.id_expediente || expediente.id || ""}`}>
+                                  {formatearValor(expediente[columna.key], columna.tipo)}
+                                </Link>
+                              </span>
                             ) : ["estado_expediente", "estado_actividad", "facturacion_estado", "registral_estado"].includes(columna.key) && expediente[columna.key] ? (
                               <span className="inline-flex max-w-[220px] items-center rounded-full border px-2.5 py-1 text-xs font-semibold whitespace-normal" style={estiloEstado(expediente[columna.key])} title={String(expediente[columna.key])}>
                                 {formatearValor(expediente[columna.key], columna.tipo)}
