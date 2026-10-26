@@ -113,6 +113,7 @@ export default function ProvisionesFondosPage() {
   const [catalogoHonorarios, setCatalogoHonorarios] = useState([]);
   const [catalogoMunicipios, setCatalogoMunicipios] = useState([]);
   const [catalogoRegistros, setCatalogoRegistros] = useState([]);
+  const [conceptosImportes, setConceptosImportes] = useState([]);
 
   useEffect(() => {
     let activo = true;
@@ -131,6 +132,9 @@ export default function ProvisionesFondosPage() {
 
   useEffect(() => {
     let activa = true;
+    axios.get("/expedientes/provisiones/conceptos-importes").then((r) => {
+      if (activa) setConceptosImportes(Array.isArray(r.data?.items) ? r.data.items : []);
+    }).catch(() => { if (activa) setConceptosImportes([]); });
     Promise.all([
       axios.get("/entidades-bancarias"),
       axios.get("/honorarios-gestoria?activos=true"),
@@ -199,8 +203,11 @@ export default function ProvisionesFondosPage() {
 
       const r = await axios.post("/expedientes/provisiones/tarifas/calcular", { tipo: "provision", entidad: g.entidad, territorio: g.territorio || "Península", capital: Number(g.capital || 0) });
       const t = r.data?.tarifa || {};
-      const notaria = g.tipo_carga === "Hipotecaria" ? Number(t.suplidos || 0) : 0;
-      const registro = Number(t.gastos_registro || 0);
+      const conceptoNotaria = conceptosImportes.find((x) => x.codigo === "notaria" && x.activo !== false);
+      const conceptoRegistro = conceptosImportes.find((x) => x.codigo === "registro" && x.activo !== false);
+      const conceptoImpuestos = conceptosImportes.find((x) => x.codigo === "impuestos" && x.activo !== false);
+      const notaria = g.tipo_carga === "Hipotecaria" ? Number(t.suplidos || conceptoNotaria?.importe_previsto || 0) : 0;
+      const registro = Number(t.gastos_registro || conceptoRegistro?.importe_previsto || 0);
       // Los honorarios siempre proceden del catálogo central. La elección
       // se hace según la columna «Entidad actual» del catálogo bancario.
       const gestion = Number(honorarioAplicable.importe ?? (
@@ -208,8 +215,9 @@ export default function ProvisionesFondosPage() {
         (1 + (String(honorarioAplicable.tipo_impuesto || "IVA").toUpperCase() === "EXENTO" ? 0 : Number(honorarioAplicable.porcentaje_impuesto || 0)) / 100)
       ));
       const otros = Number(t.otros_gastos || 0);
-      const nuevoTotal = notaria + Number(g.ajd || 0) + registro + gestion + otros;
-      setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, notaria: String(notaria), registro: String(registro), gestion: String(gestion), otros_gastos: String(otros), total: nuevoTotal.toFixed(2) } : x) }));
+      const impuestos = Number(g.ajd || (conceptoImpuestos?.modo === "previsto" ? conceptoImpuestos.importe_previsto : 0) || 0);
+      const nuevoTotal = notaria + impuestos + registro + gestion + otros;
+      setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, notaria: String(notaria), ajd: String(impuestos), registro: String(registro), gestion: String(gestion), otros_gastos: String(otros), total: nuevoTotal.toFixed(2) } : x) }));
       setAviso(`Tarifa aplicada. Honorarios de gestoría tomados del catálogo central: ${honorarioAplicable.nombre}.`);
       setError("");
     } catch (e) { setError(e.response?.data?.detail || "No hay tarifa activa para esa entidad y capital. Puedes introducir los importes manualmente."); }
