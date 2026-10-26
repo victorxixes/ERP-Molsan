@@ -763,26 +763,12 @@ export default function Municipios() {
 
             body:
               JSON.stringify({
-                ccaa:
-                  datos.ccaa.trim(),
-
-                provincia:
-                  datos.provincia.trim(),
-
-                municipio:
-                  datos.municipio.trim(),
-                codigos_postales: (datos.codigos_postales_texto || "")
-                  .split(/[;,\\s]+/)
-                  .map((cp) => cp.trim())
-                  .filter(Boolean),
-                codigo_postal_principal: (datos.codigos_postales_texto || "")
-                  .split(/[;,\\s]+/)
-                  .map((cp) => cp.trim())
-                  .filter(Boolean)
-                  .includes(datos.codigo_postal_principal)
-                    ? datos.codigo_postal_principal
-                    : ((datos.codigos_postales_texto || "").split(/[;,\\s]+/).map((cp) => cp.trim()).filter(Boolean)[0] || null)
-              })
+                ccaa: datos.ccaa.trim(),
+                provincia: datos.provincia.trim(),
+                municipio: datos.municipio.trim(),
+                codigos_postales: datos.codigos_postales || [],
+                codigo_postal_principal: datos.codigo_postal_principal || null
+              })              })
           }
         );
 
@@ -3162,10 +3148,10 @@ function ModalMunicipio({
     e.preventDefault();
 
     const codigos = (formulario.codigos_postales_texto || "")
-      .split(/[;,\\s]+/)
+      .split(/[;,\s]+/)
       .map((cp) => cp.trim())
       .filter(Boolean);
-    const invalidos = codigos.filter((cp) => !/^\\d{5}$/.test(cp));
+    const invalidos = codigos.filter((cp) => !/^\d{5}$/.test(cp));
     if (invalidos.length) {
       window.alert("Cada código postal debe tener exactamente 5 dígitos. Revisa: " + invalidos.join(", "));
       return;
@@ -3470,7 +3456,7 @@ function ModalMunicipio({
                 value={formulario.codigos_postales_texto}
                 onChange={(e) => {
                   const texto = e.target.value;
-                  const codigos = texto.split(/[;,\\s]+/).map((cp) => cp.trim()).filter(Boolean);
+                  const codigos = texto.split(/[;,\s]+/).map((cp) => cp.trim()).filter(Boolean);
                   cambiarCampo("codigos_postales_texto", texto);
                   if (!codigos.includes(formulario.codigo_postal_principal)) {
                     cambiarCampo("codigo_postal_principal", codigos[0] || "");
@@ -3489,7 +3475,7 @@ function ModalMunicipio({
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
               >
                 <option value="">Sin código postal principal</option>
-                {(formulario.codigos_postales_texto || "").split(/[;,\\s]+/).map((cp) => cp.trim()).filter((cp, i, lista) => cp && lista.indexOf(cp) === i && /^\\d{5}$/.test(cp)).map((cp) => <option key={cp} value={cp}>{cp}</option>)}
+                {(formulario.codigos_postales_texto || "").split(/[;,\s]+/).map((cp) => cp.trim()).filter((cp, i, lista) => cp && lista.indexOf(cp) === i && /^\d{5}$/.test(cp)).map((cp) => <option key={cp} value={cp}>{cp}</option>)}
               </select>
             </div>
 
