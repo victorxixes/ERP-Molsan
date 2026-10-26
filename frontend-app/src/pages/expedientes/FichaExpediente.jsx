@@ -2745,25 +2745,37 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
       const base = Math.max(0, Number(String(facturaHonorariosForm.baseImponible).replace(",", ".")) || 0);
       const impuesto = Math.max(0, Number(String(facturaHonorariosForm.importeImpuesto).replace(",", ".")) || 0);
       const total = Math.round((base + impuesto + Number.EPSILON) * 100) / 100;
+      const payloadFactura = {
+        importe: total,
+        tarifa: facturaHonorariosForm.tarifa,
+        concepto: facturaHonorariosForm.concepto || "Honorarios de gestoría",
+        entidad: facturaHonorariosForm.entidad,
+        id_expediente: expediente.id_expediente,
+        cliente: facturaHonorariosForm.cliente,
+        nif_cliente: facturaHonorariosForm.nifCliente,
+        numero_factura: facturaHonorariosForm.numeroFactura,
+        fecha_factura: facturaHonorariosForm.fechaFactura,
+        base_imponible: base,
+        tipo_impuesto: facturaHonorariosForm.tipoImpuesto,
+        porcentaje_impuesto: Number(facturaHonorariosForm.porcentajeImpuesto) || 0,
+        importe_impuesto: impuesto,
+        total_factura: total,
+        observaciones: facturaHonorariosForm.observaciones,
+      };
+
+      // Generar primero el DOCX desde la plantilla asociada al concepto de gasto ID 6.
+      // Si falta la plantilla o el concepto no coincide, no se confirma el registro.
+      const documentoFactura = await axios.post(
+        `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/factura-docx`,
+        payloadFactura,
+        { responseType: "blob" }
+      );
+
       const respuesta = await axios.post(
         `/expedientes/${encodeURIComponent(expediente.id_expediente)}/honorarios-gestoria/generar`,
-        {
-          importe: total,
-          tarifa: facturaHonorariosForm.tarifa,
-          concepto: facturaHonorariosForm.concepto || "Honorarios de gestoría",
-          entidad: facturaHonorariosForm.entidad,
-          id_expediente: expediente.id_expediente,
-          cliente: facturaHonorariosForm.cliente,
-          nif_cliente: facturaHonorariosForm.nifCliente,
-          numero_factura: facturaHonorariosForm.numeroFactura,
-          fecha_factura: facturaHonorariosForm.fechaFactura,
-          base_imponible: base,
-          tipo_impuesto: facturaHonorariosForm.tipoImpuesto,
-          porcentaje_impuesto: Number(facturaHonorariosForm.porcentajeImpuesto) || 0,
-          importe_impuesto: impuesto,
-          observaciones: facturaHonorariosForm.observaciones,
-        }
+        payloadFactura
       );
+
       setHonorariosGestoria({
         importe: total,
         tarifa: facturaHonorariosForm.tarifa,
@@ -2771,20 +2783,29 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
         ...(respuesta?.data || {}),
         guardado: true,
       });
-      setMensajeHonorariosGestoria("Honorarios registrados en el expediente.");
+
+      const urlFactura = URL.createObjectURL(documentoFactura.data instanceof Blob ? documentoFactura.data : new Blob([documentoFactura.data]));
+      const enlaceFactura = document.createElement("a");
+      enlaceFactura.href = urlFactura;
+      enlaceFactura.download = `Factura_honorarios_${String(expediente.id_expediente).replace(/[/\\\\]/g, "-")}.docx`;
+      document.body.appendChild(enlaceFactura);
+      enlaceFactura.click();
+      enlaceFactura.remove();
+      URL.revokeObjectURL(urlFactura);
+
+      setMensajeHonorariosGestoria("Honorarios registrados y factura Word generada desde la plantilla oficial vinculada al concepto ID 6.");
       setMostrarModalFacturaHonorarios(false);
     } catch (err) {
       const detail = err?.response?.data?.detail;
       setErrorHonorariosGestoria(
         typeof detail === "string" ? detail :
         detail?.mensaje || err?.message ||
-        "No se pudieron registrar los honorarios. No se ha confirmado la factura."
+        "No se pudieron registrar los honorarios o generar la factura Word. No se ha confirmado la operación."
       );
     } finally {
       setGuardandoFacturaHonorarios(false);
     }
   }
-
 
   async function guardarCamposActividad() {
     if (!expediente?.id_expediente || guardandoActividad) return;
