@@ -730,7 +730,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       key: "provisiones-fondos",
       permiso: "expedientes",
       to: "/provisiones-fondos",
-      label: "Provisiones de fondos",
+      label: "Provisiones",
       icon: "clipboard",
     },
 
@@ -950,10 +950,9 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
       if (tipo === "espacios" ? !esEspacio : esEspacio) return false;
       const ruta = rutaNormalizada(modulo.route);
       if (rutaActual === ruta || rutaActual.startsWith(`${ruta}/`)) return false;
-      const siempreEnTecnicos = new Set(["utilidades", "catalogos", "provisiones-fondos"]);
-      if (!(tipo === "tecnicos" && siempreEnTecnicos.has(modulo.key)) &&
-          (rutasVisibles.has(ruta) || clavesVisibles.has(normalizarModulo(modulo.key)) ||
-          clavesVisibles.has(normalizarModulo(modulo.label)))) return false;
+      // No repetir en los desplegables módulos que ya aparecen en el sidebar.
+      if (rutasVisibles.has(ruta) || clavesVisibles.has(normalizarModulo(modulo.key)) ||
+          clavesVisibles.has(normalizarModulo(modulo.label))) return false;
       return true;
     }).map((modulo) => ({
       key: modulo.key, to: modulo.route, label: modulo.label,
@@ -1018,15 +1017,15 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
 
   const menuSidebarItems = menuSidebarAbierto === "espacios" ? espaciosTrabajoDropdown : modulosTecnicosDropdown;
   const crearBotonesDropdown = () => ([
-    ...(espaciosTrabajoDropdown.length ? [{ key: "espacios-trabajo", label: "Espacios de trabajo", icon: "folder", menu: "espacios" }] : []),
-    ...(modulosTecnicosDropdown.length ? [{ key: "modulos-tecnicos", label: "Módulos más técnicos", icon: "settings", menu: "tecnicos" }] : []),
+    ...(espaciosTrabajoDropdown.length ? [{ key: "espacios-trabajo", label: "Espacios", icon: "folder", menu: "espacios" }] : []),
+    ...(modulosTecnicosDropdown.length ? [{ key: "modulos-tecnicos", label: "Técnicos", icon: "settings", menu: "tecnicos" }] : []),
   ]);
 
   const navigationItemsConModulos = useMemo(() => {
     if (!Array.isArray(navigationItems)) return null;
     const clavesNavegacion = new Set();
     const sinDuplicados = navigationItems.filter((item) => {
-      if (item?.key === "modulos" || item?.key === "notificaciones" || normalizarModulo(item?.label) === "notificaciones" || ["modulos", "espacios de trabajo", "modulos mas tecnicos"].includes(normalizarModulo(item?.label))) return false;
+      if (item?.key === "modulos" || item?.key === "notificaciones" || normalizarModulo(item?.label) === "notificaciones" || ["modulos", "espacios", "espacios de trabajo", "tecnicos", "modulos mas tecnicos"].includes(normalizarModulo(item?.label))) return false;
       const identificadores = [normalizarModulo(item?.key), normalizarModulo(item?.label), normalizarModulo(item?.to || item?.route)].filter(Boolean);
       if (identificadores.some((clave) => clavesNavegacion.has(clave))) return false;
       identificadores.forEach((clave) => clavesNavegacion.add(clave));
