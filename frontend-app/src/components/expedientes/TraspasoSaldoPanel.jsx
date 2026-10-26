@@ -39,6 +39,12 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
       setOperacionActiva(pendiente);
       if (pendiente?.receptor_numero) setReceptorNumero(pendiente.receptor_numero);
       if (pendiente?.origenes?.length) setOrigenesSeleccionados(pendiente.origenes.map((item) => item.numero));
+      if (pendiente?.estado === "pendiente_email") {
+        setDestinatario(pendiente.email_destinatario || "");
+        setAsunto(pendiente.email_asunto || "");
+        setCuerpo(pendiente.email_cuerpo || "");
+        setImporteReceptor(pendiente.importe_receptor_actualizado == null ? "" : String(pendiente.importe_receptor_actualizado));
+      }
     } catch (e) {
       setError(errorApi(e));
     } finally {
@@ -62,7 +68,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
   const origenBloqueado = seleccionados.find((item) => item.bloqueado_por_traspaso || item.liquidado_sin_tramitar);
 
   useEffect(() => {
-    if (!receptor) return;
+    if (!receptor || operacionActiva?.estado === "pendiente_email") return;
     setDestinatario(receptor.email_cliente || "");
     setImporteReceptor(receptor.importe === null || receptor.importe === undefined ? "" : String(receptor.importe));
     const origenes = seleccionados.map((item) => `${item.numero} (saldo disponible de referencia: ${item.saldo_disponible ?? "no indicado"} €)`).join(", ");
@@ -72,7 +78,7 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
     );
     // La plantilla se vuelve a calcular al cambiar el receptor o los orígenes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [receptorNumero, candidatos.length, origenesSeleccionados.join("|")]);
+  }, [receptorNumero, candidatos.length, origenesSeleccionados.join("|"), operacionActiva?.estado]);
 
   const alternarOrigen = (numero) => setOrigenesSeleccionados((actual) =>
     actual.includes(numero) ? actual.filter((item) => item !== numero) : [...actual, numero]
@@ -107,6 +113,20 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
         cuerpo: cuerpo.replace(/Importe actualizado del expediente receptor:.*(?=\n|$)/, `Importe actualizado del expediente receptor: ${importeReceptor} €`),
       });
       setMensaje(respuesta.data.mensaje || "Importe verificado.");
+      await cargar();
+    } catch (e) {
+      setError(errorApi(e));
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  const guardarEmail = async () => {
+    if (!operacionActiva?.id) return;
+    setError(""); setMensaje(""); setGuardando(true);
+    try {
+      const respuesta = await axios.put(`/expedientes/traspasos-saldo/${operacionActiva.id}/email`, { destinatario, asunto, cuerpo });
+      setMensaje(respuesta.data.mensaje || "Email actualizado.");
       await cargar();
     } catch (e) {
       setError(errorApi(e));
@@ -225,9 +245,21 @@ export default function TraspasoSaldoPanel({ expediente, visible = true }) {
             <div className="rounded-xl border border-indigo-200 bg-indigo-50/40 p-4">
               <h4 className="text-sm font-extrabold text-slate-900">2. Enviar email y cerrar el traspaso</h4>
               <p className="mt-1 text-xs leading-5 text-slate-600">El Importe del receptor ya se ha actualizado. Al enviar correctamente el email, los expedientes de origen pasarán a «Liquidado sin tramitar».</p>
-              <p className="mt-2 text-xs text-slate-700">Destinatario: <strong>{operacionActiva.email_destinatario || destinatario || "No indicado"}</strong> · Importe verificado: <strong>{euros(operacionActiva.importe_receptor_actualizado)}</strong></p>
+              <p className="mt-2 text-xs text-slate-700">Importe verificado: <strong>{euros(operacionActiva.importe_receptor_actualizado)}</strong></p>
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <label className="text-xs font-bold text-slate-700">Email del cliente
+                  <input type="email" value={destinatario} onChange={(e) => setDestinatario(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium" />
+                </label>
+                <label className="text-xs font-bold text-slate-700">Asunto
+                  <input value={asunto} onChange={(e) => setAsunto(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium" />
+                </label>
+                <label className="text-xs font-bold text-slate-700 md:col-span-2">Cuerpo del email
+                  <textarea rows={4} value={cuerpo} onChange={(e) => setCuerpo(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium" />
+                </label>
+              </div>
               <div className="mt-3 flex flex-wrap justify-end gap-2">
-                <button type="button" disabled={guardando} onClick={enviarEmail} className="rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-extrabold text-white disabled:opacity-50">{guardando ? "Enviando…" : "Enviar email al cliente y cerrar"}</button>
+                <button type="button" disabled={guardando || !destinatario.includes("@") || !asunto.trim() || !cuerpo.trim()} onClick={guardarEmail} className="rounded-lg border border-indigo-200 bg-white px-4 py-2.5 text-xs font-extrabold text-indigo-800 disabled:opacity-50">Guardar cambios del email</button>
+                <button type="button" disabled={guardando || !destinatario.includes("@") || !asunto.trim() || !cuerpo.trim()} onClick={enviarEmail} className="rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-extrabold text-white disabled:opacity-50">{guardando ? "Enviando…" : "Enviar email al cliente y cerrar"}</button>
               </div>
               <p className="mt-2 text-[11px] text-slate-500">El envío requiere SMTP configurado en el backend. Si falla, la operación seguirá pendiente de comunicación y los orígenes no se liquidarán.</p>
             </div>
