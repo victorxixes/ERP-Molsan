@@ -90,6 +90,14 @@ const CATALOGOS = [
     grupo: "Catálogos económicos",
   },
   {
+    icon: "🚚",
+    titulo: "Mensajería · Servicios y tarifas",
+    descripcion: "Mantén el catálogo interno de servicios, tarifas, suplementos e impuestos de mensajería.",
+    ruta: "/catalogos/mensajeria-servicios",
+    grupo: "Catálogos económicos",
+    destacado: true,
+  },
+  {
     icon: "🕒",
     titulo: "Fichajes · Tipos de ausencia",
     descripcion: "Configura los motivos de ausencia y si cada uno requiere justificante.",
