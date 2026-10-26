@@ -4,9 +4,7 @@ import "./ProvisionesFondosPage.css";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
 const dinero = (v) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(v || 0));
-const TIPOS_CARGA = ["Hipotecaria", "Administrativa", "Judicial", "Bienes muebles", "Otras"];
-const TERRITORIOS = ["Península", "Canarias"];
-const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "Hipotecaria", adquisicion_vivienda_habitual: "", territorio: "Península", notaria: "0", ajd: "0", registro: "0", gestion: "0", total: "0" });
+const vaciaGarantia = () => ({ entidad: "", capital: "", finca: "", cru_idufir: "", registro_propiedad: "", poblacion: "", provincia: "", tipo_carga: "prestamo hipotecario", condicion_resolutoria: "no", adquisicion_vivienda_habitual: "", notaria: "0", ajd: "0", registro: "0", gestion: "0", total: "0" });
 const nuevoFormulario = () => ({ id: null, fecha: hoy(), cliente: { nombre: "", nif: "", direccion: "", cp: "", poblacion: "", provincia: "", telefono: "", email: "" }, oficina: { numero: "", contacto: "", email: "" }, garantias: [vaciaGarantia()], observaciones: "" });
 const input = "mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
 const label = "block text-xs font-semibold uppercase tracking-wide text-slate-500";
@@ -235,6 +233,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
   const [catalogoHonorarios, setCatalogoHonorarios] = useState([]);
   const [catalogoMunicipios, setCatalogoMunicipios] = useState([]);
   const [catalogoRegistros, setCatalogoRegistros] = useState([]);
+  const [tiposCarga, setTiposCarga] = useState([]);
   const [conceptosImportes, setConceptosImportes] = useState([]);
 
   useEffect(() => {
@@ -242,12 +241,14 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     Promise.all([
       axios.get("/municipios"),
       axios.get("/expedientes/provisiones/tarifas/catalogo-registros"),
-    ]).then(([municipios, registros]) => {
+      axios.get("/tipos-carga-hipotecaria/opciones"),
+    ]).then(([municipios, registros, tipos]) => {
       if (!activo) return;
       setCatalogoMunicipios(Array.isArray(municipios.data) ? municipios.data.filter((m) => m.activo !== false) : []);
       setCatalogoRegistros(Array.isArray(registros.data) ? registros.data : []);
+      setTiposCarga(Array.isArray(tipos.data) ? tipos.data.filter((t) => t.activo !== false) : []);
     }).catch(() => {
-      if (activo) { setCatalogoMunicipios([]); setCatalogoRegistros([]); }
+      if (activo) { setCatalogoMunicipios([]); setCatalogoRegistros([]); setTiposCarga([]); }
     });
     return () => { activo = false; };
   }, []);
@@ -314,84 +315,63 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
   const calcular = async (i) => {
     const g = form.garantias[i];
     if (!String(g.entidad || "").trim()) { setError("Indica la entidad bancaria antes de calcular."); return; }
-    const capital = Number(String(g.capital || "").replace(",", "."));
-    if (!Number.isFinite(capital) || capital <= 0) { setError("Introduce un capital del préstamo válido y mayor que 0 € antes de calcular."); return; }
+    const capital = Number(String(g.capital || "").replace(/\s/g, "").replace(",", "."));
+    if (!Number.isFinite(capital) || capital <= 0) { setError("Introduce un capital del préstamo válido y mayor que 0 €."); return; }
 
-    try {
-      const normalizar = (valor) => normalizarCatalogo(valor);
-      const entidadSeleccionada = entidadesBancarias.find((e) => normalizar(e.nombre) === normalizar(g.entidad));
-      const entidadActual = entidadSeleccionada?.entidad_actual_id
-        ? entidadesBancarias.find((e) => Number(e.id) === Number(entidadSeleccionada.entidad_actual_id))
-        : null;
-      const nombreEntidadActual = entidadActual?.nombre || entidadSeleccionada?.entidad_actual || entidadSeleccionada?.nombre || g.entidad;
-      const esCaixaBank = normalizar(nombreEntidadActual).includes("caixabank");
-      const honorarioAplicable = catalogoHonorarios.find((h) => {
-        const nombre = normalizar(h.nombre);
-        return nombre.includes("honorarios de gestoria") &&
-          (esCaixaBank ? nombre.endsWith("caixabank") : nombre.endsWith("otra entidad"));
-      });
-
-      if (!honorarioAplicable) {
-        const nombreHonorario = esCaixaBank ? "Honorarios de gestoría — CaixaBank" : "Honorarios de gestoría — Otra entidad";
-        setError(`No se ha encontrado un honorario activo «${nombreHonorario}» en el catálogo de Honorarios Gestoría. Revisa el catálogo y vuelve a calcular.`);
-        return;
-      }
-
-      // El catálogo económico es la fuente maestra de los tramos de capital.
-      // No dependemos exclusivamente de que exista una tarifa duplicada en la tabla antigua.
-      const conceptoNotaria = conceptosImportes.find((x) => x.codigo === "notaria" && x.activo !== false);
-      const conceptoRegistro = conceptosImportes.find((x) => x.codigo === "registro" && x.activo !== false);
-      const conceptoImpuestos = conceptosImportes.find((x) => x.codigo === "impuestos" && x.activo !== false);
-      const reglas = conceptoNotaria?.reglas || {};
-      const tramos = esCaixaBank ? reglas.tramos_caixabank : reglas.tramos_entidad_ajena;
-      const tramo = Array.isArray(tramos) ? tramos.find((t) => {
-        const desde = Number(String(t.desde ?? "").replace(",", "."));
-        const hasta = Number(String(t.hasta ?? "").replace(",", "."));
-        return Number.isFinite(desde) && Number.isFinite(hasta) && capital >= desde && capital <= hasta;
-      }) : null;
-
-      let tarifaApi = null;
-      try {
-        const r = await axios.post("/expedientes/provisiones/tarifas/calcular", {
-          tipo: "provision", entidad: g.entidad, territorio: g.territorio || "Península", capital
-        });
-        tarifaApi = r.data?.tarifa || null;
-      } catch (e) {
-        // Si no hay tarifa antigua, continuamos con los tramos del catálogo económico.
-        if (e.response?.status !== 404) throw e;
-      }
-
-      if (!tramo && !tarifaApi) {
-        setError(`No hay un tramo configurado para ${dinero(capital)} y ${esCaixaBank ? "CaixaBank" : "otra entidad"}. Revisa Catálogos → Tabla Provisiones de fondos.`);
-        return;
-      }
-
-      const notaria = g.tipo_carga === "Hipotecaria"
-        ? Number(tramo?.notaria ?? tarifaApi?.suplidos ?? conceptoNotaria?.importe_previsto ?? 0)
-        : 0;
-      const registro = Number(tramo?.registro ?? tarifaApi?.gastos_registro ?? conceptoRegistro?.importe_previsto ?? 0);
-      const directo = honorarioAplicable.importe;
-      const base = Number(honorarioAplicable.base_imponible ?? honorarioAplicable.importe_base ?? honorarioAplicable.importe_honorarios ?? honorarioAplicable.precio ?? 0);
-      const porcentaje = String(honorarioAplicable.tipo_impuesto || "IVA").toUpperCase() === "EXENTO" ? 0 : Number(honorarioAplicable.porcentaje_impuesto || 0);
-      const gestion = directo !== null && directo !== undefined && directo !== "" && Number.isFinite(Number(directo))
-        ? Number(directo)
-        : base * (1 + porcentaje / 100);
-      const impuestos = Number(g.ajd || (conceptoImpuestos?.modo === "previsto" ? conceptoImpuestos.importe_previsto : 0) || 0);
-      const nuevoTotal = notaria + impuestos + registro + gestion;
-      setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? {
-        ...x, notaria: String(notaria), ajd: String(impuestos), registro: String(registro),
-        gestion: String(gestion), total: nuevoTotal.toFixed(2)
-      } : x) }));
-      setAviso(`Cálculo aplicado desde ${tramo ? "Catálogos → Tabla Provisiones de fondos" : "el tarifario de provisiones"}. Honorarios de gestoría: ${honorarioAplicable.nombre}.`);
-      setError("");
-    } catch (e) {
-      setError(e.response?.data?.detail || "No se ha podido calcular. Comprueba la entidad, el capital y los honorarios configurados.");
+    const normalizar = normalizarCatalogo;
+    const banco = entidadesBancarias.find((e) => normalizar(e.nombre) === normalizar(g.entidad));
+    if (!banco) { setError("Selecciona una entidad bancaria existente en el catálogo Entidades bancarias."); return; }
+    const entidadActual = entidadesBancarias.find((e) => banco.entidad_actual_id != null && String(e.id) === String(banco.entidad_actual_id));
+    const actualNombre = entidadActual?.nombre || (typeof banco.entidad_actual === "string" ? banco.entidad_actual : "") || banco.nombre;
+    const esCaixaBank = normalizar(actualNombre).includes("caixabank");
+    const conceptoNotaria = conceptosImportes.find((x) => x.codigo === "notaria" && x.activo !== false);
+    const conceptoRegistro = conceptosImportes.find((x) => x.codigo === "registro" && x.activo !== false);
+    const conceptoImpuestos = conceptosImportes.find((x) => x.codigo === "impuestos" && x.activo !== false);
+    const reglas = conceptoNotaria?.reglas || {};
+    const tramosConfigurados = esCaixaBank ? reglas.tramos_caixabank : reglas.tramos_entidad_ajena;
+    // Los tramos iniciales que muestra el catálogo son también la configuración por defecto
+    // hasta que el administrador los personalice y guarde.
+    const tramos = Array.isArray(tramosConfigurados) && tramosConfigurados.length
+      ? tramosConfigurados
+      : clonarTramos(esCaixaBank ? "caixabank" : "ajena");
+    const tramo = tramos.find((t) => {
+      const desde = Number(String(t.desde ?? "").replace(",", "."));
+      const hasta = Number(String(t.hasta ?? "").replace(",", "."));
+      return Number.isFinite(desde) && Number.isFinite(hasta) && capital >= desde && capital <= hasta;
+    });
+    if (!tramo) {
+      setError(`No encuentro un tramo que incluya ${dinero(capital)} para ${esCaixaBank ? "CaixaBank" : "otra entidad"}. Entra en Catálogos económicos → Provisiones de fondos, revisa los valores Desde/Hasta y pulsa «Guardar tablas».`);
+      return;
     }
+
+    const tipoCargaNormalizado = normalizar(g.tipo_carga);
+    const esCondicionResolutoria = tipoCargaNormalizado.includes("condicion resolutoria") || g.condicion_resolutoria === "si";
+    const esHipoteca = tipoCargaNormalizado.includes("hipotec") || tipoCargaNormalizado.includes("prestamo hipotecario") || tipoCargaNormalizado.includes("préstamo hipotecario");
+    const notaria = esHipoteca ? Number(tramo.notaria || 0) : 0;
+    const registro = Number(tramo.registro || 0);
+    const honorario = honorarioGestoriaPorEntidad(catalogoHonorarios, esCaixaBank ? "caixabank" : "ajena");
+    const gestionCalculada = importeHonorario(honorario);
+    const gestion = gestionCalculada == null ? Number(g.gestion || 0) : gestionCalculada;
+    let impuestos = Number(g.ajd || 0);
+    if (esCondicionResolutoria) {
+      const porcentaje = Number(conceptoImpuestos?.reglas?.porcentaje_condicion_resolutoria ?? 1.5);
+      impuestos = Math.round(capital * porcentaje) / 100;
+    } else if (g.tipo_carga && !normalizar(g.tipo_carga).includes("hipotec")) {
+      // Para otras cargas no se presupone un impuesto específico.
+      impuestos = Number(g.ajd || 0);
+    }
+    const nuevoTotal = notaria + impuestos + registro + gestion;
+    setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? {
+      ...x, notaria: String(notaria), ajd: String(impuestos), registro: String(registro),
+      gestion: String(gestion), total: nuevoTotal.toFixed(2)
+    } : x) }));
+    setAviso(`Cálculo aplicado con el tramo de capital ${dinero(tramo.desde)}–${dinero(tramo.hasta)} del catálogo. Entidad de referencia: ${actualNombre}.${honorario ? "" : " No se encontró honorario activo; se ha mantenido el importe de Gestión existente."}`);
+    setError("");
   };
   const guardar = async (e) => {
     e.preventDefault(); setGuardando(true); setError(""); setAviso("");
     const payload = { fecha: form.fecha || hoy(), cliente: form.cliente, oficina: form.oficina, garantias: form.garantias.map((g) => {
-      const notaria = g.tipo_carga === "Hipotecaria" ? Number(g.notaria || 0) : 0;
+      const notaria = normalizarCatalogo(g.tipo_carga).includes("hipotec") ? Number(g.notaria || 0) : 0;
       const ajd = Number(g.ajd || 0);
       const registro = Number(g.registro || 0);
       const gestion = Number(g.gestion || 0);
@@ -476,12 +456,13 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
               <AutocompleteCatalogo titulo="Registro de la Propiedad" valor={g.registro_propiedad} opciones={catalogoRegistros} etiqueta={(r) => r.registro_propiedad} detalle={(r) => [r.poblacion, r.provincia].filter(Boolean).join(" · ")} placeholder="Busca un registro…" onChange={(v) => cambiarGarantia(i, "registro_propiedad", v)} onSelect={(r) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, registro_propiedad: r.registro_propiedad, poblacion: r.poblacion || x.poblacion, provincia: r.provincia || x.provincia } : x) }))} />
               <AutocompleteCatalogo titulo="Población" valor={g.poblacion} opciones={catalogoMunicipios} etiqueta={(m) => m.municipio} detalle={(m) => m.provincia} placeholder="Busca una población…" onChange={(v) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, poblacion: v, provincia: "", ajd: x.adquisicion_vivienda_habitual === "no" ? "0" : x.ajd } : x) }))} onSelect={(m) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
                 if (n !== i) return x;
-                const importeTerritorial = x.tipo_carga === "Hipotecaria" && x.adquisicion_vivienda_habitual === "no" ? importeHipotecaProvincia(m.provincia) : null;
+                const importeTerritorial = normalizarCatalogo(x.tipo_carga).includes("hipotec") && x.adquisicion_vivienda_habitual === "no" ? importeHipotecaProvincia(m.provincia) : null;
                 return { ...x, poblacion: m.municipio, provincia: m.provincia, ...(importeTerritorial !== null ? { ajd: String(importeTerritorial) } : {}) };
               }) }))} />
               <AutocompleteCatalogo titulo="Provincia" valor={g.provincia} opciones={[...new Set(catalogoMunicipios.map((m) => m.provincia).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))} etiqueta={(p) => p} placeholder="Busca una provincia…" onChange={(v) => cambiarGarantia(i, "provincia", v)} onSelect={(p) => cambiarGarantia(i, "provincia", p)} />
-              <Campo titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} requerido listId="catalogo-tipos-carga" placeholder="Escribe para buscar el tipo…" />
-              {g.tipo_carga === "Hipotecaria" && <label className={label}>¿La hipoteca se constituyó para adquirir la vivienda habitual?
+              <Selector titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} opciones={tiposCarga} requerido />
+              <Selector titulo="¿Es una condición resolutoria?" valor={g.condicion_resolutoria || (normalizarCatalogo(g.tipo_carga).includes("condicion resolutoria") ? "si" : "no")} onChange={(v) => cambiarGarantia(i, "condicion_resolutoria", v)} opciones={[{ nombre: "no" }, { nombre: "si" }]} requerido />
+              {normalizarCatalogo(g.tipo_carga).includes("hipotec") && <label className={label}>¿La hipoteca se constituyó para adquirir la vivienda habitual?
                 <select className={input} value={g.adquisicion_vivienda_habitual ?? ""} onChange={(e) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
                   if (n !== i) return x;
                   const respuesta = e.target.value;
@@ -491,9 +472,8 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
                 <option value="">Selecciona una respuesta…</option><option value="si">Sí, para adquirir la vivienda habitual</option><option value="no">No, para otra finalidad</option>
               </select>
               </label>}
-              <Selector titulo="Territorio" valor={g.territorio} onChange={(v) => cambiarGarantia(i, "territorio", v)} opciones={TERRITORIOS} requerido />
             </div>
-            {g.tipo_carga === "Hipotecaria" && ["gipuzkoa", "alava", "bizkaia"].includes(String(g.provincia || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es")) && <div role="status" className="mb-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900">
+            {normalizarCatalogo(g.tipo_carga).includes("hipotec") && ["gipuzkoa", "alava", "bizkaia"].includes(String(g.provincia || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es")) && <div role="status" className="mb-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900">
               <strong>Regla territorial detectada: {g.provincia}.</strong>{" "}
               {g.adquisicion_vivienda_habitual === "" || g.adquisicion_vivienda_habitual == null
                 ? "Responde primero si la hipoteca se constituyó para adquirir la vivienda habitual."
@@ -503,9 +483,9 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
                     ? "No hay importe configurado para " + g.provincia + " en Catálogos → Tabla Provisiones de fondos. Introduce el impuesto manualmente."
                     : "Como la hipoteca no se constituyó para adquirir la vivienda habitual, se propone " + dinero(importeHipotecaProvincia(g.provincia)) + " según la tabla configurada. El importe se refleja en AJD / impuestos y puedes revisarlo antes de guardar."}
             </div>}
-            {g.tipo_carga !== "Hipotecaria" && <div role="note" className="mb-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900"><strong>Atención:</strong> en cargas administrativas, judiciales, bienes muebles u otras (por ejemplo, embargos) no se debe presupuestar gasto notarial. Añade en Observaciones una nota indicando la carga que debe cancelarse. El importe de Notaría queda a 0 €.</div>}
+            {!normalizarCatalogo(g.tipo_carga).includes("hipotec") && <div role="note" className="mb-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900"><strong>Atención:</strong> en cargas administrativas, judiciales, bienes muebles u otras (por ejemplo, embargos) no se debe presupuestar gasto notarial. Añade en Observaciones una nota indicando la carga que debe cancelarse. El importe de Notaría queda a 0 €.</div>}
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-              <Campo titulo="Notaría (€)" tipo="number" valor={g.notaria} onChange={(v) => cambiarGarantia(i, "notaria", v)} disabled={g.tipo_carga !== "Hipotecaria"} />
+              <Campo titulo="Notaría (€)" tipo="number" valor={g.notaria} onChange={(v) => cambiarGarantia(i, "notaria", v)} disabled={!normalizarCatalogo(g.tipo_carga).includes("hipotec")} />
               <Campo titulo="AJD / impuestos (€)" tipo="number" valor={g.ajd} onChange={(v) => cambiarGarantia(i, "ajd", v)} />
               <Campo titulo="Registro (€)" tipo="number" valor={g.registro} onChange={(v) => cambiarGarantia(i, "registro", v)} />
               <Campo titulo="Gestión (€)" tipo="number" valor={g.gestion} onChange={(v) => cambiarGarantia(i, "gestion", v)} />
