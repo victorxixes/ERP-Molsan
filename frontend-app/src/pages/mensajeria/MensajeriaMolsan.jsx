@@ -76,7 +76,29 @@ export default function MensajeriaMolsan({ vistaCatalogo = false }) {
     } catch (e) { setError(e?.response?.data?.detail || "No se pudo guardar el registro."); }
     finally { setGuardando(false); }
   };
-  const Field = ({ label, name, type = "text", required = false, placeholder = "", full = false, options = null }) => <label className={`${labelClass} ${full ? "md:col-span-2" : ""}`}>{label}<div className="mt-1.5">{options ? {name === "albaran_ids" ? <select multiple className={inputClass+" min-h-28"} value={Array.isArray(form[name]) ? form[name].map(String) : []} onChange={(e) => change(name, Array.from(e.target.selectedOptions, (o) => Number(o.value)))}>{options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select> : <select className={inputClass} value={form[name] ?? ""} onChange={(e) => change(name,e.target.value)} required={required}><option value="">— Seleccionar —</option>{options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select>} : type === "textarea" ? <textarea className={inputClass} rows="3" value={form[name] ?? ""} onChange={(e) => change(name,e.target.value)} placeholder={placeholder} /> : <input className={inputClass} type={type} value={form[name] ?? ""} onChange={(e) => change(name,e.target.value)} placeholder={placeholder} required={required} />}</div></label>;
+  const Field = ({ label, name, type = "text", required = false, placeholder = "", full = false, options = null }) => (
+    <label className={`${labelClass} ${full ? "md:col-span-2" : ""}`}>
+      {label}
+      <div className="mt-1.5">
+        {options ? (
+          name === "albaran_ids" ? (
+            <select multiple className={inputClass + " min-h-28"} value={Array.isArray(form[name]) ? form[name].map(String) : []} onChange={(e) => change(name, Array.from(e.target.selectedOptions, (o) => Number(o.value)))}>
+              {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          ) : (
+            <select className={inputClass} value={form[name] ?? ""} onChange={(e) => change(name, e.target.value)} required={required}>
+              <option value="">— Seleccionar —</option>
+              {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          )
+        ) : type === "textarea" ? (
+          <textarea className={inputClass} rows="3" value={form[name] ?? ""} onChange={(e) => change(name, e.target.value)} placeholder={placeholder} />
+        ) : (
+          <input className={inputClass} type={type} value={form[name] ?? ""} onChange={(e) => change(name, e.target.value)} placeholder={placeholder} required={required} />
+        )}
+      </div>
+    </label>
+  );
 
   const modalTitle = { solicitud: editing ? "Editar solicitud" : "Nueva solicitud de mensajería", servicio: editing ? "Editar servicio y tarifa" : "Nuevo servicio y tarifa", albaran: editing ? "Editar albarán" : "Registrar albarán", factura: editing ? "Editar factura" : "Registrar factura de mensajería" }[modal];
 
