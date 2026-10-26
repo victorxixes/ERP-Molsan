@@ -235,6 +235,9 @@ export default function Municipios() {
   const [importandoExcel, setImportandoExcel] =
     useState(false);
 
+  const [importandoCodigosNacionales, setImportandoCodigosNacionales] =
+    useState(false);
+
   const inputExcelRef =
     useRef(null);
 
@@ -312,6 +315,36 @@ export default function Municipios() {
 
     }
 
+  }
+
+
+  async function cargarCodigosPostalesNacionales() {
+    const confirmado = window.confirm(
+      "Se consultará el catálogo nacional derivado de datos abiertos del INE y se añadirán códigos postales a los municipios existentes. Los códigos principales ya definidos se conservarán. ¿Continuar?"
+    );
+    if (!confirmado) return;
+
+    try {
+      setImportandoCodigosNacionales(true);
+      setError("");
+      const respuesta = await fetch(API_BASE + "/importar-codigos-postales", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+      });
+      const resultado = await leerRespuestaServidor(respuesta);
+      if (!respuesta.ok) {
+        throw new Error(resultado?.detail || `Error HTTP ${respuesta.status}`);
+      }
+      mostrarMensaje(
+        `Carga completada: ${resultado.relaciones_nuevas || 0} códigos postales añadidos en ${resultado.municipios_actualizados || 0} municipios. Filas consultadas: ${resultado.filas_fuente || 0}.`,
+        "ok"
+      );
+      await cargarMunicipios();
+    } catch (e) {
+      mostrarMensaje(e?.message || "No se pudo cargar el catálogo nacional de códigos postales.", "error");
+    } finally {
+      setImportandoCodigosNacionales(false);
+    }
   }
 
 
@@ -1532,6 +1565,18 @@ export default function Municipios() {
               gap-2
             "
           >
+
+            <button
+              type="button"
+              onClick={cargarCodigosPostalesNacionales}
+              disabled={importandoCodigosNacionales}
+              title="Cargar códigos postales desde datos abiertos derivados del INE"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 shadow-sm transition-all hover:border-violet-300 hover:bg-violet-100 disabled:cursor-wait disabled:opacity-60"
+            >
+              <span className="text-lg">{importandoCodigosNacionales ? "⏳" : "📮"}</span>
+              {importandoCodigosNacionales ? "Cargando códigos…" : "Cargar códigos postales de España"}
+            </button>
+
 
             <button
               type="button"
