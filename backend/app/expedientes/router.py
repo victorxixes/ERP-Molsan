@@ -3513,6 +3513,153 @@ def generar_honorarios_gestoria(
     }
 
 
+@router.post("/{id_expediente}/honorarios-gestoria/factura-docx")
+def generar_documento_factura_honorarios(
+    id_expediente: str,
+    datos: Dict[str, Any],
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    """Rellena el DOCX oficial asociado al concepto de gasto ID 6 y conserva logo/QR."""
+    from docx import Document
+    from backend.app.tipos_concepto_gastos.models import TipoConceptoGastos
+    from backend.app.tipos_concepto_gastos.router import garantizar_catalogo_inicial
+
+    garantizar_catalogo_inicial(db)
+    concepto = db.query(TipoConceptoGastos).filter(TipoConceptoGastos.id == 6).first()
+    if not concepto or " ".join((concepto.nombre or "").strip().lower().split()) != "honorarios gestoría":
+        raise HTTPException(status_code=409, detail="El concepto ID 6 debe ser «honorarios gestoría». No se ha generado la factura.")
+
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS plantilla_factura_concepto_gasto (
+            concepto_gasto_id INTEGER PRIMARY KEY,
+            nombre_archivo VARCHAR(255) NOT NULL,
+            tipo_archivo VARCHAR(160) NOT NULL DEFAULT 'application/octet-stream',
+            contenido BYTEA NOT NULL,
+            actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    # Migra una plantilla antigua si existía antes de separar la configuración de email.
+    db.execute(text("""
+        INSERT INTO plantilla_factura_concepto_gasto
+            (concepto_gasto_id, nombre_archivo, tipo_archivo, contenido)
+        SELECT 6, factura_nombre, COALESCE(factura_tipo, 'application/octet-stream'), factura_contenido
+        FROM correspondencia_configuracion
+        WHERE id = 1 AND factura_contenido IS NOT NULL AND factura_nombre IS NOT NULL
+        ON CONFLICT (concepto_gasto_id) DO NOTHING
+    """))
+    db.commit()
+    plantilla = db.execute(text("""
+        SELECT nombre_archivo, contenido
+        FROM plantilla_factura_concepto_gasto WHERE concepto_gasto_id = 6
+    """)).mappings().first()
+    if not plantilla or not plantilla["contenido"]:
+        raise HTTPException(status_code=404, detail="Falta cargar la plantilla Word en Tipos de Concepto de Gastos → ID 6 «honorarios gestoría».")
+
+    expediente = db.query(Expediente).filter(Expediente.id_expediente == str(id_expediente)).first()
+    if expediente is None:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+
+    def valor(obj, *nombres):
+        for nombre in nombres:
+            dato = getattr(obj, nombre, None) if obj is not None else None
+            if dato is not None and str(dato).strip():
+                return str(dato).strip()
+        return ""
+
+    def fecha_es(valor_fecha):
+        if not valor_fecha:
+            return "—"
+        try:
+            return datetime.fromisoformat(str(valor_fecha)[:10]).strftime("%d/%m/%Y")
+        except (ValueError, TypeError):
+            return str(valor_fecha)
+
+    def euros(valor_importe):
+        try:
+            return f"{float(str(valor_importe or 0).replace(',', '.')):,.2f} €".replace(",", "X").replace(".", ",").replace("X", ".")
+        except (ValueError, TypeError):
+            return "0,00 €"
+
+    def poner_en_celda(celda, texto):
+        parrafo = celda.paragraphs[0] if celda.paragraphs else celda.add_paragraph()
+        if parrafo.runs:
+            parrafo.runs[0].text = str(texto)
+            for run in parrafo.runs[1:]:
+                run.text = ""
+        else:
+            parrafo.add_run(str(texto))
+
+    try:
+        documento = Document(io.BytesIO(bytes(plantilla["contenido"])))
+        numero_factura = str(datos.get("numero_factura") or "").strip() or "PENDIENTE DE ASIGNACIÓN"
+        fecha_factura = fecha_es(datos.get("fecha_factura"))
+        cliente = str(datos.get("cliente") or valor(expediente, "nombre_solicitante", "nombre_titular") or "").strip()
+        nif_cliente = str(datos.get("nif_cliente") or valor(expediente, "nif_solicitante", "dni_solicitante", "nif_titular") or "").strip()
+        concepto_factura = str(datos.get("concepto") or "Honorarios de gestoría").strip()
+        base = datos.get("base_imponible", 0)
+        impuesto = datos.get("importe_impuesto", 0)
+        total = datos.get("total_factura")
+        if total is None:
+            total = float(str(base or 0).replace(",", ".")) + float(str(impuesto or 0).replace(",", "."))
+        tipo_impuesto = str(datos.get("tipo_impuesto") or "IVA").strip().upper()
+        porcentaje = str(datos.get("porcentaje_impuesto") or ("7" if tipo_impuesto == "IGIC" else "21")).strip()
+        numero_expediente = str(id_expediente)
+        documento_cliente = nif_cliente or "—"
+        notario = valor(expediente, "nombre_notario", "notario_otorgante", "notario") or "—"
+        protocolo = valor(expediente, "protocolo") or "—"
+        fecha_firma = fecha_es(valor(expediente, "fecha_firma"))
+
+        # Tabla 1: número/fecha y bloque de datos del cliente.
+        if len(documento.tables) > 1:
+            tabla = documento.tables[1]
+            if len(tabla.rows) > 1:
+                poner_en_celda(tabla.rows[1].cells[0], numero_factura)
+                poner_en_celda(tabla.rows[1].cells[1], fecha_factura)
+            if len(tabla.rows) > 4:
+                poner_en_celda(tabla.rows[4].cells[0], f"{cliente or '—'}\\nNIF/CIF: {documento_cliente}")
+
+        # Tabla 2: concepto, importes y datos de expediente.
+        if len(documento.tables) > 2:
+            tabla = documento.tables[2]
+            if len(tabla.rows) > 1:
+                poner_en_celda(tabla.rows[1].cells[0], concepto_factura)
+                poner_en_celda(tabla.rows[1].cells[3], euros(total))
+            datos_fila = {
+                6: f"N.º Expediente: {numero_expediente}",
+                7: f"Documento: {documento_cliente}",
+                8: f"Notario: {notario}",
+                9: f"Protocolo: {protocolo}",
+                10: f"Fecha de firma: {fecha_firma}",
+            }
+            for indice, texto in datos_fila.items():
+                if len(tabla.rows) > indice:
+                    poner_en_celda(tabla.rows[indice].cells[0], texto)
+            if len(tabla.rows) > 13:
+                poner_en_celda(tabla.rows[13].cells[3], euros(base))
+            if len(tabla.rows) > 14:
+                poner_en_celda(tabla.rows[14].cells[2], f"{tipo_impuesto} {porcentaje}%")
+                poner_en_celda(tabla.rows[14].cells[3], euros(impuesto))
+            if len(tabla.rows) > 15:
+                poner_en_celda(tabla.rows[15].cells[3], euros(total))
+
+        salida = io.BytesIO()
+        documento.save(salida)
+        salida.seek(0)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.exception("No se pudo rellenar la plantilla Word de honorarios para %s", id_expediente)
+        raise HTTPException(status_code=500, detail="No se pudo rellenar la plantilla Word. Revisa que el modelo DOCX esté íntegro.")
+
+    nombre_salida = f"Factura_honorarios_{id_expediente}.docx".replace("/", "-").replace("\\\\", "-")
+    return StreamingResponse(
+        salida,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'attachment; filename="{nombre_salida}"'},
+    )
+
+
 # ============================================================
 # CONSULTAR UN EXPEDIENTE
 # ============================================================
