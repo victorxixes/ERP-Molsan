@@ -547,8 +547,23 @@ def obtener_firma_correspondencia(
         SELECT firma_pie, factura_nombre, factura_tipo, actualizado_en
         FROM correspondencia_configuracion WHERE id = 1
     """)).mappings().first()
+    nombre_empleado = " ".join(filter(None, [
+        (getattr(usuario, "nombre", "") or "").strip(),
+        (getattr(usuario, "apellidos", "") or "").strip(),
+    ]))
+    departamento = ""
+    cargo = ""
+    if getattr(usuario, "departamento_id", None):
+        departamento = db.execute(text("SELECT nombre FROM departamentos WHERE id = :id"), {"id": usuario.departamento_id}).scalar() or ""
+    if getattr(usuario, "cargo_id", None):
+        cargo = db.execute(text("SELECT nombre FROM cargos WHERE id = :id"), {"id": usuario.cargo_id}).scalar() or ""
+    firma_personal = "\\n".join(x for x in [
+        nombre_empleado,
+        " · ".join(x for x in [departamento, cargo] if x),
+    ] if x)
     return {
         "firma_pie": fila["firma_pie"] or "",
+        "firma_personal": firma_personal,
         "factura_nombre": fila["factura_nombre"],
         "factura_tipo": fila["factura_tipo"],
         "actualizado_en": fila["actualizado_en"].isoformat() if fila.get("actualizado_en") else None,
