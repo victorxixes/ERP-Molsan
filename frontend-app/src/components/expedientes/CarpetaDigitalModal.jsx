@@ -900,20 +900,7 @@ export default function CarpetaDigitalModal({
                         <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
                           <h5 className="border-b border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] font-extrabold text-slate-800">📋 Datos · {bloqueActividad?.titulo || ({ "liquidacion-impuestos": "Liquidación de impuestos", "tramitacion-inscripcion": "Tramitación inscripción", "defectos-registrales": "Defectos registrales", "facturacion-cierre": "Cierre del expediente" }[actividadId] || "Datos de actividad")}</h5>
                           <div className="grid min-w-0 grid-cols-1 gap-1.5 px-2.5 py-2 sm:grid-cols-2 xl:grid-cols-1">
-                            {["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadId) && [
-                              ["Inicio actividad", "fecha_inicio_actividad"],
-                              ["Fin actividad", "fecha_fin_actividad"],
-                            ].map(([etiqueta, clave]) => {
-                              const valor = datosPanelActividad?.[clave];
-                              return (
-                                <div key={clave} className="min-w-0 rounded-md border border-slate-100 bg-slate-50/60 px-2 py-1.5">
-                                  <p className="text-[10px] font-bold text-slate-500">{etiqueta}</p>
-                                  <p className="break-words text-[11px] font-semibold text-slate-800">{valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}</p>
-                                </div>
-                              );
-                            })}
                             {camposPanelActividad
-                              .filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key))
                               .map((campo) => {
                                 const valor = datosPanelActividad?.[campo.key];
                                 return (
@@ -1071,7 +1058,22 @@ export default function CarpetaDigitalModal({
                       </>
                     ) : (
                       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-1">
+                        {["liquidacion-impuestos", "tramitacion-inscripcion"].includes(actividadId) && [
+                          { key: "fecha_inicio_actividad", label: "Inicio actividad" },
+                          { key: "fecha_fin_actividad", label: "Fin actividad" },
+                        ].map((campo) => {
+                          const valor = datosPanelActividad?.[campo.key];
+                          return (
+                            <div key={campo.key} className="min-w-0 border-b border-slate-100 pb-1.5">
+                              <p className="text-[10px] font-bold text-slate-500">{campo.label}</p>
+                              <p className="break-words text-[11px] font-semibold text-slate-800">
+                                {valor !== null && valor !== undefined && valor !== "" ? String(valor) : "—"}
+                              </p>
+                            </div>
+                          );
+                        })}
                         {camposPanelActividad
+                          .filter((campo) => !["fecha_inicio_actividad", "fecha_fin_actividad"].includes(campo.key))
                           .filter((campo) => !(normalizar(actividadId).includes("sede-notarial") && normalizar(actividadId).includes("protocolo") && normalizar(campo.label) === "tipo-firma"))
                           .map((campo) => {
                           const valor = datosPanelActividad?.[campo.key];
