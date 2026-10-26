@@ -641,6 +641,20 @@ export default function CarpetaDigitalModal({
             </section>
 
             <section className="min-h-[250px] min-w-0 w-full overflow-hidden">
+              {modoActividad && (
+                <section className="mb-3 rounded-xl border border-blue-200 bg-white p-3 shadow-sm">
+                  <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                    <div><h4 className="text-xs font-extrabold text-slate-800">⏱️ Control SLA · {bloqueActividad?.titulo || actividadId}</h4><p className="mt-0.5 text-[10px] text-slate-500">Fechas propias de esta actividad; no se comparten con las demás fases.</p></div>
+                    <button type="button" onClick={guardarFechasSlaActividad} disabled={guardandoFechasSla} className="rounded-lg bg-blue-600 px-3 py-2 text-[11px] font-bold text-white hover:bg-blue-700 disabled:opacity-50">{guardandoFechasSla ? "Guardando…" : "Guardar fechas"}</button>
+                  </div>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <label className="block text-[10px] font-bold text-slate-500">Inicio actividad<input type="date" value={fechasSlaActividad.fecha_inicio} disabled={guardandoFechasSla} onChange={(e) => setFechasSlaActividad((v) => ({ ...v, fecha_inicio: e.target.value, fecha_fin: v.fecha_fin && e.target.value && v.fecha_fin < e.target.value ? "" : v.fecha_fin }))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-normal text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /></label>
+                    <label className="block text-[10px] font-bold text-slate-500">Fin actividad<input type="date" min={fechasSlaActividad.fecha_inicio || undefined} value={fechasSlaActividad.fecha_fin} disabled={guardandoFechasSla} onChange={(e) => setFechasSlaActividad((v) => ({ ...v, fecha_fin: e.target.value }))} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-normal text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" /></label>
+                  </div>
+                  {errorFechasSla && <p role="alert" className="mt-2 rounded-lg bg-rose-50 px-2.5 py-2 text-[11px] text-rose-700">{errorFechasSla}</p>}
+                  {mensajeFechasSla && <p role="status" className="mt-2 rounded-lg bg-emerald-50 px-2.5 py-2 text-[11px] text-emerald-700">{mensajeFechasSla}</p>}
+                </section>
+              )}
               {modoActividad && actividadId === "documentacion-previa" && false ? (
                 <div className="flex h-full min-h-[250px] flex-col overflow-y-auto rounded-xl border border-indigo-100 bg-white shadow-sm">
                   <header className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100 bg-indigo-50/70 px-3 py-3">
