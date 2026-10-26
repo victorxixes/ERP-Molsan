@@ -86,6 +86,14 @@ def _ensure_tables(db: Session):
     # Añadir los dos teléfonos sin borrar datos de solicitudes existentes.
     db.execute(text("ALTER TABLE mensajeria_solicitudes ADD COLUMN IF NOT EXISTS telefono_recogida VARCHAR(80)"))
     db.execute(text("ALTER TABLE mensajeria_solicitudes ADD COLUMN IF NOT EXISTS telefono_entrega VARCHAR(80)"))
+    # Compatibilidad con solicitudes antiguas que guardaban el teléfono de entrega
+    # en telefono_destino: migrar el dato sin sobrescribir el campo nuevo.
+    db.execute(text("""
+        UPDATE mensajeria_solicitudes
+        SET telefono_entrega = telefono_destino
+        WHERE (telefono_entrega IS NULL OR telefono_entrega = '')
+          AND telefono_destino IS NOT NULL AND telefono_destino <> ''
+    """))
     db.commit()
 
 
@@ -228,6 +236,9 @@ def listar_solicitudes(db: Session = Depends(get_db), usuario=Depends(get_curren
 def crear_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
+    telefono_entrega = payload.get("telefono_entrega") or payload.get("telefono_destino")
+    payload["telefono_entrega"] = telefono_entrega
+    payload["telefono_destino"] = telefono_entrega
     result = db.execute(text("""
         INSERT INTO mensajeria_solicitudes
         (referencia,solicitante_id,solicitante_nombre,origen,destino,fecha_solicitada,prioridad,descripcion,expediente_id,contacto_origen,contacto_destino,telefono_recogida,telefono_entrega,telefono_destino,servicio_id,responsable,estado,estado_proveedor,incidencia,coste_previsto)
@@ -245,6 +256,9 @@ def crear_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=De
 def actualizar_solicitud(solicitud_id: int, data: SolicitudIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
+    telefono_entrega = payload.get("telefono_entrega") or payload.get("telefono_destino")
+    payload["telefono_entrega"] = telefono_entrega
+    payload["telefono_destino"] = telefono_entrega
     payload.update({"id": solicitud_id})
     result = db.execute(text("""
         UPDATE mensajeria_solicitudes SET solicitante_id=:solicitante_id,solicitante_nombre=:solicitante_nombre,
@@ -366,6 +380,9 @@ def crear_mi_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario
         raise HTTPException(status_code=401, detail="No se ha podido identificar al empleado.")
     nombre = " ".join(filter(None, [getattr(usuario, "nombre", ""), getattr(usuario, "apellidos", "")])).strip()
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
+    telefono_entrega = payload.get("telefono_entrega") or payload.get("telefono_destino")
+    payload["telefono_entrega"] = telefono_entrega
+    payload["telefono_destino"] = telefono_entrega
     payload.update({
         "solicitante_id": usuario_id,
         "solicitante_nombre": nombre or payload.get("solicitante_nombre") or "Empleado",
