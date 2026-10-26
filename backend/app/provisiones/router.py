@@ -31,6 +31,7 @@ from backend.app.provisiones.models import (
     ProvisionOperacionFinca,
     TarifaProvision,
     ProvisionIndependiente,
+    ConceptoImporteProvision,
 )
 
 router = APIRouter(
@@ -350,6 +351,82 @@ def _reemplazar_operaciones(db: Session, provision: ProvisionFondo, datos: Provi
         op = _crear_operacion(db, provision, operacion_data)
         total += Decimal(str(op.total or 0))
     provision.importe_total = total.quantize(Decimal("0.01"))
+
+
+
+class ConceptoImporteProvisionInput(BaseModel):
+    modo: Literal["previsto", "calculado"] = "previsto"
+    importe_previsto: Optional[Decimal] = Field(None, ge=0, max_digits=14, decimal_places=2)
+    descripcion: Optional[str] = Field(None, max_length=1000)
+    activo: bool = True
+
+    @root_validator
+    def validar_modo(cls, values):
+        if values.get("modo") == "previsto" and values.get("importe_previsto") is None:
+            raise ValueError("Indica el importe previsto para este concepto.")
+        if values.get("modo") == "calculado":
+            values["importe_previsto"] = None
+        return values
+
+
+_CONCEPTOS_PROVISION_DEFAULT = [
+    ("notaria", "Notaría", "previsto", "Importe previsto de los gastos notariales."),
+    ("registro", "Registro de la Propiedad", "previsto", "Importe previsto de los gastos registrales."),
+    ("gestion", "Honorarios de gestoría", "catalogo", "Importe procedente del catálogo central de Honorarios Gestoría; no se duplica aquí."),
+    ("impuestos", "Impuestos", "calculado", "Importe calculado o previsto cuando corresponda. El cálculo fiscal debe definirse según la operación."),
+]
+
+
+def _concepto_importe_dict(item: ConceptoImporteProvision) -> dict:
+    return {
+        "id": item.id,
+        "codigo": item.codigo,
+        "nombre": item.nombre,
+        "modo": item.modo,
+        "importe_previsto": float(item.importe_previsto) if item.importe_previsto is not None else None,
+        "descripcion": item.descripcion or "",
+        "activo": bool(item.activo),
+        "solo_catalogo": item.codigo == "gestion",
+    }
+
+
+@router.get("/provisiones/conceptos-importes", summary="Consultar conceptos económicos de Provisiones")
+def listar_conceptos_importes_provisiones(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "expedientes", "ver")
+    try:
+        existentes = {x.codigo: x for x in db.query(ConceptoImporteProvision).all()}
+        for codigo, nombre, modo, descripcion in _CONCEPTOS_PROVISION_DEFAULT:
+            if codigo not in existentes:
+                item = ConceptoImporteProvision(codigo=codigo, nombre=nombre, modo=modo, descripcion=descripcion, activo=True)
+                db.add(item)
+        db.commit()
+        items = db.query(ConceptoImporteProvision).order_by(ConceptoImporteProvision.id).all()
+        return {"items": [_concepto_importe_dict(x) for x in items]}
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudo cargar el catálogo de conceptos: {str(exc)[:250]}") from exc
+
+
+@router.put("/provisiones/conceptos-importes/{codigo}", summary="Actualizar importe configurable de un concepto")
+def actualizar_concepto_importe_provision(codigo: str, datos: ConceptoImporteProvisionInput, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    require_perm_modulo(usuario, "expedientes", "editar")
+    require_perm_modulo(usuario, "seguridad", "editar")
+    item = db.query(ConceptoImporteProvision).filter(ConceptoImporteProvision.codigo == codigo).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Concepto de provisiones no encontrado.")
+    if codigo == "gestion":
+        raise HTTPException(status_code=422, detail="Los honorarios de gestoría se gestionan exclusivamente desde el catálogo central de Honorarios Gestoría.")
+    item.modo = datos.modo
+    item.importe_previsto = datos.importe_previsto
+    item.descripcion = (datos.descripcion or "").strip() or None
+    item.activo = datos.activo
+    try:
+        db.commit()
+        db.refresh(item)
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudo actualizar el concepto: {str(exc)[:250]}") from exc
+    return _concepto_importe_dict(item)
 
 
 @router.get("/provisiones/tarifas/catalogo-registros", summary="Catálogo de Registros de la Propiedad para Provisiones")
