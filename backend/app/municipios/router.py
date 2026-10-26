@@ -121,7 +121,7 @@ def clave_territorial(valor):
     texto = unicodedata.normalize("NFKD", str(valor or "").casefold())
     texto = "".join(caracter for caracter in texto if not unicodedata.combining(caracter))
     palabras = re.findall(r"[a-z0-9]+", texto)
-    palabras = [palabra for palabra in palabras if palabra not in {"la", "el", "los", "las", "de", "del", "l", "d"}]
+    palabras = [palabra for palabra in palabras if palabra not in {"a", "la", "el", "los", "las", "de", "del", "l", "d"}]
     return " ".join(sorted(palabras))
 
 
