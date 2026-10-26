@@ -3,6 +3,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import axios from "../../api/axios";
 import "../../css/ModalesHerramientasPremium.css";
 import "../../css/CatalogosMaestrosPremium.css";
 
@@ -127,6 +128,13 @@ export default function TiposConceptoGastos() {
   const [activo, setActivo] =
     useState(true);
 
+  const [plantillaFactura, setPlantillaFactura] = useState(null);
+  const [archivoPlantillaFactura, setArchivoPlantillaFactura] = useState(null);
+  const [subiendoPlantillaFactura, setSubiendoPlantillaFactura] = useState(false);
+  const [descargandoPlantillaFactura, setDescargandoPlantillaFactura] = useState(false);
+  const [errorPlantillaFactura, setErrorPlantillaFactura] = useState("");
+  const [mensajePlantillaFactura, setMensajePlantillaFactura] = useState("");
+
 
   // ==========================================================
   // CARGAR DATOS
@@ -229,6 +237,62 @@ export default function TiposConceptoGastos() {
     busqueda,
     filtroActivo,
   ]);
+
+  useEffect(() => {
+    cargarEstadoPlantillaFactura();
+  }, []);
+
+  async function cargarEstadoPlantillaFactura() {
+    try {
+      const { data } = await axios.get("/utilidades/conceptos-gastos/6/plantilla-factura/estado");
+      setPlantillaFactura(data);
+      setErrorPlantillaFactura("");
+    } catch (err) {
+      setPlantillaFactura(null);
+      setErrorPlantillaFactura(err?.response?.data?.detail || "No se pudo comprobar la plantilla vinculada al concepto ID 6.");
+    }
+  }
+
+  async function subirPlantillaFactura() {
+    if (!archivoPlantillaFactura || subiendoPlantillaFactura) return;
+    const form = new FormData();
+    form.append("fichero", archivoPlantillaFactura);
+    setSubiendoPlantillaFactura(true);
+    setErrorPlantillaFactura("");
+    setMensajePlantillaFactura("");
+    try {
+      const { data } = await axios.post("/utilidades/conceptos-gastos/6/plantilla-factura", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setPlantillaFactura({ plantilla_cargada: true, factura_nombre: data.factura_nombre, factura_tipo: data.factura_tipo, concepto_gasto_id: data.concepto_gasto_id, concepto_gasto: data.concepto_gasto });
+      setArchivoPlantillaFactura(null);
+      setMensajePlantillaFactura("Plantilla guardada y vinculada al concepto ID 6 «honorarios gestoría».");
+    } catch (err) {
+      setErrorPlantillaFactura(err?.response?.data?.detail || "No se pudo guardar la plantilla Word.");
+    } finally {
+      setSubiendoPlantillaFactura(false);
+    }
+  }
+
+  async function descargarPlantillaFactura() {
+    setDescargandoPlantillaFactura(true);
+    setErrorPlantillaFactura("");
+    try {
+      const { data } = await axios.get("/utilidades/conceptos-gastos/6/plantilla-factura", { responseType: "blob" });
+      const url = URL.createObjectURL(data instanceof Blob ? data : new Blob([data]));
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = plantillaFactura?.factura_nombre || "plantilla-factura.docx";
+      document.body.appendChild(enlace);
+      enlace.click();
+      enlace.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setErrorPlantillaFactura(err?.response?.data?.detail || "No se pudo descargar la plantilla Word.");
+    } finally {
+      setDescargandoPlantillaFactura(false);
+    }
+  }
 
 
   // ==========================================================
@@ -848,6 +912,30 @@ export default function TiposConceptoGastos() {
 
         </div>
 
+
+        <section className="mb-6 rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm md:p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Plantilla documental vinculada</p>
+              <h2 className="mt-1 text-lg font-extrabold text-slate-800">Factura de honorarios · Concepto ID 6</h2>
+              <p className="mt-1 text-sm text-slate-500">La plantilla Word se asocia exclusivamente al registro «honorarios gestoría» del catálogo. Se utiliza al pulsar «Guardar y facturar» en la FichaExpediente y nunca se adjunta a los emails.</p>
+              {plantillaFactura?.plantilla_cargada && <p className="mt-3 break-all text-sm font-semibold text-emerald-700">✓ Plantilla actual: {plantillaFactura.factura_nombre}</p>}
+              {plantillaFactura && <p className="mt-1 text-xs text-slate-500">Vinculación confirmada: ID {plantillaFactura.concepto_gasto_id} · {plantillaFactura.concepto_gasto}</p>}
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              {plantillaFactura?.plantilla_cargada && <button type="button" onClick={descargarPlantillaFactura} disabled={descargandoPlantillaFactura} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50">{descargandoPlantillaFactura ? "Descargando…" : "Descargar plantilla"}</button>}
+            </div>
+          </div>
+          {errorPlantillaFactura && <p role="alert" className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{errorPlantillaFactura}</p>}
+          {mensajePlantillaFactura && <p role="status" className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{mensajePlantillaFactura}</p>}
+          <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">{plantillaFactura?.plantilla_cargada ? "Sustituir plantilla oficial (.docx)" : "Cargar plantilla oficial (.docx)"}</span>
+              <input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e) => setArchivoPlantillaFactura(e.target.files?.[0] || null)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" />
+            </label>
+            <button type="button" onClick={subirPlantillaFactura} disabled={!archivoPlantillaFactura || subiendoPlantillaFactura} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-50">{subiendoPlantillaFactura ? "Guardando…" : "Vincular plantilla al ID 6"}</button>
+          </div>
+        </section>
 
         {/* ==================================================
             TARJETAS RESUMEN
