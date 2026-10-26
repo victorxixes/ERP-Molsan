@@ -11,6 +11,7 @@ export default function FirmasEmail() {
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [subiendo, setSubiendo] = useState(false);
+  const [descargando, setDescargando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
 
@@ -33,6 +34,20 @@ export default function FirmasEmail() {
       setMensaje("Firma corporativa guardada. Se aplicará automáticamente a los emails enviados desde el ERP.");
     } catch (e) { setError(e?.response?.data?.detail || "No se pudo guardar la firma."); }
     finally { setGuardando(false); }
+  }
+
+  async function descargarFactura() {
+    setDescargando(true); setError("");
+    try {
+      const { data } = await axios.get("/utilidades/correspondencia/firma/factura", { responseType: "blob" });
+      const url = URL.createObjectURL(data instanceof Blob ? data : new Blob([data]));
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = config.factura_nombre || "plantilla-factura";
+      document.body.appendChild(enlace); enlace.click(); enlace.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) { setError(e?.response?.data?.detail || "No se pudo descargar la plantilla."); }
+    finally { setDescargando(false); }
   }
 
   async function subirFactura() {
@@ -72,7 +87,7 @@ export default function FirmasEmail() {
       </section>
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 space-y-4">
         <div><h2 className="text-lg font-bold text-slate-800">Plantilla de factura de honorarios</h2><p className="mt-1 text-sm text-slate-500">Sube el modelo aprobado para conservarlo en el catálogo y poder vincularlo al flujo de emails de honorarios.</p></div>
-        {config.factura_nombre ? <div className="flex flex-col gap-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-xs font-bold uppercase tracking-wide text-emerald-700">Plantilla guardada</p><p className="mt-1 break-all font-semibold text-slate-800">{config.factura_nombre}</p><p className="text-xs text-slate-500">{config.factura_tipo || "Tipo de archivo no indicado"}</p></div><a href={axios.defaults.baseURL ? axios.defaults.baseURL + "/utilidades/correspondencia/firma/factura" : "/api/utilidades/correspondencia/firma/factura"} target="_blank" rel="noreferrer" className="rounded-lg border border-emerald-200 bg-white px-3 py-2 text-sm font-bold text-emerald-700 hover:bg-emerald-50">Descargar plantilla</a></div> : <p className="rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">Todavía no hay ninguna plantilla de factura cargada.</p>}
+        {config.factura_nombre ? <div className="flex flex-col gap-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-xs font-bold uppercase tracking-wide text-emerald-700">Plantilla guardada</p><p className="mt-1 break-all font-semibold text-slate-800">{config.factura_nombre}</p><p className="text-xs text-slate-500">{config.factura_tipo || "Tipo de archivo no indicado"}</p></div><button type="button" onClick={descargarFactura} disabled={descargando} className="rounded-lg border border-emerald-200 bg-white px-3 py-2 text-sm font-bold text-emerald-700 hover:bg-emerald-50 disabled:opacity-60">{descargando ? "Descargando…" : "Descargar plantilla"}</button></div> : <p className="rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">Todavía no hay ninguna plantilla de factura cargada.</p>}
         <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end"><label className="block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Archivo de plantilla (PDF, DOCX o imagen; máximo 10 MB)</span><input type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" onChange={(e) => setArchivo(e.target.files?.[0] || null)} className={inputClass} /></label><button type="button" onClick={subirFactura} disabled={!archivo || subiendo} className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-60">{subiendo ? "Subiendo…" : "Subir plantilla"}</button></div>
         <p className="text-xs text-slate-500">La plantilla se guarda en la base de datos del ERP, no en el almacenamiento temporal del servidor. No se adjunta indiscriminadamente a todos los correos: debe vincularse al flujo de honorarios para evitar enviar el modelo por error.</p>
       </section>
