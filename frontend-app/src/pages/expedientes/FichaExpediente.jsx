@@ -1401,7 +1401,7 @@ export default function FichaExpediente() {
   const [errorComplementosExpediente, setErrorComplementosExpediente] = useState("");
   const [mostrarDatosEnvioNotario, setMostrarDatosEnvioNotario] = useState(true);
   const [mostrarResumenEconomico, setMostrarResumenEconomico] = useState(true);
-  const [mostrarPanelEconomicoPago, setMostrarPanelEconomicoPago] = useState(false);
+  const [mostrarPanelEconomicoPago, setMostrarPanelEconomicoPago] = useState(true);
   const [mostrarModalDatosActividad, setMostrarModalDatosActividad] = useState(false);
   const [actividadDraft, setActividadDraft] = useState({});
   const [guardandoActividad, setGuardandoActividad] = useState(false);
@@ -2995,6 +2995,8 @@ const [archivoCalificacion, setArchivoCalificacion] = useState(null);
             ? datos.gastos
             : [];
       setGastosExpediente(lista);
+      // Si hay movimientos, abrir el libro al cargar o actualizar.
+      if (lista.length > 0) setMostrarPanelEconomicoPago(true);
     } catch (err) {
       setErrorGastos(
         err?.response?.data?.detail ||
