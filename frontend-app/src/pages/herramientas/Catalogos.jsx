@@ -8,6 +8,14 @@ import "../../css/HerramientasPremium.css";
  */
 const CATALOGOS = [
   {
+    icon: "🖋️",
+    titulo: "Firmas y plantillas de email",
+    descripcion: "Configura la firma corporativa automática y conserva la plantilla de factura de honorarios.",
+    ruta: "/catalogos/firmas-email",
+    grupo: "Catálogos operativos",
+    destacado: true,
+  },
+  {
     icon: "✉️",
     titulo: "Correspondencia tipificada",
     descripcion: "Crea plantillas de email por proceso y genera mensajes con datos reales de la ficha del expediente.",
