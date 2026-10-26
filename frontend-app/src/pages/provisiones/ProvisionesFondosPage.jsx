@@ -131,6 +131,7 @@ export default function ProvisionesFondosPage() {
     {aviso && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{aviso}</div>}
 
     <form onSubmit={guardar} className="space-y-5">
+      <div className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2">
       <Seccion titulo="1. Datos del cliente" detalle="Datos de contacto del cliente que solicita la provisión estimativa.">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Campo titulo="Nombre / razón social" valor={form.cliente.nombre} onChange={(v) => cambiarCliente("nombre", v)} requerido />
@@ -152,6 +153,7 @@ export default function ProvisionesFondosPage() {
           <Campo titulo="Email" tipo="email" valor={form.oficina.email} onChange={(v) => cambiarOficina("email", v)} />
         </div>
       </Seccion>
+      </div>
 
       <Seccion titulo="3. Datos de la garantía y cálculo" detalle="Añade una línea por cada préstamo o garantía. Puedes calcular con el tarifario disponible o introducir los importes manualmente.">
         <datalist id="catalogo-entidades-bancarias">{entidadesBancarias.map((e) => <option key={e.id || e.nombre} value={e.nombre} />)}</datalist>
