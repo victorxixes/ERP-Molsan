@@ -84,6 +84,12 @@ class FechasActividad(BaseModel):
 def obtener_fechas_actividad(id_expediente: str, actividad_key: str, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
     if actividad_key not in ACTIVIDADES_VALIDAS:
         raise HTTPException(status_code=400, detail="Actividad SLA no válida.")
+    expediente = db.query(Expediente).filter(Expediente.id_expediente == id_expediente).first()
+    if not expediente:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
+    ids_visibles = ids_expedientes_visibles(db, usuario)
+    if ids_visibles is not None and expediente.id not in ids_visibles:
+        raise HTTPException(status_code=404, detail="Expediente no encontrado.")
     asegurar_tabla(db)
     row = db.execute(text("""
         SELECT fecha_inicio, fecha_fin FROM public.expediente_sla_actividad
