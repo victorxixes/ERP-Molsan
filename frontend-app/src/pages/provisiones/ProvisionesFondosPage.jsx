@@ -585,8 +585,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
               <AutocompleteCatalogo titulo="Registro de la Propiedad" valor={g.registro_propiedad} opciones={catalogoRegistros} etiqueta={(r) => r.registro_propiedad} detalle={(r) => [r.poblacion, r.provincia].filter(Boolean).join(" · ")} placeholder="Busca un registro…" onChange={(v) => cambiarGarantia(i, "registro_propiedad", v)} onSelect={(r) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, registro_propiedad: r.registro_propiedad, poblacion: r.poblacion || x.poblacion, provincia: r.provincia || x.provincia } : x) }))} />
               <AutocompleteCatalogo titulo="Población" valor={g.poblacion} opciones={catalogoMunicipios} etiqueta={(m) => m.municipio} detalle={(m) => m.provincia} placeholder="Busca una población…" onChange={(v) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => n === i ? { ...x, poblacion: v, provincia: "", ajd: x.adquisicion_vivienda_habitual === "no" ? "0" : x.ajd } : x) }))} onSelect={(m) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
                 if (n !== i) return x;
-                const importeTerritorial = normalizarCatalogo(x.tipo_carga).includes("hipotec") && x.adquisicion_vivienda_habitual === "no" ? importeHipotecaProvincia(m.provincia) : null;
-                return { ...x, poblacion: m.municipio, provincia: m.provincia, ...(importeTerritorial !== null ? { ajd: String(importeTerritorial) } : {}) };
+                return { ...x, poblacion: m.municipio, provincia: m.provincia };
               }) }))} />
               <AutocompleteCatalogo titulo="Provincia" valor={g.provincia} opciones={[...new Set(catalogoMunicipios.map((m) => m.provincia).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"))} etiqueta={(p) => p} placeholder="Busca una provincia…" onChange={(v) => cambiarGarantia(i, "provincia", v)} onSelect={(p) => cambiarGarantia(i, "provincia", p)} />
               <Selector titulo="Tipo de carga" valor={g.tipo_carga} onChange={(v) => cambiarGarantia(i, "tipo_carga", v)} opciones={tiposCarga} requerido />
@@ -595,8 +594,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
                 <select className={input} value={g.adquisicion_vivienda_habitual ?? ""} onChange={(e) => setForm((f) => ({ ...f, garantias: f.garantias.map((x, n) => {
                   if (n !== i) return x;
                   const respuesta = e.target.value;
-                  const importeTerritorial = respuesta === "no" ? importeHipotecaProvincia(x.provincia) : null;
-                  return { ...x, adquisicion_vivienda_habitual: respuesta, ...(importeTerritorial !== null ? { ajd: String(importeTerritorial) } : {}) };
+                  return { ...x, adquisicion_vivienda_habitual: respuesta };
                 }) }))} required>
                 <option value="">Selecciona una respuesta…</option><option value="si">Sí, para adquirir la vivienda habitual</option><option value="no">No, para otra finalidad</option>
               </select>
