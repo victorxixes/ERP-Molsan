@@ -65,6 +65,24 @@ def _ensure_tables(db: Session):
             PRIMARY KEY (factura_id, albaran_id)
         )
     """))
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS mensajeria_proveedores (
+            id SERIAL PRIMARY KEY, nombre VARCHAR(180) NOT NULL UNIQUE,
+            contacto VARCHAR(180), email VARCHAR(180), telefono VARCHAR(80),
+            codigo_cliente VARCHAR(120), url_portal TEXT, notas TEXT,
+            principal BOOLEAN NOT NULL DEFAULT FALSE, activo BOOLEAN NOT NULL DEFAULT TRUE,
+            creado_en TIMESTAMP NOT NULL DEFAULT NOW()
+        )
+    """))
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS mensajeria_comunicaciones (
+            id SERIAL PRIMARY KEY,
+            solicitud_id INTEGER NOT NULL REFERENCES mensajeria_solicitudes(id) ON DELETE CASCADE,
+            autor_id INTEGER, autor_nombre VARCHAR(180) NOT NULL,
+            autor_tipo VARCHAR(20) NOT NULL DEFAULT 'empleado',
+            mensaje TEXT NOT NULL, creado_en TIMESTAMP NOT NULL DEFAULT NOW()
+        )
+    """))
     db.commit()
 
 
@@ -321,3 +339,143 @@ def actualizar_factura(factura_id: int, data: FacturaIn, db: Session = Depends(g
         db.execute(text("INSERT INTO mensajeria_factura_albaran (factura_id,albaran_id) VALUES (:fid,:aid) ON CONFLICT DO NOTHING"), {"fid": factura_id, "aid": aid})
     db.commit()
     result = _dict(row); result["albaran_ids"] = albaran_ids; return result
+
+
+# Acceso de empleados: solo devuelve las solicitudes creadas por el usuario autenticado.
+@router.get("/mis-solicitudes")
+def listar_mis_solicitudes(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _ensure_tables(db)
+    usuario_id = getattr(usuario, "id", None)
+    if usuario_id is None:
+        raise HTTPException(status_code=401, detail="No se ha podido identificar al empleado.")
+    return _rows(db, """SELECT s.*, c.nombre AS servicio_nombre FROM mensajeria_solicitudes s
+        LEFT JOIN mensajeria_servicios c ON c.id=s.servicio_id
+        WHERE s.solicitante_id=:uid ORDER BY s.creado_en DESC""", {"uid": usuario_id})
+
+
+@router.post("/mis-solicitudes")
+def crear_mi_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _ensure_tables(db)
+    usuario_id = getattr(usuario, "id", None)
+    if usuario_id is None:
+        raise HTTPException(status_code=401, detail="No se ha podido identificar al empleado.")
+    nombre = " ".join(filter(None, [getattr(usuario, "nombre", ""), getattr(usuario, "apellidos", "")])).strip()
+    payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
+    payload.update({
+        "solicitante_id": usuario_id,
+        "solicitante_nombre": nombre or payload.get("solicitante_nombre") or "Empleado",
+        "responsable": None,
+        "estado": "Pendiente",
+        "estado_proveedor": None,
+        "incidencia": None,
+        "coste_previsto": None,
+    })
+    result = db.execute(text("""
+        INSERT INTO mensajeria_solicitudes
+        (referencia,solicitante_id,solicitante_nombre,origen,destino,fecha_solicitada,prioridad,descripcion,expediente_id,contacto_origen,contacto_destino,telefono_destino,servicio_id,responsable,estado,estado_proveedor,incidencia,coste_previsto)
+        VALUES (NULL,:solicitante_id,:solicitante_nombre,:origen,:destino,:fecha_solicitada,:prioridad,:descripcion,:expediente_id,:contacto_origen,:contacto_destino,:telefono_destino,:servicio_id,:responsable,:estado,:estado_proveedor,:incidencia,:coste_previsto)
+        RETURNING *
+    """), payload)
+    row = _dict(result.fetchone())
+    referencia = f"MSG-{date.today():%Y%m}-{row['id']:05d}"
+    db.execute(text("UPDATE mensajeria_solicitudes SET referencia=:ref WHERE id=:id"), {"ref": referencia, "id": row["id"]})
+    db.commit()
+    return _rows(db, "SELECT * FROM mensajeria_solicitudes WHERE id=:id", {"id": row["id"]})[0]
+
+
+class ProveedorMensajeriaIn(BaseModel):
+    nombre: str = Field(min_length=1, max_length=180)
+    contacto: str | None = None
+    email: str | None = None
+    telefono: str | None = None
+    codigo_cliente: str | None = None
+    url_portal: str | None = None
+    notas: str | None = None
+    principal: bool = False
+    activo: bool = True
+
+
+@router.get("/proveedores")
+def listar_proveedores(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _ensure_tables(db)
+    return _rows(db, "SELECT * FROM mensajeria_proveedores ORDER BY principal DESC, activo DESC, nombre")
+
+
+@router.post("/proveedores")
+def crear_proveedor(data: ProveedorMensajeriaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _ensure_tables(db)
+    payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
+    try:
+        if payload.get("principal"):
+            db.execute(text("UPDATE mensajeria_proveedores SET principal=FALSE"))
+        result = db.execute(text("""INSERT INTO mensajeria_proveedores
+            (nombre,contacto,email,telefono,codigo_cliente,url_portal,notas,principal,activo)
+            VALUES (:nombre,:contacto,:email,:telefono,:codigo_cliente,:url_portal,:notas,:principal,:activo)
+            RETURNING *"""), payload)
+        row = _dict(result.fetchone())
+        db.commit()
+        return row
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="No se pudo guardar el proveedor. Comprueba que el nombre no esté duplicado.") from exc
+
+
+@router.patch("/proveedores/{proveedor_id}")
+def actualizar_proveedor(proveedor_id: int, data: ProveedorMensajeriaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _ensure_tables(db)
+    payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
+    payload["id"] = proveedor_id
+    try:
+        if payload.get("principal"):
+            db.execute(text("UPDATE mensajeria_proveedores SET principal=FALSE WHERE id<>:id"), {"id": proveedor_id})
+        result = db.execute(text("""UPDATE mensajeria_proveedores SET nombre=:nombre,contacto=:contacto,email=:email,
+            telefono=:telefono,codigo_cliente=:codigo_cliente,url_portal=:url_portal,notas=:notas,
+            principal=:principal,activo=:activo WHERE id=:id RETURNING *"""), payload)
+        row = result.fetchone()
+        if not row:
+            db.rollback()
+            raise HTTPException(status_code=404, detail="Proveedor no encontrado.")
+        db.commit()
+        return _dict(row)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="No se pudo actualizar el proveedor.") from exc
+
+
+@router.get("/solicitudes/{solicitud_id}/comunicaciones")
+def listar_comunicaciones(solicitud_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _ensure_tables(db)
+    existe = db.execute(text("SELECT id FROM mensajeria_solicitudes WHERE id=:id"), {"id": solicitud_id}).fetchone()
+    if not existe:
+        raise HTTPException(status_code=404, detail="Solicitud no encontrada.")
+    return _rows(db, """SELECT id,solicitud_id,autor_id,autor_nombre,autor_tipo,mensaje,creado_en
+        FROM mensajeria_comunicaciones WHERE solicitud_id=:id ORDER BY creado_en,id""", {"id": solicitud_id})
+
+
+class ComunicacionIn(BaseModel):
+    mensaje: str = Field(min_length=1, max_length=5000)
+
+
+@router.post("/solicitudes/{solicitud_id}/comunicaciones")
+def crear_comunicacion(solicitud_id: int, data: ComunicacionIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _ensure_tables(db)
+    solicitud = db.execute(text("SELECT id,solicitante_id FROM mensajeria_solicitudes WHERE id=:id"), {"id": solicitud_id}).fetchone()
+    if not solicitud:
+        raise HTTPException(status_code=404, detail="Solicitud no encontrada.")
+    usuario_id = getattr(usuario, "id", None)
+    nombre = " ".join(filter(None, [getattr(usuario, "nombre", ""), getattr(usuario, "apellidos", "")])).strip()
+    rol = str(getattr(getattr(usuario, "rol", None), "nombre", getattr(usuario, "rol_nombre", "")) or "").lower()
+    es_empleado_solicitante = usuario_id is not None and usuario_id == solicitud.solicitante_id
+    tipo = "empleado" if es_empleado_solicitante else "gestion"
+    if not nombre:
+        nombre = str(getattr(usuario, "usuario", "") or ("Empleado" if tipo == "empleado" else "Mensajería Gestión"))
+    result = db.execute(text("""INSERT INTO mensajeria_comunicaciones
+        (solicitud_id,autor_id,autor_nombre,autor_tipo,mensaje)
+        VALUES (:sid,:uid,:nombre,:tipo,:mensaje) RETURNING *"""),
+        {"sid": solicitud_id, "uid": usuario_id, "nombre": nombre, "tipo": tipo, "mensaje": data.mensaje.strip()})
+    row = _dict(result.fetchone())
+    db.execute(text("UPDATE mensajeria_solicitudes SET actualizado_en=NOW() WHERE id=:id"), {"id": solicitud_id})
+    db.commit()
+    return row
