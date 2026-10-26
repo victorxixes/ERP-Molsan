@@ -11,7 +11,7 @@ const label = "block text-xs font-semibold uppercase tracking-wide text-slate-50
 const boton = "inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50";
 
 function Campo({ titulo, valor, onChange, tipo = "text", requerido = false, placeholder = "", disabled = false, listId }) {
-  return <label className={label}>{titulo}<input className={`${input} ${disabled ? "cursor-not-allowed bg-slate-100 text-slate-500" : ""}`} type={tipo} value={valor ?? ""} onChange={(e) => onChange(e.target.value)} required={requerido} placeholder={placeholder} disabled={disabled} list={listId} autoComplete={listId ? "off" : undefined} /></label>;
+  return <label className={label}>{titulo}<input className={`${input} ${disabled ? "cursor-not-allowed bg-slate-100 text-slate-500" : ""}`} type={tipo === "number" ? "text" : tipo} inputMode={tipo === "number" ? "decimal" : undefined} value={valor ?? ""} onChange={(e) => onChange(e.target.value)} required={requerido} placeholder={placeholder} disabled={disabled} list={listId} autoComplete={listId ? "off" : undefined} /></label>;
 }
 
 function normalizarCatalogo(valor) {
@@ -110,7 +110,7 @@ function ConfiguracionConceptosProvisiones() {
       const lista = r.data?.items || [];
       setItems(lista);
       setBorradores(Object.fromEntries(lista.map((x) => {
-        const reglas = { porcentaje_condicion_resolutoria: 1.5, importes_hipoteca_provincia: { Gipuzkoa: "", Álava: "", Bizkaia: "" }, tramos: [], ...(x.reglas || {}) };
+        const reglas = { porcentaje_condicion_resolutoria: 1.5, porcentaje_hipoteca_provincia: x.reglas?.porcentaje_hipoteca_provincia || x.reglas?.importes_hipoteca_provincia || { Gipuzkoa: "", Álava: "", Bizkaia: "" }, tramos: [], ...(x.reglas || {}) };
         if (!Array.isArray(reglas.tramos_caixabank)) reglas.tramos_caixabank = clonarTramos("caixabank");
         if (!Array.isArray(reglas.tramos_entidad_ajena)) reglas.tramos_entidad_ajena = clonarTramos("ajena");
         return [x.codigo, { modo: x.modo === "calculado" ? "calculado" : "previsto", importe_previsto: x.importe_previsto == null ? "" : String(x.importe_previsto), descripcion: x.descripcion || "", reglas, activo: x.activo !== false }];
@@ -187,7 +187,7 @@ function ConfiguracionConceptosProvisiones() {
             const subtotal = Number(tramo.notaria || 0) + Number(tramo.registro || 0) + (importe ?? 0);
             const campos = [["desde", "Principal desde (€)"], ["hasta", "Principal hasta (€)"], ["notaria", "Notaría (€)"], ["registro", "Registro (€)"]];
             return <tr key={claveEdicion} className="border-b border-slate-100">
-              {campos.map(([campo, etiqueta]) => <td key={campo} className="p-2">{editando ? <input aria-label={etiqueta} className="w-36 rounded-lg border border-slate-200 px-2 py-1.5 text-sm" type="number" min="0" step="0.01" value={tramo[campo] ?? ""} onChange={(e) => cambiarTramo(item.codigo, tipo, indice, campo, e.target.value)} /> : <span>{tramo[campo] === "" || tramo[campo] == null ? "—" : dinero(tramo[campo])}</span>}</td>)}
+              {campos.map(([campo, etiqueta]) => <td key={campo} className="p-2">{editando ? <input aria-label={etiqueta} className="w-36 rounded-lg border border-slate-200 px-2 py-1.5 text-sm" type="text" inputMode="decimal" value={tramo[campo] ?? ""} onChange={(e) => cambiarTramo(item.codigo, tipo, indice, campo, e.target.value)} /> : <span>{tramo[campo] === "" || tramo[campo] == null ? "—" : dinero(tramo[campo])}</span>}</td>)}
               <td className="p-2">{importe == null ? <span className="text-amber-700">Revisar catálogo</span> : dinero(importe)}</td>
               <td className="p-2 font-semibold">{importe == null || tramo.notaria === "" || tramo.registro === "" ? <span className="text-amber-700">Pendiente</span> : dinero(subtotal)}</td>
               <td className="p-2"><div className="flex gap-1"><button type="button" onClick={() => setTramosEditando((prev) => ({ ...prev, [claveEdicion]: !prev[claveEdicion] }))} className="rounded-lg border border-slate-200 px-2 py-1.5 font-semibold text-blue-700">{editando ? "Terminar" : "Editar"}</button><button type="button" onClick={() => eliminarTramo(item.codigo, tipo, indice)} className="rounded-lg border border-red-200 px-2 py-1.5 font-semibold text-red-600">Eliminar</button></div></td>
@@ -272,12 +272,12 @@ function ConfiguracionConceptosProvisiones() {
         }
         return <div key={item.codigo} className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="grid gap-3 md:grid-cols-[1.2fr_1fr_1.4fr_auto] md:items-end">
-            <div><p className="font-semibold text-slate-800">{item.nombre}</p><p className="mt-1 text-xs text-slate-500">Reglas fiscales de referencia. Los importes territoriales solo se aplican cuando la regla correspondiente encaja con la operación.</p></div>
+            <div><p className="font-semibold text-slate-800">{item.nombre}</p><p className="mt-1 text-xs text-slate-500">Reglas fiscales de referencia. Los porcentajes se aplican al capital del préstamo cuando corresponde la regla territorial.</p></div>
             <div><label className="mb-1 block text-xs font-semibold text-slate-600">Tratamiento</label><select className={input} value={draft.modo || "calculado"} onChange={(e) => cambiar(item.codigo, "modo", e.target.value)}><option value="previsto">Importe previsto</option><option value="calculado">Calculado (pendiente de regla fiscal)</option></select>{draft.modo === "previsto" && <><label className="mb-1 mt-2 block text-xs font-semibold text-slate-600">Importe previsto (€)</label><input className={input} type="number" min="0" step="0.01" value={draft.importe_previsto ?? ""} onChange={(e) => cambiar(item.codigo, "importe_previsto", e.target.value)} placeholder="Introduce el importe" /></>}</div>
             <div><label className="mb-1 block text-xs font-semibold text-slate-600">Descripción / criterio</label><textarea className={input + " min-h-16 resize-y"} value={draft.descripcion || ""} onChange={(e) => cambiar(item.codigo, "descripcion", e.target.value)} /></div>
             <button type="button" disabled={guardando === item.codigo} onClick={() => guardarConcepto(item)} className={boton + " bg-blue-600 text-white hover:bg-blue-700"}>{guardando === item.codigo ? "Guardando…" : "Guardar reglas fiscales"}</button>
           </div>
-          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50/60 p-3"><p className="text-sm font-semibold text-slate-800">Reglas iniciales de impuestos</p><p className="mt-1 text-xs text-slate-600">La condición resolutoria se configura al 1,5 % como criterio inicial indicado por Molsan. Los importes por provincia son manuales y no se inventan ni se aplican automáticamente hasta validar cada supuesto.</p><div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><label className={label}>Condición resolutoria · porcentaje<input className={input} type="number" min="0" step="0.01" value={draft.reglas?.porcentaje_condicion_resolutoria ?? 1.5} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), porcentaje_condicion_resolutoria: e.target.value === "" ? "" : Number(e.target.value) })} /></label>{["Gipuzkoa", "Álava", "Bizkaia"].map((provincia) => <label key={provincia} className={label}>Hipoteca · {provincia} (€)<input className={input} type="number" min="0" step="0.01" placeholder="Por definir" value={draft.reglas?.importes_hipoteca_provincia?.[provincia] ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), importes_hipoteca_provincia: { ...(draft.reglas?.importes_hipoteca_provincia || {}), [provincia]: e.target.value } })} /></label>)}</div><p className="mt-2 text-xs text-slate-500">Vitoria-Gasteiz queda cubierta por Álava. Estos importes son configuraciones de provisión, no una confirmación de la cuota tributaria legal.</p></div>
+          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50/60 p-3"><p className="text-sm font-semibold text-slate-800">Reglas iniciales de impuestos</p><p className="mt-1 text-xs text-slate-600">La condición resolutoria tiene un porcentaje propio. En hipotecas, el porcentaje configurado para la provincia se multiplica por el capital del préstamo para calcular AJD / impuestos.</p><div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><label className={label}>Condición resolutoria · porcentaje<input className={input} type="number" min="0" step="0.01" value={draft.reglas?.porcentaje_condicion_resolutoria ?? 1.5} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), porcentaje_condicion_resolutoria: e.target.value === "" ? "" : Number(e.target.value) })} /></label>{["Gipuzkoa", "Álava", "Bizkaia"].map((provincia) => <label key={provincia} className={label}>Hipoteca · {provincia} (%)<input className={input} type="text" inputMode="decimal" placeholder="Por definir" value={draft.reglas?.porcentaje_hipoteca_provincia?.[provincia] ?? ""} onChange={(e) => cambiar(item.codigo, "reglas", { ...(draft.reglas || {}), porcentaje_hipoteca_provincia: { ...(draft.reglas?.porcentaje_hipoteca_provincia || {}), [provincia]: e.target.value } })} /></label>)}</div><p className="mt-2 text-xs text-slate-500">Vitoria-Gasteiz queda cubierta por Álava. El porcentaje se aplica sobre el capital y el resultado se muestra en euros; valida siempre el criterio fiscal aplicable.</p></div>
         </div>;
       })}
     </div>}
@@ -377,7 +377,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
   }));
   const importeHipotecaProvincia = (provincia) => {
     const concepto = conceptosImportes.find((x) => x.codigo === "impuestos" && x.activo !== false);
-    const importes = concepto?.reglas?.importes_hipoteca_provincia || {};
+    const importes = concepto?.reglas?.porcentaje_hipoteca_provincia || concepto?.reglas?.importes_hipoteca_provincia || {};
     const clave = String(provincia || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es");
     const entrada = Object.entries(importes).find(([nombre]) => nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es") === clave);
     return entrada && entrada[1] !== "" && entrada[1] != null && Number.isFinite(Number(entrada[1])) ? Number(entrada[1]) : null;
@@ -460,9 +460,9 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
       }
       impuestos = Math.round((capital * porcentaje / 100) * 100) / 100;
     } else if (esHipoteca && g.adquisicion_vivienda_habitual === "no") {
-      // Para hipotecas destinadas a otra finalidad, aplicar el importe territorial guardado en el catálogo de provisiones.
-      const importeTerritorial = importeHipotecaProvincia(g.provincia);
-      impuestos = importeTerritorial !== null ? importeTerritorial : Number(g.ajd || 0);
+      // Para hipotecas destinadas a otra finalidad, el valor de la regla provincial es un porcentaje del capital.
+      const porcentajeTerritorial = importeHipotecaProvincia(g.provincia);
+      if (porcentajeTerritorial !== null) impuestos = Math.round((capital * porcentajeTerritorial / 100) * 100) / 100;
     } else if (g.tipo_carga && !normalizar(g.tipo_carga).includes("hipotec")) {
       // Para otras cargas no se presupone un impuesto específico.
       impuestos = Number(g.ajd || 0);
@@ -607,10 +607,10 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
               {g.adquisicion_vivienda_habitual === "" || g.adquisicion_vivienda_habitual == null
                 ? "Responde primero si la hipoteca se constituyó para adquirir la vivienda habitual."
                 : g.adquisicion_vivienda_habitual === "si"
-                  ? "Al tratarse de una hipoteca constituida para adquirir la vivienda habitual, no se aplica el importe territorial configurado por esta regla."
+                  ? "Al tratarse de una hipoteca constituida para adquirir la vivienda habitual, no se aplica el porcentaje provincial configurado por esta regla."
                   : importeHipotecaProvincia(g.provincia) === null
-                    ? "No hay importe configurado para " + g.provincia + " en Catálogos → Tabla Provisiones de fondos. Introduce el impuesto manualmente."
-                    : "Como la hipoteca no se constituyó para adquirir la vivienda habitual, se propone " + dinero(importeHipotecaProvincia(g.provincia)) + " según la tabla configurada. El importe se refleja en AJD / impuestos y puedes revisarlo antes de guardar."}
+                    ? "No hay porcentaje configurado para " + g.provincia + " en Catálogos → Tabla Provisiones de fondos. Introduce el impuesto manualmente."
+                    : "Como la hipoteca no se constituyó para adquirir la vivienda habitual, se aplica el " + String(importeHipotecaProvincia(g.provincia)).replace(".", ",") + " % al capital del préstamo. El resultado se refleja en AJD / impuestos y puedes revisarlo antes de guardar."}
             </div>}
             {!normalizarCatalogo(g.tipo_carga).includes("hipotec") && <div role="note" className="mb-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900"><strong>Atención:</strong> en cargas administrativas, judiciales, bienes muebles u otras (por ejemplo, embargos) no se debe presupuestar gasto notarial. Añade en Observaciones una nota indicando la carga que debe cancelarse. El importe de Notaría queda a 0 €.</div>}
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
