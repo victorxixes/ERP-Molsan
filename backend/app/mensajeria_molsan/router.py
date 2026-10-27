@@ -531,6 +531,7 @@ def _comprobar_acceso_solicitud(solicitud, usuario):
 
 @router.get("/solicitudes/{solicitud_id}/comunicaciones")
 def listar_comunicaciones(solicitud_id: int, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_permiso_mensajeria(usuario, "ver")
     _ensure_tables(db)
     existe = db.execute(text("SELECT id FROM mensajeria_solicitudes WHERE id=:id"), {"id": solicitud_id}).fetchone()
     if not existe:
@@ -547,6 +548,7 @@ class ComunicacionIn(BaseModel):
 
 @router.post("/solicitudes/{solicitud_id}/comunicaciones")
 def crear_comunicacion(solicitud_id: int, data: ComunicacionIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_permiso_mensajeria(usuario, "ver")
     _ensure_tables(db)
     solicitud = db.execute(text("SELECT id,solicitante_id FROM mensajeria_solicitudes WHERE id=:id"), {"id": solicitud_id}).fetchone()
     if not solicitud:
