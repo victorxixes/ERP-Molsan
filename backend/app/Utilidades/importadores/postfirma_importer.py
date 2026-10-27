@@ -154,6 +154,9 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
         return _limpiar(row[col]) if col is not None else None
 
     try:
+        # Iterador secuencial: en modo read_only, llamar cell() repetidamente
+        # puede volver a recorrer el XML desde el principio y disparar el tiempo de lectura.
+        filas_originales = hoja_original.iter_rows(min_row=2, max_col=len(df.columns), values_only=False)
         for inicio in range(0, len(df), TAMANO_LOTE):
             lote = df.iloc[inicio:inicio + TAMANO_LOTE]
             registros = []
@@ -164,11 +167,11 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
             # el listado completo de expedientes sin vínculo.
             for indice, row in lote.iterrows():
                 fila_excel = int(indice) + 2
+                celdas_originales = next(filas_originales, ())
                 original = {
-                    str(columna): _valor_original_excel(
-                        hoja_original.cell(row=fila_excel, column=posicion + 1)
-                    )
+                    str(columna): _valor_original_excel(celdas_originales[posicion])
                     for posicion, columna in enumerate(df.columns)
+                    if posicion < len(celdas_originales)
                 }
                 if not any(v is not None for v in original.values()):
                     filas_vacias += 1
