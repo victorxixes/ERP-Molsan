@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
+from email.message import EmailMessage
+import os
+import smtplib
 from decimal import Decimal
 from io import BytesIO
 from pathlib import Path
@@ -18,6 +21,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether, Image as PDFImage
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from backend.app.auth.dependencies import get_current_user
@@ -1084,6 +1088,208 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
     buffer.seek(0)
     filename = "".join(c for c in str(item.numero) if c.isalnum() or c in "-_") or f"provision-{item.id}"
     return StreamingResponse(buffer, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="{filename}.pdf"', "Cache-Control": "no-store"})
+
+
+
+
+class EnviarEmailProvisionInput(BaseModel):
+    destinatario: str = Field(..., min_length=3, max_length=320)
+    asunto: str = Field(..., min_length=3, max_length=500)
+    cuerpo: str = Field(..., min_length=1, max_length=20000)
+
+
+def _preparar_email_provision(db: Session, item: ProvisionIndependiente, usuario) -> dict:
+    """Resuelve la plantilla operativa, las variables y la firma corporativa."""
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS correspondencia_plantillas (
+            id SERIAL PRIMARY KEY, nombre VARCHAR(180) NOT NULL,
+            categoria VARCHAR(120) NOT NULL DEFAULT 'General',
+            asunto VARCHAR(500) NOT NULL DEFAULT '', destinatario VARCHAR(500) NOT NULL DEFAULT '',
+            cc VARCHAR(500) NOT NULL DEFAULT '', cuerpo TEXT NOT NULL DEFAULT '',
+            activo BOOLEAN NOT NULL DEFAULT TRUE,
+            creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    db.execute(text("""
+        INSERT INTO correspondencia_plantillas (nombre, categoria, asunto, destinatario, cuerpo, activo)
+        SELECT :nombre, :categoria, :asunto, :destinatario, :cuerpo, TRUE
+        WHERE NOT EXISTS (
+            SELECT 1 FROM correspondencia_plantillas WHERE lower(nombre) = lower(:nombre)
+        )
+    """), {
+        "nombre": "Envío de provisión de fondos",
+        "categoria": "Provisión de fondos",
+        "asunto": "Provisión de fondos estimativa – {{cliente.nombre}}, {{oficina.numero}}, {{provision.id}}",
+        "destinatario": "{{oficina.email}}",
+        "cuerpo": "Buenos días:\n\nAdjuntamos la provisión de fondos estimativa correspondiente a la operación, para su conocimiento y revisión.\n\nEl documento adjunto recoge el importe estimado de la provisión necesaria para la tramitación.\n\nQuedamos a su disposición para cualquier aclaración.\n\nMuchas gracias.\n\nUn saludo,",
+    })
+    plantilla = db.execute(text("""
+        SELECT id, nombre, asunto, cuerpo, activo
+        FROM correspondencia_plantillas
+        WHERE lower(nombre) = lower(:nombre) AND activo = TRUE
+        ORDER BY id ASC LIMIT 1
+    """), {"nombre": "Envío de provisión de fondos"}).mappings().first()
+    if not plantilla:
+        raise HTTPException(status_code=500, detail="No se ha podido preparar la plantilla de envío de provisión.")
+
+    datos = _independiente_dict(item)
+    contexto = {
+        "cliente.nombre": (datos.get("cliente") or {}).get("nombre") or "",
+        "cliente.nif": (datos.get("cliente") or {}).get("nif") or "",
+        "oficina.numero": (datos.get("oficina") or {}).get("numero") or "",
+        "oficina.email": (datos.get("oficina") or {}).get("email") or "",
+        "provision.id": str(item.id),
+        "provision.numero": str(item.numero or ""),
+        "provision.importe_total": _euros(item.importe_total),
+    }
+    import re
+    def interpolar(valor):
+        return re.sub(r"\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}", lambda m: str(contexto.get(m.group(1), "")), str(valor or ""))
+    asunto = interpolar(plantilla["asunto"])
+    cuerpo = interpolar(plantilla["cuerpo"])
+
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS correspondencia_configuracion (
+            id INTEGER PRIMARY KEY, firma_pie TEXT NOT NULL DEFAULT '',
+            factura_nombre VARCHAR(255), factura_tipo VARCHAR(160), factura_contenido BYTEA,
+            actualizado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT correspondencia_configuracion_unica CHECK (id = 1)
+        )
+    """))
+    db.execute(text("INSERT INTO correspondencia_configuracion (id, firma_pie) VALUES (1, '') ON CONFLICT (id) DO NOTHING"))
+    fila_firma = db.execute(text("SELECT firma_pie FROM correspondencia_configuracion WHERE id = 1")).mappings().first()
+    nombre = " ".join(filter(None, [
+        str(getattr(usuario, "nombre", "") or "").strip(),
+        str(getattr(usuario, "apellidos", "") or "").strip(),
+    ]))
+    departamento = db.execute(text("SELECT nombre FROM departamentos WHERE id = :id"), {"id": usuario.departamento_id}).scalar() if getattr(usuario, "departamento_id", None) else ""
+    cargo = db.execute(text("SELECT nombre FROM cargos WHERE id = :id"), {"id": usuario.cargo_id}).scalar() if getattr(usuario, "cargo_id", None) else ""
+    firma_personal = "\n".join(x for x in [nombre, " · ".join(x for x in [departamento or "", cargo or ""] if x)] if x)
+    firma_pie = (fila_firma["firma_pie"] or "").strip() if fila_firma else ""
+    cuerpo = "\n\n".join(x for x in [cuerpo.strip(), firma_personal, firma_pie] if x)
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS provisiones_email_envios (
+            id SERIAL PRIMARY KEY, provision_id INTEGER NOT NULL,
+            destinatario VARCHAR(320) NOT NULL, asunto VARCHAR(500) NOT NULL,
+            estado VARCHAR(30) NOT NULL, detalle TEXT,
+            enviado_por VARCHAR(300), creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    historial = db.execute(text("""
+        SELECT destinatario, asunto, estado, detalle, creado_en
+        FROM provisiones_email_envios WHERE provision_id = :id
+        ORDER BY creado_en DESC, id DESC LIMIT 5
+    """), {"id": item.id}).mappings().all()
+    db.commit()
+    return {
+        "plantilla_id": plantilla["id"],
+        "destinatario": contexto["oficina.email"],
+        "asunto": asunto,
+        "cuerpo": cuerpo,
+        "nombre_cliente": contexto["cliente.nombre"],
+        "numero_oficina": contexto["oficina.numero"],
+        "provision_id": item.id,
+        "pdf_filename": f"provision_{item.numero or item.id}.pdf",
+        "smtp_configurado": bool(os.getenv("SMTP_HOST", "").strip()),
+        "historial": [{
+            "destinatario": fila["destinatario"], "asunto": fila["asunto"],
+            "estado": fila["estado"], "detalle": fila["detalle"],
+            "creado_en": fila["creado_en"].isoformat() if fila["creado_en"] else None,
+        } for fila in historial],
+    }
+
+
+@router.get("/provisiones-independientes/{provision_id}/email-preview", summary="Preparar vista previa del email de provisión")
+def vista_previa_email_provision(
+    provision_id: int,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "expedientes", "ver")
+    item = db.query(ProvisionIndependiente).filter(ProvisionIndependiente.id == provision_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Provisión no encontrada.")
+    if not (item.oficina_email or ((item.datos or {}).get("oficina", {}) or {}).get("email") or ""):
+        raise HTTPException(status_code=400, detail="Completa el campo Email del bloque 2. Datos de la oficina de origen antes de enviar.")
+    return _preparar_email_provision(db, item, usuario)
+
+
+@router.post("/provisiones-independientes/{provision_id}/email", summary="Enviar la provisión de fondos por email")
+async def enviar_email_provision(
+    provision_id: int,
+    datos_email: EnviarEmailProvisionInput,
+    db: Session = Depends(get_db),
+    usuario=Depends(get_current_user),
+):
+    require_perm_modulo(usuario, "expedientes", "editar")
+    item = db.query(ProvisionIndependiente).filter(ProvisionIndependiente.id == provision_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Provisión no encontrada.")
+    preparado = _preparar_email_provision(db, item, usuario)
+    destinatario = (datos_email.destinatario or "").strip()
+    if not destinatario or "@" not in destinatario or "." not in destinatario.rsplit("@", 1)[-1]:
+        raise HTTPException(status_code=400, detail="El email de destino no es válido.")
+    host = os.getenv("SMTP_HOST", "").strip()
+    port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user = os.getenv("SMTP_USER", "").strip()
+    smtp_password = os.getenv("SMTP_PASSWORD", "")
+    if not host:
+        raise HTTPException(status_code=503, detail="No se puede enviar el correo: falta SMTP_HOST en las variables de entorno del backend.")
+
+    response_pdf = documento_provision_independiente(provision_id, db, usuario)
+    chunks = []
+    async for chunk in response_pdf.body_iterator:
+        chunks.append(chunk)
+    pdf_bytes = b"".join(chunks)
+    mensaje = EmailMessage()
+    mensaje["Subject"] = datos_email.asunto.strip()
+    mensaje["From"] = "cancelaciones@molsan.es"
+    mensaje["To"] = destinatario
+    mensaje.set_content(datos_email.cuerpo)
+    filename = preparado["pdf_filename"].replace("/", "_").replace("\\", "_")
+    mensaje.add_attachment(pdf_bytes, maintype="application", subtype="pdf", filename=filename)
+
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS provisiones_email_envios (
+            id SERIAL PRIMARY KEY, provision_id INTEGER NOT NULL,
+            destinatario VARCHAR(320) NOT NULL, asunto VARCHAR(500) NOT NULL,
+            estado VARCHAR(30) NOT NULL, detalle TEXT,
+            enviado_por VARCHAR(300), creado_en TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """))
+    registro = {"provision_id": item.id, "destinatario": destinatario, "asunto": datos_email.asunto.strip(),
+                "estado": "error", "detalle": "", "enviado_por": " ".join(filter(None, [
+                    str(getattr(usuario, "nombre", "") or "").strip(),
+                    str(getattr(usuario, "apellidos", "") or "").strip()
+                ]))}
+    try:
+        with smtplib.SMTP(host, port, timeout=25) as servidor:
+            servidor.ehlo()
+            if os.getenv("SMTP_STARTTLS", "true").strip().lower() in {"1", "true", "yes", "si"}:
+                servidor.starttls()
+                servidor.ehlo()
+            if smtp_user:
+                servidor.login(smtp_user, smtp_password)
+            servidor.send_message(mensaje)
+        registro["estado"] = "enviado"
+        registro["detalle"] = "Email aceptado por el servidor SMTP."
+    except Exception as exc:
+        registro["detalle"] = f"Error SMTP: {str(exc)[:1200]}"
+        db.execute(text("""
+            INSERT INTO provisiones_email_envios
+                (provision_id, destinatario, asunto, estado, detalle, enviado_por)
+            VALUES (:provision_id, :destinatario, :asunto, :estado, :detalle, :enviado_por)
+        """), registro)
+        db.commit()
+        raise HTTPException(status_code=502, detail="No se pudo enviar el correo. El error ha quedado registrado en el histórico.")
+    db.execute(text("""
+        INSERT INTO provisiones_email_envios
+            (provision_id, destinatario, asunto, estado, detalle, enviado_por)
+        VALUES (:provision_id, :destinatario, :asunto, :estado, :detalle, :enviado_por)
+    """), registro)
+    db.commit()
+    return {"ok": True, "estado": "enviado", "mensaje": "Provisión enviada por email correctamente."}
 
 
 @router.on_event("startup")

@@ -302,6 +302,9 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
   const [catalogoRegistros, setCatalogoRegistros] = useState([]);
   const [tiposCarga, setTiposCarga] = useState([]);
   const [conceptosImportes, setConceptosImportes] = useState([]);
+  const [emailDraft, setEmailDraft] = useState(null);
+  const [emailProvisionId, setEmailProvisionId] = useState(null);
+  const [enviandoEmail, setEnviandoEmail] = useState(false);
 
   useEffect(() => {
     let activo = true;
@@ -510,6 +513,33 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     } catch (e) { setError(e.response?.data?.detail || "No se pudo generar el PDF."); }
   };
   const filtrados = items.filter((x) => [x.numero, x.cliente?.nombre, x.cliente?.nif, x.cliente?.poblacion].some((v) => String(v || "").toLowerCase().includes(busqueda.toLowerCase())));
+  const abrirEmail = async (item = form) => {
+    const id = item?.id;
+    if (!id) { setError("Guarda la provisión antes de preparar el correo."); return; }
+    setError(""); setAviso("");
+    try {
+      const r = await axios.get(`/expedientes/provisiones-independientes/${id}/email-preview`);
+      setEmailDraft({ destinatario: r.data.destinatario || "", asunto: r.data.asunto || "", cuerpo: r.data.cuerpo || "", pdf_filename: r.data.pdf_filename || "provision.pdf", smtp_configurado: Boolean(r.data.smtp_configurado), historial: Array.isArray(r.data.historial) ? r.data.historial : [] });
+      setEmailProvisionId(id);
+    } catch (e) { setError(e.response?.data?.detail || "No se pudo preparar el email de la provisión."); }
+  };
+  const enviarEmail = async (e) => {
+    e.preventDefault();
+    if (!emailProvisionId || !emailDraft) return;
+    setEnviandoEmail(true); setError(""); setAviso("");
+    try {
+      const r = await axios.post(`/expedientes/provisiones-independientes/${emailProvisionId}/email`, {
+        destinatario: emailDraft.destinatario,
+        asunto: emailDraft.asunto,
+        cuerpo: emailDraft.cuerpo,
+      });
+      setEmailDraft(null); setEmailProvisionId(null);
+      setAviso(r.data?.mensaje || "Provisión enviada por email correctamente.");
+      await cargar();
+    } catch (e2) { setError(e2.response?.data?.detail || "No se pudo enviar el email."); }
+    finally { setEnviandoEmail(false); }
+  };
+
 
   if (modoCatalogo) return <main className="provisiones-fondos-page w-full min-w-0 space-y-6 p-3 md:p-6"><header className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 px-5 py-5 shadow-sm"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">MOLSAN ERP PREMIUM 2027 · CATÁLOGOS ECONÓMICOS</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-800">Tabla Provisiones de fondos</h1><p className="mt-1 max-w-3xl text-sm text-slate-500">Configura importes estimativos y criterios iniciales. Estos valores sirven de referencia para nuevas provisiones; los registros históricos no se recalculan al cambiar la tabla.</p></header><ConfiguracionConceptosProvisiones /></main>;
 
@@ -633,13 +663,35 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
 
       <div className="sticky bottom-3 z-10 flex flex-col items-stretch justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg backdrop-blur sm:flex-row sm:items-center">
         <div><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Importe total estimado</p><p className="text-2xl font-bold text-slate-950">{dinero(form.garantias.reduce((s, g) => s + (Number(g.total || 0) || ["notaria", "ajd", "registro", "gestion"].reduce((a, k) => a + Number(g[k] || 0), 0)), 0))}</p></div>
-        <div className="flex flex-wrap gap-2"><button type="button" onClick={nueva} className={`${boton} border border-slate-300 text-slate-700 hover:bg-slate-50`}>Nueva / limpiar</button><button type="button" onClick={pdf} disabled={!form.id} className={`${boton} border border-blue-200 text-blue-800 hover:bg-blue-50`}>Generar PDF</button><button type="submit" disabled={guardando} className={`${boton} bg-slate-950 text-white hover:bg-slate-800`}>{guardando ? "Guardando…" : form.id ? "Guardar cambios" : "Guardar provisión"}</button></div>
+        <div className="flex flex-wrap gap-2"><button type="button" onClick={nueva} className={`${boton} border border-slate-300 text-slate-700 hover:bg-slate-50`}>Nueva / limpiar</button><button type="button" onClick={pdf} disabled={!form.id} className={`${boton} border border-blue-200 text-blue-800 hover:bg-blue-50`}>Generar PDF</button><button type="button" onClick={() => abrirEmail(form)} disabled={!form.id} className={`${boton} border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100`}>✉ Enviar por email</button><button type="submit" disabled={guardando} className={`${boton} bg-slate-950 text-white hover:bg-slate-800`}>{guardando ? "Guardando…" : form.id ? "Guardar cambios" : "Guardar provisión"}</button></div>
       </div>
     </form>
 
     <Seccion titulo="Histórico de provisiones guardadas" detalle="Busca, recupera y modifica una provisión anterior o vuelve a generar su documento.">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row"><input className={`${input} mt-0 flex-1`} value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar por número, cliente, DNI/CIF o población…" /><button type="button" onClick={cargar} className={`${boton} border border-slate-300 text-slate-700 hover:bg-slate-50`}>Actualizar</button></div>
-      {cargando ? <p role="status" aria-live="polite" className="py-8 text-center text-sm text-slate-500">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8 text-center text-sm text-slate-500">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[760px] border-collapse text-left text-sm"><thead><tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500"><th className="px-3 py-3">Número / fecha</th><th className="px-3 py-3">Cliente</th><th className="px-3 py-3">Población</th><th className="px-3 py-3 text-right">Importe</th><th className="px-3 py-3">Acciones</th></tr></thead><tbody>{filtrados.map((it) => <tr key={it.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="px-3 py-3"><p className="font-bold text-slate-900">{it.numero}</p><p className="text-xs text-slate-500">{it.fecha || "—"}</p></td><td className="px-3 py-3"><p className="font-semibold">{it.cliente?.nombre || "—"}</p><p className="text-xs text-slate-500">{it.cliente?.nif || ""}</p></td><td className="px-3 py-3">{it.cliente?.poblacion || "—"}</td><td className="px-3 py-3 text-right font-bold tabular-nums">{dinero(it.importe_total)}</td><td className="px-3 py-3"><button type="button" onClick={() => recuperar(it)} className="font-semibold text-blue-700 hover:underline">Abrir / editar</button></td></tr>)}</tbody></table></div>}
+      {cargando ? <p role="status" aria-live="polite" className="py-8 text-center text-sm text-slate-500">Cargando histórico…</p> : filtrados.length === 0 ? <p className="py-8 text-center text-sm text-slate-500">Todavía no hay provisiones guardadas que coincidan con la búsqueda.</p> : <div className="overflow-x-auto"><table className="w-full min-w-[760px] border-collapse text-left text-sm"><thead><tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500"><th className="px-3 py-3">Número / fecha</th><th className="px-3 py-3">Cliente</th><th className="px-3 py-3">Población</th><th className="px-3 py-3 text-right">Importe</th><th className="px-3 py-3">Acciones</th></tr></thead><tbody>{filtrados.map((it) => <tr key={it.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="px-3 py-3"><p className="font-bold text-slate-900">{it.numero}</p><p className="text-xs text-slate-500">{it.fecha || "—"}</p></td><td className="px-3 py-3"><p className="font-semibold">{it.cliente?.nombre || "—"}</p><p className="text-xs text-slate-500">{it.cliente?.nif || ""}</p></td><td className="px-3 py-3">{it.cliente?.poblacion || "—"}</td><td className="px-3 py-3 text-right font-bold tabular-nums">{dinero(it.importe_total)}</td><td className="px-3 py-3"><div className="flex flex-col items-start gap-1"><button type="button" onClick={() => recuperar(it)} className="font-semibold text-blue-700 hover:underline">Abrir / editar</button><button type="button" onClick={() => abrirEmail(it)} className="font-semibold text-emerald-700 hover:underline">Enviar por email</button></div></td></tr>)}</tbody></table></div>}
+
     </Seccion>
+    {emailDraft && <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="Enviar provisión por email">
+      <form onSubmit={enviarEmail} className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+        <header className="flex items-start justify-between gap-4 rounded-t-2xl bg-slate-950 px-5 py-4 text-white">
+          <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">Correspondencia tipificada</p><h2 className="mt-1 text-xl font-bold">Enviar provisión de fondos</h2><p className="mt-1 text-sm text-slate-300">Remitente fijo: cancelaciones@molsan.es · Se adjuntará automáticamente el PDF.</p></div>
+          <button type="button" onClick={() => { setEmailDraft(null); setEmailProvisionId(null); }} className="rounded-lg px-3 py-2 text-xl text-slate-200 hover:bg-white/10" aria-label="Cerrar">×</button>
+        </header>
+        <div className="space-y-4 p-5">
+          <label className={label}>De<input className={input} value="cancelaciones@molsan.es" readOnly /></label>
+          <label className={label}>Para · Email de la oficina de origen<input className={input} type="email" required value={emailDraft.destinatario} onChange={(e) => setEmailDraft((d) => ({ ...d, destinatario: e.target.value }))} /></label>
+          <label className={label}>Asunto<input className={input} required maxLength={500} value={emailDraft.asunto} onChange={(e) => setEmailDraft((d) => ({ ...d, asunto: e.target.value }))} /></label>
+          <label className={label}>Mensaje<textarea className={input + " min-h-56 resize-y"} required value={emailDraft.cuerpo} onChange={(e) => setEmailDraft((d) => ({ ...d, cuerpo: e.target.value }))} /></label>
+          {!emailDraft.smtp_configurado && <div role="status" className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950"><span className="text-xl">⚠️</span><div><p className="font-bold">Envío pendiente de configuración SMTP</p><p className="mt-1">La plantilla y el correo están preparados, pero todavía no se pueden enviar emails. Falta configurar el servicio SMTP en el backend. Cuando esté configurado, este botón permitirá realizar el envío.</p></div></div>}
+          <div className="flex items-center gap-3 rounded-xl border border-red-100 bg-red-50/70 p-3 text-sm text-slate-700"><span className="text-2xl">📎</span><div><p className="font-semibold">PDF de la provisión</p><p className="text-xs text-slate-500">Se genera desde la provisión seleccionada y se adjunta al correo automáticamente.</p></div></div>
+          {emailDraft.historial?.length > 0 && <section className="rounded-xl border border-slate-200 bg-slate-50 p-3"><h3 className="mb-2 text-sm font-bold text-slate-800">Últimos envíos</h3><div className="space-y-2">{emailDraft.historial.map((envio, i) => <div key={envio.creado_en || i} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white px-3 py-2 text-xs"><div><p className="font-semibold text-slate-700">{envio.destinatario}</p><p className="text-slate-500">{envio.creado_en ? new Date(envio.creado_en).toLocaleString("es-ES") : "Fecha no disponible"}</p></div><span className={envio.estado === "enviado" ? "rounded-full bg-emerald-100 px-2 py-1 font-bold text-emerald-800" : "rounded-full bg-red-100 px-2 py-1 font-bold text-red-800"}>{envio.estado === "enviado" ? "Enviado" : "Error"}</span></div>)}</div></section>}
+          <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-4">
+            <button type="button" onClick={() => { setEmailDraft(null); setEmailProvisionId(null); }} className={boton + " border border-slate-300 text-slate-700 hover:bg-slate-50"}>Cancelar</button>
+            <button type="submit" disabled={enviandoEmail || !emailDraft.smtp_configurado || !emailDraft.destinatario.trim() || !emailDraft.asunto.trim() || !emailDraft.cuerpo.trim()} className={boton + " bg-emerald-600 text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"}>{enviandoEmail ? "Enviando…" : emailDraft.smtp_configurado ? "Enviar correo" : "SMTP pendiente"}</button>
+          </div>
+        </div>
+      </form>
+    </div>}
   </main>;
 }
