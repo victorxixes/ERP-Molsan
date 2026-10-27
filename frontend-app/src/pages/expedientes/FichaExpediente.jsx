@@ -385,6 +385,14 @@ const DEFECTO_VACIO = {
   subtipo_defecto: "",
   fecha_notificacion_registro: "",
   fecha_vencimiento_presentacion: "",
+  fecha_calificacion: "",
+  fecha_renovacion_asiento: "",
+  asiento_renovacion_libro_diario: "",
+  vencimiento_asiento_renovacion: "",
+  anotacion_suspensiva: "",
+  vencimiento_anotacion: "",
+  calificacion_sustitutoria: "",
+  recurso_gubernativo: "",
   calificacion_registro: "",
   observaciones_registro: "",
   fecha_entrada_subsanacion: "",
@@ -3268,6 +3276,14 @@ function editarDefectoRegistrado(defecto) {
     subtipo_defecto: defecto.subtipo_defecto || "",
     fecha_notificacion_registro: defecto.fecha_notificacion_registro || "",
     fecha_vencimiento_presentacion: defecto.fecha_vencimiento_presentacion || "",
+    fecha_calificacion: defecto.fecha_calificacion || "",
+    fecha_renovacion_asiento: defecto.fecha_renovacion_asiento || "",
+    asiento_renovacion_libro_diario: defecto.asiento_renovacion_libro_diario || "",
+    vencimiento_asiento_renovacion: defecto.vencimiento_asiento_renovacion || "",
+    anotacion_suspensiva: defecto.anotacion_suspensiva == null ? "" : String(defecto.anotacion_suspensiva),
+    vencimiento_anotacion: defecto.vencimiento_anotacion || "",
+    calificacion_sustitutoria: defecto.calificacion_sustitutoria == null ? "" : String(defecto.calificacion_sustitutoria),
+    recurso_gubernativo: defecto.recurso_gubernativo == null ? "" : String(defecto.recurso_gubernativo),
     calificacion_registro: defecto.calificacion_registro || "",
     observaciones_registro: defecto.observaciones_registro || "",
     fecha_entrada_subsanacion: defecto.fecha_entrada_subsanacion || "",
@@ -3307,6 +3323,14 @@ async function guardarDefectoRegistral() {
       subtipo_defecto: defectoForm.subtipo_defecto || null,
       fecha_notificacion_registro: defectoForm.fecha_notificacion_registro || null,
       fecha_vencimiento_presentacion: defectoForm.fecha_vencimiento_presentacion || null,
+      fecha_calificacion: defectoForm.fecha_calificacion || null,
+      fecha_renovacion_asiento: defectoForm.fecha_renovacion_asiento || null,
+      asiento_renovacion_libro_diario: defectoForm.asiento_renovacion_libro_diario || null,
+      vencimiento_asiento_renovacion: defectoForm.vencimiento_asiento_renovacion || null,
+      anotacion_suspensiva: defectoForm.anotacion_suspensiva === "" ? null : defectoForm.anotacion_suspensiva === "true",
+      vencimiento_anotacion: defectoForm.vencimiento_anotacion || null,
+      calificacion_sustitutoria: defectoForm.calificacion_sustitutoria === "" ? null : defectoForm.calificacion_sustitutoria === "true",
+      recurso_gubernativo: defectoForm.recurso_gubernativo === "" ? null : defectoForm.recurso_gubernativo === "true",
       calificacion_registro: defectoForm.calificacion_registro || null,
       observaciones_registro: defectoForm.observaciones_registro || null,
       fecha_entrada_subsanacion: defectoForm.fecha_entrada_subsanacion || null,
@@ -7110,6 +7134,45 @@ const cuantiaFincasParaEnvio =
           )}
         </label>
 
+        <label className="block text-sm font-medium text-slate-700">
+          Fecha calificación *
+          <input type="date" required className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.fecha_calificacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_calificacion: e.target.value }))} />
+        </label>
+        <label className="block text-sm font-medium text-slate-700">
+          Fecha renovación asiento
+          <input type="date" className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.fecha_renovacion_asiento} onChange={(e) => setDefectoForm((actual) => ({ ...actual, fecha_renovacion_asiento: e.target.value }))} />
+        </label>
+        <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+          Asiento renovación y libro diario
+          <input type="text" maxLength={200} className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.asiento_renovacion_libro_diario} onChange={(e) => setDefectoForm((actual) => ({ ...actual, asiento_renovacion_libro_diario: e.target.value }))} placeholder="Asiento de renovación / libro diario" />
+        </label>
+        <label className="block text-sm font-medium text-slate-700">
+          Vencimiento asiento renovación
+          <input type="date" readOnly className="mt-1 w-full rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm" value={defectoForm.vencimiento_asiento_renovacion} />
+          <span className="mt-1 block text-xs font-normal text-amber-700">Pendiente de confirmar el número de días naturales para calcularlo desde la fecha de calificación.</span>
+        </label>
+        <label className="block text-sm font-medium text-slate-700">
+          Anotación suspensiva
+          <select className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm" value={defectoForm.anotacion_suspensiva} onChange={(e) => setDefectoForm((actual) => ({ ...actual, anotacion_suspensiva: e.target.value }))}>
+            <option value="">— Seleccionar —</option><option value="true">Sí</option><option value="false">No</option>
+          </select>
+        </label>
+        <label className="block text-sm font-medium text-slate-700">
+          Vencimiento anotación
+          <input type="date" className="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" value={defectoForm.vencimiento_anotacion} onChange={(e) => setDefectoForm((actual) => ({ ...actual, vencimiento_anotacion: e.target.value }))} />
+        </label>
+        <label className="block text-sm font-medium text-slate-700">
+          Calificación sustitutoria
+          <select className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm" value={defectoForm.calificacion_sustitutoria} onChange={(e) => setDefectoForm((actual) => ({ ...actual, calificacion_sustitutoria: e.target.value }))}>
+            <option value="">— Seleccionar —</option><option value="true">Sí</option><option value="false">No</option>
+          </select>
+        </label>
+        <label className="block text-sm font-medium text-slate-700">
+          Recurso gubernativo
+          <select className="mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-sm" value={defectoForm.recurso_gubernativo} onChange={(e) => setDefectoForm((actual) => ({ ...actual, recurso_gubernativo: e.target.value }))}>
+            <option value="">— Seleccionar —</option><option value="true">Sí</option><option value="false">No</option>
+          </select>
+        </label>
         <label className="block text-sm font-medium text-slate-700">
           Fecha Notificación Registro
           <input
