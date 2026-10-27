@@ -442,7 +442,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
     empleado?.rol?.nombre ||
     empleado?.rol_nombre ||
     (typeof empleado?.rol === "string" ? empleado.rol : "")
-  ).normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").replace(/[_-]+/g, " ").trim().toLowerCase().replace(/\\s+/g, " ");
+  ).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[_-]+/g, " ").trim().toLowerCase().replace(/\s+/g, " ");
   const rolesAdminSidebar = new Set([
     "admin", "administrador", "administradora", "superadmin", "super admin",
     "superadministrador", "super administradora", "superuser", "super usuario",
@@ -457,7 +457,7 @@ export default function Sidebar({ brandName = "CancelaGest", navigationItems = n
   const modulosVisiblesSidebar = [
     ...(Array.isArray(empleado?.modulos_visibles_list) ? empleado.modulos_visibles_list : []),
     ...(Array.isArray(empleado?.modulos_visibles) ? empleado.modulos_visibles : []),
-  ].map((v) => String(v || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim().toLowerCase());
+  ].map((v) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase());
   const tieneControlFichajesVisible = modulosVisiblesSidebar.includes("control-fichajes");
 
   const perfilModal = useAuthStore((s) => s.perfilModal);
