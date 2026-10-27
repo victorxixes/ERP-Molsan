@@ -478,11 +478,20 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
     if (!Number.isFinite(capital) || capital <= 0) { setError("Introduce un capital del préstamo válido y mayor que 0 €."); return; }
 
     const normalizar = normalizarCatalogo;
+    // El usuario puede escribir el nombre bancario con o sin espacios/puntuación
+    // (p. ej. "BancoCaixaGeral" frente a "Banco Caixa Geral, S.A.").
+    // La coincidencia compacta evita rechazar una entidad válida por diferencias de formato.
+    const compactarEntidad = (valor) => normalizar(valor).replace(/[^a-z0-9]/g, "");
     const entidadEscrita = normalizar(g.entidad);
-    const coincidenciasBanco = entidadesBancarias.filter((e) => normalizar(e.nombre) === entidadEscrita);
+    const entidadCompacta = compactarEntidad(g.entidad);
+    const coincidenciasExactas = entidadesBancarias.filter((e) => normalizar(e.nombre) === entidadEscrita);
+    const coincidenciasCompactas = entidadesBancarias.filter((e) => compactarEntidad(e.nombre) === entidadCompacta);
+    const coincidenciasBanco = coincidenciasExactas.length ? coincidenciasExactas : coincidenciasCompactas;
     const coincidenciasParciales = coincidenciasBanco.length ? coincidenciasBanco : entidadesBancarias.filter((e) => {
       const nombre = normalizar(e.nombre);
-      return nombre.startsWith(entidadEscrita) || entidadEscrita.startsWith(nombre);
+      const nombreCompacto = compactarEntidad(e.nombre);
+      return nombre.startsWith(entidadEscrita) || entidadEscrita.startsWith(nombre)
+        || nombreCompacto.startsWith(entidadCompacta) || entidadCompacta.startsWith(nombreCompacto);
     });
     const banco = coincidenciasParciales.length === 1 ? coincidenciasParciales[0] : null;
     if (!banco) {
