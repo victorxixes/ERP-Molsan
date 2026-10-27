@@ -717,7 +717,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
               <AutocompleteCatalogo titulo="Entidad bancaria" valor={g.entidad} opciones={entidadesBancarias} etiqueta={(e) => e.nombre} detalle={(e) => e.entidad_actual || ""} placeholder="Escribe para buscar una entidad bancaria…" requerido onChange={(v) => cambiarGarantia(i, "entidad", v)} onSelect={(e) => cambiarGarantia(i, "entidad", e.nombre)} />
               {(() => {
                 const bancoCatalogo = entidadesBancarias.find((e) => compactarEntidad(e.nombre) === compactarEntidad(g.entidad));
-                const entidadActual = String(bancoCatalogo?.entidad_actual || "").trim();
+                const entidadActual = String(bancoCatalogo?.entidad_actual || entidadesBancarias.find((e) => bancoCatalogo?.entidad_actual_id != null && String(e.id) === String(bancoCatalogo.entidad_actual_id))?.nombre || "").trim();
                 return <p className="sm:col-span-2 lg:col-span-4 -mt-1 text-xs text-slate-500">Entidad actual del catálogo: <strong className="text-slate-700">{entidadActual || "Sin entidad actual asignada; se aplicará tarifa de otra entidad"}</strong></p>;
               })()}
               <Campo titulo="Capital del préstamo (€)" tipo="number" valor={g.capital} onChange={(v) => cambiarGarantia(i, "capital", v)} requerido />
