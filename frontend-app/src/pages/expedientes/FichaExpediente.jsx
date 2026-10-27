@@ -8490,14 +8490,6 @@ const cuantiaFincasParaEnvio =
                     <option value="si">SÍ</option>
                   </select>
                 </label>
-                <label className="block rounded-lg border border-slate-200 bg-white p-3">
-                  <span className="block text-xs font-bold text-slate-600">Notario</span>
-                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nombre_notario") ? String(actividadDraft.nombre_notario ?? "") : String(expediente?.nombre_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nombre_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="Nombre del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
-                </label>
-                <label className="block rounded-lg border border-slate-200 bg-white p-3">
-                  <span className="block text-xs font-bold text-slate-600">NIF de notario</span>
-                  <input type="text" value={Object.prototype.hasOwnProperty.call(actividadDraft, "nif_notario") ? String(actividadDraft.nif_notario ?? "") : String(expediente?.nif_notario || "")} onChange={(event) => setActividadDraft((actual) => ({ ...actual, nif_notario: event.target.value }))} disabled={guardandoActividad || expedienteBloqueado} placeholder="NIF del notario" className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
-                </label>
               </div>
               <section className="mt-3 rounded-xl border border-slate-200 bg-white p-4">
                 <h4 className="mb-3 text-sm font-extrabold text-slate-800">📁 Repositorios digitales</h4>
