@@ -1,4 +1,4 @@
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 from io import BytesIO
 from urllib.parse import quote
@@ -240,12 +240,14 @@ def crear_marcaje(
 
 @router.get("/resumen-horas")
 def resumen_horas(
-    anio: int = Query(default_factory=lambda: datetime.now(ZoneInfo("Europe/Madrid")).year),
+    anio: int | None = Query(default=None),
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Resume horas de jornadas cerradas, descontando pausas y recortando al año solicitado."""
     require_perm_modulo(usuario, "fichajes", "ver")
+    if anio is None:
+        anio = datetime.now(ZoneInfo("Europe/Madrid")).year
     if anio < 2000 or anio > 2100:
         raise HTTPException(status_code=422, detail="Indica un año válido entre 2000 y 2100.")
 
@@ -287,7 +289,7 @@ def resumen_horas(
             tramo_inicio = max(instante_anterior, inicio)
             tramo_fin = min(instante, fin)
             if tramo_fin > tramo_inicio:
-                segundos_jornada_anio += (tramo_fin - tramo_inicio).total_seconds()
+                segundos_jornada_anio += (tramo_fin.astimezone(timezone.utc) - tramo_inicio.astimezone(timezone.utc)).total_seconds()
 
         tipo = m.tipo
         if tipo == "ENTRADA":
