@@ -385,11 +385,13 @@ def descargar_documento(
     usuario=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    require_perm_modulo(usuario, "fichajes", "ver")
     documento = db.query(FichajeDocumento).filter(FichajeDocumento.id == documento_id).first()
     if not documento:
         raise HTTPException(status_code=404, detail="Documento no encontrado.")
-    if documento.empleado_id != usuario.id:
+    if documento.empleado_id == usuario.id:
+        require_perm_modulo(usuario, "fichajes", "ver")
+    else:
+        require_perm_modulo(usuario, "control-fichajes", "ver")
         _exigir_admin(usuario)
     nombre = quote(documento.nombre_archivo or "documento")
     return StreamingResponse(
