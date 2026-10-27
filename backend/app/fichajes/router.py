@@ -235,6 +235,90 @@ def crear_marcaje(
     return _marcaje_dict(marcaje)
 
 
+@router.get("/resumen-horas")
+def resumen_horas(
+    anio: int = Query(default_factory=lambda: datetime.now(ZoneInfo("Europe/Madrid")).year),
+    usuario=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Resume horas de jornadas cerradas, descontando pausas y recortando al año solicitado."""
+    require_perm_modulo(usuario, "fichajes", "ver")
+    if anio < 2000 or anio > 2100:
+        raise HTTPException(status_code=422, detail="Indica un año válido entre 2000 y 2100.")
+
+    zona = ZoneInfo("Europe/Madrid")
+    inicio = datetime(anio, 1, 1, tzinfo=zona)
+    fin = datetime(anio + 1, 1, 1, tzinfo=zona)
+    # Se leen los marcajes hasta el día siguiente para cerrar correctamente
+    # una jornada nocturna iniciada el 31 de diciembre.
+    limite = fin + timedelta(days=1)
+    marcajes = db.query(FichajeMarcaje).filter(
+        FichajeMarcaje.empleado_id == usuario.id,
+        FichajeMarcaje.fecha_hora < limite,
+    ).order_by(FichajeMarcaje.fecha_hora.asc(), FichajeMarcaje.id.asc()).all()
+
+    pausas_inicio = {
+        "PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO",
+        "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA",
+    }
+    pausas_fin = {
+        "PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN",
+        "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA",
+    }
+    activo = False
+    pausado = False
+    inicio_jornada = None
+    instante_anterior = None
+    segundos_jornada_anio = 0.0
+    segundos_totales = 0.0
+    jornadas_incompletas = 0
+
+    def como_local(valor):
+        if valor.tzinfo is None:
+            return valor.replace(tzinfo=zona)
+        return valor.astimezone(zona)
+
+    for m in marcajes:
+        instante = como_local(m.fecha_hora)
+        if instante_anterior is not None and activo and not pausado:
+            tramo_inicio = max(instante_anterior, inicio)
+            tramo_fin = min(instante, fin)
+            if tramo_fin > tramo_inicio:
+                segundos_jornada_anio += (tramo_fin - tramo_inicio).total_seconds()
+
+        tipo = m.tipo
+        if tipo == "ENTRADA":
+            if activo and inicio_jornada and inicio_jornada.year == anio:
+                jornadas_incompletas += 1
+            activo = True
+            pausado = False
+            inicio_jornada = instante
+            segundos_jornada_anio = 0.0
+        elif tipo == "SALIDA":
+            if activo:
+                segundos_totales += segundos_jornada_anio
+            activo = False
+            pausado = False
+            inicio_jornada = None
+            segundos_jornada_anio = 0.0
+        elif tipo in pausas_inicio and activo and not pausado:
+            pausado = True
+        elif tipo in pausas_fin and activo and pausado:
+            pausado = False
+        # AUSENCIA_PUNTUAL es un evento informativo, no abre una pausa.
+        instante_anterior = instante
+
+    if activo and inicio_jornada and inicio_jornada.year == anio:
+        jornadas_incompletas += 1
+
+    return {
+        "anio": anio,
+        "horas_trabajadas": round(segundos_totales / 3600, 2),
+        "jornadas_incompletas": jornadas_incompletas,
+        "aviso": "Solo se suman jornadas cerradas con salida registrada. Las pausas se descuentan y las jornadas que cruzan de año se imputan al tiempo comprendido dentro del año consultado.",
+    }
+
+
 @router.get("/documentos")
 def listar_mis_documentos(
     usuario=Depends(get_current_user),
