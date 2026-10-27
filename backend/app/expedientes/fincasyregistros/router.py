@@ -2,12 +2,14 @@ from datetime import date
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import text
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from backend.app.database import get_db
+from backend.app.database import get_db, engine
 from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.fincasyregistros.models import ExpedienteFinca
+from backend.app.registros_propiedad.models import RegistroPropiedad
 
 
 router = APIRouter(
@@ -16,12 +18,27 @@ router = APIRouter(
 )
 
 
+@router.on_event("startup")
+def asegurar_columna_registro_propiedad_id():
+    """Migración aditiva e idempotente; conserva el texto de registros históricos."""
+    with engine.begin() as conexion:
+        conexion.execute(text("""
+            ALTER TABLE public.expediente_fincas
+            ADD COLUMN IF NOT EXISTS registro_propiedad_id INTEGER NULL
+        """))
+        conexion.execute(text("""
+            CREATE INDEX IF NOT EXISTS ix_expediente_fincas_registro_propiedad_id
+            ON public.expediente_fincas (registro_propiedad_id)
+        """))
+
+
 class FincaPayload(BaseModel):
     finca: Optional[str] = Field(None, max_length=200)
     cru_idufir: Optional[str] = Field(None, max_length=200)
     provincia: Optional[str] = Field(None, max_length=200)
     poblacion: Optional[str] = Field(None, max_length=200)
     registro: Optional[str] = Field(None, max_length=300)
+    registro_propiedad_id: Optional[int] = Field(None, ge=1)
     seccion: Optional[str] = Field(None, max_length=100)
     cuantia: Optional[str] = Field(None, max_length=200)
     inscripcion: Optional[str] = Field(None, max_length=200)
@@ -51,6 +68,7 @@ def _a_dict(finca: ExpedienteFinca) -> dict:
         "provincia": finca.provincia,
         "poblacion": finca.poblacion,
         "registro": finca.registro,
+        "registro_propiedad_id": finca.registro_propiedad_id,
         "seccion": finca.seccion,
         "cuantia": finca.cuantia,
         "inscripcion": finca.inscripcion,
@@ -95,6 +113,12 @@ def crear_finca(
 ):
     expediente = _obtener_expediente(db, id_expediente)
     datos = payload.dict()
+    registro_id = datos.get("registro_propiedad_id")
+    if registro_id:
+        registro_catalogo = db.query(RegistroPropiedad).filter(RegistroPropiedad.id == registro_id, RegistroPropiedad.activo.is_(True)).first()
+        if not registro_catalogo:
+            raise HTTPException(status_code=422, detail="El Registro de la Propiedad seleccionado no existe o está inactivo.")
+        datos["registro"] = registro_catalogo.registro_propiedad
     finca = ExpedienteFinca(
         expediente_id=expediente.id,
         **datos,
@@ -118,7 +142,14 @@ def actualizar_finca(
 ):
     expediente = _obtener_expediente(db, id_expediente)
     finca = _obtener_finca(db, expediente.id, finca_id)
-    for campo, valor in payload.dict().items():
+    datos = payload.dict()
+    registro_id = datos.get("registro_propiedad_id")
+    if registro_id:
+        registro_catalogo = db.query(RegistroPropiedad).filter(RegistroPropiedad.id == registro_id, RegistroPropiedad.activo.is_(True)).first()
+        if not registro_catalogo:
+            raise HTTPException(status_code=422, detail="El Registro de la Propiedad seleccionado no existe o está inactivo.")
+        datos["registro"] = registro_catalogo.registro_propiedad
+    for campo, valor in datos.items():
         setattr(finca, campo, valor)
     try:
         db.commit()
