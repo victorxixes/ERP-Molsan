@@ -7,9 +7,43 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.auth.dependencies import get_current_user
+from backend.app.auth.permissions import require_perm_modulo
 
 router = APIRouter(prefix="/mensajeria", tags=["Mensajería Molsan"])
 
+
+
+def _exigir_permiso_mensajeria(usuario, accion: str):
+    """Aplica los permisos individuales configurados para Mensajería."""
+    return require_perm_modulo(usuario, "mensajeria", accion)
+
+
+def _es_administrador_mensajeria(usuario) -> bool:
+    rol_obj = getattr(usuario, "rol", None)
+    rol = str(getattr(rol_obj, "nombre", "") or "").strip().lower()
+    nombre_usuario = str(getattr(usuario, "usuario", "") or "").strip().lower()
+    return nombre_usuario == "admin" or rol in {
+        "admin", "administrador", "administradora", "superadmin", "superusuario", "superuser"
+    }
+
+
+def _exigir_gestion_mensajeria(usuario, accion: str):
+    """
+    Mensajería Gestión requiere permiso de acción y acceso explícito al espacio
+    administrativo. No se concede por llamarse 'gestor' ni por manipular la URL.
+    """
+    _exigir_permiso_mensajeria(usuario, accion)
+    visibles = getattr(usuario, "modulos_visibles_list", None) or []
+    claves = {
+        str(valor or "").strip().lower().replace("_", "-")
+        for valor in visibles
+    }
+    if not _es_administrador_mensajeria(usuario) and "mensajeria-gestion" not in claves:
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes acceso al módulo Mensajería Gestión."
+        )
+    return True
 
 def _ensure_tables(db: Session):
     """Tablas auxiliares propias del módulo; creación idempotente y sin tocar datos existentes."""
@@ -176,6 +210,7 @@ class FacturaIn(BaseModel):
 
 @router.get("/resumen")
 def resumen(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "ver")
     _ensure_tables(db)
     return {
         "solicitudes": db.execute(text("SELECT COUNT(*) FROM mensajeria_solicitudes")).scalar() or 0,
@@ -187,12 +222,14 @@ def resumen(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
 
 @router.get("/servicios")
 def listar_servicios(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_permiso_mensajeria(usuario, "ver")
     _ensure_tables(db)
     return _rows(db, "SELECT * FROM mensajeria_servicios ORDER BY activo DESC, nombre")
 
 
 @router.post("/servicios")
 def crear_servicio(data: ServicioIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "crear")
     _ensure_tables(db)
     try:
         result = db.execute(text("""
@@ -209,7 +246,8 @@ def crear_servicio(data: ServicioIn, db: Session = Depends(get_db), usuario=Depe
 
 
 @router.patch("/servicios/{servicio_id}")
-def actualizar_servicio(servicio_id: int, data: ServicioIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def actualizar_servicio(servicio_id: int, data: ServicioIn, db: Session = Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "editar")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     payload["id"] = servicio_id
@@ -227,6 +265,7 @@ def actualizar_servicio(servicio_id: int, data: ServicioIn, db: Session = Depend
 
 @router.get("/solicitudes")
 def listar_solicitudes(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "ver")
     _ensure_tables(db)
     return _rows(db, """SELECT s.*, c.nombre AS servicio_nombre FROM mensajeria_solicitudes s
         LEFT JOIN mensajeria_servicios c ON c.id=s.servicio_id ORDER BY s.creado_en DESC""")
@@ -234,6 +273,7 @@ def listar_solicitudes(db: Session = Depends(get_db), usuario=Depends(get_curren
 
 @router.post("/solicitudes")
 def crear_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "crear")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     telefono_entrega = payload.get("telefono_entrega") or payload.get("telefono_destino")
@@ -253,7 +293,8 @@ def crear_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=De
 
 
 @router.patch("/solicitudes/{solicitud_id}")
-def actualizar_solicitud(solicitud_id: int, data: SolicitudIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def actualizar_solicitud(solicitud_id: int, data: SolicitudIn, db: Session = Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "editar")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     telefono_entrega = payload.get("telefono_entrega") or payload.get("telefono_destino")
@@ -276,13 +317,15 @@ def actualizar_solicitud(solicitud_id: int, data: SolicitudIn, db: Session = Dep
 
 @router.get("/albaranes")
 def listar_albaranes(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "ver")
     _ensure_tables(db)
     return _rows(db, """SELECT a.*, s.referencia AS solicitud_referencia FROM mensajeria_albaranes a
         LEFT JOIN mensajeria_solicitudes s ON s.id=a.solicitud_id ORDER BY a.fecha DESC NULLS LAST, a.id DESC""")
 
 
 @router.post("/albaranes")
-def crear_albaran(data: AlbaranIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def crear_albaran(data: AlbaranIn, db: Session = Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "crear")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     result = db.execute(text("""
@@ -294,7 +337,8 @@ def crear_albaran(data: AlbaranIn, db: Session = Depends(get_db), usuario=Depend
 
 
 @router.patch("/albaranes/{albaran_id}")
-def actualizar_albaran(albaran_id: int, data: AlbaranIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def actualizar_albaran(albaran_id: int, data: AlbaranIn, db: Session = Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "editar")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     payload["id"] = albaran_id
@@ -310,6 +354,7 @@ def actualizar_albaran(albaran_id: int, data: AlbaranIn, db: Session = Depends(g
 
 @router.get("/facturas")
 def listar_facturas(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "ver")
     _ensure_tables(db)
     facturas = _rows(db, "SELECT * FROM mensajeria_facturas ORDER BY fecha_emision DESC NULLS LAST, id DESC")
     for factura in facturas:
@@ -318,7 +363,8 @@ def listar_facturas(db: Session = Depends(get_db), usuario=Depends(get_current_u
 
 
 @router.post("/facturas")
-def crear_factura(data: FacturaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def crear_factura(data: FacturaIn, db: Session = Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "crear")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     albaran_ids = payload.pop("albaran_ids", [])
@@ -340,7 +386,8 @@ def crear_factura(data: FacturaIn, db: Session = Depends(get_db), usuario=Depend
 
 
 @router.patch("/facturas/{factura_id}")
-def actualizar_factura(factura_id: int, data: FacturaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def actualizar_factura(factura_id: int, data: FacturaIn, db: Session = Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "editar")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     albaran_ids = payload.pop("albaran_ids", [])
@@ -363,6 +410,7 @@ def actualizar_factura(factura_id: int, data: FacturaIn, db: Session = Depends(g
 # Acceso de empleados: solo devuelve las solicitudes creadas por el usuario autenticado.
 @router.get("/mis-solicitudes")
 def listar_mis_solicitudes(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_permiso_mensajeria(usuario, "ver")
     _ensure_tables(db)
     usuario_id = getattr(usuario, "id", None)
     if usuario_id is None:
@@ -373,7 +421,8 @@ def listar_mis_solicitudes(db: Session = Depends(get_db), usuario=Depends(get_cu
 
 
 @router.post("/mis-solicitudes")
-def crear_mi_solicitud(data: SolicitudIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def crear_mi_solicitud(data: SolicitudIn, db: Session = Depends(get_current_user)):
+    _exigir_permiso_mensajeria(usuario, "crear")
     _ensure_tables(db)
     usuario_id = getattr(usuario, "id", None)
     if usuario_id is None:
@@ -419,12 +468,14 @@ class ProveedorMensajeriaIn(BaseModel):
 
 @router.get("/proveedores")
 def listar_proveedores(db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "ver")
     _ensure_tables(db)
     return _rows(db, "SELECT * FROM mensajeria_proveedores ORDER BY principal DESC, activo DESC, nombre")
 
 
 @router.post("/proveedores")
 def crear_proveedor(data: ProveedorMensajeriaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "crear")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     try:
@@ -446,7 +497,8 @@ def crear_proveedor(data: ProveedorMensajeriaIn, db: Session = Depends(get_db), 
 
 
 @router.patch("/proveedores/{proveedor_id}")
-def actualizar_proveedor(proveedor_id: int, data: ProveedorMensajeriaIn, db: Session = Depends(get_db), usuario=Depends(get_current_user)):
+def actualizar_proveedor(proveedor_id: int, data: ProveedorMensajeriaIn, db: Session = Depends(get_current_user)):
+    _exigir_gestion_mensajeria(usuario, "editar")
     _ensure_tables(db)
     payload = data.model_dump() if hasattr(data, "model_dump") else data.dict()
     payload["id"] = proveedor_id
@@ -469,19 +521,12 @@ def actualizar_proveedor(proveedor_id: int, data: ProveedorMensajeriaIn, db: Ses
         raise HTTPException(status_code=409, detail="No se pudo actualizar el proveedor.") from exc
 
 
-def _puede_ver_toda_mensajeria(usuario):
-    rol_obj = getattr(usuario, "rol", None)
-    rol = str(getattr(rol_obj, "nombre", getattr(usuario, "rol_nombre", "")) or "").strip().lower()
-    usuario_nombre = str(getattr(usuario, "usuario", "") or "").strip().lower()
-    return usuario_nombre == "admin" or any(token in rol for token in ("admin", "mensaj", "gestor", "responsable", "superusuario", "superuser"))
-
-
 def _comprobar_acceso_solicitud(solicitud, usuario):
     usuario_id = getattr(usuario, "id", None)
     if usuario_id is not None and usuario_id == solicitud.solicitante_id:
+        _exigir_permiso_mensajeria(usuario, "ver")
         return
-    if not _puede_ver_toda_mensajeria(usuario):
-        raise HTTPException(status_code=403, detail="Solo puedes consultar la comunicación de tus propias solicitudes.")
+    _exigir_gestion_mensajeria(usuario, "ver")
 
 
 @router.get("/solicitudes/{solicitud_id}/comunicaciones")
