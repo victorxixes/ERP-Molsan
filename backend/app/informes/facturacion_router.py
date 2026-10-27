@@ -12,6 +12,8 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
+from sqlalchemy import text
+from backend.app.database import engine
 
 from backend.app.auth.dependencies import get_current_user
 from backend.app.database import get_db
@@ -19,6 +21,28 @@ from backend.app.expedientes.models import Expediente
 from backend.app.expedientes.gastos.models import ExpedienteGasto
 
 router = APIRouter(prefix="/informes", tags=["Informes"], dependencies=[Depends(get_current_user)])
+
+
+@router.on_event("startup")
+def migrar_campos_absis_facturacion():
+    """Añade los campos opcionales del informe sin modificar datos existentes."""
+    columnas = {
+        "estado_absis": "VARCHAR(100)",
+        "estado_justificante": "VARCHAR(100)",
+        "fecha_adjuntar_factura": "DATE",
+        "imp_gasto": "NUMERIC(12, 2)",
+        "imp_base_impuesto": "NUMERIC(12, 2)",
+        "imp_base_retencion": "NUMERIC(12, 2)",
+        "imp_impuesto": "NUMERIC(12, 2)",
+        "fecha_estado": "DATE",
+        "fecha_peticion": "DATE",
+        "fecha_pago": "DATE",
+    }
+    with engine.begin() as conexion:
+        for nombre, tipo_sql in columnas.items():
+            conexion.execute(text(
+                f"ALTER TABLE public.expediente_gastos ADD COLUMN IF NOT EXISTS {nombre} {tipo_sql}"
+            ))
 
 def _concepto_honorarios(gasto):
     valores = [getattr(gasto, "tipo", None), getattr(gasto, "descripcion", None)]
