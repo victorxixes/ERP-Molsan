@@ -8697,35 +8697,39 @@ const cuantiaFincasParaEnvio =
                     <h3 className="text-sm font-extrabold text-slate-800">Defectos registrales · datos para integración</h3>
                     <p className="mt-1 text-xs leading-relaxed text-slate-600">Resumen de los campos propios de esta actividad para preparar la futura comunicación con ABSIS. El guardado sigue siendo local hasta que informática active la integración.</p>
                   </div>
-                <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
-                  <label className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
-                    <span className="block text-xs font-bold text-slate-600">Tipo documento</span>
-                    <input type="text" value={String(actividadDraft.tipo_documento ?? expediente?.tipo_documento ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, tipo_documento: event.target.value }))} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" placeholder="Tipo documento" />
-                  </label>
-                  <label className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
-                    <span className="block text-xs font-bold text-slate-600">Motivos del defecto</span>
-                    <select value={String(actividadDraft.motivos_defecto ?? expediente?.motivos_defecto ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, motivos_defecto: event.target.value }))} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400">
-                      <option value="">Seleccionar motivo del catálogo de defectos…</option>
-                      {MOTIVOS_DEFECTO.map((motivo) => {
-                        const value = `${motivo.codigo}.${motivo.texto}`;
-                        return <option key={motivo.codigo} value={value}>{value}</option>;
-                      })}
-                    </select>
-                  </label>
-                  {[
-                    { key: "fecha_notificacion_registro", label: "Fecha notificación Registro" },
-                    { key: "fecha_vencimiento_presentacion_registro", label: "Fecha vencimiento presentación Registro" },
-                  ].map((campo) => (
-                    <label key={campo.key} className="block min-w-0 rounded-lg border border-slate-200 bg-white p-3">
-                      <span className="block text-xs font-bold text-slate-600">{campo.label}</span>
-                      <input type="date" value={String(actividadDraft[campo.key] ?? expediente?.[campo.key] ?? "").slice(0, 10)} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, [campo.key]: event.target.value }))} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
-                    </label>
-                  ))}
-                  <label className="block min-w-0 rounded-xl border border-slate-200 bg-white p-3 sm:col-span-2">
-                    <span className="block text-xs font-bold text-slate-600">Observaciones</span>
-                    <textarea rows={3} value={String(actividadDraft.observaciones_defecto_registral ?? expediente?.observaciones_defecto_registral ?? "")} disabled={guardandoActividad || expedienteBloqueado} onChange={(event) => setActividadDraft((actual) => ({ ...actual, observaciones_defecto_registral: event.target.value }))} className="mt-2 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" />
-                  </label>
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-indigo-100 bg-indigo-50 p-3">
+                  <p className="text-xs leading-relaxed text-indigo-900">Los datos del defecto se mantienen en un único registro. Usa el alta para crear o editar la información; esta actividad solo resume el estado guardado y no duplica campos editables.</p>
+                  <Boton tipo="primary" disabled={expedienteBloqueado} onClick={() => { setDefectoEditandoId(null); setDefectoForm({ ...DEFECTO_VACIO }); setErrorDefecto(""); setMostrarDefecto(true); }}>＋ Alta defecto</Boton>
                 </div>
+                {defectosRegistrados.length === 0 ? (
+                  <p className="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">Todavía no hay defectos registrados para este expediente.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {defectosRegistrados.map((defecto) => (
+                      <article key={defecto.id ?? defecto.id_defecto} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                          <p className="text-sm font-bold text-slate-800">{defecto.motivo_defecto || "Defecto registral"}</p>
+                          <span className="rounded-full border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-600">{defecto.estado_envio_absis || "Pendiente ABSIS"}</span>
+                        </div>
+                        <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+                          <Dato campo="Fecha calificación" valor={defecto.fecha_calificacion} tipo="fecha" />
+                          <Dato campo="Fecha renovación asiento" valor={defecto.fecha_renovacion_asiento} tipo="fecha" />
+                          <Dato campo="Asiento renovación / libro diario" valor={defecto.asiento_renovacion_libro_diario} />
+                          <Dato campo="Vencimiento asiento renovación" valor={defecto.vencimiento_asiento_renovacion} tipo="fecha" />
+                          <Dato campo="Anotación suspensiva" valor={defecto.anotacion_suspensiva == null ? "—" : defecto.anotacion_suspensiva ? "Sí" : "No"} />
+                          <Dato campo="Vencimiento anotación" valor={defecto.vencimiento_anotacion} tipo="fecha" />
+                          <Dato campo="Calificación sustitutoria" valor={defecto.calificacion_sustitutoria == null ? "—" : defecto.calificacion_sustitutoria ? "Sí" : "No"} />
+                          <Dato campo="Recurso gubernativo" valor={defecto.recurso_gubernativo == null ? "—" : defecto.recurso_gubernativo ? "Sí" : "No"} />
+                          <Dato campo="Observaciones" valor={defecto.observaciones_registro} />
+                          <Dato campo="Subsanación" valor={defecto.fecha_entrada_subsanacion ? "Subsanado" : "Pendiente de subsanación"} />
+                        </div>
+                        <div className="mt-3 flex justify-end">
+                          <Boton onClick={() => { editarDefectoRegistrado(defecto); setMostrarDefecto(true); }}>Editar defecto</Boton>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
                 </section>
                 <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
                 <h4 className="mb-3 text-sm font-extrabold text-slate-800">Repositorios digitales</h4>
