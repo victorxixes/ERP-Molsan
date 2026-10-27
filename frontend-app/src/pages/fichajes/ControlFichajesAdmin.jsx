@@ -9,6 +9,11 @@ const TIPOS = [
 ];
 const PAD = (n) => String(n).padStart(2, "0");
 const ISO = (d) => d.getFullYear() + "-" + PAD(d.getMonth() + 1) + "-" + PAD(d.getDate());
+const DESPLAZAR_DIA = (valor, cantidad) => {
+  if (!valor) return valor;
+  const [y, m, d] = valor.split("-").map(Number);
+  return ISO(new Date(y, m - 1, d + cantidad));
+};
 const NOW_INPUT = () => { const d = new Date(); return ISO(d) + "T" + PAD(d.getHours()) + ":" + PAD(d.getMinutes()); };
 const INPUT_DATE = (v) => { if (!v) return ""; const d = new Date(v); return ISO(d) + "T" + PAD(d.getHours()) + ":" + PAD(d.getMinutes()); };
 const HUMAN_DATE = (v) => v ? new Date(v).toLocaleDateString("es-ES") : "—";
@@ -45,7 +50,7 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
       const [m, p, all] = await Promise.all([
         axios.get("/fichajes/admin/marcajes", { params: { desde: desde || undefined, hasta: hasta || undefined, empleado_id: empleadoId || undefined, tipo: tipo || undefined, estado: estado || undefined, busqueda: busqueda || undefined } }),
         axios.get("/fichajes/admin/periodos"),
-        axios.get("/fichajes/admin/marcajes", { params: { desde: desde || undefined, hasta: hasta || undefined, empleado_id: empleadoId || undefined } })
+        axios.get("/fichajes/admin/marcajes", { params: { desde: desde ? DESPLAZAR_DIA(desde, -1) : undefined, hasta: hasta ? DESPLAZAR_DIA(hasta, 1) : undefined, empleado_id: empleadoId || undefined } })
       ]);
       setMarcajes(Array.isArray(m.data) ? m.data : []);
       setMarcajesCalculo(Array.isArray(all.data) ? all.data : []);
@@ -100,26 +105,59 @@ export default function ControlFichajesAdmin({ empleados = [] }) {
 
   const resumenHoras = useMemo(() => {
     const porEmpleado = new Map();
-    const pausas = new Set(["PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"]);
-    const retornos = new Set(["PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"]);
+    const pausasInicio = new Set(["PAUSA_CAFE_INICIO", "PAUSA_DESAYUNO_INICIO", "PAUSA_COMIDA_INICIO", "PAUSA_CIGARRILLO_INICIO", "AUSENCIA"]);
+    const pausasFin = new Set(["PAUSA_DESAYUNO_FIN", "PAUSA_COMIDA_FIN", "PAUSA_CIGARRILLO_FIN", "RETORNO_AUSENCIA"]);
     const ordenados = [...marcajesCalculo].sort((a, b) => new Date(a.fecha_hora) - new Date(b.fecha_hora));
     const estados = new Map();
+    const inicioRango = desde ? new Date(desde + "T00:00:00").getTime() : -Infinity;
+    const finRango = hasta ? new Date(DESPLAZAR_DIA(hasta, 1) + "T00:00:00").getTime() : Infinity;
+
     for (const m of ordenados) {
-      if (!estados.has(m.empleado_id)) estados.set(m.empleado_id, { entrada: null, pausa: null, pausaSeg: 0, totalSeg: 0, incompletas: 0 });
-      const s = estados.get(m.empleado_id), ts = new Date(m.fecha_hora).getTime();
-      if (m.tipo === "ENTRADA") { if (s.entrada !== null) s.incompletas++; s.entrada = ts; s.pausa = null; s.pausaSeg = 0; }
-      else if (pausas.has(m.tipo) && s.entrada !== null && s.pausa === null) s.pausa = ts;
-      else if (retornos.has(m.tipo) && s.pausa !== null) { s.pausaSeg += Math.max(0, (ts - s.pausa) / 1000); s.pausa = null; }
-      else if (m.tipo === "SALIDA" && s.entrada !== null) {
-        const finPausa = s.pausa === null ? 0 : Math.max(0, (ts - s.pausa) / 1000);
-        if (s.pausa !== null) s.incompletas++;
-        s.totalSeg += Math.max(0, (ts - s.entrada) / 1000 - s.pausaSeg - finPausa);
-        s.entrada = null; s.pausa = null; s.pausaSeg = 0;
+      if (!estados.has(m.empleado_id)) estados.set(m.empleado_id, {
+        entrada: null, pausa: null, ultimoInstante: null, segundosJornada: 0,
+        totalSeg: 0, incompletas: 0, entradaEnRango: false
+      });
+      const s = estados.get(m.empleado_id);
+      const ts = new Date(m.fecha_hora).getTime();
+
+      // Acumula solo el tiempo efectivamente trabajado y dentro del rango,
+      // manteniendo el estado aunque la entrada o la salida caigan fuera del filtro.
+      if (s.entrada !== null && s.pausa === null && s.ultimoInstante !== null) {
+        const a = Math.max(s.ultimoInstante, inicioRango);
+        const b = Math.min(ts, finRango);
+        if (b > a) s.segundosJornada += (b - a) / 1000;
       }
+
+      if (m.tipo === "ENTRADA") {
+        if (s.entrada !== null && s.entradaEnRango) s.incompletas++;
+        s.entrada = ts;
+        s.pausa = null;
+        s.segundosJornada = 0;
+        s.entradaEnRango = ts >= inicioRango && ts < finRango;
+      } else if (pausasInicio.has(m.tipo) && s.entrada !== null && s.pausa === null) {
+        s.pausa = ts;
+      } else if (pausasFin.has(m.tipo) && s.pausa !== null) {
+        s.pausa = null;
+      } else if (m.tipo === "SALIDA" && s.entrada !== null) {
+        if (s.pausa !== null && s.entradaEnRango) s.incompletas++;
+        s.totalSeg += Math.max(0, s.segundosJornada);
+        s.entrada = null;
+        s.pausa = null;
+        s.segundosJornada = 0;
+        s.entradaEnRango = false;
+      }
+      s.ultimoInstante = ts;
     }
-    for (const [id, s] of estados) { if (s.entrada !== null) s.incompletas++; porEmpleado.set(id, { horas: Math.round(s.totalSeg / 36) / 100, incompletas: s.incompletas }); }
+
+    for (const [id, s] of estados) {
+      if (s.entrada !== null && s.entradaEnRango) s.incompletas++;
+      porEmpleado.set(id, {
+        horas: Math.round(s.totalSeg / 36) / 100,
+        incompletas: s.incompletas
+      });
+    }
     return porEmpleado;
-  }, [marcajesCalculo]);
+  }, [marcajesCalculo, desde, hasta]);
 
   const empleadosConMarcajes = new Set(marcajes.map((m) => m.empleado_id)).size;
   const periodo = periodos.find((p) => p.anio === Number((desde || "").slice(0, 4)) && p.mes === Number((desde || "").slice(5, 7)));
