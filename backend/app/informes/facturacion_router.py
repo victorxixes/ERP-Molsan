@@ -37,12 +37,19 @@ def migrar_campos_absis_facturacion():
         "fecha_estado": "DATE",
         "fecha_peticion": "DATE",
         "fecha_pago": "DATE",
+        "id_gasto_absis": "VARCHAR(100)",
+        "id_expediente_absis": "VARCHAR(100)",
+        "tipo_operacion_absis": "VARCHAR(300)",
+        "concepto_gasto_absis": "VARCHAR(300)",
+        "datos_absis_json": "TEXT",
     }
     with engine.begin() as conexion:
         for nombre, tipo_sql in columnas.items():
             conexion.execute(text(
                 f"ALTER TABLE public.expediente_gastos ADD COLUMN IF NOT EXISTS {nombre} {tipo_sql}"
             ))
+        conexion.execute(text("CREATE INDEX IF NOT EXISTS ix_expediente_gastos_id_gasto_absis ON public.expediente_gastos (id_gasto_absis)"))
+        conexion.execute(text("CREATE INDEX IF NOT EXISTS ix_expediente_gastos_id_expediente_absis ON public.expediente_gastos (id_expediente_absis)"))
 
 def _normalizar_texto(valor):
     import unicodedata
