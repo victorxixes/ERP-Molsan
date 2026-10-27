@@ -400,7 +400,14 @@ def _serializar(encargo):
             "numero_prestamo": encargo.numero_prestamo,
             "capital_inscrito": float(encargo.capital_inscrito) if encargo.capital_inscrito is not None else None,
             "fecha_constitucion": encargo.fecha_constitucion.isoformat() if encargo.fecha_constitucion else None,
-            "fincas": [{"numero_finca": encargo.numero_finca, "municipio_registro": encargo.municipio_registro, "registro_propiedad": encargo.registro_propiedad}] if any([encargo.numero_finca, encargo.municipio_registro, encargo.registro_propiedad]) else [],
+            "fincas": [{
+                "numero_finca": encargo.numero_finca,
+                "capital_inscrito": float(encargo.capital_inscrito) if encargo.capital_inscrito is not None else None,
+                "numero_inscripcion": "",
+                "seccion": "",
+                "municipio_registro": encargo.municipio_registro,
+                "registro_propiedad": encargo.registro_propiedad,
+            }] if any([encargo.numero_finca, encargo.municipio_registro, encargo.registro_propiedad, encargo.capital_inscrito is not None]) else [],
         }],
         "importe": float(encargo.importe) if encargo.importe is not None else None,
         "fecha_objetivo": encargo.fecha_objetivo.isoformat() if encargo.fecha_objetivo else None,
@@ -1200,6 +1207,31 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
     if datos.prioridad not in PRIORIDADES:
         raise HTTPException(status_code=422, detail="Prioridad no válida.")
     nombre_notaria = " ".join(filter(None, [notaria.nombre, notaria.apellidos])).strip() or f"Notaría {notaria.id}"
+    # Normalizar los campos heredados a partir del primer contrato y finca para que
+    # las consultas antiguas y los listados sigan mostrando los mismos datos.
+    contratos = datos.contratos or []
+    if not isinstance(contratos, list) or any(not isinstance(contrato, dict) for contrato in contratos):
+        raise HTTPException(status_code=422, detail="Los contratos deben enviarse como una lista de objetos válidos.")
+    primer_contrato = contratos[0] if contratos else {}
+    fincas_primer_contrato = primer_contrato.get("fincas") or []
+    if not isinstance(fincas_primer_contrato, list) or any(not isinstance(finca, dict) for finca in fincas_primer_contrato):
+        raise HTTPException(status_code=422, detail="Las fincas del primer contrato deben enviarse como una lista de objetos válidos.")
+    primera_finca = fincas_primer_contrato[0] if fincas_primer_contrato else {}
+    entidad_bancaria = (primer_contrato.get("entidad_bancaria") or datos.entidad_bancaria or "").strip() or None
+    numero_prestamo = (primer_contrato.get("numero_prestamo") or datos.numero_prestamo or "").strip() or None
+    fecha_constitucion = primer_contrato.get("fecha_constitucion") or datos.fecha_constitucion
+    if isinstance(fecha_constitucion, str):
+        try:
+            fecha_constitucion = date.fromisoformat(fecha_constitucion[:10])
+        except ValueError:
+            raise HTTPException(status_code=422, detail="Fecha de constitución no válida en el primer contrato.")
+    capital_inscrito = primera_finca.get("capital_inscrito", datos.capital_inscrito)
+    try:
+        capital_inscrito = Decimal(str(capital_inscrito)) if capital_inscrito not in (None, "") else None
+        if capital_inscrito is not None and (not capital_inscrito.is_finite() or capital_inscrito < 0 or len(capital_inscrito.as_tuple().digits) > 14):
+            raise ValueError()
+    except Exception:
+        raise HTTPException(status_code=422, detail="Capital inscrito no válido en la primera finca.")
     item = EncargoExterno(
         notaria_id=notaria.id,
         notaria_nombre=nombre_notaria,
@@ -1207,14 +1239,14 @@ def crear_encargo(datos: EncargoCrear, db: Session = Depends(get_db), usuario=De
         tipo_encargo=datos.tipo_encargo.strip(),
         titular=datos.titular.strip(),
         nif_titular=(datos.nif_titular or "").strip() or None,
-        entidad_bancaria=(datos.entidad_bancaria or "").strip() or None,
-        numero_prestamo=(datos.numero_prestamo or "").strip() or None,
-        capital_inscrito=Decimal(datos.capital_inscrito) if datos.capital_inscrito is not None else None,
-        fecha_constitucion=datos.fecha_constitucion,
-        numero_finca=(datos.numero_finca or "").strip() or None,
-        municipio_registro=(datos.municipio_registro or "").strip() or None,
-        registro_propiedad=(datos.registro_propiedad or "").strip() or None,
-        contratos_json=datos.contratos or None,
+        entidad_bancaria=entidad_bancaria,
+        numero_prestamo=numero_prestamo,
+        capital_inscrito=capital_inscrito,
+        fecha_constitucion=fecha_constitucion,
+        numero_finca=(primera_finca.get("numero_finca") or datos.numero_finca or "").strip() or None,
+        municipio_registro=(primera_finca.get("municipio_registro") or datos.municipio_registro or "").strip() or None,
+        registro_propiedad=(primera_finca.get("registro_propiedad") or datos.registro_propiedad or "").strip() or None,
+        contratos_json=contratos or None,
         importe=Decimal(datos.importe) if datos.importe is not None else None,
         fecha_objetivo=datos.fecha_objetivo,
         prioridad=datos.prioridad,
@@ -1422,8 +1454,21 @@ def crear_actividad(encargo_id: int, datos: CrearActividad, db: Session = Depend
     if not mensaje:
         raise HTTPException(status_code=422, detail="Escribe un mensaje antes de guardarlo.")
     if tipo == "INCIDENCIA":
-        item.estado = "INCIDENCIA"
-        item.actualizado_en = datetime.utcnow()
+        # Toda incidencia debe ser visible para la otra parte y tener un motivo útil.
+        if len(mensaje) < 5:
+            raise HTTPException(status_code=422, detail="Para registrar una incidencia debes indicar un motivo detallado de al menos 5 caracteres.")
+        estado_actual = _estado_publico(item.estado)
+        if estado_actual != "INCIDENCIA":
+            transiciones_inc = {
+                "EN_PROCESO": {"INCIDENCIA"},
+                "RECIBIDO": {"INCIDENCIA"},
+                "AUTORIZADO": {"INCIDENCIA"},
+            }
+            if estado_actual not in transiciones_inc or "INCIDENCIA" not in transiciones_inc[estado_actual]:
+                raise HTTPException(status_code=409, detail=f"No se puede registrar una incidencia desde el estado {estado_actual}.")
+            item.estado = "INCIDENCIA"
+            item.actualizado_en = datetime.utcnow()
+        datos.visible_notaria = True
     _registrar_actividad(db, encargo_id, usuario, tipo, mensaje, datos.visible_notaria)
     db.commit()
     return {"ok": True}
