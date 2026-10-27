@@ -148,8 +148,13 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
     return filas
 
 def _resumen(items):
-    def suma(campo):
-        return round(sum((x.get(campo) or 0) for x in items), 2)
+    def suma(campo, seleccion=None):
+        return round(sum(
+            (x.get(campo) or 0) for x in items
+            if seleccion is None or x.get("situacion_facturacion") == seleccion
+        ), 2)
+    def cuenta(situacion):
+        return sum(1 for x in items if x.get("situacion_facturacion") == situacion)
     return {
         "registros": len(items),
         "total_gasto": suma("imp_gasto"),
@@ -159,10 +164,14 @@ def _resumen(items):
         "con_provision": sum(1 for x in items if x["tipo_cancelacion"] == "con_provision"),
         "sin_provision": sum(1 for x in items if x["tipo_cancelacion"] == "sin_provision"),
         "otros": sum(1 for x in items if x["tipo_cancelacion"] == "otros"),
-        "cobrado": sum(1 for x in items if x.get("situacion_facturacion") == "cobrado"),
-        "pendiente_cobro": sum(1 for x in items if x.get("situacion_facturacion") == "pendiente_cobro"),
-        "pendiente_factura": sum(1 for x in items if x.get("situacion_facturacion") == "pendiente_factura"),
-        "incidencias": sum(1 for x in items if x.get("situacion_facturacion") == "incidencia"),
+        "cobrado": cuenta("cobrado"),
+        "pendiente_cobro": cuenta("pendiente_cobro"),
+        "pendiente_factura": cuenta("pendiente_factura"),
+        "incidencias": cuenta("incidencia"),
+        "total_cobrado": suma("imp_gasto", "cobrado"),
+        "total_pendiente_cobro": suma("imp_gasto", "pendiente_cobro"),
+        "total_pendiente_factura": suma("imp_gasto", "pendiente_factura"),
+        "total_incidencias": suma("imp_gasto", "incidencia"),
     }
 
 @router.get("/facturacion")
