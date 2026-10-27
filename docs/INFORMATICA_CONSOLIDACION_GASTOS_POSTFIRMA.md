@@ -20,6 +20,7 @@ Un gasto creado desde la FichaExpediente debe poder conservar su identidad ERP y
 - `origen_registro`: `ERP` o `ABSIS_POSTFIRMA`.
 - `estado_consolidacion`: `Pendiente envío`, `Consolidado` o `Importado Post Firma`.
 - `fecha_ultima_sincronizacion`: fecha de la última importación del movimiento.
+- `numero_factura_absis` y `fecha_factura_absis`: datos de factura devueltos por ABSIS separados de los campos de factura originales del ERP.
 
 La respuesta de la API de gastos expone la identidad ABSIS y el estado de consolidación, sin exponer el JSON completo de la fila Excel. La importación no debe marcar como consolidado un registro antiguo cuyo origen no se conozca.
 
@@ -28,6 +29,8 @@ La respuesta de la API de gastos expone la identidad ABSIS y el estado de consol
 1. Modelo de gasto ampliado con campos de identidad y trazabilidad.
 2. Migración idempotente que añade las columnas opcionales; no borra ni altera filas existentes.
 3. Importador Post Firma correlaciona por `IDGASTO + TIPOCONCEPTO` cuando la columna existe y conserva compatibilidad prudente con históricos sin tipo.
+4. Cuando el movimiento coincide con un gasto ERP, se conservan sus campos nativos (tipo, descripción, importe, fecha y número de factura); los datos ABSIS se guardan en campos propios y el registro queda como `Consolidado`.
+5. La FichaExpediente y el informe de facturación muestran la pareja de identidad y el estado de consolidación.
 4. Respuesta de gastos preparada para devolver la información de consolidación.
 5. El Catálogo ABSIS existente incluye las categorías `TIPOCONCEPTO` y `CONCEPTOGASTO`, sin crear una segunda pantalla de catálogo.
 
@@ -35,6 +38,7 @@ La respuesta de la API de gastos expone la identidad ABSIS y el estado de consol
 
 - Confirmar los códigos/valores oficiales de `TIPOCONCEPTO` y `CONCEPTOGASTO` con Informática y cargar o revisar sus entradas en el Catálogo ABSIS.
 - Definir endpoint, autenticación, reintentos, timeout y respuesta de la API del cliente. No hay envío externo activado por este cambio.
+- Confirmar con Informática el contrato de la API saliente (endpoint, autenticación, método, estructura exacta de petición/respuesta, errores y reintentos). No se enviarán peticiones reales hasta disponer de ese contrato.
 - En el alta ERP, guardar el `IDGASTO` y `TIPOCONCEPTO` que devuelva ABSIS (o el identificador de correlación acordado) y mantener `origen_registro=ERP`.
 - Verificar en la FichaExpediente la presentación de los datos ERP y Post Firma como un único registro con estado visible. La rama prepara el contrato backend, pero la presentación visual final debe validarse con la pantalla real.
 - Ejecutar la migración protegida de gastos en el entorno de prueba antes de usar las nuevas columnas.
