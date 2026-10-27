@@ -31,13 +31,14 @@ La respuesta de la API de gastos expone la identidad ABSIS y el estado de consol
 3. Importador Post Firma correlaciona por `IDGASTO + TIPOCONCEPTO` cuando la columna existe y conserva compatibilidad prudente con históricos sin tipo.
 4. Cuando el movimiento coincide con un gasto ERP, se conservan sus campos nativos (tipo, descripción, importe, fecha y número de factura); los datos ABSIS se guardan en campos propios y el registro queda como `Consolidado`.
 5. La FichaExpediente y el informe de facturación muestran la pareja de identidad y el estado de consolidación.
+6. En FichaExpediente se puede seleccionar un valor activo de `TIPOCONCEPTO` del Catálogo ABSIS; al guardar el gasto, el ERP registra una solicitud local pendiente para Informática mediante `POST /expedientes/{expediente_id}/gastos/{gasto_id}/integracion-absis`. Este endpoint es idempotente mientras la solicitud siga pendiente y **no transmite datos externamente**.
 4. Respuesta de gastos preparada para devolver la información de consolidación.
 5. El Catálogo ABSIS existente incluye las categorías `TIPOCONCEPTO` y `CONCEPTOGASTO`, sin crear una segunda pantalla de catálogo.
 
 ## Pendiente de validación / integración de Informática
 
 - Confirmar los códigos/valores oficiales de `TIPOCONCEPTO` y `CONCEPTOGASTO` con Informática y cargar o revisar sus entradas en el Catálogo ABSIS.
-- Definir endpoint, autenticación, reintentos, timeout y respuesta de la API del cliente. No hay envío externo activado por este cambio.
+- Definir endpoint externo, autenticación, reintentos, timeout, contrato exacto de petición/respuesta y cómo ABSIS asigna/devuelve `IDGASTO`. El endpoint ERP de integración pendiente solo deja trazabilidad local; no hace llamadas HTTP a ABSIS.
 - Confirmar con Informática el contrato de la API saliente (endpoint, autenticación, método, estructura exacta de petición/respuesta, errores y reintentos). No se enviarán peticiones reales hasta disponer de ese contrato.
 - En el alta ERP, guardar el `IDGASTO` y `TIPOCONCEPTO` que devuelva ABSIS (o el identificador de correlación acordado) y mantener `origen_registro=ERP`.
 - Verificar en la FichaExpediente la presentación de los datos ERP y Post Firma como un único registro con estado visible. La rama prepara el contrato backend, pero la presentación visual final debe validarse con la pantalla real.
