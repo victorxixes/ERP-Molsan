@@ -215,3 +215,130 @@ def importar_postfirma(db: Session, contenido_excel: bytes, nombre_archivo: str 
         "total_procesados": creados + actualizados,
         "nota": "Importación confirmada por IDGASTO; no se ha modificado ni creado ningún expediente.",
     }
+
+
+
+def validar_postfirma(db: Session, contenido_excel: bytes):
+    """Valida el Excel sin escribir datos y devuelve solo métricas agregadas."""
+    try:
+        df = pd.read_excel(BytesIO(contenido_excel), sheet_name=0, header=0, engine="openpyxl")
+    except Exception as exc:
+        raise ValueError(f"No se pudo leer el Excel Post Firma: {exc}")
+
+    columnas = {_norm_col(c): c for c in df.columns}
+    faltan = sorted(c for c in CABECERAS_REQUERIDAS if c not in columnas)
+    if faltan:
+        raise ValueError("Faltan columnas requeridas: " + ", ".join(faltan))
+
+    def celda(row, nombre):
+        col = columnas.get(_norm_col(nombre))
+        return _limpiar(row[col]) if col is not None else None
+
+    total_importe = Decimal("0")
+    filas_con_importe = 0
+    importes_invalidos = 0
+    ids = []
+    ids_vacios = 0
+    expedientes_excel = set()
+    filas_no_vacias = 0
+    estados = {}
+    clasificaciones = {}
+    fechas_factura_validas = 0
+    fechas_factura_vacias = 0
+    fechas_adjuntar_validas = 0
+    fechas_adjuntar_vacias = 0
+
+    for _, row in df.iterrows():
+        if not any(_limpiar(row[c]) is not None for c in df.columns):
+            continue
+        filas_no_vacias += 1
+        id_gasto = _texto(celda(row, "IDGASTO"))
+        if not id_gasto:
+            ids_vacios += 1
+        else:
+            ids.append(id_gasto)
+
+        numero_exp = _texto(celda(row, "IDEXPEDIENTE"))
+        if numero_exp:
+            expedientes_excel.add(numero_exp.casefold())
+
+        estado = _texto(celda(row, "ESTADO")) or "(vacío)"
+        estados[estado] = estados.get(estado, {"filas": 0, "importe": Decimal("0")})
+        estados[estado]["filas"] += 1
+        importe = _decimal(celda(row, "IMPGASTO"))
+        if importe is None:
+            if _limpiar(celda(row, "IMPGASTO")) is not None:
+                importes_invalidos += 1
+        else:
+            filas_con_importe += 1
+            total_importe += importe
+            estados[estado]["importe"] += importe
+
+        tipo = _normalizar_tipo = _norm_col(celda(row, "TIPOOPERACION") or "")
+        if "CANCELACIONSINPROVISION" in tipo:
+            clase = "sin_provision"
+        elif "CANCELACIONCONPROVISION" in tipo:
+            clase = "con_provision"
+        else:
+            clase = "otros"
+        clasificaciones[clase] = clasificaciones.get(clase, {"filas": 0, "importe": Decimal("0")})
+        clasificaciones[clase]["filas"] += 1
+        if importe is not None:
+            clasificaciones[clase]["importe"] += importe
+
+        f_factura = _limpiar(celda(row, "FFACTURA"))
+        f_adjuntar = _limpiar(celda(row, "FECHAADJUNTARFACTURA"))
+        if _fecha(f_factura):
+            fechas_factura_validas += 1
+        else:
+            fechas_factura_vacias += 1
+        if _fecha(f_adjuntar):
+            fechas_adjuntar_validas += 1
+        else:
+            fechas_adjuntar_vacias += 1
+
+    from collections import Counter
+    conteo_ids = Counter(ids)
+    duplicados_archivo = sum(1 for n in conteo_ids.values() if n > 1)
+    duplicados_filas = sum(n - 1 for n in conteo_ids.values() if n > 1)
+    existentes = {
+        str(v[0]).strip()
+        for v in db.query(ExpedienteGasto.id_gasto_absis)
+        .filter(ExpedienteGasto.id_gasto_absis.isnot(None)).all()
+        if v[0] is not None
+    }
+    coincidencias = sum(1 for valor in set(ids) if valor in existentes)
+    ids_expedientes_erp = {
+        str(v[0]).casefold()
+        for v in db.query(Expediente.id_expediente).all()
+        if v[0] is not None
+    }
+    sin_vinculo = sum(1 for numero in expedientes_excel if numero not in ids_expedientes_erp)
+
+    def resumen_grupos(grupos):
+        return {
+            k: {"filas": v["filas"], "importe_imp_gasto": str(v["importe"].quantize(Decimal("0.01")))}
+            for k, v in sorted(grupos.items())
+        }
+
+    return {
+        "validacion_sin_escritura": True,
+        "filas_excel": int(len(df)),
+        "filas_con_datos": filas_no_vacias,
+        "ids_gasto_unicos": len(set(ids)),
+        "idgasto_vacios": ids_vacios,
+        "ids_duplicados_en_excel": duplicados_archivo,
+        "filas_duplicadas_adicionales": duplicados_filas,
+        "idgasto_ya_existentes_en_erp": coincidencias,
+        "expedientes_absis_distintos_sin_vinculo": sin_vinculo,
+        "filas_con_importe_valido": filas_con_importe,
+        "importes_no_interpretables": importes_invalidos,
+        "suma_imp_gasto": str(total_importe.quantize(Decimal("0.01"))),
+        "ffactura_con_fecha": fechas_factura_validas,
+        "ffactura_sin_fecha": fechas_factura_vacias,
+        "fecha_adjuntar_con_fecha": fechas_adjuntar_validas,
+        "fecha_adjuntar_sin_fecha": fechas_adjuntar_vacias,
+        "por_estado_absis": resumen_grupos(estados),
+        "por_tipo_cancelacion": resumen_grupos(clasificaciones),
+        "nota_privacidad": "No se devuelven identificadores, nombres, NIF, cuentas bancarias ni filas individuales. No se guardan cambios.",
+    }
