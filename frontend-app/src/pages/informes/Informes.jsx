@@ -3303,7 +3303,8 @@ function valorColumnaPostFirma(fila, columna) {
       FESTADO: fila.fecha_estado,
       FPETICION: fila.fecha_peticion,
       FPAGO: fila.fecha_pago,
-      FFACTURA: fila.fecha_factura,
+      FFACTURA: fila.fecha_factura_absis || fila.fecha_factura,
+      NUMFACTURA: fila.numero_factura_absis || fila.numero_factura,
     };
     valor = alternativas[columna];
   }
