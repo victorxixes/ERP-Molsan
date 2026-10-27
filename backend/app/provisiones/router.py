@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 from datetime import date, datetime
 from email.message import EmailMessage
 import os
@@ -16,11 +17,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, root_validator, validator
 from reportlab.lib import colors
+from reportlab.lib.utils import ImageReader
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether, Image as PDFImage
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether, Image as PDFImage, Flowable
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -704,11 +706,18 @@ def _plantilla_pdf_provision(db: Session) -> dict:
     """Lee la plantilla editable guardada en el concepto notaria del catálogo."""
     defaults = {
         "nombre_empresa": "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.",
-        "cif": "", "direccion": "", "contacto": "",
+        "cif": "", "direccion": "", "contacto": "", "logo_data_url": "",
         "aviso_legal": "En el supuesto de que todos los gastos, hasta su inscripción registral, fueran superiores a los informados, según norma 3.7.20 Cancelaciones solicitaremos un complemento de saldo. Rogamos tengan en cuenta esta información.",
         "texto_estimacion": "La presente provisión es estimativa y podrá ajustarse a los gastos efectivamente devengados.",
         "pie_corporativo": "Documento emitido por ERP-Molsan.",
         "mostrar_aviso_legal": True, "mostrar_firma": True,
+        "posiciones": {
+            "logo": {"x": 2, "y": 13, "w": 21, "h": 70},
+            "nombre_empresa": {"x": 26, "y": 16, "w": 70, "h": 24},
+            "cif": {"x": 26, "y": 43, "w": 30, "h": 15},
+            "direccion": {"x": 26, "y": 59, "w": 68, "h": 15},
+            "contacto": {"x": 26, "y": 75, "w": 68, "h": 15},
+        },
     }
     try:
         concepto = db.query(ConceptoImporteProvision).filter(ConceptoImporteProvision.codigo == "notaria").first()
@@ -719,6 +728,100 @@ def _plantilla_pdf_provision(db: Session) -> dict:
     except Exception:
         db.rollback()
     return defaults
+
+class _CabeceraVisualProvision(Flowable):
+    """Cabecera corporativa con posiciones editables en porcentajes del área A4."""
+    def __init__(self, plantilla: dict, ancho=176*mm, alto=34*mm):
+        super().__init__()
+        self.plantilla = plantilla or {}
+        self.width = ancho
+        self.height = alto
+
+    def _pos(self, clave, defecto):
+        posiciones = self.plantilla.get("posiciones") if isinstance(self.plantilla.get("posiciones"), dict) else {}
+        dato = posiciones.get(clave) if isinstance(posiciones.get(clave), dict) else {}
+        return {k: float(dato.get(k, v)) for k, v in defecto.items()}
+
+    def _logo(self):
+        data_url = str(self.plantilla.get("logo_data_url") or "")
+        if data_url.startswith("data:image/") and "," in data_url:
+            try:
+                return BytesIO(base64.b64decode(data_url.split(",", 1)[1], validate=True))
+            except Exception:
+                pass
+        ruta = _logo_pdf_path()
+        return str(ruta) if ruta else None
+
+    def draw(self):
+        c = self.canv
+        defaults = {
+            "logo": {"x": 2, "y": 13, "w": 21, "h": 70},
+            "nombre_empresa": {"x": 26, "y": 16, "w": 70, "h": 24},
+            "cif": {"x": 26, "y": 43, "w": 30, "h": 15},
+            "direccion": {"x": 26, "y": 59, "w": 68, "h": 15},
+            "contacto": {"x": 26, "y": 75, "w": 68, "h": 15},
+        }
+        for clave in ("logo", "nombre_empresa", "cif", "direccion", "contacto"):
+            p = self._pos(clave, defaults[clave])
+            x = self.width * max(0, min(100, p["x"])) / 100
+            y_top = self.height * max(0, min(100, p["y"])) / 100
+            w = self.width * max(1, min(100, p["w"])) / 100
+            h = self.height * max(1, min(100, p["h"])) / 100
+            y = self.height - y_top - h
+            if clave == "logo":
+                logo = self._logo()
+                if logo:
+                    try:
+                        c.drawImage(ImageReader(logo) if hasattr(logo, "read") else logo, x, y, width=w, height=h, preserveAspectRatio=True, anchor="c", mask="auto")
+                    except Exception:
+                        pass
+                continue
+            valor = str(self.plantilla.get(clave) or ( "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L." if clave == "nombre_empresa" else "")).strip()
+            if not valor:
+                continue
+            c.saveState()
+            c.setFillColor(colors.HexColor("#15325b" if clave == "nombre_empresa" else "#58677c"))
+            font_size = 10 if clave == "nombre_empresa" else 7
+            c.setFont("Helvetica-Bold" if clave == "nombre_empresa" else "Helvetica", font_size)
+            words = valor.split()
+            lines, line = [], ""
+            for word in words:
+                candidate = (line + " " + word).strip()
+                if line and c.stringWidth(candidate, "Helvetica-Bold" if clave == "nombre_empresa" else "Helvetica", font_size) > w:
+                    lines.append(line)
+                    line = word
+                else:
+                    line = candidate
+            if line:
+                lines.append(line)
+            baseline = y + h - font_size
+            leading = font_size + 1.5
+            for text_line in lines[:3]:
+                c.drawString(x, baseline, text_line)
+                baseline -= leading
+            c.restoreState()
+        c.saveState()
+        c.setStrokeColor(colors.HexColor("#d5deea"))
+        c.setLineWidth(0.6)
+        c.line(0, 0, self.width, 0)
+        c.restoreState()
+
+
+def _logo_pdf_path():
+    """Devuelve la ruta del logo incluido en el proyecto, si está disponible."""
+    base = Path(__file__).resolve()
+    candidatos = [
+        base.parents[3] / "frontend-app" / "public" / "img" / "logo.jpg",
+        base.parents[2] / "static" / "img" / "logo.jpg",
+        base.parents[1] / "static" / "img" / "logo.jpg",
+        base.parents[2] / "frontend-app" / "public" / "img" / "logo.jpg",
+    ]
+    return next((ruta for ruta in candidatos if ruta.is_file() and ruta.stat().st_size > 0), None)
+
+
+def _cabecera_visual_pdf(plantilla: dict):
+    return _CabeceraVisualProvision(plantilla)
+
 
 def _euros(valor: object) -> str:
     try:
@@ -750,8 +853,7 @@ def generar_documento_provision(id_expediente: str, provision_id: int, db: Sessi
     nombre_empresa = str(plantilla.get("nombre_empresa") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.")
     datos_corporativos = [plantilla.get("cif"), plantilla.get("direccion"), plantilla.get("contacto")]
     linea_corporativa = " · ".join(escape(str(x)) for x in datos_corporativos if x)
-    logo = _logo_pdf()
-    cabecera_pdf = _tabla_cabecera_pdf(logo, nombre_empresa, linea_corporativa, styles["TituloMolsan"], styles["SubtituloMolsan"])
+    cabecera_pdf = _cabecera_visual_pdf(plantilla)
     story = [
         cabecera_pdf,
         Spacer(1, 3*mm),
@@ -995,9 +1097,8 @@ def documento_provision_independiente(provision_id: int, db: Session = Depends(g
     plantilla = _plantilla_pdf_provision(db)
     datos_corporativos = [plantilla.get("cif"), plantilla.get("direccion"), plantilla.get("contacto")]
     linea_corporativa = " · ".join(escape(str(x)) for x in datos_corporativos if x)
-    logo = _logo_pdf()
     nombre_empresa = str(plantilla.get("nombre_empresa") or "MOLSAN GESTIÓN Y TRAMITACIÓN, S.L.")
-    cabecera_pdf = _tabla_cabecera_pdf(logo, nombre_empresa, linea_corporativa, styles["TituloInd"], styles["TextoInd"])
+    cabecera_pdf = _cabecera_visual_pdf(plantilla)
     story = [
         cabecera_pdf,
         Spacer(1, 3*mm),
