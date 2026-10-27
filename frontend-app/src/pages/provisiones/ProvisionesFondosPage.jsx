@@ -500,13 +500,19 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
         : "Selecciona una entidad bancaria existente en el catálogo Entidades bancarias.");
       return;
     }
-    const entidadActual = entidadesBancarias.find((e) => banco.entidad_actual_id != null && String(e.id) === String(banco.entidad_actual_id));
-    // Solo se considera entidad propia si el catálogo identifica explícitamente a CaixaBank como entidad actual.
-    // Si la columna está vacía, no tiene sucesora vinculada o conserva el nombre original, se trata como otra entidad.
-    const actualNombre = (typeof banco.entidad_actual === "string" && banco.entidad_actual.trim()) || entidadActual?.nombre || "";
+    const entidadActualRelacionada = entidadesBancarias.find((e) => banco.entidad_actual_id != null && String(e.id) === String(banco.entidad_actual_id));
+    // La tarifa se decide exclusivamente por la columna Entidad actual del registro seleccionado.
+    // Si no hay sucesora, está vacía o conserva el nombre original, corresponde Otra entidad.
+    const actualNombre = (typeof banco.entidad_actual === "string" && banco.entidad_actual.trim())
+      || entidadActualRelacionada?.nombre
+      || "";
     const nombreOriginal = normalizar(banco.nombre);
     const nombreActual = normalizar(actualNombre);
-    const esCaixaBank = Boolean(nombreActual && nombreActual !== nombreOriginal && nombreActual.includes("caixabank"));
+    const esCaixaBank = Boolean(
+      nombreActual
+      && nombreActual !== nombreOriginal
+      && (nombreActual === "caixabank" || nombreActual === "caixabank s.a." || nombreActual === "caixabank sa" || nombreActual.includes("caixabank"))
+    );
     const conceptoNotaria = conceptosImportes.find((x) => x.codigo === "notaria" && x.activo !== false);
     const conceptoRegistro = conceptosImportes.find((x) => x.codigo === "registro" && x.activo !== false);
     const conceptoImpuestos = conceptosImportes.find((x) => x.codigo === "impuestos" && x.activo !== false);
@@ -569,7 +575,8 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
       const ajd = Number(g.ajd || 0);
       const registro = Number(g.registro || 0);
       const gestion = Number(g.gestion || 0);
-      return { ...g, capital: Number(g.capital || 0), notaria, ajd, registro, gestion, total: notaria + ajd + registro + gestion };
+      const total = Math.round((notaria + ajd + registro + gestion + Number.EPSILON) * 100) / 100;
+      return { ...g, capital: Number(g.capital || 0), notaria, ajd, registro, gestion, total };
     }), observaciones: form.observaciones };
     try {
       const r = form.id ? await axios.put(`/expedientes/provisiones-independientes/${form.id}`, payload) : await axios.post("/expedientes/provisiones-independientes", payload);
