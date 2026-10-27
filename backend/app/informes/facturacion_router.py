@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from datetime import date
 from decimal import Decimal
 from io import BytesIO
@@ -169,6 +171,7 @@ def _consultar(db, fecha_desde=None, fecha_hasta=None, tipo_operacion=None, esta
             "fecha_pago": _fecha_iso(getattr(gasto, "fecha_pago", None)),
             "estado_pago": gasto.estado_pago,
             "numero_factura": gasto.numero_factura,
+            "datos_absis": (json.loads(gasto.datos_absis_json) if getattr(gasto, "datos_absis_json", None) else {}),
         })
     return filas
 
