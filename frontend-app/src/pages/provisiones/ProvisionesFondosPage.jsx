@@ -492,7 +492,7 @@ export default function ProvisionesFondosPage({ modoCatalogo = false }) {
       return;
     }
     const entidadActual = entidadesBancarias.find((e) => banco.entidad_actual_id != null && String(e.id) === String(banco.entidad_actual_id));
-    const actualNombre = entidadActual?.nombre || (typeof banco.entidad_actual === "string" ? banco.entidad_actual : "") || banco.nombre;
+    const actualNombre = (typeof banco.entidad_actual === "string" && banco.entidad_actual.trim()) || entidadActual?.nombre || banco.nombre;
     const esCaixaBank = normalizar(actualNombre).includes("caixabank");
     const conceptoNotaria = conceptosImportes.find((x) => x.codigo === "notaria" && x.activo !== false);
     const conceptoRegistro = conceptosImportes.find((x) => x.codigo === "registro" && x.activo !== false);
